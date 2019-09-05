@@ -315,9 +315,10 @@ function doEngineUpdateScript(string $fileName, array $shopTables)
 {
     $nl = "\r\n";
 
-    $database = Shop::Container()->getDB()->getConfig()['database'];
-    $host     = Shop::Container()->getDB()->getConfig()['host'];
-    $mysqlVer = DBMigrationHelper::getMySQLVersion();
+    $database    = Shop::Container()->getDB()->getConfig()['database'];
+    $host        = Shop::Container()->getDB()->getConfig()['host'];
+    $mysqlVer    = DBMigrationHelper::getMySQLVersion();
+    $recreateFKs = '';
 
     $result  = '-- ' . $fileName . $nl;
     $result .= '-- ' . $nl;
@@ -372,10 +373,17 @@ function doEngineUpdateScript(string $fileName, array $shopTables)
             $result .= implode(';' . $nl, $fulltextSQL) . ';' . $nl;
         }
 
-        $sql = DBMigrationHelper::sqlMoveToInnoDB($table);
+        $sql    = DBMigrationHelper::sqlMoveToInnoDB($table);
+        $fkSQLs = DBMigrationHelper::sqlRecreateFKs($table->TABLE_NAME);
         if (!empty($sql)) {
             $result .= '--' . $nl;
+            foreach ($fkSQLs->dropFK as $fkSQL) {
+                $result .= $fkSQL . ';' . $nl;
+            }
             $result .= $sql . ';' . $nl;
+            foreach ($fkSQLs->createFK as $fkSQL) {
+                $recreateFKs .= $fkSQL . ';' . $nl;
+            }
         }
 
         $sql = DBMigrationHelper::sqlConvertUTF8($table, $nl);
@@ -395,6 +403,14 @@ function doEngineUpdateScript(string $fileName, array $shopTables)
         $result .= '-- Fulltext search is not available on MySQL < 5.6' . $nl;
         $result .= '--' . $nl;
         $result .= "UPDATE `teinstellungen` SET `cWert` = 'N' WHERE `cName` = 'suche_fulltext';" . $nl;
+        $result .= $nl;
+    }
+
+    if (!empty($recreateFKs)) {
+        $result .= '--' . $nl;
+        $result .= '-- Recreate foreign keys' . $nl;
+        $result .= '--' . $nl;
+        $result .= $recreateFKs;
         $result .= $nl;
     }
 
@@ -475,12 +491,22 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', in
                                 }
                             }
                         }
-                        if ((($migration & DBMigrationHelper::MIGRATE_TABLE) === 0)
-                            || $db->executeQuery(
+                        if (($migration & DBMigrationHelper::MIGRATE_TABLE) !== 0) {
+                            $fkSQLs = DBMigrationHelper::sqlRecreateFKs($oTable->TABLE_NAME);
+                            foreach ($fkSQLs->dropFK as $fkSQL) {
+                                $db->executeQuery($fkSQL, ReturnType::DEFAULT);
+                            }
+                            $migrate = $db->executeQuery(
                                 DBMigrationHelper::sqlMoveToInnoDB($oTable),
-                                ReturnType::QUERYSINGLE
-                            )
-                        ) {
+                                ReturnType::DEFAULT
+                            );
+                            foreach ($fkSQLs->createFK as $fkSQL) {
+                                $db->executeQuery($fkSQL, ReturnType::DEFAULT);
+                            }
+                        } else {
+                            $migrate = true;
+                        }
+                        if ($migrate) {
                             $result->nextTable = $table;
                             $result->nextStep  = 2;
                             $result->status    = 'migrate';

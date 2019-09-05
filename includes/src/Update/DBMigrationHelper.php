@@ -286,10 +286,10 @@ class DBMigrationHelper
     }
 
     /**
-     * @param string $cTable
+     * @param string $table
      * @return stdClass[]
      */
-    public static function getColumnsNeedMigration(string $cTable): array
+    public static function getColumnsNeedMigration(string $table): array
     {
         $database = Shop::Container()->getDB()->getConfig()['database'];
 
@@ -304,7 +304,32 @@ class DBMigrationHelper
                         OR (DATA_TYPE = 'tinyint' AND SUBSTRING(COLUMN_NAME, 1, 1) = 'k')
                     )
                 ORDER BY `ORDINAL_POSITION`",
-            ['schema' => $database, 'table' => $cTable],
+            ['schema' => $database, 'table' => $table],
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+    }
+
+    /**
+     * @param string $table
+     * @return stdClass[]
+     */
+    public static function getFKDefinitions(string $table): array
+    {
+        $database = Shop::Container()->getDB()->getConfig()['database'];
+
+        return Shop::Container()->getDB()->queryPrepared(
+            'SELECT rc.`CONSTRAINT_NAME`, rc.`TABLE_NAME`, rc.`UPDATE_RULE`, rc.`DELETE_RULE`,
+                    rk.`COLUMN_NAME`, rk.`REFERENCED_TABLE_NAME`, rk.`REFERENCED_COLUMN_NAME`
+                FROM information_schema.REFERENTIAL_CONSTRAINTS rc
+                INNER JOIN information_schema.KEY_COLUMN_USAGE rk
+                    ON rk.`CONSTRAINT_SCHEMA` = rc.`CONSTRAINT_SCHEMA`
+                        AND rk.`CONSTRAINT_NAME` = rc.`CONSTRAINT_NAME`
+                WHERE rc.`CONSTRAINT_SCHEMA` = :schema
+                    AND rc.`REFERENCED_TABLE_NAME` = :table',
+            [
+                'schema' => $database,
+                'table'  => $table
+            ],
             ReturnType::ARRAY_OF_OBJECTS
         );
     }
@@ -333,6 +358,37 @@ class DBMigrationHelper
         return \version_compare($mysqlVersion->innodb->version, '5.6', '<')
             ? "ALTER TABLE `{$table->TABLE_NAME}` COMMENT = '{$table->TABLE_COMMENT}'"
             : '';
+    }
+
+    /**
+     * @param string $table
+     * @return object - dropFK: Array with SQL to drop associated foreign keys,
+     *                  createFK: Array with SQL to recreate them
+     */
+    public static function sqlRecreateFKs(string $table): object
+    {
+        $fkDefinitions = self::getFKDefinitions($table);
+        $result        = (object)[
+            'dropFK'   => [],
+            'createFK' => [],
+        ];
+
+        if (count($fkDefinitions) === 0) {
+            return $result;
+        }
+
+        foreach ($fkDefinitions as $fkDefinition) {
+            $result->dropFK[]   = 'ALTER TABLE `' . $fkDefinition->TABLE_NAME . '`'
+                . ' DROP FOREIGN KEY `' . $fkDefinition->CONSTRAINT_NAME . '`';
+            $result->createFK[] = 'ALTER TABLE `' . $fkDefinition->TABLE_NAME . '`'
+                . ' ADD FOREIGN KEY `' . $fkDefinition->CONSTRAINT_NAME . '` (`' . $fkDefinition->COLUMN_NAME . '`)'
+                . ' REFERENCES `' . $fkDefinition->REFERENCED_TABLE_NAME . '`'
+                    . '(`' . $fkDefinition->REFERENCED_COLUMN_NAME . '`)'
+                    . ' ON DELETE ' . $fkDefinition->DELETE_RULE
+                    . ' ON UPDATE ' . $fkDefinition->UPDATE_RULE;
+        }
+
+        return $result;
     }
 
     /**
@@ -430,14 +486,26 @@ class DBMigrationHelper
 
         $migration = self::isTableNeedMigration($table);
         if (($migration & self::MIGRATE_TABLE) !== self::MIGRATE_NONE) {
+            $db  = Shop::Container()->getDB();
             $sql = self::sqlMoveToInnoDB($table);
-            if (!empty($sql) && !Shop::Container()->getDB()->executeQuery($sql, ReturnType::QUERYSINGLE)) {
-                return self::FAILURE;
+            if (!empty($sql)) {
+                $fkSQLs = self::sqlRecreateFKs($tableName);
+                foreach ($fkSQLs->dropFK as $fkSQL) {
+                    $db->executeQuery($fkSQL, ReturnType::DEFAULT);
+                }
+                $res = $db->executeQuery($sql, ReturnType::DEFAULT);
+                foreach ($fkSQLs->createFK as $fkSQL) {
+                    $db->executeQuery($fkSQL, ReturnType::DEFAULT);
+                }
+
+                if (!$res) {
+                    return self::FAILURE;
+                }
             }
         }
         if (($migration & self::MIGRATE_COLUMN) !== self::MIGRATE_NONE) {
             $sql = self::sqlConvertUTF8($table);
-            if (!empty($sql) && !Shop::Container()->getDB()->executeQuery($sql, ReturnType::QUERYSINGLE)) {
+            if (!empty($sql) && !Shop::Container()->getDB()->executeQuery($sql, ReturnType::DEFAULT)) {
                 return self::FAILURE;
             }
         }

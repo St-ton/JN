@@ -277,6 +277,18 @@ class MediaImage implements IMedia
                     ReturnType::ARRAY_OF_OBJECTS
                 );
                 break;
+            case Image::TYPE_CATEGORY:
+                $names = Shop::Container()->getDB()->queryPrepared(
+                    'SELECT kKategorie, cName, cSeo
+                    FROM tkategorie AS a
+                    WHERE kKategorie = :cid
+                    UNION SELECT asp.kKategorie, asp.cName, asp.cSeo
+                        FROM tkategoriesprache AS asp JOIN tkategorie AS a ON asp.kKategorie = a.kKategorie
+                        WHERE asp.kKategorie = :cid',
+                    ['cid' => $req->id],
+                    ReturnType::ARRAY_OF_OBJECTS
+                );
+                break;
             case Image::TYPE_MANUFACTURER:
                 $names = Shop::Container()->getDB()->queryPrepared(
                     'SELECT kHersteller, cName, cSeo, cBildpfad

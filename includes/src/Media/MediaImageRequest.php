@@ -186,7 +186,7 @@ class MediaImageRequest
     public function getRaw(bool $absolute = false): ?string
     {
         $path = $this->getPath();
-        $path = empty($path) ? null : \sprintf('%s%s', self::getStoragePath(), $path);
+        $path = empty($path) ? null : \sprintf('%s%s', $this->getRealStoragePath(), $path);
 
         return $path !== null && $absolute === true
             ? \PFAD_ROOT . $path
@@ -273,6 +273,14 @@ class MediaImageRequest
                 ['mid' => $id],
                 ReturnType::SINGLE_OBJECT
             );
+        } elseif ($type === Image::TYPE_CATEGORY) {
+            $item = Shop::Container()->getDB()->queryPrepared(
+                'SELECT cPfad AS path
+                    FROM tkategoriepict
+                    WHERE kKategorie = :cid LIMIT 1',
+                ['cid' => $id],
+                ReturnType::SINGLE_OBJECT
+            );
         }
 
         $path = $item->path ?? null;
@@ -295,6 +303,21 @@ class MediaImageRequest
         static::$cache[$hash] = $path;
 
         return $path;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRealStoragePath(): string
+    {
+        if ($this->getType() === Image::TYPE_MANUFACTURER) {
+            return \STORAGE_MANUFACTURERS;
+        }
+        if ($this->getType() === Image::TYPE_CATEGORY) {
+            return \STORAGE_CATEGORIES;
+        }
+
+        return \PFAD_MEDIA_IMAGE_STORAGE;
     }
 
     /**

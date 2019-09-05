@@ -274,13 +274,12 @@ class Image
                         break;
                 }
                 break;
+            case self::TYPE_CATEGORY:
             case self::TYPE_MANUFACTURER:
                 $result = empty($mixed->cSeo) ? $mixed->cName : $mixed->cSeo;
                 break;
             case self::TYPE_VARIATION:
-                // todo..
-                break;
-            case self::TYPE_CATEGORY:
+            default:
                 // todo..
                 break;
         }
@@ -321,7 +320,6 @@ class Image
         $background   = $req->getExt() === 'png' ? 'rgba(0,0,0,0)' : $settings['background'];
         $thumbnail    = $req->getThumb(null, true);
         $directory    = \pathinfo($thumbnail, \PATHINFO_DIRNAME);
-
         if (!\is_dir($directory) && !\mkdir($directory, 0777, true)) {
             $error = \error_get_last();
             if (empty($error)) {

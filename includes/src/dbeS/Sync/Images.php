@@ -8,7 +8,6 @@ namespace JTL\dbeS\Sync;
 
 use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
-use JTL\Media\Image;
 use JTL\Shop;
 use stdClass;
 
@@ -390,10 +389,11 @@ final class Images extends AbstractSync
                 );
                 continue;
             }
-            $manufacturer = $this->db->query(
+            $manufacturer = $this->db->queryPrepared(
                 'SELECT cSeo
-                FROM thersteller
-                WHERE kHersteller = ' . (int)$image->kHersteller,
+                    FROM thersteller
+                    WHERE kHersteller = :mid',
+                ['mid' => $image->kHersteller],
                 ReturnType::SINGLE_OBJECT
             );
             if (!empty($manufacturer->cSeo)) {
@@ -402,6 +402,7 @@ final class Images extends AbstractSync
                 $image->cPfad .= '.' . $format;
             }
             $image->cPfad = $this->getNewFilename($image->cPfad);
+            \copy($original, \PFAD_ROOT . \STORAGE_MANUFACTURERS . $image->cPfad);
             $this->createThumbnail(
                 $this->brandingConfig['Hersteller'],
                 $original,
@@ -515,6 +516,7 @@ final class Images extends AbstractSync
             }
             $image->cPfad = $this->getCategoryImageName($image, $format, $sql);
             $image->cPfad = $this->getNewFilename($image->cPfad);
+            \copy($original, \PFAD_ROOT . \STORAGE_CATEGORIES . $image->cPfad);
             if ($this->createThumbnail(
                 $this->brandingConfig['Kategorie'],
                 $original,

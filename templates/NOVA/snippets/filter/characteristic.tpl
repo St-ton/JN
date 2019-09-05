@@ -66,7 +66,6 @@
                 {else}
                     {link href="{if !empty($attributeValue->getURL())}{$attributeValue->getURL()}{else}#{/if}"
                         title="{$attributeValue->getValue()|escape:'html'}: {$attributeValue->getCount()}"
-                        data=["toggle"=>"tooltip", "placement"=>"top", "boundary"=>"window"]
                         class="{if $attributeValue->isActive()}active{/if}"
                     }
                         {if !empty($attributeImageURL)}

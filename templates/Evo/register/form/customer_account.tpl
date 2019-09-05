@@ -14,7 +14,7 @@
                 <label class="btn-block" for="checkout_create_account_unreg" data-toggle="collapse"
                     data-target="#create_account_data">
                     <input id="checkout_create_account_unreg" class="radio-checkbox" type="checkbox" name="unreg_form"
-                        value="0" {if $unregForm === 0}checked="checked"{/if} />
+                        value="0" />
                     <span class="control-label label-default">
                         {lang key='createNewAccount' section='account data'}
                     </span>
@@ -23,7 +23,9 @@
         {else}
             <input type="hidden" name="unreg_form" value="0">
         {/if}
-        <div id="create_account_data" class="row collapse collapse-non-validate {if $unregForm === 1}hidden{else}in{/if}" aria-expanded="true">
+        <div id="create_account_data" class="row collapse collapse-non-validate {if empty($checkout)
+                        || $smarty.session.Warenkorb->hasDigitalProducts()
+                        || $Einstellungen.kaufabwicklung.bestellvorgang_unregistriert === 'N'}in{else}hidden{/if}" aria-expanded="true">
             <div class="col-xs-6">
                 <div class="form-group float-label-control{if isset($fehlendeAngaben.pass_zu_kurz) || isset($fehlendeAngaben.pass_ungleich)} has-error{/if}">
                     <label for="password" class="control-label">{lang key='password' section='account data'}</label>

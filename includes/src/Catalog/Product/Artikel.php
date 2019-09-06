@@ -35,6 +35,7 @@ use JTL\Language\LanguageHelper;
 use JTL\Media\Image;
 use JTL\Media\MediaImage;
 use JTL\Media\MediaImageRequest;
+use JTL\Media\MultiSizeImage;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
@@ -48,6 +49,8 @@ use function Functional\select;
  */
 class Artikel
 {
+    use MultiSizeImage;
+
     /**
      * @var int
      */
@@ -1065,6 +1068,7 @@ class Artikel
      */
     public function __construct()
     {
+        $this->setType(Image::TYPE_PRODUCT);
         $this->options = new stdClass();
         $this->conf    = $this->getConfig();
     }
@@ -1310,9 +1314,7 @@ class Artikel
                 ReturnType::ARRAY_OF_OBJECTS
             );
         }
-        $imageCount = \count($images);
-        $id         = $this->kArtikel;
-        if ($imageCount === 0) {
+        if (\count($images) === 0) {
             $image               = new stdClass();
             $image->cPfadMini    = \BILD_KEIN_ARTIKELBILD_VORHANDEN;
             $image->cPfadKlein   = \BILD_KEIN_ARTIKELBILD_VORHANDEN;
@@ -1327,34 +1329,37 @@ class Artikel
             $image->galleryJSON  = $this->prepareImageDetails($image);
 
             $this->Bilder[0] = $image;
-        } else {
-            for ($i = 0; $i < $imageCount; ++$i) {
-                $imgNo              = (int)$images[$i]->nNr;
-                $image              = new stdClass();
-                $image->cPfadMini   = MediaImage::getThumb(Image::TYPE_PRODUCT, $id, $this, Image::SIZE_XS, $imgNo);
-                $image->cPfadKlein  = MediaImage::getThumb(Image::TYPE_PRODUCT, $id, $this, Image::SIZE_SM, $imgNo);
-                $image->cPfadNormal = MediaImage::getThumb(Image::TYPE_PRODUCT, $id, $this, Image::SIZE_MD, $imgNo);
-                $image->cPfadGross  = MediaImage::getThumb(Image::TYPE_PRODUCT, $id, $this, Image::SIZE_LG, $imgNo);
-                $image->nNr         = $imgNo;
-                $image->cURLMini    = $baseURL . $image->cPfadMini;
-                $image->cURLKlein   = $baseURL . $image->cPfadKlein;
-                $image->cURLNormal  = $baseURL . $image->cPfadNormal;
-                $image->cURLGross   = $baseURL . $image->cPfadGross;
 
-                if ($i === 0) {
-                    $this->cVorschaubild    = $image->cPfadKlein;
-                    $this->cVorschaubildURL = $baseURL . $this->cVorschaubild;
-                }
-                // Lookup image alt attribute
-                $idx                 = 'img_alt_' . $imgNo;
-                $image->cAltAttribut = isset($this->AttributeAssoc[$idx])
-                    ? \strip_tags($this->AttributeAssoc['img_alt_' . $imgNo])
-                    : \str_replace(['"', "'"], '', $this->cName);
-
-                $image->galleryJSON = $this->prepareImageDetails($image);
-                $this->Bilder[$i]   = $image;
-            }
+            return $this;
         }
+        foreach ($images as $i => $item) {
+            $imgNo = (int)$item->nNr;
+            $image = new stdClass();
+            $this->generateAllImageSizes(false, $imgNo, $item->cPfad);
+            $image->cPfadMini   = $this->getImage(Image::SIZE_XS);
+            $image->cPfadKlein  = $this->getImage(Image::SIZE_SM);
+            $image->cPfadNormal = $this->getImage(Image::SIZE_MD);
+            $image->cPfadGross  = $this->getImage(Image::SIZE_LG);
+            $image->nNr         = $imgNo;
+            $image->cURLMini    = $baseURL . $image->cPfadMini;
+            $image->cURLKlein   = $baseURL . $image->cPfadKlein;
+            $image->cURLNormal  = $baseURL . $image->cPfadNormal;
+            $image->cURLGross   = $baseURL . $image->cPfadGross;
+
+            if ($i === 0) {
+                $this->cVorschaubild    = $image->cPfadKlein;
+                $this->cVorschaubildURL = $baseURL . $this->cVorschaubild;
+            }
+            // Lookup image alt attribute
+            $idx                 = 'img_alt_' . $imgNo;
+            $image->cAltAttribut = isset($this->AttributeAssoc[$idx])
+                ? \strip_tags($this->AttributeAssoc['img_alt_' . $imgNo])
+                : \str_replace(['"', "'"], '', $this->cName);
+
+            $image->galleryJSON = $this->prepareImageDetails($image);
+            $this->Bilder[]     = $image;
+        }
+        unset($this->images);
 
         return $this;
     }
@@ -6225,5 +6230,21 @@ class Artikel
         $optStr = \preg_replace('/[^-a-z0-9_]+/', '', $optStr);
 
         return $optStr;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getID(): ?int
+    {
+        return $this->kArtikel;
+    }
+
+    /**
+     * @return array
+     */
+    public function getImages(): array
+    {
+        return $this->Bilder;
     }
 }

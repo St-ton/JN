@@ -32,6 +32,19 @@ class MediaImage implements IMedia
     }
 
     /**
+     * @param string|null $sourcePath
+     * @return string
+     */
+    private static function getFileExtension(string $sourcePath = null): string
+    {
+        $config = Image::getSettings()['format'];
+
+        return $config === 'auto'
+            ? \pathinfo($sourcePath)['extension'] ?? 'jpg'
+            : $config;
+    }
+
+    /**
      * @param string $type
      * @param string $id
      * @param object $mixed
@@ -56,16 +69,17 @@ class MediaImage implements IMedia
      * @param object $mixed
      * @param string $size
      * @param int    $number
+     * @param string|null $sourcePath
      * @return string
      */
-    public static function getThumb($type, $id, $mixed, $size, int $number = 1): string
+    public static function getThumb($type, $id, $mixed, $size, int $number = 1, string $sourcePath = null): string
     {
         $req   = MediaImageRequest::create([
             'id'     => $id,
             'type'   => $type,
             'number' => $number,
             'name'   => Image::getCustomName($type, $mixed),
-            'ext'    => Image::getSettings()['format'],
+            'ext'    => self::getFileExtension($sourcePath),
         ]);
         $thumb = $req->getThumb($size);
         if (!\file_exists(\PFAD_ROOT . $thumb) && !\file_exists(\PFAD_ROOT . $req->getRaw())) {
@@ -179,7 +193,7 @@ class MediaImage implements IMedia
      * @param string $request
      * @return bool
      */
-    public function isValid($request): bool
+    public function isValid(string $request): bool
     {
         return $this->parse($request) !== null;
     }
@@ -200,36 +214,26 @@ class MediaImage implements IMedia
      * @return mixed|void
      * @throws Exception
      */
-    public function handle($request)
+    public function handle(string $request)
     {
         try {
             $request  = '/' . \ltrim($request, '/');
             $mediaReq = $this->create($request);
-            $imgNames = Shop::Container()->getDB()->queryPrepared(
-                'SELECT kArtikel, cName, cSeo, cArtNr, cBarcode
-                    FROM tartikel AS a
-                    WHERE kArtikel = :kArtikel
-                    UNION SELECT asp.kArtikel, asp.cName, asp.cSeo, a.cArtNr, a.cBarcode
-                        FROM tartikelsprache AS asp JOIN tartikel AS a ON asp.kArtikel = a.kArtikel
-                        WHERE asp.kArtikel = :kArtikel',
-                ['kArtikel' => (int)$mediaReq->id],
-                ReturnType::ARRAY_OF_OBJECTS
-            );
-
+            $imgNames = $this->getImageNames($mediaReq);
             if (\count($imgNames) === 0) {
                 throw new Exception('No such product id: ' . (int)$mediaReq->id);
             }
 
             $imgFilePath = null;
             $matchFound  = false;
-
             foreach ($imgNames as $imgName) {
                 $imgName->imgPath = self::getThumb(
                     $mediaReq->type,
                     $mediaReq->id,
                     $imgName,
                     $mediaReq->size,
-                    (int)$mediaReq->number
+                    (int)$mediaReq->number,
+                    $mediaReq->name . '.' . $mediaReq->ext
                 );
                 if ('/' . $imgName->imgPath === $request) {
                     $matchFound  = true;
@@ -237,12 +241,10 @@ class MediaImage implements IMedia
                     break;
                 }
             }
-
             if ($matchFound === false) {
                 \header('Location: ' . Shop::getURL() . '/' . $imgNames[0]->imgPath, true, 301);
                 exit;
             }
-
             if (!\is_file($imgFilePath)) {
                 Image::render($mediaReq, true);
             }
@@ -254,6 +256,85 @@ class MediaImage implements IMedia
             \http_response_code(404);
         }
         exit;
+    }
+
+    /**
+     * @param MediaImageRequest $req
+     * @return array
+     */
+    private function getImageNames(MediaImageRequest $req): array
+    {
+        switch ($req->type) {
+            case Image::TYPE_PRODUCT:
+                $names = Shop::Container()->getDB()->queryPrepared(
+                    'SELECT kArtikel, cName, cSeo, cArtNr, cBarcode
+                    FROM tartikel AS a
+                    WHERE kArtikel = :pid
+                    UNION SELECT asp.kArtikel, asp.cName, asp.cSeo, a.cArtNr, a.cBarcode
+                        FROM tartikelsprache AS asp JOIN tartikel AS a ON asp.kArtikel = a.kArtikel
+                        WHERE asp.kArtikel = :pid',
+                    ['pid' => $req->id],
+                    ReturnType::ARRAY_OF_OBJECTS
+                );
+                break;
+            case Image::TYPE_CATEGORY:
+                $names = Shop::Container()->getDB()->queryPrepared(
+                    'SELECT kKategorie, cName, cSeo
+                    FROM tkategorie AS a
+                    WHERE kKategorie = :cid
+                    UNION SELECT asp.kKategorie, asp.cName, asp.cSeo
+                        FROM tkategoriesprache AS asp JOIN tkategorie AS a ON asp.kKategorie = a.kKategorie
+                        WHERE asp.kKategorie = :cid',
+                    ['cid' => $req->id],
+                    ReturnType::ARRAY_OF_OBJECTS
+                );
+                break;
+            case Image::TYPE_MANUFACTURER:
+                $names = Shop::Container()->getDB()->queryPrepared(
+                    'SELECT kHersteller, cName, cSeo, cBildpfad
+                    FROM thersteller
+                    WHERE kHersteller = :mid',
+                    ['mid' => $req->id],
+                    ReturnType::ARRAY_OF_OBJECTS
+                );
+                if (!empty($names[0]->cBildpfad)) {
+                    $req->path = $names[0]->cBildpfad;
+                }
+                break;
+            case Image::TYPE_NEWS:
+                $names = Shop::Container()->getDB()->queryPrepared(
+                    'SELECT a.kNews, a.cPreviewImage, t.title
+                    FROM tnews AS a
+                    LEFT JOIN tnewssprache t
+                        ON a.kNews = t.kNews
+                    WHERE a.kNews = :nid',
+                    ['nid' => $req->id],
+                    ReturnType::ARRAY_OF_OBJECTS
+                );
+                if (!empty($names[0]->cPreviewImage)) {
+                    $req->path = \str_replace(\PFAD_NEWSBILDER, '', $names[0]->cPreviewImage);
+                }
+                break;
+            case Image::TYPE_NEWSCATEGORY:
+                $names = Shop::Container()->getDB()->queryPrepared(
+                    'SELECT a.kNewsKategorie, a.cPreviewImage, t.name AS title
+                    FROM tnewskategorie AS a
+                    LEFT JOIN tnewskategoriesprache t
+                        ON a.kNewsKategorie = t.kNewsKategorie
+                    WHERE a.kNewsKategorie = :nid',
+                    ['nid' => $req->id],
+                    ReturnType::ARRAY_OF_OBJECTS
+                );
+                if (!empty($names[0]->cPreviewImage)) {
+                    $req->path = \str_replace(\PFAD_NEWSKATEGORIEBILDER, '', $names[0]->cPreviewImage);
+                }
+                break;
+            default:
+                $names = [];
+                break;
+        }
+
+        return $names;
     }
 
     /**
@@ -334,8 +415,6 @@ class MediaImage implements IMedia
     {
         $cols = '';
         switch (Image::getSettings()['naming']['product']) {
-            case 0:
-                break;
             case 1:
                 $cols = ', tartikel.cArtNr';
                 break;
@@ -348,6 +427,7 @@ class MediaImage implements IMedia
             case 4:
                 $cols = ', tartikel.cBarcode';
                 break;
+            case 0:
             default:
                 break;
         }
@@ -387,8 +467,6 @@ class MediaImage implements IMedia
                 $cols = '';
                 $conf = Image::getSettings();
                 switch ($conf['naming']['product']) {
-                    case 0:
-                        break;
                     case 1:
                         $cols = ', tartikel.cArtNr';
                         break;
@@ -401,6 +479,7 @@ class MediaImage implements IMedia
                     case 4:
                         $cols = ', tartikel.cBarcode';
                         break;
+                    case 0:
                     default:
                         break;
                 }
@@ -451,9 +530,9 @@ class MediaImage implements IMedia
     public static function isCached(MediaImageRequest $req): bool
     {
         return \file_exists($req->getThumb(Image::SIZE_XS, true))
-        && \file_exists($req->getThumb(Image::SIZE_SM, true))
-        && \file_exists($req->getThumb(Image::SIZE_MD, true))
-        && \file_exists($req->getThumb(Image::SIZE_LG, true));
+            && \file_exists($req->getThumb(Image::SIZE_SM, true))
+            && \file_exists($req->getThumb(Image::SIZE_MD, true))
+            && \file_exists($req->getThumb(Image::SIZE_LG, true));
     }
 
     /**
@@ -601,49 +680,5 @@ class MediaImage implements IMedia
         }
 
         return 0;
-    }
-
-    /**
-     * @param string $type
-     * @param int    $id
-     * @return bool
-     */
-    public static function hasImage(string $type, int $id): bool
-    {
-        return static::imageCount($type, $id) > 0;
-    }
-
-    /**
-     * @param string $type
-     * @param string $id
-     * @param object $mixed
-     * @param string $size
-     * @param int    $number
-     * @return string|int|null
-     */
-    public static function getRawOrFilesize(string $type, $id, $mixed, $size, int $number = 1)
-    {
-        $name     = Image::getCustomName($type, $mixed);
-        $settings = Image::getSettings();
-        $req      = MediaImageRequest::create([
-            'id'     => $id,
-            'type'   => $type,
-            'number' => $number,
-            'name'   => $name,
-            'ext'    => $settings['format'],
-        ]);
-        $thumb    = $req->getThumb($size);
-        $thumbAbs = \PFAD_ROOT . $thumb;
-
-        if (!\file_exists($thumbAbs) && !\file_exists(\PFAD_ROOT . $req->getRaw())) {
-            $fallback = $req->getFallbackThumb($size);
-            $thumb    = \file_exists(\PFAD_ROOT . $fallback)
-                ? \PFAD_ROOT . $fallback
-                : \BILD_KEIN_ARTIKELBILD_VORHANDEN;
-
-            return \filesize($thumb);
-        }
-
-        return $req->getPath();
     }
 }

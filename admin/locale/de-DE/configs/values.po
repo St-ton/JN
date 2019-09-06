@@ -1352,6 +1352,12 @@ msgstr "Ja"
 msgid "bilder_dateiformat_value(PNG)"
 msgstr "PNG"
 
+msgid "bilder_dateiformat_value(WEBP)"
+msgstr "WebP"
+
+msgid "bilder_dateiformat_value(AUTO)"
+msgstr "Auto"
+
 msgid "bilder_skalieren_value(N)"
 msgstr "Nein"
 

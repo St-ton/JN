@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -10,6 +9,9 @@ namespace JTL\Catalog;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
+use JTL\Media\Image;
+use JTL\Media\MediaImage;
+use JTL\Media\MultiSizeImage;
 use JTL\Session;
 use JTL\Shop;
 use stdClass;
@@ -20,6 +22,8 @@ use stdClass;
  */
 class Hersteller
 {
+    use MultiSizeImage;
+
     /**
      * @var int
      */
@@ -99,6 +103,7 @@ class Hersteller
      */
     public function __construct(int $id = 0, int $languageID = 0, bool $noCache = false)
     {
+        $this->setType(Image::TYPE_MANUFACTURER);
         if ($id > 0) {
             $this->loadFromDB($id, $languageID, $noCache);
         }
@@ -106,10 +111,9 @@ class Hersteller
 
     /**
      * @param stdClass $obj
-     * @param bool     $extras
      * @return $this
      */
-    public function loadFromObject(stdClass $obj, $extras = true): self
+    public function loadFromObject(stdClass $obj): self
     {
         $members = \array_keys(\get_object_vars($obj));
         if (\is_array($members) && \count($members) > 0) {
@@ -119,9 +123,7 @@ class Hersteller
             $this->kHersteller = (int)$this->kHersteller;
             $this->nSortNr     = (int)$this->nSortNr;
         }
-        if ($extras) {
-            $this->getExtras($obj);
-        }
+        $this->loadImages($obj);
 
         return $this;
     }
@@ -134,7 +136,7 @@ class Hersteller
      */
     public function loadFromDB(int $id, int $languageID = 0, bool $noCache = false): self
     {
-        //noCache param to avoid problem with de-serialization of class properties with jtl search
+        // noCache param to avoid problem with de-serialization of class properties with jtl search
         $languageID = $languageID > 0 ? $languageID : Shop::getLanguageID();
         if ($languageID === 0) {
             $language   = LanguageHelper::getDefaultLanguage();
@@ -189,10 +191,12 @@ class Hersteller
      * @param stdClass $obj
      * @return $this
      */
-    public function getExtras(stdClass $obj): self
+    private function loadImages(stdClass $obj): self
     {
-        $shopURL      = Shop::getURL() . '/';
-        $imageBaseURL = Shop::getImageBaseURL();
+        $shopURL               = Shop::getURL() . '/';
+        $imageBaseURL          = Shop::getImageBaseURL();
+        $this->cBildpfadKlein  = \BILD_KEIN_HERSTELLERBILD_VORHANDEN;
+        $this->cBildpfadNormal = \BILD_KEIN_HERSTELLERBILD_VORHANDEN;
         if (isset($obj->kHersteller) && $obj->kHersteller > 0) {
             // URL bauen
             $this->cURL          = (isset($obj->cSeo) && \mb_strlen($obj->cSeo) > 0)
@@ -203,9 +207,7 @@ class Hersteller
         if (\mb_strlen($this->cBildpfad) > 0) {
             $this->cBildpfadKlein  = \PFAD_HERSTELLERBILDER_KLEIN . $this->cBildpfad;
             $this->cBildpfadNormal = \PFAD_HERSTELLERBILDER_NORMAL . $this->cBildpfad;
-        } else {
-            $this->cBildpfadKlein  = \BILD_KEIN_HERSTELLERBILD_VORHANDEN;
-            $this->cBildpfadNormal = \BILD_KEIN_HERSTELLERBILD_VORHANDEN;
+            $this->generateAllImageSizes();
         }
         $this->cBildURLKlein  = $imageBaseURL . $this->cBildpfadKlein;
         $this->cBildURLNormal = $imageBaseURL . $this->cBildpfadNormal;
@@ -266,5 +268,13 @@ class Hersteller
     public function getName(): ?string
     {
         return $this->cName;
+    }
+
+    /**
+     * @return int
+     */
+    public function getID(): int
+    {
+        return $this->kHersteller;
     }
 }

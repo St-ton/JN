@@ -22,7 +22,7 @@ class MediaImageCompatibility implements IMedia
      * @param string $request
      * @return bool
      */
-    public function isValid($request): bool
+    public function isValid(string $request): bool
     {
         return \in_array(\IMAGE_COMPATIBILITY_LEVEL, [1, 2], true) && $this->parse($request) !== null;
     }
@@ -31,7 +31,7 @@ class MediaImageCompatibility implements IMedia
      * @param string $request
      * @return mixed
      */
-    public function handle($request)
+    public function handle(string $request)
     {
         $req      = $this->parse($request);
         $path     = \mb_convert_case($req['path'], \MB_CASE_LOWER);

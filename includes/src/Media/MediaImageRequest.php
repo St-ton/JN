@@ -186,7 +186,7 @@ class MediaImageRequest
     public function getRaw(bool $absolute = false): ?string
     {
         $path = $this->getPath();
-        $path = empty($path) ? null : \sprintf('%s%s', self::getStoragePath(), $path);
+        $path = empty($path) ? null : \sprintf('%s%s', $this->getRealStoragePath(), $path);
 
         return $path !== null && $absolute === true
             ? \PFAD_ROOT . $path
@@ -213,7 +213,7 @@ class MediaImageRequest
             $size,
             $this->getName(),
             $number,
-            $ext
+            $ext === 'auto' ? 'jpg' : $ext
         );
 
         return $absolute === true
@@ -251,24 +251,61 @@ class MediaImageRequest
      */
     public function getPathById(): ?string
     {
-        $id = $this->getId();
-//        $type   = $this->getType();
-        $number = $this->getNumber();
-
         if (($path = $this->cachedPath()) !== null) {
             return $path;
         }
-
-        $item = Shop::Container()->getDB()->queryPrepared(
-            'SELECT kArtikel AS id, nNr AS number, cPfad AS path
-                FROM tartikelpict
-                WHERE kArtikel = :pid AND nNr = :no ORDER BY nNr LIMIT 1',
-            ['pid' => $id, 'no' => $number],
-            ReturnType::SINGLE_OBJECT
-        );
+        $id     = $this->getId();
+        $type   = $this->getType();
+        $number = $this->getNumber();
+        if ($type === Image::TYPE_PRODUCT) {
+            $item = Shop::Container()->getDB()->queryPrepared(
+                'SELECT cPfad AS path
+                    FROM tartikelpict
+                    WHERE kArtikel = :pid AND nNr = :no ORDER BY nNr LIMIT 1',
+                ['pid' => $id, 'no' => $number],
+                ReturnType::SINGLE_OBJECT
+            );
+        } elseif ($type === Image::TYPE_MANUFACTURER) {
+            $item = Shop::Container()->getDB()->queryPrepared(
+                'SELECT cBildpfad AS path
+                    FROM thersteller
+                    WHERE kHersteller = :mid LIMIT 1',
+                ['mid' => $id],
+                ReturnType::SINGLE_OBJECT
+            );
+        } elseif ($type === Image::TYPE_CATEGORY) {
+            $item = Shop::Container()->getDB()->queryPrepared(
+                'SELECT cPfad AS path
+                    FROM tkategoriepict
+                    WHERE kKategorie = :cid LIMIT 1',
+                ['cid' => $id],
+                ReturnType::SINGLE_OBJECT
+            );
+        } elseif ($type === Image::TYPE_NEWSCATEGORY) {
+            $item = Shop::Container()->getDB()->queryPrepared(
+                'SELECT cPreviewImage AS path
+                    FROM tnewskategorie
+                    WHERE kNewsKategorie = :cid LIMIT 1',
+                ['cid' => $id],
+                ReturnType::SINGLE_OBJECT
+            );
+            if (!empty($item->path)) {
+                $item->path = \str_replace(\PFAD_NEWSKATEGORIEBILDER, '', $item->path);
+            }
+        } elseif ($type === Image::TYPE_NEWS) {
+            $item = Shop::Container()->getDB()->queryPrepared(
+                'SELECT cPreviewImage AS path
+                    FROM tnews
+                    WHERE kNews = :cid LIMIT 1',
+                ['cid' => $id],
+                ReturnType::SINGLE_OBJECT
+            );
+            if (!empty($item->path)) {
+                $item->path = \str_replace(\PFAD_NEWSBILDER, '', $item->path);
+            }
+        }
 
         $path = $item->path ?? null;
-
         $this->cachedPath($path);
 
         return $path;
@@ -278,7 +315,7 @@ class MediaImageRequest
      * @param string|null $path
      * @return string|null
      */
-    protected function cachedPath($path = null): ?string
+    protected function cachedPath(string $path = null): ?string
     {
         $hash = \sprintf('%s-%s-%s', $this->getId(), $this->getNumber(), $this->getType());
         if ($path === null) {
@@ -288,6 +325,27 @@ class MediaImageRequest
         static::$cache[$hash] = $path;
 
         return $path;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRealStoragePath(): string
+    {
+        if ($this->getType() === Image::TYPE_MANUFACTURER) {
+            return \STORAGE_MANUFACTURERS;
+        }
+        if ($this->getType() === Image::TYPE_CATEGORY) {
+            return \STORAGE_CATEGORIES;
+        }
+        if ($this->getType() === Image::TYPE_NEWS) {
+            return \PFAD_NEWSBILDER;
+        }
+        if ($this->getType() === Image::TYPE_NEWSCATEGORY) {
+            return \PFAD_NEWSKATEGORIEBILDER;
+        }
+
+        return \PFAD_MEDIA_IMAGE_STORAGE;
     }
 
     /**

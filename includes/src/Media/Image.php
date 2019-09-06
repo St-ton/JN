@@ -9,9 +9,12 @@ namespace JTL\Media;
 use Exception;
 use Intervention\Image\Constraint;
 use Intervention\Image\ImageManager;
+use JTL\Catalog\Category\Kategorie;
+use JTL\Catalog\Hersteller;
 use JTL\DB\ReturnType;
+use JTL\News\Category;
+use JTL\News\Item;
 use JTL\Shop;
-use stdClass;
 
 /**
  * Class Image
@@ -29,6 +32,9 @@ class Image
     public const TYPE_MANUFACTURER    = 'manufacturer';
     public const TYPE_ATTRIBUTE       = 'attribute';
     public const TYPE_ATTRIBUTE_VALUE = 'attributevalue';
+    public const TYPE_NEWS            = 'news';
+    public const TYPE_NEWSCATEGORY    = 'newscategory';
+    public const TYPE_CHARACTERISTIC  = 'characteristic';
 
     /**
      * Image sizes
@@ -90,55 +96,6 @@ class Image
      * @var array
      */
     private static $settings;
-
-    /**
-     * Get image key by filepath
-     *
-     * @todo Support all types and map to the according table
-     * @param string $path filepath
-     * @param string $type produkt, hersteller, ..
-     * @param int    $number
-     * @return stdClass|null
-     */
-    public static function getByPath($path, $type, int $number = 1): ?stdClass
-    {
-        $item = Shop::Container()->getDB()->queryPrepared(
-            'SELECT kArtikel AS id, nNr AS number, cPfad AS path 
-                FROM tartikelpict 
-                WHERE cPfad = :path 
-                    AND nNr = :nr 
-                LIMIT 1',
-            ['path' => $path, 'nr' => $number],
-            ReturnType::SINGLE_OBJECT
-        );
-
-        return \is_object($item) ? $item : null;
-    }
-
-    /**
-     * Get image key by id
-     *
-     * @TODO: Support all types and map to the according table
-     * @todo: unsed param $type
-     * @param int    $id
-     * @param string $type produkt, hersteller, ..
-     * @param int    $number
-     * @return stdClass|null
-     */
-    public static function getById(int $id, $type, int $number = 1): ?stdClass
-    {
-        $item = Shop::Container()->getDB()->queryPrepared(
-            'SELECT kArtikel AS id, nNr AS number, cPfad AS path 
-                FROM tartikelpict 
-                WHERE kArtikel = :aid 
-                    AND nNr = :num 
-                ORDER BY nNr LIMIT 1',
-            ['aid' => $id, 'num' => $number],
-            ReturnType::SINGLE_OBJECT
-        );
-
-        return \is_object($item) ? $item : null;
-    }
 
     /**
      *  Global image settings
@@ -324,10 +281,16 @@ class Image
                         break;
                 }
                 break;
-            case self::TYPE_VARIATION:
-                // todo..
-                break;
             case self::TYPE_CATEGORY:
+            case self::TYPE_MANUFACTURER:
+                $result = empty($mixed->cSeo) ? $mixed->cName : $mixed->cSeo;
+                break;
+            case self::TYPE_NEWS:
+            case self::TYPE_NEWSCATEGORY:
+                $result = $mixed->title;
+                break;
+            case self::TYPE_VARIATION:
+            default:
                 // todo..
                 break;
         }
@@ -342,7 +305,6 @@ class Image
     public static function getCleanFilename(string $filename): string
     {
         $filename = \mb_convert_case($filename, \MB_CASE_LOWER);
-
         $source   = ['.', ' ', '/', 'ä', 'ö', 'ü', 'ß'];
         $replace  = ['-', '-', '-', 'ae', 'oe', 'ue', 'ss'];
         $filename = \str_replace($source, $replace, $filename);
@@ -365,7 +327,7 @@ class Image
         $maxWidth     = $containerDim->getWidth();
         $maxHeight    = $containerDim->getHeight();
         $settings     = self::getSettings();
-        $background   = $settings['format'] === 'png' ? 'rgba(0,0,0,0)' : $settings['background'];
+        $background   = $req->getExt() === 'png' ? 'rgba(0,0,0,0)' : $settings['background'];
         $thumbnail    = $req->getThumb(null, true);
         $directory    = \pathinfo($thumbnail, \PATHINFO_DIRNAME);
         if (!\is_dir($directory) && !\mkdir($directory, 0777, true)) {
@@ -420,7 +382,7 @@ class Image
         $img->save($thumbnail, $settings['quality']);
 
         if ($streamOutput) {
-            echo $img->response($settings['format']);
+            echo $img->response($req->getExt());
         }
     }
 

@@ -262,7 +262,7 @@ interface BoxInterface
      * @param int $pageID
      * @return bool
      */
-    public function isBoxVisible(int $pageType = 0, int $pageID = 0): bool;
+    public function isBoxVisible(int $pageType = \PAGE_UNBEKANNT, int $pageID = 0): bool;
 
     /**
      * @param array $boxData

@@ -130,18 +130,17 @@ class LegacyBoxes
     /**
      * @param int  $page
      * @param bool $active
-     * @param bool $visible
      * @return array
      * @deprecated since 5.0.0
      */
-    public function holeBoxen(int $page = 0, bool $active = true, bool $visible = false): array
+    public function holeBoxen(int $page = 0, bool $active = true): array
     {
         \trigger_error(
             __METHOD__ . ' is deprecated. Use ' . \get_class($this->boxService) . ' instead',
             \E_USER_DEPRECATED
         );
         if (\count($this->boxService->getBoxes()) === 0) {
-            return $this->boxService->buildList($page, $active, $visible);
+            return $this->boxService->buildList($page, $active);
         }
 
         return $this->boxService->getBoxes();
@@ -152,18 +151,17 @@ class LegacyBoxes
      *
      * @param int  $page
      * @param bool $active
-     * @param bool $visible
      * @return $this
      * @deprecated since 5.0.0
      */
-    public function build(int $page = 0, bool $active = true, bool $visible = false): self
+    public function build(int $page = 0, bool $active = true): self
     {
         \trigger_error(
             __METHOD__ . ' is deprecated. Use ' . \get_class($this->boxService) . ' instead',
             \E_USER_DEPRECATED
         );
         if (\count($this->boxService->getBoxes()) === 0) {
-            $this->boxService->buildList($page, $active, $visible);
+            $this->boxService->buildList($page, $active);
         }
 
         return $this;

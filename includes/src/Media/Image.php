@@ -9,7 +9,11 @@ namespace JTL\Media;
 use Exception;
 use Intervention\Image\Constraint;
 use Intervention\Image\ImageManager;
+use JTL\Catalog\Category\Kategorie;
+use JTL\Catalog\Hersteller;
 use JTL\DB\ReturnType;
+use JTL\News\Category;
+use JTL\News\Item;
 use JTL\Shop;
 
 /**
@@ -28,6 +32,9 @@ class Image
     public const TYPE_MANUFACTURER    = 'manufacturer';
     public const TYPE_ATTRIBUTE       = 'attribute';
     public const TYPE_ATTRIBUTE_VALUE = 'attributevalue';
+    public const TYPE_NEWS            = 'news';
+    public const TYPE_NEWSCATEGORY    = 'newscategory';
+    public const TYPE_CHARACTERISTIC  = 'characteristic';
 
     /**
      * Image sizes
@@ -278,6 +285,10 @@ class Image
             case self::TYPE_MANUFACTURER:
                 $result = empty($mixed->cSeo) ? $mixed->cName : $mixed->cSeo;
                 break;
+            case self::TYPE_NEWS:
+            case self::TYPE_NEWSCATEGORY:
+                $result = $mixed->title;
+                break;
             case self::TYPE_VARIATION:
             default:
                 // todo..
@@ -294,7 +305,6 @@ class Image
     public static function getCleanFilename(string $filename): string
     {
         $filename = \mb_convert_case($filename, \MB_CASE_LOWER);
-
         $source   = ['.', ' ', '/', 'ä', 'ö', 'ü', 'ß'];
         $replace  = ['-', '-', '-', 'ae', 'oe', 'ue', 'ss'];
         $filename = \str_replace($source, $replace, $filename);

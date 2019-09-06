@@ -281,6 +281,28 @@ class MediaImageRequest
                 ['cid' => $id],
                 ReturnType::SINGLE_OBJECT
             );
+        } elseif ($type === Image::TYPE_NEWSCATEGORY) {
+            $item = Shop::Container()->getDB()->queryPrepared(
+                'SELECT cPreviewImage AS path
+                    FROM tnewskategorie
+                    WHERE kNewsKategorie = :cid LIMIT 1',
+                ['cid' => $id],
+                ReturnType::SINGLE_OBJECT
+            );
+            if (!empty($item->path)) {
+                $item->path = \str_replace(\PFAD_NEWSKATEGORIEBILDER, '', $item->path);
+            }
+        } elseif ($type === Image::TYPE_NEWS) {
+            $item = Shop::Container()->getDB()->queryPrepared(
+                'SELECT cPreviewImage AS path
+                    FROM tnews
+                    WHERE kNews = :cid LIMIT 1',
+                ['cid' => $id],
+                ReturnType::SINGLE_OBJECT
+            );
+            if (!empty($item->path)) {
+                $item->path = \str_replace(\PFAD_NEWSBILDER, '', $item->path);
+            }
         }
 
         $path = $item->path ?? null;
@@ -315,6 +337,12 @@ class MediaImageRequest
         }
         if ($this->getType() === Image::TYPE_CATEGORY) {
             return \STORAGE_CATEGORIES;
+        }
+        if ($this->getType() === Image::TYPE_NEWS) {
+            return \PFAD_NEWSBILDER;
+        }
+        if ($this->getType() === Image::TYPE_NEWSCATEGORY) {
+            return \PFAD_NEWSKATEGORIEBILDER;
         }
 
         return \PFAD_MEDIA_IMAGE_STORAGE;

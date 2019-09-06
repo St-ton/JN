@@ -286,6 +286,7 @@ final class Images extends AbstractSync
             }
             $image->cPfad .= '.' . $format;
             $image->cPfad  = $this->getNewFilename($image->cPfad);
+            \copy($original, \PFAD_ROOT . \STORAGE_CHARACTERISTIC_VALUES . $image->cPfad);
             $this->createThumbnail(
                 $this->brandingConfig['Merkmalwerte'],
                 $original,
@@ -341,6 +342,7 @@ final class Images extends AbstractSync
             }
             $image->cPfad .= '.' . $format;
             $image->cPfad  = $this->getNewFilename($image->cPfad);
+            \copy($original, \PFAD_ROOT . \STORAGE_CHARACTERISTICS . $image->cPfad);
             $this->createThumbnail(
                 $this->brandingConfig['Merkmale'],
                 $original,

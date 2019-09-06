@@ -301,6 +301,34 @@ class MediaImage implements IMedia
                     $req->path = $names[0]->cBildpfad;
                 }
                 break;
+            case Image::TYPE_NEWS:
+                $names = Shop::Container()->getDB()->queryPrepared(
+                    'SELECT a.kNews, a.cPreviewImage, t.title
+                    FROM tnews AS a
+                    LEFT JOIN tnewssprache t
+                        ON a.kNews = t.kNews
+                    WHERE a.kNews = :nid',
+                    ['nid' => $req->id],
+                    ReturnType::ARRAY_OF_OBJECTS
+                );
+                if (!empty($names[0]->cPreviewImage)) {
+                    $req->path = \str_replace(\PFAD_NEWSBILDER, '', $names[0]->cPreviewImage);
+                }
+                break;
+            case Image::TYPE_NEWSCATEGORY:
+                $names = Shop::Container()->getDB()->queryPrepared(
+                    'SELECT a.kNewsKategorie, a.cPreviewImage, t.name AS title
+                    FROM tnewskategorie AS a
+                    LEFT JOIN tnewskategoriesprache t
+                        ON a.kNewsKategorie = t.kNewsKategorie
+                    WHERE a.kNewsKategorie = :nid',
+                    ['nid' => $req->id],
+                    ReturnType::ARRAY_OF_OBJECTS
+                );
+                if (!empty($names[0]->cPreviewImage)) {
+                    $req->path = \str_replace(\PFAD_NEWSKATEGORIEBILDER, '', $names[0]->cPreviewImage);
+                }
+                break;
             default:
                 $names = [];
                 break;

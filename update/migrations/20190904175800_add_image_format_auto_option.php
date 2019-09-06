@@ -19,10 +19,13 @@ class Migration_20190904175800 extends Migration implements IMigration
     {
         $this->execute("INSERT INTO teinstellungenconfwerte (`kEinstellungenConf`, `cName`, `cWert`, `nSort`)
             VALUES(1483, 'AUTO', 'AUTO', 2)");
+        $this->execute("INSERT INTO teinstellungenconfwerte (`kEinstellungenConf`, `cName`, `cWert`, `nSort`)
+            VALUES(1483, 'WEBP', 'WEBP', 2)");
     }
 
     public function down()
     {
         $this->execute("DELETE FROM teinstellungenconfwerte WHERE `kEinstellungenConf` = 1483 AND `cName` = 'AUTO'");
+        $this->execute("DELETE FROM teinstellungenconfwerte WHERE `kEinstellungenConf` = 1483 AND `cName` = 'WEBP'");
     }
 }

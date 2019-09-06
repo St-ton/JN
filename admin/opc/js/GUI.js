@@ -54,6 +54,7 @@ class GUI
             'btnPublish',
             'btnClose',
             'btnImportBlueprint',
+            'btnNoRestoreUnsaved',
             'revisionList',
             'revisionBtnBlueprint',
             'unsavedRevision',
@@ -739,5 +740,10 @@ class GUI
             this.escapedDraftNameInput = true;
             $('#footerDraftNameInput').blur();
         }
+    }
+
+    onBtnNoRestoreUnsaved()
+    {
+        this.page.clearPageWebStorage();
     }
 }

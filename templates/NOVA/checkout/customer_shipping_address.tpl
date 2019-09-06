@@ -39,6 +39,7 @@
                     }
                 {/col}
             {/if}
+            <div class="w-100"></div>
         {/block}
 
         {* firstname lastname *}
@@ -62,6 +63,7 @@
                     ]
                 }
             {/col}
+            <div class="w-100"></div>
         {/block}
 
         {* firm / firmtext *}
@@ -88,6 +90,7 @@
                     }
                 {/col}
             {/if}
+            <div class="w-100"></div>
         {/block}
 
         {* street / number *}
@@ -110,6 +113,7 @@
                     ]
                 }
             {/col}
+            <div class="w-100"></div>
         {/block}
 
         {* address addition *}
@@ -125,6 +129,7 @@
                     }
                 {/col}
             {/block}
+            <div class="w-100"></div>
         {/if}
 
         {* country *}

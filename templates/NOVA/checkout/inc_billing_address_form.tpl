@@ -67,6 +67,7 @@
                                 }
                             {/col}
                         {/if}
+                        <div class="w-100"></div>
                     {/block}
                     {* firstname lastname *}
                     {block name='checkout-inc-billing-address-form-firstname-lastname'}
@@ -98,6 +99,7 @@
                                 ]
                             }
                         {/col}
+                        <div class="w-100"></div>
                     {/block}
                     {* firm / firmtext *}
                     {block name='checkout-inc-billing-address-form-company'}
@@ -134,6 +136,7 @@
                                 }
                             {/col}
                         {/if}
+                        <div class="w-100"></div>
                     {/block}
                 {/formrow}
             {/col}
@@ -174,6 +177,7 @@
                                 ]
                             }
                         {/col}
+                        <div class="w-100"></div>
                     {/block}
                     {* adress addition *}
                     {if $Einstellungen.kunden.kundenregistrierung_abfragen_adresszusatz !== 'N'}
@@ -192,6 +196,7 @@
                                     ]
                                 }
                             {/col}
+                            <div class="w-100"></div>
                         {/block}
                     {/if}
                     {* country *}
@@ -333,6 +338,7 @@
                                 {/if}
                             {/formgroup}
                         {/col}
+                        <div class="w-100"></div>
                     {/block}
                     {* UStID *}
                     {if $Einstellungen.kunden.kundenregistrierung_abfragen_ustid !== 'N'}
@@ -474,6 +480,7 @@
                                     }
                                 {/col}
                             {/if}
+                            <div class="w-100"></div>
                         {/block}
                     {/if}
 

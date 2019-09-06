@@ -7,8 +7,8 @@
     {assign var=step2_active value=($bestellschritt[3] == 1 || $bestellschritt[4] == 1)}
     {assign var=step3_active value=($bestellschritt[5] == 1)}
     {if $bestellschritt[1] != 3}
-        {row class='stepper mb-6'}
-            {col lg=4 class="col-auto step step-active {if $step1_active}step-current{/if}"}
+        {nav class='stepper mb-6' tag='nav' aria=["label"=>"{lang key='secureCheckout' section='checkout'}"]}
+            {col lg=4 class="nav-item col-auto step step-active {if $step1_active}step-current{/if}"}
                 {link href="{get_static_route id='bestellvorgang.php'}?editRechnungsadresse=1"
                     title="{lang section='account data' key='billingAndDeliveryAddress'}"
                     class="text-decoration-none"}
@@ -25,7 +25,7 @@
                     </div>
                 {/link}
             {/col}
-            {col lg=4 class="step col-auto {if $step2_active || $step3_active}step-active{/if} {if $step2_active}step-current{/if}"}
+            {col lg=4 class="nav-item step col-auto {if $step2_active || $step3_active}step-active{/if} {if $step2_active}step-current{/if}"}
                 {link href="{get_static_route id='bestellvorgang.php'}?editVersandart=1"
                     title="{lang section='account data' key='shippingAndPaymentOptions'}"
                     class="text-decoration-none"}
@@ -42,7 +42,7 @@
                     </div>
                 {/link}
             {/col}
-            {col lg=4 class="step {if $step3_active}step-active step-current{/if}"}
+            {col lg=4 class="nav-item step {if $step3_active}step-active step-current{/if}"}
                 <div class="step-content">
                     <span class="badge badge-pill badge-{if $step3_active}primary{else}secondary{/if} mr-3 ml-md-auto">
                         <span class="badge-count">3</span>
@@ -52,6 +52,6 @@
                     </span>
                 </div>
             {/col}
-        {/row}
+        {/nav}
     {/if}
 {/block}

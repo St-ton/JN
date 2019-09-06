@@ -86,7 +86,7 @@
         <input type="hidden" name="kVersandart" value="{if isset($Versandart->kVersandart)}{$Versandart->kVersandart}{/if}" />
         <input type="hidden" name="cModulId" value="{$versandberechnung->cModulId}" />
         <div class="row">
-            <div class="col col-md-6 settings">
+            <div class="col-12 col-xl-6 settings">
                 <div class="card">
                     <div class="card-header">
                         <div class="subheading1">{__('general')}</div>
@@ -244,7 +244,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-12 col-xl-6">
                 <div class="card">
                     <div class="card-body">
                     {if $versandberechnung->cModulId === 'vm_versandberechnung_gewicht_jtl' || $versandberechnung->cModulId === 'vm_versandberechnung_warenwert_jtl' || $versandberechnung->cModulId === 'vm_versandberechnung_artikelanzahl_jtl'}
@@ -297,12 +297,12 @@
                             </li>
                         </ul>
                         <div class="row">
-                            <div class="ml-auto col-sm-6 col-lg-auto mb-2">
+                            <div class="ml-auto col-sm-6 mb-2">
                                 <button name="delRow" type="button" value="{__('delPriceScale')}" onclick="delInputRow();" class="btn btn-outline-primary btn-block">
                                     <i class="fas fa-trash-alt"></i> {__('delPriceScale')}
                                 </button>
                             </div>
-                            <div class="col-sm-6 col-lg-auto">
+                            <div class="col-sm-6">
                                 <button name="addRow" type="button" value="{__('addPriceScale')}" onclick="addInputRow();" class="btn btn-primary btn-block">
                                     <i class="fas fa-share"></i> {__('addPriceScale')}
                                 </button>
@@ -365,8 +365,8 @@
                                             {/foreach}
                                         </selectX>
                                     </div>
-                                    <div class="col-sm-auto3 pr-sm-5 order-last order-sm-2">
-                                        <button class="btn btn-link" type="button"
+                                    <div>
+                                        <button class="btn btn-link pl-0" type="button"
                                                 onclick="$(this).parent().parent().detach(); updateVK();">
                                             <span class="far fa-trash-alt"></span>
                                         </button>
@@ -393,8 +393,8 @@
                                                 </select>
                                             </div>
                                             {if $VK@iteration != 1}
-                                                <div class="col-sm-auto3 pr-sm-5 order-last order-sm-2">
-                                                    <button class="btn btn-link" type="button"
+                                                <div>
+                                                    <button class="btn btn-link pl-0" type="button"
                                                             onclick="$(this).parent().parent().detach(); updateVK();">
                                                         <span class="far fa-trash-alt"></span>
                                                     </button>

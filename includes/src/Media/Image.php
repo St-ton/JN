@@ -22,16 +22,16 @@ class Image
     /**
      * Image types
      */
-    public const TYPE_PRODUCT = 'product';
-    public const TYPE_CATEGORY = 'category';
-    public const TYPE_CONFIGGROUP = 'configgroup';
-    public const TYPE_VARIATION = 'variation';
-    public const TYPE_MANUFACTURER = 'manufacturer';
-    public const TYPE_ATTRIBUTE = 'attribute';
-    public const TYPE_ATTRIBUTE_VALUE = 'attributevalue';
-    public const TYPE_NEWS = 'news';
-    public const TYPE_NEWSCATEGORY = 'newscategory';
-    public const TYPE_CHARACTERISTIC = 'characteristic';
+    public const TYPE_PRODUCT              = 'product';
+    public const TYPE_CATEGORY             = 'category';
+    public const TYPE_CONFIGGROUP          = 'configgroup';
+    public const TYPE_VARIATION            = 'variation';
+    public const TYPE_MANUFACTURER         = 'manufacturer';
+    public const TYPE_ATTRIBUTE            = 'attribute';
+    public const TYPE_ATTRIBUTE_VALUE      = 'attributevalue';
+    public const TYPE_NEWS                 = 'news';
+    public const TYPE_NEWSCATEGORY         = 'newscategory';
+    public const TYPE_CHARACTERISTIC       = 'characteristic';
     public const TYPE_CHARACTERISTIC_VALUE = 'characteristicvalue';
 
     /**

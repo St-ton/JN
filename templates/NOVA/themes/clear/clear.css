@@ -15056,6 +15056,10 @@ header > [class*=container],
   box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.06);
 }
 
+#navbarToggler {
+  z-index: 1;
+}
+
 #evo-nav-wrapper {
   box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.06);
   height: 209px;

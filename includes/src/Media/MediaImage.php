@@ -291,19 +291,19 @@ class MediaImage implements IMedia
                 break;
             case Image::TYPE_MANUFACTURER:
                 $names = Shop::Container()->getDB()->queryPrepared(
-                    'SELECT kHersteller, cName, cSeo, cBildpfad
+                    'SELECT kHersteller, cName, cSeo, cBildpfad AS path
                     FROM thersteller
                     WHERE kHersteller = :mid',
                     ['mid' => $req->id],
                     ReturnType::ARRAY_OF_OBJECTS
                 );
-                if (!empty($names[0]->cBildpfad)) {
-                    $req->path = $names[0]->cBildpfad;
+                if (!empty($names[0]->path)) {
+                    $req->path = $names[0]->path;
                 }
                 break;
             case Image::TYPE_NEWS:
                 $names = Shop::Container()->getDB()->queryPrepared(
-                    'SELECT a.kNews, a.cPreviewImage, t.title
+                    'SELECT a.kNews, a.cPreviewImage AS path, t.title
                     FROM tnews AS a
                     LEFT JOIN tnewssprache t
                         ON a.kNews = t.kNews
@@ -311,13 +311,13 @@ class MediaImage implements IMedia
                     ['nid' => $req->id],
                     ReturnType::ARRAY_OF_OBJECTS
                 );
-                if (!empty($names[0]->cPreviewImage)) {
-                    $req->path = \str_replace(\PFAD_NEWSBILDER, '', $names[0]->cPreviewImage);
+                if (!empty($names[0]->path)) {
+                    $req->path = \str_replace(\PFAD_NEWSBILDER, '', $names[0]->path);
                 }
                 break;
             case Image::TYPE_NEWSCATEGORY:
                 $names = Shop::Container()->getDB()->queryPrepared(
-                    'SELECT a.kNewsKategorie, a.cPreviewImage, t.name AS title
+                    'SELECT a.kNewsKategorie, a.cPreviewImage AS path, t.name AS title
                     FROM tnewskategorie AS a
                     LEFT JOIN tnewskategoriesprache t
                         ON a.kNewsKategorie = t.kNewsKategorie
@@ -325,8 +325,36 @@ class MediaImage implements IMedia
                     ['nid' => $req->id],
                     ReturnType::ARRAY_OF_OBJECTS
                 );
-                if (!empty($names[0]->cPreviewImage)) {
-                    $req->path = \str_replace(\PFAD_NEWSKATEGORIEBILDER, '', $names[0]->cPreviewImage);
+                if (!empty($names[0]->path)) {
+                    $req->path = \str_replace(\PFAD_NEWSKATEGORIEBILDER, '', $names[0]->path);
+                }
+                break;
+            case Image::TYPE_CHARACTERISTIC:
+                $names = Shop::Container()->getDB()->queryPrepared(
+                    'SELECT a.kMerkmalWert, a.cBildpfad AS path, t.cWert
+                    FROM tmerkmalwert AS a
+                    LEFT JOIN tmerkmalwertsprache t
+                        ON a.kMerkmalWert = t.kMerkmalWert
+                    WHERE a.kMerkmalWert = :cid',
+                    ['cid' => $req->id],
+                    ReturnType::ARRAY_OF_OBJECTS
+                );
+                if (!empty($names[0]->path)) {
+                    $req->path = \str_replace(\PFAD_NEWSKATEGORIEBILDER, '', $names[0]->path);
+                }
+                break;
+            case Image::TYPE_CHARACTERISTIC_VALUE:
+                $names = Shop::Container()->getDB()->queryPrepared(
+                    'SELECT a.kMerkmal, a.cBildpfad AS path, t.cName
+                    FROM tmerkmal AS a
+                    LEFT JOIN tmerkmalsprache t
+                        ON a.kMerkmalWert = t.kMerkmalWert
+                    WHERE a.kMerkmalWert = :cid',
+                    ['cid' => $req->id],
+                    ReturnType::ARRAY_OF_OBJECTS
+                );
+                if (!empty($names[0]->path)) {
+                    $req->path = \str_replace(\PFAD_NEWSKATEGORIEBILDER, '', $names[0]->path);
                 }
                 break;
             default:

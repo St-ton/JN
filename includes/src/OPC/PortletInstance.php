@@ -506,6 +506,16 @@ class PortletInstance implements \JsonSerializable
                 $img->resize((int)$width, (int)($img->getHeight() * $factor), function ($constraint) {
                     $constraint->aspectRatio();
                 });
+                // image optimizations
+                $img->blur(1);
+                if (Image::getImageDriver() === 'imagick') {
+                    $img->getCore()->setColorspace(\Imagick::COLORSPACE_RGB);
+                    $img->getCore()->transformImageColorspace(\Imagick::COLORSPACE_RGB);
+                    $img->getCore()->stripImage();
+                }
+                if (pathinfo($sizedImgPath, PATHINFO_EXTENSION) === 'jpg') {
+                    $img->interlace(true);
+                }
 
                 $img->save($sizedImgPath, $settings['bilder']['bilder_jpg_quali']);
             }

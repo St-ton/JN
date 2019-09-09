@@ -182,7 +182,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
     $flushres = Shop::Container()->getCache()->flushTags([CACHING_GROUP_OBJECT, CACHING_GROUP_BOX, 'boxes']);
     Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
 }
-$boxList       = $boxService->buildList($pageID, false, true);
+$boxList       = $boxService->buildList($pageID, false);
 $boxTemplates  = $boxAdmin->getTemplates($pageID);
 $boxContainer  = Template::getInstance()->getBoxLayoutXML();
 $filterMapping = [];

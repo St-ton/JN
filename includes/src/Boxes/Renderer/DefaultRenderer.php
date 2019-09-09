@@ -55,7 +55,7 @@ class DefaultRenderer implements RendererInterface
     /**
      * @inheritdoc
      */
-    public function render(int $pageType = 0, int $pageID = 0): string
+    public function render(int $pageType = \PAGE_UNBEKANNT, int $pageID = 0): string
     {
         $this->smarty->assign('oBox', $this->box);
         try {

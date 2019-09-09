@@ -336,39 +336,23 @@ class BoxService implements BoxServiceInterface
 
     /**
      * @param int  $pageType
-     * @param bool $active
-     * @param bool $visible
+     * @param bool $activeOnly
      * @return array
      */
-    public function buildList(int $pageType = 0, bool $active = true, bool $visible = false): array
+    public function buildList(int $pageType = \PAGE_UNBEKANNT, bool $activeOnly = true): array
     {
-        $boxAdmin          = new BoxAdmin(Shop::Container()->getDB());
-        $validPages        = \implode(',', $boxAdmin->getValidPageTypes());
-        $cacheID           = 'bx_' . $pageType .
-            '_' . (int)$active .
-            '_' . (int)$visible .
-            '_' . Shop::getLanguageID();
-        $visiblePositions  = [];
-        $templatePositions = Template::getInstance()->getBoxLayoutXML();
-        $this->getVisibility($pageType);
-        foreach ($this->visibility as $position => $isVisible) {
-            if (isset($templatePositions[$position])) {
-                $isVisible = $isVisible && $templatePositions[$position];
-            }
-            if ($isVisible) {
-                $visiblePositions[] = $position;
-            }
-        }
-        if ($active === true && \count($visiblePositions) === 0) {
+        $visiblePositions = $this->getVisiblePositions($pageType, Template::getInstance()->getBoxLayoutXML());
+        if ($activeOnly === true && \count($visiblePositions) === 0) {
             return [];
         }
-        $visiblePositions = map($visiblePositions, function ($e) {
-            return "'" . $e . "'";
-        });
-        $activeSQL        = $active
-            ? ' AND tboxen.ePosition IN (' . \implode(',', $visiblePositions) . ')'
+        $boxAdmin   = new BoxAdmin(Shop::Container()->getDB());
+        $validPages = \implode(',', $boxAdmin->getValidPageTypes());
+        $cacheID    = 'bx_' . $pageType . '_' . (int)$activeOnly . '_' . Shop::getLanguageID();
+        $activeSQL  = $activeOnly
+            ? ' AND FIND_IN_SET(tboxensichtbar.kSeite, "' . $validPages . '") > 0  
+                AND tboxen.ePosition IN (' . \implode(',', $visiblePositions) . ')'
             : '';
-        $plgnSQL          = $active
+        $plgnSQL    = $activeOnly
             ? ' AND (tplugin.nStatus IS NULL OR tplugin.nStatus = ' .
             State::ACTIVATED . "  OR (tboxvorlage.eTyp != '" . Type::PLUGIN .
             "' AND tboxvorlage.eTyp != '" . Type::EXTENSION . "'))"
@@ -393,7 +377,7 @@ class BoxService implements BoxServiceInterface
                         ON tboxsprache.kBox = tboxen.kBox
                     LEFT JOIN tsprache
                         ON tsprache.cISO = tboxsprache.cISO
-                    WHERE tboxen.kContainer > -1 AND FIND_IN_SET(tboxensichtbar.kSeite, "' . $validPages . '") > 0 '
+                    WHERE tboxen.kContainer > -1 '
                         . $activeSQL . $plgnSQL . ' 
                     GROUP BY tboxsprache.kBoxSprache, tboxen.kBox, tboxensichtbar.cFilter
                     ORDER BY tboxensichtbar.nSort, tboxen.kBox ASC',
@@ -424,6 +408,27 @@ class BoxService implements BoxServiceInterface
         }
 
         return $this->getItems($grouped);
+    }
+
+    /**
+     * @param int   $pageType
+     * @param array $templatePositions
+     * @return array
+     */
+    private function getVisiblePositions(int $pageType, array $templatePositions): array
+    {
+        $visiblePositions = [];
+        $this->getVisibility($pageType);
+        foreach ($this->visibility as $position => $isVisible) {
+            if (isset($templatePositions[$position])) {
+                $isVisible = $isVisible && $templatePositions[$position];
+            }
+            if ($isVisible) {
+                $visiblePositions[] = "'" . $position . "'";
+            }
+        }
+
+        return $visiblePositions;
     }
 
     /**

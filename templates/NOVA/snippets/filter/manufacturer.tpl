@@ -15,9 +15,14 @@
             {/if}
             {block name='snippets-filter-manufacturer-item'}
                 <span class="value">
+                    {if $Einstellungen.navigationsfilter.hersteller_anzeigen_als == 'B'}
+                        {$tooltip = ["toggle"=>"tooltip", "placement"=>"top", "boundary"=>"window"]}
+                    {else}
+                        {$tooltip = []}
+                    {/if}
                     {link href="{if !empty($filterOption->getURL())}{$filterOption->getURL()}{else}#{/if}"
                         title="{$filterOption->getName()}: {$filterOption->getCount()}"
-                        data=["toggle"=>"tooltip", "placement"=>"auto"]
+                        data=$tooltip
                         class="{if $filterOption->isActive()}active{/if}"
                     }
                         {if $Einstellungen.navigationsfilter.hersteller_anzeigen_als == 'B'}

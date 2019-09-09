@@ -30,8 +30,11 @@
             .on('input', function() {
                 lastSearchTerm = $(this).val();
 
-                if (lastSearchTerm.length >= 3) {
+                if (lastSearchTerm.length >= 3 || /^\d+$/.test(lastSearchTerm)) {
+                    console.log('search', lastSearchTerm);
+
                     if(lastIoSearchCall) {
+                        console.log("abort", lastIoSearchCall);
                         lastIoSearchCall.abort();
                         lastIoSearchCall = null;
                     }
@@ -53,6 +56,8 @@
                         selectedSearchIndex = null;
                         selectedSearchItem  = null;
                     });
+
+                    console.log("sent", lastIoSearchCall);
                 } else {
                     searchDropdown.html('');
                     searchDropdown.removeClass('show');

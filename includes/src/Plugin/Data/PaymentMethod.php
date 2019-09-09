@@ -201,6 +201,8 @@ class PaymentMethod
         }
         $this->classFilePath = $plugin->getPaths()->getVersionedPath() . \PFAD_PLUGIN_PAYMENTMETHOD . $this->classFile;
         if (\file_exists($this->classFilePath)) {
+            global $oPlugin;
+            $oPlugin = $plugin;
             require_once $this->classFilePath;
             if (!\class_exists($this->className)) {
                 $class = \sprintf(

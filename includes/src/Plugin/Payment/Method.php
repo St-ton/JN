@@ -699,7 +699,6 @@ class Method implements MethodInterface
                 }
             }
         } elseif ($moduleID === 'za_null_jtl') {
-            require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'fallback/FallBackPayment.php';
             $paymentMethod = new FallbackMethod('za_null_jtl');
         }
         $plugin = $tmpPlugin;

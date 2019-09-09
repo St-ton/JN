@@ -25,6 +25,21 @@ if (isset($_POST['speichern'])) {
     $shopSettings->reset();
 }
 
+$indices = [
+    'kategorien'   => __('category'),
+    'variationen'  => __('variations'),
+    'artikel'      => __('product'),
+    'hersteller'   => __('manufacturer'),
+    'merkmal'      => __('attributes'),
+    'merkmalwert'  => __('attributeValues'),
+    'konfiggruppe' => __('configGroup')
+];
+$sizes   = ['mini', 'klein', 'normal', 'gross'];
+$dims    = ['breite', 'hoehe'];
+
 $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_BILDER))
-       ->assign('oConfig', Shop::getSettings([CONF_BILDER])['bilder'])
-       ->display('bilder.tpl');
+    ->assign('oConfig', Shop::getSettings([CONF_BILDER])['bilder'])
+    ->assign('indices', $indices)
+    ->assign('sizes', $sizes)
+    ->assign('dims', $dims)
+    ->display('bilder.tpl');

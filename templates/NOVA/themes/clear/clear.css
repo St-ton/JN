@@ -13795,6 +13795,10 @@ a.badge-outline-dark:focus, a.badge-outline-dark.focus {
   background-color: #525252;
 }
 
+.badge-light {
+  color: #525252;
+}
+
 aside h4 {
   margin-bottom: 1rem;
 }
@@ -16732,7 +16736,7 @@ a[data-toggle=collapse][aria-expanded=true] i.fa-chevron-down,
 }
 
 .product-offer .price {
-  font-size: 2.0995rem;
+  font-size: 1.389375rem;
 }
 
 .price-note {

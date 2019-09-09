@@ -64,10 +64,15 @@ $cache      = Shop::Container()->getCache()->setJtlCacheConfig(
 $session    = Backend::getInstance();
 $lang       = LanguageHelper::getInstance($db, $cache);
 $oAccount   = Shop::Container()->getAdminAccount();
+$loggedIn   = $oAccount->logged();
 $updater    = new Updater($db);
 $hasUpdates = $updater->hasPendingUpdates();
 Shop::setIsFrontend(false);
-if ($updater->hasPendingUpdates() && $_SERVER['REQUEST_METHOD'] === 'GET' && strpos($_SERVER['SCRIPT_FILENAME'], 'dbupdater') === false) {
+if ($loggedIn
+    && $_SERVER['REQUEST_METHOD'] === 'GET'
+    && strpos($_SERVER['SCRIPT_FILENAME'], 'dbupdater') === false
+    && $updater->hasPendingUpdates()
+) {
     \header('Location: ' . Shop::getURL(true) . '/' . \PFAD_ADMIN . 'dbupdater.php');
     exit;
 }
@@ -80,7 +85,7 @@ Shop::Container()->singleton(CaptchaServiceInterface::class, function () {
 if (!$hasUpdates) {
     Shop::bootstrap(false);
 }
-if ($oAccount->logged()) {
+if ($loggedIn) {
     if (!$session->isValid()) {
         $oAccount->logout();
         $oAccount->redirectOnFailure(AdminLoginStatus::ERROR_SESSION_INVALID);

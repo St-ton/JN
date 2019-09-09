@@ -112,7 +112,6 @@ if ($pluginUploaded === true) {
 
 if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::validateToken()) {
     // Eine Aktion wurde von der Uebersicht aus gestartet
-    $pluginIDs = array_map('\intval', $_POST['kPlugin'] ?? []);
     // Lizenzkey eingeben
     if (Request::postInt('lizenzkey') > 0) {
         $pluginID = Request::postInt('lizenzkey');
@@ -152,7 +151,8 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
         $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN]);
         $smarty->assign('kPlugin', $pluginID)
                ->assign('oPlugin', $plugin);
-    } elseif (is_array($pluginIDs) && count($pluginIDs) > 0) {
+    } elseif (is_array($_POST['kPlugin'] ?? false) && count($_POST['kPlugin']) > 0) {
+        $pluginIDs  = array_map('\intval', $_POST['kPlugin'] ?? []);
         $deleteData = Request::postInt('delete-data') === 1;
         foreach ($pluginIDs as $pluginID) {
             if (isset($_POST['aktivieren'])) {

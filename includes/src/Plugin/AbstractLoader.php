@@ -202,7 +202,8 @@ abstract class AbstractLoader implements LoaderInterface
     {
         $license = new License();
         if (\strlen($data->cLizenzKlasse) > 0 && \strpos($data->cLizenzKlasse, 'Plugin\\') !== 0) {
-            $data->cLizenzKlasse = 'Plugin\\' . $data->cLizenzKlasse;
+            $namespace           = $data->cPluginID . '\\' . trim(PFAD_PLUGIN_LICENCE, '\\/');
+            $data->cLizenzKlasse = \sprintf('Plugin\\%s\\%s', $namespace, $data->cLizenzKlasse);
         }
         $license->setClass($data->cLizenzKlasse);
         $license->setClassName($data->cLizenzKlasseName);

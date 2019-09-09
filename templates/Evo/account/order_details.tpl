@@ -59,7 +59,7 @@
                 <div class="panel-heading"><h3 class="panel-title">{block name='order-details-payment-title'}{lang key='paymentOptions' section='global'}: {$Bestellung->cZahlungsartName}{/block}</h3></div>
                 <div class="panel-body">
                 {block name='order-details-payment-body'}
-                {if $Bestellung->cStatus != BESTELLUNG_STATUS_STORNO && $Bestellung->dBezahldatum_de !== '00.00.0000'}
+                {if $Bestellung->cStatus != BESTELLUNG_STATUS_STORNO && $Bestellung->dBezahldatum_de !== '00.00.0000' && !empty($Bestellung->dBezahldatum_de)}
                     {lang key='payedOn' section='login'} {$Bestellung->dBezahldatum_de}
                 {else}
                     {if ($Bestellung->cStatus == BESTELLUNG_STATUS_OFFEN || $Bestellung->cStatus == BESTELLUNG_STATUS_IN_BEARBEITUNG) && (($Bestellung->Zahlungsart->cModulId !== 'za_ueberweisung_jtl' && $Bestellung->Zahlungsart->cModulId !== 'za_nachnahme_jtl' && $Bestellung->Zahlungsart->cModulId !== 'za_rechnung_jtl' && $Bestellung->Zahlungsart->cModulId !== 'za_barzahlung_jtl') && (isset($Bestellung->Zahlungsart->bPayAgain) && $Bestellung->Zahlungsart->bPayAgain))}

@@ -85,7 +85,7 @@ trait MultiSizeImage
     public function generateAllImageSizes(bool $full = true, int $number = 1, string $sourcePath = null): array
     {
         $prefix = $full ? Shop::getImageBaseURL() : '';
-        foreach ([Image::SIZE_LG, Image::SIZE_MD, Image::SIZE_SM, Image::SIZE_XS] as $size) {
+        foreach (Image::getAllSizes() as $size) {
             $this->images[$size] = $prefix . $this->generateImagePath($size, $number, $sourcePath);
         }
 

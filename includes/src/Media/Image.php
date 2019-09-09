@@ -37,10 +37,11 @@ class Image
     /**
      * Image sizes
      */
-    public const SIZE_XS = 'xs';
-    public const SIZE_SM = 'sm';
-    public const SIZE_MD = 'md';
-    public const SIZE_LG = 'lg';
+    public const SIZE_ORIGINAL = 'os';
+    public const SIZE_XS       = 'xs';
+    public const SIZE_SM       = 'sm';
+    public const SIZE_MD       = 'md';
+    public const SIZE_LG       = 'lg';
 
     /**
      * Image type map
@@ -65,10 +66,11 @@ class Image
      * @var array
      */
     private static $sizeMapper = [
-        'mini'   => self::SIZE_XS,
-        'klein'  => self::SIZE_SM,
-        'normal' => self::SIZE_MD,
-        'gross'  => self::SIZE_LG
+        'original' => self::SIZE_ORIGINAL,
+        'mini'     => self::SIZE_XS,
+        'klein'    => self::SIZE_SM,
+        'normal'   => self::SIZE_MD,
+        'gross'    => self::SIZE_LG
     ];
 
     /**
@@ -94,6 +96,14 @@ class Image
      * @var array
      */
     private static $settings;
+
+    /**
+     * @return array
+     */
+    public static function getAllSizes(): array
+    {
+        return \array_values(self::$sizeMapper);
+    }
 
     /**
      *  Global image settings
@@ -313,23 +323,12 @@ class Image
         if (!\is_file($rawPath)) {
             throw new Exception(\sprintf('Image "%s" does not exist', $rawPath));
         }
-        $containerDim = $req->getSize();
-        $maxWidth     = $containerDim->getWidth();
-        $maxHeight    = $containerDim->getHeight();
-        $settings     = self::getSettings();
-        $background   = $req->getExt() === 'png' ? 'rgba(0,0,0,0)' : $settings['background'];
-        $thumbnail    = $req->getThumb(null, true);
+        $settings  = self::getSettings();
+        $thumbnail = $req->getThumb(null, true);
         self::checkDirectory($thumbnail);
         $manager = new ImageManager(['driver' => self::getImageDriver()]);
         $img     = $manager->make($rawPath);
-        if ($settings['scale'] === true || $img->getWidth() > $maxWidth || $img->getHeight() > $maxHeight) {
-            $img->resize($maxWidth, $maxHeight, function (Constraint $constraint) {
-                $constraint->aspectRatio();
-            });
-        }
-        if ($settings['container'] === true) {
-            $img->resizeCanvas($maxWidth, $maxHeight, 'center', false, $background);
-        }
+        self::resize($req, $img, $settings);
         self::addBranding($manager, $req, $img);
         \executeHook(\HOOK_IMAGE_RENDER, [
             'image'    => $img,
@@ -343,6 +342,29 @@ class Image
     }
 
     /**
+     * @param MediaImageRequest $req
+     * @param InImage           $img
+     * @param array             $settings
+     */
+    private static function resize(MediaImageRequest $req, InImage $img, array $settings): void
+    {
+        $containerDim = $req->getSize();
+        $maxWidth     = $containerDim->getWidth();
+        $maxHeight    = $containerDim->getHeight();
+        if ($maxWidth > 0 && $maxHeight > 0) {
+            if ($settings['scale'] === true || $img->getWidth() > $maxWidth || $img->getHeight() > $maxHeight) {
+                $img->resize($maxWidth, $maxHeight, function (Constraint $constraint) {
+                    $constraint->aspectRatio();
+                });
+            }
+            if ($settings['container'] === true) {
+                $background = $req->getExt() === 'png' ? 'rgba(0,0,0,0)' : $settings['background'];
+                $img->resizeCanvas($maxWidth, $maxHeight, 'center', false, $background);
+            }
+        }
+    }
+
+    /**
      * @param ImageManager      $manager
      * @param MediaImageRequest $req
      * @param InImage           $img
@@ -350,7 +372,8 @@ class Image
     private static function addBranding(ImageManager $manager, MediaImageRequest $req, InImage $img): void
     {
         $branding = self::getSettings()['branding'];
-        if ($branding === null || $req->getSize()->getType() !== self::SIZE_LG) {
+        $type     = $req->getSize()->getType();
+        if ($branding === null || !\in_array($type, [self::SIZE_LG, self::SIZE_ORIGINAL], true)) {
             return;
         }
         $watermark = $manager->make($branding->path);

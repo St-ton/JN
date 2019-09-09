@@ -121,39 +121,40 @@ class MediaImage implements IMedia
             'corrupted'     => 0,
             'fallback'      => 0,
             'generated'     => [
-                Image::SIZE_XS => 0,
-                Image::SIZE_SM => 0,
-                Image::SIZE_MD => 0,
-                Image::SIZE_LG => 0,
+                Image::SIZE_ORIGINAL => 0,
+                Image::SIZE_XS       => 0,
+                Image::SIZE_SM       => 0,
+                Image::SIZE_MD       => 0,
+                Image::SIZE_LG       => 0,
             ],
             'totalSize'     => 0,
             'generatedSize' => [
-                Image::SIZE_XS => 0,
-                Image::SIZE_SM => 0,
-                Image::SIZE_MD => 0,
-                Image::SIZE_LG => 0,
+                Image::SIZE_ORIGINAL => 0,
+                Image::SIZE_XS       => 0,
+                Image::SIZE_SM       => 0,
+                Image::SIZE_MD       => 0,
+                Image::SIZE_LG       => 0,
             ],
         ];
         foreach (self::getProductImages() as $image) {
             $raw = $image->getRaw(true);
             ++$result->total;
-            if (!\file_exists($raw)) {
-                if (\file_exists(\PFAD_ROOT . $image->getFallbackThumb(Image::SIZE_XS))) {
-                    ++$result->fallback;
-                } else {
-                    ++$result->corrupted;
-                }
-            } else {
-                foreach ([Image::SIZE_XS, Image::SIZE_SM, Image::SIZE_MD, Image::SIZE_LG] as $size) {
+            if (\file_exists($raw)) {
+                foreach (Image::getAllSizes() as $size) {
                     $thumb = $image->getThumb($size, true);
-                    if (\file_exists($thumb)) {
-                        ++$result->generated[$size];
-                        if ($filesize === true) {
-                            $result->generatedSize[$size] = \filesize($thumb);
-                            $result->totalSize           += $result->generatedSize[$size];
-                        }
+                    if (!\file_exists($thumb)) {
+                        continue;
+                    }
+                    ++$result->generated[$size];
+                    if ($filesize === true) {
+                        $result->generatedSize[$size] = \filesize($thumb);
+                        $result->totalSize           += $result->generatedSize[$size];
                     }
                 }
+            } elseif (\file_exists(\PFAD_ROOT . $image->getFallbackThumb(Image::SIZE_XS))) {
+                ++$result->fallback;
+            } else {
+                ++$result->corrupted;
             }
         }
 
@@ -379,7 +380,7 @@ class MediaImage implements IMedia
             self::clearCache($req->getType(), $req->getId());
         }
 
-        foreach ([Image::SIZE_XS, Image::SIZE_SM, Image::SIZE_MD, Image::SIZE_LG] as $size) {
+        foreach (Image::getAllSizes() as $size) {
             $res = (object)[
                 'success'    => true,
                 'error'      => null,

@@ -75,7 +75,7 @@ class MediaImageSize
     {
         $settings = Image::getSettings();
 
-        return $settings['size'][$this->type][$type];
+        return $settings['size'][$this->type][$type] ?? -1;
     }
 
     /**

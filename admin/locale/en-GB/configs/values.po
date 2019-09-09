@@ -1217,51 +1217,6 @@ msgstr "Status page"
 msgid "bestellabschluss_abschlussseite_value(A)"
 msgstr "Completion page"
 
-msgid "box_bestseller_scrollen_value(0)"
-msgstr "No"
-
-msgid "box_bestseller_scrollen_value(1)"
-msgstr "Yes, from top to bottom"
-
-msgid "box_bestseller_scrollen_value(2)"
-msgstr "Yes, from bottom to top"
-
-msgid "box_sonderangebote_scrollen_value(0)"
-msgstr "No"
-
-msgid "box_sonderangebote_scrollen_value(1)"
-msgstr "Yes, from top to bottom"
-
-msgid "box_sonderangebote_scrollen_value(2)"
-msgstr "Yes, from bottom to top"
-
-msgid "box_neuimsortiment_scrollen_value(0)"
-msgstr "No"
-
-msgid "box_neuimsortiment_scrollen_value(1)"
-msgstr "Yes, from top to bottom"
-
-msgid "box_neuimsortiment_scrollen_value(2)"
-msgstr "Yes, from bottom to top"
-
-msgid "box_topangebot_scrollen_value(0)"
-msgstr "No"
-
-msgid "box_topangebot_scrollen_value(1)"
-msgstr "Yes, from top to bottom"
-
-msgid "box_topangebot_scrollen_value(2)"
-msgstr "Yes, from bottom to top"
-
-msgid "box_erscheinende_scrollen_value(0)"
-msgstr "No"
-
-msgid "box_erscheinende_scrollen_value(1)"
-msgstr "Yes, from top to bottom"
-
-msgid "box_erscheinende_scrollen_value(2)"
-msgstr "Yes, from bottom to top"
-
 msgid "boxen_livesuche_anzeigen_value(Y)"
 msgstr "Yes"
 

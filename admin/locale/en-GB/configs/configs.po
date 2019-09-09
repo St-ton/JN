@@ -1394,12 +1394,6 @@ msgstr "Completion page after external payment"
 msgid "bestellabschluss_abschlussseite_desc"
 msgstr "Specify what page will be displayed after an external payment."
 
-msgid "box_bestseller_scrollen_name"
-msgstr "Use scrolling"
-
-msgid "box_bestseller_scrollen_desc"
-msgstr "Specify whether it is possible to scroll through the items (Yes) or whether to display only the specified number of items."
-
 msgid "box_bestseller_anzahl_anzeige_name"
 msgstr "Number of displayed items"
 
@@ -1412,23 +1406,11 @@ msgstr "Base number of items"
 msgid "box_bestseller_anzahl_basis_desc"
 msgstr "Specify the number of items from which the items to be displayed are to be selected."
 
-msgid "box_sonderangebote_scrollen_name"
-msgstr "Use scrolling"
-
-msgid "box_sonderangebote_scrollen_desc"
-msgstr "Specify whether it is possible to scroll through the items (Yes) or whether to display only the specified number of items."
-
 msgid "box_sonderangebote_anzahl_anzeige_name"
 msgstr "Number of displayed items"
 
 msgid "box_sonderangebote_anzahl_anzeige_desc"
 msgstr "Specify how many items are to be displayed in the box."
-
-msgid "box_neuimsortiment_scrollen_name"
-msgstr "Use scrolling"
-
-msgid "box_neuimsortiment_scrollen_desc"
-msgstr "Specify whether it is possible to scroll through the items (Yes) or whether to display only the specified number of items."
 
 msgid "box_neuimsortiment_anzahl_anzeige_name"
 msgstr "Number of displayed items"
@@ -1442,12 +1424,6 @@ msgstr "Maximum age of items in days"
 msgid "box_neuimsortiment_alter_tage_desc"
 msgstr "Specify how many days an item is marked as \"New in product range\"."
 
-msgid "box_topangebot_scrollen_name"
-msgstr "Use scrolling"
-
-msgid "box_topangebot_scrollen_desc"
-msgstr "Specify whether it is possible to scroll through the items (Yes) or whether to display only the specified number of items."
-
 msgid "box_topangebot_anzahl_anzeige_name"
 msgstr "Number of displayed items"
 
@@ -1459,12 +1435,6 @@ msgstr "Number of displayed items"
 
 msgid "box_zuletztangesehen_anzahl_desc"
 msgstr "Specify how many items are to be displayed in the box."
-
-msgid "box_erscheinende_scrollen_name"
-msgstr "Use scrolling"
-
-msgid "box_erscheinende_scrollen_desc"
-msgstr "Specify whether it is possible to scroll through the items (Yes) or whether to display only the specified number of items."
 
 msgid "box_erscheinende_anzahl_anzeige_name"
 msgstr "Number of displayed items"

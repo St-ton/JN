@@ -55,12 +55,6 @@
                                                 </small>
                                             </span>
                                             {/if}
-                                            {if !empty($versandart->cLieferdauer|trans) && $Einstellungen.global.global_versandermittlung_lieferdauer_anzeigen === 'Y'}
-                                            <span class="btn-block">
-                                                <small>{lang key='shippingTimeLP' section='global'}
-                                                    : {$versandart->cLieferdauer|trans}</small>
-                                            </span>
-                                            {/if}
                                         </span>
                                     </label>
                                 </div>

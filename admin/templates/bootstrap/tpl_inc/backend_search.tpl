@@ -30,7 +30,7 @@
             .on('input', function() {
                 lastSearchTerm = $(this).val();
 
-                if (lastSearchTerm.length >= 3) {
+                if (lastSearchTerm.length >= 3 || /^\d+$/.test(lastSearchTerm)) {
                     if(lastIoSearchCall) {
                         lastIoSearchCall.abort();
                         lastIoSearchCall = null;

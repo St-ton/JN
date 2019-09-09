@@ -5,4 +5,4 @@
  * @deprecated since 5.0.0 - use JTL\Plugin\Payment\Method instead
  */
 
-class_alias(\JTL\Plugin\Payment\Method::class, 'PaymentMethod', true);
+class_alias(\JTL\Plugin\Payment\LegacyMethod::class, 'PaymentMethod', true);

@@ -13,7 +13,7 @@ use JTL\Cron\JobInterface;
 use JTL\Cron\QueueEntry;
 use JTL\Customer\Customer;
 use JTL\DB\ReturnType;
-use JTL\Kampagne;
+use JTL\Campaign;
 use JTL\Shop;
 use stdClass;
 
@@ -73,7 +73,7 @@ final class Newsletter extends Job
         $manufacturerIDs = $instance->getKeys($jobData->cHersteller);
         $categoryIDs     = $instance->getKeys($jobData->cKategorie);
         $customerGroups  = $instance->getKeys($jobData->cKundengruppe);
-        $campaign        = new Kampagne((int)$jobData->kKampagne);
+        $campaign        = new Campaign((int)$jobData->kKampagne);
         if (\count($customerGroups) === 0) {
             $this->setFinished(true);
 

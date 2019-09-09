@@ -10,7 +10,7 @@ use JTL\Helpers\Date;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
-use JTL\Kampagne;
+use JTL\Campaign;
 use JTL\Pagination\Pagination;
 use JTL\Shop;
 
@@ -46,7 +46,7 @@ if (!isset($_SESSION['Kampagne']->cSort)) {
     $_SESSION['Kampagne']->cSort = 'DESC';
 }
 
-$dateNow = Date::getDateParts(date('Y-m-d H:i:s'));
+$now = new DateTimeImmutable();
 // Tab
 if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
@@ -68,7 +68,7 @@ if (Request::verifyGPCDataInt('neu') === 1 && Form::validateToken()) {
     $step       = 'kampagne_detail';
     $campaignID = Request::verifyGPCDataInt('kKampagne');
     // Zeitraum / Ansicht
-    setzeDetailZeitraum($dateNow);
+    setzeDetailZeitraum($now);
 } elseif (Request::verifyGPCDataInt('defdetail') === 1
     && Request::verifyGPCDataInt('kKampagne') > 0
     && Request::verifyGPCDataInt('kKampagneDef') > 0
@@ -80,7 +80,7 @@ if (Request::verifyGPCDataInt('neu') === 1 && Form::validateToken()) {
     $stamp        = Request::verifyGPDataString('cStamp');
 } elseif (Request::verifyGPCDataInt('erstellen_speichern') === 1 && Form::validateToken()) {
     // Speichern / Editieren
-    $campaign             = new Kampagne();
+    $campaign             = new Campaign();
     $campaign->cName      = $_POST['cName'] ?? '';
     $campaign->cParameter = $_POST['cParameter'];
     $campaign->cWert      = $_POST['cWert'] ?? '';
@@ -220,31 +220,29 @@ if ($step === 'kampagne_uebersicht') {
     }
 }
 
-$dates = Date::getDateParts($_SESSION['Kampagne']->cStamp);
+$date = date_create($_SESSION['Kampagne']->cStamp);
 switch ((int)$_SESSION['Kampagne']->nAnsicht) {
     case 1:    // Monat
-        $timeSpan   = '01.' . $dates['cMonat'] . '.' . $dates['cJahr'] . ' - ' .
-            date('t', mktime(0, 0, 0, (int)$dates['cMonat'], 1, (int)$dates['cJahr'])) .
-            '.' . $dates['cMonat'] . '.' . $dates['cJahr'];
-        $greaterNow = (int)$dateNow['cMonat'] === (int)$dates['cMonat']
-            && (int)$dateNow['cJahr'] === (int)$dates['cJahr'];
+        $timeSpan   = '01.' . date_format($date, 'm.Y') . ' - ' . date_format($date, 't.m.Y');
+        $greaterNow = (int)$now->format('n') === (int)date_format($date, 'n')
+            && (int)$now->format('Y') === (int)date_format($date, 'Y');
         $smarty->assign('cZeitraum', $timeSpan)
             ->assign('cZeitraumParam', base64_encode($timeSpan))
             ->assign('bGreaterNow', $greaterNow);
         break;
     case 2:    // Woche
-        $dateParts  = ermittleDatumWoche($dates['cJahr'] . '-' . $dates['cMonat'] . '-' . $dates['cTag']);
+        $dateParts  = ermittleDatumWoche(date_format($date, 'Y-m-d'));
         $timeSpan   = date('d.m.Y', $dateParts[0]) . ' - ' . date('d.m.Y', $dateParts[1]);
-        $greaterNow = date('Y-m-d', $dateParts[1]) >= $dateNow['cDatum'];
+        $greaterNow = date('Y-m-d', $dateParts[1]) >= $now->format('Y-m-d');
         $smarty->assign('cZeitraum', $timeSpan)
             ->assign('cZeitraumParam', base64_encode($timeSpan))
             ->assign('bGreaterNow', $greaterNow);
         break;
     case 3:    // Tag
-        $timeSpan   = $dates['cTag'] . '.' . $dates['cMonat'] . '.' . $dates['cJahr'];
-        $greaterNow = (int)$dateNow['cTag'] === (int)$dates['cTag']
-            && (int)$dateNow['cMonat'] === (int)$dates['cMonat']
-            && (int)$dateNow['cJahr'] === (int)$dates['cJahr'];
+    default:
+        $timeSpan   = date_format($date, 'd.m.Y');
+        $greaterNow = (int)$now->format('n') === (int)date_format($date, 'n')
+            && (int)$now->format('Y') === (int)date_format($date, 'Y');
         $smarty->assign('cZeitraum', $timeSpan)
             ->assign('cZeitraumParam', base64_encode($timeSpan))
             ->assign('bGreaterNow', $greaterNow);

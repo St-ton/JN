@@ -11,7 +11,7 @@ use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
-use JTL\Kampagne;
+use JTL\Campaign;
 use JTL\Newsletter\Admin;
 use JTL\Newsletter\Newsletter;
 use JTL\Newsletter\NewsletterCronDAO;
@@ -420,7 +420,7 @@ if (Form::validateToken()) {
                 $manufacturerIDs = $instance->getKeys($newsletterTPL->cHersteller);
                 $categoryIDs     = $instance->getKeys($newsletterTPL->cKategorie);
                 // Baue Kampagnenobjekt, falls vorhanden in der Newslettervorlage
-                $campaign = new Kampagne($newsletterTPL->kKampagne);
+                $campaign = new Campaign($newsletterTPL->kKampagne);
                 // Baue Arrays von Objekten
                 $products      = $instance->getProducts($productIDs, $campaign);
                 $manufacturers = $instance->getManufacturers($manufacturerIDs, $campaign);
@@ -517,7 +517,7 @@ if (Form::validateToken()) {
             $productIDs      = $instance->getKeys($newsletterTPL->cArtikel, true);
             $manufacturerIDs = $instance->getKeys($newsletterTPL->cHersteller);
             $categoryIDs     = $instance->getKeys($newsletterTPL->cKategorie);
-            $campaign        = new Kampagne($newsletterTPL->kKampagne);
+            $campaign        = new Campaign($newsletterTPL->kKampagne);
             $products        = $instance->getProducts($productIDs, $campaign);
             $manufacturers   = $instance->getManufacturers($manufacturerIDs, $campaign);
             $categories      = $instance->getCategories($categoryIDs, $campaign);

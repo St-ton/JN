@@ -59,6 +59,7 @@ class Area implements \JsonSerializable
 
     /**
      * @return string
+     * @throws \Exception
      */
     public function getPreviewHtml(): string
     {
@@ -77,6 +78,7 @@ class Area implements \JsonSerializable
 
     /**
      * @return string
+     * @throws \Exception
      */
     public function getFinalHtml(): string
     {
@@ -93,7 +95,11 @@ class Area implements \JsonSerializable
         return $result;
     }
 
-    public function getCssList($preview = false)
+    /**
+     * @param bool $preview
+     * @return array
+     */
+    public function getCssList(bool $preview = false): array
     {
         $list = [];
 

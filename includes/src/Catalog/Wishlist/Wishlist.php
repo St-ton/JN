@@ -16,7 +16,7 @@ use JTL\DB\ReturnType;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
-use JTL\Kampagne;
+use JTL\Campaign;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Session\Frontend;
@@ -675,7 +675,7 @@ class Wishlist
         $urlID = (string)Text::filterXSS(Request::verifyGPDataString('wlid'));
 
         if ($urlID !== '') {
-            $campaign = new Kampagne(\KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL);
+            $campaign = new Campaign(\KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL);
             $id       = $campaign->kKampagne > 0
                 ? ($urlID . '&' . $campaign->cParameter . '=' . $campaign->cWert)
                 : $urlID;
@@ -1219,7 +1219,7 @@ class Wishlist
     public static function setPublic(int $id): void
     {
         $urlID    = \uniqid('', true);
-        $campaign = new Kampagne(\KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL);
+        $campaign = new Campaign(\KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL);
         if ($campaign->kKampagne > 0) {
             $urlID .= '&' . $campaign->cParameter . '=' . $campaign->cWert;
         }

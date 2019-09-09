@@ -28,10 +28,9 @@
                                 {/block}
                                 <hr class="my-3">
                                 <div class="mb-3 form-group">
-                                    {radiogroup stacked=true}
+                                    {radiogroup stacked=true class='radio-w-100'}
                                         {foreach $Versandarten as $versandart}
                                             {block name='checkout-step3-shipping-options-shipment'}
-                                                <div id="shipment_{$versandart->kVersandart}" class="mb-3">
                                                     {radio
                                                         name="Versandart"
                                                         value=$versandart->kVersandart
@@ -40,33 +39,40 @@
                                                         required=($versandart@first)
                                                         class="justify-content-between"
                                                     }
-                                                        <div class="content">
-                                                            <span class="title">{$versandart->angezeigterName|trans}</span>
-                                                            <small class="desc text-info">{$versandart->cLieferdauer|trans}</small>
-                                                            <span class="ml-3 float-right font-weight-bold">{$versandart->cPreisLocalized}</span>
-                                                        </div>
+                                                        {formrow class="content"}
+                                                            {col cols=12 sm=5 class='title'}
+                                                                {$versandart->angezeigterName|trans}
+                                                                {if !empty($versandart->angezeigterHinweistext|trans)}
+                                                                    <div>
+                                                                        <small>{$versandart->angezeigterHinweistext|trans}</small>
+                                                                    </div>
+                                                                {/if}
+                                                            {/col}
+                                                            {col cols=12 sm=3}<small class="desc text-info">{$versandart->cLieferdauer|trans}</small>{/col}
+                                                            {col cols=12 sm=4 class='font-weight-bold'}
+                                                                {$versandart->cPreisLocalized}
+                                                                {if !empty($versandart->Zuschlag->fZuschlag)}
+                                                                    <div>
+                                                                        <small>
+                                                                            ({$versandart->Zuschlag->angezeigterName|trans} +{$versandart->Zuschlag->cPreisLocalized})
+                                                                        </small>
+                                                                    </div>
+                                                                {/if}
+                                                            {/col}
+                                                        {/formrow}
                                                         <span class="btn-block">
-                                                            {if $versandart->cBild}
-                                                                {image fluid=true class="w-20" src=$versandart->cBild alt=$versandart->angezeigterName|trans}
-                                                            {/if}
-                                                            {if !empty($versandart->angezeigterHinweistext|trans)}
-                                                                <span class="text-muted">
-                                                                    {$versandart->angezeigterHinweistext|trans}
-                                                                </span>
-                                                            {/if}
-
                                                             {if isset($versandart->specificShippingcosts_arr)}
                                                                 {foreach $versandart->specificShippingcosts_arr as $specificShippingcosts}
                                                                     {block name='checkout-step3-shipping-options-shipping-cost'}
                                                                         {row}
-                                                                            {col cols=8 md=9 lg=9}
+                                                                            {col cols=8}
                                                                                 <ul>
                                                                                     <li>
                                                                                         <small>{$specificShippingcosts->cName|trans}</small>
                                                                                     </li>
                                                                                 </ul>
                                                                             {/col}
-                                                                            {col cols=4 md=3 lg=3 cclass="text-right"}
+                                                                            {col cols=4}
                                                                                 <small>
                                                                                     {$specificShippingcosts->cPreisLocalized}
                                                                                 </small>
@@ -75,18 +81,12 @@
                                                                     {/block}
                                                                 {/foreach}
                                                             {/if}
-                                                            {if !empty($versandart->Zuschlag->fZuschlag)}
-                                                                <small>{$versandart->Zuschlag->angezeigterName|trans}
-                                                                    (+{$versandart->Zuschlag->cPreisLocalized})
-                                                                </small>
-                                                            {/if}
                                                             {if !empty($versandart->cLieferdauer|trans) && $Einstellungen.global.global_versandermittlung_lieferdauer_anzeigen === 'Y'}
                                                                 <small>{lang key='shippingTimeLP'}
                                                                     : {$versandart->cLieferdauer|trans}</small>
                                                             {/if}
                                                         </span>
                                                     {/radio}
-                                                </div>
                                             {/block}
                                         {/foreach}
                                     {/radiogroup}

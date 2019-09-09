@@ -17940,6 +17940,12 @@ a.nice-deco:focus::after {
   display: block;
 }
 
+.radio-w-100 .custom-control-inline {
+  display: block;
+  width: 100%;
+  padding-bottom: 0.5rem;
+}
+
 /* utilities */
 .rounded-top-left {
   border-top-left-radius: 0.125rem !important;

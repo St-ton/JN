@@ -2596,3 +2596,11 @@ a.nice-deco {
   margin-bottom: $spacer;
   display: block;
 }
+
+.radio-w-100 {
+  .custom-control-inline {
+    display: block;
+    width: 100%;
+    padding-bottom: $spacer / 2;
+  }
+}

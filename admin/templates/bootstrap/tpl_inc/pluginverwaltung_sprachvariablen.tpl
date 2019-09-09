@@ -2,8 +2,7 @@
     function ackCheck(kPluginSprachvariable, kPlugin)
     {
         var bCheck = confirm('{__('sureResetLangVar')}');
-
-        if(bCheck) {
+        if (bCheck) {
             window.location.href = 'pluginverwaltung.php?pluginverwaltung_sprachvariable=1&kPlugin=' + kPlugin +
                 '&kPluginSprachvariable=' + kPluginSprachvariable + '&token={$smarty.session.jtl_token}';
         }
@@ -38,19 +37,30 @@
                             {foreach $pluginLanguages as $lang}
                                 <tr>
                                     {assign var=cISOSprache value=strtoupper($lang->getIso())}
-                                    <td><label for="lv-{$var->id}_{$cISOSprache}">{$lang->getLocalizedName()}</label></td>
+                                    <td>
+                                        <label for="lv-{$var->id}_{$cISOSprache}">{$lang->getLocalizedName()}</label>
+                                    </td>
                                     <td>
                                         {if isset($var->values[$cISOSprache]) && $var->values[$cISOSprache]|strlen > 0}
-                                            <input id="lv-{$var->id}_{$cISOSprache}" class="form-control" style="width: 350px;" name="{$var->id}_{$cISOSprache}" type="text" value="{$var->values[$cISOSprache]|escape:'html'}" />
+                                            {$value = $var->values[$cISOSprache]|escape:'html'}
                                         {else}
-                                            <input id="lv-{$var->id}_{$cISOSprache}" class="form-control" style="width: 350px;" name="{$var->id}_{$cISOSprache}" type="text" value="" />
+                                            {$value = ''}
+                                        {/if}
+                                        {if $var->type === 'textarea'}
+                                            <textarea id="lv-{$var->id}_{$cISOSprache}" class="form-control" style="width: 350px;" name="{$var->id}_{$cISOSprache}" type="{$var->type}">{$value}"</textarea>
+                                        {else}
+                                            <input id="lv-{$var->id}_{$cISOSprache}" class="form-control" style="width: 350px;" name="{$var->id}_{$cISOSprache}" type="{$var->type}" value="{$value}" />
                                         {/if}
                                     </td>
                                 </tr>
                             {/foreach}
                             <tr>
                                 <td>&nbsp;</td>
-                                <td><button onclick="ackCheck({$var->id}, {$kPlugin}); return false;" class="btn btn-danger"><i class="fal fa-exclamation-triangle"></i> {__('pluginLocalesStd')}</button></td>
+                                <td>
+                                    <button onclick="ackCheck({$var->id}, {$kPlugin}); return false;" class="btn btn-danger">
+                                        <i class="fal fa-exclamation-triangle"></i> {__('pluginLocalesStd')}
+                                    </button>
+                                </td>
                             </tr>
                         {/foreach}
                         </tbody>

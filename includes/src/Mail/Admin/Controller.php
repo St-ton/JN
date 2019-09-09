@@ -350,7 +350,7 @@ final class Controller
             'kEmailvorlage',
             $templateID
         );
-        if (isset($data->cDateiname) && mb_strlen($data->cDateiname) > 0) {
+        if (isset($data->cDateiname) && \mb_strlen($data->cDateiname) > 0) {
             $this->resetFromFile($templateID, $data);
         }
 

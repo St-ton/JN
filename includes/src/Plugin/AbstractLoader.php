@@ -109,7 +109,7 @@ abstract class AbstractLoader implements LoaderInterface
     {
         $data         = $this->db->queryPrepared(
             'SELECT l.kPluginSprachvariable, l.kPlugin, l.cName, l.cBeschreibung, o.cISO,
-                COALESCE(c.cName, o.cName) AS customValue
+                COALESCE(c.cName, o.cName) AS customValue, l.type
             FROM tpluginsprachvariable AS l
             JOIN tpluginsprachvariablesprache AS o
                 ON o.kPluginSprachvariable = l.kPluginSprachvariable

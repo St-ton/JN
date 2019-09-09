@@ -84,7 +84,7 @@ class CreateCommandCommand extends Command
             ->assign('author', $author)
             ->assign('created', $datetime->format(\DateTime::RSS))
             ->assign('pluginId', $pluginId)
-            ->fetch(PFAD_ROOT . 'includes/src/Console/Command/Plugin/Template/command.class.tpl');
+            ->fetch(\PFAD_ROOT . 'includes/src/Console/Command/Plugin/Template/command.class.tpl');
 
         $fileSystem->put($migrationPath, $content);
 

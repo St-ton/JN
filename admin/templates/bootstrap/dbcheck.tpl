@@ -21,13 +21,6 @@
                 {include file='tpl_inc/dbcheck_engineupdate.tpl'}
             {else}
                 <div class="alert alert-info"><strong>{__('countTables')}:</strong> {$cDBFileStruct_arr|@count}<br /><strong>{__('showModifiedTables')}:</strong> {$cDBError_arr|@count}</div>
-                {if $cDBError_arr|@count > 0}
-                    <p>
-                        <button id="viewAll" name="viewAll" type="button" class="btn btn-primary hide" value="Alle anzeigen"><i class="fa fa-share"></i> {__('showAll')}</button>
-                        <button id="viewModified" name="viewModified" type="button" class="btn btn-danger viewModified" value="Modifizierte anzeigen"><i class="fal fa-exclamation-triangle"></i> {__('showModified')}</button>
-                    </p>
-                    <br />
-                {/if}
             {/if}
             <form action="dbcheck.php" method="post">
                 <div id="contentCheck" class="card">
@@ -74,7 +67,7 @@
                                 </td>
                                 <td>
                                     {if $hasError}
-                                        <span class="badge red">{$cDBError_arr[$cTable]}</span>
+                                        <span class="badge red">{$cDBError_arr[$cTable]->errMsg}</span>
                                     {else}
                                         <span class="badge green">{__('ok')}</span>
                                     {/if}
@@ -98,14 +91,16 @@
                             </tr>
                         {/foreach}
                     </table>
-                    <div class="card-footer">
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <div class="custom-control custom-checkbox">
-                                    <input class="custom-control-input" type="checkbox" name="ALL_MSG" id="ALLMSGS" onclick="AllMessages(this.form);"/> <label for="ALLMSGS">{__('markAll')}</label>
-                                    <label class="custom-control-label" for="ALLMSGS"></label>
-                                </div>
-                            </span>
+                </div>
+                <div class="save-wrapper">
+                    <div class="row">
+                        <div class="col-sm-6 col-xl-auto text-left">
+                            <div class="custom-control custom-checkbox">
+                                <input class="custom-control-input" type="checkbox" name="ALL_MSG" id="ALLMSGS" onclick="AllMessages(this.form);"/>
+                                <label class="custom-control-label" for="ALLMSGS">{__('markAll')}</label>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xl-auto">
                             <select name="action" class="custom-select">
                                 <option value="">{__('action')}</option>
                                 <option value="optimize">{__('optimize')}</option>
@@ -113,10 +108,16 @@
                                 <option value="analyze">{__('analyse')}</option>
                                 <option value="check">{__('check')}</option>
                             </select>
-                            <div class="input-group-btn">
-                                <button type="submit" class="btn btn-primary">{__('send')}</button>
-                            </div>
                         </div>
+                        <div class="col-sm-6 col-xl-auto">
+                            <button type="submit" class="btn btn-primary">{__('send')}</button>
+                        </div>
+                        {if $cDBError_arr|@count > 0}
+                        <div class="col-sm-6 col-xl-auto ml-auto">
+                            <button id="viewAll" name="viewAll" type="button" class="btn btn-primary fade" value="Alle anzeigen"><i class="fa fa-share"></i> {__('showAll')}</button>
+                            <button id="viewModified" name="viewModified" type="button" class="btn btn-danger viewModified fade show" value="Modifizierte anzeigen"><i class="fal fa-exclamation-triangle"></i> {__('showModified')}</button>
+                        </div>
+                        {/if}
                     </div>
                 </div>
             </form>
@@ -150,16 +151,16 @@
     {literal}
     $(document).ready(function () {
         $('#viewAll').on('click', function () {
-            $('#viewAll').hide();
-            $('#viewModified').show().removeClass('hide');
+            $('#viewAll').removeClass('show').hide();
+            $('#viewModified').addClass('show').show();
             $('.unmodified').show();
             $('.modified').show();
             colorLines();
         });
 
         $('#viewModified').on('click', function () {
-            $('#viewAll').show().removeClass('hide');
-            $('#viewModified').hide();
+            $('#viewAll').addClass('show').show();
+            $('#viewModified').removeClass('show').hide();
             $('.unmodified').hide();
             $('.modified').show();
             colorLines();
@@ -253,7 +254,7 @@
         if (typeof table !== 'undefined' && table !== '') {
             updateModalWait(sprintf('{/literal}{__('migrationOf')}{literal}', table, step));
         }
-        ioCall('migrateToInnoDB_utf8', ['migrate', table, step],
+        ioCall('migrateToInnoDB_utf8', ['migrate_single', table, step],
             function (data, context) {
                 if (data && typeof data.status !== 'undefined' && data.status !== 'failure') {
                     if (data.status === 'migrate' && data.nextStep === 2) {
@@ -281,7 +282,7 @@
         if ($cols.length > 0) {
             $($cols[1]).html('<span class="badge alert-info">InnoDB</span>');
             $($cols[2]).html('<span class="badge alert-info">utf8_general_ci</span>');
-            $($cols[5]).html('<span class="badge green">{/literal}{__('migrationCancel')}{literal}</span>');
+            $($cols[5]).html('<span class="badge green">{/literal}{__('ok')}{literal}</span>');
             $($cols[6]).html('');
         }
     }

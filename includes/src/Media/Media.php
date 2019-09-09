@@ -7,7 +7,6 @@
 namespace JTL\Media;
 
 use Exception;
-use JTL\Shop;
 use function Functional\some;
 
 /**

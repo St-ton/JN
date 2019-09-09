@@ -474,7 +474,6 @@ class Iframe
     {
         if(this.selectedElm !== null) {
             let data = this.page.portletToJSON(this.selectedElm);
-            data.uid = null;
             this.io.getPortletPreviewHtml(data)
                 .then(html => {
                     let copiedElm = this.jq(html);

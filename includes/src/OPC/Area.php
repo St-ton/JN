@@ -59,6 +59,7 @@ class Area implements \JsonSerializable
 
     /**
      * @return string
+     * @throws \Exception
      */
     public function getPreviewHtml(): string
     {
@@ -77,6 +78,7 @@ class Area implements \JsonSerializable
 
     /**
      * @return string
+     * @throws \Exception
      */
     public function getFinalHtml(): string
     {

@@ -29,29 +29,33 @@
                             {__('publishImmediately')}
                         </label>
                     </div>
-                    <div class="form-group" style="float:left; width:50%">
-                        <input type="radio" id="checkPublishSchedule" name="scheduleStrategy"
-                               onchange="opc.gui.onChangePublishStrategy()">
-                        <label for="checkPublishSchedule">
-                            {__('selectDate')}
-                        </label>
+                    <div style="display:flex;">
+                        <div class="form-group" style="width:50%">
+                            <input type="radio" id="checkPublishSchedule" name="scheduleStrategy"
+                                   onchange="opc.gui.onChangePublishStrategy()">
+                            <label for="checkPublishSchedule">
+                                {__('selectDate')}
+                            </label>
+                        </div>
+                        <div class="form-group" style="width:50%">
+                            <input type="checkbox" id="checkPublishInfinite"
+                                   onchange="opc.gui.onChangePublishInfinite()">
+                            <label for="checkPublishInfinite">
+                                {__('indefinitePeriodOfTime')}
+                            </label>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <input type="checkbox" id="checkPublishInfinite"
-                               onchange="opc.gui.onChangePublishInfinite()">
-                        <label for="checkPublishInfinite">
-                            {__('indefinitePeriodOfTime')}
-                        </label>
-                    </div>
-                    <div class="form-group" style="float:left; width:50%; padding-right:16px">
-                        <label for="publishFrom">{__('publicFrom')}</label>
-                        <input type="text" class="form-control opc-control datetimepicker-input" id="publishFrom"
-                               name="publishFrom" data-toggle="datetimepicker" data-target="#publishFrom">
-                    </div>
-                    <div class="form-group" style="float:left; width:50%">
-                        <label for="publishTo">{__('publicTill')}</label>
-                        <input type="text" class="form-control opc-control datetimepicker-input" id="publishTo"
-                               name="publishTo" data-toggle="datetimepicker" data-target="#publishTo">
+                    <div style="display:flex;">
+                        <div class="form-group" style="width:50%;padding-right:16px">
+                            <label for="publishFrom">{__('publicFrom')}</label>
+                            <input type="text" class="form-control opc-control datetimepicker-input" id="publishFrom"
+                                   name="publishFrom" data-toggle="datetimepicker" data-target="#publishFrom">
+                        </div>
+                        <div class="form-group" style="width:50%">
+                            <label for="publishTo">{__('publicTill')}</label>
+                            <input type="text" class="form-control opc-control datetimepicker-input" id="publishTo"
+                                   name="publishTo" data-toggle="datetimepicker" data-target="#publishTo">
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">

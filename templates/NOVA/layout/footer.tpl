@@ -40,7 +40,7 @@
 
     {block name='layout-footer-content'}
         {if !$bExclusive}
-            <footer>
+            <footer id="footer">
                 {container class="d-print-none pt-4"}
                     {if $Einstellungen.template.footer.newsletter_footer === 'Y'}
                         {block name='layout-footer-newsletter'}

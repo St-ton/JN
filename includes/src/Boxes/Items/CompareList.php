@@ -39,35 +39,14 @@ final class CompareList extends AbstractBox
                 }
             }
             $extra          = Text::filterXSS($extra);
-            $requestURI     = Shop::getRequestUri();
             $defaultOptions = Artikel::getDefaultOptions();
-            if ($requestURI === 'io.php') {
-                // render via ajax call
-                $requestURI = LinkService::getInstance()->getStaticRoute('vergleichsliste.php');
-            }
-            foreach ($productList as $_prod) {
-                $nPosAnd   = \mb_strrpos($requestURI, '&');
-                $nPosQuest = \mb_strrpos($requestURI, '?');
-                $nPosWD    = \mb_strpos($requestURI, 'vlplo=');
-
-                if ($nPosWD) {
-                    $requestURI = \mb_substr($requestURI, 0, $nPosWD);
-                }
-                $del = '?vlplo=';
-                if ($nPosAnd === \mb_strlen($requestURI) - 1) {
-                    $del = 'vlplo=';
-                } elseif ($nPosAnd) {
-                    $del = '&vlplo=';
-                } elseif ($nPosQuest) {
-                    $del = '&vlplo=';
-                } elseif ($nPosQuest === \mb_strlen($requestURI) - 1) {
-                    $del = 'vlplo=';
-                }
+            $baseURL        = LinkService::getInstance()->getStaticRoute('vergleichsliste.php');
+            foreach ($productList as $item) {
                 $product = new Artikel();
-                $product->fuelleArtikel($_prod->kArtikel, $defaultOptions);
-                $product->cURLDEL = Shop::getURL() . $requestURI . $del . $_prod->kArtikel . $extra;
-                if (isset($_prod->oVariationen_arr) && \count($_prod->oVariationen_arr) > 0) {
-                    $product->Variationen = $_prod->oVariationen_arr;
+                $product->fuelleArtikel($item->kArtikel, $defaultOptions);
+                $product->cURLDEL = $baseURL . '?vlplo=' . $item->kArtikel . $extra;
+                if (isset($item->oVariationen_arr) && \count($item->oVariationen_arr) > 0) {
+                    $product->Variationen = $item->oVariationen_arr;
                 }
                 if ($product->kArtikel > 0) {
                     $products[] = $product;

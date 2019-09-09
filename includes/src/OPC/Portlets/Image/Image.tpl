@@ -1,8 +1,7 @@
 {$imgAttribs = $instance->getImageAttributes()}
 
 {if $isPreview && empty($imgAttribs.src)}
-    <div {$instance->getDataAttributeString()} class="opc-Image"
-         style="{$instance->getStyleString()}">
+    <div {$instance->getDataAttributeString()} class="opc-Image" style="{$instance->getStyleString()}">
         <div>
             <i class="far fa-image"></i>
             <span>{__('Image')}</span>

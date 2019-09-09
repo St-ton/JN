@@ -50,9 +50,8 @@ class ComparisonList
     {
         $compareList = Frontend::get('Vergleichsliste');
         if ($compareList !== null) {
-            $options    = Artikel::getDefaultOptions();
-            $linkHelper = Shop::Container()->getLinkService();
-            $baseURL    = $linkHelper->getStaticRoute('vergleichsliste.php');
+            $options = Artikel::getDefaultOptions();
+            $baseURL = Shop::Container()->getLinkService()->getStaticRoute('vergleichsliste.php');
             foreach ($compareList->oArtikel_arr as $item) {
                 $product = new Artikel();
                 $product->fuelleArtikel($item->kArtikel, $options);

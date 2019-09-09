@@ -270,8 +270,6 @@ class PageService
             $res .= 'category:' . $params->kKategorie;
         } elseif ($params->kHersteller > 0) {
             $res .= 'manufacturer:' . $params->kHersteller;
-        } elseif ($params->kVariKindArtikel > 0) {
-            $res .= 'child:' . $params->kVariKindArtikel;
         } elseif ($params->kArtikel > 0) {
             $res .= 'product:' . $params->kArtikel;
         } elseif ($params->kLink > 0) {

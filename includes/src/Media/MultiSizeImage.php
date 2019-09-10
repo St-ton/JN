@@ -123,6 +123,7 @@ trait MultiSizeImage
         $instance = $this->getClass($this->getType());
         /** @var IMedia $instance */
         $req = $instance::getRequest($this->getType(), $this->getID(), $this, $size, $number, $sourcePath);
+        Shop::dbg($req->getThumb(), true, 'THUMB');
         Image::render($req);
 
         return $req->getThumb($size);
@@ -138,9 +139,23 @@ trait MultiSizeImage
     {
         $prefix = $full ? Shop::getImageBaseURL() : '';
         foreach (Image::getAllSizes() as $size) {
-            $x = $this->generateImagePath($size, $number, $sourcePath);
-//            Shop::dbg($x, false, 'x:');
-            $this->images[$size] = $prefix . $x;
+            $this->images[$size] = $prefix . $this->generateImagePath($size, $number, $sourcePath);
+        }
+
+        return $this->images;
+    }
+
+    /**
+     * @param bool        $full
+     * @param int         $number
+     * @param string|null $sourcePath
+     * @return array
+     */
+    public function generateAllImages(bool $full = true, int $number = 1, string $sourcePath = null): array
+    {
+        $prefix = $full ? Shop::getImageBaseURL() : '';
+        foreach (Image::getAllSizes() as $size) {
+            $this->images[$size] = $prefix . $this->generateImage($size, $number, $sourcePath);
         }
 
         return $this->images;

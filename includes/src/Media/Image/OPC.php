@@ -1,7 +1,4 @@
 <?php declare(strict_types=1);
-
-use JTL\OPC\PortletInstance;
-
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -12,6 +9,7 @@ namespace JTL\Media\Image;
 use JTL\DB\ReturnType;
 use JTL\Media\Image;
 use JTL\Media\MediaImageRequest;
+use JTL\OPC\PortletInstance;
 use JTL\Shop;
 use stdClass;
 
@@ -34,8 +32,8 @@ class OPC extends Product
     {
         return (object)[
             'stmt' => 'SELECT cBildpfad, 0 AS number 
-                                  FROM thersteller 
-                                  WHERE kHersteller = :kHersteller',
+                          FROM thersteller 
+                          WHERE kHersteller = :kHersteller',
             'bind' => ['kHersteller' => $id]
         ];
     }
@@ -46,11 +44,10 @@ class OPC extends Product
      */
     protected function getImageNames(MediaImageRequest $req): array
     {
-        Shop::dbg($req, true, __METHOD__);
         $names = Shop::Container()->getDB()->queryPrepared(
             'SELECT kHersteller, cName, cSeo, cBildpfad AS path
-                    FROM thersteller
-                    WHERE kHersteller = :mid',
+                FROM thersteller
+                WHERE kHersteller = :mid',
             ['mid' => $req->id],
             ReturnType::ARRAY_OF_OBJECTS
         );

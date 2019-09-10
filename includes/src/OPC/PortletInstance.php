@@ -498,10 +498,10 @@ class PortletInstance implements \JsonSerializable
             ];
         }
 
-        $name            = \basename($src);
-        $decodedName     = \rawurldecode($name);
-        $widthHeuristics = $this->widthHeuristics;
-        $srcImgPath      = \PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $decodedName;
+        $name                   = \basename($src);
+        $decodedName            = \rawurldecode($name);
+        $widthHeuristics        = $this->widthHeuristics;
+        $srcImgPath             = \PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $decodedName;
         $this->currentImagePath = $srcImgPath;
         $this->generateAllImageSizes(true, 1, $this->currentImagePath);
         foreach ($this->getImages() as $size => $i) {

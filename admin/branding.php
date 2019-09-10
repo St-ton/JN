@@ -8,7 +8,7 @@ use JTL\Alert\Alert;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
-use JTL\Media\MediaImage;
+use JTL\Media\Image\Product;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -104,7 +104,7 @@ function speicherEinstellung(int $brandingID, array $post, array $files)
         }
 
         Shop::Container()->getDB()->insert('tbrandingeinstellung', $conf);
-        MediaImage::clearCache('product');
+        Product::clearCache('product');
 
         return true;
     }

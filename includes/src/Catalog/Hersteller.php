@@ -10,7 +10,6 @@ use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Media\Image;
-use JTL\Media\MediaImage;
 use JTL\Media\MultiSizeImage;
 use JTL\Session;
 use JTL\Shop;

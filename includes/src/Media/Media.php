@@ -7,6 +7,12 @@
 namespace JTL\Media;
 
 use Exception;
+use JTL\Media\Image\Category;
+use JTL\Media\Image\Manufacturer;
+use JTL\Media\Image\MediaImageCompatibility;
+use JTL\Media\Image\News;
+use JTL\Media\Image\NewsCategory;
+use JTL\Media\Image\Product;
 use function Functional\some;
 
 /**
@@ -39,12 +45,16 @@ class Media
     public function __construct()
     {
         self::$instance = $this;
-        $this->register(new MediaImage())
+        $this->register(new Product())
+             ->register(new Category())
+             ->register(new Manufacturer())
+             ->register(new News())
+             ->register(new NewsCategory())
              ->register(new MediaImageCompatibility());
     }
 
     /**
-     * @param MediaImage|MediaImageCompatibility $media
+     * @param Product|MediaImageCompatibility $media
      * @return $this
      */
     public function register($media): self

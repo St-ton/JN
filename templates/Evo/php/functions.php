@@ -19,7 +19,7 @@ use JTL\Helpers\Manufacturer;
 use JTL\Helpers\Seo;
 use JTL\Helpers\Tax;
 use JTL\Media\Image;
-use JTL\Media\MediaImage;
+use JTL\Media\Image\Product;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Staat;
@@ -575,7 +575,7 @@ function get_image_size($image)
         ? PFAD_ROOT . $image
         : $image;
     if (!file_exists($path)) {
-        $req = MediaImage::toRequest($path);
+        $req = Product::toRequest($path);
 
         if (!is_object($req)) {
             return null;

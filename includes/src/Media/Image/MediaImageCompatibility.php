@@ -4,18 +4,20 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace JTL\Media;
+namespace JTL\Media\Image;
 
 use JTL\DB\ReturnType;
+use JTL\Media\Image;
+use JTL\Media\IMedia;
 use JTL\Shop;
 
 /**
  * Class MediaImageCompatibility
- * @package JTL\Media
+ * @package JTL\Media\Image
  */
-class MediaImageCompatibility implements IMedia
+class MediaImageCompatibility extends AbstractImage implements IMedia
 {
-    public const REGEX = '/^bilder\/produkte\/(?P<size>mini|klein|normal|gross)' .
+    protected $regEx = '/^bilder\/produkte\/(?P<size>mini|klein|normal|gross)' .
     '\/(?P<path>(?P<name>[a-zA-Z0-9\-_]+)\.(?P<ext>jpg|jpeg|png|gif))$/';
 
     /**
@@ -87,7 +89,7 @@ class MediaImageCompatibility implements IMedia
         if (\is_object($fallback) && (int)$fallback->kArtikel > 0) {
             $number   = $req['number'] ?? 1;
             $thumbUrl = Shop::getImageBaseURL() .
-                MediaImage::getThumb(
+                Product::getThumb(
                     Image::TYPE_PRODUCT,
                     $fallback->kArtikel,
                     $fallback,
@@ -113,24 +115,5 @@ class MediaImageCompatibility implements IMedia
         $rpl = ['ae', 'oe', 'ue', 'ss', 'AE', 'OE', 'UE'];
 
         return \str_replace($rpl, $src, $str);
-    }
-
-    /**
-     * @param string $request
-     * @return array|null
-     */
-    private function parse($request): ?array
-    {
-        if (!\is_string($request) || $request === '') {
-            return null;
-        }
-
-        if (\mb_strpos($request, '/') === 0) {
-            $request = \mb_substr($request, 1);
-        }
-
-        return \preg_match(self::REGEX, $request, $matches)
-            ? \array_intersect_key($matches, \array_flip(\array_filter(\array_keys($matches), '\is_string')))
-            : null;
     }
 }

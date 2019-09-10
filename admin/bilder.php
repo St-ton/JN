@@ -5,7 +5,7 @@
  */
 
 use JTL\Alert\Alert;
-use JTL\Media\MediaImage;
+use JTL\Media\Image\Product;
 use JTL\Shop;
 use JTL\Shopsetting;
 
@@ -20,7 +20,7 @@ if (isset($_POST['speichern'])) {
         saveAdminSectionSettings(CONF_BILDER, $_POST),
         'saveSettings'
     );
-    MediaImage::clearCache('product');
+    Product::clearCache('product');
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE, CACHING_GROUP_CATEGORY]);
     $shopSettings->reset();
 }

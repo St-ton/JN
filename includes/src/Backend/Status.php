@@ -11,7 +11,7 @@ use JTL\Checkout\ZahlungsLog;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Template as TemplateHelper;
 use JTL\Media\Image;
-use JTL\Media\MediaImage;
+use JTL\Media\Image\Product;
 use JTL\Plugin\State;
 use JTL\Profiler;
 use JTL\Shop;
@@ -64,7 +64,7 @@ class Status
      */
     protected function getImageCache(): stdClass
     {
-        return MediaImage::getStats(Image::TYPE_PRODUCT);
+        return Product::getStats(Image::TYPE_PRODUCT);
     }
 
     /**

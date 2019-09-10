@@ -24,11 +24,10 @@ class Image
      */
     public const TYPE_PRODUCT              = 'product';
     public const TYPE_CATEGORY             = 'category';
+    public const TYPE_OPC                  = 'opc';
     public const TYPE_CONFIGGROUP          = 'configgroup';
     public const TYPE_VARIATION            = 'variation';
     public const TYPE_MANUFACTURER         = 'manufacturer';
-    public const TYPE_ATTRIBUTE            = 'attribute';
-    public const TYPE_ATTRIBUTE_VALUE      = 'attributevalue';
     public const TYPE_NEWS                 = 'news';
     public const TYPE_NEWSCATEGORY         = 'newscategory';
     public const TYPE_CHARACTERISTIC       = 'characteristic';
@@ -42,6 +41,7 @@ class Image
     public const SIZE_SM       = 'sm';
     public const SIZE_MD       = 'md';
     public const SIZE_LG       = 'lg';
+    public const SIZE_XL       = 'xl';
 
     /**
      * Image type map
@@ -56,8 +56,8 @@ class Image
         'konfigurator' => self::TYPE_CONFIGGROUP,
         'variationen'  => self::TYPE_VARIATION,
         'hersteller'   => self::TYPE_MANUFACTURER,
-        'merkmale'     => self::TYPE_ATTRIBUTE,
-        'merkmalwerte' => self::TYPE_ATTRIBUTE_VALUE
+        'merkmale'     => self::TYPE_CHARACTERISTIC,
+        'merkmalwerte' => self::TYPE_CHARACTERISTIC_VALUE
     ];
 
     /**
@@ -70,7 +70,8 @@ class Image
         'mini'     => self::SIZE_XS,
         'klein'    => self::SIZE_SM,
         'normal'   => self::SIZE_MD,
-        'gross'    => self::SIZE_LG
+        'gross'    => self::SIZE_LG,
+        'riesig'   => self::SIZE_XL
     ];
 
     /**
@@ -118,14 +119,14 @@ class Image
         $settings = Shop::getSettings([\CONF_BILDER]);
         $settings = \array_shift($settings);
 
-        self::$settings = [
-            'background' => $settings['bilder_hintergrundfarbe'],
-            'container'  => $settings['container_verwenden'] === 'Y',
-            'format'     => \mb_convert_case($settings['bilder_dateiformat'], \MB_CASE_LOWER),
-            'scale'      => $settings['bilder_skalieren'] === 'Y',
-            'quality'    => (int)$settings['bilder_jpg_quali'],
-            'branding'   => self::getBranding()[self::TYPE_PRODUCT] ?? null,
-            'size'       => [
+        self::$settings         = [
+            'background'                    => $settings['bilder_hintergrundfarbe'],
+            'container'                     => $settings['container_verwenden'] === 'Y',
+            'format'                        => \mb_convert_case($settings['bilder_dateiformat'], \MB_CASE_LOWER),
+            'scale'                         => $settings['bilder_skalieren'] === 'Y',
+            'quality'                       => (int)$settings['bilder_jpg_quali'],
+            'branding'                      => self::getBranding()[self::TYPE_PRODUCT] ?? null,
+            self::TYPE_PRODUCT              => [
                 self::SIZE_XS => [
                     'width'  => (int)$settings['bilder_artikel_mini_breite'],
                     'height' => (int)$settings['bilder_artikel_mini_hoehe']
@@ -143,12 +144,121 @@ class Image
                     'height' => (int)$settings['bilder_artikel_gross_hoehe']
                 ]
             ],
-            'naming'     => [
+            self::TYPE_MANUFACTURER         => [
+                self::SIZE_XS => [
+                    'width'  => (int)$settings['bilder_hersteller_mini_breite'],
+                    'height' => (int)$settings['bilder_hersteller_mini_hoehe']
+                ],
+                self::SIZE_SM => [
+                    'width'  => (int)$settings['bilder_hersteller_klein_breite'],
+                    'height' => (int)$settings['bilder_hersteller_klein_hoehe']
+                ],
+                self::SIZE_MD => [
+                    'width'  => (int)$settings['bilder_hersteller_normal_breite'],
+                    'height' => (int)$settings['bilder_hersteller_normal_hoehe']
+                ],
+                self::SIZE_LG => [
+                    'width'  => (int)$settings['bilder_hersteller_gross_breite'],
+                    'height' => (int)$settings['bilder_hersteller_gross_hoehe']
+                ]
+            ],
+            self::TYPE_CHARACTERISTIC       => [
+                self::SIZE_XS => [
+                    'width'  => (int)$settings['bilder_merkmal_mini_breite'],
+                    'height' => (int)$settings['bilder_merkmal_mini_hoehe']
+                ],
+                self::SIZE_SM => [
+                    'width'  => (int)$settings['bilder_merkmal_klein_breite'],
+                    'height' => (int)$settings['bilder_merkmal_klein_hoehe']
+                ],
+                self::SIZE_MD => [
+                    'width'  => (int)$settings['bilder_merkmal_normal_breite'],
+                    'height' => (int)$settings['bilder_merkmal_normal_hoehe']
+                ],
+                self::SIZE_LG => [
+                    'width'  => (int)$settings['bilder_merkmal_gross_breite'],
+                    'height' => (int)$settings['bilder_merkmal_gross_hoehe']
+                ]
+            ],
+            self::TYPE_CHARACTERISTIC_VALUE => [
+                self::SIZE_XS => [
+                    'width'  => (int)$settings['bilder_merkmalwert_mini_breite'],
+                    'height' => (int)$settings['bilder_merkmalwert_mini_hoehe']
+                ],
+                self::SIZE_SM => [
+                    'width'  => (int)$settings['bilder_merkmalwert_klein_breite'],
+                    'height' => (int)$settings['bilder_merkmalwert_klein_hoehe']
+                ],
+                self::SIZE_MD => [
+                    'width'  => (int)$settings['bilder_merkmalwert_normal_breite'],
+                    'height' => (int)$settings['bilder_merkmalwert_normal_hoehe']
+                ],
+                self::SIZE_LG => [
+                    'width'  => (int)$settings['bilder_merkmalwert_gross_breite'],
+                    'height' => (int)$settings['bilder_merkmalwert_gross_hoehe']
+                ]
+            ],
+            self::TYPE_CONFIGGROUP          => [
+                self::SIZE_XS => [
+                    'width'  => (int)$settings['bilder_konfiggruppe_mini_breite'],
+                    'height' => (int)$settings['bilder_konfiggruppe_mini_hoehe']
+                ],
+                self::SIZE_SM => [
+                    'width'  => (int)$settings['bilder_konfiggruppe_klein_breite'],
+                    'height' => (int)$settings['bilder_konfiggruppe_klein_hoehe']
+                ],
+                self::SIZE_MD => [
+                    'width'  => (int)$settings['bilder_konfiggruppe_normal_breite'],
+                    'height' => (int)$settings['bilder_konfiggruppe_normal_hoehe']
+                ],
+                self::SIZE_LG => [
+                    'width'  => (int)$settings['bilder_konfiggruppe_gross_breite'],
+                    'height' => (int)$settings['bilder_konfiggruppe_gross_hoehe']
+                ]
+            ],
+            self::TYPE_CATEGORY             => [
+                self::SIZE_XS => [
+                    'width'  => (int)$settings['bilder_kategorien_mini_breite'],
+                    'height' => (int)$settings['bilder_kategorien_mini_hoehe']
+                ],
+                self::SIZE_SM => [
+                    'width'  => (int)$settings['bilder_kategorien_klein_breite'],
+                    'height' => (int)$settings['bilder_kategorien_klein_hoehe']
+                ],
+                self::SIZE_MD => [
+                    'width'  => (int)$settings['bilder_kategorien_breite'],
+                    'height' => (int)$settings['bilder_kategorien_hoehe']
+                ],
+                self::SIZE_LG => [
+                    'width'  => (int)$settings['bilder_kategorien_gross_breite'],
+                    'height' => (int)$settings['bilder_kategorien_gross_hoehe']
+                ]
+            ],
+            self::TYPE_OPC             => [
+                self::SIZE_XS => [
+                    'width'  => 480,
+                    'height' => 480
+                ],
+                self::SIZE_SM => [
+                    'width'  => 720,
+                    'height' => 720
+                ],
+                self::SIZE_MD => [
+                    'width'  => 1080,
+                    'height' => 1080
+                ],
+                self::SIZE_LG => [
+                    'width'  => 1440,
+                    'height' => 1440
+                ]
+            ],
+            'naming'                        => [
                 self::TYPE_PRODUCT   => (int)$settings['bilder_artikel_namen'],
                 self::TYPE_CATEGORY  => (int)$settings['bilder_kategorie_namen'],
                 self::TYPE_VARIATION => (int)$settings['bilder_variation_namen']
             ]
         ];
+        self::$settings['size'] = self::$settings[self::TYPE_PRODUCT];
 
         return self::$settings;
     }
@@ -246,59 +356,6 @@ class Image
     }
 
     /**
-     * @param string $type
-     * @param object $mixed
-     * @return string
-     */
-    public static function getCustomName(string $type, $mixed): string
-    {
-        $result   = '';
-        $settings = self::getSettings();
-
-        switch ($type) {
-            case self::TYPE_PRODUCT:
-                switch ($settings['naming']['product']) {
-                    case 0:
-                        $result = $mixed->kArtikel;
-                        break;
-                    case 1:
-                        $result = $mixed->cArtNr;
-                        break;
-                    case 2:
-                        $result = empty($mixed->cSeo) ? $mixed->cName : $mixed->cSeo;
-                        break;
-                    case 3:
-                        $result = \sprintf('%s_%s', $mixed->cArtNr, empty($mixed->cSeo) ? $mixed->cName : $mixed->cSeo);
-                        break;
-                    case 4:
-                        $result = $mixed->cBarcode;
-                        break;
-                }
-                break;
-            case self::TYPE_CATEGORY:
-            case self::TYPE_MANUFACTURER:
-                $result = empty($mixed->cSeo) ? $mixed->cName : $mixed->cSeo;
-                break;
-            case self::TYPE_NEWS:
-            case self::TYPE_NEWSCATEGORY:
-                $result = $mixed->title;
-                break;
-            case self::TYPE_CHARACTERISTIC_VALUE:
-                $result = empty($mixed->cSeo) ? $mixed->cWert : $mixed->cSeo;
-                break;
-            case self::TYPE_CHARACTERISTIC:
-                $result = $mixed->cName;
-                break;
-            case self::TYPE_VARIATION:
-            default:
-                // todo..
-                break;
-        }
-
-        return empty($result) ? 'image' : self::getCleanFilename($result);
-    }
-
-    /**
      * @param string $filename
      * @return string
      */
@@ -321,10 +378,11 @@ class Image
     {
         $rawPath = $req->getRaw(true);
         if (!\is_file($rawPath)) {
+            Shop::dbg($req, true, 'REQ@exception:', 6);
             throw new Exception(\sprintf('Image "%s" does not exist', $rawPath));
         }
         $settings  = self::getSettings();
-        $thumbnail = $req->getThumb(null, true);
+        $thumbnail = $req->getThumb($req->getSize(), true);
         self::checkDirectory($thumbnail);
         $manager = new ImageManager(['driver' => self::getImageDriver()]);
         $img     = $manager->make($rawPath);
@@ -372,7 +430,7 @@ class Image
     private static function addBranding(ImageManager $manager, MediaImageRequest $req, InImage $img): void
     {
         $branding = self::getSettings()['branding'];
-        $type     = $req->getSize()->getType();
+        $type     = $req->getSize()->getImageType();
         if ($branding === null || !\in_array($type, [self::SIZE_LG, self::SIZE_ORIGINAL], true)) {
             return;
         }

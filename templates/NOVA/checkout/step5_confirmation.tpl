@@ -18,13 +18,17 @@
                 {block name='checkout-step5-confirmation-delivery-billing-address'}
                     {card no-body=true class="mb-3"}
                         {cardheader}
-                            {lang section="account data" key='billingAndDeliveryAddress'}
-                            <span class="float-right">
-                                {link class="small edit mr-1" href="{get_static_route id='bestellvorgang.php'}?editRechnungsadresse=1"}
-                                    {lang key='change'}
-                                {/link}
-                                <span class="fa fa-pencil-alt"></span>
-                            </span>
+                            {row class='align-items-center'}
+                                {col}
+                                    <span class="h3 mb-0">{lang section="account data" key='billingAndDeliveryAddress'}</span>
+                                {/col}
+                                {col class='col-auto'}
+                                    {link class="text-decoration-none" href="{get_static_route id='bestellvorgang.php'}?editRechnungsadresse=1"}
+                                        <span class="mr-1 d-none text-decoration-underline d-md-inline-block">{lang key='change'}</span>
+                                        <span class="fa fa-pencil-alt"></span>
+                                    {/link}
+                                {/col}
+                            {/row}
                         {/cardheader}
                         {cardbody}
                             {row}
@@ -49,14 +53,17 @@
                 {block name='checkout-step5-confirmation-shipping-billing-method'}
                     {card no-body=true class="mb-3"}
                         {cardheader}
-                                {* ToDo: New Localization! *}
-                            {lang section="account data" key='shippingAndPaymentOptions'}
-                            <span class="float-right">
-                                {link class="small edit mr-1" href="{get_static_route id='bestellvorgang.php'}?editVersandart=1"}
-                                    {lang key='change'}
-                                {/link}
-                                <span class="fa fa-pencil-alt"></span>
-                            </span>
+                            {row class='align-items-center'}
+                                {col}
+                                    <span class="h3 mb-0">{lang section="account data" key='shippingAndPaymentOptions'}</span>
+                                {/col}
+                                {col class='col-auto'}
+                                    {link class="text-decoration-none" href="{get_static_route id='bestellvorgang.php'}?editVersandart=1"}
+                                        <span class="mr-1 d-none text-decoration-underline d-md-inline-block">{lang key='change'}</span>
+                                        <span class="fa fa-pencil-alt"></span>
+                                    {/link}
+                                {/col}
+                            {/row}
                         {/cardheader}
                         {cardbody}
                             {row}
@@ -92,7 +99,7 @@
                 {block name='checkout-step5-confirmation-comment'}
                     {card no-body=true id="panel-edit-comment" class="mb-3"}
                         {cardheader}
-                            {lang key='comment' section='product rating'}
+                            <span class="h3 mb-0">{lang key='comment' section='product rating'}</span>
                         {/cardheader}
                         {cardbody class="border-1"}
                             {block name='checkout-step5-confirmation-comment-body'}
@@ -118,7 +125,7 @@
                     {block name='checkout-step5-confirmation-coupon'}
                         {card no-body=true id="panel-edit-coupon" class="mb-3"}
                             {cardheader}
-                                {lang key='coupon' section='account data'}
+                                <span class="h3 mb-0">{lang key='coupon' section='account data'}</span>
                             {/cardheader}
                             {cardbody}
                                 {block name='checkout-step5-confirmation-include-coupon-form'}
@@ -135,7 +142,7 @@
                     {col cols=12}
                         {card id="panel-edit-credit" no-body=true class="mb-3"}
                             {cardheader}
-                                {lang key='credit' section='account data'}
+                                <span class="h3 mb-0">{lang key='credit' section='account data'}</span>
                             {/cardheader}
                             {cardbody}
                             {block name='checkout-step5-confirmation-include-credit-form'}
@@ -226,14 +233,14 @@
                                     {input type="hidden" name="abschluss" value="1"}
                                     {input type="hidden" id="comment-hidden" name="kommentar" value=""}
                                     {block name='checkout-step5-confirmation-include-inc-order-items'}
-                                        {row class="mx-0"}
-                                            {col cols=4 md=3 lg=1 class="ml-auto bg-info py-2 text-right"}
-                                                {link class="small edit mr-1" href="{get_static_route id='warenkorb.php'}"}
-                                                    {lang key='change'}
+                                        <div class="text-right mb-1">
+                                            <span class="bg-info px-4 py-2">
+                                                {link class="text-decoration-none " href="{get_static_route id='warenkorb.php'}"}
+                                                    <span class="mr-1 text-decoration-underline d-inline-block">{lang key='change'}</span>
+                                                    <span class="fa fa-pencil-alt"></span>
                                                 {/link}
-                                                <span class="fa fa-pencil-alt"></span>
-                                            {/col}
-                                        {/row}
+                                            </span>
+                                        </div>
                                         <div class="mb-7 bg-info pt-3 px-3">
                                             {include file='checkout/inc_order_items.tpl' tplscope='confirmation'}
                                         </div>

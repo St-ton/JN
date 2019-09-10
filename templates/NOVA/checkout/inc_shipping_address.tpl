@@ -81,10 +81,10 @@
                                 {block name='checkout-inc-shipping-address-include-customer-shipping-address-first'}
                                     {include file='checkout/customer_shipping_address.tpl' prefix="register" fehlendeAngaben=$fehlendeAngabenShipping}
                                 {/block}
+                                {block name='checkout-inc-shipping-address-include-customer-shipping-contact-first'}
+                                    {include file='checkout/customer_shipping_contact.tpl' prefix="register" fehlendeAngaben=$fehlendeAngabenShipping}
+                                {/block}
                             {/col}
-                            {block name='checkout-inc-shipping-address-include-customer-shipping-contact-first'}
-                                {include file='checkout/customer_shipping_contact.tpl' prefix="register" fehlendeAngaben=$fehlendeAngabenShipping}
-                            {/block}
                         {/row}
                     {/if}
                 {/block}

@@ -50,7 +50,7 @@
                     {col}
                         {row}
                         {block name='checkout-inc-order-items-items-main-content'}
-                            {col cols=12 sm=$headsm+1 class="mb-3 mb-md-0"}
+                            {col cols=12 md=$headsm+1 class="mb-3 mb-md-0"}
                                 {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
                                     <p>{link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}{$oPosition->cName|trans}{/link}</p>
                                     {block name='checkout-inc-order-items-product-data'}

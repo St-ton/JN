@@ -614,7 +614,6 @@ final class Mapper
             'nMin',
             'nMax',
             'nTyp',
-            'nSort',
             'cKommentar'
         ],
 

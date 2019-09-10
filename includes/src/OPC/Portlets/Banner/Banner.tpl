@@ -21,7 +21,7 @@
             {if $zone.productId > 0}
                 {$product = $portlet->getProduct($zone.productId)}
                 {$title   = $product->cName}
-                {$url     = $product->cURL}
+                {$url     = $product->cURLFull}
                 {$desc    = $product->cKurzBeschreibung}
             {/if}
             {if !empty($zone.title)}

@@ -74,7 +74,7 @@
                     {col cols=6 md=4 lg=3}
                         {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'Y'}
                             {link href=$subCategory->getURL()}
-                                {image fluid-grow=true lazy=true src=$subCategory->getImageURL() alt=$subCategory->getName() class="mb-2"}
+                                {image fluid-grow=true src=$subCategory->getImageURL() alt=$subCategory->getName() class="mb-2"}
                             {/link}
                         {/if}
                         {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'B'}

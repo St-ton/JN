@@ -30,11 +30,12 @@
                             {/if}
                         {/block}
                         <div class="image-content">
-                            <picture>
-                                <source srcset="{$Artikel->Bilder[0]->cURLNormal|substr:0:-3}webp" type="image/webp">
-                                <img class="img-fluid" src="{$Artikel->Bilder[0]->cURLNormal}" alt="{$alt}">
-                            </picture>
-                            {*{image alt=$alt fluid=true lazy=true src="{$imageBaseURL}gfx/trans.png" data=["src" => $Artikel->Bilder[0]->cURLNormal, "id" => $imgcounter]}*}
+                            {image alt=$alt fluid=true lazy=true
+                                src="{$Artikel->Bilder[0]->cURLNormal}"
+                                srcset="{$Artikel->Bilder[0]->cURLNormal}"
+                                sizes = "auto"
+                                data=["id"  => $imgcounter]
+                            }
                             {if !empty($Artikel->Bilder[0]->cURLNormal)}
                                 <meta itemprop="image" content="{$Artikel->Bilder[0]->cURLNormal}">
                             {/if}

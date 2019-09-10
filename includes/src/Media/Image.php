@@ -327,7 +327,7 @@ class Image
         $maxWidth     = $containerDim->getWidth();
         $maxHeight    = $containerDim->getHeight();
         $settings     = self::getSettings();
-        $background   = $req->getExt() === 'png' ? 'rgba(0,0,0,0)' : $settings['background'];
+        $background   = $req->getExt() !== 'jpeg' ? 'rgba(0,0,0,0)' : $settings['background'];
         $thumbnail    = $req->getThumb(null, true);
         $directory    = \pathinfo($thumbnail, \PATHINFO_DIRNAME);
         if (!\is_dir($directory) && !\mkdir($directory, 0777, true)) {

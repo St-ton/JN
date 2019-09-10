@@ -564,7 +564,7 @@ $(document).ready(function () {
         this.form.submit();
     });
     navigation();
-    lazyLoadMenu($('body').attr('data-viewport'));
+    // lazyLoadMenu($('body').attr('data-viewport'));
     categoryMenu();
     regionsToState();
     compatibility();

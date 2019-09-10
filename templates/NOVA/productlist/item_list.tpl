@@ -29,15 +29,15 @@
                             {block name="productlist-item-list-image"}
                                 {foreach $Artikel->Bilder as $image}
                                     {strip}
-                                        <div>
-                                            {image data=['lazy'=>$image->cURLMini, 'srcset'=>"{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                             {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                             {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"]
-                                                 sizes="(min-width: 1200px) 175px,95vw"
-                                                 alt=$image->cAltAttribut|escape:'html'
-                                                 src=$image->cURLMini
-                                                 fluid=true}
-                                        </div>
+                                        {image alt=$image->cAltAttribut|escape:'html'
+                                            fluid=true
+                                            lazy=true
+                                            src="{$Artikel->Bilder[0]->cURLNormal}"
+                                            srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                            sizes = "auto"
+                                        }
                                     {/strip}
                                 {/foreach}
                             {/block}

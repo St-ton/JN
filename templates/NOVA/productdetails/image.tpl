@@ -36,9 +36,21 @@
                             {block name='productdetails-image-images'}
                                 {foreach $Artikel->Bilder as $image}
                                     {strip}
-                                        <div>
-                                            {*sizes based on template*}
+                                        {*<div>*}
                                             {image alt=$image->cAltAttribut|escape:'html'
+                                                fluid=true
+                                                lazy=true
+                                                src="{$Artikel->Bilder[0]->cURLNormal}"
+                                                srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+                                                data=["srcset" => "{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                    {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                    {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
+                                                    {$image->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w",
+                                                "sizes" => "auto",
+                                                "list"=>"{$image->galleryJSON|escape:"html"}"
+                                                ]
+                                            }
+                                            {*{image alt=$image->cAltAttribut|escape:'html'
                                                 data=["lazy"=>$image->cURLMini,
                                                     "srcset"=>"{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
                                                         {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
@@ -46,10 +58,10 @@
                                                         {$image->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w",
                                                     "list"=>"{$image->galleryJSON|escape:"html"}"
                                                 ]
-                                                sizes="(min-width: 1200px) 1080px,90vw"
+                                                sizes="auto"
                                                 src=$image->cURLMini
-                                             }
-                                        </div>
+                                            }*}
+                                        {*</div>*}
                                     {/strip}
                                 {/foreach}
                             {/block}

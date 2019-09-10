@@ -346,7 +346,7 @@
                     //}
                 }
             });*/
-            $('img.lazy', 'body').each(function(i, item) {
+            /*$('img.lazy', 'body').each(function(i, item) {
                 var img = $(this),
                     src = img.data('src');
 
@@ -361,7 +361,7 @@
                         });
                     });
                 }
-            });
+            });*/
         },
 
         bootlint: function() {

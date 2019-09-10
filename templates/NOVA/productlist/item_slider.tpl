@@ -12,7 +12,8 @@
                     {assign var=alt value=$Artikel->cName}
                 {/if}
                 <div class="image-box">
-                    {image data=["lazy" => $Artikel->Bilder[0]->cURLKlein] src="{$imageBaseURL}gfx/trans.png" alt=$alt fluid=true}
+                    {*{image data=["lazy" => $Artikel->Bilder[0]->cURLKlein] src="{$imageBaseURL}gfx/trans.png" alt=$alt fluid=true}*}
+                    {image lazy=true src=$Artikel->Bilder[0]->cURLKlein alt=$alt fluid=true}
                 </div>
                 <meta itemprop="image" content="{$Artikel->Bilder[0]->cURLNormal}">
                 <meta itemprop="url" content="{$Artikel->cURLFull}">

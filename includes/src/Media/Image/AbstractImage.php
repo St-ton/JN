@@ -29,7 +29,6 @@ abstract class AbstractImage implements IMedia
      */
     public static function generateThumb($type, $id, $mixed, $size, int $number = 1, string $sourcePath = null): string
     {
-
     }
 
     /**
@@ -65,8 +64,7 @@ abstract class AbstractImage implements IMedia
         string $size,
         int $number = 1,
         string $sourcePath = null
-    ): MediaImageRequest
-    {
+    ): MediaImageRequest {
         return MediaImageRequest::create([
             'size'   => $size,
             'id'     => $id,

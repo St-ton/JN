@@ -69,7 +69,7 @@ class Product extends AbstractImage implements IMedia
                     ++$result->generated[$size];
                     if ($filesize === true) {
                         $result->generatedSize[$size] = \filesize($thumb);
-                        $result->totalSize            += $result->generatedSize[$size];
+                        $result->totalSize           += $result->generatedSize[$size];
                     }
                 }
             } elseif (\file_exists(\PFAD_ROOT . $image->getFallbackThumb(Image::SIZE_XS))) {

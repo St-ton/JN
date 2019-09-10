@@ -150,7 +150,7 @@ class Product extends AbstractImage implements IMedia
         $rawImage = null;
         $rawPath  = $req->getRaw(true);
         if ($overwrite === true) {
-            self::clearCache($req->getType(), $req->getId());
+            self::clearCache($req->getType(), $req->getID());
         }
 
         foreach (Image::getAllSizes() as $size) {

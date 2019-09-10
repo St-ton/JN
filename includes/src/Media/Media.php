@@ -12,7 +12,10 @@ use JTL\Media\Image\Manufacturer;
 use JTL\Media\Image\MediaImageCompatibility;
 use JTL\Media\Image\News;
 use JTL\Media\Image\NewsCategory;
+use JTL\Media\Image\OPC;
 use JTL\Media\Image\Product;
+use JTL\Shop;
+use function Functional\first;
 use function Functional\some;
 
 /**
@@ -50,6 +53,7 @@ class Media
              ->register(new Manufacturer())
              ->register(new News())
              ->register(new NewsCategory())
+             ->register(new OPC())
              ->register(new MediaImageCompatibility());
     }
 
@@ -82,12 +86,8 @@ class Media
      */
     public function handleRequest(string $requestUri)
     {
-        foreach ($this->types as $type) {
-            if ($type->isValid($requestUri)) {
-                return $type->handle($requestUri);
-            }
-        }
-
-        return false;
+        return first($this->types, function (IMedia $type) use ($requestUri) {
+            return $type->isValid($requestUri);
+        })->handle($requestUri);
     }
 }

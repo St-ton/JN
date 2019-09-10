@@ -6,11 +6,8 @@
 
 namespace JTL\Media\Image;
 
-use JTL\DB\ReturnType;
-use JTL\Media\Image;
 use JTL\Media\MediaImageRequest;
 use JTL\OPC\PortletInstance;
-use JTL\Shop;
 use stdClass;
 
 /**
@@ -20,7 +17,7 @@ use stdClass;
 class OPC extends Product
 {
     protected $regEx = '/^media\/image\/(?P<type>opc)' .
-    '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|os)\/(?P<name>[a-zA-Z0-9\-_]+)' .
+    '\/(?P<id>[a-zA-Z0-9]+)\/(?P<size>xs|sm|md|lg|os)\/(?P<name>[a-zA-Z0-9\-_\.]+)' .
     '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
 
     /**
@@ -43,18 +40,9 @@ class OPC extends Product
      */
     protected function getImageNames(MediaImageRequest $req): array
     {
-        $names = Shop::Container()->getDB()->queryPrepared(
-            'SELECT kHersteller, cName, cSeo, cBildpfad AS path
-                FROM thersteller
-                WHERE kHersteller = :mid',
-            ['mid' => $req->id],
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-        if (!empty($names[0]->path)) {
-            $req->sourcePath = $names[0]->path;
-        }
+        $req->sourcePath = $req->name . '.' . $req->ext;
 
-        return $names;
+        return [(object)[]];
     }
 
     /**
@@ -63,8 +51,7 @@ class OPC extends Product
     public static function getCustomName($mixed): string
     {
         /** @var PortletInstance $mixed */
-        $result = \basename($mixed->currentImagePath);
-
-        return empty($result) ? 'image' : Image::getCleanFilename($result);
+        return \pathinfo($mixed->currentImagePath)['filename'];
+//        return empty($result) ? 'image' : Image::getCleanFilename($result);
     }
 }

@@ -98,11 +98,11 @@ class MediaImageRequest
     }
 
     /**
-     * @return int
+     * @return int|string
      */
-    public function getId(): int
+    public function getID()
     {
-        return (int)$this->id;
+        return $this->id;
     }
 
     /**
@@ -224,9 +224,9 @@ class MediaImageRequest
         $settings = Image::getSettings();
         $ext      = $this->ext ?: $settings['format'];
         $thumb    = \sprintf(
-            '%s/%d/%s/%s%s.%s',
+            '%s/%s/%s/%s%s.%s',
             self::getCachePath($this->getType()),
-            $this->getId(),
+            $this->getID(),
             $size,
             $this->getName(),
             $number,
@@ -271,7 +271,7 @@ class MediaImageRequest
         if (($path = $this->cachedPath()) !== null) {
             return $path;
         }
-        $id     = $this->getId();
+        $id     = $this->getID();
         $type   = $this->getType();
         $number = $this->getNumber();
         if ($type === Image::TYPE_PRODUCT) {
@@ -336,7 +336,7 @@ class MediaImageRequest
      */
     protected function cachedPath(string $path = null): ?string
     {
-        $hash = \sprintf('%s-%s-%s', $this->getId(), $this->getNumber(), $this->getType());
+        $hash = \sprintf('%s-%s-%s', $this->getID(), $this->getNumber(), $this->getType());
         if ($path === null) {
             return static::$cache[$hash] ?? null;
         }

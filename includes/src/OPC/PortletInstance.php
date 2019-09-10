@@ -510,42 +510,38 @@ class PortletInstance implements \JsonSerializable
                 $srcset .= $i . ' ' . $width . 'w,';
             }
         }
-
         $srcset = \mb_substr($srcset, 0, -1); // remove trailing comma
+        foreach ($widthHeuristics as $breakpoint => $col) {
+            if (!empty($col)) {
+                $factor = 1;
 
-        if (\is_array($widthHeuristics)) {
-            foreach ($widthHeuristics as $breakpoint => $col) {
-                if (!empty($col)) {
-                    $factor = 1;
+                if (\is_array($divisor) && !empty($divisor[$breakpoint])) {
+                    $factor = (float)($divisor[$breakpoint] / 12);
+                }
 
-                    if (\is_array($divisor) && !empty($divisor[$breakpoint])) {
-                        $factor = (float)($divisor[$breakpoint] / 12);
-                    }
-
-                    switch ($breakpoint) {
-                        case 'xs':
-                            $breakpoint = 767;
-                            $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
-                                . (int)($col * 100 * $factor) . 'vw, ';
-                            break;
-                        case 'sm':
-                            $breakpoint = 991;
-                            $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
-                                . (int)($col * $breakpoint * $factor) . 'px, ';
-                            break;
-                        case 'md':
-                            $breakpoint = 1199;
-                            $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
-                                . (int)($col * $breakpoint * $factor) . 'px, ';
-                            break;
-                        case 'lg':
-                            $breakpoint = 1200;
-                            $srcsizes  .= '(min-width: ' . $breakpoint . 'px) '
-                                . (int)($col * $breakpoint * $factor) . 'px, ';
-                            break;
-                        default:
-                            break;
-                    }
+                switch ($breakpoint) {
+                    case 'xs':
+                        $breakpoint = 767;
+                        $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
+                            . (int)($col * 100 * $factor) . 'vw, ';
+                        break;
+                    case 'sm':
+                        $breakpoint = 991;
+                        $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
+                            . (int)($col * $breakpoint * $factor) . 'px, ';
+                        break;
+                    case 'md':
+                        $breakpoint = 1199;
+                        $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
+                            . (int)($col * $breakpoint * $factor) . 'px, ';
+                        break;
+                    case 'lg':
+                        $breakpoint = 1200;
+                        $srcsizes  .= '(min-width: ' . $breakpoint . 'px) '
+                            . (int)($col * $breakpoint * $factor) . 'px, ';
+                        break;
+                    default:
+                        break;
                 }
             }
         }
@@ -603,9 +599,12 @@ class PortletInstance implements \JsonSerializable
         return $this;
     }
 
-    public function getID()
+    /**
+     * @return string
+     */
+    public function getID(): string
     {
-        return 1;
+        return \md5($this->currentImagePath);
     }
 
     /**

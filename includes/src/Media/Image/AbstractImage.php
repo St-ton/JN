@@ -18,6 +18,9 @@ use JTL\Shop;
  */
 abstract class AbstractImage implements IMedia
 {
+    protected $regEx = '/^bilder\/produkte\/(?P<size>mini|klein|normal|gross)' .
+    '\/(?P<path>(?P<name>[a-zA-Z0-9\-_]+)\.(?P<ext>jpg|jpeg|png|gif))$/';
+
     /**
      * @param MediaImageRequest $req
      * @return string
@@ -27,7 +30,7 @@ abstract class AbstractImage implements IMedia
         $thumb = $req->getThumb($req->size);
         if (!\file_exists(\PFAD_ROOT . $thumb) && !\file_exists(\PFAD_ROOT . $req->getRaw())) {
             $fallback = $req->getFallbackThumb($req->size);
-            $thumb = \file_exists(\PFAD_ROOT . $fallback)
+            $thumb    = \file_exists(\PFAD_ROOT . $fallback)
                 ? $fallback
                 : \BILD_KEIN_ARTIKELBILD_VORHANDEN;
         }
@@ -50,7 +53,7 @@ abstract class AbstractImage implements IMedia
         $thumb = $req->getThumb($size);
         if (!\file_exists(\PFAD_ROOT . $thumb) && !\file_exists(\PFAD_ROOT . $req->getRaw())) {
             $fallback = $req->getFallbackThumb($size);
-            $thumb = \file_exists(\PFAD_ROOT . $fallback)
+            $thumb    = \file_exists(\PFAD_ROOT . $fallback)
                 ? $fallback
                 : \BILD_KEIN_ARTIKELBILD_VORHANDEN;
         }
@@ -68,8 +71,7 @@ abstract class AbstractImage implements IMedia
         string $size,
         int $number = 1,
         string $sourcePath = null
-    ): MediaImageRequest
-    {
+    ): MediaImageRequest {
         return MediaImageRequest::create([
             'size'       => $size,
             'id'         => $id,
@@ -78,7 +80,7 @@ abstract class AbstractImage implements IMedia
             'name'       => static::getCustomName($mixed),
             'ext'        => static::getFileExtension($sourcePath),
             'path'       => $sourcePath !== null ? \basename($sourcePath) : null,
-            'sourcepath' => $sourcePath !== null ? \basename($sourcePath) : null
+            'sourcePath' => $sourcePath !== null ? \basename($sourcePath) : null
         ]);
     }
 
@@ -174,7 +176,7 @@ abstract class AbstractImage implements IMedia
             $imgFilePath = null;
             $matchFound  = false;
             foreach ($imgNames as $imgName) {
-                $mediaReq->path = $mediaReq->name . '.' . $mediaReq->ext;
+                $mediaReq->path   = $mediaReq->name . '.' . $mediaReq->ext;
                 $mediaReq->number = (int)$mediaReq->number;
                 $imgName->imgPath = self::getThumbByRequest($mediaReq);
                 if ('/' . $imgName->imgPath === $request) {

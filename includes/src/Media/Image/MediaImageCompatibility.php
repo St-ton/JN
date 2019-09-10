@@ -15,11 +15,8 @@ use JTL\Shop;
  * Class MediaImageCompatibility
  * @package JTL\Media\Image
  */
-class MediaImageCompatibility extends AbstractImage implements IMedia
+class MediaImageCompatibility extends AbstractImage
 {
-    protected $regEx = '/^bilder\/produkte\/(?P<size>mini|klein|normal|gross)' .
-    '\/(?P<path>(?P<name>[a-zA-Z0-9\-_]+)\.(?P<ext>jpg|jpeg|png|gif))$/';
-
     /**
      * @param string $request
      * @return bool

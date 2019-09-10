@@ -44,7 +44,7 @@
 
             {opcMountPoint id='opc_before_news'}
 
-            {container}
+            {container fluid=true}
                 {block name='page-index-subheading-news'}
                     <div class="h2">{lang key='news' section='news'}</div>
                 {/block}

@@ -1596,10 +1596,6 @@ footer {
         padding: 1.2rem $nav-link-padding-x/2;
       }
     }
-    &:hover > a {
-      color: #525252;
-      background: #F5F7FA;
-    }
   }
 }
 
@@ -1747,7 +1743,7 @@ a.no-deco {
   text-align: right;
 }
 .nws-preview {
-  height: 200px;
+  height: 250px;
   img {
     object-fit: cover;
     width: 100%;

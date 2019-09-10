@@ -30,7 +30,7 @@
                             {/if}
                         {/block}
                         <div class="image-content">
-                            {image alt=$alt fluid=true lazy=true
+                            {image alt=$alt fluid=true webp=true lazy=true
                                 src="{$Artikel->Bilder[0]->cURLNormal}"
                                 srcset="{$Artikel->Bilder[0]->cURLNormal}"
                                 sizes = "auto"

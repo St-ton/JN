@@ -16,31 +16,22 @@ use JTL\OPC\PortletInstance;
 class Divider extends Portlet
 {
     /**
-     * @param PortletInstance $instance
-     * @return string
-     */
-    public function getPreviewHtml(PortletInstance $instance): string
-    {
-        return '<hr ' . $instance->getAttributeString(). ' ' . $instance->getDataAttributeString() . '>';
-    }
-
-    /**
-     * @param PortletInstance $instance
-     * @return string
-     */
-    public function getFinalHtml(PortletInstance $instance): string
-    {
-        return '<hr ' . $instance->getAttributeString(). '>';
-    }
-
-    /**
      * @return array
      */
     public function getPropertyDesc(): array
     {
         return [
+            'title' => [
+                'label' => __('dividerTitle'),
+            ],
+            'moreLink' => [
+                'label' => __('dividerMoreLink'),
+            ],
+            'moreTitle' => [
+                'label' => __('dividerMoreTitle'),
+            ],
             'id' => [
-                'label' => 'ID',
+                'label' => __('dividerElmID'),
             ],
         ];
     }

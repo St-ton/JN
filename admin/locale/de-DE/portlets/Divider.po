@@ -4,3 +4,15 @@ msgstr ""
 
 msgid "Divider"
 msgstr "Trennlinie"
+
+msgid "dividerTitle"
+msgstr "Beschriftung"
+
+msgid "dividerMoreLink"
+msgstr "Link-URL"
+
+msgid "dividerMoreTitle"
+msgstr "Link-Titel"
+
+msgid "dividerElmID"
+msgstr "Element-ID"

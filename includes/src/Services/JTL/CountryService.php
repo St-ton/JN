@@ -168,10 +168,44 @@ class CountryService implements CountryServiceInterface
                 'name'                   => $continent,
                 'countries'              => $countries,
                 'countriesCount'         => \count($countries),
-                'countriesSelectedCount' => \count($continentsSelectedCountryTMP[$continent] ?? [])
+                'countriesSelectedCount' => \count($continentsSelectedCountryTMP[$continent] ?? []),
+                'sort'                   => $this->getContinentSort($continent)
             ];
         }
+        usort($continents, function ($a, $b) {
+            return $a->sort > $b->sort;
+        });
 
         return $continents;
+    }
+
+    /**
+     * @param string $continent
+     * @return int
+     */
+    public function getContinentSort(string $continent): int
+    {
+        switch ($continent) {
+            case __('Europa'):
+                return 1;
+            case __('europeanUnion'):
+                return 2;
+            case __('notEuropeanUnionEurope'):
+                return 3;
+            case __('Asien'):
+                return 4;
+            case __('Afrika'):
+                return 5;
+            case __('Nordamerika'):
+                return 6;
+            case __('Suedamerika'):
+                return 7;
+            case __('Ozeanien'):
+                return 8;
+            case __('Antarktis'):
+                return 9;
+            default:
+                return 0;
+        }
     }
 }

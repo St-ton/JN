@@ -34,7 +34,7 @@
                         <th>{__('shippingTypeName')}</th>
                         <th>{__('shippingclasses')}</th>
                         <th>{__('customerclass')}</th>
-                        <th>{__('paymentMethods')}</th>
+                        <th class="min-w">{__('paymentMethods')}</th>
                         <th class="text-center min-w">{__('shippingPrice')}</th>
                         <th></th>
                     </tr>
@@ -86,14 +86,14 @@
                         <td>
                             <ul class="list-unstyled">
                             {foreach $versandart->cKundengruppenName_arr as $cKundengruppenName}
-                                <li>{$cKundengruppenName}</li>
+                                <li class="mb-1">{$cKundengruppenName}</li>
                             {/foreach}
                             </ul>
                         </td>
                         <td>
                             <ul class="list-unstyled">
                             {foreach $versandart->versandartzahlungsarten as $zahlungsart}
-                                <li>
+                                <li class="mb-1">
                                     {$zahlungsart->zahlungsart->cName}
                                     {if isset($zahlungsart->zahlungsart->cAnbieter) && $zahlungsart->zahlungsart->cAnbieter|strlen > 0}
                                         ({$zahlungsart->zahlungsart->cAnbieter})

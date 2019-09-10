@@ -1,7 +1,7 @@
 {$moreLink = $instance->getProperty('moreLink')}
 {$moreTitle = $instance->getProperty('moreTitle')}
-{$title = $instance->getProperty('title')|default:'trenner'}
-{$id = $instance->getProperty('id')|default:'trenner'}
+{$title = $instance->getProperty('title')}
+{$id = $instance->getProperty('id')}
 
 <div class="opc-Divider" {if $isPreview}{$instance->getDataAttributeString()}{/if} {if !empty($id)}id="{$id}"{/if}
      {$instance->getAttributeString()}>

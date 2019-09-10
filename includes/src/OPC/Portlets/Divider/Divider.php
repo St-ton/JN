@@ -23,6 +23,7 @@ class Divider extends Portlet
         return [
             'title' => [
                 'label' => __('dividerTitle'),
+                'default' => __('Divider'),
             ],
             'moreLink' => [
                 'label' => __('dividerMoreLink'),

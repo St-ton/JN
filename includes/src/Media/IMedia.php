@@ -39,7 +39,7 @@ interface IMedia
      * @param string|null $sourcePath
      * @return string
      */
-    public static function getThumb($type, $id, $mixed, $size, int $number = 1, string $sourcePath = null): string;
+    public static function getThumb(string $type, $id, $mixed, $size, int $number = 1, string $sourcePath = null): string;
 
     /**
      * @param string      $type

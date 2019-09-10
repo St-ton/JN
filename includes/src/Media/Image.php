@@ -378,7 +378,6 @@ class Image
     {
         $rawPath = $req->getRaw(true);
         if (!\is_file($rawPath)) {
-            Shop::dbg($req, true, 'REQ@exception:', 6);
             throw new Exception(\sprintf('Image "%s" does not exist', $rawPath));
         }
         $settings  = self::getSettings();

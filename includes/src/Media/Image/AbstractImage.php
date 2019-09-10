@@ -19,16 +19,20 @@ use JTL\Shop;
 abstract class AbstractImage implements IMedia
 {
     /**
-     * @param string      $type
-     * @param string      $id
-     * @param object      $mixed
-     * @param string      $size
-     * @param int         $number
-     * @param string|null $sourcePath
+     * @param MediaImageRequest $req
      * @return string
      */
-    public static function generateThumb($type, $id, $mixed, $size, int $number = 1, string $sourcePath = null): string
+    public static function getThumbByRequest(MediaImageRequest $req): string
     {
+        $thumb = $req->getThumb($req->size);
+        if (!\file_exists(\PFAD_ROOT . $thumb) && !\file_exists(\PFAD_ROOT . $req->getRaw())) {
+            $fallback = $req->getFallbackThumb($req->size);
+            $thumb = \file_exists(\PFAD_ROOT . $fallback)
+                ? $fallback
+                : \BILD_KEIN_ARTIKELBILD_VORHANDEN;
+        }
+
+        return $thumb;
     }
 
     /**
@@ -40,13 +44,13 @@ abstract class AbstractImage implements IMedia
      * @param string|null $sourcePath
      * @return string
      */
-    public static function getThumb($type, $id, $mixed, $size, int $number = 1, string $sourcePath = null): string
+    public static function getThumb(string $type, $id, $mixed, $size, int $number = 1, string $sourcePath = null): string
     {
         $req   = self::getRequest($type, $id, $mixed, $size, $number, $sourcePath);
         $thumb = $req->getThumb($size);
         if (!\file_exists(\PFAD_ROOT . $thumb) && !\file_exists(\PFAD_ROOT . $req->getRaw())) {
             $fallback = $req->getFallbackThumb($size);
-            $thumb    = \file_exists(\PFAD_ROOT . $fallback)
+            $thumb = \file_exists(\PFAD_ROOT . $fallback)
                 ? $fallback
                 : \BILD_KEIN_ARTIKELBILD_VORHANDEN;
         }
@@ -64,28 +68,30 @@ abstract class AbstractImage implements IMedia
         string $size,
         int $number = 1,
         string $sourcePath = null
-    ): MediaImageRequest {
+    ): MediaImageRequest
+    {
         return MediaImageRequest::create([
-            'size'   => $size,
-            'id'     => $id,
-            'type'   => $type,
-            'number' => $number,
-            'name'   => static::getCustomName($mixed),
-            'ext'    => static::getFileExtension($sourcePath),
-            'path'   => $sourcePath !== null ? \basename($sourcePath) : null
+            'size'       => $size,
+            'id'         => $id,
+            'type'       => $type,
+            'number'     => $number,
+            'name'       => static::getCustomName($mixed),
+            'ext'        => static::getFileExtension($sourcePath),
+            'path'       => $sourcePath !== null ? \basename($sourcePath) : null,
+            'sourcepath' => $sourcePath !== null ? \basename($sourcePath) : null
         ]);
     }
 
     /**
-     * @param string|null $sourcePath
+     * @param string|null $filePath
      * @return string
      */
-    protected static function getFileExtension(string $sourcePath = null): string
+    protected static function getFileExtension(string $filePath = null): string
     {
         $config = Image::getSettings()['format'];
 
-        return $config === 'auto' && $sourcePath !== null
-            ? \pathinfo($sourcePath)['extension'] ?? 'jpg'
+        return $config === 'auto' && $filePath !== null
+            ? \pathinfo($filePath)['extension'] ?? 'jpg'
             : $config;
     }
 
@@ -168,14 +174,9 @@ abstract class AbstractImage implements IMedia
             $imgFilePath = null;
             $matchFound  = false;
             foreach ($imgNames as $imgName) {
-                $imgName->imgPath = self::getThumb(
-                    $mediaReq->type,
-                    $mediaReq->id,
-                    $imgName,
-                    $mediaReq->size,
-                    (int)$mediaReq->number,
-                    $mediaReq->name . '.' . $mediaReq->ext
-                );
+                $mediaReq->path = $mediaReq->name . '.' . $mediaReq->ext;
+                $mediaReq->number = (int)$mediaReq->number;
+                $imgName->imgPath = self::getThumbByRequest($mediaReq);
                 if ('/' . $imgName->imgPath === $request) {
                     $matchFound  = true;
                     $imgFilePath = \PFAD_ROOT . $imgName->imgPath;
@@ -197,5 +198,13 @@ abstract class AbstractImage implements IMedia
             \http_response_code(404);
         }
         exit;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function getImageNames(MediaImageRequest $req): array
+    {
+        return [];
     }
 }

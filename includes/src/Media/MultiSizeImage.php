@@ -123,7 +123,6 @@ trait MultiSizeImage
         $instance = $this->getClass($this->getType());
         /** @var IMedia $instance */
         $req = $instance::getRequest($this->getType(), $this->getID(), $this, $size, $number, $sourcePath);
-        Shop::dbg($req->getThumb(), true, 'THUMB');
         Image::render($req);
 
         return $req->getThumb($size);

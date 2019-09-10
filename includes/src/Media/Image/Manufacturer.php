@@ -38,8 +38,7 @@ class Manufacturer extends Product
     }
 
     /**
-     * @param MediaImageRequest $req
-     * @return array
+     * @inheritdoc
      */
     protected function getImageNames(MediaImageRequest $req): array
     {
@@ -51,7 +50,7 @@ class Manufacturer extends Product
             ReturnType::ARRAY_OF_OBJECTS
         );
         if (!empty($names[0]->path)) {
-            $req->path = $names[0]->path;
+            $req->sourcePath = $names[0]->path;
         }
 
         return $names;

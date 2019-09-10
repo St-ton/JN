@@ -123,8 +123,7 @@ class Product extends AbstractImage implements IMedia
     }
 
     /**
-     * @param MediaImageRequest $req
-     * @return array
+     * @inheritdoc
      */
     protected function getImageNames(MediaImageRequest $req): array
     {

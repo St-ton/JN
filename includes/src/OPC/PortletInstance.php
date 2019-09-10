@@ -505,7 +505,7 @@ class PortletInstance implements \JsonSerializable
         $this->currentImagePath = $srcImgPath;
         $this->generateAllImageSizes(true, 1, $this->currentImagePath);
         foreach ($this->getImages() as $size => $i) {
-            $width = self::$dirSizes[$size];
+            $width = self::$dirSizes[$size] ?? null;
             if ($width !== null) {
                 $srcset .= $i . ' ' . $width . 'w,';
             }

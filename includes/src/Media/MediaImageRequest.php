@@ -56,6 +56,11 @@ class MediaImageRequest
     public $ext;
 
     /**
+     * @var string
+     */
+    public $sourcePath;
+
+    /**
      * @var array
      */
     protected static $cache = [];
@@ -167,10 +172,22 @@ class MediaImageRequest
     /**
      * @return string|null
      */
+    public function getSourcePath(): ?string
+    {
+        if (empty($this->sourcePath)) {
+            $this->sourcePath = $this->getPathById();
+        }
+
+        return $this->sourcePath;
+    }
+
+    /**
+     * @return string|null
+     */
     public function getExt(): ?string
     {
         if (empty($this->ext)) {
-            $info      = \pathinfo($this->getPath());
+            $info      = \pathinfo($this->getSourcePath());
             $this->ext = $info['extension'] ?? null;
         }
 
@@ -185,8 +202,7 @@ class MediaImageRequest
      */
     public function getRaw(bool $absolute = false): ?string
     {
-        $path = $this->getPath();
-//        Shop::dbg($this, true, 'GETRAW:');
+        $path = $this->getSourcePath();
         $path = empty($path) ? null : \sprintf('%s%s', $this->getRealStoragePath(), $path);
 
         return $path !== null && $absolute === true
@@ -234,7 +250,7 @@ class MediaImageRequest
             '%s/%s/%s',
             \rtrim(\PFAD_PRODUKTBILDER, '/'),
             Image::mapSize($size, true),
-            $this->getPath()
+            $this->getSourcePath()
         );
     }
 

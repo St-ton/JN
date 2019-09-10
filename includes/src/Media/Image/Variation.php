@@ -38,8 +38,7 @@ class Variation extends Product
     }
 
     /**
-     * @param MediaImageRequest $req
-     * @return array
+     * @inheritdoc
      */
     protected function getImageNames(MediaImageRequest $req): array
     {
@@ -54,7 +53,7 @@ class Variation extends Product
             ReturnType::ARRAY_OF_OBJECTS
         );
         if (!empty($names[0]->path)) {
-            $req->path = \str_replace(\PFAD_NEWSBILDER, '', $names[0]->path);
+            $req->sourcePath = \str_replace(\PFAD_NEWSBILDER, '', $names[0]->path);
         }
 
         return $names;

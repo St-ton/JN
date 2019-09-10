@@ -1235,24 +1235,6 @@ msgstr "Ja"
 msgid "boxen_vergleichsliste_anzeigen_value(N)"
 msgstr "Nein"
 
-msgid "boxen_topbewertet_scrollbar_value(0)"
-msgstr "Nein"
-
-msgid "boxen_topbewertet_scrollbar_value(1)"
-msgstr "Ja, von oben nach unten"
-
-msgid "boxen_topbewertet_scrollbar_value(2)"
-msgstr "Ja, von unten nach oben"
-
-msgid "boxen_preisradar_scrollbar_value(0)"
-msgstr "Nein"
-
-msgid "boxen_preisradar_scrollbar_value(1)"
-msgstr "Ja, von oben nach unten"
-
-msgid "boxen_preisradar_scrollbar_value(2)"
-msgstr "Ja, von unten nach oben"
-
 msgid "bilder_artikel_namen_value(0)"
 msgstr "Primärschlüssel (Vorgabe von JTL-Wawi)"
 

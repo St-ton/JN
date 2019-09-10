@@ -1235,24 +1235,6 @@ msgstr "Yes"
 msgid "boxen_vergleichsliste_anzeigen_value(N)"
 msgstr "No"
 
-msgid "boxen_topbewertet_scrollbar_value(0)"
-msgstr "No"
-
-msgid "boxen_topbewertet_scrollbar_value(1)"
-msgstr "Yes, from top to bottom"
-
-msgid "boxen_topbewertet_scrollbar_value(2)"
-msgstr "Yes, from bottom to top"
-
-msgid "boxen_preisradar_scrollbar_value(0)"
-msgstr "No"
-
-msgid "boxen_preisradar_scrollbar_value(1)"
-msgstr "Yes, from top to bottom"
-
-msgid "boxen_preisradar_scrollbar_value(2)"
-msgstr "Yes, from bottom to top"
-
 msgid "bilder_artikel_namen_value(0)"
 msgstr "Primary key (default by JTL-Wawi)"
 

@@ -1472,12 +1472,6 @@ msgstr "Show comparison list"
 msgid "boxen_vergleichsliste_anzeigen_desc"
 msgstr "Specify whether to display the comparison list in a box."
 
-msgid "boxen_topbewertet_scrollbar_name"
-msgstr "Use scrolling"
-
-msgid "boxen_topbewertet_scrollbar_desc"
-msgstr "Specify whether it is possible to scroll through the items (Yes) or whether to display only the specified number of items."
-
 msgid "boxen_topbewertet_anzahl_name"
 msgstr "Number of displayed items"
 
@@ -1495,12 +1489,6 @@ msgstr "\"Top rated\" applies as of the following average rating"
 
 msgid "boxen_topbewertet_minsterne_desc"
 msgstr "Specify the minimum number of stars with which an item must be rated on average to be considered as \"Top rated\"."
-
-msgid "boxen_preisradar_scrollbar_name"
-msgstr "Use scrolling"
-
-msgid "boxen_preisradar_scrollbar_desc"
-msgstr "Specify whether it is possible to scroll through the items (Yes) or whether to display only the specified number of items."
 
 msgid "boxen_preisradar_anzahl_name"
 msgstr "Number of displayed items"

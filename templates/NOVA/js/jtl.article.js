@@ -1170,6 +1170,8 @@
                         $.evo.extended().autoheight();
                     }
                     $spinner.stop();
+
+                    $.evo.initInputSpinner(wrapper + " input[type='number']");
                 }, function () {
                     $.evo.error('Error loading ' + url);
                     $spinner.stop();

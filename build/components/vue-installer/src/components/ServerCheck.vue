@@ -87,7 +87,7 @@
                                 <td>
                                     <span class="hidden-xs">
                                         <h4 class="badge-wrap">
-                                            <span class="badge" :class="conf.className">
+                                            <span v-b-tooltip.hover :title="conf.description.replace(/(<([^>]+)>)/ig, '')" class="badge" :class="conf.className">
                                                 <span v-if="conf.currentState">{{ conf.currentState }}</span>
                                                 <icon :name="conf.icon" v-else></icon>
                                             </span>
@@ -98,7 +98,7 @@
                             </tbody>
                         </table>
                     </b-collapse>
-                    <b-btn class="mt-3" size="sm" v-if="serverStatus !== 0" @click="check()">
+                    <b-btn class="mt-3" size="sm" v-if="serverStatus !== 0" @click="check()" style="margin-left: 15px">
                         <icon name="sync"></icon> Erneut prüfen
                     </b-btn>
                 </b-card>
@@ -110,7 +110,7 @@
         <b-alert variant="danger" show v-if="networkError !== false">
             <icon name="exclamation-triangle"></icon> Netzwerkfehler: {{ networkError }}
         </b-alert>
-        <continue :disableBack="false" :disable="!checkedServer || serverStatus === 2 || networkError !== false"></continue>
+        <continue :disableBack="false" :disable="!checkedServer || serverStatus === 2 || modulesStatus === 2 || networkError !== false"></continue>
     </div>
 </template>
 

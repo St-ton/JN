@@ -19,13 +19,235 @@ class Migration_20190904175800 extends Migration implements IMigration
     {
         $this->execute("INSERT INTO teinstellungenconfwerte (`kEinstellungenConf`, `cName`, `cWert`, `nSort`)
             VALUES(1483, 'AUTO', 'AUTO', 2)");
-        $this->execute("INSERT INTO teinstellungenconfwerte (`kEinstellungenConf`, `cName`, `cWert`, `nSort`)
-            VALUES(1483, 'WEBP', 'WEBP', 2)");
+//        $this->execute("INSERT INTO teinstellungenconfwerte (`kEinstellungenConf`, `cName`, `cWert`, `nSort`)
+//            VALUES(1483, 'WEBP', 'WEBP', 2)");
+
+        $this->setConfig(
+            'bilder_hersteller_mini_breite',
+            '40',
+            \CONF_BILDER,
+            'Herstellerbilder Mini Breite',
+            'number',
+            100
+        );
+        $this->setConfig(
+            'bilder_hersteller_mini_hoehe',
+            '40',
+            \CONF_BILDER,
+            'Herstellerbilder Mini Höhe',
+            'number',
+            100
+        );
+        $this->setConfig(
+            'bilder_hersteller_gross_breite',
+            '800',
+            \CONF_BILDER,
+            'Herstellerbilder Groß Breite',
+            'number',
+            100
+        );
+        $this->setConfig(
+            'bilder_hersteller_gross_hoehe',
+            '800',
+            \CONF_BILDER,
+            'Herstellerbilder Groß Höhe',
+            'number',
+            100
+        );
+        $this->setConfig(
+            'bilder_merkmal_mini_breite',
+            '40',
+            \CONF_BILDER,
+            'Herstellerbilder Mini Breite',
+            'number',
+            100
+        );
+        $this->setConfig(
+            'bilder_merkmal_mini_hoehe',
+            '40',
+            \CONF_BILDER,
+            'Merkmalbilder Mini Höhe',
+            'number',
+            100
+        );
+        $this->setConfig(
+            'bilder_merkmal_gross_breite',
+            '800',
+            \CONF_BILDER,
+            'Merkmalbilder Groß Breite',
+            'number',
+            100
+        );
+        $this->setConfig(
+            'bilder_merkmal_gross_hoehe',
+            '800',
+            \CONF_BILDER,
+            'Merkmalbilder Groß Höhe',
+            'number',
+            100
+        );
+
+        $this->setConfig(
+            'bilder_merkmalwert_mini_breite',
+            '40',
+            \CONF_BILDER,
+            'Merkmalwertbilder Mini Breite',
+            'number',
+            100
+        );
+        $this->setConfig(
+            'bilder_merkmalwert_mini_hoehe',
+            '40',
+            \CONF_BILDER,
+            'Merkmalwertbilder Mini Höhe',
+            'number',
+            100
+        );
+        $this->setConfig(
+            'bilder_merkmalwert_gross_breite',
+            '800',
+            \CONF_BILDER,
+            'Merkmalwertbilder Groß Breite',
+            'number',
+            100
+        );
+        $this->setConfig(
+            'bilder_merkmalwert_gross_hoehe',
+            '800',
+            \CONF_BILDER,
+            'Merkmalwertbilder Groß Höhe',
+            'number',
+            100
+        );
+
+        $this->setConfig(
+            'bilder_konfiggruppe_mini_breite',
+            '40',
+            \CONF_BILDER,
+            'Konfiggruppenbilder Mini Breite',
+            'number',
+            100
+        );
+        $this->setConfig(
+            'bilder_konfiggruppe_mini_hoehe',
+            '40',
+            \CONF_BILDER,
+            'Konfiggruppenbilder Mini Höhe',
+            'number',
+            100
+        );
+
+        $this->setConfig(
+            'bilder_konfiggruppe_normal_breite',
+            '200',
+            \CONF_BILDER,
+            'Konfiggruppenbilder Normal Breite',
+            'number',
+            100
+        );
+        $this->setConfig(
+            'bilder_konfiggruppe_normal_hoehe',
+            '200',
+            \CONF_BILDER,
+            'Konfiggruppenbilder Normal Höhe',
+            'number',
+            100
+        );
+        $this->setConfig(
+            'bilder_konfiggruppe_gross_breite',
+            '800',
+            \CONF_BILDER,
+            'Konfiggruppenbilder Groß Breite',
+            'number',
+            100
+        );
+        $this->setConfig(
+            'bilder_konfiggruppe_gross_hoehe',
+            '800',
+            \CONF_BILDER,
+            'Konfiggruppenbilder Groß Höhe',
+            'number',
+            100
+        );
+
+        $this->setConfig(
+            'bilder_kategorien_mini_breite',
+            '40',
+            \CONF_BILDER,
+            'Kategoriebilder Mini Breite',
+            'number',
+            100
+        );
+        $this->setConfig(
+            'bilder_kategorien_mini_hoehe',
+            '40',
+            \CONF_BILDER,
+            'Kategoriebilder Mini Höhe',
+            'number',
+            100
+        );
+        $this->setConfig(
+            'bilder_kategorien_gross_breite',
+            '800',
+            \CONF_BILDER,
+            'Kategoriebilder Groß Breite',
+            'number',
+            100
+        );
+        $this->setConfig(
+            'bilder_kategorien_gross_hoehe',
+            '800',
+            \CONF_BILDER,
+            'Kategoriebilder Groß Höhe',
+            'number',
+            100
+        );
+        $this->setConfig(
+            'bilder_kategorien_klein_breite',
+            '100',
+            \CONF_BILDER,
+            'Kategoriebilder Klein Breite',
+            'number',
+            100
+        );
+        $this->setConfig(
+            'bilder_kategorien_klein_hoehe',
+            '100',
+            \CONF_BILDER,
+            'Kategoriebilder Klein Höhe',
+            'number',
+            100
+        );
     }
+
 
     public function down()
     {
         $this->execute("DELETE FROM teinstellungenconfwerte WHERE `kEinstellungenConf` = 1483 AND `cName` = 'AUTO'");
-        $this->execute("DELETE FROM teinstellungenconfwerte WHERE `kEinstellungenConf` = 1483 AND `cName` = 'WEBP'");
+//        $this->execute("DELETE FROM teinstellungenconfwerte WHERE `kEinstellungenConf` = 1483 AND `cName` = 'WEBP'");
+        $this->removeConfig('bilder_kategorien_klein_hoehe');
+        $this->removeConfig('bilder_kategorien_klein_breite');
+        $this->removeConfig('bilder_kategorien_gross_hoehe');
+        $this->removeConfig('bilder_kategorien_gross_breite');
+        $this->removeConfig('bilder_kategorien_mini_hoehe');
+        $this->removeConfig('bilder_kategorien_mini_breite');
+        $this->removeConfig('bilder_konfiggruppe_gross_hoehe');
+        $this->removeConfig('bilder_konfiggruppe_gross_breite');
+        $this->removeConfig('bilder_konfiggruppe_normal_hoehe');
+        $this->removeConfig('bilder_konfiggruppe_normal_breite');
+        $this->removeConfig('bilder_konfiggruppe_mini_hoehe');
+        $this->removeConfig('bilder_konfiggruppe_mini_breite');
+        $this->removeConfig('bilder_merkmalwert_gross_hoehe');
+        $this->removeConfig('bilder_merkmalwert_gross_breite');
+        $this->removeConfig('bilder_merkmalwert_mini_hoehe');
+        $this->removeConfig('bilder_merkmalwert_mini_breite');
+        $this->removeConfig('bilder_merkmal_gross_hoehe');
+        $this->removeConfig('bilder_merkmal_gross_breite');
+        $this->removeConfig('bilder_merkmal_mini_hoehe');
+        $this->removeConfig('bilder_merkmal_mini_breite');
+        $this->removeConfig('bilder_hersteller_gross_hoehe');
+        $this->removeConfig('bilder_hersteller_gross_breite');
+        $this->removeConfig('bilder_hersteller_mini_hoehe');
+        $this->removeConfig('bilder_hersteller_mini_breite');
     }
 }

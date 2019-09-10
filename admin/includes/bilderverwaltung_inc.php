@@ -7,7 +7,7 @@
 use JTL\Helpers\URL;
 use JTL\IO\IOError;
 use JTL\Media\Image;
-use JTL\Media\MediaImage;
+use JTL\Media\Image\Product;
 use JTL\Shop;
 
 /**
@@ -21,7 +21,7 @@ function getItems(bool $filesize = false): array
         Image::TYPE_PRODUCT => (object)[
             'name'  => __('product'),
             'type'  => Image::TYPE_PRODUCT,
-            'stats' => MediaImage::getStats(Image::TYPE_PRODUCT, $filesize)
+            'stats' => Product::getStats(Image::TYPE_PRODUCT, $filesize)
         ]
     ];
 }
@@ -120,7 +120,7 @@ function clearImageCache($type, bool $isAjax = false)
     Shop::Container()->getGetText()->loadAdminLocale('pages/bilderverwaltung');
 
     if ($type !== null && preg_match('/[a-z]*/', $type)) {
-        MediaImage::clearCache($type);
+        Product::clearCache($type);
         unset($_SESSION['image_count'], $_SESSION['renderedImages']);
         if ($isAjax === true) {
             return ['success' => __('successCacheReset')];
@@ -153,23 +153,23 @@ function generateImageCache(?string $type, ?int $index)
     ];
 
     if ($index === 0) {
-        $_SESSION['image_count']    = MediaImage::getUncachedProductImageCount();
+        $_SESSION['image_count']    = Product::getUncachedProductImageCount();
         $_SESSION['renderedImages'] = 0;
     }
 
     $total    = $_SESSION['image_count'];
-    $images   = MediaImage::getImages($type, true, $index, IMAGE_PRELOAD_LIMIT);
-    $totalAll = MediaImage::getProductImageCount();
+    $images   = Product::getImages($type, true, $index, IMAGE_PRELOAD_LIMIT);
+    $totalAll = Product::getProductImageCount();
     while (count($images) === 0 && $index < $totalAll) {
         $index += 10;
-        $images = MediaImage::getImages($type, true, $index, IMAGE_PRELOAD_LIMIT);
+        $images = Product::getImages($type, true, $index, IMAGE_PRELOAD_LIMIT);
     }
     foreach ($images as $image) {
         $seconds = time() - $started;
         if ($seconds >= 10) {
             break;
         }
-        $result->images[] = MediaImage::cacheImage($image);
+        $result->images[] = Product::cacheImage($image);
         ++$index;
         ++$_SESSION['renderedImages'];
     }
@@ -193,11 +193,11 @@ function generateImageCache(?string $type, ?int $index)
 function getCorruptedImages($type, int $limit)
 {
     $corruptedImages = [];
-    $totalImages     = MediaImage::getProductImageCount();
+    $totalImages     = Product::getProductImageCount();
     $db              = Shop::Container()->getDB();
     do {
         $i = 0;
-        foreach (MediaImage::getProductImages() as $image) {
+        foreach (Product::getProductImages() as $image) {
             ++$i;
             if (!file_exists($image->getRaw(true))
                 && !file_exists(PFAD_ROOT . $image->getFallbackThumb(Image::SIZE_XS))

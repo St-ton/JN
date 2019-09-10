@@ -9,6 +9,7 @@ namespace JTL\OPC;
 use Intervention\Image\ImageManager;
 use JTL\Helpers\GeneralObject;
 use JTL\Media\Image;
+use JTL\Media\MultiSizeImage;
 use JTL\Shop;
 
 /**
@@ -17,15 +18,17 @@ use JTL\Shop;
  */
 class PortletInstance implements \JsonSerializable
 {
+    use MultiSizeImage;
+
     /**
      * @var array
      */
     protected static $dirSizes = [
-        '.xl/' => \WIDTH_OPC_IMAGE_XL,
-        '.lg/' => \WIDTH_OPC_IMAGE_LG,
-        '.md/' => \WIDTH_OPC_IMAGE_MD,
-        '.sm/' => \WIDTH_OPC_IMAGE_SM,
-        '.xs/' => \WIDTH_OPC_IMAGE_XS,
+        Image::SIZE_XL => \WIDTH_OPC_IMAGE_XL,
+        Image::SIZE_LG => \WIDTH_OPC_IMAGE_LG,
+        Image::SIZE_MD => \WIDTH_OPC_IMAGE_MD,
+        Image::SIZE_SM => \WIDTH_OPC_IMAGE_SM,
+        Image::SIZE_XS => \WIDTH_OPC_IMAGE_XS,
     ];
 
     /**
@@ -74,11 +77,17 @@ class PortletInstance implements \JsonSerializable
     protected $subareaList;
 
     /**
+     * @var string
+     */
+    public $currentImagePath;
+
+    /**
      * PortletInstance constructor.
      * @param Portlet $portlet
      */
     public function __construct(Portlet $portlet)
     {
+        $this->setType(Image::TYPE_OPC);
         $this->portlet     = $portlet;
         $this->properties  = $portlet->getDefaultProps();
         $this->subareaList = new AreaList();
@@ -489,38 +498,17 @@ class PortletInstance implements \JsonSerializable
             ];
         }
 
-        $settings        = Shop::getSettings([\CONF_BILDER]);
         $name            = \basename($src);
         $decodedName     = \rawurldecode($name);
         $widthHeuristics = $this->widthHeuristics;
         $srcImgPath      = \PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $decodedName;
-
-        foreach (static::$dirSizes as $size => $width) {
-            $sizedImgPath = \PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $size . $decodedName;
-
-            if (!\file_exists($sizedImgPath)) {
-                $manager = new ImageManager(['driver' => Image::getImageDriver()]);
-                $img     = $manager->make($srcImgPath);
-                $factor  = $width / $img->getWidth();
-
-                $img->resize((int)$width, (int)($img->getHeight() * $factor), function ($constraint) {
-                    $constraint->aspectRatio();
-                });
-                // image optimizations
-                $img->blur(1);
-                if (Image::getImageDriver() === 'imagick') {
-                    $img->getCore()->setColorspace(\Imagick::COLORSPACE_RGB);
-                    $img->getCore()->transformImageColorspace(\Imagick::COLORSPACE_RGB);
-                    $img->getCore()->stripImage();
-                }
-                if (pathinfo($sizedImgPath, PATHINFO_EXTENSION) === 'jpg') {
-                    $img->interlace(true);
-                }
-
-                $img->save($sizedImgPath, $settings['bilder']['bilder_jpg_quali']);
+        $this->currentImagePath = $srcImgPath;
+        $this->generateAllImageSizes(true, 1, $this->currentImagePath);
+        foreach ($this->getImages() as $size => $i) {
+            $width = self::$dirSizes[$size];
+            if ($width !== null) {
+                $srcset .= $i . ' ' . $width . 'w,';
             }
-
-            $srcset .= \PFAD_MEDIAFILES . 'Bilder/' . $size . $name . ' ' . $width . 'w,';
         }
 
         $srcset = \mb_substr($srcset, 0, -1); // remove trailing comma
@@ -613,6 +601,11 @@ class PortletInstance implements \JsonSerializable
         $this->setAttribute('title', $imageAttributes['title']);
 
         return $this;
+    }
+
+    public function getID()
+    {
+        return 1;
     }
 
     /**

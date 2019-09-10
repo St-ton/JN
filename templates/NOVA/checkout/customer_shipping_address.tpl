@@ -3,6 +3,7 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='checkout-customer-shipping-address'}
+    <fieldset>
     {formrow}
         {$name = 'shipping_address'}
         {* salutation / title *}
@@ -248,7 +249,7 @@
                         name="{$prefix}[{$name}][ort]"
                         value="{if isset($Lieferadresse->cOrt)}{$Lieferadresse->cOrt}{/if}"
                         id="{$prefix}-{$name}-city"
-                        class="city_input typeahead"
+                        class="city_input typeahead bg-white"
                         placeholder="{lang key='city' section='account data'}"
                         required=true
                         autocomplete="shipping address-level2"
@@ -267,4 +268,5 @@
             {/col}
         {/block}
     {/formrow}
+    </fieldset>
 {/block}

@@ -17,17 +17,17 @@
                         <thead>
                         <tr>
                             <th class="text-left">{__('type')}</th>
-                            <th class="text-center">{__('xs')}<small>{__('widthXHeight')}</small></th>
-                            <th class="text-center">{__('sm')}<small>{__('widthXHeight')}</small></th>
-                            <th class="text-center">{__('md')}<small>{__('widthXHeight')}</small></th>
-                            <th class="text-center">{__('lg')}<small>{__('widthXHeight')}</small></th>
+                            <th class="text-center">{__('xs')} <small>{__('widthXHeight')}</small></th>
+                            <th class="text-center">{__('sm')} <small>{__('widthXHeight')}</small></th>
+                            <th class="text-center">{__('md')} <small>{__('widthXHeight')}</small></th>
+                            <th class="text-center">{__('lg')} <small>{__('widthXHeight')}</small></th>
                         </tr>
                         </thead>
                         <tbody>
+                        {foreach $indices as $idx => $name}
                         <tr>
-                            <td class="text-left">{__('category')}</td>
-                            <td class="text-center"></td>
-                            <td class="text-center"></td>
+                            <td class="text-left">{$name}</td>
+                            {foreach $sizes as $size}
                             <td class="text-center">
                                 <div class="input-group form-counter min-w-sm">
                                     <div class="input-group-prepend">
@@ -35,7 +35,11 @@
                                             <span class="fas fa-minus"></span>
                                         </button>
                                     </div>
-                                    <input size="4" class="form-control" type="number" name="bilder_kategorien_breite" value="{$oConfig.bilder_kategorien_breite}" />
+                                    {$optIdx = 'bilder_'|cat:$idx|cat:'_'|cat:$size|cat:'_breite'}
+                                    {if !isset($oConfig.$optIdx)}
+                                        {$optIdx = 'bilder_'|cat:$idx|cat:'_breite'}
+                                    {/if}
+                                    <input size="4" class="form-control" type="number" name="{$optIdx}" value="{$oConfig.$optIdx}" />
                                     <div class="input-group-append">
                                         <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
                                             <span class="fas fa-plus"></span>
@@ -49,7 +53,11 @@
                                             <span class="fas fa-minus"></span>
                                         </button>
                                     </div>
-                                    <input size="4" class="form-control" type="number" name="bilder_kategorien_hoehe" value="{$oConfig.bilder_kategorien_hoehe}" />
+                                    {$optIdx = 'bilder_'|cat:$idx|cat:'_'|cat:$size|cat:'_hoehe'}
+                                    {if !isset($oConfig.$optIdx)}
+                                        {$optIdx = 'bilder_'|cat:$idx|cat:'_hoehe'}
+                                    {/if}
+                                    <input size="4" class="form-control" type="number" name="{$optIdx}" value="{$oConfig.$optIdx}" />
                                     <div class="input-group-append">
                                         <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
                                             <span class="fas fa-plus"></span>
@@ -57,448 +65,9 @@
                                     </div>
                                 </div>
                             </td>
-                            <td class="text-center"></td>
+                            {/foreach}
                         </tr>
-
-                        <tr>
-                            <td class="text-left">{__('variations')}</td>
-                            <td class="text-center">
-                                <div class="input-group form-counter min-w-sm">
-                                    <div class="input-group-prepend">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
-                                            <span class="fas fa-minus"></span>
-                                        </button>
-                                    </div>
-                                    <input size="4" class="form-control" type="number" name="bilder_variationen_mini_breite" value="{$oConfig.bilder_variationen_mini_breite}" />
-                                    <div class="input-group-append">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
-                                            <span class="fas fa-plus"></span>
-                                        </button>
-                                    </div>
-                                </div>
-                                <span class="cross-sign text-center">x</span>
-                                <div class="input-group form-counter min-w-sm">
-                                    <div class="input-group-prepend">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
-                                            <span class="fas fa-minus"></span>
-                                        </button>
-                                    </div>
-                                    <input size="4" class="form-control" type="number" name="bilder_variationen_mini_hoehe" value="{$oConfig.bilder_variationen_mini_hoehe}" />
-                                    <div class="input-group-append">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
-                                            <span class="fas fa-plus"></span>
-                                        </button>
-                                    </div>
-                                </div>
-                             </td>
-                            <td class="text-center"></td>
-                            <td class="text-center">
-                                <div class="input-group form-counter min-w-sm">
-                                    <div class="input-group-prepend">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
-                                            <span class="fas fa-minus"></span>
-                                        </button>
-                                    </div>
-                                    <input size="4" class="form-control" type="number" name="bilder_variationen_breite" value="{$oConfig.bilder_variationen_breite}" />
-                                    <div class="input-group-append">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
-                                            <span class="fas fa-plus"></span>
-                                        </button>
-                                    </div>
-                                </div>
-                                <span class="cross-sign text-center">x</span>
-                                <div class="input-group form-counter min-w-sm">
-                                    <div class="input-group-prepend">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
-                                            <span class="fas fa-minus"></span>
-                                        </button>
-                                    </div>
-                                    <input size="4" class="form-control" type="number" name="bilder_variationen_hoehe" value="{$oConfig.bilder_variationen_hoehe}" />
-                                    <div class="input-group-append">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
-                                            <span class="fas fa-plus"></span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="text-center">
-                                <div class="input-group form-counter min-w-sm">
-                                    <div class="input-group-prepend">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
-                                            <span class="fas fa-minus"></span>
-                                        </button>
-                                    </div>
-                                    <input size="4" class="form-control" type="number" name="bilder_variationen_gross_breite" value="{$oConfig.bilder_variationen_gross_breite}" />
-                                    <div class="input-group-append">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
-                                            <span class="fas fa-plus"></span>
-                                        </button>
-                                    </div>
-                                </div>
-                                <span class="cross-sign text-center">x</span>
-                                <div class="input-group form-counter min-w-sm">
-                                    <div class="input-group-prepend">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
-                                            <span class="fas fa-minus"></span>
-                                        </button>
-                                    </div>
-                                    <input size="4" class="form-control" type="number" name="bilder_variationen_gross_hoehe" value="{$oConfig.bilder_variationen_gross_hoehe}" />
-                                    <div class="input-group-append">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
-                                            <span class="fas fa-plus"></span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="text-left">{__('product')}</td>
-                            <td class="text-center">
-                                <div class="input-group form-counter min-w-sm">
-                                    <div class="input-group-prepend">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
-                                            <span class="fas fa-minus"></span>
-                                        </button>
-                                    </div>
-                                    <input size="4" class="form-control" type="number" name="bilder_artikel_mini_breite" value="{$oConfig.bilder_artikel_mini_breite}" />
-                                    <div class="input-group-append">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
-                                            <span class="fas fa-plus"></span>
-                                        </button>
-                                    </div>
-                                </div>
-                                <span class="cross-sign text-center">x</span>
-                                <div class="input-group form-counter min-w-sm">
-                                    <div class="input-group-prepend">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
-                                            <span class="fas fa-minus"></span>
-                                        </button>
-                                    </div>
-                                    <input size="4" class="form-control" type="number" name="bilder_artikel_mini_hoehe" value="{$oConfig.bilder_artikel_mini_hoehe}" />
-                                    <div class="input-group-append">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
-                                            <span class="fas fa-plus"></span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="text-center">
-                                <div class="input-group form-counter min-w-sm">
-                                    <div class="input-group-prepend">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
-                                            <span class="fas fa-minus"></span>
-                                        </button>
-                                    </div>
-                                    <input size="4" class="form-control" type="number" name="bilder_artikel_klein_breite" value="{$oConfig.bilder_artikel_klein_breite}" />
-                                    <div class="input-group-append">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
-                                            <span class="fas fa-plus"></span>
-                                        </button>
-                                    </div>
-                                </div>
-                                <span class="cross-sign text-center">x</span>
-                                <div class="input-group form-counter min-w-sm">
-                                    <div class="input-group-prepend">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
-                                            <span class="fas fa-minus"></span>
-                                        </button>
-                                    </div>
-                                    <input size="4" class="form-control" type="number" name="bilder_artikel_klein_hoehe" value="{$oConfig.bilder_artikel_klein_hoehe}" />
-                                    <div class="input-group-append">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
-                                            <span class="fas fa-plus"></span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="text-center">
-                                <div class="input-group form-counter min-w-sm">
-                                    <div class="input-group-prepend">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
-                                            <span class="fas fa-minus"></span>
-                                        </button>
-                                    </div>
-                                    <input size="4" class="form-control" type="number" name="bilder_artikel_normal_breite" value="{$oConfig.bilder_artikel_normal_breite}" />
-                                    <div class="input-group-append">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
-                                            <span class="fas fa-plus"></span>
-                                        </button>
-                                    </div>
-                                </div>
-                                <span class="cross-sign text-center">x</span>
-                                <div class="input-group form-counter min-w-sm">
-                                    <div class="input-group-prepend">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
-                                            <span class="fas fa-minus"></span>
-                                        </button>
-                                    </div>
-                                    <input size="4" class="form-control" type="number" name="bilder_artikel_normal_hoehe" value="{$oConfig.bilder_artikel_normal_hoehe}" />
-                                    <div class="input-group-append">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
-                                            <span class="fas fa-plus"></span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="text-center">
-                                <div class="input-group form-counter min-w-sm">
-                                    <div class="input-group-prepend">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
-                                            <span class="fas fa-minus"></span>
-                                        </button>
-                                    </div>
-                                    <input size="4" class="form-control" type="number" name="bilder_artikel_gross_breite" value="{$oConfig.bilder_artikel_gross_breite}" />
-                                    <div class="input-group-append">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
-                                            <span class="fas fa-plus"></span>
-                                        </button>
-                                    </div>
-                                </div>
-                                <span class="cross-sign text-center">x</span>
-                                <div class="input-group form-counter min-w-sm">
-                                    <div class="input-group-prepend">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
-                                            <span class="fas fa-minus"></span>
-                                        </button>
-                                    </div>
-                                    <input size="4" class="form-control" type="number" name="bilder_artikel_gross_hoehe" value="{$oConfig.bilder_artikel_gross_hoehe}" />
-                                    <div class="input-group-append">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
-                                            <span class="fas fa-plus"></span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="text-left">{__('manufacturer')}</td>
-                            <td class="text-center"></td>
-                            <td class="text-center">
-                                <div class="input-group form-counter min-w-sm">
-                                    <div class="input-group-prepend">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
-                                            <span class="fas fa-minus"></span>
-                                        </button>
-                                    </div>
-                                    <input size="4" class="form-control" type="number" name="bilder_hersteller_klein_breite" value="{$oConfig.bilder_hersteller_klein_breite}" />
-                                    <div class="input-group-append">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
-                                            <span class="fas fa-plus"></span>
-                                        </button>
-                                    </div>
-                                </div>
-                                <span class="cross-sign text-center">x</span>
-                                <div class="input-group form-counter min-w-sm">
-                                    <div class="input-group-prepend">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
-                                            <span class="fas fa-minus"></span>
-                                        </button>
-                                    </div>
-                                    <input size="4" class="form-control" type="number" name="bilder_hersteller_klein_hoehe" value="{$oConfig.bilder_hersteller_klein_hoehe}" />
-                                    <div class="input-group-append">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
-                                            <span class="fas fa-plus"></span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="text-center">
-                                <div class="input-group form-counter min-w-sm">
-                                    <div class="input-group-prepend">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
-                                            <span class="fas fa-minus"></span>
-                                        </button>
-                                    </div>
-                                    <input size="4" class="form-control" type="number" name="bilder_hersteller_normal_breite" value="{$oConfig.bilder_hersteller_normal_breite}" />
-                                    <div class="input-group-append">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
-                                            <span class="fas fa-plus"></span>
-                                        </button>
-                                    </div>
-                                </div>
-                                <span class="cross-sign text-center">x</span>
-                                <div class="input-group form-counter min-w-sm">
-                                    <div class="input-group-prepend">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
-                                            <span class="fas fa-minus"></span>
-                                        </button>
-                                    </div>
-                                    <input size="4" class="form-control" type="number" name="bilder_hersteller_normal_hoehe" value="{$oConfig.bilder_hersteller_normal_hoehe}" />
-                                    <div class="input-group-append">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
-                                            <span class="fas fa-plus"></span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="text-center"></td>
-                        </tr>
-
-                        <tr>
-                            <td class="text-left">{__('attributes')}</td>
-                            <td class="text-center"></td>
-                            <td class="text-center">
-                                <div class="input-group form-counter min-w-sm">
-                                    <div class="input-group-prepend">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
-                                            <span class="fas fa-minus"></span>
-                                        </button>
-                                    </div>
-                                    <input size="4" class="form-control" type="number" name="bilder_merkmal_klein_breite" value="{$oConfig.bilder_merkmal_klein_breite}" />
-                                    <div class="input-group-append">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
-                                            <span class="fas fa-plus"></span>
-                                        </button>
-                                    </div>
-                                </div>
-                                <span class="cross-sign text-center">x</span>
-                                <div class="input-group form-counter min-w-sm">
-                                    <div class="input-group-prepend">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
-                                            <span class="fas fa-minus"></span>
-                                        </button>
-                                    </div>
-                                    <input size="4" class="form-control" type="number" name="bilder_merkmal_klein_hoehe" value="{$oConfig.bilder_merkmal_klein_hoehe}" />
-                                    <div class="input-group-append">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
-                                            <span class="fas fa-plus"></span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="text-center">
-                                <div class="input-group form-counter min-w-sm">
-                                    <div class="input-group-prepend">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
-                                            <span class="fas fa-minus"></span>
-                                        </button>
-                                    </div>
-                                    <input size="4" class="form-control" type="number" name="bilder_merkmal_normal_breite" value="{$oConfig.bilder_merkmal_normal_breite}" />
-                                    <div class="input-group-append">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
-                                            <span class="fas fa-plus"></span>
-                                        </button>
-                                    </div>
-                                </div>
-                                <span class="cross-sign text-center">x</span>
-                                <div class="input-group form-counter min-w-sm">
-                                    <div class="input-group-prepend">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
-                                            <span class="fas fa-minus"></span>
-                                        </button>
-                                    </div>
-                                    <input size="4" class="form-control" type="number" name="bilder_merkmal_normal_hoehe" value="{$oConfig.bilder_merkmal_normal_hoehe}" />
-                                    <div class="input-group-append">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
-                                            <span class="fas fa-plus"></span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="text-center"></td>
-                        </tr>
-
-                        <tr>
-                            <td class="text-left">{__('attributeValues')}</td>
-                            <td class="text-center"></td>
-                            <td class="text-center">
-                                <div class="input-group form-counter min-w-sm">
-                                    <div class="input-group-prepend">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
-                                            <span class="fas fa-minus"></span>
-                                        </button>
-                                    </div>
-                                    <input size="4" class="form-control" type="number" name="bilder_merkmalwert_klein_breite" value="{$oConfig.bilder_merkmalwert_klein_breite}" />
-                                    <div class="input-group-append">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
-                                            <span class="fas fa-plus"></span>
-                                        </button>
-                                    </div>
-                                </div>
-                                <span class="cross-sign text-center">x</span>
-                                <div class="input-group form-counter min-w-sm">
-                                    <div class="input-group-prepend">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
-                                            <span class="fas fa-minus"></span>
-                                        </button>
-                                    </div>
-                                    <input size="4" class="form-control" type="number" name="bilder_merkmalwert_klein_hoehe" value="{$oConfig.bilder_merkmalwert_klein_hoehe}" />
-                                    <div class="input-group-append">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
-                                            <span class="fas fa-plus"></span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="text-center">
-                                <div class="input-group form-counter min-w-sm">
-                                    <div class="input-group-prepend">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
-                                            <span class="fas fa-minus"></span>
-                                        </button>
-                                    </div>
-                                    <input size="4" class="form-control" type="number" name="bilder_merkmalwert_normal_breite" value="{$oConfig.bilder_merkmalwert_normal_breite}" />
-                                    <div class="input-group-append">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
-                                            <span class="fas fa-plus"></span>
-                                        </button>
-                                    </div>
-                                </div>
-                                <span class="cross-sign text-center">x</span>
-                                <div class="input-group form-counter min-w-sm">
-                                    <div class="input-group-prepend">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
-                                            <span class="fas fa-minus"></span>
-                                        </button>
-                                    </div>
-                                    <input size="4" class="form-control" type="number" name="bilder_merkmalwert_normal_hoehe" value="{$oConfig.bilder_merkmalwert_normal_hoehe}" />
-                                    <div class="input-group-append">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
-                                            <span class="fas fa-plus"></span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="text-center"></td>
-                        </tr>
-
-                        <tr>
-                            <td class="text-left">{__('configGroup')}</td>
-                            <td class="text-center"></td>
-                            <td class="text-center">
-                                <div class="input-group form-counter min-w-sm">
-                                    <div class="input-group-prepend">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
-                                            <span class="fas fa-minus"></span>
-                                        </button>
-                                    </div>
-                                    <input size="4" class="form-control" type="number" name="bilder_konfiggruppe_klein_breite" value="{$oConfig.bilder_konfiggruppe_klein_breite}" />
-                                    <div class="input-group-append">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
-                                            <span class="fas fa-plus"></span>
-                                        </button>
-                                    </div>
-                                </div>
-                                <span class="cross-sign text-center">x</span>
-                                <div class="input-group form-counter min-w-sm">
-                                    <div class="input-group-prepend">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
-                                            <span class="fas fa-minus"></span>
-                                        </button>
-                                    </div>
-                                    <input size="4" class="form-control" type="number" name="bilder_konfiggruppe_klein_hoehe" value="{$oConfig.bilder_konfiggruppe_klein_hoehe}" />
-                                    <div class="input-group-append">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
-                                            <span class="fas fa-plus"></span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="text-center"></td>
-                            <td class="text-center"></td>
-                        </tr>
+                        {/foreach}
 
                         </tbody>
                     </table>

@@ -9,12 +9,9 @@ namespace JTL\Media;
 use Exception;
 use Intervention\Image\Constraint;
 use Intervention\Image\ImageManager;
-use JTL\Catalog\Category\Kategorie;
-use JTL\Catalog\Hersteller;
 use JTL\DB\ReturnType;
-use JTL\News\Category;
-use JTL\News\Item;
 use JTL\Shop;
+use \Intervention\Image\Image as InImage;
 
 /**
  * Class Image
@@ -25,24 +22,26 @@ class Image
     /**
      * Image types
      */
-    public const TYPE_PRODUCT         = 'product';
-    public const TYPE_CATEGORY        = 'category';
-    public const TYPE_CONFIGGROUP     = 'configgroup';
-    public const TYPE_VARIATION       = 'variation';
-    public const TYPE_MANUFACTURER    = 'manufacturer';
-    public const TYPE_ATTRIBUTE       = 'attribute';
-    public const TYPE_ATTRIBUTE_VALUE = 'attributevalue';
-    public const TYPE_NEWS            = 'news';
-    public const TYPE_NEWSCATEGORY    = 'newscategory';
-    public const TYPE_CHARACTERISTIC  = 'characteristic';
+    public const TYPE_PRODUCT              = 'product';
+    public const TYPE_CATEGORY             = 'category';
+    public const TYPE_OPC                  = 'opc';
+    public const TYPE_CONFIGGROUP          = 'configgroup';
+    public const TYPE_VARIATION            = 'variation';
+    public const TYPE_MANUFACTURER         = 'manufacturer';
+    public const TYPE_NEWS                 = 'news';
+    public const TYPE_NEWSCATEGORY         = 'newscategory';
+    public const TYPE_CHARACTERISTIC       = 'characteristic';
+    public const TYPE_CHARACTERISTIC_VALUE = 'characteristicvalue';
 
     /**
      * Image sizes
      */
-    public const SIZE_XS = 'xs';
-    public const SIZE_SM = 'sm';
-    public const SIZE_MD = 'md';
-    public const SIZE_LG = 'lg';
+    public const SIZE_ORIGINAL = 'os';
+    public const SIZE_XS       = 'xs';
+    public const SIZE_SM       = 'sm';
+    public const SIZE_MD       = 'md';
+    public const SIZE_LG       = 'lg';
+    public const SIZE_XL       = 'xl';
 
     /**
      * Image type map
@@ -57,8 +56,8 @@ class Image
         'konfigurator' => self::TYPE_CONFIGGROUP,
         'variationen'  => self::TYPE_VARIATION,
         'hersteller'   => self::TYPE_MANUFACTURER,
-        'merkmale'     => self::TYPE_ATTRIBUTE,
-        'merkmalwerte' => self::TYPE_ATTRIBUTE_VALUE
+        'merkmale'     => self::TYPE_CHARACTERISTIC,
+        'merkmalwerte' => self::TYPE_CHARACTERISTIC_VALUE
     ];
 
     /**
@@ -67,10 +66,12 @@ class Image
      * @var array
      */
     private static $sizeMapper = [
-        'mini'   => self::SIZE_XS,
-        'klein'  => self::SIZE_SM,
-        'normal' => self::SIZE_MD,
-        'gross'  => self::SIZE_LG
+        'original' => self::SIZE_ORIGINAL,
+        'mini'     => self::SIZE_XS,
+        'klein'    => self::SIZE_SM,
+        'normal'   => self::SIZE_MD,
+        'gross'    => self::SIZE_LG,
+        'riesig'   => self::SIZE_XL
     ];
 
     /**
@@ -98,6 +99,14 @@ class Image
     private static $settings;
 
     /**
+     * @return array
+     */
+    public static function getAllSizes(): array
+    {
+        return \array_values(self::$sizeMapper);
+    }
+
+    /**
      *  Global image settings
      *
      * @return array
@@ -109,16 +118,15 @@ class Image
         }
         $settings = Shop::getSettings([\CONF_BILDER]);
         $settings = \array_shift($settings);
-        $branding = self::getBranding();
 
-        self::$settings = [
-            'background' => $settings['bilder_hintergrundfarbe'],
-            'container'  => $settings['container_verwenden'] === 'Y',
-            'format'     => \mb_convert_case($settings['bilder_dateiformat'], \MB_CASE_LOWER),
-            'scale'      => $settings['bilder_skalieren'] === 'Y',
-            'quality'    => (int)$settings['bilder_jpg_quali'],
-            'branding'   => $branding[self::TYPE_PRODUCT] ?? null,
-            'size'       => [
+        self::$settings         = [
+            'background'                    => $settings['bilder_hintergrundfarbe'],
+            'container'                     => $settings['container_verwenden'] === 'Y',
+            'format'                        => \mb_convert_case($settings['bilder_dateiformat'], \MB_CASE_LOWER),
+            'scale'                         => $settings['bilder_skalieren'] === 'Y',
+            'quality'                       => (int)$settings['bilder_jpg_quali'],
+            'branding'                      => self::getBranding()[self::TYPE_PRODUCT] ?? null,
+            self::TYPE_PRODUCT              => [
                 self::SIZE_XS => [
                     'width'  => (int)$settings['bilder_artikel_mini_breite'],
                     'height' => (int)$settings['bilder_artikel_mini_hoehe']
@@ -136,12 +144,121 @@ class Image
                     'height' => (int)$settings['bilder_artikel_gross_hoehe']
                 ]
             ],
-            'naming'     => [
+            self::TYPE_MANUFACTURER         => [
+                self::SIZE_XS => [
+                    'width'  => (int)$settings['bilder_hersteller_mini_breite'],
+                    'height' => (int)$settings['bilder_hersteller_mini_hoehe']
+                ],
+                self::SIZE_SM => [
+                    'width'  => (int)$settings['bilder_hersteller_klein_breite'],
+                    'height' => (int)$settings['bilder_hersteller_klein_hoehe']
+                ],
+                self::SIZE_MD => [
+                    'width'  => (int)$settings['bilder_hersteller_normal_breite'],
+                    'height' => (int)$settings['bilder_hersteller_normal_hoehe']
+                ],
+                self::SIZE_LG => [
+                    'width'  => (int)$settings['bilder_hersteller_gross_breite'],
+                    'height' => (int)$settings['bilder_hersteller_gross_hoehe']
+                ]
+            ],
+            self::TYPE_CHARACTERISTIC       => [
+                self::SIZE_XS => [
+                    'width'  => (int)$settings['bilder_merkmal_mini_breite'],
+                    'height' => (int)$settings['bilder_merkmal_mini_hoehe']
+                ],
+                self::SIZE_SM => [
+                    'width'  => (int)$settings['bilder_merkmal_klein_breite'],
+                    'height' => (int)$settings['bilder_merkmal_klein_hoehe']
+                ],
+                self::SIZE_MD => [
+                    'width'  => (int)$settings['bilder_merkmal_normal_breite'],
+                    'height' => (int)$settings['bilder_merkmal_normal_hoehe']
+                ],
+                self::SIZE_LG => [
+                    'width'  => (int)$settings['bilder_merkmal_gross_breite'],
+                    'height' => (int)$settings['bilder_merkmal_gross_hoehe']
+                ]
+            ],
+            self::TYPE_CHARACTERISTIC_VALUE => [
+                self::SIZE_XS => [
+                    'width'  => (int)$settings['bilder_merkmalwert_mini_breite'],
+                    'height' => (int)$settings['bilder_merkmalwert_mini_hoehe']
+                ],
+                self::SIZE_SM => [
+                    'width'  => (int)$settings['bilder_merkmalwert_klein_breite'],
+                    'height' => (int)$settings['bilder_merkmalwert_klein_hoehe']
+                ],
+                self::SIZE_MD => [
+                    'width'  => (int)$settings['bilder_merkmalwert_normal_breite'],
+                    'height' => (int)$settings['bilder_merkmalwert_normal_hoehe']
+                ],
+                self::SIZE_LG => [
+                    'width'  => (int)$settings['bilder_merkmalwert_gross_breite'],
+                    'height' => (int)$settings['bilder_merkmalwert_gross_hoehe']
+                ]
+            ],
+            self::TYPE_CONFIGGROUP          => [
+                self::SIZE_XS => [
+                    'width'  => (int)$settings['bilder_konfiggruppe_mini_breite'],
+                    'height' => (int)$settings['bilder_konfiggruppe_mini_hoehe']
+                ],
+                self::SIZE_SM => [
+                    'width'  => (int)$settings['bilder_konfiggruppe_klein_breite'],
+                    'height' => (int)$settings['bilder_konfiggruppe_klein_hoehe']
+                ],
+                self::SIZE_MD => [
+                    'width'  => (int)$settings['bilder_konfiggruppe_normal_breite'],
+                    'height' => (int)$settings['bilder_konfiggruppe_normal_hoehe']
+                ],
+                self::SIZE_LG => [
+                    'width'  => (int)$settings['bilder_konfiggruppe_gross_breite'],
+                    'height' => (int)$settings['bilder_konfiggruppe_gross_hoehe']
+                ]
+            ],
+            self::TYPE_CATEGORY             => [
+                self::SIZE_XS => [
+                    'width'  => (int)$settings['bilder_kategorien_mini_breite'],
+                    'height' => (int)$settings['bilder_kategorien_mini_hoehe']
+                ],
+                self::SIZE_SM => [
+                    'width'  => (int)$settings['bilder_kategorien_klein_breite'],
+                    'height' => (int)$settings['bilder_kategorien_klein_hoehe']
+                ],
+                self::SIZE_MD => [
+                    'width'  => (int)$settings['bilder_kategorien_breite'],
+                    'height' => (int)$settings['bilder_kategorien_hoehe']
+                ],
+                self::SIZE_LG => [
+                    'width'  => (int)$settings['bilder_kategorien_gross_breite'],
+                    'height' => (int)$settings['bilder_kategorien_gross_hoehe']
+                ]
+            ],
+            self::TYPE_OPC             => [
+                self::SIZE_XS => [
+                    'width'  => 480,
+                    'height' => 480
+                ],
+                self::SIZE_SM => [
+                    'width'  => 720,
+                    'height' => 720
+                ],
+                self::SIZE_MD => [
+                    'width'  => 1080,
+                    'height' => 1080
+                ],
+                self::SIZE_LG => [
+                    'width'  => 1440,
+                    'height' => 1440
+                ]
+            ],
+            'naming'                        => [
                 self::TYPE_PRODUCT   => (int)$settings['bilder_artikel_namen'],
                 self::TYPE_CATEGORY  => (int)$settings['bilder_kategorie_namen'],
                 self::TYPE_VARIATION => (int)$settings['bilder_variation_namen']
             ]
         ];
+        self::$settings['size'] = self::$settings[self::TYPE_PRODUCT];
 
         return self::$settings;
     }
@@ -149,31 +266,29 @@ class Image
     /**
      * Convert old size naming
      *
-     * @param string     $size
-     * @param bool|false $flip
-     * @return null
+     * @param string $size
+     * @param bool   $flip
+     * @return string|null
      */
-    public static function mapSize($size, $flip = false)
+    public static function mapSize(string $size, bool $flip = false): ?string
     {
-        $size   = \mb_convert_case($size, \MB_CASE_LOWER);
         $mapper = $flip ? \array_flip(self::$sizeMapper) : self::$sizeMapper;
 
-        return $mapper[$size] ?? null;
+        return $mapper[\mb_convert_case($size, \MB_CASE_LOWER)] ?? null;
     }
 
     /**
      * Convert old type naming
      *
-     * @param string     $type
-     * @param bool|false $flip
-     * @return null
+     * @param string $type
+     * @param bool   $flip
+     * @return string|null
      */
-    public static function mapType($type, $flip = false)
+    public static function mapType(string $type, bool $flip = false): ?string
     {
-        $type   = \mb_convert_case($type, \MB_CASE_LOWER);
         $mapper = $flip ? \array_flip(self::$typeMapper) : self::$typeMapper;
 
-        return $mapper[$type] ?? null;
+        return $mapper[\mb_convert_case($type, \MB_CASE_LOWER)] ?? null;
     }
 
     /**
@@ -185,10 +300,9 @@ class Image
      */
     public static function mapPosition($position, $flip = false)
     {
-        $position = \mb_convert_case($position, \MB_CASE_LOWER);
-        $mapper   = $flip ? \array_flip(self::$positionMapper) : self::$positionMapper;
+        $mapper = $flip ? \array_flip(self::$positionMapper) : self::$positionMapper;
 
-        return $mapper[$position] ?? null;
+        return $mapper[\mb_convert_case($position, \MB_CASE_LOWER)] ?? null;
     }
 
     /**
@@ -198,8 +312,8 @@ class Image
      */
     private static function getBranding(): array
     {
-        $branding    = [];
-        $brandingTmp = Shop::Container()->getDB()->query(
+        $branding = [];
+        $data     = Shop::Container()->getDB()->query(
             'SELECT tbranding.cBildKategorie AS type, 
             tbrandingeinstellung.cPosition AS position, tbrandingeinstellung.cBrandingBild AS path,
             tbrandingeinstellung.dTransparenz AS transparency, tbrandingeinstellung.dGroesse AS size
@@ -209,14 +323,13 @@ class Image
                 WHERE tbrandingeinstellung.nAktiv = 1',
             ReturnType::ARRAY_OF_OBJECTS
         );
-
-        foreach ($brandingTmp as $b) {
-            $b->size            = (int)$b->size;
-            $b->transparency    = (int)$b->transparency;
-            $b->type            = self::mapType($b->type);
-            $b->position        = self::mapPosition($b->position);
-            $b->path            = \PFAD_ROOT . \PFAD_BRANDINGBILDER . $b->path;
-            $branding[$b->type] = $b;
+        foreach ($data as $item) {
+            $item->size            = (int)$item->size;
+            $item->transparency    = (int)$item->transparency;
+            $item->type            = self::mapType($item->type);
+            $item->position        = self::mapPosition($item->position);
+            $item->path            = \PFAD_ROOT . \PFAD_BRANDINGBILDER . $item->path;
+            $branding[$item->type] = $item;
         }
 
         return $branding;
@@ -224,78 +337,22 @@ class Image
 
     /**
      * @param string $filepath
-     * @return int|string
+     * @return string
      */
-    public static function getMimeType(string $filepath)
+    public static function getMimeType(string $filepath): string
     {
-        $type = self::getImageType($filepath);
-
-        return $type !== null
-            ? \image_type_to_mime_type($type)
-            : \IMAGETYPE_JPEG;
+        return \image_type_to_mime_type(self::getImageType($filepath) ?? \IMAGETYPE_JPEG);
     }
 
     /**
      * @param string $filepath
      * @return int|null
      */
-    public static function getImageType(string $filepath)
+    public static function getImageType(string $filepath): ?int
     {
-        if (\function_exists('exif_imagetype')) {
-            return \exif_imagetype($filepath);
-        }
-        $info = \getimagesize($filepath);
-
-        return \is_array($info) && isset($info['type'])
-            ? $info['type']
-            : null;
-    }
-
-    /**
-     * @param string $type
-     * @param object $mixed
-     * @return string
-     */
-    public static function getCustomName(string $type, $mixed): string
-    {
-        $result   = '';
-        $settings = self::getSettings();
-
-        switch ($type) {
-            case self::TYPE_PRODUCT:
-                switch ($settings['naming']['product']) {
-                    case 0:
-                        $result = $mixed->kArtikel;
-                        break;
-                    case 1:
-                        $result = $mixed->cArtNr;
-                        break;
-                    case 2:
-                        $result = empty($mixed->cSeo) ? $mixed->cName : $mixed->cSeo;
-                        break;
-                    case 3:
-                        $result = \sprintf('%s_%s', $mixed->cArtNr, empty($mixed->cSeo) ? $mixed->cName : $mixed->cSeo);
-                        break;
-                    case 4:
-                        $result = $mixed->cBarcode;
-                        break;
-                }
-                break;
-            case self::TYPE_CATEGORY:
-            case self::TYPE_MANUFACTURER:
-                $result = empty($mixed->cSeo) ? $mixed->cName : $mixed->cSeo;
-                break;
-            case self::TYPE_NEWS:
-            case self::TYPE_NEWSCATEGORY:
-                $result = $mixed->title;
-                break;
-            case self::TYPE_VARIATION:
-            default:
-                // todo..
-                break;
-        }
-
-        return empty($result) ? 'image' : self::getCleanFilename($result);
+        return \function_exists('exif_imagetype')
+            ? \exif_imagetype($filepath)
+            : \getimagesize($filepath)[2] ?? null;
     }
 
     /**
@@ -321,25 +378,14 @@ class Image
     {
         $rawPath = $req->getRaw(true);
         if (!\is_file($rawPath)) {
+            Shop::dbg($req, true, 'REQ@exception:', 6);
             throw new Exception(\sprintf('Image "%s" does not exist', $rawPath));
         }
-        $containerDim = $req->getSize();
-        $maxWidth     = $containerDim->getWidth();
-        $maxHeight    = $containerDim->getHeight();
-        $settings     = self::getSettings();
-        $background   = $req->getExt() !== 'jpeg' ? 'rgba(0,0,0,0)' : $settings['background'];
-        $thumbnail    = $req->getThumb(null, true);
-        $directory    = \pathinfo($thumbnail, \PATHINFO_DIRNAME);
-        if (!\is_dir($directory) && !\mkdir($directory, 0777, true)) {
-            $error = \error_get_last();
-            if (empty($error)) {
-                $error = 'Unable to create directory ' . $directory;
-            }
-            throw new Exception(\is_array($error) ? $error['message'] : $error);
-        }
+        $settings  = self::getSettings();
+        $thumbnail = $req->getThumb($req->getSize(), true);
+        self::checkDirectory($thumbnail);
         $manager = new ImageManager(['driver' => self::getImageDriver()]);
         $img     = $manager->make($rawPath);
-
         // image optimizations
         $img->blur(1);
         if (self::getImageDriver() === 'imagick') {
@@ -347,30 +393,8 @@ class Image
             $img->getCore()->transformImageColorspace(\Imagick::COLORSPACE_RGB);
             $img->getCore()->stripImage();
         }
-
-        if ($settings['scale'] === true || $img->getWidth() > $maxWidth || $img->getHeight() > $maxHeight) {
-            $img->resize($maxWidth, $maxHeight, function (Constraint $constraint) {
-                $constraint->aspectRatio();
-            });
-        }
-        if ($settings['container'] === true) {
-            $img->resizeCanvas($maxWidth, $maxHeight, 'center', false, $background);
-        }
-        if (isset($settings['branding']) && $req->getSize()->getType() === self::SIZE_LG) {
-            $branding  = $settings['branding'];
-            $watermark = $manager->make($branding->path);
-            if ($branding->size > 0) {
-                $brandWidth  = \round(($img->getWidth() * $branding->size) / 100.0);
-                $brandHeight = \round(($brandWidth / $watermark->getWidth()) * $watermark->getHeight());
-                $newWidth    = \min($watermark->getWidth(), $brandWidth);
-                $newHeight   = \min($watermark->getHeight(), $brandHeight);
-                $watermark->resize($newWidth, $newHeight, function (Constraint $constraint) {
-                    $constraint->aspectRatio();
-                });
-                $watermark->opacity($branding->transparency);
-                $img->insert($watermark, $branding->position, 10, 10);
-            }
-        }
+        self::resize($req, $img, $settings);
+        self::addBranding($manager, $req, $img);
         \executeHook(\HOOK_IMAGE_RENDER, [
             'image'    => $img,
             'settings' => $settings,
@@ -383,6 +407,71 @@ class Image
 
         if ($streamOutput) {
             echo $img->response($req->getExt());
+        }
+    }
+
+    /**
+     * @param MediaImageRequest $req
+     * @param InImage           $img
+     * @param array             $settings
+     */
+    private static function resize(MediaImageRequest $req, InImage $img, array $settings): void
+    {
+        $containerDim = $req->getSize();
+        $maxWidth     = $containerDim->getWidth();
+        $maxHeight    = $containerDim->getHeight();
+        if ($maxWidth > 0 && $maxHeight > 0) {
+            if ($settings['scale'] === true || $img->getWidth() > $maxWidth || $img->getHeight() > $maxHeight) {
+                $img->resize($maxWidth, $maxHeight, function (Constraint $constraint) {
+                    $constraint->aspectRatio();
+                });
+            }
+            if ($settings['container'] === true) {
+                $background = $req->getExt() === 'png' ? 'rgba(0,0,0,0)' : $settings['background'];
+                $img->resizeCanvas($maxWidth, $maxHeight, 'center', false, $background);
+            }
+        }
+    }
+
+    /**
+     * @param ImageManager      $manager
+     * @param MediaImageRequest $req
+     * @param InImage           $img
+     */
+    private static function addBranding(ImageManager $manager, MediaImageRequest $req, InImage $img): void
+    {
+        $branding = self::getSettings()['branding'];
+        $type     = $req->getSize()->getImageType();
+        if ($branding === null || !\in_array($type, [self::SIZE_LG, self::SIZE_ORIGINAL], true)) {
+            return;
+        }
+        $watermark = $manager->make($branding->path);
+        if ($branding->size > 0) {
+            $brandWidth  = \round(($img->getWidth() * $branding->size) / 100.0);
+            $brandHeight = \round(($brandWidth / $watermark->getWidth()) * $watermark->getHeight());
+            $newWidth    = \min($watermark->getWidth(), $brandWidth);
+            $newHeight   = \min($watermark->getHeight(), $brandHeight);
+            $watermark->resize($newWidth, $newHeight, function (Constraint $constraint) {
+                $constraint->aspectRatio();
+            });
+            $watermark->opacity($branding->transparency);
+            $img->insert($watermark, $branding->position, 10, 10);
+        }
+    }
+
+    /**
+     * @param string $thumbnail
+     * @throws Exception
+     */
+    private static function checkDirectory(string $thumbnail): void
+    {
+        $directory = \pathinfo($thumbnail, \PATHINFO_DIRNAME);
+        if (!\is_dir($directory) && !\mkdir($directory, 0777, true) && !\is_dir($directory)) {
+            $error = \error_get_last();
+            if (empty($error)) {
+                $error = 'Unable to create directory ' . $directory;
+            }
+            throw new Exception(\is_array($error) ? $error['message'] : $error);
         }
     }
 

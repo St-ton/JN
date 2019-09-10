@@ -125,7 +125,7 @@ class MediaImageRequest
      */
     public function getSize(): MediaImageSize
     {
-        return new MediaImageSize($this->size);
+        return new MediaImageSize($this->size, $this->type);
     }
 
     /**
@@ -186,6 +186,7 @@ class MediaImageRequest
     public function getRaw(bool $absolute = false): ?string
     {
         $path = $this->getPath();
+//        Shop::dbg($this, true, 'GETRAW:');
         $path = empty($path) ? null : \sprintf('%s%s', $this->getRealStoragePath(), $path);
 
         return $path !== null && $absolute === true
@@ -200,7 +201,7 @@ class MediaImageRequest
      */
     public function getThumb($size = null, bool $absolute = false): string
     {
-        $size     = $size ?? $this->getSize();
+        $size     = $size ?? $this->getSize()->getSize();
         $number   = $this->getNumber() > 1
             ? '~' . $this->getNumber()
             : '';
@@ -303,6 +304,8 @@ class MediaImageRequest
             if (!empty($item->path)) {
                 $item->path = \str_replace(\PFAD_NEWSBILDER, '', $item->path);
             }
+        } elseif ($type === Image::TYPE_OPC) {
+            $item = (object)['path' => $this->path];
         }
 
         $path = $item->path ?? null;
@@ -343,6 +346,15 @@ class MediaImageRequest
         }
         if ($this->getType() === Image::TYPE_NEWSCATEGORY) {
             return \PFAD_NEWSKATEGORIEBILDER;
+        }
+        if ($this->getType() === Image::TYPE_OPC) {
+            return \PFAD_MEDIAFILES . 'Bilder/';
+        }
+        if ($this->getType() === Image::TYPE_CHARACTERISTIC) {
+            return \STORAGE_CHARACTERISTICS;
+        }
+        if ($this->getType() === Image::TYPE_CHARACTERISTIC_VALUE) {
+            return \STORAGE_CHARACTERISTIC_VALUES;
         }
 
         return \PFAD_MEDIA_IMAGE_STORAGE;

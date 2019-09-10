@@ -24,7 +24,7 @@ use JTL\Extensions\Config\Configurator;
 use JTL\Extensions\Config\Item;
 use JTL\Extensions\Download\Download;
 use JTL\Filter\Metadata;
-use JTL\Helpers\Product;
+use JTL\Helpers\Product as ProductHelper;
 use JTL\Helpers\Request;
 use JTL\Helpers\SearchSpecial;
 use JTL\Helpers\ShippingMethod;
@@ -33,7 +33,7 @@ use JTL\Helpers\Text;
 use JTL\Helpers\URL;
 use JTL\Language\LanguageHelper;
 use JTL\Media\Image;
-use JTL\Media\MediaImage;
+use JTL\Media\Image\Product;
 use JTL\Media\MediaImageRequest;
 use JTL\Media\MultiSizeImage;
 use JTL\Session\Frontend;
@@ -1407,7 +1407,7 @@ class Artikel
         if (\file_exists(\PFAD_ROOT . $imagePath)) {
             [$width, $height, $type] = \getimagesize(\PFAD_ROOT . $imagePath);
         } else {
-            $req = MediaImage::toRequest($imagePath);
+            $req = Product::toRequest($imagePath);
 
             if (!\is_object($req)) {
                 return new stdClass();
@@ -2660,7 +2660,7 @@ class Artikel
 
                 $error = false;
                 foreach ($variBoxMatrixImages as $image) {
-                    $req          = MediaImage::getRequest(
+                    $req          = Product::getRequest(
                         Image::TYPE_PRODUCT,
                         $image->kArtikel,
                         $image,
@@ -4540,7 +4540,7 @@ class Artikel
             ? (int)$this->FunktionsAttribute[\FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]
             : 2;
         $per           = ' ' . Shop::Lang()->get('vpePer') . ' ';
-        $basePriceUnit = Product::getBasePriceUnit($this, $this->Preise->fPreis1, $this->Preise->nAnzahl1);
+        $basePriceUnit = ProductHelper::getBasePriceUnit($this, $this->Preise->fPreis1, $this->Preise->nAnzahl1);
 
         $this->cStaffelpreisLocalizedVPE1[0] = Preise::getLocalizedPriceString(
             Tax::getGross(
@@ -4565,7 +4565,7 @@ class Artikel
         );
         $this->fStaffelpreisVPE1[1]          = $basePriceUnit->fBasePreis;
 
-        $basePriceUnit = Product::getBasePriceUnit($this, $this->Preise->fPreis2, $this->Preise->nAnzahl2);
+        $basePriceUnit = ProductHelper::getBasePriceUnit($this, $this->Preise->fPreis2, $this->Preise->nAnzahl2);
 
         $this->cStaffelpreisLocalizedVPE2[0] = Preise::getLocalizedPriceString(
             Tax::getGross(
@@ -4590,7 +4590,7 @@ class Artikel
         );
         $this->fStaffelpreisVPE2[1]          = $basePriceUnit->fBasePreis;
 
-        $basePriceUnit = Product::getBasePriceUnit($this, $this->Preise->fPreis3, $this->Preise->nAnzahl3);
+        $basePriceUnit = ProductHelper::getBasePriceUnit($this, $this->Preise->fPreis3, $this->Preise->nAnzahl3);
 
         $this->cStaffelpreisLocalizedVPE3[0] = Preise::getLocalizedPriceString(
             Tax::getGross(
@@ -4615,7 +4615,7 @@ class Artikel
         );
         $this->fStaffelpreisVPE3[1]          = $basePriceUnit->fBasePreis;
 
-        $basePriceUnit = Product::getBasePriceUnit($this, $this->Preise->fPreis4, $this->Preise->nAnzahl4);
+        $basePriceUnit = ProductHelper::getBasePriceUnit($this, $this->Preise->fPreis4, $this->Preise->nAnzahl4);
 
         $this->cStaffelpreisLocalizedVPE4[0] = Preise::getLocalizedPriceString(
             Tax::getGross(
@@ -4640,7 +4640,7 @@ class Artikel
         );
         $this->fStaffelpreisVPE4[1]          = $basePriceUnit->fBasePreis;
 
-        $basePriceUnit = Product::getBasePriceUnit($this, $this->Preise->fPreis5, $this->Preise->nAnzahl5);
+        $basePriceUnit = ProductHelper::getBasePriceUnit($this, $this->Preise->fPreis5, $this->Preise->nAnzahl5);
 
         $this->cStaffelpreisLocalizedVPE5[0] = Preise::getLocalizedPriceString(
             Tax::getGross(
@@ -4666,7 +4666,7 @@ class Artikel
         $this->fStaffelpreisVPE5[1]          = $basePriceUnit->fBasePreis;
 
         foreach ($this->Preise->fPreis_arr as $key => $price) {
-            $basePriceUnit = Product::getBasePriceUnit($this, $price, $this->Preise->nAnzahl_arr[$key]);
+            $basePriceUnit = ProductHelper::getBasePriceUnit($this, $price, $this->Preise->nAnzahl_arr[$key]);
 
             $this->cStaffelpreisLocalizedVPE_arr[] = [
                 Preise::getLocalizedPriceString(
@@ -5303,7 +5303,7 @@ class Artikel
         $return    = ['kArtikelXSellerKey_arr', 'oArtikelArr'];
         $limitSQL  = ' LIMIT 3';
         // Gibt es X-Seller? Aus der Artikelmenge der änhlichen Artikel, dann alle X-Seller rausfiltern
-        $xSeller  = Product::getXSelling($productID, $this->nIstVater > 0);
+        $xSeller  = ProductHelper::getXSelling($productID, $this->nIstVater > 0);
         $xSellIDs = [];
         if ($xSeller !== null) {
             foreach ($xSeller->Standard->XSellGruppen as $group) {

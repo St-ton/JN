@@ -15,7 +15,7 @@ use JTL\Helpers\Text;
 use JTL\Helpers\URL;
 use JTL\Language\LanguageHelper;
 use JTL\Media\Image;
-use JTL\Media\MediaImage;
+use JTL\Media\Image\Product;
 use JTL\Media\MultiSizeImage;
 use JTL\Session\Frontend;
 use JTL\Shop;

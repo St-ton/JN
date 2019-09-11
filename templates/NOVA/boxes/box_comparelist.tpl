@@ -25,6 +25,7 @@
                                     data=["name"=>"Vergleichsliste.remove",
                                         "toggle"=>"product-actions",
                                         "value"=>"{ldelim}{$id|escape:'html'}:{$oArtikel->kArtikel}{rdelim}"]
+                                    aria=["label"=>{lang section="comparelist" key="removeFromCompareList"}]
                                 }
                                     <span class="fa fa-trash"></span>
                                 {/link}

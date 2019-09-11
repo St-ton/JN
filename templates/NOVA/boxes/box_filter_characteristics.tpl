@@ -5,26 +5,24 @@
 {block name='boxes-box-filter-characteristics'}
     {if $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE && (!$device->isMobile() || $device->isTablet())}
         {foreach $oBox->getItems() as $Merkmal}
-            <div{if $Merkmal@last} class="mb-7"{/if}>
-                <div>
-                    {button
+            <div id="sidebox{$oBox->getID()}-{$Merkmal->kMerkmal}" class="box box-filter-characteristics{if $Merkmal@last} mb-7{/if}">
+                {button
                     variant="link"
                     class="text-decoration-none pl-0 text-left"
                     role="button"
                     block=true
-                    data=["toggle"=> "collapse", "target"=>"#sidebox{$oBox->getID()}-{$Merkmal->kMerkmal}"]
-                    }
-                    {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'T' && $Merkmal->getData('cBildpfadKlein')|strpos:$smarty.const.BILD_KEIN_MERKMALBILD_VORHANDEN === false}
-                        <img src='{$Merkmal->getData('cBildURLKlein')}' alt='' class='vmiddle' />
-                    {/if}
-                    {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'B'}
-                        {$Merkmal->cName}
-                    {/if}
-                    <i class="fas fa-plus float-right"></i>{/button}
-                </div>
+                    data=["toggle"=> "collapse", "target"=>"#cllps-box{$oBox->getID()}-{$Merkmal->kMerkmal}"]
+                }
+                {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'T' && $Merkmal->getData('cBildpfadKlein')|strpos:$smarty.const.BILD_KEIN_MERKMALBILD_VORHANDEN === false}
+                    <img src='{$Merkmal->getData('cBildURLKlein')}' alt='' class='vmiddle' />
+                {/if}
+                {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'B'}
+                    {$Merkmal->cName}
+                {/if}
+                <i class="fas fa-plus float-right"></i>{/button}
                 {collapse
-                    class="box box-filter-characteristics {if $Merkmal->getData('cTyp') !== 'SELECTBOX'}overflow-auto{/if}"
-                    id="sidebox{$oBox->getID()}-{$Merkmal->kMerkmal}"
+                    class="{if $Merkmal->getData('cTyp') !== 'SELECTBOX'}overflow-auto{/if}"
+                    id="cllps-box{$oBox->getID()}-{$Merkmal->kMerkmal}"
                     visible=$Merkmal->isActive()
                 }
                 {block name='boxes-box-filter-characteristics-characteristics'}

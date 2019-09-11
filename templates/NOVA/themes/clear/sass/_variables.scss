@@ -121,7 +121,8 @@ $highlight-border-size:             .375rem;
 $body-bg:                           $gray-100;
 $body-color:                        $gray-600;
 
-$text-muted:                        $gray-500;
+$text-muted:                        $gray;
+$input-color-placeholder:           $gray;
 
 /* links */
 
@@ -146,6 +147,7 @@ $searchcloud-font-size-scaling:     30%;
 $navbar-light-color:                $gray-dark;
 
 $input-bg:                          #fff;
+$input-focus-box-shadow:            none;
 $list-group-bg:                     #fff;
 $list-group-disabled-bg:            #fff;
 
@@ -282,5 +284,6 @@ $ribbon-bg-colors: map-merge((
 
 $navbar-nav-link-padding-x: map-get($spacers, 4);
 $navbar-nav-link-padding-y: map-get($spacers, 4);
+$nav-link-padding-x: 0.8rem;
 
 $modal-md: 700px;

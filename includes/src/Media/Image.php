@@ -377,6 +377,15 @@ class Image
         }
         $manager = new ImageManager(['driver' => self::getImageDriver()]);
         $img     = $manager->make($rawPath);
+
+        // image optimizations
+        $img->blur(1);
+        if (self::getImageDriver() === 'imagick') {
+            $img->getCore()->setColorspace(\Imagick::COLORSPACE_RGB);
+            $img->getCore()->transformImageColorspace(\Imagick::COLORSPACE_RGB);
+            $img->getCore()->stripImage();
+        }
+
         if ($settings['scale'] === true || $img->getWidth() > $maxWidth || $img->getHeight() > $maxHeight) {
             $img->resize($maxWidth, $maxHeight, function (Constraint $constraint) {
                 $constraint->aspectRatio();
@@ -405,7 +414,11 @@ class Image
             'settings' => $settings,
             'path'     => $thumbnail
         ]);
+        if ($settings['format'] === 'jpg') {
+            $img->interlace(true);
+        }
         $img->save($thumbnail, $settings['quality']);
+
         if ($streamOutput) {
             echo $img->response($settings['format']);
         }

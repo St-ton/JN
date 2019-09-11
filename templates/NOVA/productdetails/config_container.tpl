@@ -224,6 +224,7 @@
                                                         {select name="item[{$kKonfiggruppe}][]"
                                                             data=["ref"=>$kKonfiggruppe]
                                                             required=$oGruppe->getMin() > 0
+                                                            aria=["label"=>$oSprache->getName()]
                                                         }
                                                             <option value="">{lang key='pleaseChoose'}</option>
                                                             {foreach $oGruppe->oItem_arr as $oItem}
@@ -314,7 +315,10 @@
                 {/foreach}
                 {/block}
             </div>
-            {link variant="light" href="#cfg-top" class="float-right m-2 btn btn-link" title="{lang key='goTop'}"}
+            {link variant="light" href="#cfg-top" class="float-right m-2 btn btn-link"
+                title="{lang key='goTop'}"
+                aria=["label"=>{lang key='goTop'}]
+            }
                 <i class="fas fa-angle-double-up"></i>
             {/link}
         {/col}

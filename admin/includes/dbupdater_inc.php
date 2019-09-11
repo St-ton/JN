@@ -10,6 +10,7 @@ use JTL\IO\IOFile;
 use JTL\Plugin\Admin\Installation\MigrationManager as PluginMigrationManager;
 use JTL\Plugin\PluginLoader;
 use JTL\Shop;
+use JTL\Smarty\ContextType;
 use JTL\Template;
 use JTL\Update\IMigration;
 use JTL\Update\MigrationManager;
@@ -211,6 +212,7 @@ function dbUpdateIO()
         } else {
             $updateResult = sprintf('Version: %.2f', $updateResult / 100);
         }
+
         return [
             'result'          => $updateResult,
             'currentVersion'  => $dbVersion,
@@ -276,7 +278,7 @@ function dbupdaterDownload($file)
 function dbupdaterStatusTpl($pluginID = null)
 {
     Shop::Container()->getGetText()->loadAdminLocale('pages/dbupdater');
-    $smarty                 = Shop::Smarty();
+    $smarty                 = JTLSmarty::getInstance(false, ContextType::BACKEND);
     $db                     = Shop::Container()->getDB();
     $updater                = new Updater($db);
     $template               = Template::getInstance();
@@ -350,8 +352,14 @@ function dbupdaterMigration($id = null, $version = null, $dir = null, $pluginID 
         }
 
         $migration    = $manager->getMigrationById($id);
+        $updater      = new Updater($db);
         $updateResult = sprintf('Migration: %s', $migration->getDescription());
-        $result       = ['id' => $id, 'type' => 'migration', 'result' => $updateResult];
+        $result       = [
+            'id'      => $id,
+            'type'    => 'migration',
+            'result'  => $updateResult,
+            'hasMore' => $updater->hasPendingUpdates()
+        ];
     } catch (Exception $e) {
         $result = new IOError($e->getMessage());
     }

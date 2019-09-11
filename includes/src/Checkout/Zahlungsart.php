@@ -370,9 +370,9 @@ class Zahlungsart extends MainModel
     }
 
     /**
-     * @return string|null
+     * @return int|null
      */
-    public function getCURL(): ?string
+    public function getCURL(): ?int
     {
         return $this->nCURL;
     }

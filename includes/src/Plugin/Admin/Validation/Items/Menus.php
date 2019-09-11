@@ -30,7 +30,7 @@ final class Menus extends AbstractItem
         if (GeneralObject::hasCount('Customlink', $node)) {
             $this->validateCustomLinks($node['Customlink'], $dir);
         }
-        if (!isset($node['Settingslink']) || !\is_array($node['Settingslink'])) {
+        if (!GeneralObject::isCountable('Settingslink', $node)) {
             return InstallCode::OK;
         }
 

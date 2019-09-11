@@ -245,7 +245,7 @@ class MigrationHelper
         );
         $relPath       = 'update/migrations';
         $migrationPath = $relPath . '/' . $filePath . '.php';
-        $fileSystem    = new Filesystem(new LocalFilesystem(['root' => PFAD_ROOT]));
+        $fileSystem    = new Filesystem(new LocalFilesystem(['root' => \PFAD_ROOT]));
 
         if (!$fileSystem->exists($relPath)) {
             throw new Exception('Migrations path doesn\'t exist!');
@@ -257,7 +257,7 @@ class MigrationHelper
             ->assign('author', $author)
             ->assign('created', $datetime->format(DateTime::RSS))
             ->assign('timestamp', $timestamp)
-            ->fetch(PFAD_ROOT.'includes/src/Console/Command/Migration/Template/migration.class.tpl');
+            ->fetch(\PFAD_ROOT . 'includes/src/Console/Command/Migration/Template/migration.class.tpl');
 
         $fileSystem->put($migrationPath, $content);
 

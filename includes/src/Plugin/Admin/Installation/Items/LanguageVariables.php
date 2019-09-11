@@ -8,6 +8,7 @@ namespace JTL\Plugin\Admin\Installation\Items;
 
 use JTL\Helpers\GeneralObject;
 use JTL\Language\LanguageHelper;
+use JTL\Plugin\Admin\InputType;
 use JTL\Plugin\InstallCode;
 use stdClass;
 
@@ -40,6 +41,7 @@ class LanguageVariables extends AbstractItem
             $pluginLangVar          = new stdClass();
             $pluginLangVar->kPlugin = $this->plugin->kPlugin;
             $pluginLangVar->cName   = $langVar['Name'];
+            $pluginLangVar->type    = $langVar['Type'] ?? InputType::TEXT;
             if (GeneralObject::isCountable('Description', $langVar)) {
                 $pluginLangVar->cBeschreibung = '';
             } else {

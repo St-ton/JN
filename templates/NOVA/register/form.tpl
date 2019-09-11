@@ -15,13 +15,17 @@
                 {/block}
             {/if}
             {block name='register-form-submit'}
-                {input type="hidden" name="checkout" value=$checkout|default:''}
-                {input type="hidden" name="form" value="1"}
-                {input type="hidden" name="editRechnungsadresse" value=$editRechnungsadresse}
-                {opcMountPoint id='opc_before_submit'}
-                {button type="submit" value="1" variant="primary" size="lg" class="float-right submit_once"}
-                    {lang key='sendCustomerData' section='account data'}
-                {/button}
+                {row class='mt-5'}
+                    {col cols=12 md=4 xl=3 class='ml-md-auto'}
+                        {input type="hidden" name="checkout" value=$checkout|default:''}
+                        {input type="hidden" name="form" value="1"}
+                        {input type="hidden" name="editRechnungsadresse" value=$editRechnungsadresse}
+                        {opcMountPoint id='opc_before_submit'}
+                        {button type="submit" value="1" variant="primary" class="submit_once" block=true}
+                            {lang key='sendCustomerData' section='account data'}
+                        {/button}
+                    {/col}
+                {/row}
             {/block}
         {/block}
     {/form}

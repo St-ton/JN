@@ -339,9 +339,9 @@
                             {/col}
                             {col id="shop-nav" order=3 order-md=3 order-lg=4 class="col-auto bg-white {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}d-none{/if}" style="z-index: 1;"}
                                 {block name='layout-header-branding-shop-nav'}
-                                    <div class="d-flex text-right">
+                                    {nav class="nav-right ml-auto order-lg-last align-items-center flex-shrink-0"}
                                         {include file='layout/header_nav_icons.tpl'}
-                                    </div>
+                                    {/nav}
                                 {/block}
                             {/col}
 

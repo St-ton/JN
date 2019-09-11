@@ -497,7 +497,8 @@
                                                                             name="addToCart"
                                                                             value=$wlPosition->kWunschlistePos
                                                                             variant="primary"
-                                                                            class="btn-block mt-3 align-items-center"
+                                                                            class="mt-3 align-items-center"
+                                                                            block=true
                                                                             title="{lang key='wishlistaddToCart' section='login'}"}
                                                                             <span class="fas fa-shopping-cart"></span> {lang key='addToCart'}
                                                                         {/button}
@@ -523,7 +524,8 @@
                                             title="{lang key='wishlistUpdate' section='login'}"
                                             name="action"
                                             value="update"
-                                            class="btn-block bg-white"}
+                                            block=true
+                                            class="bg-white"}
                                             <i class="fa fa-sync"></i> {lang key='wishlistUpdate' section='login'}
                                         {/button}
                                     {/if}

@@ -1965,6 +1965,8 @@ table caption {
     left: 0;
     top: 0;
     backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
     transition: 0.5s;
   }
 

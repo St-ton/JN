@@ -20,8 +20,8 @@
                 </span>
             </i>
         {/navitem}
-        {collapse id="nav-wishlist-collapse" tag="div"  data=["parent"=>"#main-nav-wrapper"] class="mt-md-2 w-100"}
-            <div id="wishlist-dropdown-container" class="p-3">
+        {collapse id="nav-wishlist-collapse" tag="div"  data=["parent"=>"#main-nav-wrapper"] class="mt-md-2 py-0 w-100"}
+            <div id="wishlist-dropdown-container">
                 {block name='layout-header-shop-nav-wish-include-wishlist-dropdown'}
                     {include file='snippets/wishlist_dropdown.tpl'}
                 {/block}

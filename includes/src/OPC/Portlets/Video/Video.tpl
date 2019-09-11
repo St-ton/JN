@@ -49,6 +49,9 @@
                     {if !empty($instance->getProperty('video-yt-start'))}&start={$instance->getProperty('video-yt-start')}{/if}
                     {if !empty($instance->getProperty('video-yt-end'))}&end={$instance->getProperty('video-yt-end')}{/if}"{/strip}
                         type="text/html"
+                        {if !empty($instance->getProperty('video-title'))}
+                            title="{$instance->getProperty('video-title')}"
+                        {/if}
                         {if $instance->getProperty('video-responsive')}
                             class="embed-responsive-item"
                         {else}
@@ -66,6 +69,9 @@
                     &byline={$instance->getProperty('video-vim-byline')}
                     &loop={$instance->getProperty('video-vim-loop')}"{/strip}
                         frameborder="0" allowfullscreen
+                        {if !empty($instance->getProperty('video-title'))}
+                            title="{$instance->getProperty('video-title')}"
+                        {/if}
                         {if $instance->getProperty('video-responsive')}
                             class="embed-responsive-item"
                         {else}

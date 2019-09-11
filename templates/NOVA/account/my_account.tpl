@@ -88,7 +88,7 @@
                                     </span>
                                 {/col}
                                 {col class="col-auto font-size-sm"}
-                                    {link class='float-right' href="$cCanonicalURL?editRechnungsadresse=1"}
+                                    {link href="$cCanonicalURL?editRechnungsadresse=1"}
                                         {lang key='showAll'}
                                     {/link}
                                 {/col}
@@ -103,7 +103,9 @@
                                         <small class="text-muted d-block">{$Kunde->cStrasse}, {$Kunde->cPLZ} {$Kunde->cOrt}, {$Kunde->cLand}</small>
                                     </td>
                                     <td class="text-right">
-                                        {link class='float-right' href="$cCanonicalURL?editRechnungsadresse=1"}
+                                        {link href="$cCanonicalURL?editRechnungsadresse=1"
+                                            aria=["label"=>{lang key='editBillingAdress' section='account data'}]
+                                        }
                                             <span class="fas fa-pencil-alt"></span>
                                         {/link}
                                     </td>
@@ -114,7 +116,9 @@
                                         <small class="text-muted d-block">{$Kunde->cMail}</small>
                                     </td>
                                     <td class="text-right">
-                                        {link class='float-right' href="$cCanonicalURL?editRechnungsadresse=1"}
+                                        {link class='float-right' href="$cCanonicalURL?editRechnungsadresse=1"
+                                            aria=["label"=>{lang key='editCustomerData' section='account data'}]
+                                        }
                                             <span class="fas fa-pencil-alt"></span>
                                         {/link}
                                     </td>
@@ -124,7 +128,9 @@
                                         {lang key='password' section='account data'}
                                     </td>
                                     <td class="text-right">
-                                        {link href="{get_static_route id='jtl.php' params=['pass' => 1]}"}
+                                        {link href="{get_static_route id='jtl.php' params=['pass' => 1]}"
+                                            aria=["label"=>{lang key='changePassword' section='login'}]
+                                        }
                                             <span class="fas fa-pencil-alt"></span>
                                         {/link}
                                     </td>
@@ -171,7 +177,9 @@
                                                                class='custom-control-input wl-visibility-switch'
                                                                id="wl-visibility-{$wishlist->kWunschliste}"
                                                                data-wl-id="{$wishlist->kWunschliste}"
-                                                               {if $wishlist->nOeffentlich == 1}checked{/if}>
+                                                               {if $wishlist->nOeffentlich == 1}checked{/if}
+                                                               aria-label="{if $wishlist->nOeffentlich == 1}{lang key='wishlistNoticePublic' section='login'}{else}{lang key='wishlistNoticePrivate' section='login'}{/if}"
+                                                        >
                                                         <label class="custom-control-label" for="wl-visibility-{$wishlist->kWunschliste}"></label>
                                                     </div>
                                                 </div>

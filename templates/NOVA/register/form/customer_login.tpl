@@ -47,12 +47,12 @@
                 {input type="hidden" name="cURL" value=$oRedirect->cURL}
             {/if}
             {row}
-                {col lg=6}
+                {col cols=12 lg=6}
                     {button type="submit" variant="primary" block=true}
                         {lang key='login' section='checkout'}
                     {/button}
                 {/col}
-                {col lg=6}
+                {col cols=12 lg=6}
                     {link class="btn btn-link btn-block text-decoration-underline" href="{get_static_route id='pass.php'}"}
                         {lang key='forgotPassword'}
                     {/link}

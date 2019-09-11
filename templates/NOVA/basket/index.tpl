@@ -10,7 +10,7 @@
     {block name='basket-index-content'}
         {container}
             {row}
-                {col cols=12 md=8}
+                {col cols=12 lg=8}
                     {block name='basket-index-heading'}
                         {opcMountPoint id='opc_before_heading'}
                         <h1>{lang key='basket'} ({count($smarty.session.Warenkorb->PositionenArr)} {lang key='products'})</h1>
@@ -127,7 +127,7 @@
                     {/if}
                 {/col}
                 {if ($Warenkorb->PositionenArr|@count > 0)}
-                    {col cols=12 md=4}
+                    {col cols=12 lg=4}
                         <div class="sticky-top cart-summary">
                             <div class="h1 mb-4">{lang key="orderOverview" section="account data"}</div>
                             {if $Einstellungen.kaufabwicklung.warenkorb_kupon_anzeigen === 'Y' && $KuponMoeglich == 1}

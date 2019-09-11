@@ -12,6 +12,10 @@ namespace JTL\Plugin\Admin\Validation;
  */
 interface ValidationItemInterface
 {
+    public const CONTEXT_LEGACY_PLUGIN = 'legacy';
+
+    public const CONTEXT_PLUGIN = 'plugin';
+
     /**
      * @return int
      */
@@ -76,4 +80,14 @@ interface ValidationItemInterface
      * @param string $version
      */
     public function setVersion(string $version): void;
+
+    /**
+     * @return string
+     */
+    public function getContext(): string;
+
+    /**
+     * @param string $context
+     */
+    public function setContext(string $context): void;
 }

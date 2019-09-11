@@ -315,7 +315,7 @@ class Service
         $html    = $smarty
             ->assign('propname', $propname)
             ->assign('filters', $filters)
-            ->fetch(PFAD_ROOT . \PFAD_ADMIN . 'opc/tpl/config/filter-list.tpl');
+            ->fetch(\PFAD_ROOT . \PFAD_ADMIN . 'opc/tpl/config/filter-list.tpl');
 
         return $html;
     }

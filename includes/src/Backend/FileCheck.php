@@ -9,7 +9,6 @@ namespace JTL\Backend;
 use Exception;
 use JTL\Filesystem\Filesystem;
 use JTL\Filesystem\LocalFilesystem;
-use JTL\Shop;
 use JTLShop\SemVer\Version;
 use Symfony\Component\Finder\Finder;
 use function Functional\map;
@@ -44,7 +43,7 @@ class FileCheck
             return self::ERROR_INPUT_FILE_MISSING;
         }
         $hashes = \file_get_contents($hashFile);
-        if (mb_strlen($hashes) === 0) {
+        if (\mb_strlen($hashes) === 0) {
             return self::ERROR_NO_HASHES_FOUND;
         }
         $shopFiles = \explode("\n", $hashes);
@@ -52,7 +51,7 @@ class FileCheck
             $errors = 0;
             \array_multisort($shopFiles);
             foreach ($shopFiles as $shopFile) {
-                if (mb_strlen($shopFile) === 0) {
+                if (\mb_strlen($shopFile) === 0) {
                     continue;
                 }
                 if (\count(\explode(';', $shopFile)) === 1) {

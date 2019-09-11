@@ -1,7 +1,11 @@
 
+.breadcrumb-wrapper {
+	margin-bottom: map-get($spacers, 5);
+	@include media-breakpoint-up(lg) { border-style: solid; border-color: $gray-medium; border-width: $border-width 0;}
+}
+
 .breadcrumb { @include font-size($font-size-base * (13 / $font-size-base));
 	a { text-decoration: none; }
-	@include media-breakpoint-up(lg) { border-style: solid; border-color: $gray-medium; border-width: $border-width 0; margin-bottom: map-get($spacers, 5); }
 }
 
 .breadcrumb-item {

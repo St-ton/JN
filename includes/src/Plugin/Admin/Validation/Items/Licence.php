@@ -48,8 +48,7 @@ final class Licence extends AbstractItem
                 return InstallCode::MISSING_LICENCE;
             }
             $classMethods = \get_class_methods($node['LicenceClass']);
-            $bClassMethod = \is_array($classMethods) && \in_array(\PLUGIN_LICENCE_METHODE, $classMethods, true);
-            if (!$bClassMethod) {
+            if (!\is_array($classMethods) && \in_array(\PLUGIN_LICENCE_METHODE, $classMethods, true)) {
                 return InstallCode::MISSING_LICENCE_CHECKLICENCE_METHOD;
             }
         }

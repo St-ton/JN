@@ -223,15 +223,18 @@
                                            class='custom-control-input wl-visibility-switch'
                                            id="wl-visibility-{$CWunschliste->kWunschliste}"
                                            data-wl-id="{$CWunschliste->kWunschliste}"
-                                           {if $CWunschliste->nOeffentlich == 1}checked{/if}>
-                                    <label class="custom-control-label" for="wl-visibility-{$CWunschliste->kWunschliste}"></label>
+                                           {if $CWunschliste->nOeffentlich == 1}checked{/if}
+                                           aria-label="{if $CWunschliste->nOeffentlich == 1}{lang key='wishlistNoticePublic' section='login'}{else}{lang key='wishlistNoticePrivate' section='login'}{/if}"
+                                    >
+                                    <label class="custom-control-label" for="wl-visibility-{$CWunschliste->kWunschliste}">
+                                        <span data-switch-label-state="public-{$CWunschliste->kWunschliste}" class="{if $CWunschliste->nOeffentlich != 1}d-none{/if}">
+                                            {lang key='wishlistNoticePublic' section='login'}
+                                        </span>
+                                        <span data-switch-label-state="private-{$CWunschliste->kWunschliste}" class="{if $CWunschliste->nOeffentlich == 1}d-none{/if}">
+                                            {lang key='wishlistNoticePrivate' section='login'}
+                                        </span>
+                                    </label>
                                 </div>
-                                <span data-switch-label-state="public-{$CWunschliste->kWunschliste}" class="{if $CWunschliste->nOeffentlich != 1}d-none{/if}">
-                                    {lang key='wishlistNoticePublic' section='login'}
-                                </span>
-                                <span data-switch-label-state="private-{$CWunschliste->kWunschliste}" class="{if $CWunschliste->nOeffentlich == 1}d-none{/if}">
-                                    {lang key='wishlistNoticePrivate' section='login'}
-                                </span>
                             </div>
                         {/col}
                     {/block}
@@ -256,6 +259,7 @@
                                             id="wishlist-url"
                                             name="wishlist-url"
                                             readonly=true
+                                            aria=["label"=>"{lang key='wishlist'}-URL"]
                                             data=["static-route" => "{get_static_route id='wunschliste.php'}?wlid="]
                                             value="{get_static_route id='wunschliste.php'}?wlid={$CWunschliste->cURLID}"}
                                     {/block}
@@ -268,6 +272,7 @@
                                                     value="copyToClipboard"
                                                     disabled=(!$hasItems)
                                                     title="{lang key='copied'}"
+                                                    aria=["label"=>{lang key='copied'}]
                                                     data=["clipboard-target"=>"#wishlist-url"]}
                                                     <i class="far fa-copy"></i>
                                                 {/button}
@@ -281,7 +286,9 @@
                                                     class="btn-outline-secondary"
                                                     value="sendViaMail"
                                                     disabled=(!$hasItems)
-                                                    title="{lang key='wishlistViaEmail' section='login'}"}
+                                                    title="{lang key='wishlistViaEmail' section='login'}"
+                                                    aria=["label"=>{lang key='wishlistViaEmail' section='login'}]
+                                                }
                                                     <i class="far fa-envelope"></i>
                                                 {/button}
                                             {/inputgroupaddon}
@@ -490,7 +497,8 @@
                                                                             name="addToCart"
                                                                             value=$wlPosition->kWunschlistePos
                                                                             variant="primary"
-                                                                            class="btn-block mt-3 align-items-center"
+                                                                            class="mt-3 align-items-center"
+                                                                            block=true
                                                                             title="{lang key='wishlistaddToCart' section='login'}"}
                                                                             <span class="fas fa-shopping-cart"></span> {lang key='addToCart'}
                                                                         {/button}
@@ -516,7 +524,8 @@
                                             title="{lang key='wishlistUpdate' section='login'}"
                                             name="action"
                                             value="update"
-                                            class="btn-block bg-white"}
+                                            block=true
+                                            class="bg-white"}
                                             <i class="fa fa-sync"></i> {lang key='wishlistUpdate' section='login'}
                                         {/button}
                                     {/if}

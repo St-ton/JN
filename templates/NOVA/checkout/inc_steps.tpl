@@ -7,43 +7,51 @@
     {assign var=step2_active value=($bestellschritt[3] == 1 || $bestellschritt[4] == 1)}
     {assign var=step3_active value=($bestellschritt[5] == 1)}
     {if $bestellschritt[1] != 3}
-        {nav pills=true fill=true class="mb-7 nav-wizard"}
-            {link href="{get_static_route id='bestellvorgang.php'}?editRechnungsadresse=1"
-                title="{lang section='account data' key='billingAndDeliveryAddress'}"
-                class="nav-item nav-link {if $step1_active}active{/if}"
-            }
-                <span class="align-items-center">
-                    <div class="nav-number active mr-md-2">1</div>
-                    <span class="{if !$step1_active}d-none d-md-inline-flex{/if}">
-                        {lang section='account data' key='billingAndDeliveryAddress'}
+        {nav class='stepper mb-6' tag='nav' aria=["label"=>"{lang key='secureCheckout' section='checkout'}"]}
+            {col lg=4 class="nav-item col-auto step step-active {if $step1_active}step-current{/if}"}
+                {link href="{get_static_route id='bestellvorgang.php'}?editRechnungsadresse=1"
+                    title="{lang section='account data' key='billingAndDeliveryAddress'}"
+                    class="text-decoration-none"}
+                    <div class="step-content">
+                        <span class="badge badge-pill badge-primary mr-3 ml-md-auto">
+                            <span class="badge-count">1</span>
+                        </span>
+                        <span class="step-text {if !$step1_active}d-none d-md-inline-block{/if} mr-auto">
+                            {lang section='account data' key='billingAndDeliveryAddress'}
+                        </span>
+                        {if $step2_active || $step3_active}
+                            <span class="fas fa-check ml-0 ml-md-3 mr-auto text-primary"></span>
+                        {/if}
+                    </div>
+                {/link}
+            {/col}
+            {col lg=4 class="nav-item step col-auto {if $step2_active || $step3_active}step-active{/if} {if $step2_active}step-current{/if}"}
+                {link href="{get_static_route id='bestellvorgang.php'}?editVersandart=1"
+                    title="{lang section='account data' key='shippingAndPaymentOptions'}"
+                    class="text-decoration-none"}
+                    <div class="step-content">
+                        <span class="badge badge-pill badge-{if $step2_active || $step3_active}primary{else}secondary{/if} mr-3 ml-md-auto">
+                            <span class="badge-count">2</span>
+                        </span>
+                        <span class="step-text {if !$step2_active}d-none d-md-inline-block{/if} mr-auto">
+                            {lang section='account data' key='shippingAndPaymentOptions'}
+                        </span>
+                        {if $step3_active}
+                            <span class="fas fa-check ml-0 ml-md-3 mr-auto text-primary"></span>
+                        {/if}
+                    </div>
+                {/link}
+            {/col}
+            {col lg=4 class="nav-item step {if $step3_active}step-active step-current{/if}"}
+                <div class="step-content">
+                    <span class="badge badge-pill badge-{if $step3_active}primary{else}secondary{/if} mr-3 ml-md-auto">
+                        <span class="badge-count">3</span>
                     </span>
-                    {if $step2_active || $step3_active}
-                        <i class="fas fa-check mr-md-2"></i>
-                    {/if}
-                </span>
-            {/link}
-
-            {link href="{get_static_route id='bestellvorgang.php'}?editVersandart=1"
-                title="{lang section='account data' key='shippingAndPaymentOptions'}"
-                class="nav-item nav-link {if $step2_active}active{/if} {if $step1_active}nav-todo{/if}"
-            }
-                <span class="align-items-center">
-                    <div class="nav-number mr-md-2 {if $step2_active || $step3_active}active{/if}">2</div>
-                    <span class="{if !$step2_active}d-none d-md-inline-flex{/if}">
-                        {lang section='account data' key='shippingAndPaymentOptions'}
+                    <span class="step-text {if !$step3_active}d-none d-md-inline-block{/if} mr-auto">
+                        {lang section='checkout' key='summary'}
                     </span>
-                    {if $step3_active}
-                        <i class="fas fa-check mr-md-2"></i>
-                    {/if}
-                </span>
-            {/link}
-
-            <span class="nav-item nav-link {if $step3_active}active{/if} {if $step1_active || $step2_active}nav-todo{/if}">
-                <span class="align-items-center {if !$step3_active}d-none d-md-flex{/if}">
-                    <div class="nav-number mr-md-2 {if $step3_active}active{/if}">3</div>
-                    {lang section='checkout' key='summary'}
-                </span>
-            </span>
+                </div>
+            {/col}
         {/nav}
     {/if}
 {/block}

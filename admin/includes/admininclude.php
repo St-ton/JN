@@ -14,6 +14,7 @@ use JTL\Services\JTL\CaptchaServiceInterface;
 use JTL\Services\JTL\SimpleCaptchaService;
 use JTL\Session\Backend;
 use JTL\Shop;
+use JTL\Update\Updater;
 use JTLShop\SemVer\Version;
 
 if (!isset($bExtern) || !$bExtern) {
@@ -56,22 +57,35 @@ if (!function_exists('Shop')) {
         return Shop::getInstance();
     }
 }
-$db       = Shop::Container()->getDB();
-$cache    = Shop::Container()->getCache()->setJtlCacheConfig(
+$db         = Shop::Container()->getDB();
+$cache      = Shop::Container()->getCache()->setJtlCacheConfig(
     $db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING)
 );
-$session  = Backend::getInstance();
-$lang     = LanguageHelper::getInstance($db, $cache);
-$oAccount = Shop::Container()->getAdminAccount();
+$session    = Backend::getInstance();
+$lang       = LanguageHelper::getInstance($db, $cache);
+$oAccount   = Shop::Container()->getAdminAccount();
+$loggedIn   = $oAccount->logged();
+$updater    = new Updater($db);
+$hasUpdates = $updater->hasPendingUpdates();
+Shop::setIsFrontend(false);
+if ($loggedIn
+    && $_SERVER['REQUEST_METHOD'] === 'GET'
+    && strpos($_SERVER['SCRIPT_FILENAME'], 'dbupdater') === false
+    && $updater->hasPendingUpdates()
+) {
+    \header('Location: ' . Shop::getURL(true) . '/' . \PFAD_ADMIN . 'dbupdater.php');
+    exit;
+}
 
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'smartyinclude.php';
 
 Shop::Container()->singleton(CaptchaServiceInterface::class, function () {
     return new SimpleCaptchaService(true);
 });
-Shop::bootstrap(false);
-
-if ($oAccount->logged()) {
+if (!$hasUpdates) {
+    Shop::bootstrap(false);
+}
+if ($loggedIn) {
     if (!$session->isValid()) {
         $oAccount->logout();
         $oAccount->redirectOnFailure(AdminLoginStatus::ERROR_SESSION_INVALID);

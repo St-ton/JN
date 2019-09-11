@@ -480,6 +480,7 @@ class PortletInstance implements \JsonSerializable
      */
     public function getImageAttributes($src = null, $alt = null, $title = null, $divisor = 1, $default = null): array
     {
+        $shopURL  = Shop::getURL();
         $src      = $src ?? $this->getProperty('src');
         $alt      = $alt ?? $this->getProperty('alt');
         $title    = $title ?? $this->getProperty('title');
@@ -487,12 +488,10 @@ class PortletInstance implements \JsonSerializable
         $srcsizes = '';
 
         if (empty($src)) {
-            $src = $default ?? '';
-
             return [
-                'srcset'   => $srcset,
-                'srcsizes' => $srcsizes,
-                'src'      => $src,
+                'srcset'   => '',
+                'srcsizes' => '',
+                'src'      => $default ?? '',
                 'alt'      => $alt,
                 'title'    => $title,
             ];

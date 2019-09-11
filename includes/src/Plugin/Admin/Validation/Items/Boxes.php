@@ -6,6 +6,7 @@
 
 namespace JTL\Plugin\Admin\Validation\Items;
 
+use JTL\Helpers\GeneralObject;
 use JTL\Plugin\InstallCode;
 
 /**
@@ -19,19 +20,17 @@ final class Boxes extends AbstractItem
      */
     public function validate(): int
     {
-        $node = $this->getInstallNode();
+        $node = $this->getInstallNode()['Boxes'] ?? null;
         $dir  = $this->getDir();
-        if (!isset($node['Boxes']) || !\is_array($node['Boxes'])) {
+        if (!GeneralObject::isCountable($node)) {
             return InstallCode::OK;
         }
-        if (!isset($node['Boxes'][0]['Box'])
-            || !\is_array($node['Boxes'][0]['Box'])
-            || \count($node['Boxes'][0]['Box']) === 0
-        ) {
+        $node = $node[0]['Box'] ?? null;
+        $base = $dir . \PFAD_PLUGIN_FRONTEND . \PFAD_PLUGIN_BOXEN;
+        if (!GeneralObject::hasCount($node)) {
             return InstallCode::MISSING_BOX;
         }
-        $base = $dir . \PFAD_PLUGIN_FRONTEND . \PFAD_PLUGIN_BOXEN;
-        foreach ($node['Boxes'][0]['Box'] as $i => $box) {
+        foreach ($node as $i => $box) {
             $i = (string)$i;
             \preg_match('/[0-9]+/', $i, $hits3);
             if (\mb_strlen($hits3[0]) !== \mb_strlen($i)) {

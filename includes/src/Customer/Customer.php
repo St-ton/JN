@@ -1178,7 +1178,7 @@ class Customer
         if ($this->cLand !== null) {
             $cISOLand = $this->cLand;
             $sel_var  = 'cDeutsch';
-            if (mb_convert_case($lang->cISO, MB_CASE_LOWER) !== 'ger') {
+            if (\mb_convert_case($lang->cISO, \MB_CASE_LOWER) !== 'ger') {
                 $sel_var = 'cEnglisch';
             }
             $land = Shop::Container()->getDB()->select(

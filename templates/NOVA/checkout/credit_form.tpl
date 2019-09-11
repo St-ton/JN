@@ -8,10 +8,10 @@
             {block name='checkout-credit-form-form-content'}
                 <fieldset>
                     {row}
-                        {col cols=6}
+                        {col cols=12 md=6}
                             <p class="credit-description">{lang key='creditDesc' section='account data'}</p>
                         {/col}
-                        {col cols=6}
+                        {col cols=12 md=6}
                             {block name='checkout-credit-form-alert'}
                                 <div class="credit-amount-description text-center mb-4">
                                     {lang key='yourCreditIs' section='account data'} <strong class="credit-amount">{$GuthabenLocalized}</strong>

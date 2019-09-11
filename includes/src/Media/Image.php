@@ -392,7 +392,18 @@ class Image
             'settings' => $settings,
             'path'     => $thumbnail
         ]);
+        // image optimizations
+        $img->blur(1);
+        if (self::getImageDriver() === 'imagick') {
+            $img->getCore()->setColorspace(\Imagick::COLORSPACE_RGB);
+            $img->getCore()->transformImageColorspace(\Imagick::COLORSPACE_RGB);
+            $img->getCore()->stripImage();
+        }
+        if ($settings['format'] === 'jpg') {
+            $img->interlace(true);
+        }
         $img->save($thumbnail, $settings['quality']);
+
         if ($streamOutput) {
             echo $img->response($req->getExt());
         }

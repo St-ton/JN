@@ -127,6 +127,7 @@ switch ($profilerState) {
         $type = 'Datenbank-, XHProf und Plugin';
         break;
 }
+
 $smarty->assign('bProfilerActive', $profilerState !== 0)
        ->assign('profilerType', $type)
        ->assign('pw_updated', Request::getVar('pw_updated') === 'true')

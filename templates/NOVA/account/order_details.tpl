@@ -68,7 +68,7 @@
                                             <ul class="list-unstyled">
                                                 <li>{$Bestellung->cZahlungsartName}</li>
                                                 <li>
-                                                    {if $Bestellung->cStatus != BESTELLUNG_STATUS_STORNO && $Bestellung->dBezahldatum_de !== '00.00.0000'}
+                                                    {if $Bestellung->cStatus != BESTELLUNG_STATUS_STORNO && $Bestellung->dBezahldatum_de !== '00.00.0000' && !empty($Bestellung->dBezahldatum_de)}
                                                         {lang key='payedOn' section='login'} {$Bestellung->dBezahldatum_de}
                                                     {else}
                                                         {if ($Bestellung->cStatus == BESTELLUNG_STATUS_OFFEN || $Bestellung->cStatus == BESTELLUNG_STATUS_IN_BEARBEITUNG)

@@ -6,6 +6,8 @@
 
 namespace JTL\Plugin\Admin\Validation\Items;
 
+use JTL\Helpers\GeneralObject;
+use JTL\Plugin\Admin\Validation\ValidationItemInterface;
 use JTL\Plugin\InstallCode;
 
 /**
@@ -24,11 +26,12 @@ final class FrontendLinks extends AbstractItem
         if (!isset($node['FrontendLink'][0])) {
             return InstallCode::OK;
         }
-        $node = $node['FrontendLink'][0];
-        if (!isset($node['Link']) || !\is_array($node['Link']) || \count($node['Link']) === 0) {
+        $node   = $node['FrontendLink'][0]['Link'] ?? null;
+        $tplDir = $dir . \PFAD_PLUGIN_FRONTEND . \PFAD_PLUGIN_TEMPLATE;
+        if (!GeneralObject::hasCount($node)) {
             return InstallCode::MISSING_FRONTEND_LINKS;
         }
-        foreach ($node['Link'] as $i => $link) {
+        foreach ($node as $i => $link) {
             $i = (string)$i;
             \preg_match('/[0-9]+\sattr/', $i, $hits1);
             \preg_match('/[0-9]+/', $i, $hits2);
@@ -39,7 +42,7 @@ final class FrontendLinks extends AbstractItem
                 return InstallCode::MISSING_FRONTEND_LINKS;
             }
             $link = $this->sanitizeLinkData($link);
-            if (\mb_strlen($link['Filename']) === 0) {
+            if (\mb_strlen($link['Filename']) === 0 && $this->getContext() !== ValidationItemInterface::CONTEXT_PLUGIN) {
                 return InstallCode::INVALID_FRONTEND_LINK_FILENAME;
             }
             \preg_match(
@@ -65,9 +68,7 @@ final class FrontendLinks extends AbstractItem
                 }
                 \preg_match('/[a-zA-Z0-9\/_\-.]+.tpl/', $link['Template'], $hits1);
                 if (\mb_strlen($hits1[0]) === \mb_strlen($link['Template'])) {
-                    if (!\file_exists($dir .
-                        \PFAD_PLUGIN_FRONTEND . \PFAD_PLUGIN_TEMPLATE . $link['Template'])
-                    ) {
+                    if (!\file_exists($tplDir . $link['Template'])) {
                         return InstallCode::MISSING_FRONTEND_LINK_TEMPLATE;
                     }
                 } else {
@@ -80,9 +81,7 @@ final class FrontendLinks extends AbstractItem
                 }
                 \preg_match('/[a-zA-Z0-9\/_\-.]+.tpl/', $link['FullscreenTemplate'], $hits1);
                 if (\mb_strlen($hits1[0]) === \mb_strlen($link['FullscreenTemplate'])) {
-                    if (!\file_exists($dir .
-                        \PFAD_PLUGIN_FRONTEND . \PFAD_PLUGIN_TEMPLATE . $link['FullscreenTemplate'])
-                    ) {
+                    if (!\file_exists($tplDir . $link['FullscreenTemplate'])) {
                         return InstallCode::MISSING_FULLSCREEN_TEMPLATE_FILE;
                     }
                 } else {

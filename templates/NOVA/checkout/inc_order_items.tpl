@@ -50,7 +50,7 @@
                     {col}
                         {row}
                         {block name='checkout-inc-order-items-items-main-content'}
-                            {col cols=12 sm=$headsm+1 class="mb-3 mb-md-0"}
+                            {col cols=12 md=$headsm+1 class="mb-3 mb-md-0"}
                                 {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
                                     <p>{link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}{$oPosition->cName|trans}{/link}</p>
                                     {block name='checkout-inc-order-items-product-data'}
@@ -208,11 +208,13 @@
                                                     </div>
                                                     <span class="mx-2">|</span>
                                                 {/if}
-                                                {button type="submit" variant="link" size="sm" class="pr-0 droppos border-0 text-decoration-none" name="dropPos" value=$oPosition@index title="{lang key='delete'}"}
-                                                    <span class="fa fa-trash "></span>
-                                                {/button}
-                                                {button type="submit" variant="link" size="sm" class="pl-0 droppos border-0" name="dropPos" value=$oPosition@index title="{lang key='delete'}"}
-                                                    <span>{lang key='delete'}</span>
+                                                {button type="submit" variant="link" size="sm"
+                                                    class="pl-0 droppos border-0"
+                                                    name="dropPos"
+                                                    value=$oPosition@index
+                                                    title="{lang key='delete'}"
+                                                }
+                                                    <span class="fa fa-trash "></span> <span>{lang key='delete'}</span>
                                                 {/button}
                                             </div>
                                         {/if}

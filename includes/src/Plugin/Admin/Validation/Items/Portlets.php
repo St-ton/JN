@@ -6,6 +6,7 @@
 
 namespace JTL\Plugin\Admin\Validation\Items;
 
+use JTL\Helpers\GeneralObject;
 use JTL\Plugin\InstallCode;
 
 /**
@@ -21,13 +22,14 @@ final class Portlets extends AbstractItem
     {
         $node = $this->getInstallNode();
         $dir  = $this->getDir();
-        if (!isset($node['Portlets']) || !\is_array($node['Portlets'])) {
+        if (!GeneralObject::isCountable('Portlets', $node)) {
             return InstallCode::OK;
         }
-        if (empty($node['Portlets'][0]['Portlet']) || !\is_array($node['Portlets'][0]['Portlet'])) {
+        $node = $node['Portlets'][0]['Portlet'] ?? null;
+        if (!GeneralObject::hasCount($node)) {
             return InstallCode::MISSING_PORTLETS;
         }
-        foreach ($node['Portlets'][0]['Portlet'] as $i => $portlet) {
+        foreach ($node as $i => $portlet) {
             if (!\is_array($portlet)) {
                 continue;
             }

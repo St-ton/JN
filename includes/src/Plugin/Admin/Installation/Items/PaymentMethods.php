@@ -75,14 +75,10 @@ class PaymentMethods extends AbstractItem
                 ? $shopURL . $base . $data['PictureURL']
                 : '';
             $method->nNutzbar               = 0;
-            if ($method->nCURL === 0 && $method->nSOAP === 0 && $method->nSOCKETS === 0) {
-                $method->nNutzbar = 1;
-            }
-            $methodID             = $this->db->insert('tzahlungsart', $method);
-            $method->kZahlungsart = $methodID;
-            if ($method->nNutzbar === 0) {
-                PaymentMethod::activatePaymentMethod($method);
-            }
+            $methodID                       = $this->db->insert('tzahlungsart', $method);
+            $method->kZahlungsart           = $methodID;
+            $method->nNutzbar               = PaymentMethod::activatePaymentMethod($method) ? 1 : 0;
+
             $moduleID = $method->cModulId;
             if (!$methodID) {
                 return InstallCode::SQL_CANNOT_SAVE_PAYMENT_METHOD;

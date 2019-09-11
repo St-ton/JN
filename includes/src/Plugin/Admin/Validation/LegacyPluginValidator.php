@@ -6,6 +6,7 @@
 
 namespace JTL\Plugin\Admin\Validation;
 
+use JTL\Helpers\GeneralObject;
 use JTL\Plugin\InstallCode;
 use JTL\XMLParser;
 use JTLShop\SemVer\Version;
@@ -140,10 +141,7 @@ final class LegacyPluginValidator extends AbstractValidator
      */
     private function getVersion($node, $dir)
     {
-        if (!isset($node['Version'])
-            || !\is_array($node['Version'])
-            || !\count($node['Version']) === 0
-        ) {
+        if (!GeneralObject::hasCount('Version', $node)) {
             return InstallCode::INVALID_XML_VERSION_NUMBER;
         }
         if ((int)$node['Version']['0 attr']['nr'] !== 100) {

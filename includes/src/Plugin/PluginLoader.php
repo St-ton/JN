@@ -30,7 +30,7 @@ class PluginLoader extends AbstractLoader
     /**
      * @inheritdoc
      */
-    public function init(int $id, bool $invalidateCache = false, int $languageID = null)
+    public function init(int $id, bool $invalidateCache = false, int $languageID = null): PluginInterface
     {
         if (($languageID = $languageID ?? Shop::getLanguageID()) === 0) {
             $languageID = Shop::Lang()->getDefaultLanguage()->kSprache;
@@ -77,7 +77,7 @@ class PluginLoader extends AbstractLoader
     /**
      * @inheritdoc
      */
-    public function loadFromObject($obj, string $currentLanguageCode): Plugin
+    public function loadFromObject($obj, string $currentLanguageCode): PluginInterface
     {
         $id        = (int)$obj->kPlugin;
         $paths     = $this->loadPaths($obj->cVerzeichnis);

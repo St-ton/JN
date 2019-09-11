@@ -225,12 +225,12 @@ class InstallCommand extends Command
 
         $io->setStep($this->currentStep++, $this->steps, 'Setting permissions');
         if ($this->currentUser !== $fileOwner) {
-            $paths = $localFilesystem->listContents(PFAD_ROOT, true);
+            $paths = $localFilesystem->listContents(\PFAD_ROOT, true);
             foreach ($paths as $path) {
                 $localFilesystem->chown($path->getPath(), $fileOwner);
                 $localFilesystem->chgrp($path->getPath(), $fileGroup);
             }
-            $localFilesystem->chown(PFAD_ROOT, $fileOwner);
+            $localFilesystem->chown(\PFAD_ROOT, $fileOwner);
         }
 
         foreach (self::$writeablePaths as $path) {

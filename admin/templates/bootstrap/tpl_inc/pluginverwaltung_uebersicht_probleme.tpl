@@ -322,10 +322,10 @@
             <div class="card-footer save-wrapper save">
                 <div class="row">
                     <div class="col-sm-6 col-xl-auto text-left">
-                        div class="custom-control custom-checkbox">
-                        <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);" />
-                        <label class="custom-control-label" for="ALLMSGS3">{__('selectAll')}</label>
-                    </div>
+                        <div class="custom-control custom-checkbox">
+                            <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);" />
+                            <label class="custom-control-label" for="ALLMSGS3">{__('selectAll')}</label>
+                        </div>
                     </div>
                     <div class="ml-auto col-sm-6 col-xl-auto">
                         <button name="deinstallieren" type="submit" class="btn btn-danger btn-block">

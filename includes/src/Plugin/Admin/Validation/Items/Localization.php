@@ -21,7 +21,7 @@ final class Localization extends AbstractItem
     public function validate(): int
     {
         $node = $this->getInstallNode();
-        if (!isset($node['Locales']) || !\is_array($node['Locales'])) {
+        if (!GeneralObject::isCountable('Locales', $node)) {
             return InstallCode::OK;
         }
         if (empty($node['Locales'][0]['Variable']) || !\is_array($node['Locales'][0]['Variable'])) {

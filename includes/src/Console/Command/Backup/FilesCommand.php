@@ -53,14 +53,14 @@ class FilesCommand extends Command
             'jtllogs',
             'install/logs'], $this->getOption('exclude-dir'));
         $localFilesystem    = new Filesystem(new LocalFilesystem([
-            'root' => PFAD_ROOT
+            'root' => \PFAD_ROOT
         ]));
 
         $finder = Finder::create()
             ->ignoreVCS(false)
             ->ignoreDotFiles(false)
             ->exclude($excludeDirectories)
-            ->in(PFAD_ROOT);
+            ->in(\PFAD_ROOT);
 
         $io
             ->progress(

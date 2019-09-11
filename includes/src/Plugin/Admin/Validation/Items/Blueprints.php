@@ -6,7 +6,9 @@
 
 namespace JTL\Plugin\Admin\Validation\Items;
 
+use JTL\Helpers\GeneralObject;
 use JTL\Plugin\InstallCode;
+use JTL\Shop;
 
 /**
  * Class Blueprints
@@ -19,19 +21,17 @@ final class Blueprints extends AbstractItem
      */
     public function validate(): int
     {
-        $node = $this->getInstallNode();
-        $dir  = $this->getDir();
-        if (!isset($node['Blueprints']) || !\is_array($node['Blueprints'])) {
+        $node   = $this->getInstallNode();
+        $dir    = $this->getDir();
+        $bpNode = $node['Blueprints'][0] ?? null;
+        $base   = $dir . \PFAD_PLUGIN_BLUEPRINTS;
+        if ($bpNode === null) {
             return InstallCode::OK;
         }
-        if (!isset($node['Blueprints'][0]['Blueprint'])
-            || !\is_array($node['Blueprints'][0]['Blueprint'])
-            || \count($node['Blueprints'][0]['Blueprint']) === 0
-        ) {
+        if (!GeneralObject::hasCount('Blueprint', $bpNode)) {
             return InstallCode::MISSING_BLUEPRINTS;
         }
-        $base = $dir . \PFAD_PLUGIN_BLUEPRINTS;
-        foreach ($node['Blueprints'][0]['Blueprint'] as $i => $blueprint) {
+        foreach ($bpNode['Blueprint'] as $i => $blueprint) {
             $i = (string)$i;
             if (!isset($blueprint['Name'])) {
                 return InstallCode::INVALID_BLUEPRINT_NAME;

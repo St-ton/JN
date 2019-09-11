@@ -1,1 +1,1 @@
-{"version":3,"sourceRoot":"","sources":["preview.scss"],"names":[],"mappings":"AAAA;EACE;;AAEA;EACE;EACA;EACA;EACA;EACA;EACA;EACA;;AAEA;EACE;;AAIF;EACE;EACA","file":"preview.css"}
+{"version":3,"sourceRoot":"","sources":["Flipcard.scss","preview.scss"],"names":[],"mappings":"AAEE;EACE;EACA;;AAGF;EACE;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;AAIA;EACE;;AAGF;EACE;;AAIA;EACE;;AAGF;EACE;;AAMJ;EACE;;AAGF;EACE;;AAIA;EACE;;AAGF;EACE;;;ACnDR;EACE;;AAEA;EACE;EACA;EACA;EACA;EACA;EACA;EACA;;AAEA;EACE;;AAIF;EACE;EACA","file":"preview.css"}

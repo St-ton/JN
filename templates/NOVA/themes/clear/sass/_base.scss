@@ -1953,64 +1953,6 @@ table caption {
   display: inline-block;
 }
 
-.flipcard {
-  .flipcard-inner {
-    position: relative;
-    width: 100%;
-  }
-
-  .flipcard-face {
-    width: 100%;
-    position: absolute;
-    left: 0;
-    top: 0;
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-    -moz-backface-visibility: hidden;
-    transition: 0.5s;
-  }
-
-  &.flipcard-v {
-    .flipcard-front {
-      transform: rotateX(0deg);
-    }
-
-    .flipcard-back {
-      transform: rotateX(180deg);
-    }
-
-    .flipped {
-      .flipcard-front {
-          transform: rotateX(-180deg);
-      }
-
-      .flipcard-back {
-        transform: rotateX(0deg);
-      }
-    }
-  }
-
-  &.flipcard-h {
-    .flipcard-front {
-      transform: rotateY(0deg);
-    }
-
-    .flipcard-back {
-      transform: rotateY(180deg);
-    }
-
-    .flipped {
-      .flipcard-front {
-        transform: rotateY(-180deg);
-      }
-
-      .flipcard-back {
-        transform: rotateY(0deg);
-      }
-    }
-  }
-}
-
 .img-gallery-btn {
   position: relative;
 

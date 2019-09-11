@@ -1,37 +1,37 @@
-.gallery-columns {
+.opc-Gallery-columns {
   columns: 1;
   column-gap: 8px;
   margin-bottom: 8px;
 }
-.gallery-columns .img-gallery-btn {
+.opc-Gallery-columns .opc-Gallery-btn {
   width: 100%;
   display: block;
   margin-bottom: 8px;
 }
-.gallery-columns .img-gallery-img {
+.opc-Gallery-columns .opc-Gallery-img {
   width: 100%;
   display: block;
 }
 
 @media (min-width: 576px) {
-  .gallery-columns {
+  .opc-Gallery-columns {
     columns: 2;
   }
 }
 @media (min-width: 768px) {
-  .gallery-columns {
+  .opc-Gallery-columns {
     columns: 3;
   }
 }
 @media (min-width: 1200px) {
-  .gallery-columns {
+  .opc-Gallery-columns {
     columns: 4;
   }
 }
-.img-gallery-btn {
+.opc-Gallery-btn {
   position: relative;
 }
-.img-gallery-btn.img-gallery-active-btn:after {
+.opc-Gallery-btn.opc-Gallery-active-btn:after {
   content: " ";
   opacity: 0;
   background-color: rgba(0, 0, 0, 0.75);
@@ -42,10 +42,10 @@
   height: 100%;
   transition: all 0.5s ease-in-out 0s;
 }
-.img-gallery-btn.img-gallery-active-btn:hover:after {
+.opc-Gallery-btn.opc-Gallery-active-btn:hover:after {
   opacity: 0.75;
 }
-.img-gallery-btn .img-gallery-zoom {
+.opc-Gallery-btn .opc-Gallery-zoom {
   opacity: 0;
   color: #fff;
   position: absolute;
@@ -54,30 +54,30 @@
   transform: translate(-50%, -50%);
   transition: all 0.5s ease-in-out 0s;
 }
-.img-gallery-btn.img-gallery-active-btn:hover .img-gallery-zoom {
+.opc-Gallery-btn.opc-Gallery-active-btn:hover .opc-Gallery-zoom {
   opacity: 1;
 }
 
-.img-gallery {
+.opc-Gallery {
   margin-left: -4px;
   margin-right: -4px;
 }
-.img-gallery.img-gallery-grid .img-gallery-item .img-gallery-btn {
+.opc-Gallery.opc-Gallery-grid .opc-Gallery-item .opc-Gallery-btn {
   height: 0;
   padding-top: 100%;
 }
-.img-gallery .img-gallery-item {
+.opc-Gallery .opc-Gallery-item {
   overflow: hidden;
   padding-right: 4px;
   padding-left: 4px;
   margin-bottom: 8px;
 }
-.img-gallery .img-gallery-item .img-gallery-btn {
+.opc-Gallery .opc-Gallery-item .opc-Gallery-btn {
   display: block;
   width: 100%;
   height: 220px;
 }
-.img-gallery .img-gallery-item .img-gallery-img {
+.opc-Gallery .opc-Gallery-item .opc-Gallery-img {
   display: block;
   height: 100%;
   width: 100%;
@@ -89,7 +89,7 @@
   right: 0;
 }
 
-.opc-Gallery {
+.opc-Gallery-preview {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -101,7 +101,7 @@
   font-size: 12px;
   background-color: #fff;
 }
-.opc-Gallery svg {
+.opc-Gallery-preview svg {
   margin-right: 6px;
 }
 

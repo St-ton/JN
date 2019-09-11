@@ -206,7 +206,7 @@ class Service
     /**
      * @param int $id
      */
-    public function deleteBlueprint($id): void
+    public function deleteBlueprint(int $id): void
     {
         $blueprint = (new Blueprint())->setId($id);
         $this->db->deleteBlueprint($blueprint);

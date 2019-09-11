@@ -78,6 +78,8 @@ class AreaList implements \JsonSerializable
     }
 
     /**
+     * @return array
+     * @throws \Exception
      * @return string[] the rendered HTML content of this page
      */
     public function getFinalHtml(): array

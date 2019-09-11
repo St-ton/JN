@@ -54,6 +54,7 @@ class GUI
             'btnPublish',
             'btnClose',
             'btnImportBlueprint',
+            'btnNoRestoreUnsaved',
             'revisionList',
             'revisionBtnBlueprint',
             'unsavedRevision',
@@ -400,6 +401,8 @@ class GUI
 
                 if (propType === 'json') {
                     propval = JSON.parse(propval);
+                } else if (propType === 'datetime') {
+                    propval = this.page.encodeDate(propval);
                 } else if (propInput[0].type === 'checkbox') {
                     propval = propval === '1';
                 } else if (propInput[0].type === 'number') {
@@ -739,5 +742,10 @@ class GUI
             this.escapedDraftNameInput = true;
             $('#footerDraftNameInput').blur();
         }
+    }
+
+    onBtnNoRestoreUnsaved()
+    {
+        this.page.clearPageWebStorage();
     }
 }

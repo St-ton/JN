@@ -60,7 +60,7 @@ class LegacyPluginLoader extends AbstractLoader
     /**
      * @inheritdoc
      */
-    public function init(int $id, bool $invalidateCache = false, int $languageID = null)
+    public function init(int $id, bool $invalidateCache = false, int $languageID = null): PluginInterface
     {
         if (($languageID = $languageID ?? Shop::getLanguageID()) === 0) {
             $languageID = Shop::Lang()::getDefaultLanguage()->kSprache;
@@ -121,7 +121,7 @@ class LegacyPluginLoader extends AbstractLoader
     /**
      * @inheritdoc
      */
-    public function loadFromObject($obj, string $currentLanguageCode): LegacyPlugin
+    public function loadFromObject($obj, string $currentLanguageCode): PluginInterface
     {
         $currentLanguageCode = $currentLanguageCode
             ?? Shop::getLanguageCode()

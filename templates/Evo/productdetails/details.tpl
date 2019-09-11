@@ -8,11 +8,6 @@
 {else}
     {$alertList->displayAlertByKey('productNote')}
 {/if}
-{if isset($Artikelhinweise) && count($Artikelhinweise) > 0}
-    {foreach $Artikelhinweise as $Artikelhinweis}
-        <div class="alert alert-danger">{$Artikelhinweis}</div>
-    {/foreach}
-{/if}
 
 <div class="h1 visible-xs text-center">{$Artikel->cName}</div>
 

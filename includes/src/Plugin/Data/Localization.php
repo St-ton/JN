@@ -7,6 +7,7 @@
 namespace JTL\Plugin\Data;
 
 use Illuminate\Support\Collection;
+use JTL\Plugin\Admin\InputType;
 use function Functional\first;
 use function Functional\group;
 
@@ -58,6 +59,7 @@ class Localization
             $var->description                      = $var->cBeschreibung;
             $var->oPluginSprachvariableSprache_arr = [$lv->cISO => $lv->customValue];
             $var->values                           = $var->oPluginSprachvariableSprache_arr;
+            $var->type                             = $lv->type ?? InputType::TEXT;
             foreach ($group as $translation) {
                 $var->oPluginSprachvariableSprache_arr[$translation->cISO] = $translation->customValue;
                 $var->values[$translation->cISO]                           = $translation->customValue;

@@ -21,7 +21,7 @@
                                             <span class="value">
                                             {link href=$oMerkmalWert->cURLFull
                                                 class="text-decoration-none"
-                                                data=['toggle'=>'tooltip', 'placement'=>'top']
+                                                data=['toggle'=>'tooltip', 'placement'=>'top', 'boundary'=>'window']
                                                 title=$oMerkmalWert->cWert|escape:'html'
                                                 aria=["label"=>$oMerkmalWert->cWert|escape:'html']
                                             }

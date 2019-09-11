@@ -5,12 +5,12 @@
 {block name='checkout-inc-paymentmodules'}
     {if !isset($abschlussseite) || $abschlussseite !== 1}
         {if $oPlugin !== null && $oPlugin instanceof JTL\Plugin\PluginInterface}
-            {$method = $oPlugin->getPaymentMethods()->getMethodByID($cModulId)}
+            {$method = $oPlugin->getPaymentMethods()->getMethodByID($Bestellung->Zahlungsart->cModulId)}
         {else}
             {$method = null}
         {/if}
         {assign var=cModulId value=$Bestellung->Zahlungsart->cModulId}
-        {if ($method === null || $Bestellung->Zahlungsart->cModulId !== $method->cModulId)
+        {if ($method === null || $Bestellung->Zahlungsart->cModulId !== $method->getModuleID())
             && $Bestellung->Zahlungsart->cModulId !== 'za_kreditkarte_jtl'
             && $Bestellung->Zahlungsart->cModulId !== 'za_lastschrift_jtl'
         }
@@ -48,9 +48,9 @@
                     {include file='checkout/modules/paypal/bestellabschluss.tpl'}
                 {elseif $Bestellung->Zahlungsart->cModulId === 'za_kreditkarte_jtl'}
                     {include file='account/retrospective_payment.tpl'}
-                {elseif $method !== null && $Bestellung->Zahlungsart->cModulId === $method->cModulId}
+                {elseif $method !== null && $Bestellung->Zahlungsart->cModulId === $method->getModuleID()}
                     {block name='checkout-inc-paymentmodules-include-plugin'}
-                        {include file=$method->cTemplateFileURL}
+                        {include file=$method->getTemplateFilePath()}
                     {/block}
                 {/if}
                 <br />

@@ -81,8 +81,8 @@ class PaymentMethods
      */
     public function getMethodsAssoc(): array
     {
-        return reindex($this->methods, function ($e) {
-            return $e->cModulId;
+        return reindex($this->methods, function (PaymentMethod $e) {
+            return $e->getModuleID();
         });
     }
 

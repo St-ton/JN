@@ -3,7 +3,7 @@
  * Add aria labels
  *
  * @author ms
- * @created Wed, 14 Sep 2019 08:48:00 +0200
+ * @created Wed, 14 Aug 2019 08:48:00 +0200
  */
 
 use JTL\Update\IMigration;

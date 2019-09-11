@@ -113,9 +113,8 @@ interface BoxServiceInterface
 
     /**
      * @param int  $pageType
-     * @param bool $active
-     * @param bool $visible
+     * @param bool $activeOnly
      * @return array
      */
-    public function buildList(int $pageType = 0, bool $active = true, bool $visible = false): array;
+    public function buildList(int $pageType = \PAGE_UNBEKANNT, bool $activeOnly = true): array;
 }

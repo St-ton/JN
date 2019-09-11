@@ -109,7 +109,7 @@ abstract class AbstractLoader implements LoaderInterface
     {
         $data         = $this->db->queryPrepared(
             'SELECT l.kPluginSprachvariable, l.kPlugin, l.cName, l.cBeschreibung, o.cISO,
-                COALESCE(c.cName, o.cName) AS customValue
+                COALESCE(c.cName, o.cName) AS customValue, l.type
             FROM tpluginsprachvariable AS l
             JOIN tpluginsprachvariablesprache AS o
                 ON o.kPluginSprachvariable = l.kPluginSprachvariable
@@ -202,7 +202,8 @@ abstract class AbstractLoader implements LoaderInterface
     {
         $license = new License();
         if (\strlen($data->cLizenzKlasse) > 0 && \strpos($data->cLizenzKlasse, 'Plugin\\') !== 0) {
-            $data->cLizenzKlasse = 'Plugin\\' . $data->cLizenzKlasse;
+            $namespace           = $data->cPluginID . '\\' . trim(PFAD_PLUGIN_LICENCE, '\\/');
+            $data->cLizenzKlasse = \sprintf('Plugin\\%s\\%s', $namespace, $data->cLizenzKlasse);
         }
         $license->setClass($data->cLizenzKlasse);
         $license->setClassName($data->cLizenzKlasseName);

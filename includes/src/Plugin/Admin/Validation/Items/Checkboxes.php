@@ -6,6 +6,7 @@
 
 namespace JTL\Plugin\Admin\Validation\Items;
 
+use JTL\Helpers\GeneralObject;
 use JTL\Plugin\InstallCode;
 
 /**
@@ -19,14 +20,11 @@ final class Checkboxes extends AbstractItem
      */
     public function validate(): int
     {
-        $node = $this->getInstallNode();
-        if (!isset($node['CheckBoxFunction'][0]['Function'])
-            || !\is_array($node['CheckBoxFunction'][0]['Function'])
-            || \count($node['CheckBoxFunction'][0]['Function']) === 0
-        ) {
+        $node = $this->getInstallNode()['CheckBoxFunction'][0] ?? null;
+        if (!GeneralObject::hasCount('Function', $node)) {
             return InstallCode::OK;
         }
-        foreach ($node['CheckBoxFunction'][0]['Function'] as $i => $cb) {
+        foreach ($node['Function'] as $i => $cb) {
             $i = (string)$i;
             \preg_match('/[0-9]+/', $i, $hits2);
             if (\mb_strlen($hits2[0]) === \mb_strlen($i)) {

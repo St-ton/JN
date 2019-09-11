@@ -1,6 +1,6 @@
 {foreach $props as $propname => $propdesc}
     {$type = $propdesc.type|default:'text'}
-    {$required = $required|default:false}
+    {$required = $propdesc.required|default:false}
     {$width = round(($propdesc.width|default:100) * 12 / 100)}
     {$rowWidthAccu = $rowWidthAccu + $width}
 
@@ -19,7 +19,7 @@
     <div class="col-{$width} {$order}">
         {if $type === 'text' || $type === 'email' || $type === 'password' || $type === 'number'
                 || $type === 'date' || $type === 'time'}
-            <div class='form-group'>
+            <div class="form-group">
                 <label for="config-{$propname}">{$propdesc.label}</label>
                 <input type="{$type}" class="form-control" id="config-{$propname}" name="{$propname}"
                        value="{$propval}"

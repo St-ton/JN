@@ -17,34 +17,6 @@ use JTL\OPC\PortletInstance;
 class Panel extends Portlet
 {
     /**
-     * @param PortletInstance $instance
-     * @return string
-     * @throws \Exception
-     */
-    public function getPreviewHtml(PortletInstance $instance): string
-    {
-        $instance->addClass('panel')
-                 ->addClass('panel-' . $instance->getProperty('panel-state'))
-                 ->addClass($instance->getProperty('panel-class'));
-
-        return $this->getPreviewHtmlFromTpl($instance);
-    }
-
-    /**
-     * @param PortletInstance $instance
-     * @return string
-     * @throws \Exception
-     */
-    public function getFinalHtml(PortletInstance $instance): string
-    {
-        $instance->addClass('panel')
-                 ->addClass('panel-' . $instance->getProperty('panel-state'))
-                 ->addClass($instance->getProperty('panel-class'));
-
-        return $this->getFinalHtmlFromTpl($instance);
-    }
-
-    /**
      * @return string
      */
     public function getButtonHtml(): string

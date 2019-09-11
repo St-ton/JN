@@ -21,7 +21,7 @@
             {if $zone.productId > 0}
                 {$product = $portlet->getProduct($zone.productId)}
                 {$title   = $product->cName}
-                {$url     = $product->cURL}
+                {$url     = $product->cURLFull}
                 {$desc    = $product->cKurzBeschreibung}
             {/if}
             {if !empty($zone.title)}
@@ -38,7 +38,7 @@
                 <div class="area-desc">
                     {if !empty($product) > 0}
                         {image
-                            src=$product->cVorschaubild
+                            src=$product->cVorschaubildURL
                             alt=$product->cName|strip_tags|escape:'quotes'|truncate:60
                             style='display: block; margin-left: auto; margin-right: auto'
                             fluid=true}

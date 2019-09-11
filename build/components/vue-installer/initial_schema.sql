@@ -418,7 +418,7 @@ CREATE TABLE `tartikelsonderpreis` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tartikelsprache` (
   `kArtikel` int(10) unsigned NOT NULL DEFAULT 0,
-  `kSprache` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `kSprache` int(10) unsigned NOT NULL DEFAULT 0,
   `cSeo` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `cName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `cBeschreibung` mediumtext COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -467,7 +467,7 @@ CREATE TABLE `tattribut` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tattributsprache` (
   `kAttribut` int(10) unsigned NOT NULL DEFAULT 0,
-  `kSprache` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `kSprache` int(10) unsigned NOT NULL DEFAULT 0,
   `cName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `cStringWert` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `cTextWert` mediumtext COLLATE utf8_unicode_ci NOT NULL,
@@ -572,8 +572,8 @@ CREATE TABLE `tbestellung` (
   `kRechnungsadresse` int(10) unsigned NOT NULL,
   `kZahlungsart` int(10) unsigned NOT NULL DEFAULT 0,
   `kVersandart` int(10) unsigned NOT NULL,
-  `kSprache` tinyint(3) unsigned NOT NULL DEFAULT 0,
-  `kWaehrung` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `kSprache` int(10) unsigned NOT NULL DEFAULT 0,
+  `kWaehrung` int(10) unsigned NOT NULL DEFAULT 0,
   `fGuthaben` double(12,4) NOT NULL DEFAULT 0.0000,
   `fGesamtsumme` double NOT NULL DEFAULT 0,
   `cSession` varchar(128) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
@@ -915,7 +915,7 @@ CREATE TABLE `tbrandingeinstellung` (
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tbrocken` (
-  `kBrocken` tinyint(4) NOT NULL,
+  `kBrocken` int(10) NOT NULL,
   `cBrocken` mediumtext COLLATE utf8_unicode_ci NOT NULL,
   `dErstellt` datetime NOT NULL,
   PRIMARY KEY (`kBrocken`)
@@ -1119,7 +1119,7 @@ CREATE TABLE `teigenschaftsichtbarkeit` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `teigenschaftsprache` (
   `kEigenschaft` int(10) unsigned NOT NULL DEFAULT 0,
-  `kSprache` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `kSprache` int(10) unsigned NOT NULL DEFAULT 0,
   `cName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`kEigenschaft`,`kSprache`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -1199,7 +1199,7 @@ CREATE TABLE `teigenschaftwertsichtbarkeit` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `teigenschaftwertsprache` (
   `kEigenschaftWert` int(10) unsigned NOT NULL DEFAULT 0,
-  `kSprache` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `kSprache` int(10) unsigned NOT NULL DEFAULT 0,
   `cName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`kEigenschaftWert`,`kSprache`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -1211,7 +1211,7 @@ CREATE TABLE `teigenschaftwertsprache` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `teinheit` (
   `kEinheit` int(10) unsigned NOT NULL DEFAULT 0,
-  `kSprache` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `kSprache` int(10) unsigned NOT NULL DEFAULT 0,
   `cName` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`kEinheit`,`kSprache`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -1222,7 +1222,7 @@ CREATE TABLE `teinheit` (
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `teinstellungen` (
-  `kEinstellungenSektion` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `kEinstellungenSektion` int(10) unsigned NOT NULL DEFAULT 0,
   `cName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `cWert` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `cModulId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -1237,7 +1237,7 @@ INSERT INTO `teinstellungen` VALUES (5,'artikeldetails_xselling_standard_anzeige
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `teinstellungenconf` (
   `kEinstellungenConf` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `kEinstellungenSektion` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `kEinstellungenSektion` int(10) unsigned NOT NULL DEFAULT 0,
   `cName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `cBeschreibung` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `cWertName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -1273,9 +1273,9 @@ INSERT INTO `teinstellungenconfwerte` VALUES (268,'Primärschlüssel (Vorgabe vo
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `teinstellungensektion` (
-  `kEinstellungenSektion` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `kEinstellungenSektion` int(10) unsigned NOT NULL DEFAULT 0,
   `cName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `kAdminmenueGruppe` tinyint(3) NOT NULL DEFAULT 0,
+  `kAdminmenueGruppe` int(10) NOT NULL DEFAULT 0,
   `nSort` tinyint(3) NOT NULL DEFAULT 0,
   `cRecht` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`kEinstellungenSektion`)
@@ -1402,7 +1402,7 @@ CREATE TABLE `temailvorlageplatzhaltervariable` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `temailvorlagesprache` (
   `kEmailvorlage` int(10) unsigned NOT NULL DEFAULT 0,
-  `kSprache` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `kSprache` int(10) unsigned NOT NULL DEFAULT 0,
   `cBetreff` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `cContentHtml` mediumtext COLLATE utf8_unicode_ci NOT NULL,
   `cContentText` mediumtext COLLATE utf8_unicode_ci NOT NULL,
@@ -1419,7 +1419,7 @@ INSERT INTO `temailvorlagesprache` VALUES (1,1,'Ihnen steht ein Kupon bei #firma
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `temailvorlagespracheoriginal` (
   `kEmailvorlage` int(10) unsigned NOT NULL DEFAULT 0,
-  `kSprache` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `kSprache` int(10) unsigned NOT NULL DEFAULT 0,
   `cBetreff` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `cContentHtml` mediumtext COLLATE utf8_unicode_ci NOT NULL,
   `cContentText` mediumtext COLLATE utf8_unicode_ci NOT NULL,
@@ -1448,7 +1448,7 @@ INSERT INTO `texcludekeywords` VALUES ('ger','aus ohne mit der die das zur für 
 CREATE TABLE `texportformat` (
   `kExportformat` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `kKundengruppe` int(10) unsigned DEFAULT NULL,
-  `kSprache` tinyint(3) unsigned DEFAULT NULL,
+  `kSprache` int(10) unsigned DEFAULT NULL,
   `kWaehrung` int(10) unsigned DEFAULT NULL,
   `kKampagne` int(10) unsigned DEFAULT 0,
   `kPlugin` int(10) unsigned NOT NULL,
@@ -1568,7 +1568,7 @@ CREATE TABLE `tfirma` (
 CREATE TABLE `tfsession` (
   `cIP` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
   `cAgent` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `kWaehrung` tinyint(3) unsigned DEFAULT NULL,
+  `kWaehrung` int(10) unsigned DEFAULT NULL,
   `nUserSortierung` tinyint(4) DEFAULT NULL,
   `nUserArtikelzahl` int(10) unsigned DEFAULT NULL,
   `dErstellt` datetime DEFAULT NULL
@@ -1904,7 +1904,7 @@ CREATE TABLE `tkategoriesichtbarkeit` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tkategoriesprache` (
   `kKategorie` int(10) unsigned NOT NULL DEFAULT 0,
-  `kSprache` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `kSprache` int(10) unsigned NOT NULL DEFAULT 0,
   `cSeo` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `cName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `cBeschreibung` mediumtext COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -2001,7 +2001,7 @@ CREATE TABLE `tkonfigitemsprache` (
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tkontaktbetreff` (
-  `kKontaktBetreff` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
+  `kKontaktBetreff` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `cName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `cKundengruppen` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `cMail` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -2015,7 +2015,7 @@ CREATE TABLE `tkontaktbetreff` (
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tkontaktbetreffsprache` (
-  `kKontaktBetreff` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `kKontaktBetreff` int(10) unsigned NOT NULL DEFAULT 0,
   `cISOSprache` varchar(5) COLLATE utf8_unicode_ci NOT NULL,
   `cName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`kKontaktBetreff`,`cISOSprache`)
@@ -2028,7 +2028,7 @@ CREATE TABLE `tkontaktbetreffsprache` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tkontakthistory` (
   `kKontaktHistory` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `kKontaktBetreff` tinyint(3) unsigned DEFAULT NULL,
+  `kKontaktBetreff` int(10) unsigned DEFAULT NULL,
   `kSprache` int(10) unsigned DEFAULT NULL,
   `cAnrede` varchar(30) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `cVorname` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
@@ -2053,7 +2053,7 @@ CREATE TABLE `tkontakthistory` (
 CREATE TABLE `tkunde` (
   `kKunde` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `kKundengruppe` int(10) unsigned NOT NULL DEFAULT 0,
-  `kSprache` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `kSprache` int(10) unsigned NOT NULL DEFAULT 0,
   `cKundenNr` varchar(40) COLLATE utf8_unicode_ci DEFAULT NULL,
   `cPasswort` varchar(254) COLLATE utf8_unicode_ci DEFAULT NULL,
   `cAnrede` varchar(30) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
@@ -2195,7 +2195,7 @@ CREATE TABLE `tkundengruppenattribut` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tkundengruppensprache` (
   `kKundengruppe` int(10) unsigned NOT NULL DEFAULT 0,
-  `kSprache` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `kSprache` int(10) unsigned NOT NULL DEFAULT 0,
   `cName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`kKundengruppe`,`kSprache`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -2272,7 +2272,7 @@ CREATE TABLE `tkundenwerbenkundenbonus` (
 CREATE TABLE `tkupon` (
   `kKupon` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `kKundengruppe` int(10) NOT NULL DEFAULT 0,
-  `kSteuerklasse` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `kSteuerklasse` int(10) unsigned NOT NULL DEFAULT 0,
   `cName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `fWert` double(10,2) DEFAULT NULL,
   `cWertTyp` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'festpreis',
@@ -3831,7 +3831,7 @@ CREATE TABLE `tseo` (
   `cSeo` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `cKey` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `kKey` int(10) unsigned NOT NULL,
-  `kSprache` tinyint(3) unsigned DEFAULT NULL,
+  `kSprache` int(10) unsigned DEFAULT NULL,
   PRIMARY KEY (`cSeo`),
   KEY `cKey` (`cKey`,`kKey`,`kSprache`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -3985,7 +3985,7 @@ INSERT INTO `tspezialseite` VALUES (1,0,'Startseite','',5,5),(2,0,'Informationen
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tsprache` (
-  `kSprache` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `kSprache` int(10) unsigned NOT NULL DEFAULT 0,
   `cNameEnglisch` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `cNameDeutsch` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `cStandard` char(1) COLLATE utf8_unicode_ci DEFAULT 'N',
@@ -4001,7 +4001,7 @@ INSERT INTO `tsprache` VALUES (1,'German','Deutsch','Y','ger','Y'),(2,'English',
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tsprachiso` (
-  `kSprachISO` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
+  `kSprachISO` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `cISO` varchar(5) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`kSprachISO`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -4037,7 +4037,7 @@ INSERT INTO `tsprachsektion` VALUES (1,'global'),(2,'basketpreview'),(3,'product
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tsprachwerte` (
-  `kSprachISO` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `kSprachISO` int(10) unsigned NOT NULL DEFAULT 0,
   `kSprachsektion` int(10) unsigned NOT NULL DEFAULT 0,
   `cName` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `cWert` mediumtext COLLATE utf8_unicode_ci NOT NULL,
@@ -4164,7 +4164,7 @@ CREATE TABLE `tstueckliste` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tsuchanfrage` (
   `kSuchanfrage` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `kSprache` tinyint(4) NOT NULL,
+  `kSprache` int(10) NOT NULL,
   `cSuche` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `cSeo` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `nAktiv` tinyint(1) unsigned NOT NULL DEFAULT 0,
@@ -4186,7 +4186,7 @@ CREATE TABLE `tsuchanfrage` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tsuchanfrageblacklist` (
   `kSuchanfrageBlacklist` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `kSprache` tinyint(4) unsigned NOT NULL,
+  `kSprache` int(10) unsigned NOT NULL,
   `cSuche` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`kSuchanfrageBlacklist`),
   KEY `cSuche` (`cSuche`)
@@ -4199,7 +4199,7 @@ CREATE TABLE `tsuchanfrageblacklist` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tsuchanfrageerfolglos` (
   `kSuchanfrageErfolglos` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `kSprache` tinyint(4) NOT NULL,
+  `kSprache` int(10) NOT NULL,
   `cSuche` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `nAnzahlGesuche` int(10) unsigned DEFAULT NULL,
   `dZuletztGesucht` datetime DEFAULT NULL,
@@ -4215,7 +4215,7 @@ CREATE TABLE `tsuchanfrageerfolglos` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tsuchanfragemapping` (
   `kSuchanfrageMapping` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `kSprache` tinyint(4) unsigned NOT NULL,
+  `kSprache` int(10) unsigned NOT NULL,
   `cSuche` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `cSucheNeu` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `nAnzahlGesuche` int(10) unsigned DEFAULT NULL,
@@ -4230,7 +4230,7 @@ CREATE TABLE `tsuchanfragemapping` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tsuchanfragencache` (
   `kSuchanfrageCache` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `kSprache` tinyint(4) unsigned NOT NULL,
+  `kSprache` int(10) unsigned NOT NULL,
   `cIP` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `cSuche` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `dZeit` datetime NOT NULL,
@@ -4246,7 +4246,7 @@ CREATE TABLE `tsuchanfragencache` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tsuchcache` (
   `kSuchCache` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `kSprache` tinyint(3) unsigned NOT NULL,
+  `kSprache` int(10) unsigned NOT NULL,
   `cSuche` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `dErstellt` datetime NOT NULL,
   `dGueltigBis` datetime DEFAULT NULL,
@@ -4321,7 +4321,7 @@ CREATE TABLE `tsynclogin` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `ttag` (
   `kTag` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `kSprache` tinyint(4) unsigned NOT NULL,
+  `kSprache` int(10) unsigned NOT NULL,
   `cName` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `cSeo` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `nAktiv` tinyint(1) NOT NULL,
@@ -4367,7 +4367,7 @@ CREATE TABLE `ttagkunde` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `ttagmapping` (
   `kTagMapping` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `kSprache` tinyint(4) unsigned NOT NULL,
+  `kSprache` int(10) unsigned NOT NULL,
   `cName` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `cNameNeu` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`kTagMapping`),
@@ -4411,7 +4411,7 @@ INSERT INTO `ttemplateeinstellungen` VALUES ('JTL-Shop3-Tiny','product','show_fl
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `ttext` (
-  `kText` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
+  `kText` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `kSprache` int(11) NOT NULL,
   `kKundengruppe` int(11) NOT NULL,
   `cAGBContentText` mediumtext COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -4683,7 +4683,7 @@ CREATE TABLE `tuploadschemasprache` (
 CREATE TABLE `tverfuegbarkeitsbenachrichtigung` (
   `kVerfuegbarkeitsbenachrichtigung` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `kArtikel` int(10) unsigned DEFAULT NULL,
-  `kSprache` tinyint(3) unsigned DEFAULT NULL,
+  `kSprache` int(10) unsigned DEFAULT NULL,
   `cVorname` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `cNachname` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `cMail` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -4877,7 +4877,7 @@ INSERT INTO `tversandberechnung` VALUES (1,'Pauschale Versandkosten nach Lieferl
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tversandklasse` (
-  `kVersandklasse` tinyint(3) unsigned NOT NULL,
+  `kVersandklasse` int(10) unsigned NOT NULL,
   `cName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`kVersandklasse`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -5047,7 +5047,7 @@ CREATE TABLE `twarenkorbpos` (
   `kWarenkorbPos` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `kWarenkorb` int(10) unsigned NOT NULL DEFAULT 0,
   `kArtikel` int(10) unsigned NOT NULL DEFAULT 0,
-  `kVersandklasse` tinyint(3) unsigned NOT NULL DEFAULT 1,
+  `kVersandklasse` int(10) unsigned NOT NULL DEFAULT 1,
   `cName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `cLieferstatus` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `cArtNr` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',

@@ -5,11 +5,8 @@ msgstr ""
 msgid "Countdown"
 msgstr "Countdown"
 
-msgid "countdownDate"
-msgstr "Zieldatum"
-
-msgid "countdownTime"
-msgstr "Zielzeit"
+msgid "countdownDateTime"
+msgstr "Zieldatum und -zeit"
 
 msgid "textAfterCountdownFinished"
 msgstr "Text nach Ablauf"

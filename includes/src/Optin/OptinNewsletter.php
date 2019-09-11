@@ -111,7 +111,7 @@ class OptinNewsletter extends OptinBase implements OptinInterface
                 $checks->cPost_arr['captcha']   = isset($_POST['captcha'])
                     ? Text::htmlentities(Text::filterXSS($_POST['captcha']))
                     : null;
-                if (count($checks->nPlausi_arr) === 0) {
+                if (\count($checks->nPlausi_arr) === 0) {
                     $recipient = $this->dbHandler->select(
                         'tnewsletterempfaenger',
                         'cEmail',

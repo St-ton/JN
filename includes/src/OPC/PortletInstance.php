@@ -471,6 +471,7 @@ class PortletInstance implements \JsonSerializable
      */
     public function getImageAttributes($src = null, $alt = null, $title = null, $divisor = 1, $default = null): array
     {
+        $shopURL  = Shop::getURL();
         $src      = $src ?? $this->getProperty('src');
         $alt      = $alt ?? $this->getProperty('alt');
         $title    = $title ?? $this->getProperty('title');
@@ -478,12 +479,10 @@ class PortletInstance implements \JsonSerializable
         $srcsizes = '';
 
         if (empty($src)) {
-            $src = $default ?? '';
-
             return [
-                'srcset'   => $srcset,
-                'srcsizes' => $srcsizes,
-                'src'      => $src,
+                'srcset'   => '',
+                'srcsizes' => '',
+                'src'      => $default ?? '',
                 'alt'      => $alt,
                 'title'    => $title,
             ];
@@ -520,7 +519,7 @@ class PortletInstance implements \JsonSerializable
                 $img->save($sizedImgPath, $settings['bilder']['bilder_jpg_quali']);
             }
 
-            $srcset .= \PFAD_MEDIAFILES . 'Bilder/' . $size . $name . ' ' . $width . 'w,';
+            $srcset .= $shopURL . '/' . \PFAD_MEDIAFILES . 'Bilder/' . $size . $name . ' ' . $width . 'w,';
         }
 
         $srcset = \mb_substr($srcset, 0, -1); // remove trailing comma
@@ -567,7 +566,7 @@ class PortletInstance implements \JsonSerializable
         return [
             'srcset'   => $srcset,
             'srcsizes' => $srcsizes,
-            'src'      => \PFAD_MEDIAFILES . 'Bilder/.md/' . $name,
+            'src'      => $shopURL . '/' .\PFAD_MEDIAFILES . 'Bilder/.md/' . $name,
             'alt'      => $alt,
             'title'    => $title,
         ];

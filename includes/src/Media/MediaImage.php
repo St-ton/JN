@@ -535,8 +535,7 @@ class MediaImage implements IMedia
                 $res = [
                     'stmt' => 'SELECT cBildpfad, 0 AS number 
                         FROM tkonfiggruppe 
-                        WHERE kKonfiggruppe = :kKonfiggruppe 
-                        ORDER BY nSort ASC',
+                        WHERE kKonfiggruppe = :kKonfiggruppe',
                     'bind' => ['kKonfiggruppe' => $id]
                 ];
                 break;

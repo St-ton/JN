@@ -11,7 +11,6 @@ use JTL\Media\Image\Category;
 use JTL\Media\Image\Characteristic;
 use JTL\Media\Image\CharacteristicValue;
 use JTL\Media\Image\Manufacturer;
-use JTL\Media\Image\MediaImageCompatibility;
 use JTL\Media\Image\News;
 use JTL\Media\Image\NewsCategory;
 use JTL\Media\Image\OPC;
@@ -79,15 +78,14 @@ class Media
              ->register(new Manufacturer())
              ->register(new News())
              ->register(new NewsCategory())
-             ->register(new OPC())
-             ->register(new MediaImageCompatibility());
+             ->register(new OPC());
     }
 
     /**
-     * @param Product|MediaImageCompatibility $media
+     * @param IMedia $media
      * @return $this
      */
-    public function register($media): self
+    public function register(IMedia $media): self
     {
         $this->types[] = $media;
 

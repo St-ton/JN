@@ -18,7 +18,7 @@ msgid "headlineTotal"
 msgstr "Total number"
 
 msgid "headlineCache"
-msgstr "In cache (fallback *)"
+msgstr "In cache"
 
 msgid "headlineSize"
 msgstr "Size"
@@ -40,9 +40,6 @@ msgstr "Item image"
 
 msgid "corruptedPicsNote"
 msgstr "Faulty images are images with an entry in the database for which no file exists on the server. A maximum of 50 results is shown."
-
-msgid "fallbackNote"
-msgstr "*Fallback: images that are in the folder \"images/\" instead of the folder \"media/\"."
 
 msgid "successCacheReset"
 msgstr "Cache deleted successfully."

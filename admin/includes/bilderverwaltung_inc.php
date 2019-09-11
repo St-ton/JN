@@ -6,7 +6,10 @@
 
 use JTL\Helpers\URL;
 use JTL\IO\IOError;
-use JTL\Media\Image;
+use JTL\Media\Media;
+use JTL\Media\IMedia;
+use JTL\Media\Image\Category;
+use JTL\Media\Image\Manufacturer;
 use JTL\Media\Image\Product;
 use JTL\Shop;
 
@@ -21,7 +24,17 @@ function getItems(bool $filesize = false): array
         Image::TYPE_PRODUCT => (object)[
             'name'  => __('product'),
             'type'  => Image::TYPE_PRODUCT,
-            'stats' => Product::getStats(Image::TYPE_PRODUCT, $filesize)
+            'stats' => Product::getStats($filesize)
+        ],
+        Image::TYPE_CATEGORY => (object)[
+            'name'  => __('category'),
+            'type'  => Image::TYPE_CATEGORY,
+            'stats' => Category::getStats($filesize)
+        ],
+        Image::TYPE_MANUFACTURER => (object)[
+            'name'  => __('manufacturer'),
+            'type'  => Image::TYPE_MANUFACTURER,
+            'stats' => Manufacturer::getStats($filesize)
         ]
     ];
 }
@@ -118,9 +131,10 @@ function cleanupStorage(int $index)
 function clearImageCache($type, bool $isAjax = false)
 {
     Shop::Container()->getGetText()->loadAdminLocale('pages/bilderverwaltung');
-
     if ($type !== null && preg_match('/[a-z]*/', $type)) {
-        Product::clearCache($type);
+        $instance = Media::getClass($type);
+        /** @var IMedia $instance */
+        $instance::clearCache($type);
         unset($_SESSION['image_count'], $_SESSION['renderedImages']);
         if ($isAjax === true) {
             return ['success' => __('successCacheReset')];
@@ -142,6 +156,8 @@ function generateImageCache(?string $type, ?int $index)
     if ($type === null || $index === null) {
         return new IOError('Invalid argument request', 500);
     }
+    $instance = Media::getClass($type);
+    /** @var IMedia $instance */
 
     $started = time();
     $result  = (object)[
@@ -153,23 +169,23 @@ function generateImageCache(?string $type, ?int $index)
     ];
 
     if ($index === 0) {
-        $_SESSION['image_count']    = Product::getUncachedProductImageCount();
+        $_SESSION['image_count']    = $instance::getUncachedImageCount();
         $_SESSION['renderedImages'] = 0;
     }
 
     $total    = $_SESSION['image_count'];
-    $images   = Product::getImages($type, true, $index, IMAGE_PRELOAD_LIMIT);
-    $totalAll = Product::getProductImageCount();
+    $images   = $instance::getImages(true, $index, IMAGE_PRELOAD_LIMIT);
+    $totalAll = $instance::getTotalImageCount();
     while (count($images) === 0 && $index < $totalAll) {
         $index += 10;
-        $images = Product::getImages($type, true, $index, IMAGE_PRELOAD_LIMIT);
+        $images = $instance::getImages(true, $index, IMAGE_PRELOAD_LIMIT);
     }
     foreach ($images as $image) {
         $seconds = time() - $started;
         if ($seconds >= 10) {
             break;
         }
-        $result->images[] = Product::cacheImage($image);
+        $result->images[] = $instance::cacheImage($image);
         ++$index;
         ++$_SESSION['renderedImages'];
     }
@@ -192,12 +208,14 @@ function generateImageCache(?string $type, ?int $index)
  */
 function getCorruptedImages($type, int $limit)
 {
+    $instance = Media::getClass($type);
+    /** @var IMedia $instance */
     $corruptedImages = [];
-    $totalImages     = Product::getProductImageCount();
+    $totalImages     = $instance::getTotalImageCount();
     $db              = Shop::Container()->getDB();
     do {
         $i = 0;
-        foreach (Product::getProductImages() as $image) {
+        foreach ($instance::getAllImages() as $image) {
             ++$i;
             if (!file_exists($image->getRaw(true))
                 && !file_exists(PFAD_ROOT . $image->getFallbackThumb(Image::SIZE_XS))
@@ -227,5 +245,5 @@ function getCorruptedImages($type, int $limit)
         }
     } while (count($corruptedImages) < $limit && $i < $totalImages);
 
-    return [Image::TYPE_PRODUCT => array_slice($corruptedImages, 0, $limit)];
+    return [$type => array_slice($corruptedImages, 0, $limit)];
 }

@@ -6,6 +6,9 @@
 
 namespace JTL\Media;
 
+use Generator;
+use JTL\Media\Image\StatsItem;
+
 /**
  * Interface IMedia
  * @package JTL\Media
@@ -70,4 +73,54 @@ interface IMedia
      * @return string
      */
     public static function getStoragePath(): string;
+
+    /**
+     * @param bool $filesize
+     * @return StatsItem
+     */
+    public static function getStats(bool $filesize = false): StatsItem;
+
+    /**
+     * @param int|null $offset
+     * @param int|null $limit
+     * @return Generator
+     */
+    public static function getAllImages(int $offset = null, int $limit = null): Generator;
+
+    /**
+     * @return int
+     */
+    public static function getTotalImageCount(): int;
+
+    /**
+     * @return int
+     */
+    public static function getUncachedImageCount(): int;
+
+    /**
+     * @param bool     $notCached
+     * @param int|null $offset
+     * @param int|null $limit
+     * @return MediaImageRequest[]
+     */
+    public static function getImages(bool $notCached = false, int $offset = null, int $limit = null): array;
+
+    /**
+     * @param MediaImageRequest $req
+     * @param bool              $overwrite
+     * @return array
+     */
+    public static function cacheImage(MediaImageRequest $req, bool $overwrite = false): array;
+
+    /**
+     * @param string   $type
+     * @param null|int $id
+     */
+    public static function clearCache(string $type, $id = null): void;
+
+    /**
+     * @param string $imageUrl
+     * @return MediaImageRequest
+     */
+    public static function toRequest(string $imageUrl): MediaImageRequest;
 }

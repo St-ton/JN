@@ -6,123 +6,24 @@
 
 namespace JTL\Media\Image;
 
-use Exception;
-use FilesystemIterator;
 use Generator;
 use JTL\DB\ReturnType;
 use JTL\Media\Image;
-use JTL\Media\IMedia;
 use JTL\Media\MediaImageRequest;
 use JTL\Shop;
 use PDO;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
 use stdClass;
-use function Functional\select;
 
 /**
  * Class Product
  * @package JTL\Media\Image
  */
-class Product extends AbstractImage implements IMedia
+class Product extends AbstractImage
 {
     /**
      * @var string
      */
     protected $regEx = \MEDIAIMAGE_REGEX;
-
-    /**
-     * @param string $type
-     * @param bool   $filesize
-     * @return stdClass
-     * @throws Exception
-     */
-    public static function getStats(string $type, bool $filesize = false): stdClass
-    {
-        $result = (object)[
-            'total'         => 0,
-            'corrupted'     => 0,
-            'fallback'      => 0,
-            'generated'     => [
-                Image::SIZE_ORIGINAL => 0,
-                Image::SIZE_XS       => 0,
-                Image::SIZE_SM       => 0,
-                Image::SIZE_MD       => 0,
-                Image::SIZE_LG       => 0,
-            ],
-            'totalSize'     => 0,
-            'generatedSize' => [
-                Image::SIZE_ORIGINAL => 0,
-                Image::SIZE_XS       => 0,
-                Image::SIZE_SM       => 0,
-                Image::SIZE_MD       => 0,
-                Image::SIZE_LG       => 0,
-            ],
-        ];
-        foreach (self::getProductImages() as $image) {
-            $raw = $image->getRaw(true);
-            ++$result->total;
-            if (\file_exists($raw)) {
-                foreach (Image::getAllSizes() as $size) {
-                    $thumb = $image->getThumb($size, true);
-                    if (!\file_exists($thumb)) {
-                        continue;
-                    }
-                    ++$result->generated[$size];
-                    if ($filesize === true) {
-                        $result->generatedSize[$size] = \filesize($thumb);
-                        $result->totalSize           += $result->generatedSize[$size];
-                    }
-                }
-            } elseif (\file_exists(\PFAD_ROOT . $image->getFallbackThumb(Image::SIZE_XS))) {
-                ++$result->fallback;
-            } else {
-                ++$result->corrupted;
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * @param string   $type
-     * @param null|int $id
-     */
-    public static function clearCache(string $type, $id = null): void
-    {
-        $directory = \PFAD_ROOT . MediaImageRequest::getCachePath($type);
-        if ($id !== null) {
-            $directory .= '/' . (int)$id;
-        }
-
-        try {
-            $rdi = new RecursiveDirectoryIterator(
-                $directory,
-                FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS
-            );
-            foreach (new RecursiveIteratorIterator($rdi, RecursiveIteratorIterator::CHILD_FIRST) as $value) {
-                $value->isFile()
-                    ? \unlink($value)
-                    : \rmdir($value);
-            }
-
-            if ($id !== null) {
-                \rmdir($directory);
-            }
-        } catch (Exception $e) {
-        }
-    }
-
-    /**
-     * @param string $imageUrl
-     * @return MediaImageRequest
-     */
-    public static function toRequest(string $imageUrl): MediaImageRequest
-    {
-        $self = new self();
-
-        return $self->create($imageUrl);
-    }
 
     /**
      * @inheritdoc
@@ -142,56 +43,9 @@ class Product extends AbstractImage implements IMedia
     }
 
     /**
-     * @param MediaImageRequest $req
-     * @param bool              $overwrite
-     * @return array
+     * @inheritdoc
      */
-    public static function cacheImage(MediaImageRequest $req, bool $overwrite = false): array
-    {
-        $result   = [];
-        $rawImage = null;
-        $rawPath  = $req->getRaw(true);
-        if ($overwrite === true) {
-            self::clearCache($req->getType(), $req->getID());
-        }
-
-        foreach (Image::getAllSizes() as $size) {
-            $res = (object)[
-                'success'    => true,
-                'error'      => null,
-                'renderTime' => 0,
-                'cached'     => false,
-            ];
-            try {
-                $req->size   = $size;
-                $thumbPath   = $req->getThumb(null, true);
-                $res->cached = \is_file($thumbPath);
-                if ($res->cached === false) {
-                    $renderStart = \microtime(true);
-                    if ($rawImage === null && !\is_file($rawPath)) {
-                        throw new Exception(\sprintf('Image source "%s" does not exist', $rawPath));
-                    }
-                    Image::render($req);
-                    $res->renderTime = (\microtime(true) - $renderStart) * 1000;
-                }
-            } catch (Exception $e) {
-                $res->success = false;
-                $res->error   = $e->getMessage();
-            }
-            $result[$size] = $res;
-        }
-
-        if ($rawImage !== null) {
-            unset($rawImage);
-        }
-
-        return $result;
-    }
-
-    /**
-     * @return int
-     */
-    public static function getProductImageCount(): int
+    public static function getTotalImageCount(): int
     {
         return (int)Shop::Container()->getDB()->query(
             'SELECT COUNT(tartikelpict.kArtikel) AS cnt
@@ -203,19 +57,9 @@ class Product extends AbstractImage implements IMedia
     }
 
     /**
-     * @return int
+     * @inheritdoc
      */
-    public static function getUncachedProductImageCount(): int
-    {
-        return \count(select(self::getProductImages(), function (MediaImageRequest $e) {
-            return !self::isCached($e) && \file_exists($e->getRaw(true));
-        }));
-    }
-
-    /**
-     * @return Generator
-     */
-    public static function getProductImages(): Generator
+    public static function getAllImages(int $offset = null, int $limit = null): Generator
     {
         $cols = '';
         switch (Image::getSettings()['naming']['product']) {
@@ -239,10 +83,9 @@ class Product extends AbstractImage implements IMedia
             'SELECT tartikelpict.cPfad AS path, tartikelpict.nNr AS number, tartikelpict.kArtikel ' . $cols . '
                 FROM tartikelpict
                 INNER JOIN tartikel
-                  ON tartikelpict.kArtikel = tartikel.kArtikel',
+                  ON tartikelpict.kArtikel = tartikel.kArtikel' . self::getLimitStatement($offset, $limit),
             ReturnType::QUERYSINGLE
         );
-
         while (($image = $images->fetch(PDO::FETCH_OBJ)) !== false) {
             yield MediaImageRequest::create([
                 'id'     => $image->kArtikel,
@@ -252,123 +95,6 @@ class Product extends AbstractImage implements IMedia
                 'path'   => $image->path,
             ]);
         }
-    }
-
-    /**
-     * @param string   $type
-     * @param bool     $notCached
-     * @param int|null $offset
-     * @param int|null $limit
-     * @return MediaImageRequest[]
-     * @throws Exception
-     */
-    public static function getImages($type, bool $notCached = false, int $offset = null, int $limit = null): array
-    {
-        $requests = [];
-        // only select the necessary columns to save memory
-        $cols = '';
-        $conf = Image::getSettings();
-        switch ($conf['naming']['product']) {
-            case 1:
-                $cols = ', tartikel.cArtNr';
-                break;
-            case 2:
-                $cols = ', tartikel.cSeo, tartikel.cName';
-                break;
-            case 3:
-                $cols = ', tartikel.cArtNr, tartikel.cSeo, tartikel.cName';
-                break;
-            case 4:
-                $cols = ', tartikel.cBarcode';
-                break;
-            case 0:
-            default:
-                break;
-        }
-        $limitStmt = '';
-        if ($limit !== null) {
-            $limitStmt = ' LIMIT ';
-            if ($offset !== null) {
-                $limitStmt .= (int)$offset . ', ';
-            }
-            $limitStmt .= (int)$limit;
-        }
-        $images = Shop::Container()->getDB()->query(
-            'SELECT tartikelpict.cPfad AS path, tartikelpict.nNr AS number, tartikelpict.kArtikel ' . $cols . '
-                FROM tartikelpict
-                INNER JOIN tartikel
-                  ON tartikelpict.kArtikel = tartikel.kArtikel' . $limitStmt,
-            ReturnType::QUERYSINGLE
-        );
-
-        while (($image = $images->fetch(PDO::FETCH_OBJ)) !== false) {
-            $req = MediaImageRequest::create([
-                'id'     => $image->kArtikel,
-                'type'   => $type,
-                'name'   => self::getCustomName($image),
-                'number' => $image->number,
-                'path'   => $image->path,
-            ]);
-
-            if ($notCached && self::isCached($req)) {
-                continue;
-            }
-
-            $requests[] = $req;
-        }
-
-        return $requests;
-    }
-
-    /**
-     * @param MediaImageRequest $req
-     * @return bool
-     */
-    public static function isCached(MediaImageRequest $req): bool
-    {
-        return \file_exists($req->getThumb(Image::SIZE_XS, true))
-            && \file_exists($req->getThumb(Image::SIZE_SM, true))
-            && \file_exists($req->getThumb(Image::SIZE_MD, true))
-            && \file_exists($req->getThumb(Image::SIZE_LG, true));
-    }
-
-    /**
-     * @param string $type
-     * @param int    $id
-     * @return int|null
-     */
-    public static function getPrimaryNumber(string $type, int $id): ?int
-    {
-        $prepared = self::getImageStmt($type, $id);
-        if ($prepared !== null) {
-            $primary = Shop::Container()->getDB()->queryPrepared(
-                $prepared->stmt,
-                $prepared->bind,
-                ReturnType::SINGLE_OBJECT
-            );
-            if (\is_object($primary)) {
-                return \max(1, (int)$primary->number);
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * @param string $type
-     * @param int    $id
-     * @return stdClass|null
-     */
-    public static function getImageStmt(string $type, int $id): ?stdClass
-    {
-        return (object)[
-            'stmt' => 'SELECT kArtikel, nNr AS number
-                FROM tartikelpict 
-                WHERE kArtikel = :kArtikel 
-                GROUP BY cPfad 
-                ORDER BY nNr ASC',
-            'bind' => ['kArtikel' => $id]
-        ];
     }
 
     /**
@@ -420,5 +146,44 @@ class Product extends AbstractImage implements IMedia
     public static function getStoragePath(): string
     {
         return \PFAD_MEDIA_IMAGE_STORAGE;
+    }
+
+    /**
+     * @param string $type
+     * @param int    $id
+     * @return int|null
+     */
+    public static function getPrimaryNumber(string $type, int $id): ?int
+    {
+        $prepared = self::getImageStmt($type, $id);
+        if ($prepared !== null) {
+            $primary = Shop::Container()->getDB()->queryPrepared(
+                $prepared->stmt,
+                $prepared->bind,
+                ReturnType::SINGLE_OBJECT
+            );
+            if (\is_object($primary)) {
+                return \max(1, (int)$primary->number);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param string $type
+     * @param int    $id
+     * @return stdClass|null
+     */
+    public static function getImageStmt(string $type, int $id): ?stdClass
+    {
+        return (object)[
+            'stmt' => 'SELECT kArtikel, nNr AS number
+                FROM tartikelpict 
+                WHERE kArtikel = :kArtikel 
+                GROUP BY cPfad 
+                ORDER BY nNr ASC',
+            'bind' => ['kArtikel' => $id]
+        ];
     }
 }

@@ -6,10 +6,12 @@
 
 namespace JTL\Media\Image;
 
+use Generator;
 use JTL\DB\ReturnType;
 use JTL\Media\Image;
 use JTL\Media\MediaImageRequest;
 use JTL\Shop;
+use PDO;
 use stdClass;
 
 /**
@@ -32,8 +34,8 @@ class Manufacturer extends Product
     {
         return (object)[
             'stmt' => 'SELECT cBildpfad, 0 AS number 
-                                  FROM thersteller 
-                                  WHERE kHersteller = :kHersteller',
+                          FROM thersteller 
+                          WHERE kHersteller = :kHersteller',
             'bind' => ['kHersteller' => $id]
         ];
     }
@@ -45,8 +47,8 @@ class Manufacturer extends Product
     {
         $names = Shop::Container()->getDB()->queryPrepared(
             'SELECT kHersteller, cName, cSeo, cBildpfad AS path
-                    FROM thersteller
-                    WHERE kHersteller = :mid',
+                FROM thersteller
+                WHERE kHersteller = :mid',
             ['mid' => $req->id],
             ReturnType::ARRAY_OF_OBJECTS
         );
@@ -87,5 +89,39 @@ class Manufacturer extends Product
     public static function getStoragePath(): string
     {
         return \STORAGE_MANUFACTURERS;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function getAllImages(int $offset = null, int $limit = null): Generator
+    {
+        $images = Shop::Container()->getDB()->query(
+            'SELECT kHersteller AS id, cName, cSeo, cBildpfad AS path
+                FROM thersteller' . self::getLimitStatement($offset, $limit),
+            ReturnType::QUERYSINGLE
+        );
+        while (($image = $images->fetch(PDO::FETCH_OBJ)) !== false) {
+            yield MediaImageRequest::create([
+                'id'     => $image->id,
+                'type'   => Image::TYPE_CATEGORY,
+                'name'   => self::getCustomName($image),
+                'number' => 1,
+                'path'   => $image->path,
+            ]);
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function getTotalImageCount(): int
+    {
+        return (int)Shop::Container()->getDB()->query(
+            'SELECT COUNT(kHersteller) AS cnt
+                FROM thersteller
+                WHERE cBildpfad IS NOT NULL AND cBildpfad != \'\'',
+            ReturnType::SINGLE_OBJECT
+        )->cnt;
     }
 }

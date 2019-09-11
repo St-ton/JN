@@ -16,9 +16,4 @@ $oAccount->permission('DISPLAY_IMAGES_VIEW', true, true);
 $smarty->configLoad('german.conf', 'bilderverwaltung')
        ->assign('items', getItems())
        ->assign('corruptedImagesByType', getCorruptedImages(Image::TYPE_PRODUCT, 50))
-       ->assign('TYPE_PRODUCT', Image::TYPE_PRODUCT)
-       ->assign('SIZE_XS', Image::SIZE_XS)
-       ->assign('SIZE_SM', Image::SIZE_SM)
-       ->assign('SIZE_MD', Image::SIZE_MD)
-       ->assign('SIZE_LG', Image::SIZE_LG)
        ->display('bilderverwaltung.tpl');

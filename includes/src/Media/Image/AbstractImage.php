@@ -7,10 +7,15 @@
 namespace JTL\Media\Image;
 
 use Exception;
+use FilesystemIterator;
+use Generator;
 use JTL\Media\Image;
 use JTL\Media\IMedia;
 use JTL\Media\MediaImageRequest;
 use JTL\Shop;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use function Functional\select;
 
 /**
  * Class AbstractImage
@@ -74,12 +79,12 @@ abstract class AbstractImage implements IMedia
      */
     public static function getThumb(string $type, $id, $mixed, $size, int $number = 1, string $sourcePath = null): string
     {
-        $req   = self::getRequest($type, $id, $mixed, $size, $number, $sourcePath);
+        $req   = static::getRequest($type, $id, $mixed, $size, $number, $sourcePath);
         $thumb = $req->getThumb($size);
         if (!\file_exists(\PFAD_ROOT . $thumb) && !\file_exists(\PFAD_ROOT . $req->getRaw())) {
             Shop::dbg($thumb, false, 'Thumb@404:');
             Shop::dbg($req, true, 'REQ@404:');
-            $thumb = self::getFallback($req);
+            $thumb = \BILD_KEIN_ARTIKELBILD_VORHANDEN;
         }
 
         return $thumb;
@@ -149,6 +154,181 @@ abstract class AbstractImage implements IMedia
     }
 
     /**
+     * @inheritdoc
+     */
+    public static function getStats(bool $filesize = false): StatsItem
+    {
+        $result = new StatsItem();
+        foreach (static::getAllImages() as $image) {
+            if ($image === null) {
+                continue;
+            }
+            $raw = $image->getRaw(true);
+            $result->addItem();
+            if ($raw === null) {
+                Shop::dbg($image);
+                Shop::dbg(static::class, true);
+            }
+            if (\file_exists($raw)) {
+                foreach (Image::getAllSizes() as $size) {
+                    $thumb = $image->getThumb($size, true);
+                    if (!\file_exists($thumb)) {
+                        continue;
+                    }
+                    $result->addGeneratedItem($size);
+                    if ($filesize === true) {
+                        $bytes = \filesize($thumb);
+                        $result->addGeneratedSizeItem($size, $bytes);
+                    }
+                }
+            } else {
+                $result->addCorrupted();
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param int|null $offset
+     * @param int|null $limit
+     * @return string
+     */
+    protected static function getLimitStatement(int $offset = null, int $limit = null): string
+    {
+        $limitStmt = '';
+        if ($limit !== null) {
+            $limitStmt = ' LIMIT ';
+            if ($offset !== null) {
+                $limitStmt .= (int)$offset . ', ';
+            }
+            $limitStmt .= (int)$limit;
+        }
+
+        return $limitStmt;
+    }
+
+    /**
+     * @inheritdoc
+     * @throws Exception
+     */
+    public static function getImages(bool $notCached = false, int $offset = null, int $limit = null): array
+    {
+        $requests = [];
+        foreach (static::getAllImages($offset, $limit) as $req) {
+            if ($notCached && static::isCached($req)) {
+                continue;
+            }
+            $requests[] = $req;
+        }
+
+        return $requests;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function getAllImages(int $offset = null, int $limit = null): Generator
+    {
+        yield null;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function getUncachedImageCount(): int
+    {
+        return \count(select(static::getAllImages(), function (MediaImageRequest $e) {
+            return !static::isCached($e) && \file_exists($e->getRaw(true));
+        }));
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public static function cacheImage(MediaImageRequest $req, bool $overwrite = false): array
+    {
+        $result   = [];
+        $rawImage = null;
+        $rawPath  = $req->getRaw(true);
+        if ($overwrite === true) {
+            static::clearCache($req->getType(), $req->getID());
+        }
+        foreach (Image::getAllSizes() as $size) {
+            $res = (object)[
+                'success'    => true,
+                'error'      => null,
+                'renderTime' => 0,
+                'cached'     => false,
+            ];
+            try {
+                $req->size   = $size;
+                $thumbPath   = $req->getThumb(null, true);
+                $res->cached = \is_file($thumbPath);
+                if ($res->cached === false) {
+                    $renderStart = \microtime(true);
+                    if ($rawImage === null && !\is_file($rawPath)) {
+                        throw new Exception(\sprintf('Image source "%s" does not exist', $rawPath));
+                    }
+                    Image::render($req);
+                    $res->renderTime = (\microtime(true) - $renderStart) * 1000;
+                }
+            } catch (Exception $e) {
+                $res->success = false;
+                $res->error   = $e->getMessage();
+            }
+            $result[$size] = $res;
+        }
+
+        if ($rawImage !== null) {
+            unset($rawImage);
+        }
+
+        return $result;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function clearCache(string $type, $id = null): void
+    {
+        // @todo: remove type param
+        $directory = \PFAD_ROOT . MediaImageRequest::getCachePath($type);
+        if ($id !== null) {
+            $directory .= '/' . (int)$id;
+        }
+
+        try {
+            $rdi = new RecursiveDirectoryIterator(
+                $directory,
+                FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS
+            );
+            foreach (new RecursiveIteratorIterator($rdi, RecursiveIteratorIterator::CHILD_FIRST) as $value) {
+                $value->isFile()
+                    ? \unlink($value)
+                    : \rmdir($value);
+            }
+
+            if ($id !== null) {
+                \rmdir($directory);
+            }
+        } catch (Exception $e) {
+        }
+    }
+
+    /**
+     * @param MediaImageRequest $req
+     * @return bool
+     */
+    protected static function isCached(MediaImageRequest $req): bool
+    {
+        return \file_exists($req->getThumb(Image::SIZE_XS, true))
+            && \file_exists($req->getThumb(Image::SIZE_SM, true))
+            && \file_exists($req->getThumb(Image::SIZE_MD, true))
+            && \file_exists($req->getThumb(Image::SIZE_LG, true));
+    }
+
+    /**
      * @param MediaImageRequest $req
      * @return string
      */
@@ -158,24 +338,7 @@ abstract class AbstractImage implements IMedia
         if (!\file_exists(\PFAD_ROOT . $thumb) && !\file_exists(\PFAD_ROOT . $req->getRaw())) {
             Shop::dbg($thumb, false, 'Thumb@404:');
             Shop::dbg($req, true, 'REQ@404:');
-            $thumb = self::getFallback($req);
-        }
-
-        return $thumb;
-    }
-
-    /**
-     * @param MediaImageRequest $req
-     * @return string
-     */
-    protected static function getFallback(MediaImageRequest $req): string
-    {
-        $thumb = \BILD_KEIN_ARTIKELBILD_VORHANDEN;
-        if ($req->getType() === Image::TYPE_PRODUCT) {
-            $fallback = $req->getFallbackThumb($req->getSizeType());
-            if (\file_exists(\PFAD_ROOT . $fallback)) {
-                $thumb = $fallback;
-            }
+            $thumb = \BILD_KEIN_ARTIKELBILD_VORHANDEN;
         }
 
         return $thumb;
@@ -210,6 +373,15 @@ abstract class AbstractImage implements IMedia
         return \preg_match($this->regEx, $request, $matches)
             ? \array_intersect_key($matches, \array_flip(\array_filter(\array_keys($matches), '\is_string')))
             : null;
+    }
+
+    /**
+     * @param string $imageUrl
+     * @return MediaImageRequest
+     */
+    public static function toRequest(string $imageUrl): MediaImageRequest
+    {
+        return (new static())->create($imageUrl);
     }
 
     /**

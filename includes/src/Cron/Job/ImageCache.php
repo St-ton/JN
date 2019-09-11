@@ -11,6 +11,8 @@ use JTL\Cron\JobInterface;
 use JTL\Cron\QueueEntry;
 use JTL\Media\Image;
 use JTL\Media\Image\Product;
+use JTL\Media\IMedia;
+use JTL\Media\Media;
 
 /**
  * Class ImageCache
@@ -44,18 +46,20 @@ final class ImageCache extends Job
      */
     private function generateImageCache(int $index, string $type = Image::TYPE_PRODUCT): bool
     {
+        $instance = Media::getClass($type);
+        /** @var IMedia $instance */
         $rendered = 0;
-        $total    = Product::getUncachedProductImageCount();
-        $images   = Product::getImages($type, true, $index, $this->getLimit());
-        $totalAll = Product::getProductImageCount();
+        $total    = $instance::getUncachedImageCount();
+        $images   = $instance::getImages(true, $index, $this->getLimit());
+        $totalAll = $instance::getTotalImageCount();
         $this->logger->debug('Uncached images: ' . $total . '/' . $totalAll);
         if ($index >= $totalAll) {
             $index  = 0;
-            $images = Product::getImages($type, true, $index, $this->getLimit());
+            $images = $instance::getImages(true, $index, $this->getLimit());
         }
         while (\count($images) === 0 && $index < $totalAll) {
             $index += $this->getLimit();
-            $images = Product::getImages($type, true, $index, $this->getLimit());
+            $images = $instance::getImages(true, $index, $this->getLimit());
         }
         foreach ($images as $image) {
             Product::cacheImage($image);

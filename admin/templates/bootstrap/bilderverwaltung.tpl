@@ -10,39 +10,34 @@
                 <div class="alert alert-success"><i class="fal fa-info-circle"></i> {$success}</div>
             {/if}
             <div class="table-responsive">
-                <table class="list table" id="cache-items">
+                <table class="list table" id="cache-items" style="width: 100%">
                     <thead>
                     <tr>
                         <th class="text-left">{__('headlineTyp')}</th>
                         <th class="text-center">{__('headlineTotal')}</th>
                         <th class="text-center abbr">{__('headlineCache')}</th>
                         <th class="text-center">{__('faulty')}</th>
-                        <th class="text-center" width="125">{__('headlineSize')}</th>
-                        <th class="text-center" width="200">{__('actions')}</th>
+                        <th class="text-center" style="width:125px">{__('headlineSize')}</th>
+                        <th class="text-center" style="width:200px">{__('actions')}</th>
                     </tr>
                     </thead>
                     <tbody>
                     {foreach $items as $item}
-                        {$corruptedPicsTypes[{$item->type}] = $item->stats->corrupted}
+                        {$corruptedPicsTypes[{$item->type}] = $item->stats->getCorrupted()}
                         <tr data-type="{$item->type}">
                             <td class="item-name">{$item->name}</td>
                             <td class="text-center">
                                 <span class="item-total">
-                                  {$item->stats->total}
+                                  {$item->stats->getTotal()}
                                 </span>
                             </td>
                             <td class="text-center">
                                 <span class="item-generated">
-                                  {(($item->stats->generated[$SIZE_XS] + $item->stats->generated[$SIZE_SM] + $item->stats->generated[$SIZE_MD] + $item->stats->generated[$SIZE_LG]) / 4)|round:0}
+                                  {(($item->stats->getGeneratedBySize(Image::SIZE_XS) + $item->stats->getGeneratedBySize(Image::SIZE_SM) + $item->stats->getGeneratedBySize(Image::SIZE_MD) + $item->stats->getGeneratedBySize(Image::SIZE_LG)) / 4)|round:0}
                                 </span>
-                                (
-                                <span class="item-fallback">
-                                    {$item->stats->fallback}
-                                </span>
-                                )
                             </td>
                             <td class="text-center">
-                                <span class="item-corrupted">{$item->stats->corrupted}</span>
+                                <span class="item-corrupted">{$item->stats->getCorrupted()}</span>
                             </td>
                             <td class="text-center item-total-size">
                                 <i class="fa fa-spinner fa-spin"></i>
@@ -51,7 +46,7 @@
                                 <a class="btn btn-outline-primary btn-sm mb-2" href="#" data-callback="flush" data-type="{$item->type}">
                                     <i class="fas fa-trash-alt"></i>{__('deleteCachedPics')}
                                 </a>
-                                <a class="btn btn-primary btn-sm" href="#" data-callback="generate">
+                                <a class="btn btn-primary btn-sm" href="#" data-callback="generate" data-type="{$item->type}">
                                     <i class="fa fa-cog"></i>{__('generatePics')}
                                 </a>
                             </td>
@@ -60,12 +55,8 @@
                     </tbody>
                 </table>
             </div>
-            <div class="footnote small text-muted">
-                <p>{__('fallbackNote')}</p>
-            </div>
         </div>
     </div>
-
 
     {foreach $corruptedPicsTypes as $corruptedPicsType}
         {if $corruptedPicsType > 0}
@@ -145,7 +136,6 @@
                 $('.item-total', item).text(data.total);
                 $('.item-corrupted', item).text(data.corrupted);
                 $('.item-total-size', item).text(formatSize(data.totalSize));
-
                 $(['xs', 'sm', 'md', 'lg']).each(function (i, size) {
                     totalCached += data.generated[size];
                 });
@@ -157,11 +147,7 @@
     var lastResults = null,
         lastTick = null,
         running = false,
-        notify = null
-
-    function generate() {
-        startGenerate('product');
-    }
+        notify = null;
 
     function cleanup() {
         running = true;
@@ -242,6 +228,10 @@
                 stopCleanup();
             }
         });
+    }
+
+    function generate(param) {
+        startGenerate((typeof param.data('type') !== 'undefined') ? param.data('type') : 'product');
     }
 
     function flush(param) {

@@ -1299,6 +1299,9 @@ aside {
 .nmbr-cfg-group {
   display: flex;
   z-index: 1;
+  input {
+    border-radius: 0;
+  }
   .btn-decrement, .btn-increment {
     color: $input-color;
     background-color: $input-bg;
@@ -1321,9 +1324,11 @@ aside {
   }
   .btn-decrement {
     border-right: 0;
+    border-radius: $btn-border-radius 0 0 $btn-border-radius;
   }
   .btn-increment {
     border-left: 0;
+    border-radius: 0 $btn-border-radius $btn-border-radius 0;
   }
   input.form-control {
     border-right: 0;

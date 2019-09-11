@@ -16631,6 +16631,9 @@ aside .badge-light {
   display: flex;
   z-index: 1;
 }
+.nmbr-cfg-group input {
+  border-radius: 0;
+}
 .nmbr-cfg-group .btn-decrement, .nmbr-cfg-group .btn-increment {
   color: #525252;
   background-color: #fff;
@@ -16655,9 +16658,11 @@ aside .badge-light {
 }
 .nmbr-cfg-group .btn-decrement {
   border-right: 0;
+  border-radius: 0.125rem 0 0 0.125rem;
 }
 .nmbr-cfg-group .btn-increment {
   border-left: 0;
+  border-radius: 0 0.125rem 0.125rem 0;
 }
 .nmbr-cfg-group input.form-control {
   border-right: 0;

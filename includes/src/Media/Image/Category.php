@@ -103,11 +103,12 @@ class Category extends Product
         );
         while (($image = $images->fetch(PDO::FETCH_OBJ)) !== false) {
             yield MediaImageRequest::create([
-                'id'     => $image->id,
-                'type'   => Image::TYPE_CATEGORY,
-                'name'   => self::getCustomName($image),
-                'number' => 1,
-                'path'   => $image->path,
+                'id'         => $image->id,
+                'type'       => Image::TYPE_CATEGORY,
+                'name'       => self::getCustomName($image),
+                'number'     => 1,
+                'path'       => $image->path,
+                'sourcePath' => $image->path
             ]);
         }
     }

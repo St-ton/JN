@@ -55,9 +55,6 @@ abstract class AbstractImage implements IMedia
                 }
             }
             if ($matchFound === false) {
-                Shop::dbg($request, false, 'REQ:');
-                Shop::dbg($imgFilePath, false, '$imgFilePath:');
-                Shop::dbg($mediaReq, true);
                 \header('Location: ' . Shop::getURL() . '/' . $imgNames[0]->imgPath, true, 301);
                 exit;
             }
@@ -82,8 +79,6 @@ abstract class AbstractImage implements IMedia
         $req   = static::getRequest($type, $id, $mixed, $size, $number, $sourcePath);
         $thumb = $req->getThumb($size);
         if (!\file_exists(\PFAD_ROOT . $thumb) && !\file_exists(\PFAD_ROOT . $req->getRaw())) {
-            Shop::dbg($thumb, false, 'Thumb@404:');
-            Shop::dbg($req, true, 'REQ@404:');
             $thumb = \BILD_KEIN_ARTIKELBILD_VORHANDEN;
         }
 
@@ -165,10 +160,6 @@ abstract class AbstractImage implements IMedia
             }
             $raw = $image->getRaw(true);
             $result->addItem();
-            if ($raw === null) {
-                Shop::dbg($image);
-                Shop::dbg(static::class, true);
-            }
             if (\file_exists($raw)) {
                 foreach (Image::getAllSizes() as $size) {
                     $thumb = $image->getThumb($size, true);
@@ -336,8 +327,6 @@ abstract class AbstractImage implements IMedia
     {
         $thumb = $req->getThumb($req->getSizeType());
         if (!\file_exists(\PFAD_ROOT . $thumb) && !\file_exists(\PFAD_ROOT . $req->getRaw())) {
-            Shop::dbg($thumb, false, 'Thumb@404:');
-            Shop::dbg($req, true, 'REQ@404:');
             $thumb = \BILD_KEIN_ARTIKELBILD_VORHANDEN;
         }
 

@@ -5,18 +5,17 @@
 {block name='productdetails-details'}
     {*{has_boxes position='left' assign='hasLeftBox'}*}
     {$hasLeftBox = false}
-    {if isset($bWarenkorbHinzugefuegt) && $bWarenkorbHinzugefuegt}
-        {block name='productdetails-details-include-pushed-success'}
-            {container}
+    {container}
+        {if isset($bWarenkorbHinzugefuegt) && $bWarenkorbHinzugefuegt}
+            {block name='productdetails-details-include-pushed-success'}
                 {include file='productdetails/pushed_success.tpl' card=true}
-            {/container}
-        {/block}
-    {else}
-        {block name='productdetails-details-alert-product-note'}
+            {/block}
+        {else}
+            {block name='productdetails-details-alert-product-note'}
                 {$alertList->displayAlertByKey('productNote')}
-        {/block}
-    {/if}
-
+            {/block}
+        {/if}
+    {/container}
     {block name='productdetails-details-form'}
         {opcMountPoint id='opc_before_buy_form'}
         {container}
@@ -55,7 +54,11 @@
                                                 <meta itemprop="worstRating" content="1"/>
                                                 <meta itemprop="reviewCount" content="{$Artikel->Bewertungen->oBewertungGesamt->nAnzahl}"/>
                                                 {block name='productdetails-details-include-rating'}
-                                                    {link href="{$Artikel->cURLFull}#tab-votes" id="jump-to-votes-tab" class="d-print-none"}
+                                                    {link href="{$Artikel->cURLFull}#tab-votes"
+                                                        id="jump-to-votes-tab"
+                                                        class="d-print-none"
+                                                        aria=["label"=>{lang key='Votes'}]
+                                                    }
                                                         {include file='productdetails/rating.tpl' stars=$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt total=$Artikel->Bewertungen->oBewertungGesamt->nAnzahl}
                                                     {/link}
                                                 {/block}

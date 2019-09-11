@@ -22,7 +22,7 @@
         {row}
             {col cols=12}<hr>{/col}
             {col cols=12 md=4}
-                <div class="h3">{lang key='billingAdress' section='account data'}</div>
+                <div class="h3">{lang key='name'}</div>
             {/col}
             {col md=8}
                 {formrow}
@@ -71,7 +71,7 @@
                     {/block}
                     {* firstname lastname *}
                     {block name='checkout-inc-billing-address-form-firstname-lastname'}
-                        {col md=6}
+                        {col cols=12 md=6}
                             {if isset($cPost_var['vorname'])}
                                 {assign var=inputVal_firstName value=$cPost_var['vorname']}
                             {elseif isset($Kunde->cVorname)}
@@ -85,7 +85,7 @@
                                 ]
                             }
                         {/col}
-                        {col md=6}
+                        {col cols=12 md=6}
                             {if isset($cPost_var['nachname'])}
                                 {assign var=inputVal_lastName value=$cPost_var['nachname']}
                             {elseif isset($Kunde->cNachname)}
@@ -104,7 +104,7 @@
                     {* firm / firmtext *}
                     {block name='checkout-inc-billing-address-form-company'}
                         {if $Einstellungen.kunden.kundenregistrierung_abfragen_firma !== 'N'}
-                            {col md=6}
+                            {col cols=12 md=6}
                                 {if isset($cPost_var['firma'])}
                                     {assign var=inputVal_firm value=$cPost_var['firma']}
                                 {elseif isset($Kunde->cFirma)}
@@ -121,7 +121,7 @@
                         {/if}
 
                         {if $Einstellungen.kunden.kundenregistrierung_abfragen_firmazusatz !== 'N'}
-                            {col md=6}
+                            {col cols=12 md=6}
                                 {if isset($cPost_var['firmazusatz'])}
                                     {assign var=inputVal_firmext value=$cPost_var['firmazusatz']}
                                 {elseif isset($Kunde->cZusatz)}
@@ -138,10 +138,17 @@
                         {/if}
                         <div class="w-100"></div>
                     {/block}
-
+                {/formrow}
+            {/col}
+            {col cols=12}<hr>{/col}
+            {col cols=12 md=4}
+                <div class="h3">{lang key='billingAdress' section='account data'}</div>
+            {/col}
+            {col md=8}
+                {formrow}
                     {* street / number *}
                     {block name='checkout-inc-billing-address-form-street'}
-                        {col cols=8}
+                        {col cols=12 md=8}
                             {if isset($cPost_var['strasse'])}
                                 {assign var=inputVal_street value=$cPost_var['strasse']}
                             {elseif isset($Kunde->cStrasse)}
@@ -156,7 +163,7 @@
                             }
                         {/col}
 
-                        {col cols=4}
+                        {col cols=12 md=4}
                             {if isset($cPost_var['hausnummer'])}
                                 {assign var=inputVal_streetnumber value=$cPost_var['hausnummer']}
                             {elseif isset($Kunde->cHausnummer)}
@@ -175,7 +182,7 @@
                     {* adress addition *}
                     {if $Einstellungen.kunden.kundenregistrierung_abfragen_adresszusatz !== 'N'}
                         {block name='checkout-inc-billing-address-form-addition'}
-                            {col}
+                            {col cols=12}
                                 {if isset($cPost_var['adresszusatz'])}
                                     {assign var=inputVal_street2 value=$cPost_var['adresszusatz']}
                                 {elseif isset($Kunde->cAdressZusatz)}
@@ -276,7 +283,7 @@
                     {/block}
                     {* zip / city *}
                     {block name='checkout-inc-billing-address-form-city'}
-                        {col cols=4}
+                        {col cols=12 md=4}
                             {formgroup
                                 class="{if isset($fehlendeAngaben.plz)} has-error{/if}"
                                 label-for="postcode"
@@ -303,7 +310,7 @@
                                 {/if}
                             {/formgroup}
                         {/col}
-                        {col cols=8}
+                        {col cols=12 md=8}
                             {formgroup
                                 class="{if isset($fehlendeAngaben.ort)} has-error{/if}"
                                 label-for="city"
@@ -315,7 +322,8 @@
                                     value="{if isset($cPost_var['ort'])}{$cPost_var['ort']}{elseif isset($Kunde->cOrt)}{$Kunde->cOrt}{/if}"
                                     id="city"
                                     class="city_input typeahead"
-                                    placeholder="{lang key='city' section='account data'}"
+                                    placeholder={lang key='city' section='account data'}
+                                    aria=["label"=>{lang key='city' section='account data'}]
                                     required=true
                                     autocomplete="billing address-level2"
                                 }
@@ -404,7 +412,7 @@
                         || $Einstellungen.kunden.kundenregistrierung_abfragen_mobil !== 'N' || $Einstellungen.kunden.kundenregistrierung_abfragen_www !== 'N'}
                         {block name='checkout-inc-billing-address-form-phone-fax'}
                             {if $Einstellungen.kunden.kundenregistrierung_abfragen_tel !== 'N'}
-                                {col md=6}
+                                {col cols=12 md=6}
                                     {if isset($cPost_var['tel'])}
                                         {assign var=inputVal_tel value=$cPost_var['tel']}
                                     {elseif isset($Kunde->cTel)}
@@ -421,7 +429,7 @@
                             {/if}
 
                             {if $Einstellungen.kunden.kundenregistrierung_abfragen_fax !== 'N'}
-                                {col md=6}
+                                {col cols=12 md=6}
                                     {if isset($cPost_var['fax'])}
                                         {assign var=inputVal_fax value=$cPost_var['fax']}
                                     {elseif isset($Kunde->cFax)}
@@ -440,7 +448,7 @@
 
                         {block name='checkout-inc-billing-address-form-mobile-www'}
                             {if $Einstellungen.kunden.kundenregistrierung_abfragen_mobil !== 'N'}
-                                {col md=6}
+                                {col cols=12 md=6}
                                     {if isset($cPost_var['mobil'])}
                                         {assign var=inputVal_mobile value=$cPost_var['mobil']}
                                     {elseif isset($Kunde->cMobil)}
@@ -457,7 +465,7 @@
                             {/if}
 
                             {if $Einstellungen.kunden.kundenregistrierung_abfragen_www !== 'N'}
-                                {col md=6}
+                                {col cols=12 md=6}
                                     {if isset($cPost_var['www'])}
                                         {assign var=inputVal_www value=$cPost_var['www']}
                                     {elseif isset($Kunde->cWWW)}
@@ -532,6 +540,7 @@
                                                 id="custom_{$kKundenfeld}"
                                                 value="{$cKundenattributWert}"
                                                 placeholder=$oKundenfeld->getLabel()
+                                                aria=["label"=>$oKundenfeld->getLabel()]
                                                 required=$oKundenfeld->isRequired()
                                                 data-toggle="floatLabel"
                                                 data-value="no-js"
@@ -541,6 +550,7 @@
                                             {select
                                                 name="custom_{$kKundenfeld}"
                                                 disabled=!$isKundenattributEditable
+                                                aria=["label"=>$oKundenfeld->getLabel()]
                                                 required=$oKundenfeld->isRequired()
                                             }
                                                 <option value="" selected disabled>{lang key='pleaseChoose'}</option>

@@ -52,8 +52,6 @@
         {$mdSum = 0}
         {$xlSum = 0}
         {foreach $images as $key => $image}
-            {$imgAttribs = $instance->getImageAttributes($image.url, $image.alt, '')}
-
             {if $galleryStyle === 'alternate'}
                 {if $image@last}
                     {$image.xs = 12 - $xsSum % 12}
@@ -95,6 +93,7 @@
 
             {$image.lg = $image.md}
 
+            {$imgAttribs = $instance->getImageAttributes($image.url, $image.alt, '',['xs'=>$image.xs,'sm'=>$image.sm,'md'=>$image.md,'lg'=>$image.lg,'xl'=>$image.xl])}
             {col cols=$image.xs sm=$image.sm md=$image.md lg=$image.lg xl=$image.xl class="img-gallery-item"}
                 <a {if $isPreview === false}
                         {if $image.action === 'link'}
@@ -104,7 +103,9 @@
                         {/if}
                     {/if}
                    class="img-gallery-btn {if $image.action === 'lightbox'}img-gallery-active-btn{/if}"
-                   data-caption="{$image.desc}">
+                   data-caption="{$image.desc}"
+                   aria-label="{$image.alt}"
+                >
                     {image class='img-gallery-img'
                            srcset=$imgAttribs.srcset
                            sizes=$imgAttribs.srcsizes

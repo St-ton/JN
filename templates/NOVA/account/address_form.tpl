@@ -11,10 +11,10 @@
                 {/block}
                 {block name='account-address-form-form-submit'}
                     {row class='mt-5'}
-                        {col md=8}
+                        {col md=4 xl=3 class='ml-md-auto'}
                             {input type="hidden" name="editRechnungsadresse" value="1"}
                             {input type="hidden" name="edit" value="1"}
-                            {button type="submit" value="1" class="w-auto" variant="primary"}
+                            {button type="submit" value="1" block=true variant="primary"}
                                 {lang key='editCustomerData' section='account data'}
                             {/button}
                         {/col}

@@ -37,8 +37,11 @@
                             {buttongroup class="pagination-group"}
                                 {if in_array('pagi', $parts)}
                                     {if $oPagination->getPage() > 0}
-                                        {link class="btn btn-link" href="{$cThisUrl}?{$oPagination->getId()}_nPage={$oPagination->getPrevPage()}{$cUrlAppend}{$cAnchor}"}
-                                            <i class="far fa-long-arrow-left"></i>
+                                        {link class="btn btn-link"
+                                            href="{$cThisUrl}?{$oPagination->getId()}_nPage={$oPagination->getPrevPage()}{$cUrlAppend}{$cAnchor}"
+                                            aria=["label"=>{lang key='previous'}]
+                                        }
+                                            <i class="fas fa-long-arrow-alt-left"></i>
                                         {/link}
                                     {/if}
                                     {if $oPagination->getLeftRangePage() > 0}
@@ -63,8 +66,11 @@
                                         {/link}
                                     {/if}
                                     {if $oPagination->getPage() < $oPagination->getPageCount() - 1}
-                                        {link class="btn btn-link" href="{$cThisUrl}?{$oPagination->getId()}_nPage={$oPagination->getNextPage()}{$cUrlAppend}{$cAnchor}"}
-                                            <i class="far fa-long-arrow-left"></i>
+                                        {link class="btn btn-link"
+                                            href="{$cThisUrl}?{$oPagination->getId()}_nPage={$oPagination->getNextPage()}{$cUrlAppend}{$cAnchor}"
+                                            aria=["label"=>{lang key='next'}]
+                                        }
+                                            <i class="fas fa-long-arrow-alt-right"></i>
                                         {/link}
                                     {/if}
                                 {/if}

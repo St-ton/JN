@@ -19,13 +19,12 @@
             {/container}
         {/block}
         {if $step === 'formular'}
-            {block name='account-password-alert'}
-                {$alertList->displayAlertByKey('forgotPasswordDesc')}
-            {/block}
-
             {container}
                 {row}
-                    {col cols=12 md=8 md-offset=2}
+                    {col cols=12 lg=8}
+                        {block name='account-password-alert'}
+                            {$alertList->displayAlertByKey('forgotPasswordDesc')}
+                        {/block}
                         {block name='account-password-form-password-reset'}
                             {form id="passwort_vergessen"
                                 action="{get_static_route id='pass.php'}{if $bExclusive === true}?exclusive_content=1{/if}"
@@ -41,15 +40,17 @@
                                             ]
                                         }
                                         {block name='account-password-form-reset-submit'}
-                                            {formgroup}
-                                                {if $bExclusive === true}
-                                                  {input type="hidden" name="exclusive_content" value="1"}
-                                                {/if}
-                                                {input type="hidden" name="passwort_vergessen" value="1"}
-                                                {button type="submit" value="1" block=true class="submit_once" variant="primary"}
-                                                    {lang key='createNewPassword' section='forgot password'}
-                                                {/button}
-                                            {/formgroup}
+                                            {row}
+                                                {col class='col-md-auto ml-md-auto'}
+                                                    {if $bExclusive === true}
+                                                      {input type="hidden" name="exclusive_content" value="1"}
+                                                    {/if}
+                                                    {input type="hidden" name="passwort_vergessen" value="1"}
+                                                    {button type="submit" value="1" block=true class="submit_once" variant="primary"}
+                                                        {lang key='createNewPassword' section='forgot password'}
+                                                    {/button}
+                                                {/col}
+                                            {/row}
                                         {/block}
                                     </fieldset>
                                 {/block}

@@ -46,8 +46,11 @@
     {getCurrentPage assign='currentPage'}
     <div class="spinner"></div>
     <div id="page-wrapper" class="backend-wrapper hidden disable-transitions{if $currentPage === 'index' || $currentPage === 'status'} dashboard{/if}">
+        {if !$hasPendingUpdates}
         {include file='tpl_inc/backend_sidebar.tpl'}
+        {/if}
         <div class="backend-main sidebar-offset">
+            {if !$hasPendingUpdates}
             <div id="topbar" class="backend-navbar row mx-0 align-items-center topbar flex-nowrap">
                 <div class="col search">
                     {include file='tpl_inc/backend_search.tpl'}
@@ -119,6 +122,7 @@
                 </div>
                 <div class="opaque-background"></div>
             </div>
+            {/if}
             <div class="backend-content" id="content_wrapper">
 
             {include file='snippets/alert_list.tpl'}

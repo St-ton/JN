@@ -40,6 +40,11 @@ class Migration implements JsonSerializable
     protected $description;
 
     /**
+     * @var bool
+     */
+    protected $deleteData = true;
+
+    /**
      * Migration constructor.
      *
      * @param DbInterface $db
@@ -99,6 +104,22 @@ class Migration implements JsonSerializable
     public function getExecuted(): ?DateTime
     {
         return $this->executed;
+    }
+
+    /**
+     * @return bool
+     */
+    public function doDeleteData(): bool
+    {
+        return $this->deleteData;
+    }
+
+    /**
+     * @param bool $deleteData
+     */
+    public function setDeleteData(bool $deleteData): void
+    {
+        $this->deleteData = $deleteData;
     }
 
     /**

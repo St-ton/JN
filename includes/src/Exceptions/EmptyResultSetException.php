@@ -20,6 +20,6 @@ class EmptyResultSetException extends Exception
      */
     public function __construct(string $message)
     {
-        parent::__construct(\str_replace(PFAD_ROOT, '', $this->file) . ': ' . $message);
+        parent::__construct(\str_replace(\PFAD_ROOT, '', $this->file) . ': ' . $message);
     }
 }

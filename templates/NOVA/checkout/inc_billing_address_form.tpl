@@ -506,7 +506,7 @@
             {/col}
         {/row}
     </fieldset>
-    {if $Einstellungen.kundenfeld.kundenfeld_anzeigen === 'Y' && !empty($oKundenfeld_arr)}
+    {if $Einstellungen.kundenfeld.kundenfeld_anzeigen === 'Y' && $oKundenfeld_arr->count() > 0}
         {block name='checkout-inc-billing-address-form-custom-fields'}
             <fieldset>
                 {row}

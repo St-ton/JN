@@ -152,7 +152,7 @@
                 slidesToScroll: 1,
                 arrows:         true,
                 infinite:       false,
-                focusOnSelect:  true,
+                lazyLoad: 'ondemand',
                 responsive:     [
                     {
                         breakpoint: 576, // xs
@@ -426,6 +426,7 @@
                     message: html,
                     title: title,
                     keyboard: true,
+                    buttons: false,
                     tabindex: -1})
                     .then(
                         function () {
@@ -704,8 +705,7 @@
             }
         },
 
-        addInactivityCheck: function() {
-            var timeoutID;
+        initInputSpinner: function(target) {
             var config = {
                 decrementButton: "<i class='fas fa-minus'></i>", // button text
                 incrementButton: "<i class='fas fa-plus'></i>", // ..
@@ -719,8 +719,13 @@
                 boostMultiplier: "auto", // you can also set a constant number as multiplier
                 locale: null // the locale for number rendering; if null, the browsers language is used
             }
-            $("input[type='number']").InputSpinner(config);
+            $(target).InputSpinner(config);
+        },
 
+        addInactivityCheck: function() {
+            var timeoutID;
+
+            this.initInputSpinner("input[type='number']");
 
             function setup() {
                 $('#cart-form .nmbr-cfg-group input').on('change',resetTimer);
@@ -760,7 +765,7 @@
         },
 
         checkMenuScroll: function() {
-            var menu = 'body[data-viewport="lg"] .megamenu, body[data-viewport="md"] .megamenu';
+            var menu = '.megamenu';
 
             if ($(menu)[0] != undefined) {
                 var scrollWidth = parseInt(Math.round($(menu)[0].scrollWidth));

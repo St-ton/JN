@@ -1,24 +1,25 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license       http://jtl-url.de/jtlshoplicense
+ * @package       jtl-shop
+ * @since
  */
 
-include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
+namespace JTL\Plugin\Payment;
 
 /**
- * Class FallBackPayment
- *
+ * Class FallbackMethod
+ * @package JTL\Plugin\Payment
  * FallBack-PaymentMethod (Modul-ID: za_null_jtl)
  * for a order that goes to 0.0 during the cashing of a shop-credit
  */
-class FallBackPayment extends PaymentMethod
+class FallbackMethod extends Method
 {
     /**
-     * @param int $nAgainCheckout
-     * @return $this
+     * @inheritDoc
      */
-    public function init($nAgainCheckout = 0)
+    public function init(int $nAgainCheckout = 0)
     {
         parent::init();
 
@@ -26,28 +27,27 @@ class FallBackPayment extends PaymentMethod
     }
 
     /**
-     * @return bool
+     * @inheritDoc
      */
-    public function isSelectable()
+    public function isSelectable(): bool
     {
         // this payment-method is always selectable
         return true;
     }
 
     /**
-     * @param array $vArgs
-     * @return bool
+     * @inheritDoc
      */
-    public function isValidIntern($vArgs = [])
+    public function isValidIntern(array $args_arr = []): bool
     {
         // this payment-method is always valid
         return true;
     }
 
     /**
-     * @return bool
+     * @inheritDoc
      */
-    public function canPayAgain()
+    public function canPayAgain(): bool
     {
         // the "payNow"-link (there's no reason for that)
         return false;

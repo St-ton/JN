@@ -3,9 +3,8 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {if !isset($abschlussseite) || $abschlussseite !== 1}
-    {assign var=cModulId value=$Bestellung->Zahlungsart->cModulId}
     {if $oPlugin !== null && $oPlugin instanceof JTL\Plugin\PluginInterface}
-        {$method = $oPlugin->getPaymentMethods()->getMethodByID($cModulId)}
+        {$method = $oPlugin->getPaymentMethods()->getMethodByID($Bestellung->Zahlungsart->cModulId)}
     {else}
         {$method = null}
     {/if}

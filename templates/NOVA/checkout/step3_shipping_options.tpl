@@ -83,7 +83,8 @@
                                                             {/if}
                                                             {if !empty($versandart->cLieferdauer|trans) && $Einstellungen.global.global_versandermittlung_lieferdauer_anzeigen === 'Y'}
                                                                 <small>{lang key='shippingTimeLP'}
-                                                                    : {$versandart->cLieferdauer|trans}</small>
+                                                                    : {$versandart->cLieferdauer|trans}
+                                                                </small>
                                                             {/if}
                                                         </span>
                                                     {/radio}

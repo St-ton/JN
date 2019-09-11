@@ -485,6 +485,26 @@ interface LinkInterface
     public function setDisplayName(string $displayName): void;
 
     /**
+     * @return string
+     */
+    public function getHandler(): string;
+
+    /**
+     * @param string $handler
+     */
+    public function setHandler(string $handler): void;
+
+    /**
+     * @return string
+     */
+    public function getTemplate(): string;
+
+    /**
+     * @param string $template
+     */
+    public function setTemplate(string $template): void;
+
+    /**
      * @return LinkInterface[]
      */
     public function buildChildLinks(): array;

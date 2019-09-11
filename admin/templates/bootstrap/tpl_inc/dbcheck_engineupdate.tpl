@@ -34,120 +34,102 @@
             {{__('notEnoughTableSpaceLong')}|sprintf:{$DB_Version->innodb->size|formatByteSize:'%.0f'|upper|strip:'&nbsp;'}}
         </div>
     {/if}
-    <div class="card">
-        <div class="card-header">
-            <div class="card-title">{{__('structureMigration')}|sprintf:{$engineUpdate->tableCount}}</div>
-        </div>
-        <div class="card-body">
-            <ul class="nav nav-tabs">
-                <li{if $tab === 'update_individual'} class="active"{/if}><a data-toggle="tab" href="#update_individual">{__('soloStructureTable')}</a></li>
-                <li{if $tab === 'update_automatic'} class="active"{/if}><a data-toggle="tab" href="#update_automatic">{__('automatic')}</a></li>
+    <div class="tabs">
+        <nav class="tabs-nav">
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link{if $tab === 'update_individual'} active{/if}" data-toggle="tab" role="tab" href="#update_individual">{__('soloStructureTable')}</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link{if $tab === 'update_automatic'} active{/if}" data-toggle="tab" role="tab" href="#update_automatic">{__('automatic')}</a>
+                </li>
                 {if isset($scriptGenerationAvailable) && $scriptGenerationAvailable}
-                <li{if $tab === 'update_script'} class="active"{/if}><a data-toggle="tab" href="#update_script">{__('viaScriptConsole')}</a></li>
+                <li class="nav-item">
+                    <a class="nav-link{if $tab === 'update_script'} active{/if}" data-toggle="tab" role="tab" href="#update_script">{__('viaScriptConsole')}</a>
+                </li>
                 {/if}
             </ul>
-            <div class="tab-content">
-                <div id="update_individual" class="tab-pane fade{if $tab === 'update_individual'} in active{/if}">
-                    <h3>{__('soloStructureTable')}</h3>
-                    <p>{__('noteSoloMigration')}</p>
-                    <p>{__('noteSoloMigrationClick')}</p>
-                    <div class="alert alert-warning">{__('warningDoBackupSingle')}</div>
-                </div>
-                <div id="update_automatic" class="tab-pane fade{if $tab === 'update_automatic'} in active{/if}">
-                    <h3>{__('automatic')}</h3>
-                    <p>{__('noteRecommendMigration')}</p>
-                    {{__('notePatienceOne')}|sprintf:{$engineUpdate->tableCount}:{$engineUpdate->dataSize|formatByteSize:'%.0f'|upper|strip:'&nbsp;'}}
-                    <p>
-                        {if $engineUpdate->estimated[0] < 60}
-                            {__('lessThanOneMinute')}
-                        {elseif $engineUpdate->estimated[0] < 3600}
-                            {__('approximately')} {($engineUpdate->estimated[0] / 60)|round:0} {__('minutes')}
-                        {else}
-                            {__('approximately')} {($engineUpdate->estimated[0] / 3600)|round:1} {__('hours')}
-                        {/if} {__('ifNecessaryUpTo')}
-                        {if $engineUpdate->estimated[1] < 60}
-                            {__('oneMinute')}
-                        {elseif $engineUpdate->estimated[1] < 3600}
-                            {__('approximately')} {($engineUpdate->estimated[1] / 60)|ceil} {__('minutes')}
-                        {else}
-                            {__('approximately')} {($engineUpdate->estimated[1] / 3600)|ceil} {__('hours')}
-                        {/if}
-                        {{__('notePatienceTwo')}|sprintf:{$shopURL}:{$smarty.const.PFAD_ADMIN}}
-                    </p>
-                    <div class="alert alert-warning">{__('warningDoBackup')}</div>
-                    <form method="post" action="dbcheck.php">
-                        <div id="settings" class="card">
-                            <div class="card-body">
-                                <div class="input-group">
-                                    <span class="input-group-addon">
-                                        <label for="update_auto_backup">{__('yesBackup')}</label>
-                                    </span>
-                                    <span class="input-group-wrap">
-                                        <div class="custom-control custom-checkbox">
-                                            <input id="update_auto_backup" class="custom-control-input form-control" type="checkbox" name="update_auto_backup" value="1" required>
-                                            <label class="custom-control-label" for="update_auto_backup"></label>
-                                        </div>
-                                    </span>
-                                </div>
-                                {if isset($Einstellungen.global.wartungsmodus_aktiviert) && $Einstellungen.global.wartungsmodus_aktiviert === 'Y'}
-                                <div class="input-group">
-                                    <span class="input-group-addon"><span class="badge alert-success">{__('maintenanceActive')}</span></span>
-                                    <input id="update_auto_wartungsmodus" type="hidden" name="update_auto_wartungsmodus" value="1" >
-                                </div>
-                                {else}
-                                <div class="input-group">
-                                    <span class="input-group-addon">
-                                        <label for="update_auto_wartungsmodus_reject">{__('noMaintenance')}</label>
-                                    </span>
-                                    <span class="input-group-wrap">
-                                        <div class="custom-control custom-checkbox">
-                                            <input id="update_auto_wartungsmodus_reject" class="custom-control-input form-control" type="checkbox" name="update_auto_wartungsmodus_reject" value="1" required>
-                                            <label class="custom-control-label" for="update_auto_wartungsmodus_reject"></label>
-                                        </div>
-                                    </span>
-                                </div>
-                                {/if}
-                                {if $DB_Version->innodb->size !== 'auto' && $engineUpdate->dataSize > $DB_Version->innodb->size}
-                                <div class="input-group">
-                                    <span class="input-group-addon">
-                                        <label for="update_auto_size_skip">{__('yesEnoughSpace')}</label>
-                                    </span>
-                                    <span class="input-group-wrap">
-                                        <div class="custom-control custom-checkbox">
-                                            <input id="update_auto_size_skip" class="custom-control-input form-control" type="checkbox" name="update_auto_size_skip" value="1" required>
-                                            <label class="custom-control-label" for="update_auto_size_skip"></label>
-                                        </div>
-                                    </span>
-                                </div>
-                                {else}
-                                <input id="update_auto_size" type="hidden" name="update_auto_size" value="1" >
-                                {/if}
-                            </div>
-                        </div>
-                        <div class="btn-group">
-                            <button class="btn btn-primary" name="update" value="automatic"><i class="fa fa-cogs"></i> {__('buttonMigrationStart')}</button>
-                        </div>
-                    </form>
-                </div>
-                {if isset($scriptGenerationAvailable) && $scriptGenerationAvailable}
-                <div id="update_script" class="tab-pane fade{if $tab === 'update_script'} in active{/if}">
-                    <h3>{__('viaScriptConsole')}</h3>
-                    <p>{__('noteMigrationScript')}</p>
-                    <p>{__('noteMigrationScriptClick')}</p>
-                    <p>{__('noteMigrationScriptDesc')}</p>
-                    <p>{{__('noteMigrationScriptMaintenance')}|sprintf:{$shopURL}:{$smarty.const.PFAD_ADMIN}}</p>
-                    <div class="alert alert-warning">{__('warningDoBackupScript')}</div>
-                    <div class="alert alert-warning">{__('warningUseConsoleScript')}</div>
-                    <div class="alert alert-warning">{__('warningUseThisShopScript')}</div>
-                    <form action="{$shopURL}/{$smarty.const.PFAD_ADMIN}/dbcheck.php" method="post">
-                        {$jtl_token}
-                        <div class="btn-group">
-                            <button class="btn btn-primary" name="update" value="script"><i class="fa fa-cogs"></i> {__('buttonCreateScript')}</button>
-                        </div>
-                    </form>
-                </div>
-                {/if}
+        </nav>
+        <div class="tab-content">
+            <div id="update_individual" class="tab-pane fade{if $tab === 'update_individual'} show active{/if}">
+                <h3>{__('soloStructureTable')}</h3>
+                <p>{__('noteSoloMigration')}</p>
+                <p>{__('noteSoloMigrationClick')}</p>
+                <div class="alert alert-warning">{__('warningDoBackupSingle')}</div>
             </div>
+            <div id="update_automatic" class="tab-pane fade{if $tab === 'update_automatic'} show active{/if}">
+                <h3>{__('automatic')}</h3>
+                <p>{__('noteRecommendMigration')}</p>
+                {{__('notePatienceOne')}|sprintf:{$engineUpdate->tableCount}:{$engineUpdate->dataSize|formatByteSize:'%.0f'|upper|strip:'&nbsp;'}}
+                <p>
+                    {if $engineUpdate->estimated[0] < 60}
+                        {__('lessThanOneMinute')}
+                    {elseif $engineUpdate->estimated[0] < 3600}
+                        {__('approximately')} {($engineUpdate->estimated[0] / 60)|round:0} {__('minutes')}
+                    {else}
+                        {__('approximately')} {($engineUpdate->estimated[0] / 3600)|round:1} {__('hours')}
+                    {/if} {__('ifNecessaryUpTo')}
+                    {if $engineUpdate->estimated[1] < 60}
+                        {__('oneMinute')}
+                    {elseif $engineUpdate->estimated[1] < 3600}
+                        {__('approximately')} {($engineUpdate->estimated[1] / 60)|ceil} {__('minutes')}
+                    {else}
+                        {__('approximately')} {($engineUpdate->estimated[1] / 3600)|ceil} {__('hours')}
+                    {/if}
+                    {{__('notePatienceTwo')}|sprintf:{$shopURL}:{$smarty.const.PFAD_ADMIN}}
+                </p>
+                <div class="alert alert-warning">{__('warningDoBackup')}</div>
+                <form method="post" action="dbcheck.php">
+                    <div id="settings" class="card">
+                        <div class="card-body">
+                            <div class="custom-control custom-checkbox">
+                                <input id="update_auto_backup" class="custom-control-input form-control" type="checkbox" name="update_auto_backup" value="1" required>
+                                <label class="custom-control-label" for="update_auto_backup">{__('yesBackup')}</label>
+                            </div>
+                            {if isset($Einstellungen.global.wartungsmodus_aktiviert) && $Einstellungen.global.wartungsmodus_aktiviert === 'Y'}
+                            <div class="input-group">
+                                <span class="input-group-addon"><span class="badge alert-success">{__('maintenanceActive')}</span></span>
+                                <input id="update_auto_wartungsmodus" type="hidden" name="update_auto_wartungsmodus" value="1" >
+                            </div>
+                            {else}
+                            <div class="custom-control custom-checkbox">
+                                <input id="update_auto_wartungsmodus_reject" class="custom-control-input form-control" type="checkbox" name="update_auto_wartungsmodus_reject" value="1" required>
+                                <label class="custom-control-label" for="update_auto_wartungsmodus_reject">{__('noMaintenance')}</label>
+                            </div>
+                            {/if}
+                            {if $DB_Version->innodb->size !== 'auto' && $engineUpdate->dataSize > $DB_Version->innodb->size}
+                            <div class="custom-control custom-checkbox">
+                                <input id="update_auto_size_skip" class="custom-control-input form-control" type="checkbox" name="update_auto_size_skip" value="1" required>
+                                <label class="custom-control-label" for="update_auto_size_skip">{__('yesEnoughSpace')}</label>
+                            </div>
+                            {else}
+                            <input id="update_auto_size" type="hidden" name="update_auto_size" value="1" >
+                            {/if}
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-primary" name="update" value="automatic"><i class="fa fa-cogs"></i> {__('buttonMigrationStart')}</button>
+                    </div>
+                </form>
+            </div>
+            {if isset($scriptGenerationAvailable) && $scriptGenerationAvailable}
+            <div id="update_script" class="tab-pane fade{if $tab === 'update_script'} show active{/if}">
+                <h3>{__('viaScriptConsole')}</h3>
+                <p>{__('noteMigrationScript')}</p>
+                <p>{__('noteMigrationScriptClick')}</p>
+                <p>{__('noteMigrationScriptDesc')}</p>
+                <p>{{__('noteMigrationScriptMaintenance')}|sprintf:{$shopURL}:{$smarty.const.PFAD_ADMIN}}</p>
+                <div class="alert alert-warning">{__('warningDoBackupScript')}</div>
+                <div class="alert alert-warning">{__('warningUseConsoleScript')}</div>
+                <div class="alert alert-warning">{__('warningUseThisShopScript')}</div>
+                <form action="{$shopURL}/{$smarty.const.PFAD_ADMIN}/dbcheck.php" method="post">
+                    {$jtl_token}
+                    <div class="btn-group">
+                        <button class="btn btn-primary" name="update" value="script"><i class="fa fa-cogs"></i> {__('buttonCreateScript')}</button>
+                    </div>
+                </form>
+            </div>
+            {/if}
         </div>
     </div>
     <script>
@@ -219,7 +201,7 @@
                                 window.location.reload(true);
                             }
                         } else {
-                            if (window.confirm(sprintf('{/literal}{__('errorMigrationTableContinue')}{literal}', table)) {
+                            if (window.confirm(sprintf('{/literal}{__('errorMigrationTableContinue')}{literal}', table))) {
                                 exclude.push(table);
                                 updateModalWait(null, 1);
                                 doAutoMigration('start', '', 1, exclude);
@@ -230,7 +212,7 @@
                         }
                     },
                     function (responseJSON) {
-                        if (window.confirm(sprintf('{/literal}{__('errorMigrationTableContinue')}{literal}', table)) {
+                        if (window.confirm(sprintf('{/literal}{__('errorMigrationTableContinue')}{literal}', table))) {
                             exclude.push(table);
                             updateModalWait(null, 1);
                             doAutoMigration('start', '', 1, exclude);

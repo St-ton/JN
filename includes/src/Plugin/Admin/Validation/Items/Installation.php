@@ -6,6 +6,7 @@
 
 namespace JTL\Plugin\Admin\Validation\Items;
 
+use JTL\Helpers\GeneralObject;
 use JTL\Plugin\InstallCode;
 
 /**
@@ -19,10 +20,8 @@ final class Installation extends AbstractItem
      */
     public function validate(): int
     {
-        $baseNode = $this->getBaseNode();
-
-        return !isset($baseNode['Install']) || !\is_array($baseNode['Install'])
-            ? InstallCode::INSTALL_NODE_MISSING
-            : InstallCode::OK;
+        return GeneralObject::isCountable('Install', $this->getBaseNode())
+            ? InstallCode::OK
+            : InstallCode::INSTALL_NODE_MISSING;
     }
 }

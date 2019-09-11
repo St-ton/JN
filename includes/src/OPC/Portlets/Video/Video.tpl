@@ -1,5 +1,5 @@
 {if $isPreview}
-    <div {$instance->getAttributeString()} {$instance->getDataAttributeString()}>
+    <div {$instance->getAttributeString()} {$instance->getDataAttributeString()} class="opc-Video">
         {if !empty($instance->getProperty('video-responsive'))}
             {$style = 'width:100%;'}
         {else}
@@ -26,17 +26,10 @@
                 fluid=true
                 style=$style}
         {else}
-            {if !empty($instance->getProperty('video-responsive'))}
-                <div style="text-align:center;width:100%">
-                    <img src="gfx/keinBild.gif" alt="Kein Bild"><br>
-                </div>
-            {else}
-                <div style="text-align:center;
-                            width:{$instance->getProperty('video-width')}px;
-                            height: {$instance->getProperty('video-height')}px">
-                    <i class="fa fa-film"></i><br> Video
-                </div>
-            {/if}
+            <div>
+                <i class="fas fa-film"></i>
+                <span>{__('Video')}</span>
+            </div>
         {/if}
     </div>
 {else}

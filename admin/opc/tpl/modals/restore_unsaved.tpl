@@ -11,7 +11,8 @@
             </div>
             <form id="restoreUnsavedForm">
                 <div class="modal-footer">
-                    <button type="button" class="opc-btn-secondary opc-small-btn" data-dismiss="modal">
+                    <button type="button" class="opc-btn-secondary opc-small-btn" data-dismiss="modal"
+                            id="btnNoRestoreUnsaved">
                         {__('noCurrent')}
                     </button>
                     <button type="submit" class="opc-btn-primary opc-small-btn">

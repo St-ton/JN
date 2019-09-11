@@ -9,6 +9,7 @@ namespace JTL\Plugin;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Events\Dispatcher;
+use JTL\Link\LinkInterface;
 use JTL\Smarty\JTLSmarty;
 
 /**
@@ -28,9 +29,10 @@ interface BootstrapperInterface
     public function installed();
 
     /**
+     * @param bool $deleteData
      * @return mixed
      */
-    public function uninstalled();
+    public function uninstalled(bool $deleteData = true);
 
     /**
      * @return mixed
@@ -54,7 +56,7 @@ interface BootstrapperInterface
      * @param string      $title
      * @param null|string $description
      */
-    public function addNotify($type, $title, $description = null);
+    public function addNotify($type, $title, $description = null): void;
 
     /**
      * @return PluginInterface
@@ -88,4 +90,11 @@ interface BootstrapperInterface
      * @return string
      */
     public function renderAdminMenuTab(string $tabName, int $menuID, JTLSmarty $smarty): string;
+
+    /**
+     * @param LinkInterface $link
+     * @param JTLSmarty     $smarty
+     * @return bool
+     */
+    public function prepareFrontend(LinkInterface $link, JTLSmarty $smarty): bool;
 }

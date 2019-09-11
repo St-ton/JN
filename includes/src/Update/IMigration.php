@@ -25,12 +25,12 @@ interface IMigration
     public const DOWN = 'down';
 
     /**
-     * @return bool
+     * @return mixed
      */
     public function up();
 
     /**
-     * @return bool
+     * @return mixed
      */
     public function down();
 
@@ -58,4 +58,14 @@ interface IMigration
      * @return DateTime
      */
     public function getCreated();
+
+    /**
+     * @return bool
+     */
+    public function doDeleteData(): bool;
+
+    /**
+     * @param bool $deleteData
+     */
+    public function setDeleteData(bool $deleteData): void;
 }

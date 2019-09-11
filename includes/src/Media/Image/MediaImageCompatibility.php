@@ -8,7 +8,6 @@ namespace JTL\Media\Image;
 
 use JTL\DB\ReturnType;
 use JTL\Media\Image;
-use JTL\Media\IMedia;
 use JTL\Shop;
 
 /**

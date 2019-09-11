@@ -8,10 +8,10 @@ namespace JTL\Media;
 
 use Exception;
 use Intervention\Image\Constraint;
+use Intervention\Image\Image as InImage;
 use Intervention\Image\ImageManager;
 use JTL\DB\ReturnType;
 use JTL\Shop;
-use \Intervention\Image\Image as InImage;
 
 /**
  * Class Image

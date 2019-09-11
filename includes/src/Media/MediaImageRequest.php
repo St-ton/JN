@@ -6,7 +6,6 @@
 
 namespace JTL\Media;
 
-use JTL\DB\ReturnType;
 use JTL\Shop;
 
 /**

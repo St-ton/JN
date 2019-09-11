@@ -7,6 +7,7 @@
 namespace JTL\Media\Image;
 
 use Generator;
+use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Media\Image;
 use JTL\Media\MediaImageRequest;
@@ -186,5 +187,13 @@ class Product extends AbstractImage
                 ORDER BY nNr ASC',
             'bind' => ['kArtikel' => $id]
         ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function imageIsUsed(DbInterface $db, string $path): bool
+    {
+        return $db->select('tartikelpict', 'cPfad', $path) !== null;
     }
 }

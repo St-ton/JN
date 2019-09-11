@@ -7,13 +7,14 @@
  */
 
 use JTL\Media\Image;
+use JTL\Media\Manager;
 
 require_once __DIR__ . '/includes/admininclude.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'bilderverwaltung_inc.php';
 
 $oAccount->permission('DISPLAY_IMAGES_VIEW', true, true);
+$manager = new Manager();
 
 $smarty->configLoad('german.conf', 'bilderverwaltung')
-       ->assign('items', getItems())
-       ->assign('corruptedImagesByType', getCorruptedImages(Image::TYPE_PRODUCT, 50))
+       ->assign('items', $manager->getItems())
+       ->assign('corruptedImagesByType', $manager->getCorruptedImages(Image::TYPE_PRODUCT, 50))
        ->display('bilderverwaltung.tpl');

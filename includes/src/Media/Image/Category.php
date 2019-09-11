@@ -7,6 +7,7 @@
 namespace JTL\Media\Image;
 
 use Generator;
+use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Media\Image;
 use JTL\Media\MediaImageRequest;
@@ -125,5 +126,13 @@ class Category extends Product
                     ON tkategorie.kKategorie = tkategoriepict.kKategorie',
             ReturnType::SINGLE_OBJECT
         )->cnt;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function imageIsUsed(DbInterface $db, string $path): bool
+    {
+        return $db->select('tkategoriepict', 'cPfad', $path) !== null;
     }
 }

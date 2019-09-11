@@ -250,20 +250,6 @@ class MediaImageRequest
     }
 
     /**
-     * @param string|MediaImageSize $size
-     * @return string
-     */
-    public function getFallbackThumb($size = null): string
-    {
-        return \sprintf(
-            '%s/%s/%s',
-            \rtrim(\PFAD_PRODUKTBILDER, '/'),
-            Image::mapSize($size ?? $this->getSize(), true),
-            $this->getSourcePath()
-        );
-    }
-
-    /**
      * @param null|string $size
      * @return string
      */

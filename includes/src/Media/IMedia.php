@@ -7,6 +7,7 @@
 namespace JTL\Media;
 
 use Generator;
+use JTL\DB\DbInterface;
 use JTL\Media\Image\StatsItem;
 
 /**
@@ -123,4 +124,11 @@ interface IMedia
      * @return MediaImageRequest
      */
     public static function toRequest(string $imageUrl): MediaImageRequest;
+
+    /**
+     * @param DbInterface $db
+     * @param string      $path
+     * @return bool
+     */
+    public static function imageIsUsed(DbInterface $db, string $path): bool;
 }

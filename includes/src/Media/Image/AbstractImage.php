@@ -9,12 +9,14 @@ namespace JTL\Media\Image;
 use Exception;
 use FilesystemIterator;
 use Generator;
+use JTL\DB\DbInterface;
 use JTL\Media\Image;
 use JTL\Media\IMedia;
 use JTL\Media\MediaImageRequest;
 use JTL\Shop;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use SplFileInfo;
 use function Functional\select;
 
 /**
@@ -285,19 +287,20 @@ abstract class AbstractImage implements IMedia
     {
         // @todo: remove type param
         $directory = \PFAD_ROOT . MediaImageRequest::getCachePath($type);
+        Shop::dbg($directory);
         if ($id !== null) {
             $directory .= '/' . (int)$id;
         }
-
         try {
             $rdi = new RecursiveDirectoryIterator(
                 $directory,
                 FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS
             );
             foreach (new RecursiveIteratorIterator($rdi, RecursiveIteratorIterator::CHILD_FIRST) as $value) {
+                /** @var SplFileInfo $value */
                 $value->isFile()
-                    ? \unlink($value)
-                    : \rmdir($value);
+                    ? \unlink($value->getRealPath())
+                    : \rmdir($value->getRealPath());
             }
 
             if ($id !== null) {
@@ -305,6 +308,14 @@ abstract class AbstractImage implements IMedia
             }
         } catch (Exception $e) {
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function imageIsUsed(DbInterface $db, string $path): bool
+    {
+        return true;
     }
 
     /**

@@ -7,6 +7,7 @@
 namespace JTL\Media\Image;
 
 use Generator;
+use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Media\Image;
 use JTL\Media\MediaImageRequest;
@@ -124,5 +125,13 @@ class Manufacturer extends Product
                 WHERE cBildpfad IS NOT NULL AND cBildpfad != \'\'',
             ReturnType::SINGLE_OBJECT
         )->cnt;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function imageIsUsed(DbInterface $db, string $path): bool
+    {
+        return $db->select('thersteller', 'cBildpfad', $path) !== null;
     }
 }

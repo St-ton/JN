@@ -174,9 +174,9 @@
         });
     }
 
-    function doCleanup(index) {
+    function doCleanup(type, index) {
         lastTick = new Date().getTime();
-        ioCall('cleanupStorage', [index], function (result) {
+        ioCall('cleanupStorage', [type, index], function (result) {
             var items = result.deletes,
                 deleted = result.deletedImages,
                 total = result.total,

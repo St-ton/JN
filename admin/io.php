@@ -11,6 +11,7 @@ use JTL\Helpers\Form;
 use JTL\IO\IOError;
 use JTL\Jtllog;
 use JTL\Link\Admin\LinkAdmin;
+use JTL\Media\Manager;
 use JTL\Shop;
 
 /** @global \JTL\Backend\AdminAccount $oAccount */
@@ -26,21 +27,21 @@ if (!Form::validateToken()) {
 
 $jsonApi = JSONAPI::getInstance();
 $io      = AdminIO::getInstance()->setAccount($oAccount);
+$images  = new Manager();
 
 Shop::Container()->getOPC()->registerAdminIOFunctions($io);
 Shop::Container()->getOPCPageService()->registerAdminIOFunctions($io);
 
-$dashboardInc        = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dashboard_inc.php';
-$accountInc          = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
-$bannerInc           = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'banner_inc.php';
-$sucheInc            = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'suche_inc.php';
-$bilderverwaltungInc = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'bilderverwaltung_inc.php';
-$sucheinstellungInc  = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'sucheinstellungen_inc.php';
-$plzimportInc        = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'plz_ort_import_inc.php';
-$redirectInc         = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'redirect_inc.php';
-$dbupdaterInc        = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbupdater_inc.php';
-$dbcheckInc          = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbcheck_inc.php';
-$versandartenInc     = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'versandarten_inc.php';
+$dashboardInc       = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dashboard_inc.php';
+$accountInc         = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
+$bannerInc          = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'banner_inc.php';
+$sucheInc           = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'suche_inc.php';
+$sucheinstellungInc = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'sucheinstellungen_inc.php';
+$plzimportInc       = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'plz_ort_import_inc.php';
+$redirectInc        = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'redirect_inc.php';
+$dbupdaterInc       = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbupdater_inc.php';
+$dbcheckInc         = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbcheck_inc.php';
+$versandartenInc    = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'versandarten_inc.php';
 
 $io->register('getPages', [$jsonApi, 'getPages'])
    ->register('getCategories', [$jsonApi, 'getCategories'])
@@ -65,10 +66,10 @@ $io->register('getPages', [$jsonApi, 'getPages'])
    ->register('truncateJtllog', [Jtllog::class, 'truncateLog'], null, 'DASHBOARD_VIEW')
    ->register('addFav')
    ->register('reloadFavs')
-   ->register('loadStats', 'loadStats', $bilderverwaltungInc, 'DISPLAY_IMAGES_VIEW')
-   ->register('cleanupStorage', 'cleanupStorage', $bilderverwaltungInc, 'DISPLAY_IMAGES_VIEW')
-   ->register('clearImageCache', 'clearImageCache', $bilderverwaltungInc, 'DISPLAY_IMAGES_VIEW')
-   ->register('generateImageCache', 'generateImageCache', $bilderverwaltungInc, 'DISPLAY_IMAGES_VIEW')
+   ->register('loadStats', [$images, 'loadStats'], null, 'DISPLAY_IMAGES_VIEW')
+   ->register('cleanupStorage', [$images, 'cleanupStorage'], null, 'DISPLAY_IMAGES_VIEW')
+   ->register('clearImageCache', [$images, 'clearImageCache'], null, 'DISPLAY_IMAGES_VIEW')
+   ->register('generateImageCache', [$images, 'generateImageCache'], null, 'DISPLAY_IMAGES_VIEW')
    ->register('plzimportActionLoadAvailableDownloads', null, $plzimportInc, 'PLZ_ORT_IMPORT_VIEW')
    ->register('plzimportActionDoImport', null, $plzimportInc, 'PLZ_ORT_IMPORT_VIEW')
    ->register('plzimportActionResetImport', null, $plzimportInc, 'PLZ_ORT_IMPORT_VIEW')

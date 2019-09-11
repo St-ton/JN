@@ -39,7 +39,7 @@ class Page
 
     updateFlipcards()
     {
-        this.rootAreas.find('.flipcard').each((i, elm) => elm.updateFlipcardHeight());
+        this.rootAreas.find('.opc-Flipcard').each((i, elm) => elm.updateFlipcardHeight());
     }
 
     getRevisionList()

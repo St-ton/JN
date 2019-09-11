@@ -32,7 +32,7 @@
   @include button-variant($secondary, $primary, $primary, $primary, $primary, $primary);
   color: $gray-dark;
   text-decoration: none;
-  border-width: 2px;
+  border-width: 1px;
   position: relative;
   overflow: hidden;
   z-index: 1;

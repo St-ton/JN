@@ -6,8 +6,6 @@
 
 namespace JTL\Media;
 
-use JTL\Shop;
-
 /**
  * Class MediaImageSize
  * @package JTL\Media

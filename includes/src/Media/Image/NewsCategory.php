@@ -18,14 +18,15 @@ use stdClass;
  */
 class NewsCategory extends Product
 {
+    /**
+     * @var string
+     */
     protected $regEx = '/^media\/image\/(?P<type>newscategory)' .
     '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|os)\/(?P<name>[a-zA-Z0-9\-_]+)' .
     '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
 
     /**
-     * @param string $type
-     * @param int    $id
-     * @return stdClass|null
+     * @inheritdoc
      */
     public static function getImageStmt(string $type, int $id): ?stdClass
     {
@@ -66,5 +67,31 @@ class NewsCategory extends Product
         $result = $mixed->title;
 
         return empty($result) ? 'image' : Image::getCleanFilename($result);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function getPathByID($id, int $number = null): ?string
+    {
+        $item = Shop::Container()->getDB()->queryPrepared(
+            'SELECT cPreviewImage AS path
+                FROM tnewskategorie
+                WHERE kNewsKategorie = :cid LIMIT 1',
+            ['cid' => $id],
+            ReturnType::SINGLE_OBJECT
+        )->path ?? null;
+
+        return empty($item->path)
+            ? null
+            : \str_replace(\PFAD_NEWSKATEGORIEBILDER, '', $item->path);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function getStoragePath(): string
+    {
+        return \PFAD_NEWSKATEGORIEBILDER;
     }
 }

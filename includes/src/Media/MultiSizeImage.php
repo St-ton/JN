@@ -6,15 +6,6 @@
 
 namespace JTL\Media;
 
-use JTL\Media\Image\Category;
-use JTL\Media\Image\Characteristic;
-use JTL\Media\Image\CharacteristicValue;
-use JTL\Media\Image\Manufacturer;
-use JTL\Media\Image\News;
-use JTL\Media\Image\NewsCategory;
-use JTL\Media\Image\OPC;
-use JTL\Media\Image\Product;
-use JTL\Media\Image\Variation;
 use JTL\Shop;
 
 /**
@@ -32,30 +23,6 @@ trait MultiSizeImage
      * @var array
      */
     protected $images = [];
-
-    /**
-     * @var array
-     */
-    protected $classMapper = [
-        Image::TYPE_CATEGORY             => Category::class,
-        Image::TYPE_CHARACTERISTIC       => Characteristic::class,
-        Image::TYPE_CHARACTERISTIC_VALUE => CharacteristicValue::class,
-        Image::TYPE_MANUFACTURER         => Manufacturer::class,
-        Image::TYPE_NEWS                 => News::class,
-        Image::TYPE_NEWSCATEGORY         => NewsCategory::class,
-        Image::TYPE_OPC                  => OPC::class,
-        Image::TYPE_PRODUCT              => Product::class,
-        Image::TYPE_VARIATION            => Variation::class
-    ];
-
-    /**
-     * @param string $imageType
-     * @return string
-     */
-    public function getClass(string $imageType): string
-    {
-        return $this->classMapper[$imageType] ?? Product::class;
-    }
 
     /**
      * @return string
@@ -106,9 +73,8 @@ trait MultiSizeImage
      */
     public function generateImagePath(string $size, int $number = 1, string $sourcePath = null): string
     {
-        $instance = $this->getClass($this->getType());
+        $instance = Media::getClass($this->getType());
         /** @var IMedia $instance */
-
         return $instance::getThumb($this->getType(), $this->getID(), $this, $size, $number, $sourcePath);
     }
 
@@ -120,7 +86,7 @@ trait MultiSizeImage
      */
     public function generateImage(string $size, int $number = 1, string $sourcePath = null): string
     {
-        $instance = $this->getClass($this->getType());
+        $instance = Media::getClass($this->getType());
         /** @var IMedia $instance */
         $req = $instance::getRequest($this->getType(), $this->getID(), $this, $size, $number, $sourcePath);
         Image::render($req);

@@ -9,7 +9,6 @@ namespace JTL\Media\Image;
 use Exception;
 use FilesystemIterator;
 use Generator;
-use InvalidArgumentException;
 use JTL\DB\ReturnType;
 use JTL\Media\Image;
 use JTL\Media\IMedia;
@@ -27,6 +26,9 @@ use function Functional\select;
  */
 class Product extends AbstractImage implements IMedia
 {
+    /**
+     * @var string
+     */
     protected $regEx = \MEDIAIMAGE_REGEX;
 
     /**
@@ -35,7 +37,7 @@ class Product extends AbstractImage implements IMedia
      * @return stdClass
      * @throws Exception
      */
-    public static function getStats($type, bool $filesize = false): stdClass
+    public static function getStats(string $type, bool $filesize = false): stdClass
     {
         $result = (object)[
             'total'         => 0,
@@ -86,7 +88,7 @@ class Product extends AbstractImage implements IMedia
      * @param string   $type
      * @param null|int $id
      */
-    public static function clearCache($type, $id = null): void
+    public static function clearCache(string $type, $id = null): void
     {
         $directory = \PFAD_ROOT . MediaImageRequest::getCachePath($type);
         if ($id !== null) {
@@ -115,7 +117,7 @@ class Product extends AbstractImage implements IMedia
      * @param string $imageUrl
      * @return MediaImageRequest
      */
-    public static function toRequest($imageUrl): MediaImageRequest
+    public static function toRequest(string $imageUrl): MediaImageRequest
     {
         $self = new self();
 
@@ -370,25 +372,6 @@ class Product extends AbstractImage implements IMedia
     }
 
     /**
-     * @param string $type
-     * @param int    $id
-     * @return int
-     */
-    public static function imageCount($type, int $id): int
-    {
-        if (($prepared = static::getImageStmt($type, $id)) === null) {
-            return 0;
-        }
-        $imageCount = Shop::Container()->getDB()->queryPrepared(
-            $prepared->stmt,
-            $prepared->bind,
-            ReturnType::AFFECTED_ROWS
-        );
-
-        return \is_numeric($imageCount) ? (int)$imageCount : 0;
-    }
-
-    /**
      * @inheritdoc
      */
     public static function getCustomName($mixed): string
@@ -415,5 +398,27 @@ class Product extends AbstractImage implements IMedia
         }
 
         return empty($result) ? 'image' : Image::getCleanFilename($result);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function getPathByID($id, int $number = null): ?string
+    {
+        return Shop::Container()->getDB()->queryPrepared(
+            'SELECT cPfad AS path
+                    FROM tartikelpict
+                    WHERE kArtikel = :pid AND nNr = :no ORDER BY nNr LIMIT 1',
+            ['pid' => $id, 'no' => $number],
+            ReturnType::SINGLE_OBJECT
+        )->path ?? null;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function getStoragePath(): string
+    {
+        return \PFAD_MEDIA_IMAGE_STORAGE;
     }
 }

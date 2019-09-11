@@ -18,14 +18,15 @@ use stdClass;
  */
 class Manufacturer extends Product
 {
+    /**
+     * @var string
+     */
     protected $regEx = '/^media\/image\/(?P<type>manufacturer)' .
     '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|os)\/(?P<name>[a-zA-Z0-9\-_]+)' .
     '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
 
     /**
-     * @param string $type
-     * @param int    $id
-     * @return stdClass|null
+     * @inheritdoc
      */
     public static function getImageStmt(string $type, int $id): ?stdClass
     {
@@ -64,5 +65,27 @@ class Manufacturer extends Product
         $result = empty($mixed->cSeo) ? $mixed->cName : $mixed->cSeo;
 
         return empty($result) ? 'image' : Image::getCleanFilename($result);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function getPathByID($id, int $number = null): ?string
+    {
+        return Shop::Container()->getDB()->queryPrepared(
+            'SELECT cBildpfad AS path
+                FROM thersteller
+                WHERE kHersteller = :mid LIMIT 1',
+            ['mid' => $id],
+            ReturnType::SINGLE_OBJECT
+        )->path ?? null;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function getStoragePath(): string
+    {
+        return \STORAGE_MANUFACTURERS;
     }
 }

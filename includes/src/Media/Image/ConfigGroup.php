@@ -18,14 +18,15 @@ use stdClass;
  */
 class ConfigGroup extends Product
 {
+    /**
+     * @var string
+     */
     protected $regEx = '/^media\/image\/(?P<type>configgroup)' .
     '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|os)\/(?P<name>[a-zA-Z0-9\-_]+)' .
     '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
 
     /**
-     * @param string $type
-     * @param int    $id
-     * @return stdClass|null
+     * @inheritdoc
      */
     public static function getImageStmt(string $type, int $id): ?stdClass
     {
@@ -66,5 +67,14 @@ class ConfigGroup extends Product
         // @todo
 
         return empty($result) ? 'image' : Image::getCleanFilename($result);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function getStoragePath(): string
+    {
+        // @todo
+        return '';
     }
 }

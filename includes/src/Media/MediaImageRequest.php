@@ -21,7 +21,7 @@ class MediaImageRequest
     public $type;
 
     /**
-     * @var string|int
+     * @var int
      */
     public $id;
 
@@ -98,11 +98,11 @@ class MediaImageRequest
     }
 
     /**
-     * @return int|string
+     * @return int
      */
-    public function getID()
+    public function getID(): int
     {
-        return $this->id;
+        return (int)($this->id ?? 0);
     }
 
     /**
@@ -223,15 +223,27 @@ class MediaImageRequest
             : '';
         $settings = Image::getSettings();
         $ext      = $this->ext ?: $settings['format'];
-        $thumb    = \sprintf(
-            '%s/%s/%s/%s%s.%s',
-            self::getCachePath($this->getType()),
-            $this->getID(),
-            $size,
-            $this->getName(),
-            $number,
-            $ext === 'auto' ? 'jpg' : $ext
-        );
+        $id       = $this->getID();
+        if ($id > 0) {
+            $thumb = \sprintf(
+                '%s/%d/%s/%s%s.%s',
+                self::getCachePath($this->getType()),
+                $id,
+                $size,
+                $this->getName(),
+                $number,
+                $ext === 'auto' ? 'jpg' : $ext
+            );
+        } else {
+            $thumb = \sprintf(
+                '%s/%s/%s%s.%s',
+                self::getCachePath($this->getType()),
+                $size,
+                $this->getName(),
+                $number,
+                $ext === 'auto' ? 'jpg' : $ext
+            );
+        }
 
         return $absolute === true
             ? \PFAD_ROOT . $thumb
@@ -244,12 +256,10 @@ class MediaImageRequest
      */
     public function getFallbackThumb($size = null): string
     {
-        $size = $size ?? $this->getSize();
-
         return \sprintf(
             '%s/%s/%s',
             \rtrim(\PFAD_PRODUKTBILDER, '/'),
-            Image::mapSize($size, true),
+            Image::mapSize($size ?? $this->getSize(), true),
             $this->getSourcePath()
         );
     }
@@ -271,60 +281,9 @@ class MediaImageRequest
         if (($path = $this->cachedPath()) !== null) {
             return $path;
         }
-        $id     = $this->getID();
-        $type   = $this->getType();
-        $number = $this->getNumber();
-        if ($type === Image::TYPE_PRODUCT) {
-            $item = Shop::Container()->getDB()->queryPrepared(
-                'SELECT cPfad AS path
-                    FROM tartikelpict
-                    WHERE kArtikel = :pid AND nNr = :no ORDER BY nNr LIMIT 1',
-                ['pid' => $id, 'no' => $number],
-                ReturnType::SINGLE_OBJECT
-            );
-        } elseif ($type === Image::TYPE_MANUFACTURER) {
-            $item = Shop::Container()->getDB()->queryPrepared(
-                'SELECT cBildpfad AS path
-                    FROM thersteller
-                    WHERE kHersteller = :mid LIMIT 1',
-                ['mid' => $id],
-                ReturnType::SINGLE_OBJECT
-            );
-        } elseif ($type === Image::TYPE_CATEGORY) {
-            $item = Shop::Container()->getDB()->queryPrepared(
-                'SELECT cPfad AS path
-                    FROM tkategoriepict
-                    WHERE kKategorie = :cid LIMIT 1',
-                ['cid' => $id],
-                ReturnType::SINGLE_OBJECT
-            );
-        } elseif ($type === Image::TYPE_NEWSCATEGORY) {
-            $item = Shop::Container()->getDB()->queryPrepared(
-                'SELECT cPreviewImage AS path
-                    FROM tnewskategorie
-                    WHERE kNewsKategorie = :cid LIMIT 1',
-                ['cid' => $id],
-                ReturnType::SINGLE_OBJECT
-            );
-            if (!empty($item->path)) {
-                $item->path = \str_replace(\PFAD_NEWSKATEGORIEBILDER, '', $item->path);
-            }
-        } elseif ($type === Image::TYPE_NEWS) {
-            $item = Shop::Container()->getDB()->queryPrepared(
-                'SELECT cPreviewImage AS path
-                    FROM tnews
-                    WHERE kNews = :cid LIMIT 1',
-                ['cid' => $id],
-                ReturnType::SINGLE_OBJECT
-            );
-            if (!empty($item->path)) {
-                $item->path = \str_replace(\PFAD_NEWSBILDER, '', $item->path);
-            }
-        } elseif ($type === Image::TYPE_OPC) {
-            $item = (object)['path' => $this->path];
-        }
-
-        $path = $item->path ?? null;
+        $instance = Media::getClass($this->getType());
+        /** @var IMedia $instance */
+        $path = $instance::getPathByID($this->getID(), $this->getNumber());
         $this->cachedPath($path);
 
         return $path;
@@ -340,7 +299,6 @@ class MediaImageRequest
         if ($path === null) {
             return static::$cache[$hash] ?? null;
         }
-
         static::$cache[$hash] = $path;
 
         return $path;
@@ -351,29 +309,10 @@ class MediaImageRequest
      */
     public function getRealStoragePath(): string
     {
-        if ($this->getType() === Image::TYPE_MANUFACTURER) {
-            return \STORAGE_MANUFACTURERS;
-        }
-        if ($this->getType() === Image::TYPE_CATEGORY) {
-            return \STORAGE_CATEGORIES;
-        }
-        if ($this->getType() === Image::TYPE_NEWS) {
-            return \PFAD_NEWSBILDER;
-        }
-        if ($this->getType() === Image::TYPE_NEWSCATEGORY) {
-            return \PFAD_NEWSKATEGORIEBILDER;
-        }
-        if ($this->getType() === Image::TYPE_OPC) {
-            return \PFAD_MEDIAFILES . 'Bilder/';
-        }
-        if ($this->getType() === Image::TYPE_CHARACTERISTIC) {
-            return \STORAGE_CHARACTERISTICS;
-        }
-        if ($this->getType() === Image::TYPE_CHARACTERISTIC_VALUE) {
-            return \STORAGE_CHARACTERISTIC_VALUES;
-        }
+        $instance = Media::getClass($this->getType());
+        /** @var IMedia $instance */
 
-        return \PFAD_MEDIA_IMAGE_STORAGE;
+        return $instance::getStoragePath();
     }
 
     /**

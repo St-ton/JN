@@ -551,7 +551,7 @@ class PortletInstance implements \JsonSerializable
         return [
             'srcset'   => $srcset,
             'srcsizes' => $srcsizes,
-            'src'      => \PFAD_MEDIAFILES . 'Bilder/.md/' . $name,
+            'src'      => $this->getImage(),
             'alt'      => $alt,
             'title'    => $title,
         ];
@@ -600,11 +600,11 @@ class PortletInstance implements \JsonSerializable
     }
 
     /**
-     * @return string
+     * @return int
      */
-    public function getID(): string
+    public function getID(): int
     {
-        return \md5($this->currentImagePath);
+        return 0;
     }
 
     /**

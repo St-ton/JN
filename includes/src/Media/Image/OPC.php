@@ -16,17 +16,21 @@ use stdClass;
  */
 class OPC extends Product
 {
-    protected $regEx = '/^media\/image\/(?P<type>opc)' .
-    '\/(?P<id>[a-zA-Z0-9]+)\/(?P<size>xs|sm|md|lg|os)\/(?P<name>[a-zA-Z0-9\-_\.]+)' .
-    '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
+    /**
+     * @var string
+     */
+    protected $regEx = '/^media\/image\/'
+    . '(?P<type>opc)'
+    . '\/(?P<size>xs|sm|md|lg|xl|os)'
+    . '\/(?P<name>[a-zA-Z0-9\-_\.]+)'
+    . '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
 
     /**
-     * @param string $type
-     * @param int    $id
-     * @return stdClass|null
+     * @inheritdoc
      */
     public static function getImageStmt(string $type, int $id): ?stdClass
     {
+        // @todo
         return (object)[
             'stmt' => 'SELECT cBildpfad, 0 AS number 
                           FROM thersteller 
@@ -53,5 +57,22 @@ class OPC extends Product
         /** @var PortletInstance $mixed */
         return \pathinfo($mixed->currentImagePath)['filename'];
 //        return empty($result) ? 'image' : Image::getCleanFilename($result);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function getPathByID($id, int $number = null): ?string
+    {
+        // @todo
+        return null;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function getStoragePath(): string
+    {
+        return \PFAD_MEDIAFILES . 'Bilder/';
     }
 }

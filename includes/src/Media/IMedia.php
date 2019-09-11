@@ -58,4 +58,16 @@ interface IMedia
         int $number = 1,
         string $sourcePath = null
     ): MediaImageRequest;
+
+    /**
+     * @param int|string $id
+     * @param int|null $number
+     * @return string|null
+     */
+    public static function getPathByID($id, int $number = null): ?string;
+
+    /**
+     * @return string
+     */
+    public static function getStoragePath(): string;
 }

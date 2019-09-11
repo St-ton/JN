@@ -8,12 +8,15 @@ namespace JTL\Media;
 
 use Exception;
 use JTL\Media\Image\Category;
+use JTL\Media\Image\Characteristic;
+use JTL\Media\Image\CharacteristicValue;
 use JTL\Media\Image\Manufacturer;
 use JTL\Media\Image\MediaImageCompatibility;
 use JTL\Media\Image\News;
 use JTL\Media\Image\NewsCategory;
 use JTL\Media\Image\OPC;
 use JTL\Media\Image\Product;
+use JTL\Media\Image\Variation;
 use JTL\Shop;
 use function Functional\first;
 use function Functional\some;
@@ -33,6 +36,30 @@ class Media
      * @var IMedia[]
      */
     private $types = [];
+
+    /**
+     * @var array
+     */
+    private static $classMapper = [
+        Image::TYPE_CATEGORY             => Category::class,
+        Image::TYPE_CHARACTERISTIC       => Characteristic::class,
+        Image::TYPE_CHARACTERISTIC_VALUE => CharacteristicValue::class,
+        Image::TYPE_MANUFACTURER         => Manufacturer::class,
+        Image::TYPE_NEWS                 => News::class,
+        Image::TYPE_NEWSCATEGORY         => NewsCategory::class,
+        Image::TYPE_OPC                  => OPC::class,
+        Image::TYPE_PRODUCT              => Product::class,
+        Image::TYPE_VARIATION            => Variation::class
+    ];
+
+    /**
+     * @param string $imageType
+     * @return string
+     */
+    public static function getClass(string $imageType): string
+    {
+        return self::$classMapper[$imageType] ?? Product::class;
+    }
 
     /**
      * @return Media

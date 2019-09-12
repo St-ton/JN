@@ -30,7 +30,11 @@
                     {/block}
                 {/form}
             {/block}
-            <div class="hr-sect my-5">{lang key='or'}</div>
+            {block name='checkout-step0-login-or-hr'}
+                <div class="d-lg-none d-block">
+                    <div class="hr-sect my-5">{lang key='or'}</div>
+                </div>
+            {/block}
         {/col}
         {col cols=12 id="customer" lg=8}
             {block name='checkout-step0-login-or-register-form'}

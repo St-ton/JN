@@ -1,0 +1,10 @@
+
+.card-gray { background: $gray-lighter; border: 0;
+	.card-body { padding: map-get($spacers, 4); }
+}
+
+.card-products {
+	.card-header { background: $white; }
+	.card-header .btn { background: $gray-lighter; padding: rem(15px) rem(30px); }
+	.card-body { padding: map-get($spacers, 3); }
+}

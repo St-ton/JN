@@ -22,7 +22,7 @@
             {$headsm=$headsm+2}
         {/if}
     {block name='checkout-inc-order-items-order-items'}
-        {row class="border-bottom mb-3 font-weight-bold d-none d-md-flex"}
+        {row class="font-weight-bold d-none d-md-flex"}
             {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
                 {col cols=2}{/col}
             {/if}
@@ -33,6 +33,7 @@
             {col cols=2 class="text-center"}{lang key="quantity" section="checkout"}{/col}
             {col cols=2 class="text-right"}{lang key="price"}{/col}
         {/row}
+        <hr class="my-3">
         {foreach $smarty.session.Warenkorb->PositionenArr as $oPosition}
             {if !$oPosition->istKonfigKind()}
                 {row class="type-{$oPosition->nPosTyp}"}

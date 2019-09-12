@@ -10,7 +10,7 @@
     {block name='basket-index-content'}
         {container}
             {row}
-                {col cols=12 lg=8}
+                {col cols=12 lg=7}
                     {block name='basket-index-heading'}
                         {opcMountPoint id='opc_before_heading'}
                         <h1>{lang key='basket'} ({count($smarty.session.Warenkorb->PositionenArr)} {lang key='products'})</h1>
@@ -127,15 +127,22 @@
                     {/if}
                 {/col}
                 {if ($Warenkorb->PositionenArr|@count > 0)}
-                    {col cols=12 lg=4}
+                    {col class='ml-auto' cols=12 lg=4}
                         <div class="sticky-top cart-summary">
                             <div class="h1 mb-4">{lang key="orderOverview" section="account data"}</div>
                             {if $Einstellungen.kaufabwicklung.warenkorb_kupon_anzeigen === 'Y' && $KuponMoeglich == 1}
                                 {block name='basket-index-coupon'}
-                                    {card no-body=true}
-                                        {cardheader class="h6 mb-0" data=["toggle" => "collapse", "target"=>"#coupon-form"]}
+                                    {card class='card-gray' no-body=true}
+                                        {cardheader}
                                         {block name='basket-index-coupon-heading'}
-                                            {lang key='useCoupon' section='checkout'} <i class="fa fa-chevron-down float-right"></i>
+                                            {row class='align-items-center'}
+                                                {col data=["toggle" => "collapse", "target"=>"#coupon-form"]}
+                                                    <span class="font-weight-bold font-size-lg">{lang key='useCoupon' section='checkout'}</span>
+                                                {/col}
+                                                {col class='col-auto'}
+                                                    {button variant="link" class="btn-sm text-muted dropdown-toggle float-right" data=["toggle" => "collapse", "target"=>"#coupon-form"]}{/button}
+                                                {/col}
+                                            {/row}
                                         {/block}
                                         {/cardheader}
                                         {collapse id="coupon-form"}
@@ -155,7 +162,7 @@
                                     {/card}
                                 {/block}
                             {/if}
-                            {card class="bg-info mt-4"}
+                            {card class="card-gray mt-4"}
                                 {block name='baske-index-price-tax'}
                                     {if $NettoPreise}
                                         {block name='baske-index-price-net'}

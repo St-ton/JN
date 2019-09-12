@@ -1,6 +1,8 @@
 @charset "UTF-8";
 /* grid breakpoints */
+/* grid containers */
 /* links */
+/* tables */
 /*!
  * Bootstrap v4.3.1 (https://getbootstrap.com/)
  * Copyright 2011-2019 The Bootstrap Authors
@@ -78,7 +80,7 @@ hr {
 
 h1, h2, h3, h4, h5, h6 {
   margin-top: 0;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 p {
@@ -208,8 +210,8 @@ table {
 }
 
 caption {
-  padding-top: 0.75rem;
-  padding-bottom: 0.75rem;
+  padding-top: 0.75rem 1rem;
+  padding-bottom: 0.75rem 1rem;
   color: #707070;
   text-align: left;
   caption-side: bottom;
@@ -359,9 +361,9 @@ template {
 
 h1, h2, h3, h4, h5, h6,
 .h1, .h2, .h3, .h4, .h5, .h6 {
-  margin-bottom: 1.5rem;
-  font-family: "Montserrat", Helvetica, Arial, sans-serif;
-  font-weight: 500;
+  margin-bottom: 1rem;
+  font-family: Montserrat, sans-serif;
+  font-weight: 400;
   line-height: 1.2;
   color: #525252;
 }
@@ -542,8 +544,8 @@ pre code {
 
 .container {
   width: 100%;
-  padding-right: 16px;
-  padding-left: 16px;
+  padding-right: 1rem;
+  padding-left: 1rem;
   margin-right: auto;
   margin-left: auto;
 }
@@ -564,14 +566,14 @@ pre code {
 }
 @media (min-width: 1300px) {
   .container {
-    max-width: 1140px;
+    max-width: 1250px;
   }
 }
 
 .container-fluid {
   width: 100%;
-  padding-right: 16px;
-  padding-left: 16px;
+  padding-right: 1rem;
+  padding-left: 1rem;
   margin-right: auto;
   margin-left: auto;
 }
@@ -579,8 +581,8 @@ pre code {
 .row {
   display: flex;
   flex-wrap: wrap;
-  margin-right: -16px;
-  margin-left: -16px;
+  margin-right: -1rem;
+  margin-left: -1rem;
 }
 
 .no-gutters {
@@ -601,8 +603,8 @@ pre code {
 .col-auto, .col-12, .col-11, .col-10, .col-9, .col-8, .col-7, .col-6, .col-5, .col-4, .col-3, .col-2, .col-1 {
   position: relative;
   width: 100%;
-  padding-right: 16px;
-  padding-left: 16px;
+  padding-right: 1rem;
+  padding-left: 1rem;
 }
 
 .col {
@@ -1512,7 +1514,7 @@ pre code {
 }
 .table th,
 .table td {
-  padding: 0.75rem;
+  padding: 0.75rem 1rem;
   vertical-align: top;
   border-top: 1px solid #ebebeb;
 }
@@ -1526,7 +1528,7 @@ pre code {
 
 .table-sm th,
 .table-sm td {
-  padding: 0.3rem;
+  padding: 0.5rem 1rem;
 }
 
 .table-bordered {
@@ -1548,7 +1550,7 @@ pre code {
   border: 0;
 }
 
-.table-striped tbody tr:nth-of-type(odd) {
+.table-striped tbody tr:nth-of-type(even) {
   background-color: #f5f7fa;
 }
 
@@ -3861,8 +3863,8 @@ input[type=button].btn-block {
     position: absolute;
   }
   .navbar-expand-sm .navbar-nav .nav-link {
-    padding-right: 0.5rem;
-    padding-left: 0.5rem;
+    padding-right: 1.5rem;
+    padding-left: 1.5rem;
   }
   .navbar-expand-sm > .container,
 .navbar-expand-sm > .container-fluid {
@@ -3895,8 +3897,8 @@ input[type=button].btn-block {
     position: absolute;
   }
   .navbar-expand-md .navbar-nav .nav-link {
-    padding-right: 0.5rem;
-    padding-left: 0.5rem;
+    padding-right: 1.5rem;
+    padding-left: 1.5rem;
   }
   .navbar-expand-md > .container,
 .navbar-expand-md > .container-fluid {
@@ -3929,8 +3931,8 @@ input[type=button].btn-block {
     position: absolute;
   }
   .navbar-expand-lg .navbar-nav .nav-link {
-    padding-right: 0.5rem;
-    padding-left: 0.5rem;
+    padding-right: 1.5rem;
+    padding-left: 1.5rem;
   }
   .navbar-expand-lg > .container,
 .navbar-expand-lg > .container-fluid {
@@ -3963,8 +3965,8 @@ input[type=button].btn-block {
     position: absolute;
   }
   .navbar-expand-xl .navbar-nav .nav-link {
-    padding-right: 0.5rem;
-    padding-left: 0.5rem;
+    padding-right: 1.5rem;
+    padding-left: 1.5rem;
   }
   .navbar-expand-xl > .container,
 .navbar-expand-xl > .container-fluid {
@@ -3994,8 +3996,8 @@ input[type=button].btn-block {
   position: absolute;
 }
 .navbar-expand .navbar-nav .nav-link {
-  padding-right: 0.5rem;
-  padding-left: 0.5rem;
+  padding-right: 1.5rem;
+  padding-left: 1.5rem;
 }
 .navbar-expand > .container,
 .navbar-expand > .container-fluid {
@@ -4199,21 +4201,21 @@ input[type=button].btn-block {
   flex-direction: column;
 }
 .card-deck .card {
-  margin-bottom: 16px;
+  margin-bottom: 1rem;
 }
 @media (min-width: 576px) {
   .card-deck {
     flex-flow: row wrap;
-    margin-right: -16px;
-    margin-left: -16px;
+    margin-right: -1rem;
+    margin-left: -1rem;
   }
   .card-deck .card {
     display: flex;
     flex: 1 0 0%;
     flex-direction: column;
-    margin-right: 16px;
+    margin-right: 1rem;
     margin-bottom: 0;
-    margin-left: 16px;
+    margin-left: 1rem;
   }
 }
 
@@ -4222,7 +4224,7 @@ input[type=button].btn-block {
   flex-direction: column;
 }
 .card-group > .card {
-  margin-bottom: 16px;
+  margin-bottom: 1rem;
 }
 @media (min-width: 576px) {
   .card-group {
@@ -15192,7 +15194,7 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
   position: absolute;
   top: 50%;
   margin-top: -3.125rem;
-  margin-left: -16px;
+  margin-left: -1rem;
   left: 100%;
   z-index: 2;
 }
@@ -15207,7 +15209,7 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
   position: absolute;
   top: 50%;
   margin-top: -3.125rem;
-  margin-left: -13.9130434783px;
+  margin-left: -0.8695652174rem;
   left: 100%;
   z-index: 1;
 }
@@ -15224,8 +15226,8 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
   bottom: 0;
   background: #F8BF00;
   z-index: 11;
-  left: -16px;
-  right: -16px;
+  left: -1rem;
+  right: -1rem;
 }
 .stepper .step-active::after {
   border-left-color: #ffffff;
@@ -15515,11 +15517,6 @@ header, #main-wrapper {
   background: #fff;
 }
 
-@media (min-width: 992px) {
-  .container {
-    max-width: 1310px;
-  }
-}
 @media (max-width: 991.98px) {
   #navbarToggler {
     position: absolute;
@@ -15695,13 +15692,13 @@ header, #main-wrapper {
     clear: both;
     background: white;
     padding: 15px 0;
-    width: calc(100% - 32px);
+    width: calc(100% - 2rem);
     -webkit-box-shadow: 0 8px 10px -5px rgba(0, 0, 0, 0.15);
     box-shadow: 0 8px 10px -5px rgba(0, 0, 0, 0.15);
   }
   #main-nav-wrapper #nav-search-collapse {
     top: 0;
-    width: calc(100% - 32px);
+    width: calc(100% - 2rem);
     left: 0;
   }
 }
@@ -16125,7 +16122,7 @@ ul.partlist-items {
     right: 0;
     left: -5%;
     background: #fff;
-    padding: 0 32px;
+    padding: 0 2rem;
     z-index: 1001;
     box-shadow: 0 -10px 0 white, 0 2px 16px 0 rgba(0, 0, 0, 0.06);
     transition: opacity 0.2s;
@@ -16255,7 +16252,7 @@ ul.partlist-items {
 
 .actions {
   position: absolute;
-  right: 16px;
+  right: 1rem;
   z-index: 998;
 }
 
@@ -16289,7 +16286,7 @@ ul.partlist-items {
 .list .image-wrapper .yousave {
   position: absolute;
   padding: 0.5rem 0.75rem;
-  left: 16px;
+  left: 1rem;
 }
 
 .gallery .image-wrapper .yousave {
@@ -16335,11 +16332,11 @@ ul.partlist-items {
   margin-bottom: 0;
 }
 #main-wrapper.fluid #content-wrapper > .container > .container-block {
-  padding-top: 16px;
+  padding-top: 1rem;
 }
 @media (min-width: 768px) {
   #main-wrapper.fluid #content-wrapper > .container > .container-block {
-    padding: 16px;
+    padding: 1rem;
   }
   #main-wrapper.fluid header, #main-wrapper.fluid #content-wrapper .container-block.beveled {
     -webkit-box-shadow: none;
@@ -16434,13 +16431,13 @@ ul.partlist-items {
 }
 .product-pagination.next {
   float: right;
-  margin-right: -64px;
-  margin-left: 16px;
+  margin-right: -4rem;
+  margin-left: 1rem;
 }
 .product-pagination.previous {
   float: left;
-  margin-right: 16px;
-  margin-left: -64px;
+  margin-right: 1rem;
+  margin-left: -4rem;
 }
 
 .filter-item .badge-light,
@@ -16515,7 +16512,7 @@ aside .badge-light {
   border: 0;
 }
 #product-offer .product-info .bordered-top-bottom {
-  padding: 16px;
+  padding: 1rem;
   border-top: 1px solid #f5f7fa;
   border-bottom: 1px solid #f5f7fa;
 }
@@ -16582,7 +16579,7 @@ aside .badge-light {
 
 #product-tabs .nav-link {
   border: 0;
-  font-family: "Montserrat", Helvetica, Arial, sans-serif;
+  font-family: Montserrat, sans-serif;
   font-weight: 600;
   position: relative;
 }
@@ -16743,7 +16740,7 @@ a[data-toggle=collapse][aria-expanded=true] i.fa-chevron-down,
 }
 
 .price {
-  font-family: "Montserrat", Helvetica, Arial, sans-serif;
+  font-family: Montserrat, sans-serif;
   font-size: 1.06875rem;
   font-weight: bold;
   color: #525252;
@@ -16983,7 +16980,7 @@ footer .list-group-item {
   }
 
   .navbar-nav .nav-link {
-    padding: 0.5rem;
+    padding: 1.5rem 1.5rem;
   }
 
   .nav-right, .navbar-brand {
@@ -16991,7 +16988,7 @@ footer .list-group-item {
   }
 
   .nav-right .nav-link {
-    padding: 0rem;
+    padding: 1.5rem 1rem;
   }
 
   .navbar .navbar-brand {
@@ -17016,7 +17013,7 @@ footer .list-group-item {
 }
 
 .container-fluid .slider-wrapper {
-  margin: 0 -16px;
+  margin: 0 -1rem;
 }
 
 .nivo-caption {
@@ -17255,7 +17252,7 @@ table caption {
   color: #525252;
   margin: 8px 0px;
   font-size: 1.425rem;
-  font-family: "Montserrat", Helvetica, Arial, sans-serif;
+  font-family: Montserrat, sans-serif;
 }
 .hr-sect::before, .hr-sect::after {
   content: "";

@@ -138,9 +138,7 @@ header > [class*="container"],
 header > [class*="container"],
 #main-wrapper #content-wrapper { box-shadow: none; background: transparent; }
 header, #main-wrapper { background: #fff; }
-@include media-breakpoint-up(lg) {
-  .container { max-width: 1310px; }
-}
+
 @include media-breakpoint-down(md) {
   #navbarToggler {
     position: absolute;

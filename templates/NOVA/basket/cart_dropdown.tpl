@@ -6,7 +6,7 @@
     {collapse id="nav-cart-collapse" tag="div"  data=["parent"=>"#main-nav-wrapper"] class="mt-md-2 py-0 w-100"}
         {if $smarty.session.Warenkorb->PositionenArr|@count > 0}
             {block name='basket-cart-dropdown-cart-items-content'}
-                <div class="p-3">
+                <div class="table-responsive max-h-sm lg-max-h">
                     <table class="table table-striped dropdown-cart-items">
                         <tbody>
                             {block name='basket-cart-dropdown-cart-item'}
@@ -48,66 +48,68 @@
                                 {/foreach}
                             {/block}
                         </tbody>
-                        <tfoot>
-                            {block name='basket-cart-dropdown-cart-items-footer'}
-                                {if $NettoPreise}
-                                    <tr class="total total-net">
-                                        <td colspan="3">{lang key='totalSum'} ({lang key='net'}):</td>
-                                        <td class="text-nowrap text-right"><strong>{$WarensummeLocalized[$NettoPreise]}</strong></td>
-                                    </tr>
-                                {/if}
-                                {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N' && isset($Steuerpositionen) && $Steuerpositionen|@count > 0}
-                                    {foreach $Steuerpositionen as $Steuerposition}
-                                        <tr class="text-muted tax">
-                                            <td colspan="3">{$Steuerposition->cName}</td>
-                                            <td class="text-nowrap text-right">{$Steuerposition->cPreisLocalized}</td>
-                                        </tr>
-                                    {/foreach}
-                                {/if}
-                                <tr class="total">
-                                    <td colspan="3">{lang key='totalSum'}:</td>
-                                    <td class="text-nowrap text-right total"><strong>{$WarensummeLocalized[0]}</strong></td>
-                                </tr>
-                                {if isset($FavourableShipping)}
-                                    {if $NettoPreise}
-                                        {$shippingCosts = "`$FavourableShipping->cPriceLocalized[$NettoPreise]` {lang key='plus' section='basket'} {lang key='vat' section='productDetails'}"}
-                                    {else}
-                                        {$shippingCosts = $FavourableShipping->cPriceLocalized[$NettoPreise]}
-                                    {/if}
-                                    <tr class="shipping-costs">
-                                        <td colspan="4"><small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL():$shippingCosts:$FavourableShipping->cCountryCode key='shippingInformationSpecific' section='basket'}</small></td>
-                                    </tr>
-                                {elseif empty($FavourableShipping)}
-                                    <tr class="shipping-costs text-right">
-                                        <td colspan="4"><small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() key='shippingInformation' section='basket'}</small></td>
-                                    </tr>
-                                {/if}
-                            {/block}
-                        </tfoot>
                     </table>
-                    {if !empty($WarenkorbVersandkostenfreiHinweis)}
-                        {block name='basket-cart-dropdown-shipping-free-hint'}
-                            <p class="small text-muted">{$WarenkorbVersandkostenfreiHinweis|truncate:120:"..."}
-                                <a class="popup" href="{if !empty($oSpezialseiten_arr) && isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}{else}#{/if}" data-toggle="tooltip"  data-placement="bottom" title="{lang key='shippingInfo' section='login'}">
-                                    <i class="fa fa-info-circle"></i>
-                                </a>
-                            </p>
-                        {/block}
-                    {/if}
+                </div>
+                <div class="dropdown-body">
+                    {block name='basket-cart-dropdown-total'}
+                        <ul class="list-unstyled">
+                            {if $NettoPreise}
+                                <li class="text-muted mb-2 font-size-sm">
+                                    {lang key='totalSum'} ({lang key='net'}) <span class="float-right text-nowrap">{$WarensummeLocalized[$NettoPreise]}</span>
+                                </li>
+                            {/if}
+                            {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N' && isset($Steuerpositionen) && $Steuerpositionen|@count > 0}
+                                {foreach $Steuerpositionen as $Steuerposition}
+                                    <li class="text-muted mb-2 font-size-sm">
+                                        {$Steuerposition->cName}
+                                        <span class="float-right text-nowrap">{$Steuerposition->cPreisLocalized}</span>
+                                    </li>
+                                {/foreach}
+                            {/if}
+                            <li class="font-weight-bold">
+                                {lang key='totalSum'}: <span class="float-right text-nowrap">{$WarensummeLocalized[0]}</span>
+                            </li>
+                            {if isset($FavourableShipping)}
+                                {if $NettoPreise}
+                                    {$shippingCosts = "`$FavourableShipping->cPriceLocalized[$NettoPreise]` {lang key='plus' section='basket'} {lang key='vat' section='productDetails'}"}
+                                {else}
+                                    {$shippingCosts = $FavourableShipping->cPriceLocalized[$NettoPreise]}
+                                {/if}
+                                <li class="text-muted mb-2 font-size-sm">
+                                    {lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL():$shippingCosts:$FavourableShipping->cCountryCode key='shippingInformationSpecific' section='basket'}
+                                </li>
+                            {elseif empty($FavourableShipping)}
+                                <li class="text-muted mb-2 font-size-sm">
+                                    {lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() key='shippingInformation' section='basket'}
+                                </li>
+                            {/if}
+                        </ul>
+                    {/block}
                     {block name='basket-cart-dropdown-buttons'}
-                        {row}
-                            {col}
-                                {link href="{get_static_route id='bestellvorgang.php'}?wk=1" class="btn btn-secondary btn-block"}
+                        {row class='mt-3'}
+                            {col cols=12 lg=6}
+                                {link href="{get_static_route id='bestellvorgang.php'}?wk=1" class="btn btn-secondary btn-block mb-3"}
                                     {lang key='nextStepCheckout' section='checkout'}
                                 {/link}
                             {/col}
-                            {col}
+                            {col cols=12 lg=6}
                                 {link class="btn btn-primary btn-block" title="{lang key='gotoBasket'}" href="{get_static_route id='warenkorb.php'}"}
                                     <i class="fas fa-shopping-cart"></i> {lang key='gotoBasket'}
                                 {/link}
                             {/col}
                         {/row}
                     {/block}
+                    {if !empty($WarenkorbVersandkostenfreiHinweis)}
+                        {block name='basket-cart-dropdown-shipping-free-hint'}
+                            <hr>
+                            <p class="small text-muted mb-0">
+                                <a class="popup" href="{if !empty($oSpezialseiten_arr) && isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}{else}#{/if}" data-toggle="tooltip"  data-placement="bottom" title="{lang key='shippingInfo' section='login'}">
+                                    <i class="fa fa-info-circle"></i>
+                                </a>
+                                {$WarenkorbVersandkostenfreiHinweis|truncate:120:"..."}
+                            </p>
+                        {/block}
+                    {/if}
                 </div>
             {/block}
         {else}

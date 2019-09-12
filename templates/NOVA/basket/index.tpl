@@ -133,9 +133,16 @@
                             {if $Einstellungen.kaufabwicklung.warenkorb_kupon_anzeigen === 'Y' && $KuponMoeglich == 1}
                                 {block name='basket-index-coupon'}
                                     {card class='card-gray' no-body=true}
-                                        {cardheader data=["toggle" => "collapse", "target"=>"#coupon-form"]}
+                                        {cardheader}
                                         {block name='basket-index-coupon-heading'}
-                                            <span class="font-weight-bold font-size-lg">{lang key='useCoupon' section='checkout'}</span> <i class="fa fa-chevron-down float-right"></i>
+                                            {row class='align-items-center'}
+                                                {col data=["toggle" => "collapse", "target"=>"#coupon-form"]}
+                                                    <span class="font-weight-bold font-size-lg">{lang key='useCoupon' section='checkout'}</span>
+                                                {/col}
+                                                {col class='col-auto'}
+                                                    {button variant="link" class="btn-sm text-muted dropdown-toggle float-right" data=["toggle" => "collapse", "target"=>"#coupon-form"]}{/button}
+                                                {/col}
+                                            {/row}
                                         {/block}
                                         {/cardheader}
                                         {collapse id="coupon-form"}

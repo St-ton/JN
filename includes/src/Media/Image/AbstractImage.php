@@ -287,7 +287,6 @@ abstract class AbstractImage implements IMedia
     {
         // @todo: remove type param
         $directory = \PFAD_ROOT . MediaImageRequest::getCachePath($type);
-        Shop::dbg($directory);
         if ($id !== null) {
             $directory .= '/' . (int)$id;
         }

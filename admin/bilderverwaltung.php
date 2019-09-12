@@ -12,6 +12,7 @@ use JTL\Media\Manager;
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('DISPLAY_IMAGES_VIEW', true, true);
+Shop::Container()->getGetText()->loadAdminLocale('pages/bilderverwaltung');
 $manager = new Manager();
 
 $smarty->configLoad('german.conf', 'bilderverwaltung')

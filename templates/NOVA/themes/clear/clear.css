@@ -1,6 +1,7 @@
 @charset "UTF-8";
 /* grid breakpoints */
 /* links */
+/* progress */
 /*!
  * Bootstrap v4.3.1 (https://getbootstrap.com/)
  * Copyright 2011-2019 The Bootstrap Authors
@@ -4705,7 +4706,7 @@ a.badge-dark:focus, a.badge-dark.focus {
   height: 1rem;
   overflow: hidden;
   font-size: 0.7125rem;
-  background-color: #e9ecef;
+  background-color: #f5f7fa;
   border-radius: 0.125rem;
 }
 

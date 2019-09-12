@@ -161,6 +161,8 @@ ifndef('PFAD_IMAGEMAP', PFAD_BILDER . 'banner/');
 ifndef('PFAD_EMAILTEMPLATES', 'templates_mail/');
 ifndef('PFAD_MEDIA_IMAGE', 'media/image/');
 ifndef('PFAD_MEDIA_IMAGE_STORAGE', PFAD_MEDIA_IMAGE . 'storage/');
+ifndef('STORAGE_VARIATIONS', PFAD_MEDIA_IMAGE_STORAGE . 'variations/');
+ifndef('STORAGE_CONFIGGROUPS', PFAD_MEDIA_IMAGE_STORAGE . 'configgroups/');
 ifndef('STORAGE_MANUFACTURERS', PFAD_MEDIA_IMAGE_STORAGE . 'manufacturers/');
 ifndef('STORAGE_CATEGORIES', PFAD_MEDIA_IMAGE_STORAGE . 'categories/');
 ifndef('STORAGE_CHARACTERISTICS', PFAD_MEDIA_IMAGE_STORAGE . 'characteristics/');

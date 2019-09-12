@@ -399,9 +399,6 @@ ul.partlist-items {
     table-layout: fixed;
     word-break: break-word;
     white-space: initial;
-    &.table-striped tbody tr:nth-of-type(odd) {
-      background-color: $bg-info;
-    }
   }
 }
 

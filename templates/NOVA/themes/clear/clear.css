@@ -15787,9 +15787,6 @@ ul.partlist-items {
   word-break: break-word;
   white-space: initial;
 }
-#nav-cart-collapse table.table-striped tbody tr:nth-of-type(odd) {
-  background-color: #F5F7FA;
-}
 
 .product-title {
   word-break: break-word;

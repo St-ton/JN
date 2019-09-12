@@ -107,7 +107,7 @@ class Manufacturer extends AbstractImage
         while (($image = $images->fetch(PDO::FETCH_OBJ)) !== false) {
             yield MediaImageRequest::create([
                 'id'         => $image->id,
-                'type'       => Image::TYPE_MANUFACTURER,
+                'type'       => self::TYPE,
                 'name'       => self::getCustomName($image),
                 'number'     => 1,
                 'path'       => $image->path,

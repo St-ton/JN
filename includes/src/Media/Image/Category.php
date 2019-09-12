@@ -21,7 +21,7 @@ use stdClass;
  */
 class Category extends AbstractImage
 {
-    public const TYPE = Image::TYPE_PRODUCT;
+    public const TYPE = Image::TYPE_CATEGORY;
 
     /**
      * @var string
@@ -107,7 +107,7 @@ class Category extends AbstractImage
         while (($image = $images->fetch(PDO::FETCH_OBJ)) !== false) {
             yield MediaImageRequest::create([
                 'id'         => $image->id,
-                'type'       => Image::TYPE_CATEGORY,
+                'type'       => self::TYPE,
                 'name'       => self::getCustomName($image),
                 'number'     => 1,
                 'path'       => $image->path,

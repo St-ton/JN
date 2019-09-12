@@ -13,6 +13,8 @@ use Image;
 use JTL\Helpers\URL;
 use JTL\IO\IOError;
 use JTL\Media\Image\Category;
+use JTL\Media\Image\Characteristic;
+use JTL\Media\Image\CharacteristicValue;
 use JTL\Media\Image\Manufacturer;
 use JTL\Media\Image\Product;
 use JTL\Media\Image\StatsItem;
@@ -48,6 +50,16 @@ class Manager
                 'name'  => __('manufacturer'),
                 'type'  => Image::TYPE_MANUFACTURER,
                 'stats' => Manufacturer::getStats($filesize)
+            ],
+            Image::TYPE_CHARACTERISTIC => (object)[
+                'name'  => __('characteristic'),
+                'type'  => Image::TYPE_CHARACTERISTIC,
+                'stats' => Characteristic::getStats($filesize)
+            ],
+            Image::TYPE_CHARACTERISTIC_VALUE => (object)[
+                'name'  => __('characteristic value'),
+                'type'  => Image::TYPE_CHARACTERISTIC_VALUE,
+                'stats' => CharacteristicValue::getStats($filesize)
             ]
         ];
     }

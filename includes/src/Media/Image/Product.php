@@ -92,7 +92,7 @@ class Product extends AbstractImage
         while (($image = $images->fetch(PDO::FETCH_OBJ)) !== false) {
             yield MediaImageRequest::create([
                 'id'         => $image->kArtikel,
-                'type'       => Image::TYPE_PRODUCT,
+                'type'       => self::TYPE,
                 'name'       => self::getCustomName($image),
                 'number'     => $image->number,
                 'path'       => $image->path,

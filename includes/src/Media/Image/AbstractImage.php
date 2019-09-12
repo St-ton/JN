@@ -173,7 +173,7 @@ abstract class AbstractImage implements IMedia
             }
             $raw = $image->getRaw();
             $result->addItem();
-            if (\file_exists($raw)) {
+            if ($raw !== null && \file_exists($raw)) {
                 foreach (Image::getAllSizes() as $size) {
                     $thumb = $image->getThumb($size, true);
                     if (!\file_exists($thumb)) {

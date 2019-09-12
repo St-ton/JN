@@ -18,6 +18,8 @@ use stdClass;
  */
 class Variation extends Product
 {
+    public const TYPE = Image::TYPE_VARIATION;
+
     /**
      * @var string
      */

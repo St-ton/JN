@@ -21,6 +21,8 @@ use stdClass;
  */
 class Manufacturer extends Product
 {
+    public const TYPE = Image::TYPE_MANUFACTURER;
+
     /**
      * @var string
      */

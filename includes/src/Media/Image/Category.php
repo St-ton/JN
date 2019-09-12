@@ -21,6 +21,8 @@ use stdClass;
  */
 class Category extends Product
 {
+    public const TYPE = Image::TYPE_PRODUCT;
+
     /**
      * @var string
      */

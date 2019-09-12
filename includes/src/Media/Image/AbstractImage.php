@@ -25,6 +25,8 @@ use function Functional\select;
  */
 abstract class AbstractImage implements IMedia
 {
+    public const TYPE = '';
+
     /**
      * @var string
      */
@@ -41,7 +43,7 @@ abstract class AbstractImage implements IMedia
             $mediaReq = $this->create($request);
             $imgNames = $this->getImageNames($mediaReq);
             if (\count($imgNames) === 0) {
-                throw new Exception('No such product id: ' . (int)$mediaReq->id);
+                throw new Exception('No such image id: ' . (int)$mediaReq->id);
             }
 
             $imgFilePath = null;
@@ -245,7 +247,7 @@ abstract class AbstractImage implements IMedia
         $rawImage = null;
         $rawPath  = $req->getRaw(true);
         if ($overwrite === true) {
-            static::clearCache($req->getType(), $req->getID());
+            static::clearCache($req->getID());
         }
         foreach (Image::getAllSizes() as $size) {
             $res = (object)[
@@ -283,10 +285,9 @@ abstract class AbstractImage implements IMedia
     /**
      * @inheritdoc
      */
-    public static function clearCache(string $type, $id = null): void
+    public static function clearCache($id = null): void
     {
-        // @todo: remove type param
-        $directory = \PFAD_ROOT . MediaImageRequest::getCachePath($type);
+        $directory = \PFAD_ROOT . MediaImageRequest::getCachePath(static::getType());
         if ($id !== null) {
             $directory .= '/' . (int)$id;
         }
@@ -390,5 +391,13 @@ abstract class AbstractImage implements IMedia
     protected function create(?string $request): MediaImageRequest
     {
         return MediaImageRequest::create($this->parse($request));
+    }
+
+    /**
+     * @return string
+     */
+    public static function getType(): string
+    {
+        return static::TYPE;
     }
 }

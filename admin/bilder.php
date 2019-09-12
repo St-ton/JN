@@ -20,7 +20,7 @@ if (isset($_POST['speichern'])) {
         saveAdminSectionSettings(CONF_BILDER, $_POST),
         'saveSettings'
     );
-    Product::clearCache('product');
+    Product::clearCache();
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE, CACHING_GROUP_CATEGORY]);
     $shopSettings->reset();
 }

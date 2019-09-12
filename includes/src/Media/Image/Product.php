@@ -21,6 +21,8 @@ use stdClass;
  */
 class Product extends AbstractImage
 {
+    public const TYPE = Image::TYPE_PRODUCT;
+
     /**
      * @var string
      */

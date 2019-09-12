@@ -114,10 +114,9 @@ interface IMedia
     public static function cacheImage(MediaImageRequest $req, bool $overwrite = false): array;
 
     /**
-     * @param string   $type
-     * @param null|int $id
+     * @param null|string|int $id
      */
-    public static function clearCache(string $type, $id = null): void;
+    public static function clearCache($id = null): void;
 
     /**
      * @param string $imageUrl

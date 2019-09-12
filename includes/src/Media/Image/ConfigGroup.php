@@ -18,6 +18,8 @@ use stdClass;
  */
 class ConfigGroup extends Product
 {
+    public const TYPE = Image::TYPE_CONFIGGROUP;
+
     /**
      * @var string
      */

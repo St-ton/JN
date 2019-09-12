@@ -18,6 +18,8 @@ use stdClass;
  */
 class News extends Product
 {
+    public const TYPE = Image::TYPE_NEWS;
+
     /**
      * @var string
      */

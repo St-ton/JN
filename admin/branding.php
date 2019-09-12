@@ -104,7 +104,7 @@ function speicherEinstellung(int $brandingID, array $post, array $files)
         }
 
         Shop::Container()->getDB()->insert('tbrandingeinstellung', $conf);
-        Product::clearCache('product');
+        Product::clearCache();
 
         return true;
     }

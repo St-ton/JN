@@ -18,6 +18,8 @@ use stdClass;
  */
 class CharacteristicValue extends Product
 {
+    public const TYPE = Image::TYPE_CHARACTERISTIC_VALUE;
+
     /**
      * @var string
      */

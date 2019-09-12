@@ -6,6 +6,7 @@
 
 namespace JTL\Media\Image;
 
+use JTL\Media\Image;
 use JTL\Media\MediaImageRequest;
 use JTL\OPC\PortletInstance;
 use stdClass;
@@ -16,6 +17,8 @@ use stdClass;
  */
 class OPC extends Product
 {
+    public const TYPE = Image::TYPE_OPC;
+
     /**
      * @var string
      */

@@ -4,6 +4,7 @@
  *}
 {block name='snippets-pagination'}
     {assign var=cParam_arr value=$cParam_arr|default:[]}
+    {assign var=noWrapper value=$noWrapper|default:false}
     {assign var=cUrlAppend value=$cParam_arr|http_build_query}
     {* parts list to display: label, pagination, items-per-page-options, sort-options *}
     {assign var=parts value=$parts|default:['label','pagi','count','sort']}
@@ -23,7 +24,7 @@
 
     {get_static_route id=$cThisUrl assign=cThisUrl}
 
-    {row class="pagination-wrapper clearfix mb-3 align-items-end"}
+    {row class="{if $noWrapper === true}border-0 py-0{/if} pagination-wrapper clearfix mb-3 align-items-end"}
         {col cols="auto" class="ml-auto"}
             {row class="align-items-center"}
                 {if $oPagination->getPageCount() > 1}

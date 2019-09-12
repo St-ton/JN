@@ -16,7 +16,7 @@ use stdClass;
  * Class ConfigGroup
  * @package JTL\Media\Image
  */
-class ConfigGroup extends Product
+class ConfigGroup extends AbstractImage
 {
     public const TYPE = Image::TYPE_CONFIGGROUP;
 
@@ -35,9 +35,9 @@ class ConfigGroup extends Product
         return (object)[
             'stmt' => 'SELECT cBildpfad, 0 AS number 
                         FROM tkonfiggruppe 
-                        WHERE kKonfiggruppe = :kKonfiggruppe 
+                        WHERE kKonfiggruppe = :cid 
                         ORDER BY nSort ASC',
-            'bind' => ['kKonfiggruppe' => $id]
+            'bind' => ['cid' => $id]
         ];
     }
 
@@ -46,15 +46,12 @@ class ConfigGroup extends Product
      */
     protected function getImageNames(MediaImageRequest $req): array
     {
-        // @todo
-        die('@todo!');
         return Shop::Container()->getDB()->queryPrepared(
-            'SELECT kKategorie, cName, cSeo
-                    FROM tkategorie AS a
-                    WHERE kKategorie = :cid
-                    UNION SELECT asp.kKategorie, asp.cName, asp.cSeo
-                        FROM tkategoriesprache AS asp JOIN tkategorie AS a ON asp.kKategorie = a.kKategorie
-                        WHERE asp.kKategorie = :cid',
+            'SELECT a.kKonfiggruppe, t.cName, cBildPfad AS path
+                FROM tkonfiggruppe a
+                JOIN tkonfiggruppesprache t 
+                    ON a.kKonfiggruppe = t.kKonfiggruppe
+                WHERE a.kKonfiggruppe = :cid',
             ['cid' => $req->id],
             ReturnType::ARRAY_OF_OBJECTS
         );
@@ -65,8 +62,7 @@ class ConfigGroup extends Product
      */
     public static function getCustomName($mixed): string
     {
-        $result = '';
-        // @todo
+        $result = empty($mixed->cSeo) ? $mixed->cName : $mixed->cSeo;
 
         return empty($result) ? 'image' : Image::getCleanFilename($result);
     }
@@ -76,7 +72,6 @@ class ConfigGroup extends Product
      */
     public static function getStoragePath(): string
     {
-        // @todo
-        return '';
+        return \STORAGE_CONFIGGROUPS;
     }
 }

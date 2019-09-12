@@ -16,7 +16,7 @@ use stdClass;
  * Class CharacteristicValueImage
  * @package JTL\Media
  */
-class CharacteristicValue extends Product
+class CharacteristicValue extends AbstractImage
 {
     public const TYPE = Image::TYPE_CHARACTERISTIC_VALUE;
 
@@ -77,8 +77,13 @@ class CharacteristicValue extends Product
      */
     public static function getPathByID($id, int $number = null): ?string
     {
-        // todo
-        return null;
+        return Shop::Container()->getDB()->queryPrepared(
+            'SELECT cBildpfad AS path
+                FROM tmerkmalwert
+                WHERE kMerkmal = :cid LIMIT 1',
+            ['cid' => $id],
+            ReturnType::SINGLE_OBJECT
+        )->path ?? null;
     }
 
     /**
@@ -87,5 +92,19 @@ class CharacteristicValue extends Product
     public static function getStoragePath(): string
     {
         return \STORAGE_CHARACTERISTIC_VALUES;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function getTotalImageCount(): int
+    {
+        return (int)Shop::Container()->getDB()->query(
+            'SELECT COUNT(kMerkmalWert) AS cnt
+                FROM tmerkmalwert
+                WHERE cBildpfad IS NOT NULL
+                    AND cBildpfad != \'\'',
+            ReturnType::SINGLE_OBJECT
+        )->cnt;
     }
 }

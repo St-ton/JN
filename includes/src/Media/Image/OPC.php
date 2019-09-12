@@ -6,16 +6,16 @@
 
 namespace JTL\Media\Image;
 
+use DirectoryIterator;
 use JTL\Media\Image;
 use JTL\Media\MediaImageRequest;
 use JTL\OPC\PortletInstance;
-use stdClass;
 
 /**
  * Class OPC
  * @package JTL\Media\Image
  */
-class OPC extends Product
+class OPC extends AbstractImage
 {
     public const TYPE = Image::TYPE_OPC;
 
@@ -27,20 +27,6 @@ class OPC extends Product
     . '\/(?P<size>xs|sm|md|lg|xl|os)'
     . '\/(?P<name>[a-zA-Z0-9\-_\.]+)'
     . '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
-
-    /**
-     * @inheritdoc
-     */
-    public static function getImageStmt(string $type, int $id): ?stdClass
-    {
-        // @todo
-        return (object)[
-            'stmt' => 'SELECT cBildpfad, 0 AS number 
-                          FROM thersteller 
-                          WHERE kHersteller = :kHersteller',
-            'bind' => ['kHersteller' => $id]
-        ];
-    }
 
     /**
      * @inheritdoc
@@ -59,7 +45,6 @@ class OPC extends Product
     {
         /** @var PortletInstance $mixed */
         return \pathinfo($mixed->currentImagePath)['filename'];
-//        return empty($result) ? 'image' : Image::getCleanFilename($result);
     }
 
     /**
@@ -67,8 +52,7 @@ class OPC extends Product
      */
     public static function getPathByID($id, int $number = null): ?string
     {
-        // @todo
-        return null;
+        return $id;
     }
 
     /**
@@ -77,5 +61,22 @@ class OPC extends Product
     public static function getStoragePath(): string
     {
         return \PFAD_MEDIAFILES . 'Bilder/';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function getTotalImageCount(): int
+    {
+        $iterator = new DirectoryIterator(\PFAD_ROOT . self::getStoragePath());
+        $cnt      = 0;
+        foreach ($iterator as $fileinfo) {
+            if ($fileinfo->isDot() || !$fileinfo->isFile()) {
+                continue;
+            }
+            ++$cnt;
+        }
+
+        return $cnt;
     }
 }

@@ -19,7 +19,7 @@ use stdClass;
  * Class Manufacturer
  * @package JTL\Media
  */
-class Manufacturer extends Product
+class Manufacturer extends AbstractImage
 {
     public const TYPE = Image::TYPE_MANUFACTURER;
 

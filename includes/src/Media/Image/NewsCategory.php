@@ -16,7 +16,7 @@ use stdClass;
  * Class NewsCategory
  * @package JTL\Media\Image
  */
-class NewsCategory extends Product
+class NewsCategory extends AbstractImage
 {
     public const TYPE = Image::TYPE_NEWSCATEGORY;
 
@@ -47,10 +47,10 @@ class NewsCategory extends Product
     {
         $names = Shop::Container()->getDB()->queryPrepared(
             'SELECT a.kNewsKategorie, a.cPreviewImage AS path, t.name AS title
-                    FROM tnewskategorie AS a
-                    LEFT JOIN tnewskategoriesprache t
-                        ON a.kNewsKategorie = t.kNewsKategorie
-                    WHERE a.kNewsKategorie = :nid',
+                FROM tnewskategorie AS a
+                LEFT JOIN tnewskategoriesprache t
+                    ON a.kNewsKategorie = t.kNewsKategorie
+                WHERE a.kNewsKategorie = :nid',
             ['nid' => $req->id],
             ReturnType::ARRAY_OF_OBJECTS
         );

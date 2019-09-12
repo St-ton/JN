@@ -16,7 +16,7 @@ use stdClass;
  * Class Characteristic
  * @package JTL\Media\Image
  */
-class Characteristic extends Product
+class Characteristic extends AbstractImage
 {
     public const TYPE = Image::TYPE_CHARACTERISTIC;
 
@@ -34,9 +34,9 @@ class Characteristic extends Product
     {
         return (object)[
             'stmt' => 'SELECT cBildpfad, 0 AS number 
-                        FROM tmerkmal 
-                        WHERE kMerkmal = :cid 
-                        ORDER BY nSort ASC',
+                           FROM tmerkmal 
+                           WHERE kMerkmal = :cid 
+                           ORDER BY nSort ASC',
             'bind' => ['cid' => $id]
         ];
     }
@@ -48,10 +48,10 @@ class Characteristic extends Product
     {
         $names = Shop::Container()->getDB()->queryPrepared(
             'SELECT a.kMerkmal, a.cBildpfad AS path, t.cName
-                    FROM tmerkmal AS a
-                    LEFT JOIN tmerkmalsprache t
-                        ON a.kMerkmal = t.kMerkmal
-                    WHERE a.kMerkmal = :cid',
+                FROM tmerkmal AS a
+                LEFT JOIN tmerkmalsprache t
+                    ON a.kMerkmal = t.kMerkmal
+                WHERE a.kMerkmal = :cid',
             ['cid' => $req->id],
             ReturnType::ARRAY_OF_OBJECTS
         );
@@ -77,8 +77,13 @@ class Characteristic extends Product
      */
     public static function getPathByID($id, int $number = null): ?string
     {
-        // todo
-        return null;
+        return Shop::Container()->getDB()->queryPrepared(
+            'SELECT cPfad AS path
+                FROM tmerkmal
+                WHERE kMerkmal = :cid LIMIT 1',
+            ['cid' => $id],
+            ReturnType::SINGLE_OBJECT
+        )->path ?? null;
     }
 
     /**
@@ -87,5 +92,19 @@ class Characteristic extends Product
     public static function getStoragePath(): string
     {
         return \STORAGE_CHARACTERISTICS;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function getTotalImageCount(): int
+    {
+        return (int)Shop::Container()->getDB()->query(
+            'SELECT COUNT(kMerkmal) AS cnt
+                FROM tmerkmal
+                WHERE cBildpfad IS NOT NULL
+                    AND cBildpfad != \'\'',
+            ReturnType::SINGLE_OBJECT
+        )->cnt;
     }
 }

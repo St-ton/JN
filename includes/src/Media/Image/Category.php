@@ -19,7 +19,7 @@ use stdClass;
  * Class Category
  * @package JTL\Media\Image
  */
-class Category extends Product
+class Category extends AbstractImage
 {
     public const TYPE = Image::TYPE_PRODUCT;
 

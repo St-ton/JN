@@ -16,7 +16,7 @@ use stdClass;
  * Class Variation
  * @package JTL\Media\Image
  */
-class Variation extends Product
+class Variation extends AbstractImage
 {
     public const TYPE = Image::TYPE_VARIATION;
 
@@ -45,18 +45,17 @@ class Variation extends Product
      */
     protected function getImageNames(MediaImageRequest $req): array
     {
-        // @todo
         $names = Shop::Container()->getDB()->queryPrepared(
-            'SELECT a.kNews, a.cPreviewImage AS path, t.title
-                    FROM tnews AS a
-                    LEFT JOIN tnewssprache t
-                        ON a.kNews = t.kNews
-                    WHERE a.kNews = :nid',
-            ['nid' => $req->id],
+            'SELECT p.kEigenschaftWert, p.kEigenschaftWertPict, p.cPfad AS path, t.cName
+                FROM teigenschaftwertpict p
+                JOIN teigenschaftwert t
+                    ON p.kEigenschaftWert = t.kEigenschaftWert
+                WHERE p.kEigenschaftWert = :vid',
+            ['vid' => $req->id],
             ReturnType::ARRAY_OF_OBJECTS
         );
         if (!empty($names[0]->path)) {
-            $req->sourcePath = \str_replace(\PFAD_NEWSBILDER, '', $names[0]->path);
+            $req->sourcePath = $names[0]->path;
         }
 
         return $names;
@@ -67,8 +66,7 @@ class Variation extends Product
      */
     public static function getCustomName($mixed): string
     {
-        // @todo
-        $result = $mixed->title;
+        $result = $mixed->cName;
 
         return empty($result) ? 'image' : Image::getCleanFilename($result);
     }
@@ -78,12 +76,12 @@ class Variation extends Product
      */
     public static function getPathByID($id, int $number = null): ?string
     {
-        // @todo
         return Shop::Container()->getDB()->queryPrepared(
             'SELECT cPfad AS path
-                FROM tartikelpict
-                WHERE kArtikel = :pid AND nNr = :no ORDER BY nNr LIMIT 1',
-            ['pid' => $id, 'no' => $number],
+                FROM teigenschaftwertpict
+                WHERE kEigenschaftWert = :vid
+                LIMIT 1',
+            ['vid' => $id],
             ReturnType::SINGLE_OBJECT
         )->path ?? null;
     }
@@ -93,7 +91,20 @@ class Variation extends Product
      */
     public static function getStoragePath(): string
     {
-        // @todo
-        return '';
+        return \STORAGE_VARIATIONS;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function getTotalImageCount(): int
+    {
+        return (int)Shop::Container()->getDB()->query(
+            'SELECT COUNT(kEigenschaftWertPict) AS cnt
+                FROM teigenschaftwertpict
+                WHERE cPfad IS NOT NULL
+                    AND cPfad != \'\'',
+            ReturnType::SINGLE_OBJECT
+        )->cnt;
     }
 }

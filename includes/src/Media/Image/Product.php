@@ -137,8 +137,11 @@ class Product extends AbstractImage
     {
         return Shop::Container()->getDB()->queryPrepared(
             'SELECT cPfad AS path
-                    FROM tartikelpict
-                    WHERE kArtikel = :pid AND nNr = :no ORDER BY nNr LIMIT 1',
+                FROM tartikelpict
+                WHERE kArtikel = :pid
+                    AND nNr = :no
+                ORDER BY nNr
+                LIMIT 1',
             ['pid' => $id, 'no' => $number],
             ReturnType::SINGLE_OBJECT
         )->path ?? null;

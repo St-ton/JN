@@ -17,6 +17,7 @@ use JTL\Shop;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use SplFileInfo;
+use stdClass;
 use function Functional\select;
 
 /**
@@ -126,6 +127,13 @@ abstract class AbstractImage implements IMedia
     public function isValid(string $request): bool
     {
         return $this->parse($request) !== null;
+    }
+    /**
+     * @inheritdoc
+     */
+    public static function getImageStmt(string $type, int $id): ?stdClass
+    {
+        return null;
     }
 
     /**
@@ -316,6 +324,14 @@ abstract class AbstractImage implements IMedia
     public static function imageIsUsed(DbInterface $db, string $path): bool
     {
         return true;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function getTotalImageCount(): int
+    {
+        return 0;
     }
 
     /**

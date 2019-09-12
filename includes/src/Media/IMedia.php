@@ -40,10 +40,10 @@ interface IMedia
      * @param object      $mixed
      * @param string      $size
      * @param int         $number
-     * @param string|null $sourcePath
+     * @param string|null $source
      * @return string
      */
-    public static function getThumb(string $type, $id, $mixed, $size, int $number = 1, string $sourcePath = null): string;
+    public static function getThumb(string $type, $id, $mixed, $size, int $number = 1, string $source = null): string;
 
     /**
      * @param string      $type

@@ -77,11 +77,6 @@ class PortletInstance implements \JsonSerializable
     protected $subareaList;
 
     /**
-     * @var string
-     */
-    public $currentImagePath;
-
-    /**
      * PortletInstance constructor.
      * @param Portlet $portlet
      */
@@ -480,7 +475,6 @@ class PortletInstance implements \JsonSerializable
      */
     public function getImageAttributes($src = null, $alt = null, $title = null, $divisor = 1, $default = null): array
     {
-        $shopURL  = Shop::getURL();
         $src      = $src ?? $this->getProperty('src');
         $alt      = $alt ?? $this->getProperty('alt');
         $title    = $title ?? $this->getProperty('title');
@@ -497,12 +491,8 @@ class PortletInstance implements \JsonSerializable
             ];
         }
 
-        $name                   = \basename($src);
-        $decodedName            = \rawurldecode($name);
-        $widthHeuristics        = $this->widthHeuristics;
-        $srcImgPath             = \PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $decodedName;
-        $this->currentImagePath = $srcImgPath;
-        $this->generateAllImageSizes(true, 1, $this->currentImagePath);
+        $decodedName = \rawurldecode(\basename($src));
+        $this->generateAllImageSizes(true, 1, \PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $decodedName);
         foreach ($this->getImages() as $size => $i) {
             $width = self::$dirSizes[$size] ?? null;
             if ($width !== null) {
@@ -510,7 +500,7 @@ class PortletInstance implements \JsonSerializable
             }
         }
         $srcset = \mb_substr($srcset, 0, -1); // remove trailing comma
-        foreach ($widthHeuristics as $breakpoint => $col) {
+        foreach ($this->widthHeuristics as $breakpoint => $col) {
             if (!empty($col)) {
                 $factor = 1;
 

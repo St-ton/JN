@@ -30,6 +30,11 @@ trait MultiSizeImage
     protected $iid;
 
     /**
+     * @var string
+     */
+    public $currentImagePath;
+
+    /**
      * @param int|string $id
      */
     public function setID($id): void
@@ -89,27 +94,39 @@ trait MultiSizeImage
     /**
      * @param string      $size
      * @param int         $number
-     * @param string|null $sourcePath
+     * @param string|null $source
      * @return string
      */
-    public function generateImagePath(string $size, int $number = 1, string $sourcePath = null): string
+    public function generateImagePath(string $size, int $number = 1, string $source = null): string
     {
         $instance = Media::getClass($this->getImageType());
         /** @var IMedia $instance */
-        return $instance::getThumb($this->getImageType(), $this->getID(), $this, $size, $number, $sourcePath);
+        if ($source === null) {
+            $source = $instance::getPathByID($this->getID(), $number);
+            if (empty($source)) {
+                $source = null;
+            }
+        }
+        $this->currentImagePath = $source;
+
+        return $instance::getThumb($this->getImageType(), $this->getID(), $this, $size, $number, $source);
     }
 
     /**
      * @param string      $size
      * @param int         $number
-     * @param string|null $sourcePath
+     * @param string|null $source
      * @return string
      */
-    public function generateImage(string $size, int $number = 1, string $sourcePath = null): string
+    public function generateImage(string $size, int $number = 1, string $source = null): string
     {
         $instance = Media::getClass($this->getImageType());
         /** @var IMedia $instance */
-        $req = $instance::getRequest($this->getImageType(), $this->getID(), $this, $size, $number, $sourcePath);
+        if ($source === null) {
+            $source = $instance::getPathByID($this->getID(), $number);
+        }
+        $this->currentImagePath = $source;
+        $req                    = $instance::getRequest($this->getImageType(), $this->getID(), $this, $size, $number, $source);
         Image::render($req);
 
         return $req->getThumb($size);
@@ -118,14 +135,14 @@ trait MultiSizeImage
     /**
      * @param bool        $full
      * @param int         $number
-     * @param string|null $sourcePath
+     * @param string|null $source
      * @return array
      */
-    public function generateAllImageSizes(bool $full = true, int $number = 1, string $sourcePath = null): array
+    public function generateAllImageSizes(bool $full = true, int $number = 1, string $source = null): array
     {
         $prefix = $full ? Shop::getImageBaseURL() : '';
         foreach (Image::getAllSizes() as $size) {
-            $this->images[$size] = $prefix . $this->generateImagePath($size, $number, $sourcePath);
+            $this->images[$size] = $prefix . $this->generateImagePath($size, $number, $source);
         }
 
         return $this->images;
@@ -134,14 +151,14 @@ trait MultiSizeImage
     /**
      * @param bool        $full
      * @param int         $number
-     * @param string|null $sourcePath
+     * @param string|null $source
      * @return array
      */
-    public function generateAllImages(bool $full = true, int $number = 1, string $sourcePath = null): array
+    public function generateAllImages(bool $full = true, int $number = 1, string $source = null): array
     {
         $prefix = $full ? Shop::getImageBaseURL() : '';
         foreach (Image::getAllSizes() as $size) {
-            $this->images[$size] = $prefix . $this->generateImage($size, $number, $sourcePath);
+            $this->images[$size] = $prefix . $this->generateImage($size, $number, $source);
         }
 
         return $this->images;

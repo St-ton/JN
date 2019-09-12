@@ -206,7 +206,7 @@ class Hersteller
         if (\mb_strlen($this->cBildpfad) > 0) {
             $this->cBildpfadKlein  = \PFAD_HERSTELLERBILDER_KLEIN . $this->cBildpfad;
             $this->cBildpfadNormal = \PFAD_HERSTELLERBILDER_NORMAL . $this->cBildpfad;
-            $this->generateAllImageSizes();
+            $this->generateAllImageSizes(true, 1, $this->cBildpfad);
         }
         $this->cBildURLKlein  = $imageBaseURL . $this->cBildpfadKlein;
         $this->cBildURLNormal = $imageBaseURL . $this->cBildpfadNormal;

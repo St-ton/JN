@@ -227,7 +227,7 @@ class Manager
             $i = 0;
             foreach ($instance::getAllImages() as $image) {
                 ++$i;
-                if (!\file_exists($image->getRaw(true))) {
+                if (!\file_exists($image->getRaw())) {
                     $corruptedImage            = (object)[
                         'article' => [],
                         'picture' => ''

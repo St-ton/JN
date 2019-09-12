@@ -80,7 +80,7 @@ class CharacteristicValue extends AbstractImage
         return Shop::Container()->getDB()->queryPrepared(
             'SELECT cBildpfad AS path
                 FROM tmerkmalwert
-                WHERE kMerkmal = :cid LIMIT 1',
+                WHERE kMerkmalWert = :cid LIMIT 1',
             ['cid' => $id],
             ReturnType::SINGLE_OBJECT
         )->path ?? null;

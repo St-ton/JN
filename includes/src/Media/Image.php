@@ -298,7 +298,7 @@ class Image
      */
     public static function render(MediaImageRequest $req, bool $streamOutput = false): void
     {
-        $rawPath = $req->getRaw(true);
+        $rawPath = $req->getRaw();
         if (!\is_file($rawPath)) {
             throw new Exception(\sprintf('Image "%s" does not exist', $rawPath));
         }

@@ -199,7 +199,7 @@ class MediaImageRequest
      * @param bool $absolute
      * @return null|string storage path
      */
-    public function getRaw(bool $absolute = false): ?string
+    public function getRaw(bool $absolute = true): ?string
     {
         $path = $this->getSourcePath();
         $path = empty($path) ? null : \sprintf('%s%s', $this->getRealStoragePath(), $path);

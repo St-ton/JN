@@ -118,6 +118,6 @@ class Media
     {
         return first($this->types, function (IMedia $type) use ($requestUri) {
             return $type->isValid($requestUri);
-        });
+        })->handle($requestUri);
     }
 }

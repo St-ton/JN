@@ -79,11 +79,12 @@ abstract class AbstractImage implements IMedia
     /**
      * @inheritdoc
      */
-    public static function getThumb(string $type, $id, $mixed, $size, int $number = 1, string $sourcePath = null): string
+    public static function getThumb(string $type, $id, $mixed, $size, int $number = 1, string $source = null): string
     {
-        $req   = static::getRequest($type, $id, $mixed, $size, $number, $sourcePath);
+        $req   = static::getRequest($type, $id, $mixed, $size, $number, $source);
         $thumb = $req->getThumb($size);
-        if (!\file_exists(\PFAD_ROOT . $thumb) && !\file_exists(\PFAD_ROOT . $req->getRaw())) {
+        $raw   = $req->getRaw();
+        if (!\file_exists(\PFAD_ROOT . $thumb) && ($raw === null || !\file_exists($raw))) {
             $thumb = \BILD_KEIN_ARTIKELBILD_VORHANDEN;
         }
 
@@ -170,7 +171,7 @@ abstract class AbstractImage implements IMedia
             if ($image === null) {
                 continue;
             }
-            $raw = $image->getRaw(true);
+            $raw = $image->getRaw();
             $result->addItem();
             if (\file_exists($raw)) {
                 foreach (Image::getAllSizes() as $size) {
@@ -242,7 +243,7 @@ abstract class AbstractImage implements IMedia
     public static function getUncachedImageCount(): int
     {
         return \count(select(static::getAllImages(), function (MediaImageRequest $e) {
-            return !static::isCached($e) && \file_exists($e->getRaw(true));
+            return !static::isCached($e) && \file_exists($e->getRaw());
         }));
     }
 
@@ -253,7 +254,7 @@ abstract class AbstractImage implements IMedia
     {
         $result   = [];
         $rawImage = null;
-        $rawPath  = $req->getRaw(true);
+        $rawPath  = $req->getRaw();
         if ($overwrite === true) {
             static::clearCache($req->getID());
         }
@@ -353,7 +354,7 @@ abstract class AbstractImage implements IMedia
     public function getThumbByRequest(MediaImageRequest $req): string
     {
         $thumb = $req->getThumb($req->getSizeType());
-        if (!\file_exists(\PFAD_ROOT . $thumb) && !\file_exists(\PFAD_ROOT . $req->getRaw())) {
+        if (!\file_exists(\PFAD_ROOT . $thumb) && (($raw = $req->getRaw()) === null || !\file_exists($raw))) {
             $thumb = \BILD_KEIN_ARTIKELBILD_VORHANDEN;
         }
 

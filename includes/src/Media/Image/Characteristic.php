@@ -67,7 +67,10 @@ class Characteristic extends AbstractImage
      */
     public static function getCustomName($mixed): string
     {
-        $result = $mixed->cName;
+        $result = $mixed->cName ?? null;
+        if ($result === null && $mixed->currentImagePath !== null) {
+            return \pathinfo($mixed->currentImagePath)['filename'];
+        }
 
         return empty($result) ? 'image' : Image::getCleanFilename($result);
     }
@@ -78,7 +81,7 @@ class Characteristic extends AbstractImage
     public static function getPathByID($id, int $number = null): ?string
     {
         return Shop::Container()->getDB()->queryPrepared(
-            'SELECT cPfad AS path
+            'SELECT cBildpfad AS path
                 FROM tmerkmal
                 WHERE kMerkmal = :cid LIMIT 1',
             ['cid' => $id],

@@ -1425,7 +1425,7 @@ class Artikel
                 $height = $size['height'];
                 $type   = $settings['format'] === 'png' ? \IMAGETYPE_PNG : \IMAGETYPE_JPEG;
             } else {
-                $refImage = \PFAD_ROOT . $req->getRaw();
+                $refImage = $req->getRaw();
 
                 [$width, $height, $type] = \getimagesize($refImage);
 

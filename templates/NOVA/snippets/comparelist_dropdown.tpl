@@ -4,7 +4,7 @@
  *}
 {block name='snippets-comparelist-dropdown'}
     {block name='snippets-comparelist-dropdown-products'}
-        <div class="table-responsive max-h-sm lg:max-h">
+        <div class="table-responsive max-h-sm lg-max-h">
             {if !empty($smarty.session.Vergleichsliste->oArtikel_arr)}
                 <table class="table table-vertical-middle table-striped">
                     <tbody>

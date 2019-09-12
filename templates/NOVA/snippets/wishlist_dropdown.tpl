@@ -4,7 +4,7 @@
  *}
 {block name='snippets-wishlist-dropdown'}
     {block name='snippets-wishlist-dropdown-wischlists'}
-        <div class="table-responsive max-h-sm lg:max-h">
+        <div class="table-responsive max-h-sm lg-max-h">
             <table class="table table-vertical-middle table-striped">
                 <tbody>
                     {foreach $wishlists as $wishlist}

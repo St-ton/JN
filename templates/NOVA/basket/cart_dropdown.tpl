@@ -6,7 +6,7 @@
     {collapse id="nav-cart-collapse" tag="div"  data=["parent"=>"#main-nav-wrapper"] class="mt-md-2 py-0 w-100"}
         {if $smarty.session.Warenkorb->PositionenArr|@count > 0}
             {block name='basket-cart-dropdown-cart-items-content'}
-                <div class="table-responsive max-h-sm lg:max-h">
+                <div class="table-responsive max-h-sm lg-max-h">
                     <table class="table table-striped dropdown-cart-items">
                         <tbody>
                             {block name='basket-cart-dropdown-cart-item'}

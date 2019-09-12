@@ -58,7 +58,7 @@
         {/block}
     {else}
         {block name='layout-header-shop-nav-account-logged-in'}
-            {collapse id="nav-account-collapse" tag="div"  data=["parent"=>"#main-nav-wrapper"] class="mt-md-2 text-center w-100"}
+            {collapse id="nav-account-collapse" tag="div"  data=["parent"=>"#main-nav-wrapper"] class="mt-md-2"}
                 {dropdownitem href="{get_static_route id='jtl.php' secure=true}" rel="nofollow" title="{lang key='myAccount'}"}
                     {lang key='myAccount'}
                 {/dropdownitem}
@@ -71,6 +71,7 @@
                 {dropdownitem href="{get_static_route id='jtl.php' secure=true}#my-wishlists" rel="nofollow" title="{lang key='myAccount'}"}
                     {lang key='myWishlists'}
                 {/dropdownitem}
+                {dropdowndivider}
                 {dropdownitem href="{get_static_route id='jtl.php' secure=true}?logout=1" rel="nofollow" title="{lang key='logOut'}"}
                     {lang key='logOut'}
                 {/dropdownitem}

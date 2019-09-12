@@ -1,0 +1,7 @@
+.dropdown-body,
+.dropdown-footer { padding: $dropdown-item-padding-x;
+	&:first-child { border-top-left-radius: $dropdown-border-radius; border-top-right-radius: $dropdown-border-radius; }
+	&:last-child { border-bottom-left-radius: $dropdown-border-radius; border-bottom-right-radius: $dropdown-border-radius; }
+}
+
+.dropdown-item { text-decoration: none; }

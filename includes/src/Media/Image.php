@@ -329,11 +329,12 @@ class Image
     {
         // @todo: doesn't look very good with small images
 //        $image->blur(1);
-        if (self::getImageDriver() === 'imagick') {
-            $image->getCore()->setColorspace(\Imagick::COLORSPACE_RGB);
-            $image->getCore()->transformImageColorspace(\Imagick::COLORSPACE_RGB);
-            $image->getCore()->stripImage();
-        }
+        // @todo: strange blue tones with PNG - https://felix.vm0.halle/media/image/product/28037/md/blauer-artikel.png
+//        if (self::getImageDriver() === 'imagick') {
+//            $image->getCore()->setColorspace(\Imagick::COLORSPACE_RGB);
+//            $image->getCore()->transformImageColorspace(\Imagick::COLORSPACE_RGB);
+//            $image->getCore()->stripImage();
+//        }
         if ($extension === 'jpg') {
             $image->interlace();
         }

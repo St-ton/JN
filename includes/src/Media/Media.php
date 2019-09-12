@@ -10,12 +10,14 @@ use Exception;
 use JTL\Media\Image\Category;
 use JTL\Media\Image\Characteristic;
 use JTL\Media\Image\CharacteristicValue;
+use JTL\Media\Image\ConfigGroup;
 use JTL\Media\Image\Manufacturer;
 use JTL\Media\Image\News;
 use JTL\Media\Image\NewsCategory;
 use JTL\Media\Image\OPC;
 use JTL\Media\Image\Product;
 use JTL\Media\Image\Variation;
+use JTL\Shop;
 use function Functional\first;
 use function Functional\some;
 
@@ -76,9 +78,13 @@ class Media
         $this->register(new Product())
              ->register(new Category())
              ->register(new Manufacturer())
+             ->register(new OPC())
+             ->register(new Characteristic())
+             ->register(new CharacteristicValue())
+             ->register(new ConfigGroup())
+             ->register(new Variation())
              ->register(new News())
-             ->register(new NewsCategory())
-             ->register(new OPC());
+             ->register(new NewsCategory());
     }
 
     /**
@@ -112,6 +118,6 @@ class Media
     {
         return first($this->types, function (IMedia $type) use ($requestUri) {
             return $type->isValid($requestUri);
-        })->handle($requestUri);
+        });
     }
 }

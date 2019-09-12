@@ -1068,7 +1068,7 @@ class Artikel
      */
     public function __construct()
     {
-        $this->setType(Image::TYPE_PRODUCT);
+        $this->setImageType(Image::TYPE_PRODUCT);
         $this->options = new stdClass();
         $this->conf    = $this->getConfig();
     }

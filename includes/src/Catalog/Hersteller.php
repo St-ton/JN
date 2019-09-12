@@ -102,7 +102,7 @@ class Hersteller
      */
     public function __construct(int $id = 0, int $languageID = 0, bool $noCache = false)
     {
-        $this->setType(Image::TYPE_MANUFACTURER);
+        $this->setImageType(Image::TYPE_MANUFACTURER);
         if ($id > 0) {
             $this->loadFromDB($id, $languageID, $noCache);
         }

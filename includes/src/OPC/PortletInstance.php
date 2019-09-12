@@ -87,7 +87,7 @@ class PortletInstance implements \JsonSerializable
      */
     public function __construct(Portlet $portlet)
     {
-        $this->setType(Image::TYPE_OPC);
+        $this->setImageType(Image::TYPE_OPC);
         $this->portlet     = $portlet;
         $this->properties  = $portlet->getDefaultProps();
         $this->subareaList = new AreaList();
@@ -596,14 +596,6 @@ class PortletInstance implements \JsonSerializable
         $this->setAttribute('title', $imageAttributes['title']);
 
         return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getID(): int
-    {
-        return 0;
     }
 
     /**

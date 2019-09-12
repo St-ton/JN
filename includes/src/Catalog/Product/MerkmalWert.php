@@ -123,7 +123,7 @@ class MerkmalWert
      */
     public function __construct(int $id = 0, int $languageID = 0)
     {
-        $this->setType(Image::TYPE_CHARACTERISTIC_VALUE);
+        $this->setImageType(Image::TYPE_CHARACTERISTIC_VALUE);
         if ($id > 0) {
             $this->loadFromDB($id, $languageID);
         }

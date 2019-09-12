@@ -17,7 +17,7 @@ trait MultiSizeImage
     /**
      * @var string
      */
-    protected $type;
+    protected $imageType;
 
     /**
      * @var array
@@ -25,19 +25,40 @@ trait MultiSizeImage
     protected $images = [];
 
     /**
+     * @var int|string|null
+     */
+    protected $iid;
+
+    /**
+     * @param int|string $id
+     */
+    public function setID($id): void
+    {
+        $this->iid = $id;
+    }
+
+    /**
+     * @return int|string|null
+     */
+    public function getID()
+    {
+        return $this->iid;
+    }
+
+    /**
      * @return string
      */
-    public function getType(): string
+    public function getImageType(): string
     {
-        return $this->type;
+        return $this->imageType;
     }
 
     /**
      * @param string $type
      */
-    public function setType(string $type): void
+    public function setImageType(string $type): void
     {
-        $this->type = $type;
+        $this->imageType = $type;
     }
 
     /**
@@ -73,9 +94,9 @@ trait MultiSizeImage
      */
     public function generateImagePath(string $size, int $number = 1, string $sourcePath = null): string
     {
-        $instance = Media::getClass($this->getType());
+        $instance = Media::getClass($this->getImageType());
         /** @var IMedia $instance */
-        return $instance::getThumb($this->getType(), $this->getID(), $this, $size, $number, $sourcePath);
+        return $instance::getThumb($this->getImageType(), $this->getID(), $this, $size, $number, $sourcePath);
     }
 
     /**
@@ -86,9 +107,9 @@ trait MultiSizeImage
      */
     public function generateImage(string $size, int $number = 1, string $sourcePath = null): string
     {
-        $instance = Media::getClass($this->getType());
+        $instance = Media::getClass($this->getImageType());
         /** @var IMedia $instance */
-        $req = $instance::getRequest($this->getType(), $this->getID(), $this, $size, $number, $sourcePath);
+        $req = $instance::getRequest($this->getImageType(), $this->getID(), $this, $size, $number, $sourcePath);
         Image::render($req);
 
         return $req->getThumb($size);

@@ -105,7 +105,10 @@ class CharacteristicValue extends AbstractImage
             'SELECT A.cBildpfad AS path, A.kMerkmal, A.kMerkmal AS id, B.cWert, B.cSeo
                 FROM tmerkmalwert A
                 JOIN tmerkmalwertsprache B
-                    ON A.kMerkmalWert = B.kMerkmalWert' . self::getLimitStatement($offset, $limit),
+                    ON A.kMerkmalWert = B.kMerkmalWert
+                WHERE cBildpfad IS NOT NULL
+                    AND cBildpfad != \'\'
+                GROUP BY path, id' . self::getLimitStatement($offset, $limit),
             ReturnType::QUERYSINGLE
         );
         while (($image = $images->fetch(PDO::FETCH_OBJ)) !== false) {

@@ -106,7 +106,9 @@ class Characteristic extends AbstractImage
     {
         $images = Shop::Container()->getDB()->query(
             'SELECT cBildpfad AS path, kMerkmal, kMerkmal AS id, cName
-                FROM tmerkmal' . self::getLimitStatement($offset, $limit),
+                FROM tmerkmal
+                WHERE cBildpfad IS NOT NULL
+                    AND cBildpfad != \'\'' . self::getLimitStatement($offset, $limit),
             ReturnType::QUERYSINGLE
         );
         while (($image = $images->fetch(PDO::FETCH_OBJ)) !== false) {

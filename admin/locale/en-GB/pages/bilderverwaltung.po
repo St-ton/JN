@@ -36,7 +36,10 @@ msgid "articlenr"
 msgstr "SKU"
 
 msgid "articlePic"
-msgstr "Item image"
+msgstr "Product image"
+
+msgid "product"
+msgstr "Product"
 
 msgid "corruptedPicsNote"
 msgstr "Faulty images are images with an entry in the database for which no file exists on the server. A maximum of 50 results is shown."

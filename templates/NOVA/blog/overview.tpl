@@ -17,7 +17,7 @@
     {block name='filter'}
         {container}
         {row class='align-items-end mt-6 mb-2'}
-            {col class='col-xl'}
+            {col cols=12 class='col-xl'}
                 {get_static_route id='news.php' assign=routeURL}
                 {block name='blog-overview-form'}
                     {form id="frm_filter" name="frm_filter" action=$cCanonicalURL|default:$routeURL}
@@ -88,7 +88,7 @@
                     {/form}
                 {/block}
             {/col}
-            {col class='col-auto ml-auto'}
+            {col cols=12 class='col-sm-auto ml-auto'}
                 {block name='blog-overview-include-pagination-top'}
                     {include file='snippets/pagination.tpl' oPagination=$oPagination cThisUrl='news.php' parts=['pagi'] noWrapper=true}
                 {/block}
@@ -133,7 +133,7 @@
                     {row class="mt-4"}
                         {block name='blog-overview-previews'}
                             {foreach $oNewsUebersicht_arr as $oNewsUebersicht}
-                                {col cols=12 md=6}
+                                {col cols=12 md=6 lg=4}
                                     {block name='blog-overview-include-preview'}
                                         {include file='blog/preview.tpl'}
                                     {/block}

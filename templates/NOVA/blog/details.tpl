@@ -27,7 +27,7 @@
                         {/block}
 
                         {block name='blog-details-author'}
-                            <div class="author-meta text-muted my-4 text-center">
+                            <div class="author-meta text-muted my-4 text-center font-size-sm">
                                 {if empty($oNewsArchiv->getDateValidFrom())}
                                     {assign var=dDate value=$oNewsArchiv->getDateCreated()->format('Y-m-d H:i:s')}
                                 {else}
@@ -105,7 +105,7 @@
                                     <hr class="my-6">
                                     {row}
                                         {col cols=12}
-                                            <div class="h4">{lang key='newsCommentAdd' section='news'}</div>
+                                            <div class="h2">{lang key='newsCommentAdd' section='news'}</div>
                                             {form method="post" action="{if !empty($oNewsArchiv->getSEO())}{$oNewsArchiv->getURL()}{else}{get_static_route id='news.php'}{/if}" class="form evo-validate" id="news-addcomment"}
                                                 {input type="hidden" name="kNews" value=$oNewsArchiv->getID()}
                                                 {input type="hidden" name="kommentar_einfuegen" value="1"}
@@ -127,9 +127,13 @@
                                                             </div>
                                                         {/if}
                                                     {/formgroup}
-                                                    {button variant="primary" name="speichern" type="submit" class="float-right"}
-                                                        {lang key='newsCommentSave' section='news'}
-                                                    {/button}
+                                                    {row}
+                                                        {col md=4 xl=3 class='ml-auto'}
+                                                            {button block=true variant="primary" name="speichern" type="submit" class="float-right"}
+                                                                {lang key='newsCommentSave' section='news'}
+                                                            {/button}
+                                                        {/col}
+                                                    {/row}
                                                 {/block}
                                                 {/formgroup}
                                             {/form}
@@ -170,7 +174,7 @@
                                         {block name='blog-details-comments'}
                                             {listgroup class="list-group-flush p-3 bg-info"}
                                                 {foreach $oNewsKommentar_arr as $oNewsKommentar}
-                                                    {listgroupitem class="bg-info m-0 {if $oNewsKommentar@first}border-top-0{/if}" itemprop="comment"}
+                                                    {listgroupitem class="bg-info m-0 border-top-0" itemprop="comment"}
                                                         <p>
                                                             {$oNewsKommentar->getName()}, {$oNewsKommentar->getDateCreated()->format('d.m.y H:i')}
                                                         </p>

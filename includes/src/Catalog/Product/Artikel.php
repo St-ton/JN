@@ -2388,7 +2388,7 @@ class Artikel
             ) {
                 $value->cName .= $outOfStock;
             }
-            if ($value->addImages($tmpVariation->cPfad, $imageBaseURL)) {
+            if ($tmpVariation->cPfad !== null && $value->addImages($tmpVariation->cPfad, $imageBaseURL)) {
                 $this->cVariationenbilderVorhanden = true;
             }
             if (!$mayViewPrices) {

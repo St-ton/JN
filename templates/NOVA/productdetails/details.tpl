@@ -96,7 +96,7 @@
                                                 {block name='productdetails-details-info-category'}
                                                     {col cols=12 class="product-category word-break"}
                                                         <span class="text-muted">{lang key='category'}: </span>
-                                                        {assign var=i_kat value=$Brotnavi|@count}{assign var=i_kat value=$i_kat-1}
+                                                        {assign var=i_kat value=$Brotnavi|@count}{assign var=i_kat value=$i_kat-2}
                                                         <a href="{$Brotnavi[$i_kat]->getURLFull()}" itemprop="category">{$Brotnavi[$i_kat]->getName()}</a>
                                                     {/col}
                                                 {/block}

@@ -88,7 +88,7 @@
                                                         {if $bSelected}checked="checked"{/if}
                                                         {if $smarty.foreach.Variationswerte.index === 0 && !$showMatrix} required{/if}
                                                     >
-                                                    <label class="variation custom-control-label" for="{if isset($smallView) && $smallView}a-{$Artikel->kArtikel}{/if}vt{$Variationswert->kEigenschaftWert}"
+                                                    <label class="variation custom-control-label d-flex" for="{if isset($smallView) && $smallView}a-{$Artikel->kArtikel}{/if}vt{$Variationswert->kEigenschaftWert}"
                                                            data-type="radio"
                                                            data-original="{$Variationswert->cName}"
                                                            data-key="{$Variationswert->kEigenschaft}"
@@ -112,7 +112,7 @@
                                         {/if}
                                     {/foreach}
                                 {/block}
-                            {elseif $Variation->cTyp === 'IMGSWATCHES' || $Variation->cTyp === 'TEXTSWATCHES'}
+                            {elseif $Variation->cTyp === 'IMGSWATCHES'}
                                 {block name='productdetails-variation-swatch-outer'}
                                     <div class="btn-group swatches {$Variation->cTyp|lower}">
                                         {foreach name=Variationswerte from=$Variation->Werte key=y item=Variationswert}
@@ -161,7 +161,7 @@
                                                            {if $bSelected}checked="checked"{/if}
                                                            {if $smarty.foreach.Variationswerte.index === 0 && !$showMatrix} required{/if}
                                                            />
-                                                   <span class="label-variation">
+                                                    <span class="label-variation">
                                                         {if !empty($Variationswert->cBildPfadMiniFull)}
                                                             {image src=$Variationswert->cBildPfadMiniFull alt=$Variationswert->cName|escape:'quotes'
                                                                  data=['list' => "{prepare_image_details item=$Variationswert json=true}"]
@@ -178,6 +178,69 @@
                                             {/if}
                                         {/foreach}
                                     </div>
+                                {/block}
+                            {elseif $Variation->cTyp === 'TEXTSWATCHES'}
+                                {block name='productdetails-variation-textswatch-outer'}
+                                    {formrow class="mb-3 swatches {$Variation->cTyp|lower}"}
+                                        {foreach name=Variationswerte from=$Variation->Werte key=y item=Variationswert}
+                                            {assign var=bSelected value=false}
+                                            {if isset($oVariationKombi_arr[$Variationswert->kEigenschaft])}
+                                                {assign var=bSelected value=in_array($Variationswert->kEigenschaftWert, $oVariationKombi_arr[$Variationswert->kEigenschaft])}
+                                            {/if}
+                                            {if isset($oEigenschaftWertEdit_arr[$Variationswert->kEigenschaft])}
+                                                {assign var=bSelected value=($Variationswert->kEigenschaftWert == $oEigenschaftWertEdit_arr[$Variationswert->kEigenschaft]->kEigenschaftWert)}
+                                            {/if}
+                                            {if ($Artikel->kVaterArtikel > 0 || $Artikel->nIstVater == 1) && $Artikel->nVariationOhneFreifeldAnzahl == 1 &&
+                                            $Einstellungen.global.artikeldetails_variationswertlager == 3 &&
+                                            !empty($Artikel->VariationenOhneFreifeld[$i]->Werte[$y]->nNichtLieferbar) && $Artikel->VariationenOhneFreifeld[$i]->Werte[$y]->nNichtLieferbar == 1}
+                                                {* /do nothing *}
+                                            {else}
+                                                {block name='productdetails-variation-textswatch-inner'}
+                                                    {col class='col-auto'}
+                                                    <label class="variation swatches swatches-text{if $bSelected} active{/if}{if $Variationswert->notExists} not-available{/if}"
+                                                            data-type="swatch"
+                                                            data-original="{$Variationswert->cName}"
+                                                            data-key="{$Variationswert->kEigenschaft}"
+                                                            data-value="{$Variationswert->kEigenschaftWert}"
+                                                            for="{if isset($smallView) && $smallView}a-{$Artikel->kArtikel}{/if}vt{$Variationswert->kEigenschaftWert}"
+                                                            {if !empty($Variationswert->cBildPfadMini)}
+                                                                data-list='{prepare_image_details item=$Variationswert json=true}'
+                                                            {/if}
+                                                            {if $Variationswert->notExists}
+                                                                title="{lang key='notAvailableInSelection'}"
+                                                                data-title="{$Variationswert->cName} - {lang key='notAvailableInSelection'}"
+                                                                data-toggle="tooltip"
+                                                            {elseif $Variationswert->inStock}
+                                                                data-title="{$Variationswert->cName}"
+                                                            {else}
+                                                                title="{lang key='ampelRot'}"
+                                                                data-title="{$Variationswert->cName} - {lang key='ampelRot'}"
+                                                                data-toggle="tooltip"
+                                                                data-stock="out-of-stock"
+                                                            {/if}
+                                                            {if isset($Variationswert->oVariationsKombi)}
+                                                                data-ref="{$Variationswert->oVariationsKombi->kArtikel}"
+                                                            {/if}>
+                                                        <input type="radio"
+                                                               class="control-hidden"
+                                                               name="eigenschaftwert[{$Variation->kEigenschaft}]"
+                                                               id="{if isset($smallView) && $smallView}a-{$Artikel->kArtikel}{/if}vt{$Variationswert->kEigenschaftWert}"
+                                                               value="{$Variationswert->kEigenschaftWert}"
+                                                               {if $bSelected}checked="checked"{/if}
+                                                               {if $smarty.foreach.Variationswerte.index === 0 && !$showMatrix} required{/if}
+                                                               />
+                                                        <span class="label-variation">
+                                                            {$Variationswert->cName}
+                                                        </span>
+                                                        {block name='productdetails-variation-textswatch-include-variation-value'}
+                                                            {include file='productdetails/variation_value.tpl' hideVariationValue=true}
+                                                        {/block}
+                                                    </label>
+                                                    {/col}
+                                                {/block}
+                                            {/if}
+                                        {/foreach}
+                                    {/formrow}
                                 {/block}
                             {elseif $Variation->cTyp === 'FREIFELD' || $Variation->cTyp === 'PFLICHT-FREIFELD'}
                                 {block name='productdetails-variation-info-variation-text'}

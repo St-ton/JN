@@ -52,7 +52,7 @@ abstract class AbstractImage implements IMedia
             foreach ($imgNames as $imgName) {
                 $mediaReq->path   = $mediaReq->name . '.' . $mediaReq->ext;
                 $mediaReq->number = (int)$mediaReq->number;
-                $imgName->imgPath = $this->getThumbByRequest($mediaReq);
+                $imgName->imgPath = static::getThumbByRequest($mediaReq);
                 if ('/' . $imgName->imgPath === $request) {
                     $matchFound  = true;
                     $imgFilePath = \PFAD_ROOT . $imgName->imgPath;
@@ -85,6 +85,19 @@ abstract class AbstractImage implements IMedia
         $thumb = $req->getThumb($size);
         $raw   = $req->getRaw();
         if (!\file_exists(\PFAD_ROOT . $thumb) && ($raw === null || !\file_exists($raw))) {
+            $thumb = \BILD_KEIN_ARTIKELBILD_VORHANDEN;
+        }
+
+        return $thumb;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function getThumbByRequest(MediaImageRequest $req): string
+    {
+        $thumb = $req->getThumb($req->getSizeType());
+        if (!\file_exists(\PFAD_ROOT . $thumb) && (($raw = $req->getRaw()) === null || !\file_exists($raw))) {
             $thumb = \BILD_KEIN_ARTIKELBILD_VORHANDEN;
         }
 
@@ -345,20 +358,6 @@ abstract class AbstractImage implements IMedia
             && \file_exists($req->getThumb(Image::SIZE_SM, true))
             && \file_exists($req->getThumb(Image::SIZE_MD, true))
             && \file_exists($req->getThumb(Image::SIZE_LG, true));
-    }
-
-    /**
-     * @param MediaImageRequest $req
-     * @return string
-     */
-    public function getThumbByRequest(MediaImageRequest $req): string
-    {
-        $thumb = $req->getThumb($req->getSizeType());
-        if (!\file_exists(\PFAD_ROOT . $thumb) && (($raw = $req->getRaw()) === null || !\file_exists($raw))) {
-            $thumb = \BILD_KEIN_ARTIKELBILD_VORHANDEN;
-        }
-
-        return $thumb;
     }
 
     /**

@@ -73,11 +73,11 @@
                                                                         && (!$device->isMobile() || $device->isTablet())}
                                                                         {image fluid-grow=false lazy=true src="{$imageBaseURL}gfx/trans.png"
                                                                             alt=$category->getShortName()|escape:'html'
-                                                                            data=["src" => $sub->getImageURL()]
+                                                                            data=["src" => $sub->getImage(\JTL\Media\Image::SIZE_SM)]
                                                                             class="img-fluid d-none d-md-block"}
                                                                     {/if}
                                                                     <div class="title pt-2">
-                                                                            {$sub->getShortName()}
+                                                                        {$sub->getShortName()}
                                                                     </div>
                                                                 {/link}
                                                                 {if $show_subcategories && $sub->hasChildren()}
@@ -161,19 +161,19 @@
                 <div class="dropdown-menu">
                     {container}
                         {row}
-                            {foreach $manufacturers as $hst}
+                            {foreach $manufacturers as $mft}
                                 {col cols=12 md=6 lg=3}
-                                    {dropdownitem tag="div" active=($NaviFilter->hasManufacturer() && $NaviFilter->getManufacturer()->getValue() == $hst->kHersteller)}
+                                    {dropdownitem tag="div" active=($NaviFilter->hasManufacturer() && $NaviFilter->getManufacturer()->getValue() === $mft->getID())}
                                         <div class="category-wrapper manufacturer mt-3">
-                                            {link href=$hst->cURLFull title=$hst->cSeo}
+                                            {link href=$mft->cURLFull title=$mft->cSeo}
                                                 {if $Einstellungen.template.megamenu.show_category_images !== 'N'
                                                     && (!$device->isMobile() || $device->isTablet())}
-                                                    {image lazy=true data=["src" => $hst->cBildURLNormal]
-                                                        src="{$imageBaseURL}gfx/trans.png" alt=$hst->cName|escape:'html'
+                                                    {image lazy=true data=["src" => $mft->getImage(\JTL\Media\Image::SIZE_SM)]
+                                                        src="{$imageBaseURL}gfx/trans.png" alt=$mft->getName()|escape:'html'
                                                         class="d-none d-md-block mb-3"}
                                                 {/if}
                                                 <div class="title">
-                                                    {$hst->cName}
+                                                    {$mft->getName()}
                                                 </div>
                                             {/link}
                                         </div>

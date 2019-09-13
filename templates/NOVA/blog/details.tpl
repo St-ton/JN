@@ -106,7 +106,7 @@
                                     {row}
                                         {col cols=12}
                                             <div class="h2">{lang key='newsCommentAdd' section='news'}</div>
-                                            {form method="post" action="{if !empty($oNewsArchiv->getSEO())}{$oNewsArchiv->getURL()}{else}{get_static_route id='news.php'}{/if}" class="form evo-validate" id="news-addcomment"}
+                                            {form method="post" action="{if !empty($oNewsArchiv->getSEO())}{$oNewsArchiv->getURL()}{else}{get_static_route id='news.php'}{/if}" class="form evo-validate label-slide" id="news-addcomment"}
                                                 {input type="hidden" name="kNews" value=$oNewsArchiv->getID()}
                                                 {input type="hidden" name="kommentar_einfuegen" value="1"}
                                                 {input type="hidden" name="n" value=$oNewsArchiv->getID()}
@@ -120,6 +120,9 @@
                                                         label-for="comment-text"
                                                         label-class="commentForm"
                                                     }
+                                                        {if $Einstellungen.news.news_kommentare_freischalten === 'Y'}
+                                                            <small class="form-text text-muted">{lang key='commentWillBeValidated' section='news'}</small>
+                                                        {/if}
                                                         {textarea id="comment-text" name="cKommentar" required=true}{/textarea}
                                                         {if $nPlausiValue_arr.cKommentar > 0}
                                                             <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>

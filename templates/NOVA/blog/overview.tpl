@@ -69,7 +69,7 @@
                                         aria=["label"=>"{lang key='newsPerSite' section='news'}"]
                                     }
                                         <option value="-1" {if $oPagination->getItemsPerPage() == 0} selected{/if}>
-                                            {lang key='newsPerSite' section='news'}
+                                            {lang key='showAll'}
                                         </option>
                                         {foreach $oPagination->getItemsPerPageOptions() as $nItemsPerPageOption}
                                             <option value="{$nItemsPerPageOption}"{if $oPagination->getItemsPerPage() == $nItemsPerPageOption} selected{/if}>
@@ -77,11 +77,6 @@
                                             </option>
                                         {/foreach}
                                     {/select}
-                                {/col}
-                                {col cols=12 sm=4 lg='auto'}
-                                    {block name='blog-overview-form-submit'}
-                                        {button name="submitGo" type="submit" value="1" class="mb-3 mb-xl-0"}{lang key='filterGo'}{/button}
-                                    {/block}
                                 {/col}
                             {/formrow}
                         {/formgroup}

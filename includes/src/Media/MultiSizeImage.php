@@ -6,6 +6,7 @@
 
 namespace JTL\Media;
 
+use Exception;
 use JTL\Shop;
 
 /**
@@ -126,10 +127,21 @@ trait MultiSizeImage
             $source = $instance::getPathByID($this->getID(), $number);
         }
         $this->currentImagePath = $source;
-        $req                    = $instance::getRequest($this->getImageType(), $this->getID(), $this, $size, $number, $source);
-        Image::render($req);
+        $req                    = $instance::getRequest(
+            $this->getImageType(),
+            $this->getID(),
+            $this,
+            $size,
+            $number,
+            $source
+        );
+        try {
+            Image::render($req);
+        } catch (Exception $e) {
 
-        return $req->getThumb($size);
+        }
+
+        return $instance::getThumbByRequest($req);
     }
 
     /**

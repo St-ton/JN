@@ -368,6 +368,9 @@ msgstr "Characteristic"
 msgid "characteristic value"
 msgstr "Characteristic value"
 
+msgid "variation"
+msgstr "Variation"
+
 msgid "showQuestions"
 msgstr "Show questions"
 

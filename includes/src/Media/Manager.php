@@ -18,6 +18,7 @@ use JTL\Media\Image\CharacteristicValue;
 use JTL\Media\Image\Manufacturer;
 use JTL\Media\Image\Product;
 use JTL\Media\Image\StatsItem;
+use JTL\Media\Image\Variation;
 use JTL\Shop;
 use LimitIterator;
 use stdClass;
@@ -60,6 +61,11 @@ class Manager
                 'name'  => __('characteristic value'),
                 'type'  => Image::TYPE_CHARACTERISTIC_VALUE,
                 'stats' => CharacteristicValue::getStats($filesize)
+            ],
+            Image::TYPE_VARIATION => (object)[
+                'name'  => __('variation'),
+                'type'  => Image::TYPE_VARIATION,
+                'stats' => Variation::getStats($filesize)
             ]
         ];
     }

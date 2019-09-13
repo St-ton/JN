@@ -368,6 +368,9 @@ msgstr "Merkmalwert"
 msgid "characteristic"
 msgstr "Merkmal"
 
+msgid "variation"
+msgstr "Variation"
+
 msgid "showQuestions"
 msgstr "Fragen anzeigen"
 

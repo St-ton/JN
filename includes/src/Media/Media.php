@@ -17,7 +17,6 @@ use JTL\Media\Image\NewsCategory;
 use JTL\Media\Image\OPC;
 use JTL\Media\Image\Product;
 use JTL\Media\Image\Variation;
-use JTL\Shop;
 use function Functional\first;
 use function Functional\some;
 

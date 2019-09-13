@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -206,7 +206,7 @@ class Service
     /**
      * @param int $id
      */
-    public function deleteBlueprint($id): void
+    public function deleteBlueprint(int $id): void
     {
         $blueprint = (new Blueprint())->setId($id);
         $this->db->deleteBlueprint($blueprint);

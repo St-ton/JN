@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -51,7 +51,7 @@ class DB
         $blueprintIds = [];
 
         foreach ($blueprintsDB as $blueprintDB) {
-            $blueprintIds[] = $blueprintDB->kBlueprint;
+            $blueprintIds[] = (int)$blueprintDB->kBlueprint;
         }
 
         return $blueprintIds;
@@ -86,12 +86,12 @@ class DB
         $blueprintDB = $this->shopDB->select('topcblueprint', 'kBlueprint', $blueprint->getId());
 
         if (!\is_object($blueprintDB)) {
-            throw new Exception("The OPC blueprint with the id '{$blueprint->getId()}' could not be found.");
+            throw new Exception('The OPC blueprint with the id \'' . $blueprint->getId() . '\' could not be found.');
         }
 
         $content = \json_decode($blueprintDB->cJson, true);
 
-        $blueprint->setId($blueprintDB->kBlueprint)
+        $blueprint->setId((int)$blueprintDB->kBlueprint)
                   ->setName($blueprintDB->cName)
                   ->deserialize(['name' => $blueprintDB->cName, 'content' => $content]);
     }
@@ -241,9 +241,9 @@ class DB
         if ($isInstalled && $isActive) {
             /** @var Portlet $portlet */
             if (\class_exists($fullClass)) {
-                $portlet = new $fullClass($class, $portletDB->kPortlet, $portletDB->kPlugin);
+                $portlet = new $fullClass($class, (int)$portletDB->kPortlet, (int)$portletDB->kPlugin);
             } else {
-                $portlet = new Portlet($class, $portletDB->kPortlet, $portletDB->kPlugin);
+                $portlet = new Portlet($class, (int)$portletDB->kPortlet, (int)$portletDB->kPlugin);
             }
 
             return $portlet

@@ -17,13 +17,13 @@
             </span>
         </span>
     {/navitem}
-    {collapse id="nav-comparelist-collapse" tag="div"  data=["parent"=>"#main-nav-wrapper"] class="mt-md-2 w-100"}
-        <div id="comparelist-dropdown-container" class="p-3">
-            {row id='comparelist-dropdown-content'}
+    {collapse id="nav-comparelist-collapse" tag="div"  data=["parent"=>"#main-nav-wrapper"] class="mt-md-2 py-0 w-100"}
+        <div id="comparelist-dropdown-container">
+            <div id='comparelist-dropdown-content'>
                 {block name='layout-header-shop-nav-compare-include-comparelist-dropdown'}
                     {include file='snippets/comparelist_dropdown.tpl'}
                 {/block}
-            {/row}
+            </div>
         </div>
     {/collapse}
 {/block}

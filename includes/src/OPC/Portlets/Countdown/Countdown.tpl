@@ -1,7 +1,7 @@
 {$uid = $instance->getUid()}
 
 <div id="{$uid}"
-     class="countdown {$instance->getAnimationClass()}"
+     class="opc-Countdown {$instance->getAnimationClass()}"
      style="{$instance->getStyleString()}"
      {$instance->getAnimationDataAttributeString()}
      {if $isPreview}{$instance->getDataAttributeString()}{/if}

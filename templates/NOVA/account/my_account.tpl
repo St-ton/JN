@@ -54,6 +54,8 @@
                                         <tr title="{lang key='showOrder' section='login'}: {lang key='orderNo' section='login'} {$order->cBestellNr}"
                                             class="clickable-row"
                                             data-toggle="tooltip"
+                                            data-placement="top"
+                                            data-boundary="window"
                                             data-href="{$cCanonicalURL}?bestellung={$order->kBestellung}">
                                             <td>{$order->dBestelldatum}</td>
                                             <td class="text-right">{$order->cBestellwertLocalized}</td>

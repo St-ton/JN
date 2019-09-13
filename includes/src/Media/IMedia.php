@@ -46,6 +46,12 @@ interface IMedia
     public static function getThumb(string $type, $id, $mixed, $size, int $number = 1, string $source = null): string;
 
     /**
+     * @param MediaImageRequest $req
+     * @return string
+     */
+    public static function getThumbByRequest(MediaImageRequest $req): string;
+
+    /**
      * @param string      $type
      * @param string|int  $id
      * @param object      $mixed

@@ -1,3 +1,6 @@
+variables:
+  GLOBAL_CI_REGISTRY_URL: "registry.gitlab.com/jtl-software/jtl-shop/core"
+
 stages:
   - test
   - cleanUpTest
@@ -147,8 +150,13 @@ stages:
 
 test_PHP_5.6:
   stage: test
+  image: docker:19.03.1
+  services:
+    - docker:19.03.1-dind
   variables:
     PHP_VERSION_TEST_STEP: '5.6'
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: "/certs"
   script:
     - *testingScript
     - testing
@@ -157,13 +165,16 @@ test_PHP_5.6:
   except:
     - master
     - /^release\/.*$/
-  tags:
-    - build
 
 test_PHP_7.1:
   stage: test
+  image: docker:19.03.1
+  services:
+    - docker:19.03.1-dind
   variables:
     PHP_VERSION_TEST_STEP: '7.1'
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: "/certs"
   script:
     - *testingScript
     - testing
@@ -172,13 +183,16 @@ test_PHP_7.1:
   except:
     - master
     - /^release\/.*$/
-  tags:
-    - build
 
 test_PHP_7.2:
   stage: test
+  image: docker:19.03.1
+  services:
+    - docker:19.03.1-dind
   variables:
     PHP_VERSION_TEST_STEP: '7.2'
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: "/certs"
   script:
     - *testingScript
     - testing
@@ -187,13 +201,16 @@ test_PHP_7.2:
   except:
     - master
     - /^release\/.*$/
-  tags:
-    - build
 
 test_PHP_7.3:
   stage: test
+  image: docker:19.03.1
+  services:
+    - docker:19.03.1-dind
   variables:
     PHP_VERSION_TEST_STEP: '7.3'
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: "/certs"
   script:
     - *testingScript
     - testing
@@ -202,13 +219,17 @@ test_PHP_7.3:
   except:
     - master
     - /^release\/.*$/
-  tags:
-    - build
 
 removeContainerPHP5.6:
   stage: cleanUpTest
+  image: docker:19.03.1
+  services:
+    - docker:19.03.1-dind
   variables:
+    GIT_STRATEGY: none
     PHP_VERSION_TEST_STEP: '5.6'
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: "/certs"
   script:
     - *cleanUpTesting
     - failedTesting
@@ -218,13 +239,17 @@ removeContainerPHP5.6:
     - master
     - /^release\/.*$/
   when: on_failure
-  tags:
-    - build
 
 removeContainerPHP7.1:
   stage: cleanUpTest
+  image: docker:19.03.1
+  services:
+    - docker:19.03.1-dind
   variables:
+    GIT_STRATEGY: none
     PHP_VERSION_TEST_STEP: '7.1'
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: "/certs"
   script:
     - *cleanUpTesting
     - failedTesting
@@ -234,13 +259,17 @@ removeContainerPHP7.1:
     - master
     - /^release\/.*$/
   when: on_failure
-  tags:
-    - build
 
 removeContainerPHP7.2:
   stage: cleanUpTest
+  image: docker:19.03.1
+  services:
+    - docker:19.03.1-dind
   variables:
+    GIT_STRATEGY: none
     PHP_VERSION_TEST_STEP: '7.2'
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: "/certs"
   script:
     - *cleanUpTesting
     - failedTesting
@@ -250,13 +279,17 @@ removeContainerPHP7.2:
     - master
     - /^release\/.*$/
   when: on_failure
-  tags:
-    - build
 
 removeContainerPHP7.3:
   stage: cleanUpTest
+  image: docker:19.03.1
+  services:
+    - docker:19.03.1-dind
   variables:
+    GIT_STRATEGY: none
     PHP_VERSION_TEST_STEP: '7.3'
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: "/certs"
   script:
     - *cleanUpTesting
     - failedTesting
@@ -266,8 +299,6 @@ removeContainerPHP7.3:
     - master
     - /^release\/.*$/
   when: on_failure
-  tags:
-    - build
 
 build:
   stage: build

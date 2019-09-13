@@ -122,11 +122,13 @@ function bearbeiteInsert($xml)
                 $kategorie_arr[0]->cSeo = getFlatSeoPath($kategorie_arr[0]->cName);
             }
             $kategorie_arr[0]->cSeo                  = getSeo($kategorie_arr[0]->cSeo);
-            $kategorie_arr[0]->cSeo                  = checkSeo($kategorie_arr[0]->cSeo);
             $kategorie_arr[0]->dLetzteAktualisierung = 'now()';
             $kategorie_arr[0]->lft                   = isset($oDataOld->lft) ? $oDataOld->lft : 0;
             $kategorie_arr[0]->rght                  = isset($oDataOld->rght) ? $oDataOld->rght : 0;
             $kategorie_arr[0]->nLevel                = isset($oDataOld->nLevel) ? $oDataOld->nLevel : 0;
+            if (!isset($oDataOld->cSeo) || $oDataOld->cSeo !== $kategorie_arr[0]->cSeo) {
+                $kategorie_arr[0]->cSeo = checkSeo($kategorie_arr[0]->cSeo);
+            }
             DBInsertOnExistUpdate('tkategorie', $kategorie_arr, ['kKategorie']);
             // Insert into tredirect weil sich das SEO geändert hat
             if (isset($oDataOld->cSeo)) {

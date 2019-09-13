@@ -7,7 +7,7 @@
 {$images = $instance->getProperty('images')}
 
 {if $isPreview && empty($images)}
-    <div data-portlet="{$instance->getDataAttribute()}" class="opc-Gallery"
+    <div data-portlet="{$instance->getDataAttribute()}" class="opc-Gallery-preview"
          style="{$instance->getStyleString()}">
         <div>
             {file_get_contents($portlet->getBaseUrl()|cat:'icon.svg')}
@@ -15,7 +15,7 @@
         </div>
     </div>
 {elseif $galleryStyle === 'columns'}
-    <div class="gallery-columns" {$dataStr|default:''}
+    <div class="opc-Gallery-columns" {$dataStr|default:''}
          id="{$instance->getUid()}"
          style="{$instance->getStyleString()}">
         {foreach $images as $key => $image}
@@ -26,16 +26,16 @@
                     {elseif $image.action === 'lightbox'}
                         href="{$imgAttribs.src}"
                     {/if}
-               {/if} class="img-gallery-btn {if $image.action === 'lightbox'}img-gallery-active-btn{/if}"
+               {/if} class="opc-Gallery-btn {if $image.action === 'lightbox'}opc-Gallery-active-btn{/if}"
                data-caption="{$image.desc}">
-                {image class='img-gallery-img'
+                {image class='opc-Gallery-img'
                        srcset=$imgAttribs.srcset
                        sizes=$imgAttribs.srcsizes
                        src=$imgAttribs.src
                        alt=$imgAttribs.alt
                        title=$imgAttribs.title}
                 {if $image.action === 'lightbox'}
-                    <i class="img-gallery-zoom fa fa-search fa-2x"></i>
+                    <i class="opc-Gallery-zoom fa fa-search fa-2x"></i>
                 {/if}
             </a>
         {/foreach}
@@ -43,7 +43,7 @@
 {else}
     {row
         id=$instance->getUid()
-        class='img-gallery img-gallery-'|cat:$galleryStyle
+        class='opc-Gallery opc-Gallery-'|cat:$galleryStyle
         data=$data|default:null
         style=$instance->getStyleString()
     }
@@ -94,7 +94,7 @@
             {$image.lg = $image.md}
 
             {$imgAttribs = $instance->getImageAttributes($image.url, $image.alt, '',['xs'=>$image.xs,'sm'=>$image.sm,'md'=>$image.md,'lg'=>$image.lg,'xl'=>$image.xl])}
-            {col cols=$image.xs sm=$image.sm md=$image.md lg=$image.lg xl=$image.xl class="img-gallery-item"}
+            {col cols=$image.xs sm=$image.sm md=$image.md lg=$image.lg xl=$image.xl class="opc-Gallery-item"}
                 <a {if $isPreview === false}
                         {if $image.action === 'link'}
                             href="{$image.link}"
@@ -102,18 +102,18 @@
                             href="{$imgAttribs.src}"
                         {/if}
                     {/if}
-                   class="img-gallery-btn {if $image.action === 'lightbox'}img-gallery-active-btn{/if}"
+                   class="opc-Gallery-btn {if $image.action === 'lightbox'}opc-Gallery-active-btn{/if}"
                    data-caption="{$image.desc}"
                    aria-label="{$image.alt}"
                 >
-                    {image class='img-gallery-img'
+                    {image class='opc-Gallery-img'
                            srcset=$imgAttribs.srcset
                            sizes=$imgAttribs.srcsizes
                            src=$imgAttribs.src
                            alt=$imgAttribs.alt
                            title=$imgAttribs.title}
                     {if $image.action === 'lightbox'}
-                        <i class="img-gallery-zoom fa fa-search fa-2x"></i>
+                        <i class="opc-Gallery-zoom fa fa-search fa-2x"></i>
                     {/if}
                 </a>
             {/col}
@@ -125,7 +125,7 @@
     {inline_script}<script>
         var initGallery = function() {
             $('#{$instance->getUid()}').slickLightbox({
-                itemSelector: '.img-gallery-active-btn',
+                itemSelector: '.opc-Gallery-active-btn',
                 caption: 'caption',
                 lazy: true,
             });

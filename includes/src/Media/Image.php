@@ -201,7 +201,25 @@ class Image
                     'height' => (int)$settings['bilder_kategorien_gross_hoehe']
                 ]
             ],
-            self::TYPE_OPC             => [
+            self::TYPE_VARIATION            => [
+                self::SIZE_XS => [
+                    'width'  => (int)$settings['bilder_variationen_mini_breite'],
+                    'height' => (int)$settings['bilder_variationen_mini_hoehe']
+                ],
+                self::SIZE_SM => [
+                    'width'  => (int)$settings['bilder_variationen_klein_breite'],
+                    'height' => (int)$settings['bilder_variationen_klein_hoehe']
+                ],
+                self::SIZE_MD => [
+                    'width'  => (int)$settings['bilder_variationen_breite'],
+                    'height' => (int)$settings['bilder_variationen_hoehe']
+                ],
+                self::SIZE_LG => [
+                    'width'  => (int)$settings['bilder_variationen_gross_breite'],
+                    'height' => (int)$settings['bilder_variationen_gross_hoehe']
+                ]
+            ],
+            self::TYPE_OPC                  => [
                 self::SIZE_XS => [
                     'width'  => 480,
                     'height' => 480
@@ -323,7 +341,7 @@ class Image
 
     /**
      * @param InImage $image
-     * @param string  $extension,
+     * @param string  $extension
      */
     private static function optimizeImage(InImage $image, string $extension): void
     {

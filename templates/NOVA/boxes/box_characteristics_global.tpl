@@ -5,14 +5,20 @@
 {block name='boxes-box-characteristics-global'}
     {foreach $oBox->getItems() as $oMerkmal}
         {card
-            class="box box-global-characteristics mb-7"
+            class="box box-global-characteristics mb-4"
             id="sidebox{$oBox->getID()}-{$oMerkmal->kMerkmal}"
-            title="{if !empty($oMerkmal->cBildpfadKlein) && $oMerkmal->cBildpfadKlein !== $smarty.const.BILD_KEIN_MERKMALBILD_VORHANDEN}
-                    <img src='{$oMerkmal->cBildURLKlein}' class='vmiddle'/>
-                    {/if}
-                    {$oMerkmal->cName}"
         }
             {block name='boxes-box-characteristics-global-content'}
+                {block name='boxes-box-characteristics-global-title'}
+                    <div class="productlist-filter-headline align-items-center d-flex">
+                        {if !empty($oMerkmal->cBildpfadKlein) && $oMerkmal->cBildpfadKlein !== $smarty.const.BILD_KEIN_MERKMALBILD_VORHANDEN}
+                            <img src='{$oMerkmal->cBildURLKlein}' class='vmiddle'/>
+                        {/if}
+                        <span>
+                            {$oMerkmal->cName}
+                        </span>
+                    </div>
+                {/block}
                 {if ($oMerkmal->cTyp === 'SELECTBOX') && $oMerkmal->oMerkmalWert_arr|@count > 1}
                     {block name='boxes-box-characteristics-global-characteristics-select'}
                         {dropdown variant="link" text=$oMerkmal->cName}

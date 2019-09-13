@@ -3,8 +3,13 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='boxes-box-manufacturers'}
-    {card class="box box-manufacturers mb-7" id="sidebox{$oBox->getID()}" title="{lang key='manufacturers'}"}
+    {card class="box box-manufacturers mb-4" id="sidebox{$oBox->getID()}"}
         {block name='boxes-box-manufacturers-content'}
+            {block name='boxes-box-manufacturers-title'}
+                <div class="productlist-filter-headline">
+                    <span>{lang key='manufacturers'}</span>
+                </div>
+            {/block}
             {if $oBox->getManufacturers()|@count > 8}
                 {block name='boxes-box-manufacturers-dropdown'}
                     {dropdown class="w-100" variant="secondary btn-block" text="{lang key='selectManufacturer'}<span class='caret'></span>"}

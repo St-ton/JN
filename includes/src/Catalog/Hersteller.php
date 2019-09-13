@@ -274,6 +274,6 @@ class Hersteller
      */
     public function getID(): int
     {
-        return $this->kHersteller;
+        return (int)$this->kHersteller;
     }
 }

@@ -438,7 +438,7 @@ class Metadata implements MetadataInterface
                 // Hat die aktuelle Kategorie Unterkategorien?
                 $helper = Category::getInstance();
                 $sub    = $helper->getCategoryById($category->kKategorie);
-                if ($sub !== false && $sub->hasChildren()) {
+                if ($sub !== null && $sub->hasChildren()) {
                     $catNames       = map($sub->getChildren(), function (MenuItem $e) {
                         return \strip_tags($e->getName());
                     });
@@ -532,7 +532,7 @@ class Metadata implements MetadataInterface
             if ($category->bUnterKategorien) {
                 $helper = Category::getInstance();
                 $sub    = $helper->getCategoryById($category->kKategorie);
-                if ($sub !== false && $sub->hasChildren()) {
+                if ($sub !== null && $sub->hasChildren()) {
                     $catNames     = map($sub->getChildren(), function (MenuItem $e) {
                         return \strip_tags($e->getName());
                     });

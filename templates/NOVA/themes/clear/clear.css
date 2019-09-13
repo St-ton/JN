@@ -3,6 +3,7 @@
 /* grid containers */
 /* links */
 /* tables */
+/* progress */
 /*!
  * Bootstrap v4.3.1 (https://getbootstrap.com/)
  * Copyright 2011-2019 The Bootstrap Authors
@@ -4707,7 +4708,7 @@ a.badge-dark:focus, a.badge-dark.focus {
   height: 1rem;
   overflow: hidden;
   font-size: 0.7125rem;
-  background-color: #e9ecef;
+  background-color: #f5f7fa;
   border-radius: 0.125rem;
 }
 
@@ -14370,6 +14371,49 @@ aside .last-seen-link {
 }
 
 .btn-outline-danger:hover:hover {
+  color: #ffffff;
+}
+
+.btn-icon {
+  padding: 0.5357142857rem 0.5357142857rem;
+  font-size: 1.0925rem;
+  line-height: 1;
+  border-radius: 50%;
+  border-width: 0.125rem;
+}
+.btn-icon > [class*=fa-] {
+  width: 1.25em;
+  height: 1.25em;
+  line-height: 1.25em;
+}
+.btn-icon.btn-sm, .btn-group-sm > .btn-icon.btn {
+  padding: 0.3571428571rem 0.3571428571rem;
+  font-size: 0.9559375rem;
+  line-height: 1;
+  border-radius: 50%;
+  border-width: 0.0625rem;
+}
+.btn-icon.btn-lg, .btn-group-lg > .btn-icon.btn {
+  padding: 0.7142857143rem 0.7142857143rem;
+  font-size: 1.365625rem;
+  line-height: 1;
+  border-radius: 50%;
+}
+
+.btn-icon-primary {
+  background-color: #ffffff;
+}
+.btn-icon-primary:hover {
+  border-color: #F8BF00;
+}
+.btn-icon-primary.disabled, .btn-icon-primary:disabled {
+  background-color: #ebebeb;
+  color: #ffffff;
+  border-color: #ebebeb;
+}
+.btn-icon-primary:not(:disabled):not(.disabled):active, .btn-icon-primary:not(:disabled):not(.disabled).active, .show > .btn-icon-primary.dropdown-toggle {
+  border-color: #F8BF00;
+  background-color: #F8BF00;
   color: #ffffff;
 }
 

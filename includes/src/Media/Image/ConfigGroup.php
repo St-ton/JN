@@ -6,10 +6,12 @@
 
 namespace JTL\Media\Image;
 
+use Generator;
 use JTL\DB\ReturnType;
 use JTL\Media\Image;
 use JTL\Media\MediaImageRequest;
 use JTL\Shop;
+use PDO;
 use stdClass;
 
 /**
@@ -73,5 +75,29 @@ class ConfigGroup extends AbstractImage
     public static function getStoragePath(): string
     {
         return \STORAGE_CONFIGGROUPS;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function getAllImages(int $offset = null, int $limit = null): Generator
+    {
+        $images = Shop::Container()->getDB()->query(
+            'SELECT a.kKonfiggruppe AS id, t.cName, cBildPfad AS path
+                FROM tkonfiggruppe a
+                JOIN tkonfiggruppesprache t 
+                    ON a.kKonfiggruppe = t.kKonfiggruppe' . self::getLimitStatement($offset, $limit),
+            ReturnType::QUERYSINGLE
+        );
+        while (($image = $images->fetch(PDO::FETCH_OBJ)) !== false) {
+            yield MediaImageRequest::create([
+                'id'         => $image->id,
+                'type'       => self::TYPE,
+                'name'       => self::getCustomName($image),
+                'number'     => 1,
+                'path'       => $image->path,
+                'sourcePath' => $image->path
+            ]);
+        }
     }
 }

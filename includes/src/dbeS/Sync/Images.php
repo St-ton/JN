@@ -229,12 +229,12 @@ final class Images extends AbstractSync
             if (empty($item->cBildPfad)) {
                 continue;
             }
-            $imgFilename = $item->cBildPfad;
-            $format      = $this->getExtension($this->unzipPath . $imgFilename);
+            $original = $this->unzipPath . $item->cBildPfad;
+            $format   = $this->getExtension($original);
             if (!$format) {
                 $this->logger->error(
                     'Bildformat des Konfiggruppenbildes konnte nicht ermittelt werden. Datei ' .
-                    $imgFilename . ' keine Bilddatei?'
+                    $original . ' keine Bilddatei?'
                 );
                 continue;
             }
@@ -244,10 +244,10 @@ final class Images extends AbstractSync
             $branding                               = new stdClass();
             $branding->oBrandingEinstellung         = new stdClass();
             $branding->oBrandingEinstellung->nAktiv = 0;
-
+            \copy($original, \PFAD_ROOT . \STORAGE_CONFIGGROUPS . $image->cPfad);
             if ($this->createThumbnail(
                 $branding,
-                $this->unzipPath . $imgFilename,
+                $original,
                 \PFAD_KONFIGURATOR_KLEIN . $item->cBildPfad,
                 $this->config['bilder']['bilder_konfiggruppe_klein_breite'],
                 $this->config['bilder']['bilder_konfiggruppe_klein_hoehe'],
@@ -262,7 +262,7 @@ final class Images extends AbstractSync
                     (object)['cBildPfad' => $item->cBildPfad]
                 );
             }
-            \unlink($this->unzipPath . $imgFilename);
+            \unlink($original);
         }
     }
 
@@ -466,6 +466,7 @@ final class Images extends AbstractSync
             }
             $image->cPfad = $this->getPropertiesImageName($image, $format, $sql);
             $image->cPfad = $this->getNewFilename($image->cPfad);
+            \copy($original, \PFAD_ROOT . \STORAGE_VARIATIONS . $image->cPfad);
             $this->createThumbnail(
                 $this->brandingConfig[Image::TYPE_VARIATION],
                 $original,

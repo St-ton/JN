@@ -130,11 +130,10 @@ if ($oSuchergebnisse->getProducts()->count() === 0) {
         $categoryContent->Unterkategorien = new KategorieListe();
         $h                                = Category::getInstance();
         $children                         = $h->getCategoryById($NaviFilter->getCategory()->getValue());
-        if ($children !== false && $children->hasChildren()) {
+        $tb                               = $conf['artikeluebersicht']['topbest_anzeigen'];
+        if ($children !== null && $children->hasChildren()) {
             $categoryContent->Unterkategorien->elemente = $children->getChildren();
         }
-
-        $tb = $conf['artikeluebersicht']['topbest_anzeigen'];
         if ($tb === 'Top' || $tb === 'TopBest') {
             $categoryContent->TopArtikel = new ArtikelListe();
             $categoryContent->TopArtikel->holeTopArtikel($categoryContent->Unterkategorien);

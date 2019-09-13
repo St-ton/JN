@@ -8,6 +8,7 @@ namespace JTL\dbeS\Sync;
 
 use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
+use JTL\Media\Image;
 use JTL\Shop;
 use stdClass;
 
@@ -288,7 +289,7 @@ final class Images extends AbstractSync
             $image->cPfad  = $this->getNewFilename($image->cPfad);
             \copy($original, \PFAD_ROOT . \STORAGE_CHARACTERISTIC_VALUES . $image->cPfad);
             $this->createThumbnail(
-                $this->brandingConfig['Merkmalwerte'],
+                $this->brandingConfig[Image::TYPE_CHARACTERISTIC_VALUE],
                 $original,
                 \PFAD_MERKMALWERTBILDER_NORMAL . $image->cPfad,
                 $this->config['bilder']['bilder_merkmalwert_normal_breite'],
@@ -344,7 +345,7 @@ final class Images extends AbstractSync
             $image->cPfad  = $this->getNewFilename($image->cPfad);
             \copy($original, \PFAD_ROOT . \STORAGE_CHARACTERISTICS . $image->cPfad);
             $this->createThumbnail(
-                $this->brandingConfig['Merkmale'],
+                $this->brandingConfig[Image::TYPE_CHARACTERISTIC],
                 $original,
                 \PFAD_MERKMALBILDER_NORMAL . $image->cPfad,
                 $this->config['bilder']['bilder_merkmal_normal_breite'],
@@ -406,7 +407,7 @@ final class Images extends AbstractSync
             $image->cPfad = $this->getNewFilename($image->cPfad);
             \copy($original, \PFAD_ROOT . \STORAGE_MANUFACTURERS . $image->cPfad);
             $this->createThumbnail(
-                $this->brandingConfig['Hersteller'],
+                $this->brandingConfig[Image::TYPE_MANUFACTURER],
                 $original,
                 \PFAD_HERSTELLERBILDER_NORMAL . $image->cPfad,
                 $this->config['bilder']['bilder_hersteller_normal_breite'],
@@ -466,7 +467,7 @@ final class Images extends AbstractSync
             $image->cPfad = $this->getPropertiesImageName($image, $format, $sql);
             $image->cPfad = $this->getNewFilename($image->cPfad);
             $this->createThumbnail(
-                $this->brandingConfig['Variationen'],
+                $this->brandingConfig[Image::TYPE_VARIATION],
                 $original,
                 \PFAD_VARIATIONSBILDER_GROSS . $image->cPfad,
                 $this->config['bilder']['bilder_variationen_gross_breite'],
@@ -520,7 +521,7 @@ final class Images extends AbstractSync
             $image->cPfad = $this->getNewFilename($image->cPfad);
             \copy($original, \PFAD_ROOT . \STORAGE_CATEGORIES . $image->cPfad);
             if ($this->createThumbnail(
-                $this->brandingConfig['Kategorie'],
+                $this->brandingConfig[Image::TYPE_CATEGORY],
                 $original,
                 \PFAD_KATEGORIEBILDER . $image->cPfad,
                 $this->config['bilder']['bilder_kategorien_breite'],
@@ -631,7 +632,7 @@ final class Images extends AbstractSync
         $image->cPfad = $this->getNewFilename($image->cPfad);
         $original     = $this->unzipPath . $fileName;
         $this->createThumbnail(
-            $this->brandingConfig['Artikel'],
+            $this->brandingConfig[Image::TYPE_PRODUCT],
             $original,
             \PFAD_PRODUKTBILDER_GROSS . $image->cPfad,
             $config['bilder_artikel_gross_breite'],

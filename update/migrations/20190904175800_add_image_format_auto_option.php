@@ -257,6 +257,22 @@ class Migration_20190904175800 extends Migration implements IMigration
             'number',
             100
         );
+        $this->setConfig(
+            'bilder_variationen_klein_breite',
+            '100',
+            \CONF_BILDER,
+            'Variationsbilder Klein Breite',
+            'number',
+            100
+        );
+        $this->setConfig(
+            'bilder_variationen_klein_hoehe',
+            '100',
+            \CONF_BILDER,
+            'Variationsbilder Klein Höhe',
+            'number',
+            100
+        );
     }
 
     /**

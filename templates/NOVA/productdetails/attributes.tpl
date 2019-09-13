@@ -9,26 +9,28 @@
         <table class="table table-condensed table-striped">
             {if $Einstellungen.artikeldetails.merkmale_anzeigen === 'Y'}
                 {block name='productdetails-attributes-characteristics'}
-                    {foreach $Artikel->oMerkmale_arr as $oMerkmal}
+                    {foreach $Artikel->oMerkmale_arr as $characteristic}
                         <tr>
-                            <td class="h6">{$oMerkmal->cName}:</td>
+                            <td class="h6">{$characteristic->cName}:</td>
                             <td class="attr-characteristic">
                                 {strip}
-                                    {foreach $oMerkmal->oMerkmalWert_arr as $oMerkmalWert}
-                                        {if $oMerkmal->cTyp === 'TEXT' || $oMerkmal->cTyp === 'SELECTBOX' || $oMerkmal->cTyp === ''}
-                                            <span class="value">{link href=$oMerkmalWert->cURLFull class="badge badge-light"}{$oMerkmalWert->cWert|escape:'html'}{/link} </span>
+                                    {foreach $characteristic->oMerkmalWert_arr as $characteristicValue}
+                                        {if $characteristic->cTyp === 'TEXT' || $characteristic->cTyp === 'SELECTBOX' || $characteristic->cTyp === ''}
+                                            <span class="value">{link href=$characteristicValue->cURLFull class="badge badge-light"}{$characteristicValue->cWert|escape:'html'}{/link} </span>
                                         {else}
                                             <span class="value">
-                                            {link href=$oMerkmalWert->cURLFull
+                                            {link href=$characteristicValue->cURLFull
                                                 class="text-decoration-none"
                                                 data=['toggle'=>'tooltip', 'placement'=>'top', 'boundary'=>'window']
-                                                title=$oMerkmalWert->cWert|escape:'html'
-                                                aria=["label"=>$oMerkmalWert->cWert|escape:'html']
+                                                title=$characteristicValue->cWert|escape:'html'
+                                                aria=["label"=>$characteristicValue->cWert|escape:'html']
                                             }
-                                                {if $oMerkmalWert->cBildpfadKlein !== 'gfx/keinBild_kl.gif'}
-                                                    {image src=$oMerkmalWert->cBildURLKlein title=$oMerkmalWert->cWert|escape:'html' alt=$oMerkmalWert->cWert|escape:'html'}
+                                                {$img = $characteristicValue->getImage(\JTL\Media\Image::SIZE_XS)}
+                                                {if $img|strpos:$smarty.const.BILD_KEIN_MERKMALBILD_VORHANDEN === false
+                                                && $img|strpos:$smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN === false}
+                                                    {image src=$img title=$characteristicValue->cWert|escape:'html' alt=$characteristicValue->cWert|escape:'html'}
                                                 {else}
-                                                    {badge variant="light"}{$oMerkmalWert->cWert|escape:'html'}{/badge}
+                                                    {badge variant="light"}{$characteristicValue->cWert|escape:'html'}{/badge}
                                                 {/if}
                                             {/link}
                                             </span>

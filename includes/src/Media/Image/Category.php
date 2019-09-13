@@ -65,7 +65,10 @@ class Category extends AbstractImage
      */
     public static function getCustomName($mixed): string
     {
-        $result = empty($mixed->cSeo) ? $mixed->cName : $mixed->cSeo;
+        $result = \method_exists($mixed, 'getURL') ? $mixed->getURL() : null;
+        if ($result === null) {
+            $result = empty($mixed->cSeo) ? $mixed->cName : $mixed->cSeo;
+        }
 
         return empty($result) ? 'image' : Image::getCleanFilename($result);
     }

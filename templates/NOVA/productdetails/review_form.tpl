@@ -54,9 +54,15 @@
                             {/formgroup}
                         {/block}
                         {block name='productdetails-review-form-form-submit'}
-                            {input type="hidden" name="bfh" value="1"}
-                            {input type="hidden" name="a" value=$Artikel->kArtikel}
-                            {button type="submit" value="1" variant="primary"}{lang key='submitRating' section='product rating'}{/button}
+                            {row}
+                                {col cols=12 md=4 lg=3 class='ml-auto'}
+                                    {input type="hidden" name="bfh" value="1"}
+                                    {input type="hidden" name="a" value=$Artikel->kArtikel}
+                                    {button type="submit" value="1" variant="primary" block=true}
+                                        {lang key='submitRating' section='product rating'}
+                                    {/button}
+                                {/col}
+                            {/row}
                         {/block}
                     {/if}
                 {/form}

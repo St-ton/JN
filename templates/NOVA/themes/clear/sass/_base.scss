@@ -205,7 +205,6 @@ header, #main-wrapper { background: #fff; }
       right: 0;
       z-index: $zindex-dropdown;
       float: left;
-      min-width: $dropdown-min-width*2.7;
       padding: $dropdown-padding-y 0;
       margin: $dropdown-spacer 0 0; // override default ul
       font-size: $font-size-base; // Redeclare because nesting can cause inheritance issues
@@ -213,7 +212,7 @@ header, #main-wrapper { background: #fff; }
       text-align: left; // Ensures proper alignment if parent has it changed (e.g., modal footer)
       list-style: none;
       background-clip: padding-box;
-      max-height: 30rem;
+      max-height: 40rem;
       overflow-y: auto;
       @include border-radius($dropdown-border-radius);
       @include box-shadow($dropdown-box-shadow);
@@ -240,7 +239,11 @@ header, #main-wrapper { background: #fff; }
         text-decoration: none;
       }
     }
-    #nav-account-collapse { min-width: $dropdown-min-width*2.3; }
+    #nav-comparelist-collapse,
+    #nav-wishlist-collapse,
+    #nav-cart-collapse {
+      min-width: $dropdown-min-width*2.7;
+    }
   }
   .nav-item{
     //border-bottom: $highlight-border-size solid transparent;
@@ -286,7 +289,7 @@ header, #main-wrapper { background: #fff; }
     #nav-cart-collapse,
     #nav-account-collapse,
     #nav-search-collapse {
-      max-height: 400px;
+      max-height: 430px;
       z-index: $zindex-sticky;
       overflow-x: hidden;
       position: absolute;
@@ -396,9 +399,6 @@ ul.partlist-items {
     table-layout: fixed;
     word-break: break-word;
     white-space: initial;
-    &.table-striped tbody tr:nth-of-type(odd) {
-      background-color: $bg-info;
-    }
   }
 }
 
@@ -936,12 +936,6 @@ ul.partlist-items {
 
 .attr-group { font-size: 13px; }
 
-hr {
-  border-top: 1px solid $sand;
-  margin-top: $grid-gutter-width;
-  margin-bottom: $grid-gutter-width;
-}
-
 #main-wrapper.fluid {
   .navbar, #footer {
     margin-bottom: 0;
@@ -1297,6 +1291,9 @@ aside {
 .nmbr-cfg-group {
   display: flex;
   z-index: 1;
+  input {
+    border-radius: 0;
+  }
   .btn-decrement, .btn-increment {
     color: $input-color;
     background-color: $input-bg;
@@ -1319,9 +1316,11 @@ aside {
   }
   .btn-decrement {
     border-right: 0;
+    border-radius: $btn-border-radius 0 0 $btn-border-radius;
   }
   .btn-increment {
     border-left: 0;
+    border-radius: 0 $btn-border-radius $btn-border-radius 0;
   }
   input.form-control {
     border-right: 0;

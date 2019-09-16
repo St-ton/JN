@@ -4,17 +4,9 @@
  *}
 {block name='checkout-inc-order-items'}
     {input type="submit" name="fake" class="d-none"}
-        {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'
-            && $tplscope === 'cart'}
+        {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
             {$headcols=6}{$headsm=4}
-        {elseif $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'
-            && $tplscope !== 'cart'}
-            {$headcols=6}{$headsm=4}
-        {elseif ($Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'N')
-            && $tplscope === 'cart'}
-            {$headcols=6}{$headsm=5}
-        {elseif ($Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'N')
-            && $tplscope !== 'cart'}
+        {elseif $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'N'}
             {$headcols=6}{$headsm=5}
         {/if}
         {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen !== 'Y'}
@@ -197,30 +189,6 @@
                                         </ul>
                                     {/block}
                                 {/if}
-                                {if $tplscope === 'cart'}
-                                    {block name='checkout-inc-order-items-cart-submit'}
-                                        {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL
-                                            || $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_GRATISGESCHENK
-                                        }
-                                            <div data-toggle="product-actions">
-                                                {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
-                                                    <div class="btn-scale-small d-inline-block">
-                                                        {include file='snippets/wishlist_button.tpl' Artikel=$oPosition->Artikel}
-                                                    </div>
-                                                    <span class="mx-2">|</span>
-                                                {/if}
-                                                {button type="submit" variant="link" size="sm"
-                                                    class="pl-0 droppos border-0"
-                                                    name="dropPos"
-                                                    value=$oPosition@index
-                                                    title="{lang key='delete'}"
-                                                }
-                                                    <span class="fa fa-trash "></span> <span>{lang key='delete'}</span>
-                                                {/button}
-                                            </div>
-                                        {/if}
-                                    {/block}
-                                {/if}
                             {/col}
 
 
@@ -238,48 +206,11 @@
 
                             {col cols=12 md=3 class="text-md-center mb-3 mb-md-0"}
                                 {block name='checkout-inc-order-items-quantity'}
-                                    {if $tplscope === 'cart'}
-                                        {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
-                                            {if $oPosition->istKonfigVater()}
-                                                <div class="qty-wrapper">
-                                                    {$oPosition->nAnzahl|replace_delim} {if !empty($oPosition->Artikel->cEinheit)}{$oPosition->Artikel->cEinheit}{/if}
-                                                    {link class="btn btn-light configurepos ml-3"
-                                                        href="index.php?a={$oPosition->kArtikel}&ek={$oPosition@index}"}
-                                                        <i class="fa fa-cogs"></i><span class="d-none d-md-inline-flex ml-1">{lang key='configure'}</span>
-                                                    {/link}
-                                                </div>
-                                            {else}
-                                                <div class="qty-wrapper dropdown">
-                                                    {inputgroup id="quantity-grp{$oPosition@index}" class="choose_quantity"}
-                                                        {input type="{if $oPosition->Artikel->cTeilbar === 'Y' && $oPosition->Artikel->fAbnahmeintervall == 0}text{else}number{/if}"
-                                                            min="{if $oPosition->Artikel->fMindestbestellmenge}{$oPosition->Artikel->fMindestbestellmenge}{else}0{/if}"
-                                                            required=($oPosition->Artikel->fAbnahmeintervall > 0)
-                                                            step="{if $oPosition->Artikel->fAbnahmeintervall > 0}{$oPosition->Artikel->fAbnahmeintervall}{/if}"
-                                                            id="quantity[{$oPosition@index}]" class="quantity text-right" name="anzahl[{$oPosition@index}]"
-                                                            aria=["label"=>"{lang key='quantity'}"]
-                                                            value=$oPosition->nAnzahl
-                                                            data=["decimals"=>{getDecimalLength quantity=$oPosition->Artikel->fAbnahmeintervall}]
-                                                        }
-                                                        {*{inputgroupaddon append=true}
-                                                            {if $oPosition->cEinheit}
-                                                                {inputgrouptext class="unit form-control"}
-                                                                    {$oPosition->cEinheit}
-                                                                {/inputgrouptext}
-                                                            {/if}
-                                                        {/inputgroupaddon}*}
-                                                    {/inputgroup}
-                                                </div>
-                                            {/if}
-                                        {elseif $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_GRATISGESCHENK}
-                                            {input name="anzahl[{$oPosition@index}]" type="hidden" value="1"}
-
-                                        {/if}
-                                    {else}
-                                        {$oPosition->nAnzahl|replace_delim} {if !empty($oPosition->Artikel->cEinheit)}{$oPosition->Artikel->cEinheit}{/if}
-                                    {/if}
+                                    {$oPosition->nAnzahl|replace_delim} {if !empty($oPosition->Artikel->cEinheit)}{$oPosition->Artikel->cEinheit}{/if}
                                 {/block}
                             {/col}
                         {/block}
+
                         {block name='checkout-inc-order-items-order-items-price-net'}
                             {col cols=12 md=2 class="price-col text-md-right mb-3 mb-md-0"}
                                 <strong class="price_overall">
@@ -300,78 +231,76 @@
             {/if}
         {/foreach}
     {/block}
-    {if $tplscope !== 'cart'}
-        {block name='checkout-inc-order-items-price-tax'}
-            {if $NettoPreise}
-                {block name='checkout-inc-order-items-price-net'}
-                    {row class="total-net"}
-                        {col class="text-left" offset-sm=0 offset-md=6 cols=6 md=4}
-                            <span class="price_label"><strong>{lang key='totalSum'} ({lang key='net'}):</strong></span>
-                        {/col}
-                        {col class="text-right price-col" cols=6 md=2}
-                            <strong class="price total-sum">{$WarensummeLocalized[$NettoPreise]}</strong>
-                        {/col}
-                    {/row}
-                {/block}
-            {/if}
-
-            {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N' && $Steuerpositionen|@count > 0}
-                {block name='checkout-inc-order-items-tax'}
-                    {foreach $Steuerpositionen as $Steuerposition}
-                        {row class="tax"}
-                            {col class="text-left" offset-sm=0 offset-md=6 cols=6 md=4}
-                                <span class="tax_label">{$Steuerposition->cName}:</span>
-                            {/col}
-                            {col class="text-right price-col" cols=6 md=2}
-                                <span class="tax_label">{$Steuerposition->cPreisLocalized}</span>
-                            {/col}
-                        {/row}
-                    {/foreach}
-                {/block}
-            {/if}
-
-            {if isset($smarty.session.Bestellung->GuthabenNutzen) && $smarty.session.Bestellung->GuthabenNutzen == 1}
-                {block name='checkout-inc-order-items-credit'}
-                     {row class="customer-credit"}
-                         {col class="text-left" offset-sm=0 offset-md=6 cols=6 md=4}
-                            {lang key='useCredit' section='account data'}
-                         {/col}
-                         {col class="text-right" cols=6 md=2 lg=1}
-                             {$smarty.session.Bestellung->GutscheinLocalized}
-                         {/col}
-                     {/row}
-                {/block}
-            {/if}
-            {block name='checkout-inc-order-items-price-sticky'}
-                {row class="total bg-info border-top position-sticky"}
+    {block name='checkout-inc-order-items-price-tax'}
+        {if $NettoPreise}
+            {block name='checkout-inc-order-items-price-net'}
+                {row class="total-net"}
                     {col class="text-left" offset-sm=0 offset-md=6 cols=6 md=4}
-                        <span class="price_label"><strong>{lang key='totalSum'}:</strong></span>
+                        <span class="price_label"><strong>{lang key='totalSum'} ({lang key='net'}):</strong></span>
                     {/col}
                     {col class="text-right price-col" cols=6 md=2}
-                        <strong class="price total-sum">{$WarensummeLocalized[0]}</strong>
+                        <strong class="price total-sum">{$WarensummeLocalized[$NettoPreise]}</strong>
                     {/col}
                 {/row}
             {/block}
+        {/if}
+
+        {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N' && $Steuerpositionen|@count > 0}
+            {block name='checkout-inc-order-items-tax'}
+                {foreach $Steuerpositionen as $Steuerposition}
+                    {row class="tax"}
+                        {col class="text-left" offset-sm=0 offset-md=6 cols=6 md=4}
+                            <span class="tax_label">{$Steuerposition->cName}:</span>
+                        {/col}
+                        {col class="text-right price-col" cols=6 md=2}
+                            <span class="tax_label">{$Steuerposition->cPreisLocalized}</span>
+                        {/col}
+                    {/row}
+                {/foreach}
+            {/block}
+        {/if}
+
+        {if isset($smarty.session.Bestellung->GuthabenNutzen) && $smarty.session.Bestellung->GuthabenNutzen == 1}
+            {block name='checkout-inc-order-items-credit'}
+                 {row class="customer-credit"}
+                     {col class="text-left" offset-sm=0 offset-md=6 cols=6 md=4}
+                        {lang key='useCredit' section='account data'}
+                     {/col}
+                     {col class="text-right" cols=6 md=2 lg=1}
+                         {$smarty.session.Bestellung->GutscheinLocalized}
+                     {/col}
+                 {/row}
+            {/block}
+        {/if}
+        {block name='checkout-inc-order-items-price-sticky'}
+            {row class="total bg-info border-top position-sticky"}
+                {col class="text-left" offset-sm=0 offset-md=6 cols=6 md=4}
+                    <span class="price_label"><strong>{lang key='totalSum'}:</strong></span>
+                {/col}
+                {col class="text-right price-col" cols=6 md=2}
+                    <strong class="price total-sum">{$WarensummeLocalized[0]}</strong>
+                {/col}
+            {/row}
         {/block}
-        {block name='checkout-inc-order-items-shipping'}
-            {if isset($FavourableShipping)}
-                {if $NettoPreise}
-                    {$shippingCosts = "`$FavourableShipping->cPriceLocalized[$NettoPreise]` {lang key='plus' section='basket'} {lang key='vat' section='productDetails'}"}
-                {else}
-                    {$shippingCosts = $FavourableShipping->cPriceLocalized[$NettoPreise]}
-                {/if}
-                {row class="shipping-costs text-right"}
-                   {col cols=12}
-                        <small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL():$shippingCosts:$FavourableShipping->cCountryCode key='shippingInformationSpecific' section='basket'}</small>
-                    {/col}
-                {/row}
-            {elseif empty($FavourableShipping) && empty($smarty.session.Versandart)}
-                {row class="shipping-costs text-right"}
-                    {col cols=12}
-                        <small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() key='shippingInformation' section='basket'}</small>
-                    {/col}
-                {/row}
+    {/block}
+    {block name='checkout-inc-order-items-shipping'}
+        {if isset($FavourableShipping)}
+            {if $NettoPreise}
+                {$shippingCosts = "`$FavourableShipping->cPriceLocalized[$NettoPreise]` {lang key='plus' section='basket'} {lang key='vat' section='productDetails'}"}
+            {else}
+                {$shippingCosts = $FavourableShipping->cPriceLocalized[$NettoPreise]}
             {/if}
-        {/block}
-    {/if}
+            {row class="shipping-costs text-right"}
+               {col cols=12}
+                    <small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL():$shippingCosts:$FavourableShipping->cCountryCode key='shippingInformationSpecific' section='basket'}</small>
+                {/col}
+            {/row}
+        {elseif empty($FavourableShipping) && empty($smarty.session.Versandart)}
+            {row class="shipping-costs text-right"}
+                {col cols=12}
+                    <small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() key='shippingInformation' section='basket'}</small>
+                {/col}
+            {/row}
+        {/if}
+    {/block}
 {/block}

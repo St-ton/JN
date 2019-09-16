@@ -1999,9 +1999,6 @@ table caption {
 
 .productlist-page-nav {
   align-items: center;
-  padding: map-get($spacers, 2) 0;
-  margin-bottom: $spacer;
-  border-bottom: 1px solid $sand;
   .pagination {
     margin: 0;
   }

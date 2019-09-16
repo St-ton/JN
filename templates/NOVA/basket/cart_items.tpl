@@ -193,29 +193,6 @@
                                 </ul>
                             {/block}
                         {/if}
-                        {block name='basket-cart-items-cart-submit'}
-                            {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL
-                            || $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_GRATISGESCHENK
-                            }
-                                <div data-toggle="product-actions">
-                                    {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
-                                        <div class="btn-scale-small d-inline-block">
-                                            {include file='snippets/wishlist_button.tpl' Artikel=$oPosition->Artikel}
-                                        </div>
-                                        <span class="mx-2">|</span>
-                                    {/if}
-                                    {button type="submit"
-                                        variant="link"
-                                        size="sm"
-                                        class="pl-0 droppos border-0"
-                                        name="dropPos"
-                                        value=$oPosition@index
-                                        title="{lang key='delete'}"}
-                                        <span class="fa fa-trash "></span> <span>{lang key='delete'}</span>
-                                    {/button}
-                                </div>
-                            {/if}
-                        {/block}
                         {/col}
 
                         {block name='basket-cart-items-price-single'}
@@ -234,15 +211,15 @@
                         {block name='basket-cart-items-quantity'}
                             {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
                                 {if $oPosition->istKonfigVater()}
-                                    <div class="qty-wrapper">
+                                    <div class="qty-wrapper max-w-sm">
                                         {$oPosition->nAnzahl|replace_delim} {if !empty($oPosition->Artikel->cEinheit)}{$oPosition->Artikel->cEinheit}{/if}
                                         {link class="btn btn-light configurepos ml-3"
                                         href="index.php?a={$oPosition->kArtikel}&ek={$oPosition@index}"}
-                                            <i class="fa fa-cogs"></i><span class="d-none d-md-inline-flex ml-1">{lang key='configure'}</span>
+                                            <i class="fa fa-cogs"></i><span class="ml-1">{lang key='configure'}</span>
                                         {/link}
                                     </div>
                                 {else}
-                                    <div class="qty-wrapper dropdown">
+                                    <div class="qty-wrapper dropdown max-w-sm">
                                         {inputgroup id="quantity-grp{$oPosition@index}" class="choose_quantity"}
                                         {input type="{if $oPosition->Artikel->cTeilbar === 'Y' && $oPosition->Artikel->fAbnahmeintervall == 0}text{else}number{/if}"
                                         min="{if $oPosition->Artikel->fMindestbestellmenge}{$oPosition->Artikel->fMindestbestellmenge}{else}0{/if}"
@@ -279,6 +256,29 @@
                                 {/if}
                             </strong>
                         {/col}
+                    {/block}
+                    {block name='basket-cart-items-cart-submit'}
+                        {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL
+                        || $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_GRATISGESCHENK
+                        }
+                            {col cols=$cols xl=10 class='mt-4 ml-auto' data=['toggle'=>'product-actions']}
+                                {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
+                                    <div class="btn-scale-small d-inline-block">
+                                        {include file='snippets/wishlist_button.tpl' Artikel=$oPosition->Artikel}
+                                    </div>
+                                    <span class="mx-2">|</span>
+                                {/if}
+                                {button type="submit"
+                                variant="link"
+                                size="sm"
+                                class="pl-0 droppos border-0"
+                                name="dropPos"
+                                value=$oPosition@index
+                                title="{lang key='delete'}"}
+                                    <span class="fa fa-trash "></span> <span>{lang key='delete'}</span>
+                                {/button}
+                            {/col}
+                        {/if}
                     {/block}
                     {block name='basket-cart-items-items-bottom-hr'}
                         {col cols=12}

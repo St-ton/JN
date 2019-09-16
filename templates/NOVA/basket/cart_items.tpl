@@ -5,45 +5,49 @@
 {block name='basket-cart-items'}
     {input type="submit" name="fake" class="d-none"}
     {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
-        {$headcols=6}{$headsm=4}
-    {elseif ($Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'N')}
-        {$headcols=6}{$headsm=5}
+        {$itemInfoCols=3}
+        {$cols=9}
+    {else}
+        {$itemInfoCols=5}
+        {$cols=12}
     {/if}
     {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen !== 'Y'}
-        {$headcols=$headcols+2}
-        {$headsm=$headsm+2}
+        {$itemInfoCols=$itemInfoCols+2}
     {/if}
     {block name='basket-cart-items-order-items'}
-        {row class="font-weight-bold d-none d-md-flex"}
-            {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
-                {col cols=2}{/col}
-            {/if}
-            {col ols=$headcols sm=$headsm}{lang key='product'}{/col}
-            {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}
-                {col cols=2}{lang key="pricePerUnit" section="productDetails"}{/col}
-            {/if}
-            {col cols=2 class="text-center"}{lang key="quantity" section="checkout"}{/col}
-            {col cols=2 class="text-right"}{lang key="price"}{/col}
-        {/row}
-        <hr class="my-3">
+        {block name='basket-cart-items-order-items-header'}
+            {row class="text-accent d-none d-xl-flex pb-3"}
+                {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
+                    {col cols=2}{/col}
+                {/if}
+                {col cols=$itemInfoCols}{lang key='product'}{/col}
+                {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}
+                    {col cols=2}{lang key="pricePerUnit" section="productDetails"}{/col}
+                {/if}
+                {col cols=3 class="text-center"}{lang key="quantity" section="checkout"}{/col}
+                {col cols=2 class="text-right"}{lang key="price"}{/col}
+                {col cols=12}
+                    <hr>
+                {/col}
+            {/row}
+        {/block}
+        {block name='basket-cart-items-order-items-main'}
         {foreach $smarty.session.Warenkorb->PositionenArr as $oPosition}
             {if !$oPosition->istKonfigKind()}
-                {row class="type-{$oPosition->nPosTyp}"}
-                {block name='basket-cart-items-image'}
-                    {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y' && !empty($oPosition->Artikel->cVorschaubild)}
-                        {col cols=3 md=2 class="text-center vcenter"}
-                            {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}
-                                {image src=$oPosition->Artikel->cVorschaubild alt=$oPosition->cName|trans fluid=true}
-                            {/link}
-                        {/col}
-                    {elseif $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
-                        {col cols=3 md=2}{/col}
-                    {/if}
-                {/block}
-                {col}
-                    {row}
+                {row class="type-{$oPosition->nPosTyp} pb-3"}
+                    {block name='basket-cart-items-image'}
+                        {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
+                            {col cols=3 xl=2 class="h-100"}
+                                {if !empty($oPosition->Artikel->cVorschaubild)}
+                                    {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}
+                                        {image src=$oPosition->Artikel->cVorschaubild alt=$oPosition->cName|trans fluid=true}
+                                    {/link}
+                                {/if}
+                            {/col}
+                        {/if}
+                    {/block}
                     {block name='basket-cart-items-items-main-content'}
-                        {col cols=12 md=$headsm+1 class="mb-3 mb-md-0"}
+                        {col cols=$cols xl=$itemInfoCols class="ml-auto"}
                         {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
                             <p>{link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}{$oPosition->cName|trans}{/link}</p>
                             {block name='basket-cart-items-product-data'}
@@ -76,8 +80,8 @@
                                         <li class="manufacturer">
                                             <strong>{lang key='manufacturer' section='productDetails'}</strong>:
                                             <span class="values">
-                                                           {$oPosition->Artikel->cHersteller}
-                                                        </span>
+                                               {$oPosition->Artikel->cHersteller}
+                                            </span>
                                         </li>
                                     {/if}
 
@@ -216,7 +220,7 @@
 
                         {block name='basket-cart-items-price-single'}
                             {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}
-                                {col cols=12 md=2 class="mb-3 mb-md-0"}
+                                {col cols=$cols xl=2 class="ml-auto text-nowrap mb-3 mb-xl-0"}
                                 {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
                                     {if !$oPosition->istKonfigVater()}
                                         <p><span class="mr-3 d-inline-flex d-md-none">{lang key="pricePerUnit" section="productDetails"}:</span>{$oPosition->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}</p>
@@ -226,7 +230,7 @@
                             {/if}
                         {/block}
 
-                        {col cols=12 md=3 class="text-md-center mb-3 mb-md-0"}
+                        {col cols=$cols xl=3 class="ml-auto text-center mb-4 mb-xl-0 text-nowrap"}
                         {block name='basket-cart-items-quantity'}
                             {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
                                 {if $oPosition->istKonfigVater()}
@@ -266,7 +270,7 @@
                         {/col}
                     {/block}
                     {block name='basket-cart-items-order-items-price-net'}
-                        {col cols=12 md=2 class="price-col text-md-right mb-3 mb-md-0"}
+                        {col cols=$cols xl=2 class="price-col ml-auto text-nowrap text-accent text-xl-right"}
                             <strong class="price_overall">
                                 {if $oPosition->istKonfigVater()}
                                     {$oPosition->cKonfigpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
@@ -276,13 +280,14 @@
                             </strong>
                         {/col}
                     {/block}
-                    {/row}
-                {/col}
+                    {block name='basket-cart-items-items-bottom-hr'}
+                        {col cols=12}
+                            <hr>
+                        {/col}
+                    {/block}
                 {/row}
-                {block name='basket-cart-items-items-bottom-hr'}
-                    <hr class="my-3">
-                {/block}
             {/if}
         {/foreach}
+        {/block}
     {/block}
 {/block}

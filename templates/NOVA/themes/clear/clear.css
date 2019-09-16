@@ -16563,6 +16563,7 @@ aside .badge-light {
 .product-cell .h4.title {
   font-family: "Open Sans", sans-serif;
   font-weight: 400;
+  margin-bottom: 0;
 }
 .product-cell .h4.title a {
   word-break: break-word;

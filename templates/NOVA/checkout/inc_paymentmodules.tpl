@@ -15,11 +15,13 @@
             && $Bestellung->Zahlungsart->cModulId !== 'za_lastschrift_jtl'
         }
             {block name='checkout-inc-paymentmodules-alert'}
-                {if isset($smarty.session.Zahlungsart->nWaehrendBestellung) && $smarty.session.Zahlungsart->nWaehrendBestellung == 1}
-                    {alert variant="info"}{lang key='orderConfirmationPre' section='checkout'}{/alert}
-                {else}
-                    {alert variant="info"}{lang key='orderConfirmationPost' section='checkout'}{/alert}
-                {/if}
+                <p class="mb-4 mb-md-5">
+                    {if isset($smarty.session.Zahlungsart->nWaehrendBestellung) && $smarty.session.Zahlungsart->nWaehrendBestellung == 1}
+                        {lang key='orderConfirmationPre' section='checkout'}
+                    {else}
+                        {lang key='orderConfirmationPost' section='checkout'}
+                    {/if}
+                </p>
             {/block}
         {/if}
 
@@ -28,20 +30,20 @@
             && $Bestellung->Zahlungsart->cModulId !== 'za_lastschrift_jtl'
         }
             {block name='checkout-inc-paymentmodules-during-order'}
-                <div class="pament-method-during-order">
-                    <p><span class="font-weight-bold">{lang key='yourOrderId' section='checkout'}: </span>{$Bestellung->cBestellNr}</p>
-                    <p><span class="font-weight-bold">{lang key='yourChosenPaymentOption' section='checkout'}: </span>{$Bestellung->cZahlungsartName}</p>
-                </div>
+                <ul class="list-unstyled">
+                    <li><span class="font-weight-bold">{lang key='yourOrderId' section='checkout'}: </span>{$Bestellung->cBestellNr}</li>
+                    <li><span class="font-weight-bold">{lang key='yourChosenPaymentOption' section='checkout'}: </span>{$Bestellung->cZahlungsartName}</li>
+                </ul>
             {/block}
         {/if}
         {block name='checkout-inc-paymentmodules-method-inner'}
-            <div class="payment-method-inner">
+            <div class="payment-method-inner mb-3">
                 {if $Bestellung->Zahlungsart->cModulId === 'za_rechnung_jtl'}
-                    {lang key='invoiceDesc' section='checkout'}
+                    {*{lang key='invoiceDesc' section='checkout'}*}
                 {elseif $Bestellung->Zahlungsart->cModulId === 'za_lastschrift_jtl'}
-                    {lang key='banktransferDesc' section='checkout'}
+                    {*{lang key='banktransferDesc' section='checkout'}*}
                 {elseif $Bestellung->Zahlungsart->cModulId === 'za_nachnahme_jtl'}
-                    {lang key='banktransferDesc' section='checkout'}
+                    {*{lang key='banktransferDesc' section='checkout'}*}
                 {elseif $Bestellung->Zahlungsart->cModulId === 'za_barzahlung_jtl'}
                     {lang key='cashOnPickupDesc' section='checkout'}
                 {elseif $Bestellung->Zahlungsart->cModulId === 'za_paypal_jtl'}

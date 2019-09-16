@@ -350,7 +350,7 @@
                     {/if}
                     {block name='checkout-inc-order-items-price-sticky'}
                         <hr>
-                        {row class="total bg-info position-sticky"}
+                        {row class="total bg-info"}
                             {col}
                                 <span class="price_label"><strong>{lang key='totalSum'}:</strong></span>
                             {/col}

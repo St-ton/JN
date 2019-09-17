@@ -174,7 +174,7 @@ class Manager
         if ($type !== null && \preg_match('/[a-z]*/', $type)) {
             $instance = Media::getClass($type);
             /** @var IMedia $instance */
-            $instance::clearCache($type);
+            $instance::clearCache();
             unset($_SESSION['image_count'], $_SESSION['renderedImages']);
             if ($isAjax === true) {
                 return ['success' => __('successCacheReset')];

@@ -26,7 +26,7 @@
                                                 aria=["label"=>$characteristicValue->cWert|escape:'html']
                                             }
                                                 {$img = $characteristicValue->getImage(\JTL\Media\Image::SIZE_XS)}
-                                                {if $img|strpos:$smarty.const.BILD_KEIN_MERKMALBILD_VORHANDEN === false
+                                                {if $img !== null && $img|strpos:$smarty.const.BILD_KEIN_MERKMALBILD_VORHANDEN === false
                                                 && $img|strpos:$smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN === false}
                                                     {image src=$img title=$characteristicValue->cWert|escape:'html' alt=$characteristicValue->cWert|escape:'html'}
                                                 {else}

@@ -571,6 +571,9 @@ function prepare_image_details($params, $smarty)
  */
 function get_image_size($image)
 {
+    if (mb_strpos($image, 'http') === 0) {
+        return null;
+    }
     $path = mb_strpos($image, PFAD_BILDER) === 0
         ? PFAD_ROOT . $image
         : $image;

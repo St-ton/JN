@@ -101,7 +101,8 @@ class Manufacturer extends AbstractImage
     {
         $images = Shop::Container()->getDB()->query(
             'SELECT kHersteller AS id, cName, cSeo, cBildpfad AS path
-                FROM thersteller' . self::getLimitStatement($offset, $limit),
+                FROM thersteller
+                WHERE cBildpfad IS NOT NULL AND cBildpfad != \'\'' . self::getLimitStatement($offset, $limit),
             ReturnType::QUERYSINGLE
         );
         while (($image = $images->fetch(PDO::FETCH_OBJ)) !== false) {

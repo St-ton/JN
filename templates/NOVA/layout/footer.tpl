@@ -110,14 +110,6 @@
                                                 {/link}
                                             </li>
                                         {/if}
-                                        {if !empty($Einstellungen.template.footer.googleplus)}
-                                            <li class="mr-2">
-                                                {link href="{if $Einstellungen.template.footer.googleplus|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.googleplus}"
-                                                    class="btn-icon-secondary btn-googleplus btn" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Google+'}"] title="Google+" target="_blank" rel="noopener"}
-                                                    <i class="fab fa-google-plus-g fa-fw fa-lg"></i>
-                                                {/link}
-                                            </li>
-                                        {/if}
                                         {if !empty($Einstellungen.template.footer.youtube)}
                                             <li class="mr-2">
                                                 {link href="{if $Einstellungen.template.footer.youtube|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.youtube}"

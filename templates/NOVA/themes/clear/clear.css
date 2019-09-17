@@ -14455,6 +14455,23 @@ aside .last-seen-link {
   text-decoration: none;
 }
 
+.dropdown-toggle::after {
+  content: '\f078' !important;
+  font-family: "Font Awesome 5 Free" !important;
+  font-weight: 900;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+  display: inline-block;
+  line-height: 1;
+  margin-top: -0.125rem;
+  transition: transform 0.2s;
+  will-change: transform;
+  border-top: 0;
+}
+.dropdown-toggle[aria-expanded=true]::after {
+  transform: rotate(180deg);
+}
+
 .float-label {
   position: absolute;
   cursor: text;
@@ -15514,26 +15531,6 @@ button.bg-info:focus {
 .dropdown-menu {
   background: #fff;
   z-index: 1021;
-}
-
-.dropdown-toggle::after {
-  display: inline-block;
-  font-family: "Font Awesome 5 Free", Arial, sans-serif;
-  font-style: normal;
-  font-weight: 900;
-  /*text-rendering: auto;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;*/
-  content: "";
-  border: 0;
-  vertical-align: baseline;
-  margin-left: 0.25rem;
-  width: initial;
-  height: initial;
-  float: right;
-}
-.dropdown-toggle[aria-expanded=true]::after {
-  transform: rotate(180deg);
 }
 
 [data-toggle=collapse][aria-expanded=true] i.fa-plus:before {

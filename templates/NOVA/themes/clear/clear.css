@@ -14329,7 +14329,6 @@ aside .last-seen-link {
   border-color: #525252;
   color: #525252;
   background-color: transparent;
-  padding: 0.6rem 0.75rem;
 }
 .btn-icon-secondary:hover {
   border-color: #525252;
@@ -14415,6 +14414,19 @@ aside .last-seen-link {
   border-color: #F8BF00;
   background-color: #F8BF00;
   color: #ffffff;
+}
+
+.btn-dark {
+  color: #f5f7fa;
+  background-color: #525252;
+  border-color: #525252;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+.btn-dark:hover {
+  background-color: #707070;
+  border-color: #707070;
+  color: #f5f7fa;
 }
 
 .card-gray {
@@ -16840,7 +16852,7 @@ footer .card .card-body {
   padding: 0;
 }
 footer .nav-link {
-  padding: 0.4rem 0.8rem;
+  padding: 0.2rem 0;
 }
 footer .footer-additional {
   border-top: 0;

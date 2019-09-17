@@ -14469,6 +14469,12 @@ aside .last-seen-link {
   text-decoration: none;
 }
 
+.dropdown-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: nowrap;
+}
 .dropdown-toggle::after {
   content: '\f078' !important;
   font-family: "Font Awesome 5 Free" !important;
@@ -14484,6 +14490,12 @@ aside .last-seen-link {
 }
 .dropdown-toggle[aria-expanded=true]::after {
   transform: rotate(180deg);
+}
+.dropdown-toggle.no-caret {
+  display: block;
+}
+.dropdown-toggle.no-caret::after {
+  display: none;
 }
 
 .float-label {

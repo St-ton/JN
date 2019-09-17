@@ -21,4 +21,11 @@
 	&[aria-expanded='true']::after {
 		transform: rotate(180deg);
 	}
+
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	flex-wrap: nowrap;
+	&.no-caret { display: block; }
+	&.no-caret::after { display: none; }
 }

@@ -82,28 +82,6 @@ a { transition: color $transition-base-duration $transition-base-timing; }
   z-index: $zindex-sticky + 1;
 }
 
-.dropdown-toggle {
-  &::after {
-    display: inline-block;
-    font-family: 'Font Awesome 5 Free', Arial, sans-serif;
-    font-style: normal;
-    font-weight: 900;
-    /*text-rendering: auto;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;*/
-    content: "\f078";
-    border: 0;
-    vertical-align: baseline;
-    margin-left: 0.25rem;
-    width: initial;
-    height: initial;
-    float: right;
-  }
-  &[aria-expanded=true]::after {
-    transform: rotate(180deg) ;
-  }
-}
-
 [data-toggle="collapse"][aria-expanded="true"] i.fa-plus:before{
   content: "\f068";
 }
@@ -1139,6 +1117,7 @@ aside {
   .h4.title {
     font-family: $font-family-sans-serif;
     font-weight: $font-weight-normal;
+    margin-bottom: 0;
     a {
       word-break: break-word;
     }
@@ -1999,9 +1978,6 @@ table caption {
 
 .productlist-page-nav {
   align-items: center;
-  padding: map-get($spacers, 2) 0;
-  margin-bottom: $spacer;
-  border-bottom: 1px solid $sand;
   .pagination {
     margin: 0;
   }

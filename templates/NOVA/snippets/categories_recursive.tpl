@@ -56,13 +56,12 @@
                                     href="{$category->cURLFull}"
                                     router-data=["toggle"=>"collapse","target"=>"#category_box_{$category->kKategorie}_{$i}"]
                                 }*}
-                                    <a class="nav-link px-2" target="_self" href="{$category->getURL()}" data-toggle="collapse"
+                                    <a class="nav-link px-2 dropdown-toggle" target="_self" href="{$category->getURL()}" data-toggle="collapse"
                                        data-target="#category_box_{$category->getID()}_{$i}"
                                        aria-expanded="{if $category->getID() == $activeId
                                        || ((isset($activeParent)
                                        && isset($activeParent->kKategorie))
                                        && $activeParent->kKategorie == $category->getID())}true{else}false{/if}">
-                                        <i class="fa fa-chevron-down float-right pointer mx-2"></i>
                                         {$category->getShortName()}
                                     </a>
                                     {nav vertical=true class="collapse {if $category->getID() == $activeId

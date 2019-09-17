@@ -14392,6 +14392,83 @@ aside .last-seen-link {
   padding: 1rem;
 }
 
+.swatches {
+  flex-wrap: wrap;
+}
+.swatches .variation {
+  text-align: center;
+  cursor: pointer;
+}
+.swatches .variation .label-variation,
+.swatches .variation .label-info {
+  line-height: 1rem;
+}
+.swatches .variation .label-variation > span.label-variation,
+.swatches .variation .label-info > span.label-variation {
+  margin: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 50px;
+  display: inline-block;
+}
+.swatches .variation.not-available {
+  border: dashed #B90000;
+}
+.swatches .variation.not-available .label-variation {
+  opacity: 0.5;
+}
+.swatches-image {
+  background: #fff;
+  color: #525252 !important;
+  border: 1px solid #707070;
+  box-sizing: content-box;
+  border-radius: 2px;
+  opacity: 1;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  word-break: break-word;
+  text-overflow: ellipsis;
+  transition: all 0.5s ease-in-out;
+}
+.swatches-image img {
+  padding: 0.5rem;
+  transition: height, width 0.5s ease-in-out;
+}
+.swatches-image img:hover {
+  transform: scale(1.2);
+}
+.swatches-image.active {
+  border: 1px solid #F8BF00;
+}
+.swatches-image.active img {
+  filter: grayscale(0);
+}
+.swatches.imgswatches.radio-selected img {
+  filter: grayscale(1);
+}
+.swatches-text {
+  padding: 0.625rem 0.9375rem;
+  border: 1px solid #525252;
+  transition: all 0.2s ease-in-out;
+}
+.swatches-text.active {
+  border: 1px solid #F8BF00;
+  background-color: #f5f7fa;
+  font-weight: 600;
+}
+.swatches-not-in-stock {
+  border-color: #525252;
+  border-style: dashed;
+  opacity: 0.5;
+}
+.swatches-sold-out {
+  border-color: #B90000;
+  border-style: dashed;
+  opacity: 0.5;
+}
+
 .dropdown-body,
 .dropdown-footer {
   padding: 1.5rem;
@@ -15887,87 +15964,6 @@ ul.partlist-items {
 ::-webkit-scrollbar-thumb:hover, ::-webkit-scrollbar-thumb:active {
   background: #9b9b9b;
   border: 1px solid #525252;
-}
-
-/*  swatches  */
-.swatches {
-  flex-wrap: wrap;
-}
-.swatches .variation {
-  padding: 0;
-  margin: 0 1rem 1rem 0;
-  text-align: center;
-  cursor: pointer;
-}
-.swatches .variation .label-variation,
-.swatches .variation .label-info {
-  line-height: 1rem;
-  padding: 0.5rem;
-}
-.swatches .variation .label-variation > span.label-variation,
-.swatches .variation .label-info > span.label-variation {
-  margin: 0;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  max-width: 50px;
-  display: inline-block;
-}
-.swatches .variation.not-available {
-  border: dashed #B90000;
-}
-.swatches .variation.not-available .label-variation {
-  opacity: 0.5;
-}
-.swatches.imgswatches .variation {
-  background: #fff;
-  color: #525252 !important;
-  border: 1px solid #707070;
-  box-sizing: content-box;
-  border-radius: 2px;
-  opacity: 1;
-  width: 150px;
-  padding: 0 8px;
-  height: 61px;
-  text-align: left;
-  cursor: pointer;
-  overflow: hidden;
-  word-break: break-word;
-  text-overflow: ellipsis;
-  transition: all 0.5s ease-in-out;
-}
-.swatches.imgswatches .variation img {
-  padding: 0.5rem;
-  transition: height, width 0.5s ease-in-out;
-}
-.swatches.imgswatches .variation:hover, .swatches.imgswatches .variation.active {
-  vertical-align: top;
-  background: #f5f7fa;
-  border: 1px solid #F8BF00;
-  overflow: visible;
-  white-space: normal;
-  z-index: 1;
-  min-height: 61px;
-  height: auto;
-}
-.swatches.imgswatches .variation:hover img, .swatches.imgswatches .variation.active img {
-  padding: 0;
-  width: auto;
-  height: 100%;
-}
-.swatches.imgswatches .variation.active img {
-  filter: grayscale(0);
-}
-.swatches.imgswatches.radio-selected img {
-  filter: grayscale(1);
-}
-.swatches [data-stock=out-of-stock].variation,
-.swatches [data-stock=in-short-supply].variation {
-  border-style: dashed;
-}
-.swatches [data-stock=out-of-stock].variation .label-variation,
-.swatches [data-stock=in-short-supply].variation .label-variation {
-  opacity: 0.5;
 }
 
 .badge-not-available {

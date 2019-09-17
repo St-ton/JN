@@ -21,7 +21,7 @@ stages:
       -w '/creation' \
       --volume $(pwd):/dockerBuild \
       --name="$CI_CONTAINER_NAME" \
-      $CI_REGISTRY_IMAGE/testing-php$PHP_VERSION_TEST_STEP \
+      $GLOBAL_CI_REGISTRY_URL/testing-php$PHP_VERSION_TEST_STEP \
       sh -c "cp -r /dockerBuild/. /creation; bash build/scripts/tests.sh"
 
     docker stop "$CI_CONTAINER_NAME"
@@ -65,7 +65,7 @@ stages:
       --volume $(pwd):/dockerBuild \
       --name="$CI_CONTAINER_NAME" \
       --network="mysql-php-network" \
-      $CI_REGISTRY_IMAGE/build-deploy-php5.6 \
+      $GLOBAL_CI_REGISTRY_URL/build-deploy-php5.6 \
       bash
 
     docker exec \

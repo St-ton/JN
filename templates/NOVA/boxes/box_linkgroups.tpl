@@ -10,8 +10,8 @@
             data=["toggle"=>"collapse"]
             role="button"
             aria=["expanded"=>"false","controls"=>"crd-cllps-{$oBox->getID()}"]
-            class="text-decoration-none font-weight-bold mb-2 d-block d-md-none"}
-            {$oBox->getTitle()}<i class="fas fa-plus ml-3 float-right"></i>
+            class="text-decoration-none font-weight-bold mb-2 d-block d-md-none dropdown-toggle"}
+            {$oBox->getTitle()}
         {/link}
         <div class="h4 font-weight-bold mb-3 d-none d-md-flex text-uppercase">{$oBox->getTitle()}</div>
         {block name='boxes-box-linkgroups-content'}

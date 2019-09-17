@@ -122,8 +122,8 @@ abstract class AbstractImage implements IMedia
             'number'     => $number,
             'name'       => static::getCustomName($mixed),
             'ext'        => static::getFileExtension($sourcePath),
-            'path'       => $sourcePath !== null ? \basename($sourcePath) : null,
-            'sourcePath' => $sourcePath !== null ? \basename($sourcePath) : null
+            'path'       => $sourcePath,
+            'sourcePath' => $sourcePath
         ]);
     }
 

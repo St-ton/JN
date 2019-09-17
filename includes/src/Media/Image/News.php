@@ -66,7 +66,7 @@ class News extends AbstractImage
      */
     public static function getCustomName($mixed): string
     {
-        $result = $mixed->title;
+        $result = \method_exists($mixed, 'getTitle') ? $mixed->getTitle() : $mixed->title;
 
         return empty($result) ? 'image' : Image::getCleanFilename($result);
     }

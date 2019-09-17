@@ -14,7 +14,10 @@
                 {foreach $oBox->getItems() as $newsCategory}
                     {if $newsCategory@index === 10}{break}{/if}
                     {navitem href=$newsCategory->cURLFull title=$newsCategory->cName}
-                        {$newsCategory->cName} <span class="badge badge-light float-right">{$newsCategory->nAnzahlNews}</span>
+                        <span class="align-items-center d-flex">
+                            {$newsCategory->cName}
+                            <span class="badge badge-outline-secondary ml-auto">{$newsCategory->nAnzahlNews}</span>
+                        </span>
                     {/navitem}
                 {/foreach}
             {/nav}

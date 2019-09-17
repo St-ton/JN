@@ -3,27 +3,49 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='boxes-box-news-month'}
-    {card class="box box-monthlynews mb-4" id="sidebox{$oBox->getID()}"}
+    {card class="box box-monthlynews mb-md-4" id="sidebox{$oBox->getID()}"}
         {block name='boxes-box-news-month-content'}
+            {block name='boxes-box-linkgroups-toggle-title'}
+                {link
+                id="crd-hdr-{$oBox->getID()}"
+                href="#crd-cllps-{$oBox->getID()}"
+                data=["toggle"=>"collapse"]
+                role="button"
+                aria=["expanded"=>"false","controls"=>"crd-cllps-{$oBox->getID()}"]
+                class="text-decoration-none font-weight-bold mb-2 d-md-none dropdown-toggle"}
+                    {lang key='newsBoxMonthOverview'}
+                {/link}
+            {/block}
             {block name='boxes-box-news-month-title'}
-                <div class="productlist-filter-headline">
+                <div class="productlist-filter-headline d-none d-md-flex">
                     <span>{lang key='newsBoxMonthOverview'}</span>
                 </div>
             {/block}
-            {nav vertical=true}
-                {foreach $oBox->getItems() as $newsMonth}
-                    {if $newsMonth@index === 10}{break}{/if}
-                    {block name='boxes-box-news-month-news-link'}
-                        {navitem href=$newsMonth->cURL  title=$newsMonth->cName}
-                            <span class="value">
-                                <i class="far fa-newspaper mr-2"></i>
-                                {$newsMonth->cName}
-                                <span class="badge badge-light float-right">{$newsMonth->nAnzahl}</span>
-                            </span>
-                        {/navitem}
-                    {/block}
-                {/foreach}
-            {/nav}
+            {block name='boxes-box-news-month-news-collapse'}
+                {collapse
+                    class="d-md-flex"
+                    visible=false
+                    id="crd-cllps-{$oBox->getID()}"
+                    aria=["labelledby"=>"crd-hdr-{$oBox->getID()}"]}
+                    {nav vertical=true}
+                        {foreach $oBox->getItems() as $newsMonth}
+                            {if $newsMonth@index === 10}{break}{/if}
+                            {block name='boxes-box-news-month-news-link'}
+                                {navitem href=$newsMonth->cURL  title=$newsMonth->cName}
+                                    <span class="align-items-center d-flex">
+                                        <i class="far fa-newspaper mr-2"></i>
+                                        {$newsMonth->cName}
+                                        <span class="badge badge-outline-secondary ml-auto">{$newsMonth->nAnzahl}</span>
+                                    </span>
+                                {/navitem}
+                            {/block}
+                        {/foreach}
+                    {/nav}
+                {/collapse}
+            {/block}
         {/block}
     {/card}
+    {block name='boxes-box-news-month-hr-end'}
+        <hr class="my-3 d-flex d-md-none">
+    {/block}
 {/block}

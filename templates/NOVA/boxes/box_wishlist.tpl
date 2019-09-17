@@ -8,7 +8,7 @@
             {block name='boxes-box-wishlist-content'}
                 {block name='boxes-box-wishlisttitle'}
                     <div class="productlist-filter-headline align-items-center d-flex">
-                        <i class='fa fa-heart'></i>
+                        <i class='fa fa-heart mr-2'></i>
                         <span>{lang key='wishlist'}</span>
                     </div>
                 {/block}

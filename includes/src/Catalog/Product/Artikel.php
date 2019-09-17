@@ -3890,12 +3890,11 @@ class Artikel
             $this->cHerstellerBeschreibung    = Text::parseNewsText($data->cBeschreibung_hst_spr);
             $this->cHerstellerSortNr          = $data->nSortNr_thersteller;
             if ($data->manufImg !== null && \mb_strlen($data->manufImg) > 0) {
-                $imageBaseURL                   = Shop::getImageBaseURL();
-                $this->cBildpfad_thersteller    = $imageBaseURL . \PFAD_HERSTELLERBILDER_KLEIN . $data->manufImg;
+                $this->cBildpfad_thersteller    = $manufacturer->getImage(Image::SIZE_XS);
                 $this->cHerstellerBildKlein     = \PFAD_HERSTELLERBILDER_KLEIN . $data->manufImg;
                 $this->cHerstellerBildNormal    = \PFAD_HERSTELLERBILDER_NORMAL . $data->manufImg;
-                $this->cHerstellerBildURLKlein  = $imageBaseURL . $this->cHerstellerBildKlein;
-                $this->cHerstellerBildURLNormal = $imageBaseURL . $this->cHerstellerBildNormal;
+                $this->cHerstellerBildURLKlein  = $manufacturer->getImage(Image::SIZE_XS);
+                $this->cHerstellerBildURLNormal = $manufacturer->getImage(Image::SIZE_MD);
             }
         }
 

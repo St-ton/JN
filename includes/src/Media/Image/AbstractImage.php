@@ -18,6 +18,7 @@ use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use SplFileInfo;
 use stdClass;
+use function Functional\every;
 use function Functional\select;
 
 /**
@@ -354,10 +355,9 @@ abstract class AbstractImage implements IMedia
      */
     protected static function isCached(MediaImageRequest $req): bool
     {
-        return \file_exists($req->getThumb(Image::SIZE_XS, true))
-            && \file_exists($req->getThumb(Image::SIZE_SM, true))
-            && \file_exists($req->getThumb(Image::SIZE_MD, true))
-            && \file_exists($req->getThumb(Image::SIZE_LG, true));
+        return every(Image::getAllSizes(), function ($e) use ($req) {
+            return \file_exists($req->getThumb($e, true));
+        });
     }
 
     /**

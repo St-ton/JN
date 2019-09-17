@@ -123,7 +123,8 @@ class NewsCategory extends AbstractImage
                     'name'       => $fileinfo->getFilename(),
                     'number'     => 1,
                     'path'       => $path,
-                    'sourcePath' => $path
+                    'sourcePath' => $path,
+                    'ext'        => static::getFileExtension($path)
                 ]);
             }
         }

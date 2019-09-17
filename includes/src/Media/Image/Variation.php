@@ -115,7 +115,8 @@ class Variation extends AbstractImage
                 'name'       => self::getCustomName($image),
                 'number'     => 1,
                 'path'       => $image->path,
-                'sourcePath' => $image->path
+                'sourcePath' => $image->path,
+                'ext'        => static::getFileExtension($image->path)
             ]);
         }
     }

@@ -81,7 +81,7 @@
 
                         {if $newsItem->getPreviewImage() !== ''}
                             {block name='blog-details-image'}
-                                {image src="{$imageBaseURL}{$newsItem->getPreviewImage()}"
+                                {image src="{$newsItem->getImage(\JTL\Media\Image::SIZE_XL)}"
                                 alt="{$newsItem->getTitle()|escape:'quotes'} - {$newsItem->getMetaTitle()|escape:'quotes'}"
                                 center=true fluid=true fluid-grow=true class="mb-5"}
                                 <meta itemprop="image" content="{$imageBaseURL}{$newsItem->getPreviewImage()}">

@@ -6,10 +6,15 @@
 
 namespace JTL\Media\Image;
 
+use FilesystemIterator;
+use Generator;
 use JTL\DB\ReturnType;
 use JTL\Media\Image;
 use JTL\Media\MediaImageRequest;
 use JTL\Shop;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use SplFileInfo;
 use stdClass;
 
 /**
@@ -66,7 +71,7 @@ class NewsCategory extends AbstractImage
      */
     public static function getCustomName($mixed): string
     {
-        $result = $mixed->title;
+        $result = \method_exists($mixed, 'getName') ? $mixed->getName() : $mixed->cName;
 
         return empty($result) ? 'image' : Image::getCleanFilename($result);
     }
@@ -95,5 +100,52 @@ class NewsCategory extends AbstractImage
     public static function getStoragePath(): string
     {
         return \PFAD_NEWSKATEGORIEBILDER;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function getAllImages(int $offset = null, int $limit = null): Generator
+    {
+        $base = \PFAD_ROOT . self::getStoragePath();
+        $rdi  = new RecursiveDirectoryIterator(
+            $base,
+            FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS
+        );
+        foreach (new RecursiveIteratorIterator($rdi, RecursiveIteratorIterator::CHILD_FIRST) as $fileinfo) {
+            /** @var SplFileInfo $fileinfo */
+            $name = $fileinfo->getFilename();
+            if ($fileinfo->isFile() && \strpos($name, '.') !== 0) {
+                $path = \str_replace($base, '', $fileinfo->getPathname());
+                yield MediaImageRequest::create([
+                    'id'         => 1,
+                    'type'       => self::TYPE,
+                    'name'       => $fileinfo->getFilename(),
+                    'number'     => 1,
+                    'path'       => $path,
+                    'sourcePath' => $path
+                ]);
+            }
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function getTotalImageCount(): int
+    {
+        $rdi = new RecursiveDirectoryIterator(
+            \PFAD_ROOT . self::getStoragePath(),
+            FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS
+        );
+        $cnt = 0;
+        foreach (new RecursiveIteratorIterator($rdi, RecursiveIteratorIterator::CHILD_FIRST) as $fileinfo) {
+            /** @var SplFileInfo $fileinfo */
+            if ($fileinfo->isFile() && \strpos($fileinfo->getFilename(), '.') !== 0) {
+                ++$cnt;
+            }
+        }
+
+        return $cnt;
     }
 }

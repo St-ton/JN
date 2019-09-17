@@ -16,6 +16,8 @@ use JTL\Media\Image\Category;
 use JTL\Media\Image\Characteristic;
 use JTL\Media\Image\CharacteristicValue;
 use JTL\Media\Image\Manufacturer;
+use JTL\Media\Image\News;
+use JTL\Media\Image\NewsCategory;
 use JTL\Media\Image\Product;
 use JTL\Media\Image\StatsItem;
 use JTL\Media\Image\Variation;
@@ -66,6 +68,16 @@ class Manager
                 'name'  => __('variation'),
                 'type'  => Image::TYPE_VARIATION,
                 'stats' => Variation::getStats($filesize)
+            ],
+            Image::TYPE_NEWS => (object)[
+                'name'  => __('news'),
+                'type'  => Image::TYPE_NEWS,
+                'stats' => News::getStats($filesize)
+            ],
+            Image::TYPE_NEWSCATEGORY => (object)[
+                'name'  => __('newscategory'),
+                'type'  => Image::TYPE_NEWSCATEGORY,
+                'stats' => NewsCategory::getStats($filesize)
             ]
         ];
     }

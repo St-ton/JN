@@ -113,7 +113,7 @@
                             {row}
                                 {if !empty($oNewsCat->getPreviewImage())}
                                     {col cols=12 sm=8}{$oNewsCat->getDescription()}{/col}
-                                    {col cols=12 sm=4}{image src=$oNewsCat->getPreviewImage() center=true fluid=true}{/col}
+                                    {col cols=12 sm=4}{image src=$oNewsCat->getImage(\JTL\Media\Image::SIZE_MD) center=true fluid=true}{/col}
                                 {else}
                                     {col sm=12}{$oNewsCat->getDescription()}{/col}
                                 {/if}

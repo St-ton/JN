@@ -64,3 +64,6 @@ msgstr "Statistiken werden berechnet…"
 
 msgid "pendingImageGenerate"
 msgstr "Bilder werden generiert…"
+
+msgid "newscategory"
+msgstr "Newskategorie"

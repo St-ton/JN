@@ -67,3 +67,6 @@ msgstr "Calculating reports…"
 
 msgid "pendingImageGenerate"
 msgstr "Generating images…"
+
+msgid "newscategory"
+msgstr "News category"

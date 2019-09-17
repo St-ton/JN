@@ -250,8 +250,8 @@ final class Controller
                 $this->newsRedirect(empty($tab) ? 'aktiv' : $tab, $this->msg);
             }
         } else {
-            $newsItem       = new Item($this->db);
-            $this->step     = 'news_editieren';
+            $newsItem   = new Item($this->db);
+            $this->step = 'news_editieren';
             $this->smarty->assign('cPostVar_arr', $post)
                          ->assign('cPlausiValue_arr', $validation)
                          ->assign('oNewsKategorie_arr', $this->getAllNewsCategories())

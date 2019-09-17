@@ -149,14 +149,14 @@
             && $smarty.session.Kunde->kKunde != 0)}
         {get_manufacturers assign='manufacturers'}
         {if !empty($manufacturers)}
-            {assign var=linkKeyHersteller value=JTL\Shop::Container()->getLinkService()->getSpecialPageID(LINKTYP_HERSTELLER)|default:0}
-            {assign var=linkSEOHersteller value=JTL\Shop::Container()->getLinkService()->getLinkByID($linkKeyHersteller)|default:null}
+            {assign var=manufacturerOverview value=\JTL\Shop::Container()->getLinkService()->getSpecialPage(LINKTYP_HERSTELLER)}
+            {if $manufacturerOverview !== null}
             <li class="nav-item dropdown">
                 {link href=$category->getURL() title=$category->getName() class="float-right subcat-link d-inline-block d-md-none"}
                     <i class="fas fa-arrow-alt-circle-right"></i>
                 {/link}
-                {link href=$linkSEOHersteller->getURL() title={lang key='manufacturers'} class="nav-link" data=["toggle"=>"dropdown"] target="_self"}
-                    {if $linkSEOHersteller !== null && !empty($linkSEOHersteller->getName())}{$linkSEOHersteller->getName()}{else}{lang key='manufacturers'}{/if}
+                {link href=$manufacturerOverview->getURL() title={lang key='manufacturers'} class="nav-link" data=["toggle"=>"dropdown"] target="_self"}
+                    {if $manufacturerOverview !== null && !empty($manufacturerOverview->getName())}{$manufacturerOverview->getName()}{else}{lang key='manufacturers'}{/if}
                 {/link}
                 <div class="dropdown-menu">
                     {container}
@@ -184,6 +184,7 @@
                     {/container}
                 </div>
             </li>
+            {/if}
         {/if}
     {/if}
     {/block}{* megamenu-manufacturers *}

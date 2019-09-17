@@ -100,7 +100,7 @@ if ($step === 'plugin_uebersicht') {
         $fAddAsDocTab = false;
         $szReadmeFile = PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/README.md';
         if ('' !== $oPlugin->cTextReadmePath) {
-            $szReadmeContent = utf8_decode(file_get_contents($szReadmeFile)); // slurp in the file-content
+            $szReadmeContent = file_get_contents($szReadmeFile); // slurp in the file-content
             // check, if we got a Markdown-parser
             $fMarkDown     = false;
             if (class_exists('Parsedown')) {
@@ -111,7 +111,7 @@ if ($step === 'plugin_uebersicht') {
             // set, what we found, into the smarty-object
             // (and let the template decide to show markdown or <pre>-formatted-text)
             $smarty->assign('fMarkDown'      , $fMarkDown)
-                   ->assign('szReadmeContent', $szReadmeContent);
+                   ->assign('szReadmeContent', utf8_decode($szReadmeContent));
 
             // create a tab-object (for insert into the admin-menu later)
             $oUnnamedTab                      = new stdClass();
@@ -129,7 +129,7 @@ if ($step === 'plugin_uebersicht') {
         // check, if there is a LICENSE.md too
         $fAddAsLicenseTab  = false;
         if ('' !== $oPlugin->cTextLicensePath) {
-            $szLicenseContent = utf8_decode(file_get_contents($oPlugin->cTextLicensePath)); // slurp in the file content
+            $szLicenseContent = file_get_contents($oPlugin->cTextLicensePath); // slurp in the file content
             // check, if we got a Markdown-parser
             $fMarkDown     = false;
             if (class_exists('Parsedown')) {
@@ -140,7 +140,7 @@ if ($step === 'plugin_uebersicht') {
             // set, what we found, into the smarty-object
             // (and let the template decide to show markdown or <pre>-formatted-text)
             $smarty->assign('fMarkDown'      , $fMarkDown)
-                   ->assign('szLicenseContent', $szLicenseContent);
+                   ->assign('szLicenseContent', utf8_decode($szLicenseContent));
 
             // create a tab-object (for insert into the admin-menu later)
             $oUnnamedTab                      = new stdClass();

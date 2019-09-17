@@ -17,35 +17,35 @@
         {block name='blog-details-article'}
             <article itemprop="mainEntity" itemscope itemtype="https://schema.org/BlogPosting">
                 {container}
-                    <meta itemprop="mainEntityOfPage" content="{$oNewsArchiv->getURL()}">
+                    <meta itemprop="mainEntityOfPage" content="{$newsItem->getURL()}">
                     <p>
                         {block name='blog-details-heading'}
                             {opcMountPoint id='opc_before_heading'}
                             <h1 itemprop="headline" class="text-center">
-                                {$oNewsArchiv->getTitle()}
+                                {$newsItem->getTitle()}
                             </h1>
                         {/block}
 
                         {block name='blog-details-author'}
                             <div class="author-meta text-muted my-4 text-center font-size-sm">
-                                {if empty($oNewsArchiv->getDateValidFrom())}
-                                    {assign var=dDate value=$oNewsArchiv->getDateCreated()->format('Y-m-d H:i:s')}
+                                {if empty($newsItem->getDateValidFrom())}
+                                    {assign var=dDate value=$newsItem->getDateCreated()->format('Y-m-d H:i:s')}
                                 {else}
-                                    {assign var=dDate value=$oNewsArchiv->getDateValidFrom()->format('Y-m-d H:i:s')}
+                                    {assign var=dDate value=$newsItem->getDateValidFrom()->format('Y-m-d H:i:s')}
                                 {/if}
-                                {if $oNewsArchiv->getAuthor() !== null}
+                                {if $newsItem->getAuthor() !== null}
                                     {block name='blog-details-include-author'}
-                                        {include file='snippets/author.tpl' oAuthor=$oNewsArchiv->getAuthor() dDate=$dDate cDate=$oNewsArchiv->getDateValidFrom()->format('Y-m-d H:i:s')}
+                                        {include file='snippets/author.tpl' oAuthor=$newsItem->getAuthor() dDate=$dDate cDate=$newsItem->getDateValidFrom()->format('Y-m-d H:i:s')}
                                     {/block} /
                                 {else}
                                     <div itemprop="author publisher" itemscope itemtype="http://schema.org/Organization" class="d-none">
                                         <span itemprop="name">{$meta_publisher}</span>
                                         <meta itemprop="logo" content="{$ShopLogoURL}" />
                                     </div>
-                                    <time itemprop="datePublished" datetime="{$dDate}" class="d-none">{$dDate}</time><span class="creation-date">{$oNewsArchiv->getDateValidFrom()->format('Y-m-d H:i:s')}</span>
+                                    <time itemprop="datePublished" datetime="{$dDate}" class="d-none">{$dDate}</time><span class="creation-date">{$newsItem->getDateValidFrom()->format('Y-m-d H:i:s')}</span>
                                 {/if}
                                 <time itemprop="datePublished" datetime="{$dDate}" class="d-none">{$dDate}</time>
-                                {if isset($oNewsArchiv->getDateCreated()->format('Y-m-d H:i:s'))}<time itemprop="dateModified" class="d-none">{$oNewsArchiv->getDateCreated()->format('Y-m-d H:i:s')}</time>{/if}
+                                {if isset($newsItem->getDateCreated()->format('Y-m-d H:i:s'))}<time itemprop="dateModified" class="d-none">{$newsItem->getDateCreated()->format('Y-m-d H:i:s')}</time>{/if}
 
                                 {if isset($Einstellungen.news.news_kategorie_unternewsanzeigen) && $Einstellungen.news.news_kategorie_unternewsanzeigen === 'Y' && !empty($oNewsKategorie_arr)}
                                     {block name='blog-details-sub-news'}
@@ -68,23 +68,23 @@
                                     /
                                     <span class="fas fa-comments"></span>
                                     <span class="sr-only">
-                                        {if $oNewsArchiv->getCommentCount() === 1}
+                                        {if $newsItem->getCommentCount() === 1}
                                             {lang key='newsComment' section='news'}
                                         {else}
                                             {lang key='newsComments' section='news'}
                                         {/if}
                                     </span>
-                                    <span itemprop="commentCount">{$oNewsArchiv->getCommentCount()}</span>
+                                    <span itemprop="commentCount">{$newsItem->getCommentCount()}</span>
                                 {/link}
                             </div>
                         {/block}
 
-                        {if $oNewsArchiv->getPreviewImage() !== ''}
+                        {if $newsItem->getPreviewImage() !== ''}
                             {block name='blog-details-image'}
-                                {image src="{$imageBaseURL}{$oNewsArchiv->getPreviewImage()}"
-                                alt="{$oNewsArchiv->getTitle()|escape:'quotes'} - {$oNewsArchiv->getMetaTitle()|escape:'quotes'}"
+                                {image src="{$imageBaseURL}{$newsItem->getPreviewImage()}"
+                                alt="{$newsItem->getTitle()|escape:'quotes'} - {$newsItem->getMetaTitle()|escape:'quotes'}"
                                 center=true fluid=true fluid-grow=true class="mb-5"}
-                                <meta itemprop="image" content="{$imageBaseURL}{$oNewsArchiv->getPreviewImage()}">
+                                <meta itemprop="image" content="{$imageBaseURL}{$newsItem->getPreviewImage()}">
                             {/block}
                         {/if}
 
@@ -92,7 +92,7 @@
                             {opcMountPoint id='opc_before_content'}
                             {row itemprop="articleBody" class="mb-4"}
                                 {col cols=12 class="blog-content"}
-                                    {$oNewsArchiv->getContent()}
+                                    {$newsItem->getContent()}
                                 {/col}
                             {/row}
                             {opcMountPoint id='opc_after_content'}
@@ -106,10 +106,10 @@
                                     {row}
                                         {col cols=12}
                                             <div class="h2">{lang key='newsCommentAdd' section='news'}</div>
-                                            {form method="post" action="{if !empty($oNewsArchiv->getSEO())}{$oNewsArchiv->getURL()}{else}{get_static_route id='news.php'}{/if}" class="form evo-validate label-slide" id="news-addcomment"}
-                                                {input type="hidden" name="kNews" value=$oNewsArchiv->getID()}
+                                            {form method="post" action="{if !empty($newsItem->getSEO())}{$newsItem->getURL()}{else}{get_static_route id='news.php'}{/if}" class="form evo-validate label-slide" id="news-addcomment"}
+                                                {input type="hidden" name="kNews" value=$newsItem->getID()}
                                                 {input type="hidden" name="kommentar_einfuegen" value="1"}
-                                                {input type="hidden" name="n" value=$oNewsArchiv->getID()}
+                                                {input type="hidden" name="n" value=$newsItem->getID()}
 
                                                 {formgroup}
                                                 {block name='blog-details-form-comment-logged-in'}
@@ -148,14 +148,14 @@
                                     {alert variant="warning"}{lang key='newsLogin' section='news'}{/alert}
                                 {/block}
                             {/if}
-                            {if $oNewsKommentar_arr|@count > 0}
+                            {if $comments|@count > 0}
                                 {block name='blog-details-comments-content'}
-                                    {if $oNewsArchiv->getURL() !== ''}
-                                        {assign var=articleURL value=$oNewsArchiv->getURL()}
+                                    {if $newsItem->getURL() !== ''}
+                                        {assign var=articleURL value=$newsItem->getURL()}
                                         {assign var=cParam_arr value=[]}
                                     {else}
                                         {assign var=articleURL value='news.php'}
-                                        {assign var=cParam_arr value=['kNews'=>$oNewsArchiv->getID(),'n'=>$oNewsArchiv->getID()]}
+                                        {assign var=cParam_arr value=['kNews'=>$newsItem->getID(),'n'=>$newsItem->getID()]}
                                     {/if}
                                     <hr class="my-6">
                                     <div id="comments">
@@ -163,7 +163,7 @@
                                             {col cols="auto"}
                                                 <div class="h2 section-heading">{lang key='newsComments' section='news'}
                                                     <span itemprop="commentCount">
-                                                        ({$oNewsKommentar_arr|count})
+                                                        ({$comments|count})
                                                     </span>
                                                 </div>
                                             {/col}
@@ -176,12 +176,12 @@
 
                                         {block name='blog-details-comments'}
                                             {listgroup class="list-group-flush p-3 bg-info"}
-                                                {foreach $oNewsKommentar_arr as $oNewsKommentar}
+                                                {foreach $comments as $comment}
                                                     {listgroupitem class="bg-info m-0 border-top-0" itemprop="comment"}
                                                         <p>
-                                                            {$oNewsKommentar->getName()}, {$oNewsKommentar->getDateCreated()->format('d.m.y H:i')}
+                                                            {$comment->getName()}, {$comment->getDateCreated()->format('d.m.y H:i')}
                                                         </p>
-                                                        {$oNewsKommentar->getText()}
+                                                        {$comment->getText()}
                                                     {/listgroupitem}
                                                 {/foreach}
                                             {/listgroup}

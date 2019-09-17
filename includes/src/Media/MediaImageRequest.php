@@ -17,7 +17,7 @@ class MediaImageRequest
     /**
      * @var string
      */
-    public $type;
+    public $type = Image::TYPE_PRODUCT;
 
     /**
      * @var int

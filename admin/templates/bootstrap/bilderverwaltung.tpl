@@ -46,6 +46,9 @@
                                 <a class="btn btn-outline-primary btn-sm mb-2" href="#" data-callback="flush" data-type="{$item->type}">
                                     <i class="fas fa-trash-alt"></i>{__('deleteCachedPics')}
                                 </a>
+                                <a class="btn btn-outline-primary btn-sm mb-2" href="#" data-callback="cleanup" data-type="{$item->type}">
+                                    <i class="fas fa-trash"></i>{__('cleanup')}
+                                </a>
                                 <a class="btn btn-primary btn-sm" href="#" data-callback="generate" data-type="{$item->type}">
                                     <i class="fa fa-cog"></i>{__('generatePics')}
                                 </a>
@@ -149,13 +152,13 @@
         running = false,
         notify = null;
 
-    function cleanup() {
+    function cleanup(param) {
         running = true;
         lastResults = [];
         lastTick = new Date();
         notify = showGenerateNotify('{/literal}{__('pendingImageCleanup')}{literal}', '{/literal}{__('successImageDelete')}{literal}');
         $('.action-buttons a').attr('disabled', true);
-        doCleanup(0);
+        doCleanup((typeof param.data('type') !== 'undefined') ? param.data('type') : 'product', 0);
     }
 
     function stopCleanup() {
@@ -168,7 +171,7 @@
 
         notify.update({
             progress: 100,
-            message: result.deletedImages + '{/literal}{__('successImageDelete')}{literal}',
+            message: result.deletedImages + '{/literal} {__('successImageDelete')}{literal}',
             type: 'success',
             title: '{/literal}{__('successImageCleanup')}{literal}'
         });
@@ -211,7 +214,7 @@
             }
 
             if (result.nextIndex > 0 && result.nextIndex < total && running) {
-                doCleanup(result.nextIndex);
+                doCleanup(type, result.nextIndex);
             }
         });
     }

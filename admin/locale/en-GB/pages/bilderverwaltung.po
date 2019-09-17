@@ -70,3 +70,6 @@ msgstr "Generating images…"
 
 msgid "newscategory"
 msgstr "News category"
+
+msgid "cleanup"
+msgstr "Clean up"

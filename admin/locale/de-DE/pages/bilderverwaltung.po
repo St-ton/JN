@@ -67,3 +67,6 @@ msgstr "Bilder werden generiert…"
 
 msgid "newscategory"
 msgstr "Newskategorie"
+
+msgid "cleanup"
+msgstr "Aufräumen"

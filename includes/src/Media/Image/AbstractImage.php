@@ -256,7 +256,7 @@ abstract class AbstractImage implements IMedia
     public static function getUncachedImageCount(): int
     {
         return \count(select(static::getAllImages(), function (MediaImageRequest $e) {
-            return !static::isCached($e) && \file_exists($e->getRaw());
+            return !static::isCached($e) && ($file = $e->getRaw()) !== null && \file_exists($file);
         }));
     }
 
@@ -284,7 +284,7 @@ abstract class AbstractImage implements IMedia
                 $res->cached = \is_file($thumbPath);
                 if ($res->cached === false) {
                     $renderStart = \microtime(true);
-                    if ($rawImage === null && !\is_file($rawPath)) {
+                    if ($rawImage === null && ($rawPath !== null && !\is_file($rawPath))) {
                         throw new Exception(\sprintf('Image source "%s" does not exist', $rawPath));
                     }
                     Image::render($req);

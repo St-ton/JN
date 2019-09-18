@@ -14892,6 +14892,7 @@ input[type=radio]:checked + label, input[type=checkbox]:checked + label {
 
 .productbox-title {
   display: block;
+  line-height: 1.2;
 }
 
 .productbox-variations {

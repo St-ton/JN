@@ -46,11 +46,11 @@
                                                     </div>
                                                 {/strip}
                                             {/foreach}
-                                            {if !empty($Artikel->Bilder[0]->cURLNormal)}
-                                                <meta itemprop="image" content="{$Artikel->Bilder[0]->cURLNormal}">
-                                            {/if}
                                         {/block}
                                     </div>
+                                    {if !empty($Artikel->Bilder[0]->cURLNormal)}
+                                        <meta itemprop="image" content="{$Artikel->Bilder[0]->cURLNormal}">
+                                    {/if}
                                 </div>
                             {/block}
 

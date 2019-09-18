@@ -40,7 +40,10 @@
 
 .productbox-image { position: relative; margin-bottom: $spacer; }
 
-.productbox-title { display: block; }
+.productbox-title {
+	display: block;
+	line-height: $display-line-height;
+}
 
 .productbox-variations { margin-bottom: $spacer; }
 

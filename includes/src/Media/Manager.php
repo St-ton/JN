@@ -98,10 +98,9 @@ class Manager
 
     /**
      * @param int $index
-     * @return stdClass|IOError
-     * @todo use this.
+     * @return stdClass
      */
-    public function cleanupStorage(string $type, int $index)
+    public function cleanupStorage(string $type, int $index): stdClass
     {
         $startIndex = $index;
         $instance   = Media::getClass($type);
@@ -136,8 +135,7 @@ class Manager
             ++$checkedInThisRun;
             if (!$instance::imageIsUsed($db, $fileName)) {
                 $result->deletes[] = $fileName;
-//                \unlink($info->getRealPath());
-                \error_log('would now delete ' . $info->getRealPath());
+                \unlink($info->getRealPath());
                 ++$_SESSION['deletedImages'];
                 ++$deletedInThisRun;
             }

@@ -7,13 +7,11 @@
         {$sale = $Artikel->Preise->discountPercentage}
     {/if}
 
-    <div class="ribbon-{$Einstellungen.template.productlist.ribbon_type}
+    <div class="ribbon ribbon-{$Einstellungen.template.productlist.ribbon_type}
         ribbon-{$Einstellungen.template.productlist.ribbon_position}
-        ribbon--{$Artikel->oSuchspecialBild->getType()}">
+        ribbon-{$Artikel->oSuchspecialBild->getType()} productbox-ribbon">
         {block name='snippets-ribbon-content'}
-            <span>
-                {lang key='ribbon-'|cat:$Artikel->oSuchspecialBild->getType() section='productOverview' printf=$sale|default:''|cat:'%'}
-            </span>
+            {lang key='ribbon-'|cat:$Artikel->oSuchspecialBild->getType() section='productOverview' printf=$sale|default:''|cat:'%'}
         {/block}
     </div>
 {/block}

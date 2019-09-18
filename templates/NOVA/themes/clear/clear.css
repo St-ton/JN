@@ -14436,6 +14436,167 @@ aside .last-seen-link {
   padding: 1rem;
 }
 
+.carousel {
+  transition: opacity 0.2s;
+  display: flex;
+  flex-wrap: wrap;
+}
+.carousel:not(.slick-initialized) {
+  opacity: 0;
+  max-height: 12.5rem;
+}
+.carousel:hover .slick-arrow {
+  opacity: 1;
+}
+
+.slick-arrow {
+  background: transparent;
+  border: 0;
+  font-size: 0;
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+  width: auto;
+  max-width: 100%;
+  transition: all 0.2s ease-in-out;
+}
+.slick-arrow::after {
+  font-size: 0.95rem;
+  color: #525252;
+}
+.slick-arrow:focus {
+  outline: 0;
+}
+
+.slick-prev {
+  padding: 0 1rem 0 0;
+}
+.slick-prev::after {
+  content: '\f053' !important;
+  font-family: "Font Awesome 5 Free" !important;
+  font-weight: 900;
+}
+.slick-prev + .slick-list {
+  flex-basis: 0;
+}
+
+.slick-next {
+  padding: 0 0 0 1rem;
+}
+.slick-next::after {
+  content: '\f054' !important;
+  font-family: "Font Awesome 5 Free" !important;
+  font-weight: 900;
+}
+
+.slick-list {
+  margin: 0 -1rem;
+  flex-grow: 1;
+}
+
+.slick-track {
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.slick-slide {
+  margin: 0 1rem;
+}
+
+.slick-dots {
+  flex: 0 0 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0;
+  line-height: 0;
+  margin: 1rem 0;
+  padding: 0;
+  height: 1rem;
+  width: 100%;
+}
+.slick-dots li {
+  margin: 0 0.25rem;
+}
+.slick-dots li button {
+  width: 0.75rem;
+  height: 0.75rem;
+  padding: 0;
+  border-radius: 50%;
+  border: 0.125rem solid #ebebeb;
+  background-color: #ebebeb;
+  transition: all 0.2s ease-in-out;
+}
+.carousel-thumbnails .slick-list {
+  margin: 0 -0.5rem;
+}
+.carousel-thumbnails .slick-slide {
+  border: 1px solid #ebebeb;
+  border-radius: 0.125rem;
+  overflow: hidden;
+  margin: 0 0.5rem;
+}
+.carousel-thumbnails .slick-active {
+  border-color: transparent;
+}
+
+.carousel-btn-arrows {
+  align-items: center;
+}
+.carousel-btn-arrows:hover .slick-arrow  {
+  opacity: 1;
+}
+.carousel-btn-arrows .slick-prev, .carousel-btn-arrows .slick-next {
+  background: #ebebeb;
+  padding: 1.5rem 0.75rem;
+  position: absolute;
+}
+@media (min-width: 1300px) {
+  .carousel-btn-arrows .slick-prev, .carousel-btn-arrows .slick-next {
+    opacity: 0;
+  }
+}
+.carousel-btn-arrows .slick-prev::after, .carousel-btn-arrows .slick-prev::before, .carousel-btn-arrows .slick-next::after, .carousel-btn-arrows .slick-next::before {
+  font-size: 1.1rem;
+}
+.carousel-btn-arrows .slick-prev:hover, .carousel-btn-arrows .slick-prev:focus, .carousel-btn-arrows .slick-next:hover, .carousel-btn-arrows .slick-next:focus {
+  background: #F8BF00;
+}
+.carousel-btn-arrows .slick-prev {
+  left: 0;
+  transform: translateX(-20%);
+}
+.carousel-btn-arrows .slick-next {
+  right: 0;
+  transform: translateX(20%);
+}
+
+[data-gallery] .slick-slide {
+  cursor: zoom-in;
+}
+
+.carousel-fullwidth {
+  width: 100%;
+}
+.carousel-fullwidth .slick-list, .carousel-fullwidth .slick-slide {
+  margin: 0;
+}
+.carousel-fullwidth .slick-slide > div {
+  height: 100%;
+}
+.carousel-fullwidth .slick-prev {
+  left: 2rem;
+  transform: translateX(-20%);
+}
+.carousel-fullwidth .slick-next {
+  right: 2rem;
+  transform: translateX(20%);
+}
+.carousel-fullwidth .slick-dots {
+  position: absolute;
+  bottom: 1rem;
+}
+
 .dropdown-body,
 .dropdown-footer {
   padding: 1.5rem;
@@ -15015,10 +15176,6 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
   background: #fff url("../base/images/loader.gif") center center no-repeat;
 }
 
-.slick-initialized .slick-slide {
-  padding: 0 0.25rem;
-}
-
 .slick-prev,
 .slick-next {
   position: absolute;
@@ -15043,16 +15200,6 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
 .slick-next .slick-disabled:before {
   opacity: 0.25;
 }
-.slick-prev::before,
-.slick-next::before {
-  font-family: "Font Awesome 5 Free", Arial, sans-serif;
-  font-weight: 900;
-  font-size: 20px;
-  line-height: 1;
-  color: #cccccc;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
 
 .slick-prev {
   z-index: 2;
@@ -15062,9 +15209,6 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
   left: auto;
   right: 0;
 }
-.slick-prev::before {
-  content: "";
-}
 
 .slick-next {
   z-index: 2;
@@ -15073,9 +15217,6 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
 .slick-next[dir=rtl] {
   left: 0;
   right: auto;
-}
-.slick-next::before {
-  content: "";
 }
 
 .slick-dotted {

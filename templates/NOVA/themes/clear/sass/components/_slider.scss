@@ -10,10 +10,6 @@
   background: #fff url('../base/images/loader.gif') center center no-repeat;
 }
 
-.slick-initialized .slick-slide {
-  padding: 0 map_get($spacers, 1);
-}
-
 .slick-prev,
 .slick-next {
   position: absolute;
@@ -38,15 +34,15 @@
     opacity: 0.25;
   }
 
-  &::before {
-    font-family: "Font Awesome 5 Free", Arial, sans-serif;
-    font-weight: 900;
-    font-size: 20px;
-    line-height: 1;
-    color: #cccccc;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
+  //&::before {
+  //  font-family: "Font Awesome 5 Free", Arial, sans-serif;
+  //  font-weight: 900;
+  //  font-size: 20px;
+  //  line-height: 1;
+  //  color: #cccccc;
+  //  -webkit-font-smoothing: antialiased;
+  //  -moz-osx-font-smoothing: grayscale;
+  //}
 }
 
 .slick-prev {
@@ -58,9 +54,9 @@
     right: 0;
   }
 
-  &::before {
-    content: '\f053';
-  }
+  //&::before {
+  //  content: '\f053';
+  //}
 }
 
 .slick-next {
@@ -72,9 +68,9 @@
     right: auto;
   }
 
-  &::before {
-    content: '\f054';
-  }
+  //&::before {
+  //  content: '\f054';
+  //}
 }
 
 .slick-dotted {

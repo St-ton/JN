@@ -14,48 +14,59 @@
                 {col cols=12}
                     {block name='productlist-item-box-image'}
                         <div class="productbox-image">
-                            {link class="image-wrapper" href=$Artikel->cURLFull}
-                                {if isset($Artikel->Bilder[0]->cAltAttribut)}
-                                    {assign var=alt value=$Artikel->Bilder[0]->cAltAttribut|strip_tags|truncate:60|escape:'html'}
-                                {else}
-                                    {assign var=alt value=$Artikel->cName}
-                                {/if}
-                                {block name='productlist-item-box-image'}
-                                    {counter assign=imgcounter print=0}
-                                    {if isset($Artikel->oSuchspecialBild)}
-                                        {block name='productlist-item-box-include-ribbon'}
-                                            {include file='snippets/ribbon.tpl'}
-                                        {/block}
-                                    {/if}
-                                    <div class="productbox-images text-center">
-                                        {image class='product-image'
-                                            alt=$alt
-                                            fluid=true
-                                            lazy=true
-                                            src="{$imageBaseURL}gfx/trans.png"
-                                            data=["src" => $Artikel->Bilder[0]->cURLNormal, "id" => $imgcounter]
-                                            width="3000"
-                                            height="3000"}
-                                        {if !empty($Artikel->Bilder[0]->cURLNormal)}
-                                            <meta itemprop="image" content="{$Artikel->Bilder[0]->cURLNormal}">
-                                        {/if}
-                                    </div>
-                                {/block}
-
-                                {if $smarty.session.Kundengruppe->mayViewPrices()
-                                    && isset($Artikel->SieSparenX)
-                                    && $Artikel->SieSparenX->anzeigen == 1
-                                    && $Artikel->SieSparenX->nProzent > 0
-                                    && !$NettoPreise
-                                    && $Artikel->taxData['tax'] > 0
-                                }
-                                    {block name='productlist-item-badge-yousave'}
-                                        <div class="productbox-sale-percentage">
-                                            <div class="ribbon ribbon-7 productbox-ribbon">{$Artikel->SieSparenX->nProzent}%</div>
-                                        </div>
+                            {if isset($Artikel->Bilder[0]->cAltAttribut)}
+                                {assign var=alt value=$Artikel->Bilder[0]->cAltAttribut|strip_tags|truncate:60|escape:'html'}
+                            {else}
+                                {assign var=alt value=$Artikel->cName}
+                            {/if}
+                            {block name='productlist-item-box-image'}
+                                {counter assign=imgcounter print=0}
+                                {if isset($Artikel->oSuchspecialBild)}
+                                    {block name='productlist-item-box-include-ribbon'}
+                                        {include file='snippets/ribbon.tpl'}
                                     {/block}
                                 {/if}
-                            {/link}
+                                <div class="productbox-images">
+                                    <div class="clearfix list-gallery carousel carousel-btn-arrows">
+                                        {block name="productlist-item-list-image"}
+                                            {foreach $Artikel->Bilder as $image}
+                                                {strip}
+                                                    <div>
+                                                        {link href=$Artikel->cURLFull}
+                                                            {image data=['lazy'=>$image->cURLMini, 'srcset'=>"{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                                 {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                                 {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w",
+                                                                 'id' => $imgcounter]
+                                                            sizes="(min-width: 1200px) 175px,95vw"
+                                                            alt=$image->cAltAttribut|escape:'html'
+                                                            src=$image->cURLMini
+                                                            fluid=true
+                                                            class='w-100'}
+                                                        {/link}
+                                                    </div>
+                                                {/strip}
+                                            {/foreach}
+                                            {if !empty($Artikel->Bilder[0]->cURLNormal)}
+                                                <meta itemprop="image" content="{$Artikel->Bilder[0]->cURLNormal}">
+                                            {/if}
+                                        {/block}
+                                    </div>
+                                </div>
+                            {/block}
+
+                            {if $smarty.session.Kundengruppe->mayViewPrices()
+                                && isset($Artikel->SieSparenX)
+                                && $Artikel->SieSparenX->anzeigen == 1
+                                && $Artikel->SieSparenX->nProzent > 0
+                                && !$NettoPreise
+                                && $Artikel->taxData['tax'] > 0
+                            }
+                                {block name='productlist-item-badge-yousave'}
+                                    <div class="productbox-sale-percentage">
+                                        <div class="ribbon ribbon-7 productbox-ribbon">{$Artikel->SieSparenX->nProzent}%</div>
+                                    </div>
+                                {/block}
+                            {/if}
 
                             {block name='productlist-item-box-include-productlist-actions'}
                                 <div class="productbox-quick-actions productbox-onhover">
@@ -68,7 +79,7 @@
                 {col cols=12}
                     {block name='productlist-item-box-caption'}
                         <div class="caption mt-2 text-left">
-                            <div class="h4 title" itemprop="name">{link href=$Artikel->cURLFull class="text-truncate-fade"}{$Artikel->cKurzbezeichnung}{/link}</div>
+                            <div class="productbox-title" itemprop="name">{link href=$Artikel->cURLFull class="text-truncate-fade"}{$Artikel->cKurzbezeichnung}{/link}</div>
                             {if $Artikel->cName !== $Artikel->cKurzbezeichnung}<meta itemprop="alternateName" content="{$Artikel->cName}">{/if}
                             <meta itemprop="url" content="{$Artikel->cURLFull}">
                             {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->fDurchschnittsBewertung > 0}

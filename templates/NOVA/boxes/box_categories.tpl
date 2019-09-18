@@ -4,11 +4,15 @@
  *}
 {block name='boxes-box-categories'}
     {card
-        class="box box-categories word-break mb-7"
+        class="box box-categories word-break mb-4"
         id="sidebox_categories{$oBox->getCustomID()}"
-        title="{if !empty($oBox->getTitle())}{$oBox->getTitle()}{else}{lang key='categories'}{/if}"
     }
         {block name='boxes-box-categories-content'}
+            {block name='boxes-box-categories-title'}
+                <div class="productlist-filter-headline">
+                    <span>{if !empty($oBox->getTitle())}{$oBox->getTitle()}{else}{lang key='categories'}{/if}</span>
+                </div>
+            {/block}
             <div class="nav-panel">
                 {nav vertical=true}
                     {block name='boxes-box-categories-include-categories-recursive'}

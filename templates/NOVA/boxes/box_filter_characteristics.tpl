@@ -8,21 +8,22 @@
             <div id="sidebox{$oBox->getID()}-{$characteristic->getID()}" class="box box-filter-characteristics{if $characteristic@last} mb-7{/if}">
                 {button
                     variant="link"
-                    class="text-decoration-none pl-0 text-left"
+                    class="text-decoration-none px-0 text-left dropdown-toggle"
                     role="button"
                     block=true
                     data=["toggle"=> "collapse", "target"=>"#cllps-box{$oBox->getID()}-{$characteristic->getID()}"]
                 }
-                {$img = $characteristic->getImage(\JTL\Media\Image::SIZE_XS)}
-                {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'T'
+                    {$img = $characteristic->getImage(\JTL\Media\Image::SIZE_XS)}
+                    {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'T'
+                    && $img !== null
                     && $img|strpos:$smarty.const.BILD_KEIN_MERKMALBILD_VORHANDEN === false
                     && $img|strpos:$smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN === false}
-                    <img src='{$img}' alt='{$characteristic->getName()}' class='vmiddle' />
-                {/if}
-                {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'B'}
-                    {$characteristic->getName()}
-                {/if}
-                <i class="fas fa-plus float-right"></i>{/button}
+                        <img src='{$img}' alt='{$characteristic->getName()}' class='vmiddle' />
+                    {/if}
+                    {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'B'}
+                        {$Merkmal->cName}
+                    {/if}
+                {/button}
                 {collapse
                     class="{if $characteristic->getData('cTyp') !== 'SELECTBOX'}overflow-auto{/if}"
                     id="cllps-box{$oBox->getID()}-{$characteristic->getID()}"

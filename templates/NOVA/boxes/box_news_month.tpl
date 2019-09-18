@@ -5,14 +5,13 @@
 {block name='boxes-box-news-month'}
     {card class="box box-monthlynews mb-md-4" id="sidebox{$oBox->getID()}"}
         {block name='boxes-box-news-month-content'}
-            {block name='boxes-box-linkgroups-toggle-title'}
-                {link
-                id="crd-hdr-{$oBox->getID()}"
-                href="#crd-cllps-{$oBox->getID()}"
-                data=["toggle"=>"collapse"]
-                role="button"
-                aria=["expanded"=>"false","controls"=>"crd-cllps-{$oBox->getID()}"]
-                class="text-decoration-none font-weight-bold mb-2 d-md-none dropdown-toggle"}
+            {block name='boxes-box-news-month-toggle-title'}
+                {link id="crd-hdr-{$oBox->getID()}"
+                    href="#crd-cllps-{$oBox->getID()}"
+                    data=["toggle"=>"collapse"]
+                    role="button"
+                    aria=["expanded"=>"false","controls"=>"crd-cllps-{$oBox->getID()}"]
+                    class="text-decoration-none font-weight-bold mb-2 d-md-none dropdown-toggle"}
                     {lang key='newsBoxMonthOverview'}
                 {/link}
             {/block}
@@ -21,9 +20,9 @@
                     <span>{lang key='newsBoxMonthOverview'}</span>
                 </div>
             {/block}
-            {block name='boxes-box-news-month-news-collapse'}
+            {block name='boxes-box-news-month-collapse'}
                 {collapse
-                    class="d-md-flex"
+                    class="d-md-block"
                     visible=false
                     id="crd-cllps-{$oBox->getID()}"
                     aria=["labelledby"=>"crd-hdr-{$oBox->getID()}"]}

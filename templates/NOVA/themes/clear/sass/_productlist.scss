@@ -1,4 +1,17 @@
-.productlist-filter-headline { border-bottom: $border-width solid $border-color; padding-bottom: map-get($spacers, 2); margin-bottom: $spacer; margin-top: map-get($spacers, 3); @extend .h3; }
+.productlist-filter-headline {
+	border-bottom: $border-width solid $border-color;
+	padding-bottom: map-get($spacers, 2);
+	margin-bottom: $spacer;
+	margin-top: map-get($spacers, 3);
+	@extend .h3;
+}
+
+#footer .productlist-filter-headline {
+	border-bottom: 0 solid $border-color;
+	font-size: $font-size-base;
+	font-weight: $font-weight-bold;
+	font-family: $font-family-sans-serif;
+}
 
 .productlist-filter {
 	&:not(.collapse) { display: none;

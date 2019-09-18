@@ -22,7 +22,7 @@
         {/block}
         {block name='boxes-box-linkgroups-content'}
             {collapse
-                class="d-md-flex"
+                class="d-md-block"
                 visible=false
                 id="crd-cllps-{$oBox->getID()}"
                 aria=["labelledby"=>"crd-hdr-{$oBox->getID()}"]}

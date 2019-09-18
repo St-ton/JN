@@ -18709,6 +18709,13 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   margin-top: 1rem;
 }
 
+#footer .productlist-filter-headline {
+  border-bottom: 0 solid #ebebeb;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: "Open Sans", sans-serif;
+}
+
 .productlist-filter:not(.collapse) {
   display: none;
 }

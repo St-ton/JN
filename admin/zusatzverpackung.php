@@ -146,7 +146,7 @@ if ($action === 'save') {
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successPackagingSaveMultiple'), 'successPackagingSaveMultiple');
     }
 }
-$taxClasses     = $db->query(
+$taxClasses = $db->query(
     'SELECT * FROM tsteuerklasse',
     ReturnType::ARRAY_OF_OBJECTS
 );

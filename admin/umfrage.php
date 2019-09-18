@@ -537,8 +537,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             ->assign('oUmfrage_arr', $surveys)
             ->assign('pagination', $pagination);
     }
-    $langData       = $db->select('tsprache', 'kSprache', (int)$_SESSION['kSprache']);
-    $coupons        = $db->queryPrepared(
+    $langData = $db->select('tsprache', 'kSprache', (int)$_SESSION['kSprache']);
+    $coupons  = $db->queryPrepared(
         "SELECT tkupon.kKupon, tkuponsprache.cName
             FROM tkupon
             LEFT JOIN tkuponsprache 

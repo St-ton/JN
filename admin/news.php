@@ -177,13 +177,8 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
             $controller->setStep('news_kategorie_erstellen');
             $newsCategory->load(Request::getInt('kNewsKategorie'), false);
             if ($newsCategory->getID() > 0) {
-                $smarty->assign('oNewsKategorie', $newsCategory);
-                if (is_dir($uploadDirCat . $newsCategory->getID())) {
-                    $smarty->assign(
-                        'oDatei_arr',
-                        $controller->getCategoryImages($newsCategory->getID(), $uploadDirCat)
-                    );
-                }
+                $smarty->assign('oNewsKategorie', $newsCategory)
+                       ->assign('files', $controller->getCategoryImages($newsCategory->getID(), $uploadDirCat));
             } else {
                 $controller->setStep('news_uebersicht');
                 $controller->setErrorMsg(sprintf(__('errorNewsCatNotFound'), Request::getInt('kNewsKategorie')));
@@ -230,10 +225,8 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
             $newsItem->load($newsItemID);
 
             if ($newsItem->getID() > 0) {
-                if (is_dir($uploadDir . $newsItem->getID())) {
-                    $smarty->assign('oDatei_arr', $controller->getNewsImages($newsItem->getID(), $uploadDir));
-                }
                 $smarty->assign('oNewsKategorie_arr', $controller->getAllNewsCategories())
+                       ->assign('files', $controller->getNewsImages($newsItem->getID(), $uploadDir))
                        ->assign('oNews', $newsItem);
             }
         } else {
@@ -247,15 +240,12 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
         $newsItem->load($newsItemID);
 
         if ($newsItem->getID() > 0) {
-            if (is_dir($uploadDir . $newsItem->getID())) {
-                $smarty->assign('oDatei_arr', $controller->getNewsImages($newsItem->getID(), $uploadDir));
-            }
-            $smarty->assign('oNews', $newsItem);
             if (Request::postInt('kommentare_loeschen') === 1 || isset($_POST['kommentareloeschenSubmit'])) {
                 $controller->deleteComments($_POST['kNewsKommentar'] ?? [], $newsItem);
             }
-
-            $smarty->assign('oNewsKommentar_arr', $newsItem->getComments()->getItems());
+            $smarty->assign('oNews', $newsItem)
+                   ->assign('files', $controller->getNewsImages($newsItem->getID(), $uploadDir))
+                   ->assign('comments', $newsItem->getComments()->getItems());
         }
     }
 }
@@ -289,7 +279,7 @@ if ($controller->getStep() === 'news_uebersicht') {
         ->setItemArray($newsCategories)
         ->assemble();
     $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_NEWS))
-           ->assign('oNewsKommentar_arr', $commentPagination->getPageItems())
+           ->assign('comments', $commentPagination->getPageItems())
            ->assign('oNews_arr', $itemPagination->getPageItems())
            ->assign('oNewsKategorie_arr', $categoryPagination->getPageItems())
            ->assign('oNewsMonatsPraefix_arr', $prefixes)

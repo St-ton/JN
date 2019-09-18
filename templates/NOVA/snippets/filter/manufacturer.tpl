@@ -14,28 +14,30 @@
                 {$collapseInit = true}
             {/if}
             {block name='snippets-filter-manufacturer-item'}
-                <span class="value">
-                    {if $Einstellungen.navigationsfilter.hersteller_anzeigen_als == 'B'}
-                        {$tooltip = ["toggle"=>"tooltip", "placement"=>"top", "boundary"=>"window"]}
-                    {else}
-                        {$tooltip = []}
-                    {/if}
-                    {link href="{if !empty($filterOption->getURL())}{$filterOption->getURL()}{else}#{/if}"
-                        title="{$filterOption->getName()}: {$filterOption->getCount()}"
-                        data=$tooltip
-                        class="{if $filterOption->isActive()}active{/if}"
-                    }
+                {if $Einstellungen.navigationsfilter.hersteller_anzeigen_als == 'B'}
+                    {$tooltip = ["toggle"=>"tooltip", "placement"=>"top", "boundary"=>"window"]}
+                {else}
+                    {$tooltip = []}
+                {/if}
+                {link href="{if !empty($filterOption->getURL())}{$filterOption->getURL()}{else}#{/if}"
+                    title="{$filterOption->getName()}: {$filterOption->getCount()}"
+                    data=$tooltip
+                    class="nav-link px-0{if $filterOption->isActive()}active{/if}"
+                }
+                    <div class="align-items-center d-flex">
                         {if $Einstellungen.navigationsfilter.hersteller_anzeigen_als == 'B'}
-                                {image src=$filterOption->getData('cBildpfadKlein') class="vmiddle filter-img"}
+                            {image src=$filterOption->getData('cBildpfadKlein') class="vmiddle filter-img"}
                         {elseif $Einstellungen.navigationsfilter.hersteller_anzeigen_als === 'BT'}
-                             {image src=$filterOption->getData('cBildpfadKlein') class="vmiddle filter-img"}
-                            &nbsp;{$filterOption->getName()} ({$filterOption->getCount()})
+                            {image src=$filterOption->getData('cBildpfadKlein') class="vmiddle filter-img"}
+                            <span class="word-break">{$filterOption->getName()}</span>
+                            <span class="badge badge-outline-secondary ml-auto">{$filterOption->getCount()}</span>
                         {elseif $Einstellungen.navigationsfilter.hersteller_anzeigen_als === 'T'}
-                            <i class="far fa-{if $filterIsActive === true}check-{/if}square text-muted"></i>
-                            &nbsp;{$filterOption->getName()}&nbsp;({$filterOption->getCount()})
+                            <i class="far fa-{if $filterIsActive === true}check-{/if}square text-muted mr-2"></i>
+                            <span class="word-break">{$filterOption->getName()}</span>
+                            <span class="badge badge-outline-secondary ml-auto">{$filterOption->getCount()}</span>
                         {/if}
-                    {/link}
-                </span>
+                    </div>
+                {/link}
             {/block}
         {/foreach}
         {if $limit != -1 && $filter->getOptions()|count > $limit}
@@ -44,10 +46,10 @@
             {button
                 variant="link"
                 role="button"
-                class="text-right pr-0"
+                class="text-right p-0"
                 data=["toggle"=> "collapse", "target"=>"#box-collps-filter{$filter->getNiceName()}"]
-            }
-            {lang key='showAll'} <i class="fas fa-chevron-down"></i>
+                block=true}
+                {lang key='showAll'} <i class="fas fa-chevron-down"></i>
             {/button}
         {/if}
     {/nav}

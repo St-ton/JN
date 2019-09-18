@@ -4,11 +4,15 @@
  *}
 {block name='boxes-box-login'}
     {card
-        class="box box-login mb-7"
+        class="box box-login mb-4"
         id="sidebox{$oBox->getID()}"
-        title="{if empty($smarty.session.Kunde)}{lang key='login'}{else}{lang key='hello'}, {$smarty.session.Kunde->cVorname} {$smarty.session.Kunde->cNachname}{/if}"
     }
         {block name='boxes-box-login-content'}
+            {block name='boxes-box-login-title'}
+                <div class="productlist-filter-headline">
+                    <span>{if empty($smarty.session.Kunde)}{lang key='login'}{else}{lang key='hello'}, {$smarty.session.Kunde->cVorname} {$smarty.session.Kunde->cNachname}{/if}</span>
+                </div>
+            {/block}
             {if empty($smarty.session.Kunde->kKunde)}
                 {block name='boxes-box-login-form'}
                     {form action="{get_static_route id='jtl.php' secure=true}" method="post" class="form box_login evo-validate label-slide"}

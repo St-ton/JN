@@ -243,7 +243,7 @@
                 {/if}
             </div>
             <div id="newscomments" class="tab-pane fade {if isset($cTab) && $cTab === 'newscomments'} active show{/if}">
-                {if $oNewsKommentar_arr|@count > 0 && $oNewsKommentar_arr}
+                {if $comments|@count > 0 && $comments}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiNewskommentare cAnchor='newscomments'}
                     <div>
                         <form method="post" action="freischalten.php">
@@ -263,29 +263,29 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {foreach $oNewsKommentar_arr as $oNewsKommentar}
+                                        {foreach $comments as $comment}
                                             <tr>
                                                 <td class="check">
                                                     <div class="custom-control custom-checkbox">
-                                                        <input class="custom-control-input" type="checkbox" name="kNewsKommentar[]" id="ncid-{$oNewsKommentar->kNewsKommentar}" value="{$oNewsKommentar->kNewsKommentar}" />
-                                                        <label class="custom-control-label" for="ncid-{$oNewsKommentar->kNewsKommentar}"></label>
+                                                        <input class="custom-control-input" type="checkbox" name="kNewsKommentar[]" id="ncid-{$comment->kNewsKommentar}" value="{$comment->kNewsKommentar}" />
+                                                        <label class="custom-control-label" for="ncid-{$comment->kNewsKommentar}"></label>
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    <label for="ncid-{$oNewsKommentar->kNewsKommentar}">
-                                                        {if $oNewsKommentar->cVorname|strlen > 0}
-                                                            {$oNewsKommentar->cVorname} {$oNewsKommentar->cNachname}
+                                                    <label for="ncid-{$comment->kNewsKommentar}">
+                                                        {if $comment->cVorname|strlen > 0}
+                                                            {$comment->cVorname} {$comment->cNachname}
                                                         {else}
-                                                            {$oNewsKommentar->cName}
+                                                            {$comment->cName}
                                                         {/if}
                                                     </label>
                                                 </td>
-                                                <td>{$oNewsKommentar->cBetreff|truncate:50:'...'}</td>
-                                                <td class="text-center">{$oNewsKommentar->dErstellt_de}</td>
+                                                <td>{$comment->cBetreff|truncate:50:'...'}</td>
+                                                <td class="text-center">{$comment->dErstellt_de}</td>
                                                 <td class="text-center">
                                                     <div class="btn-group">
                                                         <a class="btn btn-link px-2" title="{__('modify')}"
-                                                           href="news.php?news=1&kNews={$oNewsKommentar->kNews}&kNewsKommentar={$oNewsKommentar->kNewsKommentar}&nkedit=1&nFZ=1&token={$smarty.session.jtl_token}"
+                                                           href="news.php?news=1&kNews={$comment->kNews}&kNewsKommentar={$comment->kNewsKommentar}&nkedit=1&nFZ=1&token={$smarty.session.jtl_token}"
                                                            data-toggle="tooltip"
                                                         >
                                                             <span class="icon-hover">

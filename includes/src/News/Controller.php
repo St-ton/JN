@@ -176,13 +176,14 @@ class Controller
                 $pagination->getItemsPerPage()
             );
         }
-
         $conf = Shop::getConfig([\CONF_NEWS]);
 
         $this->smarty->assign('oNewsKommentar_arr', $comments)
+                     ->assign('comments', $comments)
                      ->assign('oPagiComments', $pagination)
                      ->assign('oNewsKategorie_arr', $newsCategories)
                      ->assign('oNewsArchiv', $newsItem)
+                     ->assign('newsItem', $newsItem)
                      ->assign('meta_title', $newsItem->getMetaTitle())
                      ->assign('meta_description', $newsItem->getMetaDescription())
                      ->assign('userCanComment', Frontend::getCustomer()->getID() > 0)

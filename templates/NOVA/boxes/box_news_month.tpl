@@ -3,8 +3,13 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='boxes-box-news-month'}
-    {card class="box box-monthlynews mb-7" id="sidebox{$oBox->getID()}" title="{lang key='newsBoxMonthOverview'}"}
+    {card class="box box-monthlynews mb-4" id="sidebox{$oBox->getID()}"}
         {block name='boxes-box-news-month-content'}
+            {block name='boxes-box-news-month-title'}
+                <div class="productlist-filter-headline">
+                    <span>{lang key='newsBoxMonthOverview'}</span>
+                </div>
+            {/block}
             {nav vertical=true}
                 {foreach $oBox->getItems() as $newsMonth}
                     {if $newsMonth@index === 10}{break}{/if}

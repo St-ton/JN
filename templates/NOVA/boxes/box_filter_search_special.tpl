@@ -13,13 +13,13 @@
             <div class="box box-filter-special" id="sidebox{$oBox->getID()}">
                 {button
                     variant="link"
-                    class="text-decoration-none pl-0 text-left"
+                    class="text-decoration-none px-0 text-left dropdown-toggle"
                     block=true
                     role="button"
                     data=["toggle"=> "collapse", "target"=>"#cllps-box{$oBox->getID()}"]
                 }
                     {$ssf->getFrontendName()}
-                    <i class="fas fa-plus float-right"></i>{/button}
+                {/button}
                 {collapse id="cllps-box{$oBox->getID()}" visible=$ssf->isActive()}
                     {block name='boxes-box-filter-search-special-content'}
                         {include file='snippets/filter/genericFilterItem.tpl' filter=$ssf}

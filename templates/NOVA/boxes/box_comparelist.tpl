@@ -7,11 +7,16 @@
     {assign var=itemCount value=count($oBox->getProducts())}
     {if $itemCount > 0}
         {card
-            class="box box-compare mb-7"
+            class="box box-compare mb-4"
             id="sidebox{$oBox->getID()}"
-            title="<i class='fa fa-tasks'></i> {lang key='compare'}"
         }
             {block name='boxes-box-comparelist-content'}
+                {block name='boxes-box-comparelist-title'}
+                    <div class="productlist-filter-headline align-items-center d-flex">
+                        <i class='fa fa-tasks mr-2'></i>
+                        <span>{lang key='compare'}</span>
+                    </div>
+                {/block}
                 {block name='boxes-box-comparelist-products'}
                     {listgroup}
                         {foreach $oBox->getProducts() as $oArtikel}

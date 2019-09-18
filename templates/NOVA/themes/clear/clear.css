@@ -16886,6 +16886,10 @@ footer .footer-additional {
 footer .footer-additional a {
   text-decoration: none;
 }
+footer .footer-additional li {
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+}
 footer #copyright {
   background-color: #525252;
   color: #f5f7fa;

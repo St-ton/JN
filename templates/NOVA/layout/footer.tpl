@@ -97,7 +97,7 @@
                                     {col cols=12 class="footer-additional-wrapper col-auto mx-auto"}
                                         <ul class="list-unstyled d-flex flex-row flex-wrap">
                                         {if !empty($Einstellungen.template.footer.facebook)}
-                                            <li class="mr-2">
+                                            <li>
                                                 {link href="{if $Einstellungen.template.footer.facebook|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.facebook}"
                                                     class="btn-icon-secondary btn-facebook btn btn-sm" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Facebook'}"] title="Facebook" target="_blank" rel="noopener"}
                                                     <span class="fab fa-facebook-f fa-fw fa-lg"></span>
@@ -105,7 +105,7 @@
                                             </li>
                                         {/if}
                                         {if !empty($Einstellungen.template.footer.twitter)}
-                                            <li class="mr-2">
+                                            <li>
                                                 {link href="{if $Einstellungen.template.footer.twitter|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.twitter}"
                                                     class="btn-icon-secondary btn-twitter btn btn-sm" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Twitter'}"] title="Twitter" target="_blank" rel="noopener"}
                                                     <i class="fab fa-twitter fa-fw fa-lg"></i>
@@ -113,7 +113,7 @@
                                             </li>
                                         {/if}
                                         {if !empty($Einstellungen.template.footer.youtube)}
-                                            <li class="mr-2">
+                                            <li>
                                                 {link href="{if $Einstellungen.template.footer.youtube|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.youtube}"
                                                     class="btn-icon-secondary btn-youtube btn btn-sm" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='YouTube'}"] title="YouTube" target="_blank" rel="noopener"}
                                                     <i class="fab fa-youtube fa-fw fa-lg"></i>
@@ -121,7 +121,7 @@
                                             </li>
                                         {/if}
                                         {if !empty($Einstellungen.template.footer.vimeo)}
-                                            <li class="mr-2">
+                                            <li>
                                                 {link href="{if $Einstellungen.template.footer.vimeo|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.vimeo}"
                                                     class="btn-icon-secondary btn-vimeo btn btn-sm" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Vimeo'}"]  title="Vimeo" target="_blank" rel="noopener"}
                                                     <i class="fab fa-vimeo-v fa-fw fa-lg"></i>
@@ -129,7 +129,7 @@
                                             </li>
                                         {/if}
                                         {if !empty($Einstellungen.template.footer.pinterest)}
-                                            <li class="mr-2">
+                                            <li>
                                                 {link href="{if $Einstellungen.template.footer.pinterest|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.pinterest}"
                                                     class="btn-icon-secondary btn-pinterest btn btn-sm" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Pinterest'}"]  title="Pinterest" target="_blank" rel="noopener"}
                                                     <i class="fab fa-pinterest-p fa-fw fa-lg"></i>
@@ -137,7 +137,7 @@
                                             </li>
                                         {/if}
                                         {if !empty($Einstellungen.template.footer.instagram)}
-                                            <li class="mr-2">
+                                            <li>
                                                 {link href="{if $Einstellungen.template.footer.instagram|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.instagram}"
                                                     class="btn-icon-secondary btn-instagram btn btn-sm" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Instagram'}"]  title="Instagram" target="_blank" rel="noopener"}
                                                     <i class="fab fa-instagram fa-fw fa-lg"></i>
@@ -145,7 +145,7 @@
                                             </li>
                                         {/if}
                                         {if !empty($Einstellungen.template.footer.skype)}
-                                            <li class="mr-2">
+                                            <li>
                                                 {link href="{if $Einstellungen.template.footer.skype|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.skype}"
                                                     class="btn-icon-secondary btn-skype btn btn-sm" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Skype'}"]  title="Skype" target="_blank" rel="noopener"}
                                                     <i class="fab fa-skype fa-fw fa-lg"></i>
@@ -153,7 +153,7 @@
                                             </li>
                                         {/if}
                                         {if !empty($Einstellungen.template.footer.xing)}
-                                            <li class="mr-2">
+                                            <li>
                                                 {link href="{if $Einstellungen.template.footer.xing|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.xing}"
                                                     class="btn-icon-secondary btn-xing btn btn-sm" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Xing'}"]  title="Xing" target="_blank" rel="noopener"}
                                                     <i class="fab fa-xing fa-fw fa-lg"></i>
@@ -161,7 +161,7 @@
                                             </li>
                                         {/if}
                                         {if !empty($Einstellungen.template.footer.linkedin)}
-                                            <li class="mr-0">
+                                            <li>
                                                 {link href="{if $Einstellungen.template.footer.linkedin|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.linkedin}"
                                                     class="btn-icon-secondary btn-linkedin btn btn-sm" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Linkedin'}"]  title="Linkedin" target="_blank" rel="noopener"}
                                                     <i class="fab fa-linkedin-in fa-fw fa-lg"></i>

@@ -1419,6 +1419,10 @@ footer {
     a {
       text-decoration: none;
     }
+    li {
+      margin-right: map-get($spacers, 2);
+      margin-bottom: map-get($spacers, 2);
+    }
   }
   #copyright {
     background-color: $gray-dark;

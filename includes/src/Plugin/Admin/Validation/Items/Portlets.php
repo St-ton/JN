@@ -39,7 +39,7 @@ final class Portlets extends AbstractItem
             \preg_match('/[0-9]+/', $i, $hits2);
             if (\mb_strlen($hits2[0]) === \mb_strlen($i)) {
                 \preg_match(
-                    '/[a-zA-Z0-9\/_\-äÄüÜöÖß' . \utf8_decode('äÄüÜöÖß') . '\(\) ]+/',
+                    '/[\w0-9\/_\-\(\) ]+/u',
                     $portlet['Title'],
                     $hits1
                 );
@@ -57,7 +57,7 @@ final class Portlets extends AbstractItem
                     return InstallCode::INVALID_PORTLET_CLASS;
                 }
                 \preg_match(
-                    '/[a-zA-Z0-9\/_\-äÄüÜöÖß' . \utf8_decode('äÄüÜöÖß') . '\(\) ]+/',
+                    '/[\w0-9\/_\-\(\) ]+/u',
                     $portlet['Group'],
                     $hits1
                 );

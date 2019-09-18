@@ -24,7 +24,7 @@ final class Name extends AbstractItem
             return InstallCode::INVALID_NAME;
         }
         \preg_match(
-            '/[a-zA-Z0-9äÄüÜöÖß' . '\(\)_ -]+/',
+            '/[\w0-9\(\)_ -]+/u',
             $baseNode['Name'],
             $hits
         );

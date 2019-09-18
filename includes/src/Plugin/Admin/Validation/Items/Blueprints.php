@@ -43,7 +43,7 @@ final class Blueprints extends AbstractItem
             \preg_match('/[0-9]+/', $i, $hits2);
             if (\mb_strlen($hits2[0]) === \mb_strlen($i)) {
                 \preg_match(
-                    '/[a-zA-Z0-9\/_\-\ äÄüÜöÖß' . \utf8_decode('äÄüÜöÖß') . '\(\) ]+/',
+                    '/[\w0-9\/_\-\ \(\) ]+/u',
                     $blueprint['Name'],
                     $hits1
                 );

@@ -62,7 +62,7 @@
 </div>
 {if $noarchiv === 1}
     <div class="alert alert-info">{lang key='noNewsArchiv' section='news'}.</div>
-{elseif !empty($oNewsUebersicht_arr)}
+{elseif !empty($newsItems)}
     <div id="newsContent" itemprop="mainEntity" itemscope itemtype="https://schema.org/Blog">
         {if $oNewsCat->getID() > 0}
             {opcMountPoint id='opc_before_news_category_heading'}
@@ -79,7 +79,7 @@
             {include file='snippets/pagination.tpl' oPagination=$oPagination cThisUrl='news.php' parts=['label']}
         {/if}
         {opcMountPoint id='opc_before_news_list'}
-        {foreach $oNewsUebersicht_arr as $oNewsUebersicht}
+        {foreach $newsItems as $newsItem}
             {include file='blog/preview.tpl'}
         {/foreach}
     </div>

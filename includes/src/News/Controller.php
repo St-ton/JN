@@ -244,6 +244,7 @@ class Controller
             ? $category->buildMetaKeywords()
             : $metaKeywords;
         $this->smarty->assign('oNewsUebersicht_arr', $items)
+                     ->assign('newsItems', $items)
                      ->assign('noarchiv', 0)
                      ->assign('oNewsKategorie_arr', $this->getAllNewsCategories(true))
                      ->assign('nSort', $_SESSION['NewsNaviFilter']->nSort)

@@ -162,7 +162,7 @@ class MediaImageRequest
     public function getPath(): ?string
     {
         if (empty($this->path)) {
-            $this->path = $this->getPathById();
+            $this->path = $this->getPathByID();
         }
 
         return $this->path;
@@ -174,7 +174,7 @@ class MediaImageRequest
     public function getSourcePath(): ?string
     {
         if (empty($this->sourcePath)) {
-            $this->sourcePath = $this->getPathById();
+            $this->sourcePath = $this->getPathByID();
         }
 
         return $this->sourcePath;
@@ -261,7 +261,7 @@ class MediaImageRequest
     /**
      * @return string|null
      */
-    public function getPathById(): ?string
+    public function getPathByID(): ?string
     {
         if (($path = $this->cachedPath()) !== null) {
             return $path;

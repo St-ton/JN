@@ -233,9 +233,9 @@
                                         data-actions-box="true">
                                     <option value="-1" {if $gesetzteKundengruppen.alle}selected{/if}>{__('all')}</option>
                                     <option data-divider="true"></option>
-                                    {foreach $kundengruppen as $oKundengruppe}
-                                        {assign var=klasse value=$oKundengruppe->kKundengruppe}
-                                        <option value="{$oKundengruppe->kKundengruppe}" {if isset($gesetzteKundengruppen.$klasse) && $gesetzteKundengruppen.$klasse}selected{/if}>{$oKundengruppe->cName}</option>
+                                    {foreach $customerGroups as $customerGroup}
+                                        {assign var=classID value=$customerGroup->getID()}
+                                        <option value="{$classID}" {if isset($gesetzteKundengruppen.$classID) && $gesetzteKundengruppen.$classID}selected{/if}>{$customerGroup->getName()}</option>
                                     {/foreach}
                                 </select>
                             </div>

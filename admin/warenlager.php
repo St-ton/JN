@@ -53,7 +53,7 @@ if ($action === 'update') {
 }
 
 if ($step === 'uebersicht') {
-    $smarty->assign('oWarenlager_arr', Warehouse::getAll(false, true));
+    $smarty->assign('warehouses', Warehouse::getAll(false, true));
 }
 
 $smarty->assign('step', $step)

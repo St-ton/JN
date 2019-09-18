@@ -5,6 +5,7 @@
  */
 
 use JTL\Alert\Alert;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
@@ -536,12 +537,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             ->assign('oUmfrage_arr', $surveys)
             ->assign('pagination', $pagination);
     }
-    $customerGroups = $db->query(
-        'SELECT kKundengruppe, cName
-            FROM tkundengruppe
-            ORDER BY cStandard DESC',
-        ReturnType::ARRAY_OF_OBJECTS
-    );
     $langData       = $db->select('tsprache', 'kSprache', (int)$_SESSION['kSprache']);
     $coupons        = $db->queryPrepared(
         "SELECT tkupon.kKupon, tkuponsprache.cName
@@ -558,7 +553,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
         ReturnType::ARRAY_OF_OBJECTS
     );
 
-    $smarty->assign('oKundengruppe_arr', $customerGroups)
+    $smarty->assign('customerGroups', CustomerGroup::getGroups())
         ->assign('oKupon_arr', $coupons);
 } else {
     $smarty->assign('noModule', true);

@@ -173,7 +173,7 @@ final class PaymentMethods extends AbstractItem
                     return InstallCode::INVALID_PAYMENT_METHOD_NAME_LOCALIZED;
                 }
                 \preg_match(
-                    '/[\w0-9' . "\.\,\!\"\§\$\%\&\/\(\)\=\`\´\+\~\*\'\;\-\_\?\{\}\[\] ]+/u",
+                    '/[\w.,!"§$%&\/()=`´+~*\';\-?{}\[\] ]+/u',
                     $localized['Name'],
                     $hits1
                 );

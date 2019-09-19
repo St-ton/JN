@@ -125,7 +125,7 @@ final class FrontendLinks extends AbstractItem
                         return InstallCode::INVALID_FRONEND_LINK_SEO;
                     }
                     \preg_match(
-                        '/[\w0-9\- ]+/u',
+                        '/[\w\- ]+/u',
                         $localized['Name'],
                         $hits1
                     );
@@ -134,7 +134,7 @@ final class FrontendLinks extends AbstractItem
                         return InstallCode::INVALID_FRONEND_LINK_NAME;
                     }
                     \preg_match(
-                        '/[\w0-9\- ]+/u',
+                        '/[\w0-9\,\.\;\- ]+/u',
                         $localized['Title'],
                         $hits1
                     );
@@ -143,7 +143,7 @@ final class FrontendLinks extends AbstractItem
                         return InstallCode::INVALID_FRONEND_LINK_TITLE;
                     }
                     \preg_match(
-                        '/[\w0-9\,\.\- ]+/u',
+                        '/[\w0-9\,\.\;\- ]+/u',
                         $localized['MetaTitle'],
                         $hits1
                     );
@@ -152,7 +152,7 @@ final class FrontendLinks extends AbstractItem
                         return InstallCode::INVALID_FRONEND_LINK_META_TITLE;
                     }
                     \preg_match(
-                        '/[\w0-9\,\- ]+/u',
+                        '/[\w,\- ]+/u',
                         $localized['MetaKeywords'],
                         $hits1
                     );
@@ -161,7 +161,7 @@ final class FrontendLinks extends AbstractItem
                         return InstallCode::INVALID_FRONEND_LINK_META_KEYWORDS;
                     }
                     \preg_match(
-                        '/[\w0-9\,\.\- ]+/u',
+                        '/[\w\,\.\;\- ]+/u',
                         $localized['MetaDescription'],
                         $hits1
                     );

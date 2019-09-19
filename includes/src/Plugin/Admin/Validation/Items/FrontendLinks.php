@@ -134,7 +134,7 @@ final class FrontendLinks extends AbstractItem
                         return InstallCode::INVALID_FRONEND_LINK_NAME;
                     }
                     \preg_match(
-                        '/[\w0-9\,\.\;\- ]+/u',
+                        '/[\w\,\.\;\- ]+/u',
                         $localized['Title'],
                         $hits1
                     );
@@ -143,7 +143,7 @@ final class FrontendLinks extends AbstractItem
                         return InstallCode::INVALID_FRONEND_LINK_TITLE;
                     }
                     \preg_match(
-                        '/[\w0-9\,\.\;\- ]+/u',
+                        '/[\w\,\.\;\- ]+/u',
                         $localized['MetaTitle'],
                         $hits1
                     );

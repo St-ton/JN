@@ -7,7 +7,6 @@
 namespace JTL\Filter;
 
 use JTL\Media\MultiSizeImage;
-use JTL\Shop;
 
 /**
  * Class Option

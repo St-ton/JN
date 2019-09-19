@@ -6,7 +6,6 @@
 
 namespace JTL\OPC;
 
-use Intervention\Image\ImageManager;
 use JTL\Helpers\GeneralObject;
 use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;

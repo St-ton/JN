@@ -447,7 +447,7 @@ class DBMigrationHelper
                     $col->COLUMN_TYPE = 'MEDIUMTEXT';
                 }
 
-                if ($col->DATA_TYPE === 'tinyint' && strpos($col->COLUMN_NAME, 'k') === 0) {
+                if ($col->DATA_TYPE === 'tinyint' && \strpos($col->COLUMN_NAME, 'k') === 0) {
                     $col->COLUMN_TYPE = 'INT(10) UNSIGNED';
                     $characterSet = '';
                 }

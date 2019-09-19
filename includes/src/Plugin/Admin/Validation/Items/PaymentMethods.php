@@ -58,7 +58,7 @@ final class PaymentMethods extends AbstractItem
                 continue;
             }
             \preg_match(
-                '/[\w0-9' . "\.\,\!\"\§\$\%\&\/\(\)\=\`\´\+\~\*\'\;\-\_\?\{\}\[\] ]+/u",
+                '/[\w.,!"§$%&\/()=`´+~*\';\-?{}\[\] ]+/u',
                 $method['Name'],
                 $hits1
             );

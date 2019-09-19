@@ -113,7 +113,6 @@
 
 {if $Suchergebnisse->getProducts()|@count <= 0 && isset($KategorieInhalt)}
     {if isset($KategorieInhalt->TopArtikel->elemente) && $KategorieInhalt->TopArtikel->elemente|@count > 0}
-        {$KategorieInhalt->TopArtikel->elemente|var_dump}
         {opcMountPoint id='opc_before_category_top'}
         {lang key='topOffer' section='global' assign='slidertitle'}
         {include file='snippets/product_slider.tpl' id='slider-top-products' productlist=$KategorieInhalt->TopArtikel->elemente title=$slidertitle}

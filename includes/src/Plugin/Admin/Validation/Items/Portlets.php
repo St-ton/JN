@@ -39,7 +39,7 @@ final class Portlets extends AbstractItem
             \preg_match('/[0-9]+/', $i, $hits2);
             if (\mb_strlen($hits2[0]) === \mb_strlen($i)) {
                 \preg_match(
-                    '/[\w0-9\/_\-\(\) ]+/u',
+                    '/[\w\/\-() ]+/u',
                     $portlet['Title'],
                     $hits1
                 );

@@ -16,7 +16,6 @@ use JTL\Plugin\InstallCode;
 use JTL\Plugin\LegacyPluginLoader;
 use JTL\Plugin\PluginInterface;
 use JTL\Plugin\PluginLoader;
-use JTL\Shop;
 
 /**
  * Class Uninstaller

@@ -349,11 +349,11 @@ final class Customer extends AbstractSync
     }
 
     /**
-     * @param CustomerCustomerClass $customer
-     * @param array    $customerAttributes
+     * @param CustomerClass $customer
+     * @param array         $customerAttributes
      * @return int
      */
-    private function addNewCustomer(CustomerCustomerClass $customer, array $customerAttributes): int
+    private function addNewCustomer(CustomerClass $customer, array $customerAttributes): int
     {
         $passwordService             = Shop::Container()->getPasswordService();
         $customer->dErstellt         = 'NOW()';
@@ -388,8 +388,13 @@ final class Customer extends AbstractSync
      * @param array    $res
      * @return array
      */
-    private function merge(CustomerClass $customer, CustomerClass $oldCustomer, int $kInetKunde, array $customerAttributes, array $res): array
-    {
+    private function merge(
+        CustomerClass $customer,
+        CustomerClass $oldCustomer,
+        int $kInetKunde,
+        array $customerAttributes,
+        array $res
+    ): array {
         // Angaben vom alten Kunden übernehmen
         $customer->kKunde      = $kInetKunde;
         $customer->cAbgeholt   = 'Y';

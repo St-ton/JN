@@ -9,7 +9,6 @@ namespace JTL\Plugin\Admin\Validation\Items;
 use JTL\Helpers\GeneralObject;
 use JTL\Plugin\Admin\InputType;
 use JTL\Plugin\InstallCode;
-use JTL\Shop;
 
 /**
  * Class PaymentMethods

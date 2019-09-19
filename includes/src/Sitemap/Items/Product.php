@@ -8,7 +8,7 @@ namespace JTL\Sitemap\Items;
 
 use JTL\Helpers\URL;
 use JTL\Media\Image;
-use JTL\Media\Image\Product;
+use JTL\Media\Image\Product as ProductImage;
 
 /**
  * Class Product
@@ -24,8 +24,8 @@ final class Product extends AbstractItem
         if ($this->config['sitemap']['sitemap_googleimage_anzeigen'] !== 'Y') {
             return;
         }
-        if (($number = Product::getPrimaryNumber(Image::TYPE_PRODUCT, $this->data->kArtikel)) !== null) {
-            $googleImage = Product::getThumb(
+        if (($number = ProductImage::getPrimaryNumber(Image::TYPE_PRODUCT, $this->data->kArtikel)) !== null) {
+            $googleImage = ProductImage::getThumb(
                 Image::TYPE_PRODUCT,
                 $this->data->kArtikel,
                 $this->data,

@@ -141,7 +141,7 @@ interface MethodInterface
      * @param int    $level
      * @return static
      */
-    public function doLog(string $msg, int $level = LOGLEVEL_NOTICE);
+    public function doLog(string $msg, int $level = \LOGLEVEL_NOTICE);
 
     /**
      * @param int $customerID

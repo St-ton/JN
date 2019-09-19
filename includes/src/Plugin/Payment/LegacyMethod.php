@@ -258,7 +258,7 @@ class LegacyMethod
      * @param int    $level
      * @return static
      */
-    public function doLog($msg, $level = LOGLEVEL_NOTICE)
+    public function doLog($msg, $level = \LOGLEVEL_NOTICE)
     {
         $this->methodInstance->doLog($msg, $level);
 

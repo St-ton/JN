@@ -10,7 +10,6 @@ use JTL\Catalog\Product\Artikel;
 use JTL\Helpers\Text;
 use JTL\Services\JTL\LinkService;
 use JTL\Session\Frontend;
-use JTL\Shop;
 
 /**
  * Class CompareList

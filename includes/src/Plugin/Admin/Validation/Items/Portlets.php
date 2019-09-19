@@ -57,7 +57,7 @@ final class Portlets extends AbstractItem
                     return InstallCode::INVALID_PORTLET_CLASS;
                 }
                 \preg_match(
-                    '/[\w0-9\/_\-\(\) ]+/u',
+                    '/[\w\/\-() ]+/u',
                     $portlet['Group'],
                     $hits1
                 );

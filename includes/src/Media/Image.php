@@ -7,6 +7,7 @@
 namespace JTL\Media;
 
 use Exception;
+use Imagick;
 use Intervention\Image\Constraint;
 use Intervention\Image\Image as InImage;
 use Intervention\Image\ImageManager;
@@ -333,6 +334,7 @@ class Image
             'settings' => $settings,
             'path'     => $thumbnail
         ]);
+        echo '<br>rendered $thumbnail: ' . $thumbnail;
         $img->save($thumbnail, $settings['quality'], $req->getExt());
         if ($streamOutput) {
             echo $img->response($req->getExt());
@@ -429,5 +431,18 @@ class Image
     public static function getImageDriver(): string
     {
         return \extension_loaded('imagick') ? 'imagick' : 'gd';
+    }
+
+    /**
+     * @return bool
+     */
+    public static function hasWebPSupport(): bool
+    {
+        if (self::getSettings()['format'] !== 'auto') {
+            return false;
+        }
+        return self::getImageDriver() === 'imagick'
+            ? \count(Imagick::queryFormats('WEBP')) > 0
+            : \gd_info()['WebP Support'] ?? false;
     }
 }

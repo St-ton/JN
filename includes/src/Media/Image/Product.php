@@ -40,7 +40,7 @@ class Product extends AbstractImage
             UNION SELECT asp.kArtikel, asp.cName, asp.cSeo, a.cArtNr, a.cBarcode
                 FROM tartikelsprache AS asp JOIN tartikel AS a ON asp.kArtikel = a.kArtikel
                 WHERE asp.kArtikel = :pid',
-            ['pid' => $req->id],
+            ['pid' => $req->getID()],
             ReturnType::ARRAY_OF_OBJECTS
         );
     }

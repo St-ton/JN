@@ -54,7 +54,7 @@ class ConfigGroup extends AbstractImage
                 JOIN tkonfiggruppesprache t 
                     ON a.kKonfiggruppe = t.kKonfiggruppe
                 WHERE a.kKonfiggruppe = :cid',
-            ['cid' => $req->id],
+            ['cid' => $req->getID()],
             ReturnType::ARRAY_OF_OBJECTS
         );
     }

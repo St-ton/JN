@@ -56,11 +56,11 @@ class NewsCategory extends AbstractImage
                 LEFT JOIN tnewskategoriesprache t
                     ON a.kNewsKategorie = t.kNewsKategorie
                 WHERE a.kNewsKategorie = :nid',
-            ['nid' => $req->id],
+            ['nid' => $req->getID()],
             ReturnType::ARRAY_OF_OBJECTS
         );
         if (!empty($names[0]->path)) {
-            $req->sourcePath = \str_replace(\PFAD_NEWSKATEGORIEBILDER, '', $names[0]->path);
+            $req->setSourcePath(\str_replace(\PFAD_NEWSKATEGORIEBILDER, '', $names[0]->path));
         }
 
         return $names;

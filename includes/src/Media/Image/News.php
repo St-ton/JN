@@ -57,11 +57,11 @@ class News extends AbstractImage
                 LEFT JOIN tnewssprache t
                     ON a.kNews = t.kNews
                 WHERE a.kNews = :nid',
-            ['nid' => $req->id],
+            ['nid' => $req->getID()],
             ReturnType::ARRAY_OF_OBJECTS
         );
         if (!empty($names[0]->path)) {
-            $req->sourcePath = \str_replace(\PFAD_NEWSBILDER, '', $names[0]->path);
+            $req->setSourcePath(\str_replace(\PFAD_NEWSBILDER, '', $names[0]->path));
         }
 
         return $names;

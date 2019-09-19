@@ -55,7 +55,7 @@ class Category extends AbstractImage
                 UNION SELECT asp.kKategorie, asp.cName, asp.cSeo
                     FROM tkategoriesprache AS asp JOIN tkategorie AS a ON asp.kKategorie = a.kKategorie
                     WHERE asp.kKategorie = :cid',
-            ['cid' => $req->id],
+            ['cid' => $req->getID()],
             ReturnType::ARRAY_OF_OBJECTS
         );
     }

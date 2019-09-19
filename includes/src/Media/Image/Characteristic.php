@@ -54,11 +54,11 @@ class Characteristic extends AbstractImage
                 LEFT JOIN tmerkmalsprache t
                     ON a.kMerkmal = t.kMerkmal
                 WHERE a.kMerkmal = :cid',
-            ['cid' => $req->id],
+            ['cid' => $req->getID()],
             ReturnType::ARRAY_OF_OBJECTS
         );
         if (!empty($names[0]->path)) {
-            $req->sourcePath = $names[0]->path;
+            $req->setSourcePath($names[0]->path);
         }
 
         return $names;

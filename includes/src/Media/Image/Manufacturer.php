@@ -52,11 +52,11 @@ class Manufacturer extends AbstractImage
             'SELECT kHersteller, cName, cSeo, cBildpfad AS path
                 FROM thersteller
                 WHERE kHersteller = :mid',
-            ['mid' => $req->id],
+            ['mid' => $req->getID()],
             ReturnType::ARRAY_OF_OBJECTS
         );
         if (!empty($names[0]->path)) {
-            $req->sourcePath = $names[0]->path;
+            $req->setSourcePath($names[0]->path);
         }
 
         return $names;

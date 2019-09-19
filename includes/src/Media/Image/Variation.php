@@ -53,11 +53,11 @@ class Variation extends AbstractImage
                 JOIN teigenschaftwert t
                     ON p.kEigenschaftWert = t.kEigenschaftWert
                 WHERE p.kEigenschaftWert = :vid',
-            ['vid' => $req->id],
+            ['vid' => $req->getID()],
             ReturnType::ARRAY_OF_OBJECTS
         );
         if (!empty($names[0]->path)) {
-            $req->sourcePath = $names[0]->path;
+            $req->setSourcePath($names[0]->path);
         }
 
         return $names;

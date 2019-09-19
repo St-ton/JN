@@ -9,6 +9,7 @@ namespace JTL\Media\Image;
 use Exception;
 use FilesystemIterator;
 use Generator;
+use Imagick;
 use JTL\DB\DbInterface;
 use JTL\Media\Image;
 use JTL\Media\IMedia;
@@ -269,38 +270,42 @@ abstract class AbstractImage implements IMedia
         $result   = [];
         $rawImage = null;
         $rawPath  = $req->getRaw();
+        $extensions = [$req->getExt()];
+        if (Image::hasWebPSupport()) {
+            $extensions[] = 'webp';
+        }
         if ($overwrite === true) {
             static::clearCache($req->getID());
         }
-        foreach (Image::getAllSizes() as $size) {
-            $res = (object)[
-                'success'    => true,
-                'error'      => null,
-                'renderTime' => 0,
-                'cached'     => false,
-            ];
-            try {
-                $req->size   = $size;
-                $thumbPath   = $req->getThumb(null, true);
-                $res->cached = \is_file($thumbPath);
-                if ($res->cached === false) {
-                    $renderStart = \microtime(true);
-                    if ($rawImage === null && ($rawPath !== null && !\is_file($rawPath))) {
-                        throw new Exception(\sprintf('Image source "%s" does not exist', $rawPath));
+        foreach ($extensions as $extension) {
+            $req->setExt($extension);
+            foreach (Image::getAllSizes() as $size) {
+                $res = (object)[
+                    'success'    => true,
+                    'error'      => null,
+                    'renderTime' => 0,
+                    'cached'     => false,
+                ];
+                try {
+                    $req->setSizeType($size);
+                    $thumbPath   = $req->getThumb(null, true);
+                    $res->cached = \is_file($thumbPath);
+                    if ($res->cached === false) {
+                        $renderStart = \microtime(true);
+                        if ($rawImage === null && ($rawPath !== null && !\is_file($rawPath))) {
+                            throw new Exception(\sprintf('Image source "%s" does not exist', $rawPath));
+                        }
+                        Image::render($req);
+                        $res->renderTime = (\microtime(true) - $renderStart) * 1000;
                     }
-                    Image::render($req);
-                    $res->renderTime = (\microtime(true) - $renderStart) * 1000;
+                } catch (Exception $e) {
+                    $res->success = false;
+                    $res->error   = $e->getMessage();
                 }
-            } catch (Exception $e) {
-                $res->success = false;
-                $res->error   = $e->getMessage();
+                $result[$size] = $res;
             }
-            $result[$size] = $res;
         }
-
-        if ($rawImage !== null) {
-            unset($rawImage);
-        }
+        unset($rawImage);
 
         return $result;
     }

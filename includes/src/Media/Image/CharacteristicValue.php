@@ -54,11 +54,11 @@ class CharacteristicValue extends AbstractImage
                 LEFT JOIN tmerkmalwertsprache t
                     ON a.kMerkmalWert = t.kMerkmalWert
                 WHERE a.kMerkmalWert = :cid',
-            ['cid' => $req->id],
+            ['cid' => $req->getID()],
             ReturnType::ARRAY_OF_OBJECTS
         );
         if (!empty($names[0]->path)) {
-            $req->sourcePath = $names[0]->path;
+            $req->setSourcePath($names[0]->path);
         }
 
         return $names;

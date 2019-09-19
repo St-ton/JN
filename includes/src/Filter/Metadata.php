@@ -560,7 +560,7 @@ class Metadata implements MetadataInterface
         // sanitize and lowercase text
         $text = \StringHandler::removeDoubleSpaces(
             \preg_replace(
-                '/[^\w0-9-]/u',
+                '/[^[:alpha:]\d\-]/u',
                 ' ',
                 \StringHandler::htmlentitydecode(\strtolower(\strip_tags($text)))
             )

@@ -46,7 +46,7 @@ final class FrontendLinks extends AbstractItem
                 return InstallCode::INVALID_FRONTEND_LINK_FILENAME;
             }
             \preg_match(
-                '/[\w0-9' . '\_\- ]+/u',
+                '/[\w\- ]+/u',
                 $link['Name'],
                 $hits1
             );

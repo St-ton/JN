@@ -5,6 +5,7 @@
  */
 
 use JTL\Alert\Alert;
+use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Shop;
@@ -50,14 +51,6 @@ if (Request::verifyGPCDataInt('agbwrb') === 1 && Form::validateToken()) {
 }
 
 if ($step === 'agbwrb_uebersicht') {
-    // Kundengruppen holen
-    $customerGroups = Shop::Container()->getDB()->selectAll(
-        'tkundengruppe',
-        [],
-        [],
-        'kKundengruppe, cName',
-        'cStandard DESC'
-    );
     // AGB fuer jeweilige Sprache holen
     $agbWrb = [];
     $data   = Shop::Container()->getDB()->selectAll('ttext', 'kSprache', (int)$_SESSION['kSprache']);
@@ -65,7 +58,7 @@ if ($step === 'agbwrb_uebersicht') {
     foreach ($data as $item) {
         $agbWrb[(int)$item->kKundengruppe] = $item;
     }
-    $smarty->assign('oKundengruppe_arr', $customerGroups)
+    $smarty->assign('customerGroups', CustomerGroup::getGroups())
            ->assign('oAGBWRB_arr', $agbWrb);
 }
 

@@ -6,6 +6,9 @@
 
 namespace JTL\Filter;
 
+use JTL\Media\MultiSizeImage;
+use JTL\Shop;
+
 /**
  * Class Option
  *
@@ -26,6 +29,8 @@ namespace JTL\Filter;
  */
 class Option extends AbstractFilter
 {
+    use MultiSizeImage;
+
     /**
      * @var string
      */

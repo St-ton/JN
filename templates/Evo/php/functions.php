@@ -19,7 +19,7 @@ use JTL\Helpers\Manufacturer;
 use JTL\Helpers\Seo;
 use JTL\Helpers\Tax;
 use JTL\Media\Image;
-use JTL\Media\MediaImage;
+use JTL\Media\Image\Product;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Staat;
@@ -571,11 +571,14 @@ function prepare_image_details($params, $smarty)
  */
 function get_image_size($image)
 {
+    if (mb_strpos($image, 'http') === 0) {
+        return null;
+    }
     $path = mb_strpos($image, PFAD_BILDER) === 0
         ? PFAD_ROOT . $image
         : $image;
     if (!file_exists($path)) {
-        $req = MediaImage::toRequest($path);
+        $req = Product::toRequest($path);
 
         if (!is_object($req)) {
             return null;

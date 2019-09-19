@@ -6,6 +6,7 @@
 
 use JTL\Alert\Alert;
 use JTL\ContentAuthor;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
@@ -296,22 +297,11 @@ if (!empty($_SESSION['news.cHinweis'])) {
     unset($_SESSION['news.cHinweis']);
 }
 
-$maxFileSize    = getMaxFileSize(ini_get('upload_max_filesize'));
-$customerGroups = map($db->query(
-    'SELECT kKundengruppe, cName
-        FROM tkundengruppe
-        ORDER BY cStandard DESC',
-    ReturnType::ARRAY_OF_OBJECTS
-), function ($e) {
-    $e->kKundengruppe = (int)$e->kKundengruppe;
-
-    return $e;
-});
-
+$maxFileSize = getMaxFileSize(ini_get('upload_max_filesize'));
 Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $controller->getMsg(), 'newsMessage');
 Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, $controller->getErrorMsg(), 'newsError');
 
-$smarty->assign('oKundengruppe_arr', $customerGroups)
+$smarty->assign('customerGroups', CustomerGroup::getGroups())
        ->assign('step', $controller->getStep())
        ->assign('nMaxFileSize', $maxFileSize)
        ->assign('kSprache', (int)$_SESSION['kSprache'])

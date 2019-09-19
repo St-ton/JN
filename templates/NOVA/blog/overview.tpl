@@ -101,7 +101,7 @@
                 {alert variant="info"}{lang key='noNewsArchiv' section='news'}.{/alert}
                 {/container}
             {/block}
-        {elseif !empty($oNewsUebersicht_arr)}
+        {elseif !empty($newsItems)}
             {container}
                 <div id="newsContent" itemprop="mainEntity" itemscope itemtype="https://schema.org/Blog">
                     {if $oNewsCat->getID() > 0}
@@ -113,7 +113,7 @@
                             {row}
                                 {if !empty($oNewsCat->getPreviewImage())}
                                     {col cols=12 sm=8}{$oNewsCat->getDescription()}{/col}
-                                    {col cols=12 sm=4}{image src=$oNewsCat->getPreviewImage() center=true fluid=true}{/col}
+                                    {col cols=12 sm=4}{image src=$oNewsCat->getImage(\JTL\Media\Image::SIZE_MD) center=true fluid=true}{/col}
                                 {else}
                                     {col sm=12}{$oNewsCat->getDescription()}{/col}
                                 {/if}
@@ -127,7 +127,7 @@
                     {opcMountPoint id='opc_before_news_list'}
                     {row class="mt-4"}
                         {block name='blog-overview-previews'}
-                            {foreach $oNewsUebersicht_arr as $oNewsUebersicht}
+                            {foreach $newsItems as $newsItem}
                                 {col cols=12 md=6 lg=4}
                                     {block name='blog-overview-include-preview'}
                                         {include file='blog/preview.tpl'}

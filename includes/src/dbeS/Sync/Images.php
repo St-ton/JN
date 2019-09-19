@@ -8,6 +8,7 @@ namespace JTL\dbeS\Sync;
 
 use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
+use JTL\Media\Image;
 use JTL\Shop;
 use stdClass;
 
@@ -228,12 +229,12 @@ final class Images extends AbstractSync
             if (empty($item->cBildPfad)) {
                 continue;
             }
-            $imgFilename = $item->cBildPfad;
-            $format      = $this->getExtension($this->unzipPath . $imgFilename);
+            $original = $this->unzipPath . $item->cBildPfad;
+            $format   = $this->getExtension($original);
             if (!$format) {
                 $this->logger->error(
                     'Bildformat des Konfiggruppenbildes konnte nicht ermittelt werden. Datei ' .
-                    $imgFilename . ' keine Bilddatei?'
+                    $original . ' keine Bilddatei?'
                 );
                 continue;
             }
@@ -243,10 +244,10 @@ final class Images extends AbstractSync
             $branding                               = new stdClass();
             $branding->oBrandingEinstellung         = new stdClass();
             $branding->oBrandingEinstellung->nAktiv = 0;
-
+            \copy($original, \PFAD_ROOT . \STORAGE_CONFIGGROUPS . $image->cPfad);
             if ($this->createThumbnail(
                 $branding,
-                $this->unzipPath . $imgFilename,
+                $original,
                 \PFAD_KONFIGURATOR_KLEIN . $item->cBildPfad,
                 $this->config['bilder']['bilder_konfiggruppe_klein_breite'],
                 $this->config['bilder']['bilder_konfiggruppe_klein_hoehe'],
@@ -261,7 +262,7 @@ final class Images extends AbstractSync
                     (object)['cBildPfad' => $item->cBildPfad]
                 );
             }
-            \unlink($this->unzipPath . $imgFilename);
+            \unlink($original);
         }
     }
 
@@ -275,20 +276,21 @@ final class Images extends AbstractSync
             if (empty($image->cPfad) || $image->kMerkmalWert <= 0) {
                 continue;
             }
-            $fileName = $image->cPfad;
-            $format   = $this->getExtension($this->unzipPath . $fileName);
+            $original = $this->unzipPath . $image->cPfad;
+            $format   = $this->getExtension($original);
             if (!$format) {
                 $this->logger->error(
                     'Bildformat des Merkmalwertbildes konnte nicht ermittelt werden. Datei ' .
-                    $fileName . ' keine Bilddatei?'
+                    $original . ' keine Bilddatei?'
                 );
                 continue;
             }
             $image->cPfad .= '.' . $format;
             $image->cPfad  = $this->getNewFilename($image->cPfad);
+            \copy($original, \PFAD_ROOT . \STORAGE_CHARACTERISTIC_VALUES . $image->cPfad);
             $this->createThumbnail(
-                $this->brandingConfig['Merkmalwerte'],
-                $this->unzipPath . $fileName,
+                $this->brandingConfig[Image::TYPE_CHARACTERISTIC_VALUE],
+                $original,
                 \PFAD_MERKMALWERTBILDER_NORMAL . $image->cPfad,
                 $this->config['bilder']['bilder_merkmalwert_normal_breite'],
                 $this->config['bilder']['bilder_merkmalwert_normal_hoehe'],
@@ -297,7 +299,7 @@ final class Images extends AbstractSync
                 $this->config['bilder']['container_verwenden']
             );
             if ($this->createBrandedThumbnail(
-                \PFAD_ROOT . \PFAD_MERKMALWERTBILDER_NORMAL . $image->cPfad,
+                $original,
                 \PFAD_MERKMALWERTBILDER_KLEIN . $image->cPfad,
                 $this->config['bilder']['bilder_merkmalwert_klein_breite'],
                 $this->config['bilder']['bilder_merkmalwert_klein_hoehe'],
@@ -316,7 +318,7 @@ final class Images extends AbstractSync
 
                 $this->upsert('tmerkmalwertbild', [$charValImage], 'kMerkmalWert');
             }
-            \unlink($this->unzipPath . $fileName);
+            \unlink($original);
         }
     }
 
@@ -330,20 +332,21 @@ final class Images extends AbstractSync
             if (empty($image->cPfad) || $image->kMerkmal <= 0) {
                 continue;
             }
-            $imgFilename = $image->cPfad;
-            $format      = $this->getExtension($this->unzipPath . $imgFilename);
+            $original = $this->unzipPath . $image->cPfad;
+            $format   = $this->getExtension($original);
             if (!$format) {
                 $this->logger->error(
                     'Bildformat des Merkmalbildes konnte nicht ermittelt werden. Datei ' .
-                    $imgFilename . ' keine Bilddatei?'
+                    $original . ' keine Bilddatei?'
                 );
                 continue;
             }
             $image->cPfad .= '.' . $format;
             $image->cPfad  = $this->getNewFilename($image->cPfad);
+            \copy($original, \PFAD_ROOT . \STORAGE_CHARACTERISTICS . $image->cPfad);
             $this->createThumbnail(
-                $this->brandingConfig['Merkmale'],
-                $this->unzipPath . $imgFilename,
+                $this->brandingConfig[Image::TYPE_CHARACTERISTIC],
+                $original,
                 \PFAD_MERKMALBILDER_NORMAL . $image->cPfad,
                 $this->config['bilder']['bilder_merkmal_normal_breite'],
                 $this->config['bilder']['bilder_merkmal_normal_hoehe'],
@@ -352,7 +355,7 @@ final class Images extends AbstractSync
                 $this->config['bilder']['container_verwenden']
             );
             if ($this->createBrandedThumbnail(
-                \PFAD_ROOT . \PFAD_MERKMALBILDER_NORMAL . $image->cPfad,
+                $original,
                 \PFAD_MERKMALBILDER_KLEIN . $image->cPfad,
                 $this->config['bilder']['bilder_merkmal_klein_breite'],
                 $this->config['bilder']['bilder_merkmal_klein_hoehe'],
@@ -366,7 +369,7 @@ final class Images extends AbstractSync
                     (object)['cBildpfad' => $image->cPfad]
                 );
             }
-            \unlink($this->unzipPath . $imgFilename);
+            \unlink($original);
         }
     }
 
@@ -380,19 +383,20 @@ final class Images extends AbstractSync
             if (empty($image->cPfad) || $image->kHersteller <= 0) {
                 continue;
             }
-            $fileName = $image->cPfad;
-            $format   = $this->getExtension($this->unzipPath . $fileName);
+            $original = $this->unzipPath . $image->cPfad;
+            $format   = $this->getExtension($original);
             if (!$format) {
                 $this->logger->error(
                     'Bildformat des Herstellerbildes konnte nicht ermittelt werden. Datei ' .
-                    $fileName . ' keine Bilddatei?'
+                    $original . ' keine Bilddatei?'
                 );
                 continue;
             }
-            $manufacturer = $this->db->query(
+            $manufacturer = $this->db->queryPrepared(
                 'SELECT cSeo
-                FROM thersteller
-                WHERE kHersteller = ' . (int)$image->kHersteller,
+                    FROM thersteller
+                    WHERE kHersteller = :mid',
+                ['mid' => $image->kHersteller],
                 ReturnType::SINGLE_OBJECT
             );
             if (!empty($manufacturer->cSeo)) {
@@ -401,9 +405,10 @@ final class Images extends AbstractSync
                 $image->cPfad .= '.' . $format;
             }
             $image->cPfad = $this->getNewFilename($image->cPfad);
+            \copy($original, \PFAD_ROOT . \STORAGE_MANUFACTURERS . $image->cPfad);
             $this->createThumbnail(
-                $this->brandingConfig['Hersteller'],
-                $this->unzipPath . $fileName,
+                $this->brandingConfig[Image::TYPE_MANUFACTURER],
+                $original,
                 \PFAD_HERSTELLERBILDER_NORMAL . $image->cPfad,
                 $this->config['bilder']['bilder_hersteller_normal_breite'],
                 $this->config['bilder']['bilder_hersteller_normal_hoehe'],
@@ -412,7 +417,7 @@ final class Images extends AbstractSync
                 $this->config['bilder']['container_verwenden']
             );
             if ($this->createBrandedThumbnail(
-                \PFAD_ROOT . \PFAD_HERSTELLERBILDER_NORMAL . $image->cPfad,
+                $original,
                 \PFAD_HERSTELLERBILDER_KLEIN . $image->cPfad,
                 $this->config['bilder']['bilder_hersteller_klein_breite'],
                 $this->config['bilder']['bilder_hersteller_klein_hoehe'],
@@ -436,7 +441,7 @@ final class Images extends AbstractSync
                 $cacheTags[] = \CACHING_GROUP_ARTICLE . '_' . $product->kArtikel;
             }
             $this->cache->flushTags($cacheTags);
-            \unlink($this->unzipPath . $fileName);
+            \unlink($original);
         }
     }
 
@@ -450,20 +455,21 @@ final class Images extends AbstractSync
             if (empty($image->cPfad)) {
                 continue;
             }
-            $fileName = $image->cPfad;
-            $format   = $this->getExtension($this->unzipPath . $fileName);
+            $original = $this->unzipPath . $image->cPfad;
+            $format   = $this->getExtension($original);
             if (!$format) {
                 $this->logger->error(
                     'Bildformat des Eigenschaftwertbildes konnte nicht ermittelt werden. Datei ' .
-                    $fileName . ' keine Bilddatei?'
+                    $original . ' keine Bilddatei?'
                 );
                 continue;
             }
             $image->cPfad = $this->getPropertiesImageName($image, $format, $sql);
             $image->cPfad = $this->getNewFilename($image->cPfad);
+            \copy($original, \PFAD_ROOT . \STORAGE_VARIATIONS . $image->cPfad);
             $this->createThumbnail(
-                $this->brandingConfig['Variationen'],
-                $this->unzipPath . $fileName,
+                $this->brandingConfig[Image::TYPE_VARIATION],
+                $original,
                 \PFAD_VARIATIONSBILDER_GROSS . $image->cPfad,
                 $this->config['bilder']['bilder_variationen_gross_breite'],
                 $this->config['bilder']['bilder_variationen_gross_hoehe'],
@@ -472,7 +478,7 @@ final class Images extends AbstractSync
                 $this->config['bilder']['container_verwenden']
             );
             $this->createBrandedThumbnail(
-                \PFAD_ROOT . \PFAD_VARIATIONSBILDER_GROSS . $image->cPfad,
+                $original,
                 \PFAD_VARIATIONSBILDER_NORMAL . $image->cPfad,
                 $this->config['bilder']['bilder_variationen_breite'],
                 $this->config['bilder']['bilder_variationen_hoehe'],
@@ -480,7 +486,7 @@ final class Images extends AbstractSync
                 $this->config['bilder']['container_verwenden']
             );
             if ($this->createBrandedThumbnail(
-                \PFAD_ROOT . \PFAD_VARIATIONSBILDER_GROSS . $image->cPfad,
+                $original,
                 \PFAD_VARIATIONSBILDER_MINI . $image->cPfad,
                 $this->config['bilder']['bilder_variationen_mini_breite'],
                 $this->config['bilder']['bilder_variationen_mini_hoehe'],
@@ -489,7 +495,7 @@ final class Images extends AbstractSync
             )) {
                 $this->upsert('teigenschaftwertpict', [$image], 'kEigenschaftWert');
             }
-            \unlink($this->unzipPath . $fileName);
+            \unlink($original);
         }
     }
 
@@ -503,21 +509,21 @@ final class Images extends AbstractSync
             if (empty($image->cPfad)) {
                 continue;
             }
-            $fileName = $image->cPfad;
-            $format   = $this->getExtension($this->unzipPath . $fileName);
+            $original = $this->unzipPath . $image->cPfad;
+            $format   = $this->getExtension($original);
             if (!$format) {
                 $this->logger->error(
                     'Bildformat des Kategoriebildes konnte nicht ermittelt werden. Datei ' .
-                    $fileName . ' keine Bilddatei?'
+                    $original . ' keine Bilddatei?'
                 );
                 continue;
             }
-
             $image->cPfad = $this->getCategoryImageName($image, $format, $sql);
             $image->cPfad = $this->getNewFilename($image->cPfad);
+            \copy($original, \PFAD_ROOT . \STORAGE_CATEGORIES . $image->cPfad);
             if ($this->createThumbnail(
-                $this->brandingConfig['Kategorie'],
-                $this->unzipPath . $fileName,
+                $this->brandingConfig[Image::TYPE_CATEGORY],
+                $original,
                 \PFAD_KATEGORIEBILDER . $image->cPfad,
                 $this->config['bilder']['bilder_kategorien_breite'],
                 $this->config['bilder']['bilder_kategorien_hoehe'],
@@ -527,7 +533,7 @@ final class Images extends AbstractSync
             )) {
                 $this->upsert('tkategoriepict', [$image], 'kKategorie');
             }
-            \unlink($this->unzipPath . $fileName);
+            \unlink($original);
         }
     }
 
@@ -625,9 +631,10 @@ final class Images extends AbstractSync
             $sql
         );
         $image->cPfad = $this->getNewFilename($image->cPfad);
+        $original     = $this->unzipPath . $fileName;
         $this->createThumbnail(
-            $this->brandingConfig['Artikel'],
-            $this->unzipPath . $fileName,
+            $this->brandingConfig[Image::TYPE_PRODUCT],
+            $original,
             \PFAD_PRODUKTBILDER_GROSS . $image->cPfad,
             $config['bilder_artikel_gross_breite'],
             $config['bilder_artikel_gross_hoehe'],
@@ -636,7 +643,7 @@ final class Images extends AbstractSync
             $config['container_verwenden']
         );
         $this->createBrandedThumbnail(
-            \PFAD_ROOT . \PFAD_PRODUKTBILDER_GROSS . $image->cPfad,
+            $original,
             \PFAD_PRODUKTBILDER_NORMAL . $image->cPfad,
             $config['bilder_artikel_normal_breite'],
             $config['bilder_artikel_normal_hoehe'],
@@ -644,7 +651,7 @@ final class Images extends AbstractSync
             $config['container_verwenden']
         );
         $this->createBrandedThumbnail(
-            \PFAD_ROOT . \PFAD_PRODUKTBILDER_GROSS . $image->cPfad,
+            $original,
             \PFAD_PRODUKTBILDER_KLEIN . $image->cPfad,
             $config['bilder_artikel_klein_breite'],
             $config['bilder_artikel_klein_hoehe'],
@@ -652,7 +659,7 @@ final class Images extends AbstractSync
             $config['container_verwenden']
         );
         if ($this->createBrandedThumbnail(
-            $this->unzipPath . $fileName,
+            $original,
             \PFAD_PRODUKTBILDER_MINI . $image->cPfad,
             $config['bilder_artikel_mini_breite'],
             $config['bilder_artikel_mini_hoehe'],
@@ -949,7 +956,7 @@ final class Images extends AbstractSync
     ): int {
         $enlarge          = $this->config['bilder']['bilder_skalieren'] === 'Y';
         $ret              = 0;
-        $format           = $this->config['bilder']['bilder_dateiformat'];//$this->getExtension($imgFilename);
+        $format           = $this->getNewExtension($targetImage);
         [$width, $height] = \getimagesize($imgFilename);
         if ($width > 0 && $height > 0) {
             if (!$enlarge && $width < $targetWidth && $height < $targetheight) {
@@ -1011,7 +1018,7 @@ final class Images extends AbstractSync
     ): int {
         $enlarge = $this->config['bilder']['bilder_skalieren'] === 'Y';
         $ret     = 0;
-        $format  = $this->config['bilder']['bilder_dateiformat'];//$this->getExtension($imgFilename);
+        $format  = $this->getNewExtension($target);
         $im      = $this->imageloadAlpha($imgFilename);
         if (!$im) {
             $this->logger->error('Bild konnte nicht erstellt werden. Datei kein Bild?: ' . $imgFilename);
@@ -1497,6 +1504,19 @@ final class Images extends AbstractSync
     }
 
     /**
+     * @param string|null $sourcePath
+     * @return string
+     */
+    private function getNewExtension(string $sourcePath = null): string
+    {
+        $config = \mb_convert_case($this->config['bilder']['bilder_dateiformat'], \MB_CASE_LOWER);
+
+        return $config === 'auto'
+            ? \pathinfo($sourcePath)['extension'] ?? 'jpg'
+            : $config;
+    }
+
+    /**
      * @param string $img
      * @param int    $width
      * @param int    $height
@@ -1511,12 +1531,10 @@ final class Images extends AbstractSync
             case 1:
                 $im = \imagecreatefromgif($img);
                 break;
-            case 2:
-                $im = \imagecreatefromjpeg($img);
-                break;
             case 3:
                 $im = \imagecreatefrompng($img);
                 break;
+            case 2:
             default:
                 $im = \imagecreatefromjpeg($img);
                 break;
@@ -1529,7 +1547,7 @@ final class Images extends AbstractSync
         $height = (int)\round($height);
         $newImg = \imagecreatetruecolor($containerWidth, $containerHeight);
         // hintergrundfarbe
-        $format = \strtolower($this->config['bilder']['bilder_dateiformat']);
+        $format = $this->getNewExtension($img);
         if ($format === 'jpg') {
             $rgb   = $this->html2rgb($this->config['bilder']['bilder_hintergrundfarbe']);
             $color = \imagecolorallocate($newImg, $rgb[0], $rgb[1], $rgb[2]);
@@ -1563,15 +1581,10 @@ final class Images extends AbstractSync
             case 1:
                 $im = \imagecreatefromgif($img);
                 break;
-
-            case 2:
-                $im = \imagecreatefromjpeg($img);
-                break;
-
             case 3:
                 $im = \imagecreatefrompng($img);
                 break;
-
+            case 2:
             default:
                 $im = \imagecreatefromjpeg($img);
                 break;
@@ -1588,9 +1601,7 @@ final class Images extends AbstractSync
         if (!$newImg) {
             return $im;
         }
-
-        // hintergrundfarbe
-        $format = \strtolower($this->config['bilder']['bilder_dateiformat']);
+        $format = $this->getNewExtension($img);
         if ($format === 'jpg') {
             $rgb   = $this->html2rgb($this->config['bilder']['bilder_hintergrundfarbe']);
             $color = \imagecolorallocate($newImg, $rgb[0], $rgb[1], $rgb[2]);
@@ -1617,7 +1628,7 @@ final class Images extends AbstractSync
      */
     private function getNewFilename(string $path): string
     {
-        $format = \strtolower($this->config['bilder']['bilder_dateiformat']);
+        $format = $this->getNewExtension($path);
         $path   = \substr($path, 0, -3);
 
         return $path . $format;

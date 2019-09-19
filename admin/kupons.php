@@ -6,6 +6,7 @@
 
 use JTL\Alert\Alert;
 use JTL\Checkout\Kupon;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
@@ -134,17 +135,13 @@ if ($action === 'bearbeiten') {
     }
 }
 if ($action === 'bearbeiten') {
-    $taxClasses     = Shop::Container()->getDB()->query(
+    $taxClasses    = Shop::Container()->getDB()->query(
         'SELECT kSteuerklasse, cName FROM tsteuerklasse',
         ReturnType::ARRAY_OF_OBJECTS
     );
-    $customerGroups = Shop::Container()->getDB()->query(
-        'SELECT kKundengruppe, cName FROM tkundengruppe',
-        ReturnType::ARRAY_OF_OBJECTS
-    );
-    $manufacturers  = getManufacturers($coupon->cHersteller);
-    $categories     = getCategories($coupon->cKategorien);
-    $customerIDs    = array_filter(
+    $manufacturers = getManufacturers($coupon->cHersteller);
+    $categories    = getCategories($coupon->cKategorien);
+    $customerIDs   = array_filter(
         Text::parseSSKint($coupon->cKunden),
         function ($customerID) {
             return (int)$customerID > 0;
@@ -162,12 +159,12 @@ if ($action === 'bearbeiten') {
         }
     }
 
-    $smarty->assign('oSteuerklasse_arr', $taxClasses)
-        ->assign('oKundengruppe_arr', $customerGroups)
-        ->assign('oHersteller_arr', $manufacturers)
-        ->assign('oKategorie_arr', $categories)
-        ->assign('kKunde_arr', $customerIDs)
-        ->assign('oKuponName_arr', $names)
+    $smarty->assign('taxClasses', $taxClasses)
+        ->assign('customerGroups', CustomerGroup::getGroups())
+        ->assign('manufacturers', $manufacturers)
+        ->assign('categories', $categories)
+        ->assign('customerIDs', $customerIDs)
+        ->assign('couponNames', $names)
         ->assign('oKupon', $coupon);
 } else {
     // Seite: Uebersicht

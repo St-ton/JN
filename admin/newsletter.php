@@ -231,12 +231,6 @@ if (Form::validateToken()) {
         $smarty->assign('oNewsletterVorlage', $newsletterTPL)
                ->assign('NettoPreise', Frontend::getCustomerGroup()->getIsMerchant());
     } elseif (Request::verifyGPCDataInt('newslettervorlagenstd') === 1) { // Vorlagen Std
-        $customerGroups   = $db->query(
-            'SELECT kKundengruppe, cName
-                FROM tkundengruppe
-                ORDER BY cStandard DESC',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
         $productNos       = $_POST['cArtNr'] ?? null;
         $customerGroupIDs = $_POST['kKundengruppe'] ?? null;
         $groupString      = '';
@@ -246,8 +240,7 @@ if (Form::validateToken()) {
                 $groupString .= ';' . $customerGroupID . ';';
             }
         }
-        $smarty->assign('oKundengruppe_arr', $customerGroups)
-               ->assign('oKampagne_arr', holeAlleKampagnen(false, true))
+        $smarty->assign('oKampagne_arr', holeAlleKampagnen(false, true))
                ->assign('cTime', time());
         // Vorlage speichern
         if (Request::verifyGPCDataInt('vorlage_std_speichern') === 1) {
@@ -321,15 +314,7 @@ if (Form::validateToken()) {
         }
     } elseif (Request::verifyGPCDataInt('newslettervorlagen') === 1) {
         // Vorlagen
-        $customerGroups = $db->query(
-            'SELECT kKundengruppe, cName
-                FROM tkundengruppe
-                ORDER BY cStandard DESC',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-        $smarty->assign('oKundengruppe_arr', $customerGroups)
-               ->assign('oKampagne_arr', holeAlleKampagnen(false, true));
-
+        $smarty->assign('oKampagne_arr', holeAlleKampagnen(false, true));
         $productNos       = $_POST['cArtNr'] ?? null;
         $customerGroupIDs = $_POST['kKundengruppe'] ?? null;
         $groupString      = '';
@@ -639,12 +624,6 @@ if ($step === 'uebersicht') {
     $pagiSubscriptions = (new Pagination('alle'))
         ->setItemCount($admin->getSubscriberCount($activeSearchSQL))
         ->assemble();
-    $customerGroups    = $db->query(
-        'SELECT kKundengruppe, cName
-            FROM tkundengruppe
-            ORDER BY cStandard DESC',
-        ReturnType::ARRAY_OF_OBJECTS
-    );
     $queue             = $db->queryPrepared(
         "SELECT
             l.cBetreff,
@@ -738,7 +717,6 @@ if ($step === 'uebersicht') {
         ReturnType::ARRAY_OF_OBJECTS
     );
     $smarty->assign('kundengruppen', $customerGroupsByName)
-           ->assign('oKundengruppe_arr', $customerGroups)
            ->assign('oNewsletterQueue_arr', $queue)
            ->assign('oNewsletterVorlage_arr', $templates)
            ->assign('oNewslettervorlageStd_arr', $defaultData)
@@ -754,5 +732,6 @@ if ($step === 'uebersicht') {
            ->assign('oPagiAlleAbos', $pagiSubscriptions);
 }
 $smarty->assign('step', $step)
+       ->assign('customerGroups', CustomerGroup::getGroups())
        ->assign('nRand', time())
        ->display('newsletter.tpl');

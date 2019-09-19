@@ -41,7 +41,7 @@
 
     <h2>{lang key='news' section='news'}</h2>
     <div itemprop="about" itemscope itemtype="http://schema.org/Blog">
-        {foreach $oNews_arr as $oNewsUebersicht}
+        {foreach $oNews_arr as $newsItem}
             {include file='blog/preview.tpl'}
         {/foreach}
     </div>

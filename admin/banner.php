@@ -159,8 +159,7 @@ switch ($action) {
             break;
         }
 
-        $smarty->assign('oBanner', $imageMap)
-            ->assign('cBannerLocation', Shop::getURL() . '/' . PFAD_BILDER_BANNER);
+        $smarty->assign('oBanner', $imageMap);
         break;
 
     case 'edit':
@@ -168,9 +167,8 @@ switch ($action) {
         $imageMap = holeBanner($id);
 
         $smarty->assign('oExtension', holeExtension($id))
-            ->assign('cBannerFile_arr', holeBannerDateien())
-            ->assign('oSprachen_arr', LanguageHelper::getInstance()->gibInstallierteSprachen())
-            ->assign('oKundengruppe_arr', CustomerGroup::getGroups())
+            ->assign('bannerFiles', holeBannerDateien())
+            ->assign('customerGroups', CustomerGroup::getGroups())
             ->assign('nMaxFileSize', getMaxFileSize(ini_get('upload_max_filesize')))
             ->assign('oBanner', $imageMap);
 
@@ -182,11 +180,9 @@ switch ($action) {
 
     case 'new':
         $smarty->assign('oBanner', $imageMap ?? null)
-            ->assign('oSprachen_arr', LanguageHelper::getInstance()->gibInstallierteSprachen())
-            ->assign('oKundengruppe_arr', CustomerGroup::getGroups())
-            ->assign('cBannerLocation', PFAD_BILDER_BANNER)
+            ->assign('customerGroups', CustomerGroup::getGroups())
             ->assign('nMaxFileSize', getMaxFileSize(ini_get('upload_max_filesize')))
-            ->assign('cBannerFile_arr', holeBannerDateien());
+            ->assign('bannerFiles', holeBannerDateien());
         break;
 
     case 'delete':
@@ -208,5 +204,5 @@ $pagination = (new Pagination('banners'))
 $smarty->assign('action', $action)
     ->assign('validPageTypes', (new BoxAdmin($db))->getMappedValidPageTypes())
     ->assign('pagination', $pagination)
-    ->assign('oBanner_arr', $pagination->getPageItems())
+    ->assign('banners', $pagination->getPageItems())
     ->display('banner.tpl');

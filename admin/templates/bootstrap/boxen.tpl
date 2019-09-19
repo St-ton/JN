@@ -185,7 +185,7 @@
                                 </div>
                             </div>
                             {if $oEditBox->eTyp === 'text'}
-                                {foreach $oSprachen_arr as $language}
+                                {foreach $availableLanguages as $language}
                                     <div class="form-group form-row align-items-center">
                                         <label class="col col-sm-4 col-form-label text-sm-right"for="title-{$language->getIso()}">{__('boxTitle')} {$language->getLocalizedName()}</label>
                                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
@@ -207,7 +207,7 @@
                                         {getHelpDesc cDesc=__('catBoxNumTooltip')}
                                     </div>
                                 </div>
-                                {foreach $oSprachen_arr as $language}
+                                {foreach $availableLanguages as $language}
                                     <div class="form-group form-row align-items-center">
                                         <label class="col col-sm-4 col-form-label text-sm-right"for="title-{$language->getIso()}">{__('boxTitle')} {$language->getLocalizedName()}:</label>
                                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
@@ -231,7 +231,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                {foreach $oSprachen_arr as $language}
+                                {foreach $availableLanguages as $language}
                                     <div class="form-group form-row align-items-center">
                                         <label class="col col-sm-4 col-form-label text-sm-right"for="title-{$language->getIso()}">{__('boxTitle')} ({$language->getLocalizedName()}):</label>
                                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">

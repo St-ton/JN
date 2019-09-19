@@ -7,11 +7,13 @@
     {$limit = $Einstellungen.template.productlist.filter_max_options}
     {$collapseInit = false}
     {foreach $Merkmal->getOptions() as $attributeValue}
-        {assign var=attributeImageURL value=''}
-        {if ($Merkmal->getData('cTyp') === 'BILD' || $Merkmal->getData('cTyp') === 'BILD-TEXT')
-            && $attributeValue->getData('cBildpfadKlein') !== $smarty.const.BILD_KEIN_MERKMALWERTBILD_VORHANDEN
-        }
-            {assign var=attributeImageURL value=$attributeValue->getData('cBildURLKlein')}
+        {$attributeImageURL = null}
+        {if ($Merkmal->getData('cTyp') === 'BILD' || $Merkmal->getData('cTyp') === 'BILD-TEXT')}
+            {$attributeImageURL = $attributeValue->getImage(\JTL\Media\Image::SIZE_XS)}
+            {if $attributeImageURL|strpos:$smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN !== false
+                || $attributeImageURL|strpos:$smarty.const.BILD_KEIN_MERKMALWERTBILD_VORHANDEN !== false}
+                {$attributeImageURL = null}
+            {/if}
         {/if}
         {if $is_dropdown}
             {block name='snippets-filter-characteristics-dropdown'}
@@ -53,7 +55,7 @@
                             <span class="badge badge-outline-secondary ml-auto">{$attributeValue->getCount()}</span>
                         </div>
                     {/navitem}
-                {elseif $Merkmal->getData('cTyp') === 'BILD'}
+                {elseif $Merkmal->getData('cTyp') === 'BILD' && $attributeImageURL !== null}
                     {link href="{if !empty($attributeValue->getURL())}{$attributeValue->getURL()}{else}#{/if}"
                         title="{$attributeValue->getValue()|escape:'html'}: {$attributeValue->getCount()}"
                         data=["toggle"=>"tooltip", "placement"=>"top", "boundary"=>"window"]

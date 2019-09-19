@@ -8,25 +8,25 @@
         <input type="hidden" name="emailblacklist" value="1" />
         <div id="settings">
             {assign var=open value=false}
-            {foreach $oConfig_arr as $oConfig}
-                {if $oConfig->cConf === 'Y'}
+            {foreach $config as $configItem}
+                {if $configItem->cConf === 'Y'}
                     <div class="item form-group form-row align-items-center">
-                        <label class="col col-sm-4 col-form-label text-sm-right" for="{$oConfig->cWertName}">{$oConfig->cName}:</label>
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="{$configItem->cWertName}">{$configItem->cName}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            {if $oConfig->cInputTyp === 'selectbox'}
-                                <select name="{$oConfig->cWertName}" id="{$oConfig->cWertName}" class="custom-select combo">
-                                    {foreach $oConfig->ConfWerte as $wert}
-                                        <option value="{$wert->cWert}" {if $oConfig->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
+                            {if $configItem->cInputTyp === 'selectbox'}
+                                <select name="{$configItem->cWertName}" id="{$configItem->cWertName}" class="custom-select combo">
+                                    {foreach $configItem->ConfWerte as $wert}
+                                        <option value="{$wert->cWert}" {if $configItem->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
                                     {/foreach}
                                 </select>
-                            {elseif $oConfig->cInputTyp === 'number'}
+                            {elseif $configItem->cInputTyp === 'number'}
                                 <div class="input-group form-counter">
                                     <div class="input-group-prepend">
                                         <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
                                             <span class="fas fa-minus"></span>
                                         </button>
                                     </div>
-                                    <input class="form-control" type="number" name="{$oConfig->cWertName}" id="{$oConfig->cWertName}" value="{if isset($oConfig->gesetzterWert)}{$oConfig->gesetzterWert}{/if}" tabindex="1" />
+                                    <input class="form-control" type="number" name="{$configItem->cWertName}" id="{$configItem->cWertName}" value="{if isset($configItem->gesetzterWert)}{$configItem->gesetzterWert}{/if}" tabindex="1" />
                                     <div class="input-group-append">
                                         <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
                                             <span class="fas fa-plus"></span>
@@ -34,19 +34,19 @@
                                     </div>
                                 </div>
                             {else}
-                                <input type="text" name="{$oConfig->cWertName}" id="{$oConfig->cWertName}" value="{$oConfig->gesetzterWert}" tabindex="1" />
+                                <input type="text" name="{$configItem->cWertName}" id="{$configItem->cWertName}" value="{$configItem->gesetzterWert}" tabindex="1" />
                             {/if}
                         </div>
-                        {if $oConfig->cBeschreibung}
-                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=$oConfig->cBeschreibung}</div>
+                        {if $configItem->cBeschreibung}
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=$configItem->cBeschreibung}</div>
                         {/if}
                     </div>
                 {else}
                     {if $open}</div></div>{/if}
                     <div class="card">
-                    {if $oConfig->cName}
+                    {if $configItem->cName}
                         <div class="card-header">
-                            <div class="subheading1">{$oConfig->cName}</div>
+                            <div class="subheading1">{$configItem->cName}</div>
                             <hr class="mb-n3">
                         </div>
                     {/if}
@@ -66,7 +66,7 @@
                 <hr class="mb-n3">
             </div>
             <div class="card-body">
-                <textarea class="form-control" name="cEmail" cols="50" rows="10">{if isset($oEmailBlacklist_arr)}{foreach $oEmailBlacklist_arr as $oEmailBlacklist}{$oEmailBlacklist->cEmail}{if !$oEmailBlacklist@last};{/if}{/foreach}{/if}</textarea>
+                <textarea class="form-control" name="cEmail" cols="50" rows="10">{foreach $blacklist as $item}{$item->cEmail}{if !$item@last};{/if}{/foreach}</textarea>
             </div>
         </div>
         <div class="save-wrapper">
@@ -79,14 +79,15 @@
             </div>
         </div>
     </form>
-    {if isset($oEmailBlacklistBlock_arr) && $oEmailBlacklistBlock_arr|@count > 0}
+    {if $blocked|@count > 0}
         <div class="card">
             <div class="card-header">
-                <div class="card-title">{__('emailblacklistBlockedEmails')}</div>
+                <div class="subheading1">{__('emailblacklistBlockedEmails')}</div>
+                <hr class="mb-n3">
             </div>
             <div class="card-body">
-                {foreach $oEmailBlacklistBlock_arr as $entry}
-                    {$entry->cEmail} ({$entry->dLetzterBlock})<br />
+                {foreach $blocked as $item}
+                    {$item->cEmail} ({$item->dLetzterBlock})<br />
                 {/foreach}
             </div>
         </div>

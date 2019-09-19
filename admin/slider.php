@@ -145,8 +145,7 @@ switch ($action) {
         }
         $slider = new Slider($db);
         $slider->load($kSlider, false);
-        $smarty->assign('oSprachen_arr', LanguageHelper::getInstance()->gibInstallierteSprachen())
-               ->assign('oKundengruppe_arr', CustomerGroup::getGroups())
+        $smarty->assign('customerGroups', CustomerGroup::getGroups())
                ->assign('oExtension', holeExtension($kSlider));
 
         if ($slider->getEffects() !== 'random') {
@@ -171,8 +170,7 @@ switch ($action) {
 
     case 'new':
         $smarty->assign('checked', 'checked="checked"')
-               ->assign('oSprachen_arr', LanguageHelper::getInstance()->gibInstallierteSprachen())
-               ->assign('oKundengruppe_arr', CustomerGroup::getGroups())
+               ->assign('customerGroups', CustomerGroup::getGroups())
                ->assign('oSlider', new Slider($db));
         break;
 

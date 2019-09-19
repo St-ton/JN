@@ -1409,7 +1409,7 @@ footer {
   }
 
   .nav-link {
-    padding: $nav-link-padding-y*0.8 $nav-link-padding-x;
+    padding: $nav-link-padding-y*0.4 0;
   }
 
   .footer-additional {
@@ -1418,6 +1418,10 @@ footer {
     margin-top: 0;
     a {
       text-decoration: none;
+    }
+    li {
+      margin-right: map-get($spacers, 2);
+      margin-bottom: map-get($spacers, 2);
     }
   }
   #copyright {

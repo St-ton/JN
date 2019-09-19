@@ -673,7 +673,7 @@ class Text
     public static function parseNewsText($text)
     {
         \preg_match_all(
-            '/\${1}\#{1}[akhmntl]{1}:[0-9]+\:{0,1}' .
+            '/\${1}\#{1}[akhmnl]{1}:[0-9]+\:{0,1}' .
             '[\w\.\,\!\"\§\$\%\&\/\(\)\=\`\´\+\~\*\'\;\-\_\?\{\}\[\]\ ]{0,}\#{1}\${1}/',
             $text,
             $hits

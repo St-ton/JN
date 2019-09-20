@@ -118,8 +118,7 @@ abstract class AbstractImage implements IMedia
         string $size,
         int $number = 1,
         string $sourcePath = null
-    ): MediaImageRequest
-    {
+    ): MediaImageRequest {
         return MediaImageRequest::create([
             'size'       => $size,
             'id'         => $id,

@@ -7,7 +7,6 @@
 namespace JTL\Catalog\Product;
 
 use JTL\DB\ReturnType;
-use JTL\Helpers\GeneralObject;
 use JTL\Language\LanguageHelper;
 use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;

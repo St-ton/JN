@@ -45,11 +45,9 @@ class LegacyMethod
      */
     public function __get($name)
     {
-        if (property_exists($this->methodInstance, $name)) {
-            return $this->methodInstance->$name;
-        }
-
-        return null;
+        return \property_exists($this->methodInstance, $name)
+            ? $this->methodInstance->$name
+            : null;
     }
 
     /**
@@ -57,7 +55,7 @@ class LegacyMethod
      */
     public function __set($name, $value)
     {
-        if (property_exists($this->methodInstance, $name)) {
+        if (\property_exists($this->methodInstance, $name)) {
             $this->methodInstance->$name = $value;
         }
     }
@@ -67,11 +65,9 @@ class LegacyMethod
      */
     public function __isset($name)
     {
-        if (property_exists($this->methodInstance, $name)) {
-            return isset($this->methodInstance->$name);
-        }
-
-        return false;
+        return \property_exists($this->methodInstance, $name)
+            ? isset($this->methodInstance->$name)
+            : false;
     }
 
     /**
@@ -262,7 +258,7 @@ class LegacyMethod
      * @param int    $level
      * @return static
      */
-    public function doLog($msg, $level = LOGLEVEL_NOTICE)
+    public function doLog($msg, $level = \LOGLEVEL_NOTICE)
     {
         $this->methodInstance->doLog($msg, $level);
 

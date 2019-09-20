@@ -172,7 +172,7 @@ class CountryService implements CountryServiceInterface
                 'sort'                   => $this->getContinentSort($continent)
             ];
         }
-        usort($continents, function ($a, $b) {
+        \usort($continents, function ($a, $b) {
             return $a->sort > $b->sort;
         });
 

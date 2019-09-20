@@ -6,7 +6,6 @@
 
 namespace JTL\Media\Image;
 
-use DirectoryIterator;
 use FilesystemIterator;
 use Generator;
 use JTL\DB\ReturnType;

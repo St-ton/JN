@@ -7,6 +7,7 @@
 namespace JTL\Media\Image;
 
 use Generator;
+use JTL\Catalog\Product\Artikel;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Media\Image;
@@ -103,7 +104,8 @@ class Product extends AbstractImage
     }
 
     /**
-     * @inheritdoc
+     * @param Artikel $mixed
+     * @return string
      */
     public static function getCustomName($mixed): string
     {
@@ -115,7 +117,7 @@ class Product extends AbstractImage
                 $result = $mixed->cArtNr;
                 break;
             case 2:
-                $result = empty($mixed->cSeo) ? $mixed->cName : $mixed->cSeo;
+                $result = $mixed->originalSeo ?? $mixed->cSeo ?? $mixed->cName;
                 break;
             case 3:
                 $result = \sprintf('%s_%s', $mixed->cArtNr, empty($mixed->cSeo) ? $mixed->cName : $mixed->cSeo);

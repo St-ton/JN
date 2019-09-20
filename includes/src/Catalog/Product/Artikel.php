@@ -1022,6 +1022,16 @@ class Artikel
     public $cKurzbezeichnung = '';
 
     /**
+     * @var string
+     */
+    public $originalName = '';
+
+    /**
+     * @var string
+     */
+    public $originalSeo = '';
+
+    /**
      * @var array
      */
     public $languageURLs = [];
@@ -3591,7 +3601,7 @@ class Artikel
                 tartikel.kEinheit, tartikel.kVPEEinheit, tartikel.kVersandklasse, tartikel.kEigenschaftKombi,
                 tartikel.kVaterArtikel, tartikel.kStueckliste, tartikel.kWarengruppe,
                 tartikel.cArtNr, tartikel.cName, tartikel.cBeschreibung, tartikel.cAnmerkung, ' . $bomSQL . '
-                tartikel.fMwSt,
+                tartikel.fMwSt, tartikel.cSeo AS originalSeo,
                 IF (tartikelabnahme.fMindestabnahme IS NOT NULL,
                     tartikelabnahme.fMindestabnahme, tartikel.fMindestbestellmenge) AS fMindestbestellmenge,
                 IF (tartikelabnahme.fIntervall IS NOT NULL,
@@ -3701,6 +3711,8 @@ class Artikel
      */
     private function sanitizeProductData($data): void
     {
+        $this->originalName                      = $data->cName;
+        $this->originalSeo                       = $data->originalSeo;
         $data                                    = $this->localizeData($data);
         $this->kArtikel                          = (int)$data->kArtikel;
         $this->kHersteller                       = (int)$data->kHersteller;

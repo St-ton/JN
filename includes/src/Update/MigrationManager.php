@@ -272,14 +272,15 @@ class MigrationManager
     }
 
     /**
+     * @param bool $force
      * @return array
      * @throws Exception
      */
-    public function getPendingMigrations(): array
+    public function getPendingMigrations(bool $force = false): array
     {
         static $pending = null;
 
-        if ($pending === null) {
+        if ($force || $pending === null) {
             $executed   = $this->getExecutedMigrations();
             $migrations = \array_keys($this->getMigrations());
             $pending    = \array_udiff($migrations, $executed, function ($a, $b) {

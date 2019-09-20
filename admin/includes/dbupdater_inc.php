@@ -335,6 +335,8 @@ function dbupdaterMigration($id = null, $version = null, $dir = null, $pluginID 
     Shop::Container()->getGetText()->loadAdminLocale('pages/dbupdater');
     $db = Shop::Container()->getDB();
     try {
+        $updater    = new Updater($db);
+        $hasAlready = $updater->hasPendingUpdates();
         if ($pluginID !== null && is_numeric($pluginID)) {
             $loader  = new PluginLoader($db, Shop::Container()->getCache());
             $plugin  = $loader->init($pluginID);
@@ -352,13 +354,15 @@ function dbupdaterMigration($id = null, $version = null, $dir = null, $pluginID 
         }
 
         $migration    = $manager->getMigrationById($id);
-        $updater      = new Updater($db);
+
         $updateResult = sprintf('Migration: %s', $migration->getDescription());
+        $hasMore      = $updater->hasPendingUpdates(true);
         $result       = [
-            'id'      => $id,
-            'type'    => 'migration',
-            'result'  => $updateResult,
-            'hasMore' => $updater->hasPendingUpdates()
+            'id'          => $id,
+            'type'        => 'migration',
+            'result'      => $updateResult,
+            'hasMore'     => $hasMore,
+            'forceReload' => $hasMore === false || ($hasMore !== $hasAlready),
         ];
     } catch (Exception $e) {
         $result = new IOError($e->getMessage());

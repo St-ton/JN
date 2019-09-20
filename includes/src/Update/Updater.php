@@ -89,14 +89,15 @@ class Updater
     /**
      * Has pending updates to execute
      *
+     * @param bool $force
      * @return bool
      * @throws Exception
      */
-    public function hasPendingUpdates(): bool
+    public function hasPendingUpdates(bool $force = false): bool
     {
         static $pending = null;
 
-        if ($pending === null) {
+        if ($force || $pending === null) {
             $fileVersion = $this->getCurrentFileVersion();
             $dbVersion = $this->getCurrentDatabaseVersion();
 
@@ -108,7 +109,7 @@ class Updater
             }
 
             $manager = new MigrationManager($this->db);
-            $pending = \count($manager->getPendingMigrations()) > 0;
+            $pending = \count($manager->getPendingMigrations($force)) > 0;
         }
 
         return $pending;

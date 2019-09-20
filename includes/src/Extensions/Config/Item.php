@@ -140,6 +140,11 @@ class Item implements JsonSerializable
     public $bAktiv;
 
     /**
+     * @var array|null
+     */
+    public $oEigenschaftwerte_arr;
+
+    /**
      * Item constructor.
      * @param int $id
      * @param int $languageID

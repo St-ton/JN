@@ -192,19 +192,20 @@ final class Uninstaller
      * @param int      $pluginID
      * @param bool     $update
      * @param null|int $newPluginID
+     * @param bool     $deleteData
      */
     private function doSQLDelete(int $pluginID, bool $update, int $newPluginID = null, $deleteData = true): void
     {
         if ($update) {
             $this->partialDelete($pluginID);
         } else {
-            $this->fullDelete($pluginID);
-        }
-        if ($deleteData === true) {
-            $customTables = $this->db->selectAll('tplugincustomtabelle', 'kPlugin', $pluginID);
-            foreach ($customTables as $table) {
-                $this->db->query('DROP TABLE IF EXISTS ' . $table->cTabelle, ReturnType::DEFAULT);
+            if ($deleteData === true) {
+                $customTables = $this->db->selectAll('tplugincustomtabelle', 'kPlugin', $pluginID);
+                foreach ($customTables as $table) {
+                    $this->db->query('DROP TABLE IF EXISTS ' . $table->cTabelle, ReturnType::DEFAULT);
+                }
             }
+            $this->fullDelete($pluginID);
         }
         $this->db->queryPrepared(
             'DELETE tpluginsqlfehler, tpluginhook

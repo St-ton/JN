@@ -222,21 +222,14 @@
                                     <div class="qty-wrapper dropdown max-w-sm">
                                         {inputgroup id="quantity-grp{$oPosition@index}" class="choose_quantity"}
                                         {input type="{if $oPosition->Artikel->cTeilbar === 'Y' && $oPosition->Artikel->fAbnahmeintervall == 0}text{else}number{/if}"
-                                        min="{if $oPosition->Artikel->fMindestbestellmenge}{$oPosition->Artikel->fMindestbestellmenge}{else}0{/if}"
-                                        required=($oPosition->Artikel->fAbnahmeintervall > 0)
-                                        step="{if $oPosition->Artikel->fAbnahmeintervall > 0}{$oPosition->Artikel->fAbnahmeintervall}{/if}"
-                                        id="quantity[{$oPosition@index}]" class="quantity text-right" name="anzahl[{$oPosition@index}]"
-                                        aria=["label"=>"{lang key='quantity'}"]
-                                        value=$oPosition->nAnzahl
-                                        data=["decimals"=>{getDecimalLength quantity=$oPosition->Artikel->fAbnahmeintervall}]
+                                            min="{if $oPosition->Artikel->fMindestbestellmenge}{$oPosition->Artikel->fMindestbestellmenge}{else}0{/if}"
+                                            required=($oPosition->Artikel->fAbnahmeintervall > 0)
+                                            step="{if $oPosition->Artikel->fAbnahmeintervall > 0}{$oPosition->Artikel->fAbnahmeintervall}{/if}"
+                                            id="quantity[{$oPosition@index}]" class="quantity text-right" name="anzahl[{$oPosition@index}]"
+                                            aria=["label"=>"{lang key='quantity'}"]
+                                            value=$oPosition->nAnzahl
+                                            data=["decimals"=>{getDecimalLength quantity=$oPosition->Artikel->fAbnahmeintervall}]
                                         }
-                                            {*{inputgroupaddon append=true}
-                                                {if $oPosition->cEinheit}
-                                                    {inputgrouptext class="unit form-control"}
-                                                        {$oPosition->cEinheit}
-                                                    {/inputgrouptext}
-                                                {/if}
-                                            {/inputgroupaddon}*}
                                         {/inputgroup}
                                     </div>
                                 {/if}

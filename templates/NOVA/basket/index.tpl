@@ -29,7 +29,7 @@
                                             {input type="hidden" name="wka" value="1"}
                                             <div class="mb-7">
                                                 {block name='basket-index-include-order-items'}
-                                                    {include file='checkout/inc_order_items.tpl' tplscope='cart'}
+                                                    {include file='basket/cart_items.tpl'}
                                                 {/block}
                                             </div>
                                             {block name='basket-index-include-uploads'}

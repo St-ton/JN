@@ -354,7 +354,6 @@ function dbupdaterMigration($id = null, $version = null, $dir = null, $pluginID 
         }
 
         $migration    = $manager->getMigrationById($id);
-
         $updateResult = sprintf('Migration: %s', $migration->getDescription());
         $hasMore      = $updater->hasPendingUpdates(true);
         $result       = [

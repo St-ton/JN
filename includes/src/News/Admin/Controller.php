@@ -22,6 +22,7 @@ use JTL\News\Category;
 use JTL\News\CategoryInterface;
 use JTL\News\CategoryList;
 use JTL\News\CommentList;
+use JTL\News\Controller as FrontendController;
 use JTL\News\Item;
 use JTL\News\ItemList;
 use JTL\Shop;
@@ -109,7 +110,7 @@ final class Controller
         $newsCategoryIDs = $post['kNewsKategorie'] ?? null;
         $active          = (int)$post['nAktiv'];
         $dateValidFrom   = $post['dGueltigVon'];
-        $previewImage    = $post['previewImage'];
+        $previewImage    = $_FILES['previewImage']['name'] ?? '';
         $authorID        = (int)($post['kAuthor'] ?? 0);
         $validation      = $this->pruefeNewsPost($customerGroups, $newsCategoryIDs);
         if (\is_array($validation) && \count($validation) === 0) {
@@ -202,7 +203,7 @@ final class Controller
                     )->cPraefix ?? 'Newsuebersicht';
                     $monthOverview           = new stdClass();
                     $monthOverview->kSprache = $langID;
-                    $monthOverview->cName    = \JTL\News\Controller::mapDateName((string)$month, $year, $iso);
+                    $monthOverview->cName    = FrontendController::mapDateName((string)$month, $year, $iso);
                     $monthOverview->nMonat   = $month;
                     $monthOverview->nJahr    = $year;
 
@@ -249,12 +250,11 @@ final class Controller
                 $this->newsRedirect(empty($tab) ? 'aktiv' : $tab, $this->msg);
             }
         } else {
-            $newsCategories = $this->getAllNewsCategories();
-            $newsItem       = new Item($this->db);
-            $this->step     = 'news_editieren';
+            $newsItem   = new Item($this->db);
+            $this->step = 'news_editieren';
             $this->smarty->assign('cPostVar_arr', $post)
                          ->assign('cPlausiValue_arr', $validation)
-                         ->assign('oNewsKategorie_arr', $newsCategories)
+                         ->assign('oNewsKategorie_arr', $this->getAllNewsCategories())
                          ->assign('oNews', $newsItem);
             $this->errorMsg .= __('errorFillRequired');
 
@@ -544,11 +544,7 @@ final class Controller
         if (empty($_FILES['previewImage']['name'])) {
             return '';
         }
-        $extension = \mb_substr(
-            $_FILES['previewImage']['type'],
-            \mb_strpos($_FILES['previewImage']['type'], '/') + 1,
-            \mb_strlen($_FILES['previewImage']['type']) - \mb_strpos($_FILES['previewImage']['type'], '/') + 1
-        );
+        $extension = \pathinfo($_FILES['previewImage']['name'])['extension'];
         if ($extension === 'jpe') {
             $extension = 'jpg';
         }
@@ -763,11 +759,11 @@ final class Controller
             $tab    = Request::verifyGPDataString('tab');
             $params = [
                 'news'  => '1',
-                'nd'    => '1',
                 'token' => $_SESSION['jtl_token'],
             ];
             if ($newsItem !== null) {
                 $params['kNews'] = $newsItem->getID();
+                $params['nd']    = '1';
             }
             $this->newsRedirect(empty($tab) ? 'inaktiv' : $tab, $this->getMsg(), $params);
         } else {

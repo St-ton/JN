@@ -44,32 +44,34 @@
                 {container class="d-print-none pt-4"}
                     {if $Einstellungen.template.footer.newsletter_footer === 'Y'}
                         {block name='layout-footer-newsletter'}
-                            {row class="newsletter-footer" class="text-center text-md-left"}
-                                {col cols=12 md=6}
-                                    <div class="h5">
+                            {row class="newsletter-footer" class="text-center text-md-left align-items-center"}
+                                {col cols=12 lg=6}
+                                    <div class="h2">
                                         {lang key='newsletter' section='newsletter'} {lang key='newsletterSendSubscribe' section='newsletter'}
                                     </div>
-                                    <p class="info small">
+                                    <p class="info">
                                         {lang key='unsubscribeAnytime' section='newsletter'}
                                     </p>
                                 {/col}
-                                {block name='layout-footer-form'}
-                                    {form methopd="post" action="{get_static_route id='newsletter.php'}" class="col-12 col-md-4"}
-                                        {block name='layout-footer-form-content'}
-                                            {input type="hidden" name="abonnieren" value="2"}
-                                            {formgroup label-sr-only="{lang key='emailadress'}" class="mb-0"}
-                                                {inputgroup}
-                                                    {input type="email" name="cEmail" id="newsletter_email" placeholder="{lang key='emailadress'}" aria=['label' => {lang key='emailadress'}]}
-                                                    {inputgroupaddon append=true}
-                                                        {button type="submit" variant="secondary"}
-                                                            {lang key='newsletterSendSubscribe' section='newsletter'}
-                                                        {/button}
-                                                    {/inputgroupaddon}
-                                                {/inputgroup}
-                                            {/formgroup}
-                                        {/block}
-                                    {/form}
-                                {/block}
+                                {col cols=12 lg=6}
+                                    {block name='layout-footer-form'}
+                                        {form methopd="post" action="{get_static_route id='newsletter.php'}"}
+                                            {block name='layout-footer-form-content'}
+                                                {input type="hidden" name="abonnieren" value="2"}
+                                                {formgroup label-sr-only="{lang key='emailadress'}" class="mb-0"}
+                                                    {inputgroup}
+                                                        {input type="email" name="cEmail" id="newsletter_email" placeholder="{lang key='emailadress'}" aria=['label' => {lang key='emailadress'}]}
+                                                        {inputgroupaddon append=true}
+                                                            {button type='submit' variant='dark' class='min-w-sm'}
+                                                                {lang key='newsletterSendSubscribe' section='newsletter'}
+                                                            {/button}
+                                                        {/inputgroupaddon}
+                                                    {/inputgroup}
+                                                {/formgroup}
+                                            {/block}
+                                        {/form}
+                                    {/block}
+                                {/col}
                             {/row}
                             <hr>
                         {/block}
@@ -77,7 +79,7 @@
                     {block name='layout-footer-boxes'}
                         {getBoxesByPosition position='bottom' assign='footerBoxes'}
                         {if isset($footerBoxes) && count($footerBoxes) > 0}
-                            {row id="footer-boxes"}
+                            {row id='footer-boxes' class='mt-4 mt-lg-7'}
                                 {foreach $footerBoxes as $box}
                                     {col cols=12 sm=6 md=3}
                                         {$box->getRenderedContent()}
@@ -95,81 +97,73 @@
                                     {col cols=12 class="footer-additional-wrapper col-auto mx-auto"}
                                         <ul class="list-unstyled d-flex flex-row flex-wrap">
                                         {if !empty($Einstellungen.template.footer.facebook)}
-                                            <li class="mr-2">
+                                            <li>
                                                 {link href="{if $Einstellungen.template.footer.facebook|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.facebook}"
-                                                    class="btn-icon-secondary btn-facebook btn" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Facebook'}"] title="Facebook" target="_blank" rel="noopener"}
+                                                    class="btn-icon-secondary btn-facebook btn btn-sm" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Facebook'}"] title="Facebook" target="_blank" rel="noopener"}
                                                     <span class="fab fa-facebook-f fa-fw fa-lg"></span>
                                                 {/link}
                                             </li>
                                         {/if}
                                         {if !empty($Einstellungen.template.footer.twitter)}
-                                            <li class="mr-2">
+                                            <li>
                                                 {link href="{if $Einstellungen.template.footer.twitter|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.twitter}"
-                                                    class="btn-icon-secondary btn-twitter btn" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Twitter'}"] title="Twitter" target="_blank" rel="noopener"}
+                                                    class="btn-icon-secondary btn-twitter btn btn-sm" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Twitter'}"] title="Twitter" target="_blank" rel="noopener"}
                                                     <i class="fab fa-twitter fa-fw fa-lg"></i>
                                                 {/link}
                                             </li>
                                         {/if}
-                                        {if !empty($Einstellungen.template.footer.googleplus)}
-                                            <li class="mr-2">
-                                                {link href="{if $Einstellungen.template.footer.googleplus|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.googleplus}"
-                                                    class="btn-icon-secondary btn-googleplus btn" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Google+'}"] title="Google+" target="_blank" rel="noopener"}
-                                                    <i class="fab fa-google-plus-g fa-fw fa-lg"></i>
-                                                {/link}
-                                            </li>
-                                        {/if}
                                         {if !empty($Einstellungen.template.footer.youtube)}
-                                            <li class="mr-2">
+                                            <li>
                                                 {link href="{if $Einstellungen.template.footer.youtube|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.youtube}"
-                                                    class="btn-icon-secondary btn-youtube btn" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='YouTube'}"] title="YouTube" target="_blank" rel="noopener"}
+                                                    class="btn-icon-secondary btn-youtube btn btn-sm" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='YouTube'}"] title="YouTube" target="_blank" rel="noopener"}
                                                     <i class="fab fa-youtube fa-fw fa-lg"></i>
                                                 {/link}
                                             </li>
                                         {/if}
                                         {if !empty($Einstellungen.template.footer.vimeo)}
-                                            <li class="mr-2">
+                                            <li>
                                                 {link href="{if $Einstellungen.template.footer.vimeo|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.vimeo}"
-                                                    class="btn-icon-secondary btn-vimeo btn" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Vimeo'}"]  title="Vimeo" target="_blank" rel="noopener"}
+                                                    class="btn-icon-secondary btn-vimeo btn btn-sm" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Vimeo'}"]  title="Vimeo" target="_blank" rel="noopener"}
                                                     <i class="fab fa-vimeo-v fa-fw fa-lg"></i>
                                                 {/link}
                                             </li>
                                         {/if}
                                         {if !empty($Einstellungen.template.footer.pinterest)}
-                                            <li class="mr-2">
+                                            <li>
                                                 {link href="{if $Einstellungen.template.footer.pinterest|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.pinterest}"
-                                                    class="btn-icon-secondary btn-pinterest btn" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Pinterest'}"]  title="Pinterest" target="_blank" rel="noopener"}
+                                                    class="btn-icon-secondary btn-pinterest btn btn-sm" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Pinterest'}"]  title="Pinterest" target="_blank" rel="noopener"}
                                                     <i class="fab fa-pinterest-p fa-fw fa-lg"></i>
                                                 {/link}
                                             </li>
                                         {/if}
                                         {if !empty($Einstellungen.template.footer.instagram)}
-                                            <li class="mr-2">
+                                            <li>
                                                 {link href="{if $Einstellungen.template.footer.instagram|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.instagram}"
-                                                    class="btn-icon-secondary btn-instagram btn" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Instagram'}"]  title="Instagram" target="_blank" rel="noopener"}
+                                                    class="btn-icon-secondary btn-instagram btn btn-sm" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Instagram'}"]  title="Instagram" target="_blank" rel="noopener"}
                                                     <i class="fab fa-instagram fa-fw fa-lg"></i>
                                                 {/link}
                                             </li>
                                         {/if}
                                         {if !empty($Einstellungen.template.footer.skype)}
-                                            <li class="mr-2">
+                                            <li>
                                                 {link href="{if $Einstellungen.template.footer.skype|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.skype}"
-                                                    class="btn-icon-secondary btn-skype btn" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Skype'}"]  title="Skype" target="_blank" rel="noopener"}
+                                                    class="btn-icon-secondary btn-skype btn btn-sm" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Skype'}"]  title="Skype" target="_blank" rel="noopener"}
                                                     <i class="fab fa-skype fa-fw fa-lg"></i>
                                                 {/link}
                                             </li>
                                         {/if}
                                         {if !empty($Einstellungen.template.footer.xing)}
-                                            <li class="mr-2">
+                                            <li>
                                                 {link href="{if $Einstellungen.template.footer.xing|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.xing}"
-                                                    class="btn-icon-secondary btn-xing btn" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Xing'}"]  title="Xing" target="_blank" rel="noopener"}
+                                                    class="btn-icon-secondary btn-xing btn btn-sm" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Xing'}"]  title="Xing" target="_blank" rel="noopener"}
                                                     <i class="fab fa-xing fa-fw fa-lg"></i>
                                                 {/link}
                                             </li>
                                         {/if}
                                         {if !empty($Einstellungen.template.footer.linkedin)}
-                                            <li class="mr-0">
+                                            <li>
                                                 {link href="{if $Einstellungen.template.footer.linkedin|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.linkedin}"
-                                                    class="btn-icon-secondary btn-linkedin btn" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Linkedin'}"]  title="Linkedin" target="_blank" rel="noopener"}
+                                                    class="btn-icon-secondary btn-linkedin btn btn-sm" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Linkedin'}"]  title="Linkedin" target="_blank" rel="noopener"}
                                                     <i class="fab fa-linkedin-in fa-fw fa-lg"></i>
                                                 {/link}
                                             </li>
@@ -235,15 +229,13 @@
                             {lang key='footnoteInclusiveShipping' printf=$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() assign='footnoteShipping'}
                         {/if}
                         {block name='footer-vat-notice'}
-                            <p class="pt-4">
-                                <span class="footnote-reference">*</span> {$footnoteVat}{if isset($footnoteShipping)}{$footnoteShipping}{/if}
-                            </p>
+                            <span class="small">* {$footnoteVat}{if isset($footnoteShipping)}{$footnoteShipping}{/if}</span>
                         {/block}
                     </div>
                 {/container}
                 {block name='layout-footer-copyright'}
-                    <div id="copyright" class="py-3 text-center">
-                        {container fluid=true}
+                    <div id="copyright" class="mt-3">
+                        {container id="copyright" fluid=true class='py-3 font-size-sm text-center"'}
                             {row}
                                 {assign var=isBrandFree value=JTL\Shop::isBrandfree()}
                                 {col class="text-right"}

@@ -3,16 +3,45 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='boxes-box-news-categories'}
-    {card class="box box-newscategories mb-7" id="sidebox{$oBox->getID()}" title="{lang key='newsBoxCatOverview'}"}
+    {card class="box box-newscategories mb-md-4" id="sidebox{$oBox->getID()}"}
         {block name='boxes-box-news-categories-content'}
-            {nav vertical=true}
-                {foreach $oBox->getItems() as $newsCategory}
-                    {if $newsCategory@index === 10}{break}{/if}
-                    {navitem href=$newsCategory->cURLFull title=$newsCategory->cName}
-                        {$newsCategory->cName} <span class="badge badge-light float-right">{$newsCategory->nAnzahlNews}</span>
-                    {/navitem}
-                {/foreach}
-            {/nav}
+            {block name='boxes-box-news-categories-toggle-title'}
+                {link id="crd-hdr-{$oBox->getID()}"
+                    href="#crd-cllps-{$oBox->getID()}"
+                    data=["toggle"=>"collapse"]
+                    role="button"
+                    aria=["expanded"=>"false","controls"=>"crd-cllps-{$oBox->getID()}"]
+                    class="text-decoration-none font-weight-bold mb-2 d-md-none dropdown-toggle"}
+                    {lang key='newsBoxCatOverview'}
+                {/link}
+            {/block}
+            {block name='boxes-box-news-categories-title'}
+                <div class="productlist-filter-headline d-none d-md-flex">
+                    <span>{lang key='newsBoxCatOverview'}</span>
+                </div>
+            {/block}
+            {block name='boxes-box-news-categories-collapse'}
+                {collapse
+                    class="d-md-block"
+                    visible=false
+                    id="crd-cllps-{$oBox->getID()}"
+                    aria=["labelledby"=>"crd-hdr-{$oBox->getID()}"]}
+                    {nav vertical=true}
+                        {foreach $oBox->getItems() as $newsCategory}
+                            {if $newsCategory@index === 10}{break}{/if}
+                            {navitem href=$newsCategory->cURLFull title=$newsCategory->cName}
+                                <span class="align-items-center d-flex">
+                                    {$newsCategory->cName}
+                                    <span class="badge badge-outline-secondary ml-auto">{$newsCategory->nAnzahlNews}</span>
+                                </span>
+                            {/navitem}
+                        {/foreach}
+                    {/nav}
+                {/collapse}
+            {/block}
         {/block}
     {/card}
+    {block name='boxes-box-news-categories-hr-end'}
+        <hr class="my-3 d-flex d-md-none">
+    {/block}
 {/block}

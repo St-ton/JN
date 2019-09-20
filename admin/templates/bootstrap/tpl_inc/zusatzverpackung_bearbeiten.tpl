@@ -54,8 +54,8 @@
                 <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                     <select id="kSteuerklasse" name="kSteuerklasse" class="custom-select combo">
                         <option value="-1">{__('zusatzverpackungAutoTax')}</option>
-                        {foreach $oSteuerklasse_arr as $oSteuerklasse}
-                            <option value="{$oSteuerklasse->kSteuerklasse}" {if isset($oVerpackungEdit) && (int)$oSteuerklasse->kSteuerklasse === (int)$oVerpackungEdit->kSteuerklasse} selected{/if}>{$oSteuerklasse->cName}</option>
+                        {foreach $taxClasss as $taxClass}
+                            <option value="{$taxClass->kSteuerklasse}" {if isset($oVerpackungEdit) && (int)$taxClass->kSteuerklasse === (int)$oVerpackungEdit->kSteuerklasse} selected{/if}>{$taxClass->cName}</option>
                         {/foreach}
                     </select>
                 </div>
@@ -72,15 +72,15 @@
                             data-size="7">
                         <option value="-1"{if isset($oVerpackungEdit) && $oVerpackungEdit->cKundengruppe == '-1'} selected{/if}>{__('all')}</option>
                         <option data-divider="true"></option>
-                        {foreach $oKundengruppe_arr as $oKundengruppe}
+                        {foreach $customerGroups as $customerGroup}
                             {if (isset($oVerpackungEdit->cKundengruppe) && $oVerpackungEdit->cKundengruppe == '-1') || !isset($oVerpackungEdit) || !$oVerpackungEdit}
-                                <option value="{$oKundengruppe->kKundengruppe}">{$oKundengruppe->cName}</option>
+                                <option value="{$customerGroup->getID()}">{$customerGroup->getName()}</option>
                             {else}
-                                <option value="{$oKundengruppe->kKundengruppe}"
-                                        {foreach $oVerpackungEdit->kKundengruppe_arr as $kKundengruppe}
-                                    {if isset($oKundengruppe->kKundengruppe) && $oKundengruppe->kKundengruppe == $kKundengruppe} selected{/if}
-                                        {/foreach}>
-                                    {$oKundengruppe->cName}
+                                <option value="{$customerGroup->getID()}"
+                                    {foreach $oVerpackungEdit->kKundengruppe_arr as $kKundengruppe}
+                                    {if $customerGroup->getID() === (int)$kKundengruppe} selected{/if}
+                                    {/foreach}>
+                                    {$customerGroup->getName()}
                                 </option>
 
                             {/if}

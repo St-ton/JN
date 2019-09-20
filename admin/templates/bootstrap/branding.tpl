@@ -49,31 +49,31 @@
                             <label class="col col-sm-4 col-form-label text-sm-right" for="cPosition">{__('position')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <select name="cPosition" id="cPosition" class="custom-select combo">
-                                    <option value="oben"{if $oBranding->cPosition === 'oben'} selected{/if}>
+                                    <option value="top"{if $oBranding->cPosition === 'top'} selected{/if}>
                                         {__('top')}
                                     </option>
-                                    <option value="oben-rechts"{if $oBranding->cPosition === 'oben-rechts'} selected{/if}>
+                                    <option value="top-right"{if $oBranding->cPosition === 'top-right'} selected{/if}>
                                         {__('topRight')}
                                     </option>
-                                    <option value="rechts"{if $oBranding->cPosition === 'rechts'} selected{/if}>
+                                    <option value="right"{if $oBranding->cPosition === 'right'} selected{/if}>
                                         {__('right')}
                                     </option>
-                                    <option value="unten-rechts"{if $oBranding->cPosition === 'unten-rechts'} selected{/if}>
+                                    <option value="bottom-right"{if $oBranding->cPosition === 'bottom-right'} selected{/if}>
                                         {__('bottomRight')}
                                     </option>
-                                    <option value="unten"{if $oBranding->cPosition === 'unten'} selected{/if}>
+                                    <option value="bottom"{if $oBranding->cPosition === 'bottom'} selected{/if}>
                                         {__('bottom')}
                                     </option>
-                                    <option value="unten-links"{if $oBranding->cPosition === 'unten-links'} selected{/if}>
+                                    <option value="bottom-left"{if $oBranding->cPosition === 'bottom-left'} selected{/if}>
                                         {__('bottomLeft')}
                                     </option>
-                                    <option value="links"{if $oBranding->cPosition === 'links'} selected{/if}>
+                                    <option value="left"{if $oBranding->cPosition === 'left'} selected{/if}>
                                         {__('left')}
                                     </option>
-                                    <option value="oben-links"{if $oBranding->cPosition === 'oben-links'} selected{/if}>
+                                    <option value="top-left"{if $oBranding->cPosition === 'top-left'} selected{/if}>
                                         {__('topLeft')}
                                     </option>
-                                    <option value="zentriert"{if $oBranding->cPosition === 'zentriert'} selected{/if}>
+                                    <option value="center"{if $oBranding->cPosition === 'center'} selected{/if}>
                                         {__('centered')}
                                     </option>
                                 </select>

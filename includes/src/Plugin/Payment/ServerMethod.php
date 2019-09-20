@@ -59,9 +59,9 @@ class ServerMethod extends Method
     public function postRequest(array $fields, bool $bUTF8 = true, bool $bLogging = false, string $cLogPfad = ''): array
     {
         // Workaround: http://bugs.php.net/bug.php?id=39039 (see last line of Method)
-        $tempErrorLevel = error_reporting(0);
+        $tempErrorLevel = \error_reporting(0);
 
-        $socket = fsockopen($this->hostname, SPM_PORT, $errNo, $errStr, SPM_TIMEOUT);
+        $socket = \fsockopen($this->hostname, \SPM_PORT, $errNo, $errStr, \SPM_TIMEOUT);
 
         // Socket Error
         if (!$socket) {
@@ -73,9 +73,9 @@ class ServerMethod extends Method
         $request   = '';
         $cEncoding = 'UTF-8';
         if ($bUTF8) {
-            $fields = array_map('\urlencode', array_map('\utf8_encode', $fields));
+            $fields = \array_map('\urlencode', \array_map('\utf8_encode', $fields));
         } else {
-            $fields    = array_map('\urlencode', $fields);
+            $fields    = \array_map('\urlencode', $fields);
             $cEncoding = 'ISO-8859-1';
         }
 
@@ -88,16 +88,16 @@ class ServerMethod extends Method
             . 'Content-Type: application/x-www-form-urlencoded;charset=' . $cEncoding . "\r\n"
             . 'Content-Length: ' . \strlen($request) . "\r\n"
             . "Connection: close\r\n\r\n";
-        fwrite($socket, $header);
-        fwrite($socket, $request);
+        \fwrite($socket, $header);
+        \fwrite($socket, $request);
         // Recieve
         $reponseHeader = '';
         $reponseBody   = '';
         $isBody        = false;
         $isChunked     = false;
-        while (feof($socket) === false) {
-            $line = fgetss($socket, 256);
-            $line = trim($line);
+        while (\feof($socket) === false) {
+            $line = \fgetss($socket, 256);
+            $line = \trim($line);
 
             if (($isBody === false) && ($line === '')) {
                 $isBody = true;
@@ -106,20 +106,20 @@ class ServerMethod extends Method
             if ($isBody) {
                 if ($isChunked && $line === '') {
                     // Read Control Sequence
-                    fgetss($socket, 256);
+                    \fgetss($socket, 256);
                 } else {
                     $reponseBody .= $line;
                 }
             } else {
                 $reponseHeader .= $line;
-                if (($isChunked === false) && preg_match('/Transfer-Encoding:[\s*]chunked/is', $line)) {
+                if (($isChunked === false) && \preg_match('/Transfer-Encoding:[\s*]chunked/is', $line)) {
                     $isChunked = true;
                 }
             }
         }
-        fclose($socket);
+        \fclose($socket);
         // Workaround: http://bugs.php.net/bug.php?id=39039 (see first line of Method)
-        error_reporting($tempErrorLevel);
+        \error_reporting($tempErrorLevel);
 
         return [
             'status' => 'success',

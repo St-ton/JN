@@ -94,7 +94,7 @@ final class Orders extends AbstractSync
             ReturnType::SINGLE_OBJECT
         );
 
-        return $order ? \PaymentMethod::create($order->cModulId) : false;
+        return empty($order->cModulId) ? false : \PaymentMethod::create($order->cModulId);
     }
 
     /**

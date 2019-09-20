@@ -187,7 +187,7 @@ class LegacyPlugin extends PluginBC
     }
 
     /**
-     * @return Version
+     * @inheritdoc
      */
     public function getCurrentVersion(): Version
     {

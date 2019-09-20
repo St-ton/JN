@@ -18,6 +18,7 @@ use JTL\Plugin\Data\Meta;
 use JTL\Plugin\Data\Paths;
 use JTL\Plugin\Data\PaymentMethods;
 use JTL\Plugin\Data\Widget;
+use JTLShop\SemVer\Version;
 
 /**
  * Interface PluginInterface
@@ -204,4 +205,9 @@ interface PluginInterface
      * @param PaymentMethods $paymentMethods
      */
     public function setPaymentMethods(PaymentMethods $paymentMethods): void;
+
+    /**
+     * @return Version
+     */
+    public function getCurrentVersion(): Version;
 }

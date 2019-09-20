@@ -220,7 +220,7 @@ final class MigrationHelper
      * @param string $description
      * @param string $author
      * @return string
-     * @throws \SmartyExceptionincludes/src/Plugin/MigrationHelper.php
+     * @throws \SmartyException
      * @throws \Exception
      */
     public static function create(string $pluginDir, string $description, string $author): string

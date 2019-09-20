@@ -50,20 +50,20 @@ class News extends AbstractImage
      */
     protected function getImageNames(MediaImageRequest $req): array
     {
-        $names = Shop::Container()->getDB()->queryPrepared(
+        return Shop::Container()->getDB()->queryPrepared(
             'SELECT a.kNews, a.cPreviewImage AS path, t.title
                 FROM tnews AS a
                 LEFT JOIN tnewssprache t
                     ON a.kNews = t.kNews
                 WHERE a.kNews = :nid',
             ['nid' => $req->getID()],
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-        if (!empty($names[0]->path)) {
-            $req->setSourcePath(\str_replace(\PFAD_NEWSBILDER, '', $names[0]->path));
-        }
-
-        return $names;
+            ReturnType::COLLECTION
+        )->each(function ($item, $key) use ($req) {
+            if ($key === 0 && !empty($item->path)) {
+                $req->setSourcePath(\str_replace(\PFAD_NEWSBILDER, '', $item->path));
+            }
+            $item->imageName = self::getCustomName($item);
+        })->pluck('imageName')->toArray();
     }
 
     /**

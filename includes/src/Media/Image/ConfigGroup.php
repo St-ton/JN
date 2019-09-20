@@ -55,8 +55,10 @@ class ConfigGroup extends AbstractImage
                     ON a.kKonfiggruppe = t.kKonfiggruppe
                 WHERE a.kKonfiggruppe = :cid',
             ['cid' => $req->getID()],
-            ReturnType::ARRAY_OF_OBJECTS
-        );
+            ReturnType::COLLECTION
+        )->map(function ($item) {
+            return self::getCustomName($item);
+        })->toArray();
     }
 
     /**
@@ -64,6 +66,12 @@ class ConfigGroup extends AbstractImage
      */
     public static function getCustomName($mixed): string
     {
+        if (isset($mixed->path)) {
+            return \pathinfo($mixed->path)['filename'];
+        }
+        if (isset($mixed->cBildpfad)) {
+            return \pathinfo($mixed->cBildpfad)['filename'];
+        }
         $result = empty($mixed->cSeo) ? $mixed->cName : $mixed->cSeo;
 
         return empty($result) ? 'image' : Image::getCleanFilename($result);

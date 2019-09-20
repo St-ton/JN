@@ -48,20 +48,20 @@ class CharacteristicValue extends AbstractImage
      */
     protected function getImageNames(MediaImageRequest $req): array
     {
-        $names = Shop::Container()->getDB()->queryPrepared(
+        return Shop::Container()->getDB()->queryPrepared(
             'SELECT a.kMerkmalWert, a.cBildpfad AS path, t.cWert
                 FROM tmerkmalwert AS a
                 LEFT JOIN tmerkmalwertsprache t
                     ON a.kMerkmalWert = t.kMerkmalWert
                 WHERE a.kMerkmalWert = :cid',
             ['cid' => $req->getID()],
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-        if (!empty($names[0]->path)) {
-            $req->setSourcePath($names[0]->path);
-        }
-
-        return $names;
+            ReturnType::COLLECTION
+        )->each(function ($item, $key) use ($req) {
+            if ($key === 0 && !empty($item->path)) {
+                $req->setSourcePath($item->path);
+            }
+            $item->imageName = self::getCustomName($item);
+        })->pluck('imageName')->toArray();
     }
 
     /**
@@ -69,6 +69,12 @@ class CharacteristicValue extends AbstractImage
      */
     public static function getCustomName($mixed): string
     {
+        if (isset($mixed->path)) {
+            return \pathinfo($mixed->path)['filename'];
+        }
+        if (isset($mixed->cBildpfad)) {
+            return \pathinfo($mixed->cBildpfad)['filename'];
+        }
         $result = empty($mixed->cSeo) ? $mixed->cWert : $mixed->cSeo;
 
         return empty($result) ? 'image' : Image::getCleanFilename($result);

@@ -334,7 +334,6 @@ class Image
             'settings' => $settings,
             'path'     => $thumbnail
         ]);
-        echo '<br>rendered $thumbnail: ' . $thumbnail;
         $img->save($thumbnail, $settings['quality'], $req->getExt());
         if ($streamOutput) {
             echo $img->response($req->getExt());

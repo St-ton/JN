@@ -41,6 +41,11 @@ class Hersteller
     /**
      * @var string
      */
+    public $originalSeo;
+
+    /**
+     * @var string
+     */
     public $cMetaTitle;
 
     /**
@@ -148,7 +153,8 @@ class Hersteller
             $manufacturer = Shop::Container()->getDB()->queryPrepared(
                 "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
                     thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
-                    therstellersprache.cMetaDescription, therstellersprache.cBeschreibung, tseo.cSeo
+                    therstellersprache.cMetaDescription, therstellersprache.cBeschreibung,
+                    tseo.cSeo, thersteller.cSeo AS originalSeo
                     FROM thersteller
                     LEFT JOIN therstellersprache 
                         ON therstellersprache.kHersteller = thersteller.kHersteller
@@ -239,7 +245,8 @@ class Hersteller
         $items   = Shop::Container()->getDB()->query(
             'SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
                 thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
-                therstellersprache.cMetaDescription, therstellersprache.cBeschreibung, tseo.cSeo
+                therstellersprache.cMetaDescription, therstellersprache.cBeschreibung,
+                tseo.cSeo, thersteller.cSeo AS originalSeo
                 FROM thersteller
                 LEFT JOIN therstellersprache 
                     ON therstellersprache.kHersteller = thersteller.kHersteller

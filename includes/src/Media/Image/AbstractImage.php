@@ -42,30 +42,32 @@ abstract class AbstractImage implements IMedia
     public function handle(string $request)
     {
         try {
-            $request  = '/' . \ltrim($request, '/');
-            $mediaReq = $this->create($request);
-            $imgNames = $this->getImageNames($mediaReq);
-            if (\count($imgNames) === 0) {
+            $request      = '/' . \ltrim($request, '/');
+            $mediaReq     = $this->create($request);
+            $allowedNames = $this->getImageNames($mediaReq);
+            if (\count($allowedNames) === 0) {
                 throw new Exception('No such image id: ' . (int)$mediaReq->id);
             }
 
-            $imgFilePath = null;
-            $matchFound  = false;
-            foreach ($imgNames as $imgName) {
-                $mediaReq->path   = $mediaReq->name . '.' . $mediaReq->ext;
+            $imgPath      = '';
+            $matchFound   = false;
+            $allowedFiles = [];
+            foreach ($allowedNames as $allowedName) {
+                $mediaReq->path   = $allowedName . '.' . $mediaReq->ext;
+                $mediaReq->name   = $allowedName;
                 $mediaReq->number = (int)$mediaReq->number;
-                $imgName->imgPath = static::getThumbByRequest($mediaReq);
-                if ('/' . $imgName->imgPath === $request) {
-                    $matchFound  = true;
-                    $imgFilePath = \PFAD_ROOT . $imgName->imgPath;
+                $imgPath          = static::getThumbByRequest($mediaReq);
+                $allowedFiles[]   = $imgPath;
+                if ('/' . $imgPath === $request) {
+                    $matchFound = true;
                     break;
                 }
             }
             if ($matchFound === false) {
-                \header('Location: ' . Shop::getURL() . '/' . $imgNames[0]->imgPath, true, 301);
+                \header('Location: ' . Shop::getURL() . '/' . $allowedFiles[0], true, 301);
                 exit;
             }
-            if (!\is_file($imgFilePath)) {
+            if (!\is_file(\PFAD_ROOT . $imgPath)) {
                 Image::render($mediaReq, true);
             }
         } catch (Exception $e) {
@@ -116,7 +118,8 @@ abstract class AbstractImage implements IMedia
         string $size,
         int $number = 1,
         string $sourcePath = null
-    ): MediaImageRequest {
+    ): MediaImageRequest
+    {
         return MediaImageRequest::create([
             'size'       => $size,
             'id'         => $id,
@@ -144,6 +147,7 @@ abstract class AbstractImage implements IMedia
     {
         return $this->parse($request) !== null;
     }
+
     /**
      * @inheritdoc
      */
@@ -267,9 +271,9 @@ abstract class AbstractImage implements IMedia
      */
     public static function cacheImage(MediaImageRequest $req, bool $overwrite = false): array
     {
-        $result   = [];
-        $rawImage = null;
-        $rawPath  = $req->getRaw();
+        $result     = [];
+        $rawImage   = null;
+        $rawPath    = $req->getRaw();
         $extensions = [$req->getExt()];
         if (Image::hasWebPSupport()) {
             $extensions[] = 'webp';

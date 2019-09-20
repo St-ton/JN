@@ -35,7 +35,7 @@ class OPC extends AbstractImage
     {
         $req->setSourcePath($req->getName() . '.' . $req->getExt());
 
-        return [(object)[]];
+        return [''];
     }
 
     /**

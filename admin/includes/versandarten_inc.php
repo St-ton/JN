@@ -86,7 +86,7 @@ function P($arr)
 
 /**
  * @param array  $arr
- * @param string $key
+ * @param object $key
  * @return array
  */
 function bauePot($arr, $key)

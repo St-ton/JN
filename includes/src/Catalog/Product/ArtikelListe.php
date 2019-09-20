@@ -202,6 +202,7 @@ class ArtikelListe
                 $categoryIDs[] = $category->getID();
                 if ($category->hasChildren()) {
                     foreach ($category->getChildren() as $level2) {
+                        /** @var MenuItem $level2 */
                         $categoryIDs[] = $level2->getID();
                     }
                 }
@@ -266,6 +267,7 @@ class ArtikelListe
                 $categoryIDs[] = $category->getID();
                 if ($category->hasChildren()) {
                     foreach ($category->getChildren() as $level2) {
+                        /** @var MenuItem $level2 */
                         $categoryIDs[] = $level2->getID();
                     }
                 }

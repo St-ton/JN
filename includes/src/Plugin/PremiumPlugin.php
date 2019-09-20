@@ -112,9 +112,9 @@ class PremiumPlugin
         $plugin            = Helper::getPluginById($pluginID);
         $this->pluginID    = $pluginID;
         $this->exists      = \file_exists(\PFAD_ROOT . \PFAD_PLUGIN . $pluginID . '/' . \PLUGIN_INFO_FILE);
-        $this->isInstalled = $plugin !== null && $plugin->kPlugin > 0;
-        $this->isActivated = $this->isInstalled && (int)$plugin->nStatus === State::ACTIVATED;
-        $this->kPlugin     = $this->isInstalled ? (int)$plugin->kPlugin : 0;
+        $this->isInstalled = $plugin !== null && $plugin->getID() > 0;
+        $this->isActivated = $this->isInstalled && $plugin->getState() === State::ACTIVATED;
+        $this->kPlugin     = $this->isInstalled ? $plugin->getID() : 0;
     }
 
     /**

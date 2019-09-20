@@ -152,7 +152,7 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                ->assign('oPlugin', $plugin);
     } elseif (is_array($_POST['kPlugin'] ?? false) && count($_POST['kPlugin']) > 0) {
         $pluginIDs  = array_map('\intval', $_POST['kPlugin'] ?? []);
-        $deleteData = Request::postInt('delete-data') === 1;
+        $deleteData = Request::postInt('delete-data', 1) === 1;
         foreach ($pluginIDs as $pluginID) {
             if (isset($_POST['aktivieren'])) {
                 $res = $stateChanger->activate($pluginID);
@@ -197,7 +197,6 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
             } elseif (isset($_POST['deinstallieren'])) {
                 $plugin = $db->select('tplugin', 'kPlugin', $pluginID);
                 if (isset($plugin->kPlugin) && $plugin->kPlugin > 0) {
-                    Shop::dbg($deleteData, false, '$deleteData@'.__FILE__);
                     switch ($uninstaller->uninstall($pluginID, false, null, $deleteData)) {
                         case InstallCode::WRONG_PARAM:
                             $errorMsg = __('errorAtLeastOnePlugin');

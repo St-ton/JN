@@ -53,7 +53,7 @@
         {/if}
 
         {if isset($Einstellungen.news.news_kommentare_nutzen) && $Einstellungen.news.news_kommentare_nutzen === 'Y'}
-            {if $oNewsKommentar_arr|@count > 0}
+            {if $comments|@count > 0}
                 {if $oNewsArchiv->getURL() !== ''}
                     {assign var=articleURL value=$oNewsArchiv->getURL()}
                     {assign var=cParam_arr value=[]}
@@ -63,13 +63,13 @@
                 {/if}
                 <hr>
                 <div class="top10" id="comments">
-                    <h3 class="section-heading">{lang key='newsComments' section='news'}<span itemprop="commentCount" class="hidden">{$oNewsKommentar_arr|count}</span></h3>
-                    {foreach $oNewsKommentar_arr as $oNewsKommentar}
+                    <h3 class="section-heading">{lang key='newsComments' section='news'}<span itemprop="commentCount" class="hidden">{$comments|count}</span></h3>
+                    {foreach $comments as $comment}
                         <blockquote class="news-comment">
                             <p itemprop="comment">
-                                {$oNewsKommentar->getText()}
+                                {$comment->getText()}
                             </p>
-                            <small>{$oNewsKommentar->getName()}, {$oNewsKommentar->getDateCreated()->format('d.m.y H:i')}</small>
+                            <small>{$comment->getName()}, {$comment->getDateCreated()->format('d.m.y H:i')}</small>
                         </blockquote>
                     {/foreach}
                 </div>

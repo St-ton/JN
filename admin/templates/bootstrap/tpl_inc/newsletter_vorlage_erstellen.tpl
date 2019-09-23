@@ -78,18 +78,18 @@ function checkNewsletterSend() {ldelim}
                                             {/foreach}
                                         {/if}
                                         >{__('newsletterNoAccount')}</option>
-                                {foreach $oKundengruppe_arr as $oKundengruppe}
-                                    <option value="{$oKundengruppe->kKundengruppe}"
+                                {foreach $customerGroups as $customerGroup}
+                                    <option value="{$customerGroup->getID()}"
                                             {if isset($kKundengruppe_arr)}
                                                 {foreach $kKundengruppe_arr as $kKundengruppe}
-                                                    {if $oKundengruppe->kKundengruppe == $kKundengruppe}selected{/if}
+                                                    {if $customerGroup->getID() === (int)$kKundengruppe}selected{/if}
                                                 {/foreach}
                                             {elseif isset($cPostVar_arr.kKundengruppe)}
                                                 {foreach $cPostVar_arr.kKundengruppe as $kKundengruppe}
-                                                    {if $oKundengruppe->kKundengruppe == $kKundengruppe}selected{/if}
+                                                    {if $customerGroup->getID() ==) (int)$kKundengruppe}selected{/if}
                                                 {/foreach}
                                             {/if}
-                                            >{$oKundengruppe->cName}</option>
+                                            >{$customerGroup->getName()}</option>
                                 {/foreach}
                             </select>
                         </div>

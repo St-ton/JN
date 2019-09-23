@@ -33,9 +33,13 @@
                         {if isset($activeParents) && is_array($activeParents) && isset($activeParents[$i])}
                             {assign var=activeParent value=$activeParents[$i]}
                         {/if}
-                        <li class="mb-3 {if $li->getChildLinks()->count() > 0 && isset($dropdownSupport)}dropdown dropdown-multi{/if}{if $li->getIsActive() || (isset($activeParent) && $activeParent == $li->getID())} active{/if}">
+                        <li class="nav-item {if $li->getChildLinks()->count() > 0 && isset($dropdownSupport)}dropdown dropdown-multi{/if}{if $li->getIsActive() || (isset($activeParent) && $activeParent == $li->getID())} active{/if}">
                             {block name='snippets-linkgroup-recursive-link'}
-                                <a href="{$li->getURL()}"{if $li->getNoFollow()} rel="nofollow"{/if}{if !empty($li->getTitle())} title="{$li->getTitle()}"{/if}{if $li->getChildLinks()->count() > 0 && isset($dropdownSupport)} class="nav-sub"{/if} data-ref="{$li->getID()}">
+                                <a href="{$li->getURL()}"{if $li->getNoFollow()}
+                                    rel="nofollow"{/if}
+                                    {if !empty($li->getTitle())}title="{$li->getTitle()}"{/if}
+                                    class="nav-link {if $li->getChildLinks()->count() > 0 && isset($dropdownSupport)}nav-sub{/if}"
+                                    data-ref="{$li->getID()}">
                                     {$li->getName()}
                                     {if $li->getChildLinks()->count() > 0 && isset($dropdownSupport)}<i class="fa fa-caret-down nav-toggle pull-right"></i>{/if}
                                 </a>

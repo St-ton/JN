@@ -111,16 +111,16 @@
                                 <input name="previewImage" type="hidden" value="{if !empty($oNewsKategorie->getPreviewImage())}{$oNewsKategorie->getPreviewImage()}{/if}" />
                             </div>
                         </div>
-                        {if isset($oDatei_arr) && $oDatei_arr|@count > 0}
+                        {if $files|@count > 0}
                             <div class="form-group form-row align-items-center">
                                 <label class="col col-sm-4 col-form-label text-sm-right">{__('newsPics')}:</label>
                                 <div>
-                                    {foreach $oDatei_arr as $oDatei}
+                                    {foreach $file as $file}
                                         <div class="well col-xs-3">
-                                            <div class="thumbnail"><img src="{$oDatei->cURLFull}" alt=""></div>
+                                            <div class="thumbnail"><img src="{$file->cURLFull}" alt=""></div>
                                             <label>{__('link')}: </label>
                                             <div class="input-group">
-                                                <input class="form-control" type="text" disabled="disabled" value="$#{$oDatei->cName}#$">
+                                                <input class="form-control" type="text" disabled="disabled" value="$#{$file->cName}#$">
                                                 <div class="input-group-addon">
                                                     <a href="news.php?news=1&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->getID()}&delpic={$oDatei->cName}&token={$smarty.session.jtl_token}" title="{__('delete')}"><i class="fas fa-trash-alt"></i></a>
                                                 </div>

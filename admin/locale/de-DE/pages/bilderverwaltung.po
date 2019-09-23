@@ -18,7 +18,7 @@ msgid "headlineTotal"
 msgstr "Insgesamt"
 
 msgid "headlineCache"
-msgstr "Im Cache (Fallback *)"
+msgstr "Im Cache"
 
 msgid "headlineSize"
 msgstr "Größe"
@@ -40,9 +40,6 @@ msgstr "Artikelbild"
 
 msgid "corruptedPicsNote"
 msgstr "Fehlerhafte Bilder sind Bilder, die zwar einen Eintrag in der Datenbank haben, allerdings nicht als Datei auf dem Server vorhanden sind. Es werden maximal 50 Ergebnisse angezeigt."
-
-msgid "fallbackNote"
-msgstr "*Fallback: Bilder, die sich im Ordner „bilder/“ und nicht im Ordner „media/“ befinden."
 
 msgid "successCacheReset"
 msgstr "Cache wurde erfolgreich zurückgesetzt."
@@ -67,3 +64,9 @@ msgstr "Statistiken werden berechnet…"
 
 msgid "pendingImageGenerate"
 msgstr "Bilder werden generiert…"
+
+msgid "newscategory"
+msgstr "Newskategorie"
+
+msgid "cleanup"
+msgstr "Aufräumen"

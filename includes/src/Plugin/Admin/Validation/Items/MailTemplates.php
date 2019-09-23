@@ -40,7 +40,7 @@ final class MailTemplates extends AbstractItem
                 continue;
             }
             \preg_match(
-                '/[a-zA-Z0-9\/_\-äÄüÜöÖß' . ' ]+/',
+                '/[\w\/\- ]+/u',
                 $tpl['Name'],
                 $hits1
             );

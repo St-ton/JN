@@ -21,24 +21,20 @@
             browseOnZoneClick:     true,
             maxFileSize:           {$nMaxFileSize},
             initialPreview:        [
-                {if !empty($oDatei_arr)}
-                {foreach $oDatei_arr as $oDatei}
-                '<img src="{$oDatei->cURLFull}" class="file-preview-image img-fluid"/><a href="news.php?news=1&news_editieren=1&kNews={$oNews->getID()}&delpic={$oDatei->cName}&token={$smarty.session.jtl_token}" title="{__('delete')}"><i class="fas fa-trash-alt"></i></a>',
+                {foreach $files as $file}
+                '<img src="{$file->cURLFull}" class="file-preview-image img-fluid"/><a href="news.php?news=1&news_editieren=1&kNews={$oNews->getID()}&delpic={$file->cName}&token={$smarty.session.jtl_token}" title="{__('delete')}"><i class="fas fa-trash-alt"></i></a>',
                 {/foreach}
-                {/if}
             ],
             initialPreviewConfig:  [
-                {if !empty($oDatei_arr)}
-                {foreach $oDatei_arr as $oDatei}
+                {foreach $files as $file}
                 {
-                    caption: '$#{$oDatei->cName}#$',
+                    caption: '$#{$file->cName}#$',
                     width:   '120px'
                 },
                 {/foreach}
-                {/if}
             ]
-        }).on("filebatchselected", function(event, files) {
-            $('#images').fileinput("upload");
+        }).on('filebatchselected', function(event, files) {
+            $('#images').fileinput('upload');
         });
         var $preview = $('#previewImage');
         $preview.fileinput({
@@ -62,7 +58,7 @@
             maxFileSize:           {$nMaxFileSize},
             initialPreview:        [
                 {if !empty($oNews->getPreviewImage())}
-                '<img src="{$shopURL}/{$oNews->getPreviewImage()}" class="preview-image left"/>',
+                '<img src="{$shopURL}/{$oNews->getPreviewImage()}" class="preview-image"/>',
                 {/if}
             ],
             initialPreviewConfig:  [
@@ -73,8 +69,8 @@
                 }
                 {/if}
             ]
-        }).on("filebatchselected", function(event, files) {
-            $('#preview').fileinput("upload");
+        }).on('filebatchselected', function(event, files) {
+            $('#preview').fileinput('upload');
         });
     });
     {literal}
@@ -142,17 +138,17 @@
                                         {__('all')}
                                     </option>
                                     <option data-divider="true"></option>
-                                    {foreach $oKundengruppe_arr as $oKundengruppe}
-                                        <option value="{$oKundengruppe->kKundengruppe}"
+                                    {foreach $customerGroups as $customerGroup}
+                                        <option value="{$customerGroup->getID()}"
                                             {if isset($cPostVar_arr.kKundengruppe)}
                                                 {foreach $cPostVar_arr.kKundengruppe as $kKundengruppe}
-                                                    {if $oKundengruppe->kKundengruppe == $kKundengruppe}selected{/if}
+                                                    {if $customerGroup->getID() == $kKundengruppe}selected{/if}
                                                 {/foreach}
                                             {else}
                                                 {foreach $oNews->getCustomerGroups() as $kKundengruppe}
-                                                    {if $oKundengruppe->kKundengruppe === $kKundengruppe}selected{/if}
+                                                    {if $customerGroup->getID() === $kKundengruppe}selected{/if}
                                                 {/foreach}
-                                            {/if}>{$oKundengruppe->cName}</option>
+                                            {/if}>{$customerGroup->getName()}</option>
                                     {/foreach}
                                 </select>
                             </div>
@@ -225,7 +221,7 @@
                         </div>
                         {/if}
                         <div class="form-group form-row align-items-center">
-                            <label class="col col-sm-4 col-form-label text-sm-right"for="previewImage">{__('preview')}:</label>
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="previewImage">{__('preview')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <input class="form-control-upload" name="previewImage" id="previewImage" type="file"/>
                             </div>

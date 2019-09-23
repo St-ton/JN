@@ -86,7 +86,7 @@ function ackCheck(kPlugin, hash)
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {if isset($cTab) && $cTab === 'probleme'} active{/if}" data-toggle="tab" role="tab" href="#probleme">
-                                {__('problems')} <span class="badge">{$PluginErrorCount}</span>
+                                {__('problems')} <span class="badge">{$pluginErrorCount}</span>
                             </a>
                         </li>
                         <li class="nav-item">

@@ -14,6 +14,8 @@ use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Helpers\URL;
 use JTL\Language\LanguageHelper;
+use JTL\Media\Image;
+use JTL\Media\MultiSizeImage;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
@@ -24,6 +26,8 @@ use stdClass;
  */
 class Kategorie
 {
+    use MultiSizeImage;
+
     /**
      * @var int
      */
@@ -73,6 +77,16 @@ class Kategorie
      * @var array
      */
     public $cKategoriePfad_arr;
+
+    /**
+     * @var string
+     */
+    public $cBildpfad;
+
+    /**
+     * @var string
+     */
+    public $imageURL;
 
     /**
      * @var string
@@ -143,6 +157,7 @@ class Kategorie
      */
     public function __construct(int $id = 0, int $languageID = 0, int $customerGroupID = 0, bool $noCache = false)
     {
+        $this->setImageType(Image::TYPE_CATEGORY);
         if ($id > 0) {
             $this->loadFromDB($id, $languageID, $customerGroupID, false, $noCache);
         }
@@ -303,15 +318,17 @@ class Kategorie
      */
     private function addImage(stdClass $item): void
     {
-        $imageBaseURL = Shop::getImageBaseURL();
+        $imageBaseURL         = Shop::getImageBaseURL();
+        $this->cBildURL       = \BILD_KEIN_KATEGORIEBILD_VORHANDEN;
+        $this->cBild          = $imageBaseURL . \BILD_KEIN_KATEGORIEBILD_VORHANDEN;
+        $this->imageURL       = $imageBaseURL . \BILD_KEIN_KATEGORIEBILD_VORHANDEN;
+        $this->nBildVorhanden = 0;
         if (isset($item->cPfad) && \mb_strlen($item->cPfad) > 0) {
+            $this->cBildpfad      = $item->cPfad;
             $this->cBildURL       = \PFAD_KATEGORIEBILDER . $item->cPfad;
             $this->cBild          = $imageBaseURL . \PFAD_KATEGORIEBILDER . $item->cPfad;
             $this->nBildVorhanden = 1;
-        } else {
-            $this->cBildURL       = \BILD_KEIN_KATEGORIEBILD_VORHANDEN;
-            $this->cBild          = $imageBaseURL . \BILD_KEIN_KATEGORIEBILD_VORHANDEN;
-            $this->nBildVorhanden = 0;
+            $this->generateAllImageSizes(true, 1, $this->cBildpfad);
         }
     }
 

@@ -91,7 +91,7 @@ class Method implements MethodInterface
         $this->moduleID = $moduleID;
         // extract: za_mbqc_visa_jtl => myqc_visa
         $pattern = '&za_(.*)_jtl&is';
-        preg_match($pattern, $moduleID, $subpattern);
+        \preg_match($pattern, $moduleID, $subpattern);
         $this->moduleAbbr = $subpattern[1] ?? null;
 
         $this->loadSettings();
@@ -145,7 +145,7 @@ class Method implements MethodInterface
         ) {
             return Shop::getURL() . '/bestellvorgang.php';
         }
-        if (Shop::getSettings([CONF_KAUFABWICKLUNG])['kaufabwicklung']['bestellabschluss_abschlussseite'] === 'A') {
+        if (Shop::getSettings([\CONF_KAUFABWICKLUNG])['kaufabwicklung']['bestellabschluss_abschlussseite'] === 'A') {
             // Abschlussseite
             $oZahlungsID = Shop::Container()->getDB()->query(
                 'SELECT cId
@@ -191,7 +191,7 @@ class Method implements MethodInterface
      */
     public function getShopTitle(): string
     {
-        return Shop::getConfigValue(CONF_GLOBAL, 'global_shopname');
+        return Shop::getConfigValue(\CONF_GLOBAL, 'global_shopname');
     }
 
     /**
@@ -207,13 +207,13 @@ class Method implements MethodInterface
      */
     public function sendErrorMail(string $body)
     {
-        $conf                = Shop::getSettings([CONF_EMAILS]);
+        $conf                = Shop::getSettings([\CONF_EMAILS]);
         $mail                = new stdClass();
         $mail->toEmail       = $conf['emails']['email_master_absender'];
         $mail->toName        = $conf['emails']['email_master_absender_name'];
         $mail->fromEmail     = $mail->toEmail;
         $mail->fromName      = $mail->toName;
-        $mail->subject       = sprintf(
+        $mail->subject       = \sprintf(
             Shop::Lang()->get('errorMailSubject', 'paymentMethods'),
             $conf['global']['global_meta_title']
         );
@@ -226,8 +226,8 @@ class Method implements MethodInterface
         $mail->smtp_user     = $conf['eMails']['eMail_smtp_user'];
         $mail->smtp_pass     = $conf['eMails']['eMail_smtp_pass'];
         $mail->SMTPSecure    = $conf['emails']['email_smtp_verschluesselung'];
-        include_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
-        verschickeMail($mail);
+        include_once \PFAD_ROOT . \PFAD_INCLUDES . 'mailTools.php';
+        \verschickeMail($mail);
 
         return $this;
     }
@@ -260,12 +260,12 @@ class Method implements MethodInterface
             $paymentID->dDatum       = 'NOW()';
             Shop::Container()->getDB()->insert('tzahlungsid', $paymentID);
         } else {
-            Shop::Container()->getDB()->delete('tzahlungsession', ['cSID', 'kBestellung'], [session_id(), 0]);
+            Shop::Container()->getDB()->delete('tzahlungsession', ['cSID', 'kBestellung'], [\session_id(), 0]);
             $paymentSession               = new stdClass();
-            $paymentSession->cSID         = session_id();
+            $paymentSession->cSID         = \session_id();
             $paymentSession->cNotifyID    = '';
             $paymentSession->dZeitBezahlt = '_DBNULL_';
-            $paymentSession->cZahlungsID  = uniqid('', true);
+            $paymentSession->cZahlungsID  = \uniqid('', true);
             $paymentSession->dZeit        = 'NOW()';
             Shop::Container()->getDB()->insert('tzahlungsession', $paymentSession);
             $hash = '_' . $paymentSession->cZahlungsID;
@@ -289,7 +289,7 @@ class Method implements MethodInterface
      */
     public function addIncomingPayment(Bestellung $order, object $payment)
     {
-        $model = (object)array_merge([
+        $model = (object)\array_merge([
             'kBestellung'       => (int)$order->kBestellung,
             'cZahlungsanbieter' => empty($order->cZahlungsartName) ? $this->name : $order->cZahlungsartName,
             'fBetrag'           => 0,
@@ -312,7 +312,7 @@ class Method implements MethodInterface
     public function setOrderStatusToPaid(Bestellung $order)
     {
         $_upd                = new stdClass();
-        $_upd->cStatus       = BESTELLUNG_STATUS_BEZAHLT;
+        $_upd->cStatus       = \BESTELLUNG_STATUS_BEZAHLT;
         $_upd->dBezahltDatum = 'NOW()';
         Shop::Container()->getDB()->update('tbestellung', 'kBestellung', (int)$order->kBestellung, $_upd);
 
@@ -324,7 +324,7 @@ class Method implements MethodInterface
      */
     public function sendConfirmationMail(Bestellung $order)
     {
-        $this->sendMail($order->kBestellung, MAILTEMPLATE_BESTELLUNG_BEZAHLT);
+        $this->sendMail($order->kBestellung, \MAILTEMPLATE_BESTELLUNG_BEZAHLT);
 
         return $this;
     }
@@ -367,7 +367,7 @@ class Method implements MethodInterface
     /**
      * @inheritDoc
      */
-    public function doLog(string $msg, int $level = LOGLEVEL_NOTICE)
+    public function doLog(string $msg, int $level = \LOGLEVEL_NOTICE)
     {
         ZahlungsLog::add($this->moduleID, $msg, null, $level);
 
@@ -401,7 +401,7 @@ class Method implements MethodInterface
      */
     public function loadSettings()
     {
-        $this->paymentConfig = Shop::getSettings([CONF_ZAHLUNGSARTEN])['zahlungsarten'];
+        $this->paymentConfig = Shop::getSettings([\CONF_ZAHLUNGSARTEN])['zahlungsarten'];
 
         return $this;
     }
@@ -411,7 +411,7 @@ class Method implements MethodInterface
      */
     public function getSetting(string $key)
     {
-        $conf = Shop::getSettings([CONF_ZAHLUNGSARTEN, CONF_PLUGINZAHLUNGSARTEN]);
+        $conf = Shop::getSettings([\CONF_ZAHLUNGSARTEN, \CONF_PLUGINZAHLUNGSARTEN]);
 
         return $conf['zahlungsarten']['zahlungsart_' . $this->moduleAbbr . '_' . $key]
             ?? ($conf['pluginzahlungsarten'][$this->moduleID . '_' . $key] ?? null);
@@ -432,8 +432,8 @@ class Method implements MethodInterface
                         AND (cStatus = :stp OR cStatus = :sts)',
                     [
                         'cid' => (int)$customer->kKunde,
-                        'stp' => BESTELLUNG_STATUS_BEZAHLT,
-                        'sts' => BESTELLUNG_STATUS_VERSANDT
+                        'stp' => \BESTELLUNG_STATUS_BEZAHLT,
+                        'sts' => \BESTELLUNG_STATUS_VERSANDT
                     ],
                     ReturnType::SINGLE_OBJECT
                 );
@@ -444,13 +444,13 @@ class Method implements MethodInterface
                         'Bestellanzahl ' . $count . ' ist kleiner als die Mindestanzahl von ' .
                         $this->getSetting('min_bestellungen'),
                         null,
-                        LOGLEVEL_NOTICE
+                        \LOGLEVEL_NOTICE
                     );
 
                     return false;
                 }
             } else {
-                ZahlungsLog::add($this->moduleID, 'Es ist kein kKunde vorhanden', null, LOGLEVEL_NOTICE);
+                ZahlungsLog::add($this->moduleID, 'Es ist kein kKunde vorhanden', null, \LOGLEVEL_NOTICE);
 
                 return false;
             }
@@ -463,7 +463,7 @@ class Method implements MethodInterface
                 'Bestellwert ' . $cart->gibGesamtsummeWaren(true) .
                 ' ist kleiner als der Mindestbestellwert von ' . $this->getSetting('min'),
                 null,
-                LOGLEVEL_NOTICE
+                \LOGLEVEL_NOTICE
             );
 
             return false;
@@ -476,7 +476,7 @@ class Method implements MethodInterface
                 'Bestellwert ' . $cart->gibGesamtsummeWaren(true) .
                 ' ist groesser als der maximale Bestellwert von ' . $this->getSetting('max'),
                 null,
-                LOGLEVEL_NOTICE
+                \LOGLEVEL_NOTICE
             );
 
             return false;
@@ -576,9 +576,9 @@ class Method implements MethodInterface
      */
     public function reactivateOrder(int $orderID)
     {
-        $this->sendMail($orderID, MAILTEMPLATE_BESTELLUNG_RESTORNO);
+        $this->sendMail($orderID, \MAILTEMPLATE_BESTELLUNG_RESTORNO);
         $upd                = new stdClass();
-        $upd->cStatus       = BESTELLUNG_STATUS_IN_BEARBEITUNG;
+        $upd->cStatus       = \BESTELLUNG_STATUS_IN_BEARBEITUNG;
         $upd->dBezahltDatum = 'NOW()';
         Shop::Container()->getDB()->update('tbestellung', 'kBestellung', $orderID, $upd);
 
@@ -591,9 +591,9 @@ class Method implements MethodInterface
     public function cancelOrder(int $orderID, bool $delete = false)
     {
         if (!$delete) {
-            $this->sendMail($orderID, MAILTEMPLATE_BESTELLUNG_STORNO);
+            $this->sendMail($orderID, \MAILTEMPLATE_BESTELLUNG_STORNO);
             $upd                = new stdClass();
-            $upd->cStatus       = BESTELLUNG_STATUS_STORNO;
+            $upd->cStatus       = \BESTELLUNG_STATUS_STORNO;
             $upd->dBezahltDatum = 'NOW()';
             Shop::Container()->getDB()->update('tbestellung', 'kBestellung', $orderID, $upd);
         }
@@ -623,10 +623,10 @@ class Method implements MethodInterface
         $mail     = new Mail();
 
         switch ($type) {
-            case MAILTEMPLATE_BESTELLBESTAETIGUNG:
-            case MAILTEMPLATE_BESTELLUNG_TEILVERSANDT:
-            case MAILTEMPLATE_BESTELLUNG_AKTUALISIERT:
-            case MAILTEMPLATE_BESTELLUNG_VERSANDT:
+            case \MAILTEMPLATE_BESTELLBESTAETIGUNG:
+            case \MAILTEMPLATE_BESTELLUNG_TEILVERSANDT:
+            case \MAILTEMPLATE_BESTELLUNG_AKTUALISIERT:
+            case \MAILTEMPLATE_BESTELLUNG_VERSANDT:
                 $data->tkunde      = $customer;
                 $data->tbestellung = $order;
                 if ($customer->cMail !== '') {
@@ -634,26 +634,26 @@ class Method implements MethodInterface
                 }
                 break;
 
-            case MAILTEMPLATE_BESTELLUNG_BEZAHLT:
+            case \MAILTEMPLATE_BESTELLUNG_BEZAHLT:
                 $data->tkunde      = $customer;
                 $data->tbestellung = $order;
-                if (($order->Zahlungsart->nMailSenden & ZAHLUNGSART_MAIL_EINGANG) && $customer->cMail !== '') {
+                if (($order->Zahlungsart->nMailSenden & \ZAHLUNGSART_MAIL_EINGANG) && $customer->cMail !== '') {
                     $mailer->send($mail->createFromTemplateID($type, $data));
                 }
                 break;
 
-            case MAILTEMPLATE_BESTELLUNG_STORNO:
+            case \MAILTEMPLATE_BESTELLUNG_STORNO:
                 $data->tkunde      = $customer;
                 $data->tbestellung = $order;
-                if (($order->Zahlungsart->nMailSenden & ZAHLUNGSART_MAIL_STORNO) && $customer->cMail !== '') {
+                if (($order->Zahlungsart->nMailSenden & \ZAHLUNGSART_MAIL_STORNO) && $customer->cMail !== '') {
                     $mailer->send($mail->createFromTemplateID($type, $data));
                 }
                 break;
 
-            case MAILTEMPLATE_BESTELLUNG_RESTORNO:
+            case \MAILTEMPLATE_BESTELLUNG_RESTORNO:
                 $data->tkunde      = $customer;
                 $data->tbestellung = $order;
-                if (($order->Zahlungsart->nMailSenden & ZAHLUNGSART_MAIL_RESTORNO) && $customer->cMail !== '') {
+                if (($order->Zahlungsart->nMailSenden & \ZAHLUNGSART_MAIL_RESTORNO) && $customer->cMail !== '') {
                     $mailer->send($mail->createFromTemplateID($type, $data));
                 }
                 break;
@@ -691,7 +691,7 @@ class Method implements MethodInterface
                     return $paymentMethod;
                 }
                 $classFile = $pluginPaymentMethod->getClassFilePath();
-                if (file_exists($classFile)) {
+                if (\file_exists($classFile)) {
                     require_once $classFile;
                     $className               = $pluginPaymentMethod->getClassName();
                     $paymentMethod           = new $className($moduleID, $nAgainCheckout);

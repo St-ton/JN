@@ -198,7 +198,7 @@
                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         <select id="kSprache" name="kSprache" class="custom-select">
                             <option value="0">{__('all')}</option>
-                            {foreach $oSprachen_arr as $language}
+                            {foreach $availableLanguages as $language}
                                 <option value="{$language->getId()}" {if isset($oExtension->kSprache) && (int)$oExtension->kSprache === $language->getId()}selected="selected"{/if}>{$language->getLocalizedName()}</option>
                             {/foreach}
                         </select>
@@ -209,8 +209,8 @@
                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         <select id="kKundengruppe" name="kKundengruppe" class="custom-select">
                             <option value="0">{__('all')}</option>
-                            {foreach $oKundengruppe_arr as $oKundengruppe}
-                                <option value="{$oKundengruppe->getID()}" {if isset($oExtension->kKundengruppe) && $oExtension->kKundengruppe == $oKundengruppe->getID()}selected="selected"{/if}>{$oKundengruppe->getName()}</option>
+                            {foreach $customerGroups as $customerGroup}
+                                <option value="{$customerGroup->getID()}" {if isset($oExtension->kKundengruppe) && $oExtension->kKundengruppe == $customerGroup->getID()}selected="selected"{/if}>{$customerGroup->getName()}</option>
                             {/foreach}
                         </select>
                     </div>

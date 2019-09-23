@@ -205,6 +205,7 @@ $smarty->assign('URL_SHOP', $shopURL)
     ->assign('language', $langTag)
     ->assign('hasPendingUpdates', $hasPendingUpdates)
     ->assign('sprachen', LanguageHelper::getAllLanguages())
+    ->assign('availableLanguages', LanguageHelper::getInstance()->gibInstallierteSprachen())
     ->assign('languageName', Locale::getDisplayLanguage($langTag, $langTag))
     ->assign('languages', Shop::Container()->getGetText()->getAdminLanguages($langTag))
     ->assign('faviconAdminURL', Shop::getFaviconURL(true));

@@ -33,9 +33,9 @@
             }
                 <meta itemprop="image" content="{$imageBaseURL}{$oNavigationsinfo->getImageURL()}" />
                 <meta property="og:image" content="{$imageBaseURL}{$oNavigationsinfo->getImageURL()}" />
-            {elseif $nSeitenTyp === $smarty.const.PAGE_NEWSDETAIL && !empty($oNewsArchiv->getPreviewImage())}
-                <meta itemprop="image" content="{$imageBaseURL}{$oNewsArchiv->getPreviewImage()}" />
-                <meta property="og:image" content="{$imageBaseURL}{$oNewsArchiv->getPreviewImage()}" />
+            {elseif $nSeitenTyp === $smarty.const.PAGE_NEWSDETAIL && !empty($newsItem->getPreviewImage())}
+                <meta itemprop="image" content="{$imageBaseURL}{$newsItem->getPreviewImage()}" />
+                <meta property="og:image" content="{$imageBaseURL}{$newsItem->getPreviewImage()}" />
             {else}
                 <meta itemprop="image" content="{$ShopLogoURL}" />
                 <meta property="og:image" content="{$ShopLogoURL}" />

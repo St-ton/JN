@@ -42,7 +42,7 @@ final class WidgetsExtension extends AbstractItem
                 continue;
             }
             \preg_match(
-                '/[a-zA-Z0-9\/_\-äÄüÜöÖß' . '\(\) ]+/',
+                '/[\w\/\-() ]+/u',
                 $widget['Title'],
                 $hits1
             );

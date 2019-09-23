@@ -8,7 +8,6 @@ namespace JTL\OPC\Portlets\Panel;
 
 use JTL\OPC\InputType;
 use JTL\OPC\Portlet;
-use JTL\OPC\PortletInstance;
 
 /**
  * Class Panel

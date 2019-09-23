@@ -6,6 +6,7 @@
     {if $Suchergebnisse->getProductCount() > 0}
         {opcMountPoint id='opc_before_page_nav_'|cat:$navid}
 
+        <div class="d-none d-md-block">
         {if $hrTop|default:false === true}
             {block name='snippets-productlist-page-nav-hr-top'}
                 <hr>
@@ -46,7 +47,7 @@
                 {/block}
             {/if}
             {block name='snippets-productlist-page-nav-current-page-count'}
-                {col cols="auto" class="ml-auto productlist-item-info d-none d-md-flex border-right pr-3"}
+                {col cols="auto" class="ml-auto productlist-item-info d-flex {if $Suchergebnisse->getPages()->getMaxPage() > 1}border-right{/if} pr-3"}
                     {lang key="products"} {$Suchergebnisse->getOffsetStart()} - {$Suchergebnisse->getOffsetEnd()} {lang key='of' section='productOverview'} {$Suchergebnisse->getProductCount()}
                 {/col}
             {/block}
@@ -88,5 +89,6 @@
         {block name='snippets-productlist-page-nav-hr-bottom'}
             <hr class="mb-5">
         {/block}
+        </div>
     {/if}
 {/block}

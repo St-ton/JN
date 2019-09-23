@@ -113,7 +113,11 @@
                                 {$imageCache = $status->getImageCache()}
                                 <i class="fa fa-file-image-o text-four-times text-success"></i>
                                 <h3 style="margin-top:10px;margin-bottom:0">
-                                    {(($imageCache->generated[JTL\Media\Image::SIZE_XS] + $imageCache->generated[JTL\Media\Image::SIZE_SM] + $imageCache->generated[JTL\Media\Image::SIZE_MD] + $imageCache->generated[JTL\Media\Image::SIZE_LG]) / 4)|round:0}
+                                    {(($imageCache->getGeneratedBySize(\JTL\Media\Image::SIZE_XS)
+                                    + $imageCache->getGeneratedBySize(\JTL\Media\Image::SIZE_SM)
+                                    + $imageCache->getGeneratedBySize(\JTL\Media\Image::SIZE_MD)
+                                    + $imageCache->getGeneratedBySize(\JTL\Media\Image::SIZE_LG)
+                                    + $imageCache->getGeneratedBySize(\JTL\Media\Image::SIZE_XL))/ 5)|round:0}
                                 </h3>
                                 <span style="color:#c7c7c7">{__('imagesInCache')}</span>
                             </div>

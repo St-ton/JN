@@ -51,7 +51,7 @@ class Category extends AbstractImage
     {
         return Shop::Container()->getDB()->queryPrepared(
             'SELECT cPfad
-                FROM tkategorie
+                FROM tkategoriepict
                 WHERE kKategorie = :cid',
             ['cid' => $req->getID()],
             ReturnType::COLLECTION
@@ -71,7 +71,11 @@ class Category extends AbstractImage
         if (!empty($mixed->cPfad)) {
             return \pathinfo($mixed->cPfad)['filename'];
         }
-        $result = empty($mixed->cSeo) ? $mixed->cName : $mixed->cSeo;
+        if (isset($mixed->currentImagePath)) {
+            return \pathinfo($mixed->currentImagePath)['filename'];
+        }
+        $result = \method_exists($mixed, 'getURL') ? $mixed->getURL() : null;
+        $result = $result ?? (empty($mixed->cSeo) ? $mixed->cName : $mixed->cSeo);
 
         return empty($result) ? 'image' : Image::getCleanFilename($result);
     }

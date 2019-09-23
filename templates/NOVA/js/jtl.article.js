@@ -302,7 +302,7 @@
                 .each(function(i, item) {
                     var $item   = $(item),
                         wrapper = '#' + $item.closest('form').closest('div[data-wrapper="true"]').attr('id');
-
+console.log(wrapper);
                     $item.on('change', function () {
                         that.variationPrice($(this), true, wrapper);
                     });
@@ -1166,7 +1166,7 @@
                         $.evo.article().variationSetVal(item.key, item.value, wrapper);
                     });
 
-                    if (!$wrapper.hasClass('hover-enabled')) {
+                    if (!$wrapper.hasClass('productbox-hover')) {
                         $.evo.extended().autoheight();
                     }
                     $spinner.stop();

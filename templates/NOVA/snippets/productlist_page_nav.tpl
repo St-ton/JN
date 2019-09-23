@@ -6,7 +6,6 @@
     {if $Suchergebnisse->getProductCount() > 0}
         {opcMountPoint id='opc_before_page_nav_'|cat:$navid}
 
-        <div class="d-none d-md-block">
         {if $hrTop|default:false === true}
             {block name='snippets-productlist-page-nav-hr-top'}
                 <hr>
@@ -87,8 +86,7 @@
             {/if}
         {/row}
         {block name='snippets-productlist-page-nav-hr-bottom'}
-            <hr class="mb-5">
+            <hr  class="mb-5">
         {/block}
-        </div>
     {/if}
 {/block}

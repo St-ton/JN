@@ -759,11 +759,11 @@ final class Controller
             $tab    = Request::verifyGPDataString('tab');
             $params = [
                 'news'  => '1',
-                'nd'    => '1',
                 'token' => $_SESSION['jtl_token'],
             ];
             if ($newsItem !== null) {
                 $params['kNews'] = $newsItem->getID();
+                $params['nd']    = '1';
             }
             $this->newsRedirect(empty($tab) ? 'inaktiv' : $tab, $this->getMsg(), $params);
         } else {

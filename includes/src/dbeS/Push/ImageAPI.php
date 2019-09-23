@@ -9,7 +9,7 @@ namespace JTL\dbeS\Push;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\Media\Image;
-use JTL\Media\MediaImage;
+use JTL\Media\Image\Product;
 use JTL\Shop;
 use stdClass;
 
@@ -37,7 +37,7 @@ final class ImageAPI extends AbstractPush
             return;
         }
         foreach ($this->getProductImages($productID, $imageNo, $cgroupID) as $productImage) {
-            $image = MediaImage::getThumb(
+            $image = Product::getThumb(
                 Image::TYPE_PRODUCT,
                 (int)$productImage->kArtikel,
                 $productImage,
@@ -45,7 +45,7 @@ final class ImageAPI extends AbstractPush
                 (int)$productImage->nNr
             );
             if (!\file_exists($image)) {
-                MediaImage::cacheImage(MediaImage::toRequest($image));
+                Product::cacheImage(Product::toRequest($image));
             }
             if ($url === 1) {
                 echo Shop::getURL() . '/' . $image . "<br/>\n";

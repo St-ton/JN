@@ -14343,7 +14343,6 @@ aside .last-seen-link {
   border-color: #525252;
   color: #525252;
   background-color: transparent;
-  padding: 0.6rem 0.75rem;
 }
 .btn-icon-secondary:hover {
   border-color: #525252;
@@ -14429,6 +14428,19 @@ aside .last-seen-link {
   border-color: #F8BF00;
   background-color: #F8BF00;
   color: #ffffff;
+}
+
+.btn-dark {
+  color: #f5f7fa;
+  background-color: #525252;
+  border-color: #525252;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+.btn-dark:hover {
+  background-color: #707070;
+  border-color: #707070;
+  color: #f5f7fa;
 }
 
 .card-gray {
@@ -16967,7 +16979,7 @@ footer .card .card-body {
   padding: 0;
 }
 footer .nav-link {
-  padding: 0.4rem 0.8rem;
+  padding: 0.2rem 0;
 }
 footer .footer-additional {
   border-top: 0;
@@ -16976,6 +16988,10 @@ footer .footer-additional {
 }
 footer .footer-additional a {
   text-decoration: none;
+}
+footer .footer-additional li {
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 footer #copyright {
   background-color: #525252;
@@ -18798,6 +18814,13 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   padding-bottom: 0.5rem;
   margin-bottom: 1rem;
   margin-top: 1rem;
+}
+
+#footer .productlist-filter-headline {
+  border-bottom: 0 solid #ebebeb;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: "Open Sans", sans-serif;
 }
 
 .productlist-filter:not(.collapse) {

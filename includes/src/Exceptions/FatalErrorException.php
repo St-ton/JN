@@ -38,15 +38,16 @@ class FatalErrorException extends \ErrorException
     ) {
         parent::__construct($message, $code, $severity, $filename, $lineno, $previous);
 
-        if (null !== $trace) {
+        if ($trace !== null) {
             if (!$traceArgs) {
                 foreach ($trace as &$frame) {
                     unset($frame['args'], $frame['this'], $frame);
                 }
+                unset($frame);
             }
 
             $this->setTrace($trace);
-        } elseif (null !== $traceOffset) {
+        } elseif ($traceOffset !== null) {
             if (\function_exists('xdebug_get_function_stack')) {
                 $trace = \xdebug_get_function_stack();
                 if (0 < $traceOffset) {
@@ -60,9 +61,9 @@ class FatalErrorException extends \ErrorException
                         if (isset($frame['class'])) {
                             $frame['type'] = '::';
                         }
-                    } elseif ('dynamic' === $frame['type']) {
+                    } elseif ($frame['type'] === 'dynamic') {
                         $frame['type'] = '->';
-                    } elseif ('static' === $frame['type']) {
+                    } elseif ($frame['type'] === 'static') {
                         $frame['type'] = '::';
                     }
 

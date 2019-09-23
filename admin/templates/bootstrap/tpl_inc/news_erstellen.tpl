@@ -138,17 +138,17 @@
                                         {__('all')}
                                     </option>
                                     <option data-divider="true"></option>
-                                    {foreach $oKundengruppe_arr as $oKundengruppe}
-                                        <option value="{$oKundengruppe->kKundengruppe}"
+                                    {foreach $customerGroups as $customerGroup}
+                                        <option value="{$customerGroup->getID()}"
                                             {if isset($cPostVar_arr.kKundengruppe)}
                                                 {foreach $cPostVar_arr.kKundengruppe as $kKundengruppe}
-                                                    {if $oKundengruppe->kKundengruppe == $kKundengruppe}selected{/if}
+                                                    {if $customerGroup->getID() == $kKundengruppe}selected{/if}
                                                 {/foreach}
                                             {else}
                                                 {foreach $oNews->getCustomerGroups() as $kKundengruppe}
-                                                    {if $oKundengruppe->kKundengruppe === $kKundengruppe}selected{/if}
+                                                    {if $customerGroup->getID() === $kKundengruppe}selected{/if}
                                                 {/foreach}
-                                            {/if}>{$oKundengruppe->cName}</option>
+                                            {/if}>{$customerGroup->getName()}</option>
                                     {/foreach}
                                 </select>
                             </div>

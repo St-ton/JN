@@ -7,8 +7,9 @@
 namespace JTL\Catalog\Product;
 
 use JTL\DB\ReturnType;
-use JTL\Helpers\GeneralObject;
 use JTL\Language\LanguageHelper;
+use JTL\Media\Image;
+use JTL\Media\MultiSizeImage;
 use JTL\Shop;
 
 /**
@@ -17,6 +18,8 @@ use JTL\Shop;
  */
 class Merkmal
 {
+    use MultiSizeImage;
+
     /**
      * @var int
      */
@@ -100,6 +103,7 @@ class Merkmal
      */
     public function __construct(int $id = 0, bool $getValues = false, int $languageID = 0)
     {
+        $this->setImageType(Image::TYPE_CHARACTERISTIC);
         if ($id > 0) {
             $this->loadFromDB($id, $getValues, $languageID);
         }
@@ -150,6 +154,8 @@ class Merkmal
             foreach (\array_keys(\get_object_vars($data)) as $cMember) {
                 $this->$cMember = $data->$cMember;
             }
+            $this->kMerkmal = (int)$this->kMerkmal;
+            $this->nSort    = (int)$this->nSort;
         }
         if ($getValues && $this->kMerkmal > 0) {
             if ($languageID !== $defaultLanguageID) {
@@ -190,11 +196,11 @@ class Merkmal
                 $this->cBildpfadKlein      = \PFAD_MERKMALBILDER_KLEIN . $this->cBildpfad;
                 $this->nBildKleinVorhanden = 1;
             }
-
             if (\file_exists(\PFAD_MERKMALBILDER_NORMAL . $this->cBildpfad)) {
                 $this->cBildpfadNormal     = \PFAD_MERKMALBILDER_NORMAL . $this->cBildpfad;
                 $this->nBildGrossVorhanden = 1;
             }
+            $this->generateAllImageSizes(true, 1, $this->cBildpfad);
         }
         $this->cBildURLGross       = $imageBaseURL . $this->cBildpfadGross;
         $this->cBildURLNormal      = $imageBaseURL . $this->cBildpfadNormal;
@@ -212,67 +218,10 @@ class Merkmal
     }
 
     /**
-     * @param array $ids
-     * @param bool  $getValues
-     * @return array
+     * @return int|null
      */
-    public function holeMerkmale(array $ids, bool $getValues = false): array
+    public function getID(): ?int
     {
-        $characteristics = [];
-        if (!\is_array($ids) || \count($ids) === 0) {
-            return $characteristics;
-        }
-        $languageID = Shop::getLanguage();
-        if (!$languageID) {
-            $language = LanguageHelper::getDefaultLanguage();
-            if ($language->kSprache > 0) {
-                $languageID = $language->kSprache;
-            }
-        }
-        $languageID        = (int)$languageID;
-        $defaultLanguageID = (int)LanguageHelper::getDefaultLanguage()->kSprache;
-        if ($languageID !== $defaultLanguageID) {
-            $select = 'COALESCE(fremdSprache.cName, standardSprache.cName) AS cName';
-            $join   = 'INNER JOIN tmerkmalsprache AS standardSprache 
-                            ON standardSprache.kMerkmal = tmerkmal.kMerkmal
-                            AND standardSprache.kSprache = ' . $defaultLanguageID . '
-                        LEFT JOIN tmerkmalsprache AS fremdSprache 
-                            ON fremdSprache.kMerkmal = tmerkmal.kMerkmal
-                            AND fremdSprache.kSprache = ' . $languageID;
-        } else {
-            $select = 'tmerkmalsprache.cName';
-            $join   = 'INNER JOIN tmerkmalsprache 
-                            ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
-                            AND tmerkmalsprache.kSprache = ' . $languageID;
-        }
-
-        $characteristics = Shop::Container()->getDB()->query(
-            'SELECT tmerkmal.kMerkmal, tmerkmal.nSort, tmerkmal.cBildpfad, tmerkmal.cTyp, ' .
-                $select . ' 
-                FROM tmerkmal ' .
-                $join . ' WHERE tmerkmal.kMerkmal IN(' . \implode(', ', \array_filter($ids, '\intval')) .
-                ') ORDER BY tmerkmal.nSort',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-
-        if ($getValues && GeneralObject::hasCount($characteristics)) {
-            $imageBaseURL = Shop::getImageBaseURL();
-            foreach ($characteristics as $characteristic) {
-                $value                            = new MerkmalWert(0, $this->kSprache);
-                $characteristic->oMerkmalWert_arr = $value->holeAlleMerkmalWerte($characteristic->kMerkmal);
-
-                if (\mb_strlen($characteristic->cBildpfad) > 0) {
-                    $characteristic->cBildpfadKlein  = \PFAD_MERKMALBILDER_KLEIN . $characteristic->cBildpfad;
-                    $characteristic->cBildpfadNormal = \PFAD_MERKMALBILDER_NORMAL . $characteristic->cBildpfad;
-                } else {
-                    $characteristic->cBildpfadKlein  = \BILD_KEIN_MERKMALBILD_VORHANDEN;
-                    $characteristic->cBildpfadNormal = \BILD_KEIN_MERKMALBILD_VORHANDEN;
-                }
-                $characteristic->cBildURLKlein  = $imageBaseURL . $characteristic->cBildpfadKlein;
-                $characteristic->cBildURLNormal = $imageBaseURL . $characteristic->cBildpfadNormal;
-            }
-        }
-
-        return $characteristics;
+        return $this->kMerkmal;
     }
 }

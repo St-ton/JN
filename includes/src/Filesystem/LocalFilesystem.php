@@ -319,7 +319,7 @@ class LocalFilesystem extends AbstractFilesystem
             throw new Exception('Archive file could not be created.', $code);
         }
         foreach ($finder->files() as $file) {
-            /** @var SplFileInfo\Symfony\Component\Finder\SplFileInfo $file */
+            /** @var \Symfony\Component\Finder\SplFileInfo $file */
             $real = $file->getRealpath();
             if ($real !== false && !$file->isDir()) {
                 $zipArchive->addFile($real, \str_replace($basePath, '', $file->getPathname()));

@@ -5,7 +5,7 @@
  */
 
 use JTL\Alert\Alert;
-use JTL\Media\MediaImage;
+use JTL\Media\Image\Product;
 use JTL\Shop;
 use JTL\Shopsetting;
 
@@ -20,11 +20,26 @@ if (isset($_POST['speichern'])) {
         saveAdminSectionSettings(CONF_BILDER, $_POST),
         'saveSettings'
     );
-    MediaImage::clearCache('product');
+    Product::clearCache();
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE, CACHING_GROUP_CATEGORY]);
     $shopSettings->reset();
 }
 
+$indices = [
+    'kategorien'   => __('category'),
+    'variationen'  => __('variations'),
+    'artikel'      => __('product'),
+    'hersteller'   => __('manufacturer'),
+    'merkmal'      => __('attributes'),
+    'merkmalwert'  => __('attributeValues'),
+    'konfiggruppe' => __('configGroup')
+];
+$sizes   = ['mini', 'klein', 'normal', 'gross'];
+$dims    = ['breite', 'hoehe'];
+
 $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_BILDER))
-       ->assign('oConfig', Shop::getSettings([CONF_BILDER])['bilder'])
-       ->display('bilder.tpl');
+    ->assign('oConfig', Shop::getSettings([CONF_BILDER])['bilder'])
+    ->assign('indices', $indices)
+    ->assign('sizes', $sizes)
+    ->assign('dims', $dims)
+    ->display('bilder.tpl');

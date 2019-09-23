@@ -13,7 +13,7 @@ use JTL\MagicCompatibilityTrait;
  * Class PluginBC
  * @package JTL\Plugin
  */
-class PluginBC extends AbstractPlugin
+abstract class PluginBC extends AbstractPlugin
 {
     use MagicCompatibilityTrait;
 

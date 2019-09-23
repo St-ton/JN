@@ -6,7 +6,6 @@
 
 namespace JTL\Media;
 
-use JTL\DB\ReturnType;
 use JTL\Shop;
 
 /**
@@ -18,10 +17,10 @@ class MediaImageRequest
     /**
      * @var string
      */
-    public $type;
+    public $type = Image::TYPE_PRODUCT;
 
     /**
-     * @var string|int
+     * @var int
      */
     public $id;
 
@@ -54,6 +53,11 @@ class MediaImageRequest
      * @var string
      */
     public $ext;
+
+    /**
+     * @var string
+     */
+    public $sourcePath;
 
     /**
      * @var array
@@ -95,9 +99,9 @@ class MediaImageRequest
     /**
      * @return int
      */
-    public function getId(): int
+    public function getID(): int
     {
-        return (int)$this->id;
+        return (int)($this->id ?? 0);
     }
 
     /**
@@ -125,7 +129,7 @@ class MediaImageRequest
      */
     public function getSize(): MediaImageSize
     {
-        return new MediaImageSize($this->size);
+        return new MediaImageSize($this->size, $this->type);
     }
 
     /**
@@ -158,7 +162,7 @@ class MediaImageRequest
     public function getPath(): ?string
     {
         if (empty($this->path)) {
-            $this->path = $this->getPathById();
+            $this->path = $this->getPathByID();
         }
 
         return $this->path;
@@ -167,10 +171,22 @@ class MediaImageRequest
     /**
      * @return string|null
      */
+    public function getSourcePath(): ?string
+    {
+        if (empty($this->sourcePath)) {
+            $this->sourcePath = $this->getPathByID();
+        }
+
+        return $this->sourcePath;
+    }
+
+    /**
+     * @return string|null
+     */
     public function getExt(): ?string
     {
         if (empty($this->ext)) {
-            $info      = \pathinfo($this->getPath());
+            $info      = \pathinfo($this->getSourcePath());
             $this->ext = $info['extension'] ?? null;
         }
 
@@ -183,10 +199,10 @@ class MediaImageRequest
      * @param bool $absolute
      * @return null|string storage path
      */
-    public function getRaw(bool $absolute = false): ?string
+    public function getRaw(bool $absolute = true): ?string
     {
-        $path = $this->getPath();
-        $path = empty($path) ? null : \sprintf('%s%s', self::getStoragePath(), $path);
+        $path = $this->getSourcePath();
+        $path = empty($path) ? null : \sprintf('%s%s', $this->getRealStoragePath(), $path);
 
         return $path !== null && $absolute === true
             ? \PFAD_ROOT . $path
@@ -200,41 +216,37 @@ class MediaImageRequest
      */
     public function getThumb($size = null, bool $absolute = false): string
     {
-        $size     = $size ?? $this->getSize();
+        $size     = $size ?? $this->getSize()->getSize();
         $number   = $this->getNumber() > 1
             ? '~' . $this->getNumber()
             : '';
         $settings = Image::getSettings();
         $ext      = $this->ext ?: $settings['format'];
-        $thumb    = \sprintf(
-            '%s/%d/%s/%s%s.%s',
-            self::getCachePath($this->getType()),
-            $this->getId(),
-            $size,
-            $this->getName(),
-            $number,
-            $ext
-        );
+        $id       = $this->getID();
+        if ($id > 0) {
+            $thumb = \sprintf(
+                '%s/%d/%s/%s%s.%s',
+                self::getCachePath($this->getType()),
+                $id,
+                $size,
+                $this->getName(),
+                $number,
+                $ext === 'auto' ? 'jpg' : $ext
+            );
+        } else {
+            $thumb = \sprintf(
+                '%s/%s/%s%s.%s',
+                self::getCachePath($this->getType()),
+                $size,
+                $this->getName(),
+                $number,
+                $ext === 'auto' ? 'jpg' : $ext
+            );
+        }
 
         return $absolute === true
             ? \PFAD_ROOT . $thumb
             : $thumb;
-    }
-
-    /**
-     * @param string|MediaImageSize $size
-     * @return string
-     */
-    public function getFallbackThumb($size = null): string
-    {
-        $size = $size ?? $this->getSize();
-
-        return \sprintf(
-            '%s/%s/%s',
-            \rtrim(\PFAD_PRODUKTBILDER, '/'),
-            Image::mapSize($size, true),
-            $this->getPath()
-        );
     }
 
     /**
@@ -249,26 +261,14 @@ class MediaImageRequest
     /**
      * @return string|null
      */
-    public function getPathById(): ?string
+    public function getPathByID(): ?string
     {
-        $id = $this->getId();
-//        $type   = $this->getType();
-        $number = $this->getNumber();
-
         if (($path = $this->cachedPath()) !== null) {
             return $path;
         }
-
-        $item = Shop::Container()->getDB()->queryPrepared(
-            'SELECT kArtikel AS id, nNr AS number, cPfad AS path
-                FROM tartikelpict
-                WHERE kArtikel = :pid AND nNr = :no ORDER BY nNr LIMIT 1',
-            ['pid' => $id, 'no' => $number],
-            ReturnType::SINGLE_OBJECT
-        );
-
-        $path = $item->path ?? null;
-
+        $instance = Media::getClass($this->getType());
+        /** @var IMedia $instance */
+        $path = $instance::getPathByID($this->getID(), $this->getNumber());
         $this->cachedPath($path);
 
         return $path;
@@ -278,16 +278,26 @@ class MediaImageRequest
      * @param string|null $path
      * @return string|null
      */
-    protected function cachedPath($path = null): ?string
+    protected function cachedPath(string $path = null): ?string
     {
-        $hash = \sprintf('%s-%s-%s', $this->getId(), $this->getNumber(), $this->getType());
+        $hash = \sprintf('%s-%s-%s', $this->getID(), $this->getNumber(), $this->getType());
         if ($path === null) {
             return static::$cache[$hash] ?? null;
         }
-
         static::$cache[$hash] = $path;
 
         return $path;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRealStoragePath(): string
+    {
+        $instance = Media::getClass($this->getType());
+        /** @var IMedia $instance */
+
+        return $instance::getStoragePath();
     }
 
     /**

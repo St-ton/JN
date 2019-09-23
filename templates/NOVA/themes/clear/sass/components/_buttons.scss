@@ -177,7 +177,6 @@
   border-color: $gray-dark;
   color: $gray-dark;
   background-color: transparent;
-  padding: 0.6rem 0.75rem;
   @include hover {
     border-color: $gray-dark;
     color: $white;
@@ -225,4 +224,17 @@
   &:not(:disabled):not(.disabled):active,
   &:not(:disabled):not(.disabled).active,
   .show > &.dropdown-toggle { border-color: $primary; background-color: $primary; color: $white; }
+}
+
+.btn-dark {
+  color: $gray-lighter;
+  background-color: $gray-darker;
+  border-color: $gray-darker;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  &:hover {
+    background-color: $gray;
+    border-color: $gray;
+    color: $gray-lighter;
+  }
 }

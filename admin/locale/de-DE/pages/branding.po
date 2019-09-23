@@ -36,27 +36,27 @@ msgid "brandingFileNameDesc"
 msgstr "Hier können Sie eine Bilddatei für das Wasserzeichen angeben. Wir empfehlen eine PNG-Datei mit transparentem Hintergrund."
 
 # branding types (tbranding)
-msgid "Artikel"
+msgid "product"
 msgstr "Artikel"
 
 # branding types (tbranding)
-msgid "Kategorie"
-msgstr "Kategorie"
+msgid "category"
+msgstr "Kategorien"
 
 # branding types (tbranding)
-msgid "Variationen"
+msgid "variation"
 msgstr "Variationen"
 
 # branding types (tbranding)
-msgid "Merkmale"
+msgid "characteristic"
 msgstr "Merkmale"
 
 # branding types (tbranding)
-msgid "Merkmalwerte"
+msgid "characteristicvalue"
 msgstr "Merkmalwerte"
 
 # branding types (tbranding)
-msgid "Hersteller"
+msgid "manufacturer"
 msgstr "Hersteller"
 
 #placeholder: name of image category

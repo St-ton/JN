@@ -33,8 +33,7 @@ abstract class AbstractImage implements IMedia
     /**
      * @var string
      */
-    protected $regEx = '/^bilder\/produkte\/(?P<size>mini|klein|normal|gross)' .
-    '\/(?P<path>(?P<name>[a-zA-Z0-9\-_]+)\.(?P<ext>jpg|jpeg|png|gif))$/';
+    protected $regEx = '';
 
     /**
      * @inheritdoc
@@ -44,7 +43,7 @@ abstract class AbstractImage implements IMedia
         try {
             $request      = '/' . \ltrim($request, '/');
             $mediaReq     = $this->create($request);
-            $allowedNames = $this->getImageNames($mediaReq);
+            $allowedNames = static::getImageNames($mediaReq);
             if (\count($allowedNames) === 0) {
                 throw new Exception('No such image id: ' . (int)$mediaReq->id);
             }
@@ -158,7 +157,7 @@ abstract class AbstractImage implements IMedia
     /**
      * @inheritdoc
      */
-    protected function getImageNames(MediaImageRequest $req): array
+    public static function getImageNames(MediaImageRequest $req): array
     {
         return [];
     }
@@ -273,7 +272,7 @@ abstract class AbstractImage implements IMedia
         $result     = [];
         $rawImage   = null;
         $rawPath    = $req->getRaw();
-        $extensions = [$req->getExt()];
+        $extensions = [$req->getExt() === 'auto' ? 'jpg' : $req->getExt()];
         if (Image::hasWebPSupport()) {
             $extensions[] = 'webp';
         }

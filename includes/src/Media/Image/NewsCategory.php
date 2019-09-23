@@ -48,7 +48,7 @@ class NewsCategory extends AbstractImage
     /**
      * @inheritdoc
      */
-    protected function getImageNames(MediaImageRequest $req): array
+    public static function getImageNames(MediaImageRequest $req): array
     {
         return Shop::Container()->getDB()->queryPrepared(
             'SELECT a.kNewsKategorie, a.cPreviewImage AS path, t.name AS title

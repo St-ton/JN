@@ -9,6 +9,7 @@ namespace JTL\Media\Image;
 use Exception;
 use FilesystemIterator;
 use Generator;
+use Imagick;
 use JTL\DB\DbInterface;
 use JTL\Media\Image;
 use JTL\Media\IMedia;
@@ -41,30 +42,32 @@ abstract class AbstractImage implements IMedia
     public function handle(string $request)
     {
         try {
-            $request  = '/' . \ltrim($request, '/');
-            $mediaReq = $this->create($request);
-            $imgNames = $this->getImageNames($mediaReq);
-            if (\count($imgNames) === 0) {
+            $request      = '/' . \ltrim($request, '/');
+            $mediaReq     = $this->create($request);
+            $allowedNames = $this->getImageNames($mediaReq);
+            if (\count($allowedNames) === 0) {
                 throw new Exception('No such image id: ' . (int)$mediaReq->id);
             }
 
-            $imgFilePath = null;
-            $matchFound  = false;
-            foreach ($imgNames as $imgName) {
-                $mediaReq->path   = $mediaReq->name . '.' . $mediaReq->ext;
+            $imgPath      = '';
+            $matchFound   = false;
+            $allowedFiles = [];
+            foreach ($allowedNames as $allowedName) {
+                $mediaReq->path   = $allowedName . '.' . $mediaReq->ext;
+                $mediaReq->name   = $allowedName;
                 $mediaReq->number = (int)$mediaReq->number;
-                $imgName->imgPath = static::getThumbByRequest($mediaReq);
-                if ('/' . $imgName->imgPath === $request) {
-                    $matchFound  = true;
-                    $imgFilePath = \PFAD_ROOT . $imgName->imgPath;
+                $imgPath          = static::getThumbByRequest($mediaReq);
+                $allowedFiles[]   = $imgPath;
+                if ('/' . $imgPath === $request) {
+                    $matchFound = true;
                     break;
                 }
             }
             if ($matchFound === false) {
-                \header('Location: ' . Shop::getURL() . '/' . $imgNames[0]->imgPath, true, 301);
+                \header('Location: ' . Shop::getURL() . '/' . $allowedFiles[0], true, 301);
                 exit;
             }
-            if (!\is_file($imgFilePath)) {
+            if (!\is_file(\PFAD_ROOT . $imgPath)) {
                 Image::render($mediaReq, true);
             }
         } catch (Exception $e) {
@@ -143,6 +146,7 @@ abstract class AbstractImage implements IMedia
     {
         return $this->parse($request) !== null;
     }
+
     /**
      * @inheritdoc
      */
@@ -266,41 +270,45 @@ abstract class AbstractImage implements IMedia
      */
     public static function cacheImage(MediaImageRequest $req, bool $overwrite = false): array
     {
-        $result   = [];
-        $rawImage = null;
-        $rawPath  = $req->getRaw();
+        $result     = [];
+        $rawImage   = null;
+        $rawPath    = $req->getRaw();
+        $extensions = [$req->getExt()];
+        if (Image::hasWebPSupport()) {
+            $extensions[] = 'webp';
+        }
         if ($overwrite === true) {
             static::clearCache($req->getID());
         }
-        foreach (Image::getAllSizes() as $size) {
-            $res = (object)[
-                'success'    => true,
-                'error'      => null,
-                'renderTime' => 0,
-                'cached'     => false,
-            ];
-            try {
-                $req->size   = $size;
-                $thumbPath   = $req->getThumb(null, true);
-                $res->cached = \is_file($thumbPath);
-                if ($res->cached === false) {
-                    $renderStart = \microtime(true);
-                    if ($rawImage === null && ($rawPath !== null && !\is_file($rawPath))) {
-                        throw new Exception(\sprintf('Image source "%s" does not exist', $rawPath));
+        foreach ($extensions as $extension) {
+            $req->setExt($extension);
+            foreach (Image::getAllSizes() as $size) {
+                $res = (object)[
+                    'success'    => true,
+                    'error'      => null,
+                    'renderTime' => 0,
+                    'cached'     => false,
+                ];
+                try {
+                    $req->setSizeType($size);
+                    $thumbPath   = $req->getThumb(null, true);
+                    $res->cached = \is_file($thumbPath);
+                    if ($res->cached === false) {
+                        $renderStart = \microtime(true);
+                        if ($rawImage === null && ($rawPath !== null && !\is_file($rawPath))) {
+                            throw new Exception(\sprintf('Image source "%s" does not exist', $rawPath));
+                        }
+                        Image::render($req);
+                        $res->renderTime = (\microtime(true) - $renderStart) * 1000;
                     }
-                    Image::render($req);
-                    $res->renderTime = (\microtime(true) - $renderStart) * 1000;
+                } catch (Exception $e) {
+                    $res->success = false;
+                    $res->error   = $e->getMessage();
                 }
-            } catch (Exception $e) {
-                $res->success = false;
-                $res->error   = $e->getMessage();
+                $result[$size] = $res;
             }
-            $result[$size] = $res;
         }
-
-        if ($rawImage !== null) {
-            unset($rawImage);
-        }
+        unset($rawImage);
 
         return $result;
     }

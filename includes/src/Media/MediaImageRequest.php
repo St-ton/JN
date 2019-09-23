@@ -105,6 +105,14 @@ class MediaImageRequest
     }
 
     /**
+     * @param int $id
+     */
+    public function setID(int $id): void
+    {
+        $this->id = $id;
+    }
+
+    /**
      * @return string
      */
     public function getName(): string
@@ -117,11 +125,27 @@ class MediaImageRequest
     }
 
     /**
+     * @param string $name
+     */
+    public function setName(string $name): void
+    {
+        $this->name = $name;
+    }
+
+    /**
      * @return string|null
      */
     public function getType(): ?string
     {
         return $this->type;
+    }
+
+    /**
+     * @param string $type
+     */
+    public function setType(string $type): void
+    {
+        $this->type = $type;
     }
 
     /**
@@ -141,6 +165,14 @@ class MediaImageRequest
     }
 
     /**
+     * @param string $size
+     */
+    public function setSizeType(string $size): void
+    {
+        $this->size = $size;
+    }
+
+    /**
      * @return int
      */
     public function getNumber(): int
@@ -149,11 +181,27 @@ class MediaImageRequest
     }
 
     /**
+     * @param int $number
+     */
+    public function setNumber(int $number): void
+    {
+        $this->number = $number;
+    }
+
+    /**
      * @return int
      */
     public function getRatio(): int
     {
         return \max((int)$this->ratio, 1);
+    }
+
+    /**
+     * @param int $ratio
+     */
+    public function setRatio(int $ratio): void
+    {
+        $this->ratio = $ratio;
     }
 
     /**
@@ -169,6 +217,14 @@ class MediaImageRequest
     }
 
     /**
+     * @param string $path
+     */
+    public function setPath(string $path): void
+    {
+        $this->path = $path;
+    }
+
+    /**
      * @return string|null
      */
     public function getSourcePath(): ?string
@@ -178,6 +234,14 @@ class MediaImageRequest
         }
 
         return $this->sourcePath;
+    }
+
+    /**
+     * @param string $sourcePath
+     */
+    public function setSourcePath(string $sourcePath): void
+    {
+        $this->sourcePath = $sourcePath;
     }
 
     /**
@@ -191,6 +255,14 @@ class MediaImageRequest
         }
 
         return $this->ext;
+    }
+
+    /**
+     * @param string $ext
+     */
+    public function setExt(string $ext): void
+    {
+        $this->ext = $ext;
     }
 
     /**

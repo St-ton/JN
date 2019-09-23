@@ -9,6 +9,7 @@ namespace JTL\Media\Image;
 use Generator;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Language\LanguageHelper;
 use JTL\Media\Image;
 use JTL\Media\MediaImageRequest;
 use JTL\Shop;
@@ -49,15 +50,14 @@ class Category extends AbstractImage
     protected function getImageNames(MediaImageRequest $req): array
     {
         return Shop::Container()->getDB()->queryPrepared(
-            'SELECT kKategorie, cName, cSeo
-                FROM tkategorie AS a
-                WHERE kKategorie = :cid
-                UNION SELECT asp.kKategorie, asp.cName, asp.cSeo
-                    FROM tkategoriesprache AS asp JOIN tkategorie AS a ON asp.kKategorie = a.kKategorie
-                    WHERE asp.kKategorie = :cid',
-            ['cid' => $req->id],
-            ReturnType::ARRAY_OF_OBJECTS
-        );
+            'SELECT cPfad
+                FROM tkategoriepict
+                WHERE kKategorie = :cid',
+            ['cid' => $req->getID()],
+            ReturnType::COLLECTION
+        )->map(function ($item) {
+            return self::getCustomName($item);
+        })->toArray();
     }
 
     /**
@@ -65,10 +65,17 @@ class Category extends AbstractImage
      */
     public static function getCustomName($mixed): string
     {
-        $result = \method_exists($mixed, 'getURL') ? $mixed->getURL() : null;
-        if ($result === null) {
-            $result = empty($mixed->cSeo) ? $mixed->cName : $mixed->cSeo;
+        if (\is_string($mixed)) {
+            return \pathinfo($mixed)['filename'];
         }
+        if (!empty($mixed->cPfad)) {
+            return \pathinfo($mixed->cPfad)['filename'];
+        }
+        if (isset($mixed->currentImagePath)) {
+            return \pathinfo($mixed->currentImagePath)['filename'];
+        }
+        $result = \method_exists($mixed, 'getURL') ? $mixed->getURL() : null;
+        $result = $result ?? (empty($mixed->cSeo) ? $mixed->cName : $mixed->cSeo);
 
         return empty($result) ? 'image' : Image::getCleanFilename($result);
     }

@@ -196,7 +196,6 @@ class Manager
         }
         $instance = Media::getClass($type);
         /** @var IMedia $instance */
-
         $started = \time();
         $result  = (object)[
             'total'          => 0,

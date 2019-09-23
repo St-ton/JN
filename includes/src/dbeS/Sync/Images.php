@@ -175,7 +175,6 @@ final class Images extends AbstractSync
         if (!\is_array($xml['bilder'])) {
             return;
         }
-        $productImages      = $this->mapper->mapArray($xml['bilder'], 'tartikelpict', 'mArtikelPict');
         $categoryImages     = $this->mapper->mapArray($xml['bilder'], 'tkategoriepict', 'mKategoriePict');
         $propertyImages     = $this->mapper->mapArray($xml['bilder'], 'teigenschaftwertpict', 'mEigenschaftWertPict');
         $manufacturerImages = $this->mapper->mapArray($xml['bilder'], 'therstellerbild', 'mEigenschaftWertPict');
@@ -185,7 +184,6 @@ final class Images extends AbstractSync
 
         \executeHook(\HOOK_BILDER_XML_BEARBEITE, [
             'Pfad'             => $unzipPath,
-            'Artikel'          => &$productImages,
             'Kategorie'        => &$categoryImages,
             'Eigenschaftswert' => &$propertyImages,
             'Hersteller'       => &$manufacturerImages,
@@ -195,7 +193,6 @@ final class Images extends AbstractSync
         ]);
         $this->unzipPath = $unzipPath;
 
-        $this->handleProductImages($productImages, $sql);
         $this->handleCategoryImages($categoryImages, $sql);
         $this->handlePropertyImages($propertyImages, $sql);
         $this->handleManufacturerImages($manufacturerImages);
@@ -207,7 +204,6 @@ final class Images extends AbstractSync
         }
 
         \executeHook(\HOOK_BILDER_XML_BEARBEITE_ENDE, [
-            'Artikel'          => &$productImages,
             'Kategorie'        => &$categoryImages,
             'Eigenschaftswert' => &$propertyImages,
             'Hersteller'       => &$manufacturerImages,
@@ -538,139 +534,6 @@ final class Images extends AbstractSync
     }
 
     /**
-     * @param stdClass[] $images
-     * @param string     $sql
-     */
-    private function handleProductImages(array $images, string $sql): void
-    {
-        if (\count($images) === 0) {
-            return;
-        }
-        foreach ($images as $image) {
-            if (\strlen($image->cPfad) <= 0) {
-                continue;
-            }
-            $image->nNr  = (int)$image->nNr;
-            $imgFilename = $image->cPfad;
-            $format      = $this->getExtension($this->unzipPath . $imgFilename);
-            if (!$format) {
-                $this->logger->error(
-                    'Bildformat des Artikelbildes konnte nicht ermittelt werden. Datei ' .
-                    $imgFilename . ' keine Bilddatei?'
-                );
-                continue;
-            }
-            // first delete by kArtikelPict
-            $this->deleteProductImage((int)$image->kArtikelPict);
-            // then delete by kArtikel + nNr since Wawi > .99923 has changed all kArtikelPict keys
-            if ($image->nNr > 0) {
-                $this->deleteProductImageByProductID((int)$image->kArtikel, $image->nNr);
-            }
-            if ($image->kMainArtikelBild > 0) {
-                $main = $this->db->select(
-                    'tartikelpict',
-                    'kArtikelPict',
-                    (int)$image->kMainArtikelBild
-                );
-                if (!empty($main->cPfad)) {
-                    $image->cPfad = $this->getNewFilename($main->cPfad);
-                    $this->upsert('tartikelpict', [$image], 'kArtikel', 'kArtikelpict');
-                } else {
-                    $this->createProductImage($image, $format, $imgFilename, $sql);
-                }
-            } else {
-                $productImage = $this->db->select(
-                    'tartikelpict',
-                    'kArtikelPict',
-                    (int)$image->kArtikelPict
-                );
-                // update all references, if img is used by other products
-                if (!empty($productImage->cPfad)) {
-                    $this->db->update(
-                        'tartikelpict',
-                        'kMainArtikelBild',
-                        (int)$productImage->kArtikelPict,
-                        (object)['cPfad' => $productImage->cPfad]
-                    );
-                }
-                $this->createProductImage($image, $format, $imgFilename, $sql);
-            }
-        }
-        $this->deleteTempProductImages();
-    }
-
-    /**
-     *
-     */
-    private function deleteTempProductImages(): void
-    {
-        $handle = \opendir($this->unzipPath);
-        while (($file = \readdir($handle)) !== false) {
-            if ($file === '.' || $file === '..' || $file === 'bilder_a.xml') {
-                continue;
-            }
-            if (\file_exists($this->unzipPath . $file) && !\unlink($this->unzipPath . $file)) {
-                $this->logger->error('Artikelbild konnte nicht geloescht werden: ' . $file);
-            }
-        }
-        \closedir($handle);
-    }
-
-    /**
-     * @param stdClass $image
-     * @param string   $format
-     * @param string   $fileName
-     * @param string   $sql
-     */
-    private function createProductImage($image, string $format, string $fileName, string $sql): void
-    {
-        $config       = $this->config['bilder'];
-        $image->cPfad = $this->getProductImageName(
-            $image,
-            $config['container_verwenden'] === 'Y' ? 'png' : $format,
-            $sql
-        );
-        $image->cPfad = $this->getNewFilename($image->cPfad);
-        $original     = $this->unzipPath . $fileName;
-        $this->createThumbnail(
-            $this->brandingConfig[Image::TYPE_PRODUCT],
-            $original,
-            \PFAD_PRODUKTBILDER_GROSS . $image->cPfad,
-            $config['bilder_artikel_gross_breite'],
-            $config['bilder_artikel_gross_hoehe'],
-            $config['bilder_jpg_quali'],
-            1,
-            $config['container_verwenden']
-        );
-        $this->createBrandedThumbnail(
-            $original,
-            \PFAD_PRODUKTBILDER_NORMAL . $image->cPfad,
-            $config['bilder_artikel_normal_breite'],
-            $config['bilder_artikel_normal_hoehe'],
-            $config['bilder_jpg_quali'],
-            $config['container_verwenden']
-        );
-        $this->createBrandedThumbnail(
-            $original,
-            \PFAD_PRODUKTBILDER_KLEIN . $image->cPfad,
-            $config['bilder_artikel_klein_breite'],
-            $config['bilder_artikel_klein_hoehe'],
-            $config['bilder_jpg_quali'],
-            $config['container_verwenden']
-        );
-        if ($this->createBrandedThumbnail(
-            $original,
-            \PFAD_PRODUKTBILDER_MINI . $image->cPfad,
-            $config['bilder_artikel_mini_breite'],
-            $config['bilder_artikel_mini_hoehe'],
-            $config['bilder_jpg_quali'],
-            $config['container_verwenden']
-        )) {
-            $this->upsert('tartikelpict', [$image], 'kArtikel', 'kArtikelPict');
-        }
-    }
-
-    /**
      * @param object $image
      * @param string $format
      * @param string $sql
@@ -816,99 +679,6 @@ final class Images extends AbstractSync
                     return $image->cPfad . '.' . $format;
                     break;
             }
-        }
-
-        return $imageName;
-    }
-
-    /**
-     * @param object $image
-     * @param string $format
-     * @param string $sql
-     * @return string
-     */
-    private function getProductImageName($image, $format, $sql): string
-    {
-        if (!empty($image->kArtikel)) {
-            $attr = $this->db->select(
-                'tkategorieattribut',
-                'kArtikel',
-                (int)$image->kArtikel,
-                'cName',
-                \FKT_ATTRIBUT_BILDNAME,
-                null,
-                null,
-                false,
-                'cWert'
-            );
-            if (isset($attr->cWert)) {
-                if ($image->nNr > 1) {
-                    $attr->cWert .= '_' . $image->nNr;
-                }
-
-                return $attr->cWert . '.' . $format;
-            }
-        }
-
-        if (!$image->kArtikel || !$this->config['bilder']['bilder_artikel_namen']) {
-            return $image->cPfad . '.' . $format;
-        }
-        $product   = $this->db->query(
-            "SELECT tartikel.cArtNr, tseo.cSeo, tartikel.cName, tartikel.cBarcode
-            FROM tartikel
-            LEFT JOIN tseo
-                ON tseo.cKey = 'kArtikel'
-                AND tseo.kKey = tartikel.kArtikel
-                " . $sql . '
-            WHERE tartikel.kArtikel = ' . (int)$image->kArtikel,
-            ReturnType::SINGLE_OBJECT
-        );
-        $imageName = $image->cPfad;
-        if (empty($product->cName)) {
-            return $image->cPfad . '.' . $format;
-        }
-        switch ($this->config['bilder']['bilder_artikel_namen']) {
-            case 1:
-                if ($product->cArtNr) {
-                    $imageName = $this->convertUmlauts($product->cArtNr);
-                }
-                break;
-
-            case 2:
-                if ($product->cSeo) {
-                    $imageName = $product->cSeo;
-                } else {
-                    $imageName = $this->convertUmlauts($product->cName);
-                }
-                break;
-
-            case 3:
-                if ($product->cArtNr) {
-                    $imageName = $this->convertUmlauts($product->cArtNr) . '_';
-                }
-                if ($product->cSeo) {
-                    $imageName .= $product->cSeo;
-                } else {
-                    $imageName .= $this->convertUmlauts($product->cName);
-                }
-                break;
-
-            case 4:
-                if ($product->cBarcode) {
-                    $imageName = $this->convertUmlauts($product->cBarcode);
-                }
-                break;
-            default:
-                return $image->cPfad . '.' . $format;
-        }
-
-        if ($image->nNr > 1 && $imageName !== $image->cPfad) {
-            $imageName .= '_b' . $image->nNr;
-        }
-        if ($imageName !== $image->cPfad && (int)$this->config['bilder']['bilder_artikel_namen'] !== 5) {
-            $imageName = $this->removeSpecialChars($imageName) . '.' . $format;
-        } else {
-            $imageName .= '.' . $format;
         }
 
         return $imageName;
@@ -1061,7 +831,6 @@ final class Images extends AbstractSync
     private function handleDeletes($xml): void
     {
         \executeHook(\HOOK_BILDER_XML_BEARBEITEDELETES, [
-            'Artikel'          => $xml['del_bilder']['tArtikelPict'] ?? [],
             'Kategorie'        => $xml['del_bilder']['kKategoriePict'] ?? [],
             'KategoriePK'      => $xml['del_bilder']['kKategorie'] ?? [],
             'Eigenschaftswert' => $xml['del_bilder']['kEigenschaftWertPict'] ?? [],
@@ -1069,19 +838,6 @@ final class Images extends AbstractSync
             'Merkmal'          => $xml['del_bilder']['kMerkmal'] ?? [],
             'Merkmalwert'      => $xml['del_bilder']['kMerkmalWert'] ?? [],
         ]);
-        // Artikelbilder löschen Wawi > .99923
-        if (isset($xml['del_bilder']['tArtikelPict'])) {
-            if (\count($xml['del_bilder']['tArtikelPict']) > 1) {
-                for ($i = 0; $i < (\count($xml['del_bilder']['tArtikelPict']) / 2); $i++) {
-                    $index        = $i . ' attr';
-                    $productImage = (object)$xml['del_bilder']['tArtikelPict'][$index];
-                    $this->deleteProductImageByProductID($productImage->kArtikel, $productImage->nNr);
-                }
-            } else {
-                $productImage = (object)$xml['del_bilder']['tArtikelPict attr'];
-                $this->deleteProductImageByProductID($productImage->kArtikel, $productImage->nNr);
-            }
-        }
         // Kategoriebilder löschen Wawi > .99923
         $this->deleteCategoryImages($xml);
         // Variationsbilder löschen Wawi > .99923
@@ -1187,121 +943,6 @@ final class Images extends AbstractSync
                 (object)['cBildpfad' => '']
             );
             $this->db->delete('tmerkmalwertbild', 'kMerkmalWert', (int)$attrValID);
-        }
-    }
-
-    /**
-     * @param int $productID
-     * @param int $no
-     */
-    private function deleteProductImageByProductID(int $productID, int $no): void
-    {
-        if ($productID < 1 || $no < 1) {
-            return;
-        }
-        $image = $this->db->select('tartikelpict', 'kArtikel', $productID, 'nNr', $no);
-        $this->deleteProductImage((int)($image->kArtikelPict ?? 0));
-    }
-
-    /**
-     * @param int $imageID
-     */
-    private function deleteProductImage(int $imageID): void
-    {
-        if ($imageID < 1) {
-            return;
-        }
-        $image     = $this->db->select('tartikelpict', 'kArtikelPict', $imageID);
-        $productID = isset($image->kArtikel) ? (int)$image->kArtikel : 0;
-        // Das Bild ist eine Verknüpfung
-        if (isset($image->kMainArtikelBild) && $image->kMainArtikelBild > 0 && $productID > 0) {
-            // Existiert der Artikel vom Mainbild noch?
-            $main = $this->db->query(
-                'SELECT kArtikel
-                FROM tartikel
-                WHERE kArtikel = (
-                    SELECT kArtikel
-                        FROM tartikelpict
-                        WHERE kArtikelPict = ' . (int)$image->kMainArtikelBild . ')',
-                ReturnType::SINGLE_OBJECT
-            );
-            // Main Artikel existiert nicht mehr
-            if (!isset($main->kArtikel) || (int)$main->kArtikel === 0) {
-                // Existiert noch eine andere aktive Verknüpfung auf das Mainbild?
-                $productImages = $this->db->query(
-                    'SELECT kArtikelPict
-                    FROM tartikelpict
-                    WHERE kMainArtikelBild = ' . (int)$image->kMainArtikelBild . '
-                        AND kArtikel != ' . $productID,
-                    ReturnType::ARRAY_OF_OBJECTS
-                );
-                // Lösche das MainArtikelBild
-                if (\count($productImages) === 0) {
-                    $this->deleteImageFiles($image->cPfad);
-                    $this->db->delete('tartikelpict', 'kArtikelPict', (int)$image->kMainArtikelBild);
-                }
-            }
-            // Bildverknüpfung aus DB löschen
-            $this->db->delete('tartikelpict', 'kArtikelPict', (int)$image->kArtikelPict);
-        } elseif (isset($image->kMainArtikelBild) && (int)$image->kMainArtikelBild === 0) {
-            // Das Bild ist ein Hauptbild
-            // Gibt es Artikel die auf Bilder des zu löschenden Artikel verknüpfen?
-            $childProducts = $this->db->queryPrepared(
-                'SELECT kArtikelPict
-                FROM tartikelpict
-                WHERE kMainArtikelBild = :img',
-                ['img' => (int)$image->kArtikelPict],
-                ReturnType::ARRAY_OF_OBJECTS
-            );
-            if (\count($childProducts) === 0) {
-                $data = $this->db->queryPrepared(
-                    'SELECT COUNT(*) AS nCount
-                    FROM tartikelpict
-                    WHERE cPfad = :pth',
-                    ['pth' => $image->cPfad],
-                    ReturnType::SINGLE_OBJECT
-                );
-                if (isset($data->nCount) && $data->nCount < 2) {
-                    $this->deleteImageFiles($image->cPfad);
-                }
-            } else {
-                // Reorder linked images because master imagelink will be deleted
-                $next = $childProducts[0]->kArtikelPict;
-                // this will be the next masterimage
-                $this->db->update(
-                    'tartikelpict',
-                    'kArtikelPict',
-                    (int)$next,
-                    (object)['kMainArtikelBild' => 0]
-                );
-                // now link other images to the new masterimage
-                $this->db->update(
-                    'tartikelpict',
-                    'kMainArtikelBild',
-                    (int)$image->kArtikelPict,
-                    (object)['kMainArtikelBild' => (int)$next]
-                );
-            }
-            $this->db->delete('tartikelpict', 'kArtikelPict', (int)$image->kArtikelPict);
-        }
-        $this->cache->flushTags([\CACHING_GROUP_ARTICLE . '_' . $productID]);
-    }
-
-    /**
-     * @param string $path
-     */
-    private function deleteImageFiles(string $path): void
-    {
-        $files = [
-            \PFAD_ROOT . \PFAD_PRODUKTBILDER_MINI . $path,
-            \PFAD_ROOT . \PFAD_PRODUKTBILDER_KLEIN . $path,
-            \PFAD_ROOT . \PFAD_PRODUKTBILDER_NORMAL . $path,
-            \PFAD_ROOT . \PFAD_PRODUKTBILDER_GROSS . $path,
-            \PFAD_ROOT . \PFAD_MEDIA_IMAGE_STORAGE . $path
-        ];
-
-        foreach (\array_filter($files, '\file_exists') as $file) {
-            @\unlink($file);
         }
     }
 

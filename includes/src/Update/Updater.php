@@ -89,24 +89,30 @@ class Updater
     /**
      * Has pending updates to execute
      *
+     * @param bool $force
      * @return bool
      * @throws Exception
      */
-    public function hasPendingUpdates(): bool
+    public function hasPendingUpdates(bool $force = false): bool
     {
-        $fileVersion = $this->getCurrentFileVersion();
-        $dbVersion   = $this->getCurrentDatabaseVersion();
+        static $pending = null;
 
-        if (Version::parse($fileVersion)->greaterThan($dbVersion)
-            || ($dbVersion->smallerThan(Version::parse('2.19'))
-                || $dbVersion->equals(Version::parse('2.19')))
-        ) {
-            return true;
+        if ($force || $pending === null) {
+            $fileVersion = $this->getCurrentFileVersion();
+            $dbVersion = $this->getCurrentDatabaseVersion();
+
+            if (Version::parse($fileVersion)->greaterThan($dbVersion)
+                || ($dbVersion->smallerThan(Version::parse('2.19'))
+                    || $dbVersion->equals(Version::parse('2.19')))
+            ) {
+                return true;
+            }
+
+            $manager = new MigrationManager($this->db);
+            $pending = \count($manager->getPendingMigrations($force)) > 0;
         }
 
-        $manager = new MigrationManager($this->db);
-
-        return \count($manager->getPendingMigrations()) > 0;
+        return $pending;
     }
 
     /**

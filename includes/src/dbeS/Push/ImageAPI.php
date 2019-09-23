@@ -124,8 +124,12 @@ final class ImageAPI extends AbstractPush
             case 4:
                 $res = Image::SIZE_XS;
                 break;
+            case 5:
+                $res = Image::SIZE_XL;
+                break;
+            case 6:
             default:
-                $res = null;
+                $res = Image::SIZE_ORIGINAL;
                 break;
         }
 

@@ -8,7 +8,6 @@ namespace JTL\dbeS\Sync;
 
 use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
-use JTL\Media\Image;
 use JTL\Media\Image\Product;
 use SimpleXMLElement;
 use function Functional\flatten;

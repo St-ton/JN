@@ -5,7 +5,7 @@
 {block name='layout-header-shop-nav-account'}
     {if empty($smarty.session.Kunde->kKunde)}
         {block name='layout-header-shop-nav-account-logged-out'}
-            {collapse id="nav-account-collapse" tag="div"  data=["parent"=>"#main-nav-wrapper"] class="mt-md-2 py-0 w-100"}
+            {collapse id="nav-account-collapse" tag="div"  data=["parent"=>"#main-nav-wrapper"] class="mt-md-2 py-0 w-100 min-w-lg"}
                 {form action="{get_static_route id='jtl.php' secure=true}" method="post" class="evo-validate px-5 pt-5 pb-3"}
                     {block name='layout-header-shop-nav-account-form-content'}
                         <fieldset id="quick-login">

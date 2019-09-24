@@ -20,6 +20,7 @@ $danger:                            #B90000;
 $bg-danger:                         #E8CCD2;
 
 $white:                             #ffffff;
+$black:                             #000000;
 
 $dark:                              $gray-dark;
 $gray-100:                          $gray-lighter;
@@ -288,7 +289,7 @@ $ribbon-bg-colors: map-merge((
 
 $navbar-nav-link-padding-x: map-get($spacers, 4);
 $navbar-nav-link-padding-y: map-get($spacers, 4);
-$nav-link-padding-x: 0.8rem;
+$nav-link-padding-x: 1rem;
 
 $modal-md: 700px;
 
@@ -297,6 +298,22 @@ $modal-md: 700px;
 $progress-bg				: $gray-lighter;
 $progress-box-shadow		: none;
 
+/* options */
+
+$enable-caret				: false;
+$enable-shadows				: true;
+
 /* dropdowns */
+
+$dropdown-box-shadow		: 0 rem(1px) rem(12px) transparentize($black, .84);
+$dropdown-border-width		: 0;
+$dropdown-border-radius		: 0;
+
+$dropdown-link-color		: $gray-darker;
+$dropdown-link-hover-color	: $gray-darker;
+$dropdown-link-hover-bg		: $gray-lighter;
+
+$dropdown-link-active-color	: $dropdown-link-hover-color;
+$dropdown-link-active-bg	: $dropdown-link-hover-bg;
 
 $dropdown-padding-y         : 0;

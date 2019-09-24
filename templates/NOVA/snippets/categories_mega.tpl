@@ -40,7 +40,7 @@
                     {assign var=activeParent value=$activeParents[$i]}
                 {/if}
                 {if $isDropdown}
-                    <li class="nav-item dropdown{if $category->getID() === $activeId
+                    <li class="nav-item nav-scrollbar-item dropdown dropdown-full{if $category->getID() === $activeId
                     || ((isset($activeParent)
                         && isset($activeParent->kKategorie))
                         && $activeParent->kKategorie == $category->getID())} active{/if}">
@@ -123,10 +123,9 @@
                         {/container}
                         </div>
                     </li>
-                    {*{/navitemdropdown}*}
                 {else}
                     {navitem href=$category->getURL() title=$category->getName()
-                        class="{if $category->getID() === $activeId}active{/if}"}
+                        class="nav-scrollbar-item {if $category->getID() === $activeId}active{/if}"}
                         {$category->getShortName()}
                     {/navitem}
                 {/if}

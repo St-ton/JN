@@ -274,7 +274,7 @@ function lazyLoadMenu(viewport){
             });
         });
 
-        $('#evo-nav-wrapper .nav-item.dropdown .nav-link').attr('data-toggle','');
+        // $('#evo-nav-wrapper .nav-item.dropdown .nav-link').attr('data-toggle','');
         $('#evo-nav-wrapper .nav-item.btn-link[data-toggle="collapse"]').attr('data-toggle','dropdown');
     }
 }

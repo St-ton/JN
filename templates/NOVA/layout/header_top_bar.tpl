@@ -4,15 +4,15 @@
  *}
 {block name='layout-header-top-bar'}
     {strip}
-        {buttongroup size="sm"}
+        {nav tag='ul' class='nav-dividers'}
         {if isset($smarty.session.Waehrungen) && $smarty.session.Waehrungen|@count > 1 || isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
             {block name='layout-header-top-bar-user-settings'}
                 {block name='layout-header-top-bar-user-settings-currency'}
                     {if isset($smarty.session.Waehrungen) && $smarty.session.Waehrungen|@count > 1}
-                        {dropdown
+                        {navitemdropdown
                             id="currency-dropdown"
-                            variant="link btn-sm"
                             class="currency-dropdown"
+                            right=true
                             text=$smarty.session.Waehrung->getName()
                         }
                             {foreach $smarty.session.Waehrungen as $oWaehrung}
@@ -20,28 +20,28 @@
                                     {$oWaehrung->getName()}
                                 {/dropdownitem}
                             {/foreach}
-                        {/dropdown}
+                        {/navitemdropdown}
                     {/if}
                 {/block}
                 {block name='layout-header-top-bar-user-settings-language'}
                     {if isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
-                        {dropdown
+                        {navitemdropdown
                             id="language-dropdown"
                             class="language-dropdown"
-                            variant="link btn-sm {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}border-0{/if}"
+                            right=true
                             text="
-                                {foreach $smarty.session.Sprachen as $Sprache}
-                                    {if $Sprache->kSprache == $smarty.session.kSprache}
-                                        {$Sprache->iso639|upper}
+                                {foreach $smarty.session.Sprachen as $language}
+                                    {if $language->kSprache == $smarty.session.kSprache}
+                                        {$language->iso639|upper}
                                     {/if}
                                 {/foreach}"
                         }
-                            {foreach $smarty.session.Sprachen as $oSprache}
-                                {dropdownitem href="{$oSprache->cURL}" rel="nofollow" }
-                                    {$oSprache->iso639|upper}
+                            {foreach $smarty.session.Sprachen as $language}
+                                {dropdownitem href="{$language->cURL}" rel="nofollow" active=($language->kSprache == $smarty.session.kSprache)}
+                                    {$language->iso639|upper}
                                 {/dropdownitem}
                             {/foreach}
-                        {/dropdown}
+                        {/navitemdropdown}
                     {/if}
                 {/block}
             {/block}
@@ -49,12 +49,12 @@
         {if $linkgroups->getLinkGroupByTemplate('Kopf') !== null && $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}
             {block name='layout-header-top-bar-cms-pages'}
                 {foreach $linkgroups->getLinkGroupByTemplate('Kopf')->getLinks() as $Link}
-                    {link class="btn btn-link btn-sm" active=$Link->getIsActive() href=$Link->getURL() title=$Link->getTitle()}
+                    {navitem active=$Link->getIsActive() href=$Link->getURL() title=$Link->getTitle()}
                         {$Link->getName()}
-                    {/link}
+                    {/navitem}
                 {/foreach}
             {/block}
         {/if}
-        {/buttongroup}
+        {/nav}
     {/strip}
 {/block}

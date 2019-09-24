@@ -92,25 +92,25 @@ header > [class*="container"],
   box-shadow: 0 2px 16px 0 rgba(0,0,0,0.06);
 }
 
-#evo-nav-wrapper {
-  box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.06);
-  height: 209px;
-  #navbarToggler .dropdown-menu{
-    top:185px;
-  }
-  @include media-breakpoint-down(sm) {
-    height: auto;
-    #navbarToggler .dropdown-menu{
-      top: auto;
-    }
-  }
-  @include media-breakpoint-up(xl) {
-    height: 132px;
-    #navbarToggler .dropdown-menu{
-      top: 100px;
-    }
-  }
-}
+//#evo-nav-wrapper {
+//  box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.06);
+//  height: 209px;
+//  #navbarToggler .dropdown-menu{
+//    top:185px;
+//  }
+//  @include media-breakpoint-down(sm) {
+//    height: auto;
+//    #navbarToggler .dropdown-menu{
+//      top: auto;
+//    }
+//  }
+//  @include media-breakpoint-up(xl) {
+//    height: 132px;
+//    #navbarToggler .dropdown-menu{
+//      top: 100px;
+//    }
+//  }
+//}
 
 
 header > [class*="container"],
@@ -337,21 +337,6 @@ header, #main-wrapper { background: #fff; }
     p {
       margin: 0;
     }
-  }
-}
-
-.top-bar {
-  .btn-link {
-    text-decoration: none;
-    border-right: 1px solid $gray-light;
-    border-radius: 0;
-    padding: 0 map_get($spacers, 3);
-    &:last-child {
-      border-right: 0;
-    }
-  }
-  a {
-    text-decoration: none;
   }
 }
 
@@ -1543,7 +1528,6 @@ footer {
     margin: 0;
     @include media-breakpoint-up(md) {
       margin-top: -6px;
-      @include box-shadow($dropdown-box-shadow);
     }
   }
 
@@ -1601,49 +1585,49 @@ footer {
 
 /* navigation style */
 
-@include media-breakpoint-up(lg) {
-  .navbar-nav .nav-item {
-    .nav-link {
-      position: relative;
-      &::before {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        border-width: 0 0 $nav-tabs-border-width * 6;
-        border-color: $primary;
-        border-style: solid;
-        transition: width .4s;
-        width: 0;
-      }
-    }
-    &.active .nav-link, &:hover .nav-link, &.hover .nav-link {
-      &::before {
-        width: 100%;
-      }
-    }
-  }
-  .navbar-nav .nav-link {
-    padding: $navbar-nav-link-padding-y $navbar-nav-link-padding-x;
-  }
+//@include media-breakpoint-up(lg) {
+//  .navbar-nav .nav-item {
+//    .nav-link {
+//      position: relative;
+//      &::before {
+//        content: '';
+//        position: absolute;
+//        bottom: 0;
+//        left: 50%;
+//        transform: translateX(-50%);
+//        border-width: 0 0 $nav-tabs-border-width * 6;
+//        border-color: $primary;
+//        border-style: solid;
+//        transition: width .4s;
+//        width: 0;
+//      }
+//    }
+//    &.active .nav-link, &:hover .nav-link, &.hover .nav-link {
+//      &::before {
+//        width: 100%;
+//      }
+//    }
+//  }
+//  .navbar-nav .nav-link {
+//    padding: $navbar-nav-link-padding-y $navbar-nav-link-padding-x;
+//  }
+//
+//  .nav-right, .navbar-brand {
+//    flex-shrink: 0;
+//  }
+//  .nav-right .nav-link {
+//    padding: $navbar-nav-link-padding-y $navbar-nav-link-padding-x - 0.5;
+//  }
+//  .navbar .navbar-brand {
+//    padding-bottom: 1.6rem;
+//  }
+//}
 
-  .nav-right, .navbar-brand {
-    flex-shrink: 0;
-  }
-  .nav-right .nav-link {
-    padding: $navbar-nav-link-padding-y $navbar-nav-link-padding-x - 0.5;
-  }
-  .navbar .navbar-brand {
-    padding-bottom: 1.6rem;
-  }
-}
-
-@include media-breakpoint-down(md) {
-  .navbar .navbar-brand {
-    max-width: 110px;
-  }
-}
+//@include media-breakpoint-down(md) {
+//  .navbar .navbar-brand {
+//    max-width: 110px;
+//  }
+//}
 
 
 .ns-ScrollWrapper {
@@ -1824,9 +1808,9 @@ table caption {
   caption-side: top;
 }
 
-.navbar-brand img.img-fluid {
-  max-height: 70px;
-}
+//.navbar-brand img.img-fluid {
+//  max-height: 70px;
+//}
 
 .nav-wizard {
   position: relative;
@@ -2014,16 +1998,6 @@ input.form-control[name="wishlist-url"] {
   &:hover,
   &:focus {
     border-color: $input-border-color;
-  }
-}
-
-.wishlist-options {
-  .btn-link {
-    text-decoration: none;
-  }
-  .dropdown-menu {
-    @include border-radius($dropdown-border-radius);
-    @include box-shadow($dropdown-box-shadow);
   }
 }
 

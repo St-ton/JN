@@ -51,4 +51,4 @@ msgid "backupText"
 msgstr "Created backup file %s and deleted %d files"
 
 msgid "showDeleteScript"
-msgstr "generate cript"
+msgstr "Generate script"

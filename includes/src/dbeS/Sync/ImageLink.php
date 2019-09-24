@@ -35,9 +35,7 @@ final class ImageLink extends AbstractSync
             }
         }
         $productIDs = \array_unique(flatten($productIDs));
-        foreach ($productIDs as $pid) {
-            Product::clearCache($pid);
-        }
+        Product::clearCache($productIDs);
         $this->cache->flushTags(map($productIDs, function ($pid) {
             return \CACHING_GROUP_ARTICLE . '_' . $pid;
         }));

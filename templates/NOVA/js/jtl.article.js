@@ -1171,6 +1171,12 @@
                     $spinner.stop();
 
                     $.evo.initInputSpinner(wrapper + " input[type='number']");
+                    $(wrapper + ' .list-gallery:not(.slick-initialized)').slick({
+                        lazyLoad: 'ondemand',
+                        infinite: false,
+                        dots:     false,
+                        arrows:   true
+                    });
                 }, function () {
                     $.evo.error('Error loading ' + url);
                     $spinner.stop();

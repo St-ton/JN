@@ -12,6 +12,7 @@ use JTL\DB\ReturnType;
 use JTL\Helpers\Template as TemplateHelper;
 use JTL\Media\Image;
 use JTL\Media\Image\Product;
+use JTL\Media\Image\StatsItem;
 use JTL\Plugin\State;
 use JTL\Profiler;
 use JTL\Shop;
@@ -59,10 +60,10 @@ class Status
     }
 
     /**
-     * @return stdClass
+     * @return StatsItem
      * @throws \Exception
      */
-    protected function getImageCache(): stdClass
+    protected function getImageCache(): StatsItem
     {
         return Product::getStats(Image::TYPE_PRODUCT);
     }
@@ -262,7 +263,7 @@ class Status
      */
     protected function getEnvironmentTests(): array
     {
-        return (new \Systemcheck_Environment())->executeTestGroup('Shop4');
+        return (new \Systemcheck_Environment())->executeTestGroup('Shop5');
     }
 
     /**

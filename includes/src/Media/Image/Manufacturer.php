@@ -48,18 +48,18 @@ class Manufacturer extends AbstractImage
      */
     protected function getImageNames(MediaImageRequest $req): array
     {
-        $names = Shop::Container()->getDB()->queryPrepared(
-            'SELECT kHersteller, cName, cSeo, cBildpfad AS path
+        return Shop::Container()->getDB()->queryPrepared(
+            'SELECT kHersteller, cName, cSeo, cSeo AS originalSeo, cBildpfad AS path
                 FROM thersteller
                 WHERE kHersteller = :mid',
-            ['mid' => $req->id],
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-        if (!empty($names[0]->path)) {
-            $req->sourcePath = $names[0]->path;
-        }
-
-        return $names;
+            ['mid' => $req->getID()],
+            ReturnType::COLLECTION
+        )->each(function ($item, $key) use ($req) {
+            if ($key === 0 && !empty($item->path)) {
+                $req->setSourcePath($item->path);
+            }
+            $item->imageName = self::getCustomName($item);
+        })->pluck('imageName')->toArray();
     }
 
     /**
@@ -67,7 +67,7 @@ class Manufacturer extends AbstractImage
      */
     public static function getCustomName($mixed): string
     {
-        $result = empty($mixed->cSeo) ? $mixed->cName : $mixed->cSeo;
+        $result = $mixed->originalSeo ?? $mixed->cSeo ?? $mixed->cName;
 
         return empty($result) ? 'image' : Image::getCleanFilename($result);
     }

@@ -7,6 +7,7 @@
 namespace JTL\Media\Image;
 
 use Generator;
+use JTL\Catalog\Product\Artikel;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Media\Image;
@@ -34,15 +35,14 @@ class Product extends AbstractImage
     protected function getImageNames(MediaImageRequest $req): array
     {
         return Shop::Container()->getDB()->queryPrepared(
-            'SELECT kArtikel, cName, cSeo, cArtNr, cBarcode
-            FROM tartikel AS a
-            WHERE kArtikel = :pid
-            UNION SELECT asp.kArtikel, asp.cName, asp.cSeo, a.cArtNr, a.cBarcode
-                FROM tartikelsprache AS asp JOIN tartikel AS a ON asp.kArtikel = a.kArtikel
-                WHERE asp.kArtikel = :pid',
-            ['pid' => $req->id],
-            ReturnType::ARRAY_OF_OBJECTS
-        );
+            'SELECT kArtikel, cName, cSeo, cSeo AS originalSeo, cArtNr, cBarcode
+                FROM tartikel
+                WHERE kArtikel = :pid',
+            ['pid' => $req->getID()],
+            ReturnType::COLLECTION
+        )->map(function ($item) {
+            return self::getCustomName($item);
+        })->toArray();
     }
 
     /**
@@ -70,10 +70,10 @@ class Product extends AbstractImage
                 $cols = ', tartikel.cArtNr';
                 break;
             case 2:
-                $cols = ', tartikel.cSeo, tartikel.cName';
+                $cols = ', tartikel.cSeo, tartikel.cSeo AS originalSeo, tartikel.cName';
                 break;
             case 3:
-                $cols = ', tartikel.cArtNr, tartikel.cSeo, tartikel.cName';
+                $cols = ', tartikel.cArtNr, tartikel.cSeo, tartikel.cSeo AS originalSeo, tartikel.cName';
                 break;
             case 4:
                 $cols = ', tartikel.cBarcode';
@@ -103,7 +103,8 @@ class Product extends AbstractImage
     }
 
     /**
-     * @inheritdoc
+     * @param Artikel $mixed
+     * @return string
      */
     public static function getCustomName($mixed): string
     {
@@ -115,7 +116,7 @@ class Product extends AbstractImage
                 $result = $mixed->cArtNr;
                 break;
             case 2:
-                $result = empty($mixed->cSeo) ? $mixed->cName : $mixed->cSeo;
+                $result = $mixed->originalSeo ?? $mixed->cSeo ?? $mixed->cName;
                 break;
             case 3:
                 $result = \sprintf('%s_%s', $mixed->cArtNr, empty($mixed->cSeo) ? $mixed->cName : $mixed->cSeo);

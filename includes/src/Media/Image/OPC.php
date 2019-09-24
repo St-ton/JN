@@ -33,9 +33,9 @@ class OPC extends AbstractImage
      */
     protected function getImageNames(MediaImageRequest $req): array
     {
-        $req->sourcePath = $req->name . '.' . $req->ext;
+        $req->setSourcePath($req->getName() . '.' . $req->getExt());
 
-        return [(object)[]];
+        return [''];
     }
 
     /**

@@ -179,7 +179,6 @@
                                     </ul>
                                 {/block}
                             {/if}
-
                             {if !empty($oPosition->Artikel->kStueckliste) && !empty($oPosition->Artikel->oStueckliste_arr)}
                                 {block name='checkout-inc-order-items-product-partlist-items'}
                                     <ul class="partlist-items text-muted small">

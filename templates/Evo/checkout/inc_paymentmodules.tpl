@@ -24,15 +24,7 @@
         </div>
     {/if}
     <div class="payment-method-inner">
-        {if $Bestellung->Zahlungsart->cModulId === 'za_rechnung_jtl'}
-            {lang key='invoiceDesc' section='checkout'}
-        {elseif $Bestellung->Zahlungsart->cModulId === 'za_lastschrift_jtl'}
-            {lang key='banktransferDesc' section='checkout'}
-        {elseif $Bestellung->Zahlungsart->cModulId === 'za_nachnahme_jtl'}
-            {lang key='banktransferDesc' section='checkout'}
-        {elseif $Bestellung->Zahlungsart->cModulId === 'za_barzahlung_jtl'}
-            {lang key='cashOnPickupDesc' section='checkout'}
-        {elseif $Bestellung->Zahlungsart->cModulId === 'za_paypal_jtl'}
+        {if $Bestellung->Zahlungsart->cModulId === 'za_paypal_jtl'}
             {include file='checkout/modules/paypal/bestellabschluss.tpl'}
         {elseif $Bestellung->Zahlungsart->cModulId === 'za_kreditkarte_jtl'}
             {include file='account/retrospective_payment.tpl'}

@@ -49,3 +49,6 @@ msgstr "Are you sure you want to delete all files? Please make sure you have a b
 
 msgid "backupText"
 msgstr "Created backup file %s and deleted %d files"
+
+msgid "showDeleteScript"
+msgstr "generate cript"

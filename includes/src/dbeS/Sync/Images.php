@@ -9,6 +9,10 @@ namespace JTL\dbeS\Sync;
 use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
 use JTL\Media\Image;
+use JTL\Media\Image\Manufacturer;
+use JTL\Media\Image\Category;
+use JTL\Media\Image\Characteristic;
+use JTL\Media\Image\CharacteristicValue;
 use JTL\Shop;
 use stdClass;
 
@@ -423,7 +427,7 @@ final class Images extends AbstractSync
                 $this->db->update(
                     'thersteller',
                     'kHersteller',
-                    (int)$image->kHersteller,
+                    $image->kHersteller,
                     (object)['cBildpfad' => $image->cPfad]
                 );
             }
@@ -431,7 +435,7 @@ final class Images extends AbstractSync
             foreach ($this->db->selectAll(
                 'tartikel',
                 'kHersteller',
-                (int)$image->kHersteller,
+                $image->kHersteller,
                 'kArtikel'
             ) as $product) {
                 $cacheTags[] = \CACHING_GROUP_ARTICLE . '_' . $product->kArtikel;
@@ -873,9 +877,11 @@ final class Images extends AbstractSync
         if (\is_numeric($source)) {
             $source = [$source];
         }
-        foreach (\array_filter(\array_map('\intval', $source)) as $id) {
+        $ids = \array_filter(\array_map('\intval', $source));
+        foreach ($ids as $id) {
             $this->db->delete('tkategoriepict', 'kKategorie', $id);
         }
+        Category::clearCache($ids);
     }
 
     /**
@@ -888,7 +894,8 @@ final class Images extends AbstractSync
         if (\is_numeric($source)) {
             $source = [$source];
         }
-        foreach (\array_filter(\array_map('\intval', $source)) as $manufacturerID) {
+        $ids = \array_filter(\array_map('\intval', $source));
+        foreach ($ids as $manufacturerID) {
             $this->db->update(
                 'thersteller',
                 'kHersteller',
@@ -905,6 +912,7 @@ final class Images extends AbstractSync
             }
         }
         $this->cache->flushTags($cacheTags);
+        Manufacturer::clearCache($ids);
     }
 
     /**
@@ -916,7 +924,8 @@ final class Images extends AbstractSync
         if (\is_numeric($source)) {
             $source = [$source];
         }
-        foreach (\array_filter(\array_map('\intval', $source)) as $attrID) {
+        $ids = \array_filter(\array_map('\intval', $source));
+        foreach ($ids as $attrID) {
             $this->db->update(
                 'tmerkmal',
                 'kMerkmal',
@@ -924,6 +933,7 @@ final class Images extends AbstractSync
                 (object)['cBildpfad' => '']
             );
         }
+        Characteristic::clearCache($ids);
     }
 
     /**
@@ -935,7 +945,8 @@ final class Images extends AbstractSync
         if (\is_numeric($source)) {
             $source = [$source];
         }
-        foreach (\array_filter(\array_map('\intval', $source)) as $attrValID) {
+        $ids = \array_filter(\array_map('\intval', $source));
+        foreach ($ids as $attrValID) {
             $this->db->update(
                 'tmerkmalwert',
                 'kMerkmalWert',
@@ -944,6 +955,7 @@ final class Images extends AbstractSync
             );
             $this->db->delete('tmerkmalwertbild', 'kMerkmalWert', (int)$attrValID);
         }
+        CharacteristicValue::clearCache($ids);
     }
 
     /**

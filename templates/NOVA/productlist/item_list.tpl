@@ -89,7 +89,7 @@
                                     {if count($Artikel->Variationen) > 0}
                                         {col tag='dt' cols=6}{lang key='variationsIn' section='productOverview'}:{/col}
                                         {col tag='dd' cols=6}
-                                            <ul class="list-unstyled">
+                                            <ul class="list-unstyled mb-0">
                                                 {foreach $Artikel->Variationen as $variation}
                                                     <li>{$variation->cName}<li>
                                                     {if $variation@index === 3 && !$variation@last}

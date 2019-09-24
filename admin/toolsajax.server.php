@@ -23,7 +23,7 @@ if (isset($_SERVER['REQUEST_URI'])) {
     $url = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 }
 
-$xajax = new xajax($url);
+$xajax = new xajax(StringHandler::filterXSS($url));
 
 /**
  * @deprecated since 4.06

@@ -86,7 +86,7 @@
             {/if}
         {/row}
         {block name='snippets-productlist-page-nav-hr-bottom'}
-            <hr  class="mb-5">
+            <hr class="mb-5">
         {/block}
     {/if}
 {/block}

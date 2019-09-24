@@ -22,7 +22,5 @@
     }
         <span class="far fa-heart"></span>
     {/button}
-    {*<div class="action-tip-animation">{lang key='onWishlist'}</div>*}
-    {*<div class="action-tip-animation">{lang key='notOnWishlist'}</div>*}
     {input type="hidden" name="wlPos" value=$wishlistPos}
 {/block}

@@ -287,6 +287,15 @@ $ribbon-bg-colors: map-merge((
         '9' : $ribbon-bg-9
 ), $ribbon-bg-colors);
 
+/* navs */
+
+$nav-tabs-border-radius					: 0;
+
+$nav-tabs-link-hover-border-color		: 0;
+$nav-tabs-link-active-color				: $link-color;
+$nav-tabs-link-active-bg				: transparent;
+$nav-tabs-link-active-border-color		: $primary;
+
 $navbar-nav-link-padding-x: map-get($spacers, 4);
 $navbar-nav-link-padding-y: map-get($spacers, 4);
 $nav-link-padding-x: 1rem;

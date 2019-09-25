@@ -4,10 +4,22 @@
  *}
 {block name='layout-header-nav-icons'}
     {block name='layout-header-nav-icons-search'}
-        {*{navitem tag="li" class="d-flex d-md-none mr-1" aria=['expanded' => 'false', 'label' => {lang key='search'}] role='button'*}
-            {*data=['toggle' => 'collapse', 'target' => '#nav-search-collapse'] router-tag='div'}*}
-            {*<i class="fas fa-search"></i>*}
-        {*{/navitem}*}
+        <li class="nav-item d-none d-lg-block">
+            <div class="form-icon-trigger">
+                {input id="search-header" name="qs" type="text" class="ac_input" placeholder="{lang key='search'}" autocomplete="off" aria=["label"=>"{lang key='search'}"]}
+                <label class="form-icon-trigger-label" for="search-header"><span class="fas fa-search"></span></label>
+            </div>
+        </li>
+    {/block}
+    {block name='layout-header-nav-icons-search-dropdown'}
+        {navitemdropdown class='d-block d-lg-none' text='<i class="fas fa-search"></i>' right=true no-caret=true}
+            <div class="dropdown-body">
+                {input name="qs" type="text" class="ac_input w-100" placeholder="{lang key='search'}" autocomplete="off" aria=["label"=>"{lang key='search'}"]}
+                {button class="mt-3" type="submit" size="sm" variant="primary" block=true name="search" id="search-submit-button" aria=["label"=>"{lang key='search'}"]}
+                    {lang key='search'}
+                {/button}
+            </div>
+        {/navitemdropdown}
     {/block}
     {block name='layout-header-nav-icons-login'}
         {navitemdropdown

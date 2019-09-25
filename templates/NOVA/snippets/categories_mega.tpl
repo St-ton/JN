@@ -47,7 +47,7 @@
                         {link href=$category->getURL() title=$category->getName() class="float-right subcat-link d-inline-block d-md-none"}
                             <i class="fas fa-arrow-alt-circle-right"></i>
                         {/link}
-                        {link href=$category->getURL() title=$category->getName() class="nav-link" data=["toggle"=>"dropdown"] target="_self"}
+                        {link href=$category->getURL() title=$category->getName() class="nav-link dropdown-toggle" data=["toggle"=>"dropdown"] target="_self"}
                             {$category->getName()}
                         {/link}
                         <div class="dropdown-menu">

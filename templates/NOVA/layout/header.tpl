@@ -313,7 +313,7 @@
 
                     <div class="container-fluid container-fluid-xl clearfix">
                     {block name='layout-header-branding-top-bar'}
-                        {row class="mb-2 d-none {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-block{/if}"}
+                        {row class="mb-2 d-none {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex{/if}"}
                             {col class='col-auto ml-auto'}
                                 {include file='layout/header_top_bar.tpl'}
                             {/col}
@@ -359,15 +359,6 @@
                                     {/navbarnav}
                                 </div>
                             {/block}
-
-                            {*{col order=6 order-md=2 cols=12 order-lg=3*}
-                                 {*class="col-md-auto bg-white{if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG} d-none{/if}"}*}
-                                {*{block name='layout-header-include-header-nav-search'}*}
-                                    {*{collapse id="nav-search-collapse" tag="div" data=["parent"=>"#main-nav-wrapper"] class="d-md-flex mx-auto float-md-right w-100"}*}
-                                        {*{include file='layout/header_nav_search.tpl'}*}
-                                    {*{/collapse}*}
-                                {*{/block}*}
-                            {*{/col}*}
 
                             {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}
                                 {col class="d-block text-right text-md-left" order=3}

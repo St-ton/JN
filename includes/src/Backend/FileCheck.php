@@ -56,8 +56,11 @@ class FileCheck
                 }
                 if (\count(\explode(';', $shopFile)) === 1) {
                     if (\file_exists($prefix . $shopFile)) {
-                        $result[] = $shopFile;
-
+                        $mtime    = \filemtime($prefix . $shopFile);
+                        $result[] = (object)[
+                            'name'         => $shopFile,
+                            'lastModified' => \date('d.m.Y H:i:s', $mtime)
+                        ];
                         $errors++;
                     }
                 } else {

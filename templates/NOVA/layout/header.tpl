@@ -331,28 +331,26 @@
                                     <span itemprop="name" class="d-none">{$meta_publisher}</span>
                                     <meta itemprop="url" content="{$ShopURL}">
                                     <meta itemprop="logo" content="{$ShopLogoURL}">
-
                                     {link class="navbar-brand {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}mb-lg-3{/if} mr-lg-6" href=$ShopURL title=$Einstellungen.global.global_shopname}
-                                    {if isset($ShopLogoURL)}
-                                        {image src=$ShopLogoURL
-                                        alt=$Einstellungen.global.global_shopname
-                                        fluid=true
-                                        width=160
-                                        height=53}
-                                    {else}
-                                        <span class="h1">{$Einstellungen.global.global_shopname}</span>
-                                    {/if}
+                                        {if isset($ShopLogoURL)}
+                                            {image src=$ShopLogoURL
+                                            alt=$Einstellungen.global.global_shopname
+                                            fluid=true
+                                            width=160
+                                            height=53}
+                                        {else}
+                                            <span class="h1">{$Einstellungen.global.global_shopname}</span>
+                                        {/if}
                                     {/link}
                                 </div>
                             {/block}
+
                             {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}
                                 <div class="ml-auto ml-lg-0">
                                     <i class="fas fa-lock align-center mr-2"></i>{lang key='secureCheckout' section='checkout'}
                                 </div>
                                 <div class="ml-auto d-none d-lg-block">
-                                    <div class="top-bar text-right">
-                                        {include file='layout/header_top_bar.tpl'}
-                                    </div>
+                                    {include file='layout/header_top_bar.tpl'}
                                 </div>
                             {else}
                                 {block name='layout-header-branding-shop-nav'}

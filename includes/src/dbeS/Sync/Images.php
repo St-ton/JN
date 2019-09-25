@@ -15,6 +15,7 @@ use JTL\Media\Image\Characteristic;
 use JTL\Media\Image\CharacteristicValue;
 use JTL\Shop;
 use stdClass;
+use function Functional\map;
 use function Functional\reindex;
 
 /**
@@ -69,6 +70,8 @@ final class Images extends AbstractSync
                 case 'del_bilder_h.xml':
                     $this->handleDeletes($xml);
                     break;
+                default:
+                    break;
             }
         }
         $this->db->query('COMMIT', ReturnType::DEFAULT);
@@ -81,22 +84,25 @@ final class Images extends AbstractSync
      */
     private function initBrandingConfig(): array
     {
-        $data     = $this->db->query(
-            'SELECT * FROM tbranding',
-            ReturnType::ARRAY_OF_OBJECTS
+        return map(
+            reindex(
+                $this->db->query(
+                    'SELECT * FROM tbranding',
+                    ReturnType::ARRAY_OF_OBJECTS
+                ),
+                function ($e) {
+                    return $e->cBildKategorie;
+                }
+            ),
+            function ($e) {
+                $e->config = $this->db->select(
+                    'tbrandingeinstellung',
+                    'kBranding',
+                    (int)$e->kBranding
+                );
+                return $e;
+            }
         );
-        $branding = reindex($data, function ($e) {
-            return $e->cBildKategorie;
-        });
-        foreach ($branding as $item) {
-            $item->config = $this->db->select(
-                'tbrandingeinstellung',
-                'kBranding',
-                (int)$item->kBranding
-            );
-        }
-
-        return $branding;
     }
 
     /**
@@ -212,14 +218,14 @@ final class Images extends AbstractSync
     private function handleConfigGroupImages(array $images): void
     {
         foreach ($images as $image) {
-            $item                = new stdClass();
-            $item->cBildPfad     = $image->cPfad;
-            $item->kKonfiggruppe = $image->kKonfiggruppe;
-            if (empty($item->cBildPfad)) {
+            if (empty($image->cBildPfad) || empty($image->kKonfiggruppe)) {
                 continue;
             }
-            $original  = $this->unzipPath . $item->cBildPfad;
-            $extension = $this->getExtension($original);
+            $item                = new stdClass();
+            $item->cBildPfad     = $image->cPfad;
+            $item->kKonfiggruppe = (int)$image->kKonfiggruppe;
+            $original            = $this->unzipPath . $item->cBildPfad;
+            $extension           = $this->getExtension($original);
             if (!$extension) {
                 $this->logger->error(
                     'Bildformat des Konfiggruppenbildes konnte nicht ermittelt werden. Datei ' .
@@ -229,7 +235,6 @@ final class Images extends AbstractSync
             }
             $item->cBildPfad = $item->kKonfiggruppe . '.' . $extension;
             $item->cBildPfad = $this->getNewFilename($item->cBildPfad);
-
             \copy($original, \PFAD_ROOT . \STORAGE_CONFIGGROUPS . $image->cPfad);
             if ($this->createThumbnail(
                 $original,
@@ -241,7 +246,7 @@ final class Images extends AbstractSync
                 $this->db->update(
                     'tkonfiggruppe',
                     'kKonfiggruppe',
-                    (int)$item->kKonfiggruppe,
+                    $item->kKonfiggruppe,
                     (object)['cBildPfad' => $item->cBildPfad]
                 );
             }
@@ -308,12 +313,12 @@ final class Images extends AbstractSync
     private function handleCharacteristicImages(array $images): void
     {
         foreach ($images as $image) {
-            $image->kMerkmal = (int)$image->kMerkmal;
-            if (empty($image->cPfad) || $image->kMerkmal <= 0) {
+            if (empty($image->cPfad) || empty($image->kMerkmal)) {
                 continue;
             }
-            $original  = $this->unzipPath . $image->cPfad;
-            $extension = $this->getExtension($original);
+            $image->kMerkmal = (int)$image->kMerkmal;
+            $original        = $this->unzipPath . $image->cPfad;
+            $extension       = $this->getExtension($original);
             if (!$extension) {
                 $this->logger->error(
                     'Bildformat des Merkmalbildes konnte nicht ermittelt werden. Datei ' .
@@ -342,7 +347,7 @@ final class Images extends AbstractSync
                 $this->db->update(
                     'tmerkmal',
                     'kMerkmal',
-                    (int)$image->kMerkmal,
+                    $image->kMerkmal,
                     (object)['cBildpfad' => $image->cPfad]
                 );
             }
@@ -356,12 +361,12 @@ final class Images extends AbstractSync
     private function handleManufacturerImages(array $images): void
     {
         foreach ($images as $image) {
-            $image->kHersteller = (int)$image->kHersteller;
-            if (empty($image->cPfad) || $image->kHersteller <= 0) {
+            if (empty($image->cPfad) || empty($image->kHersteller)) {
                 continue;
             }
-            $original  = $this->unzipPath . $image->cPfad;
-            $extension = $this->getExtension($original);
+            $image->kHersteller = (int)$image->kHersteller;
+            $original           = $this->unzipPath . $image->cPfad;
+            $extension          = $this->getExtension($original);
             if (!$extension) {
                 $this->logger->error(
                     'Bildformat des Herstellerbildes konnte nicht ermittelt werden. Datei ' .
@@ -510,7 +515,7 @@ final class Images extends AbstractSync
      */
     private function getPropertiesImageName($image, string $extension): string
     {
-        if (!$image->kEigenschaftWert || !$this->config['bilder']['bilder_variation_namen']) {
+        if (empty($image->kEigenschaftWert) || !$this->config['bilder']['bilder_variation_namen']) {
             return (\stripos(\strrev($image->cPfad), \strrev($extension)) === 0)
                 ? $image->cPfad
                 : $image->cPfad . '.' . $extension;
@@ -608,7 +613,7 @@ final class Images extends AbstractSync
      */
     private function getCategoryImageName($image, string $ext): string
     {
-        if (!$image->kKategorie || !$this->config['bilder']['bilder_kategorie_namen']) {
+        if (empty($image->kKategorie) || !$this->config['bilder']['bilder_kategorie_namen']) {
             return (\stripos(\strrev($image->cPfad), \strrev($ext)) === 0)
                 ? $image->cPfad
                 : $image->cPfad . '.' . $ext;
@@ -682,7 +687,7 @@ final class Images extends AbstractSync
      * @param int    $targetHeight
      * @param int    $quality
      * @param null   $branding
-     * @return int
+     * @return bool
      */
     private function createThumbnail(
         string $source,
@@ -691,45 +696,34 @@ final class Images extends AbstractSync
         int $targetHeight,
         int $quality = 80,
         $branding = null
-    ): int {
+    ): bool {
         $container        = $this->config['bilder']['container_verwenden'] === 'Y';
         $enlarge          = $this->config['bilder']['bilder_skalieren'] === 'Y';
-        $ret              = 0;
         $extension        = $this->getNewExtension($target);
+        $target           = \PFAD_ROOT . $target;
         [$width, $height] = \getimagesize($source);
         if ($width <= 0 || $height <= 0) {
             $this->logger->error('Bild konnte nicht erstellt werden. Quelle ungueltig: ' . $source);
 
-            return $ret;
+            return false;
         }
         if (!$enlarge && $width < $targetWidth && $height < $targetHeight) {
-            // Bild nicht neu berechnen, nur verschieben
-            $image = $container === true
-                ? $this->imageloadContainer($source, $width, $height, $targetWidth, $targetHeight)
-                : $this->imageloadAlpha($source, $width, $height);
-            $this->saveImage($this->brandImage($image, $branding), $extension, \PFAD_ROOT . $target, $quality);
-            @\chmod(\PFAD_ROOT . $target, 0644);
-
-            return 1;
-        }
-        $ratio     = $width / $height;
-        $newWidth  = $targetWidth;
-        $newHeight = \round($newWidth / $ratio);
-        if ($newHeight > $targetHeight) {
-            $newHeight = $targetHeight;
-            $newWidth  = \round($newHeight * $ratio);
+            $newWidth  = $width;
+            $newHeight = $height;
+        } else {
+            $ratio     = $width / $height;
+            $newWidth  = $targetWidth;
+            $newHeight = \round($newWidth / $ratio);
+            if ($newHeight > $targetHeight) {
+                $newHeight = $targetHeight;
+                $newWidth  = \round($newHeight * $ratio);
+            }
         }
         $image = $container === true
             ? $this->imageloadContainer($source, $newWidth, $newHeight, $targetWidth, $targetHeight)
             : $this->imageloadAlpha($source, $newWidth, $newHeight);
-        if ($this->saveImage($this->brandImage($image, $branding), $extension, \PFAD_ROOT . $target, $quality)) {
-            $ret = 1;
-            @\chmod(\PFAD_ROOT . $target, 0644);
-        } else {
-            $this->logger->error('Fehler beim Speichern des Bildes: ' . $target);
-        }
 
-        return $ret;
+        return $this->saveImage($this->brandImage($image, $branding), $extension, $target, $quality) !== false;
     }
 
     /**
@@ -1205,6 +1199,11 @@ final class Images extends AbstractSync
             default:
                 $res = false;
                 break;
+        }
+        if ($res === false) {
+            $this->logger->error('Cannot save image: ' . $path);
+        } else {
+            @\chmod($path, 0644);
         }
 
         return $res;

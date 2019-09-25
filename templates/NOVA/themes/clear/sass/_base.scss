@@ -117,46 +117,6 @@ header > [class*="container"],
 #main-wrapper #content-wrapper { box-shadow: none; background: transparent; }
 header, #main-wrapper { background: #fff; }
 
-@include media-breakpoint-down(md) {
-  #navbarToggler {
-    position: absolute;
-    background: #fff;
-    width: 100%;
-    padding: map_get($spacers,3) 0 map_get($spacers,2) map_get($spacers,3);
-    left: 0;
-    @include media-breakpoint-down(sm) {
-      box-shadow: 0 2px 16px 0 rgba(0,0,0,0.06);;
-    }
-  }
-}
-@include media-breakpoint-up(md) {
-  #navbarToggler {
-    white-space: nowrap;
-    overflow-x: hidden;
-    .megamenu {
-      display: block;
-    }
-  }
-
-  #scrollMenuRight,
-  #scrollMenuLeft {
-    color: $gray;
-    border: 0;
-    position: absolute;
-    padding: 0.5rem 0.4rem !important;
-    z-index: 1;
-  }
-
-  #scrollMenuRight {
-    background: linear-gradient(270deg, #ffffff, rgba(255, 255, 255, 0.65));
-    right: 0;
-  }
-
-  #scrollMenuLeft {
-    background: linear-gradient(90deg, #ffffff, rgba(255, 255, 255, 0.65));
-    left: 0;
-  }
-}
 #evo-nav-wrapper {
   box-shadow: 0 2px 16px 0 rgba(0,0,0,0.06);
   .sticky-top {

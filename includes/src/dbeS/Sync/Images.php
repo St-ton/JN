@@ -720,8 +720,8 @@ final class Images extends AbstractSync
             }
         }
         $image = $container === true
-            ? $this->imageloadContainer($source, $newWidth, $newHeight, $targetWidth, $targetHeight)
-            : $this->imageloadAlpha($source, $newWidth, $newHeight);
+            ? $this->createImage($source, $newWidth, $newHeight, false, $targetWidth, $targetHeight)
+            : $this->createImage($source, $newWidth, $newHeight);
 
         return $this->saveImage($this->brandImage($image, $branding), $extension, $target, $quality) !== false;
     }
@@ -875,8 +875,8 @@ final class Images extends AbstractSync
         $position     = $config->cPosition;
         $transparency = $config->dTransparenz;
         $brandingSize = $config->dGroesse;
-        $randabstand  = $config->dRandabstand / 100;
-        $branding     = $this->imageloadAlpha($brandingImage, 0, 0, true);
+        $margin       = $config->dRandabstand / 100;
+        $branding     = $this->createImage($brandingImage, 0, 0, true);
         if (!$im || !$branding) {
             return $im;
         }
@@ -887,55 +887,20 @@ final class Images extends AbstractSync
         $brandingNewWidth  = $brandingWidth;
         $brandingNewHeight = $brandingHeight;
         $srcImage          = $branding;
-        if ($brandingSize > 0) { // branding auf diese Breite skalieren
+        if ($brandingSize > 0) { // scale to width
             $brandingNewWidth  = \round(($imageWidth * $brandingSize) / 100.0);
             $brandingNewHeight = \round(($brandingNewWidth / $brandingWidth) * $brandingHeight);
-            $srcImage          = $this->imageloadAlpha($brandingImage, $brandingNewWidth, $brandingNewHeight, true);
+            $srcImage          = $this->createImage($brandingImage, $brandingNewWidth, $brandingNewHeight, true);
         }
-        // position bestimmen
-        $brandingPosX = 0;
-        $brandingPosY = 0;
-        switch ($position) {
-            case 'oben':
-                $brandingPosX = $imageWidth / 2 - $brandingNewWidth / 2;
-                $brandingPosY = $imageHeight * $randabstand;
-                break;
-            case 'oben-rechts':
-                $brandingPosX = $imageWidth - $brandingNewWidth - $imageWidth * $randabstand;
-                $brandingPosY = $imageHeight * $randabstand;
-                break;
-            case 'rechts':
-                $brandingPosX = $imageWidth - $brandingNewWidth - $imageWidth * $randabstand;
-                $brandingPosY = $imageHeight / 2 - $brandingNewHeight / 2;
-                break;
-            case 'unten-rechts':
-                $brandingPosX = $imageWidth - $brandingNewWidth - $imageWidth * $randabstand;
-                $brandingPosY = $imageHeight - $brandingNewHeight - $imageHeight * $randabstand;
-                break;
-            case 'unten':
-                $brandingPosX = $imageWidth / 2 - $brandingNewWidth / 2;
-                $brandingPosY = $imageHeight - $brandingNewHeight - $imageHeight * $randabstand;
-                break;
-            case 'unten-links':
-                $brandingPosX = $imageWidth * $randabstand;
-                $brandingPosY = $imageHeight - $brandingNewHeight - $imageHeight * $randabstand;
-                break;
-            case 'links':
-                $brandingPosX = $imageWidth * $randabstand;
-                $brandingPosY = $imageHeight / 2 - $brandingNewHeight / 2;
-                break;
-            case 'oben-links':
-                $brandingPosX = $imageWidth * $randabstand;
-                $brandingPosY = $imageHeight * $randabstand;
-                break;
-            case 'zentriert':
-                $brandingPosX = $imageWidth / 2 - $brandingNewWidth / 2;
-                $brandingPosY = $imageHeight / 2 - $brandingNewHeight / 2;
-                break;
-        }
-        $brandingPosX = \round($brandingPosX);
-        $brandingPosY = \round($brandingPosY);
-        // bild mit branding composen
+
+        [$brandingPosX, $brandingPosY] = $this->getBrandingCoordinates(
+            $position,
+            $imageWidth,
+            $imageHeight,
+            $brandingNewWidth,
+            $brandingNewHeight,
+            $margin
+        );
         \imagealphablending($im, true);
         \imagesavealpha($im, true);
         $this->imagecopymergeAlpha(
@@ -951,6 +916,69 @@ final class Images extends AbstractSync
         );
 
         return $im;
+    }
+
+    /**
+     * @param string $position
+     * @param int    $imageWidth
+     * @param int    $imageHeight
+     * @param int    $brandingNewWidth
+     * @param int    $brandingNewHeight
+     * @param int    $margin
+     * @return array
+     */
+    private function getBrandingCoordinates(
+        string $position,
+        int $imageWidth,
+        int $imageHeight,
+        int $brandingNewWidth,
+        int $brandingNewHeight,
+        int $margin
+    ): array {
+        switch ($position) {
+            case 'top':
+                $positionX = $imageWidth / 2 - $brandingNewWidth / 2;
+                $positionY = $imageHeight * $margin;
+                break;
+            case 'top-right':
+                $positionX = $imageWidth - $brandingNewWidth - $imageWidth * $margin;
+                $positionY = $imageHeight * $margin;
+                break;
+            case 'right':
+                $positionX = $imageWidth - $brandingNewWidth - $imageWidth * $margin;
+                $positionY = $imageHeight / 2 - $brandingNewHeight / 2;
+                break;
+            case 'bottom-right':
+                $positionX = $imageWidth - $brandingNewWidth - $imageWidth * $margin;
+                $positionY = $imageHeight - $brandingNewHeight - $imageHeight * $margin;
+                break;
+            case 'bottom':
+                $positionX = $imageWidth / 2 - $brandingNewWidth / 2;
+                $positionY = $imageHeight - $brandingNewHeight - $imageHeight * $margin;
+                break;
+            case 'bottom-left':
+                $positionX = $imageWidth * $margin;
+                $positionY = $imageHeight - $brandingNewHeight - $imageHeight * $margin;
+                break;
+            case 'left':
+                $positionX = $imageWidth * $margin;
+                $positionY = $imageHeight / 2 - $brandingNewHeight / 2;
+                break;
+            case 'top-left':
+                $positionX = $imageWidth * $margin;
+                $positionY = $imageHeight * $margin;
+                break;
+            case 'center':
+                $positionX = $imageWidth / 2 - $brandingNewWidth / 2;
+                $positionY = $imageHeight / 2 - $brandingNewHeight / 2;
+                break;
+            default:
+                $positionX = 0;
+                $positionY = 0;
+                break;
+        }
+
+        return [\round($positionX), \round($positionY)];
     }
 
     /**
@@ -976,23 +1004,11 @@ final class Images extends AbstractSync
         $h = \imagesy($srcImg);
         // Turn alpha blending off
         \imagealphablending($srcImg, false);
-        // Find the most opaque pixel in the image (the one with the smallest alpha value)
-        /*
-        $minalpha = 127;
-        for( $x = 0; $x < $w; $x++ )
-        for( $y = 0; $y < $h; $y++ ){
-            $alpha = ( imagecolorat( $src_im, $x, $y ) >> 24 ) & 0xFF;
-            if( $alpha < $minalpha ){
-                $minalpha = $alpha;
-            }
-        }
-        */
-
         $minalpha = 0;
-        // loop through image pixels and modify alpha for each
+        // loop through image pixels and modify alpha
         for ($x = 0; $x < $w; $x++) {
             for ($y = 0; $y < $h; $y++) {
-                // get current alpha value (represents the TANSPARENCY!)
+                // get current alpha value (represents the transparency!)
                 $colorxy = \imagecolorat($srcImg, $x, $y);
                 $alpha   = ($colorxy >> 24) & 0xFF;
                 // calculate new alpha
@@ -1065,87 +1081,48 @@ final class Images extends AbstractSync
     }
 
     /**
-     * @param string $img
-     * @param int    $width
-     * @param int    $height
-     * @param int    $containerWidth
-     * @param int    $containerHeight
-     * @return resource
+     * @param string   $source
+     * @param int      $width
+     * @param int      $height
+     * @param bool     $branding
+     * @param int|null $containerWidth
+     * @param int|null $containerHeight
+     * @return false|resource
      */
-    private function imageloadContainer($img, int $width, int $height, int $containerWidth, int $containerHeight)
-    {
-        $imgInfo = \getimagesize($img);
+    private function createImage(
+        string $source,
+        int $width = 0,
+        int $height = 0,
+        bool $branding = false,
+        int $containerWidth = null,
+        int $containerHeight = null
+    ) {
+        $imgInfo = \getimagesize($source);
         switch ($imgInfo[2]) {
-            case 1:
-                $im = \imagecreatefromgif($img);
+            case \IMAGETYPE_GIF:
+                $im = \imagecreatefromgif($source);
                 break;
-            case 3:
-                $im = \imagecreatefrompng($img);
+            case \IMAGETYPE_PNG:
+                $im = \imagecreatefrompng($source);
                 break;
-            case 2:
+            case \IMAGETYPE_JPEG:
             default:
-                $im = \imagecreatefromjpeg($img);
+                $im = \imagecreatefromjpeg($source);
                 break;
         }
 
         if ($width === 0 && $height === 0) {
             [$width, $height] = $imgInfo;
         }
+        $posX   = 0;
+        $posY   = 0;
         $width  = (int)\round($width);
         $height = (int)\round($height);
-        $newImg = \imagecreatetruecolor($containerWidth, $containerHeight);
-        if ($this->getNewExtension($img) === 'jpg') {
-            $rgb   = $this->html2rgb($this->config['bilder']['bilder_hintergrundfarbe']);
-            $color = \imagecolorallocate($newImg, $rgb[0], $rgb[1], $rgb[2]);
-            \imagealphablending($newImg, true);
-        } else {
-            $color = \imagecolorallocatealpha($newImg, 255, 255, 255, 127);
-            \imagealphablending($newImg, false);
-        }
-        \imagesavealpha($newImg, true);
-        \imagefilledrectangle($newImg, 0, 0, $containerWidth, $containerHeight, $color);
-        $posX = ($containerWidth / 2) - ($width / 2);
-        $posY = ($containerHeight / 2) - ($height / 2);
-        \imagecopyresampled($newImg, $im, $posX, $posY, 0, 0, $width, $height, $imgInfo[0], $imgInfo[1]);
-
-        return $newImg;
-    }
-
-    /**
-     * @param string $img
-     * @param int    $width
-     * @param int    $height
-     * @param bool   $branding
-     * @return resource
-     */
-    private function imageloadAlpha($img, int $width = 0, int $height = 0, bool $branding = false)
-    {
-        $imgInfo = \getimagesize($img);
-        switch ($imgInfo[2]) {
-            case 1:
-                $im = \imagecreatefromgif($img);
-                break;
-            case 3:
-                $im = \imagecreatefrompng($img);
-                break;
-            case 2:
-            default:
-                $im = \imagecreatefromjpeg($img);
-                break;
-        }
-
-        if ($width === 0 && $height === 0) {
-            [$width, $height] = $imgInfo;
-        }
-
-        $width  = (int)\round($width);
-        $height = (int)\round($height);
-        $newImg = \imagecreatetruecolor($width, $height);
-
+        $newImg = \imagecreatetruecolor($containerWidth ?? $width, $containerHeight ?? $height);
         if (!$newImg) {
             return $im;
         }
-        if ($this->getNewExtension($img) === 'jpg') {
+        if ($this->getNewExtension($source) === 'jpg') {
             $rgb   = $this->html2rgb($this->config['bilder']['bilder_hintergrundfarbe']);
             $color = \imagecolorallocate($newImg, $rgb[0], $rgb[1], $rgb[2]);
             \imagealphablending($newImg, $branding);
@@ -1155,8 +1132,12 @@ final class Images extends AbstractSync
         }
 
         \imagesavealpha($newImg, true);
-        \imagefilledrectangle($newImg, 0, 0, $width, $height, $color);
-        \imagecopyresampled($newImg, $im, 0, 0, 0, 0, $width, $height, $imgInfo[0], $imgInfo[1]);
+        \imagefilledrectangle($newImg, 0, 0, $containerWidth ?? $width, $containerHeight ?? $height, $color);
+        if ($containerHeight !== null) {
+            $posX = ($containerWidth / 2) - ($width / 2);
+            $posY = ($containerHeight / 2) - ($height / 2);
+        }
+        \imagecopyresampled($newImg, $im, $posX, $posY, 0, 0, $width, $height, $imgInfo[0], $imgInfo[1]);
 
         return $newImg;
     }
@@ -1200,10 +1181,10 @@ final class Images extends AbstractSync
                 $res = false;
                 break;
         }
-        if ($res === false) {
-            $this->logger->error('Cannot save image: ' . $path);
-        } else {
+        if ($res !== false) {
             @\chmod($path, 0644);
+        } else {
+            $this->logger->error('Cannot save image: ' . $path);
         }
 
         return $res;

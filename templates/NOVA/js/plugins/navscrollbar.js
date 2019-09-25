@@ -1,6 +1,6 @@
 const NAME					= 'navscrollbar'
 const VERSION				= '1.0.0'
-const UNIQID				= 'osdihjgsoidjfgiosdjf'
+const UNIQID				= uniqid()
 const DATA_KEY				= `jtl.${NAME}`
 const EVENT_KEY				= `.${DATA_KEY}#${UNIQID}`
 const JQUERY_NO_CONFLICT	= $.fn[NAME]

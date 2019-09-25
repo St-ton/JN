@@ -577,6 +577,8 @@ $(document).ready(function () {
     $('.label-slide input').on('change', function() {
         $(this).attr('value', $(this).val());
     });
+
+    $('header .nav-scrollbar').navscrollbar();
 });
 
 function setClickableRow ()

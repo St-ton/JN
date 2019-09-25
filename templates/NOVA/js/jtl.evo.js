@@ -820,7 +820,6 @@
             this.checkout();
             this.addInactivityCheck();
             this.setCompareListHeight();
-            this.checkMenuScroll();
             this.fixStickyElements();
             this.setWishlistVisibilitySwitches();
         }
@@ -836,12 +835,6 @@
             $.evo.register();
         });
     }
-
-    $(window).on('resize', function () {
-      /*  console.log('resize');
-        $.evo.autoheight();*/
-        $.evo.checkMenuScroll();
-    });
 
     // PLUGIN DEFINITION
     // =================

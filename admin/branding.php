@@ -8,7 +8,7 @@ use JTL\Alert\Alert;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
-use JTL\Media\Image\Product;
+use JTL\Media\Media;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -102,9 +102,10 @@ function speicherEinstellung(int $brandingID, array $post, array $files)
             loescheBrandingBild($conf->kBranding);
             speicherBrandingBild($files, $conf->kBranding);
         }
-
         Shop::Container()->getDB()->insert('tbrandingeinstellung', $conf);
-        Product::clearCache();
+        $data = Shop::Container()->getDB()->select('tbranding', 'kBranding', $conf->kBranding);
+        $type = Media::getClass($data->cBildKategorie ?? '');
+        $type::clearCache();
 
         return true;
     }

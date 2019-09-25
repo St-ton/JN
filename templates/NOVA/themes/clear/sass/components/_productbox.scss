@@ -17,7 +17,6 @@
 				&:hover {
 					.productbox-inner { position: absolute; left: 0; top: 0; right: 0; }
 				}
-				&:not(:hover) .productbox-onhover { display: none; }
 			}
 		}
 	}
@@ -41,7 +40,10 @@
 
 .productbox-image { position: relative; margin-bottom: $spacer; }
 
-.productbox-title { display: block; }
+.productbox-title {
+	display: block;
+	line-height: $display-line-height;
+}
 
 .productbox-variations { margin-bottom: $spacer; }
 

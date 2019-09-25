@@ -10,10 +10,6 @@
   background: #fff url('../base/images/loader.gif') center center no-repeat;
 }
 
-.slick-initialized .slick-slide {
-  padding: 0 map_get($spacers, 1);
-}
-
 .slick-prev,
 .slick-next {
   position: absolute;
@@ -37,16 +33,6 @@
   .slick-disabled:before {
     opacity: 0.25;
   }
-
-  &::before {
-    font-family: "Font Awesome 5 Free", Arial, sans-serif;
-    font-weight: 900;
-    font-size: 20px;
-    line-height: 1;
-    color: #cccccc;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
 }
 
 .slick-prev {
@@ -57,10 +43,6 @@
     left: auto;
     right: 0;
   }
-
-  &::before {
-    content: '\f053';
-  }
 }
 
 .slick-next {
@@ -70,10 +52,6 @@
   &[dir="rtl"] {
     left: 0;
     right: auto;
-  }
-
-  &::before {
-    content: '\f054';
   }
 }
 

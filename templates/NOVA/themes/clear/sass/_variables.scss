@@ -28,7 +28,7 @@ $gray-600:                          $gray;
 $gray-700:                          $gray-dark;
 
 $yiq-text-dark:                     $gray-darker;
-$yiq-text-light:                    $gray-light;
+$yiq-text-light:                    $gray-lighter;
 
 // spacer
 
@@ -233,31 +233,31 @@ $tap-target-size:                   44px;
 $tap-target-size-sm:                36px;
 
 //BESTSELLER, 1
-$ribbon-bg-1:                       #eeb728;
+$ribbon-bg-1:                       #eeb700;
 $ribbon-color-1:                    #fff;
 //SPECIALOFFERS, 2
-$ribbon-bg-2:                       #4bc223;
+$ribbon-bg-2:                       #4cc210;
 $ribbon-color-2:                    #fff;
 //NEWPRODUCTS, 3
-$ribbon-bg-3:                       #525252;
+$ribbon-bg-3:                       $gray-darker;
 $ribbon-color-3:                    #fff;
 //TOPOFFERS, 4
-$ribbon-bg-4:                       #c3ebe6;
+$ribbon-bg-4:                       $gray-medium;
 $ribbon-color-4:                    $gray-dark;
 //UPCOMINGPRODUCTS, 5
-$ribbon-bg-5:                       #b9056f;
+$ribbon-bg-5:                       #f78e25;
 $ribbon-color-5:                    #fff;
 //TOPREVIEWS, 6
 $ribbon-bg-6:                       #ebebeb;
 $ribbon-color-6:                    $gray-dark;
 //OUTOFSTOCK, 7
-$ribbon-bg-7:                       #b9080e;
+$ribbon-bg-7:                       $danger;
 $ribbon-color-7:                    #fff;
 //ONSTOCK, 8
-$ribbon-bg-8:                       #0f8662;
+$ribbon-bg-8:                       #11926b;
 $ribbon-color-8:                    #fff;
 //PREORDER, 9
-$ribbon-bg-9:                       #f78e26;
+$ribbon-bg-9:                       #b9006f;
 $ribbon-color-9:                    #fff;
 
 $ribbon-colors				: ();

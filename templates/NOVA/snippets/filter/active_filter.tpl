@@ -37,7 +37,7 @@
             {if $NaviFilter->getURL()->getUnsetAll() !== null}
                 {link href=$NaviFilter->getURL()->getUnsetAll()
                     title="{lang key='removeFilters'}"
-                    class='text-decoration-none'}
+                    class='text-decoration-none d-inline-block'}
                     {lang key='removeFilters'}
                 {/link}
             {/if}

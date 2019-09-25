@@ -332,7 +332,7 @@
                                     <meta itemprop="url" content="{$ShopURL}">
                                     <meta itemprop="logo" content="{$ShopLogoURL}">
 
-                                    {link class='navbar-brand mb-lg-3 mr-lg-6' href=$ShopURL title=$Einstellungen.global.global_shopname}
+                                    {link class="navbar-brand {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}mb-lg-3{/if} mr-lg-6" href=$ShopURL title=$Einstellungen.global.global_shopname}
                                     {if isset($ShopLogoURL)}
                                         {image src=$ShopLogoURL
                                         alt=$Einstellungen.global.global_shopname

@@ -221,18 +221,13 @@ final class Images extends AbstractSync
             $item->cBildPfad = $item->kKonfiggruppe . '.' . $extension;
             $item->cBildPfad = $this->getNewFilename($item->cBildPfad);
 
-            $branding                               = new stdClass();
-            $branding->oBrandingEinstellung         = new stdClass();
-            $branding->oBrandingEinstellung->nAktiv = 0;
             \copy($original, \PFAD_ROOT . \STORAGE_CONFIGGROUPS . $image->cPfad);
             if ($this->createThumbnail(
-                $branding,
                 $original,
                 \PFAD_KONFIGURATOR_KLEIN . $item->cBildPfad,
                 $this->config['bilder']['bilder_konfiggruppe_klein_breite'],
                 $this->config['bilder']['bilder_konfiggruppe_klein_hoehe'],
                 $this->config['bilder']['bilder_jpg_quali'],
-                true,
                 $this->config['bilder']['container_verwenden']
             )) {
                 $this->db->update(
@@ -268,22 +263,16 @@ final class Images extends AbstractSync
             $image->cPfad .= '.' . $extension;
             $image->cPfad  = $this->getNewFilename($image->cPfad);
             \copy($original, \PFAD_ROOT . \STORAGE_CHARACTERISTIC_VALUES . $image->cPfad);
-            // @todo: why createThumbnail with branding config and createBrandedThumbnail??????????????????????
-            // ??????????????????????
-            // ??????????????????????
-            // ??????????????????????
-            // ??????????????????????
             $this->createThumbnail(
-                $this->brandingConfig[Image::TYPE_CHARACTERISTIC_VALUE],
                 $original,
                 \PFAD_MERKMALWERTBILDER_NORMAL . $image->cPfad,
                 $this->config['bilder']['bilder_merkmalwert_normal_breite'],
                 $this->config['bilder']['bilder_merkmalwert_normal_hoehe'],
                 $this->config['bilder']['bilder_jpg_quali'],
-                true,
-                $this->config['bilder']['container_verwenden']
+                $this->config['bilder']['container_verwenden'],
+                $this->brandingConfig[Image::TYPE_CHARACTERISTIC_VALUE]
             );
-            if ($this->createBrandedThumbnail(
+            if ($this->createThumbnail(
                 $original,
                 \PFAD_MERKMALWERTBILDER_KLEIN . $image->cPfad,
                 $this->config['bilder']['bilder_merkmalwert_klein_breite'],
@@ -330,16 +319,15 @@ final class Images extends AbstractSync
             $image->cPfad  = $this->getNewFilename($image->cPfad);
             \copy($original, \PFAD_ROOT . \STORAGE_CHARACTERISTICS . $image->cPfad);
             $this->createThumbnail(
-                $this->brandingConfig[Image::TYPE_CHARACTERISTIC],
                 $original,
                 \PFAD_MERKMALBILDER_NORMAL . $image->cPfad,
                 $this->config['bilder']['bilder_merkmal_normal_breite'],
                 $this->config['bilder']['bilder_merkmal_normal_hoehe'],
                 $this->config['bilder']['bilder_jpg_quali'],
-                true,
-                $this->config['bilder']['container_verwenden']
+                $this->config['bilder']['container_verwenden'],
+                $this->brandingConfig[Image::TYPE_CHARACTERISTIC]
             );
-            if ($this->createBrandedThumbnail(
+            if ($this->createThumbnail(
                 $original,
                 \PFAD_MERKMALBILDER_KLEIN . $image->cPfad,
                 $this->config['bilder']['bilder_merkmal_klein_breite'],
@@ -392,16 +380,15 @@ final class Images extends AbstractSync
             $image->cPfad = $this->getNewFilename($image->cPfad);
             \copy($original, \PFAD_ROOT . \STORAGE_MANUFACTURERS . $image->cPfad);
             $this->createThumbnail(
-                $this->brandingConfig[Image::TYPE_MANUFACTURER],
                 $original,
                 \PFAD_HERSTELLERBILDER_NORMAL . $image->cPfad,
                 $this->config['bilder']['bilder_hersteller_normal_breite'],
                 $this->config['bilder']['bilder_hersteller_normal_hoehe'],
                 $this->config['bilder']['bilder_jpg_quali'],
-                true,
-                $this->config['bilder']['container_verwenden']
+                $this->config['bilder']['container_verwenden'],
+                $this->brandingConfig[Image::TYPE_MANUFACTURER]
             );
-            if ($this->createBrandedThumbnail(
+            if ($this->createThumbnail(
                 $original,
                 \PFAD_HERSTELLERBILDER_KLEIN . $image->cPfad,
                 $this->config['bilder']['bilder_hersteller_klein_breite'],
@@ -452,16 +439,15 @@ final class Images extends AbstractSync
             $image->cPfad = $this->getNewFilename($image->cPfad);
             \copy($original, \PFAD_ROOT . \STORAGE_VARIATIONS . $image->cPfad);
             $this->createThumbnail(
-                $this->brandingConfig[Image::TYPE_VARIATION],
                 $original,
                 \PFAD_VARIATIONSBILDER_GROSS . $image->cPfad,
                 $this->config['bilder']['bilder_variationen_gross_breite'],
                 $this->config['bilder']['bilder_variationen_gross_hoehe'],
                 $this->config['bilder']['bilder_jpg_quali'],
-                true,
-                $this->config['bilder']['container_verwenden']
+                $this->config['bilder']['container_verwenden'],
+                $this->brandingConfig[Image::TYPE_VARIATION]
             );
-            $this->createBrandedThumbnail(
+            $this->createThumbnail(
                 $original,
                 \PFAD_VARIATIONSBILDER_NORMAL . $image->cPfad,
                 $this->config['bilder']['bilder_variationen_breite'],
@@ -469,7 +455,7 @@ final class Images extends AbstractSync
                 $this->config['bilder']['bilder_jpg_quali'],
                 $this->config['bilder']['container_verwenden']
             );
-            if ($this->createBrandedThumbnail(
+            if ($this->createThumbnail(
                 $original,
                 \PFAD_VARIATIONSBILDER_MINI . $image->cPfad,
                 $this->config['bilder']['bilder_variationen_mini_breite'],
@@ -505,14 +491,13 @@ final class Images extends AbstractSync
             $image->cPfad = $this->getNewFilename($image->cPfad);
             \copy($original, \PFAD_ROOT . \STORAGE_CATEGORIES . $image->cPfad);
             if ($this->createThumbnail(
-                $this->brandingConfig[Image::TYPE_CATEGORY],
                 $original,
                 \PFAD_KATEGORIEBILDER . $image->cPfad,
                 $this->config['bilder']['bilder_kategorien_breite'],
                 $this->config['bilder']['bilder_kategorien_hoehe'],
                 $this->config['bilder']['bilder_jpg_quali'],
-                true,
-                $this->config['bilder']['container_verwenden']
+                $this->config['bilder']['container_verwenden'],
+                $this->brandingConfig[Image::TYPE_CATEGORY]
             )) {
                 $this->upsert('tkategoriepict', [$image], 'kKategorie');
             }
@@ -635,7 +620,8 @@ final class Images extends AbstractSync
             'kKategorie',
             (int)$image->kKategorie,
             'cName',
-            \KAT_ATTRIBUT_BILDNAME);
+            \KAT_ATTRIBUT_BILDNAME
+        );
         if (!empty($attr->cWert)) {
             return $attr->cWert . '.' . $ext;
         }
@@ -692,99 +678,39 @@ final class Images extends AbstractSync
     }
 
     /**
-     * @param string $imgFilename
-     * @param string $targetImage
+     * @param string $source
+     * @param string $target
      * @param int    $targetWidth
-     * @param int    $targetheight
+     * @param int    $targetHeight
      * @param int    $quality
      * @param string $container
-     * @return int
-     */
-    private function createBrandedThumbnail(
-        string $imgFilename,
-        string $targetImage,
-        int $targetWidth,
-        int $targetheight,
-        int $quality = 80,
-        string $container = 'N'
-    ): int {
-        $enlarge          = $this->config['bilder']['bilder_skalieren'] === 'Y';
-        $ret              = 0;
-        $extension        = $this->getNewExtension($targetImage);
-        [$width, $height] = \getimagesize($imgFilename);
-        if ($width > 0 && $height > 0) {
-            if (!$enlarge && $width < $targetWidth && $height < $targetheight) {
-                if ($container === 'Y') {
-                    $im = $this->imageloadContainer($imgFilename, $width, $height, $targetWidth, $targetheight);
-                } else {
-                    $im = $this->imageloadAlpha($imgFilename, $width, $height);
-                }
-                $this->saveImage($im, $extension, \PFAD_ROOT . $targetImage, $quality);
-                @\chmod(\PFAD_ROOT . $targetImage, 0644);
-
-                return 1;
-            }
-            $ratio     = $width / $height;
-            $newWidth  = $targetWidth;
-            $newHeight = \round($newWidth / $ratio);
-            if ($newHeight > $targetheight) {
-                $newHeight = $targetheight;
-                $newWidth  = \round($newHeight * $ratio);
-            }
-            if ($container === 'Y') {
-                $im = $this->imageloadContainer($imgFilename, $newWidth, $newHeight, $targetWidth, $targetheight);
-            } else {
-                $im = $this->imageloadAlpha($imgFilename, $newWidth, $newHeight);
-            }
-            if ($this->saveImage($im, $extension, \PFAD_ROOT . $targetImage, $quality)) {
-                $ret = 1;
-                @\chmod(\PFAD_ROOT . $targetImage, 0644);
-            } else {
-                $this->logger->error('Fehler beim Speichern des Bildes: ' . $targetImage);
-            }
-        } else {
-            $this->logger->error('Fehler beim Speichern des Bildes: ' . $imgFilename);
-        }
-
-        return $ret;
-    }
-
-    /**
-     * @param object       $branding
-     * @param string       $imgFilename
-     * @param string       $target
-     * @param int          $targetWidth
-     * @param int          $targetHeight
-     * @param int          $quality
-     * @param bool         $brand
-     * @param string       $container
+     * @param null   $branding
      * @return int
      */
     private function createThumbnail(
-        $branding,
-        string $imgFilename,
+        string $source,
         string $target,
         int $targetWidth,
         int $targetHeight,
         int $quality = 80,
-        bool $brand = false,
-        $container = 'N'
+        string $container = 'N',
+        $branding = null
     ): int {
-        $enlarge   = $this->config['bilder']['bilder_skalieren'] === 'Y';
-        $ret       = 0;
-        $extension = $this->getNewExtension($target);
-        $im        = $this->imageloadAlpha($imgFilename);
-        if (!$im) {
-            $this->logger->error('Bild konnte nicht erstellt werden. Datei kein Bild?: ' . $imgFilename);
+        $enlarge          = $this->config['bilder']['bilder_skalieren'] === 'Y';
+        $ret              = 0;
+        $extension        = $this->getNewExtension($target);
+        [$width, $height] = \getimagesize($source);
+        if ($width <= 0 || $height <= 0) {
+            $this->logger->error('Bild konnte nicht erstellt werden. Quelle ungueltig: ' . $source);
+
             return $ret;
         }
-        [$width, $height] = \getimagesize($imgFilename);
         if (!$enlarge && $width < $targetWidth && $height < $targetHeight) {
             // Bild nicht neu berechnen, nur verschieben
-            $im = $container === 'Y'
-                ? $this->imageloadContainer($imgFilename, $width, $height, $targetWidth, $targetHeight)
-                : $this->imageloadAlpha($imgFilename, $width, $height);
-            $this->saveImage($this->brandImage($im, $brand, $branding), $extension, \PFAD_ROOT . $target, $quality);
+            $image = $container === 'Y'
+                ? $this->imageloadContainer($source, $width, $height, $targetWidth, $targetHeight)
+                : $this->imageloadAlpha($source, $width, $height);
+            $this->saveImage($this->brandImage($image, $branding), $extension, \PFAD_ROOT . $target, $quality);
             @\chmod(\PFAD_ROOT . $target, 0644);
 
             return 1;
@@ -797,9 +723,9 @@ final class Images extends AbstractSync
             $newWidth  = \round($newHeight * $ratio);
         }
         $image = $container === 'Y'
-            ? $this->imageloadContainer($imgFilename, $newWidth, $newHeight, $targetWidth, $targetHeight)
-            : $this->imageloadAlpha($imgFilename, $newWidth, $newHeight);
-        if ($this->saveImage($this->brandImage($image, $brand, $branding), $extension, \PFAD_ROOT . $target, $quality)) {
+            ? $this->imageloadContainer($source, $newWidth, $newHeight, $targetWidth, $targetHeight)
+            : $this->imageloadAlpha($source, $newWidth, $newHeight);
+        if ($this->saveImage($this->brandImage($image, $branding), $extension, \PFAD_ROOT . $target, $quality)) {
             $ret = 1;
             @\chmod(\PFAD_ROOT . $target, 0644);
         } else {
@@ -940,13 +866,12 @@ final class Images extends AbstractSync
 
     /**
      * @param resource $im
-     * @param bool     $brand
-     * @param object   $brandData
+     * @param object|null   $brandData
      * @return mixed
      */
-    private function brandImage($im, bool $brand, $brandData)
+    private function brandImage($im, $brandData)
     {
-        if (!$brand
+        if ($brandData === null
             || (isset($brandData->oBrandingEinstellung->nAktiv) && (int)$brandData->oBrandingEinstellung->nAktiv === 0)
             || !isset($brandData->oBrandingEinstellung->cBrandingBild)
         ) {
@@ -970,12 +895,11 @@ final class Images extends AbstractSync
         $brandingHeight    = \imagesy($branding);
         $brandingNewWidth  = $brandingWidth;
         $brandingNewHeight = $brandingHeight;
-        $image_branding    = $branding;
+        $srcImage          = $branding;
         if ($brandingSize > 0) { // branding auf diese Breite skalieren
             $brandingNewWidth  = \round(($imageWidth * $brandingSize) / 100.0);
             $brandingNewHeight = \round(($brandingNewWidth / $brandingWidth) * $brandingHeight);
-
-            $image_branding = $this->imageloadAlpha($brandingImage, $brandingNewWidth, $brandingNewHeight, true);
+            $srcImage          = $this->imageloadAlpha($brandingImage, $brandingNewWidth, $brandingNewHeight, true);
         }
         // position bestimmen
         $brandingPosX = 0;
@@ -1025,7 +949,7 @@ final class Images extends AbstractSync
         \imagesavealpha($im, true);
         $this->imagecopymergeAlpha(
             $im,
-            $image_branding,
+            $srcImage,
             $brandingPosX,
             $brandingPosY,
             0,

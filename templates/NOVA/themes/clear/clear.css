@@ -14183,7 +14183,7 @@ aside .last-seen-link {
   z-index: -1;
   background-color: #F8BF00;
   height: 100%;
-  left: -100%;
+  left: -110%;
   top: 0;
   transform: skew(50deg);
   transition: 0.6s;
@@ -14196,7 +14196,7 @@ aside .last-seen-link {
 }
 .btn-secondary:hover::before {
   height: 100%;
-  width: 200%;
+  width: 220%;
 }
 
 .btn-secondary.disabled, .btn-secondary:disabled {

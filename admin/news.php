@@ -38,7 +38,8 @@ $defaultLang    = LanguageHelper::getDefaultLanguage();
 $_SESSION['kSprache'] = $defaultLang->kSprache;
 if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $backTab = Request::verifyGPDataString('tab');
-    $smarty->assign('cTab', $backTab);
+    $smarty->assign('cTab', $backTab)
+           ->assign('files', []);
 
     switch ($backTab) {
         case 'inaktiv':

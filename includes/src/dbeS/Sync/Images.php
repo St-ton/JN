@@ -15,6 +15,7 @@ use JTL\Media\Image\Characteristic;
 use JTL\Media\Image\CharacteristicValue;
 use JTL\Shop;
 use stdClass;
+use function Functional\reindex;
 
 /**
  * Class Images
@@ -43,8 +44,8 @@ final class Images extends AbstractSync
      */
     public function handle(Starter $starter)
     {
-        $this->brandingConfig = $this->getBrandingConfig();
-        $this->config         = $this->getConfig();
+        $this->brandingConfig = $this->initBrandingConfig();
+        $this->config         = $this->initConfig();
         $this->db->query('START TRANSACTION', ReturnType::DEFAULT);
         foreach ($starter->getXML() as $i => $item) {
             [$file, $xml] = [\key($item), \reset($item)];
@@ -78,21 +79,20 @@ final class Images extends AbstractSync
     /**
      * @return array
      */
-    private function getBrandingConfig(): array
+    private function initBrandingConfig(): array
     {
-        $branding = [];
         $data     = $this->db->query(
             'SELECT * FROM tbranding',
             ReturnType::ARRAY_OF_OBJECTS
         );
-        foreach ($data as $item) {
-            $branding[$item->cBildKategorie] = $item;
-        }
-        foreach ($branding as $config) {
-            $config->oBrandingEinstellung = $this->db->select(
+        $branding = reindex($data, function ($e) {
+            return $e->cBildKategorie;
+        });
+        foreach ($branding as $item) {
+            $item->config = $this->db->select(
                 'tbrandingeinstellung',
                 'kBranding',
-                (int)$config->kBranding
+                (int)$item->kBranding
             );
         }
 
@@ -100,9 +100,18 @@ final class Images extends AbstractSync
     }
 
     /**
+     * @param string $type
+     * @return stdClass|null
+     */
+    private function getBrandingConfig(string $type): ?stdClass
+    {
+        return $this->brandingConfig[$type]->config ?? null;
+    }
+
+    /**
      * @return array
      */
-    private function getConfig(): array
+    private function initConfig(): array
     {
         $config   = Shop::getSettings([\CONF_BILDER]);
         $defaults = [
@@ -227,8 +236,7 @@ final class Images extends AbstractSync
                 \PFAD_KONFIGURATOR_KLEIN . $item->cBildPfad,
                 $this->config['bilder']['bilder_konfiggruppe_klein_breite'],
                 $this->config['bilder']['bilder_konfiggruppe_klein_hoehe'],
-                $this->config['bilder']['bilder_jpg_quali'],
-                $this->config['bilder']['container_verwenden']
+                $this->config['bilder']['bilder_jpg_quali']
             )) {
                 $this->db->update(
                     'tkonfiggruppe',
@@ -269,16 +277,14 @@ final class Images extends AbstractSync
                 $this->config['bilder']['bilder_merkmalwert_normal_breite'],
                 $this->config['bilder']['bilder_merkmalwert_normal_hoehe'],
                 $this->config['bilder']['bilder_jpg_quali'],
-                $this->config['bilder']['container_verwenden'],
-                $this->brandingConfig[Image::TYPE_CHARACTERISTIC_VALUE]
+                $this->getBrandingConfig(Image::TYPE_CHARACTERISTIC_VALUE)
             );
             if ($this->createThumbnail(
                 $original,
                 \PFAD_MERKMALWERTBILDER_KLEIN . $image->cPfad,
                 $this->config['bilder']['bilder_merkmalwert_klein_breite'],
                 $this->config['bilder']['bilder_merkmalwert_klein_hoehe'],
-                $this->config['bilder']['bilder_jpg_quali'],
-                $this->config['bilder']['container_verwenden']
+                $this->config['bilder']['bilder_jpg_quali']
             )) {
                 $this->db->update(
                     'tmerkmalwert',
@@ -324,16 +330,14 @@ final class Images extends AbstractSync
                 $this->config['bilder']['bilder_merkmal_normal_breite'],
                 $this->config['bilder']['bilder_merkmal_normal_hoehe'],
                 $this->config['bilder']['bilder_jpg_quali'],
-                $this->config['bilder']['container_verwenden'],
-                $this->brandingConfig[Image::TYPE_CHARACTERISTIC]
+                $this->getBrandingConfig(Image::TYPE_CHARACTERISTIC)
             );
             if ($this->createThumbnail(
                 $original,
                 \PFAD_MERKMALBILDER_KLEIN . $image->cPfad,
                 $this->config['bilder']['bilder_merkmal_klein_breite'],
                 $this->config['bilder']['bilder_merkmal_klein_hoehe'],
-                $this->config['bilder']['bilder_jpg_quali'],
-                $this->config['bilder']['container_verwenden']
+                $this->config['bilder']['bilder_jpg_quali']
             )) {
                 $this->db->update(
                     'tmerkmal',
@@ -385,16 +389,14 @@ final class Images extends AbstractSync
                 $this->config['bilder']['bilder_hersteller_normal_breite'],
                 $this->config['bilder']['bilder_hersteller_normal_hoehe'],
                 $this->config['bilder']['bilder_jpg_quali'],
-                $this->config['bilder']['container_verwenden'],
-                $this->brandingConfig[Image::TYPE_MANUFACTURER]
+                $this->getBrandingConfig(Image::TYPE_MANUFACTURER)
             );
             if ($this->createThumbnail(
                 $original,
                 \PFAD_HERSTELLERBILDER_KLEIN . $image->cPfad,
                 $this->config['bilder']['bilder_hersteller_klein_breite'],
                 $this->config['bilder']['bilder_hersteller_klein_hoehe'],
-                $this->config['bilder']['bilder_jpg_quali'],
-                $this->config['bilder']['container_verwenden']
+                $this->config['bilder']['bilder_jpg_quali']
             )) {
                 $this->db->update(
                     'thersteller',
@@ -444,24 +446,21 @@ final class Images extends AbstractSync
                 $this->config['bilder']['bilder_variationen_gross_breite'],
                 $this->config['bilder']['bilder_variationen_gross_hoehe'],
                 $this->config['bilder']['bilder_jpg_quali'],
-                $this->config['bilder']['container_verwenden'],
-                $this->brandingConfig[Image::TYPE_VARIATION]
+                $this->getBrandingConfig(Image::TYPE_VARIATION)
             );
             $this->createThumbnail(
                 $original,
                 \PFAD_VARIATIONSBILDER_NORMAL . $image->cPfad,
                 $this->config['bilder']['bilder_variationen_breite'],
                 $this->config['bilder']['bilder_variationen_hoehe'],
-                $this->config['bilder']['bilder_jpg_quali'],
-                $this->config['bilder']['container_verwenden']
+                $this->config['bilder']['bilder_jpg_quali']
             );
             if ($this->createThumbnail(
                 $original,
                 \PFAD_VARIATIONSBILDER_MINI . $image->cPfad,
                 $this->config['bilder']['bilder_variationen_mini_breite'],
                 $this->config['bilder']['bilder_variationen_mini_hoehe'],
-                $this->config['bilder']['bilder_jpg_quali'],
-                $this->config['bilder']['container_verwenden']
+                $this->config['bilder']['bilder_jpg_quali']
             )) {
                 $this->upsert('teigenschaftwertpict', [$image], 'kEigenschaftWert');
             }
@@ -496,8 +495,7 @@ final class Images extends AbstractSync
                 $this->config['bilder']['bilder_kategorien_breite'],
                 $this->config['bilder']['bilder_kategorien_hoehe'],
                 $this->config['bilder']['bilder_jpg_quali'],
-                $this->config['bilder']['container_verwenden'],
-                $this->brandingConfig[Image::TYPE_CATEGORY]
+                $this->getBrandingConfig(Image::TYPE_CATEGORY)
             )) {
                 $this->upsert('tkategoriepict', [$image], 'kKategorie');
             }
@@ -683,7 +681,6 @@ final class Images extends AbstractSync
      * @param int    $targetWidth
      * @param int    $targetHeight
      * @param int    $quality
-     * @param string $container
      * @param null   $branding
      * @return int
      */
@@ -693,9 +690,9 @@ final class Images extends AbstractSync
         int $targetWidth,
         int $targetHeight,
         int $quality = 80,
-        string $container = 'N',
         $branding = null
     ): int {
+        $container        = $this->config['bilder']['container_verwenden'] === 'Y';
         $enlarge          = $this->config['bilder']['bilder_skalieren'] === 'Y';
         $ret              = 0;
         $extension        = $this->getNewExtension($target);
@@ -707,7 +704,7 @@ final class Images extends AbstractSync
         }
         if (!$enlarge && $width < $targetWidth && $height < $targetHeight) {
             // Bild nicht neu berechnen, nur verschieben
-            $image = $container === 'Y'
+            $image = $container === true
                 ? $this->imageloadContainer($source, $width, $height, $targetWidth, $targetHeight)
                 : $this->imageloadAlpha($source, $width, $height);
             $this->saveImage($this->brandImage($image, $branding), $extension, \PFAD_ROOT . $target, $quality);
@@ -722,7 +719,7 @@ final class Images extends AbstractSync
             $newHeight = $targetHeight;
             $newWidth  = \round($newHeight * $ratio);
         }
-        $image = $container === 'Y'
+        $image = $container === true
             ? $this->imageloadContainer($source, $newWidth, $newHeight, $targetWidth, $targetHeight)
             : $this->imageloadAlpha($source, $newWidth, $newHeight);
         if ($this->saveImage($this->brandImage($image, $branding), $extension, \PFAD_ROOT . $target, $quality)) {
@@ -865,26 +862,26 @@ final class Images extends AbstractSync
     }
 
     /**
-     * @param resource $im
-     * @param object|null   $brandData
+     * @param resource    $im
+     * @param object|null $config
      * @return mixed
      */
-    private function brandImage($im, $brandData)
+    private function brandImage($im, $config)
     {
-        if ($brandData === null
-            || (isset($brandData->oBrandingEinstellung->nAktiv) && (int)$brandData->oBrandingEinstellung->nAktiv === 0)
-            || !isset($brandData->oBrandingEinstellung->cBrandingBild)
+        if ($config === null
+            || (isset($config->nAktiv) && (int)$config->nAktiv === 0)
+            || !isset($config->cBrandingBild)
         ) {
             return $im;
         }
-        $brandingImage = \PFAD_ROOT . \PFAD_BRANDINGBILDER . $brandData->oBrandingEinstellung->cBrandingBild;
+        $brandingImage = \PFAD_ROOT . \PFAD_BRANDINGBILDER . $config->cBrandingBild;
         if (!\file_exists($brandingImage)) {
             return $im;
         }
-        $position     = $brandData->oBrandingEinstellung->cPosition;
-        $transparency = $brandData->oBrandingEinstellung->dTransparenz;
-        $brandingSize = $brandData->oBrandingEinstellung->dGroesse;
-        $randabstand  = $brandData->oBrandingEinstellung->dRandabstand / 100;
+        $position     = $config->cPosition;
+        $transparency = $config->dTransparenz;
+        $brandingSize = $config->dGroesse;
+        $randabstand  = $config->dRandabstand / 100;
         $branding     = $this->imageloadAlpha($brandingImage, 0, 0, true);
         if (!$im || !$branding) {
             return $im;
@@ -1081,7 +1078,7 @@ final class Images extends AbstractSync
      * @param int    $containerHeight
      * @return resource
      */
-    private function imageloadContainer($img, int $width, int $height, $containerWidth, $containerHeight)
+    private function imageloadContainer($img, int $width, int $height, int $containerWidth, int $containerHeight)
     {
         $imgInfo = \getimagesize($img);
         switch ($imgInfo[2]) {
@@ -1157,11 +1154,7 @@ final class Images extends AbstractSync
         if ($this->getNewExtension($img) === 'jpg') {
             $rgb   = $this->html2rgb($this->config['bilder']['bilder_hintergrundfarbe']);
             $color = \imagecolorallocate($newImg, $rgb[0], $rgb[1], $rgb[2]);
-            if ($branding) {
-                \imagealphablending($newImg, false);
-            } else {
-                \imagealphablending($newImg, true);
-            }
+            \imagealphablending($newImg, $branding);
         } else {
             $color = \imagecolorallocatealpha($newImg, 255, 255, 255, 127);
             \imagealphablending($newImg, false);

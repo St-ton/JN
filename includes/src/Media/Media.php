@@ -98,6 +98,14 @@ class Media
     }
 
     /**
+     * @return array
+     */
+    public function getRegisteredTypes(): array
+    {
+        return $this->types;
+    }
+
+    /**
      * @param string $requestUri
      * @return bool
      */

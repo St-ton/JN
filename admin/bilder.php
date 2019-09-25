@@ -5,7 +5,9 @@
  */
 
 use JTL\Alert\Alert;
-use JTL\Media\Image\Product;
+use JTL\Helpers\Form;
+use JTL\Media\IMedia;
+use JTL\Media\Media;
 use JTL\Shop;
 use JTL\Shopsetting;
 
@@ -14,14 +16,22 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('SETTINGS_SITEMAP_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 $shopSettings = Shopsetting::getInstance();
-if (isset($_POST['speichern'])) {
+if (isset($_POST['speichern']) && Form::validateToken()) {
     Shop::Container()->getAlertService()->addAlert(
         Alert::TYPE_SUCCESS,
-        saveAdminSectionSettings(CONF_BILDER, $_POST),
+        saveAdminSectionSettings(
+            CONF_BILDER,
+            $_POST,
+            [CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE, CACHING_GROUP_CATEGORY]
+        ),
         'saveSettings'
     );
-    Product::clearCache();
-    Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE, CACHING_GROUP_CATEGORY]);
+    // @todo: this flushes all the media caches every time the form is submitted.
+    // this should be more fine tuned and depending on the actual options changed
+    foreach (Media::getInstance()->getRegisteredTypes() as $class) {
+        /** @var IMedia $class */
+        $class::clearCache();
+    }
     $shopSettings->reset();
 }
 
@@ -34,12 +44,9 @@ $indices = [
     'merkmalwert'  => __('attributeValues'),
     'konfiggruppe' => __('configGroup')
 ];
-$sizes   = ['mini', 'klein', 'normal', 'gross'];
-$dims    = ['breite', 'hoehe'];
-
 $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_BILDER))
     ->assign('oConfig', Shop::getSettings([CONF_BILDER])['bilder'])
     ->assign('indices', $indices)
-    ->assign('sizes', $sizes)
-    ->assign('dims', $dims)
+    ->assign('sizes', ['mini', 'klein', 'normal', 'gross'])
+    ->assign('dims', ['breite', 'hoehe'])
     ->display('bilder.tpl');

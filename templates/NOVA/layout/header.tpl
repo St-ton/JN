@@ -310,7 +310,6 @@
             <header class="d-print-none{if $isSticky} sticky-top{/if}{if $Einstellungen.template.theme.static_header === 'Y'} fixed-navbar{/if}" id="evo-nav-wrapper">
 
                 {block name='layout-header-container-inner'}
-
                     <div class="container-fluid container-fluid-xl clearfix">
                     {block name='layout-header-branding-top-bar'}
                         {row class="mb-2 d-none {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex{/if}"}
@@ -321,7 +320,12 @@
                     {/block}
 
                     {block name='layout-header-category-nav'}
-                        {navbar  toggleable=true fill=true class="navbar-expand-lg justify-content-start align-items-lg-end px-0 pb-lg-0"}
+                        {navbar  toggleable=true fill=true class="navbar-expand-lg justify-content-start {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}align-items-center{else}align-items-lg-end{/if} px-0 pb-lg-0"}
+
+                            <button class="navbar-toggler mr-3 collapsed {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}d-none{/if}" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                                <span class="navbar-toggler-icon"></span>
+                            </button>
+
                             {block name='layout-header-logo'}
                                 <div id="logo" itemprop="publisher" itemscope itemtype="http://schema.org/Organization" itemid="">
                                     <span itemprop="name" class="d-none">{$meta_publisher}</span>
@@ -329,51 +333,45 @@
                                     <meta itemprop="logo" content="{$ShopLogoURL}">
 
                                     {link class='navbar-brand mb-lg-3 mr-lg-6' href=$ShopURL title=$Einstellungen.global.global_shopname}
-                                        {if isset($ShopLogoURL)}
-                                            {image src=$ShopLogoURL
-                                                alt=$Einstellungen.global.global_shopname
-                                                fluid=true
-                                                width=160
-                                                height=53}
-                                        {else}
-                                            <span class="h1">{$Einstellungen.global.global_shopname}</span>
-                                        {/if}
+                                    {if isset($ShopLogoURL)}
+                                        {image src=$ShopLogoURL
+                                        alt=$Einstellungen.global.global_shopname
+                                        fluid=true
+                                        width=160
+                                        height=53}
+                                    {else}
+                                        <span class="h1">{$Einstellungen.global.global_shopname}</span>
+                                    {/if}
                                     {/link}
                                 </div>
                             {/block}
-                            {block name='layout-header-branding-shop-nav'}
-                                {nav id="shop-nav" right=true class="nav-right ml-auto order-lg-last align-items-center flex-shrink-0 {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}d-none{/if}"}
-                                    {include file='layout/header_nav_icons.tpl'}
-                                {/nav}
-                            {/block}
-
-                            {block name='layout-header-navbar-toggler'}
-                                {navbartoggle data=["target"=>"#navbarToggler"] class="d-flex d-md-none collapsed {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}d-none{/if}"}
-                            {/block}
-
-                            {*categories*}
-                            {block name='layout-header-include-categories-mega'}
-                                <div id="navbarToggler" class="navbar-collapse nav-scrollbar mr-lg-5 collapse {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}d-none{/if}" data-parent="#main-nav-wrapper">
-                                    {navbarnav class="nav-scrollbar-inner mr-auto show"}
-                                        {include file='snippets/categories_mega.tpl'}
-                                    {/navbarnav}
-                                </div>
-                            {/block}
-
                             {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}
-                                {col class="d-block text-right text-md-left" order=3}
+                                <div class="ml-auto ml-lg-0">
                                     <i class="fas fa-lock align-center mr-2"></i>{lang key='secureCheckout' section='checkout'}
-                                {/col}
-                                {col order=4 class="d-none d-md-block"}
+                                </div>
+                                <div class="ml-auto d-none d-lg-block">
                                     <div class="top-bar text-right">
                                         {include file='layout/header_top_bar.tpl'}
                                     </div>
-                                {/col}
+                                </div>
+                            {else}
+                                {block name='layout-header-branding-shop-nav'}
+                                    {nav id="shop-nav" right=true class="nav-right ml-auto order-lg-last align-items-center flex-shrink-0"}
+                                        {include file='layout/header_nav_icons.tpl'}
+                                    {/nav}
+                                {/block}
+
+                                {*categories*}
+                                {block name='layout-header-include-categories-mega'}
+                                    <div id="navbarSupportedContent" class="collapse navbar-collapse nav-scrollbar mr-lg-5">
+                                        {navbarnav class="nav-scrollbar-inner mr-auto"}
+                                            {include file='snippets/categories_mega.tpl'}
+                                        {/navbarnav}
+                                    </div>
+                                {/block}
                             {/if}
                         {/navbar}
-
                     {/block}
-
                     </div>
                 {/block}
             </header>

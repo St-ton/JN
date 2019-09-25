@@ -18851,9 +18851,6 @@ header .nav-right .dropdown-menu {
   }
 }
 @media (min-width: 992px) {
-  header {
-    height: 8.375rem;
-  }
   header .navbar-brand img {
     min-width: 10rem;
   }

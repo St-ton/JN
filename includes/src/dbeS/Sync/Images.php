@@ -886,8 +886,8 @@ final class Images extends AbstractSync
         $brandingNewHeight = $brandingHeight;
         $srcImage          = $branding;
         if ($brandingSize > 0) { // scale to width
-            $brandingNewWidth  = \round(($imageWidth * $brandingSize) / 100.0);
-            $brandingNewHeight = \round(($brandingNewWidth / $brandingWidth) * $brandingHeight);
+            $brandingNewWidth  = (int)\round(($imageWidth * $brandingSize) / 100.0);
+            $brandingNewHeight = (int)\round(($brandingNewWidth / $brandingWidth) * $brandingHeight);
             $srcImage          = $this->createImage($brandingImage, $brandingNewWidth, $brandingNewHeight, true);
         }
 
@@ -1161,7 +1161,6 @@ final class Images extends AbstractSync
         if (!$im) {
             return false;
         }
-        $path = $this->getNewFilename($path);
         switch (\strtolower($format)) {
             case 'jpg':
                 $res = \function_exists('imagejpeg') ? \imagejpeg($im, $path, $quality) : false;

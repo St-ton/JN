@@ -1337,17 +1337,26 @@ msgstr "Primary key (default by JTL-Wawi)"
 msgid "bilder_hersteller_namen_value(1)"
 msgstr "Manufacturer name (URL path)"
 
+msgid "bilder_hersteller_namen_value(2)"
+msgstr "Filename sent by JTL-Wawi"
+
 msgid "bilder_merkmal_namen_value(0)"
 msgstr "Primary key (default by JTL-Wawi)"
 
 msgid "bilder_merkmal_namen_value(1)"
-msgstr "Characteristic name (URL path)"
+msgstr "Characteristic name"
+
+msgid "bilder_merkmal_namen_value(2)"
+msgstr "Filename sent by JTL-Wawi"
 
 msgid "bilder_merkmalwert_namen_value(0)"
 msgstr "Primary key (default by JTL-Wawi)"
 
 msgid "bilder_merkmalwert_namen_value(1)"
 msgstr "Characteristic value name (URL path)"
+
+msgid "bilder_merkmalwert_namen_value(2)"
+msgstr "Filename sent by JTL-Wawi"
 
 msgid "bilder_externe_bildschnittstelle_value(A)"
 msgstr "No access limitation"

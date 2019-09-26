@@ -1337,17 +1337,26 @@ msgstr "Primärschlüssel (Vorgabe von JTL-Wawi)"
 msgid "bilder_hersteller_namen_value(1)"
 msgstr "Herstellername (URL-Pfad) (falls nicht vorhanden, Primärschlüssel)"
 
+msgid "bilder_hersteller_namen_value(2)"
+msgstr "Dateiname aus JTL-Wawi"
+
 msgid "bilder_merkmal_namen_value(0)"
 msgstr "Primärschlüssel (Vorgabe von JTL-Wawi)"
 
 msgid "bilder_merkmal_namen_value(1)"
-msgstr "Merkmalname (URL-Pfad) (falls nicht vorhanden, Primärschlüssel)"
+msgstr "Merkmalname (falls nicht vorhanden, Primärschlüssel)"
+
+msgid "bilder_merkmal_namen_value(2)"
+msgstr "Dateiname aus JTL-Wawi"
 
 msgid "bilder_merkmalwert_namen_value(0)"
 msgstr "Primärschlüssel (Vorgabe von JTL-Wawi)"
 
 msgid "bilder_merkmalwert_namen_value(1)"
 msgstr "Merkmalwertname (URL-Pfad) (falls nicht vorhanden, Primärschlüssel)"
+
+msgid "bilder_merkmalwert_namen_value(2)"
+msgstr "Dateiname aus JTL-Wawi"
 
 msgid "bilder_externe_bildschnittstelle_value(A)"
 msgstr "Jeder hat Zugriff"

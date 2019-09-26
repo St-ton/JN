@@ -40,14 +40,12 @@ final class ImageCache extends Job
 
     /**
      * @param int    $index
-     * @param string $type
+     * @param IMedia $instance
      * @return bool
      * @throws \Exception
      */
-    private function generateImageCache(int $index, string $type = Image::TYPE_PRODUCT): bool
+    private function generateImageCache(int $index, IMedia $instance): bool
     {
-        $instance = Media::getClass($type);
-        /** @var IMedia $instance */
         $rendered = 0;
         $total    = $instance::getUncachedImageCount();
         $images   = $instance::getImages(true, $index, $this->getLimit());
@@ -62,7 +60,7 @@ final class ImageCache extends Job
             $images = $instance::getImages(true, $index, $this->getLimit());
         }
         foreach ($images as $image) {
-            Product::cacheImage($image);
+            $instance::cacheImage($image);
             ++$index;
             ++$rendered;
         }
@@ -79,7 +77,12 @@ final class ImageCache extends Job
     {
         parent::start($queueEntry);
         $this->logger->debug('Generating image cache - max. ' . $this->getLimit());
-        $res                       = $this->generateImageCache($queueEntry->tasksExecuted);
+        $media = Media::getInstance();
+        $res   = true;
+        foreach ($media->getRegisteredClasses() as $type) {
+            $this->logger->debug('Class: ' . \get_class($type));
+            $res = $this->generateImageCache($queueEntry->tasksExecuted, $type) && $res;
+        }
         $queueEntry->tasksExecuted = $this->nextIndex;
         $this->setFinished($res);
 

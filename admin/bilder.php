@@ -32,7 +32,7 @@ if (isset($_POST['speichern']) && Form::validateToken()) {
     $confDiff      = array_diff_assoc($oldConfig, $newConfig);
     $cachesToClear = [];
     $media         = Media::getInstance();
-    foreach (\array_keys($confDiff) as $item) {
+    foreach (array_keys($confDiff) as $item) {
         if (strpos($item, 'hersteller') !== false) {
             $cachesToClear[] = $media::getClass(Image::TYPE_MANUFACTURER);
             continue;

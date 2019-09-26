@@ -34,6 +34,11 @@ abstract class AbstractImage implements IMedia
     protected $regEx = '';
 
     /**
+     * @var array
+     */
+    protected static $imageExtensions = ['jpg', 'jpeg', 'jpg', 'webp', 'gif', 'png', 'bmp'];
+
+    /**
      * @inheritdoc
      */
     public function handle(string $request)

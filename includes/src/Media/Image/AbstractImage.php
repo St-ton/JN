@@ -249,7 +249,7 @@ abstract class AbstractImage implements IMedia
      */
     public static function getAllImages(int $offset = null, int $limit = null): Generator
     {
-        yield null;
+        yield from [];
     }
 
     /**

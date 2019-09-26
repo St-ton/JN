@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -173,12 +173,12 @@ class Overlay
         // get overlay data for fallback language
         $overlay = $overlay ?? $this->getDataForLanguage(LanguageHelper::getDefaultLanguage()->kSprache);
         if (!empty($overlay)) {
-            $this->setActive($overlay->nAktiv)
-                ->setMargin($overlay->nMargin)
-                ->setPosition($overlay->nPosition)
-                ->setPriority($overlay->nPrio)
-                ->setTransparence($overlay->nTransparenz)
-                ->setSize($overlay->nGroesse)
+            $this->setActive((int)$overlay->nAktiv)
+                ->setMargin((int)$overlay->nMargin)
+                ->setPosition((int)$overlay->nPosition)
+                ->setPriority((int)$overlay->nPrio)
+                ->setTransparence((int)$overlay->nTransparenz)
+                ->setSize((int)$overlay->nGroesse)
                 ->setImageName($overlay->cBildPfad)
                 ->setName(isset($_SESSION['AdminAccount']) ? __($overlay->cSuchspecial) : $overlay->cSuchspecial);
 

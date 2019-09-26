@@ -80,7 +80,6 @@ final class ImageCache extends Job
         $media = Media::getInstance();
         $res   = true;
         foreach ($media->getRegisteredClasses() as $type) {
-            $this->logger->debug('Class: ' . \get_class($type));
             $res = $this->generateImageCache($queueEntry->tasksExecuted, $type) && $res;
         }
         $queueEntry->tasksExecuted = $this->nextIndex;

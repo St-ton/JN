@@ -46,7 +46,7 @@ final class Images extends AbstractSync
     public function handle(Starter $starter)
     {
         $this->brandingConfig = $this->initBrandingConfig();
-        $this->config         = $this->initConfig();
+        $this->config         = Shop::getSettings([\CONF_BILDER])['bilder'];
         $this->db->query('START TRANSACTION', ReturnType::DEFAULT);
         foreach ($starter->getXML() as $i => $item) {
             [$file, $xml] = [\key($item), \reset($item)];
@@ -112,57 +112,6 @@ final class Images extends AbstractSync
     private function getBrandingConfig(string $type): ?stdClass
     {
         return $this->brandingConfig[$type]->config ?? null;
-    }
-
-    /**
-     * @return array
-     */
-    private function initConfig(): array
-    {
-        $config   = Shop::getSettings([\CONF_BILDER]);
-        $defaults = [
-            'bilder_kategorien_breite'         => 100,
-            'bilder_kategorien_hoehe'          => 100,
-            'bilder_variationen_gross_breite'  => 800,
-            'bilder_variationen_gross_hoehe'   => 800,
-            'bilder_variationen_breite'        => 210,
-            'bilder_variationen_hoehe'         => 210,
-            'bilder_variationen_mini_breite'   => 30,
-            'bilder_variationen_mini_hoehe'    => 30,
-            'bilder_artikel_gross_breite'      => 800,
-            'bilder_artikel_gross_hoehe'       => 800,
-            'bilder_artikel_normal_breite'     => 210,
-            'bilder_artikel_normal_hoehe'      => 210,
-            'bilder_artikel_klein_breite'      => 80,
-            'bilder_artikel_klein_hoehe'       => 80,
-            'bilder_artikel_mini_breite'       => 30,
-            'bilder_artikel_mini_hoehe'        => 30,
-            'bilder_hersteller_normal_breite'  => 100,
-            'bilder_hersteller_normal_hoehe'   => 100,
-            'bilder_hersteller_klein_breite'   => 40,
-            'bilder_hersteller_klein_hoehe'    => 40,
-            'bilder_merkmal_normal_breite'     => 100,
-            'bilder_merkmal_normal_hoehe'      => 100,
-            'bilder_merkmal_klein_breite'      => 20,
-            'bilder_merkmal_klein_hoehe'       => 20,
-            'bilder_merkmalwert_normal_breite' => 100,
-            'bilder_merkmalwert_normal_hoehe'  => 100,
-            'bilder_merkmalwert_klein_breite'  => 20,
-            'bilder_merkmalwert_klein_hoehe'   => 20,
-            'bilder_konfiggruppe_klein_breite' => 130,
-            'bilder_konfiggruppe_klein_hoehe'  => 130,
-            'bilder_jpg_quali'                 => 80,
-            'bilder_dateiformat'               => 'PNG',
-            'bilder_hintergrundfarbe'          => '#ffffff',
-            'bilder_skalieren'                 => 'N',
-        ];
-        foreach ($defaults as $option => $value) {
-            if (empty($config['bilder'][$option])) {
-                $config['bilder'][$option] = $value;
-            }
-        }
-
-        return $config;
     }
 
     /**
@@ -239,9 +188,9 @@ final class Images extends AbstractSync
             if ($this->createThumbnail(
                 $original,
                 \PFAD_KONFIGURATOR_KLEIN . $item->cBildPfad,
-                $this->config['bilder']['bilder_konfiggruppe_klein_breite'],
-                $this->config['bilder']['bilder_konfiggruppe_klein_hoehe'],
-                $this->config['bilder']['bilder_jpg_quali']
+                $this->config['bilder_konfiggruppe_klein_breite'],
+                $this->config['bilder_konfiggruppe_klein_hoehe'],
+                $this->config['bilder_jpg_quali']
             )) {
                 $this->db->update(
                     'tkonfiggruppe',
@@ -273,23 +222,22 @@ final class Images extends AbstractSync
                 );
                 continue;
             }
-            $image->cPfad .= '.' . $extension;
-            $image->cPfad  = $this->getNewFilename($image->cPfad);
+            $image->cPfad  = $this->getCharacteristicValueImageName($image, $extension);
             \copy($original, \PFAD_ROOT . \STORAGE_CHARACTERISTIC_VALUES . $image->cPfad);
             $this->createThumbnail(
                 $original,
                 \PFAD_MERKMALWERTBILDER_NORMAL . $image->cPfad,
-                $this->config['bilder']['bilder_merkmalwert_normal_breite'],
-                $this->config['bilder']['bilder_merkmalwert_normal_hoehe'],
-                $this->config['bilder']['bilder_jpg_quali'],
+                $this->config['bilder_merkmalwert_normal_breite'],
+                $this->config['bilder_merkmalwert_normal_hoehe'],
+                $this->config['bilder_jpg_quali'],
                 $this->getBrandingConfig(Image::TYPE_CHARACTERISTIC_VALUE)
             );
             if ($this->createThumbnail(
                 $original,
                 \PFAD_MERKMALWERTBILDER_KLEIN . $image->cPfad,
-                $this->config['bilder']['bilder_merkmalwert_klein_breite'],
-                $this->config['bilder']['bilder_merkmalwert_klein_hoehe'],
-                $this->config['bilder']['bilder_jpg_quali']
+                $this->config['bilder_merkmalwert_klein_breite'],
+                $this->config['bilder_merkmalwert_klein_hoehe'],
+                $this->config['bilder_jpg_quali']
             )) {
                 $this->db->update(
                     'tmerkmalwert',
@@ -326,23 +274,22 @@ final class Images extends AbstractSync
                 );
                 continue;
             }
-            $image->cPfad .= '.' . $extension;
-            $image->cPfad  = $this->getNewFilename($image->cPfad);
+            $image->cPfad  = $this->getCharacteristicImageName($image, $extension);
             \copy($original, \PFAD_ROOT . \STORAGE_CHARACTERISTICS . $image->cPfad);
             $this->createThumbnail(
                 $original,
                 \PFAD_MERKMALBILDER_NORMAL . $image->cPfad,
-                $this->config['bilder']['bilder_merkmal_normal_breite'],
-                $this->config['bilder']['bilder_merkmal_normal_hoehe'],
-                $this->config['bilder']['bilder_jpg_quali'],
+                $this->config['bilder_merkmal_normal_breite'],
+                $this->config['bilder_merkmal_normal_hoehe'],
+                $this->config['bilder_jpg_quali'],
                 $this->getBrandingConfig(Image::TYPE_CHARACTERISTIC)
             );
             if ($this->createThumbnail(
                 $original,
                 \PFAD_MERKMALBILDER_KLEIN . $image->cPfad,
-                $this->config['bilder']['bilder_merkmal_klein_breite'],
-                $this->config['bilder']['bilder_merkmal_klein_hoehe'],
-                $this->config['bilder']['bilder_jpg_quali']
+                $this->config['bilder_merkmal_klein_breite'],
+                $this->config['bilder_merkmal_klein_hoehe'],
+                $this->config['bilder_jpg_quali']
             )) {
                 $this->db->update(
                     'tmerkmal',
@@ -374,34 +321,22 @@ final class Images extends AbstractSync
                 );
                 continue;
             }
-            $manufacturer = $this->db->queryPrepared(
-                'SELECT cSeo
-                    FROM thersteller
-                    WHERE kHersteller = :mid',
-                ['mid' => $image->kHersteller],
-                ReturnType::SINGLE_OBJECT
-            );
-            if (!empty($manufacturer->cSeo)) {
-                $image->cPfad = \str_replace('/', '_', $manufacturer->cSeo . '.' . $extension);
-            } elseif (\stripos(\strrev($image->cPfad), \strrev($extension)) !== 0) {
-                $image->cPfad .= '.' . $extension;
-            }
-            $image->cPfad = $this->getNewFilename($image->cPfad);
+            $image->cPfad = $this->getManufacturerImageName($image, $extension);
             \copy($original, \PFAD_ROOT . \STORAGE_MANUFACTURERS . $image->cPfad);
             $this->createThumbnail(
                 $original,
                 \PFAD_HERSTELLERBILDER_NORMAL . $image->cPfad,
-                $this->config['bilder']['bilder_hersteller_normal_breite'],
-                $this->config['bilder']['bilder_hersteller_normal_hoehe'],
-                $this->config['bilder']['bilder_jpg_quali'],
+                $this->config['bilder_hersteller_normal_breite'],
+                $this->config['bilder_hersteller_normal_hoehe'],
+                $this->config['bilder_jpg_quali'],
                 $this->getBrandingConfig(Image::TYPE_MANUFACTURER)
             );
             if ($this->createThumbnail(
                 $original,
                 \PFAD_HERSTELLERBILDER_KLEIN . $image->cPfad,
-                $this->config['bilder']['bilder_hersteller_klein_breite'],
-                $this->config['bilder']['bilder_hersteller_klein_hoehe'],
-                $this->config['bilder']['bilder_jpg_quali']
+                $this->config['bilder_hersteller_klein_breite'],
+                $this->config['bilder_hersteller_klein_hoehe'],
+                $this->config['bilder_jpg_quali']
             )) {
                 $this->db->update(
                     'thersteller',
@@ -448,24 +383,24 @@ final class Images extends AbstractSync
             $this->createThumbnail(
                 $original,
                 \PFAD_VARIATIONSBILDER_GROSS . $image->cPfad,
-                $this->config['bilder']['bilder_variationen_gross_breite'],
-                $this->config['bilder']['bilder_variationen_gross_hoehe'],
-                $this->config['bilder']['bilder_jpg_quali'],
+                $this->config['bilder_variationen_gross_breite'],
+                $this->config['bilder_variationen_gross_hoehe'],
+                $this->config['bilder_jpg_quali'],
                 $this->getBrandingConfig(Image::TYPE_VARIATION)
             );
             $this->createThumbnail(
                 $original,
                 \PFAD_VARIATIONSBILDER_NORMAL . $image->cPfad,
-                $this->config['bilder']['bilder_variationen_breite'],
-                $this->config['bilder']['bilder_variationen_hoehe'],
-                $this->config['bilder']['bilder_jpg_quali']
+                $this->config['bilder_variationen_breite'],
+                $this->config['bilder_variationen_hoehe'],
+                $this->config['bilder_jpg_quali']
             );
             if ($this->createThumbnail(
                 $original,
                 \PFAD_VARIATIONSBILDER_MINI . $image->cPfad,
-                $this->config['bilder']['bilder_variationen_mini_breite'],
-                $this->config['bilder']['bilder_variationen_mini_hoehe'],
-                $this->config['bilder']['bilder_jpg_quali']
+                $this->config['bilder_variationen_mini_breite'],
+                $this->config['bilder_variationen_mini_hoehe'],
+                $this->config['bilder_jpg_quali']
             )) {
                 $this->upsert('teigenschaftwertpict', [$image], 'kEigenschaftWert');
             }
@@ -492,14 +427,13 @@ final class Images extends AbstractSync
                 continue;
             }
             $image->cPfad = $this->getCategoryImageName($image, $extension);
-            $image->cPfad = $this->getNewFilename($image->cPfad);
             \copy($original, \PFAD_ROOT . \STORAGE_CATEGORIES . $image->cPfad);
             if ($this->createThumbnail(
                 $original,
                 \PFAD_KATEGORIEBILDER . $image->cPfad,
-                $this->config['bilder']['bilder_kategorien_breite'],
-                $this->config['bilder']['bilder_kategorien_hoehe'],
-                $this->config['bilder']['bilder_jpg_quali'],
+                $this->config['bilder_kategorien_breite'],
+                $this->config['bilder_kategorien_hoehe'],
+                $this->config['bilder_jpg_quali'],
                 $this->getBrandingConfig(Image::TYPE_CATEGORY)
             )) {
                 $this->upsert('tkategoriepict', [$image], 'kKategorie');
@@ -515,7 +449,7 @@ final class Images extends AbstractSync
      */
     private function getPropertiesImageName($image, string $extension): string
     {
-        if (empty($image->kEigenschaftWert) || !$this->config['bilder']['bilder_variation_namen']) {
+        if (empty($image->kEigenschaftWert) || !$this->config['bilder_variation_namen']) {
             return (\stripos(\strrev($image->cPfad), \strrev($extension)) === 0)
                 ? $image->cPfad
                 : $image->cPfad . '.' . $extension;
@@ -534,7 +468,7 @@ final class Images extends AbstractSync
         }
         $imageName = $propValue->kEigenschaftWert;
         if ($propValue->cName) {
-            switch ($this->config['bilder']['bilder_variation_namen']) {
+            switch ($this->config['bilder_variation_namen']) {
                 case 1:
                     if (!empty($propValue->cArtNr)) {
                         $imageName = 'var' . $this->convertUmlauts($propValue->cArtNr);
@@ -613,8 +547,9 @@ final class Images extends AbstractSync
      */
     private function getCategoryImageName($image, string $ext): string
     {
-        if (empty($image->kKategorie) || !$this->config['bilder']['bilder_kategorie_namen']) {
-            return (\pathinfo($image->cPfad)['filename']) . '.' . $ext;
+        $imageName = $image->cPfad;
+        if (empty($image->kKategorie) || !$this->config['bilder_kategorie_namen']) {
+            return $this->getNewFilename((\pathinfo($imageName)['filename']) . '.' . $ext);
         }
         $attr = $this->db->select(
             'tkategorieattribut',
@@ -626,7 +561,7 @@ final class Images extends AbstractSync
         if (!empty($attr->cWert)) {
             return $attr->cWert . '.' . $ext;
         }
-        $category  = $this->db->queryPrepared(
+        $data  = $this->db->queryPrepared(
             "SELECT tseo.cSeo, tkategorie.cName
             FROM tkategorie
             JOIN JOIN tseo
@@ -639,20 +574,95 @@ final class Images extends AbstractSync
             ['cid' => (int)$image->kKategorie],
             ReturnType::SINGLE_OBJECT
         );
-        $imageName = $image->cPfad;
-        if ($category->cName) {
-            switch ($this->config['bilder']['bilder_kategorie_namen']) {
-                case 1:
-                    $imageName = $this->removeSpecialChars($category->cSeo ?: $this->convertUmlauts($category->cName))
-                        . '.' . $ext;
-                    break;
-                case 0:
-                default:
-                    return \pathinfo($image->cPfad)['filename'] . '.' . $ext;
+        if (!empty($data->cName) && (int)$this->config['bilder_kategorie_namen'] === 1) {
+            $imageName = $this->removeSpecialChars($data->cSeo ?: $this->convertUmlauts($data->cName)) . '.' . $ext;
+        } else {
+            $imageName = \pathinfo($image->cPfad)['filename'] . '.' . $ext;
+        }
+
+        return $this->getNewFilename($imageName);
+    }
+
+    /**
+     * @param object $image
+     * @param string $ext
+     * @return string
+     */
+    private function getManufacturerImageName($image, string $ext): string
+    {
+        $data = $this->db->queryPrepared(
+            'SELECT cName, cSeo
+                FROM thersteller
+                WHERE kHersteller = :mid',
+            ['mid' => $image->kHersteller],
+            ReturnType::SINGLE_OBJECT
+        );
+        if (!empty($data->cSeo) && (int)$this->config['bilder_hersteller_namen'] === 1) {
+            $imageName = $this->removeSpecialChars($data->cSeo ?: $this->convertUmlauts($data->cName)) . '.' . $ext;
+        } else {
+            $imageName = \pathinfo($image->cPfad)['filename'] . '.' . $ext;
+        }
+
+        return $this->getNewFilename($imageName);
+    }
+
+    /**
+     * @param object $image
+     * @param string $ext
+     * @return string
+     */
+    private function getCharacteristicValueImageName($image, string $ext): string
+    {
+        $conf = (int)$this->config['bilder_merkmalwert_namen'];
+        if ($conf === 2) {
+            $imageName = $image->cPfad . '.' . $ext;
+        } else {
+            $data = $this->db->queryPrepared(
+                'SELECT tmerkmalwertsprache.cSeo, tmerkmalwertsprache.cWert
+                    FROM tmerkmalwertsprache
+                    JOIN tsprache
+                        ON tsprache.kSprache = tmerkmalwertsprache.kSprache
+                    WHERE kMerkmalWert = :cid
+                        AND tsprache.cShopStandard = \'Y\'',
+                ['cid' => $image->kMerkmalWert],
+                ReturnType::SINGLE_OBJECT
+            );
+            if (!empty($data->cSeo) && $conf === 1) {
+                $imageName = $this->removeSpecialChars($data->cSeo ?: $this->convertUmlauts($data->cName)) . '.' . $ext;
+            } else {
+                $imageName = \pathinfo($image->cPfad)['filename'] . '.' . $ext;
             }
         }
 
-        return $imageName;
+        return $this->getNewFilename($imageName);
+    }
+
+    /**
+     * @param object $image
+     * @param string $ext
+     * @return string
+     */
+    private function getCharacteristicImageName($image, string $ext): string
+    {
+        $conf = (int)$this->config['bilder_merkmal_namen'];
+        if ($conf === 2) {
+            $imageName = $image->cPfad . '.' . $ext;
+        } else {
+            $data = $this->db->queryPrepared(
+                'SELECT cName
+                    FROM tmerkmal
+                    WHERE kMerkmal = :cid',
+                ['cid' => $image->kMerkmal],
+                ReturnType::SINGLE_OBJECT
+            );
+            if (!empty($data->cName) && $conf === 1) {
+                $imageName = $this->removeSpecialChars($this->convertUmlauts($data->cName)) . '.' . $ext;
+            } else {
+                $imageName = \pathinfo($image->cPfad)['filename'] . '.' . $ext;
+            }
+        }
+
+        return $this->getNewFilename($imageName);
     }
 
     /**
@@ -695,8 +705,8 @@ final class Images extends AbstractSync
         int $quality = 80,
         $branding = null
     ): bool {
-        $container        = $this->config['bilder']['container_verwenden'] === 'Y';
-        $enlarge          = $this->config['bilder']['bilder_skalieren'] === 'Y';
+        $container        = $this->config['container_verwenden'] === 'Y';
+        $enlarge          = $this->config['bilder_skalieren'] === 'Y';
         $extension        = $this->getNewExtension($target);
         $target           = \PFAD_ROOT . $target;
         [$width, $height] = \getimagesize($source);
@@ -1071,7 +1081,7 @@ final class Images extends AbstractSync
      */
     private function getNewExtension(string $sourcePath = null): string
     {
-        $config = \mb_convert_case($this->config['bilder']['bilder_dateiformat'], \MB_CASE_LOWER);
+        $config = \mb_convert_case($this->config['bilder_dateiformat'], \MB_CASE_LOWER);
 
         return $config === 'auto'
             ? \pathinfo($sourcePath)['extension'] ?? 'jpg'
@@ -1121,7 +1131,7 @@ final class Images extends AbstractSync
             return $im;
         }
         if ($this->getNewExtension($source) === 'jpg') {
-            $rgb   = $this->html2rgb($this->config['bilder']['bilder_hintergrundfarbe']);
+            $rgb   = $this->html2rgb($this->config['bilder_hintergrundfarbe']);
             $color = \imagecolorallocate($newImg, $rgb[0], $rgb[1], $rgb[2]);
             \imagealphablending($newImg, $branding);
         } else {

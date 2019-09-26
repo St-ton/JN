@@ -5,13 +5,13 @@
  */
 
 use JTL\Alert\Alert;
+use JTL\Campaign;
 use JTL\Customer\Customer;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
-use JTL\Campaign;
 use JTL\Newsletter\Admin;
 use JTL\Newsletter\Newsletter;
 use JTL\Newsletter\NewsletterCronDAO;

@@ -10,7 +10,6 @@ use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\ImageMap;
-use JTL\Language\LanguageHelper;
 use JTL\Pagination\Pagination;
 use JTL\Shop;
 

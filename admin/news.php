@@ -18,7 +18,6 @@ use JTL\News\Comment;
 use JTL\News\Item;
 use JTL\Pagination\Pagination;
 use JTL\Shop;
-use function Functional\map;
 
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('CONTENT_NEWS_SYSTEM_VIEW', true, true);

@@ -222,7 +222,7 @@ final class Images extends AbstractSync
                 );
                 continue;
             }
-            $image->cPfad  = $this->getCharacteristicValueImageName($image, $extension);
+            $image->cPfad = $this->getCharacteristicValueImageName($image, $extension);
             \copy($original, \PFAD_ROOT . \STORAGE_CHARACTERISTIC_VALUES . $image->cPfad);
             $this->createThumbnail(
                 $original,
@@ -274,7 +274,7 @@ final class Images extends AbstractSync
                 );
                 continue;
             }
-            $image->cPfad  = $this->getCharacteristicImageName($image, $extension);
+            $image->cPfad = $this->getCharacteristicImageName($image, $extension);
             \copy($original, \PFAD_ROOT . \STORAGE_CHARACTERISTICS . $image->cPfad);
             $this->createThumbnail(
                 $original,
@@ -561,7 +561,7 @@ final class Images extends AbstractSync
         if (!empty($attr->cWert)) {
             return $attr->cWert . '.' . $ext;
         }
-        $data  = $this->db->queryPrepared(
+        $data = $this->db->queryPrepared(
             "SELECT tseo.cSeo, tkategorie.cName
             FROM tkategorie
             JOIN JOIN tseo

@@ -20,12 +20,20 @@
                 {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
                     {col cols=2}{/col}
                 {/if}
-                {col cols=$itemInfoCols}{lang key='product'}{/col}
+                {col cols=$itemInfoCols}
+                    <span class="text-accent">{lang key='product'}</span>
+                {/col}
                 {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}
-                    {col cols=2}{lang key="pricePerUnit" section="productDetails"}{/col}
+                    {col cols=2}
+                        <span class="text-accent">{lang key="pricePerUnit" section="productDetails"}</span>
+                    {/col}
                 {/if}
-                {col cols=3 class="text-center"}{lang key="quantity" section="checkout"}{/col}
-                {col cols=2 class="text-right"}{lang key="price"}{/col}
+                {col cols=3 class="text-center"}
+                    <span class="text-accent">{lang key="quantity" section="checkout"}</span>
+                {/col}
+                {col cols=2 class="text-right"}
+                    <span class="text-accent">{lang key="price"}</span>
+                {/col}
                 {col cols=12}
                     <hr>
                 {/col}

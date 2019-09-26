@@ -13,7 +13,7 @@
                 {col cols=12 lg=7}
                     {block name='basket-index-heading'}
                         {opcMountPoint id='opc_before_heading'}
-                        <h1>{lang key='basket'} ({count($smarty.session.Warenkorb->PositionenArr)} {lang key='products'})</h1>
+                        <h2 class="mb-5">{lang key='basket'} ({count($smarty.session.Warenkorb->PositionenArr)} {lang key='products'})</h2>
                     {/block}
                     {block name='basket-index-include-extension'}
                         {include file='snippets/extension.tpl'}
@@ -129,7 +129,7 @@
                 {if ($Warenkorb->PositionenArr|@count > 0)}
                     {col class='ml-auto' cols=12 lg=4}
                         <div class="sticky-top cart-summary">
-                            <div class="h1 mb-4">{lang key="orderOverview" section="account data"}</div>
+                            <div class="h2 mb-4">{lang key="orderOverview" section="account data"}</div>
                             {if $Einstellungen.kaufabwicklung.warenkorb_kupon_anzeigen === 'Y' && $KuponMoeglich == 1}
                                 {block name='basket-index-coupon'}
                                     {card class='card-gray' no-body=true}
@@ -205,12 +205,12 @@
                                         {/block}
                                     {/if}
                                     {block name='baske-index-price-sticky'}
-                                        {row class="total bg-info border-top mt-3 pt-3"}
+                                        {row class="total border-top mt-3 pt-3 font-size-lg"}
                                             {col class="text-left" cols=7}
-                                                <span class="price_label"><strong>{lang key='totalSum'}:</strong></span>
+                                                <span class="price_label">{lang key='totalSum'}:</span>
                                             {/col}
                                             {col class="text-right price-col" cols=5}
-                                                <strong class="price total-sum">{$WarensummeLocalized[0]}</strong>
+                                                <strong class="total-sum">{$WarensummeLocalized[0]}</strong>
                                             {/col}
                                         {/row}
                                     {/block}

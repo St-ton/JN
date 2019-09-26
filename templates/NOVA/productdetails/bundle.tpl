@@ -6,22 +6,22 @@
 {if !empty($Products)}
     {block name='productdetails-bundle-form'}
         {form action="{if !empty($ProductMain->cURLFull)}{$ProductMain->cURLFull}{else}index.php{/if}" method="post" id="form_bundles" class="evo-validate"}
-            <div class="panel panel-default">
+            {card no-body=true}
                 {block name='productdetails-bundle-hidden-inputs'}
                     {input type="hidden" name="a" value=$ProductMain->kArtikel}
                     {input type="hidden" name="addproductbundle" value="1"}
                     {input type="hidden" name="aBundle" value=$ProductKey}
                 {/block}
                 {block name='productdetails-bundle-form-content'}{* for additional hidden inputs use block prepend *}
-                    <div class="panel-heading">
+                    {cardheader}
                         {block name='productdetails-bundle-form-subheading'}
-                            <h5 class="panel-title">{lang key='buyProductBundle' section='productDetails'}</h5>
+                            <div class="h3 mb-0">{lang key='buyProductBundle' section='productDetails'}</div>
                         {/block}
-                    </div>
-                    <div class="panel-body row">
+                    {/cardheader}
+                    {cardbody class='row'}
                         {block name='productdetails-bundle-form-body'}
                             <div class="col-xs-12 col-md-8">
-                                <ul class="list-inline bundle-list">
+                                <ul class="list-inline bundle-list align-items-center d-flex flex-wrap flex-row">
                                     {foreach $Products as $bundleProduct}
                                         <li>
                                             {link href=$bundleProduct->cURLFull}
@@ -31,7 +31,7 @@
                                             {/link}
                                         </li>
                                         {if !$bundleProduct@last}
-                                            <li>
+                                            <li class="px-2">
                                                 <span class="fa fa-plus"></span>
                                             </li>
                                         {/if}
@@ -86,9 +86,9 @@
                                 </ul>
                             </div>
                         {/block}
-                    </div>
+                    {/cardbody}
                 {/block}
-            </div>
+            {/card}
         {/form}
     {/block}
 {/if}

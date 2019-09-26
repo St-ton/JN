@@ -43,6 +43,7 @@ class Media
         Image::TYPE_CATEGORY             => Category::class,
         Image::TYPE_CHARACTERISTIC       => Characteristic::class,
         Image::TYPE_CHARACTERISTIC_VALUE => CharacteristicValue::class,
+        Image::TYPE_CONFIGGROUP          => ConfigGroup::class,
         Image::TYPE_MANUFACTURER         => Manufacturer::class,
         Image::TYPE_NEWS                 => News::class,
         Image::TYPE_NEWSCATEGORY         => NewsCategory::class,
@@ -98,9 +99,17 @@ class Media
     }
 
     /**
-     * @return array
+     * @return IMedia[]
      */
-    public function getRegisteredTypes(): array
+    public function getAllTypes(): array
+    {
+        return \array_values(self::$classMapper);
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getRegisteredClasses(): array
     {
         return $this->types;
     }

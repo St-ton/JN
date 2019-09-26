@@ -351,9 +351,9 @@ class Metadata implements MetadataInterface
                 $this->name = $this->category->getName();
             } elseif ($this->conf['navigationsfilter']['kategorie_bild_anzeigen'] === 'BT') {
                 $this->name     = $this->category->getName();
-                $this->imageURL = $this->category->getKategorieBild();
+                $this->imageURL = $this->category->getImage();
             } elseif ($this->conf['navigationsfilter']['kategorie_bild_anzeigen'] === 'B') {
-                $this->imageURL = $category->getKategorieBild();
+                $this->imageURL = $category->getImage();
             }
         } elseif ($this->productFilter->hasManufacturer()) {
             $this->manufacturer = new Hersteller($this->productFilter->getManufacturer()->getValue());
@@ -361,9 +361,9 @@ class Metadata implements MetadataInterface
                 $this->name = $this->manufacturer->getName();
             } elseif ($this->conf['navigationsfilter']['hersteller_bild_anzeigen'] === 'BT') {
                 $this->name     = $this->manufacturer->getName();
-                $this->imageURL = $this->manufacturer->cBildpfadNormal;
+                $this->imageURL = $this->manufacturer->getImage();
             } elseif ($this->conf['navigationsfilter']['hersteller_bild_anzeigen'] === 'B') {
-                $this->imageURL = $this->manufacturer->cBildpfadNormal;
+                $this->imageURL = $this->manufacturer->getImage();
             }
             if ($this->manufacturer !== null) {
                 $this->setMetaTitle($this->manufacturer->cMetaTitle)
@@ -376,9 +376,9 @@ class Metadata implements MetadataInterface
                 $this->setName($this->characteristicValue->cWert);
             } elseif ($this->conf['navigationsfilter']['merkmalwert_bild_anzeigen'] === 'BT') {
                 $this->setName($this->characteristicValue->cWert)
-                     ->setImageURL($this->characteristicValue->cBildpfadNormal);
+                     ->setImageURL($this->characteristicValue->getImage());
             } elseif ($this->conf['navigationsfilter']['merkmalwert_bild_anzeigen'] === 'B') {
-                $this->setImageURL($this->characteristicValue->cBildpfadNormal);
+                $this->setImageURL($this->characteristicValue->getImage());
             }
             if ($this->characteristicValue !== null) {
                 $this->setMetaTitle($this->characteristicValue->cMetaTitle)

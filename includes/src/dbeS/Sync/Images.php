@@ -614,9 +614,7 @@ final class Images extends AbstractSync
     private function getCategoryImageName($image, string $ext): string
     {
         if (empty($image->kKategorie) || !$this->config['bilder']['bilder_kategorie_namen']) {
-            return (\stripos(\strrev($image->cPfad), \strrev($ext)) === 0)
-                ? $image->cPfad
-                : $image->cPfad . '.' . $ext;
+            return (\pathinfo($image->cPfad)['filename']) . '.' . $ext;
         }
         $attr = $this->db->select(
             'tkategorieattribut',
@@ -650,7 +648,7 @@ final class Images extends AbstractSync
                     break;
                 case 0:
                 default:
-                    return $image->cPfad . '.' . $ext;
+                    return \pathinfo($image->cPfad)['filename'] . '.' . $ext;
             }
         }
 
@@ -1148,7 +1146,7 @@ final class Images extends AbstractSync
      */
     private function getNewFilename(string $path): string
     {
-        return \substr($path, 0, -3) . $this->getNewExtension($path);
+        return \pathinfo($path)['filename'] . '.' . $this->getNewExtension($path);
     }
 
     /**

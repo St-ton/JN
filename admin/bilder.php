@@ -17,7 +17,7 @@ $oAccount->permission('SETTINGS_SITEMAP_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 $shopSettings = Shopsetting::getInstance();
 if (isset($_POST['speichern']) && Form::validateToken()) {
-    $oldConfig = Shop::getSettings([CONF_BILDER])['bilder'];
+    $oldConfig = $shopSettings->getSettings([CONF_BILDER])['bilder'];
     Shop::Container()->getAlertService()->addAlert(
         Alert::TYPE_SUCCESS,
         saveAdminSectionSettings(
@@ -28,7 +28,7 @@ if (isset($_POST['speichern']) && Form::validateToken()) {
         'saveSettings'
     );
     $shopSettings->reset();
-    $newConfig     = Shop::getSettings([CONF_BILDER])['bilder'];
+    $newConfig     = $shopSettings->getSettings([CONF_BILDER])['bilder'];
     $confDiff      = array_diff_assoc($oldConfig, $newConfig);
     $cachesToClear = [];
     $media         = Media::getInstance();

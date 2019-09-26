@@ -174,7 +174,7 @@ function addValidationListener() {
             $(event.target).closest('.form-group').find('div.form-error-msg').remove();
             $(event.target).closest('.form-group')
                 .addClass('has-error')
-                .append('<div class="form-error-msg text-danger w-100"><i class="fas fa-exclamation-triangle"></i> ' + event.target.validationMessage + '</div>');
+                .append('<div class="form-error-msg text-danger w-100">' + event.target.validationMessage + '</div>');
 
             if (!$body.data('doScrolling')) {
                 var $firstError = $(event.target).closest('.form-group.has-error');
@@ -222,13 +222,9 @@ function checkInputError(event)
 {
     var $target = $(event.target);
     if ($target.parents('.cfg-group') != undefined) {
-        $target.parents('.cfg-group').find('div.form-error-msg').slideUp(function () {
-            $(this).remove();
-        });
+        $target.parents('.cfg-group').find('div.form-error-msg').remove();
     }
-    $target.parents('.form-group').find('div.form-error-msg').slideUp(function () {
-        $(this).remove();
-    });
+    $target.parents('.form-group').find('div.form-error-msg').remove();
 
     if ($target.data('must-equal-to') !== undefined) {
         var $equalsTo = $($target.data('must-equal-to'));
@@ -245,7 +241,7 @@ function checkInputError(event)
     if (event.target.validity.valid) {
         $target.closest('.form-group').removeClass('has-error');
     } else {
-        $target.closest('.form-group').addClass('has-error').append('<div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i> ' + event.target.validationMessage + '</div>');
+        $target.closest('.form-group').addClass('has-error').append('<div class="form-error-msg text-danger">' + event.target.validationMessage + '</div>');
     }
 }
 

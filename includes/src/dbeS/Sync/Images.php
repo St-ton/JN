@@ -721,10 +721,10 @@ final class Images extends AbstractSync
         } else {
             $ratio     = $width / $height;
             $newWidth  = $targetWidth;
-            $newHeight = \round($newWidth / $ratio);
+            $newHeight = (int)\round($newWidth / $ratio);
             if ($newHeight > $targetHeight) {
                 $newHeight = $targetHeight;
-                $newWidth  = \round($newHeight * $ratio);
+                $newWidth  = (int)\round($newHeight * $ratio);
             }
         }
         $image = $container === true
@@ -881,9 +881,9 @@ final class Images extends AbstractSync
             return $im;
         }
         $position     = $config->cPosition;
-        $transparency = $config->dTransparenz;
-        $brandingSize = $config->dGroesse;
-        $margin       = $config->dRandabstand / 100;
+        $transparency = (int)$config->dTransparenz;
+        $brandingSize = (int)$config->dGroesse;
+        $margin       = (int)($config->dRandabstand / 100);
         $branding     = $this->createImage($brandingImage, 0, 0, true);
         if (!$im || !$branding) {
             return $im;
@@ -986,7 +986,7 @@ final class Images extends AbstractSync
                 break;
         }
 
-        return [\round($positionX), \round($positionY)];
+        return [(int)\round($positionX), (int)\round($positionY)];
     }
 
     /**
@@ -1001,11 +1001,17 @@ final class Images extends AbstractSync
      * @param int      $pct
      * @return bool
      */
-    private function imagecopymergeAlpha($destImg, $srcImg, $destX, $destY, $srcX, $srxY, $srcW, $srcH, $pct): bool
-    {
-        if ($pct === null) {
-            return false;
-        }
+    private function imagecopymergeAlpha(
+        $destImg,
+        $srcImg,
+        int $destX,
+        int $destY,
+        int $srcX,
+        int $srxY,
+        int $srcW,
+        int $srcH,
+        int $pct
+    ): bool {
         $pct /= 100;
         // Get image width and height
         $w = \imagesx($srcImg);
@@ -1031,7 +1037,7 @@ final class Images extends AbstractSync
                     ($colorxy >> 16) & 0xFF,
                     ($colorxy >> 8) & 0xFF,
                     $colorxy & 0xFF,
-                    $alpha
+                    (int)$alpha
                 );
                 // set pixel with the new color + opacity
                 if (!\imagesetpixel($srcImg, $x, $y, $alphacolorxy)) {

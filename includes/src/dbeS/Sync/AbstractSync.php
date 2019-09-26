@@ -539,7 +539,7 @@ abstract class AbstractSync
         );
         // Handle price details from xml...
         foreach ($prices as $i => $price) {
-            $this->handlePriceFormat($price->kArtikel, $price->kKundenGruppe, (int)$price->kKunde);
+            $this->handlePriceFormat((int)$price->kArtikel, (int)$price->kKundenGruppe, (int)$price->kKunde);
             $details = empty($xml['tpreis'][$i])
                 ? $this->mapper->mapArray($xml['tpreis'], 'tpreisdetail', 'mPreisDetail')
                 : $this->mapper->mapArray($xml['tpreis'][$i], 'tpreisdetail', 'mPreisDetail');
@@ -558,7 +558,7 @@ abstract class AbstractSync
                         'countingFrom'  => $preisdetail->nAnzahlAb,
                         'nettoPrice'    => $preisdetail->fNettoPreis,
                         'productID'     => $productID,
-                        'customerGroup' => $price->kKundenGruppe,
+                        'customerGroup' => (int)$price->kKundenGruppe,
                         'customerPrice' => (int)$price->kKunde,
                     ],
                     ReturnType::DEFAULT

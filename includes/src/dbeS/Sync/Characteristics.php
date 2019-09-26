@@ -92,7 +92,7 @@ final class Characteristics extends AbstractSync
             } else {
                 $characteristics[$i]->nMehrfachauswahl = 0;
             }
-            $characteristic                 = $this->saveImagePath($characteristics[$i]->kMerkmal);
+            $characteristic                 = $this->saveImagePath((int)$characteristics[$i]->kMerkmal);
             $characteristics[$i]->cBildpfad = $characteristic->cBildpfad ?? '';
             $charValues[$i]->oMMW_arr       = [];
 
@@ -110,9 +110,9 @@ final class Characteristics extends AbstractSync
                 'mMerkmalWert'
             );
             if (\count($values) > 0) {
-                $this->delete($charAttribute['kMerkmal'], 0);
+                $this->delete((int)$charAttribute['kMerkmal'], 0);
             } else {
-                $this->deleteCharacteristicOnly($charAttribute['kMerkmal']);
+                $this->deleteCharacteristicOnly((int)$charAttribute['kMerkmal']);
             }
             $this->upsertXML(
                 $charData,
@@ -208,7 +208,7 @@ final class Characteristics extends AbstractSync
         $charValues[$i]->oMMW_arr = [];
         $valueCount               = \count($mapped);
         for ($o = 0; $o < $valueCount; $o++) {
-            $this->deleteCharacteristicValue($mapped[$o]->kMerkmalWert, true);
+            $this->deleteCharacteristicValue((int)$mapped[$o]->kMerkmalWert, true);
             $item               = new stdClass();
             $item->kMerkmalWert = $mapped[$o]->kMerkmalWert;
             $item->kSprache_arr = [];

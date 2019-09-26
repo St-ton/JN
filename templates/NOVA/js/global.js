@@ -108,9 +108,9 @@ function regionsToState() {
                 var def = $('#state').val();
                 if (data !== null && data.length > 0) {
                     if (stateIsRequired){
-                        var state = $('<select />').attr({ id: 'state', name: 'bundesland', class: 'required form-control', required: 'required'});
+                        var state = $('<select />').attr({ id: 'state', name: 'bundesland', class: 'custom-select required form-control', required: 'required'});
                     } else {
-                        var state = $('<select />').attr({ id: 'state', name: 'bundesland', class: 'form-control'});
+                        var state = $('<select />').attr({ id: 'state', name: 'bundesland', class: 'custom-select form-control'});
                     }
 
                     state.append('<option value="">' + title + '</option>');

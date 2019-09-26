@@ -33,7 +33,7 @@
                                     label-for="salutation"
                                     label="{lang key='salutation' section='account data'}{if $Einstellungen.artikeldetails.produktfrage_abfragen_anrede === 'O'}<span class='optional'> - {lang key='optional'}</span>{/if}"
                                 }
-                                    {select name="anrede" id="salutation" placeholder="{lang key='emailadress'}" autocomplete="honorific-prefix" required=($Einstellungen.artikeldetails.produktfrage_abfragen_anrede === 'Y')}
+                                    {select class='custom-select' name="anrede" id="salutation" placeholder="{lang key='emailadress'}" autocomplete="honorific-prefix" required=($Einstellungen.artikeldetails.produktfrage_abfragen_anrede === 'Y')}
                                         <option value="" {if $Einstellungen.artikeldetails.produktfrage_abfragen_anrede === 'Y'}disabled{/if} selected>
                                             {if $Einstellungen.artikeldetails.produktfrage_abfragen_anrede === 'Y'}{lang key='salutation' section='account data'}{else}{lang key='noSalutation'}{/if}
                                         </option>

@@ -13,7 +13,7 @@
                     <div class="form-row">
                         {block name='snippets-shipping-calculator-countries'}
                             {col cols=12 md=5 class="mb-3"}
-                                {select name="land" id="country" placeholder="" aria=["label"=>"{lang key='country' section='account data'}"]}
+                                {select name="land" id="country" class='custom-select' placeholder="" aria=["label"=>"{lang key='country' section='account data'}"]}
                                     {foreach $laender as $land}
                                         <option value="{$land->getISO()}" {if ($Einstellungen.kunden.kundenregistrierung_standardland === $land->getISO() && (!isset($smarty.session.Kunde->cLand) || !$smarty.session.Kunde->cLand)) || (isset($smarty.session.Kunde->cLand) && $smarty.session.Kunde->cLand==$land->getISO())}selected{/if}>{$land->getName()}</option>
                                     {/foreach}

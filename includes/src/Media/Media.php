@@ -99,7 +99,7 @@ class Media
     }
 
     /**
-     * @return IMedia[]
+     * @return string[]
      */
     public function getAllClassNames(): array
     {
@@ -107,7 +107,7 @@ class Media
     }
 
     /**
-     * @return string[]
+     * @return IMedia[]
      */
     public function getRegisteredClasses(): array
     {

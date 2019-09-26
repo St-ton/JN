@@ -101,7 +101,7 @@ class Media
     /**
      * @return IMedia[]
      */
-    public function getAllTypes(): array
+    public function getAllClassNames(): array
     {
         return \array_values(self::$classMapper);
     }

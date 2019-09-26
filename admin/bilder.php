@@ -66,7 +66,7 @@ if (isset($_POST['speichern']) && Form::validateToken()) {
             || strpos($item, 'skalieren') !== false
             || strpos($item, 'hintergrundfarbe') !== false
         ) {
-            $cachesToClear = $media->getAllTypes();
+            $cachesToClear = $media->getAllClassNames();
             break;
         }
     }

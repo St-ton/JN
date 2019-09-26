@@ -563,14 +563,14 @@ final class Images extends AbstractSync
         }
         $data = $this->db->queryPrepared(
             "SELECT tseo.cSeo, tkategorie.cName
-            FROM tkategorie
-            JOIN JOIN tseo
-                ON tseo.cKey = 'kKategorie'
-                AND tseo.kKey = tkategorie.kKategorie
-            JOIN tsprache
-                ON tsprache.kSprache = tseo.kSprache
-            WHERE tkategorie.kKategorie = :cid
-                AND tsprache.cShopStandard = 'Y'",
+                FROM tkategorie
+                JOIN tseo
+                    ON tseo.cKey = 'kKategorie'
+                    AND tseo.kKey = tkategorie.kKategorie
+                JOIN tsprache
+                    ON tsprache.kSprache = tseo.kSprache
+                WHERE tkategorie.kKategorie = :cid
+                    AND tsprache.cShopStandard = 'Y'",
             ['cid' => (int)$image->kKategorie],
             ReturnType::SINGLE_OBJECT
         );

@@ -6,7 +6,6 @@
 
 namespace JTL\Session;
 
-
 use JTL\Language\LanguageHelper;
 
 class CookieConfig

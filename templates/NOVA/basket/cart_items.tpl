@@ -221,7 +221,7 @@
                                 {if $oPosition->istKonfigVater()}
                                     <div class="qty-wrapper max-w-sm">
                                         {$oPosition->nAnzahl|replace_delim} {if !empty($oPosition->Artikel->cEinheit)}{$oPosition->Artikel->cEinheit}{/if}
-                                        {link class="btn btn-light configurepos ml-3"
+                                        {link class="btn btn-outline-secondary configurepos ml-3"
                                         href="index.php?a={$oPosition->kArtikel}&ek={$oPosition@index}"}
                                             <i class="fa fa-cogs"></i><span class="ml-1">{lang key='configure'}</span>
                                         {/link}

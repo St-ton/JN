@@ -49,7 +49,7 @@
                                         {/link}
                                         {link href=$oArtikel->cURLFull}
                                             {image src=$oArtikel->Bilder[0]->cURLMini
-                                                 alt=$oArtikel->cName|strip_tags|truncate:60|escape:'html' class="img-xs"}
+                                                 alt=$oArtikel->cName|strip_tags|truncate:60|escape:'html' class="img-xs mr-2"}
                                             {$oArtikel->cName|truncate:25:'...'}
                                         {/link}
                                     {/listgroupitem}

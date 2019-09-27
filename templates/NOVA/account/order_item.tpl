@@ -164,7 +164,7 @@
                             {/if}
                         {/col}
                     {/if}
-                    {col class='price-col text-right' md=2 cols=3}
+                    {col class='price-col text-right text-nowrap' md=2 cols=3}
                         <strong class="price_overall">
                             {if is_string($oPosition->cUnique) && !empty($oPosition->cUnique) && (int)$oPosition->kKonfigitem === 0}
                                 {$oPosition->cKonfigpreisLocalized[$NettoPreise]}

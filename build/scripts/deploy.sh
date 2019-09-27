@@ -9,7 +9,7 @@ ARCHIVE_PATH="${3}/${FILENAME}";
 echo "";
 echo "Create zip of build '${TAG}'...";
 
-zip -r -q ${ARCHIVE_PATH} . -x \*.git* \*.idea* \*build/* \*docs/* \*patch-dir-* \*tests/* \*.asset_cs \*.php_cs \*.travis.yml \*phpunit.xml;
+zip -r -q ${ARCHIVE_PATH} . -x \*.git* \*.idea* \*build/* \*docs/* \*patch-dir-* \*tests/* \*templates_c/*.php\* \*templates_c/*/\* \*.asset_cs \*.php_cs \*.travis.yml \*phpunit.xml;
 echo "  ${FILENAME}";
 echo "";
 

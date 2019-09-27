@@ -278,6 +278,12 @@ msgstr "HTTPONLY"
 msgid "global_cookie_httponly_desc"
 msgstr "Hier legen Sie fest, ob PHP versuchen soll, das HTTPONLY-Flag zu senden."
 
+msgid "global_cookie_samesite_name"
+msgstr "SameSite"
+
+msgid "global_cookie_samesite_desc"
+msgstr "Hier legen Sie fest, ob PHP versuchen soll, das SameSite-Flag zu senden."
+
 msgid "startseite_neuimsortiment_anzahl_name"
 msgstr "„Neu im Sortiment“: Anzahl Artikel"
 

@@ -65,7 +65,7 @@ class Status
      */
     protected function getImageCache(): StatsItem
     {
-        return Product::getStats(Image::TYPE_PRODUCT);
+        return Product::getStats();
     }
 
     /**

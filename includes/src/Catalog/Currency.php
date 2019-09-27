@@ -328,7 +328,13 @@ class Currency
      */
     public function getDefault(): self
     {
-        return $this->extract(Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y'));
+        $data = Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y');
+        if ($data !== null) {
+            $data->kWaehrung = (int)$data->kWaehrung;
+            $this->extract($data);
+        }
+
+        return $this;
     }
 
     /**

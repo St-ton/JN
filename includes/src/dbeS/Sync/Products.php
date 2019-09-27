@@ -389,7 +389,7 @@ final class Products extends AbstractSync
         $attrCount  = \count($attributes);
         for ($i = 0; $i < $attrCount; ++$i) {
             if ($attrCount < 2) {
-                $this->deleteAttribute($xml['tartikel']['tattribut attr']['kAttribut']);
+                $this->deleteAttribute((int)$xml['tartikel']['tattribut attr']['kAttribut']);
                 $this->upsertXML(
                     $xml['tartikel']['tattribut'],
                     'tattributsprache',
@@ -398,7 +398,7 @@ final class Products extends AbstractSync
                     'kSprache'
                 );
             } else {
-                $this->deleteAttribute($xml['tartikel']['tattribut'][$i . ' attr']['kAttribut']);
+                $this->deleteAttribute((int)$xml['tartikel']['tattribut'][$i . ' attr']['kAttribut']);
                 $this->upsertXML(
                     $xml['tartikel']['tattribut'][$i],
                     'tattributsprache',
@@ -424,7 +424,7 @@ final class Products extends AbstractSync
         $mediaCount = \count($mediaFiles);
         for ($i = 0; $i < $mediaCount; ++$i) {
             if ($mediaCount < 2) {
-                $this->deleteMediaFile($xml['tartikel']['tmediendatei attr']['kMedienDatei']);
+                $this->deleteMediaFile((int)$xml['tartikel']['tmediendatei attr']['kMedienDatei']);
                 $this->upsertXML(
                     $source,
                     'tmediendateisprache',
@@ -439,7 +439,7 @@ final class Products extends AbstractSync
                     'kMedienDateiAttribut'
                 );
             } else {
-                $this->deleteMediaFile($source[$i . ' attr']['kMedienDatei']);
+                $this->deleteMediaFile((int)$source[$i . ' attr']['kMedienDatei']);
                 $this->upsertXML(
                     $source[$i],
                     'tmediendateisprache',
@@ -470,9 +470,9 @@ final class Products extends AbstractSync
             $this->deleteDownload($productID);
             $dlData = $xml['tartikel']['tArtikelDownload']['kDownload'];
             if (\is_array($dlData)) {
-                foreach ($dlData as $kDownload) {
+                foreach ($dlData as $downloadID) {
                     $download            = new stdClass();
-                    $download->kDownload = (int)$kDownload;
+                    $download->kDownload = (int)$downloadID;
                     $download->kArtikel  = $productID;
                     $downloads[]         = $download;
                     if (($idx = \array_search($download->kDownload, $downloadKeys, true)) !== false) {
@@ -490,8 +490,8 @@ final class Products extends AbstractSync
             }
             $this->upsert('tartikeldownload', $downloads, 'kArtikel', 'kDownload');
         }
-        foreach ($downloadKeys as $kDownload) {
-            $this->deleteDownload($productID, $kDownload);
+        foreach ($downloadKeys as $downloadID) {
+            $this->deleteDownload($productID, $downloadID);
         }
     }
 
@@ -623,7 +623,7 @@ final class Products extends AbstractSync
         $cCount          = \count($characteristics);
         for ($i = 0; $i < $cCount; ++$i) {
             if ($cCount < 2) {
-                $this->deleteProperty($xml['tartikel']['teigenschaft attr']['kEigenschaft']);
+                $this->deleteProperty((int)$xml['tartikel']['teigenschaft attr']['kEigenschaft']);
                 $this->upsertXML($source, 'teigenschaftsprache', 'mEigenschaftSprache', 'kEigenschaft', 'kSprache');
                 $this->upsertXML(
                     $source,
@@ -636,10 +636,10 @@ final class Products extends AbstractSync
                 $pvCount    = \count($propValues);
                 for ($o = 0; $o < $pvCount; ++$o) {
                     if ($pvCount < 2) {
-                        $this->deletePropertyValue($source['teigenschaftwert attr']['kEigenschaftWert']);
+                        $this->deletePropertyValue((int)$source['teigenschaftwert attr']['kEigenschaftWert']);
                         $item = $source['teigenschaftwert'];
                     } else {
-                        $this->deletePropertyValue($source['teigenschaftwert'][$o . ' attr']['kEigenschaftWert']);
+                        $this->deletePropertyValue((int)$source['teigenschaftwert'][$o . ' attr']['kEigenschaftWert']);
                         $item = $source['teigenschaftwert'][$o];
                     }
                     $this->upsertXML(
@@ -675,7 +675,7 @@ final class Products extends AbstractSync
             } else {
                 $idx = $i . ' attr';
                 if (isset($source[$idx])) {
-                    $this->deleteProperty($source[$idx]['kEigenschaft']);
+                    $this->deleteProperty((int)$source[$idx]['kEigenschaft']);
                 }
                 if (isset($source[$i])) {
                     $current = $source[$i];
@@ -701,10 +701,12 @@ final class Products extends AbstractSync
                     $pvCount    = \count($propValues);
                     for ($o = 0; $o < $pvCount; ++$o) {
                         if ($pvCount < 2) {
-                            $this->deletePropertyValue($current['teigenschaftwert attr']['kEigenschaftWert']);
+                            $this->deletePropertyValue((int)$current['teigenschaftwert attr']['kEigenschaftWert']);
                             $item = $current['teigenschaftwert'];
                         } else {
-                            $this->deletePropertyValue($current['teigenschaftwert'][$o . ' attr']['kEigenschaftWert']);
+                            $this->deletePropertyValue(
+                                (int)$current['teigenschaftwert'][$o . ' attr']['kEigenschaftWert']
+                            );
                             $item = $current['teigenschaftwert'][$o];
                         }
                         $this->upsertXML(
@@ -810,32 +812,33 @@ final class Products extends AbstractSync
     private function addStockData(object $product): void
     {
         if ((int)$product->nIstVater === 1) {
+            $productID = (int)$product->kArtikel;
             $this->db->query(
-                'UPDATE tartikel SET fLagerbestand =
-                (SELECT * FROM
+                'UPDATE tartikel SET fLagerbestand = (SELECT * FROM
                     (SELECT SUM(fLagerbestand)
                         FROM tartikel
-                        WHERE kVaterartikel = ' . (int)$product->kArtikel . '
+                        WHERE kVaterartikel = ' . $productID . '
                      ) AS x
                  )
-                WHERE kArtikel = ' . (int)$product->kArtikel,
+                WHERE kArtikel = ' . $productID,
                 ReturnType::AFFECTED_ROWS
             );
-            Artikel::beachteVarikombiMerkmalLagerbestand($product->kArtikel, $this->productVisibilityFilter);
+            Artikel::beachteVarikombiMerkmalLagerbestand($productID, $this->productVisibilityFilter);
         } elseif (isset($product->kVaterArtikel) && $product->kVaterArtikel > 0) {
+            $productID = (int)$product->kVaterArtikel;
             $this->db->query(
                 'UPDATE tartikel SET fLagerbestand =
                 (SELECT * FROM
                     (SELECT SUM(fLagerbestand)
                         FROM tartikel
-                        WHERE kVaterartikel = ' . (int)$product->kVaterArtikel . '
+                        WHERE kVaterartikel = ' . $productID . '
                     ) AS x
                 )
-                WHERE kArtikel = ' . (int)$product->kVaterArtikel,
+                WHERE kArtikel = ' . $productID,
                 ReturnType::AFFECTED_ROWS
             );
             // Aktualisiere Merkmale in tartikelmerkmal vom Vaterartikel
-            Artikel::beachteVarikombiMerkmalLagerbestand($product->kVaterArtikel, $this->productVisibilityFilter);
+            Artikel::beachteVarikombiMerkmalLagerbestand($productID, $this->productVisibilityFilter);
         }
     }
 

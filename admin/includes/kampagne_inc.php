@@ -4,12 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Campaign;
 use JTL\Catalog\Product\Preise;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
-use JTL\Campaign;
 use JTL\Linechart;
 use JTL\Session\Frontend;
 use JTL\Shop;

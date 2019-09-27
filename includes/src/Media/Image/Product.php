@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -32,7 +32,7 @@ class Product extends AbstractImage
     /**
      * @inheritdoc
      */
-    protected function getImageNames(MediaImageRequest $req): array
+    public static function getImageNames(MediaImageRequest $req): array
     {
         return Shop::Container()->getDB()->queryPrepared(
             'SELECT kArtikel, cName, cSeo, cSeo AS originalSeo, cArtNr, cBarcode
@@ -110,7 +110,7 @@ class Product extends AbstractImage
     {
         switch (Image::getSettings()['naming']['product']) {
             case 0:
-                $result = $mixed->kArtikel;
+                $result = (string)$mixed->kArtikel;
                 break;
             case 1:
                 $result = $mixed->cArtNr;

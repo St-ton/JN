@@ -259,7 +259,7 @@ class Metadata implements MetadataInterface
      */
     public function getImageURL(): string
     {
-        return $this->imageURL;
+        return $this->imageURL ?? \BILD_KEIN_KATEGORIEBILD_VORHANDEN;
     }
 
     /**

@@ -3,7 +3,7 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='snippets-filter-characteristics'}
-    {$is_dropdown = ($Merkmal->cTyp === 'SELECTBOX') && $Merkmal->oMerkmalWerte_arr|@count > 1}
+    {$is_dropdown = ($Merkmal->cTyp === 'SELECTBOX')}
     {$limit = $Einstellungen.template.productlist.filter_max_options}
     {$collapseInit = false}
     {foreach $Merkmal->getOptions() as $attributeValue}

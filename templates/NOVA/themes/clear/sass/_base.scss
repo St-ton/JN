@@ -2389,3 +2389,10 @@ a.nice-deco {
     padding-bottom: $spacer / 2;
   }
 }
+
+main section {
+  padding: map-get($spacers, 5) 0;
+  @include media-breakpoint-up(lg) {
+    padding: (map-get($spacers, 1) * 16) 0;
+  }
+}

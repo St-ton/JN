@@ -58,9 +58,7 @@
                                             {/foreach}
                                             {row id="freegift"}
                                                 {col cols=12}
-                                                    <p>
-                                                        <strong class="mb-2">{lang key='freeGiftFromOrderValueBasket'}</strong>
-                                                    </p>
+                                                    <h3 class="mb-4">{lang key='freeGiftFromOrderValueBasket'}</h3>
                                                 {/col}
                                                 {col cols=12}
                                                     {block name='basket-index-form-freegift'}

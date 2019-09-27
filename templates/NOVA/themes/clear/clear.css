@@ -18010,6 +18010,15 @@ a.nice-deco:focus::after {
   padding-bottom: 0.5rem;
 }
 
+main section {
+  padding: 2rem 0;
+}
+@media (min-width: 992px) {
+  main section {
+    padding: 4rem 0;
+  }
+}
+
 /* utilities */
 .rounded-top-left {
   border-top-left-radius: 0.125rem !important;

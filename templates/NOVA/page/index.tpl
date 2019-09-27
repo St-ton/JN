@@ -40,13 +40,20 @@
 
     {block name='page-index-additional-content'}
         {if isset($oNews_arr) && $oNews_arr|@count > 0}
-            <hr>
 
             {opcMountPoint id='opc_before_news'}
 
-            {container}
+            <section>
                 {block name='page-index-subheading-news'}
-                    <div class="h2">{lang key='news' section='news'}</div>
+                    {row class="align-items-center mb-5"}
+                        {col class='col-md'}<hr>{/col}
+                        {col class='col-md-auto text-center'}
+                            <h2 class="m-0">
+                                {lang key='news' section='news'}
+                            </h2>
+                        {/col}
+                        {col class='col-md'}<hr>{/col}
+                    {/row}
                 {/block}
                 {block name='page-index-news'}
                     {row itemprop="about" itemscope=true itemtype="http://schema.org/Blog" class="news-slider mx-0"}
@@ -59,7 +66,7 @@
                         {/foreach}
                     {/row}
                 {/block}
-            {/container}
+            </section>
         {/if}
     {/block}
 {/block}

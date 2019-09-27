@@ -228,13 +228,13 @@ class NiceDB implements DbInterface
     }
 
     /**
-     * @param string $type
-     * @param string $stmt
+     * @param string     $type
+     * @param string     $stmt
      * @param array|null $assigns
-     * @param int  $time
+     * @param float      $time
      * @return DbInterface
      */
-    private function analyzeQuery(string $type, string $stmt, array $assigns = null, int $time = 0): DbInterface
+    private function analyzeQuery(string $type, string $stmt, array $assigns = null, float $time = 0): DbInterface
     {
         if ($this->debug !== true || \mb_strpos($stmt, 'tprofiler') !== false) {
             return $this;
@@ -403,7 +403,7 @@ class NiceDB implements DbInterface
             } elseif ($val === null) {
                 $val = '';
             }
-            $lc = \mb_convert_case($val, \MB_CASE_LOWER);
+            $lc = \mb_convert_case((string)$val, \MB_CASE_LOWER);
             if ($lc === 'now()' || $lc === 'current_timestamp') {
                 $values[] = $val;
             } else {
@@ -473,7 +473,7 @@ class NiceDB implements DbInterface
             } elseif ($_val === null) {
                 $_val = '';
             }
-            $lc = \mb_convert_case($_val, \MB_CASE_LOWER);
+            $lc = \mb_convert_case((string)$_val, \MB_CASE_LOWER);
             if ($lc === 'now()' || $lc === 'current_timestamp') {
                 $updates[] = '`' . $_key . '`=' . $_val;
             } else {
@@ -1021,7 +1021,7 @@ class NiceDB implements DbInterface
             $string = $string ?: '0';
         }
 
-        return $this->pdo->quote($string);
+        return $this->pdo->quote((string)$string);
     }
 
     /**

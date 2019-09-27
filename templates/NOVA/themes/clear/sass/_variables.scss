@@ -20,6 +20,7 @@ $danger:                            #B90000;
 $bg-danger:                         #E8CCD2;
 
 $white:                             #ffffff;
+$black:                             #000000;
 
 $dark:                              $gray-dark;
 $gray-100:                          $gray-lighter;
@@ -289,6 +290,19 @@ $ribbon-bg-colors: map-merge((
 $navbar-nav-link-padding-x: map-get($spacers, 4);
 $navbar-nav-link-padding-y: map-get($spacers, 4);
 $nav-link-padding-x: 0.8rem;
+
+/* modals */
+
+$modal-inner-padding			: $spacer 0;
+
+$modal-content-padding			: map-get($spacers, 4) map-get($spacers, 5);
+$modal-content-border-width		: 0;
+$modal-content-box-shadow-sm-up	: 0 0 rem(10px) transparentize($black, .9);
+$modal-content-border-radius	: $border-radius;
+
+$modal-header-border-width		: $border-width;
+$modal-header-padding-y			: map-get($spacers, 2);
+$modal-header-padding-x			: 0;
 
 $modal-md: 700px;
 

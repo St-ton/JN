@@ -15621,18 +15621,6 @@ button.bg-info:focus {
   background-color: #d3dce9 !important;
 }
 
-.text-justify {
-  text-align: justify !important;
-}
-
-.text-wrap {
-  white-space: normal !important;
-}
-
-.text-nowrap {
-  white-space: nowrap !important;
-}
-
 .text-truncate {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -16442,10 +16430,6 @@ ul.partlist-items {
   .list .product-cell .product-detail-cell {
     text-align: right;
   }
-  .list .product-cell .price_wrapper .price {
-    font-size: 16;
-    font-weight: bold;
-  }
 }
 
 .actions {
@@ -16512,16 +16496,6 @@ ul.partlist-items {
   }
 }
 
-@media (min-width: 992px) {
-  #content.col-lg-9.order-lg-1 {
-    padding-left: 2rem;
-  }
-}
-@media (min-width: 1300px) {
-  #content.col-lg-9.order-lg-1 {
-    padding-left: 5rem;
-  }
-}
 .attr-group {
   font-size: 13px;
 }
@@ -16941,17 +16915,6 @@ a[data-toggle=collapse][aria-expanded=true] i.fa-chevron-down,
   border: 1px solid #9b9b9b;
   border-radius: 50%;
   padding: 0.2rem 0.45rem;
-}
-
-.price {
-  font-family: Montserrat, sans-serif;
-  font-size: 16;
-  font-weight: bold;
-  color: #525252;
-}
-
-.product-offer .price {
-  font-size: 20.8;
 }
 
 .price-note {
@@ -18822,7 +18785,6 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   border-bottom: 1px solid #ebebeb;
   padding-bottom: 0.5rem;
   margin-bottom: 1rem;
-  margin-top: 1rem;
 }
 
 #footer .productlist-filter-headline {

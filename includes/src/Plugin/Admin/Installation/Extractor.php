@@ -23,6 +23,8 @@ class Extractor
 
     private const NEW_PLUGINS_DIR = \PFAD_ROOT . \PLUGIN_DIR;
 
+    private const GIT_REGEX = '/(.*)((-master)|(-[a-zA-Z0-9]{40}))\/(.*)/';
+
     /**
      * @var XMLParser
      */
@@ -108,21 +110,16 @@ class Extractor
 
                         return $response;
                     }
-                    \preg_match('/(.*)-master\/(.*)/', $dirName, $hits);
+                    \preg_match(self::GIT_REGEX, $dirName, $hits);
                     if (\count($hits) >= 3) {
-                        $dirName = \str_replace('-master', '', $dirName);
+                        $dirName = \str_replace($hits[2], '', $dirName);
                     }
                     $response->dir_name = $dirName;
                 }
                 $filename = $zip->getNameIndex($i);
-                \preg_match('/(.*)-master-([a-zA-Z0-9]{40})\/(.*)/', $filename, $hits);
+                \preg_match(self::GIT_REGEX, $filename, $hits);
                 if (\count($hits) >= 3) {
-                    $zip->renameIndex($i, \str_replace('-master-' . $hits[2], '', $filename));
-                    $filename = $zip->getNameIndex($i);
-                }
-                \preg_match('/(.*)-master\/(.*)/', $filename, $hits);
-                if (\count($hits) >= 3) {
-                    $zip->renameIndex($i, \str_replace('-master', '', $filename));
+                    $zip->renameIndex($i, \str_replace($hits[2], '', $filename));
                     $filename = $zip->getNameIndex($i);
                 }
                 if ($zip->extractTo(self::UNZIP_PATH, $filename)) {

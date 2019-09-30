@@ -726,7 +726,7 @@ class Bestellung
                 'kLieferschein'
             );
             foreach ($deliveryNotes as $note) {
-                $note                = new Lieferschein($note->kLieferschein, $sData);
+                $note                = new Lieferschein((int)$note->kLieferschein, $sData);
                 $note->oPosition_arr = [];
                 /** @var Lieferscheinpos $lineItem */
                 foreach ($note->oLieferscheinPos_arr as &$lineItem) {

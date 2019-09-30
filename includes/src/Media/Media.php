@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -43,6 +43,7 @@ class Media
         Image::TYPE_CATEGORY             => Category::class,
         Image::TYPE_CHARACTERISTIC       => Characteristic::class,
         Image::TYPE_CHARACTERISTIC_VALUE => CharacteristicValue::class,
+        Image::TYPE_CONFIGGROUP          => ConfigGroup::class,
         Image::TYPE_MANUFACTURER         => Manufacturer::class,
         Image::TYPE_NEWS                 => News::class,
         Image::TYPE_NEWSCATEGORY         => NewsCategory::class,
@@ -95,6 +96,22 @@ class Media
         $this->types[] = $media;
 
         return $this;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getAllClassNames(): array
+    {
+        return \array_values(self::$classMapper);
+    }
+
+    /**
+     * @return IMedia[]
+     */
+    public function getRegisteredClasses(): array
+    {
+        return $this->types;
     }
 
     /**

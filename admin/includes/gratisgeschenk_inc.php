@@ -6,7 +6,6 @@
 
 use JTL\Catalog\Product\Artikel;
 use JTL\DB\ReturnType;
-use JTL\Helpers\Date;
 use JTL\Shop;
 
 /**

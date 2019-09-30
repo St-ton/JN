@@ -40,12 +40,12 @@ class FilterSelectField extends FilterField
     /**
      * Add a select option to a filter select field
      *
-     * @param string $title - the label/title for this option
-     * @param string $value
-     * @param int    $testOp
+     * @param string     $title - the label/title for this option
+     * @param string|int $value
+     * @param int        $testOp
      * @return FilterSelectOption
      */
-    public function addSelectOption($title, $value, $testOp = Operation::CUSTOM): FilterSelectOption
+    public function addSelectOption($title, $value, int $testOp = Operation::CUSTOM): FilterSelectOption
     {
         $option          = new FilterSelectOption($title, $value, $testOp);
         $this->options[] = $option;

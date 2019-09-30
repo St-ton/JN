@@ -75,7 +75,7 @@
             </div>
             {assign var=open value=false}
             {foreach $oConfig_arr as $cnf}
-            {if $cnf->kEinstellungenConf == 267 || $cnf->kEinstellungenConf == 268 || $cnf->kEinstellungenConf == 269 || $cnf->kEinstellungenConf == 1135 || $cnf->kEinstellungenConf == 1421 || $cnf->kEinstellungenConf == 172 || $cnf->kEinstellungenConf == 161  || $cnf->kEinstellungenConf == 1483  || $cnf->kEinstellungenConf == 1484 || $cnf->kEinstellungenConf == 1485}
+            {if strpos($cnf->cWertName, 'hoehe') === false && strpos($cnf->cWertName, 'breite') === false}
                 {if $cnf->cConf === 'Y'}
                     <div class="form-group form-row align-items-center{if isset($cSuche) && $cnf->kEinstellungenConf == $cSuche} highlight{/if}">
                         <label class="col col-sm-4 col-form-label text-sm-right order-1" for="{$cnf->cWertName}">{$cnf->cName}:</label>

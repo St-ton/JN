@@ -23,6 +23,8 @@ class Extractor
 
     private const NEW_PLUGINS_DIR = \PFAD_ROOT . \PLUGIN_DIR;
 
+    private const GIT_REGEX = '/(.*)((-master)|(-[a-zA-Z0-9]{40}))\/(.*)/';
+
     /**
      * @var XMLParser
      */
@@ -101,19 +103,23 @@ class Extractor
         } else {
             for ($i = 0; $i < $zip->numFiles; $i++) {
                 if ($i === 0) {
-                    $dirName            = $zip->getNameIndex($i);
-                    $response->dir_name = $dirName;
+                    $dirName = $zip->getNameIndex($i);
                     if (\mb_strpos($dirName, '.') !== false) {
                         $response->status     = 'FAILED';
                         $response->messages[] = 'Invalid archive';
 
                         return $response;
                     }
+                    \preg_match(self::GIT_REGEX, $dirName, $hits);
+                    if (\count($hits) >= 3) {
+                        $dirName = \str_replace($hits[2], '', $dirName);
+                    }
+                    $response->dir_name = $dirName;
                 }
                 $filename = $zip->getNameIndex($i);
-                \preg_match('/(.*)-master-([a-zA-Z0-9]{40})\/(.*)/', $filename, $hits);
+                \preg_match(self::GIT_REGEX, $filename, $hits);
                 if (\count($hits) >= 3) {
-                    $zip->renameIndex($i, \str_replace('-master-' . $hits[2], '', $filename));
+                    $zip->renameIndex($i, \str_replace($hits[2], '', $filename));
                     $filename = $zip->getNameIndex($i);
                 }
                 if ($zip->extractTo(self::UNZIP_PATH, $filename)) {

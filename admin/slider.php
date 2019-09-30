@@ -10,7 +10,6 @@ use JTL\Boxes\Admin\BoxAdmin;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
-use JTL\Language\LanguageHelper;
 use JTL\Pagination\Pagination;
 use JTL\Shop;
 use JTL\Slide;

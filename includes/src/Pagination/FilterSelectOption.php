@@ -18,7 +18,7 @@ class FilterSelectOption
     protected $title = '';
 
     /**
-     * @var string
+     * @var string|int
      */
     protected $value = '';
 
@@ -31,10 +31,10 @@ class FilterSelectOption
      * FilterSelectOption constructor.
      *
      * @param string $title
-     * @param string $value
+     * @param string|int $value
      * @param int    $testOp
      */
-    public function __construct($title, $value, $testOp)
+    public function __construct($title, $value, int $testOp)
     {
         $this->title  = $title;
         $this->value  = $value;
@@ -50,9 +50,9 @@ class FilterSelectOption
     }
 
     /**
-     * @return string
+     * @return string|int
      */
-    public function getValue(): string
+    public function getValue()
     {
         return $this->value;
     }

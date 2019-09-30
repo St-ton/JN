@@ -620,11 +620,11 @@ class Cart
     /**
      * erstellt eine Spezialposition im Warenkorb
      *
-     * @param string|array $name          Positionsname
-     * @param string       $qty        Positionsanzahl
-     * @param string       $price         Positionspreis
-     * @param string       $taxClassID Positionsmwst
-     * @param int          $typ           Positionstyp
+     * @param string|array $name
+     * @param string       $qty
+     * @param string       $price
+     * @param int          $taxClassID
+     * @param int          $typ
      * @param bool         $delSamePosType
      * @param bool         $grossPrice
      * @param string       $message
@@ -885,9 +885,9 @@ class Cart
      * @param int $productID
      * @param int $excludePos
      * @param bool $countParentProducts
-     * @return int
+     * @return int|float
      */
-    public function gibAnzahlEinesArtikels(int $productID, int $excludePos = -1, bool $countParentProducts = false): int
+    public function gibAnzahlEinesArtikels(int $productID, int $excludePos = -1, bool $countParentProducts = false)
     {
         if (!$productID) {
             return 0;

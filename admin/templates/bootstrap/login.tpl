@@ -108,7 +108,7 @@
                     </form>
                 </div>
             </div>
-            <p class="forgot-pw-wrap">
+            <p class="forgot-pw-wrap text-center">
                 <small><a href="pass.php" title="{__('forgotPassword')}"><i class="fa fa-lock"></i> {__('forgotPassword')}</a></small>
             </p>
         </div>

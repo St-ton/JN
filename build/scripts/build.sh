@@ -171,7 +171,7 @@ build_create_md5_hashfile()
 
 build_import_initial_schema()
 {
-    local INITIALSCHEMA=${REPOSITORY_DIR}/install/initial_schema.sql
+    local INITIALSCHEMA=${REPOSITORY_DIR}/install/lib/initial_schema.sql
 
     mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME}";
 
@@ -258,7 +258,7 @@ build_create_db_struct()
 
 build_create_initial_schema()
 {
-    local INITIAL_SCHEMA_PATH=${REPOSITORY_DIR}/install/initial_schema.sql;
+    local INITIAL_SCHEMA_PATH=${REPOSITORY_DIR}/install/lib/initial_schema.sql;
     local MYSQL_CONN="-h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD}";
     local ORDER_BY="table_name ASC";
     local SQL="SET group_concat_max_len = 1048576;";

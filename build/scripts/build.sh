@@ -44,7 +44,6 @@ build_create()
     build_create_deleted_files_csv;
 
     echo "Create templates md5 csv files";
-    create_tpl_md5_hashfile "${REPOSITORY_DIR}/templates/Evo";
     create_tpl_md5_hashfile "${REPOSITORY_DIR}/templates/NOVA";
 
     echo "Move class files";

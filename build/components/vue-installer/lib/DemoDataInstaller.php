@@ -4,14 +4,19 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Andyftw\Faker\ImageProvider;
+namespace VueInstaller;
+
 use Cocur\Slugify\Slugify;
 use Faker\Factory as Fake;
-use ShopCli\Faker\de_DE\Commerce;
+use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use stdClass;
+use VueInstaller\Faker\de_DE\Commerce;
+use VueInstaller\Faker\ImageProvider;
 
 /**
  * Class DemoDataInstaller
+ * @package VueInstaller
  */
 class DemoDataInstaller
 {
@@ -34,16 +39,6 @@ class DemoDataInstaller
      * number of customers to create.
      */
     public const NUM_CUSTOMERS = 100;
-
-    /**
-     * font file.
-     */
-    public const FONT_FILE = 'OpenSans-Regular.ttf';
-
-    /**
-     * @var \ShopCli\Controller\ShopController
-     */
-    protected $shop;
 
     /**
      * @var array
@@ -76,16 +71,15 @@ class DemoDataInstaller
     ];
 
     /**
-     * DemoData constructor.
-     * @param NiceDB $DB
-     * @param array  $config
+     * DemoDataInstaller constructor.
+     * @param DbInterface $DB
+     * @param array       $config
      */
-    public function __construct(\NiceDB $DB, array $config = [])
+    public function __construct(DbInterface $DB, array $config = [])
     {
         $this->pdo    = $DB;
-        $this->config = array_merge(static::$defaultConfig, $config);
-
-        $this->faker = Fake::create('de_DE');
+        $this->config = \array_merge(static::$defaultConfig, $config);
+        $this->faker  = Fake::create('de_DE');
         $this->faker->addProvider(new Commerce($this->faker));
         $this->faker->addProvider(new ImageProvider($this->faker));
 
@@ -95,40 +89,16 @@ class DemoDataInstaller
         ]);
     }
 
-    protected function execute()
+    protected function execute(): void
     {
-//        $io = $this->getIO();
-//        $shop = $this->getController('shop');
-//        $targetDirectory = $this->getOption('target-dir');
-
-//        $shop->setBasePath($targetDirectory);
-//        $shop->validateConfig();
-
         $config = [
-            'manufacturers' => max(0, (int)$this->config['manufacturers']),
-            'categories'    => max(0, (int)$this->config['categories']),
-            'articles'      => max(0, (int)$this->config['articles']),
-            'customers'     => max(0, (int)$this->config['customers']),
+            'manufacturers' => \max(0, (int)$this->config['manufacturers']),
+            'categories'    => \max(0, (int)$this->config['categories']),
+            'articles'      => \max(0, (int)$this->config['articles']),
+            'customers'     => \max(0, (int)$this->config['customers']),
         ];
-
-        $steps = count(array_filter($config));
+        $steps = count(\array_filter($config));
         $step  = 1;
-
-//        foreach ($config as $kindName => $kindCount) {
-//            if ($kindCount > 0) {
-//                $io->setStep($step, $steps, 'Creating '.$kindCount.' '.Text::singular($kindName, $kindCount));
-//                $io->progress(
-//                    function ($mycb) use (&$demoData, $kindName) {
-//                        $demoData->{Text::camelize('create_'.$kindName)}(
-//                            function ($index, $limit, $success, $name) use (&$mycb) {
-//                                $mycb(round($index * 100 / $limit), $limit, $index, $name);
-//                            }
-//                        );
-//                    }, '  %percent:-3s%% [%bar%] %message%'
-//                );
-//                ++$step;
-//            }
-//        }
 
         $this->updateRatingsAvg()->updateGlobals();
     }
@@ -484,7 +454,7 @@ class DemoDataInstaller
                     'SELECT kHersteller FROM thersteller WHERE cName = "' . $_name . '"',
                     ReturnType::ARRAY_OF_OBJECTS
                 );
-                if (is_array($res) && count($res) > 0) {
+                if (\is_array($res) && count($res) > 0) {
                     throw new \OverflowException();
                 }
             } catch (\OverflowException $e) {
@@ -506,7 +476,7 @@ class DemoDataInstaller
 
                 $seo_index = 0;
                 while (($data = $this->pdo->select('tseo', 'cKey', $seoItem->cKey, 'cSeo', $seoItem->cSeo)) !== false
-                    && is_array($data)
+                    && \is_array($data)
                     && count($data) > 0
                 ) {
                     $seoItem->cSeo = $_manufacturer->cSeo . '_' . ++$seo_index;
@@ -546,7 +516,7 @@ class DemoDataInstaller
                     'SELECT kKategorie FROM tkategorie WHERE cName = "' . $_name . '"',
                     ReturnType::ARRAY_OF_OBJECTS
                 );
-                if (is_array($res) && count($res) > 0) {
+                if (\is_array($res) && count($res) > 0) {
                     throw new \OverflowException();
                 }
             } catch (\OverflowException $e) {
@@ -557,7 +527,7 @@ class DemoDataInstaller
             $_category->cName                 = $_name;
             $_category->cSeo                  = $this->slug($_name);
             $_category->cBeschreibung         = $this->faker->text(200);
-            $_category->kOberKategorie        = rand(0, $_category->kKategorie - 1);
+            $_category->kOberKategorie        = \rand(0, $_category->kKategorie - 1);
             $_category->nSort                 = 0;
             $_category->dLetzteAktualisierung = 'now()';
             $_category->lft                   = 0;
@@ -570,7 +540,7 @@ class DemoDataInstaller
 
                 $seo_index = 0;
                 while (($data = $this->pdo->select('tseo', 'cKey', $_seoEntry->cKey, 'cSeo', $_seoEntry->cSeo)) !== false
-                    && is_array($data)
+                    && \is_array($data)
                     && count($data) > 0
                 ) {
                     $_seoEntry->cSeo = $_category->cSeo . '_' . ++$seo_index;
@@ -638,20 +608,20 @@ class DemoDataInstaller
                     'SELECT kArtikel FROM tartikel WHERE cName = "' . $_name . '"',
                     ReturnType::ARRAY_OF_OBJECTS
                 );
-                if (is_array($res) && count($res) > 0) {
+                if (\is_array($res) && count($res) > 0) {
                     throw new \OverflowException();
                 }
             } catch (\OverflowException $e) {
                 $_name = $this->faker->unique(true)->productName . '_' . ++$name_index;
             }
 
-            $price                      = rand(1, 2999);
+            $price                      = \rand(1, 2999);
             $product                           = new \stdClass();
             $product->kArtikel                 = $maxPk + $i;
-            $product->kHersteller              = rand(0, $manufacturesCount);
+            $product->kHersteller              = \rand(0, $manufacturesCount);
             $product->kLieferstatus            = 0;
             $product->kSteuerklasse            = 1;
-            $product->kEinheit                 = (10 === rand(0, 10)) && $unitCount > 0 ? rand(1, $unitCount) : 0;
+            $product->kEinheit                 = (10 === \rand(0, 10)) && $unitCount > 0 ? \rand(1, $unitCount) : 0;
             $product->kVersandklasse           = 1;
             $product->kEigenschaftKombi        = 0;
             $product->kVaterArtikel            = 0;
@@ -665,29 +635,29 @@ class DemoDataInstaller
             $product->cArtNr                   = $this->faker->ean8();
             $product->cBeschreibung            = $this->faker->text(300);
             $product->cAnmerkung               = '';
-            $product->fLagerbestand            = (float)rand(0, 1000);
+            $product->fLagerbestand            = (float)\rand(0, 1000);
             $product->fStandardpreisNetto      = $price / 19.00;
             $product->fMwSt                    = $_taxRate;
-            $product->fMindestbestellmenge     = (5 < rand(0, 10)) ? rand(0, 5) : 0;
+            $product->fMindestbestellmenge     = (5 < \rand(0, 10)) ? \rand(0, 5) : 0;
             $product->fLieferantenlagerbestand = 0;
             $product->fLieferzeit              = 0;
             $product->cBarcode                 = $this->faker->ean13;
-            $product->cTopArtikel              = (10 === rand(0, 10)) ? 'Y' : 'N';
-            $product->fGewicht                 = (float)rand(0, 10);
+            $product->cTopArtikel              = (10 === \rand(0, 10)) ? 'Y' : 'N';
+            $product->fGewicht                 = (float)\rand(0, 10);
             $product->fArtikelgewicht          = $product->fGewicht;
             $product->fMassMenge               = 0; //@todo?
             $product->fGrundpreisMenge         = 0;
             $product->fBreite                  = 0;
             $product->fHoehe                   = 0;
             $product->fLaenge                  = 0;
-            $product->cNeu                     = (10 === rand(0, 10)) ? 'Y' : 'N';
+            $product->cNeu                     = (10 === \rand(0, 10)) ? 'Y' : 'N';
             $product->cKurzBeschreibung        = $this->faker->text(50);
-            $product->fUVP                     = (10 === rand(0, 10)) ? ($price / 2) : 0;
-            $product->cLagerBeachten           = (10 === rand(0, 10)) ? 'Y' : 'N';
+            $product->fUVP                     = (10 === \rand(0, 10)) ? ($price / 2) : 0;
+            $product->cLagerBeachten           = (10 === \rand(0, 10)) ? 'Y' : 'N';
             $product->cLagerKleinerNull        = $product->cLagerBeachten;
             $product->cLagerVariation          = 'N';
             $product->cTeilbar                 = 'N';
-            $product->fPackeinheit             = (10 === rand(0, 10)) ? rand(1, 12) : 1;
+            $product->fPackeinheit             = (10 === \rand(0, 10)) ? \rand(1, 12) : 1;
             $product->fAbnahmeintervall        = 0;
             $product->fZulauf                  = 0;
             $product->cVPE                     = 'N';
@@ -710,7 +680,7 @@ class DemoDataInstaller
                 $productCategory                    = new \stdClass();
                 $productCategory->kKategorieArtikel = $product->kArtikel;
                 $productCategory->kArtikel          = $product->kArtikel;
-                $productCategory->kKategorie        = rand(1, $categoryCount);
+                $productCategory->kKategorie        = \rand(1, $categoryCount);
                 $this->pdo->insert('tkategorieartikel', $productCategory);
 
                 $seoItem       = new \stdClass();
@@ -725,7 +695,7 @@ class DemoDataInstaller
                     'cSeo',
                     $seoItem->cSeo
                 )) !== false
-                    && is_array($data)
+                    && \is_array($data)
                     && count($data) > 0
                 ) {
                     $seoItem->cSeo = $product->cSeo . '_' . ++$seo_index;
@@ -777,11 +747,11 @@ class DemoDataInstaller
         $limit  = $this->config['customers'];
         $fake   = $this->faker;
         $pdo    = $this->pdo;
-        $secret = BLOWFISH_KEY;
+        $secret = \BLOWFISH_KEY;
         $oXTEA  = new \XTEA($secret);
 
         for ($i = 1; $i <= $limit; ++$i) {
-            if (rand(0, 1) === 0) {
+            if (\rand(0, 1) === 0) {
                 $firstName = $fake->firstNameMale;
                 $gender    = 'm';
             } else {
@@ -790,12 +760,12 @@ class DemoDataInstaller
             }
             $lastName      = $fake->lastName;
             $streetName    = $fake->streetName;
-            $houseNr       = rand(1, 200);
+            $houseNr       = \rand(1, 200);
             $cityName      = $fake->city;
             $postcode      = $fake->postcode;
             $email         = $fake->email;
             $dateofbirth   = $fake->date('Y-m-d', '1998-12-31');
-            $password      = password_hash('pass', PASSWORD_DEFAULT);
+            $password      = \password_hash('pass', \PASSWORD_DEFAULT);
             $streetNameEnc = $oXTEA->encrypt($streetName);
             $lastNameEnc   = $oXTEA->encrypt($lastName);
             $lastName      = $fake->lastName;
@@ -857,7 +827,7 @@ class DemoDataInstaller
         $font     = $this->getFontFile();
         $filepath = $this->faker->imageFile(null, $width, $height, 'jpg', true, $string, null, null, $font);
 
-        return $filepath !== null && rename($filepath, $path);
+        return $filepath !== null && \rename($filepath, $path);
     }
 
     /**
@@ -896,7 +866,7 @@ class DemoDataInstaller
         )->maxPk;
 
         if ($productID > 0) {
-            $file = '1024_1024_' . md5($string . $productID . $imageNumber) . '.jpg';
+            $file = '1024_1024_' . \md5($string . $productID . $imageNumber) . '.jpg';
             $path = PFAD_ROOT . 'media/image/storage/' . $file;
 
             if ($this->createImage($path, $string, 1024, 1024) === true) {
@@ -922,12 +892,12 @@ class DemoDataInstaller
             $file = $this->slug($string) . '.jpg';
             $path = PFAD_ROOT . 'bilder/kategorien/' . $file;
             if ($this->createImage($path, $string, 200, 200) === true) {
-                $pathStorage = PFAD_ROOT . 'media/images/storage/categories/' . $file;
+                $pathStorage = PFAD_ROOT . 'media/image/storage/categories/' . $file;
                 $this->createImage($pathStorage, $string, 800, 800);
-                $_image             = new \stdClass();
-                $_image->kKategorie = $categoryID;
-                $_image->cPfad      = $file;
-                $this->pdo->insert('tkategoriepict', $_image);
+                $image             = new \stdClass();
+                $image->kKategorie = $categoryID;
+                $image->cPfad      = $file;
+                $this->pdo->insert('tkategoriepict', $image);
             }
         }
     }
@@ -944,11 +914,11 @@ class DemoDataInstaller
             $rating->kKunde          = 0;
             $rating->kSprache        = 1; //@todo: rand(0, 1)?
             $rating->cName           = $this->faker->name;
-            $rating->cTitel          = addcslashes($this->faker->realText(75), '\'"');
+            $rating->cTitel          = \addcslashes($this->faker->realText(75), '\'"');
             $rating->cText           = $this->faker->text(100);
-            $rating->nHilfreich      = rand(0, 10);
-            $rating->nNichtHilfreich = rand(0, 10);
-            $rating->nSterne         = rand(1, 5);
+            $rating->nHilfreich      = \rand(0, 10);
+            $rating->nNichtHilfreich = \rand(0, 10);
+            $rating->nSterne         = \rand(1, 5);
             $rating->nAktiv          = 1;
             $rating->dDatum          = 'now()';
 
@@ -993,7 +963,7 @@ class DemoDataInstaller
      * @param string $text
      * @return string
      */
-    private function slug($text)
+    private function slug($text): string
     {
         return $this->slugify->slugify($text);
     }
@@ -1003,11 +973,11 @@ class DemoDataInstaller
      */
     private function callback(): void
     {
-        $arguments = func_get_args();
-        $cb        = array_shift($arguments);
+        $arguments = \func_get_args();
+        $cb        = \array_shift($arguments);
 
-        if ($cb !== null && is_callable($cb)) {
-            call_user_func_array($cb, $arguments);
+        if ($cb !== null && \is_callable($cb)) {
+            \call_user_func_array($cb, $arguments);
         }
     }
 

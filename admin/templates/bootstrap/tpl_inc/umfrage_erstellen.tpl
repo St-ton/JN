@@ -83,8 +83,8 @@ function clearInput(inputField) {ldelim}
                                     data-size="7">
                                 <option value="-1" {if isset($oUmfrage->kKundengruppe_arr)}{foreach $oUmfrage->kKundengruppe_arr as $kKundengruppe}{if $kKundengruppe == '-1'}selected{/if}{/foreach}{/if}>{__('all')}</option>
                                 <option data-divider="true"></option>
-                                {foreach $oKundengruppe_arr as $oKundengruppe}
-                                    <option value="{$oKundengruppe->kKundengruppe}" {if isset($oUmfrage->kKundengruppe_arr)}{foreach $oUmfrage->kKundengruppe_arr as $kKundengruppe}{if $oKundengruppe->kKundengruppe == $kKundengruppe}selected{/if}{/foreach}{/if}>{$oKundengruppe->cName}</option>
+                                {foreach $customerGroups as $customerGroup}
+                                    <option value="{$customerGroup->getID()}" {if isset($oUmfrage->kKundengruppe_arr)}{foreach $oUmfrage->kKundengruppe_arr as $kKundengruppe}{if $customerGroup->getID() === (int)$kKundengruppe}selected{/if}{/foreach}{/if}>{$customerGroup->getName()}</option>
                                 {/foreach}
                             </select>
                         </div>

@@ -15,7 +15,6 @@ use JTL\Helpers\Text;
 use JTL\Helpers\URL;
 use JTL\Language\LanguageHelper;
 use JTL\Media\Image;
-use JTL\Media\Image\Product;
 use JTL\Media\MultiSizeImage;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -158,7 +157,7 @@ class Kategorie
      */
     public function __construct(int $id = 0, int $languageID = 0, int $customerGroupID = 0, bool $noCache = false)
     {
-        $this->setType(Image::TYPE_CATEGORY);
+        $this->setImageType(Image::TYPE_CATEGORY);
         if ($id > 0) {
             $this->loadFromDB($id, $languageID, $customerGroupID, false, $noCache);
         }

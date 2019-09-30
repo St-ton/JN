@@ -11,6 +11,7 @@ use JTL\Backend\NotificationEntry;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Events\Dispatcher;
+use JTL\Link\LinkInterface;
 use JTL\Smarty\JTLSmarty;
 
 /**
@@ -74,7 +75,7 @@ abstract class Bootstrapper implements BootstrapperInterface
     /**
      * @inheritdoc
      */
-    final public function addNotify($type, $title, $description = null)
+    final public function addNotify($type, $title, $description = null): void
     {
         $this->notifications[] = (new NotificationEntry($type, $title, $description))->setPluginId($this->pluginId);
     }
@@ -89,7 +90,7 @@ abstract class Bootstrapper implements BootstrapperInterface
     /**
      * @inheritdoc
      */
-    public function uninstalled()
+    public function uninstalled(bool $deleteData = true)
     {
     }
 
@@ -160,5 +161,13 @@ abstract class Bootstrapper implements BootstrapperInterface
     public function renderAdminMenuTab(string $tabName, int $menuID, JTLSmarty $smarty): string
     {
         return '';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function prepareFrontend(LinkInterface $link, JTLSmarty $smarty): bool
+    {
+        return false;
     }
 }

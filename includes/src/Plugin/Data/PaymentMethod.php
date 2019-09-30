@@ -8,7 +8,6 @@ namespace JTL\Plugin\Data;
 
 use JTL\MagicCompatibilityTrait;
 use JTL\Plugin\PluginInterface;
-use JTL\Shop;
 use stdClass;
 
 /**

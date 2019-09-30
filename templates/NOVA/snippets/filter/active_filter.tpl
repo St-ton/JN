@@ -35,9 +35,10 @@
                 {/if}
             {/foreach}
             {if $NaviFilter->getURL()->getUnsetAll() !== null}
-                <br/>
-                {link href=$NaviFilter->getURL()->getUnsetAll() title="{lang key='removeFilters'}"}
-                {lang key='removeFilters'}
+                {link href=$NaviFilter->getURL()->getUnsetAll()
+                    title="{lang key='removeFilters'}"
+                    class='text-decoration-none d-inline-block'}
+                    {lang key='removeFilters'}
                 {/link}
             {/if}
         </div>

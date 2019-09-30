@@ -11,6 +11,8 @@ use Illuminate\Support\Collection;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\MagicCompatibilityTrait;
+use JTL\Media\Image;
+use JTL\Media\MultiSizeImage;
 use JTL\Shop;
 use stdClass;
 use function Functional\flatten;
@@ -22,7 +24,8 @@ use function Functional\map;
  */
 class Category implements CategoryInterface
 {
-    use MagicCompatibilityTrait;
+    use MagicCompatibilityTrait,
+        MultiSizeImage;
 
     /**
      * @var array
@@ -152,6 +155,7 @@ class Category implements CategoryInterface
         $this->items            = new Collection();
         $this->children         = new Collection();
         $this->dateLastModified = \date_create();
+        $this->setImageType(Image::TYPE_NEWSCATEGORY);
     }
 
     /**
@@ -205,8 +209,10 @@ class Category implements CategoryInterface
             $this->level                     = (int)$groupLanguage->lvl;
             $this->lft                       = (int)$groupLanguage->lft;
             $this->rght                      = (int)$groupLanguage->rght;
-
-            $this->seo[$langID] = $groupLanguage->cSeo;
+            $this->seo[$langID]              = $groupLanguage->cSeo;
+        }
+        if (($preview = $this->getPreviewImage()) !== '') {
+            $this->generateAllImageSizes(true, 1, \str_replace(\PFAD_NEWSKATEGORIEBILDER, '', $preview));
         }
         $this->items = (new ItemList($this->db))->createItems(map(flatten($this->db->queryPrepared(
             'SELECT kNews

@@ -49,3 +49,6 @@ msgstr "Sind Sie sicher, dass Sie alle genannten Dateien löschen möchten? Stel
 
 msgid "backupText"
 msgstr "Backup unter %s erstellt und %d Dateien gelöscht."
+
+msgid "showDeleteScript"
+msgstr "Script generieren"

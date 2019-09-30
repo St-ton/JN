@@ -8,6 +8,7 @@ use Illuminate\Support\Collection;
 use JTL\Alert\Alert;
 use JTL\Checkout\Versandart;
 use JTL\Country\Country;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -371,10 +372,7 @@ if ($step === 'neue Versandart') {
         ))
         ->assign('versandberechnung', $shippingType)
         ->assign('waehrung', $defaultCurrency->cName)
-        ->assign('kundengruppen', $db->query(
-            'SELECT kKundengruppe, cName FROM tkundengruppe ORDER BY kKundengruppe',
-            ReturnType::ARRAY_OF_OBJECTS
-        ))
+        ->assign('customerGroups', CustomerGroup::getGroups())
         ->assign('oVersandartSpracheAssoc_arr', getShippingLanguage($tmpID, $languages))
         ->assign('gesetzteVersandklassen', isset($shippingMethod->cVersandklassen)
             ? gibGesetzteVersandklassen($shippingMethod->cVersandklassen)

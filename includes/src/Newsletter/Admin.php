@@ -70,7 +70,7 @@ final class Admin
         if (empty($name)) {
             $checks['cName'] = 1;
         }
-        if (!\is_array($customerGroups) || count($customerGroups) === 0) {
+        if (!\is_array($customerGroups) || \count($customerGroups) === 0) {
             $checks['kKundengruppe_arr'] = 1;
         }
         if (empty($subject)) {
@@ -109,7 +109,7 @@ final class Admin
      */
     public function mapDefaultTemplate($text, $stdVars, $noHTML = false)
     {
-        if (!\is_array($stdVars) || count($stdVars) === 0) {
+        if (!\is_array($stdVars) || \count($stdVars) === 0) {
             return $text;
         }
         foreach ($stdVars as $stdVar) {
@@ -249,16 +249,16 @@ final class Admin
                     );
                 }
 
-                if (isset($nlTplContent->cInhalt) && mb_strlen($nlTplContent->cInhalt) > 0) {
+                if (isset($nlTplContent->cInhalt) && \mb_strlen($nlTplContent->cInhalt) > 0) {
                     $defaultTpl->oNewslettervorlageStdVar_arr[$j]->cInhalt = \str_replace(
                         \NEWSLETTER_STD_VORLAGE_URLSHOP,
                         Shop::getURL() . '/',
                         $nlTplContent->cInhalt
                     );
-                    if (isset($nlTplContent->cLinkURL) && mb_strlen($nlTplContent->cLinkURL) > 0) {
+                    if (isset($nlTplContent->cLinkURL) && \mb_strlen($nlTplContent->cLinkURL) > 0) {
                         $defaultTpl->oNewslettervorlageStdVar_arr[$j]->cLinkURL = $nlTplContent->cLinkURL;
                     }
-                    if (isset($nlTplContent->cAltTag) && mb_strlen($nlTplContent->cAltTag) > 0) {
+                    if (isset($nlTplContent->cAltTag) && \mb_strlen($nlTplContent->cAltTag) > 0) {
                         $defaultTpl->oNewslettervorlageStdVar_arr[$j]->cAltTag = $nlTplContent->cAltTag;
                     }
                 } else {
@@ -294,7 +294,7 @@ final class Admin
             $post['cArt']
         );
 
-        if (!\is_array($checks) || count($checks) !== 0) {
+        if (!\is_array($checks) || \count($checks) !== 0) {
             return $checks;
         }
         $day         = $post['dTag'];
@@ -311,7 +311,7 @@ final class Admin
         $customerGroupIDs = ';' . \implode(';', $post['kKundengruppe']) . ';';
         if (isset($defaultTpl->oNewslettervorlageStdVar_arr)
             && \is_array($defaultTpl->oNewslettervorlageStdVar_arr)
-            && count($defaultTpl->oNewslettervorlageStdVar_arr) > 0
+            && \count($defaultTpl->oNewslettervorlageStdVar_arr) > 0
         ) {
             foreach ($defaultTpl->oNewslettervorlageStdVar_arr as $i => $nlTplStdVar) {
                 if ($nlTplStdVar->cTyp === 'TEXT') {
@@ -381,7 +381,7 @@ final class Admin
         if ($templateID > 0
             && isset($defaultTpl->oNewslettervorlageStdVar_arr)
             && \is_array($defaultTpl->oNewslettervorlageStdVar_arr)
-            && count($defaultTpl->oNewslettervorlageStdVar_arr) > 0
+            && \count($defaultTpl->oNewslettervorlageStdVar_arr) > 0
         ) {
             $this->db->delete(
                 'tnewslettervorlagestdvarinhalt',
@@ -396,7 +396,7 @@ final class Admin
                         \mkdir($uploadDir . $templateID);
                     }
                     $idx = 'kNewslettervorlageStdVar_' . $nlTplStdVar->kNewslettervorlageStdVar;
-                    if (isset($_FILES[$idx]['name']) && mb_strlen($_FILES[$idx]['name']) > 0) {
+                    if (isset($_FILES[$idx]['name']) && \mb_strlen($_FILES[$idx]['name']) > 0) {
                         $file = $uploadDir . $templateID .
                             '/kNewslettervorlageStdVar_' . $nlTplStdVar->kNewslettervorlageStdVar .
                             $this->mapFileType($_FILES['kNewslettervorlageStdVar_' .
@@ -408,10 +408,10 @@ final class Admin
                             $_FILES['kNewslettervorlageStdVar_' . $nlTplStdVar->kNewslettervorlageStdVar]['tmp_name'],
                             $file
                         );
-                        if (isset($post['cLinkURL']) && mb_strlen($post['cLinkURL']) > 0) {
+                        if (isset($post['cLinkURL']) && \mb_strlen($post['cLinkURL']) > 0) {
                             $defaultTpl->oNewslettervorlageStdVar_arr[$i]->cLinkURL = $post['cLinkURL'];
                         }
-                        if (isset($post['cAltTag']) && mb_strlen($post['cAltTag']) > 0) {
+                        if (isset($post['cAltTag']) && \mb_strlen($post['cAltTag']) > 0) {
                             $defaultTpl->oNewslettervorlageStdVar_arr[$i]->cAltTag = $post['cAltTag'];
                         }
                         $defaultTpl->oNewslettervorlageStdVar_arr[$i]->cInhalt =
@@ -434,10 +434,10 @@ final class Admin
                 } elseif ($nlTplStdVar->cTyp === 'BILD') {
                     if ($imageExists) {
                         $nlTplContent->cInhalt = $defaultTpl->oNewslettervorlageStdVar_arr[$i]->cInhalt;
-                        if (isset($post['cLinkURL']) && mb_strlen($post['cLinkURL']) > 0) {
+                        if (isset($post['cLinkURL']) && \mb_strlen($post['cLinkURL']) > 0) {
                             $nlTplContent->cLinkURL = $post['cLinkURL'];
                         }
-                        if (isset($post['cAltTag']) && mb_strlen($post['cAltTag']) > 0) {
+                        if (isset($post['cAltTag']) && \mb_strlen($post['cAltTag']) > 0) {
                             $nlTplContent->cAltTag = $post['cAltTag'];
                         }
                         $upd              = new stdClass();
@@ -458,10 +458,10 @@ final class Admin
                         );
                     } else {
                         $nlTplContent->cInhalt = $nlTplStdVar->cInhalt;
-                        if (isset($post['cLinkURL']) && mb_strlen($post['cLinkURL']) > 0) {
+                        if (isset($post['cLinkURL']) && \mb_strlen($post['cLinkURL']) > 0) {
                             $nlTplContent->cLinkURL = $post['cLinkURL'];
                         }
-                        if (isset($post['cAltTag']) && mb_strlen($post['cAltTag']) > 0) {
+                        if (isset($post['cAltTag']) && \mb_strlen($post['cAltTag']) > 0) {
                             $nlTplContent->cAltTag = $post['cAltTag'];
                         }
                     }
@@ -491,7 +491,7 @@ final class Admin
             $post['cText']
         );
 
-        if (\is_array($checks) && count($checks) === 0) {
+        if (\is_array($checks) && \count($checks) === 0) {
             $day         = $post['dTag'];
             $month       = $post['dMonat'];
             $year        = $post['dJahr'];
@@ -584,7 +584,7 @@ final class Admin
         if (empty($name)) {
             $checks['cName'] = 1;
         }
-        if (!\is_array($customerGroups) || count($customerGroups) === 0) {
+        if (!\is_array($customerGroups) || \count($customerGroups) === 0) {
             $checks['kKundengruppe_arr'] = 1;
         }
         if (empty($subject)) {
@@ -613,7 +613,7 @@ final class Admin
         $productData               = new stdClass();
         $productData->kArtikel_arr = [];
         $productData->cArtNr_arr   = [];
-        if (\is_array($productIDs) && count($productIDs) > 0) {
+        if (\is_array($productIDs) && \count($productIDs) > 0) {
             foreach ($productIDs as $item) {
                 if ($item) {
                     $productData->kArtikel_arr[] = $item;
@@ -622,7 +622,7 @@ final class Admin
             // hole zu den kArtikeln die passende cArtNr
             foreach ($productData->kArtikel_arr as $kArtikel) {
                 $cArtNr = $this->getProductNo((int)$kArtikel);
-                if (mb_strlen($cArtNr) > 0) {
+                if (\mb_strlen($cArtNr) > 0) {
                     $productData->cArtNr_arr[] = $cArtNr;
                 }
             }
@@ -632,14 +632,14 @@ final class Admin
     }
 
     /**
-     * @param string $cKundengruppe
+     * @param string $groupString
      * @return array
      */
-    public function getCustomerGroupData($cKundengruppe): array
+    public function getCustomerGroupData(string $groupString): array
     {
         $groupIDs = [];
-        foreach (\explode(';', $cKundengruppe) as $item) {
-            if (mb_strlen($item) > 0) {
+        foreach (\explode(';', $groupString) as $item) {
+            if (\mb_strlen($item) > 0) {
                 $groupIDs[] = $item;
             }
         }
@@ -648,19 +648,18 @@ final class Admin
     }
 
     /**
-     * @param int $kArtikel
+     * @param int $productID
      * @return string
      */
-    private function getProductNo(int $kArtikel): string
+    private function getProductNo(int $productID): string
     {
-        $cArtNr   = '';
-        $oArtikel = null;
-
-        if ($kArtikel > 0) {
-            $oArtikel = $this->db->select('tartikel', 'kArtikel', $kArtikel);
+        $artNo   = '';
+        $product = null;
+        if ($productID > 0) {
+            $product = $this->db->select('tartikel', 'kArtikel', $productID);
         }
 
-        return $oArtikel->cArtNr ?? $cArtNr;
+        return $product->cArtNr ?? $artNo;
     }
 
     /**
@@ -669,25 +668,25 @@ final class Admin
      */
     public function activateSubscribers($recipientIDs): bool
     {
-        if (!\is_array($recipientIDs) || count($recipientIDs) === 0) {
+        if (!\is_array($recipientIDs) || \count($recipientIDs) === 0) {
             return false;
         }
         $where      = ' IN (' . \implode(',', \array_map('\intval', $recipientIDs)) . ')';
         $recipients = $this->db->query(
             'SELECT *
-            FROM tnewsletterempfaenger
-            WHERE kNewsletterEmpfaenger' .
+                FROM tnewsletterempfaenger
+                WHERE kNewsletterEmpfaenger' .
             $where,
             ReturnType::ARRAY_OF_OBJECTS
         );
 
-        if (count($recipients) === 0) {
+        if (\count($recipients) === 0) {
             return false;
         }
         $this->db->query(
             'UPDATE tnewsletterempfaenger
-            SET nAktiv = 1
-            WHERE kNewsletterEmpfaenger' . $where,
+                SET nAktiv = 1
+                WHERE kNewsletterEmpfaenger' . $where,
             ReturnType::AFFECTED_ROWS
         );
         foreach ($recipients as $recipient) {
@@ -720,24 +719,24 @@ final class Admin
      */
     public function deleteSubscribers($recipientIDs): bool
     {
-        if (!\is_array($recipientIDs) || count($recipientIDs) === 0) {
+        if (!\is_array($recipientIDs) || \count($recipientIDs) === 0) {
             return false;
         }
         $where      = ' IN (' . \implode(',', \array_map('\intval', $recipientIDs)) . ')';
         $recipients = $this->db->query(
             'SELECT *
-            FROM tnewsletterempfaenger
-            WHERE kNewsletterEmpfaenger' .
+                FROM tnewsletterempfaenger
+                WHERE kNewsletterEmpfaenger' .
             $where,
             ReturnType::ARRAY_OF_OBJECTS
         );
 
-        if (count($recipients) === 0) {
+        if (\count($recipients) === 0) {
             return false;
         }
         $this->db->query(
             'DELETE FROM tnewsletterempfaenger
-            WHERE kNewsletterEmpfaenger' . $where,
+                WHERE kNewsletterEmpfaenger' . $where,
             ReturnType::AFFECTED_ROWS
         );
         foreach ($recipients as $recipient) {
@@ -774,11 +773,11 @@ final class Admin
     public function getSubscriberCount($searchSQL): int
     {
         return (int)Shop::Container()->getDB()->query(
-            'SELECT COUNT(*) AS nAnzahl
+            'SELECT COUNT(*) AS cnt
                 FROM tnewsletterempfaenger
                 WHERE kSprache = ' . (int)$_SESSION['kSprache'] . $searchSQL->cWHERE,
             ReturnType::SINGLE_OBJECT
-        )->nAnzahl;
+        )->cnt;
     }
 
     /**
@@ -804,7 +803,8 @@ final class Admin
                 LEFT JOIN tnewsletterempfaengerhistory
                     ON tnewsletterempfaengerhistory.cEmail = tnewsletterempfaenger.cEmail
                       AND tnewsletterempfaengerhistory.cAktion = 'Eingetragen'
-                LEFT JOIN toptin ON toptin.cMail = tnewsletterempfaenger.cEmail
+                LEFT JOIN toptin 
+                    ON toptin.cMail = tnewsletterempfaenger.cEmail
                 WHERE tnewsletterempfaenger.kSprache = " . (int)$_SESSION['kSprache'] .
             $searchSQL->cWHERE . '
                 ORDER BY tnewsletterempfaenger.dEingetragen DESC' . $limitSQL,

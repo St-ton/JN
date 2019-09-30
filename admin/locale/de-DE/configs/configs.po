@@ -1748,6 +1748,24 @@ msgstr "Bildnamen von Variationsbildern"
 msgid "bilder_variation_namen_desc"
 msgstr "Hier legen Sie fest, wie der Name der Bilddateien für Variationen erzeugt werden soll."
 
+msgid "bilder_hersteller_namen_name"
+msgstr "Bildnamen von Herstellerbildern"
+
+msgid "bilder_hersteller_namen_desc"
+msgstr "Hier legen Sie fest, wie der Name der Bilddateien für Hersteller erzeugt werden soll."
+
+msgid "bilder_merkmal_namen_name"
+msgstr "Bildnamen von Merkmalbildern"
+
+msgid "bilder_merkmal_namen_desc"
+msgstr "Hier legen Sie fest, wie der Name der Bilddateien für Merkmale erzeugt werden soll."
+
+msgid "bilder_merkmalwert_namen_name"
+msgstr "Bildnamen von Merkmalwertbildern"
+
+msgid "bilder_merkmalwert_namen_desc"
+msgstr "Hier legen Sie fest, wie der Name der Bilddateien für Merkmalwerte erzeugt werden soll."
+
 msgid "bilder_externe_bildschnittstelle_name"
 msgstr "Externe Bildschnittstelle aktivieren"
 

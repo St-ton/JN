@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -6,7 +6,6 @@
 
 namespace JTL\OPC;
 
-use Intervention\Image\ImageManager;
 use JTL\Helpers\GeneralObject;
 use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;
@@ -77,17 +76,12 @@ class PortletInstance implements \JsonSerializable
     protected $subareaList;
 
     /**
-     * @var string
-     */
-    public $currentImagePath;
-
-    /**
      * PortletInstance constructor.
      * @param Portlet $portlet
      */
     public function __construct(Portlet $portlet)
     {
-        $this->setType(Image::TYPE_OPC);
+        $this->setImageType(Image::TYPE_OPC);
         $this->portlet     = $portlet;
         $this->properties  = $portlet->getDefaultProps();
         $this->subareaList = new AreaList();
@@ -487,65 +481,55 @@ class PortletInstance implements \JsonSerializable
         $srcsizes = '';
 
         if (empty($src)) {
-            $src = $default ?? '';
-
             return [
-                'srcset'   => $srcset,
-                'srcsizes' => $srcsizes,
-                'src'      => $src,
+                'srcset'   => '',
+                'srcsizes' => '',
+                'src'      => $default ?? '',
                 'alt'      => $alt,
                 'title'    => $title,
             ];
         }
 
-        $name            = \basename($src);
-        $decodedName     = \rawurldecode($name);
-        $widthHeuristics = $this->widthHeuristics;
-        $srcImgPath      = \PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $decodedName;
-        $this->currentImagePath = $srcImgPath;
-        $this->generateAllImageSizes(true, 1, $this->currentImagePath);
+        $decodedName = \rawurldecode(\basename($src));
+        $this->generateAllImageSizes(true, 1, \PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $decodedName);
         foreach ($this->getImages() as $size => $i) {
-            $width = self::$dirSizes[$size];
+            $width = self::$dirSizes[$size] ?? null;
             if ($width !== null) {
                 $srcset .= $i . ' ' . $width . 'w,';
             }
         }
-
         $srcset = \mb_substr($srcset, 0, -1); // remove trailing comma
+        foreach ($this->widthHeuristics as $breakpoint => $col) {
+            if (!empty($col)) {
+                $factor = 1;
 
-        if (\is_array($widthHeuristics)) {
-            foreach ($widthHeuristics as $breakpoint => $col) {
-                if (!empty($col)) {
-                    $factor = 1;
+                if (\is_array($divisor) && !empty($divisor[$breakpoint])) {
+                    $factor = (float)($divisor[$breakpoint] / 12);
+                }
 
-                    if (\is_array($divisor) && !empty($divisor[$breakpoint])) {
-                        $factor = (float)($divisor[$breakpoint] / 12);
-                    }
-
-                    switch ($breakpoint) {
-                        case 'xs':
-                            $breakpoint = 767;
-                            $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
-                                . (int)($col * 100 * $factor) . 'vw, ';
-                            break;
-                        case 'sm':
-                            $breakpoint = 991;
-                            $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
-                                . (int)($col * $breakpoint * $factor) . 'px, ';
-                            break;
-                        case 'md':
-                            $breakpoint = 1199;
-                            $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
-                                . (int)($col * $breakpoint * $factor) . 'px, ';
-                            break;
-                        case 'lg':
-                            $breakpoint = 1200;
-                            $srcsizes  .= '(min-width: ' . $breakpoint . 'px) '
-                                . (int)($col * $breakpoint * $factor) . 'px, ';
-                            break;
-                        default:
-                            break;
-                    }
+                switch ($breakpoint) {
+                    case 'xs':
+                        $breakpoint = 767;
+                        $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
+                            . (int)($col * 100 * $factor) . 'vw, ';
+                        break;
+                    case 'sm':
+                        $breakpoint = 991;
+                        $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
+                            . (int)($col * $breakpoint * $factor) . 'px, ';
+                        break;
+                    case 'md':
+                        $breakpoint = 1199;
+                        $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
+                            . (int)($col * $breakpoint * $factor) . 'px, ';
+                        break;
+                    case 'lg':
+                        $breakpoint = 1200;
+                        $srcsizes  .= '(min-width: ' . $breakpoint . 'px) '
+                            . (int)($col * $breakpoint * $factor) . 'px, ';
+                        break;
+                    default:
+                        break;
                 }
             }
         }
@@ -555,7 +539,7 @@ class PortletInstance implements \JsonSerializable
         return [
             'srcset'   => $srcset,
             'srcsizes' => $srcsizes,
-            'src'      => \PFAD_MEDIAFILES . 'Bilder/.md/' . $name,
+            'src'      => $this->getImage(),
             'alt'      => $alt,
             'title'    => $title,
         ];
@@ -601,11 +585,6 @@ class PortletInstance implements \JsonSerializable
         $this->setAttribute('title', $imageAttributes['title']);
 
         return $this;
-    }
-
-    public function getID()
-    {
-        return 1;
     }
 
     /**

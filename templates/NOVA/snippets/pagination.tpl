@@ -4,6 +4,7 @@
  *}
 {block name='snippets-pagination'}
     {assign var=cParam_arr value=$cParam_arr|default:[]}
+    {assign var=noWrapper value=$noWrapper|default:false}
     {assign var=cUrlAppend value=$cParam_arr|http_build_query}
     {* parts list to display: label, pagination, items-per-page-options, sort-options *}
     {assign var=parts value=$parts|default:['label','pagi','count','sort']}
@@ -23,7 +24,7 @@
 
     {get_static_route id=$cThisUrl assign=cThisUrl}
 
-    {row class="pagination-wrapper clearfix mb-3 align-items-end"}
+    {row class="{if $noWrapper === true}border-0 py-0{/if} pagination-wrapper clearfix mb-3 align-items-end"}
         {col cols="auto" class="ml-auto"}
             {row class="align-items-center"}
                 {if $oPagination->getPageCount() > 1}
@@ -34,47 +35,63 @@
                             {/col}
                         {/if}
                         {col cols="auto {if $showFilter === true && (in_array('count', $parts) || in_array('sort', $parts))}border-right{/if}"}
-                            {buttongroup class="pagination-group"}
+                            {nav tag='nav' aria=["label"=>"pagination"]}
+                            <ul class="pagination mb-0">
                                 {if in_array('pagi', $parts)}
                                     {if $oPagination->getPage() > 0}
-                                        {link class="btn btn-link"
-                                            href="{$cThisUrl}?{$oPagination->getId()}_nPage={$oPagination->getPrevPage()}{$cUrlAppend}{$cAnchor}"
-                                            aria=["label"=>{lang key='previous'}]
-                                        }
-                                            <i class="fas fa-long-arrow-alt-left"></i>
-                                        {/link}
+                                        <li class="page-item">
+                                            {link class="page-link"
+                                                href="{$cThisUrl}?{$oPagination->getId()}_nPage={$oPagination->getPrevPage()}{$cUrlAppend}{$cAnchor}"
+                                                aria=["label"=>{lang key='previous'}]
+                                            }
+                                                &#8592;
+                                            {/link}
+                                        </li>
                                     {/if}
                                     {if $oPagination->getLeftRangePage() > 0}
-                                        {link class="page-link"  href="{$cThisUrl}?{$oPagination->getId()}_nPage=0{$cUrlAppend}{$cAnchor}"}
-                                            1
-                                        {/link}
+                                        <li class="page-item">
+                                            {link class="page-link"  href="{$cThisUrl}?{$oPagination->getId()}_nPage=0{$cUrlAppend}{$cAnchor}"}
+                                                1
+                                            {/link}
+                                        </li>
                                     {/if}
                                     {if $oPagination->getLeftRangePage() > 1}
-                                        {button variant="link" href="#" disabled=true}&hellip;{/button}
+                                        <li class="page-item">
+                                            <span class="page-text">&hellip;</span>
+                                        </li>
                                     {/if}
                                     {for $i=$oPagination->getLeftRangePage() to $oPagination->getRightRangePage()}
-                                        {link class="page-link {if $oPagination->getPage() === $i}active{elseif $i > 0 && $i < $oPagination->getPageCount() - 1}d-none d-sm-block{/if}" href="{$cThisUrl}?{$oPagination->getId()}_nPage={$i}{$cUrlAppend}{$cAnchor}"}
-                                            {$i+1}
-                                        {/link}
+                                        <li class="page-item">
+                                            {link class="page-link {if $oPagination->getPage() === $i}active{elseif $i > 0 && $i < $oPagination->getPageCount() - 1}d-none d-sm-block{/if}" href="{$cThisUrl}?{$oPagination->getId()}_nPage={$i}{$cUrlAppend}{$cAnchor}"}
+                                                {$i+1}
+                                            {/link}
+                                        </li>
                                     {/for}
                                     {if $oPagination->getRightRangePage() < $oPagination->getPageCount() - 2}
-                                        {button variant="link" href="#" disabled=true}&hellip;{/button}
+                                        <li class="page-item">
+                                            <span class="page-text">&hellip;</span>
+                                        </li>
                                     {/if}
                                     {if $oPagination->getRightRangePage() < $oPagination->getPageCount() - 1}
-                                        {link class="page-link" href="{$cThisUrl}?{$oPagination->getId()}_nPage={$oPagination->getPageCount() - 1}{$cUrlAppend}{$cAnchor}"}
-                                            {$oPagination->getPageCount()}
-                                        {/link}
+                                        <li class="page-item">
+                                            {link class="page-link" href="{$cThisUrl}?{$oPagination->getId()}_nPage={$oPagination->getPageCount() - 1}{$cUrlAppend}{$cAnchor}"}
+                                                {$oPagination->getPageCount()}
+                                            {/link}
+                                        </li>
                                     {/if}
                                     {if $oPagination->getPage() < $oPagination->getPageCount() - 1}
-                                        {link class="btn btn-link"
-                                            href="{$cThisUrl}?{$oPagination->getId()}_nPage={$oPagination->getNextPage()}{$cUrlAppend}{$cAnchor}"
-                                            aria=["label"=>{lang key='next'}]
-                                        }
-                                            <i class="fas fa-long-arrow-alt-right"></i>
-                                        {/link}
+                                        <li class="page-item">
+                                            {link class="page-link"
+                                                href="{$cThisUrl}?{$oPagination->getId()}_nPage={$oPagination->getNextPage()}{$cUrlAppend}{$cAnchor}"
+                                                aria=["label"=>{lang key='next'}]
+                                            }
+                                                &#8594;
+                                            {/link}
+                                        </li>
                                     {/if}
                                 {/if}
-                            {/buttongroup}
+                            </ul>
+                            {/nav}
                         {/col}
                     {/if}
                 {else}

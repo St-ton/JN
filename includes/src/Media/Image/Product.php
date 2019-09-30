@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -6,191 +6,49 @@
 
 namespace JTL\Media\Image;
 
-use Exception;
-use FilesystemIterator;
 use Generator;
-use InvalidArgumentException;
+use JTL\Catalog\Product\Artikel;
+use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Media\Image;
-use JTL\Media\IMedia;
 use JTL\Media\MediaImageRequest;
 use JTL\Shop;
 use PDO;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
 use stdClass;
-use function Functional\select;
 
 /**
  * Class Product
  * @package JTL\Media\Image
  */
-class Product extends AbstractImage implements IMedia
+class Product extends AbstractImage
 {
+    public const TYPE = Image::TYPE_PRODUCT;
+
+    /**
+     * @var string
+     */
     protected $regEx = \MEDIAIMAGE_REGEX;
 
     /**
-     * @param string $type
-     * @param bool   $filesize
-     * @return stdClass
-     * @throws Exception
+     * @inheritdoc
      */
-    public static function getStats($type, bool $filesize = false): stdClass
-    {
-        $result = (object)[
-            'total'         => 0,
-            'corrupted'     => 0,
-            'fallback'      => 0,
-            'generated'     => [
-                Image::SIZE_ORIGINAL => 0,
-                Image::SIZE_XS       => 0,
-                Image::SIZE_SM       => 0,
-                Image::SIZE_MD       => 0,
-                Image::SIZE_LG       => 0,
-            ],
-            'totalSize'     => 0,
-            'generatedSize' => [
-                Image::SIZE_ORIGINAL => 0,
-                Image::SIZE_XS       => 0,
-                Image::SIZE_SM       => 0,
-                Image::SIZE_MD       => 0,
-                Image::SIZE_LG       => 0,
-            ],
-        ];
-        foreach (self::getProductImages() as $image) {
-            $raw = $image->getRaw(true);
-            ++$result->total;
-            if (\file_exists($raw)) {
-                foreach (Image::getAllSizes() as $size) {
-                    $thumb = $image->getThumb($size, true);
-                    if (!\file_exists($thumb)) {
-                        continue;
-                    }
-                    ++$result->generated[$size];
-                    if ($filesize === true) {
-                        $result->generatedSize[$size] = \filesize($thumb);
-                        $result->totalSize           += $result->generatedSize[$size];
-                    }
-                }
-            } elseif (\file_exists(\PFAD_ROOT . $image->getFallbackThumb(Image::SIZE_XS))) {
-                ++$result->fallback;
-            } else {
-                ++$result->corrupted;
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * @param string   $type
-     * @param null|int $id
-     */
-    public static function clearCache($type, $id = null): void
-    {
-        $directory = \PFAD_ROOT . MediaImageRequest::getCachePath($type);
-        if ($id !== null) {
-            $directory .= '/' . (int)$id;
-        }
-
-        try {
-            $rdi = new RecursiveDirectoryIterator(
-                $directory,
-                FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS
-            );
-            foreach (new RecursiveIteratorIterator($rdi, RecursiveIteratorIterator::CHILD_FIRST) as $value) {
-                $value->isFile()
-                    ? \unlink($value)
-                    : \rmdir($value);
-            }
-
-            if ($id !== null) {
-                \rmdir($directory);
-            }
-        } catch (Exception $e) {
-        }
-    }
-
-    /**
-     * @param string $imageUrl
-     * @return MediaImageRequest
-     */
-    public static function toRequest($imageUrl): MediaImageRequest
-    {
-        $self = new self();
-
-        return $self->create($imageUrl);
-    }
-
-    /**
-     * @param MediaImageRequest $req
-     * @return array
-     */
-    protected function getImageNames(MediaImageRequest $req): array
+    public static function getImageNames(MediaImageRequest $req): array
     {
         return Shop::Container()->getDB()->queryPrepared(
-            'SELECT kArtikel, cName, cSeo, cArtNr, cBarcode
-            FROM tartikel AS a
-            WHERE kArtikel = :pid
-            UNION SELECT asp.kArtikel, asp.cName, asp.cSeo, a.cArtNr, a.cBarcode
-                FROM tartikelsprache AS asp JOIN tartikel AS a ON asp.kArtikel = a.kArtikel
-                WHERE asp.kArtikel = :pid',
-            ['pid' => $req->id],
-            ReturnType::ARRAY_OF_OBJECTS
-        );
+            'SELECT kArtikel, cName, cSeo, cSeo AS originalSeo, cArtNr, cBarcode
+                FROM tartikel
+                WHERE kArtikel = :pid',
+            ['pid' => $req->getID()],
+            ReturnType::COLLECTION
+        )->map(function ($item) {
+            return self::getCustomName($item);
+        })->toArray();
     }
 
     /**
-     * @param MediaImageRequest $req
-     * @param bool              $overwrite
-     * @return array
+     * @inheritdoc
      */
-    public static function cacheImage(MediaImageRequest $req, bool $overwrite = false): array
-    {
-        $result   = [];
-        $rawImage = null;
-        $rawPath  = $req->getRaw(true);
-        if ($overwrite === true) {
-            self::clearCache($req->getType(), $req->getId());
-        }
-
-        foreach (Image::getAllSizes() as $size) {
-            $res = (object)[
-                'success'    => true,
-                'error'      => null,
-                'renderTime' => 0,
-                'cached'     => false,
-            ];
-            try {
-                $req->size   = $size;
-                $thumbPath   = $req->getThumb(null, true);
-                $res->cached = \is_file($thumbPath);
-                if ($res->cached === false) {
-                    $renderStart = \microtime(true);
-                    if ($rawImage === null && !\is_file($rawPath)) {
-                        throw new Exception(\sprintf('Image source "%s" does not exist', $rawPath));
-                    }
-                    Image::render($req);
-                    $res->renderTime = (\microtime(true) - $renderStart) * 1000;
-                }
-            } catch (Exception $e) {
-                $res->success = false;
-                $res->error   = $e->getMessage();
-            }
-            $result[$size] = $res;
-        }
-
-        if ($rawImage !== null) {
-            unset($rawImage);
-        }
-
-        return $result;
-    }
-
-    /**
-     * @return int
-     */
-    public static function getProductImageCount(): int
+    public static function getTotalImageCount(): int
     {
         return (int)Shop::Container()->getDB()->query(
             'SELECT COUNT(tartikelpict.kArtikel) AS cnt
@@ -202,19 +60,9 @@ class Product extends AbstractImage implements IMedia
     }
 
     /**
-     * @return int
+     * @inheritdoc
      */
-    public static function getUncachedProductImageCount(): int
-    {
-        return \count(select(self::getProductImages(), function (MediaImageRequest $e) {
-            return !self::isCached($e) && \file_exists($e->getRaw(true));
-        }));
-    }
-
-    /**
-     * @return Generator
-     */
-    public static function getProductImages(): Generator
+    public static function getAllImages(int $offset = null, int $limit = null): Generator
     {
         $cols = '';
         switch (Image::getSettings()['naming']['product']) {
@@ -222,10 +70,10 @@ class Product extends AbstractImage implements IMedia
                 $cols = ', tartikel.cArtNr';
                 break;
             case 2:
-                $cols = ', tartikel.cSeo, tartikel.cName';
+                $cols = ', tartikel.cSeo, tartikel.cSeo AS originalSeo, tartikel.cName';
                 break;
             case 3:
-                $cols = ', tartikel.cArtNr, tartikel.cSeo, tartikel.cName';
+                $cols = ', tartikel.cArtNr, tartikel.cSeo, tartikel.cSeo AS originalSeo, tartikel.cName';
                 break;
             case 4:
                 $cols = ', tartikel.cBarcode';
@@ -238,97 +86,75 @@ class Product extends AbstractImage implements IMedia
             'SELECT tartikelpict.cPfad AS path, tartikelpict.nNr AS number, tartikelpict.kArtikel ' . $cols . '
                 FROM tartikelpict
                 INNER JOIN tartikel
-                  ON tartikelpict.kArtikel = tartikel.kArtikel',
+                  ON tartikelpict.kArtikel = tartikel.kArtikel' . self::getLimitStatement($offset, $limit),
             ReturnType::QUERYSINGLE
         );
-
         while (($image = $images->fetch(PDO::FETCH_OBJ)) !== false) {
             yield MediaImageRequest::create([
-                'id'     => $image->kArtikel,
-                'type'   => Image::TYPE_PRODUCT,
-                'name'   => self::getCustomName($image),
-                'number' => $image->number,
-                'path'   => $image->path,
+                'id'         => $image->kArtikel,
+                'type'       => self::TYPE,
+                'name'       => self::getCustomName($image),
+                'number'     => $image->number,
+                'path'       => $image->path,
+                'sourcePath' => $image->path,
+                'ext'        => static::getFileExtension($image->path)
             ]);
         }
     }
 
     /**
-     * @param string   $type
-     * @param bool     $notCached
-     * @param int|null $offset
-     * @param int|null $limit
-     * @return MediaImageRequest[]
-     * @throws Exception
+     * @param Artikel $mixed
+     * @return string
      */
-    public static function getImages($type, bool $notCached = false, int $offset = null, int $limit = null): array
+    public static function getCustomName($mixed): string
     {
-        $requests = [];
-        // only select the necessary columns to save memory
-        $cols = '';
-        $conf = Image::getSettings();
-        switch ($conf['naming']['product']) {
+        switch (Image::getSettings()['naming']['product']) {
+            case 0:
+                $result = (string)$mixed->kArtikel;
+                break;
             case 1:
-                $cols = ', tartikel.cArtNr';
+                $result = $mixed->cArtNr;
                 break;
             case 2:
-                $cols = ', tartikel.cSeo, tartikel.cName';
+                $result = $mixed->originalSeo ?? $mixed->cSeo ?? $mixed->cName;
                 break;
             case 3:
-                $cols = ', tartikel.cArtNr, tartikel.cSeo, tartikel.cName';
+                $result = \sprintf('%s_%s', $mixed->cArtNr, empty($mixed->cSeo) ? $mixed->cName : $mixed->cSeo);
                 break;
             case 4:
-                $cols = ', tartikel.cBarcode';
+                $result = $mixed->cBarcode;
                 break;
-            case 0:
             default:
+                $result = 'image';
                 break;
         }
-        $limitStmt = '';
-        if ($limit !== null) {
-            $limitStmt = ' LIMIT ';
-            if ($offset !== null) {
-                $limitStmt .= (int)$offset . ', ';
-            }
-            $limitStmt .= (int)$limit;
-        }
-        $images = Shop::Container()->getDB()->query(
-            'SELECT tartikelpict.cPfad AS path, tartikelpict.nNr AS number, tartikelpict.kArtikel ' . $cols . '
-                FROM tartikelpict
-                INNER JOIN tartikel
-                  ON tartikelpict.kArtikel = tartikel.kArtikel' . $limitStmt,
-            ReturnType::QUERYSINGLE
-        );
 
-        while (($image = $images->fetch(PDO::FETCH_OBJ)) !== false) {
-            $req = MediaImageRequest::create([
-                'id'     => $image->kArtikel,
-                'type'   => $type,
-                'name'   => self::getCustomName($image),
-                'number' => $image->number,
-                'path'   => $image->path,
-            ]);
-
-            if ($notCached && self::isCached($req)) {
-                continue;
-            }
-
-            $requests[] = $req;
-        }
-
-        return $requests;
+        return empty($result) ? 'image' : Image::getCleanFilename($result);
     }
 
     /**
-     * @param MediaImageRequest $req
-     * @return bool
+     * @inheritdoc
      */
-    public static function isCached(MediaImageRequest $req): bool
+    public static function getPathByID($id, int $number = null): ?string
     {
-        return \file_exists($req->getThumb(Image::SIZE_XS, true))
-            && \file_exists($req->getThumb(Image::SIZE_SM, true))
-            && \file_exists($req->getThumb(Image::SIZE_MD, true))
-            && \file_exists($req->getThumb(Image::SIZE_LG, true));
+        return Shop::Container()->getDB()->queryPrepared(
+            'SELECT cPfad AS path
+                FROM tartikelpict
+                WHERE kArtikel = :pid
+                    AND nNr = :no
+                ORDER BY nNr
+                LIMIT 1',
+            ['pid' => $id, 'no' => $number],
+            ReturnType::SINGLE_OBJECT
+        )->path ?? null;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function getStoragePath(): string
+    {
+        return \PFAD_MEDIA_IMAGE_STORAGE;
     }
 
     /**
@@ -371,50 +197,10 @@ class Product extends AbstractImage implements IMedia
     }
 
     /**
-     * @param string $type
-     * @param int    $id
-     * @return int
-     */
-    public static function imageCount($type, int $id): int
-    {
-        if (($prepared = static::getImageStmt($type, $id)) === null) {
-            return 0;
-        }
-        $imageCount = Shop::Container()->getDB()->queryPrepared(
-            $prepared->stmt,
-            $prepared->bind,
-            ReturnType::AFFECTED_ROWS
-        );
-
-        return \is_numeric($imageCount) ? (int)$imageCount : 0;
-    }
-
-    /**
      * @inheritdoc
      */
-    public static function getCustomName($mixed): string
+    public static function imageIsUsed(DbInterface $db, string $path): bool
     {
-        switch (Image::getSettings()['naming']['product']) {
-            case 0:
-                $result = $mixed->kArtikel;
-                break;
-            case 1:
-                $result = $mixed->cArtNr;
-                break;
-            case 2:
-                $result = empty($mixed->cSeo) ? $mixed->cName : $mixed->cSeo;
-                break;
-            case 3:
-                $result = \sprintf('%s_%s', $mixed->cArtNr, empty($mixed->cSeo) ? $mixed->cName : $mixed->cSeo);
-                break;
-            case 4:
-                $result = $mixed->cBarcode;
-                break;
-            default:
-                $result = 'image';
-                break;
-        }
-
-        return empty($result) ? 'image' : Image::getCleanFilename($result);
+        return $db->select('tartikelpict', 'cPfad', $path) !== null;
     }
 }

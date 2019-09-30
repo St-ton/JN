@@ -66,7 +66,7 @@ if (strlen($cSh) > 0) {
         false,
         'cSID, kBestellung'
     );
-    if ($paymentSession === false) {
+    if ($paymentSession === null) {
         $logger->error('Session Hash: ' . $cSh . ' ergab keine Bestellung aus tzahlungsession');
         die();
     }

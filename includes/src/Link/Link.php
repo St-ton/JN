@@ -184,6 +184,16 @@ final class Link extends AbstractLink
     /**
      * @var string
      */
+    protected $handler = '';
+
+    /**
+     * @var string
+     */
+    protected $template = '';
+
+    /**
+     * @var string
+     */
     protected $displayName = '';
 
     /**
@@ -227,25 +237,30 @@ final class Link extends AbstractLink
     {
         $this->id = $id;
         $link     = $this->db->queryPrepared(
-            "SELECT tlink.*, tlinksprache.cISOSprache, tlink.cName AS displayName,
-                tlinksprache.cName AS localizedName,  tlinksprache.cTitle AS localizedTitle,
-                tlinksprache.cContent AS content, tlinksprache.cMetaDescription AS metaDescription,
-                tlinksprache.cMetaKeywords AS metaKeywords, tlinksprache.cMetaTitle AS metaTitle,
+            "SELECT tlink.*, loc.cISOSprache, tlink.cName AS displayName,
+                loc.cName AS localizedName,  loc.cTitle AS localizedTitle,
+                loc.cContent AS content, loc.cMetaDescription AS metaDescription,
+                loc.cMetaKeywords AS metaKeywords, loc.cMetaTitle AS metaTitle,
                 tseo.kSprache AS languageID, tseo.cSeo AS localizedUrl,
-                tplugin.nStatus AS pluginState, GROUP_CONCAT(tlinkgroupassociations.linkGroupID) AS linkGroups
+                pld.cDatei AS pluginFileName, tplugin.nStatus AS pluginState,
+                pld.cDatei AS handler, pld.cTemplate AS template, pld.cFullscreenTemplate AS fullscreenTemplate,
+                GROUP_CONCAT(assoc.linkGroupID) AS linkGroups
             FROM tlink
-                JOIN tlinksprache
-                    ON tlink.kLink = tlinksprache.kLink
+                JOIN tlinksprache loc
+                    ON tlink.kLink = loc.kLink
                 JOIN tsprache
-                    ON tsprache.cISO = tlinksprache.cISOSprache
+                    ON tsprache.cISO = loc.cISOSprache
                 JOIN tseo
                     ON tseo.cKey = 'kLink'
-                    AND tseo.kKey = tlinksprache.kLink
+                    AND tseo.kKey = loc.kLink
                     AND tseo.kSprache = tsprache.kSprache
-                LEFT JOIN tlinkgroupassociations
-					ON tlinkgroupassociations.linkID = tlinksprache.kLink
+                LEFT JOIN tlinkgroupassociations assoc
+					ON assoc.linkID = loc.kLink
                 LEFT JOIN tplugin
                     ON tplugin.kPlugin = tlink.kPlugin
+                LEFT JOIN tpluginlinkdatei pld
+                    ON tplugin.kPlugin = pld.kPlugin
+                    AND tlink.kLink = pld.kLink
                 WHERE tlink.kLink = :lid
                 GROUP BY tseo.kSprache",
             ['lid' => $this->getRealID($id)],
@@ -342,6 +357,8 @@ final class Link extends AbstractLink
                     : ($baseURL . $link->localizedUrl),
                 $link->languageID
             );
+            $this->setHandler($link->handler ?? '');
+            $this->setTemplate($link->template ?? $link->fullscreenTemplate ?? '');
             if (($this->id === null || $this->id === 0) && isset($link->kLink)) {
                 $this->setID((int)$link->kLink);
             }
@@ -364,6 +381,7 @@ final class Link extends AbstractLink
         $link->bSSL        = (int)$link->bSSL;
         $link->nLinkart    = (int)$link->nLinkart;
         $link->nSort       = (int)$link->nSort;
+        $link->reference   = (int)$link->reference;
         $link->enabled     = $link->pluginState === null || (int)$link->pluginState === State::ACTIVATED;
         $link->cISOSprache = $link->cISOSprache ?? Shop::getLanguageCode();
         if ($link->languageID === 0) {
@@ -1107,6 +1125,38 @@ final class Link extends AbstractLink
     public function setDisplayName(string $displayName): void
     {
         $this->displayName = $displayName;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getHandler(): string
+    {
+        return $this->handler;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setHandler(string $handler): void
+    {
+        $this->handler = $handler;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getTemplate(): string
+    {
+        return $this->template;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setTemplate(string $template): void
+    {
+        $this->template = $template;
     }
 
     /**

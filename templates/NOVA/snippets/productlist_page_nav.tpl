@@ -5,7 +5,13 @@
 {block name='snippets-productlist-page-nav'}
     {if $Suchergebnisse->getProductCount() > 0}
         {opcMountPoint id='opc_before_page_nav_'|cat:$navid}
-        {row class="no-gutters productlist-page-nav"}
+
+        {if $hrTop|default:false === true}
+            {block name='snippets-productlist-page-nav-hr-top'}
+                <hr>
+            {/block}
+        {/if}
+        {row class="{if $navid === 'header'}mt-6{/if} no-gutters productlist-page-nav"}
             {if count($NaviFilter->getSearchResults()->getProducts()) > 0}
                 {block name='snippets-productlist-page-nav-result-options-sort'}
                     {col cols=12 md="auto" class="displayoptions mb-3 mb-md-0"}
@@ -40,7 +46,7 @@
                 {/block}
             {/if}
             {block name='snippets-productlist-page-nav-current-page-count'}
-                {col cols="auto" class="ml-auto productlist-item-info d-none d-md-flex"}
+                {col cols="auto" class="ml-auto productlist-item-info d-flex {if $Suchergebnisse->getPages()->getMaxPage() > 1}border-right{/if} pr-3"}
                     {lang key="products"} {$Suchergebnisse->getOffsetStart()} - {$Suchergebnisse->getOffsetEnd()} {lang key='of' section='productOverview'} {$Suchergebnisse->getProductCount()}
                 {/col}
             {/block}
@@ -79,5 +85,8 @@
                 {/block}
             {/if}
         {/row}
+        {block name='snippets-productlist-page-nav-hr-bottom'}
+            <hr class="mb-5">
+        {/block}
     {/if}
 {/block}

@@ -6,6 +6,7 @@
 
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
+use JTL\Media\Image;
 
 /**
  * Class Migration_20190904175800
@@ -15,12 +16,49 @@ class Migration_20190904175800 extends Migration implements IMigration
     protected $author      = 'fm';
     protected $description = 'Add image extension auto detection option';
 
+    /**
+     * @var array
+     */
+    private static $types = [
+        'Artikel'      => Image::TYPE_PRODUCT,
+        'Kategorie'    => Image::TYPE_CATEGORY,
+        'Variationen'  => Image::TYPE_VARIATION,
+        'Hersteller'   => Image::TYPE_MANUFACTURER,
+        'Merkmale'     => Image::TYPE_CHARACTERISTIC,
+        'Merkmalwerte' => Image::TYPE_CHARACTERISTIC_VALUE
+    ];
+
+    /**
+     * @var array
+     */
+    private static $positions = [
+        'oben'         => 'top',
+        'oben-rechts'  => 'top-right',
+        'rechts'       => 'right',
+        'unten-rechts' => 'bottom-right',
+        'unten'        => 'bottom',
+        'unten-links'  => 'bottom-left',
+        'links'        => 'left',
+        'oben-links'   => 'top-left',
+        'zentriert'    => 'center'
+    ];
+
+    /**
+     * @inheritdoc
+     */
     public function up()
     {
         $this->execute("INSERT INTO teinstellungenconfwerte (`kEinstellungenConf`, `cName`, `cWert`, `nSort`)
             VALUES(1483, 'AUTO', 'AUTO', 2)");
-//        $this->execute("INSERT INTO teinstellungenconfwerte (`kEinstellungenConf`, `cName`, `cWert`, `nSort`)
-//            VALUES(1483, 'WEBP', 'WEBP', 2)");
+
+        foreach (self::$types as $old => $new) {
+            $this->execute("UPDATE `tbranding` SET `cBildKategorie` = '" .
+                $new . "' WHERE `cBildKategorie` = '" . $old . "'");
+        }
+        foreach (self::$positions as $old => $new) {
+            $this->execute("UPDATE `tbrandingeinstellung` SET `cPosition` = '" .
+                $new . "' WHERE `cPosition` = '" . $old . "'");
+        }
 
         $this->setConfig(
             'bilder_hersteller_mini_breite',
@@ -218,13 +256,38 @@ class Migration_20190904175800 extends Migration implements IMigration
             'number',
             100
         );
+        $this->setConfig(
+            'bilder_variationen_klein_breite',
+            '100',
+            \CONF_BILDER,
+            'Variationsbilder Klein Breite',
+            'number',
+            100
+        );
+        $this->setConfig(
+            'bilder_variationen_klein_hoehe',
+            '100',
+            \CONF_BILDER,
+            'Variationsbilder Klein Höhe',
+            'number',
+            100
+        );
     }
 
-
+    /**
+     * @inheritdoc
+     */
     public function down()
     {
         $this->execute("DELETE FROM teinstellungenconfwerte WHERE `kEinstellungenConf` = 1483 AND `cName` = 'AUTO'");
-//        $this->execute("DELETE FROM teinstellungenconfwerte WHERE `kEinstellungenConf` = 1483 AND `cName` = 'WEBP'");
+
+        foreach (self::$types as $old => $new) {
+            $this->execute("UPDATE `tbranding` SET `cBildKategorie` = '" . $old . "' WHERE `cBildKategorie` = '" . $new . "'");
+        }
+        foreach (self::$positions as $old => $new) {
+            $this->execute("UPDATE `tbrandingeinstellung` SET `cPosition` = '" . $old . "' WHERE `cPosition` = '" . $new . "'");
+        }
+
         $this->removeConfig('bilder_kategorien_klein_hoehe');
         $this->removeConfig('bilder_kategorien_klein_breite');
         $this->removeConfig('bilder_kategorien_gross_hoehe');

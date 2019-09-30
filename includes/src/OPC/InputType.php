@@ -52,6 +52,8 @@ class InputType extends Enum
 
     public const TIME = 'time';
 
+    public const DATETIME = 'datetime';
+
     public const RICHTEXT = 'richtext';
 
     public const FILTER = 'filter';

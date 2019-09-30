@@ -6,56 +6,59 @@
 
 namespace JTL\Media\Image;
 
+use Generator;
 use JTL\DB\ReturnType;
 use JTL\Media\Image;
 use JTL\Media\MediaImageRequest;
 use JTL\Shop;
+use PDO;
 use stdClass;
 
 /**
  * Class ConfigGroup
  * @package JTL\Media\Image
  */
-class ConfigGroup extends Product
+class ConfigGroup extends AbstractImage
 {
+    public const TYPE = Image::TYPE_CONFIGGROUP;
+
+    /**
+     * @var string
+     */
     protected $regEx = '/^media\/image\/(?P<type>configgroup)' .
-    '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|os)\/(?P<name>[a-zA-Z0-9\-_]+)' .
+    '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|xl|os)\/(?P<name>[a-zA-Z0-9\-_]+)' .
     '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
 
     /**
-     * @param string $type
-     * @param int    $id
-     * @return stdClass|null
+     * @inheritdoc
      */
     public static function getImageStmt(string $type, int $id): ?stdClass
     {
         return (object)[
             'stmt' => 'SELECT cBildpfad, 0 AS number 
                         FROM tkonfiggruppe 
-                        WHERE kKonfiggruppe = :kKonfiggruppe 
+                        WHERE kKonfiggruppe = :cid 
                         ORDER BY nSort ASC',
-            'bind' => ['kKonfiggruppe' => $id]
+            'bind' => ['cid' => $id]
         ];
     }
 
     /**
-     * @param MediaImageRequest $req
-     * @return array
+     * @inheritdoc
      */
-    protected function getImageNames(MediaImageRequest $req): array
+    public static function getImageNames(MediaImageRequest $req): array
     {
-        // @todo
-        die('@todo!');
         return Shop::Container()->getDB()->queryPrepared(
-            'SELECT kKategorie, cName, cSeo
-                    FROM tkategorie AS a
-                    WHERE kKategorie = :cid
-                    UNION SELECT asp.kKategorie, asp.cName, asp.cSeo
-                        FROM tkategoriesprache AS asp JOIN tkategorie AS a ON asp.kKategorie = a.kKategorie
-                        WHERE asp.kKategorie = :cid',
-            ['cid' => $req->id],
-            ReturnType::ARRAY_OF_OBJECTS
-        );
+            'SELECT a.kKonfiggruppe, t.cName, cBildPfad AS path
+                FROM tkonfiggruppe a
+                JOIN tkonfiggruppesprache t 
+                    ON a.kKonfiggruppe = t.kKonfiggruppe
+                WHERE a.kKonfiggruppe = :cid',
+            ['cid' => $req->getID()],
+            ReturnType::COLLECTION
+        )->map(function ($item) {
+            return self::getCustomName($item);
+        })->toArray();
     }
 
     /**
@@ -63,9 +66,47 @@ class ConfigGroup extends Product
      */
     public static function getCustomName($mixed): string
     {
-        $result = '';
-        // @todo
+        if (isset($mixed->path)) {
+            return \pathinfo($mixed->path)['filename'];
+        }
+        if (isset($mixed->cBildpfad)) {
+            return \pathinfo($mixed->cBildpfad)['filename'];
+        }
+        $result = empty($mixed->cSeo) ? $mixed->cName : $mixed->cSeo;
 
         return empty($result) ? 'image' : Image::getCleanFilename($result);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function getStoragePath(): string
+    {
+        return \STORAGE_CONFIGGROUPS;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function getAllImages(int $offset = null, int $limit = null): Generator
+    {
+        $images = Shop::Container()->getDB()->query(
+            'SELECT a.kKonfiggruppe AS id, t.cName, cBildPfad AS path
+                FROM tkonfiggruppe a
+                JOIN tkonfiggruppesprache t 
+                    ON a.kKonfiggruppe = t.kKonfiggruppe' . self::getLimitStatement($offset, $limit),
+            ReturnType::QUERYSINGLE
+        );
+        while (($image = $images->fetch(PDO::FETCH_OBJ)) !== false) {
+            yield MediaImageRequest::create([
+                'id'         => $image->id,
+                'type'       => self::TYPE,
+                'name'       => self::getCustomName($image),
+                'number'     => 1,
+                'path'       => $image->path,
+                'sourcePath' => $image->path,
+                'ext'        => static::getFileExtension($image->path)
+            ]);
+        }
     }
 }

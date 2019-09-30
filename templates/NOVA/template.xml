@@ -120,7 +120,6 @@
             </Setting>
             <Setting Description="Facebook-Link" Key="facebook" Type="text" Value=""/>
             <Setting Description="Twitter-Link" Key="twitter" Type="text" Value=""/>
-            <Setting Description="GooglePlus-Link" Key="googleplus" Type="text" Value=""/>
             <Setting Description="YouTube-Link" Key="youtube" Type="text" Value=""/>
             <Setting Description="Xing-Link" Key="xing" Type="text" Value=""/>
             <Setting Description="LinkedIn-Link" Key="linkedin" Type="text" Value=""/>

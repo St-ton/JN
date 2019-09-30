@@ -41,6 +41,11 @@ class Hersteller
     /**
      * @var string
      */
+    public $originalSeo;
+
+    /**
+     * @var string
+     */
     public $cMetaTitle;
 
     /**
@@ -102,7 +107,7 @@ class Hersteller
      */
     public function __construct(int $id = 0, int $languageID = 0, bool $noCache = false)
     {
-        $this->setType(Image::TYPE_MANUFACTURER);
+        $this->setImageType(Image::TYPE_MANUFACTURER);
         if ($id > 0) {
             $this->loadFromDB($id, $languageID, $noCache);
         }
@@ -148,7 +153,8 @@ class Hersteller
             $manufacturer = Shop::Container()->getDB()->queryPrepared(
                 "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
                     thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
-                    therstellersprache.cMetaDescription, therstellersprache.cBeschreibung, tseo.cSeo
+                    therstellersprache.cMetaDescription, therstellersprache.cBeschreibung,
+                    tseo.cSeo, thersteller.cSeo AS originalSeo
                     FROM thersteller
                     LEFT JOIN therstellersprache 
                         ON therstellersprache.kHersteller = thersteller.kHersteller
@@ -206,7 +212,7 @@ class Hersteller
         if (\mb_strlen($this->cBildpfad) > 0) {
             $this->cBildpfadKlein  = \PFAD_HERSTELLERBILDER_KLEIN . $this->cBildpfad;
             $this->cBildpfadNormal = \PFAD_HERSTELLERBILDER_NORMAL . $this->cBildpfad;
-            $this->generateAllImageSizes();
+            $this->generateAllImageSizes(true, 1, $this->cBildpfad);
         }
         $this->cBildURLKlein  = $imageBaseURL . $this->cBildpfadKlein;
         $this->cBildURLNormal = $imageBaseURL . $this->cBildpfadNormal;
@@ -239,7 +245,8 @@ class Hersteller
         $items   = Shop::Container()->getDB()->query(
             'SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
                 thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
-                therstellersprache.cMetaDescription, therstellersprache.cBeschreibung, tseo.cSeo
+                therstellersprache.cMetaDescription, therstellersprache.cBeschreibung,
+                tseo.cSeo, thersteller.cSeo AS originalSeo
                 FROM thersteller
                 LEFT JOIN therstellersprache 
                     ON therstellersprache.kHersteller = thersteller.kHersteller
@@ -274,6 +281,6 @@ class Hersteller
      */
     public function getID(): int
     {
-        return $this->kHersteller;
+        return (int)$this->kHersteller;
     }
 }

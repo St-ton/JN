@@ -44,8 +44,9 @@ final class LicenceExtension extends AbstractItem
             if ($requiresMissingIoncube) {
                 return InstallCode::IONCUBE_REQUIRED;
             }
+            $namespace    = $this->getPluginID() . '\\' . \trim(\PFAD_PLUGIN_LICENCE, '\\/');
             $licenceClass = \strpos($node['LicenceClass'], 'Plugin\\') !== 0
-                ? 'Plugin\\' . $node['LicenceClass']
+                ? \sprintf('Plugin\\%s\\%s', $namespace, $node['LicenceClass'])
                 : $node['LicenceClass'];
             require_once $dir . \PFAD_PLUGIN_LICENCE . $node['LicenceClassFile'];
             if (!\class_exists($licenceClass)) {

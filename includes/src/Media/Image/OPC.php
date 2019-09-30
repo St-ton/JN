@@ -1,7 +1,4 @@
 <?php declare(strict_types=1);
-
-use JTL\OPC\PortletInstance;
-
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -9,56 +6,36 @@ use JTL\OPC\PortletInstance;
 
 namespace JTL\Media\Image;
 
-use JTL\DB\ReturnType;
+use DirectoryIterator;
 use JTL\Media\Image;
 use JTL\Media\MediaImageRequest;
-use JTL\Shop;
-use stdClass;
+use JTL\OPC\PortletInstance;
 
 /**
  * Class OPC
  * @package JTL\Media\Image
  */
-class OPC extends Product
+class OPC extends AbstractImage
 {
-    protected $regEx = '/^media\/image\/(?P<type>opc)' .
-    '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|os)\/(?P<name>[a-zA-Z0-9\-_]+)' .
-    '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
+    public const TYPE = Image::TYPE_OPC;
 
     /**
-     * @param string $type
-     * @param int    $id
-     * @return stdClass|null
+     * @var string
      */
-    public static function getImageStmt(string $type, int $id): ?stdClass
-    {
-        return (object)[
-            'stmt' => 'SELECT cBildpfad, 0 AS number 
-                                  FROM thersteller 
-                                  WHERE kHersteller = :kHersteller',
-            'bind' => ['kHersteller' => $id]
-        ];
-    }
+    protected $regEx = '/^media\/image\/'
+    . '(?P<type>opc)'
+    . '\/(?P<size>xs|sm|md|lg|xl|os)'
+    . '\/(?P<name>[a-zA-Z0-9\-_\.]+)'
+    . '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
 
     /**
-     * @param MediaImageRequest $req
-     * @return array
+     * @inheritdoc
      */
-    protected function getImageNames(MediaImageRequest $req): array
+    public static function getImageNames(MediaImageRequest $req): array
     {
-        Shop::dbg($req, true, __METHOD__);
-        $names = Shop::Container()->getDB()->queryPrepared(
-            'SELECT kHersteller, cName, cSeo, cBildpfad AS path
-                    FROM thersteller
-                    WHERE kHersteller = :mid',
-            ['mid' => $req->id],
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-        if (!empty($names[0]->path)) {
-            $req->path = $names[0]->path;
-        }
+        $req->setSourcePath($req->getName() . '.' . $req->getExt());
 
-        return $names;
+        return [''];
     }
 
     /**
@@ -67,8 +44,39 @@ class OPC extends Product
     public static function getCustomName($mixed): string
     {
         /** @var PortletInstance $mixed */
-        $result = \basename($mixed->currentImagePath);
+        return \pathinfo($mixed->currentImagePath)['filename'];
+    }
 
-        return empty($result) ? 'image' : Image::getCleanFilename($result);
+    /**
+     * @inheritdoc
+     */
+    public static function getPathByID($id, int $number = null): ?string
+    {
+        return $id;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function getStoragePath(): string
+    {
+        return \PFAD_MEDIAFILES . 'Bilder/';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function getTotalImageCount(): int
+    {
+        $iterator = new DirectoryIterator(\PFAD_ROOT . self::getStoragePath());
+        $cnt      = 0;
+        foreach ($iterator as $fileinfo) {
+            if ($fileinfo->isDot() || !$fileinfo->isFile()) {
+                continue;
+            }
+            ++$cnt;
+        }
+
+        return $cnt;
     }
 }

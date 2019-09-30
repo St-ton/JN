@@ -1,6 +1,6 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('order') cBeschreibung=__('orderDesc') cDokuURL=__('orderURL')}
 <div id="content">
-    {if $oBestellung_arr|@count > 0 && $oBestellung_arr}
+    {if $orders|@count > 0}
         <div class="card">
             <div class="card-header">
                 <div class="subheading1">{__('order')}</div>
@@ -47,55 +47,55 @@
                                 </tr>
                             </thead>
                             <tbody>
-                            {foreach $oBestellung_arr as $oBestellung}
+                            {foreach $orders as $order}
                                 <tr>
                                     <td class="check">
-                                        {if $oBestellung->cAbgeholt === 'Y' && $oBestellung->cZahlungsartName !== 'Amazon Payment' && $oBestellung->oKunde !== null}
+                                        {if $order->cAbgeholt === 'Y' && $order->cZahlungsartName !== 'Amazon Payment' && $order->oKunde !== null}
                                             <div class="custom-control custom-checkbox">
-                                                <input class="custom-control-input" type="checkbox" name="kBestellung[]" id="order-id-{$oBestellung->kBestellung}" value="{$oBestellung->kBestellung}" />
-                                                <label class="custom-control-label" for="order-id-{$oBestellung->kBestellung}"></label>
+                                                <input class="custom-control-input" type="checkbox" name="kBestellung[]" id="order-id-{$order->kBestellung}" value="{$order->kBestellung}" />
+                                                <label class="custom-control-label" for="order-id-{$order->kBestellung}"></label>
                                             </div>
                                         {/if}
                                     </td>
-                                    <td class="text-center">{$oBestellung->cBestellNr}</td>
+                                    <td class="text-center">{$order->cBestellNr}</td>
                                     <td>
-                                        {if isset($oBestellung->oKunde->cVorname) || isset($oBestellung->oKunde->cNachname) || isset($oBestellung->oKunde->cFirma)}
-                                            {$oBestellung->oKunde->cVorname} {$oBestellung->oKunde->cNachname}
-                                            {if isset($oBestellung->oKunde->cFirma) && $oBestellung->oKunde->cFirma|strlen > 0}
-                                                ({$oBestellung->oKunde->cFirma})
+                                        {if isset($order->oKunde->cVorname) || isset($order->oKunde->cNachname) || isset($order->oKunde->cFirma)}
+                                            {$order->oKunde->cVorname} {$order->oKunde->cNachname}
+                                            {if isset($order->oKunde->cFirma) && $order->oKunde->cFirma|strlen > 0}
+                                                ({$order->oKunde->cFirma})
                                             {/if}
                                         {else}
                                             {__('noAccount')}
                                         {/if}
                                     </td>
-                                    <td class="text-center">{if isset($oBestellung->oKunde) && $oBestellung->oKunde->nRegistriert === 1}{__('yes')}{else}{__('no')}{/if}</td>
-                                    <td>{$oBestellung->cVersandartName}</td>
-                                    <td>{$oBestellung->cZahlungsartName}</td>
+                                    <td class="text-center">{if isset($order->oKunde) && $order->oKunde->nRegistriert === 1}{__('yes')}{else}{__('no')}{/if}</td>
+                                    <td>{$order->cVersandartName}</td>
+                                    <td>{$order->cZahlungsartName}</td>
                                     <td class="text-center">
-                                        {if $oBestellung->cAbgeholt === 'Y'}
+                                        {if $order->cAbgeholt === 'Y'}
                                             <i class="fal fa-check text-success"></i>
                                         {else}
                                             <i class="fal fa-times text-danger"></i>
                                         {/if}
                                     </td>
                                     <td class="text-center">
-                                        {if $oBestellung->cStatus == 1}
+                                        {if $order->cStatus == 1}
                                             {__('new')}
-                                        {elseif $oBestellung->cStatus == 2}
+                                        {elseif $order->cStatus == 2}
                                             {__('orderInProgress')}
-                                        {elseif $oBestellung->cStatus == 3}
+                                        {elseif $order->cStatus == 3}
                                             {__('orderPayed')}
-                                        {elseif $oBestellung->cStatus == 4}
+                                        {elseif $order->cStatus == 4}
                                             {__('orderShipped')}
-                                        {elseif $oBestellung->cStatus == 5}
+                                        {elseif $order->cStatus == 5}
                                             {__('orderPartlyShipped')}
-                                        {elseif $oBestellung->cStatus == -1}
+                                        {elseif $order->cStatus == -1}
                                             {__('orderCanceled')}
                                         {/if}
                                     </td>
-                                    <td class="text-center">{$oBestellung->WarensummeLocalized[0]}</td>
-                                    <td class="text-right">{$oBestellung->dErstelldatum_de}</td>
-                                    <td class="text-right">{$oBestellung->cIP}</td>
+                                    <td class="text-center">{$order->WarensummeLocalized[0]}</td>
+                                    <td class="text-right">{$order->dErstelldatum_de}</td>
+                                    <td class="text-right">{$order->cIP}</td>
                                 </tr>
                             {/foreach}
                             </tbody>

@@ -33,9 +33,9 @@
             }
                 <meta itemprop="image" content="{$imageBaseURL}{$oNavigationsinfo->getImageURL()}" />
                 <meta property="og:image" content="{$imageBaseURL}{$oNavigationsinfo->getImageURL()}" />
-            {elseif $nSeitenTyp === $smarty.const.PAGE_NEWSDETAIL && !empty($oNewsArchiv->getPreviewImage())}
-                <meta itemprop="image" content="{$imageBaseURL}{$oNewsArchiv->getPreviewImage()}" />
-                <meta property="og:image" content="{$imageBaseURL}{$oNewsArchiv->getPreviewImage()}" />
+            {elseif $nSeitenTyp === $smarty.const.PAGE_NEWSDETAIL && !empty($newsItem->getPreviewImage())}
+                <meta itemprop="image" content="{$imageBaseURL}{$newsItem->getPreviewImage()}" />
+                <meta property="og:image" content="{$imageBaseURL}{$newsItem->getPreviewImage()}" />
             {else}
                 <meta itemprop="image" content="{$ShopLogoURL}" />
                 <meta property="og:image" content="{$ShopLogoURL}" />
@@ -55,7 +55,7 @@
         {/block}
 
         {block name='layout-header-head-resources'}
-            {include file='layout/header_inline_css.tpl'}
+            {*{include file='layout/header_inline_css.tpl'}*}
             {* css *}
             {if !isset($Einstellungen.template.general.use_minify) || $Einstellungen.template.general.use_minify === 'N'}
                 {foreach $cCSS_arr as $cCSS}
@@ -339,9 +339,9 @@
                             {/col}
                             {col id="shop-nav" order=3 order-md=3 order-lg=4 class="col-auto bg-white {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}d-none{/if}" style="z-index: 1;"}
                                 {block name='layout-header-branding-shop-nav'}
-                                    <div class="d-flex text-right">
+                                    {nav class="nav-right ml-auto order-lg-last align-items-center flex-shrink-0"}
                                         {include file='layout/header_nav_icons.tpl'}
-                                    </div>
+                                    {/nav}
                                 {/block}
                             {/col}
 

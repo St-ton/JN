@@ -7,7 +7,6 @@
 namespace JTL\Catalog\Product;
 
 use JTL\DB\ReturnType;
-use JTL\Helpers\GeneralObject;
 use JTL\Language\LanguageHelper;
 use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;
@@ -104,7 +103,7 @@ class Merkmal
      */
     public function __construct(int $id = 0, bool $getValues = false, int $languageID = 0)
     {
-        $this->setType(Image::TYPE_CHARACTERISTIC);
+        $this->setImageType(Image::TYPE_CHARACTERISTIC);
         if ($id > 0) {
             $this->loadFromDB($id, $getValues, $languageID);
         }

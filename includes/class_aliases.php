@@ -190,7 +190,6 @@ class_alias(\JTL\Customer\CustomerGroup::class, 'Kundengruppe', true);
 class_alias(\JTL\Customer\DataHistory::class, 'Kundendatenhistory', true);
 class_alias(\JTL\Customer\Customer::class, 'Kunde', true);
 class_alias(\JTL\PlausiCMS::class, 'PlausiCMS', true);
-class_alias(\JTL\Media\Image\MediaImageCompatibility::class, 'MediaImageCompatibility', true);
 class_alias(\JTL\Media\Image\Product::class, 'MediaImage', true);
 class_alias(\JTL\Media\MediaImageSize::class, 'MediaImageSize', true);
 class_alias(\JTL\Media\Media::class, 'Media', true);

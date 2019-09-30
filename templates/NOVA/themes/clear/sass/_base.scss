@@ -82,28 +82,6 @@ a { transition: color $transition-base-duration $transition-base-timing; }
   z-index: $zindex-sticky + 1;
 }
 
-.dropdown-toggle {
-  &::after {
-    display: inline-block;
-    font-family: 'Font Awesome 5 Free', Arial, sans-serif;
-    font-style: normal;
-    font-weight: 900;
-    /*text-rendering: auto;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;*/
-    content: "\f078";
-    border: 0;
-    vertical-align: baseline;
-    margin-left: 0.25rem;
-    width: initial;
-    height: initial;
-    float: right;
-  }
-  &[aria-expanded=true]::after {
-    transform: rotate(180deg) ;
-  }
-}
-
 [data-toggle="collapse"][aria-expanded="true"] i.fa-plus:before{
   content: "\f068";
 }
@@ -141,9 +119,7 @@ header > [class*="container"],
 header > [class*="container"],
 #main-wrapper #content-wrapper { box-shadow: none; background: transparent; }
 header, #main-wrapper { background: #fff; }
-@include media-breakpoint-up(lg) {
-  .container { max-width: 1310px; }
-}
+
 @include media-breakpoint-down(md) {
   #navbarToggler {
     position: absolute;
@@ -210,7 +186,6 @@ header, #main-wrapper { background: #fff; }
       right: 0;
       z-index: $zindex-dropdown;
       float: left;
-      min-width: $dropdown-min-width*2.7;
       padding: $dropdown-padding-y 0;
       margin: $dropdown-spacer 0 0; // override default ul
       font-size: $font-size-base; // Redeclare because nesting can cause inheritance issues
@@ -218,7 +193,7 @@ header, #main-wrapper { background: #fff; }
       text-align: left; // Ensures proper alignment if parent has it changed (e.g., modal footer)
       list-style: none;
       background-clip: padding-box;
-      max-height: 30rem;
+      max-height: 40rem;
       overflow-y: auto;
       @include border-radius($dropdown-border-radius);
       @include box-shadow($dropdown-box-shadow);
@@ -245,7 +220,11 @@ header, #main-wrapper { background: #fff; }
         text-decoration: none;
       }
     }
-    #nav-account-collapse { min-width: $dropdown-min-width*2.3; }
+    #nav-comparelist-collapse,
+    #nav-wishlist-collapse,
+    #nav-cart-collapse {
+      min-width: $dropdown-min-width*2.7;
+    }
   }
   .nav-item{
     //border-bottom: $highlight-border-size solid transparent;
@@ -265,7 +244,7 @@ header, #main-wrapper { background: #fff; }
     }
   }
   .nav-link{
-    padding: 1.2rem $nav-link-padding-x/2;
+    padding: 1.2rem $nav-link-padding-x;
     text-decoration: none;
     display: flex;
     align-items: center;
@@ -291,7 +270,7 @@ header, #main-wrapper { background: #fff; }
     #nav-cart-collapse,
     #nav-account-collapse,
     #nav-search-collapse {
-      max-height: 400px;
+      max-height: 430px;
       z-index: $zindex-sticky;
       overflow-x: hidden;
       position: absolute;
@@ -401,9 +380,6 @@ ul.partlist-items {
     table-layout: fixed;
     word-break: break-word;
     white-space: initial;
-    &.table-striped tbody tr:nth-of-type(odd) {
-      background-color: $bg-info;
-    }
   }
 }
 
@@ -944,12 +920,6 @@ ul.partlist-items {
 
 .attr-group { font-size: 13px; }
 
-hr {
-  border-top: 1px solid $sand;
-  margin-top: $grid-gutter-width;
-  margin-bottom: $grid-gutter-width;
-}
-
 #main-wrapper.fluid {
   .navbar, #footer {
     margin-bottom: 0;
@@ -1153,6 +1123,7 @@ aside {
   .h4.title {
     font-family: $font-family-sans-serif;
     font-weight: $font-weight-normal;
+    margin-bottom: 0;
     a {
       word-break: break-word;
     }
@@ -1305,6 +1276,9 @@ aside {
 .nmbr-cfg-group {
   display: flex;
   z-index: 1;
+  input {
+    border-radius: 0;
+  }
   .btn-decrement, .btn-increment {
     color: $input-color;
     background-color: $input-bg;
@@ -1327,9 +1301,11 @@ aside {
   }
   .btn-decrement {
     border-right: 0;
+    border-radius: $btn-border-radius 0 0 $btn-border-radius;
   }
   .btn-increment {
     border-left: 0;
+    border-radius: 0 $btn-border-radius $btn-border-radius 0;
   }
   input.form-control {
     border-right: 0;
@@ -1408,7 +1384,7 @@ a[data-toggle="collapse"][aria-expanded=true],
   color: $gray-dark;
 }
 .product-offer .price {
-  font-size: $h1-font-size * 1.3;
+  font-size: $h3-font-size * 1.3;
 }
 .price-note { font-size: $font-size-xs; }
 
@@ -1439,7 +1415,7 @@ footer {
   }
 
   .nav-link {
-    padding: $nav-link-padding-y*0.8 $nav-link-padding-x;
+    padding: $nav-link-padding-y*0.4 0;
   }
 
   .footer-additional {
@@ -1448,6 +1424,10 @@ footer {
     margin-top: 0;
     a {
       text-decoration: none;
+    }
+    li {
+      margin-right: map-get($spacers, 2);
+      margin-bottom: map-get($spacers, 2);
     }
   }
   #copyright {
@@ -1958,200 +1938,8 @@ table caption {
   display: inline-block;
 }
 
-.flipcard {
-  .flipcard-inner {
-    position: relative;
-    width: 100%;
-  }
-
-  .flipcard-face {
-    width: 100%;
-    position: absolute;
-    left: 0;
-    top: 0;
-    backface-visibility: hidden;
-    transition: 0.5s;
-  }
-
-  &.flipcard-v {
-    .flipcard-front {
-      transform: rotateX(0deg);
-    }
-
-    .flipcard-back {
-      transform: rotateX(180deg);
-    }
-
-    .flipped {
-      .flipcard-front {
-          transform: rotateX(-180deg);
-      }
-
-      .flipcard-back {
-        transform: rotateX(0deg);
-      }
-    }
-  }
-
-  &.flipcard-h {
-    .flipcard-front {
-      transform: rotateY(0deg);
-    }
-
-    .flipcard-back {
-      transform: rotateY(180deg);
-    }
-
-    .flipped {
-      .flipcard-front {
-        transform: rotateY(-180deg);
-      }
-
-      .flipcard-back {
-        transform: rotateY(0deg);
-      }
-    }
-  }
-}
-
-.img-gallery-btn {
-  position: relative;
-
-  &.img-gallery-active-btn:after {
-    content: " ";
-    opacity: 0;
-    background-color: rgba(0, 0, 0, 0.75);
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    transition: all 0.5s ease-in-out 0s;
-  }
-
-  &.img-gallery-active-btn:hover:after {
-    opacity: 0.75;
-  }
-
-  .img-gallery-zoom {
-    opacity: 0;
-    color: #fff;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    transition: all 0.5s ease-in-out 0s;
-  }
-
-  &.img-gallery-active-btn:hover .img-gallery-zoom {
-    opacity: 1;
-  }
-}
-
-.img-gallery {
-  margin-left: -4px;
-  margin-right: -4px;
-
-  &.img-gallery-grid {
-    .img-gallery-item {
-      .img-gallery-btn {
-        height: 0;
-        padding-top: 100%;
-      }
-    }
-  }
-
-  .img-gallery-item {
-    overflow: hidden;
-    padding-right: 4px;
-    padding-left: 4px;
-    margin-bottom: 8px;
-
-    .img-gallery-btn {
-      display: block;
-      width: 100%;
-      height: 220px;
-    }
-
-    .img-gallery-img {
-      display: block;
-      height: 100%;
-      width: 100%;
-      object-fit: cover;
-      position: absolute;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      right: 0;
-    }
-  }
-}
-
-.gallery-columns {
-  columns: 1;
-  column-gap: 8px;
-  margin-bottom: 8px;
-
-  .img-gallery-btn {
-    width: 100%;
-    display: block;
-    margin-bottom: 8px;
-  }
-  .img-gallery-img {
-    width: 100%;
-    display: block;
-  }
-}
-
-@media (min-width: 576px) {
-  .gallery-columns {
-    columns: 2;
-  }
-}
-
-@media (min-width: 768px) {
-  .gallery-columns {
-    columns: 3;
-  }
-}
-
-@media (min-width: 1200px) {
-  .gallery-columns {
-    columns: 4;
-  }
-}
-
-.img-gallery-modal {
-  .modal-dialog {
-    transform: scale(0.1);
-    top: 50px;
-    opacity: 0;
-    transition: all 0.3s;
-  }
-
-  &.in, &.show {
-    .modal-dialog {
-      transform: scale(1);
-      opacity: 1;
-    }
-  }
-}
-
 .fas, .fab, .fa, .far {
   vertical-align: middle;
-}
-
-.countdown {
-  padding: 20px;
-  .cntdwn-item {
-    font-size: 45px;
-    font-weight: 700;
-  }
-  .expired {
-    margin: 20px 0;
-    display: none;
-    font-size: x-large;
-  }
 }
 
 #account .card{
@@ -2196,9 +1984,6 @@ table caption {
 
 .productlist-page-nav {
   align-items: center;
-  padding: map-get($spacers, 2) 0;
-  margin-bottom: $spacer;
-  border-bottom: 1px solid $sand;
   .pagination {
     margin: 0;
   }
@@ -2597,4 +2382,12 @@ a.nice-deco {
   font-weight: $font-weight-bold;
   margin-bottom: $spacer;
   display: block;
+}
+
+.radio-w-100 {
+  .custom-control-inline {
+    display: block;
+    width: 100%;
+    padding-bottom: $spacer / 2;
+  }
 }

@@ -1022,6 +1022,16 @@ class Artikel
     public $cKurzbezeichnung = '';
 
     /**
+     * @var string
+     */
+    public $originalName = '';
+
+    /**
+     * @var string
+     */
+    public $originalSeo = '';
+
+    /**
      * @var array
      */
     public $languageURLs = [];
@@ -1068,7 +1078,7 @@ class Artikel
      */
     public function __construct()
     {
-        $this->setType(Image::TYPE_PRODUCT);
+        $this->setImageType(Image::TYPE_PRODUCT);
         $this->options = new stdClass();
         $this->conf    = $this->getConfig();
     }
@@ -1425,7 +1435,7 @@ class Artikel
                 $height = $size['height'];
                 $type   = $settings['format'] === 'png' ? \IMAGETYPE_PNG : \IMAGETYPE_JPEG;
             } else {
-                $refImage = \PFAD_ROOT . $req->getRaw();
+                $refImage = $req->getRaw();
 
                 [$width, $height, $type] = \getimagesize($refImage);
 
@@ -2317,12 +2327,10 @@ class Artikel
         $this->VariationenOhneFreifeld      = [];
         $this->oVariationenNurKind_arr      = [];
 
-        $currency       = Frontend::getCurrency();
-        $currencyFactor = $currency->getConversionFactor();
-        $imageBaseURL   = Shop::getImageBaseURL();
-        $isDefaultLang  = LanguageHelper::isDefaultLanguageActive();
-        $mayViewPrices  = Frontend::getCustomerGroup()->mayViewPrices();
-        $variations     = $this->execVariationSQL($customerGroupID, $exportWorkaround);
+        $currency      = Frontend::getCurrency();
+        $imageBaseURL  = Shop::getImageBaseURL();
+        $mayViewPrices = Frontend::getCustomerGroup()->mayViewPrices();
+        $variations    = $this->execVariationSQL($customerGroupID, $exportWorkaround);
         if (!\is_array($variations) || \count($variations) === 0) {
             return $this;
         }
@@ -2337,11 +2345,10 @@ class Artikel
         $per         = ' ' . Shop::Lang()->get('vpePer') . ' ' . $this->cVPEEinheit;
         $taxRate     = $_SESSION['Steuersatz'][$this->kSteuerklasse];
 
-        if ($exportWorkaround) {
-            $cntVariationen = (object)['nCount' => 0];
-        } else {
-            $cntVariationen = Shop::Container()->getDB()->query(
-                'SELECT COUNT(teigenschaft.kEigenschaft) AS nCount
+        $cntVariationen = $exportWorkaround
+            ? 0
+            : (int)Shop::Container()->getDB()->query(
+                'SELECT COUNT(teigenschaft.kEigenschaft) AS cnt
                     FROM teigenschaft
                     LEFT JOIN teigenschaftsichtbarkeit 
                         ON teigenschaftsichtbarkeit.kEigenschaft = teigenschaft.kEigenschaft
@@ -2350,31 +2357,13 @@ class Artikel
                         AND teigenschaft.cTyp NOT IN (\'FREIFELD\', \'PFLICHT-FREIFELD\')
                         AND teigenschaftsichtbarkeit.kEigenschaft IS NULL',
                 ReturnType::SINGLE_OBJECT
-            );
-        }
-
+            )->cnt;
         foreach ($variations as $i => $tmpVariation) {
             if ($lastID !== $tmpVariation->kEigenschaft) {
                 ++$counter;
-                $lastID                                = $tmpVariation->kEigenschaft;
-                $variation                             = new stdClass();
-                $variation->Werte                      = [];
-                $variation->kEigenschaft               = (int)$tmpVariation->kEigenschaft;
-                $variation->kArtikel                   = (int)$tmpVariation->kArtikel;
-                $variation->cWaehlbar                  = $tmpVariation->cWaehlbar;
-                $variation->cTyp                       = $tmpVariation->cTyp;
-                $variation->nSort                      = (int)$tmpVariation->nSort;
-                $variation->cName                      = $tmpVariation->cName;
-                $variation->nLieferbareVariationswerte = 0;
-                if ($this->kSprache > 0
-                    && !$isDefaultLang
-                    && \mb_strlen($tmpVariation->cName_teigenschaftsprache) > 0
-                ) {
-                    $variation->cName = $tmpVariation->cName_teigenschaftsprache;
-                }
-                if ($tmpVariation->cTyp === 'FREIFELD' || $tmpVariation->cTyp === 'PFLICHT-FREIFELD') {
-                    $variation->nLieferbareVariationswerte = 1;
-                }
+                $lastID    = $tmpVariation->kEigenschaft;
+                $variation = new Variation();
+                $variation->init($tmpVariation);
                 $this->Variationen[$counter] = $variation;
             }
             // Fix #1517
@@ -2383,62 +2372,10 @@ class Artikel
             }
             $tmpVariation->kEigenschaft = (int)$tmpVariation->kEigenschaft;
 
-            $value                   = new stdClass();
-            $value->kEigenschaftWert = (int)$tmpVariation->kEigenschaftWert;
-            $value->kEigenschaft     = (int)$tmpVariation->kEigenschaft;
-            $value->cName            = Text::htmlentitiesOnce(
-                $tmpVariation->cName_teigenschaftwert ?? '',
-                \ENT_COMPAT | \ENT_HTML401
-            );
-            $value->fAufpreisNetto   = $tmpVariation->fAufpreisNetto;
-            $value->fGewichtDiff     = $tmpVariation->fGewichtDiff;
-            $value->cArtNr           = $tmpVariation->cArtNr;
-            $value->nSort            = $tmpVariation->teigenschaftwert_nSort;
-            $value->fLagerbestand    = $tmpVariation->fLagerbestand;
-            $value->fPackeinheit     = $tmpVariation->fPackeinheit;
-            $value->inStock          = true;
-            $value->notExists        = isset($tmpVariation->nMatched)
-                && (int)$tmpVariation->nMatched < (int)$cntVariationen->nCount - 1;
-
-            if (isset($tmpVariation->fVPEWert) && $tmpVariation->fVPEWert > 0) {
-                $value->fVPEWert = $tmpVariation->fVPEWert;
-            }
+            $value = new VariationValue();
+            $value->init($tmpVariation, $cntVariationen, $tmpDiscount);
             if ($this->kVaterArtikel > 0 || $this->nIstVater === 1) {
-                $varCombi                         = new stdClass();
-                $varCombi->kArtikel               = $tmpVariation->tartikel_kArtikel ?? null;
-                $varCombi->tartikel_fLagerbestand = $tmpVariation->tartikel_fLagerbestand ?? null;
-                $varCombi->cLagerBeachten         = $tmpVariation->cLagerBeachten ?? null;
-                $varCombi->cLagerKleinerNull      = $tmpVariation->cLagerKleinerNull ?? null;
-                $varCombi->cLagerVariation        = $tmpVariation->cLagerVariation ?? null;
-
-                if ($this->nIstVater === 1 && isset($tmpVariation->cMergedLagerBeachten)) {
-                    $varCombi->tartikel_fLagerbestand = $tmpVariation->fMergedLagerbestand ?? null;
-                    $varCombi->cLagerBeachten         = $tmpVariation->cMergedLagerBeachten ?? null;
-                    $varCombi->cLagerKleinerNull      = $tmpVariation->cMergedLagerKleinerNull ?? null;
-                    $varCombi->cLagerVariation        = $tmpVariation->cMergedLagerVariation ?? null;
-                }
-
-                $stockInfo = $this->getStockInfo((object)[
-                    'cLagerVariation'   => $varCombi->cLagerVariation,
-                    'fLagerbestand'     => $varCombi->tartikel_fLagerbestand,
-                    'cLagerBeachten'    => $varCombi->cLagerBeachten,
-                    'cLagerKleinerNull' => $varCombi->cLagerKleinerNull,
-                ]);
-
-                $value->inStock          = $stockInfo->inStock;
-                $value->notExists        = $value->notExists || $stockInfo->notExists;
-                $value->oVariationsKombi = $varCombi;
-            }
-            if ($this->kSprache > 0 && !$isDefaultLang && \mb_strlen($tmpVariation->localizedName) > 0) {
-                $value->cName = $tmpVariation->localizedName;
-            }
-            // kundengrp spezif. Aufpreis?
-            if ($tmpVariation->fAufpreisNetto_teigenschaftwertaufpreis !== null) {
-                $value->fAufpreisNetto =
-                    $tmpVariation->fAufpreisNetto_teigenschaftwertaufpreis * ((100 - $tmpDiscount) / 100);
-            }
-            if ((int)$value->fPackeinheit === 0) {
-                $value->fPackeinheit = 1;
+                $value->addChildItems($tmpVariation, $this);
             }
             if ($this->cLagerBeachten === 'Y'
                 && $this->cLagerVariation === 'Y'
@@ -2461,103 +2398,13 @@ class Artikel
             ) {
                 $value->cName .= $outOfStock;
             }
-            if ($tmpVariation->cPfad
-                && \file_exists(\PFAD_ROOT . \PFAD_VARIATIONSBILDER_NORMAL . $tmpVariation->cPfad)
-            ) {
+            if ($tmpVariation->cPfad !== null && $value->addImages($tmpVariation->cPfad, $imageBaseURL)) {
                 $this->cVariationenbilderVorhanden = true;
-                $value->cBildPfadMini              = \PFAD_VARIATIONSBILDER_MINI . $tmpVariation->cPfad;
-                $value->cBildPfad                  = \PFAD_VARIATIONSBILDER_NORMAL . $tmpVariation->cPfad;
-                $value->cBildPfadGross             = \PFAD_VARIATIONSBILDER_GROSS . $tmpVariation->cPfad;
-
-                $value->cBildPfadMiniFull  = $imageBaseURL . \PFAD_VARIATIONSBILDER_MINI . $tmpVariation->cPfad;
-                $value->cBildPfadFull      = $imageBaseURL . \PFAD_VARIATIONSBILDER_NORMAL . $tmpVariation->cPfad;
-                $value->cBildPfadGrossFull = $imageBaseURL . \PFAD_VARIATIONSBILDER_GROSS . $tmpVariation->cPfad;
-                // compatibility
-                $value->cPfadMini   = \PFAD_VARIATIONSBILDER_MINI . $tmpVariation->cPfad;
-                $value->cPfadKlein  = \PFAD_VARIATIONSBILDER_NORMAL . $tmpVariation->cPfad;
-                $value->cPfadNormal = \PFAD_VARIATIONSBILDER_NORMAL . $tmpVariation->cPfad;
-                $value->cPfadGross  = \PFAD_VARIATIONSBILDER_GROSS . $tmpVariation->cPfad;
-
-                $value->cPfadMiniFull   = $imageBaseURL . \PFAD_VARIATIONSBILDER_MINI . $tmpVariation->cPfad;
-                $value->cPfadKleinFull  = $imageBaseURL . \PFAD_VARIATIONSBILDER_NORMAL . $tmpVariation->cPfad;
-                $value->cPfadNormalFull = $imageBaseURL . \PFAD_VARIATIONSBILDER_NORMAL . $tmpVariation->cPfad;
-                $value->cPfadGrossFull  = $imageBaseURL . \PFAD_VARIATIONSBILDER_GROSS . $tmpVariation->cPfad;
             }
             if (!$mayViewPrices) {
                 unset($value->fAufpreisNetto, $value->cAufpreisLocalized, $value->cPreisInklAufpreis);
-            } elseif (isset($value->fVPEWert) && $value->fVPEWert > 0) {
-                $base                            = $value->fAufpreisNetto / $value->fVPEWert;
-                $value->cPreisVPEWertAufpreis[0] = Preise::getLocalizedPriceString(
-                    Tax::getGross($base, $taxRate),
-                    $currency,
-                    true,
-                    $precision
-                ) . $per;
-
-                $value->cPreisVPEWertAufpreis[1] = Preise::getLocalizedPriceString(
-                    $base,
-                    $currency,
-                    true,
-                    $precision
-                ) . $per;
-
-                $base = ($value->fAufpreisNetto + $this->Preise->fVKNetto) / $value->fVPEWert;
-
-                $value->cPreisVPEWertInklAufpreis[0] = Preise::getLocalizedPriceString(
-                    Tax::getGross($base, $taxRate),
-                    $currency,
-                    true,
-                    $precision
-                ) . $per;
-                $value->cPreisVPEWertInklAufpreis[1] = Preise::getLocalizedPriceString(
-                    $base,
-                    $currency,
-                    true,
-                    $precision
-                ) . $per;
             }
-
-            if (isset($value->fAufpreisNetto) && $value->fAufpreisNetto != 0) {
-                $surcharge                    = $value->fAufpreisNetto;
-                $value->cAufpreisLocalized[0] = Preise::getLocalizedPriceString(
-                    Tax::getGross($surcharge, $taxRate, 4),
-                    $currency
-                );
-                $value->cAufpreisLocalized[1] = Preise::getLocalizedPriceString($surcharge, $currency);
-                // Wenn der Artikel ein VarikombiKind ist, rechne nicht nochmal die Variationsaufpreise drauf
-                if ($this->kVaterArtikel > 0) {
-                    $value->cPreisInklAufpreis[0] = Preise::getLocalizedPriceString(
-                        Tax::getGross($this->Preise->fVKNetto, $taxRate),
-                        $currency
-                    );
-                    $value->cPreisInklAufpreis[1] = Preise::getLocalizedPriceString($this->Preise->fVKNetto, $currency);
-                } else {
-                    $value->cPreisInklAufpreis[0] = Preise::getLocalizedPriceString(
-                        Tax::getGross($surcharge + $this->Preise->fVKNetto, $taxRate),
-                        $currency
-                    );
-                    $value->cPreisInklAufpreis[1] = Preise::getLocalizedPriceString(
-                        $surcharge + $this->Preise->fVKNetto,
-                        $currency
-                    );
-                }
-
-                if ($value->fAufpreisNetto > 0) {
-                    $value->cAufpreisLocalized[0] = '+ ' . $value->cAufpreisLocalized[0];
-                    $value->cAufpreisLocalized[1] = '+ ' . $value->cAufpreisLocalized[1];
-                } else {
-                    $value->cAufpreisLocalized[0] = \str_replace('-', '- ', $value->cAufpreisLocalized[0]);
-                    $value->cAufpreisLocalized[1] = \str_replace('-', '- ', $value->cAufpreisLocalized[1]);
-                }
-                $surcharge = $value->fAufpreisNetto;
-
-                $value->fAufpreis[0] = Tax::getGross($surcharge * $currencyFactor, $taxRate);
-                $value->fAufpreis[1] = $surcharge * $currencyFactor;
-
-                if ($surcharge > 0) {
-                    $this->nVariationsAufpreisVorhanden = 1;
-                }
-            }
+            $value->addPrices($this, $taxRate, $currency, $mayViewPrices, $precision, $per);
             $this->Variationen[$counter]->Werte[$i] = $value;
         }
         foreach ($this->Variationen as $i => $oVariation) {
@@ -3754,7 +3601,7 @@ class Artikel
                 tartikel.kEinheit, tartikel.kVPEEinheit, tartikel.kVersandklasse, tartikel.kEigenschaftKombi,
                 tartikel.kVaterArtikel, tartikel.kStueckliste, tartikel.kWarengruppe,
                 tartikel.cArtNr, tartikel.cName, tartikel.cBeschreibung, tartikel.cAnmerkung, ' . $bomSQL . '
-                tartikel.fMwSt,
+                tartikel.fMwSt, tartikel.cSeo AS originalSeo,
                 IF (tartikelabnahme.fMindestabnahme IS NOT NULL,
                     tartikelabnahme.fMindestabnahme, tartikel.fMindestbestellmenge) AS fMindestbestellmenge,
                 IF (tartikelabnahme.fIntervall IS NOT NULL,
@@ -3864,6 +3711,8 @@ class Artikel
      */
     private function sanitizeProductData($data): void
     {
+        $this->originalName                      = $data->cName;
+        $this->originalSeo                       = $data->originalSeo;
         $data                                    = $this->localizeData($data);
         $this->kArtikel                          = (int)$data->kArtikel;
         $this->kHersteller                       = (int)$data->kHersteller;
@@ -4053,12 +3902,11 @@ class Artikel
             $this->cHerstellerBeschreibung    = Text::parseNewsText($data->cBeschreibung_hst_spr);
             $this->cHerstellerSortNr          = $data->nSortNr_thersteller;
             if ($data->manufImg !== null && \mb_strlen($data->manufImg) > 0) {
-                $imageBaseURL                   = Shop::getImageBaseURL();
-                $this->cBildpfad_thersteller    = $imageBaseURL . \PFAD_HERSTELLERBILDER_KLEIN . $data->manufImg;
+                $this->cBildpfad_thersteller    = $manufacturer->getImage(Image::SIZE_XS);
                 $this->cHerstellerBildKlein     = \PFAD_HERSTELLERBILDER_KLEIN . $data->manufImg;
                 $this->cHerstellerBildNormal    = \PFAD_HERSTELLERBILDER_NORMAL . $data->manufImg;
-                $this->cHerstellerBildURLKlein  = $imageBaseURL . $this->cHerstellerBildKlein;
-                $this->cHerstellerBildURLNormal = $imageBaseURL . $this->cHerstellerBildNormal;
+                $this->cHerstellerBildURLKlein  = $manufacturer->getImage(Image::SIZE_XS);
+                $this->cHerstellerBildURLNormal = $manufacturer->getImage(Image::SIZE_MD);
             }
         }
 

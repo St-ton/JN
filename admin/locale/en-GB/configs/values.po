@@ -1331,6 +1331,33 @@ msgstr "SKU(item)_SKU(VariationValue)"
 msgid "bilder_variation_namen_value(3)"
 msgstr "Item name_VariationName_VariationValue"
 
+msgid "bilder_hersteller_namen_value(0)"
+msgstr "Primary key (default by JTL-Wawi)"
+
+msgid "bilder_hersteller_namen_value(1)"
+msgstr "Manufacturer name (URL path)"
+
+msgid "bilder_hersteller_namen_value(2)"
+msgstr "Filename sent by JTL-Wawi"
+
+msgid "bilder_merkmal_namen_value(0)"
+msgstr "Primary key (default by JTL-Wawi)"
+
+msgid "bilder_merkmal_namen_value(1)"
+msgstr "Characteristic name"
+
+msgid "bilder_merkmal_namen_value(2)"
+msgstr "Filename sent by JTL-Wawi"
+
+msgid "bilder_merkmalwert_namen_value(0)"
+msgstr "Primary key (default by JTL-Wawi)"
+
+msgid "bilder_merkmalwert_namen_value(1)"
+msgstr "Characteristic value name (URL path)"
+
+msgid "bilder_merkmalwert_namen_value(2)"
+msgstr "Filename sent by JTL-Wawi"
+
 msgid "bilder_externe_bildschnittstelle_value(A)"
 msgstr "No access limitation"
 
@@ -1351,9 +1378,6 @@ msgstr "Yes"
 
 msgid "bilder_dateiformat_value(PNG)"
 msgstr "PNG"
-
-msgid "bilder_dateiformat_value(WEBP)"
-msgstr "WebP"
 
 msgid "bilder_dateiformat_value(AUTO)"
 msgstr "Auto"

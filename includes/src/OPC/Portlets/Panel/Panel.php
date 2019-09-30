@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -8,7 +8,6 @@ namespace JTL\OPC\Portlets\Panel;
 
 use JTL\OPC\InputType;
 use JTL\OPC\Portlet;
-use JTL\OPC\PortletInstance;
 
 /**
  * Class Panel
@@ -16,34 +15,6 @@ use JTL\OPC\PortletInstance;
  */
 class Panel extends Portlet
 {
-    /**
-     * @param PortletInstance $instance
-     * @return string
-     * @throws \Exception
-     */
-    public function getPreviewHtml(PortletInstance $instance): string
-    {
-        $instance->addClass('panel')
-                 ->addClass('panel-' . $instance->getProperty('panel-state'))
-                 ->addClass($instance->getProperty('panel-class'));
-
-        return $this->getPreviewHtmlFromTpl($instance);
-    }
-
-    /**
-     * @param PortletInstance $instance
-     * @return string
-     * @throws \Exception
-     */
-    public function getFinalHtml(PortletInstance $instance): string
-    {
-        $instance->addClass('panel')
-                 ->addClass('panel-' . $instance->getProperty('panel-state'))
-                 ->addClass($instance->getProperty('panel-class'));
-
-        return $this->getFinalHtmlFromTpl($instance);
-    }
-
     /**
      * @return string
      */

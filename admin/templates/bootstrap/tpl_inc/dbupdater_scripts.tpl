@@ -41,7 +41,9 @@
 
 					if (result.availableUpdate) {
 						doUpdate(callback);
-					}
+					} else {
+					    location.reload();
+                    }
 				} else {
 					callback(undefined, error);
 				}
@@ -164,6 +166,9 @@
 			showNotify(error ? 'danger' : 'success', 'Migration', message);
 
 			if (!error) {
+			    if (result.forceReload === true) {
+			        location.reload();
+                }
 				updateStatusTpl(plugin);
 				if (dir === 'up') {
 					pushEvent(sprintf('{/literal}{__('updateTosuccessfull')}{literal}', formatVersion(result.result)));

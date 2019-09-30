@@ -9,9 +9,11 @@
                 href=$searchFilter->getURL()
                 active=$searchFilter->isActive()
                 router-class="px-0"}
-                    <span class="value">
-                        <i class="far fa-{if $searchFilter->isActive()}check-{/if}square text-muted"></i> {$searchFilter->getName()} ({$searchFilter->getCount()})
-                    </span>
+                    <div class="align-items-center d-flex">
+                        <i class="far fa-{if $searchFilter->isActive()}check-{/if}square text-muted mr-2"></i>
+                        <span class="word-break">{$searchFilter->getName()}</span>
+                        <span class="badge badge-outline-secondary ml-auto">{$searchFilter->getCount()}</span>
+                    </div>
             {/navitem}
         {/foreach}
     {/nav}

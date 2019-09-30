@@ -36,32 +36,20 @@
                             {block name='productdetails-image-images'}
                                 {foreach $Artikel->Bilder as $image}
                                     {strip}
-                                        {*<div>*}
-                                            {image alt=$image->cAltAttribut|escape:'html'
-                                                fluid=true
-                                                lazy=true
-                                                src="{$Artikel->Bilder[0]->cURLNormal}"
-                                                srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
-                                                data=["srcset" => "{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                    {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                    {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
-                                                    {$image->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w",
-                                                "sizes" => "auto",
+                                        {image alt=$image->cAltAttribut|escape:'html'
+                                            fluid=true
+                                            lazy=true
+                                            webp=true
+                                            src="{$Artikel->Bilder[0]->cURLNormal}"
+                                            srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
+                                                {$image->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
+                                            sizes="auto"
+                                            data=[
                                                 "list"=>"{$image->galleryJSON|escape:"html"}"
-                                                ]
-                                            }
-                                            {*{image alt=$image->cAltAttribut|escape:'html'
-                                                data=["lazy"=>$image->cURLMini,
-                                                    "srcset"=>"{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                        {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                        {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
-                                                        {$image->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w",
-                                                    "list"=>"{$image->galleryJSON|escape:"html"}"
-                                                ]
-                                                sizes="auto"
-                                                src=$image->cURLMini
-                                            }*}
-                                        {*</div>*}
+                                            ]
+                                        }
                                     {/strip}
                                 {/foreach}
                             {/block}
@@ -77,11 +65,12 @@
                                 {block name='productdetails-image-preview-images'}
                                     {foreach $Artikel->Bilder as $image}
                                         {strip}
-                                            <div>
-                                                {image src="{$imageBaseURL}gfx/trans.png" data=["lazy"=>"{$image->cURLKlein}"]
-                                                    alt="{$image->cAltAttribut|escape:"html"}"
-                                                    fluid=true}
-                                            </div>
+                                            {image alt=$image->cAltAttribut|escape:'html'
+                                                fluid=true
+                                                lazy=true
+                                                webp=true
+                                                src="{$image->cURLKlein}"
+                                            }
                                         {/strip}
                                     {/foreach}
                                 {/block}

@@ -5,12 +5,11 @@
  */
 
 use JTL\Alert\Alert;
+use JTL\Campaign;
 use JTL\DB\ReturnType;
-use JTL\Helpers\Date;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
-use JTL\Campaign;
 use JTL\Pagination\Pagination;
 use JTL\Shop;
 

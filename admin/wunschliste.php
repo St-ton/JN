@@ -86,7 +86,7 @@ $wishLists = Shop::Container()->getDB()->query(
 );
 foreach ($wishLists as $wishList) {
     if ($wishList->kKunde !== null) {
-        $customer            = new Customer($wishList->kKunde);
+        $customer            = new Customer((int)$wishList->kKunde);
         $wishList->cNachname = $customer->cNachname;
     }
 }

@@ -11,6 +11,8 @@ use InvalidArgumentException;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
+use JTL\Media\Image;
+use JTL\Media\MultiSizeImage;
 use JTL\Shop;
 use stdClass;
 use function Functional\map;
@@ -21,6 +23,8 @@ use function Functional\map;
  */
 class Item extends AbstractItem
 {
+    use MultiSizeImage;
+
     /**
      * @var int
      */
@@ -142,6 +146,7 @@ class Item extends AbstractItem
         $this->dateCreated   = $this->date;
         $this->dateValidFrom = $this->date;
         $this->comments      = new CommentList($this->db);
+        $this->setImageType(Image::TYPE_NEWS);
     }
 
     /**
@@ -240,6 +245,9 @@ class Item extends AbstractItem
         }
         $this->comments->createItemsByNewsItem($this->id);
         $this->commentCount = $this->comments->getItems()->count();
+        if (($preview = $this->getPreviewImage()) !== '') {
+            $this->generateAllImageSizes(true, 1, \str_replace(\PFAD_NEWSBILDER, '', $preview));
+        }
 
         return $this;
     }
@@ -284,7 +292,7 @@ class Item extends AbstractItem
      * @param string $uploadDirName
      * @return array
      */
-    public function getImages(string $uploadDirName): array
+    public function getNewsImages(string $uploadDirName): array
     {
         $images = [];
         if ($this->id > 0 && \is_dir($uploadDirName . $this->id)) {

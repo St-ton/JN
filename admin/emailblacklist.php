@@ -47,8 +47,8 @@ $blocked   = Shop::Container()->getDB()->query(
     ReturnType::ARRAY_OF_OBJECTS
 );
 
-$smarty->assign('oEmailBlacklist_arr', $blacklist)
-       ->assign('oEmailBlacklistBlock_arr', $blocked)
-       ->assign('oConfig_arr', getAdminSectionSettings(CONF_EMAILBLACKLIST))
+$smarty->assign('blacklist', $blacklist)
+       ->assign('blocked', $blocked)
+       ->assign('config', getAdminSectionSettings(CONF_EMAILBLACKLIST))
        ->assign('step', $step)
        ->display('emailblacklist.tpl');

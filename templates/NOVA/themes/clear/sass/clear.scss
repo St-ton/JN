@@ -27,18 +27,28 @@
 
 // components
 @import "components/grid";
+@import "components/badges";
 @import "components/boxes";
 @import "components/navs";
 @import "components/breadcrumbs";
 @import "components/buttons";
+@import "components/cards";
+@import "components/carousel";
+@import "components/dropdowns";
+@import "components/forms";
+@import "components/icons";
 @import "components/productbox";
 @import "components/tooltip";
 @import "components/ui_slider";
 @import "components/ribbons";
 @import "components/slider";
+@import "components/stepper";
 
 // theme base
 @import "base";
 
 /* utilities */
 @import 'utilities/all';
+
+/* productlist */
+@import 'productlist';

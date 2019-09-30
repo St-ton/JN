@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -7,11 +7,13 @@
 namespace JTL\Media;
 
 use Exception;
+use Imagick;
 use Intervention\Image\Constraint;
+use Intervention\Image\Image as InImage;
 use Intervention\Image\ImageManager;
 use JTL\DB\ReturnType;
 use JTL\Shop;
-use \Intervention\Image\Image as InImage;
+use function Functional\reindex;
 
 /**
  * Class Image
@@ -44,51 +46,17 @@ class Image
     public const SIZE_XL       = 'xl';
 
     /**
-     * Image type map
-     *
-     * @var array
-     */
-    private static $typeMapper = [
-        'artikel'      => self::TYPE_PRODUCT,
-        'produkte'     => self::TYPE_PRODUCT,
-        'kategorien'   => self::TYPE_CATEGORY,
-        'kategorie'    => self::TYPE_CATEGORY,
-        'konfigurator' => self::TYPE_CONFIGGROUP,
-        'variationen'  => self::TYPE_VARIATION,
-        'hersteller'   => self::TYPE_MANUFACTURER,
-        'merkmale'     => self::TYPE_CHARACTERISTIC,
-        'merkmalwerte' => self::TYPE_CHARACTERISTIC_VALUE
-    ];
-
-    /**
      * Image size map
      *
      * @var array
      */
-    private static $sizeMapper = [
-        'original' => self::SIZE_ORIGINAL,
-        'mini'     => self::SIZE_XS,
-        'klein'    => self::SIZE_SM,
-        'normal'   => self::SIZE_MD,
-        'gross'    => self::SIZE_LG,
-        'riesig'   => self::SIZE_XL
-    ];
-
-    /**
-     * Image size map
-     *
-     * @var array
-     */
-    private static $positionMapper = [
-        'oben'         => 'top',
-        'oben-rechts'  => 'top-right',
-        'rechts'       => 'right',
-        'unten-rechts' => 'bottom-right',
-        'unten'        => 'bottom',
-        'unten-links'  => 'bottom-left',
-        'links'        => 'left',
-        'oben-links'   => 'top-left',
-        'zentriert'    => 'center'
+    private static $sizes = [
+        self::SIZE_XS,
+        self::SIZE_SM,
+        self::SIZE_MD,
+        self::SIZE_LG,
+        self::SIZE_XL,
+        self::SIZE_ORIGINAL
     ];
 
     /**
@@ -103,7 +71,7 @@ class Image
      */
     public static function getAllSizes(): array
     {
-        return \array_values(self::$sizeMapper);
+        return self::$sizes;
     }
 
     /**
@@ -234,7 +202,25 @@ class Image
                     'height' => (int)$settings['bilder_kategorien_gross_hoehe']
                 ]
             ],
-            self::TYPE_OPC             => [
+            self::TYPE_VARIATION            => [
+                self::SIZE_XS => [
+                    'width'  => (int)$settings['bilder_variationen_mini_breite'],
+                    'height' => (int)$settings['bilder_variationen_mini_hoehe']
+                ],
+                self::SIZE_SM => [
+                    'width'  => (int)$settings['bilder_variationen_klein_breite'],
+                    'height' => (int)$settings['bilder_variationen_klein_hoehe']
+                ],
+                self::SIZE_MD => [
+                    'width'  => (int)$settings['bilder_variationen_breite'],
+                    'height' => (int)$settings['bilder_variationen_hoehe']
+                ],
+                self::SIZE_LG => [
+                    'width'  => (int)$settings['bilder_variationen_gross_breite'],
+                    'height' => (int)$settings['bilder_variationen_gross_hoehe']
+                ]
+            ],
+            self::TYPE_OPC                  => [
                 self::SIZE_XS => [
                     'width'  => 480,
                     'height' => 480
@@ -253,56 +239,17 @@ class Image
                 ]
             ],
             'naming'                        => [
-                self::TYPE_PRODUCT   => (int)$settings['bilder_artikel_namen'],
-                self::TYPE_CATEGORY  => (int)$settings['bilder_kategorie_namen'],
-                self::TYPE_VARIATION => (int)$settings['bilder_variation_namen']
+                self::TYPE_PRODUCT              => (int)$settings['bilder_artikel_namen'],
+                self::TYPE_CATEGORY             => (int)$settings['bilder_kategorie_namen'],
+                self::TYPE_VARIATION            => (int)$settings['bilder_variation_namen'],
+                self::TYPE_MANUFACTURER         => (int)$settings['bilder_hersteller_namen'],
+                self::TYPE_CHARACTERISTIC       => (int)$settings['bilder_merkmal_namen'],
+                self::TYPE_CHARACTERISTIC_VALUE => (int)$settings['bilder_merkmalwert_namen'],
             ]
         ];
         self::$settings['size'] = self::$settings[self::TYPE_PRODUCT];
 
         return self::$settings;
-    }
-
-    /**
-     * Convert old size naming
-     *
-     * @param string $size
-     * @param bool   $flip
-     * @return string|null
-     */
-    public static function mapSize(string $size, bool $flip = false): ?string
-    {
-        $mapper = $flip ? \array_flip(self::$sizeMapper) : self::$sizeMapper;
-
-        return $mapper[\mb_convert_case($size, \MB_CASE_LOWER)] ?? null;
-    }
-
-    /**
-     * Convert old type naming
-     *
-     * @param string $type
-     * @param bool   $flip
-     * @return string|null
-     */
-    public static function mapType(string $type, bool $flip = false): ?string
-    {
-        $mapper = $flip ? \array_flip(self::$typeMapper) : self::$typeMapper;
-
-        return $mapper[\mb_convert_case($type, \MB_CASE_LOWER)] ?? null;
-    }
-
-    /**
-     * Convert old position naming
-     *
-     * @param string     $position
-     * @param bool|false $flip
-     * @return null
-     */
-    public static function mapPosition($position, $flip = false)
-    {
-        $mapper = $flip ? \array_flip(self::$positionMapper) : self::$positionMapper;
-
-        return $mapper[\mb_convert_case($position, \MB_CASE_LOWER)] ?? null;
     }
 
     /**
@@ -312,8 +259,7 @@ class Image
      */
     private static function getBranding(): array
     {
-        $branding = [];
-        $data     = Shop::Container()->getDB()->query(
+        $data = Shop::Container()->getDB()->query(
             'SELECT tbranding.cBildKategorie AS type, 
             tbrandingeinstellung.cPosition AS position, tbrandingeinstellung.cBrandingBild AS path,
             tbrandingeinstellung.dTransparenz AS transparency, tbrandingeinstellung.dGroesse AS size
@@ -324,15 +270,14 @@ class Image
             ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($data as $item) {
-            $item->size            = (int)$item->size;
-            $item->transparency    = (int)$item->transparency;
-            $item->type            = self::mapType($item->type);
-            $item->position        = self::mapPosition($item->position);
-            $item->path            = \PFAD_ROOT . \PFAD_BRANDINGBILDER . $item->path;
-            $branding[$item->type] = $item;
+            $item->size         = (int)$item->size;
+            $item->transparency = (int)$item->transparency;
+            $item->path         = \PFAD_ROOT . \PFAD_BRANDINGBILDER . $item->path;
         }
 
-        return $branding;
+        return reindex($data, function ($e) {
+            return $e->type;
+        });
     }
 
     /**
@@ -361,10 +306,9 @@ class Image
      */
     public static function getCleanFilename(string $filename): string
     {
-        $filename = \mb_convert_case($filename, \MB_CASE_LOWER);
         $source   = ['.', ' ', '/', 'ä', 'ö', 'ü', 'ß'];
         $replace  = ['-', '-', '-', 'ae', 'oe', 'ue', 'ss'];
-        $filename = \str_replace($source, $replace, $filename);
+        $filename = \str_replace($source, $replace, \mb_convert_case($filename, \MB_CASE_LOWER));
 
         return \preg_replace('/[^a-zA-Z0-9\.\-_]/', '', $filename);
     }
@@ -376,37 +320,45 @@ class Image
      */
     public static function render(MediaImageRequest $req, bool $streamOutput = false): void
     {
-        $rawPath = $req->getRaw(true);
+        $rawPath = $req->getRaw();
         if (!\is_file($rawPath)) {
-            Shop::dbg($req, true, 'REQ@exception:', 6);
             throw new Exception(\sprintf('Image "%s" does not exist', $rawPath));
         }
         $settings  = self::getSettings();
         $thumbnail = $req->getThumb($req->getSize(), true);
+        $manager   = new ImageManager(['driver' => self::getImageDriver()]);
+        $img       = $manager->make($rawPath);
         self::checkDirectory($thumbnail);
-        $manager = new ImageManager(['driver' => self::getImageDriver()]);
-        $img     = $manager->make($rawPath);
-        // image optimizations
-        $img->blur(1);
-        if (self::getImageDriver() === 'imagick') {
-            $img->getCore()->setColorspace(\Imagick::COLORSPACE_RGB);
-            $img->getCore()->transformImageColorspace(\Imagick::COLORSPACE_RGB);
-            $img->getCore()->stripImage();
-        }
         self::resize($req, $img, $settings);
         self::addBranding($manager, $req, $img);
+        self::optimizeImage($img, $req->getExt());
         \executeHook(\HOOK_IMAGE_RENDER, [
             'image'    => $img,
             'settings' => $settings,
             'path'     => $thumbnail
         ]);
-        if ($settings['format'] === 'jpg') {
-            $img->interlace(true);
-        }
-        $img->save($thumbnail, $settings['quality']);
-
+        $img->save($thumbnail, $settings['quality'], $req->getExt());
         if ($streamOutput) {
             echo $img->response($req->getExt());
+        }
+    }
+
+    /**
+     * @param InImage $image
+     * @param string  $extension
+     */
+    private static function optimizeImage(InImage $image, string $extension): void
+    {
+        // @todo: doesn't look very good with small images
+//        $image->blur(1);
+        // @todo: strange blue tones with PNG - https://felix.vm0.halle/media/image/product/28037/md/blauer-artikel.png
+//        if (self::getImageDriver() === 'imagick') {
+//            $image->getCore()->setColorspace(\Imagick::COLORSPACE_RGB);
+//            $image->getCore()->transformImageColorspace(\Imagick::COLORSPACE_RGB);
+//            $image->getCore()->stripImage();
+//        }
+        if ($extension === 'jpg') {
+            $image->interlace();
         }
     }
 
@@ -441,8 +393,8 @@ class Image
     private static function addBranding(ImageManager $manager, MediaImageRequest $req, InImage $img): void
     {
         $branding = self::getSettings()['branding'];
-        $type     = $req->getSize()->getImageType();
-        if ($branding === null || !\in_array($type, [self::SIZE_LG, self::SIZE_ORIGINAL], true)) {
+        $type     = $req->getSize()->getSize();
+        if ($branding === null || !\in_array($type, [self::SIZE_LG, self::SIZE_ORIGINAL, self::SIZE_XL], true)) {
             return;
         }
         $watermark = $manager->make($branding->path);
@@ -481,5 +433,18 @@ class Image
     public static function getImageDriver(): string
     {
         return \extension_loaded('imagick') ? 'imagick' : 'gd';
+    }
+
+    /**
+     * @return bool
+     */
+    public static function hasWebPSupport(): bool
+    {
+        if (self::getSettings()['format'] !== 'auto') {
+            return false;
+        }
+        return self::getImageDriver() === 'imagick'
+            ? \count(Imagick::queryFormats('WEBP')) > 0
+            : \gd_info()['WebP Support'] ?? false;
     }
 }

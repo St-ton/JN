@@ -6,6 +6,7 @@
 
 namespace JTL\Plugin\Admin\Validation\Items;
 
+use JTL\Helpers\GeneralObject;
 use JTL\Plugin\InstallCode;
 
 /**
@@ -20,13 +21,14 @@ final class MailTemplates extends AbstractItem
     public function validate(): int
     {
         $node = $this->getInstallNode();
-        if (!isset($node['Emailtemplate']) || !\is_array($node['Emailtemplate'])) {
+        if (!GeneralObject::isCountable('Emailtemplate', $node)) {
             return InstallCode::OK;
         }
-        if (empty($node['Emailtemplate'][0]['Template']) || !\is_array($node['Emailtemplate'][0]['Template'])) {
+        $node = $node['Emailtemplate'][0]['Template'] ?? null;
+        if (!GeneralObject::hasCount($node)) {
             return InstallCode::MISSING_EMAIL_TEMPLATES;
         }
-        foreach ($node['Emailtemplate'][0]['Template'] as $i => $tpl) {
+        foreach ($node as $i => $tpl) {
             if (!\is_array($tpl)) {
                 continue;
             }
@@ -38,7 +40,7 @@ final class MailTemplates extends AbstractItem
                 continue;
             }
             \preg_match(
-                '/[a-zA-Z0-9\/_\-äÄüÜöÖß' . ' ]+/',
+                '/[\w\/\- ]+/u',
                 $tpl['Name'],
                 $hits1
             );

@@ -6,7 +6,7 @@
 
 namespace JTL\OPC;
 
-use JTL\OPC\Portlets\MissingPortlet;
+use JTL\OPC\Portlets\MissingPortlet\MissingPortlet;
 
 /**
  * Class MissingPortletInstance

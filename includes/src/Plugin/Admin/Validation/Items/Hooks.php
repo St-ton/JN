@@ -6,6 +6,7 @@
 
 namespace JTL\Plugin\Admin\Validation\Items;
 
+use JTL\Helpers\GeneralObject;
 use JTL\Plugin\InstallCode;
 
 /**
@@ -21,7 +22,7 @@ final class Hooks extends AbstractItem
     {
         $node = $this->getInstallNode();
         $dir  = $this->getDir();
-        if (!isset($node['Hooks']) || !\is_array($node['Hooks'])) {
+        if (!GeneralObject::isCountable('Hooks', $node)) {
             return InstallCode::OK;
         }
         if (\count($node['Hooks'][0]) === 1) {

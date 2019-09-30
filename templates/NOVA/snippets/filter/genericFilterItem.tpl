@@ -47,11 +47,11 @@
                         href="{if $filterOption->isActive()}{$filter->getUnsetFilterURL($filterOption->getValue())}{else}{$filterOption->getURL()}{/if}"
                         nofollow=true
                         router-class="px-0"}
-                        <span class="value">
+                        <div class="align-items-center d-flex">
                             {if $filter->getIcon() !== null}
-                                <i class="fa {$filter->getIcon()}"></i>
+                                <i class="fa {$filter->getIcon()} mr-2"></i>
                             {else}
-                                <i class="far fa-{if $filterIsActive === true}check-{/if}square text-muted"></i>
+                                <i class="far fa-{if $filterIsActive === true}check-{/if}square text-muted mr-2"></i>
                             {/if}
                             {if $filter->getNiceName() === 'Rating'}
                                 {block name='snippets-filter-genericFilterItem-include-rating-nav'}
@@ -59,18 +59,17 @@
                                 {/block}
                             {/if}
                             <span class="word-break">{$filterOption->getName()}</span>
-                        </span>
-                        ({$filterOption->getCount()})
+                            <span class="badge badge-outline-secondary ml-auto">{$filterOption->getCount()}</span>
+                        </div>
                     {/navitem}
                 {/foreach}
                 {if $limit != -1 && $filter->getOptions()|count > $limit}
                     </div>
-                    {button
-                        variant="link"
+                    {button variant="link"
                         role="button"
-                        class="text-right pr-0"
+                        class="text-right p-0"
                         data=["toggle"=> "collapse", "target"=>"#box-collps-filter{$filter->getNiceName()}"]
-                    }
+                        block=true}
                         {lang key='showAll'} <i class="fas fa-chevron-down"></i>
                     {/button}
                 {/if}

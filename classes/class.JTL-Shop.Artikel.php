@@ -6786,7 +6786,7 @@ class Artikel
         ];
 
         if ($this->kStueckliste > 0 && count($this->oStueckliste_arr) === 0) {
-            $this->holeStueckliste(Kundengruppe::getCurrent());
+            $this->holeStueckliste(Kundengruppe::getCurrent(), $onlyStockRelevant);
         }
 
         /** @var static $item */

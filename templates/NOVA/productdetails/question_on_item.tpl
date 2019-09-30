@@ -200,9 +200,13 @@
             {input type="hidden" name="a" value=$Artikel->kArtikel}
             {input type="hidden" name="show" value="1"}
             {input type="hidden" name="fragezumprodukt" value="1"}
-            {button type="submit" value="1" variant="primary" class="w-auto"}
-                {lang key='sendQuestion' section='productDetails'}
-            {/button}
+            {row}
+                {col md='auto' class="ml-auto"}
+                    {button type="submit" value="1" variant="primary" block=true}
+                        {lang key='sendQuestion' section='productDetails'}
+                    {/button}
+                {/col}
+            {/row}
         {/block}
     {/form}
     {/block}

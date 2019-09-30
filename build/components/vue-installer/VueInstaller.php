@@ -6,6 +6,11 @@
 
 use JTL\DB\NiceDB;
 use JTL\DB\ReturnType;
+use JTL\Exceptions\InvalidEntityNameException;
+use jtl\Wizard\Question;
+use jtl\Wizard\ShopWizard;
+use Systemcheck\Environment;
+use Systemcheck\Platform\Filesystem;
 
 /**
  * Class VueInstaller
@@ -54,7 +59,7 @@ class VueInstaller
      * @param array|null $post
      * @param bool       $cli
      */
-    public function __construct($task, $post = null, $cli = false)
+    public function __construct(string $task, array $post = null, bool $cli = false)
     {
         $this->task = $task;
         $this->post = $post;
@@ -102,11 +107,11 @@ class VueInstaller
     {
         if ($this->initNiceDB($this->post['db'])) {
             $step   = isset($this->post['stepId']) ? (int)$this->post['stepId'] : 0;
-            $wizard = new \jtl\Wizard\ShopWizard($step);
+            $wizard = new ShopWizard($step);
             if (isset($this->post['action']) && $this->post['action'] === 'setData') {
                 foreach ($wizard->getQuestions() as $idx => $question) {
                     $questionId = $question->getID();
-                    if ($question->getType() === \jtl\Wizard\Question::TYPE_BOOL) {
+                    if ($question->getType() === Question::TYPE_BOOL) {
                         $wizard->answerQuestionByID(
                             $questionId,
                             isset($this->post['data'][$questionId]) && $this->post['data'][$questionId] === 'true'
@@ -194,7 +199,7 @@ class VueInstaller
 
     /**
      * @return VueInstaller
-     * @throws \JTL\Exceptions\InvalidEntityNameException
+     * @throws InvalidEntityNameException
      */
     private function doInstall(): self
     {
@@ -421,7 +426,7 @@ ini_set('display_errors', 0);" . "\n";
      */
     public function getSystemCheck(): self
     {
-        $environment                  = new Systemcheck_Environment();
+        $environment                  = new Environment();
         $this->payload['testresults'] = $environment->executeTestGroup('Shop5');
 
         return $this;
@@ -432,7 +437,7 @@ ini_set('display_errors', 0);" . "\n";
      */
     public function getDirectoryCheck(): self
     {
-        $fsCheck                      = new Systemcheck_Platform_Filesystem(PFAD_ROOT);
+        $fsCheck                      = new Filesystem(PFAD_ROOT);
         $this->payload['testresults'] = $fsCheck->getFoldersChecked();
 
         return $this;

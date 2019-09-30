@@ -449,12 +449,6 @@ msgstr "Yes"
 msgid "artikeluebersicht_artikelintervall_anzeigen_value(N)"
 msgstr "No"
 
-msgid "artikeluebersicht_finanzierung_anzeigen_value(Y)"
-msgstr "Yes"
-
-msgid "artikeluebersicht_finanzierung_anzeigen_value(N)"
-msgstr "No"
-
 msgid "artikeluebersicht_erw_darstellung_value(Y)"
 msgstr "Yes"
 

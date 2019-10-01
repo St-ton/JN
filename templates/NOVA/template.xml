@@ -167,6 +167,7 @@
             <File Path="js/nouislider.min.js"/>
             <File Path="js/password/password.min.js"/>
             <File Path="js/helpers.js"/>
+            <File Path="js/header.js"/>
             <File Path="js/plugins/navscrollbar.js"/>
         </JS>
     </Minify>

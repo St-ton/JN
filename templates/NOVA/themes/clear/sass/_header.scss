@@ -9,10 +9,7 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
 	.navbar-toggler { color: map-get($grays, darker); }
 
 	.nav-right {
-		.dropdown-menu {
-			margin-top: rem(-.5px);
-			@include box-shadow(0 rem(8px) rem(9px) transparentize($black, .94));
-		}
+		.dropdown-menu { margin-top: rem(-.5px); }
 	}
 
 	/* mobile only */
@@ -20,39 +17,28 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
 	@include media-breakpoint-down(md) {
 		.navbar { height: rem(50px); padding: 0; }
 
-		.dropup, .dropright, .dropdown, .dropleft { position: static; }
+		.dropup, .dropright, .dropdown, .dropleft, .col, [class*='col-'] { position: static; }
 		.dropdown-menu { margin-top: rem(-.5px); width: 100%; }
 
-		.navbar-collapse {
-			position: absolute;
-			top: rem(50px);
-			left: 0;
-			padding-bottom: map-get($spacers, 1) * 20;
-			display: block;
-			height: calc(100vh - #{rem(50px)}) !important;
-			overflow: auto;
-			-webkit-overflow-scrolling: touch;
-			max-width: rem(270px);
-			transition: $transition-base;
-			z-index: $zindex-fixed;
-			width: 100%;
-			background: $white; @include box-shadow(0 rem(8px) rem(9px) transparentize($black, .94));
+		.navbar-collapse { position: absolute; top: rem(50px); left: 0; display: block; height: calc(100vh - #{rem(50px)}) !important; overflow: auto; -webkit-overflow-scrolling: touch; max-width: rem(270px); transition: $transition-base; z-index: $zindex-fixed; width: 100%; background: $white;
 			&:not(.show) { transform: translateX(-100%); }
 		}
 
-		.navbar-nav { padding: 0 $grid-gutter-width / 2; transition: $transition-base;
-			.nav-item, .nav-link { margin-left: -$grid-gutter-width / 2; margin-right: -$grid-gutter-width / 2; padding-left: $grid-gutter-width / 2; padding-right: $grid-gutter-width / 2; padding-top: $spacer; padding-bottom: $spacer; }
-			.nav-link { margin-top: -$spacer; margin-bottom: -$spacer; display: flex; align-items: center; justify-content: space-between;
-				&::after { @include fas('f054'); margin-left: map-get($spacers, 2); }
+		.navbar-nav { transition: $transition-base;
+			.nav-item, .nav-link { margin-left: 0; margin-right: 0; padding-left: $grid-gutter-width / 2; padding-right: $grid-gutter-width / 2; padding-top: $spacer; padding-bottom: $spacer; }
+			.nav-link { margin-top: -$spacer; margin-bottom: -$spacer; margin-left: -$grid-gutter-width / 2; margin-right: -$grid-gutter-width / 2; display: flex; align-items: center; justify-content: space-between; }
+			.dropdown {
+				> .nav-link {
+					&::after { @include fas('f054'); margin-left: map-get($spacers, 2) }
+					> .product-count { display: none; }
+				}
 			}
 
-			.dropdown-menu {
+			.dropdown-menu { @include box-shadow(0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94));
 				&.show { position: absolute; top: 0; left: 100%; }
 			}
 
-			.nav li:not(.submenu-headline) { display: none; }
-
-			&.show { transform: translateX(-100%); }
+			.nav { flex-direction: column; }
 		}
 
 		.nav-scrollbar-inner { overflow-x: initial; }
@@ -77,20 +63,21 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
 					&::before { width: 100%; }
 				}
 
-				.dropdown-menu {
-					max-height: calc(100vh - #{rem(134px)});
-					overflow: auto;
-					margin-top: rem(-.5px);
-				}
-				// &.dropdown:hover .dropdown-menu { display: block; }
+				> .dropdown-menu { max-height: calc(100vh - #{rem(200px)}); overflow: auto; margin-top: rem(-.5px); }
 
 				&.dropdown-full { position: static;
 					.dropdown-menu { width: 100%; }
 				}
+
+				.product-count { display: none; }
+
+				.nav { flex-wrap: wrap; }
 			}
 
 			.nav {
-				.nav-link { padding: 0; }
+				.nav-link { padding: 0;
+					&::after { display: none; }
+				}
 			}
 		}
 
@@ -98,6 +85,14 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
 			.nav-link { padding-top: map-get($spacers, 4); padding-bottom: map-get($spacers, 4); }
 		}
 
-		.submenu-headline { font-family: $font-accent; font-size: $font-size-lg; border-bottom: $border-width solid $border-color; margin-bottom: $spacer; }
+		.submenu-headline {
+			&::after { display: none; }
+		}
+
+		.submenu-headline-toplevel { font-family: $font-accent; font-size: $font-size-lg; border-bottom: $border-width solid $border-color; margin-bottom: $spacer;
+			& + .dropdown-menu { display: block; position: static !important; box-shadow: none;
+				> .nav { flex-direction: column; }
+			}
+		}
 	}
 }

@@ -18568,15 +18568,13 @@ header .navbar-brand img {
 }
 header .nav-right .dropdown-menu {
   margin-top: -0.03125rem;
-  -webkit-box-shadow: 0 0.5rem 0.5625rem rgba(0, 0, 0, 0.06);
-  box-shadow: 0 0.5rem 0.5625rem rgba(0, 0, 0, 0.06);
 }
 @media (max-width: 991.98px) {
   header .navbar {
     height: 3.125rem;
     padding: 0;
   }
-  header .dropup, header .dropright, header .dropdown, header .dropleft {
+  header .dropup, header .dropright, header .dropdown, header .dropleft, header .col, header [class*=col-] {
     position: static;
   }
   header .dropdown-menu {
@@ -18587,7 +18585,6 @@ header .nav-right .dropdown-menu {
     position: absolute;
     top: 3.125rem;
     left: 0;
-    padding-bottom: 5rem;
     display: block;
     height: calc(100vh - 3.125rem) !important;
     overflow: auto;
@@ -18597,19 +18594,16 @@ header .nav-right .dropdown-menu {
     z-index: 1030;
     width: 100%;
     background: #ffffff;
-    -webkit-box-shadow: 0 0.5rem 0.5625rem rgba(0, 0, 0, 0.06);
-    box-shadow: 0 0.5rem 0.5625rem rgba(0, 0, 0, 0.06);
   }
   header .navbar-collapse:not(.show) {
     transform: translateX(-100%);
   }
   header .navbar-nav {
-    padding: 0 1rem;
     transition: all 0.2s ease-in-out;
   }
   header .navbar-nav .nav-item, header .navbar-nav .nav-link {
-    margin-left: -1rem;
-    margin-right: -1rem;
+    margin-left: 0;
+    margin-right: 0;
     padding-left: 1rem;
     padding-right: 1rem;
     padding-top: 1rem;
@@ -18618,26 +18612,32 @@ header .nav-right .dropdown-menu {
   header .navbar-nav .nav-link {
     margin-top: -1rem;
     margin-bottom: -1rem;
+    margin-left: -1rem;
+    margin-right: -1rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
   }
-  header .navbar-nav .nav-link::after {
+  header .navbar-nav .dropdown > .nav-link::after {
     content: '\f054' !important;
     font-family: "Font Awesome 5 Free" !important;
     font-weight: 900;
     margin-left: 0.5rem;
+  }
+  header .navbar-nav .dropdown > .nav-link > .product-count {
+    display: none;
+  }
+  header .navbar-nav .dropdown-menu {
+    -webkit-box-shadow: 0 1rem 0.5625rem -0.75rem rgba(0, 0, 0, 0.06);
+    box-shadow: 0 1rem 0.5625rem -0.75rem rgba(0, 0, 0, 0.06);
   }
   header .navbar-nav .dropdown-menu.show {
     position: absolute;
     top: 0;
     left: 100%;
   }
-  header .navbar-nav .nav li:not(.submenu-headline) {
-    display: none;
-  }
-  header .navbar-nav.show {
-    transform: translateX(-100%);
+  header .navbar-nav .nav {
+    flex-direction: column;
   }
   header .nav-scrollbar-inner {
     overflow-x: initial;
@@ -18672,8 +18672,8 @@ header .nav-right .dropdown-menu {
   header .navbar-nav > .nav-item.active > .nav-link::before, header .navbar-nav > .nav-item:hover > .nav-link::before, header .navbar-nav > .nav-item.hover > .nav-link::before {
     width: 100%;
   }
-  header .navbar-nav > .nav-item .dropdown-menu {
-    max-height: calc(100vh - 8.375rem);
+  header .navbar-nav > .nav-item > .dropdown-menu {
+    max-height: calc(100vh - 12.5rem);
     overflow: auto;
     margin-top: -0.03125rem;
   }
@@ -18683,18 +18683,38 @@ header .nav-right .dropdown-menu {
   header .navbar-nav > .nav-item.dropdown-full .dropdown-menu {
     width: 100%;
   }
+  header .navbar-nav > .nav-item .product-count {
+    display: none;
+  }
+  header .navbar-nav > .nav-item .nav {
+    flex-wrap: wrap;
+  }
   header .navbar-nav .nav .nav-link {
     padding: 0;
+  }
+  header .navbar-nav .nav .nav-link::after {
+    display: none;
   }
   header .nav-right .nav-link {
     padding-top: 1.5rem;
     padding-bottom: 1.5rem;
   }
-  header .submenu-headline {
+  header .submenu-headline::after {
+    display: none;
+  }
+  header .submenu-headline-toplevel {
     font-family: Montserrat, sans-serif;
     font-size: 1.1875rem;
     border-bottom: 1px solid #ebebeb;
     margin-bottom: 1rem;
+  }
+  header .submenu-headline-toplevel + .dropdown-menu {
+    display: block;
+    position: static !important;
+    box-shadow: none;
+  }
+  header .submenu-headline-toplevel + .dropdown-menu > .nav {
+    flex-direction: column;
   }
 }
 

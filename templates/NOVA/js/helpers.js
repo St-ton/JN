@@ -9,7 +9,9 @@ window.globals = {
     breakpoints: breakpoints
 }
 
-let isMobile = window.innerWidth < globals.breakpoints.lg
+let isMobile = () => window.innerWidth < globals.breakpoints.lg
+let isDesktop = () => !isMobile()
+let hasTouch = () => 'ontouchstart' in window
 
 const debounce = (fn, wait = 100) => {
 	let timeout
@@ -37,13 +39,13 @@ const uniqid = () => {
 
 const onMobile = (fn) => {
 	return (...args) => {
-		if(isMobile) fn(...args)
+		if(isMobile()) fn(...args)
 	}
 }
 
 const onDesktop = (fn) => {
 	return (...args) => {
-		if(!isMobile) fn(...args)
+		if(!isMobile()) fn(...args)
 	}
 }
 

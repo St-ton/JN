@@ -43,14 +43,13 @@ class DB
     public function getAllBlueprintIds(bool $withInactive = false): array
     {
         return map($this->shopDB->selectAll(
-                'topcblueprint',
-                $withInactive ? [] : 'bActive',
-                $withInactive ? [] : 1,
-                'kBlueprint'
-            ), function ($e) {
+            'topcblueprint',
+            $withInactive ? [] : 'bActive',
+            $withInactive ? [] : 1,
+            'kBlueprint'
+        ), function ($e) {
                 return (int)$e->kBlueprint;
-            }
-        );
+        });
     }
 
     /**

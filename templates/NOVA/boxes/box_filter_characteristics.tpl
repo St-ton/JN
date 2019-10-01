@@ -18,7 +18,7 @@
                     && $img !== null
                     && $img|strpos:$smarty.const.BILD_KEIN_MERKMALBILD_VORHANDEN === false
                     && $img|strpos:$smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN === false}
-                        <img src="{$img}" alt="{$characteristic->getName()}" class="vmiddle" />
+                        {image src=$img alt=$characteristic->getName() webp=true class="vmiddle"}
                     {/if}
                     {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'B'}
                         {$characteristic->cName}

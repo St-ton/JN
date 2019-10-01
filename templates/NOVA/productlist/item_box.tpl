@@ -41,7 +41,6 @@
                                                                 sizes="auto"
                                                                 data=["id"  => $imgcounter]
                                                                 class='w-100'
-                                                                webp=true
                                                             }
                                                         {/link}
                                                     </div>

@@ -50,7 +50,7 @@
                             {link class="selection-wizard-answer no-deco mb-3" href="#" data=["value"=>$characteristicValue->getID()]}
                                 {$img = $characteristicValue->getImage(\JTL\Media\Image::SIZE_XS)}
                                 {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['B', 'BT']:true && $img !== null}
-                                    {image src=$img alt=$characteristicValue->getValue() title=$characteristicValue->getValue()}
+                                    {image src=$img webp=true alt=$characteristicValue->getValue() title=$characteristicValue->getValue()}
                                 {/if}
                                 {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['T', 'BT']:true}
                                     {$characteristicValue->getValue()}

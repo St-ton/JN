@@ -61,7 +61,8 @@
                         data=["toggle"=>"tooltip", "placement"=>"top", "boundary"=>"window"]
                         class="{if $attributeValue->isActive()}active{/if}"
                     }
-                        {image src=$attributeImageURL alt=$attributeValue->getValue()|escape:'html'
+                        {image src=$attributeImageURL webp=true
+                            alt=$attributeValue->getValue()|escape:'html'
                             title="{$attributeValue->getValue()|escape:'html'}: {$attributeValue->getCount()}"
                             class="vmiddle filter-img"
                         }
@@ -73,7 +74,8 @@
                     }
                         <div class="align-items-center d-flex">
                             {if !empty($attributeImageURL)}
-                                {image src=$attributeImageURL alt=$attributeValue->getValue()|escape:'html'
+                                {image src=$attributeImageURL webp=true
+                                    alt=$attributeValue->getValue()|escape:'html'
                                     title="{$attributeValue->getValue()|escape:'html'}: {$attributeValue->getCount()}"
                                     class="vmiddle filter-img"
                                 }

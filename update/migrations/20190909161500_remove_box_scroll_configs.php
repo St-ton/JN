@@ -25,6 +25,10 @@ class Migration_20190909161500 extends Migration implements IMigration
         $this->removeConfig('box_erscheinende_scrollen');
         $this->removeConfig('boxen_topbewertet_scrollbar');
         $this->removeConfig('boxen_preisradar_scrollbar');
+
+        $this->removeConfig('boxen_preisradar_anzahl');
+        $this->removeConfig('boxen_preisradar_anzahltage');
+        $this->removeConfig('configgroup_8_box_priceradar');
     }
 
     public function down()
@@ -147,6 +151,40 @@ class Migration_20190909161500 extends Migration implements IMigration
                 ]
             ],
             true
+        );
+
+        $this->setConfig(
+            'boxen_preisradar_anzahl',
+            '3',
+            \CONF_BOXEN,
+            'Anzahl Artikel anzeigen',
+            'number',
+            1420,
+            (object)[
+                'cBeschreibung' => 'Wieviele Artikel sollen gleichzeitig in der Box zu sehen sein?'
+            ],
+            true
+        );
+        $this->setConfig(
+            'boxen_preisradar_anzahltage',
+            '30',
+            \CONF_BOXEN,
+            'Wieviele Tage sollen beachtet werden?',
+            'number',
+            1430,
+            (object)[
+                'cBeschreibung' => 'Wieviele Tage in der Vergangenheit, sollen für den Preisverlauf beachtet werden?'
+            ],
+            true
+        );
+        $this->setConfig(
+            'configgroup_8_box_priceradar',
+            'Box: Preisradar',
+            \CONF_BOXEN,
+            'Box: Preisradar',
+            null,
+            1400,
+            (object)['cConf' => 'N']
         );
     }
 }

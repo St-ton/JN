@@ -1490,18 +1490,6 @@ msgstr "\"Top rated\" applies as of the following average rating"
 msgid "boxen_topbewertet_minsterne_desc"
 msgstr "Specify the minimum number of stars with which an item must be rated on average to be considered as \"Top rated\"."
 
-msgid "boxen_preisradar_anzahl_name"
-msgstr "Number of displayed items"
-
-msgid "boxen_preisradar_anzahl_desc"
-msgstr "Specify how many items are to be displayed in the box."
-
-msgid "boxen_preisradar_anzahltage_name"
-msgstr "Number of considered days"
-
-msgid "boxen_preisradar_anzahltage_desc"
-msgstr "Specify how many days are to be taken into account for the price history."
-
 msgid "bilder_kategorien_breite_name"
 msgstr "Category images: width"
 

@@ -55,7 +55,7 @@
         {/block}
 
         {block name='layout-header-head-resources'}
-            {include file='layout/header_inline_css.tpl'}
+            {*{include file='layout/header_inline_css.tpl'}*}
             {* css *}
             {if !isset($Einstellungen.template.general.use_minify) || $Einstellungen.template.general.use_minify === 'N'}
                 {foreach $cCSS_arr as $cCSS}
@@ -310,7 +310,7 @@
             <header class="d-print-none{if $isSticky} sticky-top{/if}{if $Einstellungen.template.theme.static_header === 'Y'} fixed-navbar{/if}" id="evo-nav-wrapper">
 
                 {block name='layout-header-container-inner'}
-                    <div class="container-fluid container-fluid-xl clearfix">
+                    <div class="container-fluid container-fluid-xl">
                     {block name='layout-header-branding-top-bar'}
                         {row class="mb-2 d-none {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex{/if}"}
                             {col class='col-auto ml-auto'}

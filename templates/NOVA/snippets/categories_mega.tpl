@@ -43,74 +43,32 @@
                     || ((isset($activeParent)
                         && isset($activeParent->kKategorie))
                         && $activeParent->kKategorie == $category->getID())} active{/if}">
-                        {*{link href=$category->getURL() title=$category->getName() class="float-right subcat-link d-inline-block d-md-none"}*}
-                            {*<i class="fas fa-arrow-alt-circle-right"></i>*}
-                        {*{/link}*}
                         {link href=$category->getURL() title=$category->getName() class="nav-link dropdown-toggle" data=["toggle"=>"dropdown"] target="_self"}
                             {$category->getName()}
                         {/link}
                         <div class="dropdown-menu">
                             <div class="dropdown-header border-bottom border-primary border-w-5 d-lg-none">
                                 {row class='align-items-center font-size-base'}
-                                    {col}<span class="fas fa-chevron-left mr-4"></span> Accessoire{/col}
-                                    {col class='col-auto'}<a href="#"><span class="far fa-arrow-alt-circle-right ml-auto"></span></a>{/col}
+                                    {col}<a href="#" data-nav-back><span class="fas fa-chevron-left mr-4"></span> {$category->getName()}</a>{/col}
+                                    {col class='col-auto'}<a href="{$category->getURL()}"><span class="far fa-arrow-alt-circle-right ml-auto"></span></a>{/col}
                                 {/row}
                             </div>
                             <div class="dropdown-body p-0 py-lg-4">
                                 {container}
-                                    {row}
+                                    {row class='lg-row-lg nav'}
                                         {block name='snippets-categories-mega-sub-categories'}
-                                            {col lg=4 xl=3 class="my-lg-4 nav-item {if !empty($category->getChildren())}dropdown{/if}"}
-                                                {if $category->hasChildren()}
-                                                    {if !empty($category->getChildren())}
-                                                        {assign var=sub_categories value=$category->getChildren()}
-                                                    {else}
-                                                        {get_category_array categoryId=$category->getID() assign='sub_categories'}
-                                                    {/if}
-                                                    {foreach $sub_categories as $sub}
-                                                        {*{dropdownitem tag="div" active=$sub->getID() === $activeId || (isset($activeParents[1]) && $activeParents[1]->kKategorie === $sub->getID()) class="p-3 mb-md-6"}*}
-                                                        {link href=$sub->getURL() title=$sub->getName()}
-                                                            {if $Einstellungen.template.megamenu.show_category_images !== 'N'
-                                                                && (!$device->isMobile() || $device->isTablet())}
-                                                                {image fluid-grow=false lazy=true src="{$imageBaseURL}gfx/trans.png"
-                                                                    alt=$category->getShortName()|escape:'html'
-                                                                    data=["src" => $sub->getImage(\JTL\Media\Image::SIZE_SM)]
-                                                                    class="img-fluid d-none d-md-block"}
-                                                            {/if}
-                                                            <div class="title pt-2">
-                                                                {$sub->getShortName()}
-                                                            </div>
-                                                        {/link}
-
-                                                        {if $show_subcategories && $sub->hasChildren()}
-                                                            {if !empty($sub->getChildren())}
-                                                                {assign var=subsub_categories value=$sub->getChildren()}
-                                                            {else}
-                                                                {get_category_array categoryId=$sub->getID() assign='subsub_categories'}
-                                                            {/if}
-                                                            <hr class="my-1 d-none d-md-block">
-                                                            <ul class="list-unstyled small subsub py-2">
-                                                                {foreach $subsub_categories as $subsub}
-                                                                    {if $subsub@iteration <= $max_subsub_items}
-                                                                        <li{if $subsub->getID() === $activeId || (isset($activeParents[2]) && $activeParents[2]->kKategorie == $subsub->getID())} class="active"{/if}>
-                                                                            {link href=$subsub->getURL() title=$subsub->getName()}
-                                                                                {$subsub->getShortName()}
-                                                                            {/link}
-                                                                        </li>
-                                                                    {else}
-                                                                        <li class="more">
-                                                                            {link href=$sub->getURL() title=$sub->getName()}
-                                                                                <i class="fa fa-chevron-circle-right"></i> {lang key='more'} <span class="remaining">({math equation='total - max' total=$subsub_categories|count max=$max_subsub_items})</span>
-                                                                            {/link}
-                                                                        </li>
-                                                                        {break}
-                                                                    {/if}
-                                                                {/foreach}
-                                                            </ul>
-                                                        {/if}
-                                                    {/foreach}
+                                            {if $category->hasChildren()}
+                                                {if !empty($category->getChildren())}
+                                                    {assign var=sub_categories value=$category->getChildren()}
+                                                {else}
+                                                    {get_category_array categoryId=$category->getID() assign='sub_categories'}
                                                 {/if}
-                                            {/col}
+                                                {foreach $sub_categories as $sub}
+                                                    {col lg=4 xl=3 class="my-lg-4 nav-item {if $sub->hasChildren()}dropdown{/if}"}
+                                                        {include file='snippets/categories_mega_recursive.tpl' mainCategory=$sub firstChild=true}
+                                                    {/col}
+                                                {/foreach}
+                                            {/if}
                                         {/block}
                                     {/row}
                                 {/container}
@@ -134,7 +92,7 @@
     {if $Einstellungen.template.megamenu.show_pages !== 'N'}
         {include file='snippets/linkgroup_list.tpl' linkgroupIdentifier='megamenu' dropdownSupport=true tplscope='megamenu'}
     {/if}
-    {/block}{* megamenu-pages *}
+    {/block}{* /megamenu-pages*}
 
     {block name='snippets-categories-mega-manufacturers'}
     {if $Einstellungen.template.megamenu.show_manufacturers !== 'N'
@@ -181,7 +139,7 @@
             {/if}
         {/if}
     {/if}
-    {/block}{* megamenu-manufacturers *}
+    {/block} {* /megamenu-manufacturers*}
 
     {block name='snippets-categories-mega-global-characteristics'}
     {*

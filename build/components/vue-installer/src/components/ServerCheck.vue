@@ -1,8 +1,8 @@
 <template>
     <div>
-        <jumbotron header="Serverkonfiguration"
-                     lead="Prüft, ob die Serverkonfiguration korrekt ist"
-                     content="">
+        <jumbotron :header="$t('headerMsg')"
+                   :lead="$t('leadMsg')"
+                   content="">
         </jumbotron>
         <div class="row">
             <div class="col" v-if="checkedServer">
@@ -12,20 +12,20 @@
                             <icon name="check" v-if="serverStatus === 0"></icon>
                             <icon name="exclamation-triangle" v-else></icon>
                         </span>
-                        Serveranforderungen <b-btn v-b-toggle="'collapse-programs'" size="sm">
-                        <span class="when-opened">ausblenden</span>
-                        <span class="when-closed">anzeigen</span>
+                        {{ $t('systemRequirements') }} <b-btn v-b-toggle="'collapse-programs'" size="sm">
+                        <span class="when-opened">{{ $t('hide') }}</span>
+                        <span class="when-closed">{{ $t('show') }}</span>
                     </b-btn>
                     </h3>
                     <span id="server-status-msg" class="alert alert-success" v-if="serverStatus === 0 && !collapseIsVisible">Alles OK.</span>
                     <b-collapse id="collapse-programs" :visible="serverStatus !== 0" @hidden="collapseHide()" @show="collapseShow()">
-                        <h4 class="ml-3 mb-3 mt-3">Installierte Software</h4>
+                        <h4 class="ml-3 mb-3 mt-3">{{ $t('installedSoftware') }}</h4>
                         <table id="programs" class="table table-striped table-hover">
                             <thead>
                             <tr>
-                                <th>Software</th>
-                                <th>Voraussetzung</th>
-                                <th>Vorhanden</th>
+                                <th>{{ $t('installedSoftware') }}</th>
+                                <th>{{ $t('requirement') }}</th>
+                                <th>{{ $t('existing') }}</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -46,13 +46,13 @@
                             </tbody>
                         </table>
 
-                        <h4 class="ml-3 mb-3 mt-3">Benötigte PHP-Einstellungen</h4>
+                        <h4 class="ml-3 mb-3 mt-3">{{ $t('requiredConfig') }}</h4>
                         <table id="phpconfig" class="table table-striped table-hover">
                             <thead>
                             <tr>
-                                <th>Einstellung</th>
-                                <th>Benötigter Wert</th>
-                                <th>Ihr System</th>
+                                <th>{{ $t('config') }}</th>
+                                <th>{{ $t('requiredValue') }}</th>
+                                <th>{{ $t('actualValue') }}</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -73,12 +73,12 @@
                             </tbody>
                         </table>
 
-                        <h4 class="ml-3 mb-3 mt-3">Benötigte PHP-Erweiterungen und -Funktionen</h4>
+                        <h4 class="ml-3 mb-3 mt-3">{{ $t('requiredExtensions') }}</h4>
                         <table id="phpmodules" class="table table-striped table-hover mb-0">
                             <thead>
                             <tr>
-                                <th>Bezeichnung</th>
-                                <th>Status</th>
+                                <th>{{ $t('name') }}</th>
+                                <th>{{ $t('state') }}</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -99,16 +99,16 @@
                         </table>
                     </b-collapse>
                     <b-btn class="mt-3" size="sm" v-if="serverStatus !== 0" @click="check()" style="margin-left: 15px">
-                        <icon name="sync"></icon> Erneut prüfen
+                        <icon name="sync"></icon> {{ $t('checkAgain') }}
                     </b-btn>
                 </b-card>
             </div>
         </div>
         <b-alert variant="info" show v-if="!checkedServer">
-            <icon name="sync" spin></icon> Prüfe Serveranforderungen...
+            <icon name="sync" spin></icon> {{ $t('validateServerRequirements') }}
         </b-alert>
         <b-alert variant="danger" show v-if="networkError !== false">
-            <icon name="exclamation-triangle"></icon> Netzwerkfehler: {{ networkError }}
+            <icon name="exclamation-triangle"></icon> {{ $t('networkError') }} {{ networkError }}
         </b-alert>
         <continue :disableBack="false" :disable="!checkedServer || serverStatus === 2 || modulesStatus === 2 || networkError !== false"></continue>
     </div>
@@ -119,6 +119,54 @@ import axios from 'axios';
 export default {
     name: 'servercheck',
     data() {
+        const messages = {
+            de: {
+                systemRequirements:         'Serveranforderungen',
+                unreachable:                'URL {url} nicht erreichbar.',
+                hide:                       'ausblenden',
+                show:                       'anzeigen',
+                installedSoftware:          'Installierte Software',
+                software:                   'Software',
+                requirement:                'Voraussetzung',
+                existing:                   'Vorhanden',
+                requiredConfig:             'Benötigte PHP-Einstellungen',
+                config:                     'Einstellung',
+                requiredValue:              'Benötigter Wert',
+                actualValue:                'Ihr System',
+                requiredExtensions:         'Benötigte PHP-Erweiterungen und -Funktionen',
+                name:                       'Bezeichnung',
+                state:                      'Status',
+                checkAgain:                 'Erneut prüfen',
+                validateServerRequirements: 'Prüfe Serveranforderungen...',
+                networkError:               'Netzwerkfehler:',
+                headerMsg:                  'Serverkonfiguration',
+                leadMsg:                    'Prüft, ob die Serverkonfiguration korrekt ist'
+            },
+            en: {
+                systemRequirements:         'System requirements',
+                unreachable:                'URL {url} unreachable.',
+                hide:                       'hide',
+                show:                       'show',
+                installedSoftware:          'Installed software',
+                software:                   'Software',
+                requirement:                'Requirement',
+                existing:                   'existing',
+                requiredConfig:             'Required php config',
+                config:                     'Config',
+                requiredValue:              'Required value',
+                actualValue:                'Your system',
+                requiredExtensions:         'Required php extensions',
+                name:                       'Name',
+                state:                      'State',
+                checkAgain:                 'check again',
+                validateServerRequirements: 'Validating server requirements...',
+                networkError:               'Network error:',
+                headerMsg:                  'Server configuration',
+                leadMsg:                    'Checks your server configuration'
+            }
+        };
+        this.$i18n.add('en', messages.en);
+        this.$i18n.add('de', messages.de);
         let phpConfig         = [],
             phpModules        = [],
             programs          = [],
@@ -170,7 +218,7 @@ export default {
                 .catch(error => {
                     this.networkError = error.response
                         ? error.response
-                        : `URL ${this.$getApiUrl('systemcheck')} nicht erreichbar.`;
+                        : this.$i18n.translate('unreachable', { url: this.$getApiUrl('systemcheck') });
                 });
         }
     }

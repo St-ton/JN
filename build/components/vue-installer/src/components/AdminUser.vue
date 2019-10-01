@@ -1,14 +1,14 @@
 <template>
     <div>
-        <jumbotron header="Admin- und Sync-Benutzer"
-                     lead="Konfigurieren Sie die nötigen Zugangsdaten"
-                     content="">
+        <jumbotron :header="$t('headerMsg')"
+                   :lead="$t('leadMsg')"
+                   content="">
         </jumbotron>
         <div class="row">
             <div class="col">
                 <div class="form-group">
-                    <b-input-group size="md" prepend="Admin-Benutzer">
-                        <b-form-input size="35" required v-model="admin.name" type="text" :state="admin.name.length ? 'success' : 'warning'"></b-form-input>
+                    <b-input-group size="md" :prepend="$t('adminUser')">
+                        <b-form-input size="35" required v-model="admin.name" type="text" :state="admin.name.length > 0"></b-form-input>
                         <b-input-group-append is-text>
                             <icon name="user"></icon>
                         </b-input-group-append>
@@ -17,9 +17,9 @@
                 <div class="form-group">
                     <b-input-group size="md">
                         <b-input-group-prepend is-text>
-                            Admin-Passwort &nbsp; <a @click="admin.pass = generatePassword()"><icon name="sync"></icon></a>
+                            {{ $t('adminPassword') }} &nbsp; <a @click="admin.pass = generatePassword()"><icon name="sync"></icon></a>
                         </b-input-group-prepend>
-                        <b-form-input size="35" required v-model="admin.pass" type="text" :state="admin.pass.length ? 'success' : 'warning'"></b-form-input>
+                        <b-form-input size="35" required v-model="admin.pass" type="text" :state="admin.pass.length > 0"></b-form-input>
                         <b-input-group-append is-text>
                             <icon name="lock"></icon>
                         </b-input-group-append>
@@ -32,7 +32,7 @@
             <div class="col">
                 <div class="form-group">
                     <b-input-group size="md" prepend="Sync-Benutzer">
-                        <b-form-input size="35" required v-model="wawi.name" type="text" :state="wawi.name.length ? 'success' : 'warning'"></b-form-input>
+                        <b-form-input size="35" required v-model="wawi.name" type="text" :state="wawi.name.length > 0"></b-form-input>
                         <b-input-group-append is-text>
                             <icon name="user"></icon>
                         </b-input-group-append>
@@ -41,9 +41,9 @@
                 <div class="form-group">
                     <b-input-group size="md">
                         <b-input-group-prepend is-text>
-                            Sync-Passwort &nbsp; <a @click="wawi.pass = generatePassword()"><icon name="sync"></icon></a>
+                            {{ $t('syncPassword') }} &nbsp; <a @click="wawi.pass = generatePassword()"><icon name="sync"></icon></a>
                         </b-input-group-prepend>
-                        <b-form-input size="35" required v-model="wawi.pass" type="text" :state="wawi.pass.length ? 'success' : 'warning'"></b-form-input>
+                        <b-form-input size="35" required v-model="wawi.pass" type="text" :state="wawi.pass.length > 0"></b-form-input>
                         <b-input-group-append is-text>
                             <icon name="lock"></icon>
                         </b-input-group-append>
@@ -59,6 +59,24 @@
 export default {
     name: 'adminuser',
     data() {
+        const messages = {
+            de: {
+                headerMsg:     'Admin- und Sync-Benutzer',
+                leadMsg:       'Konfigurieren Sie die nötigen Zugangsdaten',
+                adminPassword: 'Admin-Passwort',
+                adminUser:     'Admin-Benutzer',
+                syncPassword:  'Sync-Passwort'
+            },
+            en: {
+                headerMsg:     'Admin and sync user',
+                leadMsg:       'Configure the required credentials',
+                adminPassword: 'Admin password',
+                adminUser:     'Admin user',
+                syncPassword:  'Sync password'
+            }
+        };
+        this.$i18n.add('en', messages.en);
+        this.$i18n.add('de', messages.de);
         return {
             admin: {
                 name: 'admin',
@@ -96,5 +114,13 @@ export default {
     }
     a {
         cursor: pointer;
+    }
+    .input-group-prepend {
+        -ms-flex: 0 0 16.666667%;
+        flex: 0 0 16.666667%;
+        max-width: 16.666667%;
+    }
+    .input-group-prepend .input-group-text {
+        width: 100%;
     }
 </style>

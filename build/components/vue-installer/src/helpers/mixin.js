@@ -6,19 +6,15 @@ import Jumbotron from '../components/Jumbotron';
 export default {
     data() {
         return {
-            steps: [
-                'Hallo',
-                'Vorige Installation prüfen',
-                'Dateirechte',
-                'Systemcheck',
-                'Datenbankdaten',
-                'Adminnutzer',
-                'Schema',
-                'Abschluss'
-                // 'Wawi-Abgleich',
-                // 'Globale Einstellungen',
-                // 'Formulare',
-                // 'Weiterführende Links'
+            isteps: [
+                'step1',
+                'step2',
+                'step3',
+                'step4',
+                'step5',
+                'step6',
+                'step7',
+                'step8'
             ]
         };
     },
@@ -29,11 +25,11 @@ export default {
     methods: {
         setStep(step) {
             store.commit('setStep', step);
-            store.commit('setProgress', step / (this.steps.length - 1) * 100);
+            store.commit('setProgress', step / (this.isteps.length - 1) * 100);
         }
     },
     computed: mapGetters({
-        step:            'getStep',
+        istep:           'getStep',
         installProgress: 'getProgress'
     })
 };

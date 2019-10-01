@@ -46,7 +46,7 @@ class CharacteristicValue extends AbstractImage
     /**
      * @inheritdoc
      */
-    protected function getImageNames(MediaImageRequest $req): array
+    public static function getImageNames(MediaImageRequest $req): array
     {
         return Shop::Container()->getDB()->queryPrepared(
             'SELECT a.kMerkmalWert, a.cBildpfad AS path, t.cWert

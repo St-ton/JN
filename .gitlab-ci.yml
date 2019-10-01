@@ -395,7 +395,7 @@ tagsDeployment:
   variables:
     GIT_STRATEGY: none
   script:
-    - buildscript tags:deployment "$CI_BUILD_SERVER_ARCHIVE_PATH"
+    - buildscript release:deployment "$CI_BUILD_SERVER_ARCHIVE_PATH"
   except:
     - branches
   only:

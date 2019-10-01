@@ -164,7 +164,9 @@ class Emailhistory
         );
         $history     = [];
         foreach ($historyData as $item) {
-            $history[] = new self(null, $item);
+            $item->kEmailhistory = (int)$item->kEmailhistory;
+            $item->kEmailvorlage = (int)$item->kEmailvorlage;
+            $history[]           = new self(null, $item);
         }
 
         return $history;

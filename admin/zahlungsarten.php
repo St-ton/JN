@@ -5,6 +5,7 @@
  */
 
 use JTL\Alert\Alert;
+use JTL\Checkout\Zahlungsart;
 use JTL\Checkout\ZahlungsLog;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
@@ -16,7 +17,6 @@ use JTL\Pagination\Filter;
 use JTL\Pagination\Pagination;
 use JTL\Plugin\Helper as PluginHelper;
 use JTL\Shop;
-use JTL\Checkout\Zahlungsart;
 
 require_once __DIR__ . '/includes/admininclude.php';
 

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -120,7 +120,7 @@ interface IMedia
     public static function cacheImage(MediaImageRequest $req, bool $overwrite = false): array;
 
     /**
-     * @param null|string|int $id
+     * @param null|string|int|array $id
      */
     public static function clearCache($id = null): void;
 
@@ -136,4 +136,10 @@ interface IMedia
      * @return bool
      */
     public static function imageIsUsed(DbInterface $db, string $path): bool;
+
+    /**
+     * @param MediaImageRequest $req
+     * @return array
+     */
+    public static function getImageNames(MediaImageRequest $req): array;
 }

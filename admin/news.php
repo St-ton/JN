@@ -18,7 +18,6 @@ use JTL\News\Comment;
 use JTL\News\Item;
 use JTL\Pagination\Pagination;
 use JTL\Shop;
-use function Functional\map;
 
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('CONTENT_NEWS_SYSTEM_VIEW', true, true);
@@ -38,7 +37,8 @@ $defaultLang    = LanguageHelper::getDefaultLanguage();
 $_SESSION['kSprache'] = $defaultLang->kSprache;
 if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $backTab = Request::verifyGPDataString('tab');
-    $smarty->assign('cTab', $backTab);
+    $smarty->assign('cTab', $backTab)
+           ->assign('files', []);
 
     switch ($backTab) {
         case 'inaktiv':

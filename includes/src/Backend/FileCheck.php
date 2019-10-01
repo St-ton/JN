@@ -10,6 +10,7 @@ use Exception;
 use JTL\Filesystem\Filesystem;
 use JTL\Filesystem\LocalFilesystem;
 use JTLShop\SemVer\Version;
+use stdClass;
 use Symfony\Component\Finder\Finder;
 use function Functional\map;
 
@@ -113,17 +114,16 @@ class FileCheck
         $count  = 0;
         $fs     = new Filesystem(new LocalFilesystem(['root' => \PFAD_ROOT]));
         $finder = new Finder();
-        $finder->append(map($orphanedFiles, function ($e) {
-            return \PFAD_ROOT . $e;
+        $finder->append(map($orphanedFiles, function (stdClass $e) {
+            return \PFAD_ROOT . $e->name;
         }));
-
         try {
             $fs->zip($finder, $backupFile);
         } catch (Exception $e) {
             return -1;
         }
         foreach ($orphanedFiles as $i => $file) {
-            if ($fs->delete($file)) {
+            if ($fs->delete($file->name)) {
                 unset($orphanedFiles[$i]);
                 ++$count;
             }

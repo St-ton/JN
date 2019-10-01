@@ -34,7 +34,7 @@
                                                     <div>
                                                         {link href=$Artikel->cURLFull}
                                                             {image alt=$alt fluid=true webp=true lazy=true
-                                                                src="{$Artikel->Bilder[0]->cURLNormal}"
+                                                                src="{$image->cURLKlein}"
                                                                 srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
                                                                          {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
                                                                          {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"

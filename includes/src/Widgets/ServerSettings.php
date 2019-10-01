@@ -7,6 +7,8 @@
 namespace JTL\Widgets;
 
 use JTL\Helpers\PHPSettings;
+use Systemcheck\Environment;
+use Systemcheck\Tests\Shop5\PhpSoapExtension;
 
 /**
  * Class ServerSettings
@@ -59,15 +61,13 @@ class ServerSettings extends AbstractWidget
      */
     public function SOAPcheck(): bool
     {
-        if (\class_exists('Systemcheck_Environment')) {
-            $oSystemCheck  = new \Systemcheck_Environment();
-            $vCheckResults = $oSystemCheck->executeTestGroup('Shop4');
-            if (\array_key_exists('recommendations', $vCheckResults)) {
-                foreach ($vCheckResults['recommendations'] as $object) {
-                    if ($object instanceof \Systemcheck_Tests_Shop4_PhpSoapExtension) {
-                        // SOAP is OFF
-                        return false;
-                    }
+        $environment = new Environment();
+        $results     = $environment->executeTestGroup('Shop5');
+        if (\array_key_exists('recommendations', $results)) {
+            foreach ($results['recommendations'] as $object) {
+                if ($object instanceof PhpSoapExtension) {
+                    // SOAP is OFF
+                    return false;
                 }
             }
         }

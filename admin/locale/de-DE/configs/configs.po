@@ -1412,6 +1412,12 @@ msgstr "Anzahl angezeigter Artikel"
 msgid "box_sonderangebote_anzahl_anzeige_desc"
 msgstr "Hier legen Sie fest, wie viele Artikel in der Box angezeigt werden."
 
+msgid "box_sonderangebote_anzahl_basis_name"
+msgstr "Basisanzahl Artikel"
+
+msgid "box_sonderangebote_anzahl_basis_desc"
+msgstr "Hier legen Sie fest, aus wie vielen Artikeln die anzuzeigenden Artikel ausgesucht werden sollen."
+
 msgid "box_neuimsortiment_anzahl_anzeige_name"
 msgstr "Anzahl angezeigter Artikel"
 
@@ -1424,11 +1430,23 @@ msgstr "Maximales Artikelalter in Tagen"
 msgid "box_neuimsortiment_alter_tage_desc"
 msgstr "Hier legen Sie fest, wie viele Tage lang Artikel als „Neu im Sortiment“ markiert werden."
 
+msgid "box_neuimsortiment_anzahl_basis_name"
+msgstr "Basisanzahl Artikel"
+
+msgid "box_neuimsortiment_anzahl_basis_desc"
+msgstr "Hier legen Sie fest, aus wie vielen Artikeln die anzuzeigenden Artikel ausgesucht werden sollen."
+
 msgid "box_topangebot_anzahl_anzeige_name"
 msgstr "Anzahl angezeigter Artikel"
 
 msgid "box_topangebot_anzahl_anzeige_desc"
 msgstr "Hier legen Sie fest, wie viele Artikel in der Box angezeigt werden."
+
+msgid "box_topangebot_anzahl_basis_name"
+msgstr "Basisanzahl Artikel"
+
+msgid "box_topangebot_anzahl_basis_desc"
+msgstr "Hier legen Sie fest, aus wie vielen Artikeln die anzuzeigenden Artikel ausgesucht werden sollen."
 
 msgid "box_zuletztangesehen_anzahl_name"
 msgstr "Anzahl angezeigter Artikel"
@@ -1441,6 +1459,12 @@ msgstr "Anzahl angezeigter Artikel"
 
 msgid "box_erscheinende_anzahl_anzeige_desc"
 msgstr "Hier legen Sie fest, wie viele Artikel in der Box angezeigt werden."
+
+msgid "box_erscheinende_anzahl_basis_name"
+msgstr "Basisanzahl Artikel"
+
+msgid "box_erscheinende_anzahl_basis_desc"
+msgstr "Hier legen Sie fest, aus wie vielen Artikeln die anzuzeigenden Artikel ausgesucht werden sollen."
 
 msgid "boxen_livesuche_anzeigen_name"
 msgstr "Box anzeigen"

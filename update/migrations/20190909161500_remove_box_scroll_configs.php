@@ -29,6 +29,55 @@ class Migration_20190909161500 extends Migration implements IMigration
         $this->removeConfig('boxen_preisradar_anzahl');
         $this->removeConfig('boxen_preisradar_anzahltage');
         $this->removeConfig('configgroup_8_box_priceradar');
+
+        $this->setConfig(
+            'box_erscheinende_anzahl_basis',
+            '10',
+            \CONF_BOXEN,
+            'Basisanzahl Produkte',
+            'number',
+            830,
+            (object)[
+                'cBeschreibung' => 'Menge, aus der die anzuzeigenden Produkte zufällig ausgesucht werden sollen'
+            ],
+            true
+        );
+        $this->setConfig(
+            'box_sonderangebote_anzahl_basis',
+            '10',
+            \CONF_BOXEN,
+            'Basisanzahl Produkte',
+            'number',
+            230,
+            (object)[
+                'cBeschreibung' => 'Menge, aus der die anzuzeigenden Produkte zufällig ausgesucht werden sollen'
+            ],
+            true
+        );
+        $this->setConfig(
+            'box_neuimsortiment_anzahl_basis',
+            '10',
+            \CONF_BOXEN,
+            'Basisanzahl Produkte',
+            'number',
+            325,
+            (object)[
+                'cBeschreibung' => 'Menge, aus der die anzuzeigenden Produkte zufällig ausgesucht werden sollen'
+            ],
+            true
+        );
+        $this->setConfig(
+            'box_topangebot_anzahl_basis',
+            '10',
+            \CONF_BOXEN,
+            'Basisanzahl Produkte',
+            'number',
+            430,
+            (object)[
+                'cBeschreibung' => 'Menge, aus der die anzuzeigenden Produkte zufällig ausgesucht werden sollen'
+            ],
+            true
+        );
     }
 
     public function down()
@@ -186,5 +235,10 @@ class Migration_20190909161500 extends Migration implements IMigration
             1400,
             (object)['cConf' => 'N']
         );
+
+        $this->removeConfig('box_erscheinende_anzahl_basis');
+        $this->removeConfig('box_sonderangebote_anzahl_basis');
+        $this->removeConfig('box_neuimsortiment_anzahl_basis');
+        $this->removeConfig('box_topangebot_anzahl_basis');
     }
 }

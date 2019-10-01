@@ -1412,6 +1412,12 @@ msgstr "Number of displayed items"
 msgid "box_sonderangebote_anzahl_anzeige_desc"
 msgstr "Specify how many items are to be displayed in the box."
 
+msgid "box_sonderangebote_anzahl_basis_name"
+msgstr "Base number of items"
+
+msgid "box_sonderangebote_anzahl_basis_desc"
+msgstr "Specify the number of items from which the items to be displayed are to be selected."
+
 msgid "box_neuimsortiment_anzahl_anzeige_name"
 msgstr "Number of displayed items"
 
@@ -1424,11 +1430,23 @@ msgstr "Maximum age of items in days"
 msgid "box_neuimsortiment_alter_tage_desc"
 msgstr "Specify how many days an item is marked as \"New in product range\"."
 
+msgid "box_neuimsortiment_anzahl_basis_name"
+msgstr "Base number of items"
+
+msgid "box_neuimsortiment_anzahl_basis_desc"
+msgstr "Specify the number of items from which the items to be displayed are to be selected."
+
 msgid "box_topangebot_anzahl_anzeige_name"
 msgstr "Number of displayed items"
 
 msgid "box_topangebot_anzahl_anzeige_desc"
 msgstr "Specify how many items are to be displayed in the box."
+
+msgid "box_topangebot_anzahl_basis_name"
+msgstr "Base number of items"
+
+msgid "box_topangebot_anzahl_basis_desc"
+msgstr "Specify the number of items from which the items to be displayed are to be selected."
 
 msgid "box_zuletztangesehen_anzahl_name"
 msgstr "Number of displayed items"
@@ -1441,6 +1459,12 @@ msgstr "Number of displayed items"
 
 msgid "box_erscheinende_anzahl_anzeige_desc"
 msgstr "Specify how many items are to be displayed in the box."
+
+msgid "box_erscheinende_anzahl_basis_name"
+msgstr "Base number of items"
+
+msgid "box_erscheinende_anzahl_basis_desc"
+msgstr "Specify the number of items from which the items to be displayed are to be selected."
 
 msgid "boxen_livesuche_anzeigen_name"
 msgstr "Show box"

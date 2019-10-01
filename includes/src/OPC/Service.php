@@ -6,6 +6,7 @@
 
 namespace JTL\OPC;
 
+use Exception;
 use JTL\Backend\AdminIO;
 use JTL\Filter\AbstractFilter;
 use JTL\Filter\Config;
@@ -75,14 +76,14 @@ class Service
 
     /**
      * @param AdminIO $io
-     * @throws \Exception
+     * @throws Exception
      */
     public function registerAdminIOFunctions(AdminIO $io): void
     {
         $adminAccount = $io->getAccount();
 
         if ($adminAccount === null) {
-            throw new \Exception('Admin account was not set on AdminIO.');
+            throw new Exception('Admin account was not set on AdminIO.');
         }
 
         $this->adminName = $adminAccount->account()->cLogin;
@@ -95,7 +96,7 @@ class Service
 
     /**
      * @return null|string
-     * @throws \Exception
+     * @throws Exception
      */
     public function getAdminSessionToken(): ?string
     {
@@ -105,7 +106,7 @@ class Service
     /**
      * @param bool $withInactive
      * @return PortletGroup[]
-     * @throws \Exception
+     * @throws Exception
      */
     public function getPortletGroups(bool $withInactive = false): array
     {
@@ -115,7 +116,7 @@ class Service
     /**
      * @param bool $withInactive
      * @return Portlet[]
-     * @throws \Exception
+     * @throws Exception
      */
     public function getAllPortlets(bool $withInactive = false): array
     {
@@ -124,17 +125,15 @@ class Service
 
     /**
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
-    public function getPortletInitScriptUrls()
+    public function getPortletInitScriptUrls(): array
     {
         $scripts = [];
-
         foreach ($this->getAllPortlets() as $portlet) {
             foreach ($portlet->getEditorInitScripts() as $script) {
                 $path = $portlet->getBasePath() . $script;
                 $url  = $portlet->getBaseUrl() . $script;
-
                 if (!\array_key_exists($url, $scripts) && \file_exists($path)) {
                     $scripts[$url] = $url;
                 }
@@ -147,7 +146,7 @@ class Service
     /**
      * @param bool $withInactive
      * @return Blueprint[]
-     * @throws \Exception
+     * @throws Exception
      */
     public function getBlueprints(bool $withInactive = false): array
     {
@@ -162,7 +161,7 @@ class Service
     /**
      * @param int $id
      * @return Blueprint
-     * @throws \Exception
+     * @throws Exception
      */
     public function getBlueprint(int $id): Blueprint
     {
@@ -175,7 +174,7 @@ class Service
     /**
      * @param int $id
      * @return PortletInstance
-     * @throws \Exception
+     * @throws Exception
      */
     public function getBlueprintInstance(int $id): PortletInstance
     {
@@ -185,7 +184,7 @@ class Service
     /**
      * @param int $id
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function getBlueprintPreview(int $id): string
     {
@@ -195,7 +194,7 @@ class Service
     /**
      * @param string $name
      * @param array $data
-     * @throws \Exception
+     * @throws Exception
      */
     public function saveBlueprint($name, $data): void
     {
@@ -215,7 +214,7 @@ class Service
     /**
      * @param string $class
      * @return PortletInstance
-     * @throws \Exception
+     * @throws Exception
      */
     public function createPortletInstance($class): PortletInstance
     {
@@ -231,7 +230,7 @@ class Service
     /**
      * @param array $data
      * @return PortletInstance
-     * @throws \Exception
+     * @throws Exception
      */
     public function getPortletInstance($data): PortletInstance
     {
@@ -247,7 +246,7 @@ class Service
     /**
      * @param array $data
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function getPortletPreviewHtml($data): string
     {
@@ -259,7 +258,7 @@ class Service
      * @param string $missingClass
      * @param array $props
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function getConfigPanelHtml($portletClass, $missingClass, $props): string
     {

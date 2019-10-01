@@ -6,14 +6,15 @@
 
 use JTL\Backend\AdminFavorite;
 use JTL\Backend\Notification;
+use JTL\Campaign;
 use JTL\Catalog\Currency;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\IO\IOError;
 use JTL\IO\IOResponse;
-use JTL\Campaign;
 use JTL\Shop;
+use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
 use JTL\XMLParser;
 
@@ -548,7 +549,7 @@ function reloadFavs()
 function getNotifyDropIO()
 {
     return [
-        'tpl'  => Shop::Smarty()
+        'tpl'  => JTLSmarty::getInstance(false, ContextType::BACKEND)
             ->assign('notifications', Notification::getInstance())
             ->fetch('tpl_inc/notify_drop.tpl'),
         'type' => 'notify'

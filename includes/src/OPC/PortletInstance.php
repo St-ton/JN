@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -6,9 +6,9 @@
 
 namespace JTL\OPC;
 
-use Intervention\Image\ImageManager;
 use JTL\Helpers\GeneralObject;
 use JTL\Media\Image;
+use JTL\Media\MultiSizeImage;
 use JTL\Shop;
 
 /**
@@ -17,15 +17,17 @@ use JTL\Shop;
  */
 class PortletInstance implements \JsonSerializable
 {
+    use MultiSizeImage;
+
     /**
      * @var array
      */
     protected static $dirSizes = [
-        '.xl/' => \WIDTH_OPC_IMAGE_XL,
-        '.lg/' => \WIDTH_OPC_IMAGE_LG,
-        '.md/' => \WIDTH_OPC_IMAGE_MD,
-        '.sm/' => \WIDTH_OPC_IMAGE_SM,
-        '.xs/' => \WIDTH_OPC_IMAGE_XS,
+        Image::SIZE_XL => \WIDTH_OPC_IMAGE_XL,
+        Image::SIZE_LG => \WIDTH_OPC_IMAGE_LG,
+        Image::SIZE_MD => \WIDTH_OPC_IMAGE_MD,
+        Image::SIZE_SM => \WIDTH_OPC_IMAGE_SM,
+        Image::SIZE_XS => \WIDTH_OPC_IMAGE_XS,
     ];
 
     /**
@@ -79,6 +81,7 @@ class PortletInstance implements \JsonSerializable
      */
     public function __construct(Portlet $portlet)
     {
+        $this->setImageType(Image::TYPE_OPC);
         $this->portlet     = $portlet;
         $this->properties  = $portlet->getDefaultProps();
         $this->subareaList = new AreaList();
@@ -478,76 +481,55 @@ class PortletInstance implements \JsonSerializable
         $srcsizes = '';
 
         if (empty($src)) {
-            $src = $default ?? '';
-
             return [
-                'srcset'   => $srcset,
-                'srcsizes' => $srcsizes,
-                'src'      => $src,
+                'srcset'   => '',
+                'srcsizes' => '',
+                'src'      => $default ?? '',
                 'alt'      => $alt,
                 'title'    => $title,
             ];
         }
 
-        $settings        = Shop::getSettings([\CONF_BILDER]);
-        $name            = \basename($src);
-        $decodedName     = \rawurldecode($name);
-        $widthHeuristics = $this->widthHeuristics;
-        $srcImgPath      = \PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $decodedName;
-
-        foreach (static::$dirSizes as $size => $width) {
-            $sizedImgPath = \PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $size . $decodedName;
-
-            if (!\file_exists($sizedImgPath)) {
-                $manager = new ImageManager(['driver' => Image::getImageDriver()]);
-                $img     = $manager->make($srcImgPath);
-                $factor  = $width / $img->getWidth();
-
-                $img->resize((int)$width, (int)($img->getHeight() * $factor), function ($constraint) {
-                    $constraint->aspectRatio();
-                });
-
-                $img->save($sizedImgPath, $settings['bilder']['bilder_jpg_quali']);
+        $decodedName = \rawurldecode(\basename($src));
+        $this->generateAllImageSizes(true, 1, \PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $decodedName);
+        foreach ($this->getImages() as $size => $i) {
+            $width = self::$dirSizes[$size] ?? null;
+            if ($width !== null) {
+                $srcset .= $i . ' ' . $width . 'w,';
             }
-
-            $srcset .= \PFAD_MEDIAFILES . 'Bilder/' . $size . $name . ' ' . $width . 'w,';
         }
-
         $srcset = \mb_substr($srcset, 0, -1); // remove trailing comma
+        foreach ($this->widthHeuristics as $breakpoint => $col) {
+            if (!empty($col)) {
+                $factor = 1;
 
-        if (\is_array($widthHeuristics)) {
-            foreach ($widthHeuristics as $breakpoint => $col) {
-                if (!empty($col)) {
-                    $factor = 1;
+                if (\is_array($divisor) && !empty($divisor[$breakpoint])) {
+                    $factor = (float)($divisor[$breakpoint] / 12);
+                }
 
-                    if (\is_array($divisor) && !empty($divisor[$breakpoint])) {
-                        $factor = (float)($divisor[$breakpoint] / 12);
-                    }
-
-                    switch ($breakpoint) {
-                        case 'xs':
-                            $breakpoint = 767;
-                            $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
-                                . (int)($col * 100 * $factor) . 'vw, ';
-                            break;
-                        case 'sm':
-                            $breakpoint = 991;
-                            $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
-                                . (int)($col * $breakpoint * $factor) . 'px, ';
-                            break;
-                        case 'md':
-                            $breakpoint = 1199;
-                            $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
-                                . (int)($col * $breakpoint * $factor) . 'px, ';
-                            break;
-                        case 'lg':
-                            $breakpoint = 1200;
-                            $srcsizes  .= '(min-width: ' . $breakpoint . 'px) '
-                                . (int)($col * $breakpoint * $factor) . 'px, ';
-                            break;
-                        default:
-                            break;
-                    }
+                switch ($breakpoint) {
+                    case 'xs':
+                        $breakpoint = 767;
+                        $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
+                            . (int)($col * 100 * $factor) . 'vw, ';
+                        break;
+                    case 'sm':
+                        $breakpoint = 991;
+                        $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
+                            . (int)($col * $breakpoint * $factor) . 'px, ';
+                        break;
+                    case 'md':
+                        $breakpoint = 1199;
+                        $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
+                            . (int)($col * $breakpoint * $factor) . 'px, ';
+                        break;
+                    case 'lg':
+                        $breakpoint = 1200;
+                        $srcsizes  .= '(min-width: ' . $breakpoint . 'px) '
+                            . (int)($col * $breakpoint * $factor) . 'px, ';
+                        break;
+                    default:
+                        break;
                 }
             }
         }
@@ -557,7 +539,7 @@ class PortletInstance implements \JsonSerializable
         return [
             'srcset'   => $srcset,
             'srcsizes' => $srcsizes,
-            'src'      => \PFAD_MEDIAFILES . 'Bilder/.md/' . $name,
+            'src'      => $this->getImage(),
             'alt'      => $alt,
             'title'    => $title,
         ];

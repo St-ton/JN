@@ -15,7 +15,7 @@ msgid "imageCache"
 msgstr "Bilder-Cache"
 
 msgid "imagesInCache"
-msgstr "Bilder im Cache"
+msgstr "Produktbilder im Cache"
 
 msgid "fileStructure"
 msgstr "Dateistruktur"

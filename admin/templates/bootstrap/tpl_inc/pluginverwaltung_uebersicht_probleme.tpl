@@ -1,5 +1,5 @@
 <div id="probleme" class="tab-pane fade {if isset($cTab) && $cTab === 'probleme'} active show{/if}">
-    {if $PluginErrorCount > 0}
+    {if $pluginErrorCount > 0}
     <form name="pluginverwaltung" method="post" action="pluginverwaltung.php">
         {$jtl_token}
         <input type="hidden" name="pluginverwaltung_uebersicht" value="1" />
@@ -322,10 +322,10 @@
             <div class="card-footer save-wrapper save">
                 <div class="row">
                     <div class="col-sm-6 col-xl-auto text-left">
-                        div class="custom-control custom-checkbox">
-                        <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);" />
-                        <label class="custom-control-label" for="ALLMSGS3">{__('selectAll')}</label>
-                    </div>
+                        <div class="custom-control custom-checkbox">
+                            <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);" />
+                            <label class="custom-control-label" for="ALLMSGS3">{__('selectAll')}</label>
+                        </div>
                     </div>
                     <div class="ml-auto col-sm-6 col-xl-auto">
                         <button name="deinstallieren" type="submit" class="btn btn-danger btn-block">

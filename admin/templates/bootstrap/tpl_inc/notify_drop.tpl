@@ -13,10 +13,10 @@
             <div class="dropdown-item-text">
                 <span class="icon-text-indent">
                     <div><i class="fa fa-circle text-{$notifyTypes[$notify->getType()]}" aria-hidden="true"></i></div>
-                    <a href="{$notify->getUrl()}">
+                    {if $notify->getUrl() !== null}<a href="{$notify->getUrl()}">{/if}
                         <div class="font-weight-bold">{$notify->getTitle()}: </div>
                         {$notify->getDescription()}
-                    </a>
+                    {if $notify->getUrl() !== null}</a>{/if}
                 </span>
             </div>
         {/foreach}

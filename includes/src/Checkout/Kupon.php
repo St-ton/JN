@@ -166,7 +166,7 @@ class Kupon
         $couponResult = Shop::Container()->getDB()->select('tkupon', 'kKupon', $id);
 
         if ($couponResult !== null && $couponResult->kKupon > 0) {
-            $couponResult->translationList = $this->getTranslation($couponResult->kKupon);
+            $couponResult->translationList = $this->getTranslation((int)$couponResult->kKupon);
             foreach (\array_keys(\get_object_vars($couponResult)) as $member) {
                 $this->$member = $couponResult->$member;
             }

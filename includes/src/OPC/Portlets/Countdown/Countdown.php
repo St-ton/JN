@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -29,16 +29,10 @@ class Countdown extends Portlet
     public function getPropertyDesc(): array
     {
         return [
-            'date'         => [
-                'label'    => __('countdownDate'),
-                'type'     => InputType::DATE,
-                'width'    => 50,
+            'until'        => [
+                'label'    => __('countdownDateTime'),
+                'type'     => InputType::DATETIME,
                 'required' => true,
-            ],
-            'time'         => [
-                'label' => __('countdownTime'),
-                'type'  => InputType::TIME,
-                'width' => 50,
             ],
             'expired-text' => [
                 'label' => __('textAfterCountdownFinished'),

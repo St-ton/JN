@@ -71,7 +71,7 @@
         </nav>
         <div class="tab-content">
             <div id="inaktiv" class="tab-pane fade{if !isset($cTab) || $cTab === 'inaktiv'} active show{/if}">
-                {if $oNewsKommentar_arr && $oNewsKommentar_arr|@count > 0}
+                {if $comments && $comments|@count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiKommentar cAnchor='inaktiv'}
                     <form method="post" action="news.php">
                         {$jtl_token}
@@ -95,29 +95,29 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {foreach $oNewsKommentar_arr as $oNewsKommentar}
+                                    {foreach $comments as $comment}
                                         <tr>
                                             <td class="check">
                                                 <div class="custom-control custom-checkbox">
-                                                    <input class="custom-control-input" type="checkbox" name="kNewsKommentar[]" value="{$oNewsKommentar->getID()}" id="comment-{$oNewsKommentar->getID()}" />
-                                                    <label class="custom-control-label" for="comment-{$oNewsKommentar->getID()}"></label>
+                                                    <input class="custom-control-input" type="checkbox" name="kNewsKommentar[]" value="{$comment->getID()}" id="comment-{$comment->getID()}" />
+                                                    <label class="custom-control-label" for="comment-{$comment->getID()}"></label>
                                                 </div>
                                             </td>
                                             <td class="TD2">
-                                                <label for="comment-{$oNewsKommentar->getID()}">
-                                                {*{if $oNewsKommentar->cVorname|strlen > 0}*}
-                                                    {*{$oNewsKommentar->cVorname} {$oNewsKommentar->cNachname}*}
+                                                <label for="comment-{$comment->getID()}">
+                                                {*{if $comment->cVorname|strlen > 0}*}
+                                                    {*{$comment->cVorname} {$comment->cNachname}*}
                                                 {*{else}*}
-                                                    {$oNewsKommentar->getName()}
+                                                    {$comment->getName()}
                                                 {*{/if}*}
                                                 </label>
                                             </td>
-                                            <td class="TD3">{$oNewsKommentar->getNewsTitle()|truncate:50:'...'}</td>
-                                            <td class="TD4">{$oNewsKommentar->getText()|truncate:150:'...'}</td>
-                                            <td class="text-center">{$oNewsKommentar->getDateCreatedCompat()}</td>
+                                            <td class="TD3">{$comment->getNewsTitle()|truncate:50:'...'}</td>
+                                            <td class="TD4">{$comment->getText()|truncate:150:'...'}</td>
+                                            <td class="text-center">{$comment->getDateCreatedCompat()}</td>
                                             <td class="text-center">
                                                 <div class="btn-group">
-                                                    <a href="news.php?news=1&kNews={$oNewsKommentar->getNewsID()}&kNewsKommentar={$oNewsKommentar->getID()}&nkedit=1&tab=inaktiv&token={$smarty.session.jtl_token}"
+                                                    <a href="news.php?news=1&kNews={$comment->getNewsID()}&kNewsKommentar={$comment->getID()}&nkedit=1&tab=inaktiv&token={$smarty.session.jtl_token}"
                                                        class="btn btn-link px-2"
                                                        title="{__('modify')}"
                                                        data-toggle="tooltip">

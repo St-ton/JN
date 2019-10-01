@@ -100,7 +100,7 @@ final class Manufacturers extends AbstractSync
                 ReturnType::SINGLE_OBJECT
             );
             $manufacturers[$i]->cBildPfad = $manufacturerImage->cBildPfad ?? '';
-            $manufacturers[$i]->cSeo      = Seo::checkSeo(Seo::getSeo($manufacturers[$i]->cSeo));
+            $manufacturers[$i]->cSeo      = Seo::getSeo($manufacturers[$i]->cSeo);
             $this->upsert('thersteller', [$manufacturers[$i]], 'kHersteller');
 
             $xmlLanguage = [];
@@ -109,7 +109,12 @@ final class Manufacturers extends AbstractSync
             } elseif (isset($source['therstellersprache'])) {
                 $xmlLanguage = $source;
             }
-            $this->updateSeo($id, $languages, $xmlLanguage, $manufacturers[$i]->cSeo);
+            $newSeo = $this->updateSeo($id, $languages, $xmlLanguage, $manufacturers[$i]->cSeo);
+            if ($newSeo !== $manufacturers[$i]->cSeo) {
+                $this->db->update('thersteller', 'kHersteller', $id, (object)[
+                    'cSeo' => $newSeo,
+                ]);
+            }
             $this->db->delete('therstellersprache', 'kHersteller', $id);
 
             $this->upsertXML(
@@ -135,15 +140,19 @@ final class Manufacturers extends AbstractSync
      * @param LanguageModel[] $languages
      * @param array           $xmlLanguage
      * @param string          $slug
+     * @return string
      */
-    private function updateSeo(int $id, array $languages, array $xmlLanguage, $slug): void
+    private function updateSeo(int $id, array $languages, array $xmlLanguage, $slug): string
     {
         $this->db->delete('tseo', ['kKey', 'cKey'], [$id, 'kHersteller']);
-        $mfSeo = $this->mapper->mapArray($xmlLanguage, 'therstellersprache', 'mHerstellerSpracheSeo');
+        $mfSeo  = $this->mapper->mapArray($xmlLanguage, 'therstellersprache', 'mHerstellerSpracheSeo');
+        $result = $slug;
+
+        /** @var LanguageModel $language */
         foreach ($languages as $language) {
             $baseSeo = $slug;
             foreach ($mfSeo as $mf) {
-                if (isset($mf->kSprache) && (int)$mf->kSprache === $language->getId() && !empty($mf->cSeo)) {
+                if (isset($mf->kSprache) && !empty($mf->cSeo) && (int)$mf->kSprache === $language->getId()) {
                     $baseSeo = Seo::getSeo($mf->cSeo);
                     break;
                 }
@@ -154,6 +163,12 @@ final class Manufacturers extends AbstractSync
             $seo->kKey     = $id;
             $seo->kSprache = $language->getId();
             $this->db->insert('tseo', $seo);
+
+            if ($language->default === 'Y') {
+                $result = $seo->cSeo;
+            }
         }
+
+        return $result;
     }
 }

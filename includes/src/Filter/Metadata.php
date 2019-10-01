@@ -259,7 +259,7 @@ class Metadata implements MetadataInterface
      */
     public function getImageURL(): string
     {
-        return $this->imageURL;
+        return $this->imageURL ?? \BILD_KEIN_KATEGORIEBILD_VORHANDEN;
     }
 
     /**
@@ -351,9 +351,9 @@ class Metadata implements MetadataInterface
                 $this->name = $this->category->getName();
             } elseif ($this->conf['navigationsfilter']['kategorie_bild_anzeigen'] === 'BT') {
                 $this->name     = $this->category->getName();
-                $this->imageURL = $this->category->getKategorieBild();
+                $this->imageURL = $this->category->getImage();
             } elseif ($this->conf['navigationsfilter']['kategorie_bild_anzeigen'] === 'B') {
-                $this->imageURL = $category->getKategorieBild();
+                $this->imageURL = $category->getImage();
             }
         } elseif ($this->productFilter->hasManufacturer()) {
             $this->manufacturer = new Hersteller($this->productFilter->getManufacturer()->getValue());
@@ -361,9 +361,9 @@ class Metadata implements MetadataInterface
                 $this->name = $this->manufacturer->getName();
             } elseif ($this->conf['navigationsfilter']['hersteller_bild_anzeigen'] === 'BT') {
                 $this->name     = $this->manufacturer->getName();
-                $this->imageURL = $this->manufacturer->cBildpfadNormal;
+                $this->imageURL = $this->manufacturer->getImage();
             } elseif ($this->conf['navigationsfilter']['hersteller_bild_anzeigen'] === 'B') {
-                $this->imageURL = $this->manufacturer->cBildpfadNormal;
+                $this->imageURL = $this->manufacturer->getImage();
             }
             if ($this->manufacturer !== null) {
                 $this->setMetaTitle($this->manufacturer->cMetaTitle)
@@ -376,9 +376,9 @@ class Metadata implements MetadataInterface
                 $this->setName($this->characteristicValue->cWert);
             } elseif ($this->conf['navigationsfilter']['merkmalwert_bild_anzeigen'] === 'BT') {
                 $this->setName($this->characteristicValue->cWert)
-                     ->setImageURL($this->characteristicValue->cBildpfadNormal);
+                     ->setImageURL($this->characteristicValue->getImage());
             } elseif ($this->conf['navigationsfilter']['merkmalwert_bild_anzeigen'] === 'B') {
-                $this->setImageURL($this->characteristicValue->cBildpfadNormal);
+                $this->setImageURL($this->characteristicValue->getImage());
             }
             if ($this->characteristicValue !== null) {
                 $this->setMetaTitle($this->characteristicValue->cMetaTitle)
@@ -438,7 +438,7 @@ class Metadata implements MetadataInterface
                 // Hat die aktuelle Kategorie Unterkategorien?
                 $helper = Category::getInstance();
                 $sub    = $helper->getCategoryById($category->kKategorie);
-                if ($sub !== false && $sub->hasChildren()) {
+                if ($sub !== null && $sub->hasChildren()) {
                     $catNames       = map($sub->getChildren(), function (MenuItem $e) {
                         return \strip_tags($e->getName());
                     });
@@ -532,7 +532,7 @@ class Metadata implements MetadataInterface
             if ($category->bUnterKategorien) {
                 $helper = Category::getInstance();
                 $sub    = $helper->getCategoryById($category->kKategorie);
-                if ($sub !== false && $sub->hasChildren()) {
+                if ($sub !== null && $sub->hasChildren()) {
                     $catNames     = map($sub->getChildren(), function (MenuItem $e) {
                         return \strip_tags($e->getName());
                     });
@@ -560,7 +560,7 @@ class Metadata implements MetadataInterface
         // sanitize and lowercase text
         $text = \StringHandler::removeDoubleSpaces(
             \preg_replace(
-                '/[^a-zA-Z0-9üÜäÄöÖß-]/u',
+                '/[^[:alpha:]\d\-]/u',
                 ' ',
                 \StringHandler::htmlentitydecode(\strtolower(\strip_tags($text)))
             )

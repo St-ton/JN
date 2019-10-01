@@ -30,7 +30,11 @@
                     {/block}
                 {/form}
             {/block}
-            <div class="hr-sect my-5">{lang key='or'}</div>
+            {block name='checkout-step0-login-or-hr'}
+                <div class="d-lg-none d-block">
+                    <div class="hr-sect my-5">{lang key='or'}</div>
+                </div>
+            {/block}
         {/col}
         {col cols=12 id="customer" lg=8}
             {block name='checkout-step0-login-or-register-form'}
@@ -43,14 +47,16 @@
                         {include file='checkout/inc_shipping_address.tpl'}
                     {/block}
                     {block name='checkout-step0-login-or-register-form-submit'}
-                        <div class="text-left mt-5">
-                            {input type="hidden" name="checkout" value="1"}
-                            {input type="hidden" name="form" value="1"}
-                            {input type="hidden" name="editRechnungsadresse" value="0"}
-                            {button type="submit" variant="primary" class="submit_once"}
-                                {lang key='sendCustomerData' section='account data'}
-                            {/button}
-                        </div>
+                        {row class='mt-5'}
+                            {col cols=12 md=4 xl=3 class='ml-md-auto'}
+                                {input type="hidden" name="checkout" value="1"}
+                                {input type="hidden" name="form" value="1"}
+                                {input type="hidden" name="editRechnungsadresse" value="0"}
+                                {button type="submit" variant="primary" class="submit_once" block=true}
+                                    {lang key='sendCustomerData' section='account data'}
+                                {/button}
+                            {/col}
+                        {/row}
                     {/block}
                 {/form}
             {/block}

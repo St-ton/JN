@@ -71,7 +71,7 @@
         </nav>
         <div class="tab-content">
             <div id="bewertungen" class="tab-pane fade {if !isset($cTab) || empty($cTab) || $cTab === 'bewertungen'} active show{/if}">
-                {if $oBewertung_arr|@count > 0 && $oBewertung_arr}
+                {if $ratings|@count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiBewertungen cAnchor='bewertungen'}
                     <form method="post" action="freischalten.php">
                         {$jtl_token}
@@ -94,24 +94,24 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {foreach $oBewertung_arr as $oBewertung}
+                                    {foreach $ratings as $rating}
                                         <tr>
                                             <td class="check">
                                                 <div class="custom-control custom-checkbox">
-                                                    <input class="custom-control-input" name="kBewertung[]" type="checkbox" id="review-id-{$oBewertung->kBewertung}" value="{$oBewertung->kBewertung}" />
-                                                    <label class="custom-control-label" for="review-id-{$oBewertung->kBewertung}"></label>
+                                                    <input class="custom-control-input" name="kBewertung[]" type="checkbox" id="review-id-{$rating->kBewertung}" value="{$rating->kBewertung}" />
+                                                    <label class="custom-control-label" for="review-id-{$rating->kBewertung}"></label>
                                                 </div>
-                                                <input type="hidden" name="kArtikel[]" value="{$oBewertung->kArtikel}" />
-                                                <input type="hidden" name="kBewertungAll[]" value="{$oBewertung->kBewertung}" />
+                                                <input type="hidden" name="kArtikel[]" value="{$rating->kArtikel}" />
+                                                <input type="hidden" name="kBewertungAll[]" value="{$rating->kBewertung}" />
                                             </td>
-                                            <td><a href="{$shopURL}/index.php?a={$oBewertung->kArtikel}" target="_blank">{$oBewertung->ArtikelName}</a></td>
-                                            <td>{$oBewertung->cName}.</td>
-                                            <td class="text-center">{$oBewertung->nSterne}</td>
-                                            <td class="text-center">{$oBewertung->Datum}</td>
+                                            <td><a href="{$shopURL}/index.php?a={$rating->kArtikel}" target="_blank">{$rating->ArtikelName}</a></td>
+                                            <td>{$rating->cName}.</td>
+                                            <td class="text-center">{$rating->nSterne}</td>
+                                            <td class="text-center">{$rating->Datum}</td>
                                             <td class="text-center">
                                                 <div class="btn-group">
                                                     <a class="btn btn-link px-2" title="{__('modify')}"
-                                                       href="bewertung.php?a=editieren&kBewertung={$oBewertung->kBewertung}&nFZ=1&token={$smarty.session.jtl_token}"
+                                                       href="bewertung.php?a=editieren&kBewertung={$rating->kBewertung}&nFZ=1&token={$smarty.session.jtl_token}"
                                                        data-toggle="tooltip"
                                                     >
                                                         <span class="icon-hover">
@@ -125,8 +125,8 @@
                                         <tr>
                                             <td class="border-top-0">&nbsp;</td>
                                             <td class="border-top-0" colspan="6">
-                                                <strong>{$oBewertung->cTitel}</strong>
-                                                <p>{$oBewertung->cText}</p>
+                                                <strong>{$rating->cTitel}</strong>
+                                                <p>{$rating->cText}</p>
                                             </td>
                                         </tr>
                                     {/foreach}
@@ -160,7 +160,7 @@
                 {/if}
             </div>
             <div id="livesearch" class="tab-pane fade {if isset($cTab) && $cTab === 'livesearch'} active show{/if}">
-                {if $oSuchanfrage_arr|@count > 0 && $oSuchanfrage_arr}
+                {if $searchQueries|@count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiSuchanfragen cAnchor='livesearch'}
                     <div>
                         <form method="post" action="freischalten.php">
@@ -188,18 +188,18 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {foreach $oSuchanfrage_arr as $oSuchanfrage}
+                                    {foreach $searchQueries as $query}
                                         <tr>
                                             <td class="check">
                                                 <div class="custom-control custom-checkbox">
-                                                    <input class="custom-control-input" name="kSuchanfrage[]" type="checkbox" id="search-request-id-{$oSuchanfrage->kSuchanfrage}" value="{$oSuchanfrage->kSuchanfrage}" />
-                                                    <label class="custom-control-label" for="search-request-id-{$oSuchanfrage->kSuchanfrage}"></label>
+                                                    <input class="custom-control-input" name="kSuchanfrage[]" type="checkbox" id="search-request-id-{$query->kSuchanfrage}" value="{$query->kSuchanfrage}" />
+                                                    <label class="custom-control-label" for="search-request-id-{$query->kSuchanfrage}"></label>
                                                 </div>
                                             </td>
-                                            <td class="text-left">{$oSuchanfrage->cSuche}</td>
-                                            <td class="text-center">{$oSuchanfrage->nAnzahlGesuche}</td>
-                                            <td class="text-center">{$oSuchanfrage->nAnzahlTreffer}</td>
-                                            <td class="text-center">{$oSuchanfrage->dZuletztGesucht_de}</td>
+                                            <td class="text-left">{$query->cSuche}</td>
+                                            <td class="text-center">{$query->nAnzahlGesuche}</td>
+                                            <td class="text-center">{$query->nAnzahlTreffer}</td>
+                                            <td class="text-center">{$query->dZuletztGesucht_de}</td>
                                         </tr>
                                     {/foreach}
                                     </tbody>
@@ -243,7 +243,7 @@
                 {/if}
             </div>
             <div id="newscomments" class="tab-pane fade {if isset($cTab) && $cTab === 'newscomments'} active show{/if}">
-                {if $oNewsKommentar_arr|@count > 0 && $oNewsKommentar_arr}
+                {if $comments|@count > 0 && $comments}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiNewskommentare cAnchor='newscomments'}
                     <div>
                         <form method="post" action="freischalten.php">
@@ -263,29 +263,29 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {foreach $oNewsKommentar_arr as $oNewsKommentar}
+                                        {foreach $comments as $comment}
                                             <tr>
                                                 <td class="check">
                                                     <div class="custom-control custom-checkbox">
-                                                        <input class="custom-control-input" type="checkbox" name="kNewsKommentar[]" id="ncid-{$oNewsKommentar->kNewsKommentar}" value="{$oNewsKommentar->kNewsKommentar}" />
-                                                        <label class="custom-control-label" for="ncid-{$oNewsKommentar->kNewsKommentar}"></label>
+                                                        <input class="custom-control-input" type="checkbox" name="kNewsKommentar[]" id="ncid-{$comment->kNewsKommentar}" value="{$comment->kNewsKommentar}" />
+                                                        <label class="custom-control-label" for="ncid-{$comment->kNewsKommentar}"></label>
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    <label for="ncid-{$oNewsKommentar->kNewsKommentar}">
-                                                        {if $oNewsKommentar->cVorname|strlen > 0}
-                                                            {$oNewsKommentar->cVorname} {$oNewsKommentar->cNachname}
+                                                    <label for="ncid-{$comment->kNewsKommentar}">
+                                                        {if $comment->cVorname|strlen > 0}
+                                                            {$comment->cVorname} {$comment->cNachname}
                                                         {else}
-                                                            {$oNewsKommentar->cName}
+                                                            {$comment->cName}
                                                         {/if}
                                                     </label>
                                                 </td>
-                                                <td>{$oNewsKommentar->cBetreff|truncate:50:'...'}</td>
-                                                <td class="text-center">{$oNewsKommentar->dErstellt_de}</td>
+                                                <td>{$comment->cBetreff|truncate:50:'...'}</td>
+                                                <td class="text-center">{$comment->dErstellt_de}</td>
                                                 <td class="text-center">
                                                     <div class="btn-group">
                                                         <a class="btn btn-link px-2" title="{__('modify')}"
-                                                           href="news.php?news=1&kNews={$oNewsKommentar->kNews}&kNewsKommentar={$oNewsKommentar->kNewsKommentar}&nkedit=1&nFZ=1&token={$smarty.session.jtl_token}"
+                                                           href="news.php?news=1&kNews={$comment->kNews}&kNewsKommentar={$comment->kNewsKommentar}&nkedit=1&nFZ=1&token={$smarty.session.jtl_token}"
                                                            data-toggle="tooltip"
                                                         >
                                                             <span class="icon-hover">
@@ -327,7 +327,7 @@
                 {/if}
             </div>
             <div id="newsletter" class="tab-pane fade {if isset($cTab) && $cTab === 'newsletter'} active show{/if}">
-                {if $oNewsletterEmpfaenger_arr|@count > 0 && $oNewsletterEmpfaenger_arr}
+                {if $recipients|@count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiNewsletterEmpfaenger cAnchor='newsletter'}
                     <div>
                         <form method="post" action="freischalten.php">
@@ -350,18 +350,18 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {foreach $oNewsletterEmpfaenger_arr as $oNewsletterEmpfaenger}
+                                        {foreach $recipients as $recipient}
                                             <tr>
                                                 <td class="check">
                                                     <div class="custom-control custom-checkbox">
-                                                        <input class="custom-control-input" type="checkbox" name="kNewsletterEmpfaenger[]" id="newsletter-recipient-id-{$oNewsletterEmpfaenger->kNewsletterEmpfaenger}" value="{$oNewsletterEmpfaenger->kNewsletterEmpfaenger}" />
-                                                        <label class="custom-control-label" for="newsletter-recipient-id-{$oNewsletterEmpfaenger->kNewsletterEmpfaenger}"></label>
+                                                        <input class="custom-control-input" type="checkbox" name="kNewsletterEmpfaenger[]" id="newsletter-recipient-id-{$recipient->kNewsletterEmpfaenger}" value="{$recipient->kNewsletterEmpfaenger}" />
+                                                        <label class="custom-control-label" for="newsletter-recipient-id-{$recipient->kNewsletterEmpfaenger}"></label>
                                                     </div>
                                                 </td>
-                                                <td>{$oNewsletterEmpfaenger->cEmail}</td>
-                                                <td>{$oNewsletterEmpfaenger->cVorname}</td>
-                                                <td>{$oNewsletterEmpfaenger->cNachname}</td>
-                                                <td class="text-center">{$oNewsletterEmpfaenger->dEingetragen_de}</td>
+                                                <td>{$recipient->cEmail}</td>
+                                                <td>{$recipient->cVorname}</td>
+                                                <td>{$recipient->cNachname}</td>
+                                                <td class="text-center">{$recipient->dEingetragen_de}</td>
                                             </tr>
                                         {/foreach}
                                     </tbody>

@@ -1,4 +1,8 @@
 
+@function breakpoint-infix-jtl($name, $breakpoints: $grid-breakpoints) {
+	@return if(breakpoint-min($name, $breakpoints) == null, '', #{$name}-);
+}
+
 @function rem($pixels, $default: 16px) {
 	@if (unitless($pixels)) {
 		$pixels: $pixels * 1px;

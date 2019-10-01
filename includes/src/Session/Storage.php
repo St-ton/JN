@@ -42,7 +42,7 @@ class Storage
      * @param string $userAgent
      * @return bool
      */
-    protected static function getIsCrawler(string $userAgent): bool
+    public static function getIsCrawler(string $userAgent): bool
     {
         return \preg_match(
             '/Google|ApacheBench|sqlmap|loader.io|bot|Rambler|Yahoo|AbachoBOT|accoona' .

@@ -91,6 +91,7 @@ use Monolog\Processor\PsrLogMessageProcessor;
 use Psr\Log\LoggerInterface;
 use stdClass;
 use function Functional\first;
+use function Functional\map;
 use function Functional\tail;
 
 /**
@@ -846,7 +847,7 @@ final class Shop
         $cache            = self::Container()->getCache();
         $cacheID          = 'plgnbtsrp';
         if (($plugins = $cache->get($cacheID)) === false) {
-            $plugins = $db->queryPrepared(
+            $plugins = map($db->queryPrepared(
                 'SELECT kPlugin, bBootstrap, bExtension
                     FROM tplugin
                     WHERE nStatus = :state
@@ -854,14 +855,20 @@ final class Shop
                     ORDER BY nPrio ASC',
                 ['state' => State::ACTIVATED],
                 ReturnType::ARRAY_OF_OBJECTS
-            ) ?: [];
+            ) ?: [], function ($e) {
+                $e->kPlugin    = (int)$e->kPlugin;
+                $e->bBootstrap = (int)$e->bBootstrap;
+                $e->bExtension = (int)$e->bExtension;
+
+                return $e;
+            });
             $cache->set($cacheID, $plugins, [\CACHING_GROUP_PLUGIN]);
         }
         $dispatcher      = Dispatcher::getInstance();
         $extensionLoader = new PluginLoader($db, $cache);
         $pluginLoader    = new LegacyPluginLoader($db, $cache);
         foreach ($plugins as $plugin) {
-            $loader = isset($plugin->bExtension) && (int)$plugin->bExtension === 1 ? $extensionLoader : $pluginLoader;
+            $loader = $plugin->bExtension === 1 ? $extensionLoader : $pluginLoader;
             if (($p = PluginHelper::bootstrap($plugin->kPlugin, $loader)) !== null) {
                 $p->boot($dispatcher);
             }
@@ -874,6 +881,14 @@ final class Shop
     public static function isFrontend(): bool
     {
         return self::$isFrontend === true;
+    }
+
+    /**
+     * @param bool $isFrontend
+     */
+    public static function setIsFrontend(bool $isFrontend): void
+    {
+        self::$isFrontend = $isFrontend;
     }
 
     /**

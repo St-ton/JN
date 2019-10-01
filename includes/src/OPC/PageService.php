@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -403,7 +403,7 @@ class PageService
      * @return bool true if the draft could be locked, false if it is still locked by some other user
      * @throws \Exception
      */
-    public function lockDraft($key): bool
+    public function lockDraft(int $key): bool
     {
         $draft = $this->getDraft($key);
 

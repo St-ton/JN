@@ -119,7 +119,7 @@ abstract class BaseController
         if ((float)$reviewBonus->fGuthabenProMonat > $maxBalance) {
             return $reward;
         }
-        if ((int)$this->config['bewertung']['bewertung_stufe2_anzahlzeichen'] <= mb_strlen($review->getContent())) {
+        if ((int)$this->config['bewertung']['bewertung_stufe2_anzahlzeichen'] <= \mb_strlen($review->getContent())) {
             $reward = ((float)$reviewBonus->fGuthabenProMonat + $level2balance) > $maxBalance
                 ? $maxBalance - (float)$reviewBonus->fGuthabenProMonat
                 : $level2balance;

@@ -4,22 +4,22 @@
  *}
 {block name='boxes-box-filter-category'}
     {if $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE && (!$device->isMobile() || $device->isTablet())}
-        <div>
+        <div class="box box-filter-category" id="sidebox{$oBox->getID()}">
             {button
-            variant="link"
-            class="text-decoration-none pl-0 text-left"
-            block=true
-            role="button"
-            data=["toggle"=> "collapse", "target"=>"#sidebox{$oBox->getID()}"]
+                variant="link"
+                class="text-decoration-none px-0 text-left dropdown-toggle"
+                block=true
+                role="button"
+                data=["toggle"=> "collapse", "target"=>"#cllps-box{$oBox->getID()}"]
             }
-                {$oBox->getTitle()} <i class="fas fa-plus float-right"></i>
+                {$oBox->getTitle()}
             {/button}
+            {collapse id="cllps-box{$oBox->getID()}" visible=$oBox->getItems()->isActive()}
+            {block name='boxes-box-filter-category-content'}
+                {include file='snippets/filter/genericFilterItem.tpl' filter=$oBox->getItems()}
+            {/block}
+            {/collapse}
+            <hr class="my-2">
         </div>
-        {collapse class="box box-filter-category" id="sidebox{$oBox->getID()}" visible=$oBox->getItems()->isActive()}
-        {block name='boxes-box-filter-category-content'}
-            {include file='snippets/filter/genericFilterItem.tpl' filter=$oBox->getItems()}
-        {/block}
-        {/collapse}
-        <hr class="my-2">
     {/if}
 {/block}

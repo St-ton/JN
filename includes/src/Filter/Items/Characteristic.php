@@ -18,6 +18,7 @@ use JTL\Filter\StateSQLInterface;
 use JTL\Filter\Type;
 use JTL\Language\LanguageHelper;
 use JTL\MagicCompatibilityTrait;
+use JTL\Media\Image;
 use JTL\Shop;
 use stdClass;
 use function Functional\every;
@@ -497,6 +498,9 @@ class Characteristic extends BaseCharacteristic
                 ->setData('cBildpfadNormal', $baseSrcNormal)
                 ->setData('cBildURLKlein', $imageBaseURL . $baseSrcSmall)
                 ->setData('cBildURLNormal', $imageBaseURL . $baseSrcNormal);
+            $option->setImageType(Image::TYPE_CHARACTERISTIC);
+            $option->setID($filter->kMerkmal);
+            $option->generateAllImageSizes();
             $option->setParam($this->getUrlParam());
             $option->setType($filter->nMehrfachauswahl === 1 ? Type::OR : Type::AND);
             $option->setType($this->getType());
@@ -532,6 +536,9 @@ class Characteristic extends BaseCharacteristic
                 $characteristicOption->setName(\htmlentities($filterValue->cWert));
                 $characteristicOption->setValue($filterValue->cWert);
                 $characteristicOption->setCount((int)$filterValue->nAnzahl);
+                $characteristicOption->setImageType(Image::TYPE_CHARACTERISTIC_VALUE);
+                $characteristicOption->setID($filterValue->kMerkmalWert);
+                $characteristicOption->generateAllImageSizes();
                 if ($characteristicOption->isActive()) {
                     $option->setIsActive(true);
                 }

@@ -93,6 +93,11 @@ class Lieferschein
         $db   = Shop::Container()->getDB();
         $item = $db->select('tlieferschein', 'kLieferschein', $id);
         if ($item !== null && $item->kLieferschein > 0) {
+            $item->kLieferschein    = (int)$item->kLieferschein;
+            $item->kInetBestellung  = (int)$item->kInetBestellung;
+            $item->nFulfillment     = (int)$item->nFulfillment;
+            $item->nStatus          = (int)$item->nStatus;
+            $item->bEmailVerschickt = (int)$item->bEmailVerschickt;
             foreach (\array_keys(\get_object_vars($item)) as $member) {
                 $setter = 'set' . \mb_substr($member, 1);
                 if (\is_callable([$this, $setter])) {
@@ -131,7 +136,7 @@ class Lieferschein
                 'kVersand'
             );
             foreach ($shippings as $shipping) {
-                $this->oVersand_arr[] = new Versand($shipping->kVersand, $data);
+                $this->oVersand_arr[] = new Versand((int)$shipping->kVersand, $data);
             }
         }
 

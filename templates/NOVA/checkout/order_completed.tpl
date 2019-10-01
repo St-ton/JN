@@ -10,29 +10,37 @@
         {container}
         {block name='checkout-order-completed-heading'}
             {if isset($smarty.session.Zahlungsart->nWaehrendBestellung) && $smarty.session.Zahlungsart->nWaehrendBestellung == 1}
-                <h1>{lang key='orderCompletedPre' section='checkout'}</h1>
+                <h2>{lang key='orderCompletedPre' section='checkout'}</h2>
             {elseif $Bestellung->Zahlungsart->cModulId !== 'za_kreditkarte_jtl' && $Bestellung->Zahlungsart->cModulId !== 'za_lastschrift_jtl'}
-                <h1>{lang key='orderCompletedPost' section='checkout'}</h1>
+                <h2>{lang key='orderCompletedPost' section='checkout'}</h2>
             {/if}
         {/block}
         {block name='checkout-order-completed-include-extension'}
             {include file='snippets/extension.tpl'}
         {/block}
-        <div class="order-completed">
-            {block name='checkout-order-completed-include-inc-paymentmodules'}
-                {include file='checkout/inc_paymentmodules.tpl'}
-            {/block}
-            {block name='checkout-order-completed-order-completed'}
-                {if isset($abschlussseite)}
-                    {block name='checkout-order-completed-include-inc-order-completed'}
-                        {include file='checkout/inc_order_completed.tpl'}
-                    {/block}
-                {/if}
-            {/block}
-            {button class="mt-3" type="link" href={$ShopURL} variant="primary"}
-                {lang key='continueShopping' section='checkout'}
-            {/button}
-        </div>
+        {block name='checkout-order-completed-main'}
+            <div class="order-completed">
+                {block name='checkout-order-completed-include-inc-paymentmodules'}
+                    {include file='checkout/inc_paymentmodules.tpl'}
+                {/block}
+                {block name='checkout-order-completed-order-completed'}
+                    {if isset($abschlussseite)}
+                        {block name='checkout-order-completed-include-inc-order-completed'}
+                            {include file='checkout/inc_order_completed.tpl'}
+                        {/block}
+                    {/if}
+                {/block}
+                {block name='checkout-order-completed-continue-shopping'}
+                    {row}
+                        {col md=4 lg=3 xl=2}
+                            {button block=true type="link" href={$ShopURL} variant="primary"}
+                                {lang key='continueShopping' section='checkout'}
+                            {/button}
+                        {/col}
+                    {/row}
+                {/block}
+            </div>
+        {/block}
         {/container}
     {/block}
     {block name='checkout-order-completed-include-footer'}

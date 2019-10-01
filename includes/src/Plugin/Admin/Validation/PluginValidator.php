@@ -58,6 +58,7 @@ final class PluginValidator extends AbstractValidator
         $checks     = $validation->getValidations($baseNode, $this->dir, $version, $baseNode['PluginID']);
         foreach ($checks as $check) {
             $check->setDir($this->dir . \DIRECTORY_SEPARATOR); // override versioned dir from base validator
+            $check->setContext(ValidationItemInterface::CONTEXT_PLUGIN);
             $res = $check->validate();
             if ($res !== InstallCode::OK) {
                 return $res;

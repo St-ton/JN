@@ -68,7 +68,7 @@
                                             <ul class="list-unstyled">
                                                 <li>{$Bestellung->cZahlungsartName}</li>
                                                 <li>
-                                                    {if $Bestellung->cStatus != BESTELLUNG_STATUS_STORNO && $Bestellung->dBezahldatum_de !== '00.00.0000'}
+                                                    {if $Bestellung->cStatus != BESTELLUNG_STATUS_STORNO && $Bestellung->dBezahldatum_de !== '00.00.0000' && !empty($Bestellung->dBezahldatum_de)}
                                                         {lang key='payedOn' section='login'} {$Bestellung->dBezahldatum_de}
                                                     {else}
                                                         {if ($Bestellung->cStatus == BESTELLUNG_STATUS_OFFEN || $Bestellung->cStatus == BESTELLUNG_STATUS_IN_BEARBEITUNG)
@@ -311,6 +311,15 @@
                 <div class="h3">{lang key='yourOrderComment' section='login'}</div>
                 <p>{$Bestellung->cKommentar}</p>
             {/if}
+        {/block}
+        {block name='account-order-details-actions'}
+            {row}
+                {col md=3 cols=12}
+                    {link class="btn btn-secondary btn-block" href="{get_static_route id='jtl.php'}?bestellungen=1"}
+                        {lang key='back'}
+                    {/link}
+                {/col}
+            {/row}
         {/block}
     {/if}
 {/block}

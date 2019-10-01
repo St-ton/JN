@@ -253,10 +253,10 @@ if ($step === 'freischalten_uebersicht') {
     $queries      = gibSuchanfrageFreischalten(' LIMIT ' . $pagiQueries->getLimitSQL(), $liveSearchSQL);
     $newsComments = gibNewskommentarFreischalten(' LIMIT ' . $pagiComments->getLimitSQL(), $commentsSQL);
     $recipients   = gibNewsletterEmpfaengerFreischalten(' LIMIT ' . $pagiRecipients->getLimitSQL(), $recipientsSQL);
-    $smarty->assign('oBewertung_arr', $reviews)
-           ->assign('oSuchanfrage_arr', $queries)
-           ->assign('oNewsKommentar_arr', $newsComments)
-           ->assign('oNewsletterEmpfaenger_arr', $recipients)
+    $smarty->assign('ratings', $reviews)
+           ->assign('searchQueries', $queries)
+           ->assign('comments', $newsComments)
+           ->assign('recipients', $recipients)
            ->assign('oPagiBewertungen', $pagiRatings)
            ->assign('oPagiSuchanfragen', $pagiQueries)
            ->assign('oPagiNewskommentare', $pagiComments)

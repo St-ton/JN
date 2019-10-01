@@ -8,6 +8,8 @@ namespace JTL\Catalog\Category;
 
 use JTL\Helpers\Text;
 use JTL\MagicCompatibilityTrait;
+use JTL\Media\Image;
+use JTL\Media\MultiSizeImage;
 use JTL\Shop;
 use stdClass;
 
@@ -17,7 +19,8 @@ use stdClass;
  */
 class MenuItem
 {
-    use MagicCompatibilityTrait;
+    use MagicCompatibilityTrait,
+        MultiSizeImage;
 
     public static $mapping = [
         'kKategorie'                 => 'ID',
@@ -331,6 +334,7 @@ class MenuItem
      */
     public function __construct($data)
     {
+        $this->setImageType(Image::TYPE_CATEGORY);
         $this->setID($data->kKategorie);
         $this->setParentID($data->kOberKategorie);
         if (empty($data->cName_spr)) {
@@ -346,6 +350,7 @@ class MenuItem
 
         $this->setURL($data->cSeo ?? '');
         $this->setImageURL($data->cPfad ?? '');
+        $this->generateAllImageSizes(true, 1, $data->cPfad ?? null);
         $this->setProductCount($data->cnt);
     }
 }

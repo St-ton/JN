@@ -68,35 +68,33 @@ final class LinkList implements LinkListInterface
             $loadData[$real] = (object)['linkID' => $link, 'parentID' => (int)$realID->kVaterLink];
         }
         $linkLanguages = $this->db->query(
-            "SELECT tlink.*, tlinksprache.cISOSprache,
-                tlink.cName AS displayName,
-                tlinksprache.cName AS localizedName, 
-                tlinksprache.cTitle AS localizedTitle, 
-                tsprache.kSprache, 
-                tlinksprache.cContent AS content,
-                tlinksprache.cMetaDescription AS metaDescription,
-                tlinksprache.cMetaKeywords AS metaKeywords,
-                tlinksprache.cMetaTitle AS metaTitle,
-                tseo.kSprache AS languageID,
-                tseo.cSeo AS localizedUrl,
+            "SELECT tlink.*, loc.cISOSprache,
+                tlink.cName AS displayName, loc.cName AS localizedName, loc.cTitle AS localizedTitle, 
+                loc.cContent AS content,
+                loc.cMetaDescription AS metaDescription, loc.cMetaKeywords AS metaKeywords, loc.cMetaTitle AS metaTitle,
+                tsprache.kSprache, tseo.kSprache AS languageID, tseo.cSeo AS localizedUrl,
                 tspezialseite.cDateiname,
                 tplugin.nStatus AS pluginState,
-                GROUP_CONCAT(tlinkgroupassociations.linkGroupID) AS linkGroups
+                pld.cDatei AS handler, pld.cTemplate AS template, pld.cFullscreenTemplate AS fullscreenTemplate,
+                GROUP_CONCAT(assoc.linkGroupID) AS linkGroups
             FROM tlink
-                JOIN tlinksprache
-                    ON tlink.kLink = tlinksprache.kLink
+                JOIN tlinksprache loc
+                    ON tlink.kLink = loc.kLink
                 JOIN tsprache
-                    ON tsprache.cISO = tlinksprache.cISOSprache
+                    ON tsprache.cISO = loc.cISOSprache
                 JOIN tseo
                     ON tseo.cKey = 'kLink'
-                    AND tseo.kKey = tlinksprache.kLink
+                    AND tseo.kKey = loc.kLink
                     AND tseo.kSprache = tsprache.kSprache
-                LEFT JOIN tlinkgroupassociations
-                    ON tlinkgroupassociations.linkID = tlinksprache.kLink
+                LEFT JOIN tlinkgroupassociations assoc
+                    ON assoc.linkID = loc.kLink
                 LEFT JOIN tspezialseite
                     ON tspezialseite.nLinkart = tlink.nLinkart
                 LEFT JOIN tplugin
                     ON tplugin.kPlugin = tlink.kPlugin
+                LEFT JOIN tpluginlinkdatei pld
+                    ON tplugin.kPlugin = pld.kPlugin
+                    AND tlink.kLink = pld.kLink
                 WHERE tlink.kLink IN (" . \implode(',', $realData) . ')
                 GROUP BY tlink.kLink, tseo.kSprache
                 ORDER BY tlink.nSort, tlink.cName',

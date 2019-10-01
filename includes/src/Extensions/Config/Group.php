@@ -44,11 +44,6 @@ class Group implements JsonSerializable
     protected $nTyp;
 
     /**
-     * @var int
-     */
-    protected $nSort;
-
-    /**
      * @var string
      */
     public $cKommentar;
@@ -138,7 +133,6 @@ class Group implements JsonSerializable
             $this->nMin          = (int)$this->nMin;
             $this->nMax          = (int)$this->nMax;
             $this->nTyp          = (int)$this->nTyp;
-            $this->nSort         = (int)$this->nSort;
             $this->oSprache      = new GroupLocalization($this->kKonfiggruppe, $languageID);
             $this->oItem_arr     = Item::fetchAll($this->kKonfiggruppe);
         }
@@ -210,17 +204,6 @@ class Group implements JsonSerializable
     }
 
     /**
-     * @param int $nSort
-     * @return $this
-     */
-    public function setSort(int $nSort): self
-    {
-        $this->nSort = $nSort;
-
-        return $this;
-    }
-
-    /**
      * @return int|null
      */
     public function getKonfiggruppe(): ?int
@@ -268,14 +251,6 @@ class Group implements JsonSerializable
     public function getAnzeigeTyp(): ?int
     {
         return $this->nTyp;
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getSort(): ?int
-    {
-        return $this->nSort;
     }
 
     /**

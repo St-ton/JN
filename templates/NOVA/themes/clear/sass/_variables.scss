@@ -28,10 +28,26 @@ $gray-600:                          $gray;
 $gray-700:                          $gray-dark;
 
 $yiq-text-dark:                     $gray-darker;
-$yiq-text-light:                    $gray-light;
+$yiq-text-light:                    $gray-lighter;
+
+// spacer
+
+$spacer: 1rem;
+$spacers: (
+        0:                                0,
+        1:                                ($spacer * .25),
+        2:                                ($spacer * .5),
+        3:                                $spacer,
+        4:                                ($spacer * 1.5),
+        5:                                ($spacer * 2),
+        6:                                ($spacer * 3),
+        7:                                ($spacer * 4),
+        8:                                ($spacer * 5)
+);
+
 // grid
 
-$grid-gutter-width:                 32px;
+$grid-gutter-width:                 map-get($spacers, 5);
 
 /* grid breakpoints */
 
@@ -43,15 +59,22 @@ $grid-breakpoints: (
         xl: 1300px
 );
 
+/* grid containers */
+
+$container-max-widths: (
+        sm: 540px,
+        md: 720px,
+        lg: 960px,
+        xl: 1250px
+);
+
 // font
 
 $font-family-sans-serif:            "Open Sans", Helvetica, Arial, sans-serif;
-$headings-font-family:              "Montserrat", Helvetica, Arial, sans-serif;
-$headings-margin-bottom:            1.5rem;
 $line-height-base:                  1.5;
 
 $font-family-sans-serif:            'Open Sans', sans-serif;
-$font-accent :                      Montserrat, sans-serif;
+$font-accent:                       Montserrat, sans-serif;
 
 $font-size-base:                    .95rem;
 $font-size-lg:                      $font-size-base * 1.25;
@@ -70,6 +93,11 @@ $h3-font-size:                      $font-size-base * 1.125;
 $h4-font-size:                      $font-size-base;
 $h5-font-size:                      $font-size-base;
 $h6-font-size:                      $font-size-base;
+
+$headings-margin-bottom:            $spacer;
+$headings-font-family:              $font-accent;
+$headings-font-weight:              $font-weight-normal;
+$headings-color:                    $gray-darker;
 
 // buttons
 
@@ -93,9 +121,8 @@ $highlight-border-size:             .375rem;
 $body-bg:                           $gray-100;
 $body-color:                        $gray-600;
 
-$headings-color:                    $gray-700;
-
-$text-muted:                        $gray-500;
+$text-muted:                        $gray;
+$input-color-placeholder:           $gray;
 
 /* links */
 
@@ -120,23 +147,21 @@ $searchcloud-font-size-scaling:     30%;
 $navbar-light-color:                $gray-dark;
 
 $input-bg:                          #fff;
+$input-focus-box-shadow:            none;
 $list-group-bg:                     #fff;
 $list-group-disabled-bg:            #fff;
 
 $progress-bar-color:                $gray;
 
+/* tables */
+
 $table-accent-bg:                   $gray-lighter;
 $table-hover-bg:                    $gray-lighter;
 
-// spacer
+$table-cell-padding:               (map-get($spacers, 1) * 3) $spacer;
+$table-cell-padding-sm:             map-get($spacers, 2) $spacer;
 
-$spacer: 1rem;
-$spacers: (
-  5:                                ($spacer * 2),
-  6:                                ($spacer * 3),
-  7:                                ($spacer * 4),
-  8:                                ($spacer * 5)
-);
+$table-striped-order:               even;
 
 $sizes: (
   20:                               20%,
@@ -169,8 +194,12 @@ $tooltip-margin:                    .25rem;
 // input
 
 $border-width:                      1px;
-$input-btn-padding-y:               .375rem;
-$input-height:                      calc(#{$line-height-base * 1em} + #{$input-btn-padding-y * 2} + #{$border-width * 9});
+$input-btn-padding-y:               rem(10px);
+$input-btn-padding-x:               rem(15px);
+$input-btn-padding-y-sm:            rem(6px);
+$input-btn-font-size-sm:            $font-size-base;
+
+$input-height:                      calc(#{$line-height-base * 1em} + #{$input-btn-padding-y * 2} + #{$border-width * 2});
 $input-border-color:                $gray;
 $custom-select-indicator-padding:   rem(30px);
 $custom-select-indicator-color:     $white;
@@ -204,31 +233,31 @@ $tap-target-size:                   44px;
 $tap-target-size-sm:                36px;
 
 //BESTSELLER, 1
-$ribbon-bg-1:                       #eeb728;
+$ribbon-bg-1:                       #eeb700;
 $ribbon-color-1:                    #fff;
 //SPECIALOFFERS, 2
-$ribbon-bg-2:                       #4bc223;
+$ribbon-bg-2:                       #4cc210;
 $ribbon-color-2:                    #fff;
 //NEWPRODUCTS, 3
-$ribbon-bg-3:                       #525252;
+$ribbon-bg-3:                       $gray-darker;
 $ribbon-color-3:                    #fff;
 //TOPOFFERS, 4
-$ribbon-bg-4:                       #c3ebe6;
+$ribbon-bg-4:                       $gray-medium;
 $ribbon-color-4:                    $gray-dark;
 //UPCOMINGPRODUCTS, 5
-$ribbon-bg-5:                       #b9056f;
+$ribbon-bg-5:                       #f78e25;
 $ribbon-color-5:                    #fff;
 //TOPREVIEWS, 6
 $ribbon-bg-6:                       #ebebeb;
 $ribbon-color-6:                    $gray-dark;
 //OUTOFSTOCK, 7
-$ribbon-bg-7:                       #b9080e;
+$ribbon-bg-7:                       $danger;
 $ribbon-color-7:                    #fff;
 //ONSTOCK, 8
-$ribbon-bg-8:                       #0f8662;
+$ribbon-bg-8:                       #11926b;
 $ribbon-color-8:                    #fff;
 //PREORDER, 9
-$ribbon-bg-9:                       #f78e26;
+$ribbon-bg-9:                       #b9006f;
 $ribbon-color-9:                    #fff;
 
 $ribbon-colors				: ();
@@ -259,5 +288,15 @@ $ribbon-bg-colors: map-merge((
 
 $navbar-nav-link-padding-x: map-get($spacers, 4);
 $navbar-nav-link-padding-y: map-get($spacers, 4);
+$nav-link-padding-x: 0.8rem;
 
 $modal-md: 700px;
+
+/* progress */
+
+$progress-bg				: $gray-lighter;
+$progress-box-shadow		: none;
+
+/* dropdowns */
+
+$dropdown-padding-y         : 0;

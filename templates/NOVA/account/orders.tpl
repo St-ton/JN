@@ -53,9 +53,13 @@
             {/block}
         {/if}
         {block name='account-orders-actions'}
-            {link class="btn btn-primary" href="{get_static_route id='jtl.php'}"}
-                {lang key='back'}
-            {/link}
+            {row}
+                {col md=3 cols=12}
+                    {link class="btn btn-secondary btn-block" href="{get_static_route id='jtl.php'}"}
+                        {lang key='back'}
+                    {/link}
+                {/col}
+            {/row}
         {/block}
     {/block}
 {/block}

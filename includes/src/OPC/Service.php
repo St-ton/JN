@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -16,7 +16,7 @@ use JTL\Filter\ProductFilter;
 use JTL\Filter\Type;
 use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
-use JTL\OPC\Portlets\MissingPortlet;
+use JTL\OPC\Portlets\MissingPortlet\MissingPortlet;
 use JTL\Shop;
 
 /**
@@ -206,7 +206,7 @@ class Service
     /**
      * @param int $id
      */
-    public function deleteBlueprint($id): void
+    public function deleteBlueprint(int $id): void
     {
         $blueprint = (new Blueprint())->setId($id);
         $this->db->deleteBlueprint($blueprint);
@@ -315,7 +315,7 @@ class Service
         $html    = $smarty
             ->assign('propname', $propname)
             ->assign('filters', $filters)
-            ->fetch(PFAD_ROOT . \PFAD_ADMIN . 'opc/tpl/config/filter-list.tpl');
+            ->fetch(\PFAD_ROOT . \PFAD_ADMIN . 'opc/tpl/config/filter-list.tpl');
 
         return $html;
     }

@@ -40,10 +40,10 @@ if ($bestellid->cId) {
 $obj              = new stdClass();
 $obj->tkunde      = $_SESSION['Kunde'];
 $obj->tbestellung = $order;
+$moduleID         = $order->Zahlungsart->cModulId;
 Shop::Smarty()->assign('Bestellung', $order);
 if (Request::verifyGPCDataInt('zusatzschritt') === 1) {
     $hasAdditionalInformation = false;
-    $moduleID                 = $order->Zahlungsart->cModulId;
     switch ($moduleID) {
         case 'za_kreditkarte_jtl':
             if ($_POST['kreditkartennr']
@@ -114,15 +114,15 @@ if ($pluginID > 0) {
     $loader = Helper::getLoaderByPluginID($pluginID, $db);
     $plugin = $loader->init($pluginID);
     if ($plugin !== null) {
-        $pluginPaymentMethod = $plugin->getPaymentMethods()->getMethodByID($moduleID);
-        if ($pluginPaymentMethod === null) {
-            return false;
+        $paymentMethod = PaymentMethod::create($moduleID, 1);
+        if ($paymentMethod !== null) {
+            if ($paymentMethod->validateAdditional()) {
+                $paymentMethod->preparePaymentProcess($order);
+            } elseif (!$paymentMethod->handleAdditional($_POST)) {
+                $order->Zahlungsart = gibZahlungsart($order->kZahlungsart);
+            }
         }
-        $className = $pluginPaymentMethod->getClassName();
-        /** @var PaymentMethod $paymentMethod */
-        $paymentMethod           = new $className($moduleID);
-        $paymentMethod->cModulId = $moduleID;
-        $paymentMethod->preparePaymentProcess($order);
+
         Shop::Smarty()->assign('oPlugin', $plugin);
     }
 } elseif ($moduleID === 'za_lastschrift_jtl') {

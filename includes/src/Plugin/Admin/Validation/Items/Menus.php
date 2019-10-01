@@ -30,7 +30,7 @@ final class Menus extends AbstractItem
         if (GeneralObject::hasCount('Customlink', $node)) {
             $this->validateCustomLinks($node['Customlink'], $dir);
         }
-        if (!isset($node['Settingslink']) || !\is_array($node['Settingslink'])) {
+        if (!GeneralObject::isCountable('Settingslink', $node)) {
             return InstallCode::OK;
         }
 
@@ -50,7 +50,7 @@ final class Menus extends AbstractItem
             \preg_match('/[0-9]+/', $i, $hits2);
             if (\mb_strlen($hits2[0]) === \mb_strlen($i)) {
                 \preg_match(
-                    '/[a-zA-Z0-9äÄüÜöÖß' . '\_\- ]+/',
+                    '/[\w\- ]+/u',
                     $customLink['Name'],
                     $hits
                 );

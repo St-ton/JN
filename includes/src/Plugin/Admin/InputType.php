@@ -20,6 +20,12 @@ class InputType extends Enum
 
     public const PASSWORD = 'password';
 
+    public const EMAIL = 'email';
+
+    public const DATE = 'date';
+
+    public const TEXT = 'text';
+
     public const TEXTAREA = 'textarea';
 
     public const NUMBER = 'number';

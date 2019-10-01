@@ -6,8 +6,8 @@
 
 use Illuminate\Support\Collection;
 use JTL\Alert\Alert;
-use JTL\Checkout\Versandart;
 use JTL\Checkout\ShippingSurcharge;
+use JTL\Checkout\Versandart;
 use JTL\Checkout\ZipValidator;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
@@ -86,7 +86,7 @@ function P($arr)
 
 /**
  * @param array  $arr
- * @param string $key
+ * @param object $key
  * @return array
  */
 function bauePot($arr, $key)

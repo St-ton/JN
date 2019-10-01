@@ -33,9 +33,9 @@
             }
                 <meta itemprop="image" content="{$imageBaseURL}{$oNavigationsinfo->getImageURL()}" />
                 <meta property="og:image" content="{$imageBaseURL}{$oNavigationsinfo->getImageURL()}" />
-            {elseif $nSeitenTyp === $smarty.const.PAGE_NEWSDETAIL && !empty($oNewsArchiv->getPreviewImage())}
-                <meta itemprop="image" content="{$imageBaseURL}{$oNewsArchiv->getPreviewImage()}" />
-                <meta property="og:image" content="{$imageBaseURL}{$oNewsArchiv->getPreviewImage()}" />
+            {elseif $nSeitenTyp === $smarty.const.PAGE_NEWSDETAIL && !empty($newsItem->getPreviewImage())}
+                <meta itemprop="image" content="{$imageBaseURL}{$newsItem->getPreviewImage()}" />
+                <meta property="og:image" content="{$imageBaseURL}{$newsItem->getPreviewImage()}" />
             {else}
                 <meta itemprop="image" content="{$ShopLogoURL}" />
                 <meta property="og:image" content="{$ShopLogoURL}" />
@@ -94,7 +94,11 @@
                 </noscript>
             {/if}
             {foreach $opcPageService->getCurPage()->getCssList($opc->isEditMode()) as $cssFile => $cssTrue}
-                <link rel="stylesheet" href="{$cssFile}">
+                <link rel="preload" href="{$cssFile}" as="style"
+                      onload="this.onload=null;this.rel='stylesheet'">
+                <noscript>
+                    <link rel="stylesheet" href="{$cssFile}">
+                </noscript>
             {/foreach}
             <script>
 
@@ -283,9 +287,9 @@
             {$uploaderLang = 'LANG'}
         {/if}
 
-        <script defer src="{$templateDir}js/fileinput/fileinput.min.js"></script>
-        <script defer src="{$templateDir}js/fileinput/themes/fas/theme.min.js"></script>
-        <script defer src="{$templateDir}js/fileinput/locales/{$uploaderLang}.js"></script>
+        <script defer src="{$ShopURL}/{$templateDir}js/fileinput/fileinput.min.js"></script>
+        <script defer src="{$ShopURL}/{$templateDir}js/fileinput/themes/fas/theme.min.js"></script>
+        <script defer src="{$ShopURL}/{$templateDir}js/fileinput/locales/{$uploaderLang}.js"></script>
     </head>
     {/block}
 
@@ -335,9 +339,9 @@
                             {/col}
                             {col id="shop-nav" order=3 order-md=3 order-lg=4 class="col-auto bg-white {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}d-none{/if}" style="z-index: 1;"}
                                 {block name='layout-header-branding-shop-nav'}
-                                    <div class="d-flex text-right">
+                                    {nav class="nav-right ml-auto order-lg-last align-items-center flex-shrink-0"}
                                         {include file='layout/header_nav_icons.tpl'}
-                                    </div>
+                                    {/nav}
                                 {/block}
                             {/col}
 
@@ -414,20 +418,6 @@
 
         {block name='layout-header-breadcrumb'}
             {container fluid=($smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp) class="{if $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}px-0{/if}"}
-                {block name='layout-header-product-pagination'}
-                    {*{if $Einstellungen.artikeldetails.artikeldetails_navi_blaettern === 'Y' && isset($NavigationBlaettern)}
-                        <div class="d-none d-xl-block product-pagination next">
-                            {if isset($NavigationBlaettern->naechsterArtikel) && $NavigationBlaettern->naechsterArtikel->kArtikel}
-                                {link href=$NavigationBlaettern->naechsterArtikel->cURLFull title=$NavigationBlaettern->naechsterArtikel->cName}<span class="fa fa-chevron-right"></span>{/link}
-                            {/if}
-                        </div>
-                        <div class="d-none d-xl-block product-pagination previous">
-                            {if isset($NavigationBlaettern->vorherigerArtikel) && $NavigationBlaettern->vorherigerArtikel->kArtikel}
-                                {link href=$NavigationBlaettern->vorherigerArtikel->cURLFull title=$NavigationBlaettern->vorherigerArtikel->cName}<span class="fa fa-chevron-left"></span>{/link}
-                            {/if}
-                        </div>
-                    {/if}*}
-                {/block}
                 {include file='layout/breadcrumb.tpl'}
             {/container}
         {/block}

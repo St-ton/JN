@@ -84,8 +84,8 @@
                                 {__('details')} <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a href="cache.php">{__('systemCache')}</a></li>
-                                <li><a href="bilderverwaltung.php">{__('imageCache')}</a></li>
+                                <li class="dropdown-item"><a href="cache.php">{__('systemCache')}</a></li>
+                                <li class="dropdown-item"><a href="bilderverwaltung.php">{__('imageCache')}</a></li>
                             </ul>
                         </div>
                     </div>
@@ -113,7 +113,11 @@
                                 {$imageCache = $status->getImageCache()}
                                 <i class="fa fa-file-image-o text-four-times text-success"></i>
                                 <h3 style="margin-top:10px;margin-bottom:0">
-                                    {(($imageCache->generated[JTL\Media\Image::SIZE_XS] + $imageCache->generated[JTL\Media\Image::SIZE_SM] + $imageCache->generated[JTL\Media\Image::SIZE_MD] + $imageCache->generated[JTL\Media\Image::SIZE_LG]) / 4)|round:0}
+                                    {(($imageCache->getGeneratedBySize(\JTL\Media\Image::SIZE_XS)
+                                    + $imageCache->getGeneratedBySize(\JTL\Media\Image::SIZE_SM)
+                                    + $imageCache->getGeneratedBySize(\JTL\Media\Image::SIZE_MD)
+                                    + $imageCache->getGeneratedBySize(\JTL\Media\Image::SIZE_LG)
+                                    + $imageCache->getGeneratedBySize(\JTL\Media\Image::SIZE_XL))/ 5)|round:0}
                                 </h3>
                                 <span style="color:#c7c7c7">{__('imagesInCache')}</span>
                             </div>
@@ -197,7 +201,7 @@
                                     </td>
                                     <td class="text-muted"><strong>{$s->cName}</strong></td>
                                     <td class="text-right">
-                                        <a class="btn btn-default btn-sm text-uppercase" href="zahlungsarten.php?a=log&kZahlungsart={$s->kZahlungsart}">{__('details')}</a>
+                                        <a class="btn btn-default text-uppercase" href="zahlungsarten.php?a=log&kZahlungsart={$s->kZahlungsart}">{__('details')}</a>
                                     </td>
                                 </tr>
                             {/foreach}
@@ -254,7 +258,7 @@
                         <div class="subheading1">{__('server')}</div>
                     </div>
                     <div class="heading-right">
-                        <a href="systemcheck.php" class="btn btn-primary btn-sm text-uppercase">{__('details')}</a>
+                        <a href="systemcheck.php" class="btn btn-primary text-uppercase">{__('details')}</a>
                     </div>
                     <hr class="mb-n3">
                 </div>
@@ -288,7 +292,7 @@
                         </table>
                     {else}
                         <div class="alert alert-success">
-                            <p>{__('requirementsMet')}</p>
+                            {__('requirementsMet')}
                         </div>
                     {/if}
                 </div>

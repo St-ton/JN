@@ -13,6 +13,7 @@ use JTL\DB\ReturnType;
 use JTL\OPC\Portlets\MissingPortlet\MissingPortlet;
 use JTL\Plugin\PluginLoader;
 use JTL\Shop;
+use function Functional\map;
 
 /**
  * Class DB
@@ -41,20 +42,15 @@ class DB
      */
     public function getAllBlueprintIds(bool $withInactive = false): array
     {
-        $blueprintsDB = $this->shopDB->selectAll(
-            'topcblueprint',
-            $withInactive ? [] : 'bActive',
-            $withInactive ? [] : 1,
-            'kBlueprint'
+        return map($this->shopDB->selectAll(
+                'topcblueprint',
+                $withInactive ? [] : 'bActive',
+                $withInactive ? [] : 1,
+                'kBlueprint'
+            ), function ($e) {
+                return (int)$e->kBlueprint;
+            }
         );
-
-        $blueprintIds = [];
-
-        foreach ($blueprintsDB as $blueprintDB) {
-            $blueprintIds[] = (int)$blueprintDB->kBlueprint;
-        }
-
-        return $blueprintIds;
     }
 
     /**
@@ -159,19 +155,16 @@ class DB
      */
     public function getPortletGroup(string $groupName, bool $withInactive = false): PortletGroup
     {
-        $portletsDB = $this->shopDB->selectAll(
+        $portletsDB   = $this->shopDB->selectAll(
             'topcportlet',
             $withInactive ? 'cGroup' : ['cGroup', 'bActive'],
             $withInactive ? $groupName : [$groupName, 1],
             'cClass',
             'cTitle'
         );
-
         $portletGroup = new PortletGroup($groupName);
-
         foreach ($portletsDB as $portletDB) {
-            $portlet = $this->getPortlet($portletDB->cClass);
-            $portletGroup->addPortlet($portlet);
+            $portletGroup->addPortlet($this->getPortlet($portletDB->cClass));
         }
 
         return $portletGroup;
@@ -184,8 +177,7 @@ class DB
      */
     public function getAllPortlets(bool $withInactive = false): array
     {
-        $portlets = [];
-
+        $portlets   = [];
         $portletsDB = $this->shopDB->selectAll(
             'topcportlet',
             $withInactive ? [] : 'bActive',
@@ -193,7 +185,6 @@ class DB
             'cClass',
             'cTitle'
         );
-
         foreach ($portletsDB as $portletDB) {
             $portlets[] = $this->getPortlet($portletDB->cClass);
         }
@@ -251,7 +242,6 @@ class DB
                 ->setGroup($portletDB->cGroup)
                 ->setActive((int)$portletDB->bActive === 1);
         }
-
         /** @var MissingPortlet $portlet */
         $portlet = (new MissingPortlet('MissingPortlet', 0, 0))
             ->setMissingClass($class)

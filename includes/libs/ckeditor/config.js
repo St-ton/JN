@@ -23,7 +23,7 @@ CKEDITOR.editorConfig = function( config ) {
     config.format_tags = 'p;h1;h2;h3;pre';
 
     // Simplify the dialog windows.
-    config.removeDialogTabs = 'image:advanced;';
+    config.removeDialogTabs = 'image:advanced;link:upload;image:Upload';
     
     // This setting is used when instantiating CKEDITOR.editor.filter. 
     // true – will disable the filter (data will not be filtered, all features will be activated).

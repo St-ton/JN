@@ -5,7 +5,8 @@
 <script type="text/javascript">
 if (typeof CKEDITOR !== 'undefined') {ldelim}
     CKEDITOR.editorConfig = function(config) {ldelim}
-         config.language = 'de';
+        config.language = 'de';
+        config.removeDialogTabs = 'link:upload;image:Upload';
         // config.uiColor = '#AADC6E';
         config.startupMode = '{if isset($Einstellungen.global.admin_ckeditor_mode) && $Einstellungen.global.admin_ckeditor_mode === 'Q'}source{else}wysiwyg{/if}';
         config.htmlEncodeOutput = false;

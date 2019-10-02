@@ -750,6 +750,6 @@ class Plugins
             'uz', 'vi', 'zh'
         ];
 
-        $smarty->assign($params['assign'], \in_array($params['iso'], $availableLocales, true) ? $params['iso'] : 'en');
+        $smarty->assign($params['assign'], \in_array($params['iso'], $availableLocales, true) ? $params['iso'] : 'LANG');
     }
 }

@@ -96,7 +96,7 @@ export default class NavScrollbar {
 		}
 
 		this.$scrollBarArrowLeft[scrolledFromLeft > this.config.showArrowOffset ? 'removeClass' : 'addClass']('disabled')
-		this.$scrollBarArrowRight[scrolledFromLeft + this.config.showArrowOffset < (widthDifference - 5) ? 'removeClass' : 'addClass']('disabled')
+		this.$scrollBarArrowRight[scrolledFromLeft + this.config.showArrowOffset < (widthDifference - 8) ? 'removeClass' : 'addClass']('disabled')
 	}
 
 	destroy() {

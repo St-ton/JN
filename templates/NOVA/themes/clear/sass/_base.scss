@@ -1637,8 +1637,6 @@ table caption {
   @include media-breakpoint-down(sm) { text-align: center; margin-bottom: $spacer; }
 }
 
-.bootstrap-select .btn, .dropdown .btn { font-weight: $custom-select-font-weight; }
-
 .text-decoration-underline { text-decoration: underline; }
 /* wishlist */
 input.form-control[name="wishlist-url"] {

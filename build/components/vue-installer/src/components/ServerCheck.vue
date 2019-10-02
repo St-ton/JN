@@ -17,7 +17,7 @@
                         <span class="when-closed">{{ $t('show') }}</span>
                     </b-btn>
                     </h3>
-                    <span id="server-status-msg" class="alert alert-success" v-if="serverStatus === 0 && !collapseIsVisible">Alles OK.</span>
+                    <span id="server-status-msg" class="alert alert-success" v-if="serverStatus === 0 && !collapseIsVisible">{{ $t('ok') }}</span>
                     <b-collapse id="collapse-programs" :visible="serverStatus !== 0" @hidden="collapseHide()" @show="collapseShow()">
                         <h4 class="ml-3 mb-3 mt-3">{{ $t('installedSoftware') }}</h4>
                         <table id="programs" class="table table-striped table-hover">
@@ -139,6 +139,7 @@ export default {
                 checkAgain:                 'Erneut prüfen',
                 validateServerRequirements: 'Prüfe Serveranforderungen...',
                 networkError:               'Netzwerkfehler:',
+                ok:                         'Alles OK.',
                 headerMsg:                  'Serverkonfiguration',
                 leadMsg:                    'Prüft, ob die Serverkonfiguration korrekt ist'
             },
@@ -161,6 +162,7 @@ export default {
                 checkAgain:                 'check again',
                 validateServerRequirements: 'Validating server requirements...',
                 networkError:               'Network error:',
+                ok:                         'Everything OK.',
                 headerMsg:                  'Server configuration',
                 leadMsg:                    'Checks your server configuration'
             }

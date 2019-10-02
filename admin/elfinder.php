@@ -74,9 +74,18 @@ if (validateToken()) {
                     'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
                     // All Mimetypes not allowed to upload
                     'uploadDeny'    => ['all'],
-                    // Mimetype `image` and `text/plain` allowed to upload
-                    'uploadAllow'   => ['image', 'text/plain', 'application/pdf'],
-                    // allowed Mimetype `image` and `text/plain` only
+                    // Mimetypes allowed to upload
+                    'uploadAllow'   => ['image',
+                                        'video',
+                                        'text/plain',
+                                        'application/pdf',
+                                        'application/msword',
+                                        'application/excel',
+                                        'application/vnd.ms-excel',
+                                        'application/x-excel',
+                                        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                    ],
                     'uploadOrder'   => ['deny', 'allow'],
                     // disable and hide dot starting files (OPTIONAL)
                     'accessControl' => 'access',

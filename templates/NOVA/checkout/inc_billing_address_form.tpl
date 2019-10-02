@@ -35,7 +35,7 @@
                                     label-for="salutation"
                                     label="{lang key='salutation' section='account data'}{if $Einstellungen.kunden.kundenregistrierung_abfragen_anrede === 'O'}<span class='optional'> - {lang key='optional'}</span>{/if}"
                                 }
-                                {select name="anrede" id="salutation" required=($Einstellungen.kunden.kundenregistrierung_abfragen_anrede === 'Y') autocomplete="billing sex"}
+                                {select name="anrede" id="salutation" class='custom-select' required=($Einstellungen.kunden.kundenregistrierung_abfragen_anrede === 'Y') autocomplete="billing sex"}
                                     <option value="" selected="selected" {if $Einstellungen.kunden.kundenregistrierung_abfragen_anrede === 'Y'}disabled{/if}>
                                         {if $Einstellungen.kunden.kundenregistrierung_abfragen_anrede === 'Y'}{lang key='salutation' section='account data'}{else}{lang key='noSalutation'}{/if}
                                     </option>
@@ -218,7 +218,7 @@
                                 label-for="country"
                                 label="{lang key='country' section='account data'}"
                             }
-                                {select name="land" id="country" class="country-input" required=true autocomplete="billing country"}
+                                {select name="land" id="country" class="country-input custom-select" required=true autocomplete="billing country"}
                                     <option value="" disabled>{lang key='country' section='account data'}</option>
                                     {foreach $laender as $land}
                                         <option value="{$land->getISO()}" {if $cIso === $land->getISO()}selected="selected"{/if}>{$land->getName()}</option>
@@ -250,7 +250,7 @@
                                             title="{lang key=pleaseChoose}"
                                             name="bundesland"
                                             id="state"
-                                            class="state-input"
+                                            class="state-input custom-select"
                                             autocomplete="billing address-level1"
                                             required=($Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y')
                                         }
@@ -552,6 +552,7 @@
                                                 disabled=!$isKundenattributEditable
                                                 aria=["label"=>$oKundenfeld->getLabel()]
                                                 required=$oKundenfeld->isRequired()
+                                                class='custom-select'
                                             }
                                                 <option value="" selected disabled>{lang key='pleaseChoose'}</option>
                                                 {foreach $oKundenfeld->getValues() as $oKundenfeldWert}

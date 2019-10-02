@@ -153,14 +153,6 @@ function loadContent(url)
     });
 }
 
-function navigation()
-{
-    $( '#main-nav-wrapper a.dropdown-toggle' ).on( 'click', function ( e ) {
-
-        return false;
-    } );
-}
-
 function addValidationListener() {
     var forms      = $('form.evo-validate'),
         inputs     = $('form.evo-validate input, form.evo-validate textarea').not('[type="radio"],[type="checkbox"]'),
@@ -257,28 +249,6 @@ function isTouchCapable() {
     return 'ontouchstart' in window || (window.DocumentTouch && document instanceof window.DocumentTouch);
 }
 
-function lazyLoadMenu(viewport){
-    if (viewport !== 'xs' && viewport != 'sm'){
-        $('#main-nav-wrapper .dropdown').on('mouseenter mouseleave', function(e) {
-            $(this).find('img.lazy').each(function(i, item) {
-                var img = $(item);
-                $(img).lazy(0, function() {
-                    $(this).on('load', function() {
-                        img.removeClass('loading')
-                            .addClass('loaded');
-                    }).on('error',function() {
-                        img.removeClass('loading')
-                            .addClass('error');
-                    });
-                });
-            });
-        });
-
-        // $('#evo-nav-wrapper .nav-item.dropdown .nav-link').attr('data-toggle','');
-        $('#evo-nav-wrapper .nav-item.btn-link[data-toggle="collapse"]').attr('data-toggle','dropdown');
-    }
-}
-
 function addCopyToClipboardListener() {
     var clipboard = new ClipboardJS('.btn.copyToClipboard');
 
@@ -290,17 +260,6 @@ function addCopyToClipboardListener() {
     clipboard.on('error', function(e) {
         console.error('Action:', e.action);
         console.error('Trigger:', e.trigger);
-    });
-}
-
-function addCloseMenuDropdownListener() {
-    $(document).on("click", function (event) {
-        var clickover = $(event.target);
-        var _opened   = $("#main-nav-wrapper .collapse.show");
-        var _parents  = clickover.parents(".collapse.show");
-        if (_opened[0] !== undefined && !clickover.hasClass("collapse") && _parents.length === 0) {
-            $(".nav-item[data-target='#" + _opened[0].id + "']").click();
-        }
     });
 }
 
@@ -451,18 +410,6 @@ $(document).ready(function () {
             $(this).trigger('click');
         });
     }
-    
-    /*
-     * activate category parents of active child
-     
-    var child = $('section.box-categories .nav-panel li.active');
-    if (child.length > 0) {
-        //$(child).parents('.nav-panel li').addClass('active');
-        $(child).parents('.nav-panel li').each(function(i, item) {
-           $(item).find('ul.nav').show();
-        });
-    }
-     */
 
     /*
      * show subcategory on caret click
@@ -564,13 +511,11 @@ $(document).ready(function () {
         this.form.submit();
     });
     navigation();
-    lazyLoadMenu($('body').attr('data-viewport'));
     categoryMenu();
     regionsToState();
     compatibility();
     addValidationListener();
     addCopyToClipboardListener();
-    addCloseMenuDropdownListener();
     initWow();
     setClickableRow();
 

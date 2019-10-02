@@ -42,7 +42,7 @@
                                             ]
                                             aria=["label"=>"{lang section='login' key='wishlistremoveItem'}"]
                                         }
-                                            <span class="fa fa-trash"></span>
+                                            <span class="fas fa-times"></span>
                                         {/link}
                                         {link href=$oWunschlistePos->Artikel->cURLFull title=$oWunschlistePos->cArtikelName|escape:'quotes'}
                                             {if $oBox->getShowImages()}

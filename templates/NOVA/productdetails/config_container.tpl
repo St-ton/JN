@@ -225,6 +225,7 @@
                                                             data=["ref"=>$kKonfiggruppe]
                                                             required=$oGruppe->getMin() > 0
                                                             aria=["label"=>$oSprache->getName()]
+                                                            class='custom-select'
                                                         }
                                                             <option value="">{lang key='pleaseChoose'}</option>
                                                             {foreach $oGruppe->oItem_arr as $oItem}

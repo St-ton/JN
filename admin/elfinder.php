@@ -79,7 +79,7 @@ if (Form::validateToken()) {
                     // All Mimetypes not allowed to upload
                     'uploadDeny'    => ['all'],
                     // Mimetype `image` and `text/plain` allowed to upload
-                    'uploadAllow'   => ['image', 'text/plain', 'video'],
+                    'uploadAllow'   => ['image', 'text/plain', 'video', 'application/pdf'],
                     // allowed Mimetype `image` and `text/plain` only
                     'uploadOrder'   => ['deny', 'allow'],
                     // disable and hide dot starting files (OPTIONAL)

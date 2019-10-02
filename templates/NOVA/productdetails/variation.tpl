@@ -26,7 +26,7 @@
                         <dd class="form-group text-left">
                             {if $Variation->cTyp === 'SELECTBOX'}
                                 {block name='productdetails-variation-select-outer'}
-                                {select title="{lang key='pleaseChooseVariation' section='productDetails'}" name="eigenschaftwert[{$Variation->kEigenschaft}]" required=!$showMatrix}
+                                {select class='custom-select' title="{lang key='pleaseChooseVariation' section='productDetails'}" name="eigenschaftwert[{$Variation->kEigenschaft}]" required=!$showMatrix}
                                     {foreach name=Variationswerte from=$Variation->Werte key=y item=Variationswert}
                                         {assign var=bSelected value=false}
                                         {if isset($oVariationKombi_arr[$Variationswert->kEigenschaft])}

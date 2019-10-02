@@ -53,10 +53,10 @@
                         {block name='boxes-box-login-form-links'}
                             {nav vertical=true class="register-or-resetpw"}
                                 {navitem class="resetpw" href="{get_static_route id='pass.php' secure=true}"}
-                                    <span class="fa fa-question-circle"></span> {lang key='forgotPassword'}
+                                    {lang key='forgotPassword'}
                                 {/navitem}
                                 {navitem class="register" href="{get_static_route id='registrieren.php'}"}
-                                    <span class="fa fa-pencil-alt"></span> {lang key='newHere'} {lang key='registerNow'}
+                                    {lang key='newHere'} {lang key='registerNow'}
                                 {/navitem}
                             {/nav}
                         {/block}

@@ -327,13 +327,9 @@ function checkInputError(event)
 {
     var $target = $(event.target);
     if ($target.parents('.cfg-group') != undefined) {
-        $target.parents('.cfg-group').find('div.form-error-msg').slideUp(function () {
-            $(this).remove();
-        });
+        $target.parents('.cfg-group').find('div.form-error-msg').remove();
     }
-    $target.parents('.form-group').find('div.form-error-msg').slideUp(function () {
-        $(this).remove();
-    });
+    $target.parents('.form-group').find('div.form-error-msg').remove();
 
     if ($target.data('must-equal-to') !== undefined) {
         var $equalsTo = $($target.data('must-equal-to'));

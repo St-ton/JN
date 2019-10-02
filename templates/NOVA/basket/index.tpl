@@ -10,7 +10,7 @@
     {block name='basket-index-content'}
         {container}
             {row}
-                {col cols=12 lg=7}
+                {col cols=12 lg="{if ($Warenkorb->PositionenArr|@count > 0)}7{else}12{/if}"}
                     {block name='basket-index-heading'}
                         {opcMountPoint id='opc_before_heading'}
                         <h2 class="mb-5">{lang key='basket'} ({count($smarty.session.Warenkorb->PositionenArr)} {lang key='products'})</h2>

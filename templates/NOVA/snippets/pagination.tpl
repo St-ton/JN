@@ -110,7 +110,8 @@
                                     {/foreach}
                                     {if in_array('count', $parts)}
                                         {formgroup class="items-per-page-group ml-3"}
-                                            {select name="{$oPagination->getId()}_nItemsPerPage"
+                                            {select class="custom-select"
+                                                    name="{$oPagination->getId()}_nItemsPerPage"
                                                     id="{$oPagination->getId()}_nItemsPerPage"
                                                     title="{lang key='paginationEntriesPerPage'}"}
                                                 <option disabled>{lang key='paginationEntriesPerPage'}</option>
@@ -127,7 +128,8 @@
                                     {/if}
                                     {if $oPagination->getSortByOptions()|@count > 0 && in_array('sort', $parts)}
                                         {formgroup class="filter-group ml-3"}
-                                            {select name="{$oPagination->getId()}_nSortByDir"
+                                            {select class="custom-select"
+                                                    name="{$oPagination->getId()}_nSortByDir"
                                                     id="{$oPagination->getId()}_nSortByDir"
                                                     title="{lang key='sorting' section='productOverview'}"}
                                                 <option disabled>{lang key='sorting' section='productOverview'}</option>

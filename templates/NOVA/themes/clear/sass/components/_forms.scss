@@ -69,3 +69,7 @@ input[type='radio'], input[type='checkbox'] {
 .form-icon-trigger-label { margin: 0; padding: $input-padding-y $input-padding-x; width: ($spacer + 2 * $input-padding-x); margin-left: -($spacer + 2 * $input-padding-x); text-align: center; z-index: 1; cursor: pointer; transition: color $transition-base-duration $transition-base-timing;
 	@include hover { color: $link-hover-color; }
 }
+
+.custom-select {
+	-webkit-appearance: none;
+}

@@ -44,6 +44,7 @@ build_create()
     build_create_deleted_files_csv;
 
     echo "Create templates md5 csv files";
+    create_tpl_md5_hashfile "${REPOSITORY_DIR}/templates/Evo";
     create_tpl_md5_hashfile "${REPOSITORY_DIR}/templates/NOVA";
 
     echo "Move class files";
@@ -171,7 +172,7 @@ build_create_md5_hashfile()
 
 build_import_initial_schema()
 {
-    local INITIALSCHEMA=${REPOSITORY_DIR}/install/initial_schema.sql
+    local INITIALSCHEMA=${REPOSITORY_DIR}/install/lib/initial_schema.sql
 
     mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME}";
 
@@ -258,7 +259,7 @@ build_create_db_struct()
 
 build_create_initial_schema()
 {
-    local INITIAL_SCHEMA_PATH=${REPOSITORY_DIR}/install/initial_schema.sql;
+    local INITIAL_SCHEMA_PATH=${REPOSITORY_DIR}/install/lib/initial_schema.sql;
     local MYSQL_CONN="-h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD}";
     local ORDER_BY="table_name ASC";
     local SQL="SET group_concat_max_len = 1048576;";
@@ -346,14 +347,15 @@ build_add_files_to_patch_dir()
     rsync -rR admin/classes/ ${PATCH_DIR};
     rsync -rR classes/ ${PATCH_DIR};
     rsync -rR includes/ext/ ${PATCH_DIR};
+    rsync -rR templates/NOVA/checksums.csv ${PATCH_DIR};
 
     if [[ -f "${PATCH_DIR}/includes/composer.json" ]]; then
-        mkdir /tmp_composer;
-        mkdir /tmp_composer/includes;
-        touch /tmp_composer/includes/composer.json;
-        git show ${PATCH_VERSION}:includes/composer.json > /tmp_composer/includes/composer.json;
-        git show ${PATCH_VERSION}:includes/composer.lock > /tmp_composer/includes/composer.lock;
-        composer install --no-dev -o -q -d /tmp_composer/includes;
+        mkdir "/tmp_composer-${PATCH_VERSION}";
+        mkdir "/tmp_composer-${PATCH_VERSION}/includes";
+        touch "/tmp_composer-${PATCH_VERSION}/includes/composer.json";
+        git show ${PATCH_VERSION}:includes/composer.json > /tmp_composer-${PATCH_VERSION}/includes/composer.json;
+        git show ${PATCH_VERSION}:includes/composer.lock > /tmp_composer-${PATCH_VERSION}/includes/composer.lock;
+        composer install --no-dev -o -q -d /tmp_composer-${PATCH_VERSION}/includes;
 
         while read -r line;
         do
@@ -367,7 +369,7 @@ build_add_files_to_patch_dir()
             else
                 rsync -R ${path} ${PATCH_DIR};
             fi
-        done< <(diff -rq /tmp_composer/includes/vendor includes/vendor);
+        done< <(diff -rq /tmp_composer-${PATCH_VERSION}/includes/vendor includes/vendor);
     fi
 }
 

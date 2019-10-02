@@ -11,7 +11,7 @@ rm(base, err => {
 	cpx.copy(cwd + '.htaccess', base);
 	cpx.copy(cwd + '*.{php,sql}', base);
 	cpx.copy(cwd + 'vendor/**/*.*', base + '/vendor');
-	cpx.copy(cwd + 'Faker/**/*.*', base + '/Faker');
+	cpx.copy(cwd + 'lib/**/*.*', base + '/lib');
 });
 
 module.exports = {

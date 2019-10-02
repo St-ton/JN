@@ -49,7 +49,7 @@
                         <div class="dropdown-menu">
                             <div class="dropdown-header border-bottom border-primary border-w-5 d-lg-none">
                                 {row class='align-items-center font-size-base'}
-                                    {col}<a href="#" data-nav-back><span class="fas fa-chevron-left mr-4"></span> {$category->getName()}</a>{/col}
+                                    {col}<a href="#" class="font-size-base" data-nav-back><span class="fas fa-chevron-left mr-4"></span> {$category->getName()}</a>{/col}
                                     {col class='col-auto'}<a href="{$category->getURL()}"><span class="far fa-arrow-alt-circle-right ml-auto"></span></a>{/col}
                                 {/row}
                             </div>
@@ -88,12 +88,6 @@
     {/if}
     {/block}{* /megamenu-categories*}
 
-    {block name='snippets-categories-mega-include-linkgroup-list'}
-    {if $Einstellungen.template.megamenu.show_pages !== 'N'}
-        {include file='snippets/linkgroup_list.tpl' linkgroupIdentifier='megamenu' dropdownSupport=true tplscope='megamenu'}
-    {/if}
-    {/block}{* /megamenu-pages*}
-
     {block name='snippets-categories-mega-manufacturers'}
     {if $Einstellungen.template.megamenu.show_manufacturers !== 'N'
         && ($Einstellungen.global.global_sichtbarkeit != 3
@@ -103,37 +97,35 @@
         {if !empty($manufacturers)}
             {assign var=manufacturerOverview value=\JTL\Shop::Container()->getLinkService()->getSpecialPage(LINKTYP_HERSTELLER)}
             {if $manufacturerOverview !== null}
-            <li class="nav-item dropdown">
-                {link href=$category->getURL() title=$category->getName() class="float-right subcat-link d-inline-block d-md-none"}
-                    <i class="fas fa-arrow-alt-circle-right"></i>
-                {/link}
-                {link href=$manufacturerOverview->getURL() title={lang key='manufacturers'} class="nav-link" data=["toggle"=>"dropdown"] target="_self"}
+            <li class="nav-item nav-scrollbar-item dropdown dropdown-full">
+                {link href=$manufacturerOverview->getURL() title={lang key='manufacturers'} class="nav-link dropdown-toggle" data=["toggle"=>"dropdown"] target="_self"}
                     {if $manufacturerOverview !== null && !empty($manufacturerOverview->getName())}{$manufacturerOverview->getName()}{else}{lang key='manufacturers'}{/if}
                 {/link}
                 <div class="dropdown-menu">
-                    {container}
-                        {row}
-                            {foreach $manufacturers as $mft}
-                                {col cols=12 md=6 lg=3}
-                                    {dropdownitem tag="div" active=($NaviFilter->hasManufacturer() && $NaviFilter->getManufacturer()->getValue() === $mft->getID())}
-                                        <div class="category-wrapper manufacturer mt-3">
-                                            {link href=$mft->cURLFull title=$mft->cSeo}
-                                                {if $Einstellungen.template.megamenu.show_category_images !== 'N'
-                                                    && (!$device->isMobile() || $device->isTablet())}
-                                                    {image lazy=true data=["src" => $mft->getImage(\JTL\Media\Image::SIZE_SM)]
-                                                        src="{$imageBaseURL}gfx/trans.png" alt=$mft->getName()|escape:'html'
-                                                        class="d-none d-md-block mb-3"}
-                                                {/if}
-                                                <div class="title">
-                                                    {$mft->getName()}
-                                                </div>
-                                            {/link}
-                                        </div>
-                                    {/dropdownitem}
-                                {/col}
-                            {/foreach}
-                        {/row}
-                    {/container}
+                    <div class="dropdown-header border-bottom border-primary border-w-5 d-lg-none">
+                        <a href="#" class="font-size-base" data-nav-back><span class="fas fa-chevron-left mr-4"></span> {lang key='manufacturers'}</a>
+                    </div>
+                    <div class="dropdown-body p-0 py-lg-4">
+                        {container}
+                            {row class='lg-row-lg nav'}
+                                {foreach $manufacturers as $mft}
+                                    {col lg=4 xl=3 class='my-lg-4 nav-item'}
+                                        {link href=$mft->cURLFull title=$mft->cSeo}
+                                            {if $Einstellungen.template.megamenu.show_category_images !== 'N'
+                                                && (!$device->isMobile() || $device->isTablet())}
+                                                {image lazy=true data=["src" => $mft->getImage(\JTL\Media\Image::SIZE_SM)]
+                                                    src="{$imageBaseURL}gfx/trans.png" alt=$mft->getName()|escape:'html'
+                                                    class="d-none d-md-block mb-3"}
+                                            {/if}
+                                            <div class="title">
+                                                {$mft->getName()}
+                                            </div>
+                                        {/link}
+                                    {/col}
+                                {/foreach}
+                            {/row}
+                        {/container}
+                    </div>
                 </div>
             </li>
             {/if}
@@ -141,15 +133,66 @@
     {/if}
     {/block} {* /megamenu-manufacturers*}
 
-    {block name='snippets-categories-mega-global-characteristics'}
-    {*
-    {if isset($Einstellungen.template.megamenu.show_global_characteristics) && $Einstellungen.template.megamenu.show_global_characteristics !== 'N'}
-        {get_global_characteristics assign='characteristics'}
-        {if !empty($characteristics)}
-
+    {block name='snippets-categories-mega-include-linkgroup-list'}
+        {if $Einstellungen.template.megamenu.show_pages !== 'N'}
+            {include file='snippets/linkgroup_list.tpl' linkgroupIdentifier='megamenu' dropdownSupport=true tplscope='megamenu'}
         {/if}
+    {/block}{* /megamenu-pages*}
+
+    {if $device->isMobile()}
+        <li class="d-lg-none"><hr></li>
+        {block name='snippets-categories-mega'}
+            {foreach $linkgroups->getLinkGroupByTemplate('Kopf')->getLinks() as $Link}
+                {navitem active=$Link->getIsActive() href=$Link->getURL() title=$Link->getTitle()}
+                    {$Link->getName()}
+                {/navitem}
+            {/foreach}
+        {/block}
+        {block name='layout-header-top-bar-user-settings'}
+            {block name='layout-header-top-bar-user-settings-currency'}
+                {if isset($smarty.session.Waehrungen) && $smarty.session.Waehrungen|@count > 1}
+                    <li class="nav-item nav-scrollbar-item dropdown dropdown-full">
+                        {link id='currency-dropdown' href='#' title={lang key='currency'} class="nav-link dropdown-toggle" data=["toggle"=>"dropdown"] target="_self"}
+                            {lang key='currency'}
+                        {/link}
+                        <div class="dropdown-menu">
+                            <div class="dropdown-header border-bottom border-primary border-w-5 d-lg-none">
+                                <a href="#" class="font-size-base" data-nav-back><span class="fas fa-chevron-left mr-4"></span> {lang key='currency'}</a>
+                            </div>
+                            <div class="dropdown-body p-0 py-lg-4">
+                                {foreach $smarty.session.Waehrungen as $currency}
+                                    {dropdownitem href=$currency->getURLFull() rel="nofollow"}
+                                        {$currency->getName()}
+                                    {/dropdownitem}
+                                {/foreach}
+                            </div>
+                        </div>
+                    </li>
+                {/if}
+            {/block}
+            {block name='layout-header-top-bar-user-settings-language'}
+                {if isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
+                    <li class="nav-item nav-scrollbar-item dropdown dropdown-full">
+                        {link id='language-dropdown' href='#' title={lang key='selectLanguage'} class="nav-link dropdown-toggle" data=["toggle"=>"dropdown"] target="_self"}
+                            {lang key='selectLanguage'}
+                        {/link}
+                        <div class="dropdown-menu">
+                            <div class="dropdown-header border-bottom border-primary border-w-5 d-lg-none">
+                                <a href="#" class="font-size-base" data-nav-back><span class="fas fa-chevron-left mr-4"></span> {lang key='selectLanguage'}</a>
+                            </div>
+                            <div class="dropdown-body p-0 py-lg-4">
+                                {foreach $smarty.session.Sprachen as $language}
+                                    {dropdownitem href=$language->cURL rel="nofollow" active=($language->kSprache == $smarty.session.kSprache)}
+                                        {$language->iso639|upper}
+                                    {/dropdownitem}
+                                {/foreach}
+                            </div>
+                        </div>
+                    </li>
+                {/if}
+            {/block}
+        {/block}
     {/if}
-    *}
-    {/block}{* megamenu-global-characteristics *}
+
     {/strip}
 {/block}

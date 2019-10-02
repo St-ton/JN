@@ -11,7 +11,7 @@
             <div class="dropdown-header border-bottom border-primary border-w-5 d-lg-none">
                 <div class="row align-items-center font-size-base">
                     <div class="col">
-                        <a href="#" data-nav-back="">
+                        <a href="#" class="font-size-base" data-nav-back="">
                             <span class="fas fa-chevron-left mr-4"></span>{$mainCategory->getName()}
                         </a>
                     </div>

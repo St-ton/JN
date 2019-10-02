@@ -29,3 +29,7 @@
 	&.no-caret { display: block; }
 	&.no-caret::after { display: none; }
 }
+
+.dropdown-header {
+	padding: map-get($spacers, 2) $dropdown-item-padding-x;
+}

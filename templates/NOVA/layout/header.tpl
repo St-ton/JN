@@ -312,11 +312,13 @@
                 {block name='layout-header-container-inner'}
                     <div class="container-fluid container-fluid-xl">
                     {block name='layout-header-branding-top-bar'}
-                        {row class="mb-2 d-none {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex{/if}"}
-                            {col class='col-auto ml-auto'}
-                                {include file='layout/header_top_bar.tpl'}
-                            {/col}
-                        {/row}
+                        {if !$device->isMobile()}
+                            {row class="mb-2 d-none {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex{/if}"}
+                                {col class='col-auto ml-auto'}
+                                    {include file='layout/header_top_bar.tpl'}
+                                {/col}
+                            {/row}
+                        {/if}
                     {/block}
 
                     {block name='layout-header-category-nav'}

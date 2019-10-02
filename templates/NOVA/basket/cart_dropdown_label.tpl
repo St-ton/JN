@@ -5,7 +5,7 @@
 {block name='basket-cart-dropdown-label'}
     <li class="cart-icon-dropdown nav-item dropdown">
         {link class='nav-link' aria=['expanded' => 'false'] data=['toggle' => 'dropdown']}
-            <i class='fas fa-shopping-cart{if $WarenkorbArtikelPositionenanzahl == 0} mr-3{/if} position-relative'>
+            <i class='fas fa-shopping-cart{if $WarenkorbArtikelPositionenanzahl == 0} mr-md-3{/if} position-relative'>
                 {if $WarenkorbArtikelPositionenanzahl >= 1}
                 <span class="fa-sup" title="{$WarenkorbArtikelPositionenanzahl}">
                     {$WarenkorbArtikelPositionenanzahl}

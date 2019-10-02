@@ -34,7 +34,8 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
 				}
 			}
 
-			.dropdown-menu { @include box-shadow(0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94));
+			.dropdown-menu {
+				box-shadow: none;
 				&.show { position: absolute; top: 0; left: 100%; }
 			}
 

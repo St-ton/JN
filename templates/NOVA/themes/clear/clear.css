@@ -14704,6 +14704,10 @@ aside .last-seen-link {
   display: none;
 }
 
+.dropdown-header {
+  padding: 0.5rem 1.5rem;
+}
+
 .float-label {
   position: absolute;
   cursor: text;
@@ -18628,8 +18632,7 @@ header .nav-right .dropdown-menu {
     display: none;
   }
   header .navbar-nav .dropdown-menu {
-    -webkit-box-shadow: 0 1rem 0.5625rem -0.75rem rgba(0, 0, 0, 0.06);
-    box-shadow: 0 1rem 0.5625rem -0.75rem rgba(0, 0, 0, 0.06);
+    box-shadow: none;
   }
   header .navbar-nav .dropdown-menu.show {
     position: absolute;

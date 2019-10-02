@@ -161,7 +161,7 @@
                             </div>
                             <div class="dropdown-body p-0 py-lg-4">
                                 {foreach $smarty.session.Waehrungen as $currency}
-                                    {dropdownitem href=$currency->getURLFull() rel="nofollow"}
+                                    {dropdownitem href=$currency->getURLFull() rel="nofollow" active=($smarty.session.Waehrung->getName() === $currency->getName())}
                                         {$currency->getName()}
                                     {/dropdownitem}
                                 {/foreach}

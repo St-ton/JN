@@ -274,7 +274,7 @@
             <script defer src="{$ShopURL}/{$customJSPath}?v={$nTemplateVersion}"></script>
         {/if}
 
-        {getUploaderLang iso={$smarty.session.currentLanguage->cISO639|default:''} assign='uploaderLang'}
+        {getUploaderLang iso=$smarty.session.currentLanguage->cISO639|default:'' assign='uploaderLang'}
 
         <script defer src="{$ShopURL}/{$templateDir}js/fileinput/fileinput.min.js"></script>
         <script defer src="{$ShopURL}/{$templateDir}js/fileinput/themes/fas/theme.min.js"></script>

@@ -43,7 +43,7 @@
                     || ((isset($activeParent)
                         && isset($activeParent->kKategorie))
                         && $activeParent->kKategorie == $category->getID())} active{/if}">
-                        {link href=$category->getURL() title=$category->getName() class="nav-link dropdown-toggle" target="_self"}
+                        {link href='#' title=$category->getName() class="nav-link dropdown-toggle" target="_self"}
                             {$category->getName()}
                         {/link}
                         <div class="dropdown-menu">
@@ -98,12 +98,15 @@
             {assign var=manufacturerOverview value=\JTL\Shop::Container()->getLinkService()->getSpecialPage(LINKTYP_HERSTELLER)}
             {if $manufacturerOverview !== null}
             <li class="nav-item nav-scrollbar-item dropdown dropdown-full">
-                {link href=$manufacturerOverview->getURL() title={lang key='manufacturers'} class="nav-link dropdown-toggle" target="_self"}
+                {link href='#' title={lang key='manufacturers'} class="nav-link dropdown-toggle" target="_self"}
                     {if $manufacturerOverview !== null && !empty($manufacturerOverview->getName())}{$manufacturerOverview->getName()}{else}{lang key='manufacturers'}{/if}
                 {/link}
                 <div class="dropdown-menu">
                     <div class="dropdown-header border-bottom border-primary border-w-5 d-lg-none">
-                        <a href="#" class="font-size-base" data-nav-back><span class="fas fa-chevron-left mr-4"></span> {lang key='manufacturers'}</a>
+                        {row class='align-items-center font-size-base'}
+                            {col}<a href="#" class="font-size-base" data-nav-back><span class="fas fa-chevron-left mr-4"></span> {lang key='manufacturers'}</a>{/col}
+                            {col class='col-auto'}<a href="{$manufacturerOverview->getURL()}"><span class="far fa-arrow-alt-circle-right ml-auto"></span></a>{/col}
+                        {/row}
                     </div>
                     <div class="dropdown-body p-0 py-lg-4">
                         {container}

@@ -290,6 +290,7 @@
         <script defer src="{$ShopURL}/{$templateDir}js/fileinput/fileinput.min.js"></script>
         <script defer src="{$ShopURL}/{$templateDir}js/fileinput/themes/fas/theme.min.js"></script>
         <script defer src="{$ShopURL}/{$templateDir}js/fileinput/locales/{$uploaderLang}.js"></script>
+        <script defer type="module" src="{$ShopURL}/{$templateDir}js/app/app.js"></script>
     </head>
     {/block}
 

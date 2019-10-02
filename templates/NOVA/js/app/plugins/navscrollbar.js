@@ -1,3 +1,7 @@
+
+import { debounce, uniqid } from './../helpers.js'
+
+
 const NAME					= 'navscrollbar'
 const VERSION				= '1.0.0'
 const UNIQID				= uniqid()
@@ -41,7 +45,7 @@ let $document	= $(document)
 let $window		= $(window)
 
 
-class NavScrollbar {
+export default class NavScrollbar {
 	constructor(element, config = {}) {
 		this.element = $(element)
 		this.config = $.extend(true, {}, Default, config)
@@ -82,7 +86,7 @@ class NavScrollbar {
 	update() {
 		this._updateItemWidth()
 
-		let widthDifference = Math.floor(this._itemWidth - this.$scrollBarInner.width())
+		let widthDifference = Math.round(this._itemWidth - this.$scrollBarInner.width())
 		let scrolledFromLeft = this.$scrollBarInner.scrollLeft()
 
 		if(widthDifference <= 0) {
@@ -92,7 +96,7 @@ class NavScrollbar {
 		}
 
 		this.$scrollBarArrowLeft[scrolledFromLeft > this.config.showArrowOffset ? 'removeClass' : 'addClass']('disabled')
-		this.$scrollBarArrowRight[scrolledFromLeft + this.config.showArrowOffset < widthDifference ? 'removeClass' : 'addClass']('disabled')
+		this.$scrollBarArrowRight[scrolledFromLeft + this.config.showArrowOffset < (widthDifference - 5) ? 'removeClass' : 'addClass']('disabled')
 	}
 
 	destroy() {
@@ -148,7 +152,7 @@ class NavScrollbar {
 		this._itemWidth = 0
 
 		$.each(this.$scrollBarItems, (i, element) => {
-			this._itemWidth += element.offsetWidth
+			this._itemWidth += Math.round(element.offsetWidth)
 		})
 	}
 

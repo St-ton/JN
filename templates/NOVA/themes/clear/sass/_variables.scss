@@ -31,6 +31,15 @@ $gray-700:                          $gray-dark;
 $yiq-text-dark:                     $gray-darker;
 $yiq-text-light:                    $gray-lighter;
 
+$theme-colors				: ();
+$theme-colors: map-merge((
+        'gray'			: $gray,
+        'gray-light'	: $gray-lighter,
+        'gray-medium'	: $gray-medium,
+        'gray-dark'		: $gray-light,
+        'gray-darker'	: $gray-darker
+), $theme-colors);
+
 // spacer
 
 $spacer: 1rem;

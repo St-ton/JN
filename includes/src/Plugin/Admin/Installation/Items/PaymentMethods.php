@@ -104,12 +104,13 @@ class PaymentMethods extends AbstractItem
                 if (isset($hits1[0]) && \mb_strlen($hits1[0]) === \mb_strlen($l)) {
                     $iso = \mb_convert_case($loc['iso'], \MB_CASE_LOWER);
                 } elseif (\mb_strlen($hits2[0]) === \mb_strlen($l)) {
-                    $localizedMethod               = new stdClass();
-                    $localizedMethod->kZahlungsart = $methodID;
-                    $localizedMethod->cISOSprache  = $iso;
-                    $localizedMethod->cName        = $loc['Name'];
-                    $localizedMethod->cGebuehrname = $loc['ChargeName'];
-                    $localizedMethod->cHinweisText = $loc['InfoText'];
+                    $localizedMethod                   = new stdClass();
+                    $localizedMethod->kZahlungsart     = $methodID;
+                    $localizedMethod->cISOSprache      = $iso;
+                    $localizedMethod->cName            = $loc['Name'];
+                    $localizedMethod->cGebuehrname     = $loc['ChargeName'];
+                    $localizedMethod->cHinweisText     = $loc['InfoText'];
+                    $localizedMethod->cHinweisTextShop = $loc['InfoText'];
                     if (!$default) {
                         $localized = $localizedMethod;
                         $default   = true;

@@ -31,7 +31,7 @@
         <div class="row">
             <div class="col">
                 <div class="form-group">
-                    <b-input-group size="md" prepend="Sync-Benutzer">
+                    <b-input-group size="md" :prepend="$t('syncUser')">
                         <b-form-input size="35" required v-model="wawi.name" type="text" :state="wawi.name.length > 0"></b-form-input>
                         <b-input-group-append is-text>
                             <icon name="user"></icon>
@@ -65,14 +65,16 @@ export default {
                 leadMsg:       'Konfigurieren Sie die nötigen Zugangsdaten',
                 adminPassword: 'Admin-Passwort',
                 adminUser:     'Admin-Benutzer',
-                syncPassword:  'Sync-Passwort'
+                syncPassword:  'Sync-Passwort',
+                syncUser:      'Sync-Benutzer'
             },
             en: {
                 headerMsg:     'Admin and sync user',
                 leadMsg:       'Configure the required credentials',
                 adminPassword: 'Admin password',
                 adminUser:     'Admin user',
-                syncPassword:  'Sync password'
+                syncPassword:  'Sync password',
+                syncUser:      'Sync user'
             }
         };
         this.$i18n.add('en', messages.en);

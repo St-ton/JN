@@ -4,11 +4,21 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
+namespace VueInstaller;
+
+use Exception;
 use JTL\DB\NiceDB;
 use JTL\DB\ReturnType;
+use JTL\Exceptions\InvalidEntityNameException;
+use jtl\Wizard\Question;
+use jtl\Wizard\ShopWizard;
+use stdClass;
+use Systemcheck\Environment;
+use Systemcheck\Platform\Filesystem;
 
 /**
  * Class VueInstaller
+ * @package VueInstaller
  */
 class VueInstaller
 {
@@ -54,7 +64,7 @@ class VueInstaller
      * @param array|null $post
      * @param bool       $cli
      */
-    public function __construct($task, $post = null, $cli = false)
+    public function __construct(string $task, array $post = null, bool $cli = false)
     {
         $this->task = $task;
         $this->post = $post;
@@ -102,11 +112,11 @@ class VueInstaller
     {
         if ($this->initNiceDB($this->post['db'])) {
             $step   = isset($this->post['stepId']) ? (int)$this->post['stepId'] : 0;
-            $wizard = new \jtl\Wizard\ShopWizard($step);
+            $wizard = new ShopWizard($step);
             if (isset($this->post['action']) && $this->post['action'] === 'setData') {
                 foreach ($wizard->getQuestions() as $idx => $question) {
                     $questionId = $question->getID();
-                    if ($question->getType() === \jtl\Wizard\Question::TYPE_BOOL) {
+                    if ($question->getType() === Question::TYPE_BOOL) {
                         $wizard->answerQuestionByID(
                             $questionId,
                             isset($this->post['data'][$questionId]) && $this->post['data'][$questionId] === 'true'
@@ -135,7 +145,7 @@ class VueInstaller
     private function output(): ?array
     {
         if (!$this->cli) {
-            echo json_encode($this->payload);
+            echo \json_encode($this->payload);
             exit(0);
         }
 
@@ -148,12 +158,12 @@ class VueInstaller
     private function sendResponse(): void
     {
         if ($this->responseStatus === true && empty($this->responseMessage)) {
-            $this->responseMessage[] = 'Erfolgreich ausgeführt';
+            $this->responseMessage[] = 'executeSuccess';
         }
-        echo json_encode([
+        echo \json_encode([
             'ok'      => $this->responseStatus,
             'payload' => $this->payload,
-            'msg'     => implode('<br>', $this->responseMessage)
+            'msg'     => \implode('<br>', $this->responseMessage)
         ]);
         exit(0);
     }
@@ -167,12 +177,12 @@ class VueInstaller
         if (isset($credentials['host'], $credentials['user'], $credentials['pass'], $credentials['name'])) {
             try {
                 if (!empty($credentials['socket'])) {
-                    define('DB_SOCKET', $credentials['socket']);
+                    \define('DB_SOCKET', $credentials['socket']);
                 }
-                ifndef('DB_HOST', $credentials['host']);
-                ifndef('DB_USER', $credentials['user']);
-                ifndef('DB_PASS', $credentials['pass']);
-                ifndef('DB_NAME', $credentials['name']);
+                \ifndef('DB_HOST', $credentials['host']);
+                \ifndef('DB_USER', $credentials['user']);
+                \ifndef('DB_PASS', $credentials['pass']);
+                \ifndef('DB_NAME', $credentials['name']);
                 $this->db = new NiceDB(
                     $credentials['host'],
                     $credentials['user'],
@@ -194,7 +204,7 @@ class VueInstaller
 
     /**
      * @return VueInstaller
-     * @throws \JTL\Exceptions\InvalidEntityNameException
+     * @throws InvalidEntityNameException
      */
     private function doInstall(): self
     {
@@ -213,7 +223,7 @@ class VueInstaller
         } else {
             $this->payload['error'] = !$this->responseStatus;
             $this->payload['msg']   = $this->responseStatus === true && empty($this->responseMessage)
-                ? 'Erfolgreich ausgeführt'
+                ? 'executeSuccess'
                 : $this->responseMessage;
         }
 
@@ -249,12 +259,12 @@ class VueInstaller
                 $socket = "\ndefine('DB_SOCKET', '" . $credentials['host'] . "');";
             }
             $rootPath = PFAD_ROOT;
-            if (strpos(PFAD_ROOT, '\\') !== false) {
-                $rootPath = str_replace('\\', '\\\\', $rootPath);
+            if (\strpos(PFAD_ROOT, '\\') !== false) {
+                $rootPath = \str_replace('\\', '\\\\', $rootPath);
             }
             $config = "<?php
 define('PFAD_ROOT', '" . $rootPath . "');
-define('URL_SHOP', '" . substr(URL_SHOP, 0, strlen(URL_SHOP) - 1) . "');" .
+define('URL_SHOP', '" . \substr(URL_SHOP, 0, \strlen(URL_SHOP) - 1) . "');" .
                 $socket . "
 define('DB_HOST','" . $credentials['host'] . "');
 define('DB_NAME','" . $credentials['name'] . "');
@@ -273,9 +283,9 @@ define('ADMIN_LOG_LEVEL', E_ALL);
 define('SMARTY_LOG_LEVEL', E_ALL);
 //excplicitly show/hide errors
 ini_set('display_errors', 0);" . "\n";
-            $file        = fopen(PFAD_ROOT . PFAD_INCLUDES . 'config.JTL-Shop.ini.php', 'w');
-            fwrite($file, $config);
-            fclose($file);
+            $file        = \fopen(PFAD_ROOT . \PFAD_INCLUDES . 'config.JTL-Shop.ini.php', 'w');
+            \fwrite($file, $config);
+            \fclose($file);
 
             return true;
         }
@@ -290,20 +300,20 @@ ini_set('display_errors', 0);" . "\n";
     private function parseMysqlDump(string $url): string
     {
         if ($this->db === null) {
-            return 'NiceDB nicht initialisiert.';
+            return 'noNiceDB';
         }
-        $content = file($url);
+        $content = \file($url);
         $errors  = '';
         $query   = '';
         foreach ($content as $i => $line) {
-            $tsl = trim($line);
+            $tsl = \trim($line);
             if ($line !== ''
-                && substr($tsl, 0, 2) !== '/*'
-                && substr($tsl, 0, 2) !== '--'
-                && substr($tsl, 0, 1) !== '#'
+                && \substr($tsl, 0, 2) !== '/*'
+                && \substr($tsl, 0, 2) !== '--'
+                && \substr($tsl, 0, 1) !== '#'
             ) {
                 $query .= $line;
-                if (preg_match('/;\s*$/', $line)) {
+                if (\preg_match('/;\s*$/', $line)) {
                     $result = $this->db->executeQuery($query, ReturnType::QUERYSINGLE);
                     if (!$result) {
                         $this->responseStatus    = false;
@@ -320,13 +330,13 @@ ini_set('display_errors', 0);" . "\n";
 
     /**
      * @return VueInstaller
-     * @throws \JTL\Exceptions\InvalidEntityNameException
+     * @throws InvalidEntityNameException
      */
     private function insertUsers(): self
     {
         $adminLogin                    = new stdClass();
         $adminLogin->cLogin            = $this->post['admin']['name'];
-        $adminLogin->cPass             = md5($this->post['admin']['pass']);
+        $adminLogin->cPass             = \md5($this->post['admin']['pass']);
         $adminLogin->cName             = 'Admin';
         $adminLogin->cMail             = '';
         $adminLogin->kAdminlogingruppe = 1;
@@ -335,8 +345,8 @@ ini_set('display_errors', 0);" . "\n";
 
         if (!$this->db->insertRow('tadminlogin', $adminLogin)) {
             $error                   = $this->db->getError();
-            $this->responseMessage[] = 'Fehler Nr: ' . $this->db->getErrorCode();
-            if (!is_array($error)) {
+            $this->responseMessage[] = 'Error code: ' . $this->db->getErrorCode();
+            if (!\is_array($error)) {
                 $this->responseMessage[] = $error;
             }
             $this->responseStatus = false;
@@ -345,12 +355,12 @@ ini_set('display_errors', 0);" . "\n";
         $syncLogin        = new stdClass();
         $syncLogin->cMail = '';
         $syncLogin->cName = $this->post['wawi']['name'];
-        $syncLogin->cPass = password_hash($this->post['wawi']['pass'], PASSWORD_DEFAULT);
+        $syncLogin->cPass = \password_hash($this->post['wawi']['pass'], \PASSWORD_DEFAULT);
 
         if (!$this->db->insertRow('tsynclogin', $syncLogin)) {
             $error                   = $this->db->getError();
-            $this->responseMessage[] = 'Fehler Nr: ' . $this->db->getErrorCode();
-            if (!is_array($error)) {
+            $this->responseMessage[] = 'Error code: ' . $this->db->getErrorCode();
+            if (!\is_array($error)) {
                 $this->responseMessage[] = $error;
             }
             $this->responseStatus = false;
@@ -366,28 +376,28 @@ ini_set('display_errors', 0);" . "\n";
     {
         $res        = new stdClass();
         $res->error = false;
-        $res->msg   = 'Erfolgreich verbunden';
+        $res->msg   = 'connectionSuccess';
         if (isset($this->post['host'], $this->post['user'], $this->post['pass'], $this->post['name'])) {
             if (!empty($this->post['socket'])) {
-                define('DB_SOCKET', $this->post['socket']);
+                \define('DB_SOCKET', $this->post['socket']);
             }
             try {
                 $db = new NiceDB($this->post['host'], $this->post['user'], $this->post['pass'], $this->post['name']);
                 if (!$db->isConnected()) {
                     $res->error = true;
-                    $res->msg   = 'Keine Verbindung möglich';
+                    $res->msg   = 'cannotConnect';
                 }
                 $obj = $db->executeQuery("SHOW TABLES LIKE 'tsynclogin'", 1);
                 if ($obj !== false) {
                     $res->error = true;
-                    $res->msg   = 'Es existiert bereits eine Shopinstallation in dieser Datenbank';
+                    $res->msg   = 'shopExists';
                 }
             } catch (Exception $e) {
                 $res->error = true;
-                $res->msg   = 'Datenbankfehler: ' . $e->getMessage();
+                $res->msg   = $e->getMessage();
             }
         } else {
-            $res->msg   = 'Keine Zugangsdaten übermittelt';
+            $res->msg   = 'noCredentials';
             $res->error = true;
         }
         $this->payload['msg']   = $res->msg;
@@ -402,13 +412,13 @@ ini_set('display_errors', 0);" . "\n";
     private function getIsInstalled(): self
     {
         $res = false;
-        if (file_exists(PFAD_ROOT . PFAD_INCLUDES . 'config.JTL-Shop.ini.php')) {
+        if (\file_exists(PFAD_ROOT . \PFAD_INCLUDES . 'config.JTL-Shop.ini.php')) {
             //use buffer to avoid redeclaring constants errors
-            ob_start();
-            require_once PFAD_ROOT . PFAD_INCLUDES . 'config.JTL-Shop.ini.php';
-            ob_end_clean();
+            \ob_start();
+            require_once PFAD_ROOT . \PFAD_INCLUDES . 'config.JTL-Shop.ini.php';
+            \ob_end_clean();
 
-            $res = defined('BLOWFISH_KEY');
+            $res = \defined('BLOWFISH_KEY');
         }
         $this->payload['shopURL']   = URL_SHOP;
         $this->payload['installed'] = $res;
@@ -421,7 +431,7 @@ ini_set('display_errors', 0);" . "\n";
      */
     public function getSystemCheck(): self
     {
-        $environment                  = new Systemcheck_Environment();
+        $environment                  = new Environment();
         $this->payload['testresults'] = $environment->executeTestGroup('Shop5');
 
         return $this;
@@ -432,7 +442,7 @@ ini_set('display_errors', 0);" . "\n";
      */
     public function getDirectoryCheck(): self
     {
-        $fsCheck                      = new Systemcheck_Platform_Filesystem(PFAD_ROOT);
+        $fsCheck                      = new Filesystem(PFAD_ROOT);
         $this->payload['testresults'] = $fsCheck->getFoldersChecked();
 
         return $this;
@@ -450,36 +460,36 @@ ini_set('display_errors', 0);" . "\n";
         $saltBase = 'aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ0123456789';
         // Gen SALT
         for ($j = 0; $j < 30; $j++) {
-            $salt .= substr($saltBase, mt_rand(0, strlen($saltBase) - 1), 1);
+            $salt .= \substr($saltBase, \mt_rand(0, \strlen($saltBase) - 1), 1);
         }
-        $salt = md5($salt);
-        mt_srand();
+        $salt = \md5($salt);
+        \mt_srand();
         // Wurde ein String übergeben?
-        if (strlen($seed) > 0) {
+        if (\strlen($seed) > 0) {
             // Hat der String Elemente?
-            list($strings) = explode(';', $seed);
-            if (is_array($strings) && count($strings) > 0) {
+            [$strings] = \explode(';', $seed);
+            if (\is_array($strings) && count($strings) > 0) {
                 foreach ($strings as $string) {
-                    $uid .= md5($string . md5(PFAD_ROOT . (time() - mt_rand())));
+                    $uid .= \md5($string . \md5(PFAD_ROOT . (\time() - \mt_rand())));
                 }
 
-                $uid = md5($uid . $salt);
+                $uid = \md5($uid . $salt);
             } else {
-                $sl = strlen($seed);
+                $sl = \strlen($seed);
                 for ($i = 0; $i < $sl; $i++) {
-                    $nPos = mt_rand(0, strlen($seed) - 1);
-                    if (((int)date('w') % 2) <= strlen($seed)) {
-                        $nPos = (int)date('w') % 2;
+                    $nPos = \mt_rand(0, \strlen($seed) - 1);
+                    if (((int)\date('w') % 2) <= \strlen($seed)) {
+                        $nPos = (int)\date('w') % 2;
                     }
-                    $uid .= md5(substr($seed, $nPos, 1) . $salt . md5(PFAD_ROOT . (microtime(true) - mt_rand())));
+                    $uid .= \md5(\substr($seed, $nPos, 1) . $salt . \md5(PFAD_ROOT . (\microtime(true) - \mt_rand())));
                 }
             }
             $uid = $this->cryptPasswort($uid . $salt);
         } else {
-            $uid = $this->cryptPasswort(md5(M_PI . $salt . md5(time() - mt_rand())));
+            $uid = $this->cryptPasswort(\md5(\M_PI . $salt . \md5(\time() - \mt_rand())));
         }
 
-        return $length > 0 ? substr($uid, 0, $length) : $uid;
+        return $length > 0 ? \substr($uid, 0, $length) : $uid;
     }
 
     /**
@@ -489,16 +499,16 @@ ini_set('display_errors', 0);" . "\n";
      */
     private function cryptPasswort(string $pass, $hashPass = null)
     {
-        $salt   = sha1(uniqid(mt_rand(), true));
-        $length = strlen($salt);
-        $length = max($length >> 3, ($length >> 2) - strlen($pass));
+        $salt   = \sha1(\uniqid(\mt_rand(), true));
+        $length = \strlen($salt);
+        $length = \max($length >> 3, ($length >> 2) - \strlen($pass));
         $salt   = $hashPass
-            ? substr($hashPass, min(strlen($pass), strlen($hashPass) - $length), $length)
-            : strrev(substr($salt, 0, $length));
-        $hash   = sha1($pass);
-        $hash   = sha1(substr($hash, 0, strlen($pass)) . $salt . substr($hash, strlen($pass)));
-        $hash   = substr($hash, $length);
-        $hash   = substr($hash, 0, strlen($pass)) . $salt . substr($hash, strlen($pass));
+            ? \substr($hashPass, \min(\strlen($pass), \strlen($hashPass) - $length), $length)
+            : \strrev(\substr($salt, 0, $length));
+        $hash   = \sha1($pass);
+        $hash   = \sha1(\substr($hash, 0, \strlen($pass)) . $salt . \substr($hash, \strlen($pass)));
+        $hash   = \substr($hash, $length);
+        $hash   = \substr($hash, 0, \strlen($pass)) . $salt . \substr($hash, \strlen($pass));
 
         return $hashPass && $hashPass !== $hash ? false : $hash;
     }

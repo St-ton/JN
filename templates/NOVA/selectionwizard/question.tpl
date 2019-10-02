@@ -29,7 +29,7 @@
             {if $AWA->getConf('auswahlassistent_anzeigeformat') === 'S'}
                 {block name='selectionwizard-question-answer-equals-s'}
                     <label for="kMerkmalWert-{$nQuestion}" class="sr-only">{lang key='pleaseChoose' section='global'}</label>
-                    {select id="kMerkmalWert-{$nQuestion}"}
+                    {select id="kMerkmalWert-{$nQuestion}" class='custom-select'}
                         <option value="-1">{lang key='pleaseChoose' section='global'}</option>
                         {foreach $oFrage->oWert_arr as $characteristicValue}
                             {if $characteristicValue->getCount() > 0}
@@ -67,7 +67,7 @@
             {block name='selectionwizard-question-anwser-bigger'}
                 {if $AWA->getConf('auswahlassistent_anzeigeformat') === 'S'}
                     <label for="kMerkmalWert-{$nQuestion}" class="sr-only">{lang key='pleaseChoose' section='global'}</label>
-                    {select id="kMerkmalWert-{$nQuestion}" disabled="disabled"}
+                    {select id="kMerkmalWert-{$nQuestion}" class='custom-select' disabled="disabled"}
                         <option value="-1">{lang key='pleaseChoose' section='global'}</option>
                     {/select}
                 {else}

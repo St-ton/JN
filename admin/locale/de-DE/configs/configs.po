@@ -662,12 +662,6 @@ msgstr "Abnahmeintervall anzeigen"
 msgid "artikeluebersicht_artikelintervall_anzeigen_desc"
 msgstr "Hier legen Sie fest, ob ein eventuell vorhandenes Abnahmeintervall angezeigt werden soll."
 
-msgid "artikeluebersicht_finanzierung_anzeigen_name"
-msgstr "Finanzierungsvorschlag anzeigen"
-
-msgid "artikeluebersicht_finanzierung_anzeigen_desc"
-msgstr "Hier legen Sie fest, ob bei jedem Artikel ein Finanzierungsvorschlag angezeigt werden soll."
-
 msgid "livesuche_max_ip_count_name"
 msgstr "Maximale Einträge pro Besucher und Stunde"
 

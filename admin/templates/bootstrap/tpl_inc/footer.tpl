@@ -11,6 +11,7 @@
     if(typeof CKEDITOR !== 'undefined') {
         CKEDITOR.editorConfig = function(config) {
             config.language = '{$language}';
+            config.removeDialogTabs = 'link:upload;image:Upload';
             config.defaultLanguage = 'en';
             config.startupMode = '{if isset($Einstellungen.global.admin_ckeditor_mode)
                 && $Einstellungen.global.admin_ckeditor_mode === 'Q'}source{else}wysiwyg{/if}';

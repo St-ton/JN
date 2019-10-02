@@ -461,12 +461,6 @@ msgstr "Ja"
 msgid "artikeluebersicht_artikelintervall_anzeigen_value(N)"
 msgstr "Nein"
 
-msgid "artikeluebersicht_finanzierung_anzeigen_value(Y)"
-msgstr "Ja"
-
-msgid "artikeluebersicht_finanzierung_anzeigen_value(N)"
-msgstr "Nein"
-
 msgid "artikeluebersicht_erw_darstellung_value(Y)"
 msgstr "Ja"
 

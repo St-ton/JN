@@ -662,12 +662,6 @@ msgstr "Show permissible order quantity"
 msgid "artikeluebersicht_artikelintervall_anzeigen_desc"
 msgstr "Specify whether to display the permissible order quantity (if applicable)."
 
-msgid "artikeluebersicht_finanzierung_anzeigen_name"
-msgstr "Show financing proposal"
-
-msgid "artikeluebersicht_finanzierung_anzeigen_desc"
-msgstr "Specify whether to display a financing proposal for each item."
-
 msgid "livesuche_max_ip_count_name"
 msgstr "Maximum entries per visitor per hour"
 

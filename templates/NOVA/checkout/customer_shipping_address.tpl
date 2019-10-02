@@ -15,7 +15,7 @@
                         label="{lang key='salutation' section='account data'}{if $Einstellungen.kunden.lieferadresse_abfragen_anrede === 'O'}<span class='optional'> - {lang key='optional'}</span>{/if}"
                         label-for="{$prefix}-{$name}-salutation"
                     }
-                        {select name="{$prefix}[{$name}][anrede]" id="{$prefix}-{$name}-salutation" required=($Einstellungen.kunden.lieferadresse_abfragen_anrede === 'Y') autocomplete="shipping sex"}
+                        {select name="{$prefix}[{$name}][anrede]" id="{$prefix}-{$name}-salutation" class='custom-select' required=($Einstellungen.kunden.lieferadresse_abfragen_anrede === 'Y') autocomplete="shipping sex"}
                             <option value="" selected="selected" {if $Einstellungen.kunden.lieferadresse_abfragen_anrede === 'Y'}disabled{/if}>
                                 {if $Einstellungen.kunden.lieferadresse_abfragen_anrede === 'Y'}{lang key='salutation' section='account data'}{else}{lang key='noSalutation'}{/if}
                             </option>
@@ -148,7 +148,7 @@
         {block name='checkout-customer-shipping-address-country'}
             {col cols=12}
                 {formgroup label="{lang key='country' section='account data'}" label-for="{$prefix}-{$name}-country"}
-                    {select name="{$prefix}[{$name}][land]" id="{$prefix}-{$name}-country" class="country-input" autocomplete="shipping country"}
+                    {select name="{$prefix}[{$name}][land]" id="{$prefix}-{$name}-country" class="country-input custom-select" autocomplete="shipping country"}
                         <option value="" selected disabled>{lang key='country' section='account data'}</option>
                         {foreach $laender as $land}
                             <option value="{$land->getISO()}" {if ($Einstellungen.kunden.kundenregistrierung_standardland == $land->getISO() && empty($Lieferadresse->cLand)) || (isset($Lieferadresse->cLand) && $Lieferadresse->cLand == $land->getISO())}selected="selected"{/if}>{$land->getName()}</option>
@@ -176,7 +176,7 @@
                                     title="{lang key=pleaseChoose}"
                                     name="{$prefix}[{$name}][bundesland]"
                                     id="{$prefix}-{$name}-state"
-                                    class="state-input"
+                                    class="state-input custom-select"
                                     autocomplete="shipping address-level1"
                                     required=($Einstellungen.kunden.lieferadresse_abfragen_bundesland === 'Y')
                             }

@@ -52,12 +52,7 @@ $listing         = new Listing($db, $cache, $validator, $modernValidator);
 $installer       = new Installer($db, $uninstaller, $validator, $modernValidator);
 $updater         = new Updater($db, $installer);
 $extractor       = new Extractor($parser);
-$stateChanger    = new StateChanger(
-    $db,
-    $cache,
-    $validator,
-    $modernValidator
-);
+$stateChanger    = new StateChanger($db, $cache, $validator, $modernValidator);
 if (isset($_SESSION['plugin_msg'])) {
     $notice = $_SESSION['plugin_msg'];
     unset($_SESSION['plugin_msg']);
@@ -70,36 +65,35 @@ if (!empty($_FILES['file_data'])) {
     $response       = $extractor->extractPlugin($_FILES['file_data']['tmp_name']);
     $pluginUploaded = true;
 }
-$pluginsInstalled        = $listing->getInstalled();
-$pluginsAll              = $listing->getAll($pluginsInstalled);
-$pluginsInstalledByState = [
-    'status_1' => [],
-    'status_2' => [],
-    'status_3' => [],
-    'status_4' => [],
-    'status_5' => [],
-    'status_6' => []
-];
-foreach ($pluginsInstalled as $_plugin) {
-    $pluginsInstalledByState['status_' . $_plugin->getState()][] = $_plugin;
-}
+$pluginsInstalled   = $listing->getInstalled();
+$pluginsAll         = $listing->getAll($pluginsInstalled);
+$pluginsDisabled    = $pluginsInstalled->filter(function (ListingItem $e) {
+    return $e->getState() === State::DISABLED;
+});
+$pluginsProblematic = $pluginsInstalled->filter(function (ListingItem $e) {
+    return \in_array(
+        $e->getState(),
+        [State::ERRONEOUS, State::UPDATE_FAILED, State::LICENSE_KEY_MISSING, State::LICENSE_KEY_INVALID],
+        true
+    );
+});
+$pluginsInstalled   = $pluginsInstalled->filter(function (ListingItem $e) {
+    return $e->getState() === State::ACTIVATED;
+});
+$listing->checkLegacyToModernUpdates($pluginsInstalled, $pluginsAll);
 $pluginsAvailable = $pluginsAll->filter(function (ListingItem $item) {
     return $item->isAvailable() === true && $item->isInstalled() === false;
 });
 $pluginsErroneous = $pluginsAll->filter(function (ListingItem $item) {
     return $item->isHasError() === true && $item->isInstalled() === false;
 });
-$errorCount       = count($pluginsInstalledByState['status_3'])
-    + count($pluginsInstalledByState['status_4'])
-    + count($pluginsInstalledByState['status_5'])
-    + count($pluginsInstalledByState['status_6']);
-
 if ($pluginUploaded === true) {
     $smarty->configLoad('german.conf', 'pluginverwaltung')
-           ->assign('pluginsByState', $pluginsInstalledByState)
-           ->assign('pluginErrorCount', $errorCount)
-           ->assign('pluginsAvailable', $pluginsAvailable)
-           ->assign('pluginsErroneous', $pluginsErroneous);
+        ->assign('pluginsDisabled', $pluginsDisabled)
+        ->assign('pluginsInstalled', $pluginsInstalled)
+        ->assign('pluginsProblematic', $pluginsProblematic)
+        ->assign('pluginsAvailable', $pluginsAvailable)
+        ->assign('pluginsErroneous', $pluginsErroneous);
 
     $response->html                   = new stdClass();
     $response->html->verfuegbar       = $smarty->fetch('tpl_inc/pluginverwaltung_uebersicht_verfuegbar.tpl');
@@ -118,7 +112,7 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
         $loader   = Helper::getLoaderByPluginID($pluginID, $db, $cache);
         $plugin   = $loader->init($pluginID, true);
         $smarty->assign('oPlugin', $plugin)
-               ->assign('kPlugin', $pluginID);
+            ->assign('kPlugin', $pluginID);
         $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN]);
     } elseif (Request::postInt('lizenzkeyadd') === 1 && Request::postInt('kPlugin') > 0) {
         // Lizenzkey eingeben
@@ -149,7 +143,7 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
         }
         $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN]);
         $smarty->assign('kPlugin', $pluginID)
-               ->assign('oPlugin', $plugin);
+            ->assign('oPlugin', $plugin);
     } elseif (is_array($_POST['kPlugin'] ?? false) && count($_POST['kPlugin']) > 0) {
         $pluginIDs  = array_map('\intval', $_POST['kPlugin'] ?? []);
         $deleteData = Request::postInt('delete-data', 1) === 1;
@@ -234,8 +228,13 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
         $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN, CACHING_GROUP_BOX]);
     } elseif (Request::verifyGPCDataInt('updaten') === 1) {
         // Updaten
-        $pluginID = Request::verifyGPCDataInt('kPlugin');
-        $res      = $updater->update($pluginID);
+        $pluginID  = Request::verifyGPCDataInt('kPlugin');
+        $toInstall = $pluginsInstalled->first(function ($e) use ($pluginID) {
+            /** @var ListingItem $e */
+            return $e->getID() === $pluginID;
+        });
+        /** @var ListingItem $toInstall */
+        $res = $updater->updateFromListingItem($toInstall);
         if ($res === InstallCode::OK) {
             $notice .= __('successPluginUpdate');
             $reload  = true;
@@ -368,8 +367,8 @@ if ($step === 'pluginverwaltung_uebersicht') {
     $loader   = Helper::getLoaderByPluginID($pluginID, $db);
 
     $smarty->assign('pluginLanguages', Shop::Lang()->gibInstallierteSprachen())
-           ->assign('plugin', $loader->init($pluginID))
-           ->assign('kPlugin', $pluginID);
+        ->assign('plugin', $loader->init($pluginID))
+        ->assign('kPlugin', $pluginID);
 }
 
 if ($reload === true) {
@@ -387,12 +386,13 @@ Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, $errorMsg, 'er
 Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $notice, 'noticePlugin');
 
 $smarty->assign('hinweis64', base64_encode($notice))
-       ->assign('step', $step)
-       ->assign('mapper', new StateMapper())
-       ->assign('pluginsByState', $pluginsInstalledByState)
-       ->assign('pluginErrorCount', $errorCount)
-       ->assign('pluginsAvailable', $pluginsAvailable)
-       ->assign('pluginsErroneous', $pluginsErroneous)
-       ->assign('allPluginItems', $pluginsAll)
-       ->assign('hasAuth', $hasAuth)
-       ->display('pluginverwaltung.tpl');
+    ->assign('step', $step)
+    ->assign('mapper', new StateMapper())
+    ->assign('pluginsAvailable', $pluginsAvailable)
+    ->assign('pluginsErroneous', $pluginsErroneous)
+    ->assign('pluginsInstalled', $pluginsInstalled)
+    ->assign('pluginsProblematic', $pluginsProblematic)
+    ->assign('pluginsDisabled', $pluginsDisabled)
+    ->assign('allPluginItems', $pluginsAll)
+    ->assign('hasAuth', $hasAuth)
+    ->display('pluginverwaltung.tpl');

@@ -113,16 +113,14 @@
                             {row class='lg-row-lg nav'}
                                 {foreach $manufacturers as $mft}
                                     {col lg=4 xl=3 class='my-lg-4 nav-item'}
-                                        {link href=$mft->cURLFull title=$mft->cSeo}
+                                        {link href=$mft->cURLFull title=$mft->cSeo class='submenu-headline submenu-headline-toplevel nav-link '}
                                             {if $Einstellungen.template.megamenu.show_category_images !== 'N'
                                                 && (!$device->isMobile() || $device->isTablet())}
-                                                {image lazy=true data=["src" => $mft->getImage(\JTL\Media\Image::SIZE_SM)]
+                                                {image fluid=true lazy=true data=["src" => $mft->getImage(\JTL\Media\Image::SIZE_SM)]
                                                     src="{$imageBaseURL}gfx/trans.png" alt=$mft->getName()|escape:'html'
                                                     class="d-none d-md-block mb-3"}
                                             {/if}
-                                            <div class="title">
                                                 {$mft->getName()}
-                                            </div>
                                         {/link}
                                     {/col}
                                 {/foreach}

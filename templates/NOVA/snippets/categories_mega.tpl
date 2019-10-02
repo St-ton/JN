@@ -43,7 +43,7 @@
                     || ((isset($activeParent)
                         && isset($activeParent->kKategorie))
                         && $activeParent->kKategorie == $category->getID())} active{/if}">
-                        {link href=$category->getURL() title=$category->getName() class="nav-link dropdown-toggle" data=["toggle"=>"dropdown"] target="_self"}
+                        {link href=$category->getURL() title=$category->getName() class="nav-link dropdown-toggle" target="_self"}
                             {$category->getName()}
                         {/link}
                         <div class="dropdown-menu">
@@ -98,7 +98,7 @@
             {assign var=manufacturerOverview value=\JTL\Shop::Container()->getLinkService()->getSpecialPage(LINKTYP_HERSTELLER)}
             {if $manufacturerOverview !== null}
             <li class="nav-item nav-scrollbar-item dropdown dropdown-full">
-                {link href=$manufacturerOverview->getURL() title={lang key='manufacturers'} class="nav-link dropdown-toggle" data=["toggle"=>"dropdown"] target="_self"}
+                {link href=$manufacturerOverview->getURL() title={lang key='manufacturers'} class="nav-link dropdown-toggle" target="_self"}
                     {if $manufacturerOverview !== null && !empty($manufacturerOverview->getName())}{$manufacturerOverview->getName()}{else}{lang key='manufacturers'}{/if}
                 {/link}
                 <div class="dropdown-menu">
@@ -152,7 +152,7 @@
             {block name='layout-header-top-bar-user-settings-currency'}
                 {if isset($smarty.session.Waehrungen) && $smarty.session.Waehrungen|@count > 1}
                     <li class="nav-item nav-scrollbar-item dropdown dropdown-full">
-                        {link id='currency-dropdown' href='#' title={lang key='currency'} class="nav-link dropdown-toggle" data=["toggle"=>"dropdown"] target="_self"}
+                        {link id='currency-dropdown' href='#' title={lang key='currency'} class="nav-link dropdown-toggle" target="_self"}
                             {lang key='currency'}
                         {/link}
                         <div class="dropdown-menu">
@@ -173,7 +173,7 @@
             {block name='layout-header-top-bar-user-settings-language'}
                 {if isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
                     <li class="nav-item nav-scrollbar-item dropdown dropdown-full">
-                        {link id='language-dropdown' href='#' title={lang key='selectLanguage'} class="nav-link dropdown-toggle" data=["toggle"=>"dropdown"] target="_self"}
+                        {link id='language-dropdown' href='#' title={lang key='selectLanguage'} class="nav-link dropdown-toggle" target="_self"}
                             {lang key='selectLanguage'}
                         {/link}
                         <div class="dropdown-menu">

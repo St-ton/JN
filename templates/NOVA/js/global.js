@@ -333,7 +333,7 @@ $(document).ready(function () {
         loadContent(url);
         return e.preventDefault();
     });
-    
+
     if ($('.pagination-ajax').length > 0) {
         window.addEventListener('popstate', function(e) {
             loadContent(document.location.href);
@@ -494,7 +494,7 @@ $(document).ready(function () {
     /*
      * set bootstrap viewport
      */
-    (function($, document, window, viewport){ 
+    (function($, document, window, viewport){
         var $body = $('body');
 
         $(window).on('resize',
@@ -510,7 +510,6 @@ $(document).ready(function () {
     $('.onchangeSubmit').on('change', function(){
         this.form.submit();
     });
-    navigation();
     categoryMenu();
     regionsToState();
     compatibility();

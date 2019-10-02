@@ -135,14 +135,7 @@
                                     {card class='card-gray' no-body=true}
                                         {cardheader}
                                         {block name='basket-index-coupon-heading'}
-                                            {row class='align-items-center'}
-                                                {col data=["toggle" => "collapse", "target"=>"#coupon-form"]}
-                                                    <span class="font-weight-bold font-size-lg">{lang key='useCoupon' section='checkout'}</span>
-                                                {/col}
-                                                {col class='col-auto'}
-                                                    {button variant="link" class="btn-sm text-muted dropdown-toggle float-right" data=["toggle" => "collapse", "target"=>"#coupon-form"]}{/button}
-                                                {/col}
-                                            {/row}
+                                            <span class="font-weight-bold font-size-lg" data-toggle="collapse" data-target="#coupon-form">{lang key='useCoupon' section='checkout'}</span>
                                         {/block}
                                         {/cardheader}
                                         {collapse id="coupon-form"}

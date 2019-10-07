@@ -13826,7 +13826,7 @@ aside .card {
 }
 aside .card .card-title {
   margin-bottom: 0.5rem;
-  font-size: 24;
+  font-size: 1.5rem;
   font-weight: 600;
 }
 aside .card.card-default .card-heading {
@@ -17426,7 +17426,7 @@ table caption {
   align-items: center;
   color: #525252;
   margin: 8px 0px;
-  font-size: 24;
+  font-size: 1.5rem;
   font-family: Montserrat, sans-serif;
 }
 .hr-sect::before {

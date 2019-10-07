@@ -13,7 +13,7 @@
                 {col cols=12 lg="{if ($Warenkorb->PositionenArr|@count > 0)}7{else}12{/if}"}
                     {block name='basket-index-heading'}
                         {opcMountPoint id='opc_before_heading'}
-                        <h2 class="mb-5">{lang key='basket'} ({count($smarty.session.Warenkorb->PositionenArr)} {lang key='products'})</h2>
+                        <h1 class="h2 b-5">{lang key='basket'} ({count($smarty.session.Warenkorb->PositionenArr)} {lang key='products'})</h1>
                     {/block}
                     {block name='basket-index-include-extension'}
                         {include file='snippets/extension.tpl'}

@@ -50,17 +50,17 @@
                 {if $Einstellungen.navigationsfilter.kategorie_beschreibung_anzeigen === 'Y'
                     && $oNavigationsinfo->getCategory() !== null
                     && $oNavigationsinfo->getCategory()->cBeschreibung|strlen > 0}
-                    <div class="item_desc custom_content d-none d-md-block">{$oNavigationsinfo->getCategory()->cBeschreibung}</div>
+                    <p>{$oNavigationsinfo->getCategory()->cBeschreibung}</p>
                 {/if}
                 {if $Einstellungen.navigationsfilter.hersteller_beschreibung_anzeigen === 'Y'
                     && $oNavigationsinfo->getManufacturer() !== null
                     && $oNavigationsinfo->getManufacturer()->cBeschreibung|strlen > 0}
-                    <div class="item_desc custom_content d-none d-md-block">{$oNavigationsinfo->getManufacturer()->cBeschreibung}</div>
+                    <p>{$oNavigationsinfo->getManufacturer()->cBeschreibung}</p>
                 {/if}
                 {if $Einstellungen.navigationsfilter.merkmalwert_beschreibung_anzeigen === 'Y'
                     && $oNavigationsinfo->getCharacteristicValue() !== null
                     && $oNavigationsinfo->getCharacteristicValue()->cBeschreibung|strlen > 0}
-                    <div class="item_desc custom_content d-none d-md-block">{$oNavigationsinfo->getCharacteristicValue()->cBeschreibung}</div>
+                    <p>{$oNavigationsinfo->getCharacteristicValue()->cBeschreibung}</p>
                 {/if}
             </div>
         {/if}

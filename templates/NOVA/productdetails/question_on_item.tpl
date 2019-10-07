@@ -25,10 +25,10 @@
                 {block name='productdetails-question-on-item-form-legend-contact'}
                     <legend>{lang key='contact'}</legend>
                 {/block}
-                {if $Einstellungen.artikeldetails.produktfrage_abfragen_anrede !== 'N'}
-                    {block name='productdetails-question-on-item-form-salutation'}
-                        {row}
-                            {col md=6}
+                {row}
+                    {if $Einstellungen.artikeldetails.produktfrage_abfragen_anrede !== 'N'}
+                        {block name='productdetails-question-on-item-form-salutation'}
+                            {col cols=12 md=6}
                                 {formgroup
                                     label-for="salutation"
                                     label="{lang key='salutation' section='account data'}{if $Einstellungen.artikeldetails.produktfrage_abfragen_anrede === 'O'}<span class='optional'> - {lang key='optional'}</span>{/if}"
@@ -42,15 +42,14 @@
                                     {/select}
                                 {/formgroup}
                             {/col}
-                        {/row}
-                    {/block}
-                {/if}
+                        {/block}
+                        <div class="w-100"></div>
+                    {/if}
 
-                {if $Einstellungen.artikeldetails.produktfrage_abfragen_vorname !== 'N' || $Einstellungen.artikeldetails.produktfrage_abfragen_nachname !== 'N'}
-                    {block name='productdetails-question-on-item-form-name'}
-                        {row}
+                    {if $Einstellungen.artikeldetails.produktfrage_abfragen_vorname !== 'N' || $Einstellungen.artikeldetails.produktfrage_abfragen_nachname !== 'N'}
+                        {block name='productdetails-question-on-item-form-name'}
                             {if $Einstellungen.artikeldetails.produktfrage_abfragen_vorname !== 'N'}
-                                {col md=6}
+                                {col cols=12 md=6}
                                     {include file='snippets/form_group_simple.tpl'
                                         options=[
                                             'text', 'firstName', 'vorname',
@@ -62,7 +61,7 @@
                             {/if}
 
                             {if $Einstellungen.artikeldetails.produktfrage_abfragen_nachname !== 'N'}
-                                {col md=6}
+                                {col cols=12 md=6}
                                     {include file='snippets/form_group_simple.tpl'
                                         options=[
                                             'text', 'lastName', 'nachname',
@@ -72,14 +71,13 @@
                                     }
                                 {/col}
                             {/if}
-                        {/row}
-                    {/block}
-                {/if}
+                        {/block}
+                        <div class="w-100"></div>
+                    {/if}
 
-                {if $Einstellungen.artikeldetails.produktfrage_abfragen_firma !== 'N'}
-                    {block name='productdetails-question-on-item-form-firm'}
-                        {row}
-                            {col md=6}
+                    {if $Einstellungen.artikeldetails.produktfrage_abfragen_firma !== 'N'}
+                        {block name='productdetails-question-on-item-form-firm'}
+                            {col cols=12 md=6}
                                 {include file='snippets/form_group_simple.tpl'
                                     options=[
                                         'text', 'company', 'firma',
@@ -88,13 +86,11 @@
                                     ]
                                 }
                             {/col}
-                        {/row}
-                    {/block}
-                {/if}
+                        {/block}
+                    {/if}
 
-                {block name='productdetails-question-on-item-form-email'}
-                    {row}
-                        {col md=6}
+                    {block name='productdetails-question-on-item-form-email'}
+                        {col cols=12}
                             {include file='snippets/form_group_simple.tpl'
                                 options=[
                                     'email', 'question_email', 'email',
@@ -103,13 +99,11 @@
                                 ]
                             }
                         {/col}
-                    {/row}
-                {/block}
-                {if $Einstellungen.artikeldetails.produktfrage_abfragen_tel !== 'N' || $Einstellungen.artikeldetails.produktfrage_abfragen_mobil !== 'N'}
-                    {block name='productdetails-question-on-item-form-mobil'}
-                        {row}
+                    {/block}
+                    {if $Einstellungen.artikeldetails.produktfrage_abfragen_tel !== 'N' || $Einstellungen.artikeldetails.produktfrage_abfragen_mobil !== 'N'}
+                        {block name='productdetails-question-on-item-form-mobil'}
                             {if $Einstellungen.artikeldetails.produktfrage_abfragen_tel !== 'N'}
-                                {col md=6}
+                                {col cols=12 md=6}
                                     {include file='snippets/form_group_simple.tpl'
                                         options=[
                                             'tel', 'tel', 'tel',
@@ -121,7 +115,7 @@
                             {/if}
 
                             {if $Einstellungen.artikeldetails.produktfrage_abfragen_mobil !== 'N'}
-                                {col md=6}
+                                {col cols=12 md=6}
                                     {include file='snippets/form_group_simple.tpl'
                                         options=[
                                             'tel', 'mobile', 'mobil',
@@ -131,13 +125,11 @@
                                     }
                                 {/col}
                             {/if}
-                        {/row}
                     {/block}
-                {/if}
+                    {/if}
 
-                {if $Einstellungen.artikeldetails.produktfrage_abfragen_fax !== 'N'}
-                    {block name='productdetails-question-on-item-form-fax'}
-                        {row}
+                    {if $Einstellungen.artikeldetails.produktfrage_abfragen_fax !== 'N'}
+                        {block name='productdetails-question-on-item-form-fax'}
                             {col md=6}
                                 {include file='snippets/form_group_simple.tpl'
                                     options=[
@@ -147,9 +139,9 @@
                                     ]
                                 }
                             {/col}
-                        {/row}
-                    {/block}
-                {/if}
+                        {/block}
+                    {/if}
+                {/row}
             </fieldset>
         {/block}
         {block name='productdetails-question-on-item-form-fieldset-product-question'}

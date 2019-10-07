@@ -14915,6 +14915,11 @@ input[type=radio]:checked + label, input[type=checkbox]:checked + label {
   height: 100vh;
 }
 
+@media (max-width: 991.98px) {
+  .modal-dialog {
+    margin-top: 2rem;
+  }
+}
 .productbox {
   position: relative;
 }

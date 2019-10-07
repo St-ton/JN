@@ -45,15 +45,9 @@
 
             <section>
                 {block name='page-index-subheading-news'}
-                    {row class="align-items-center mb-5"}
-                        {col class='col-md'}<hr>{/col}
-                        {col class='col-md-auto text-center'}
-                            <h2 class="m-0">
-                                {lang key='news' section='news'}
-                            </h2>
-                        {/col}
-                        {col class='col-md'}<hr>{/col}
-                    {/row}
+                    <div class="hr-sect h2 mb-5">
+                        {link href="{get_static_route id='news.php'}"}{lang key='news' section='news'}{/link}
+                    </div>
                 {/block}
                 {block name='page-index-news'}
                     {row itemprop="about" itemscope=true itemtype="http://schema.org/Blog" class="news-slider mx-0"}

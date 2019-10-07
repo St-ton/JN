@@ -17429,22 +17429,24 @@ table caption {
   font-size: 24;
   font-family: Montserrat, sans-serif;
 }
+.hr-sect::before {
+  margin: 0px 30px 0px 0px;
+}
+.hr-sect::after {
+  margin: 0px 0px 0px 30px;
+}
 .hr-sect::before, .hr-sect::after {
   content: "";
   flex-grow: 1;
   background: #ebebeb;
-  height: 2px;
+  height: 1px;
   font-size: 0px;
   line-height: 0px;
-  margin: 0px 30px;
 }
 .hr-sect a {
   text-decoration: none;
   border-bottom: 0.375rem solid transparent;
   font-weight: 700;
-}
-.hr-sect a:hover {
-  border-color: #F8BF00;
 }
 
 .cart-summary {

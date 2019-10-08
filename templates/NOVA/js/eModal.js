@@ -232,10 +232,10 @@
             return $modal;
 
             function createModalElement() {
-                return $('<div class="modal fade" tabindex="-1"><style>.modal-xl{width:96%;}.modal-body{max-height: calc(100vh - 145px);overflow-y: auto;}</style>' +
-                    '<div class=modal-dialog>' +
+                return $('<div class="modal fade" tabindex="-1">' +
+                    '<div class="modal-dialog modal-dialog-centered">' +
                     '<div class=modal-content>' +
-                    ' <div class=modal-header><h5 class=modal-title></h5><button type=button class="x close" data-dismiss=modal aria-label="Close"><span aria-hidden=true>&times;</span></button></div>' +
+                    ' <div class=modal-header><span class=modal-title></span><button type=button class="x close" data-dismiss=modal aria-label="Close"><span aria-hidden="true" class="fas fa-times"></span></button></div>' +
                     '</div>' +
                     '</div>' +
                     '</div>')

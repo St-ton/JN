@@ -11,23 +11,24 @@
         {block name='snippets-filter-genericFilterItem-content'}
             {foreach $filter->getOptions() as $filterOption}
                 {assign var=filterIsActive value=$filterOption->isActive() || $NaviFilter->getFilterValue($filter->getClassName()) === $filterOption->getValue()}
-                {dropdownitem class="filter-item py-1"
+                {dropdownitem class="filter-item py-1 px-0"
                     active=$filterIsActive
                     href="{if $filterOption->isActive()}{$filter->getUnsetFilterURL($filterOption->getValue())}{else}{$filterOption->getURL()}{/if}"
                     rel='nofollow'}
-                    <span class="value">
+                    <div class="align-items-center d-flex">
                         {if $filter->getIcon() !== null}
-                            <i class="fa {$filter->getIcon()}"></i>
+                            <i class="fa {$filter->getIcon()} mr-2"></i>
                         {else}
-                            <i class="far fa-{if $filterIsActive === true}check-{/if}square text-muted"></i>
+                            <i class="far fa-{if $filterIsActive === true}check-{/if}square text-muted mr-2"></i>
                         {/if}
                         {if $filter->getNiceName() === 'Rating'}
                             {block name='snippets-filter-genericFilterItem-include-rating-content'}
-                                {include file='productdetails/rating.tpl' stars=$filterOption->getValue()}
+                                <span class="mr-2">{include file='productdetails/rating.tpl' stars=$filterOption->getValue()}</span>
                             {/block}
                         {/if}
-                        <span class="word-break">{$filterOption->getName()}</span><span class="ml-2">({$filterOption->getCount()})</span>
-                    </span>
+                        <span class="word-break">{$filterOption->getName()}</span>
+                        <span class="badge badge-outline-secondary ml-auto">{$filterOption->getCount()}</span>
+                    </div>
                 {/dropdownitem}
             {/foreach}
         {/block}
@@ -55,7 +56,7 @@
                             {/if}
                             {if $filter->getNiceName() === 'Rating'}
                                 {block name='snippets-filter-genericFilterItem-include-rating-nav'}
-                                    {include file='productdetails/rating.tpl' stars=$filterOption->getValue()}
+                                    <span class="mr-2">{include file='productdetails/rating.tpl' stars=$filterOption->getValue()}</span>
                                 {/block}
                             {/if}
                             <span class="word-break">{$filterOption->getName()}</span>

@@ -90,12 +90,12 @@
                     {/block}
                     {block name='productdetails-pushed-success-product-cell-links'}
                         {row}
-                            {col cols=6}
-                                {link href="{get_static_route id='warenkorb.php'}" class="btn btn-secondary btn-basket btn-block"}
+                            {col cols=12 md=6}
+                                {link href="{get_static_route id='warenkorb.php'}" class="btn btn-secondary btn-basket btn-block mb-3"}
                                     <i class="fas fa-shopping-cart"></i> {lang key='gotoBasket'}
                                 {/link}
                             {/col}
-                            {col cols=6}
+                            {col cols=12 md=6}
                                 {link href=$pushedArtikel->cURLFull
                                     class="btn btn-primary btn-block"
                                     data=["dismiss"=>"{if !$card}modal{else}alert{/if}"]

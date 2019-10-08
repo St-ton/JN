@@ -80,26 +80,28 @@ $container-max-widths: (
 
 // font
 
-$font-family-sans-serif:            "Open Sans", Helvetica, Arial, sans-serif;
 $line-height-base:                  1.5;
 
 $font-family-sans-serif:            'Open Sans', sans-serif;
 $font-accent:                       Montserrat, sans-serif;
 
-$font-size-base:                    .95rem;
-$font-size-lg:                      $font-size-base * 1.25;
-$font-size-sm:                      $font-size-base * .875;
-$font-size-xs:                      $font-size-base * .75;
+$font-size-base:                    rem(14px);
+$font-size-lg:                      rem(16px);
+$font-size-sm:                      rem(12px);
+$font-size-xs:                      rem(11px);
 
-$font-weight-normal:                400;
-$font-weight-semibold:              600;
-$font-weight-bold:                  600;
+$font-weight-lighter		: lighter;
+$font-weight-light			: 300;
+$font-weight-normal			: 400;
+$font-weight-semibold		: 600;
+$font-weight-bold			: 700;
+$font-weight-bolder			: bolder;
 
 // heading
 
-$h1-font-size:                      $font-size-base * 1.7;
-$h2-font-size:                      $font-size-base * 1.5;
-$h3-font-size:                      $font-size-base * 1.125;
+$h1-font-size:                      rem(30px);
+$h2-font-size:                      rem(24px);
+$h3-font-size:                      rem(16px);
 $h4-font-size:                      $font-size-base;
 $h5-font-size:                      $font-size-base;
 $h6-font-size:                      $font-size-base;
@@ -312,6 +314,19 @@ $nav-tabs-link-active-border-color		: $primary;
 $navbar-nav-link-padding-x: map-get($spacers, 4);
 $navbar-nav-link-padding-y: map-get($spacers, 4);
 $nav-link-padding-x: 1rem;
+
+/* modals */
+
+$modal-inner-padding			: $spacer 0;
+
+$modal-content-padding			: map-get($spacers, 4) map-get($spacers, 5);
+$modal-content-border-width		: 0;
+$modal-content-box-shadow-sm-up	: 0 0 rem(10px) transparentize($black, .9);
+$modal-content-border-radius	: $border-radius;
+
+$modal-header-border-width		: $border-width;
+$modal-header-padding-y			: map-get($spacers, 2);
+$modal-header-padding-x			: 0;
 
 $modal-md: 700px;
 

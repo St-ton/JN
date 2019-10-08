@@ -35,7 +35,7 @@
                             <div class="product-headline">
                                 {block name='productdetails-details-info-product-title'}
                                     {opcMountPoint id='opc_before_headline'}
-                                    <h1 class="product-title mb-3" itemprop="name">{$Artikel->cName}</h1>
+                                    <h1 class="product-title h2" itemprop="name">{$Artikel->cName}</h1>
                                 {/block}
                             </div>
                             {block name='productdetails-details-info-essential-wrapper'}
@@ -193,7 +193,7 @@
                                     {/block}
                                     {block name='productdetails-details-include-stock'}
                                         {col cols=12}
-                                            {row class="bordered-top border-bottom align-items-end no-gutters {if !isset($availability) && !isset($shippingTime)}py-3 mt-5 px-lg-3 mb-4{/if}"}
+                                            {row class="border-top border-bottom align-items-end no-gutters {if !isset($availability) && !isset($shippingTime)}py-3 mt-5 px-lg-3 mb-4{/if}"}
                                                 {col}
                                                     {include file='productdetails/stock.tpl'}
                                                 {/col}

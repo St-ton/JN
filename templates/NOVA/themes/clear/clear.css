@@ -16963,10 +16963,6 @@ aside .badge-light {
   margin-left: -1px;
 }
 
-#add-to-cart .btn[type=submit] {
-  line-height: 1.7rem;
-}
-
 .input-group-append > .btn.ml-3 {
   border-radius: 0.125rem;
 }

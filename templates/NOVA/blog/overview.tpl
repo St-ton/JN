@@ -112,8 +112,20 @@
                         {block name='blog-overview-preview-image'}
                             {row}
                                 {if !empty($oNewsCat->getPreviewImage())}
-                                    {col cols=12 sm=8}{$oNewsCat->getDescription()}{/col}
-                                    {col cols=12 sm=4}{image src=$oNewsCat->getImage(\JTL\Media\Image::SIZE_MD) center=true fluid=true}{/col}
+                                    {col cols=12 sm=8}
+                                        {$oNewsCat->getDescription()}
+                                    {/col}
+                                    {col cols=12 sm=4}
+                                        {image webp=true center=true fluid=true
+                                            src=$oNewsCat->getImage(\JTL\Media\Image::SIZE_MD)
+                                                srcset="{$oNewsCat->getImage(\JTL\Media\Image::SIZE_XS)} 300w,
+                                                {$oNewsCat->getImage(\JTL\Media\Image::SIZE_SM)} 600w,
+                                                {$oNewsCat->getImage(\JTL\Media\Image::SIZE_MD)} 1200w,
+                                                {$oNewsCat->getImage(\JTL\Media\Image::SIZE_LG)} 1800w"
+                                            sizes="auto"
+                                            alt=$oNewsCat->getName()|escape:'quotes'
+                                        }
+                                    {/col}
                                 {else}
                                     {col sm=12}{$oNewsCat->getDescription()}{/col}
                                 {/if}

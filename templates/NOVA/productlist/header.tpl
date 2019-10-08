@@ -34,7 +34,7 @@
     {block name='productlist-header-description'}
         {if $oNavigationsinfo->hasData()}
             <div class="desc clearfix mb-5">
-                {if $oNavigationsinfo->getImageURL() !== $smarty.const.BILD_KEIN_KATEGORIEBILD_VORHANDEN && $oNavigationsinfo->getImageURL() !== 'gfx/keinBild_kl.gif'}
+                {if $oNavigationsinfo->getImageURL() !== $imageBaseURL|cat:$smarty.const.BILD_KEIN_KATEGORIEBILD_VORHANDEN && $oNavigationsinfo->getImageURL() !== 'gfx/keinBild_kl.gif'}
                     {image fluid-grow=true fluid=true
                         webp=true
                         src="{$oNavigationsinfo->getImageURL()}"

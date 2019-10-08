@@ -37,7 +37,6 @@
                                                         {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
                                                         {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
                                                     sizes="auto"
-                                                    data=["id"  => $imgcounter]
                                                     class='w-100'
                                                     webp=true
                                                 }

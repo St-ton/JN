@@ -274,18 +274,7 @@
             <script defer src="{$ShopURL}/{$customJSPath}?v={$nTemplateVersion}"></script>
         {/if}
 
-        {$availableLocale = [
-            'ar', 'az', 'bg', 'ca', 'cr', 'cs', 'da', 'de', 'el', 'es', 'et', 'fa', 'fi', 'fr', 'gl', 'he', 'hu', 'id',
-            'it', 'ja', 'ka', 'kr', 'kz', 'lt', 'nl', 'no', 'pl', 'pt', 'ro', 'ru', 'sk', 'sl', 'sv', 'th', 'tr', 'uk',
-            'uz', 'vi', 'zh'
-        ]}
-
-        {if isset($smarty.session.currentLanguage->cISO639)
-                && $smarty.session.currentLanguage->cISO639|in_array:$availableLocale}
-            {$uploaderLang = $smarty.session.currentLanguage->cISO639}
-        {else}
-            {$uploaderLang = 'LANG'}
-        {/if}
+        {getUploaderLang iso=$smarty.session.currentLanguage->cISO639|default:'' assign='uploaderLang'}
 
         <script defer src="{$ShopURL}/{$templateDir}js/fileinput/fileinput.min.js"></script>
         <script defer src="{$ShopURL}/{$templateDir}js/fileinput/themes/fas/theme.min.js"></script>
@@ -413,7 +402,7 @@
     {/block}
     {block name='layout-header-content-all-starttags'}
         {block name='layout-header-content-wrapper-starttag'}
-            <div id="content-wrapper" class="container-fluid mt-0 pt-7 {if $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}px-4 px-xl-7{else}px-0{/if}">
+            <div id="content-wrapper" class="container-fluid mt-0 pt-7">
         {/block}
 
         {block name='layout-header-breadcrumb'}
@@ -423,11 +412,11 @@
         {/block}
 
         {block name='layout-header-content-row-starttag'}
-            <div class="row no-gutters">
+            <div class="row">
         {/block}
 
         {block name='layout-header-content-starttag'}
-            <div id="content" class="col-12{if !$bExclusive && !empty($boxes.left|strip_tags|trim) && $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp} col-lg-9{/if} order-lg-1 mb-6">
+            <div id="content" class="col-12{if !$bExclusive && !empty($boxes.left|strip_tags|trim) && $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp} col-lg-8 col-xl-9 ml-auto{/if} order-lg-1 mb-6">
         {/block}
 
         {block name='layout-header-alert'}

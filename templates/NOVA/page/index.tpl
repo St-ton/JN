@@ -40,13 +40,14 @@
 
     {block name='page-index-additional-content'}
         {if isset($oNews_arr) && $oNews_arr|@count > 0}
-            <hr>
 
             {opcMountPoint id='opc_before_news'}
 
-            {container fluid=true}
+            <section>
                 {block name='page-index-subheading-news'}
-                    <div class="h2">{lang key='news' section='news'}</div>
+                    <div class="hr-sect h2 mb-5">
+                        {link href="{get_static_route id='news.php'}"}{lang key='news' section='news'}{/link}
+                    </div>
                 {/block}
                 {block name='page-index-news'}
                     {row itemprop="about" itemscope=true itemtype="http://schema.org/Blog" class="news-slider mx-0"}
@@ -59,7 +60,7 @@
                         {/foreach}
                     {/row}
                 {/block}
-            {/container}
+            </section>
         {/if}
     {/block}
 {/block}

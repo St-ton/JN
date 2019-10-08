@@ -11,6 +11,11 @@
                 {/block}
                 {block name='account-address-form-form-submit'}
                     {row class='mt-5'}
+                        {col md=3 cols=12}
+                            {link class="btn btn-secondary btn-block mb-3" href="{get_static_route id='jtl.php'}"}
+                                {lang key='back'}
+                            {/link}
+                        {/col}
                         {col md=4 xl=3 class='ml-md-auto'}
                             {input type="hidden" name="editRechnungsadresse" value="1"}
                             {input type="hidden" name="edit" value="1"}

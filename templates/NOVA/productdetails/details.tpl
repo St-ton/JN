@@ -185,7 +185,7 @@
                                 {row}
                                     {block name='productdetails-details-include-price'}
                                         {col}
-                                            {include file='productdetails/price.tpl' Artikel=$Artikel tplscope='detail'}
+                                            {include file='productdetails/price.tpl' Artikel=$Artikel tplscope='detail' priceLarge=true}
                                         {/col}
                                     {/block}
                                     {block name='productdetails-details-include-stock'}

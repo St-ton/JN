@@ -736,4 +736,20 @@ class Plugins
     {
         return Seo::sanitizeSeoSlug($optStr);
     }
+
+    /**
+     * @param array                         $params
+     * @param \Smarty_Internal_TemplateBase $smarty
+     * @return void
+     */
+    public function getUploaderLang($params, $smarty): void
+    {
+        $availableLocales = [
+            'ar', 'az', 'bg', 'ca', 'cr', 'cs', 'da', 'de', 'el', 'es', 'et', 'fa', 'fi', 'fr', 'gl', 'he', 'hu', 'id',
+            'it', 'ja', 'ka', 'kr', 'kz', 'lt', 'nl', 'no', 'pl', 'pt', 'ro', 'ru', 'sk', 'sl', 'sv', 'th', 'tr', 'uk',
+            'uz', 'vi', 'zh'
+        ];
+
+        $smarty->assign($params['assign'], \in_array($params['iso'], $availableLocales, true) ? $params['iso'] : 'LANG');
+    }
 }

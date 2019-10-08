@@ -42,7 +42,7 @@
     z-index: -1;
     background-color: $primary;
     height: 100%;
-    left: -100%;
+    left: -110%;
     top: 0;
     transform: skew(50deg);
     transition: 0.6s;
@@ -54,7 +54,7 @@
     background: transparent;
     &::before {
       height: 100%;
-      width: 200%;
+      width: 220%;
     }
   }
 }

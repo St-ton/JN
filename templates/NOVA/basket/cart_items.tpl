@@ -20,12 +20,20 @@
                 {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
                     {col cols=2}{/col}
                 {/if}
-                {col cols=$itemInfoCols}{lang key='product'}{/col}
+                {col cols=$itemInfoCols}
+                    <span class="text-accent">{lang key='product'}</span>
+                {/col}
                 {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}
-                    {col cols=2}{lang key="pricePerUnit" section="productDetails"}{/col}
+                    {col cols=2}
+                        <span class="text-accent">{lang key="pricePerUnit" section="productDetails"}</span>
+                    {/col}
                 {/if}
-                {col cols=3 class="text-center"}{lang key="quantity" section="checkout"}{/col}
-                {col cols=2 class="text-right"}{lang key="price"}{/col}
+                {col cols=3 class="text-center"}
+                    <span class="text-accent">{lang key="quantity" section="checkout"}</span>
+                {/col}
+                {col cols=2 class="text-right"}
+                    <span class="text-accent">{lang key="price"}</span>
+                {/col}
                 {col cols=12}
                     <hr>
                 {/col}
@@ -200,7 +208,7 @@
                                 {col cols=$cols xl=2 class="ml-auto text-nowrap mb-3 mb-xl-0"}
                                 {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
                                     {if !$oPosition->istKonfigVater()}
-                                        <p><span class="mr-3 d-inline-flex d-md-none">{lang key="pricePerUnit" section="productDetails"}:</span>{$oPosition->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}</p>
+                                        <span class="mr-3 d-inline-flex d-xl-none">{lang key="pricePerUnit" section="productDetails"}:</span>{$oPosition->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
                                     {/if}
                                 {/if}
                                 {/col}
@@ -213,7 +221,7 @@
                                 {if $oPosition->istKonfigVater()}
                                     <div class="qty-wrapper max-w-sm">
                                         {$oPosition->nAnzahl|replace_delim} {if !empty($oPosition->Artikel->cEinheit)}{$oPosition->Artikel->cEinheit}{/if}
-                                        {link class="btn btn-light configurepos ml-3"
+                                        {link class="btn btn-outline-secondary configurepos ml-3"
                                         href="index.php?a={$oPosition->kArtikel}&ek={$oPosition@index}"}
                                             <i class="fa fa-cogs"></i><span class="ml-1">{lang key='configure'}</span>
                                         {/link}
@@ -225,7 +233,7 @@
                                             min="{if $oPosition->Artikel->fMindestbestellmenge}{$oPosition->Artikel->fMindestbestellmenge}{else}0{/if}"
                                             required=($oPosition->Artikel->fAbnahmeintervall > 0)
                                             step="{if $oPosition->Artikel->fAbnahmeintervall > 0}{$oPosition->Artikel->fAbnahmeintervall}{/if}"
-                                            id="quantity[{$oPosition@index}]" class="quantity text-right" name="anzahl[{$oPosition@index}]"
+                                            id="quantity[{$oPosition@index}]" class="quantity" name="anzahl[{$oPosition@index}]"
                                             aria=["label"=>"{lang key='quantity'}"]
                                             value=$oPosition->nAnzahl
                                             data=["decimals"=>{getDecimalLength quantity=$oPosition->Artikel->fAbnahmeintervall}]
@@ -241,13 +249,13 @@
                     {/block}
                     {block name='basket-cart-items-order-items-price-net'}
                         {col cols=$cols xl=2 class="price-col ml-auto text-nowrap text-accent text-xl-right"}
-                            <strong class="price_overall">
+                            <span class="price_overall text-accent">
                                 {if $oPosition->istKonfigVater()}
                                     {$oPosition->cKonfigpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
                                 {else}
                                     {$oPosition->cGesamtpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
                                 {/if}
-                            </strong>
+                            </span>
                         {/col}
                     {/block}
                     {block name='basket-cart-items-cart-submit'}

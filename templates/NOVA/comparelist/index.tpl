@@ -28,17 +28,17 @@
                             {col}
                                 {buttongroup}
                                     {button
-                                        variant="light"
+                                        variant="outline-secondary"
                                         role="button"
                                         data=["toggle"=> "collapse", "target"=>"#collapse-checkboxes"]
                                     }
                                         <i class="fa fa-chevron-down"></i>
                                         {lang key='filter'}
                                     {/button}
-                                    {button variant="light" id="check-all"}
+                                    {button variant="outline-secondary" id="check-all"}
                                         {lang key='showAll'}
                                     {/button}
-                                    {button variant="light" id="check-none"}
+                                    {button variant="outline-secondary" id="check-none"}
                                         {lang key='showNone'}
                                     {/button}
                                 {/buttongroup}

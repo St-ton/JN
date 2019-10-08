@@ -32,7 +32,7 @@
                 {block name='boxes-box-filter-characteristics-characteristics'}
                     {if ($characteristic->getData('cTyp') === 'SELECTBOX') && $characteristic->getOptions()|@count > 0}
                         {block name='boxes-box-filter-characteristics-select'}
-                            {dropdown variant="light" text="{lang key='selectFilter' section='global'} " toggle-class="btn-block text-left"}
+                            {dropdown variant="outline-secondary" text="{lang key='selectFilter' section='global'} " toggle-class="btn-block text-left"}
                             {block name='boxes-box-filter-characteristics-include-characteristics-dropdown'}
                                 {include file='snippets/filter/characteristic.tpl' Merkmal=$characteristic}
                             {/block}

@@ -21,7 +21,7 @@
                 {row}
                     {col cols=12}
                     {block name='snippets-wishlist-form-subheading'}
-                        <div class="h3">{$CWunschliste->cName}</div>
+                        <div class="subheadline mb-5">{$CWunschliste->cName}</div>
                     {/block}
                     {block name='snippets-wishlist-form'}
                         {form method="post" action="{get_static_route id='wunschliste.php'}" name="Wunschliste"}
@@ -157,7 +157,7 @@
                     {/block}
                     {block name='snippets-wishlist-wishlists'}
                         {col class="col-auto"}
-                            {dropdown id='wlName' variant='light' text=$CWunschliste->cName}
+                            {dropdown id='wlName' variant='outline-secondary' text=$CWunschliste->cName}
                             {foreach $oWunschliste_arr as $wishlist}
                                 {dropdownitem href="{get_static_route id='wunschliste.php'}{if $wishlist->nStandard != 1}?wl={$wishlist->kWunschliste}{/if}" rel="nofollow" }
                                     {$wishlist->cName}
@@ -168,7 +168,7 @@
                     {/block}
                 {/if}
                 {block name='snippets-wishlist-search'}
-                    {col class="col-md"}
+                    {col cols=12 class="col-md mt-3 mt-md-0"}
                     {if $hasItems === true || !empty($wlsearch)}
                         <div id="wishlist-search">
                             {form method="post"
@@ -303,7 +303,7 @@
 
                 {block name='snippets-wishlist-form-rename'}
                     {block name='snippets-wishlist-form-rename-hr-top'}
-                        <hr class="mt-2 mb-2">
+                        <hr>
                     {/block}
                     {row}
                         {col cols=12}

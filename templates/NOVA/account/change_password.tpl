@@ -43,10 +43,14 @@
                                 ]
                             }
                             {block name='account-change-password-form-submit'}
-                                {input type="hidden" name="pass_aendern" value="1"}
-                                {button type="submit" value="1" class="w-auto" variant="primary"}
-                                    {lang key='changePassword' section='login'}
-                                {/button}
+                                {row}
+                                    {col class='ml-auto col-md-auto'}
+                                        {input type="hidden" name="pass_aendern" value="1"}
+                                        {button type="submit" value="1" block=true variant="primary"}
+                                            {lang key='changePassword' section='login'}
+                                        {/button}
+                                    {/col}
+                                {/row}
                             {/block}
                         {/block}
                     {/form}

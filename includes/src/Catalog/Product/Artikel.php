@@ -2337,7 +2337,7 @@ class Artikel
         $lastID      = 0;
         $counter     = -1;
         $tmpDiscount = $this->Preise->isDiscountable() ? $this->getDiscount($customerGroupID, $this->kArtikel) : 0;
-        $outOfStock  = '(' . Shop::Lang()->get('outofstock', 'productDetails') . ')';
+        $outOfStock  = ' (' . Shop::Lang()->get('outofstock', 'productDetails') . ')';
         $precision   = isset($this->FunktionsAttribute[\FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT])
         && (int)$this->FunktionsAttribute[\FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT] > 0
             ? (int)$this->FunktionsAttribute[\FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]

@@ -27,7 +27,7 @@
                         <span class="price_label nowonly">{lang key='nowOnly'} </span>
                     {/if}
                 {/block}
-                <span class="price {if $priceLarge|default:false}h1{else}productbox-price{/if} text-nowrap{if isset($Artikel->Preise->Sonderpreis_aktiv) && $Artikel->Preise->Sonderpreis_aktiv} special-price{/if}">
+                <div class="price d-inline-block {if $priceLarge|default:false}h1{else}productbox-price{/if} text-nowrap{if isset($Artikel->Preise->Sonderpreis_aktiv) && $Artikel->Preise->Sonderpreis_aktiv} special-price{/if}">
                     {block name='productdetails-range'}
                         <span{if $Artikel->Preise->oPriceRange->isRange()} itemprop="priceSpecification" itemscope itemtype="http://schema.org/UnitPriceSpecification"{/if}>
                         {if $tplscope !== 'detail' && $Artikel->Preise->oPriceRange->isRange()}
@@ -54,10 +54,10 @@
                             <meta itemprop="validThrough" content="{$Artikel->dSonderpreisEnde_en}">
                         {/if}
                     {/block}
-                </span>
+                </div>
                 {if $tplscope === 'detail'}
                     {block name='productdetails-price-detail'}
-                        <div class="price-note mb-3">
+                        <div class="price-note">
                             {if $Artikel->cEinheit && ($Artikel->fMindestbestellmenge > 1 || $Artikel->fAbnahmeintervall > 1)}
                                 {block name='productdetails-price-label-per-unit'}
                                     <span class="price_label per_unit"> {lang key='vpePer'} 1 {$Artikel->cEinheit}</span>
@@ -80,9 +80,9 @@
                             {/if}
 
                             {block name='productdetails-price-detail-vat-info'}
-                                <p class="vat_info text-muted">
+                                <span class="vat_info text-muted">
                                     {include file='snippets/shipping_tax_info.tpl' taxdata=$Artikel->taxData}
-                                </p>
+                                </span>
                             {/block}
 
                             {block name='productdetails-price-special-prices-detail'}

@@ -281,14 +281,6 @@
         registerSimpleVariations: function($wrapper) {
             var that = this;
 
-            $('.variations select', $wrapper).selectpicker({
-                iconBase: 'fa',
-                tickIcon: 'fa-check',
-                hideDisabled: true,
-                showTick: true
-                /*mobile: true*/
-            });
-
             $('.simple-variations input[type="radio"]', $wrapper)
                 .on('change', function() {
                     var val = $(this).val(),
@@ -989,10 +981,6 @@
             }
         },
 
-        variationRefreshAll: function($wrapper) {
-            $('.variations select', $wrapper).selectpicker('refresh');
-        },
-
         getConfigGroupQuantity: function (groupId) {
             return $('.cfg-group[data-id="' + groupId + '"] .quantity');
         },
@@ -1190,7 +1178,6 @@
 
             $('.variation[data-value] input:checked', $wrapper).prop('checked', false);
             $('.variations select option', $wrapper).prop('selected', false);
-            $('.variations select', $wrapper).selectpicker('refresh');
         },
 
         variationDisableAll: function(wrapper) {
@@ -1298,8 +1285,6 @@
                     $item.data('content', $wrapper.html())
                         .attr('data-content', $wrapper.html());
 
-                    $item.closest('select')
-                        .selectpicker('refresh');
                     break;
                 case 'radio':
                     $item.find('.badge-not-available')

@@ -27,6 +27,7 @@
                             {if $Variation->cTyp === 'SELECTBOX'}
                                 {block name='productdetails-variation-select-outer'}
                                 {select class='custom-select' title="{lang key='pleaseChooseVariation' section='productDetails'}" name="eigenschaftwert[{$Variation->kEigenschaft}]" required=!$showMatrix}
+                                    <option selected="selected" disabled value="">Auswählen</option>
                                     {foreach name=Variationswerte from=$Variation->Werte key=y item=Variationswert}
                                         {assign var=bSelected value=false}
                                         {if isset($oVariationKombi_arr[$Variationswert->kEigenschaft])}
@@ -48,7 +49,6 @@
                                                         data-original="{$Variationswert->cName}"
                                                         data-key="{$Variationswert->kEigenschaft}"
                                                         data-value="{$Variationswert->kEigenschaftWert}"
-                                                        data-content="{$cVariationsWert|escape:'html'}{if $Variationswert->notExists}<span class='badge badge-danger badge-not-available'> {lang key='notAvailableInSelection'}</span>{elseif !$Variationswert->inStock}<span class='badge badge-danger badge-not-available'>{lang key='ampelRot'}</span>{/if}"
                                                         {if !empty($Variationswert->cBildPfadMini)}
                                                             data-list='{prepare_image_details item=$Variationswert json=true}'
                                                             data-title='{$Variationswert->cName}'
@@ -58,6 +58,7 @@
                                                         {/if}
                                                         {if $bSelected} selected="selected"{/if}>
                                                     {$cVariationsWert|trim}
+                                                    {if $Variationswert->notExists} ({lang key='notAvailableInSelection'}){elseif !$Variationswert->inStock} ({lang key='ampelRot'}){/if}
                                                 </option>
                                             {/block}
                                         {/if}
@@ -79,7 +80,7 @@
                                         !empty($Artikel->VariationenOhneFreifeld[$i]->Werte[$y]->nNichtLieferbar) && $Artikel->VariationenOhneFreifeld[$i]->Werte[$y]->nNichtLieferbar == 1}
                                         {else}
                                             {block name='productdetails-variation-radio-inner'}
-                                                <div class="custom-control custom-radio mb-1">
+                                                <div class="custom-control custom-radio mb-2">
                                                     <input type="radio"
                                                         class="custom-control-input"
                                                         name="eigenschaftwert[{$Variation->kEigenschaft}]"
@@ -172,9 +173,7 @@
                                                             {/if}
                                                         </span>
                                                         {block name='productdetails-variation-swatch-include-variation-value'}
-                                                            <span class="mx-2">
-                                                                {include file='productdetails/variation_value.tpl' hideVariationValue=true}
-                                                            </span>
+                                                            {include file='productdetails/variation_value.tpl' hideVariationValue=true}
                                                         {/block}
                                                     </label>
                                                 {/col}

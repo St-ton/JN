@@ -495,7 +495,7 @@ ul.partlist-items {
 }
 
 /* VARIATIONS */
-.switch-variations {
+.variations {
   dt { font-weight: normal; margin-bottom: 8px; }
 }
 
@@ -766,6 +766,7 @@ ul.partlist-items {
 .actions {
   position: absolute;
   right: ($grid-gutter-width / 2);
+  top: ($grid-gutter-width / 4);
   z-index: ($zindex-dropdown - 2);
 }
 
@@ -1265,11 +1266,6 @@ a[data-toggle="collapse"][aria-expanded=true],
   border-radius: 50%;
   padding: 0.2rem 0.45rem;
 }
-
-
-
-//price
-.price-note { font-size: $font-size-xs; }
 
 //bagdes
 .badge {

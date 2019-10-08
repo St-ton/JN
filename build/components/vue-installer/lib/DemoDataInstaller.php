@@ -4,14 +4,19 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Andyftw\Faker\ImageProvider;
+namespace VueInstaller;
+
 use Cocur\Slugify\Slugify;
 use Faker\Factory as Fake;
-use ShopCli\Faker\de_DE\Commerce;
+use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use stdClass;
+use VueInstaller\Faker\de_DE\Commerce;
+use VueInstaller\Faker\ImageProvider;
 
 /**
  * Class DemoDataInstaller
+ * @package VueInstaller
  */
 class DemoDataInstaller
 {
@@ -34,16 +39,6 @@ class DemoDataInstaller
      * number of customers to create.
      */
     public const NUM_CUSTOMERS = 100;
-
-    /**
-     * font file.
-     */
-    public const FONT_FILE = 'OpenSans-Regular.ttf';
-
-    /**
-     * @var \ShopCli\Controller\ShopController
-     */
-    protected $shop;
 
     /**
      * @var array
@@ -76,16 +71,15 @@ class DemoDataInstaller
     ];
 
     /**
-     * DemoData constructor.
-     * @param NiceDB $DB
-     * @param array  $config
+     * DemoDataInstaller constructor.
+     * @param DbInterface $DB
+     * @param array       $config
      */
-    public function __construct(\NiceDB $DB, array $config = [])
+    public function __construct(DbInterface $DB, array $config = [])
     {
         $this->pdo    = $DB;
-        $this->config = array_merge(static::$defaultConfig, $config);
-
-        $this->faker = Fake::create('de_DE');
+        $this->config = \array_merge(static::$defaultConfig, $config);
+        $this->faker  = Fake::create('de_DE');
         $this->faker->addProvider(new Commerce($this->faker));
         $this->faker->addProvider(new ImageProvider($this->faker));
 
@@ -95,40 +89,16 @@ class DemoDataInstaller
         ]);
     }
 
-    protected function execute()
+    protected function execute(): void
     {
-//        $io = $this->getIO();
-//        $shop = $this->getController('shop');
-//        $targetDirectory = $this->getOption('target-dir');
-
-//        $shop->setBasePath($targetDirectory);
-//        $shop->validateConfig();
-
         $config = [
-            'manufacturers' => max(0, (int)$this->config['manufacturers']),
-            'categories'    => max(0, (int)$this->config['categories']),
-            'articles'      => max(0, (int)$this->config['articles']),
-            'customers'     => max(0, (int)$this->config['customers']),
+            'manufacturers' => \max(0, (int)$this->config['manufacturers']),
+            'categories'    => \max(0, (int)$this->config['categories']),
+            'articles'      => \max(0, (int)$this->config['articles']),
+            'customers'     => \max(0, (int)$this->config['customers']),
         ];
-
-        $steps = count(array_filter($config));
+        $steps = count(\array_filter($config));
         $step  = 1;
-
-//        foreach ($config as $kindName => $kindCount) {
-//            if ($kindCount > 0) {
-//                $io->setStep($step, $steps, 'Creating '.$kindCount.' '.Text::singular($kindName, $kindCount));
-//                $io->progress(
-//                    function ($mycb) use (&$demoData, $kindName) {
-//                        $demoData->{Text::camelize('create_'.$kindName)}(
-//                            function ($index, $limit, $success, $name) use (&$mycb) {
-//                                $mycb(round($index * 100 / $limit), $limit, $index, $name);
-//                            }
-//                        );
-//                    }, '  %percent:-3s%% [%bar%] %message%'
-//                );
-//                ++$step;
-//            }
-//        }
 
         $this->updateRatingsAvg()->updateGlobals();
     }
@@ -143,7 +113,7 @@ class DemoDataInstaller
              ->addCompanyData()
              ->createManufacturers($callback)
              ->createCategories($callback)
-             ->createArticles($callback)
+             ->createProducts($callback)
              ->updateRatingsAvg()
              ->setConfig()
              ->updateGlobals();
@@ -194,7 +164,7 @@ class DemoDataInstaller
         $this->pdo->query(
             "UPDATE `ttemplateeinstellungen` 
                 SET `cWert`='Y' 
-                WHERE `cTemplate`='Evo' 
+                WHERE `cTemplate`='NOVA' 
                 AND `cSektion`='megamenu' 
                 AND `cName`='show_pages';",
             ReturnType::DEFAULT
@@ -202,7 +172,7 @@ class DemoDataInstaller
         $this->pdo->query(
             "UPDATE `ttemplateeinstellungen` 
                 SET `cWert`='Y' 
-                WHERE `cTemplate`='Evo' 
+                WHERE `cTemplate`='NOVA' 
                 AND `cSektion`='megamenu' 
                 AND `cName`='show_manufacturers';",
             ReturnType::DEFAULT
@@ -210,7 +180,7 @@ class DemoDataInstaller
         $this->pdo->query(
             "UPDATE `ttemplateeinstellungen` 
                 SET `cWert`='Y' 
-                WHERE `cTemplate`='Evo' 
+                WHERE `cTemplate`='NOVA' 
                 AND `cSektion`='footer' 
                 AND `cName`='newsletter_footer';",
             ReturnType::DEFAULT
@@ -218,7 +188,7 @@ class DemoDataInstaller
         $this->pdo->query(
             "UPDATE `ttemplateeinstellungen` 
                 SET `cWert`='Y' 
-                WHERE `cTemplate`='Evo' 
+                WHERE `cTemplate`='NOVA' 
                 AND `cSektion`='footer' 
                 AND `cName`='socialmedia_footer';",
             ReturnType::DEFAULT
@@ -226,7 +196,7 @@ class DemoDataInstaller
         $this->pdo->query(
             "UPDATE `ttemplateeinstellungen` 
                 SET `cWert`='https://www.facebook.com/JTLSoftware/' 
-                WHERE `cTemplate`='Evo' 
+                WHERE `cTemplate`='NOVA' 
                 AND `cSektion`='footer' 
                 AND `cName`='facebook';",
             ReturnType::DEFAULT
@@ -234,7 +204,7 @@ class DemoDataInstaller
         $this->pdo->query(
             "UPDATE `ttemplateeinstellungen` 
                 SET `cWert`='https://twitter.com/JTLSoftware' 
-                WHERE `cTemplate`='Evo' 
+                WHERE `cTemplate`='NOVA' 
                 AND `cSektion`='footer' 
                 AND `cName`='twitter';",
             ReturnType::DEFAULT
@@ -242,7 +212,7 @@ class DemoDataInstaller
         $this->pdo->query(
             "UPDATE `ttemplateeinstellungen` 
                 SET `cWert`='https://www.youtube.com/user/JTLSoftwareGmbH' 
-                WHERE `cTemplate`='Evo' 
+                WHERE `cTemplate`='NOVA' 
                 AND `cSektion`='footer' 
                 AND `cName`='youtube';",
             ReturnType::DEFAULT
@@ -250,7 +220,7 @@ class DemoDataInstaller
         $this->pdo->query(
             "UPDATE `ttemplateeinstellungen` 
                 SET `cWert`='https://www.xing.com/companies/jtl-softwaregmbh' 
-                WHERE `cTemplate`='Evo' 
+                WHERE `cTemplate`='NOVA' 
                 AND `cSektion`='footer' 
                 AND `cName`='xing';",
             ReturnType::DEFAULT
@@ -484,7 +454,7 @@ class DemoDataInstaller
                     'SELECT kHersteller FROM thersteller WHERE cName = "' . $_name . '"',
                     ReturnType::ARRAY_OF_OBJECTS
                 );
-                if (is_array($res) && count($res) > 0) {
+                if (\is_array($res) && count($res) > 0) {
                     throw new \OverflowException();
                 }
             } catch (\OverflowException $e) {
@@ -506,7 +476,7 @@ class DemoDataInstaller
 
                 $seo_index = 0;
                 while (($data = $this->pdo->select('tseo', 'cKey', $seoItem->cKey, 'cSeo', $seoItem->cSeo)) !== false
-                    && is_array($data)
+                    && \is_array($data)
                     && count($data) > 0
                 ) {
                     $seoItem->cSeo = $_manufacturer->cSeo . '_' . ++$seo_index;
@@ -546,7 +516,7 @@ class DemoDataInstaller
                     'SELECT kKategorie FROM tkategorie WHERE cName = "' . $_name . '"',
                     ReturnType::ARRAY_OF_OBJECTS
                 );
-                if (is_array($res) && count($res) > 0) {
+                if (\is_array($res) && count($res) > 0) {
                     throw new \OverflowException();
                 }
             } catch (\OverflowException $e) {
@@ -557,7 +527,7 @@ class DemoDataInstaller
             $_category->cName                 = $_name;
             $_category->cSeo                  = $this->slug($_name);
             $_category->cBeschreibung         = $this->faker->text(200);
-            $_category->kOberKategorie        = rand(0, $_category->kKategorie - 1);
+            $_category->kOberKategorie        = \rand(0, $_category->kKategorie - 1);
             $_category->nSort                 = 0;
             $_category->dLetzteAktualisierung = 'now()';
             $_category->lft                   = 0;
@@ -570,7 +540,7 @@ class DemoDataInstaller
 
                 $seo_index = 0;
                 while (($data = $this->pdo->select('tseo', 'cKey', $_seoEntry->cKey, 'cSeo', $_seoEntry->cSeo)) !== false
-                    && is_array($data)
+                    && \is_array($data)
                     && count($data) > 0
                 ) {
                     $_seoEntry->cSeo = $_category->cSeo . '_' . ++$seo_index;
@@ -598,7 +568,7 @@ class DemoDataInstaller
      * @param null $callback
      * @return $this
      */
-    public function createArticles($callback = null): self
+    public function createProducts($callback = null): self
     {
         $maxPk             = (int)$this->pdo->query(
             'SELECT max(kArtikel) AS maxPk FROM tartikel',
@@ -638,116 +608,116 @@ class DemoDataInstaller
                     'SELECT kArtikel FROM tartikel WHERE cName = "' . $_name . '"',
                     ReturnType::ARRAY_OF_OBJECTS
                 );
-                if (is_array($res) && count($res) > 0) {
+                if (\is_array($res) && count($res) > 0) {
                     throw new \OverflowException();
                 }
             } catch (\OverflowException $e) {
                 $_name = $this->faker->unique(true)->productName . '_' . ++$name_index;
             }
 
-            $_articlePrice                      = rand(1, 2999);
-            $_article                           = new \stdClass();
-            $_article->kArtikel                 = $maxPk + $i;
-            $_article->kHersteller              = rand(0, $manufacturesCount);
-            $_article->kLieferstatus            = 0;
-            $_article->kSteuerklasse            = 1;
-            $_article->kEinheit                 = (10 === rand(0, 10)) && $unitCount > 0 ? rand(1, $unitCount) : 0;
-            $_article->kVersandklasse           = 1;
-            $_article->kEigenschaftKombi        = 0;
-            $_article->kVaterArtikel            = 0;
-            $_article->kStueckliste             = 0;
-            $_article->kWarengruppe             = 0;
-            $_article->kVPEEinheit              = 0;
-            $_article->kMassEinheit             = 0;
-            $_article->kGrundpreisEinheit       = 0;
-            $_article->cName                    = $_name;
-            $_article->cSeo                     = $this->slug($_name);
-            $_article->cArtNr                   = $this->faker->ean8();
-            $_article->cBeschreibung            = $this->faker->text(300);
-            $_article->cAnmerkung               = '';
-            $_article->fLagerbestand            = (float)rand(0, 1000);
-            $_article->fStandardpreisNetto      = $_articlePrice / 19.00;
-            $_article->fMwSt                    = $_taxRate;
-            $_article->fMindestbestellmenge     = (5 < rand(0, 10)) ? rand(0, 5) : 0;
-            $_article->fLieferantenlagerbestand = 0;
-            $_article->fLieferzeit              = 0;
-            $_article->cBarcode                 = $this->faker->ean13;
-            $_article->cTopArtikel              = (10 === rand(0, 10)) ? 'Y' : 'N';
-            $_article->fGewicht                 = (float)rand(0, 10);
-            $_article->fArtikelgewicht          = $_article->fGewicht;
-            $_article->fMassMenge               = 0; //@todo?
-            $_article->fGrundpreisMenge         = 0;
-            $_article->fBreite                  = 0;
-            $_article->fHoehe                   = 0;
-            $_article->fLaenge                  = 0;
-            $_article->cNeu                     = (10 === rand(0, 10)) ? 'Y' : 'N';
-            $_article->cKurzBeschreibung        = $this->faker->text(50);
-            $_article->fUVP                     = (10 === rand(0, 10)) ? ($_articlePrice / 2) : 0;
-            $_article->cLagerBeachten           = (10 === rand(0, 10)) ? 'Y' : 'N';
-            $_article->cLagerKleinerNull        = $_article->cLagerBeachten;
-            $_article->cLagerVariation          = 'N';
-            $_article->cTeilbar                 = 'N';
-            $_article->fPackeinheit             = (10 === rand(0, 10)) ? rand(1, 12) : 1;
-            $_article->fAbnahmeintervall        = 0;
-            $_article->fZulauf                  = 0;
-            $_article->cVPE                     = 'N';
-            $_article->fVPEWert                 = 0;
-            $_article->nSort                    = 0;
-            $_article->dErscheinungsdatum       = 'now()';
-            $_article->dErstellt                = 'now()';
-            $_article->dLetzteAktualisierung    = 'now()';
-            $articleID                          = $this->pdo->insert('tartikel', $_article); //@todo!
-            if ($articleID > 0) {
+            $price                      = \rand(1, 2999);
+            $product                           = new \stdClass();
+            $product->kArtikel                 = $maxPk + $i;
+            $product->kHersteller              = \rand(0, $manufacturesCount);
+            $product->kLieferstatus            = 0;
+            $product->kSteuerklasse            = 1;
+            $product->kEinheit                 = (10 === \rand(0, 10)) && $unitCount > 0 ? \rand(1, $unitCount) : 0;
+            $product->kVersandklasse           = 1;
+            $product->kEigenschaftKombi        = 0;
+            $product->kVaterArtikel            = 0;
+            $product->kStueckliste             = 0;
+            $product->kWarengruppe             = 0;
+            $product->kVPEEinheit              = 0;
+            $product->kMassEinheit             = 0;
+            $product->kGrundpreisEinheit       = 0;
+            $product->cName                    = $_name;
+            $product->cSeo                     = $this->slug($_name);
+            $product->cArtNr                   = $this->faker->ean8();
+            $product->cBeschreibung            = $this->faker->text(300);
+            $product->cAnmerkung               = '';
+            $product->fLagerbestand            = (float)\rand(0, 1000);
+            $product->fStandardpreisNetto      = $price / 19.00;
+            $product->fMwSt                    = $_taxRate;
+            $product->fMindestbestellmenge     = (5 < \rand(0, 10)) ? \rand(0, 5) : 0;
+            $product->fLieferantenlagerbestand = 0;
+            $product->fLieferzeit              = 0;
+            $product->cBarcode                 = $this->faker->ean13;
+            $product->cTopArtikel              = (10 === \rand(0, 10)) ? 'Y' : 'N';
+            $product->fGewicht                 = (float)\rand(0, 10);
+            $product->fArtikelgewicht          = $product->fGewicht;
+            $product->fMassMenge               = 0; //@todo?
+            $product->fGrundpreisMenge         = 0;
+            $product->fBreite                  = 0;
+            $product->fHoehe                   = 0;
+            $product->fLaenge                  = 0;
+            $product->cNeu                     = (10 === \rand(0, 10)) ? 'Y' : 'N';
+            $product->cKurzBeschreibung        = $this->faker->text(50);
+            $product->fUVP                     = (10 === \rand(0, 10)) ? ($price / 2) : 0;
+            $product->cLagerBeachten           = (10 === \rand(0, 10)) ? 'Y' : 'N';
+            $product->cLagerKleinerNull        = $product->cLagerBeachten;
+            $product->cLagerVariation          = 'N';
+            $product->cTeilbar                 = 'N';
+            $product->fPackeinheit             = (10 === \rand(0, 10)) ? \rand(1, 12) : 1;
+            $product->fAbnahmeintervall        = 0;
+            $product->fZulauf                  = 0;
+            $product->cVPE                     = 'N';
+            $product->fVPEWert                 = 0;
+            $product->nSort                    = 0;
+            $product->dErscheinungsdatum       = 'now()';
+            $product->dErstellt                = 'now()';
+            $product->dLetzteAktualisierung    = 'now()';
+            $productID                          = $this->pdo->insert('tartikel', $product); //@todo!
+            if ($productID > 0) {
                 $_maxImages = $this->faker->numberBetween(1, 3);
                 for ($k = 0; $k < $_maxImages; ++$k) {
-                    $this->createProductImage($_article->kArtikel, $_name, $k + 1);
+                    $this->createProductImage($product->kArtikel, $_name, $k + 1);
                 }
                 $_numRatings = $this->faker->numberBetween(0, 6);
                 for ($j = 0; $j < $_numRatings; ++$j) {
-                    $this->createRating($_article->kArtikel);
+                    $this->createRating($product->kArtikel);
                 }
 
-                $_articleCategory                    = new \stdClass();
-                $_articleCategory->kKategorieArtikel = $_article->kArtikel;
-                $_articleCategory->kArtikel          = $_article->kArtikel;
-                $_articleCategory->kKategorie        = rand(1, $categoryCount);
-                $this->pdo->insert('tkategorieartikel', $_articleCategory);
+                $productCategory                    = new \stdClass();
+                $productCategory->kKategorieArtikel = $product->kArtikel;
+                $productCategory->kArtikel          = $product->kArtikel;
+                $productCategory->kKategorie        = \rand(1, $categoryCount);
+                $this->pdo->insert('tkategorieartikel', $productCategory);
 
-                $_seoEntry       = new \stdClass();
-                $_seoEntry->cKey = 'kArtikel';
-                $_seoEntry->cSeo = $_article->cSeo;
+                $seoItem       = new \stdClass();
+                $seoItem->cKey = 'kArtikel';
+                $seoItem->cSeo = $product->cSeo;
 
                 $seo_index = 0;
                 while (($data = $this->pdo->select(
                     'tseo',
                     'cKey',
-                    $_seoEntry->cKey,
+                    $seoItem->cKey,
                     'cSeo',
-                    $_seoEntry->cSeo
+                    $seoItem->cSeo
                 )) !== false
-                    && is_array($data)
+                    && \is_array($data)
                     && count($data) > 0
                 ) {
-                    $_seoEntry->cSeo = $_article->cSeo . '_' . ++$seo_index;
+                    $seoItem->cSeo = $product->cSeo . '_' . ++$seo_index;
                 }
 
-                $_seoEntry->kKey     = $_article->kArtikel;
-                $_seoEntry->kSprache = 1;
-                $this->pdo->insert('tseo', $_seoEntry);
+                $seoItem->kKey     = $product->kArtikel;
+                $seoItem->kSprache = 1;
+                $this->pdo->insert('tseo', $seoItem);
 
-                $_seoEntry->cSeo     .= '-en';
-                $_seoEntry->kSprache = 2;
-                $this->pdo->insert('tseo', $_seoEntry);
+                $seoItem->cSeo     .= '-en';
+                $seoItem->kSprache = 2;
+                $this->pdo->insert('tseo', $seoItem);
 
                 $_price2                = new \stdClass();
-                $_price2->kArtikel      = $_article->kArtikel;
+                $_price2->kArtikel      = $product->kArtikel;
                 $_price2->kKundengruppe = 1;
                 $idxKg1                 = $this->pdo->insert('tpreis', $_price2);
                 if ($idxKg1 > 0) {
                     $_price3            = new \stdClass();
                     $_price3->kPreis    = $idxKg1;
                     $_price3->nAnzahlAb = 0;
-                    $_price3->fVKNetto  = $_articlePrice / 19.00;
+                    $_price3->fVKNetto  = $price / 19.00;
                     $this->pdo->insert('tpreisdetail', $_price3);
                 }
 
@@ -757,12 +727,12 @@ class DemoDataInstaller
                     $_price3            = new \stdClass();
                     $_price3->kPreis    = $idxKg2;
                     $_price3->nAnzahlAb = 0;
-                    $_price3->fVKNetto  = $_articlePrice / 19.00;
+                    $_price3->fVKNetto  = $price / 19.00;
                     $this->pdo->insert('tpreisdetail', $_price3);
                 }
             }
 
-            $this->callback($callback, $i, $limit, $articleID > 0, $_name);
+            $this->callback($callback, $i, $limit, $productID > 0, $_name);
         }
 
         return $this;
@@ -777,11 +747,11 @@ class DemoDataInstaller
         $limit  = $this->config['customers'];
         $fake   = $this->faker;
         $pdo    = $this->pdo;
-        $secret = BLOWFISH_KEY;
+        $secret = \BLOWFISH_KEY;
         $oXTEA  = new \XTEA($secret);
 
         for ($i = 1; $i <= $limit; ++$i) {
-            if (rand(0, 1) === 0) {
+            if (\rand(0, 1) === 0) {
                 $firstName = $fake->firstNameMale;
                 $gender    = 'm';
             } else {
@@ -790,12 +760,12 @@ class DemoDataInstaller
             }
             $lastName      = $fake->lastName;
             $streetName    = $fake->streetName;
-            $houseNr       = rand(1, 200);
+            $houseNr       = \rand(1, 200);
             $cityName      = $fake->city;
             $postcode      = $fake->postcode;
             $email         = $fake->email;
             $dateofbirth   = $fake->date('Y-m-d', '1998-12-31');
-            $password      = password_hash('pass', PASSWORD_DEFAULT);
+            $password      = \password_hash('pass', \PASSWORD_DEFAULT);
             $streetNameEnc = $oXTEA->encrypt($streetName);
             $lastNameEnc   = $oXTEA->encrypt($lastName);
             $lastName      = $fake->lastName;
@@ -857,7 +827,7 @@ class DemoDataInstaller
         $font     = $this->getFontFile();
         $filepath = $this->faker->imageFile(null, $width, $height, 'jpg', true, $string, null, null, $font);
 
-        return $filepath !== null && rename($filepath, $path);
+        return $filepath !== null && \rename($filepath, $path);
     }
 
     /**
@@ -868,12 +838,14 @@ class DemoDataInstaller
     private function createManufacturerImage(int $manufacturerID, $string): string
     {
         if ($manufacturerID > 0) {
-            $file       = $this->slug($string) . '.jpg';
-            $pathNormal = PFAD_ROOT . 'bilder/hersteller/normal/' . $file;
-            $pathSmall  = PFAD_ROOT . 'bilder/hersteller/klein/' . $file;
+            $file        = $this->slug($string) . '.jpg';
+            $pathNormal  = PFAD_ROOT . 'bilder/hersteller/normal/' . $file;
+            $pathSmall   = PFAD_ROOT . 'bilder/hersteller/klein/' . $file;
+            $pathStorage = PFAD_ROOT . 'media/image/storage/manufacturers/' . $file;
 
             return ($this->createImage($pathNormal, $string) === true
-                && $this->createImage($pathSmall, $string, 100, 100) === true)
+                && $this->createImage($pathSmall, $string, 100, 100) === true
+                && $this->createImage($pathStorage, $string, 800, 800) === true)
                 ? $file
                 : '';
         }
@@ -894,7 +866,7 @@ class DemoDataInstaller
         )->maxPk;
 
         if ($productID > 0) {
-            $file = '1024_1024_' . md5($string . $productID . $imageNumber) . '.jpg';
+            $file = '1024_1024_' . \md5($string . $productID . $imageNumber) . '.jpg';
             $path = PFAD_ROOT . 'media/image/storage/' . $file;
 
             if ($this->createImage($path, $string, 1024, 1024) === true) {
@@ -919,12 +891,13 @@ class DemoDataInstaller
         if ($categoryID > 0) {
             $file = $this->slug($string) . '.jpg';
             $path = PFAD_ROOT . 'bilder/kategorien/' . $file;
-
             if ($this->createImage($path, $string, 200, 200) === true) {
-                $_image             = new \stdClass();
-                $_image->kKategorie = $categoryID;
-                $_image->cPfad      = $file;
-                $this->pdo->insert('tkategoriepict', $_image);
+                $pathStorage = PFAD_ROOT . 'media/image/storage/categories/' . $file;
+                $this->createImage($pathStorage, $string, 800, 800);
+                $image             = new \stdClass();
+                $image->kKategorie = $categoryID;
+                $image->cPfad      = $file;
+                $this->pdo->insert('tkategoriepict', $image);
             }
         }
     }
@@ -936,20 +909,20 @@ class DemoDataInstaller
     private function createRating(int $productID): bool
     {
         if ($productID > 0) {
-            $_rating                  = new \stdClass();
-            $_rating->kArtikel        = $productID;
-            $_rating->kKunde          = 0;
-            $_rating->kSprache        = 1; //@todo: rand(0, 1)?
-            $_rating->cName           = $this->faker->name;
-            $_rating->cTitel          = addcslashes($this->faker->realText(75), '\'"');
-            $_rating->cText           = $this->faker->text(100);
-            $_rating->nHilfreich      = rand(0, 10);
-            $_rating->nNichtHilfreich = rand(0, 10);
-            $_rating->nSterne         = rand(1, 5);
-            $_rating->nAktiv          = 1;
-            $_rating->dDatum          = 'now()';
+            $rating                  = new \stdClass();
+            $rating->kArtikel        = $productID;
+            $rating->kKunde          = 0;
+            $rating->kSprache        = 1; //@todo: rand(0, 1)?
+            $rating->cName           = $this->faker->name;
+            $rating->cTitel          = \addcslashes($this->faker->realText(75), '\'"');
+            $rating->cText           = $this->faker->text(100);
+            $rating->nHilfreich      = \rand(0, 10);
+            $rating->nNichtHilfreich = \rand(0, 10);
+            $rating->nSterne         = \rand(1, 5);
+            $rating->nAktiv          = 1;
+            $rating->dDatum          = 'now()';
 
-            return $this->pdo->insert('tbewertung', $_rating) > 0;
+            return $this->pdo->insert('tbewertung', $rating) > 0;
         }
 
         return false;
@@ -990,7 +963,7 @@ class DemoDataInstaller
      * @param string $text
      * @return string
      */
-    private function slug($text)
+    private function slug($text): string
     {
         return $this->slugify->slugify($text);
     }
@@ -1000,11 +973,11 @@ class DemoDataInstaller
      */
     private function callback(): void
     {
-        $arguments = func_get_args();
-        $cb        = array_shift($arguments);
+        $arguments = \func_get_args();
+        $cb        = \array_shift($arguments);
 
-        if ($cb !== null && is_callable($cb)) {
-            call_user_func_array($cb, $arguments);
+        if ($cb !== null && \is_callable($cb)) {
+            \call_user_func_array($cb, $arguments);
         }
     }
 
@@ -1013,6 +986,6 @@ class DemoDataInstaller
      */
     private function getFontFile(): string
     {
-        return PFAD_ROOT . PFAD_TEMPLATES . 'Evo/fonts/opensans/OpenSans-Regular.ttf';
+        return __DIR__ . '/OpenSans-Regular.ttf';
     }
 }

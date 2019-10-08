@@ -161,7 +161,7 @@ class File
                 '%s/%s?action=preview&secret=%s&sid=%s',
                 $baseURL,
                 \PFAD_UPLOAD_CALLBACK,
-                \rawurlencode($crypto->encryptXTEA($upload->kUpload)),
+                \rawurlencode($crypto->encryptXTEA((string)$upload->kUpload)),
                 \session_id()
             );
         }

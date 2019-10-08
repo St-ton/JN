@@ -166,7 +166,7 @@
 			showNotify(error ? 'danger' : 'success', 'Migration', message);
 
 			if (!error) {
-			    if (result.hasMore === false) {
+			    if (result.forceReload === true) {
 			        location.reload();
                 }
 				updateStatusTpl(plugin);

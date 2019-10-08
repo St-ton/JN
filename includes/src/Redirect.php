@@ -571,6 +571,8 @@ class Redirect
             ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($redirects as $redirect) {
+            $redirect->kRedirect            = (int)$redirect->kRedirect;
+            $redirect->nCount               = (int)$redirect->nCount;
             $redirect->oRedirectReferer_arr = self::getReferers($redirect->kRedirect);
         }
 

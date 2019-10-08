@@ -8,7 +8,6 @@ namespace JTL\Plugin\Admin\Validation\Items;
 
 use JTL\Helpers\GeneralObject;
 use JTL\Plugin\InstallCode;
-use JTL\Shop;
 
 /**
  * Class Blueprints
@@ -43,7 +42,7 @@ final class Blueprints extends AbstractItem
             \preg_match('/[0-9]+/', $i, $hits2);
             if (\mb_strlen($hits2[0]) === \mb_strlen($i)) {
                 \preg_match(
-                    '/[a-zA-Z0-9\/_\-\ äÄüÜöÖß' . \utf8_decode('äÄüÜöÖß') . '\(\) ]+/',
+                    '/[\w\/\-() ]+/u',
                     $blueprint['Name'],
                     $hits1
                 );

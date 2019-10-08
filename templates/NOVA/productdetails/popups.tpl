@@ -15,14 +15,6 @@
         {/block}
     {/if}
 
-    {if $verfuegbarkeitsBenachrichtigung == 2 || $verfuegbarkeitsBenachrichtigung == 3}
-        {block name='productdetails-popups-include-availability-notification-form'}
-            <div id="popupn{$kArtikel}" class="d-none">
-                {include file='productdetails/availability_notification_form.tpl' position='popup' tplscope='artikeldetails'}
-            </div>
-        {/block}
-    {/if}
-
     {if isset($bWarenkorbHinzugefuegt) && $bWarenkorbHinzugefuegt}
         {if !isset($kArtikel)}
             {assign var=kArtikel value=$Artikel->kArtikel}

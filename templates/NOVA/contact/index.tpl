@@ -63,7 +63,7 @@
                                                                 label="{lang key='salutation' section='account data'}{if $Einstellungen.kontakt.kontakt_abfragen_anrede === 'O'}<span class='optional'> - {lang key='optional'}</span>{/if}"
                                                                 label-for="salutation"
                                                             }
-                                                                {select name="anrede" id="salutation" required=($Einstellungen.kontakt.kontakt_abfragen_anrede === 'Y')}
+                                                                {select name="anrede" id="salutation" class='custom-select' required=($Einstellungen.kontakt.kontakt_abfragen_anrede === 'Y')}
                                                                     <option value="" selected="selected" {if $Einstellungen.kontakt.kontakt_abfragen_anrede === 'Y'}disabled{/if}>
                                                                         {if $Einstellungen.kontakt.kontakt_abfragen_anrede === 'Y'}{lang key='salutation' section='account data'}{else}{lang key='noSalutation'}{/if}
                                                                     </option>
@@ -192,7 +192,7 @@
                                                                 label="{lang key='subject' section='contact'}"
                                                                 label-for="subject"
                                                             }
-                                                                {select name="subject" id="subject" required=true}
+                                                                {select name="subject" id="subject" class='custom-select' required=true}
                                                                     <option value="" selected disabled>{lang key='subject' section='contact'}</option>
                                                                     {foreach $betreffs as $betreff}
                                                                         <option value="{$betreff->kKontaktBetreff}" {if $Vorgaben->kKontaktBetreff == $betreff->kKontaktBetreff}selected{/if}>{$betreff->AngezeigterName}</option>

@@ -17,7 +17,7 @@
                             href=$activeFilter->getUnsetFilterURL($filterOption->getValue())
                             rel="nofollow"
                             title="Filter {lang key='delete'}"
-                            class="btn btn-light btn-sm filter-type-{$activeFilter->getNiceName()} mb-2 mr-2"
+                            class="btn btn-outline-secondary btn-sm filter-type-{$activeFilter->getNiceName()} mb-2 mr-2"
                             }
                             {$filterOption->getFrontendName()}<span class="fa fa-times ml-2"></span>
                             {/link}
@@ -27,7 +27,7 @@
                         href=$activeFilter->getUnsetFilterURL($activeFilter->getValue())
                         rel="nofollow"
                         title="Filter {lang key='delete'}"
-                        class="btn btn-light btn-sm filter-type-{$activeFilter->getNiceName()} mb-2 mr-2"
+                        class="btn btn-outline-secondary btn-sm filter-type-{$activeFilter->getNiceName()} mb-2 mr-2"
                         }
                         {$activeValues->getFrontendName()}<span class="fa fa-times ml-2"></span>
                         {/link}
@@ -35,9 +35,10 @@
                 {/if}
             {/foreach}
             {if $NaviFilter->getURL()->getUnsetAll() !== null}
-                <br/>
-                {link href=$NaviFilter->getURL()->getUnsetAll() title="{lang key='removeFilters'}"}
-                {lang key='removeFilters'}
+                {link href=$NaviFilter->getURL()->getUnsetAll()
+                    title="{lang key='removeFilters'}"
+                    class='text-decoration-none d-inline-block'}
+                    {lang key='removeFilters'}
                 {/link}
             {/if}
         </div>

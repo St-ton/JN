@@ -1,92 +1,92 @@
 <template>
     <div>
-        <jumbotron header="Wawi-Abgleich"
-                   lead="Firmendaten"
+        <jumbotron :header="$t('headerMsg')"
+                   :lead="$t('leadMsg')"
                    content="">
         </jumbotron>
 
         <div class="row">
             <div class="col">
                 <b-alert variant="info" show v-if="!syncOK">
-                    <icon name="exclamation-triangle"></icon> Bitte Wawi-Abgleich starten
+                    <icon name="exclamation-triangle"></icon> {{ $t('startSync') }}
                 </b-alert>
                 <table class="table b-table table-striped table-hover" v-if="syncOK">
                     <thead>
                     <tr>
-                        <th colspan="2">Firmendaten</th>
+                        <th colspan="2">{{ $t('companyData') }}</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr>
-                        <td>Name</td>
+                        <td>{{ $t('name') }}</td>
                         <td>{{ syncData.step.company.cName}}</td>
                     </tr>
                     <tr>
-                        <td>Unternehmer</td>
+                        <td>{{ $t('operator') }}</td>
                         <td>{{ syncData.step.company.cUnternehmer}}</td>
                     </tr>
                     <tr>
-                        <td>Straße</td>
+                        <td>{{ $t('street') }}</td>
                         <td>{{ syncData.step.company.cStrasse}}</td>
                     </tr>
                     <tr>
-                        <td>PLZ</td>
+                        <td>{{ $t('zip') }}</td>
                         <td>{{ syncData.step.company.cPLZ}}</td>
                     </tr>
                     <tr>
-                        <td>Ort</td>
+                        <td>{{ $t('city') }}</td>
                         <td>{{ syncData.step.company.cOrt}}</td>
                     </tr>
                     <tr>
-                        <td>Land</td>
+                        <td>{{ $t('country') }}</td>
                         <td>{{ syncData.step.company.cLand}}</td>
                     </tr>
                     <tr>
-                        <td>Tel.</td>
+                        <td>{{ $t('tel') }}</td>
                         <td>{{ syncData.step.company.cTel}}</td>
                     </tr>
                     <tr>
-                        <td>Fax</td>
+                        <td>{{ $t('fax') }}</td>
                         <td>{{ syncData.step.company.cFax}}</td>
                     </tr>
                     <tr>
-                        <td>E-Mail</td>
+                        <td>{{ $t('mail') }}</td>
                         <td>{{ syncData.step.company.cEMail}}</td>
                     </tr>
                     <tr>
-                        <td>WWW</td>
+                        <td>{{ $t('www') }}</td>
                         <td>{{ syncData.step.company.cWWW}}</td>
                     </tr>
                     <tr>
-                        <td>Kontoinhaber</td>
+                        <td>{{ $t('accountHolder') }}</td>
                         <td>{{ syncData.step.company.cKontoinhaber}}</td>
                     </tr>
                     <tr>
-                        <td>BLZ</td>
+                        <td>{{ $t('blz') }}</td>
                         <td>{{ syncData.step.company.cBLZ}}</td>
                     </tr>
                     <tr>
-                        <td>KontoNr.</td>
+                        <td>{{ $t('accountNo') }}</td>
                         <td>{{ syncData.step.company.cKontoNr}}</td>
                     </tr>
                     <tr>
-                        <td>Bank</td>
+                        <td>{{ $t('bank') }}</td>
                         <td>{{ syncData.step.company.cBank}}</td>
                     </tr>
                     <tr>
-                        <td>IBAN</td>
+                        <td>{{ $t('iban') }}</td>
                         <td>{{ syncData.step.company.cIBAN}}</td>
                     </tr>
                     <tr>
-                        <td>BIC</td>
+                        <td>{{ $t('bic') }}</td>
                         <td>{{ syncData.step.company.cBIC}}</td>
                     </tr>
                     <tr>
-                        <td>USTIDNr.</td>
+                        <td>{{ $t('ustidnr') }}</td>
                         <td>{{ syncData.step.company.cUSTID}}</td>
                     </tr>
                     <tr>
-                        <td>SteuerNr.</td>
+                        <td>{{ $t('taxNo') }}</td>
                         <td>{{ syncData.step.company.cSteuerNr}}</td>
                     </tr>
                     </tbody>
@@ -95,7 +95,7 @@
                 <table class="table b-table table-striped table-hover" v-if="syncOK">
                     <thead>
                     <tr>
-                        <th colspan="2">Kundengruppen</th>
+                        <th colspan="2">{{ $t('customerGroups') }}</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -109,12 +109,12 @@
                 <table class="table b-table table-striped table-hover" v-if="syncOK">
                     <thead>
                     <tr>
-                        <th colspan="2">Sprachen</th>
+                        <th colspan="2">{{ $t('languages') }}</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr v-for="language in syncData.step.languages" :key="language.cNameDeutsch">
-                        <td v-if="language.cShopStandard === 'Y'"><strong>{{ language.cNameDeutsch }}</strong> (Standard)</td>
+                        <td v-if="language.cShopStandard === 'Y'"><strong>{{ language.cNameDeutsch }}</strong> {{ $t('default') }}</td>
                         <td v-else>{{ language.cNameDeutsch }}</td>
                     </tr>
                     </tbody>
@@ -124,7 +124,7 @@
         <div class="row">
             <div class="col">
                 <b-btn :class="{'pulse-button': !syncOK}" size="sm" variant="primary" @click="checkWawi()">
-                    <icon name="sync"></icon> erneut prüfen
+                    <icon name="sync"></icon> {{ $t('checkAgain') }}
                 </b-btn>
                 <continue :disableBack="false" :disable="error !== false"></continue>
             </div>
@@ -140,6 +140,66 @@ import qs from 'qs';
 export default {
     name:     'wawicheck',
     data() {
+        const messages = {
+            de: {
+                headerMsg:      'Wawi-Abgleich',
+                leadMsg:        'Firmendaten',
+                startSync:      'Bitte Wawi-Abgleich starten',
+                companyData:    'Firmendaten',
+                name:           'Name',
+                operator:       'Unternehmer',
+                street:         'Straße',
+                zip:            'PLZ',
+                city:           'Ort',
+                country:        'Land',
+                tel:            'Tel.',
+                fax:            'Fax',
+                mail:           'E-Mail',
+                www:            'WWW',
+                accountHolder:  'Kontoinhaber',
+                blz:            'BLZ',
+                accountNo:      'KontoNr.',
+                bank:           'Bank',
+                iban:           'IBAN',
+                bic:            'BIC',
+                ustidnr:        'USTIDNr.',
+                taxNo:          'SteuerNr.',
+                customerGroups: 'Kundengruppen',
+                languages:      'Sprachen',
+                checkAgain:     'erneut prüfen',
+                default:        '(Standard)'
+            },
+            en: {
+                headerMsg:      'Wawi sync',
+                leadMsg:        'Company data',
+                startSync:      'Please start  Wawi sync',
+                companyData:    'Company data',
+                name:           'Name',
+                operator:       'Business operator',
+                street:         'Street',
+                zip:            'ZIP',
+                city:           'City',
+                country:        'Coutnry',
+                tel:            'Tel.',
+                fax:            'Fax',
+                mail:           'E-Mail',
+                www:            'WWW',
+                accountHolder:  'Account holder',
+                blz:            'BLZ',
+                accountNo:      'Account no.',
+                bank:           'Bank',
+                iban:           'IBAN',
+                bic:            'BIC',
+                ustidnr:        'USTIDNr.',
+                taxNo:          'Tax no.',
+                customerGroups: 'Customer groups',
+                languages:      'Languages',
+                checkAgain:     'check again',
+                default:        '(default)'
+            }
+        };
+        this.$i18n.add('en', messages.en);
+        this.$i18n.add('de', messages.de);
         return {
             syncData: null,
             error:    false,

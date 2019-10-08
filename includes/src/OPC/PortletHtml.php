@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -249,6 +249,6 @@ trait PortletHtml
      */
     final public function getDefaultPreviewImageUrl(): string
     {
-        return Shop::getURL() . '/' . \PFAD_GFX . 'keinBild.gif';
+        return Shop::getURL() . '/' . \BILD_KEIN_KATEGORIEBILD_VORHANDEN;
     }
 }

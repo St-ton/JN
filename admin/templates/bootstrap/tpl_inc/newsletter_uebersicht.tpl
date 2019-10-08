@@ -340,8 +340,8 @@
                                                     <td>
                                                         {foreach $oNewsletterQueue->cKundengruppe_arr as $cKundengruppe}
                                                             {if $cKundengruppe == '0'}{__('newsletterNoAccount')}{if !$cKundengruppe@last}, {/if}{/if}
-                                                            {foreach $oKundengruppe_arr as $oKundengruppe}
-                                                                {if $cKundengruppe == $oKundengruppe->kKundengruppe}{$oKundengruppe->cName}{if !$oKundengruppe@last}, {/if}{/if}
+                                                            {foreach $customerGroups as $customerGroup}
+                                                                {if $cKundengruppe == $customerGroup->getID()}{$customerGroup->getName()}{if !$customerGroup@last}, {/if}{/if}
                                                             {/foreach}
                                                         {/foreach}
                                                     </td>

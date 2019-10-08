@@ -6,6 +6,7 @@
 
 use JTL\Alert\Alert;
 use JTL\ContentAuthor;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
@@ -17,7 +18,6 @@ use JTL\News\Comment;
 use JTL\News\Item;
 use JTL\Pagination\Pagination;
 use JTL\Shop;
-use function Functional\map;
 
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('CONTENT_NEWS_SYSTEM_VIEW', true, true);
@@ -37,7 +37,8 @@ $defaultLang    = LanguageHelper::getDefaultLanguage();
 $_SESSION['kSprache'] = $defaultLang->kSprache;
 if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $backTab = Request::verifyGPDataString('tab');
-    $smarty->assign('cTab', $backTab);
+    $smarty->assign('cTab', $backTab)
+           ->assign('files', []);
 
     switch ($backTab) {
         case 'inaktiv':
@@ -177,13 +178,8 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
             $controller->setStep('news_kategorie_erstellen');
             $newsCategory->load(Request::getInt('kNewsKategorie'), false);
             if ($newsCategory->getID() > 0) {
-                $smarty->assign('oNewsKategorie', $newsCategory);
-                if (is_dir($uploadDirCat . $newsCategory->getID())) {
-                    $smarty->assign(
-                        'oDatei_arr',
-                        $controller->getCategoryImages($newsCategory->getID(), $uploadDirCat)
-                    );
-                }
+                $smarty->assign('oNewsKategorie', $newsCategory)
+                       ->assign('files', $controller->getCategoryImages($newsCategory->getID(), $uploadDirCat));
             } else {
                 $controller->setStep('news_uebersicht');
                 $controller->setErrorMsg(sprintf(__('errorNewsCatNotFound'), Request::getInt('kNewsKategorie')));
@@ -230,10 +226,8 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
             $newsItem->load($newsItemID);
 
             if ($newsItem->getID() > 0) {
-                if (is_dir($uploadDir . $newsItem->getID())) {
-                    $smarty->assign('oDatei_arr', $controller->getNewsImages($newsItem->getID(), $uploadDir));
-                }
                 $smarty->assign('oNewsKategorie_arr', $controller->getAllNewsCategories())
+                       ->assign('files', $controller->getNewsImages($newsItem->getID(), $uploadDir))
                        ->assign('oNews', $newsItem);
             }
         } else {
@@ -247,15 +241,12 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
         $newsItem->load($newsItemID);
 
         if ($newsItem->getID() > 0) {
-            if (is_dir($uploadDir . $newsItem->getID())) {
-                $smarty->assign('oDatei_arr', $controller->getNewsImages($newsItem->getID(), $uploadDir));
-            }
-            $smarty->assign('oNews', $newsItem);
             if (Request::postInt('kommentare_loeschen') === 1 || isset($_POST['kommentareloeschenSubmit'])) {
                 $controller->deleteComments($_POST['kNewsKommentar'] ?? [], $newsItem);
             }
-
-            $smarty->assign('oNewsKommentar_arr', $newsItem->getComments()->getItems());
+            $smarty->assign('oNews', $newsItem)
+                   ->assign('files', $controller->getNewsImages($newsItem->getID(), $uploadDir))
+                   ->assign('comments', $newsItem->getComments()->getItems());
         }
     }
 }
@@ -289,7 +280,7 @@ if ($controller->getStep() === 'news_uebersicht') {
         ->setItemArray($newsCategories)
         ->assemble();
     $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_NEWS))
-           ->assign('oNewsKommentar_arr', $commentPagination->getPageItems())
+           ->assign('comments', $commentPagination->getPageItems())
            ->assign('oNews_arr', $itemPagination->getPageItems())
            ->assign('oNewsKategorie_arr', $categoryPagination->getPageItems())
            ->assign('oNewsMonatsPraefix_arr', $prefixes)
@@ -306,22 +297,11 @@ if (!empty($_SESSION['news.cHinweis'])) {
     unset($_SESSION['news.cHinweis']);
 }
 
-$maxFileSize    = getMaxFileSize(ini_get('upload_max_filesize'));
-$customerGroups = map($db->query(
-    'SELECT kKundengruppe, cName
-        FROM tkundengruppe
-        ORDER BY cStandard DESC',
-    ReturnType::ARRAY_OF_OBJECTS
-), function ($e) {
-    $e->kKundengruppe = (int)$e->kKundengruppe;
-
-    return $e;
-});
-
+$maxFileSize = getMaxFileSize(ini_get('upload_max_filesize'));
 Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $controller->getMsg(), 'newsMessage');
 Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, $controller->getErrorMsg(), 'newsError');
 
-$smarty->assign('oKundengruppe_arr', $customerGroups)
+$smarty->assign('customerGroups', CustomerGroup::getGroups())
        ->assign('step', $controller->getStep())
        ->assign('nMaxFileSize', $maxFileSize)
        ->assign('kSprache', (int)$_SESSION['kSprache'])

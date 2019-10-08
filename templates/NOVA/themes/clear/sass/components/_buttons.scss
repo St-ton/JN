@@ -42,7 +42,7 @@
     z-index: -1;
     background-color: $primary;
     height: 100%;
-    left: -100%;
+    left: -110%;
     top: 0;
     transform: skew(50deg);
     transition: 0.6s;
@@ -54,7 +54,7 @@
     background: transparent;
     &::before {
       height: 100%;
-      width: 200%;
+      width: 220%;
     }
   }
 }
@@ -177,7 +177,6 @@
   border-color: $gray-dark;
   color: $gray-dark;
   background-color: transparent;
-  padding: 0.6rem 0.75rem;
   @include hover {
     border-color: $gray-dark;
     color: $white;
@@ -207,5 +206,35 @@
 .btn-outline-danger:hover {
   &:hover {
     color: $white;
+  }
+}
+
+.btn-icon { @include button-size($btn-padding-x / 1.4, $btn-padding-x / 1.4, $btn-font-size * 1.15, 1, 50%); border-width: rem($btn-border-width + 1px);
+  > [class*='fa-'] { width: 1.25em; height: 1.25em; line-height: 1.25em; }
+
+  &.btn-sm { @include button-size($btn-padding-x-sm / 1.4, $btn-padding-x-sm / 1.4, $btn-font-size-sm * 1.15, 1, 50%); border-width: rem($btn-border-width); }
+  &.btn-lg { @include button-size($btn-padding-x-lg / 1.4, $btn-padding-x-lg / 1.4, $btn-font-size-lg * 1.15, 1, 50%); }
+}
+
+.btn-icon-primary { border-color: map-get($grays, dark); color: map-get($grays, dark); background-color: $white;
+  @include hover { border-color: $primary;}
+
+  &.disabled, &:disabled { background-color: $gray-medium; color: $white; border-color: $gray-medium; }
+
+  &:not(:disabled):not(.disabled):active,
+  &:not(:disabled):not(.disabled).active,
+  .show > &.dropdown-toggle { border-color: $primary; background-color: $primary; color: $white; }
+}
+
+.btn-dark {
+  color: $gray-lighter;
+  background-color: $gray-darker;
+  border-color: $gray-darker;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  &:hover {
+    background-color: $gray;
+    border-color: $gray;
+    color: $gray-lighter;
   }
 }

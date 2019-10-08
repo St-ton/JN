@@ -188,9 +188,8 @@ class PluginCollection
      */
     public function inlineScript(array $params, $content): string
     {
-        $content = \trim($content);
-        if (empty($content)) {
-            return $content;
+        if ($content === null || empty(\trim($content))) {
+            return '';
         }
         $content = \preg_replace('/^<script(.*?)>/', '', $content);
         $content = \preg_replace('/<\/script>$/', '', $content);

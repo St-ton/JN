@@ -66,8 +66,15 @@
                     <button class="btn btn-danger" name="delete-orphans" value="1" onclick="return confirmDelete();">
                         <i class="fa fas fa-trash"></i> {__('delete')}
                     </button>
+                    <button class="btn btn-danger" type="button" data-toggle="collapse" data-target="#show-script" aria-expanded="false" aria-controls="show-script">
+                        <i class="fa fas fa-terminal"></i> {__('showDeleteScript')}
+                    </button>
+                    <div class="collapse" id="show-script">
+                        <div class="card card-body">
+                            <pre style="margin-top:1em;">{$deleteScript}</pre>
+                        </div>
+                    </div>
                 </form>
-<pre style="margin-top:1em;">{$deleteScript}</pre>
             </div>
         </div>
     {/if}

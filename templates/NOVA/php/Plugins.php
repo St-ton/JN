@@ -21,7 +21,7 @@ use JTL\Helpers\Tax;
 use JTL\Link\Link;
 use JTL\Link\LinkGroupInterface;
 use JTL\Media\Image;
-use JTL\Media\MediaImage;
+use JTL\Media\Image\Product;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Staat;
@@ -543,7 +543,7 @@ class Plugins
         if (\file_exists($path)) {
             [$width, $height, $type] = \getimagesize($path);
         } else {
-            $req = MediaImage::toRequest($path);
+            $req = Product::toRequest($path);
 
             if (!\is_object($req)) {
                 return null;
@@ -735,5 +735,21 @@ class Plugins
     public function seofy($optStr = ''): string
     {
         return Seo::sanitizeSeoSlug($optStr);
+    }
+
+    /**
+     * @param array                         $params
+     * @param \Smarty_Internal_TemplateBase $smarty
+     * @return void
+     */
+    public function getUploaderLang($params, $smarty): void
+    {
+        $availableLocales = [
+            'ar', 'az', 'bg', 'ca', 'cr', 'cs', 'da', 'de', 'el', 'es', 'et', 'fa', 'fi', 'fr', 'gl', 'he', 'hu', 'id',
+            'it', 'ja', 'ka', 'kr', 'kz', 'lt', 'nl', 'no', 'pl', 'pt', 'ro', 'ru', 'sk', 'sl', 'sv', 'th', 'tr', 'uk',
+            'uz', 'vi', 'zh'
+        ];
+
+        $smarty->assign($params['assign'], \in_array($params['iso'], $availableLocales, true) ? $params['iso'] : 'LANG');
     }
 }

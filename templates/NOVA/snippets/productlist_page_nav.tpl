@@ -5,7 +5,13 @@
 {block name='snippets-productlist-page-nav'}
     {if $Suchergebnisse->getProductCount() > 0}
         {opcMountPoint id='opc_before_page_nav_'|cat:$navid}
-        {row class="no-gutters productlist-page-nav"}
+
+        {if $hrTop|default:false === true}
+            {block name='snippets-productlist-page-nav-hr-top'}
+                <hr>
+            {/block}
+        {/if}
+        {row class="{if $navid === 'header'}mt-6{/if} no-gutters productlist-page-nav"}
             {if count($NaviFilter->getSearchResults()->getProducts()) > 0}
                 {block name='snippets-productlist-page-nav-result-options-sort'}
                     {col cols=12 md="auto" class="displayoptions mb-3 mb-md-0"}
@@ -20,14 +26,14 @@
                             {/if}
                         {/block}
                         {if (!$device->isMobile() || $device->isTablet()) && $navid === 'header'}
-                            {dropdown class="filter-type-FilterItemSort btn-group" variant="light" text="{lang key='sorting' section='productOverview'}"}
+                            {dropdown class="filter-type-FilterItemSort btn-group" variant="outline-secondary" text="{lang key='sorting' section='productOverview'}"}
                                 {foreach $Suchergebnisse->getSortingOptions() as $option}
                                     {dropdownitem rel="nofollow" href=$option->getURL() class="filter-item" active=$option->isActive()}
                                         {$option->getName()}
                                     {/dropdownitem}
                                 {/foreach}
                             {/dropdown}
-                            {dropdown class="filter-type-FilterItemLimits btn-group ml-2" variant="light" text="{lang key='productsPerPage' section='productOverview'}"}
+                            {dropdown class="filter-type-FilterItemLimits btn-group ml-2" variant="outline-secondary" text="{lang key='productsPerPage' section='productOverview'}"}
                                 {foreach $Suchergebnisse->getLimitOptions() as $option}
                                     {dropdownitem rel="nofollow" href=$option->getURL() class="filter-item" active=$option->isActive()}
                                         {$option->getName()}
@@ -40,7 +46,7 @@
                 {/block}
             {/if}
             {block name='snippets-productlist-page-nav-current-page-count'}
-                {col cols="auto" class="ml-auto productlist-item-info d-none d-md-flex"}
+                {col cols="auto" class="ml-auto productlist-item-info d-flex {if $Suchergebnisse->getPages()->getMaxPage() > 1}border-right{/if} pr-3"}
                     {lang key="products"} {$Suchergebnisse->getOffsetStart()} - {$Suchergebnisse->getOffsetEnd()} {lang key='of' section='productOverview'} {$Suchergebnisse->getProductCount()}
                 {/col}
             {/block}
@@ -55,14 +61,14 @@
                                     </li>
                                 {/block}
                                 <li class="page-item dropdown">
-                                    <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <span class="pagination-site">Seite</span> {$Suchergebnisse->getPages()->getCurrentPage()}
+                                    <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <span class="pagination-site">{lang key='page'}</span> {$Suchergebnisse->getPages()->getCurrentPage()}
                                     </button>
                                     <div class="dropdown-menu">
                                         {block name='snippets-productlist-page-nav-pages'}
                                             {foreach $filterPagination->getPages() as $page}
                                                 <div class="dropdown-item page-item{if $page->isActive()} active{/if}">
-                                                    {link class="page-link" href=$page->getURL()}<span class="pagination-site">Seite</span> {$page->getPageNumber()}{/link}
+                                                    {link class="page-link" href=$page->getURL()}<span class="pagination-site">{lang key='page'}</span> {$page->getPageNumber()}{/link}
                                                 </div>
                                             {/foreach}
                                         {/block}
@@ -79,5 +85,8 @@
                 {/block}
             {/if}
         {/row}
+        {block name='snippets-productlist-page-nav-hr-bottom'}
+            <hr class="mb-5">
+        {/block}
     {/if}
 {/block}

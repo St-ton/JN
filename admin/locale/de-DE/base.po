@@ -362,6 +362,15 @@ msgstr "Suche nach Kategorien"
 msgid "category"
 msgstr "Kategorie"
 
+msgid "characteristic value"
+msgstr "Merkmalwert"
+
+msgid "characteristic"
+msgstr "Merkmal"
+
+msgid "variation"
+msgstr "Variation"
+
 msgid "showQuestions"
 msgstr "Fragen anzeigen"
 

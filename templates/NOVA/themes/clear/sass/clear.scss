@@ -29,14 +29,17 @@
 @import "components/grid";
 @import "components/badges";
 @import "components/boxes";
+@import "components/close";
 @import "components/navs";
 @import "components/breadcrumbs";
 @import "components/buttons";
 @import "components/cards";
+@import "components/carousel";
 @import "components/custom_forms";
 @import "components/dropdowns";
 @import "components/forms";
 @import "components/icons";
+@import "components/modals";
 @import "components/productbox";
 @import "components/tooltip";
 @import "components/ui_slider";
@@ -49,3 +52,6 @@
 
 /* utilities */
 @import 'utilities/all';
+
+/* productlist */
+@import 'productlist';

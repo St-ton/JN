@@ -656,12 +656,6 @@ msgstr "Show permissible order quantity"
 msgid "artikeluebersicht_artikelintervall_anzeigen_desc"
 msgstr "Specify whether to display the permissible order quantity (if applicable)."
 
-msgid "artikeluebersicht_finanzierung_anzeigen_name"
-msgstr "Show financing proposal"
-
-msgid "artikeluebersicht_finanzierung_anzeigen_desc"
-msgstr "Specify whether to display a financing proposal for each item."
-
 msgid "livesuche_max_ip_count_name"
 msgstr "Maximum entries per visitor per hour"
 
@@ -1747,6 +1741,24 @@ msgstr "Image name of variation images"
 
 msgid "bilder_variation_namen_desc"
 msgstr "Specify how to generate the name of image files for variations."
+
+msgid "bilder_hersteller_namen_name"
+msgstr "Image name of manufacturer images"
+
+msgid "bilder_hersteller_namen_desc"
+msgstr "Specify how to generate the name of image files for manufacturers."
+
+msgid "bilder_merkmal_namen_name"
+msgstr "Image name of characteristic images"
+
+msgid "bilder_merkmal_namen_desc"
+msgstr "Specify how to generate the name of image files for characteristics."
+
+msgid "bilder_merkmalwert_namen_name"
+msgstr "Image name of characteristic value images"
+
+msgid "bilder_merkmalwert_namen_desc"
+msgstr "Specify how to generate the name of image files for characteristic values."
 
 msgid "bilder_externe_bildschnittstelle_name"
 msgstr "Enable external image interface"

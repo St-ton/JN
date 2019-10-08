@@ -1,4 +1,6 @@
-.opc-Gallery {
+@import "./Gallery.scss";
+
+.opc-Gallery-preview {
   display: flex;
   flex-direction: column;
   justify-content: center;

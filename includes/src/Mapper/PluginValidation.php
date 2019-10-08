@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -19,7 +19,7 @@ class PluginValidation
      * @param string|null $pluginID
      * @return string
      */
-    public function map($code, $pluginID): string
+    public function map(int $code, string $pluginID = null): string
     {
         if ($code === 0) {
             return '';
@@ -93,9 +93,11 @@ class PluginValidation
                 $return .= 'Einstellungen Name entspricht nicht der Konvention.';
                 break;
             case InstallCode::MISSING_CONFIG_SELECTBOX_OPTIONS:
+            case InstallCode::MISSING_PAYMENT_METHOD_SELECTBOX_OPTIONS:
                 $return .= 'Keine SelectboxOptionen vorhanden.';
                 break;
             case InstallCode::INVALID_CONFIG_OPTION:
+            case InstallCode::INVALID_PAYMENT_METHOD_OPTION:
                 $return .= 'Die Option entspricht nicht der Konvention.';
                 break;
             case InstallCode::MISSING_LANG_VARS:
@@ -226,12 +228,6 @@ class PluginValidation
                 break;
             case InstallCode::INVALID_PAYMENT_METHOD_VALUE_NAME:
                 $return .= 'Zahlungsmethode Einstellungen ValueName entspricht nicht der Konvention.';
-                break;
-            case InstallCode::MISSING_PAYMENT_METHOD_SELECTBOX_OPTIONS:
-                $return .= 'Keine SelectboxOptionen vorhanden.';
-                break;
-            case InstallCode::INVALID_PAYMENT_METHOD_OPTION:
-                $return .= 'Die Option entspricht nicht der Konvention.';
                 break;
             case InstallCode::INVALID_PAYMENT_METHOD_SORT:
                 $return .= 'Die Sortierung in den Zahlungsmethoden entspricht nicht der Konvention.';

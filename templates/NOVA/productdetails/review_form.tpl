@@ -32,7 +32,7 @@
                             </div>
                             <hr>
                             {formgroup label-for="stars" label="{lang key='productRating' section='product rating'}"}
-                                {select name="nSterne" id="stars" required=true}
+                                {select name="nSterne" id="stars" class='custom-select' required=true}
                                     {$ratings = [5,4,3,2,1]}
                                     {foreach $ratings as $rating}
                                         <option value="{$rating}"{if isset($oBewertung->nSterne) && (int)$oBewertung->nSterne === $rating} selected{/if}>
@@ -54,9 +54,15 @@
                             {/formgroup}
                         {/block}
                         {block name='productdetails-review-form-form-submit'}
-                            {input type="hidden" name="bfh" value="1"}
-                            {input type="hidden" name="a" value=$Artikel->kArtikel}
-                            {button type="submit" value="1" variant="primary"}{lang key='submitRating' section='product rating'}{/button}
+                            {row}
+                                {col cols=12 md=4 lg=3 class='ml-auto'}
+                                    {input type="hidden" name="bfh" value="1"}
+                                    {input type="hidden" name="a" value=$Artikel->kArtikel}
+                                    {button type="submit" value="1" variant="primary" block=true}
+                                        {lang key='submitRating' section='product rating'}
+                                    {/button}
+                                {/col}
+                            {/row}
                         {/block}
                     {/if}
                 {/form}

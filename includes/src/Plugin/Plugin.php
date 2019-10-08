@@ -16,7 +16,7 @@ use JTLShop\SemVer\Version;
 class Plugin extends AbstractPlugin
 {
     /**
-     * @return Version
+     * @inheritdoc
      */
     public function getCurrentVersion(): Version
     {

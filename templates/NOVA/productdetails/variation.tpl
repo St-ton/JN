@@ -4,9 +4,9 @@
  *}
 {block name='productdetails-variation'}
     {if isset($Artikel->Variationen) && $Artikel->Variationen|@count > 0 && !$showMatrix}
-        {assign var=VariationsSource value="Variationen"}
+        {assign var=VariationsSource value='Variationen'}
         {if isset($ohneFreifeld) && $ohneFreifeld}
-            {assign var=VariationsSource value="VariationenOhneFreifeld"}
+            {assign var=VariationsSource value='VariationenOhneFreifeld'}
         {/if}
         {assign var=oVariationKombi_arr value=$Artikel->getChildVariations()}
         {block name='productdetails-variation-spinner'}
@@ -26,7 +26,7 @@
                         <dd class="form-group text-left">
                             {if $Variation->cTyp === 'SELECTBOX'}
                                 {block name='productdetails-variation-select-outer'}
-                                {select title="{lang key='pleaseChooseVariation' section='productDetails'}" name="eigenschaftwert[{$Variation->kEigenschaft}]" required=!$showMatrix}
+                                {select class='custom-select' title="{lang key='pleaseChooseVariation' section='productDetails'}" name="eigenschaftwert[{$Variation->kEigenschaft}]" required=!$showMatrix}
                                     {foreach name=Variationswerte from=$Variation->Werte key=y item=Variationswert}
                                         {assign var=bSelected value=false}
                                         {if isset($oVariationKombi_arr[$Variationswert->kEigenschaft])}
@@ -164,7 +164,7 @@
                                                                />
                                                         <span class="label-variation">
                                                             {if !empty($Variationswert->cBildPfadMiniFull)}
-                                                                {image src=$Variationswert->cBildPfadMiniFull alt=$Variationswert->cName|escape:'quotes'
+                                                                {image src=$Variationswert->getImage(\JTL\Media\Image::SIZE_XS) alt=$Variationswert->cName|escape:'quotes'
                                                                      data=['list' => "{prepare_image_details item=$Variationswert json=true}"]
                                                                      title=$Variationswert->cName}
                                                             {else}

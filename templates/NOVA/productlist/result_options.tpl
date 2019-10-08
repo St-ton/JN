@@ -12,7 +12,7 @@
             {row}
             {block name='productlist-result-options-filter-link'}
                 {col cols=12 md=4 class="filter-collapsible-control order-1 order-md-0 d-flex justify-content-between"}
-                    {button variant="light"
+                    {button variant="outline-secondary"
                         data=["toggle" => "collapse", "target" => "#filter-collapsible"]
                         aria=["expanded" => "{if $Einstellungen.template.productlist.initial_display_filter === 'Y'}true{else}false{/if}",
                             "controls" => "filter-collapsible"]

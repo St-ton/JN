@@ -1,5 +1,5 @@
 <div id="probleme" class="tab-pane fade {if isset($cTab) && $cTab === 'probleme'} active show{/if}">
-    {if $PluginErrorCount > 0}
+    {if $pluginErrorCount > 0}
     <form name="pluginverwaltung" method="post" action="pluginverwaltung.php">
         {$jtl_token}
         <input type="hidden" name="pluginverwaltung_uebersicht" value="1" />

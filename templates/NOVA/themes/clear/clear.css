@@ -15458,7 +15458,6 @@ aside .last-seen-link {
   vertical-align: middle;
   display: inline-block;
   line-height: 1;
-  margin-top: -0.125rem;
   transition: transform 0.2s;
   will-change: transform;
   border-top: 0;

@@ -68,10 +68,10 @@
                     </div>
                     {button variant="link"
                         role="button"
-                        class="text-right p-0"
+                        class="text-right p-0 d-block"
                         data=["toggle"=> "collapse", "target"=>"#box-collps-filter{$filter->getNiceName()}"]
                         block=true}
-                        {lang key='showAll'} <i class="fas fa-chevron-down"></i>
+                        {lang key='showAll'}
                     {/button}
                 {/if}
             {/nav}

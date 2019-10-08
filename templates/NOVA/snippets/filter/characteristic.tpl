@@ -3,7 +3,7 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='snippets-filter-characteristics'}
-    {$is_dropdown = ($Merkmal->cTyp === 'SELECTBOX') && $Merkmal->oMerkmalWerte_arr|@count > 1}
+    {$is_dropdown = ($Merkmal->cTyp === 'SELECTBOX')}
     {$limit = $Einstellungen.template.productlist.filter_max_options}
     {$collapseInit = false}
     {foreach $Merkmal->getOptions() as $attributeValue}
@@ -67,9 +67,10 @@
                         }
                     {/link}
                 {else}
-                    {link href="{if !empty($attributeValue->getURL())}{$attributeValue->getURL()}{else}#{/if}"
+                    {navitem href="{if !empty($attributeValue->getURL())}{$attributeValue->getURL()}{else}#{/if}"
                         title="{$attributeValue->getValue()|escape:'html'}: {$attributeValue->getCount()}"
                         class="{if $attributeValue->isActive()}active{/if}"
+                        router-class="px-0 {if !empty($attributeImageURL)}py-0{/if}"
                     }
                         <div class="align-items-center d-flex">
                             {if !empty($attributeImageURL)}
@@ -83,7 +84,7 @@
                             </span>
                             <span class="badge badge-outline-secondary ml-auto">{$attributeValue->getCount()}</span>
                         </div>
-                    {/link}
+                    {/navitem}
                 {/if}
             {/block}
         {/if}

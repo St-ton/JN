@@ -158,7 +158,7 @@ class VueInstaller
     private function sendResponse(): void
     {
         if ($this->responseStatus === true && empty($this->responseMessage)) {
-            $this->responseMessage[] = 'Erfolgreich ausgeführt';
+            $this->responseMessage[] = 'executeSuccess';
         }
         echo \json_encode([
             'ok'      => $this->responseStatus,
@@ -223,7 +223,7 @@ class VueInstaller
         } else {
             $this->payload['error'] = !$this->responseStatus;
             $this->payload['msg']   = $this->responseStatus === true && empty($this->responseMessage)
-                ? 'Erfolgreich ausgeführt'
+                ? 'executeSuccess'
                 : $this->responseMessage;
         }
 
@@ -300,7 +300,7 @@ ini_set('display_errors', 0);" . "\n";
     private function parseMysqlDump(string $url): string
     {
         if ($this->db === null) {
-            return 'NiceDB nicht initialisiert.';
+            return 'noNiceDB';
         }
         $content = \file($url);
         $errors  = '';
@@ -330,7 +330,7 @@ ini_set('display_errors', 0);" . "\n";
 
     /**
      * @return VueInstaller
-     * @throws \JTL\Exceptions\InvalidEntityNameException
+     * @throws InvalidEntityNameException
      */
     private function insertUsers(): self
     {
@@ -345,7 +345,7 @@ ini_set('display_errors', 0);" . "\n";
 
         if (!$this->db->insertRow('tadminlogin', $adminLogin)) {
             $error                   = $this->db->getError();
-            $this->responseMessage[] = 'Fehler Nr: ' . $this->db->getErrorCode();
+            $this->responseMessage[] = 'Error code: ' . $this->db->getErrorCode();
             if (!\is_array($error)) {
                 $this->responseMessage[] = $error;
             }
@@ -359,7 +359,7 @@ ini_set('display_errors', 0);" . "\n";
 
         if (!$this->db->insertRow('tsynclogin', $syncLogin)) {
             $error                   = $this->db->getError();
-            $this->responseMessage[] = 'Fehler Nr: ' . $this->db->getErrorCode();
+            $this->responseMessage[] = 'Error code: ' . $this->db->getErrorCode();
             if (!\is_array($error)) {
                 $this->responseMessage[] = $error;
             }
@@ -376,7 +376,7 @@ ini_set('display_errors', 0);" . "\n";
     {
         $res        = new stdClass();
         $res->error = false;
-        $res->msg   = 'Erfolgreich verbunden';
+        $res->msg   = 'connectionSuccess';
         if (isset($this->post['host'], $this->post['user'], $this->post['pass'], $this->post['name'])) {
             if (!empty($this->post['socket'])) {
                 \define('DB_SOCKET', $this->post['socket']);
@@ -385,19 +385,19 @@ ini_set('display_errors', 0);" . "\n";
                 $db = new NiceDB($this->post['host'], $this->post['user'], $this->post['pass'], $this->post['name']);
                 if (!$db->isConnected()) {
                     $res->error = true;
-                    $res->msg   = 'Keine Verbindung möglich';
+                    $res->msg   = 'cannotConnect';
                 }
                 $obj = $db->executeQuery("SHOW TABLES LIKE 'tsynclogin'", 1);
                 if ($obj !== false) {
                     $res->error = true;
-                    $res->msg   = 'Es existiert bereits eine Shopinstallation in dieser Datenbank';
+                    $res->msg   = 'shopExists';
                 }
             } catch (Exception $e) {
                 $res->error = true;
-                $res->msg   = 'Datenbankfehler: ' . $e->getMessage();
+                $res->msg   = $e->getMessage();
             }
         } else {
-            $res->msg   = 'Keine Zugangsdaten übermittelt';
+            $res->msg   = 'noCredentials';
             $res->error = true;
         }
         $this->payload['msg']   = $res->msg;

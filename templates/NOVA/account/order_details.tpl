@@ -19,7 +19,7 @@
                 {row class='align-items-center'}
                 {block name='account-order-details-order-heading'}
                     {col cols=12 lg=3 class='border-lg-right'}
-                        <span class="font-weight-bold">
+                        <span class="font-weight-bold font-size-lg">
                             <span class="far fa-calendar mr-2"></span>{$Bestellung->dErstelldatum_de}
                         </span>
                     {/col}
@@ -147,28 +147,32 @@
                 {cardbody}
                     {block name='account-order-details-request-plz'}
                         {row}
-                            {col sm=12 md=6}
+                            {col cols=12 md=6}
                                 {form method="post" id='request-plz' action="{get_static_route}" class="evo-validate label-slide"}
                                     {input type="hidden" name="uid" value="{$uid}"}
-                                <p>{lang key='enter_plz_for_details' section='account data'}</p>
-                                {formgroup
-                                    label-for="postcode"
-                                    label={lang key='plz' section='account data'}
-                                }
-                                    {input
-                                        type="text"
-                                        name="plz"
-                                        value=""
-                                        id="postcode"
-                                        class="postcode_input"
-                                        placeholder="{lang key='plz' section='account data'}"
-                                        required=true
-                                        autocomplete="billing postal-code"
+                                    <p>{lang key='enter_plz_for_details' section='account data'}</p>
+                                    {formgroup
+                                        label-for="postcode"
+                                        label={lang key='plz' section='account data'}
                                     }
-                                {/formgroup}
-                                    {button type="submit" value="1" class="w-auto" variant="primary"}
-                                        {lang key='view' section='global'}
-                                    {/button}
+                                        {input
+                                            type="text"
+                                            name="plz"
+                                            value=""
+                                            id="postcode"
+                                            class="postcode_input"
+                                            placeholder="{lang key='plz' section='account data'}"
+                                            required=true
+                                            autocomplete="billing postal-code"
+                                        }
+                                    {/formgroup}
+                                    {row}
+                                        {col class='ml-auto col-md-auto'}
+                                            {button type='submit' value='1' block=true variant='primary' class='mb-3'}
+                                                {lang key='view' section='global'}
+                                            {/button}
+                                        {/col}
+                                    {/row}
                                 {/form}
                             {/col}
                             {col cols=12 md=9}

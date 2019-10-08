@@ -10,7 +10,7 @@
         {buttongroup class="ml-2"}
             {link href=$oErweiterteDarstellung->cURL_arr[$smarty.const.ERWDARSTELLUNG_ANSICHT_LISTE]
                 id="ed_list"
-                class="btn btn-light btn-option ed list{if $oErweiterteDarstellung->nDarstellung === $smarty.const.ERWDARSTELLUNG_ANSICHT_LISTE} active{/if}"
+                class="btn btn-outline-secondary btn-option ed list{if $oErweiterteDarstellung->nDarstellung === $smarty.const.ERWDARSTELLUNG_ANSICHT_LISTE} active{/if}"
                 role="button"
                 title="{lang key='list' section='productOverview'}"
                 aria=["label"=>{lang key='list' section='productOverview'}]
@@ -19,7 +19,7 @@
             {/link}
             {link href=$oErweiterteDarstellung->cURL_arr[$smarty.const.ERWDARSTELLUNG_ANSICHT_GALERIE]
                 id="ed_gallery"
-                class="btn btn-light btn-option ed gallery{if $oErweiterteDarstellung->nDarstellung === $smarty.const.ERWDARSTELLUNG_ANSICHT_GALERIE} active{/if}"
+                class="btn btn-outline-secondary btn-option ed gallery{if $oErweiterteDarstellung->nDarstellung === $smarty.const.ERWDARSTELLUNG_ANSICHT_GALERIE} active{/if}"
                 role="button"
                 title="{lang key='gallery' section='productOverview'}"
                 aria=["label"=>{lang key='gallery' section='productOverview'}]

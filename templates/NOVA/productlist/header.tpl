@@ -44,23 +44,23 @@
                 <div class="title mb-4">
                     {if $oNavigationsinfo->getName()}
                         {opcMountPoint id='opc_before_heading'}
-                        <h1>{$oNavigationsinfo->getName()}</h1>
+                        <h1 class="h2">{$oNavigationsinfo->getName()}</h1>
                     {/if}
                 </div>
                 {if $Einstellungen.navigationsfilter.kategorie_beschreibung_anzeigen === 'Y'
                     && $oNavigationsinfo->getCategory() !== null
                     && $oNavigationsinfo->getCategory()->cBeschreibung|strlen > 0}
-                    <div class="item_desc custom_content">{$oNavigationsinfo->getCategory()->cBeschreibung}</div>
+                    <p>{$oNavigationsinfo->getCategory()->cBeschreibung}</p>
                 {/if}
                 {if $Einstellungen.navigationsfilter.hersteller_beschreibung_anzeigen === 'Y'
                     && $oNavigationsinfo->getManufacturer() !== null
                     && $oNavigationsinfo->getManufacturer()->cBeschreibung|strlen > 0}
-                    <div class="item_desc custom_content">{$oNavigationsinfo->getManufacturer()->cBeschreibung}</div>
+                    <p>{$oNavigationsinfo->getManufacturer()->cBeschreibung}</p>
                 {/if}
                 {if $Einstellungen.navigationsfilter.merkmalwert_beschreibung_anzeigen === 'Y'
                     && $oNavigationsinfo->getCharacteristicValue() !== null
                     && $oNavigationsinfo->getCharacteristicValue()->cBeschreibung|strlen > 0}
-                    <div class="item_desc custom_content">{$oNavigationsinfo->getCharacteristicValue()->cBeschreibung}</div>
+                    <p>{$oNavigationsinfo->getCharacteristicValue()->cBeschreibung}</p>
                 {/if}
             </div>
         {/if}
@@ -69,7 +69,7 @@
     {block name='productlist-header-subcategories'}
         {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'N' && $oUnterKategorien_arr|@count > 0}
             {opcMountPoint id='opc_before_subcategories'}
-            {row class="row-eq-height content-cats-small clearfix"}
+            {row class="row-eq-height content-cats-small clearfix d-none d-md-flex"}
                 {foreach $oUnterKategorien_arr as $subCategory}
                     {col cols=6 md=4 lg=3}
                         {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'Y'}

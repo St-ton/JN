@@ -6,7 +6,7 @@
     {strip}
     {has_boxes position='left' assign='hasLeftBox'}
     {if !empty($Brotnavi) && !$bExclusive && !$bAjaxRequest && $nSeitenTyp !== $smarty.const.PAGE_STARTSEITE && $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG && $nSeitenTyp !== $smarty.const.PAGE_BESTELLSTATUS}
-        {row class="breadcrumb-wrapper"}
+        {row class="breadcrumb-wrapper no-gutters"}
             {col cols="auto"}
                 {breadcrumb id="breadcrumb" itemprop="breadcrumb" itemscope=true itemtype="http://schema.org/BreadcrumbList" class="p-0 py-2 mb-0"}
                     {block name='layout-breadcrumb-xs-back'}

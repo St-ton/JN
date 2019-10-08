@@ -17,7 +17,7 @@
                             href=$activeFilter->getUnsetFilterURL($filterOption->getValue())
                             rel="nofollow"
                             title="Filter {lang key='delete'}"
-                            class="btn btn-light btn-sm filter-type-{$activeFilter->getNiceName()} mb-2 mr-2"
+                            class="btn btn-outline-secondary btn-sm filter-type-{$activeFilter->getNiceName()} mb-2 mr-2"
                             }
                             {$filterOption->getFrontendName()}<span class="fa fa-times ml-2"></span>
                             {/link}
@@ -27,7 +27,7 @@
                         href=$activeFilter->getUnsetFilterURL($activeFilter->getValue())
                         rel="nofollow"
                         title="Filter {lang key='delete'}"
-                        class="btn btn-light btn-sm filter-type-{$activeFilter->getNiceName()} mb-2 mr-2"
+                        class="btn btn-outline-secondary btn-sm filter-type-{$activeFilter->getNiceName()} mb-2 mr-2"
                         }
                         {$activeValues->getFrontendName()}<span class="fa fa-times ml-2"></span>
                         {/link}

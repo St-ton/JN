@@ -151,7 +151,7 @@
 
                     {block name='account-order-item-price'}
                     {col class='qty-col text-right' md=1 cols=6}
-                        {$oPosition->nAnzahl|replace_delim} {if !empty($oPosition->Artikel->cEinheit)}{$oPosition->Artikel->cEinheit}{/if}x
+                        {$oPosition->nAnzahl|replace_delim} {if !empty($oPosition->Artikel->cEinheit)}{$oPosition->Artikel->cEinheit} {/if}x
                     {/col}
                     {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}
                         {col class='price-col text-right hidden-xs text-nowrap' md=2 cols=3}
@@ -164,7 +164,7 @@
                             {/if}
                         {/col}
                     {/if}
-                    {col class='price-col text-right' md=2 cols=3}
+                    {col class='price-col text-right text-nowrap' md=2 cols=3}
                         <strong class="price_overall">
                             {if is_string($oPosition->cUnique) && !empty($oPosition->cUnique) && (int)$oPosition->kKonfigitem === 0}
                                 {$oPosition->cKonfigpreisLocalized[$NettoPreise]}

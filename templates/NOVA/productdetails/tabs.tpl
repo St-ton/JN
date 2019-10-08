@@ -228,9 +228,6 @@
                                                         {opcMountPoint id='opc_after_desc'}
                                                     {/block}
                                                     {block name='productdetails-tabs-card-description-attributes'}
-                                                        {if (!empty($Artikel->cBeschreibung) || $useDescriptionWithMediaGroup) && $showAttributesTable}
-                                                            <hr>
-                                                        {/if}
                                                         {block name='productdetails-tabs-include-attributes'}
                                                             {include file='productdetails/attributes.tpl' tplscope='details'
                                                             showProductWeight=$showProductWeight showShippingWeight=$showShippingWeight

@@ -16877,12 +16877,8 @@ aside .badge-light {
   border: 0;
 }
 
-#tabAccordion .card {
+#tabAccordion > .card {
   border: 0;
-}
-#tabAccordion .card .card-body {
-  padding-left: 0;
-  padding-right: 0;
 }
 
 .nmbr-cfg-group {

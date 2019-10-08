@@ -87,13 +87,13 @@
 
                             {block name='productdetails-price-special-prices-detail'}
                                 {if $Artikel->Preise->Sonderpreis_aktiv && $Einstellungen.artikeldetails.artikeldetails_sonderpreisanzeige == 2}
-                                    <div class="instead_of old_price">{lang key='oldPrice'}:
-                                        <del class="value">{$Artikel->Preise->alterVKLocalized[$NettoPreise]}</del>
+                                    <div class="text-danger text-stroke text-nowrap">
+                                        {lang key='oldPrice'}: {$Artikel->Preise->alterVKLocalized[$NettoPreise]}
                                     </div>
                                 {elseif !$Artikel->Preise->Sonderpreis_aktiv && $Artikel->Preise->rabatt > 0}
                                     {if $Einstellungen.artikeldetails.artikeldetails_rabattanzeige == 3 || $Einstellungen.artikeldetails.artikeldetails_rabattanzeige == 4}
-                                        <div class="old_price">{lang key='oldPrice'}:
-                                            <del class="value text-nowrap">{$Artikel->Preise->alterVKLocalized[$NettoPreise]}</del>
+                                        <div class="text-danger text-stroke text-nowrap">
+                                            {lang key='oldPrice'}: {$Artikel->Preise->alterVKLocalized[$NettoPreise]}
                                         </div>
                                     {/if}
                                     {if $Einstellungen.artikeldetails.artikeldetails_rabattanzeige == 2 || $Einstellungen.artikeldetails.artikeldetails_rabattanzeige == 4}

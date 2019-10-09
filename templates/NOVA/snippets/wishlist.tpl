@@ -70,10 +70,10 @@
                 {if $isCurrenctCustomer === true}
                     {block name='snippets-wishlist-actions'}
                         {col class="col-auto"}
-                            {dropdown variant="link" class="no-chevron wishlist-options" text="<i class='fas fa-ellipsis-v'></i>" aria=["label"=>"{lang key='rename' section='wishlistOptions'}"]}
+                            {dropdown variant="link no-caret" class="no-chevron wishlist-options" text="<i class='fas fa-ellipsis-v'></i>" aria=["label"=>"{lang key='rename' section='wishlistOptions'}"]}
                                 {dropdownitem class="text-center position-relative"}
                                 {block name='snippets-wishlist-actions-rename'}
-                                    {button type="submit" variant="link" class="stretched-link" data=["toggle" => "collapse", "target"=>"#edit-wishlist-name"]}
+                                    {button type="submit" variant="link" class="w-100 no-caret" data=["toggle" => "collapse", "target"=>"#edit-wishlist-name"]}
                                         {lang key='rename'}
                                     {/button}
                                 {/block}
@@ -145,7 +145,7 @@
                                 {block name='snippets-wishlist-actions-add-new'}
                                     {button type="submit"
                                         variant="link"
-                                        class="stretched-link"
+                                        class="stretched-link no-caret"
                                         data=["toggle" => "collapse", "target"=>"#create-new-wishlist"]
                                     }
                                         {lang key='wishlistAddNew' section='login'}

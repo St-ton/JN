@@ -25,7 +25,7 @@
                 {if !$showMatrix}
                     {block name='productdetails-basket-form-inline'}
                         {row class="align-items-center"}
-                            {col cols=12 sm=6 class="mb-3 mb-md-0"}
+                            {col cols=12 sm=6 class="mb-3 mb-sm-0"}
                                 {inputgroup id="quantity-grp" class="choose_quantity"}
                                     {input type="{if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}text{else}number{/if}"
                                         min="{if $Artikel->fMindestbestellmenge}{$Artikel->fMindestbestellmenge}{else}0{/if}"

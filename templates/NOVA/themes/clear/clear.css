@@ -16494,6 +16494,36 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
   margin: 1.5rem 0;
 }
 
+.table tbody:first-child tr:first-child td {
+  border-top: 0;
+}
+
+.table-bordered-outline tr {
+  border-width: 0 1px;
+  border-style: solid;
+  border-color: #ebebeb;
+}
+.table-bordered-outline tr:first-child {
+  border-top-width: 1px;
+}
+.table-bordered-outline tr:last-child {
+  border-bottom-width: 1px;
+}
+.table-bordered-outline th, .table-bordered-outline td {
+  border-width: 0;
+}
+
+.table-vertical-middle th, .table-vertical-middle td {
+  vertical-align: middle;
+}
+
+.table-border-medium th, .table-border-medium td {
+  border-width: 0 0 1px 0;
+  border-style: solid;
+  border-color: #ebebeb;
+  padding: 1.5rem 1rem;
+}
+
 html {
   scroll-behavior: smooth;
 }

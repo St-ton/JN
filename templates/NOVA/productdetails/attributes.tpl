@@ -6,7 +6,7 @@
 {if $showAttributesTable}
     <div class="product-attributes mt-3">
     {block name='productdetails-attributes-table'}
-        <table class="table table-condensed table-striped">
+        <table class="table table-sm table-striped table-bordered-outline">
             {if $Einstellungen.artikeldetails.merkmale_anzeigen === 'Y'}
                 {block name='productdetails-attributes-characteristics'}
                     {foreach $Artikel->oMerkmale_arr as $characteristic}

@@ -89,27 +89,6 @@ header > [class*="container"],
   box-shadow: 0 2px 16px 0 rgba(0,0,0,0.06);
 }
 
-//#evo-nav-wrapper {
-//  box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.06);
-//  height: 209px;
-//  #navbarToggler .dropdown-menu{
-//    top:185px;
-//  }
-//  @include media-breakpoint-down(sm) {
-//    height: auto;
-//    #navbarToggler .dropdown-menu{
-//      top: auto;
-//    }
-//  }
-//  @include media-breakpoint-up(xl) {
-//    height: 132px;
-//    #navbarToggler .dropdown-menu{
-//      top: 100px;
-//    }
-//  }
-//}
-
-
 header > [class*="container"],
 #main-wrapper #content-wrapper { box-shadow: none; background: transparent; }
 header, #main-wrapper { background: #fff; }
@@ -340,21 +319,6 @@ ul.partlist-items {
   color: $gray;
   font-size: 12px;
 }
-
-//#product-tabs {
-//  .nav-link {
-//    text-decoration: none;
-//    padding-left: map_get($spacers,4);
-//    padding-right: map_get($spacers,4);
-//    font-size: $font-size-lg;
-//    &.active {
-//      background-color: transparent;
-//    }
-//    a {
-//      text-decoration: none;
-//    }
-//  }
-//}
 
 .card-columns {
   column-count: 2;
@@ -923,62 +887,6 @@ aside {
   margin-bottom: $spacer;
 }
 
-//#product-tabs {
-//  .nav-link {
-//    border: 0;
-//    font-family: $headings-font-family;
-//    font-weight: $font-weight-semibold;
-//    position: relative;
-//    &::after {
-//      content: '';
-//      position: absolute;
-//      bottom: 0;
-//      left: 50%;
-//      transform: translateX(-50%);
-//      border-width: 0 0 $nav-tabs-border-width * 6;
-//      border-color: $primary;
-//      border-style: solid;
-//      transition: width .4s;
-//      width: 0;
-//    }
-//    &:not(:last-child) {
-//      margin-right: map-get($spacers, 5);
-//    }
-//
-//    &.active, &:hover {
-//      &::after {
-//        width: 100%;
-//      }
-//    }
-//  }
-//}
-//
-//.tab-content {
-//  margin: map-get($spacers, 4) 0;
-//}
-//
-//.nav-tabs {
-//  .nav-link[role="tab"] {
-//    // Actual tabs (as links)
-//    font-weight: $font-weight-semibold;
-//    text-decoration: none;
-//    border-color: transparent;
-//    border-bottom: $highlight-border-size solid transparent;
-//    &.active,
-//    &:hover,
-//    &:focus {
-//      background-color: transparent;
-//      border-color: transparent;
-//      font-weight: $font-weight-bold;
-//      color: $gray-dark;
-//      border-bottom-color: $primary;
-//    }
-//    a {
-//      text-decoration: none;
-//    }
-//  }
-//}
-
 #cfg-container .cfg-group {
   .h5 {
     background: $sand;
@@ -1352,10 +1260,6 @@ a.no-deco {
 table caption {
   caption-side: top;
 }
-
-//.navbar-brand img.img-fluid {
-//  max-height: 70px;
-//}
 
 .nav-wizard {
   position: relative;

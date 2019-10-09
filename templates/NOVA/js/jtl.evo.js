@@ -806,7 +806,7 @@
             // this.addSliderTouchSupport();
             this.productTabsPriceFlow();
             this.generateSlickSlider();
-            // $('.nav-pills, .nav-tabs').tabdrop();
+            $('.nav-pills, .nav-tabs').tabdrop();
             //this.addTabsTouchSupport();
             //this.autoheight();
             this.tooltips();

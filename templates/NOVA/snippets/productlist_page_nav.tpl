@@ -64,7 +64,7 @@
                                     <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         <span class="pagination-site">{lang key='page'}</span> {$Suchergebnisse->getPages()->getCurrentPage()}
                                     </button>
-                                    <div class="dropdown-menu">
+                                    <div class="dropdown-menu shadow-none">
                                         {block name='snippets-productlist-page-nav-pages'}
                                             {foreach $filterPagination->getPages() as $page}
                                                 <div class="dropdown-item page-item{if $page->isActive()} active{/if}">

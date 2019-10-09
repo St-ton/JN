@@ -19,7 +19,7 @@ class Migration_20191009112100 extends Migration implements IMigration
 
     public function up()
     {
-        $this->setLocalization('ger', 'global', 'selectChoose', 'Asuwählen');
+        $this->setLocalization('ger', 'global', 'selectChoose', 'Auswählen');
         $this->setLocalization('eng', 'global', 'selectChoose', 'Choose');
     }
 

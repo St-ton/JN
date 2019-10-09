@@ -764,64 +764,6 @@
             $('.comparelist .equal-height').height(h);
         },
 
-        checkMenuScroll: function() {
-            var menu = '.megamenu';
-
-            if ($(menu)[0] != undefined) {
-                var scrollWidth = parseInt(Math.round($(menu)[0].scrollWidth));
-                var width = parseInt(Math.round($(menu).outerWidth() + 2));
-                var btnLeft = $('#scrollMenuLeft');
-                var btnRight = $('#scrollMenuRight');
-                // reset
-                btnLeft.off("click.menuScroll");
-                btnRight.off("click.menuScroll");
-
-                checkButtons();
-                if (width < scrollWidth) {
-                    btnLeft.on("click.menuScroll",function () {
-                        var leftPos = parseInt(Math.round($('#navbarToggler').scrollLeft()));
-                        var newLeft = leftPos-250;
-
-                        $('#navbarToggler').animate({scrollLeft: newLeft},{
-                            duration: 600,
-                            start: checkButtons(newLeft)
-                        });
-                    });
-
-                    btnRight.on("click.menuScroll", function () {
-                        var leftPos2 = parseInt(Math.round($('#navbarToggler').scrollLeft()));
-                        var newLeft = leftPos2+250;
-                        var y = parseInt(Math.round(scrollWidth-(width+newLeft)));
-
-                        $('#navbarToggler').animate({scrollLeft: newLeft},{
-                            duration: 600,
-                            start: checkButtons(newLeft)
-                        });
-                    });
-                }
-            }
-
-            function checkButtons(scrollLeft) {
-                if (typeof scrollLeft === 'undefined') {
-                    scrollLeft = 0;
-                }
-                let scrollWidth = parseInt($(menu)[0].scrollWidth);
-                let width = parseInt($(menu).outerWidth() + 2);
-                let btnLeft = $('#scrollMenuLeft');
-                let btnRight = $('#scrollMenuRight');
-
-                btnRight.addClass('d-none');
-                btnLeft.addClass('d-none');
-
-                if (scrollLeft > 0) {
-                    btnLeft.removeClass('d-none');
-                }
-                if ((scrollWidth - width) > scrollLeft) {
-                    btnRight.removeClass('d-none');
-                }
-            }
-        },
-
         fixStickyElements: function() {
             var sticky    = '.cart-summary';
             var navHeight = $('#main-nav-wrapper').outerHeight(true);
@@ -878,7 +820,6 @@
             this.checkout();
             this.addInactivityCheck();
             this.setCompareListHeight();
-            this.checkMenuScroll();
             this.fixStickyElements();
             this.setWishlistVisibilitySwitches();
         }
@@ -894,12 +835,6 @@
             $.evo.register();
         });
     }
-
-    $(window).on('resize', function () {
-      /*  console.log('resize');
-        $.evo.autoheight();*/
-        $.evo.checkMenuScroll();
-    });
 
     // PLUGIN DEFINITION
     // =================

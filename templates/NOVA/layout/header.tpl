@@ -279,6 +279,7 @@
         <script defer src="{$ShopURL}/{$templateDir}js/fileinput/fileinput.min.js"></script>
         <script defer src="{$ShopURL}/{$templateDir}js/fileinput/themes/fas/theme.min.js"></script>
         <script defer src="{$ShopURL}/{$templateDir}js/fileinput/locales/{$uploaderLang}.js"></script>
+        <script defer type="module" src="{$ShopURL}/{$templateDir}js/app/app.js"></script>
     </head>
     {/block}
 
@@ -299,87 +300,68 @@
             <header class="d-print-none{if $isSticky} sticky-top{/if}{if $Einstellungen.template.theme.static_header === 'Y'} fixed-navbar{/if}" id="evo-nav-wrapper">
 
                 {block name='layout-header-container-inner'}
-
-                    <div class="container-fluid px-md-4 clearfix">
+                    <div class="container-fluid container-fluid-xl">
                     {block name='layout-header-branding-top-bar'}
-                        <div class="top-bar pt-2 text-right d-none {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-md-block{/if}">
-                            {include file='layout/header_top_bar.tpl'}
-                        </div>
+                        {if !$device->isMobile()}
+                            {row class="mb-2 d-none {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex{/if}"}
+                                {col class='col-auto ml-auto'}
+                                    {include file='layout/header_top_bar.tpl'}
+                                {/col}
+                            {/row}
+                        {/if}
                     {/block}
 
                     {block name='layout-header-category-nav'}
-                        {navbar id="main-nav-wrapper" toggleable=true fill=true class="navbar-expand-md accordion row py-0 px-0"}
-                            {col id="logo" cols=4 md="auto" order=2 order-md=1 class="mr-auto bg-white" style="z-index: 1;"}
-                                {block name='layout-header-logo'}
-                                    <div class="navbar-brand mr-0 ml-lg-2" itemprop="publisher" itemscope itemtype="http://schema.org/Organization" itemid="">
-                                        <span itemprop="name" class="d-none">{$meta_publisher}</span>
-                                        <meta itemprop="url" content="{$ShopURL}">
-                                        <meta itemprop="logo" content="{$ShopLogoURL}">
+                        {navbar  toggleable=true fill=true type="expand-lg " class="justify-content-start {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}align-items-center{else}align-items-lg-end{/if} px-0 pb-lg-0"}
 
-                                        {link href=$ShopURL title=$Einstellungen.global.global_shopname}
+                            <button class="navbar-toggler mr-3 collapsed {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}d-none{/if}" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                                <span class="navbar-toggler-icon"></span>
+                            </button>
+
+                            {block name='layout-header-logo'}
+                                <div id="logo" itemprop="publisher" itemscope itemtype="http://schema.org/Organization" itemid="">
+                                    <span itemprop="name" class="d-none">{$meta_publisher}</span>
+                                    <meta itemprop="url" content="{$ShopURL}">
+                                    <meta itemprop="logo" content="{$ShopLogoURL}">
+                                    {link class="navbar-brand {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}mb-lg-3{/if} mr-lg-6" href=$ShopURL title=$Einstellungen.global.global_shopname}
                                         {if isset($ShopLogoURL)}
-                                            {image src=$ShopLogoURL alt=$Einstellungen.global.global_shopname fluid=true}
+                                            {image src=$ShopLogoURL
+                                            alt=$Einstellungen.global.global_shopname
+                                            fluid=true
+                                            width=160
+                                            height=53}
                                         {else}
                                             <span class="h1">{$Einstellungen.global.global_shopname}</span>
                                         {/if}
-                                        {/link}
-                                    </div>
-                                {/block}
-                            {/col}
-                            {col id="shop-nav" order=3 order-md=3 order-lg=4 class="col-auto bg-white {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}d-none{/if}" style="z-index: 1;"}
+                                    {/link}
+                                </div>
+                            {/block}
+
+                            {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}
+                                <div class="ml-auto ml-lg-0">
+                                    <i class="fas fa-lock align-center mr-2"></i>{lang key='secureCheckout' section='checkout'}
+                                </div>
+                                <div class="ml-auto d-none d-lg-block">
+                                    {include file='layout/header_top_bar.tpl'}
+                                </div>
+                            {else}
                                 {block name='layout-header-branding-shop-nav'}
-                                    {nav class="nav-right ml-auto order-lg-last align-items-center flex-shrink-0"}
+                                    {nav id="shop-nav" right=true class="nav-right ml-auto order-lg-last align-items-center flex-shrink-0"}
                                         {include file='layout/header_nav_icons.tpl'}
                                     {/nav}
                                 {/block}
-                            {/col}
 
-                            {col md=12 order=1 order-md=5 order-xl=5 class="no-flex-grow {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}d-none{/if}"}
-                                {block name='layout-header-navbar-toggler'}
-                                    {navbartoggle data=["target"=>"#navbarToggler"] class="d-flex d-md-none collapsed"}
-                                {/block}
-                            {/col}
-
-                            {col cols=12 col-md=auto order=5 order-xl=2 class="col-xl {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}d-none{/if}"}
                                 {*categories*}
                                 {block name='layout-header-include-categories-mega'}
-                                    <div id="navbarToggler" class="collapse navbar-collapse" data-parent="#main-nav-wrapper">
-                                        {button id="scrollMenuLeft"  variant="light" class="d-none" aria=["label" => {lang key="scrollMenuLeft" section="aria"}]}
-                                            <i class="fas fa-arrow-left"></i>
-                                        {/button}
-                                        {navbarnav class="megamenu show"}
+                                    <div id="navbarSupportedContent" class="collapse navbar-collapse nav-scrollbar mr-lg-5">
+                                        {navbarnav class="nav-scrollbar-inner mr-auto"}
                                             {include file='snippets/categories_mega.tpl'}
                                         {/navbarnav}
-                                        {button id="scrollMenuRight" variant="light" class="d-none" aria=["label" => {lang key="scrollMenuRight" section="aria"}]}
-                                            <i class="fas fa-arrow-right"></i>
-                                        {/button}
                                     </div>
                                 {/block}
-                            {/col}
-
-                            {col order=6 order-md=2 cols=12 order-lg=3
-                                 class="col-md-auto bg-white{if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG} d-none{/if}"}
-                                {block name='layout-header-include-header-nav-search'}
-                                    {collapse id="nav-search-collapse" tag="div" data=["parent"=>"#main-nav-wrapper"] class="d-md-flex mx-auto float-md-right w-100"}
-                                        {include file='layout/header_nav_search.tpl'}
-                                    {/collapse}
-                                {/block}
-                            {/col}
-
-                            {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}
-                                {col class="d-block text-right text-md-left" order=3}
-                                    <i class="fas fa-lock align-center mr-2"></i>{lang key='secureCheckout' section='checkout'}
-                                {/col}
-                                {col order=4 class="d-none d-md-block"}
-                                    <div class="top-bar text-right">
-                                        {include file='layout/header_top_bar.tpl'}
-                                    </div>
-                                {/col}
                             {/if}
                         {/navbar}
-
                     {/block}
-
                     </div>
                 {/block}
             </header>

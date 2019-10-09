@@ -31,6 +31,15 @@ $gray-700:                          $gray-dark;
 $yiq-text-dark:                     $gray-darker;
 $yiq-text-light:                    $gray-lighter;
 
+$theme-colors				: ();
+$theme-colors: map-merge((
+        'gray'			: $gray,
+        'gray-light'	: $gray-lighter,
+        'gray-medium'	: $gray-medium,
+        'gray-dark'		: $gray-light,
+        'gray-darker'	: $gray-darker
+), $theme-colors);
+
 // spacer
 
 $spacer: 1rem;
@@ -293,9 +302,18 @@ $ribbon-bg-colors: map-merge((
         '9' : $ribbon-bg-9
 ), $ribbon-bg-colors);
 
+/* navs */
+
+$nav-tabs-border-radius					: 0;
+
+$nav-tabs-link-hover-border-color		: 0;
+$nav-tabs-link-active-color				: $link-color;
+$nav-tabs-link-active-bg				: transparent;
+$nav-tabs-link-active-border-color		: $primary;
+
 $navbar-nav-link-padding-x: map-get($spacers, 4);
 $navbar-nav-link-padding-y: map-get($spacers, 4);
-$nav-link-padding-x: 0.8rem;
+$nav-link-padding-x: 1rem;
 
 /* navs */
 
@@ -326,6 +344,22 @@ $modal-md: 700px;
 $progress-bg				: $gray-lighter;
 $progress-box-shadow		: none;
 
+/* options */
+
+$enable-caret				: false;
+$enable-shadows				: true;
+
 /* dropdowns */
+
+$dropdown-box-shadow		: 0 rem(1px) rem(12px) transparentize($black, .84);
+$dropdown-border-width		: 0;
+$dropdown-border-radius		: 0;
+
+$dropdown-link-color		: $gray-darker;
+$dropdown-link-hover-color	: $gray-darker;
+$dropdown-link-hover-bg		: $gray-lighter;
+
+$dropdown-link-active-color	: $dropdown-link-hover-color;
+$dropdown-link-active-bg	: $dropdown-link-hover-bg;
 
 $dropdown-padding-y         : 0;

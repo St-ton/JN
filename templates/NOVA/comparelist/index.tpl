@@ -32,7 +32,6 @@
                                         role="button"
                                         data=["toggle"=> "collapse", "target"=>"#collapse-checkboxes"]
                                     }
-                                        <i class="fa fa-chevron-down"></i>
                                         {lang key='filter'}
                                     {/button}
                                     {button variant="outline-secondary" id="check-all"}
@@ -165,7 +164,7 @@
                                                                 {/collapse}
                                                             </div>
                                                             {button variant='link' data=['toggle' => 'collapse', 'target' => "#read-more-{$oArtikel->kArtikel}"]}
-                                                                {lang key='more'}<i class="fa fa-chevron-down"></i>
+                                                                {lang key='more'}
                                                             {/button}
                                                         {/if}
                                                     {/if}

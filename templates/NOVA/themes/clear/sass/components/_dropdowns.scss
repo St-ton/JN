@@ -13,10 +13,10 @@
 		vertical-align: middle;
 		display: inline-block;
 		line-height: 1;
-		margin-top: -.125rem;
 		transition: transform $transition-base-duration;
 		will-change: transform;
 		border-top: 0;
+		font-size: .75em;
 	}
 	&[aria-expanded='true']::after {
 		transform: rotate(180deg);
@@ -28,4 +28,8 @@
 	flex-wrap: nowrap;
 	&.no-caret { display: block; }
 	&.no-caret::after { display: none; }
+}
+
+.dropdown-header {
+	padding: map-get($spacers, 2) $dropdown-item-padding-x;
 }

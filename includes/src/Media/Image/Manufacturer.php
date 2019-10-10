@@ -73,6 +73,7 @@ class Manufacturer extends AbstractImage
                 if ($result !== null) {
                     return \pathinfo($result)['filename'];
                 }
+                break;
             case 1:
                 $result = $mixed->originalSeo ?? $mixed->seoPath ?? $mixed->cName ?? null;
                 break;

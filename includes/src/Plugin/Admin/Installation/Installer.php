@@ -566,8 +566,7 @@ final class Installer
                     ON tpluginsprachvariable.cName =  tpluginsprachvariablecustomsprache.cSprachvariable
                 WHERE tpluginsprachvariablecustomsprache.kPlugin = :pid',
             ['pid' => $oldPluginID],
-            ReturnType::ARRAY_OF_OBJECTS,
-            true
+            ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($customLangVars as $langVar) {
             $this->db->update(

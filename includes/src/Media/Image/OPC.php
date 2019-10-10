@@ -60,7 +60,7 @@ class OPC extends AbstractImage
      */
     public static function getStoragePath(): string
     {
-        return \PFAD_MEDIAFILES . 'Bilder/';
+        return \STORAGE_OPC;
     }
 
     /**

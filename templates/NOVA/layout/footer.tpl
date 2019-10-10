@@ -4,29 +4,30 @@
  *}
 {block name='layout-footer'}
     {block name='layout-footer-content-all-closingtags'}
-        {block name='layout-footer-content-closingtag'}
-            {opcMountPoint id='opc_content' title='Default Area'}
-            </div>{* /content *}
-        {/block}
 
         {block name='layout-footer-aside'}
             {has_boxes position='left' assign='hasLeftBox'}
 
             {if $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp
-                && !$bExclusive
-                && $hasLeftBox
-                && !empty($boxes.left|strip_tags|trim)
+            && !$bExclusive
+            && $hasLeftBox
+            && !empty($boxes.left|strip_tags|trim)
             }
+                </div>{* /col *}
                 {block name='layout-footer-sidepanel-left'}
                     <aside id="sidepanel_left" class="d-print-none col-12 col-lg-4 col-xl-3 order-lg-0 pr-lg-5 pr-xl-7">
                         {block name='footer-sidepanel-left-content'}{$boxes.left}{/block}
                     </aside>
                 {/block}
+                {block name='layout-footer-content-productlist-row-closingtag'}
+                    </div>{* /row *}
+                {/block}
             {/if}
         {/block}
 
-        {block name='layout-footer-content-row-closingtag'}
-            </div>{* /row *}
+        {block name='layout-footer-content-closingtag'}
+            {opcMountPoint id='opc_content' title='Default Area'}
+            </div>{* /content *}
         {/block}
 
         {block name='layout-footer-content-wrapper-closingtag'}

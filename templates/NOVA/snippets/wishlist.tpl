@@ -13,7 +13,6 @@
         {/block}
 
         {if $step === 'wunschliste versenden' && $Einstellungen.global.global_wunschliste_freunde_aktiv === 'Y'}
-            {container}
             {block name='snippets-wishlist-content-heading-email'}
                 <div class="h2">{lang key='wishlistViaEmail' section='login'}</div>
             {/block}
@@ -53,9 +52,7 @@
                     {/col}
                 {/row}
             {/block}
-            {/container}
         {else}
-            {container}
             {block name='snippets-wishlist-content-heading'}
                 <div class="h2">
                     {if $isCurrenctCustomer === false && isset($CWunschliste->oKunde->cVorname)}
@@ -541,7 +538,6 @@
                 {/block}
                 {/form}
             {/block}
-            {/container}
         {/if}
     {/block}
 

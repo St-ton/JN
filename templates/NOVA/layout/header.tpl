@@ -384,7 +384,7 @@
     {/block}
     {block name='layout-header-content-all-starttags'}
         {block name='layout-header-content-wrapper-starttag'}
-            <div id="content-wrapper" class="container-fluid mt-0 pt-7">
+            <div id="content-wrapper" class="{if !$bExclusive && !empty($boxes.left|strip_tags|trim) && $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}container-fluid container-fluid-xl{/if} mt-0 pt-7">
         {/block}
 
         {block name='layout-header-breadcrumb'}
@@ -393,13 +393,16 @@
             {/container}
         {/block}
 
-        {block name='layout-header-content-row-starttag'}
-            <div class="row">
+        {block name='layout-header-content-starttag'}
+            <div id="content" class="{if !$bExclusive && !empty($boxes.left|strip_tags|trim) && $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}{else}container{/if} pb-6">
         {/block}
 
-        {block name='layout-header-content-starttag'}
-            <div id="content" class="col-12{if !$bExclusive && !empty($boxes.left|strip_tags|trim) && $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp} col-lg-8 col-xl-9 ml-auto{/if} order-lg-1 mb-6">
-        {/block}
+        {if !$bExclusive && !empty($boxes.left|strip_tags|trim) && $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}
+            {block name='layout-header-content-productlist-starttags'}
+                <div class="row">
+                    <div class="col-lg-8 col-xl-9 ml-auto order-lg-1">
+            {/block}
+        {/if}
 
         {block name='layout-header-alert'}
             {include file='snippets/alert_list.tpl'}

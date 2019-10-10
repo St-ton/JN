@@ -79,8 +79,22 @@
     }
   }
 
-  .btn-outline-primary { overflow: hidden; position: relative;
-    &::after { content: ''; position: absolute; z-index: -1; width: 0%; height: 100%; top: 0; left: -100%; transform: skew(50deg); transition: all .6s $transition-base-timing; }
+  .btn-outline-primary {
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+    &::after {
+      content: '';
+      position: absolute;
+      z-index: -1;
+      width: 0%;
+      height: 100%;
+      top: 0;
+      left: -100%;
+      transform: skew(50deg);
+      transition: all .6s $transition-base-timing;
+      background-color: $primary;
+    }
 
     @include hover { border-color: $primary; background-color: transparent;
       &::after { width: 300%; background: $primary; }

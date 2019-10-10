@@ -56,7 +56,7 @@
                                     </p>
                                     <p>
                                         {block name='productdetails-bundle-form-submit'}
-                                            {button name="inWarenkorb" type="submit" value="1"}{lang key='addAllToCart'}{/button}
+                                            {button name="inWarenkorb" type="submit" variant="outline-primary" value="1"}{lang key='addAllToCart'}{/button}
                                         {/block}
                                     </p>
                                 {/if}

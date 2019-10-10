@@ -40,7 +40,7 @@
                                         {input name="a" type="hidden" value="getdl"}
                                         {input name="bestellung" type="hidden" value=$Bestellung->kBestellung}
                                         {input name="dl" type="hidden" value=$oDownload->getDownload()}
-                                        {button size="sm" type="submit"}
+                                        {button size="sm" type="submit" variant="outline-primary"}
                                             <i class="fa fa-download"></i> {lang key='download'}
                                         {/button}
                                     {/form}
@@ -108,7 +108,7 @@
                                                             {/foreach}
                                                             {if $cStatus == $smarty.const.BESTELLUNG_STATUS_BEZAHLT || $cStatus == $smarty.const.BESTELLUNG_STATUS_VERSANDT}
                                                                 {input name="dl" type="hidden" value=$oDownload->getDownload()}
-                                                                {button size="sm" type="submit"}
+                                                                {button size="sm" type="submit" variant="outline-primary"}
                                                                     <i class="fa fa-download"></i> {lang key='download'}
                                                                 {/button}
                                                             {else}

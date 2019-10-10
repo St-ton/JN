@@ -91,7 +91,7 @@
                     {block name='productdetails-pushed-success-product-cell-links'}
                         {row}
                             {col cols=12 md=6}
-                                {link href="{get_static_route id='warenkorb.php'}" class="btn btn-secondary btn-basket btn-block mb-3"}
+                                {link href="{get_static_route id='warenkorb.php'}" class="btn btn-outline-primary btn-basket btn-block mb-3"}
                                     <i class="fas fa-shopping-cart"></i> {lang key='gotoBasket'}
                                 {/link}
                             {/col}

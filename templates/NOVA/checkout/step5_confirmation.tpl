@@ -252,7 +252,7 @@
                                             {/button}
                                         {/col}
                                         {col cols=12 md=6 lg=3 class='order-2 order-md-1'}
-                                            {link href="{get_static_route id='warenkorb.php'}" class="btn btn-secondary btn-block"}
+                                            {link href="{get_static_route id='warenkorb.php'}" class="btn btn-outline-primary btn-block"}
                                                 {lang key='modifyBasket' section='checkout'}
                                             {/link}
                                         {/col}

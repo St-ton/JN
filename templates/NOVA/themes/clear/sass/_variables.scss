@@ -153,7 +153,11 @@ $border-radius-sm:                  $border-radius;
 $border-width:                      1px;
 $border-color:                      $gray-medium;
 
-$card-bg:                           #fff;
+/* cards */
+
+$card-border-color:                 $gray-lighter;
+$card-cap-bg:                       $gray-lighter;
+$card-bg:                           $white;
 
 $searchcloud-font-size-scaling:     30%;
 $navbar-light-color:                $gray-dark;
@@ -224,21 +228,21 @@ $custom-select-valid-indicator:     str-replace(url("data:image/svg+xml,%3Csvg x
 $custom-select-background:          $custom-select-indicator no-repeat right center / auto 100%;
 $custom-select-box-shadow:          none;
 
-
-
 // pagination
 
 $pagination-border-width:           0;
 $pagination-bg:                     transparent;
+$pagination-color:                  $link-color;
 
 $pagination-hover-bg:               transparent;
+$pagination-hover-color:            $pagination-color;
 
 $pagination-active-bg:              transparent;
-$pagination-active-color:           $link-color;
+$pagination-active-color:           $pagination-hover-color;
 
 $pagination-focus-box-shadow:       none;
 
-$pagination-disabled-color:         $sand;
+$pagination-disabled-color:         $gray-lighter;
 $pagination-disabled-bg:            transparent;
 
 // breadcrumbs

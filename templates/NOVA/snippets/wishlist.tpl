@@ -67,7 +67,7 @@
                 {if $isCurrenctCustomer === true}
                     {block name='snippets-wishlist-actions'}
                         {col class="col-auto"}
-                            {dropdown variant="link" class="no-chevron wishlist-options" text="<i class='fas fa-ellipsis-v'></i>" aria=["label"=>"{lang key='rename' section='wishlistOptions'}"]}
+                            {dropdown variant="link" class="wishlist-options" text="<i class='fas fa-ellipsis-v'></i>" aria=["label"=>"{lang key='rename' section='wishlistOptions'}"]}
                                 {dropdownitem class="text-center position-relative"}
                                 {block name='snippets-wishlist-actions-rename'}
                                     {button type="submit" variant="link" class="stretched-link" data=["toggle" => "collapse", "target"=>"#edit-wishlist-name"]}
@@ -408,7 +408,7 @@
                                             {/block}
                                         {/if}
                                         {block name='snippets-wishlist-form-basket-image'}
-                                            {link class="image-box mx-auto clearer d-block" href=$wlPosition->Artikel->cURLFull}
+                                            {link class="image-box mx-auto clear-both d-block" href=$wlPosition->Artikel->cURLFull}
                                                 {image alt=$wlPosition->Artikel->cName src=$wlPosition->Artikel->Bilder[0]->cURLNormal fluid=true}
                                             {/link}
                                         {/block}

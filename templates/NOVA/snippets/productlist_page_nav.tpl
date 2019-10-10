@@ -46,7 +46,7 @@
                 {/block}
             {/if}
             {block name='snippets-productlist-page-nav-current-page-count'}
-                {col cols="auto" class="ml-auto productlist-item-info d-flex {if $Suchergebnisse->getPages()->getMaxPage() > 1}border-right{/if} pr-3"}
+                {col cols="auto" class="ml-md-auto mb-2 mb-md-0 mx-auto mx-md-0 productlist-item-info d-flex {if $Suchergebnisse->getPages()->getMaxPage() > 1}border-md-right{/if} pr-md-3"}
                     {lang key="products"} {$Suchergebnisse->getOffsetStart()} - {$Suchergebnisse->getOffsetEnd()} {lang key='of' section='productOverview'} {$Suchergebnisse->getProductCount()}
                 {/col}
             {/block}

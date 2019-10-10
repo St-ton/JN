@@ -24,7 +24,7 @@
                     {/block}
 
                     {block name='blog-details-author'}
-                        <div class="author-meta text-muted my-4 text-center font-size-sm">
+                        <div class="author-meta text-muted text-center font-size-sm">
                             {if empty($newsItem->getDateValidFrom())}
                                 {assign var=dDate value=$newsItem->getDateCreated()->format('Y-m-d H:i:s')}
                             {else}
@@ -61,7 +61,7 @@
                                 {/block}
                             {/if}
 
-                            {link class="align-middle no-deco" href="#comments" title="{lang key='readComments' section='news'}"}
+                            {link class="no-deco" href="#comments" title="{lang key='readComments' section='news'}"}
                                 /
                                 <span class="fas fa-comments"></span>
                                 <span class="sr-only">
@@ -80,7 +80,7 @@
                         {block name='blog-details-image'}
                             {image src="{$newsItem->getImage(\JTL\Media\Image::SIZE_XL)}"
                             alt="{$newsItem->getTitle()|escape:'quotes'} - {$newsItem->getMetaTitle()|escape:'quotes'}"
-                            center=true fluid=true fluid-grow=true class="mb-5"}
+                            center=true fluid=true fluid-grow=true class="my-5"}
                             <meta itemprop="image" content="{$imageBaseURL}{$newsItem->getPreviewImage()}">
                         {/block}
                     {/if}
@@ -108,7 +108,6 @@
                                             {input type="hidden" name="kommentar_einfuegen" value="1"}
                                             {input type="hidden" name="n" value=$newsItem->getID()}
 
-                                            {formgroup}
                                             {block name='blog-details-form-comment-logged-in'}
                                                 {formgroup
                                                     id="commentText"
@@ -135,7 +134,6 @@
                                                     {/col}
                                                 {/row}
                                             {/block}
-                                            {/formgroup}
                                         {/form}
                                     {/col}
                                 {/row}

@@ -50,9 +50,11 @@ class Category extends AbstractImage
     public static function getImageNames(MediaImageRequest $req): array
     {
         return Shop::Container()->getDB()->queryPrepared(
-            'SELECT cPfad
-                FROM tkategoriepict
-                WHERE kKategorie = :cid',
+            'SELECT pic.cPfad AS path, pic.kKategorie, pic.kKategorie AS id, cat.cName, cat.cSeo AS seoPath
+                FROM tkategorie cat
+                JOIN tkategoriepict pic
+                    ON cat.kKategorie = pic.kKategorie
+                WHERE pic.kKategorie = :cid',
             ['cid' => $req->getID()],
             ReturnType::COLLECTION
         )->map(function ($item) {
@@ -68,16 +70,29 @@ class Category extends AbstractImage
         if (\is_string($mixed)) {
             return \pathinfo($mixed)['filename'];
         }
-        if (!empty($mixed->cPfad)) {
-            return \pathinfo($mixed->cPfad)['filename'];
-        }
         if (isset($mixed->currentImagePath)) {
             return \pathinfo($mixed->currentImagePath)['filename'];
         }
-        $result = \method_exists($mixed, 'getURL') ? $mixed->getURL() : null;
-        $result = $result ?? (empty($mixed->cSeo) ? $mixed->cName : $mixed->cSeo);
+        switch (Image::getSettings()['naming'][Image::TYPE_CATEGORY]) {
+            case 2:
+                $result = $mixed->path ?? $mixed->cBildpfad ?? null;
+                if ($result !== null) {
+                    return \pathinfo($result)['filename'];
+                }
+            case 1:
+                $result = \method_exists($mixed, 'getURL')
+                    ? $mixed->getURL()
+                    : ($mixed->originalSeo ?? $mixed->seoPath ?? $mixed->cName ?? null);
+                break;
+            case 0:
+            default:
+                $result = \method_exists($mixed, 'getID')
+                    ? $mixed->getID()
+                    : ($mixed->id ?? $mixed->kKategorie ?? null);
+                break;
+        }
 
-        return empty($result) ? 'image' : Image::getCleanFilename($result);
+        return empty($result) ? 'image' : Image::getCleanFilename((string)$result);
     }
 
     /**
@@ -108,7 +123,7 @@ class Category extends AbstractImage
     public static function getAllImages(int $offset = null, int $limit = null): Generator
     {
         $images = Shop::Container()->getDB()->query(
-            'SELECT pic.cPfad AS path, pic.kKategorie, pic.kKategorie AS id, cat.cName, cat.cSeo
+            'SELECT pic.cPfad AS path, pic.kKategorie, pic.kKategorie AS id, cat.cName, cat.cSeo AS seoPath
                 FROM tkategorie cat
                 JOIN tkategoriepict pic
                     ON cat.kKategorie = pic.kKategorie' . self::getLimitStatement($offset, $limit),

@@ -49,7 +49,7 @@ class Manufacturer extends AbstractImage
     public static function getImageNames(MediaImageRequest $req): array
     {
         return Shop::Container()->getDB()->queryPrepared(
-            'SELECT kHersteller, cName, cSeo, cSeo AS originalSeo, cBildpfad AS path
+            'SELECT kHersteller, cName, cSeo AS seoPath, cSeo AS originalSeo, cBildpfad AS path
                 FROM thersteller
                 WHERE kHersteller = :mid',
             ['mid' => $req->getID()],
@@ -67,9 +67,22 @@ class Manufacturer extends AbstractImage
      */
     public static function getCustomName($mixed): string
     {
-        $result = $mixed->originalSeo ?? $mixed->cSeo ?? $mixed->cName;
+        switch (Image::getSettings()['naming'][Image::TYPE_MANUFACTURER]) {
+            case 2:
+                $result = $mixed->path ?? $mixed->cBildpfad ?? null;
+                if ($result !== null) {
+                    return \pathinfo($result)['filename'];
+                }
+            case 1:
+                $result = $mixed->originalSeo ?? $mixed->seoPath ?? $mixed->cName ?? null;
+                break;
+            case 0:
+            default:
+                $result = $mixed->id ?? $mixed->kHersteller ?? null;
+                break;
+        }
 
-        return empty($result) ? 'image' : Image::getCleanFilename($result);
+        return empty($result) ? 'image' : Image::getCleanFilename((string)$result);
     }
 
     /**
@@ -100,7 +113,7 @@ class Manufacturer extends AbstractImage
     public static function getAllImages(int $offset = null, int $limit = null): Generator
     {
         $images = Shop::Container()->getDB()->query(
-            'SELECT kHersteller AS id, cName, cSeo, cBildpfad AS path
+            'SELECT kHersteller AS id, cName, cSeo AS seoPath, cBildpfad AS path
                 FROM thersteller
                 WHERE cBildpfad IS NOT NULL AND cBildpfad != \'\'' . self::getLimitStatement($offset, $limit),
             ReturnType::QUERYSINGLE

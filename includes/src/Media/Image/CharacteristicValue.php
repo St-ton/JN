@@ -49,11 +49,14 @@ class CharacteristicValue extends AbstractImage
     public static function getImageNames(MediaImageRequest $req): array
     {
         return Shop::Container()->getDB()->queryPrepared(
-            'SELECT a.kMerkmalWert, a.cBildpfad AS path, t.cWert
+            'SELECT a.kMerkmalWert, a.kMerkmalWert AS id, a.cBildpfad AS path, t.cWert AS val, t.cSeo AS seoPath
                 FROM tmerkmalwert AS a
-                LEFT JOIN tmerkmalwertsprache t
+                JOIN tmerkmalwertsprache t
                     ON a.kMerkmalWert = t.kMerkmalWert
-                WHERE a.kMerkmalWert = :cid',
+                JOIN tsprache
+                    ON tsprache.kSprache = t.kSprache
+                WHERE a.kMerkmalWert = :cid
+                    AND tsprache.cShopStandard = \'Y\'',
             ['cid' => $req->getID()],
             ReturnType::COLLECTION
         )->each(function ($item, $key) use ($req) {
@@ -69,15 +72,25 @@ class CharacteristicValue extends AbstractImage
      */
     public static function getCustomName($mixed): string
     {
-        if (isset($mixed->path)) {
-            return \pathinfo($mixed->path)['filename'];
+        switch (Image::getSettings()['naming'][Image::TYPE_CHARACTERISTIC_VALUE]) {
+            case 2:
+                $result = $mixed->path ?? $mixed->cBildpfad ?? $mixed->currentImagePath ?? null;
+                if ($result !== null) {
+                    return \pathinfo($result)['filename'];
+                }
+            case 1:
+                $result = $mixed->seoPath ?? $mixed->val ?? null;
+                if ($result === null && !empty($mixed->currentImagePath)) {
+                    return \pathinfo($mixed->currentImagePath)['filename'];
+                }
+                break;
+            case 0:
+            default:
+                $result = $mixed->id ?? $mixed->kMerkmalWert ?? null;
+                break;
         }
-        if (isset($mixed->cBildpfad)) {
-            return \pathinfo($mixed->cBildpfad)['filename'];
-        }
-        $result = empty($mixed->cSeo) ? $mixed->cWert : $mixed->cSeo;
 
-        return empty($result) ? 'image' : Image::getCleanFilename($result);
+        return empty($result) ? 'image' : Image::getCleanFilename((string)$result);
     }
 
     /**
@@ -108,12 +121,15 @@ class CharacteristicValue extends AbstractImage
     public static function getAllImages(int $offset = null, int $limit = null): Generator
     {
         $images = Shop::Container()->getDB()->query(
-            'SELECT A.cBildpfad AS path, A.kMerkmal, A.kMerkmal AS id, B.cWert, B.cSeo
+            'SELECT A.cBildpfad AS path, A.kMerkmalwert, A.kMerkmalwert AS id, B.cWert AS val, B.cSeo AS seoPath
                 FROM tmerkmalwert A
                 JOIN tmerkmalwertsprache B
                     ON A.kMerkmalWert = B.kMerkmalWert
+                JOIN tsprache
+                    ON tsprache.kSprache = B.kSprache
                 WHERE cBildpfad IS NOT NULL
                     AND cBildpfad != \'\'
+                    AND tsprache.cShopStandard = \'Y\'
                 GROUP BY path, id' . self::getLimitStatement($offset, $limit),
             ReturnType::QUERYSINGLE
         );

@@ -7,7 +7,7 @@
         {row}
             {block name='productdetails-image-button'}
                 {col cols=12}
-                    <button id="image_fullscreen_close" type="button" class="btn btn-link float-right font-size-2x" aria-label="close">
+                    <button id="image_fullscreen_close" type="button" class="btn btn-link float-right font-size-2.5x" aria-label="close">
                         <span aria-hidden="true"><i class="fa fa-times"></i></span>
                     </button>
                 {/col}

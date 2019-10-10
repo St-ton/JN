@@ -33,7 +33,7 @@
 .slick-dots { flex: 0 0 100%; display: flex; justify-content: center; align-items: center; font-size: 0; line-height: 0; margin: $spacer 0; padding: 0; height: $spacer; width: 100%;
 	li { margin: 0 map-get($spacers, 1);
 		button { width: $spacer * 3/4; height: $spacer * 3/4; padding: 0; border-radius: 50%; border: rem(2px) solid $gray-medium; background-color: $gray-medium; transition: $transition-base; }
-		&.slick-active button { background-color: map-get($grays, darker); border-color: map-get($grays, darker); }
+		&.slick-active button { background-color: $gray-darker; border-color: $gray-darker; }
 	}
 }
 

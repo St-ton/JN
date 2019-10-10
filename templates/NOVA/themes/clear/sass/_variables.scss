@@ -189,19 +189,21 @@ $url-1:                             url(../base/images/loading-sm.gif);
 
 // tooltips
 
-$tooltip-font-size:                 $font-size-base/1.15;
-$tooltip-color:                     $gray-dark;
-$tooltip-bg:                        #fff;
+$tooltip-font-size:                 $font-size-sm;
+$tooltip-color:                     $gray-darker;
+$tooltip-border-color:              $gray-darker;
+$tooltip-bg:                        $white;
 $tooltip-border-radius:             $border-radius;
-$tooltip-arrow-color:               $gray-dark;
-$tooltip-arrow-inner-color:         #fff;
+$tooltip-arrow-color:               $gray-darker;
+$tooltip-arrow-inner-color:         $white;
+$tooltip-border-width:              $border-width;
 
 $tooltip-arrow-inner-width:         .8rem;
 $tooltip-arrow-inner-height:        .4rem;
 $tooltip-arrow-width:               .88rem;
 $tooltip-arrow-height:              .45rem;
 
-$tooltip-margin:                    .25rem;
+$tooltip-margin:                    .5rem;
 
 // input
 

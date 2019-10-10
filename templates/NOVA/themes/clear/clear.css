@@ -17259,7 +17259,7 @@ ul.partlist-items {
   font-size: 13px;
 }
 
-#main-wrapper.fluid .navbar, #main-wrapper.fluid #footer {
+#main-wrapper.fluid .navbar {
   margin-bottom: 0;
 }
 #main-wrapper.fluid #content-wrapper > .container > .container-block {
@@ -17687,70 +17687,6 @@ a[data-toggle=collapse][aria-expanded=true] i.fa-chevron-down,
 
 .form-group.has-error .form-control {
   border: 1px solid #B90000;
-}
-
-footer {
-  background: #f5f7fa;
-  color: #707070;
-  padding-top: 1rem;
-}
-footer .card .card-title {
-  color: #525252;
-}
-footer .card .card-body {
-  padding: 0;
-}
-footer .nav-link {
-  padding: 0.2rem 0;
-}
-footer .footer-additional {
-  border-top: 0;
-  padding-top: 20px;
-  margin-top: 0;
-}
-footer .footer-additional a {
-  text-decoration: none;
-}
-footer .footer-additional li {
-  margin-right: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-footer #copyright {
-  background-color: #525252;
-  color: #f5f7fa;
-}
-footer .btn-social {
-  font-size: 24px;
-  line-height: 33px;
-  width: 33px;
-  margin-right: 6px;
-  border-radius: 0.125rem;
-  border: 1px solid #525252;
-  padding: 0;
-  margin-bottom: 1rem;
-}
-footer .btn-social:hover {
-  border-color: #F8BF00;
-  color: #F8BF00;
-}
-footer .btn-social:active, footer .btn-social:focus {
-  color: #f8f8f8;
-  background: #F8BF00;
-  border-color: #F8BF00;
-}
-footer .btn-social i {
-  vertical-align: baseline;
-}
-footer hr {
-  border-top: 1px solid #ebebeb;
-}
-footer .footer-logo {
-  width: auto;
-  height: 18px;
-  vertical-align: bottom;
-}
-footer .list-group-item {
-  background: transparent;
 }
 
 #system-credits a {
@@ -19610,6 +19546,44 @@ header .nav-right .dropdown-menu {
   header .submenu-headline-toplevel + .dropdown-menu > .nav {
     flex-direction: column;
   }
+}
+
+/* footer */
+#footer {
+  background-color: #f5f7fa;
+  margin-top: auto;
+  padding: 1rem 0 0;
+}
+#footer a {
+  text-decoration: none;
+}
+#footer li {
+  margin-bottom: 0.5rem;
+}
+#footer .footer-additional-wrapper li {
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+#footer .card .card-title {
+  color: #525252;
+}
+#footer .card .card-body {
+  padding: 0;
+}
+#footer .nav-link {
+  padding: 0.2rem 0;
+}
+#footer #copyright {
+  background-color: #525252;
+  color: #f5f7fa;
+}
+#footer .footer-logo {
+  width: auto;
+  height: 18px;
+  vertical-align: bottom;
+}
+#footer .list-group-item {
+  background: transparent;
 }
 
 /*# sourceMappingURL=clear.css.map */

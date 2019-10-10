@@ -725,7 +725,7 @@ ul.partlist-items {
 .attr-group { font-size: 13px; }
 
 #main-wrapper.fluid {
-  .navbar, #footer {
+  .navbar {
     margin-bottom: 0;
   }
 
@@ -1195,75 +1195,6 @@ a[data-toggle="collapse"][aria-expanded=true],
   }
 }
 
-//footer
-footer {
-  background: $gray-lighter;
-  color: $gray;
-  padding-top: $spacer;
-  .card {
-    .card-title {
-      color: $gray-dark;
-    }
-    .card-body {
-      padding: 0;
-    }
-  }
-
-  .nav-link {
-    padding: $nav-link-padding-y*0.4 0;
-  }
-
-  .footer-additional {
-    border-top: 0;
-    padding-top: 20px;
-    margin-top: 0;
-    a {
-      text-decoration: none;
-    }
-    li {
-      margin-right: map-get($spacers, 2);
-      margin-bottom: map-get($spacers, 2);
-    }
-  }
-  #copyright {
-    background-color: $gray-dark;
-    color: $gray-lighter;
-  }
-  .btn-social {
-    font-size: 24px;
-    line-height: 33px;
-    width: 33px;
-    margin-right: 6px;
-    border-radius: $border-radius;
-    border: 1px solid $gray-dark;
-    padding: 0;
-    margin-bottom: map-get($spacers, 3);
-    &:hover {
-      border-color: $primary;
-      color: $primary;
-    }
-    &:active,
-    &:focus{
-      color: $cool-white;
-      background: $primary;
-      border-color: $primary;
-    }
-    i {
-      vertical-align: baseline;
-    }
-  }
-  hr {
-    border-top: 1px solid $sand;
-  }
-  .footer-logo {
-    width: auto;
-    height: 18px;
-    vertical-align: bottom;
-  }
-  .list-group-item {
-    background: transparent;
-  }
-}
 #system-credits a {
   color: $gray-lighter;
 }

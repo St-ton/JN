@@ -3,19 +3,16 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='blog-overview'}
-    {container}
-        {block name='blog-overview-heading'}
-            {opcMountPoint id='opc_before_heading'}
-            <h1>{lang key='news' section='news'}</h1>
-        {/block}
+    {block name='blog-overview-heading'}
+        {opcMountPoint id='opc_before_heading'}
+        <h1>{lang key='news' section='news'}</h1>
+    {/block}
 
-        {block name='blog-overview-include-extension'}
-            {include file='snippets/extension.tpl'}
-        {/block}
-    {/container}
+    {block name='blog-overview-include-extension'}
+        {include file='snippets/extension.tpl'}
+    {/block}
     {opcMountPoint id='opc_before_filter'}
     {block name='filter'}
-        {container}
         {row class='align-items-end mt-6 mb-2'}
             {col cols=12 class='col-xl'}
                 {get_static_route id='news.php' assign=routeURL}
@@ -92,56 +89,51 @@
         {block name='blog-overview-hr-top'}
             <hr class="mt-n1 mb-5">
         {/block}
-        {/container}
     {/block}
     {block name='blog-overview-category'}
         {if $noarchiv === 1}
             {block name='blog-overview-alert-no-archive'}
-                {container}
                 {alert variant="info"}{lang key='noNewsArchiv' section='news'}.{/alert}
-                {/container}
             {/block}
         {elseif !empty($newsItems)}
-            {container}
-                <div id="newsContent" itemprop="mainEntity" itemscope itemtype="https://schema.org/Blog">
-                    {if $oNewsCat->getID() > 0}
-                        {block name='blog-overview-subheading'}
-                            {opcMountPoint id='opc_before_news_category_heading'}
-                            <h2>{$oNewsCat->getName()}</h2>
-                        {/block}
-                        {block name='blog-overview-preview-image'}
-                            {row}
-                                {if !empty($oNewsCat->getPreviewImage())}
-                                    {col cols=12 sm=8}{$oNewsCat->getDescription()}{/col}
-                                    {col cols=12 sm=4}{image src=$oNewsCat->getImage(\JTL\Media\Image::SIZE_MD) center=true fluid=true}{/col}
-                                {else}
-                                    {col sm=12}{$oNewsCat->getDescription()}{/col}
-                                {/if}
-                            {/row}
-                        <hr>
-                        {/block}
-                        {block name='blog-overview-include-pagination-bottom'}
-                            {include file='snippets/pagination.tpl' oPagination=$oPagination cThisUrl='news.php' parts=['label']}
-                        {/block}
-                    {/if}
-                    {opcMountPoint id='opc_before_news_list'}
-                    {row class="mt-4"}
-                        {block name='blog-overview-previews'}
-                            {foreach $newsItems as $newsItem}
-                                {col cols=12 md=6 lg=4}
-                                    {block name='blog-overview-include-preview'}
-                                        {include file='blog/preview.tpl'}
-                                    {/block}
-                                {/col}
-                            {/foreach}
-                        {/block}
-                    {/row}
-                </div>
-                {opcMountPoint id='opc_after_news_list'}
-                {block name='blog-overview-include-pagination-bottom'}
-                    {include file='snippets/pagination.tpl' oPagination=$oPagination cThisUrl='news.php' parts=['pagi']}
-                {/block}
-            {/container}
+            <div id="newsContent" itemprop="mainEntity" itemscope itemtype="https://schema.org/Blog">
+                {if $oNewsCat->getID() > 0}
+                    {block name='blog-overview-subheading'}
+                        {opcMountPoint id='opc_before_news_category_heading'}
+                        <h2>{$oNewsCat->getName()}</h2>
+                    {/block}
+                    {block name='blog-overview-preview-image'}
+                        {row}
+                            {if !empty($oNewsCat->getPreviewImage())}
+                                {col cols=12 sm=8}{$oNewsCat->getDescription()}{/col}
+                                {col cols=12 sm=4}{image src=$oNewsCat->getImage(\JTL\Media\Image::SIZE_MD) center=true fluid=true}{/col}
+                            {else}
+                                {col sm=12}{$oNewsCat->getDescription()}{/col}
+                            {/if}
+                        {/row}
+                    <hr>
+                    {/block}
+                    {block name='blog-overview-include-pagination-bottom'}
+                        {include file='snippets/pagination.tpl' oPagination=$oPagination cThisUrl='news.php' parts=['label']}
+                    {/block}
+                {/if}
+                {opcMountPoint id='opc_before_news_list'}
+                {row class="mt-4"}
+                    {block name='blog-overview-previews'}
+                        {foreach $newsItems as $newsItem}
+                            {col cols=12 md=6 lg=4 class='mb-5'}
+                                {block name='blog-overview-include-preview'}
+                                    {include file='blog/preview.tpl'}
+                                {/block}
+                            {/col}
+                        {/foreach}
+                    {/block}
+                {/row}
+            </div>
+            {opcMountPoint id='opc_after_news_list'}
+            {block name='blog-overview-include-pagination-bottom'}
+                {include file='snippets/pagination.tpl' oPagination=$oPagination cThisUrl='news.php' parts=['pagi']}
+            {/block}
         {/if}
     {/block}
 {/block}

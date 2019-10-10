@@ -15710,6 +15710,31 @@ input[type=radio]:checked + label, input[type=checkbox]:checked + label {
     margin-top: 2rem;
   }
 }
+.newsbox {
+  display: flex;
+  flex-direction: column;
+}
+
+.newsbox-image {
+  height: 15.625rem;
+}
+.newsbox-image img {
+  object-fit: cover;
+  height: 100%;
+  width: 100%;
+}
+
+.newsbox-body {
+  flex: 1 1 auto;
+  padding: 1rem 0;
+}
+
+.newsbox-headline {
+  font-weight: 700;
+  margin: 1rem 0;
+  display: block;
+}
+
 .productbox {
   position: relative;
 }
@@ -17717,21 +17742,6 @@ footer .list-group-item {
 
 a.no-deco {
   text-decoration: none;
-}
-
-/* NEWS */
-#frm_filter fieldset {
-  flex: 1 0 auto;
-  text-align: right;
-}
-
-.nws-preview {
-  height: 200px;
-}
-.nws-preview img {
-  object-fit: cover;
-  width: 100%;
-  height: 100%;
 }
 
 #comments .pagination-wrapper > .text-muted {

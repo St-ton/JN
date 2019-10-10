@@ -2009,3 +2009,12 @@ main section {
     padding: (map-get($spacers, 1) * 16) 0;
   }
 }
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

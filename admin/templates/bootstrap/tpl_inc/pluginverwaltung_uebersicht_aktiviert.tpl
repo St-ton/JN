@@ -137,7 +137,7 @@
                             </div>
                         </div>
                         <div class="ml-auto col-sm-6 col-xl-auto">
-                            <button name="deinstallieren" type="submit" class="btn btn-danger btn-block" id="uninstall-plugin-btn">
+                            <button name="deinstallieren" type="submit" class="btn btn-danger btn-block uninstall-plugin-btn">
                                 <i class="fas fa-trash-alt"></i> {__('pluginBtnDeInstall')}
                             </button>
                         </div>
@@ -150,76 +150,72 @@
                 </div>
             </div>
         </form>
-
-
-        <div id="uninstall-modal" class="modal fade" role="dialog">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">
-                            <i class="fal fa-times"></i>
-                        </button>
-                        <h2 class="modal-title">{__('deletePluginData')}</h2>
-                    </div>
-                    <div class="modal-body">
-
-                    </div>
-                    <div class="modal-footer">
-                        <div class="row">
-                            <div class="ml-auto col-sm-6 col-xl-auto submit">
-                                <button type="button" class="btn btn-danger btn-bock" name="yes" data-dismiss="modal">
-                                    <i class="fa fa-close"></i>&nbsp;{__('deletePluginDataYes')}
-                                </button>
-                            </div> <div class="col-sm-6 col-xl-auto submit">
-                                <button type="button" class="btn btn-outline-primary" name="no" data-dismiss="modal">
-                                    <i class="fa fa-close"></i>&nbsp;{__('deletePluginDataNo')}
-                                </button>
-                            </div>
-                            <div class="col-sm-6 col-xl-auto submit">
-                                <button type="button" class="btn btn-primary" name="cancel" data-dismiss="modal">
-                                    <i class="fal fa-check text-success"></i>&nbsp;{__('cancel')}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <script>
-            {literal}
-            $(document).ready(function() {
-                var token = $('input[name="jtl_token"]').val(),
-                    modal = $('#uninstall-modal');
-
-                $('#uninstall-plugin-btn').on('click', function(event) {
-                    modal.modal('show');
-                    return false;
-                });
-                modal.on('hide.bs.modal', function(event) {
-                    if (document.activeElement.name === 'yes' || document.activeElement.name === 'no') {
-                        var data = $('#enabled-plugins').serialize();
-                        data += '&deinstallieren=1&delete-data=';
-                        if (document.activeElement.name === 'yes') {
-                            data += '1';
-                        } else {
-                            data += '0';
-                        }
-                        $.ajax({
-                            type:    'POST',
-                            url:     'pluginverwaltung.php',
-                            data:    data,
-                            success: function () {
-                                location.reload();
-                            }
-                        });
-                    }
-                });
-            });
-            {/literal}
-        </script>
-
     {else}
         <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
     {/if}
 </div>
+<div id="uninstall-modal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <i class="fal fa-times"></i>
+                </button>
+                <h2 class="modal-title">{__('deletePluginData')}</h2>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto submit">
+                        <button type="button" class="btn btn-danger btn-bock" name="yes" data-dismiss="modal">
+                            <i class="fa fa-close"></i>&nbsp;{__('deletePluginDataYes')}
+                        </button>
+                    </div> <div class="col-sm-6 col-xl-auto submit">
+                        <button type="button" class="btn btn-outline-primary" name="no" data-dismiss="modal">
+                            <i class="fa fa-close"></i>&nbsp;{__('deletePluginDataNo')}
+                        </button>
+                    </div>
+                    <div class="col-sm-6 col-xl-auto submit">
+                        <button type="button" class="btn btn-primary" name="cancel" data-dismiss="modal">
+                            <i class="fal fa-check text-success"></i>&nbsp;{__('cancel')}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    {literal}
+    $(document).ready(function() {
+        var token = $('input[name="jtl_token"]').val(),
+            modal = $('#uninstall-modal');
+
+        $('.uninstall-plugin-btn').on('click', function(event) {
+            modal.modal('show');
+            return false;
+        });
+        modal.on('hide.bs.modal', function(event) {
+            if (document.activeElement.name === 'yes' || document.activeElement.name === 'no') {
+                var data = $('#enabled-plugins').serialize();
+                data += '&deinstallieren=1&delete-data=';
+                if (document.activeElement.name === 'yes') {
+                    data += '1';
+                } else {
+                    data += '0';
+                }
+                $.ajax({
+                    type:    'POST',
+                    url:     'pluginverwaltung.php',
+                    data:    data,
+                    success: function () {
+                        location.reload();
+                    }
+                });
+            }
+        });
+    });
+    {/literal}
+</script>

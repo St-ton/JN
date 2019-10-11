@@ -124,9 +124,9 @@
                             </div>
                         </div>
                         <div class="ml-auto col-sm-6 col-xl-auto">
-                            <button name="deinstallieren" type="submit" class="btn btn-danger btn-block">
-                                <i class="fas fa-trash-alt"></i> {__('pluginBtnDeInstall')
-                                }</button>
+                            <button name="deinstallieren" type="submit" class="btn btn-danger btn-block uninstall-plugin-btn">
+                                <i class="fas fa-trash-alt"></i> {__('pluginBtnDeInstall')}
+                            </button>
                         </div>
                         <div class="col-sm-6 col-xl-auto">
                             <button name="aktivieren" type="submit" class="btn btn-primary btn-block">

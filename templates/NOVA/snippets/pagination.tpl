@@ -102,7 +102,7 @@
 
                 {if $showFilter === true && (in_array('count', $parts) || in_array('sort', $parts))}
                     {block name='snippets-pagination-form'}
-                        {col cols="auto" class="ml-auto pl-0"}
+                        {col cols="auto" class="ml-auto pl-0 mt-3 mt-sm-0"}
                             {form action="{$cThisUrl}{$cAnchor}" method="get" class="form-inline float-right"}
                                 {block name='snippets-pagination-form-content'}
                                     {foreach $cParam_arr as $cParamName => $cParamValue}

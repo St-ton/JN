@@ -400,7 +400,7 @@
                                                     name="remove" value=$wlPosition->kWunschlistePos
                                                     aria=["label"=>"{lang key='wishlistremoveItem' section='login'}"]
                                                     title="{lang key='wishlistremoveItem' section='login'}"
-                                                    class="wishlist-pos-delete float-right text-decoration-none mb-2 fs-large"
+                                                    class="wishlist-pos-delete float-right text-decoration-none mb-2 font-size-lg"
                                                     data=["toggle"=>"tooltip"]
                                                 }
                                                     <i class="fas fa-times"></i>

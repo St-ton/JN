@@ -766,7 +766,7 @@
 
         fixStickyElements: function() {
             var sticky    = '.cart-summary';
-            var navHeight = $('#main-nav-wrapper').outerHeight(true);
+            var navHeight = $('#evo-nav-wrapper').outerHeight(true);
             navHeight = navHeight === undefined ? 0 : parseInt(navHeight + 40);
             $(sticky).css('top', navHeight);
         },

@@ -12,7 +12,7 @@
             {col cols=12 lg="{if ($Warenkorb->PositionenArr|@count > 0)}7{else}12{/if}"}
                 {block name='basket-index-heading'}
                     {opcMountPoint id='opc_before_heading'}
-                    <h1 class="h2 b-5">{lang key='basket'} ({count($smarty.session.Warenkorb->PositionenArr)} {lang key='products'})</h1>
+                    <h1 class="h2 mb-5">{lang key='basket'} ({count($smarty.session.Warenkorb->PositionenArr)} {lang key='products'})</h1>
                 {/block}
                 {block name='basket-index-include-extension'}
                     {include file='snippets/extension.tpl'}
@@ -126,7 +126,7 @@
             {if ($Warenkorb->PositionenArr|@count > 0)}
                 {col class='ml-auto' cols=12 lg=4}
                     <div class="sticky-top cart-summary">
-                        <div class="h2 mb-4">{lang key="orderOverview" section="account data"}</div>
+                        <div class="h2 mb-5">{lang key="orderOverview" section="account data"}</div>
                         {if $Einstellungen.kaufabwicklung.warenkorb_kupon_anzeigen === 'Y' && $KuponMoeglich == 1}
                             {block name='basket-index-coupon'}
                                 {card class='card-gray' no-body=true}

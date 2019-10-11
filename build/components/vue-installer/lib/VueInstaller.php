@@ -273,6 +273,8 @@ define('DB_PASS','" . $credentials['pass'] . "');
 
 define('BLOWFISH_KEY', '" . $blowfishKey . "');
 
+define('EVO_COMPATIBILITY', false);
+
 //enables printing of warnings/infos/errors for the shop frontend
 define('SHOP_LOG_LEVEL', E_ALL);
 //enables printing of warnings/infos/errors for the dbeS sync

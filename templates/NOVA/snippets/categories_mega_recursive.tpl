@@ -16,7 +16,7 @@
                         </a>
                     </div>
                     <div class="col-auto">
-                        <a href="#">
+                        <a href="{$mainCategory->getURL()}">
                             <span class="far fa-arrow-alt-circle-right ml-auto"></span>
                         </a>
                     </div>

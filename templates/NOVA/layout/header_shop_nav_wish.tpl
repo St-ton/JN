@@ -8,24 +8,22 @@
         {if isset($smarty.session.Wunschliste->CWunschlistePos_arr)}
             {$wlCount = $smarty.session.Wunschliste->CWunschlistePos_arr|count}
         {/if}
-        {navitem tag="li"
-            aria=['expanded' => 'false']
-            data=['toggle' => 'collapse', 'target' => '#nav-wishlist-collapse']
-            id='shop-nav-wish'
-            class="d-none d-md-flex{if $nSeitenTyp === $smarty.const.PAGE_WUNSCHLISTE} active{/if}"
-        }
-            <i class="fas fa-heart position-relative">
-                <span id="badge-wl-count" class="fa-sup {if $wlCount === 0} d-none{/if}" title="{$wlCount}">
-                    {$wlCount}
-                </span>
-            </i>
-        {/navitem}
-        {collapse id="nav-wishlist-collapse" tag="div"  data=["parent"=>"#main-nav-wrapper"] class="mt-md-2 py-0 w-100"}
-            <div id="wishlist-dropdown-container">
-                {block name='layout-header-shop-nav-wish-include-wishlist-dropdown'}
-                    {include file='snippets/wishlist_dropdown.tpl'}
-                {/block}
+        <li id='shop-nav-wish'
+            class="nav-item dropdown d-none d-md-flex{if $nSeitenTyp === $smarty.const.PAGE_WUNSCHLISTE} active{/if}">
+            {link class='nav-link' aria=['expanded' => 'false'] data=['toggle' => 'dropdown']}
+                <i class="fas fa-heart position-relative">
+                    <span id="badge-wl-count" class="fa-sup {if $wlCount === 0} d-none{/if}" title="{$wlCount}">
+                        {$wlCount}
+                    </span>
+                </i>
+            {/link}
+            <div id="nav-wishlist-collapse" class="dropdown-menu dropdown-menu-right lg-min-w-lg">
+                <div id="wishlist-dropdown-container">
+                    {block name='layout-header-shop-nav-wish-include-wishlist-dropdown'}
+                        {include file='snippets/wishlist_dropdown.tpl'}
+                    {/block}
+                </div>
             </div>
-        {/collapse}
+        </li>
     {/if}
 {/block}

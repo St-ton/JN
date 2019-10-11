@@ -42,11 +42,11 @@
                                             ]
                                             aria=["label"=>"{lang section='login' key='wishlistremoveItem'}"]
                                         }
-                                            <span class="fa fa-trash"></span>
+                                            <span class="fas fa-times"></span>
                                         {/link}
                                         {link href=$oWunschlistePos->Artikel->cURLFull title=$oWunschlistePos->cArtikelName|escape:'quotes'}
                                             {if $oBox->getShowImages()}
-                                                {image alt=$oWunschlistePos->cArtikelName|escape:'quotes' src=$oWunschlistePos->Artikel->Bilder[0]->cURLMini class="img-xs"}
+                                                {image alt=$oWunschlistePos->cArtikelName|escape:'quotes' src=$oWunschlistePos->Artikel->Bilder[0]->cURLMini class="img-xs mr-2"}
                                             {/if}
                                             {$oWunschlistePos->fAnzahl|replace_delim} &times; {$oWunschlistePos->cArtikelName|truncate:25:"..."}
                                         {/link}

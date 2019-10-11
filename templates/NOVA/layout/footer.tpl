@@ -18,7 +18,7 @@
                 && !empty($boxes.left|strip_tags|trim)
             }
                 {block name='layout-footer-sidepanel-left'}
-                    <aside id="sidepanel_left" class="d-print-none col-12 col-lg-3 order-lg-0 mb-6">
+                    <aside id="sidepanel_left" class="d-print-none col-12 col-lg-4 col-xl-3 order-lg-0 pr-lg-5 pr-xl-7">
                         {block name='footer-sidepanel-left-content'}{$boxes.left}{/block}
                     </aside>
                 {/block}
@@ -175,48 +175,6 @@
                             {/row}{* /row footer-additional *}
                         {/if}
                     {/block}{* /footer-additional *}
-                    {row}
-                        {block name='layout-footer-language'}
-                            {if isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
-                                {dropdown
-                                    id="language-dropdown-footer"
-                                    variant="link btn-sm"
-                                    class="d-block d-md-none col-6 text-center language-dropdown"
-                                    text="<i class='fas fa-language'></i> {lang key='language'}"}
-                                    {foreach $smarty.session.Sprachen as $oSprache}
-                                        {dropdownitem href="{$oSprache->url}" rel="nofollow" }
-                                            {$oSprache->displayLanguage}
-                                        {/dropdownitem}
-                                    {/foreach}
-                                {/dropdown}
-                            {/if}
-                        {/block}
-                        {block name='layout-footer-currency'}
-                            {if isset($smarty.session.Waehrungen) && $smarty.session.Waehrungen|@count > 1}
-                                {dropdown
-                                    id="currency-dropdown-footer"
-                                    variant="link btn-sm"
-                                    class="d-block d-md-none col-6 text-center currency-dropdown"
-                                    text="
-                                        {if $smarty.session.Waehrung->getCode() === 'EUR'}
-                                            <i class='fas fa-euro-sign' title='{$smarty.session.Waehrung->getName()}'></i> {lang key='currency'}
-                                        {elseif $smarty.session.Waehrung->getCode() === 'USD'}
-                                            <i class='fas fa-dollar-sign' title='{$smarty.session.Waehrung->getName()}'></i> {lang key='currency'}
-                                        {elseif $smarty.session.Waehrung->getCode() === 'GBP'}
-                                            <i class='fas fa-pound-sign'' title='{$smarty.session.Waehrung->getName()}''></i> {lang key='currency'}
-                                        {else}
-                                            {$smarty.session.Waehrung->getName()}
-                                        {/if}"
-                                }
-                                    {foreach $smarty.session.Waehrungen as $oWaehrung}
-                                        {dropdownitem href=$oWaehrung->getURLFull() rel="nofollow"}
-                                            {$oWaehrung->getName()}
-                                        {/dropdownitem}
-                                    {/foreach}
-                                {/dropdown}
-                            {/if}
-                        {/block}
-                    {/row}
                     <div class="footnote-vat">
                         {if $NettoPreise == 1}
                             {lang key='footnoteExclusiveVat' assign='footnoteVat'}
@@ -235,7 +193,7 @@
                 {/container}
                 {block name='layout-footer-copyright'}
                     <div id="copyright" class="mt-3">
-                        {container id="copyright" fluid=true class='py-3 font-size-sm text-center"'}
+                        {container fluid=true class='py-3 font-size-sm text-center"'}
                             {row}
                                 {assign var=isBrandFree value=JTL\Shop::isBrandfree()}
                                 {col class="text-right"}

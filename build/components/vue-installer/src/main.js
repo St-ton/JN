@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import vuexI18n from 'vuex-i18n';
 import App from './App';
 import BootstrapVue from 'bootstrap-vue';
 import 'vue-awesome/icons/sync';
@@ -25,9 +26,11 @@ import plugin from './helpers/plugin';
 
 Vue.use(BootstrapVue);
 Vue.use(Vuex);
+Vue.use(vuexI18n.plugin, store);
 Vue.use({ install: plugin });
 Vue.component('icon', Icon);
 Vue.mixin(mixin);
+Vue.i18n.set('de');
 Vue.config.productionTip = false;
 
 /* eslint-disable no-new */

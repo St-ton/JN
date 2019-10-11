@@ -26,14 +26,14 @@
                             {/if}
                         {/block}
                         {if (!$device->isMobile() || $device->isTablet()) && $navid === 'header'}
-                            {dropdown class="filter-type-FilterItemSort btn-group" variant="light" text="{lang key='sorting' section='productOverview'}"}
+                            {dropdown class="filter-type-FilterItemSort btn-group" variant="outline-secondary" text="{lang key='sorting' section='productOverview'}"}
                                 {foreach $Suchergebnisse->getSortingOptions() as $option}
                                     {dropdownitem rel="nofollow" href=$option->getURL() class="filter-item" active=$option->isActive()}
                                         {$option->getName()}
                                     {/dropdownitem}
                                 {/foreach}
                             {/dropdown}
-                            {dropdown class="filter-type-FilterItemLimits btn-group ml-2" variant="light" text="{lang key='productsPerPage' section='productOverview'}"}
+                            {dropdown class="filter-type-FilterItemLimits btn-group ml-2" variant="outline-secondary" text="{lang key='productsPerPage' section='productOverview'}"}
                                 {foreach $Suchergebnisse->getLimitOptions() as $option}
                                     {dropdownitem rel="nofollow" href=$option->getURL() class="filter-item" active=$option->isActive()}
                                         {$option->getName()}
@@ -61,14 +61,14 @@
                                     </li>
                                 {/block}
                                 <li class="page-item dropdown">
-                                    <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <span class="pagination-site">Seite</span> {$Suchergebnisse->getPages()->getCurrentPage()}
+                                    <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <span class="pagination-site">{lang key='page'}</span> {$Suchergebnisse->getPages()->getCurrentPage()}
                                     </button>
-                                    <div class="dropdown-menu">
+                                    <div class="dropdown-menu shadow-none">
                                         {block name='snippets-productlist-page-nav-pages'}
                                             {foreach $filterPagination->getPages() as $page}
                                                 <div class="dropdown-item page-item{if $page->isActive()} active{/if}">
-                                                    {link class="page-link" href=$page->getURL()}<span class="pagination-site">Seite</span> {$page->getPageNumber()}{/link}
+                                                    {link class="page-link" href=$page->getURL()}<span class="pagination-site">{lang key='page'}</span> {$page->getPageNumber()}{/link}
                                                 </div>
                                             {/foreach}
                                         {/block}

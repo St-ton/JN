@@ -20,6 +20,7 @@ ifndef('SHOP_LOG_LEVEL', E_ERROR | E_PARSE);
 ifndef('SMARTY_LOG_LEVEL', E_ERROR | E_PARSE);
 error_reporting(SHOP_LOG_LEVEL);
 ifndef('TEMPLATE_COMPATIBILITY', false);
+ifndef('EVO_COMPATIBILITY', true);
 // Image compatibility level 0 => disabled, 1 => referenced in history table, 2 => automatic detection
 ifndef('IMAGE_COMPATIBILITY_LEVEL', 1);
 ifndef('KEEP_SYNC_FILES', false);

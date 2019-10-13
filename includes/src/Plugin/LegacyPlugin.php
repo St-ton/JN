@@ -47,26 +47,6 @@ class LegacyPlugin extends PluginBC
     /**
      * @var string
      */
-    public $pluginCacheID;
-
-    /**
-     * @var string
-     */
-    public $pluginCacheGroup;
-
-    /**
-     * @var int
-     */
-    public $bBootstrap;
-
-    /**
-     * @var int
-     */
-    public $nCalledHook;
-
-    /**
-     * @var string
-     */
     public $cFehler = '';
 
     /**

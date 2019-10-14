@@ -37,10 +37,14 @@ class OPC extends AbstractImage
         $file = $name . '.' . $req->getExt();
         if (\file_exists(\PFAD_ROOT . \STORAGE_OPC . $file)) {
             $req->setSourcePath($file);
-        } elseif (\file_exists(\PFAD_ROOT . \STORAGE_OPC . $name . '.png')) {
-            $req->setSourcePath($name . '.png');
-        } elseif (\file_exists(\PFAD_ROOT . \STORAGE_OPC . $name . '.jpg')) {
-            $req->setSourcePath($name . '.jpg');
+        } else {
+            foreach (self::$imageExtensions as $extension) {
+                $file = $name . '.' . $extension;
+                if (\file_exists(\PFAD_ROOT . \STORAGE_OPC . $file)) {
+                    $req->setSourcePath($file);
+                    break;
+                }
+            }
         }
 
         return [$name];

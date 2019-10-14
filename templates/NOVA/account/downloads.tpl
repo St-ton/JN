@@ -10,7 +10,7 @@
         {block name='account-downloads-order-downloads'}
             {foreach $Bestellung->oDownload_arr as $oDownload}
                 {card no-body=true class="cols-12 col-md-8"}
-                    {cardheader id="download-{$oDownload@iteration}" class="p-2 bg-white"}
+                    {cardheader id="download-{$oDownload@iteration}" class="p-2 border-top"}
                         {button
                             variant="link"
                             role="button"
@@ -59,7 +59,7 @@
             {row class='mb-5'}
                 {col cols=12 md=6}
                     {card no-body=true}
-                        {cardheader class="bg-info"}
+                        {cardheader}
                             <span class="h3">
                                 {lang key='myDownloads'}
                             </span>
@@ -69,7 +69,7 @@
                                 {block name='account-downloads-customer-downloads'}
                                     {foreach $oDownload_arr as $oDownload}
                                         {card no-body=true}
-                                            {cardheader id="download-{$oDownload@iteration}" class="p-2 bg-white"}
+                                            {cardheader id="download-{$oDownload@iteration}" class="p-2 border-top"}
                                                 {button
                                                     variant="link"
                                                     role="button"

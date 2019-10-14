@@ -33,7 +33,6 @@ final class BestsellingProducts extends AbstractBox
             $cacheTags      = [\CACHING_GROUP_BOX, \CACHING_GROUP_ARTICLE];
             $stockFilterSQL = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $parentSQL      = ' AND tartikel.kVaterArtikel = 0';
-            $count          = (int)$this->config['boxen']['box_bestseller_anzahl_anzeige'];
             $cacheID        = 'bx_bstsl_' . $customerGroupID . '_' . \md5($parentSQL . $stockFilterSQL);
             if (($productIDs = Shop::Container()->getCache()->get($cacheID)) === false) {
                 $cached   = false;
@@ -60,9 +59,12 @@ final class BestsellingProducts extends AbstractBox
                 Shop::Container()->getCache()->set($cacheID, $productIDs, $cacheTags);
             }
             \shuffle($productIDs);
-            $res = map(\array_slice($productIDs, 0, $count), function ($productID) {
-                return (int)$productID->kArtikel;
-            });
+            $res = map(
+                \array_slice($productIDs, 0, $this->config['boxen']['box_bestseller_anzahl_anzeige']),
+                function ($productID) {
+                    return (int)$productID->kArtikel;
+                }
+            );
 
             if (\count($res) > 0) {
                 $this->setShow(true);

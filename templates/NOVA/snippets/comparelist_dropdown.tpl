@@ -38,7 +38,7 @@
             {else}
                 {row}
                     {col class='col-lg-auto ml-auto'}
-                        {link class="btn btn-block btn-primary"
+                        {link class="btn btn-block btn-primary btn-sm"
                             id='nav-comparelist-goto'
                             href="{get_static_route id='vergleichsliste.php'}"
                         }

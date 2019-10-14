@@ -3,7 +3,7 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='basket-cart-dropdown'}
-    {collapse id="nav-cart-collapse" tag="div"  data=["parent"=>"#main-nav-wrapper"] class="mt-md-2 py-0 w-100"}
+    <div class="dropdown-menu dropdown-menu-right lg-min-w-lg">
         {if $smarty.session.Warenkorb->PositionenArr|@count > 0}
             {block name='basket-cart-dropdown-cart-items-content'}
                 <div class="table-responsive max-h-sm lg-max-h">
@@ -92,13 +92,13 @@
                     {block name='basket-cart-dropdown-buttons'}
                         {row class='mt-3'}
                             {col cols=12 lg=6}
-                                {link href="{get_static_route id='bestellvorgang.php'}?wk=1" class="btn btn-secondary btn-block mb-3"}
+                                {link href="{get_static_route id='bestellvorgang.php'}?wk=1" class="btn btn-secondary btn-block btn-sm mb-3"}
                                     {lang key='nextStepCheckout' section='checkout'}
                                 {/link}
                             {/col}
                             {col cols=12 lg=6}
-                                {link class="btn btn-primary btn-block" title="{lang key='gotoBasket'}" href="{get_static_route id='warenkorb.php'}"}
-                                    <i class="fas fa-shopping-cart"></i> {lang key='gotoBasket'}
+                                {link class="btn btn-primary btn-block btn-sm" title="{lang key='gotoBasket'}" href="{get_static_route id='warenkorb.php'}"}
+                                    {lang key='gotoBasket'}
                                 {/link}
                             {/col}
                         {/row}
@@ -118,10 +118,10 @@
             {/block}
         {else}
             {block name='basket-cart-dropdown-hint-empty'}
-                {dropdownitem href="{{get_static_route id='warenkorb.php'}}" rel="nofollow" title="{lang section='checkout' key='emptybasket'}"}
+                {dropdownitem class='p-2' href="{{get_static_route id='warenkorb.php'}}" rel="nofollow" title="{lang section='checkout' key='emptybasket'}"}
                     {lang section='checkout' key='emptybasket'}
                 {/dropdownitem}
             {/block}
         {/if}
-    {/collapse}
+    </div>
 {/block}

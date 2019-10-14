@@ -20,7 +20,6 @@
                             data=["toggle"=> "collapse", "target"=>"#collapse-download-{$oDownload@iteration}"]
                         }
                             {$oDownload->oDownloadSprache->getName()}
-                            <i class="fa fa-chevron-down float-right"></i>
                         {/button}
                     {/cardheader}
                     {collapse id="collapse-download-{$oDownload@iteration}" visible=false}
@@ -80,7 +79,6 @@
                                                     data=["toggle"=> "collapse", "target"=>"#collapse-download-{$oDownload@iteration}"]
                                                 }
                                                     {$oDownload->oDownloadSprache->getName()}
-                                                    <i class="fa fa-chevron-down float-right"></i>
                                                 {/button}
                                             {/cardheader}
                                             {collapse id="collapse-download-{$oDownload@iteration}" visible=false

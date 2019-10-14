@@ -238,6 +238,42 @@ class Image
                     'height' => 1440
                 ]
             ],
+            self::TYPE_NEWS                 => [
+                self::SIZE_XS => [
+                    'width'  => (int)$settings['bilder_news_mini_breite'],
+                    'height' => (int)$settings['bilder_news_mini_hoehe']
+                ],
+                self::SIZE_SM => [
+                    'width'  => (int)$settings['bilder_news_klein_breite'],
+                    'height' => (int)$settings['bilder_news_klein_hoehe']
+                ],
+                self::SIZE_MD => [
+                    'width'  => (int)$settings['bilder_news_normal_breite'],
+                    'height' => (int)$settings['bilder_news_normal_hoehe']
+                ],
+                self::SIZE_LG => [
+                    'width'  => (int)$settings['bilder_news_gross_breite'],
+                    'height' => (int)$settings['bilder_news_gross_hoehe']
+                ]
+            ],
+            self::TYPE_NEWSCATEGORY         => [
+                self::SIZE_XS => [
+                    'width'  => (int)$settings['bilder_newskategorie_mini_breite'],
+                    'height' => (int)$settings['bilder_newskategorie_mini_hoehe']
+                ],
+                self::SIZE_SM => [
+                    'width'  => (int)$settings['bilder_newskategorie_klein_breite'],
+                    'height' => (int)$settings['bilder_newskategorie_klein_hoehe']
+                ],
+                self::SIZE_MD => [
+                    'width'  => (int)$settings['bilder_newskategorie_normal_hoehe'],
+                    'height' => (int)$settings['bilder_newskategorie_normal_breite']
+                ],
+                self::SIZE_LG => [
+                    'width'  => (int)$settings['bilder_newskategorie_gross_breite'],
+                    'height' => (int)$settings['bilder_newskategorie_gross_hoehe']
+                ]
+            ],
             'naming'                        => [
                 self::TYPE_PRODUCT              => (int)$settings['bilder_artikel_namen'],
                 self::TYPE_CATEGORY             => (int)$settings['bilder_kategorie_namen'],

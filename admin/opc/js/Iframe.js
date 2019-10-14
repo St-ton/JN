@@ -166,9 +166,15 @@ class Iframe
 
     loadPortletPreviewCss(portletCls)
     {
-        this.loadStylesheet(
-            this.shopUrl + '/includes/src/OPC/Portlets/' + portletCls + '/preview.css'
-        );
+        let portletBtn = this.gui.portletButtons.filter("[data-portlet-class='" + portletCls + "']");
+
+        if(portletBtn) {
+            let css = portletBtn.data('portlet-css');
+
+            if(css) {
+                this.loadStylesheet(css);
+            }
+        }
     }
 
     loadMissingPortletPreviewStyles()

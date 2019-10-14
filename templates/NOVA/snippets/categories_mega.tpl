@@ -115,9 +115,15 @@
                                     {col lg=4 xl=3 class='my-lg-4 nav-item'}
                                         {link href=$mft->cURLFull title=$mft->cSeo class='submenu-headline submenu-headline-toplevel nav-link '}
                                             {if $Einstellungen.template.megamenu.show_category_images !== 'N'
-                                                && (!$device->isMobile() || $device->isTablet())}
-                                                {image fluid=true lazy=true data=["src" => $mft->getImage(\JTL\Media\Image::SIZE_SM)]
-                                                    src="{$imageBaseURL}gfx/trans.png" alt=$mft->getName()|escape:'html'
+                                                && (!$device->isMobile() || $device->isTablet())
+                                                && !empty($mft->getImage(\JTL\Media\Image::SIZE_XS))}
+                                                {image fluid=true lazy=true
+                                                    src=$mft->getImage(\JTL\Media\Image::SIZE_XS)
+                                                    srcset="{$mft->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_hersteller_mini_breite}w,
+                                                        {$mft->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_hersteller_klein_breite}w,
+                                                        {$mft->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_hersteller_normal_breite}w"
+                                                    sizes="80px"
+                                                    alt=$mft->getName()|escape:'html'
                                                     class="d-none d-md-block mb-3"}
                                             {/if}
                                                 {$mft->getName()}

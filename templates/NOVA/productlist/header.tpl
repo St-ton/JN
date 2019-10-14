@@ -35,7 +35,7 @@
         {if $oNavigationsinfo->hasData()}
             <div class="desc clearfix mb-5">
                 {if $oNavigationsinfo->getImageURL() !== $imageBaseURL|cat:$smarty.const.BILD_KEIN_KATEGORIEBILD_VORHANDEN && $oNavigationsinfo->getImageURL() !== 'gfx/keinBild_kl.gif'}
-                    {image fluid-grow=true fluid=true
+                    {image fluid-grow=true
                         webp=true
                         src="{$oNavigationsinfo->getImageURL()}"
                         alt="{if $oNavigationsinfo->getCategory() !== null}{$oNavigationsinfo->getCategory()->cBeschreibung|strip_tags|truncate:40|escape:'html'}{elseif $oNavigationsinfo->getManufacturer() !== null}{$oNavigationsinfo->getManufacturer()->cBeschreibung|strip_tags|truncate:40|escape:'html'}{/if}"
@@ -75,7 +75,11 @@
                     {col cols=6 md=4 lg=3}
                         {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'Y'}
                             {link href=$subCategory->getURL()}
-                                {image fluid-grow=true lazy=true src=$subCategory->getImage() alt=$subCategory->getName() class="mb-2"}
+                                {image fluid-grow=true lazy=true webp=true
+                                    src=$subCategory->getImage()
+                                    alt=$subCategory->getName()
+                                    class="mb-2"
+                                }
                             {/link}
                         {/if}
                         {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'B'}

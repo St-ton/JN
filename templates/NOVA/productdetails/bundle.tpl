@@ -21,13 +21,18 @@
                     <div class="panel-body row">
                         {block name='productdetails-bundle-form-body'}
                             <div class="col-xs-12 col-md-8">
-                                <ul class="list-inline bundle-list">
+                                <ul class="list-inline bundle-list d-inline-flex align-items-center">
                                     {foreach $Products as $bundleProduct}
                                         <li>
                                             {link href=$bundleProduct->cURLFull}
-                                                {image src="{if $bundleProduct->Bilder[0]->cURLKlein}{$bundleProduct->Bilder[0]->cURLKlein}{else}{$smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN}{/if}"
-                                                     alt=$bundleProduct->cName
-                                                     title=$bundleProduct->cName}
+                                                {image fluid=true webp=true lazy=true
+                                                    alt=$bundleProduct->cName
+                                                    src="{if $bundleProduct->Bilder[0]->cURLKlein}{$bundleProduct->Bilder[0]->cURLKlein}{else}{$smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN}{/if}"
+                                                    srcset="{$bundleProduct->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                        {$bundleProduct->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                        {$bundleProduct->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                                    sizes="200px"
+                                                }
                                             {/link}
                                         </li>
                                         {if !$bundleProduct@last}

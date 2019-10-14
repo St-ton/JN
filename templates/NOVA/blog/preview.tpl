@@ -11,7 +11,13 @@
                     {block name='blog-preview-news-image'}
                         {link href=$newsItem->getURL() title=$newsItem->getTitle()|escape:'quotes'}
                             <div class="nws-preview">
-                                {image src="{$newsItem->getImage()}"
+                                {image webp=true lazy=true fluid-grow=true
+                                    src=$newsItem->getImage(\JTL\Media\Image::SIZE_MD)
+                                    srcset="{$newsItem->getImage(\JTL\Media\Image::SIZE_XS)} 300w,
+                                        {$newsItem->getImage(\JTL\Media\Image::SIZE_SM)} 600w,
+                                        {$newsItem->getImage(\JTL\Media\Image::SIZE_MD)} 1200w,
+                                        {$newsItem->getImage(\JTL\Media\Image::SIZE_LG)} 1800w"
+                                    sizes="auto"
                                     alt="{$newsItem->getTitle()|escape:'quotes'} - {$newsItem->getMetaTitle()|escape:'quotes'}"
                                 }
                             </div>

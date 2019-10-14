@@ -1413,9 +1413,6 @@ class Artikel
                 $imagePath = $image->cPfadGross;
                 break;
         }
-        if ($imagePath === null) {
-            Shop::dbg($image, true, '44',99);
-        }
         if ($imagePath !== null && \file_exists(\PFAD_ROOT . $imagePath)) {
             [$width, $height, $type] = \getimagesize(\PFAD_ROOT . $imagePath);
         } else {

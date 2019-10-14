@@ -13,10 +13,9 @@
 
 			&:not(:hover) .productbox-onhover { opacity: 0; }
 
-			&.productbox-column { width: 100%; height: 100%;
-				&:hover {
-					.productbox-inner { position: absolute; left: 0; top: 0; right: 0; }
-				}
+			&.productbox-column {
+				width: 100%;
+				height: 100%;
 			}
 		}
 	}

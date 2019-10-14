@@ -15964,12 +15964,6 @@ label {
     width: 100%;
     height: 100%;
   }
-  .productbox.productbox-hover.productbox-column:hover .productbox-inner {
-    position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-  }
 }
 .productbox:not(.productbox-show-variations) .productbox-variations {
   display: none;

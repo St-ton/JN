@@ -288,6 +288,8 @@ class Migration_20190904175800 extends Migration implements IMigration
             $this->execute("UPDATE `tbrandingeinstellung` SET `cPosition` = '" . $old . "' WHERE `cPosition` = '" . $new . "'");
         }
 
+        $this->removeConfig('bilder_variationen_klein_hoehe');
+        $this->removeConfig('bilder_variationen_klein_breite');
         $this->removeConfig('bilder_kategorien_klein_hoehe');
         $this->removeConfig('bilder_kategorien_klein_breite');
         $this->removeConfig('bilder_kategorien_gross_hoehe');

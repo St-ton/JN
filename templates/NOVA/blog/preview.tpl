@@ -13,10 +13,10 @@
                             <div class="nws-preview">
                                 {image webp=true lazy=true fluid-grow=true
                                     src=$newsItem->getImage(\JTL\Media\Image::SIZE_MD)
-                                    srcset="{$newsItem->getImage(\JTL\Media\Image::SIZE_XS)} 300w,
-                                        {$newsItem->getImage(\JTL\Media\Image::SIZE_SM)} 600w,
-                                        {$newsItem->getImage(\JTL\Media\Image::SIZE_MD)} 1200w,
-                                        {$newsItem->getImage(\JTL\Media\Image::SIZE_LG)} 1800w"
+                                    srcset="{$newsItem->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_news_mini_breite}w,
+                                        {$newsItem->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_news_klein_breite}w,
+                                        {$newsItem->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_news_normal_breite}w,
+                                        {$newsItem->getImage(\JTL\Media\Image::SIZE_LG)} {$Einstellungen.bilder.bilder_news_gross_breite}w"
                                     sizes="auto"
                                     alt="{$newsItem->getTitle()|escape:'quotes'} - {$newsItem->getMetaTitle()|escape:'quotes'}"
                                 }

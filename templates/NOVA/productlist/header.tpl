@@ -35,10 +35,14 @@
         {if $oNavigationsinfo->hasData()}
             <div class="desc clearfix mb-5">
                 {if $oNavigationsinfo->getImageURL() !== $imageBaseURL|cat:$smarty.const.BILD_KEIN_KATEGORIEBILD_VORHANDEN && $oNavigationsinfo->getImageURL() !== 'gfx/keinBild_kl.gif'}
-                    {image fluid-grow=true
-                        webp=true
-                        src="{$oNavigationsinfo->getImageURL()}"
+                    {image fluid-grow=true lazy=true webp=true
+                        src=$oNavigationsinfo->getCategory()->getImage(\JTL\Media\Image::SIZE_XS)
+                        srcset="{$oNavigationsinfo->getCategory()->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_kategorien_mini_breite}w,
+                            {$oNavigationsinfo->getCategory()->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_kategorien_klein_breite}w,
+                            {$oNavigationsinfo->getCategory()->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_kategorien_breite}w,
+                            {$oNavigationsinfo->getCategory()->getImage(\JTL\Media\Image::SIZE_LG)} {$Einstellungen.bilder.bilder_kategorien_gross_breite}w"
                         alt="{if $oNavigationsinfo->getCategory() !== null}{$oNavigationsinfo->getCategory()->cBeschreibung|strip_tags|truncate:40|escape:'html'}{elseif $oNavigationsinfo->getManufacturer() !== null}{$oNavigationsinfo->getManufacturer()->cBeschreibung|strip_tags|truncate:40|escape:'html'}{/if}"
+                        sizes="auto"
                         class="mb-5"
                     }
                 {/if}

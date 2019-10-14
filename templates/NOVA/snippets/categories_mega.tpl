@@ -117,7 +117,7 @@
                                             {if $Einstellungen.template.megamenu.show_category_images !== 'N'
                                                 && (!$device->isMobile() || $device->isTablet())
                                                 && !empty($mft->getImage(\JTL\Media\Image::SIZE_XS))}
-                                                {image fluid=true lazy=true
+                                                {image fluid=true lazy=true webp=true
                                                     src=$mft->getImage(\JTL\Media\Image::SIZE_XS)
                                                     srcset="{$mft->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_hersteller_mini_breite}w,
                                                         {$mft->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_hersteller_klein_breite}w,

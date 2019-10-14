@@ -34,7 +34,14 @@ class OPC extends AbstractImage
     public static function getImageNames(MediaImageRequest $req): array
     {
         $name = $req->getName();
-        $req->setSourcePath($name . '.' . $req->getExt());
+        $file = $name . '.' . $req->getExt();
+        if (\file_exists(\PFAD_ROOT . \STORAGE_OPC . $file)) {
+            $req->setSourcePath($file);
+        } elseif (\file_exists(\PFAD_ROOT . \STORAGE_OPC . $name . '.png')) {
+            $req->setSourcePath($name . '.png');
+        } elseif (\file_exists(\PFAD_ROOT . \STORAGE_OPC . $name . '.jpg')) {
+            $req->setSourcePath($name . '.jpg');
+        }
 
         return [$name];
     }

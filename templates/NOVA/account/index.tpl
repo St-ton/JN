@@ -10,7 +10,9 @@
     {block name='account-index-content'}
         {if isset($smarty.get.reg)}
             {block name='account-index-alert'}
-                {alert variant="success"}{lang key='accountCreated' section='global'}{/alert}
+                {container}
+                    {alert variant="success"}{lang key='accountCreated' section='global'}{/alert}
+                {/container}
             {/block}
         {/if}
         {block name='account-index-include-extension'}
@@ -36,52 +38,53 @@
         {/if}
 
         {opcMountPoint id='opc_before_account'}
-
-        {row id="account"}
-            {col cols=12}
-                {if $step === 'login'}
-                    {block name='account-index-include-login'}
-                        {include file='account/login.tpl'}
-                    {/block}
-                {elseif $step === 'mein Konto'}
-                    {block name='account-index-include-my-account'}
-                        {include file='account/my_account.tpl'}
-                    {/block}
-                {elseif $step === 'rechnungsdaten'}
-                    {block name='account-index-include-address-form'}
-                        {include file='account/address_form.tpl'}
-                    {/block}
-                {elseif $step === 'passwort aendern'}
-                    {block name='account-index-include-change-password'}
-                        {include file='account/change_password.tpl'}
-                    {/block}
-                {elseif $step === 'bestellung'}
-                    {block name='account-index-include-order-details'}
-                        {include file='account/order_details.tpl'}
-                    {/block}
-                {elseif $step === 'bestellungen'}
-                    {block name='account-index-include-orders'}
-                        {include file='account/orders.tpl'}
-                    {/block}
-                {elseif $step === 'account loeschen'}
-                    {block name='account-index-include-delete-account'}
-                        {include file='account/delete_account.tpl'}
-                    {/block}
-                {elseif $step === 'kunden_werben_kunden'}
-                    {block name='account-index-include-customers-recruiting'}
-                        {include file='account/customers_recruiting.tpl'}
-                    {/block}
-                {elseif $step === 'bewertungen'}
-                    {block name='account-index-include-feedback'}
-                        {include file='account/feedback.tpl'}
-                    {/block}
-                {else}
-                    {block name='account-index-include-my-account-default'}
-                        {include file='account/my_account.tpl'}
-                    {/block}
-                {/if}
-            {/col}
-        {/row}
+        {container}
+            {row id="account"}
+                {col cols=12}
+                    {if $step === 'login'}
+                        {block name='account-index-include-login'}
+                            {include file='account/login.tpl'}
+                        {/block}
+                    {elseif $step === 'mein Konto'}
+                        {block name='account-index-include-my-account'}
+                            {include file='account/my_account.tpl'}
+                        {/block}
+                    {elseif $step === 'rechnungsdaten'}
+                        {block name='account-index-include-address-form'}
+                            {include file='account/address_form.tpl'}
+                        {/block}
+                    {elseif $step === 'passwort aendern'}
+                        {block name='account-index-include-change-password'}
+                            {include file='account/change_password.tpl'}
+                        {/block}
+                    {elseif $step === 'bestellung'}
+                        {block name='account-index-include-order-details'}
+                            {include file='account/order_details.tpl'}
+                        {/block}
+                    {elseif $step === 'bestellungen'}
+                        {block name='account-index-include-orders'}
+                            {include file='account/orders.tpl'}
+                        {/block}
+                    {elseif $step === 'account loeschen'}
+                        {block name='account-index-include-delete-account'}
+                            {include file='account/delete_account.tpl'}
+                        {/block}
+                    {elseif $step === 'kunden_werben_kunden'}
+                        {block name='account-index-include-customers-recruiting'}
+                            {include file='account/customers_recruiting.tpl'}
+                        {/block}
+                    {elseif $step === 'bewertungen'}
+                        {block name='account-index-include-feedback'}
+                            {include file='account/feedback.tpl'}
+                        {/block}
+                    {else}
+                        {block name='account-index-include-my-account-default'}
+                            {include file='account/my_account.tpl'}
+                        {/block}
+                    {/if}
+                {/col}
+            {/row}
+        {/container}
     {/block}
 
     {block name='account-index-include-footer'}

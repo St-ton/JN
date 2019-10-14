@@ -394,7 +394,7 @@
         {/block}
 
         {block name='layout-header-content-starttag'}
-            <div id="content" class="{if !$bExclusive && !empty($boxes.left|strip_tags|trim) && $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}{else}container{/if} pb-6">
+            <div id="content" class="pb-6">
         {/block}
 
         {if !$bExclusive && !empty($boxes.left|strip_tags|trim) && $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}

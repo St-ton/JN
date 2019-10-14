@@ -15,6 +15,7 @@ use JTL\Shop;
 use JTL\Template;
 use JTL\Update\Updater;
 use JTLShop\SemVer\Version;
+use Systemcheck\Platform\Filesystem;
 
 require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Smarty\JTLSmarty     $smarty */
@@ -152,11 +153,7 @@ function openDashboard()
     if ($oAccount->permission('DASHBOARD_VIEW')) {
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dashboard_inc.php';
 
-        $fsCheck = new Systemcheck_Platform_Filesystem(PFAD_ROOT);
-        $fsCheck->getFoldersChecked();
-
         $smarty->assign('bDashboard', true)
-               ->assign('oPermissionStat', $fsCheck->getFolderStats())
                ->assign('bUpdateError', (Request::postInt('shopupdate') === 1 ? '1' : false))
                ->assign('bTemplateDiffers', Template::getInstance()->getVersion() !== APPLICATION_VERSION)
                ->assign('oActiveWidget_arr', getWidgets())

@@ -6,8 +6,8 @@
 
 use Illuminate\Support\Collection;
 use JTL\Alert\Alert;
-use JTL\Checkout\Versandart;
 use JTL\Checkout\ShippingSurcharge;
+use JTL\Checkout\Versandart;
 use JTL\Checkout\ZipValidator;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Text;

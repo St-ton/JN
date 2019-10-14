@@ -140,7 +140,7 @@
                                                                             max="{$oItem->getMax()}"
                                                                             step="{if $oItem->getArtikel()->fAbnahmeintervall > 0}{$oItem->getArtikel()->fAbnahmeintervall}{/if}"
                                                                             id="quantity{$oItem->getKonfigitem()}"
-                                                                            class="quantity text-right"
+                                                                            class="quantity"
                                                                             name="item_quantity[{$kKonfigitem}]"
                                                                             autocomplete="off"
                                                                             value="{if !empty($nKonfigitemAnzahl_arr[$kKonfigitem])}{$nKonfigitemAnzahl_arr[$kKonfigitem]}{else}{if $oItem->getArtikel()->fAbnahmeintervall > 0}{if $oItem->getArtikel()->fMindestbestellmenge > $oItem->getArtikel()->fAbnahmeintervall}{$oItem->getArtikel()->fMindestbestellmenge}{else}{$oItem->getArtikel()->fAbnahmeintervall}{/if}{else}1{/if}{/if}"
@@ -205,7 +205,7 @@
                                                                             max="{$oItem->getMax()}"
                                                                             step="{if $oItem->getArtikel()->fAbnahmeintervall > 0}{$oItem->getArtikel()->fAbnahmeintervall}{/if}"
                                                                             id="quantity{$oItem->getKonfigitem()}"
-                                                                            class="quantity text-right"
+                                                                            class="quantity"
                                                                             name="item_quantity[{$kKonfigitem}]"
                                                                             autocomplete="off"
                                                                             value="{if !empty($nKonfigitemAnzahl_arr[$kKonfigitem])}{$nKonfigitemAnzahl_arr[$kKonfigitem]}{else}{if $oItem->getArtikel()->fAbnahmeintervall > 0}{if $oItem->getArtikel()->fMindestbestellmenge > $oItem->getArtikel()->fAbnahmeintervall}{$oItem->getArtikel()->fMindestbestellmenge}{else}{$oItem->getArtikel()->fAbnahmeintervall}{/if}{else}1{/if}{/if}"
@@ -225,6 +225,7 @@
                                                             data=["ref"=>$kKonfiggruppe]
                                                             required=$oGruppe->getMin() > 0
                                                             aria=["label"=>$oSprache->getName()]
+                                                            class='custom-select'
                                                         }
                                                             <option value="">{lang key='pleaseChoose'}</option>
                                                             {foreach $oGruppe->oItem_arr as $oItem}
@@ -294,7 +295,7 @@
                                                                             max="{$oItem->getMax()}"
                                                                             step="{if $oItem->getArtikel()->fAbnahmeintervall > 0}{$oItem->getArtikel()->fAbnahmeintervall}{/if}"
                                                                             id="quantity{$oItem->getKonfigitem()}"
-                                                                            class="quantity text-right"
+                                                                            class="quantity"
                                                                             name="item_quantity[{$oItem->getKonfigitem()}]"
                                                                             autocomplete="off"
                                                                             value="{if !empty($nKonfigitemAnzahl_arr[$oItem->getKonfigitem()])}{$nKonfigitemAnzahl_arr[$oItem->getKonfigitem()]}{else}{if $oItem->getArtikel()->fAbnahmeintervall > 0}{if $oItem->getArtikel()->fMindestbestellmenge > $oItem->getArtikel()->fAbnahmeintervall}{$oItem->getArtikel()->fMindestbestellmenge}{else}{$oItem->getArtikel()->fAbnahmeintervall}{/if}{else}1{/if}{/if}"

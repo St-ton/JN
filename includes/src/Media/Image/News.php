@@ -48,7 +48,7 @@ class News extends AbstractImage
     /**
      * @inheritdoc
      */
-    protected function getImageNames(MediaImageRequest $req): array
+    public static function getImageNames(MediaImageRequest $req): array
     {
         return Shop::Container()->getDB()->queryPrepared(
             'SELECT a.kNews, a.cPreviewImage AS path, t.title
@@ -115,7 +115,7 @@ class News extends AbstractImage
         foreach (new RecursiveIteratorIterator($rdi, RecursiveIteratorIterator::CHILD_FIRST) as $fileinfo) {
             /** @var SplFileInfo $fileinfo */
             $name = $fileinfo->getFilename();
-            if ($fileinfo->isFile() && \strpos($name, '.') !== 0) {
+            if ($fileinfo->isFile() && \in_array($fileinfo->getExtension(), self::$imageExtensions, true)) {
                 $path = \str_replace($base, '', $fileinfo->getPathname());
                 yield MediaImageRequest::create([
                     'id'         => 1,
@@ -142,7 +142,7 @@ class News extends AbstractImage
         $cnt = 0;
         foreach (new RecursiveIteratorIterator($rdi, RecursiveIteratorIterator::CHILD_FIRST) as $fileinfo) {
             /** @var SplFileInfo $fileinfo */
-            if ($fileinfo->isFile() && \strpos($fileinfo->getFilename(), '.') !== 0) {
+            if ($fileinfo->isFile() && \in_array($fileinfo->getExtension(), self::$imageExtensions, true)) {
                 ++$cnt;
             }
         }

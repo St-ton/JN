@@ -34,7 +34,7 @@ export default VueInstance => {
     VueInstance.prototype.$getApiUrl = task => {
         let base = process.env.NODE_ENV === 'production'
             ? ''
-            : 'https://felix.vm0.halle/build/components/vue-installer/';
+            : 'http://felix.vm0.halle/install/';
         return `${base}install.php?task=${task}`;
     };
 };

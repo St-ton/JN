@@ -23,4 +23,6 @@ create_tpl_md5_hashfile()
     echo "  File checksums ${MD5_HASH_FILENAME}";
 }
 
-(create_tpl_md5_hashfile $*)
+if [[ $# -eq 1 ]]; then
+    (create_tpl_md5_hashfile $*)
+fi

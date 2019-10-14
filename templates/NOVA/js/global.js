@@ -108,9 +108,9 @@ function regionsToState() {
                 var def = $('#state').val();
                 if (data !== null && data.length > 0) {
                     if (stateIsRequired){
-                        var state = $('<select />').attr({ id: 'state', name: 'bundesland', class: 'required form-control', required: 'required'});
+                        var state = $('<select />').attr({ id: 'state', name: 'bundesland', class: 'custom-select required form-control', required: 'required'});
                     } else {
-                        var state = $('<select />').attr({ id: 'state', name: 'bundesland', class: 'form-control'});
+                        var state = $('<select />').attr({ id: 'state', name: 'bundesland', class: 'custom-select form-control'});
                     }
 
                     state.append('<option value="">' + title + '</option>');
@@ -153,14 +153,6 @@ function loadContent(url)
     });
 }
 
-function navigation()
-{
-    $( '#main-nav-wrapper a.dropdown-toggle' ).on( 'click', function ( e ) {
-
-        return false;
-    } );
-}
-
 function addValidationListener() {
     var forms      = $('form.evo-validate'),
         inputs     = $('form.evo-validate input, form.evo-validate textarea').not('[type="radio"],[type="checkbox"]'),
@@ -174,7 +166,7 @@ function addValidationListener() {
             $(event.target).closest('.form-group').find('div.form-error-msg').remove();
             $(event.target).closest('.form-group')
                 .addClass('has-error')
-                .append('<div class="form-error-msg text-danger w-100"><i class="fas fa-exclamation-triangle"></i> ' + event.target.validationMessage + '</div>');
+                .append('<div class="form-error-msg text-danger w-100">' + event.target.validationMessage + '</div>');
 
             if (!$body.data('doScrolling')) {
                 var $firstError = $(event.target).closest('.form-group.has-error');
@@ -222,13 +214,9 @@ function checkInputError(event)
 {
     var $target = $(event.target);
     if ($target.parents('.cfg-group') != undefined) {
-        $target.parents('.cfg-group').find('div.form-error-msg').slideUp(function () {
-            $(this).remove();
-        });
+        $target.parents('.cfg-group').find('div.form-error-msg').remove();
     }
-    $target.parents('.form-group').find('div.form-error-msg').slideUp(function () {
-        $(this).remove();
-    });
+    $target.parents('.form-group').find('div.form-error-msg').remove();
 
     if ($target.data('must-equal-to') !== undefined) {
         var $equalsTo = $($target.data('must-equal-to'));
@@ -245,7 +233,7 @@ function checkInputError(event)
     if (event.target.validity.valid) {
         $target.closest('.form-group').removeClass('has-error');
     } else {
-        $target.closest('.form-group').addClass('has-error').append('<div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i> ' + event.target.validationMessage + '</div>');
+        $target.closest('.form-group').addClass('has-error').append('<div class="form-error-msg text-danger">' + event.target.validationMessage + '</div>');
     }
 }
 
@@ -255,28 +243,6 @@ function captcha_filled() {
 
 function isTouchCapable() {
     return 'ontouchstart' in window || (window.DocumentTouch && document instanceof window.DocumentTouch);
-}
-
-function lazyLoadMenu(viewport){
-    if (viewport !== 'xs' && viewport != 'sm'){
-        $('#main-nav-wrapper .dropdown').on('mouseenter mouseleave', function(e) {
-            $(this).find('img.lazy').each(function(i, item) {
-                var img = $(item);
-                $(img).lazy(0, function() {
-                    $(this).on('load', function() {
-                        img.removeClass('loading')
-                            .addClass('loaded');
-                    }).on('error',function() {
-                        img.removeClass('loading')
-                            .addClass('error');
-                    });
-                });
-            });
-        });
-
-        $('#evo-nav-wrapper .nav-item.dropdown .nav-link').attr('data-toggle','');
-        $('#evo-nav-wrapper .nav-item.btn-link[data-toggle="collapse"]').attr('data-toggle','dropdown');
-    }
 }
 
 function addCopyToClipboardListener() {
@@ -290,17 +256,6 @@ function addCopyToClipboardListener() {
     clipboard.on('error', function(e) {
         console.error('Action:', e.action);
         console.error('Trigger:', e.trigger);
-    });
-}
-
-function addCloseMenuDropdownListener() {
-    $(document).on("click", function (event) {
-        var clickover = $(event.target);
-        var _opened   = $("#main-nav-wrapper .collapse.show");
-        var _parents  = clickover.parents(".collapse.show");
-        if (_opened[0] !== undefined && !clickover.hasClass("collapse") && _parents.length === 0) {
-            $(".nav-item[data-target='#" + _opened[0].id + "']").click();
-        }
     });
 }
 
@@ -374,7 +329,7 @@ $(document).ready(function () {
         loadContent(url);
         return e.preventDefault();
     });
-    
+
     if ($('.pagination-ajax').length > 0) {
         window.addEventListener('popstate', function(e) {
             loadContent(document.location.href);
@@ -451,18 +406,6 @@ $(document).ready(function () {
             $(this).trigger('click');
         });
     }
-    
-    /*
-     * activate category parents of active child
-     
-    var child = $('section.box-categories .nav-panel li.active');
-    if (child.length > 0) {
-        //$(child).parents('.nav-panel li').addClass('active');
-        $(child).parents('.nav-panel li').each(function(i, item) {
-           $(item).find('ul.nav').show();
-        });
-    }
-     */
 
     /*
      * show subcategory on caret click
@@ -547,7 +490,7 @@ $(document).ready(function () {
     /*
      * set bootstrap viewport
      */
-    (function($, document, window, viewport){ 
+    (function($, document, window, viewport){
         var $body = $('body');
 
         $(window).on('resize',
@@ -563,14 +506,11 @@ $(document).ready(function () {
     $('.onchangeSubmit').on('change', function(){
         this.form.submit();
     });
-    navigation();
-    lazyLoadMenu($('body').attr('data-viewport'));
     categoryMenu();
     regionsToState();
     compatibility();
     addValidationListener();
     addCopyToClipboardListener();
-    addCloseMenuDropdownListener();
     initWow();
     setClickableRow();
 

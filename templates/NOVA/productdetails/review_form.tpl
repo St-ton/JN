@@ -32,7 +32,7 @@
                             </div>
                             <hr>
                             {formgroup label-for="stars" label="{lang key='productRating' section='product rating'}"}
-                                {select name="nSterne" id="stars" required=true}
+                                {select name="nSterne" id="stars" class='custom-select' required=true}
                                     {$ratings = [5,4,3,2,1]}
                                     {foreach $ratings as $rating}
                                         <option value="{$rating}"{if isset($oBewertung->nSterne) && (int)$oBewertung->nSterne === $rating} selected{/if}>

@@ -71,17 +71,17 @@
                         {link href=$Artikel->cURLFull}{$Artikel->cName}{/link}
                     </div>
                     <meta itemprop="url" content="{$Artikel->cURLFull}">
+                    {if $Einstellungen.artikeluebersicht.artikeluebersicht_kurzbeschreibung_anzeigen === 'Y' && $Artikel->cKurzBeschreibung}
+                        {block name='productlist-item-list-description'}
+                            <div class="mb-1 mt-n2 d-none d-md-block" itemprop="description">
+                                {$Artikel->cKurzBeschreibung}
+                            </div>
+                        {/block}
+                    {/if}
                 {/block}
                 {form id="buy_form_{$Artikel->kArtikel}" action=$ShopURL class="form form-basket evo-validate" data=["toggle" => "basket-add"]}
                     {row}
                         {col cols=12 xl=4 class='productbox-details'}
-                            {if $Einstellungen.artikeluebersicht.artikeluebersicht_kurzbeschreibung_anzeigen === 'Y' && $Artikel->cKurzBeschreibung}
-                                {block name='productlist-item-list-description'}
-                                    <div class="small mb-1" itemprop="description">
-                                        {$Artikel->cKurzBeschreibung}
-                                    </div>
-                                {/block}
-                            {/if}
                             {block name='productlist-item-list-details'}
                                 {formrow tag='dl' class="text-nowrap"}
                                     {col tag='dt' cols=6}{lang key='productNo'}:{/col}

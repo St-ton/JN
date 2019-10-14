@@ -34,9 +34,9 @@
     {block name='productlist-header-description'}
         {if $oNavigationsinfo->hasData()}
             <div class="desc clearfix mb-5">
-                {if $oNavigationsinfo->getImageURL() !== 'gfx/keinBild.gif' && $oNavigationsinfo->getImageURL() !== 'gfx/keinBild_kl.gif'}
+                {if $oNavigationsinfo->getImageURL() !== $smarty.const.BILD_KEIN_KATEGORIEBILD_VORHANDEN && $oNavigationsinfo->getImageURL() !== 'gfx/keinBild_kl.gif'}
                     {image fluid-grow=true fluid=true
-                        src="{$imageBaseURL}{$oNavigationsinfo->getImageURL()}"
+                        src="{$oNavigationsinfo->getImageURL()}"
                         alt="{if $oNavigationsinfo->getCategory() !== null}{$oNavigationsinfo->getCategory()->cBeschreibung|strip_tags|truncate:40|escape:'html'}{elseif $oNavigationsinfo->getManufacturer() !== null}{$oNavigationsinfo->getManufacturer()->cBeschreibung|strip_tags|truncate:40|escape:'html'}{/if}"
                         class="mb-5"
                     }
@@ -44,23 +44,23 @@
                 <div class="title mb-4">
                     {if $oNavigationsinfo->getName()}
                         {opcMountPoint id='opc_before_heading'}
-                        <h1>{$oNavigationsinfo->getName()}</h1>
+                        <h1 class="h2">{$oNavigationsinfo->getName()}</h1>
                     {/if}
                 </div>
                 {if $Einstellungen.navigationsfilter.kategorie_beschreibung_anzeigen === 'Y'
                     && $oNavigationsinfo->getCategory() !== null
                     && $oNavigationsinfo->getCategory()->cBeschreibung|strlen > 0}
-                    <div class="item_desc custom_content">{$oNavigationsinfo->getCategory()->cBeschreibung}</div>
+                    <p>{$oNavigationsinfo->getCategory()->cBeschreibung}</p>
                 {/if}
                 {if $Einstellungen.navigationsfilter.hersteller_beschreibung_anzeigen === 'Y'
                     && $oNavigationsinfo->getManufacturer() !== null
                     && $oNavigationsinfo->getManufacturer()->cBeschreibung|strlen > 0}
-                    <div class="item_desc custom_content">{$oNavigationsinfo->getManufacturer()->cBeschreibung}</div>
+                    <p>{$oNavigationsinfo->getManufacturer()->cBeschreibung}</p>
                 {/if}
                 {if $Einstellungen.navigationsfilter.merkmalwert_beschreibung_anzeigen === 'Y'
                     && $oNavigationsinfo->getCharacteristicValue() !== null
                     && $oNavigationsinfo->getCharacteristicValue()->cBeschreibung|strlen > 0}
-                    <div class="item_desc custom_content">{$oNavigationsinfo->getCharacteristicValue()->cBeschreibung}</div>
+                    <p>{$oNavigationsinfo->getCharacteristicValue()->cBeschreibung}</p>
                 {/if}
             </div>
         {/if}
@@ -69,12 +69,12 @@
     {block name='productlist-header-subcategories'}
         {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'N' && $oUnterKategorien_arr|@count > 0}
             {opcMountPoint id='opc_before_subcategories'}
-            {row class="row-eq-height content-cats-small clearfix"}
+            {row class="row-eq-height content-cats-small clearfix d-none d-md-flex"}
                 {foreach $oUnterKategorien_arr as $subCategory}
                     {col cols=6 md=4 lg=3}
                         {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'Y'}
                             {link href=$subCategory->getURL()}
-                                {image fluid-grow=true lazy=true src=$subCategory->getImageURL() alt=$subCategory->getName() class="mb-2"}
+                                {image fluid-grow=true lazy=true src=$subCategory->getImage() alt=$subCategory->getName() class="mb-2"}
                             {/link}
                         {/if}
                         {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'B'}
@@ -91,9 +91,9 @@
                             {if $subCategory->hasChildren()}
                                 <hr class="my-3">
                                 <ul class="list-unstyled small subsub">
-                                    {foreach $subCategory->getChildren() as $UnterUnterKat}
+                                    {foreach $subCategory->getChildren() as $subChild}
                                         <li>
-                                            {link href=$UnterUnterKat->getURL() title=$UnterUnterKat->getName()}{$UnterUnterKat->getName()}{/link}
+                                            {link href=$subChild->getURL() title=$subChild->getName()}{$subChild->getName()}{/link}
                                         </li>
                                     {/foreach}
                                 </ul>

@@ -249,6 +249,6 @@ trait PortletHtml
      */
     final public function getDefaultPreviewImageUrl(): string
     {
-        return Shop::getURL() . '/' . \PFAD_GFX . 'keinBild.gif';
+        return Shop::getURL() . '/' . \BILD_KEIN_KATEGORIEBILD_VORHANDEN;
     }
 }

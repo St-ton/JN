@@ -7,19 +7,17 @@
 namespace JTL\Media\Image;
 
 use Exception;
-use FilesystemIterator;
 use Generator;
-use Imagick;
 use JTL\DB\DbInterface;
 use JTL\Media\Image;
 use JTL\Media\IMedia;
 use JTL\Media\MediaImageRequest;
 use JTL\Shop;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
-use SplFileInfo;
 use stdClass;
+use Symfony\Component\Finder\Finder;
 use function Functional\every;
+use function Functional\filter;
+use function Functional\map;
 use function Functional\select;
 
 /**
@@ -33,8 +31,12 @@ abstract class AbstractImage implements IMedia
     /**
      * @var string
      */
-    protected $regEx = '/^bilder\/produkte\/(?P<size>mini|klein|normal|gross)' .
-    '\/(?P<path>(?P<name>[a-zA-Z0-9\-_]+)\.(?P<ext>jpg|jpeg|png|gif))$/';
+    protected $regEx = '';
+
+    /**
+     * @var array
+     */
+    protected static $imageExtensions = ['jpg', 'jpeg', 'jpg', 'webp', 'gif', 'png', 'bmp'];
 
     /**
      * @inheritdoc
@@ -44,7 +46,7 @@ abstract class AbstractImage implements IMedia
         try {
             $request      = '/' . \ltrim($request, '/');
             $mediaReq     = $this->create($request);
-            $allowedNames = $this->getImageNames($mediaReq);
+            $allowedNames = static::getImageNames($mediaReq);
             if (\count($allowedNames) === 0) {
                 throw new Exception('No such image id: ' . (int)$mediaReq->id);
             }
@@ -158,7 +160,7 @@ abstract class AbstractImage implements IMedia
     /**
      * @inheritdoc
      */
-    protected function getImageNames(MediaImageRequest $req): array
+    public static function getImageNames(MediaImageRequest $req): array
     {
         return [];
     }
@@ -252,7 +254,7 @@ abstract class AbstractImage implements IMedia
      */
     public static function getAllImages(int $offset = null, int $limit = null): Generator
     {
-        yield null;
+        yield from [];
     }
 
     /**
@@ -273,7 +275,7 @@ abstract class AbstractImage implements IMedia
         $result     = [];
         $rawImage   = null;
         $rawPath    = $req->getRaw();
-        $extensions = [$req->getExt()];
+        $extensions = [$req->getExt() === 'auto' ? 'jpg' : $req->getExt()];
         if (Image::hasWebPSupport()) {
             $extensions[] = 'webp';
         }
@@ -318,24 +320,31 @@ abstract class AbstractImage implements IMedia
      */
     public static function clearCache($id = null): void
     {
-        $directory = \PFAD_ROOT . MediaImageRequest::getCachePath(static::getType());
-        if ($id !== null) {
-            $directory .= '/' . (int)$id;
-        }
-        try {
-            $rdi = new RecursiveDirectoryIterator(
-                $directory,
-                FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS
-            );
-            foreach (new RecursiveIteratorIterator($rdi, RecursiveIteratorIterator::CHILD_FIRST) as $value) {
-                /** @var SplFileInfo $value */
-                $value->isFile()
-                    ? \unlink($value->getRealPath())
-                    : \rmdir($value->getRealPath());
+        $baseDir     = \realpath(\PFAD_ROOT . MediaImageRequest::getCachePath(static::getType()));
+        $ids         = \is_array($id) ? $id : [$id];
+        $directories = filter(
+            map($ids, function ($e) use ($baseDir) {
+                return $e === null ? $baseDir : \realpath($baseDir . '/' . $e);
+            }),
+            function ($e) use ($baseDir) {
+                return $e !== false && \strpos($e, $baseDir) === 0;
             }
-
-            if ($id !== null) {
-                \rmdir($directory);
+        );
+        try {
+            $finder = new Finder();
+            $finder->ignoreUnreadableDirs()->in($directories);
+            foreach ($finder->files() as $file) {
+                /** @var \Symfony\Component\Finder\SplFileInfo $file */
+                \unlink($file->getRealPath());
+            }
+            foreach (\array_reverse(\iterator_to_array($finder->directories(), true)) as $directory) {
+                /** @var \Symfony\Component\Finder\SplFileInfo $directory */
+                \rmdir($directory->getRealPath());
+            }
+            foreach ($directories as $directory) {
+                if ($directory !== $baseDir) {
+                    \rmdir($directory);
+                }
             }
         } catch (Exception $e) {
         }

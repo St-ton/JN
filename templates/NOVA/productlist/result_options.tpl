@@ -12,14 +12,13 @@
             {row}
             {block name='productlist-result-options-filter-link'}
                 {col cols=12 md=4 class="filter-collapsible-control order-1 order-md-0 d-flex justify-content-between"}
-                    {button variant="light"
+                    {button variant="outline-secondary"
                         data=["toggle" => "collapse", "target" => "#filter-collapsible"]
                         aria=["expanded" => "{if $Einstellungen.template.productlist.initial_display_filter === 'Y'}true{else}false{/if}",
                             "controls" => "filter-collapsible"]
                         role="button"
                     }
                         <span class="fas fa-filter{if $NaviFilter->getFilterCount() > 0} text-primary{/if}"></span> {lang key='filter'}
-                        <i class="fas fa-chevron-down"></i>
                     {/button}
                     {include file='productlist/layout_options.tpl'}
                 {/col}
@@ -46,7 +45,6 @@
                                                     data=["toggle"=> "collapse", "target"=>"#filter-collapse-{$subFilter->getFrontendName()|@seofy}"]
                                                 }
                                                     {$subFilter->getFrontendName()}
-                                                    <i class="float-right ml-3 fas fa-plus"></i>
                                                     <span class="float-right mx-3 font-italic text-right text-truncate w-40 pr-1">
                                                         {foreach $subFilter->getOptions() as $filterOption}
                                                             {assign var=filterIsActive value=$filterOption->isActive() || $NaviFilter->getFilterValue($subFilter->getClassName()) === $filterOption->getValue()}
@@ -72,7 +70,6 @@
                                                 data=["toggle"=> "collapse", "target"=>"#filter-collapse-{$filter->getFrontendName()|@seofy}"]
                                             }
                                                 {$filter->getFrontendName()}
-                                                <i class="float-right ml-3 fas fa-plus"></i>
                                             {/button}
                                             {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}" class="mb-2 py-3 col-12 col-md-4 max-h-150-scroll" visible=$filter->isActive()}
                                                 {block name='boxes-box-filter-pricerange-include-price-slider'}
@@ -94,7 +91,6 @@
                                                     data=["toggle"=> "collapse", "target"=>"#filter-collapse-{$filter->getFrontendName()|@seofy}"]
                                                 }
                                                     {$filter->getFrontendName()}
-                                                    <i class="float-right ml-3 fas fa-plus"></i>
                                                     <span class="float-right mx-3 font-italic text-right text-truncate w-40 pr-1">
                                                         {foreach $filter->getOptions() as $filterOption}
                                                             {*TODO: Preisfilter nicht als aktiv markiert*}
@@ -132,7 +128,6 @@
                                 data=["toggle"=> "collapse", "target"=>"#sorting-collapse"]
                             }
                                 {lang key='sorting' section='productOverview'}
-                                <i class="float-right ml-3 fas fa-plus"></i>
                                 <span class="float-right mx-3 font-italic text-right text-truncate w-40 pr-1">
                                     {foreach $Suchergebnisse->getSortingOptions() as $option}
                                         {if $option->isActive()} {$option->getName()}{/if}

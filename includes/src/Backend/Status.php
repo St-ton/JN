@@ -20,6 +20,9 @@ use JTL\SingletonTrait;
 use JTL\Template;
 use JTL\Update\Updater;
 use stdClass;
+use Systemcheck\Environment;
+use Systemcheck\Platform\Filesystem;
+use Systemcheck\Platform\Hosting;
 use function Functional\some;
 
 /**
@@ -65,7 +68,7 @@ class Status
      */
     protected function getImageCache(): StatsItem
     {
-        return Product::getStats(Image::TYPE_PRODUCT);
+        return Product::getStats();
     }
 
     /**
@@ -138,7 +141,7 @@ class Status
      */
     protected function validFolderPermissions(): bool
     {
-        $permissionStat = (new \Systemcheck_Platform_Filesystem(\PFAD_ROOT))->getFolderStats();
+        $permissionStat = (new Filesystem(\PFAD_ROOT))->getFolderStats();
 
         return $permissionStat->nCountInValid === 0;
     }
@@ -252,8 +255,8 @@ class Status
      */
     protected function hasValidEnvironment(): bool
     {
-        $systemcheck = new \Systemcheck_Environment();
-        $systemcheck->executeTestGroup('Shop4');
+        $systemcheck = new Environment();
+        $systemcheck->executeTestGroup('Shop5');
 
         return $systemcheck->getIsPassed();
     }
@@ -263,15 +266,15 @@ class Status
      */
     protected function getEnvironmentTests(): array
     {
-        return (new \Systemcheck_Environment())->executeTestGroup('Shop5');
+        return (new Environment())->executeTestGroup('Shop5');
     }
 
     /**
-     * @return \Systemcheck_Platform_Hosting
+     * @return Hosting
      */
-    protected function getPlatform(): \Systemcheck_Platform_Hosting
+    protected function getPlatform(): Hosting
     {
-        return new \Systemcheck_Platform_Hosting();
+        return new Hosting();
     }
 
     /**

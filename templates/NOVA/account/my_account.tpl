@@ -216,7 +216,7 @@
                                     {lang key='compareListNoItems'}
                                 {/if}
                             </p>
-                            {link class="btn btn-outline-secondary" href="{get_static_route id='vergleichsliste.php'}"}
+                            {link class="btn btn-outline-secondary btn-sm" href="{get_static_route id='vergleichsliste.php'}"}
                                 {lang key='goToCompareList' section='comparelist'}
                             {/link}
                         {/cardbody}

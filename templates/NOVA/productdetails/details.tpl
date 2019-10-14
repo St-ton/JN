@@ -96,8 +96,8 @@
                                                 {block name='productdetails-details-info-category'}
                                                     {col cols=12 class="product-category word-break"}
                                                         <span class="text-muted">{lang key='category'}: </span>
-                                                        {assign var=i_kat value=$Brotnavi|@count}{assign var=i_kat value=$i_kat-1}
-                                                        <a href="{$Brotnavi[$i_kat]->getURLFull()}" itemprop="category">{$Brotnavi[$i_kat]->getName()}</a>
+                                                        {assign var=cidx value=($Brotnavi|@count)-2}
+                                                        <a href="{$Brotnavi[$cidx]->getURLFull()}" itemprop="category">{$Brotnavi[$cidx]->getName()}</a>
                                                     {/col}
                                                 {/block}
                                             {/if}
@@ -185,7 +185,7 @@
                                 {row}
                                     {block name='productdetails-details-include-price'}
                                         {col}
-                                            {include file='productdetails/price.tpl' Artikel=$Artikel tplscope='detail'}
+                                            {include file='productdetails/price.tpl' Artikel=$Artikel tplscope='detail' priceLarge=true}
                                         {/col}
                                     {/block}
                                     {block name='productdetails-details-include-stock'}

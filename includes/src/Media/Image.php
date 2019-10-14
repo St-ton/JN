@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -239,9 +239,12 @@ class Image
                 ]
             ],
             'naming'                        => [
-                self::TYPE_PRODUCT   => (int)$settings['bilder_artikel_namen'],
-                self::TYPE_CATEGORY  => (int)$settings['bilder_kategorie_namen'],
-                self::TYPE_VARIATION => (int)$settings['bilder_variation_namen']
+                self::TYPE_PRODUCT              => (int)$settings['bilder_artikel_namen'],
+                self::TYPE_CATEGORY             => (int)$settings['bilder_kategorie_namen'],
+                self::TYPE_VARIATION            => (int)$settings['bilder_variation_namen'],
+                self::TYPE_MANUFACTURER         => (int)$settings['bilder_hersteller_namen'],
+                self::TYPE_CHARACTERISTIC       => (int)$settings['bilder_merkmal_namen'],
+                self::TYPE_CHARACTERISTIC_VALUE => (int)$settings['bilder_merkmalwert_namen'],
             ]
         ];
         self::$settings['size'] = self::$settings[self::TYPE_PRODUCT];

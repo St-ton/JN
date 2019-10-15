@@ -12,7 +12,7 @@
     {block name='checkout-index-content'}
 
         <div id="result-wrapper" data-wrapper="true">
-            <div id="checkout">
+            {container id="checkout"}
                 {block name='checkout-index-include-inc-steps'}
                     {include file='checkout/inc_steps.tpl'}
                 {/block}
@@ -30,7 +30,7 @@
                 {elseif $step === 'Bestaetigung'}
                     {include file='checkout/step5_confirmation.tpl'}{*bestellvorgang_bestaetigung*}
                 {/if}
-            </div>
+            {/container}
         </div>
 
         {if (isset($nWarenkorb2PersMerge) && $nWarenkorb2PersMerge === 1)}

@@ -12,6 +12,7 @@
             {include file='snippets/extension.tpl'}
         {/block}
 
+        {container}
         {if $step === 'wunschliste versenden' && $Einstellungen.global.global_wunschliste_freunde_aktiv === 'Y'}
             {block name='snippets-wishlist-content-heading-email'}
                 <div class="h2">{lang key='wishlistViaEmail' section='login'}</div>
@@ -539,6 +540,7 @@
                 {/form}
             {/block}
         {/if}
+        {/container}
     {/block}
 
     {block name='snippets-wishlist-include-footer'}

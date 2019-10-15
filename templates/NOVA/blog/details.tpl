@@ -7,6 +7,7 @@
         {include file='snippets/extension.tpl'}
     {/block}
 
+    {container}
     {if !empty($cNewsErr)}
         {block name='blog-details-alert'}
             {alert variant="danger"}{lang key='newsRestricted' section='news'}{/alert}
@@ -202,4 +203,5 @@
             </article>
         {/block}
     {/if}
+    {/container}
 {/block}

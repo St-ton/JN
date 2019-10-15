@@ -4,43 +4,45 @@
  *}
 {block name='snippets-slider'}
     {if isset($oSlider) && count($oSlider->getSlides()) > 0}
-        {opcMountPoint id='opc_before_slider'}
-        <div class="slider-wrapper theme-{$oSlider->getTheme()}{if $oSlider->getControlNav()} control-nav{/if}{if $oSlider->getDirectionNav()} direction-nav{/if}{if $oSlider->getThumbnail()} thumbnail-nav{/if}">
-            <div id="slider-{$oSlider->getID()}" class="nivoSlider">
-                {block name='snippets-slider-slides'}
+        {container fluid=$isFluid}
+            {opcMountPoint id='opc_before_slider'}
+            <div class="slider-wrapper theme-{$oSlider->getTheme()}{if $oSlider->getControlNav()} control-nav{/if}{if $oSlider->getDirectionNav()} direction-nav{/if}{if $oSlider->getThumbnail()} thumbnail-nav{/if}">
+                <div id="slider-{$oSlider->getID()}" class="nivoSlider">
+                    {block name='snippets-slider-slides'}
+                        {foreach $oSlider->getSlides() as $oSlide}
+                            {assign var=slideTitle value=$oSlide->getTitle()}
+                            {if !empty($oSlide->getText())}
+                                {assign var=slideTitle value="#slide_caption_{$oSlide->getID()}"}
+                            {/if}
+                            {if !empty($oSlide->getLink())}
+                                <a href="{$oSlide->getLink()}"{if !empty($oSlide->getText())} title="{$oSlide->getText()|strip_tags}"{/if} class="slide">
+                            {else}
+                                <div class="slide">
+                            {/if}
+                            {block name='snippets-slider-slide-image'}
+                                {image alt=$oSlide->getTitle() title=$slideTitle src=$oSlide->getAbsoluteImage() data-thumb="{if !empty($oSlide->getAbsoluteThumbnail()) && $oSlider->getThumbnail()}{$oSlide->getAbsoluteThumbnail()}{/if}"}
+                            {/block}
+                            {if !empty($oSlide->getLink())}
+                                </a>
+                            {else}
+                                </div>
+                            {/if}
+                        {/foreach}
+                    {/block}
+                </div>
+                {* slide captions outside of .nivoSlider *}
+                {block name='snippets-slider-slide-captions'}
                     {foreach $oSlider->getSlides() as $oSlide}
-                        {assign var=slideTitle value=$oSlide->getTitle()}
                         {if !empty($oSlide->getText())}
-                            {assign var=slideTitle value="#slide_caption_{$oSlide->getID()}"}
-                        {/if}
-                        {if !empty($oSlide->getLink())}
-                            <a href="{$oSlide->getLink()}"{if !empty($oSlide->getText())} title="{$oSlide->getText()|strip_tags}"{/if} class="slide">
-                        {else}
-                            <div class="slide">
-                        {/if}
-                        {block name='snippets-slider-slide-image'}
-                            {image alt=$oSlide->getTitle() title=$slideTitle src=$oSlide->getAbsoluteImage() data-thumb="{if !empty($oSlide->getAbsoluteThumbnail()) && $oSlider->getThumbnail()}{$oSlide->getAbsoluteThumbnail()}{/if}"}
-                        {/block}
-                        {if !empty($oSlide->getLink())}
-                            </a>
-                        {else}
+                            <div id="slide_caption_{$oSlide->getID()}" class="htmlcaption d-none">
+                                {if isset($oSlide->getTitle())}<strong class="title">{$oSlide->getTitle()}</strong>{/if}
+                                <p class="desc">{$oSlide->getText()}</p>
                             </div>
                         {/if}
                     {/foreach}
                 {/block}
             </div>
-            {* slide captions outside of .nivoSlider *}
-            {block name='snippets-slider-slide-captions'}
-                {foreach $oSlider->getSlides() as $oSlide}
-                    {if !empty($oSlide->getText())}
-                        <div id="slide_caption_{$oSlide->getID()}" class="htmlcaption d-none">
-                            {if isset($oSlide->getTitle())}<strong class="title">{$oSlide->getTitle()}</strong>{/if}
-                            <p class="desc">{$oSlide->getText()}</p>
-                        </div>
-                    {/if}
-                {/foreach}
-            {/block}
-        </div>
+        {/container}
         {block name='snippets-slider-script'}
             {inline_script}<script>
                 {if $oSlider->getUseKB() === false}

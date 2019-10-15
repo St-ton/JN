@@ -368,23 +368,28 @@
         {/block}
     {/if}
 
-    {block name='layout-header-fluid-banner'}
-        {assign var=isFluidBanner value=$Einstellungen.template.theme.banner_full_width === 'Y' && isset($oImageMap)}
-        {if $isFluidBanner}
-            {include file='snippets/banner.tpl'}
-        {/if}
-        {assign var=isFluidSlider value=$Einstellungen.template.theme.slider_full_width === 'Y' && isset($oSlider) && count($oSlider->getSlides()) > 0}
-        {if $isFluidSlider}
-            {include file='snippets/slider.tpl'}
-        {/if}
-    {/block}
     {block name='layout-header-main-wrapper-starttag'}
         <main id="main-wrapper" class="{if $bExclusive} exclusive{/if}{if $hasLeftPanel} aside-active{/if}">
         {opcMountPoint id='opc_before_main'}
     {/block}
+
+    {block name='layout-header-fluid-banner'}
+        {assign var=isFluidBanner value=$Einstellungen.template.theme.banner_full_width === 'Y' && isset($oImageMap)}
+        {if $isFluidBanner}
+            {include file='snippets/banner.tpl' isFluid=true}
+        {/if}
+        {assign var=isFluidSlider value=$Einstellungen.template.theme.slider_full_width === 'Y' && isset($oSlider) && count($oSlider->getSlides()) > 0}
+        {if $isFluidSlider}
+            {include file='snippets/slider.tpl' isFluid=true}
+        {/if}
+    {/block}
+
     {block name='layout-header-content-all-starttags'}
         {block name='layout-header-content-wrapper-starttag'}
-            <div id="content-wrapper" class="{if !$bExclusive && !empty($boxes.left|strip_tags|trim) && $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}container-fluid container-fluid-xl{/if} mt-0 pt-7">
+            <div id="content-wrapper"
+                 class="{if !$bExclusive && !empty($boxes.left|strip_tags|trim) && $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}
+                            container-fluid container-fluid-xl
+                        {/if} mt-0 {if $isFluidBanner || $isFluidSlider}pt-3{else}pt-7{/if}">
         {/block}
 
         {block name='layout-header-breadcrumb'}

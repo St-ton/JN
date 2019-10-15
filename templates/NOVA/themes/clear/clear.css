@@ -14351,10 +14351,114 @@ Supports Thumbs: false
   src: local("Montserrat"), local("Montserrat"), url("../base/fonts/montserrat/Montserrat-SemiBold.eot?") format("eot"), url("../base/fonts/montserrat/Montserrat-SemiBold.woff2") format("woff2"), url("../base/fonts/montserrat/Montserrat-SemiBold.woff") format("woff"), url("../base/fonts/montserrat/Montserrat-SemiBold.ttf") format("truetype"), url("../base/fonts/montserrat/Montserrat-SemiBold.svg#Montserrat") format("svg");
   font-display: swap;
 }
-.container-fluid {
+.container-fluid-xl {
   max-width: 103.125rem;
 }
 
+.row-sm {
+  margin-left: -0.5rem;
+  margin-right: -0.5rem;
+}
+.row-sm > .col,
+.row-sm > [class*=col-] {
+  padding-right: 0.5rem;
+  padding-left: 0.5rem;
+}
+
+.row-lg {
+  margin-left: -2rem;
+  margin-right: -2rem;
+}
+.row-lg > .col,
+.row-lg > [class*=col-] {
+  padding-right: 2rem;
+  padding-left: 2rem;
+}
+
+@media (min-width: 576px) {
+  .sm-row-sm {
+    margin-left: -0.5rem;
+    margin-right: -0.5rem;
+  }
+  .sm-row-sm > .col,
+.sm-row-sm > [class*=col-] {
+    padding-right: 0.5rem;
+    padding-left: 0.5rem;
+  }
+
+  .sm-row-lg {
+    margin-left: -2rem;
+    margin-right: -2rem;
+  }
+  .sm-row-lg > .col,
+.sm-row-lg > [class*=col-] {
+    padding-right: 2rem;
+    padding-left: 2rem;
+  }
+}
+@media (min-width: 768px) {
+  .md-row-sm {
+    margin-left: -0.5rem;
+    margin-right: -0.5rem;
+  }
+  .md-row-sm > .col,
+.md-row-sm > [class*=col-] {
+    padding-right: 0.5rem;
+    padding-left: 0.5rem;
+  }
+
+  .md-row-lg {
+    margin-left: -2rem;
+    margin-right: -2rem;
+  }
+  .md-row-lg > .col,
+.md-row-lg > [class*=col-] {
+    padding-right: 2rem;
+    padding-left: 2rem;
+  }
+}
+@media (min-width: 992px) {
+  .lg-row-sm {
+    margin-left: -0.5rem;
+    margin-right: -0.5rem;
+  }
+  .lg-row-sm > .col,
+.lg-row-sm > [class*=col-] {
+    padding-right: 0.5rem;
+    padding-left: 0.5rem;
+  }
+
+  .lg-row-lg {
+    margin-left: -2rem;
+    margin-right: -2rem;
+  }
+  .lg-row-lg > .col,
+.lg-row-lg > [class*=col-] {
+    padding-right: 2rem;
+    padding-left: 2rem;
+  }
+}
+@media (min-width: 1300px) {
+  .xl-row-sm {
+    margin-left: -0.5rem;
+    margin-right: -0.5rem;
+  }
+  .xl-row-sm > .col,
+.xl-row-sm > [class*=col-] {
+    padding-right: 0.5rem;
+    padding-left: 0.5rem;
+  }
+
+  .xl-row-lg {
+    margin-left: -2rem;
+    margin-right: -2rem;
+  }
+  .xl-row-lg > .col,
+.xl-row-lg > [class*=col-] {
+    padding-right: 2rem;
+    padding-left: 2rem;
+  }
+}
 .badge {
   border: 1px solid transparent;
   text-decoration: none;

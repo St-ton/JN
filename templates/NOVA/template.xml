@@ -135,10 +135,6 @@
     </Settings>
     <Minify>
         <CSS Name="clear.css">
-            <File Path="themes/base/fontawesome/css/all.min.css"/>
-            <File Path="themes/base/nouislider.min.css"/>
-            <File Path="themes/base/slick/slick-lightbox.css"/>
-            <File Path="js/password/password.min.css"/>
             <File Path="themes/clear/clear.css"/>
             <File Path="themes/clear/custom.css"/>
         </CSS>

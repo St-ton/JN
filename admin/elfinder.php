@@ -18,16 +18,13 @@ $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'elfinder_inc.php';
 
 if (Form::validateToken()) {
-    $mediafilesSubdir = 'Bilder';
+    $mediafilesSubdir = STORAGE_OPC;
     $mediafilesType   = Request::verifyGPDataString('mediafilesType');
     $elfinderCommand  = Request::verifyGPDataString('cmd');
     $isCKEditor       = Request::verifyGPDataString('ckeditor') === '1';
     $CKEditorFuncNum  = Request::verifyGPDataString('CKEditorFuncNum');
 
     switch ($mediafilesType) {
-        case 'image':
-            $mediafilesSubdir = 'Bilder';
-            break;
         case 'video':
             $mediafilesSubdir = 'Videos';
             break;
@@ -52,9 +49,7 @@ if (Form::validateToken()) {
 
                     foreach ($result['removed'] as $filename) {
                         foreach ($sizes as $size) {
-                            $scaledFile = PFAD_ROOT . PFAD_MEDIAFILES
-                                . "$mediafilesSubdir/.$size/{$filename['name']}";
-
+                            $scaledFile = PFAD_ROOT . PFAD_MEDIA_IMAGE . 'opc/' . $size . '/' . $filename['name'];
                             if (file_exists($scaledFile)) {
                                 @unlink($scaledFile);
                             }
@@ -68,10 +63,10 @@ if (Form::validateToken()) {
                     // driver for accessing file system (REQUIRED)
                     'driver'        => 'LocalFileSystem',
                     // path to files (REQUIRED)
-                    'path'          => PFAD_ROOT . PFAD_MEDIAFILES . $mediafilesSubdir,
+                    'path'          => PFAD_ROOT . $mediafilesSubdir,
                     // URL to files (REQUIRED)
                     'URL'           => parse_url(
-                        URL_SHOP . '/' . PFAD_MEDIAFILES . $mediafilesSubdir,
+                        URL_SHOP . '/' . $mediafilesSubdir,
                         PHP_URL_PATH
                     ),
                     // to make hash same to Linux one on windows too

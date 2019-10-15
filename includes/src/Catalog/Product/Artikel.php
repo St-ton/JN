@@ -1656,6 +1656,7 @@ class Artikel
             $options->nAttribute                 = 1;
             $options->nArtikelAttribute          = 1;
             $options->nKeineSichtbarkeitBeachten = 1;
+            $options->nStueckliste               = 1;
             $this->oProduktBundleMain->fuelleArtikel((int)$main->kArtikel, $options);
 
             $currency = Frontend::getCurrency();

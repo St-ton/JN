@@ -525,7 +525,6 @@
                                             name="action"
                                             value="update"
                                             block=true
-                                            class="bg-white"
                                             variant="outline-primary"}
                                             <i class="fa fa-sync"></i> {lang key='wishlistUpdate' section='login'}
                                         {/button}

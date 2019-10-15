@@ -249,7 +249,7 @@
         || isset($Xselling->Standard->XSellGruppen) && count($Xselling->Standard->XSellGruppen) > 0
         || isset($Xselling->Kauf->Artikel) && count($Xselling->Kauf->Artikel) > 0
         || isset($oAehnlicheArtikel_arr) && count($oAehnlicheArtikel_arr) > 0}
-            {container}
+            {container fluid=true}
                 {if isset($Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen) && $Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen === 'Y' && isset($Artikel->oStueckliste_arr) && $Artikel->oStueckliste_arr|@count > 0}
                     {block name='productdetails-details-include-product-slider-partslist'}
                         <div class="partslist">

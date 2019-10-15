@@ -1346,10 +1346,10 @@ class Artikel
             $imgNo = (int)$item->nNr;
             $image = new stdClass();
             $this->generateAllImageSizes(false, $imgNo, $item->cPfad);
-            $image->cPfadMini   = $this->getImage(Image::SIZE_XS);
-            $image->cPfadKlein  = $this->getImage(Image::SIZE_SM);
-            $image->cPfadNormal = $this->getImage(Image::SIZE_MD);
-            $image->cPfadGross  = $this->getImage(Image::SIZE_LG);
+            $image->cPfadMini   = $this->images[$imgNo][Image::SIZE_XS];
+            $image->cPfadKlein  = $this->images[$imgNo][Image::SIZE_SM];
+            $image->cPfadNormal = $this->images[$imgNo][Image::SIZE_MD];
+            $image->cPfadGross  = $this->images[$imgNo][Image::SIZE_LG];
             $image->nNr         = $imgNo;
             $image->cURLMini    = $baseURL . $image->cPfadMini;
             $image->cURLKlein   = $baseURL . $image->cPfadKlein;
@@ -1413,8 +1413,7 @@ class Artikel
                 $imagePath = $image->cPfadGross;
                 break;
         }
-
-        if (\file_exists(\PFAD_ROOT . $imagePath)) {
+        if ($imagePath !== null && \file_exists(\PFAD_ROOT . $imagePath)) {
             [$width, $height, $type] = \getimagesize(\PFAD_ROOT . $imagePath);
         } else {
             $req = Product::toRequest($imagePath);
@@ -6094,5 +6093,30 @@ class Artikel
     public function getImages(): array
     {
         return $this->Bilder;
+    }
+
+    /**
+     * @param string $size
+     * @param int    $number
+     * @return string|null
+     */
+    public function getImage(string $size = Image::SIZE_MD, int $number = 1): ?string
+    {
+        $from = $this->Bilder[$number - 1] ?? null;
+        if ($from === null) {
+            return null;
+        }
+        switch ($size) {
+            case Image::SIZE_XS:
+                return $from->cURLMini;
+            case Image::SIZE_SM:
+                return $from->cPfadKlein;
+            case Image::SIZE_MD:
+                return $from->cPfadNormal;
+            case Image::SIZE_LG:
+                return $from->cPfadGross;
+            default:
+                return null;
+        }
     }
 }

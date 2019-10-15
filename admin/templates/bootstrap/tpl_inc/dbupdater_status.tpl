@@ -99,9 +99,6 @@
     </form>
 {/if}
 {if isset($manager) && is_object($manager)}
-    <p>&nbsp;</p>
-    {if $updatesAvailable}
-        {migration_list manager=$manager filter=2 title=__('openMigrations') url=$migrationURL plugin=$pluginID}
-    {/if}
+    {migration_list manager=$manager filter=2 title=__('openMigrations') url=$migrationURL plugin=$pluginID}
     {migration_list manager=$manager filter=1 title=__('successfullMigrations') url=$migrationURL plugin=$pluginID}
 {/if}

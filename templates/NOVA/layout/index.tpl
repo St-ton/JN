@@ -61,15 +61,15 @@
                 {elseif $Link->getLinkType() === $smarty.const.LINKTYP_WRB}
                     <div id="revocation-instruction" class="well well-sm">
                         {opcMountPoint id='opc_before_revocation'}
-                        {container}
-                            {if $WRB !== false}
+                        {if $WRB !== false}
+                            {container}
                                 {if $WRB->cWRBContentHtml}
                                     {$WRB->cWRBContentHtml}
                                 {elseif $WRB->cWRBContentText}
                                     {$WRB->cWRBContentText|nl2br}
                                 {/if}
-                            {/if}
-                        {/container}
+                            {/container}
+                        {/if}
                         {opcMountPoint id='opc_after_revocation'}
                     </div>
                 {elseif $Link->getLinkType() === $smarty.const.LINKTYP_WRB_FORMULAR}

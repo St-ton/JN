@@ -43,7 +43,7 @@
                     || ((isset($activeParent)
                         && isset($activeParent->kKategorie))
                         && $activeParent->kKategorie == $category->getID())} active{/if}">
-                        {link href='#' title=$category->getName() class="nav-link dropdown-toggle" target="_self"}
+                        {link href="{$category->getURL()}" title=$category->getName() class="nav-link dropdown-toggle" target="_self"}
                             {$category->getName()}
                         {/link}
                         <div class="dropdown-menu">

@@ -1,7 +1,14 @@
 @import 'functions';
-
 // theme variables
 @import "variables";
+
+@import "../../base/fontawesome/scss/fontawesome.scss";
+@import "../../base/fontawesome/scss/brands.scss";
+@import "../../base/fontawesome/scss/regular.scss";
+@import "../../base/fontawesome/scss/solid.scss";
+@import "../../base/nouislider.min";
+@import "../../base/slick/slick-lightbox";
+@import "../../../js/password/password.min";
 
 // bootstrap
 @import "../../base/bootstrap/scss/bootstrap.scss";

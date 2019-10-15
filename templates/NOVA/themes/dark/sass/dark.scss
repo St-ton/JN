@@ -1,0 +1,10 @@
+@import '../../base/sass/functions';
+
+@import 'variables';
+
+@import 'allstyles';
+
+header, #main-wrapper {
+  background: $body-bg;
+  color: $body-color;
+}

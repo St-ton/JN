@@ -7,7 +7,7 @@ $gray-medium:                       #ebebeb;
 $gray-darker:                       #525252;
 $sand:                              #ebebeb;
 $cool-white:                        #f8f8f8;
-$primary:                           #F8BF00;
+$primary:                           #0ef83c;
 $secondary:                         transparent;
 $success:                           #088319;
 $bg-success:                        #CDE1D6;
@@ -130,8 +130,8 @@ $transition-base			: all $transition-base-duration $transition-base-timing;
 
 $highlight-border-size:             .375rem;
 
-$body-bg:                           $gray-100;
-$body-color:                        $gray-600;
+$body-bg: #343434;
+$body-color:                        #eee;
 
 $text-muted:                        $gray;
 $input-color-placeholder:           $gray;

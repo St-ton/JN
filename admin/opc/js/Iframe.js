@@ -54,6 +54,10 @@ class Iframe
 
             this.ctx.opc = this.opc;
 
+            this.jq('[data-opc-portlet-css-link=true]').each((e, elm) => {
+                this.loadedStylesheets.push(elm.href);
+            });
+
             this.loadStylesheet(this.shopUrl + '/admin/opc/css/iframe.css');
             this.loadStylesheet(this.shopUrl + '/templates/NOVA/themes/base/fontawesome/css/all.min.css');
 

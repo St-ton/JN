@@ -94,7 +94,7 @@
                 </noscript>
             {/if}
             {foreach $opcPageService->getCurPage()->getCssList($opc->isEditMode()) as $cssFile => $cssTrue}
-                <link rel="preload" href="{$cssFile}" as="style"
+                <link rel="preload" href="{$cssFile}" as="style" data-opc-portlet-css-link="true"
                       onload="this.onload=null;this.rel='stylesheet'">
                 <noscript>
                     <link rel="stylesheet" href="{$cssFile}">

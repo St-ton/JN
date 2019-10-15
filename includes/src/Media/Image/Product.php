@@ -65,7 +65,7 @@ class Product extends AbstractImage
     public static function getAllImages(int $offset = null, int $limit = null): Generator
     {
         $cols = '';
-        switch (Image::getSettings()['naming']['product']) {
+        switch (Image::getSettings()['naming'][Image::TYPE_PRODUCT]) {
             case 1:
                 $cols = ', tartikel.cArtNr';
                 break;
@@ -108,7 +108,7 @@ class Product extends AbstractImage
      */
     public static function getCustomName($mixed): string
     {
-        switch (Image::getSettings()['naming']['product']) {
+        switch (Image::getSettings()['naming'][Image::TYPE_PRODUCT]) {
             case 0:
                 $result = (string)$mixed->kArtikel;
                 break;

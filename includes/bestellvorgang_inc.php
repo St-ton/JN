@@ -27,6 +27,7 @@ use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Plugin\Helper as PluginHelper;
+use JTL\Plugin\Payment\LegacyMethod;
 use JTL\Plugin\PluginInterface;
 use JTL\Plugin\State;
 use JTL\Session\Frontend;
@@ -320,7 +321,7 @@ function pruefeBestaetigungStep(): void
     if (isset($_SESSION['Zahlungsart'], $_SESSION['Zahlungsart']->cZusatzschrittTemplate)
         && mb_strlen($_SESSION['Zahlungsart']->cZusatzschrittTemplate) > 0
     ) {
-        $paymentMethod = PaymentMethod::create($_SESSION['Zahlungsart']->cModulId);
+        $paymentMethod = LegacyMethod::create($_SESSION['Zahlungsart']->cModulId);
         if (is_object($paymentMethod) && !$paymentMethod->validateAdditional()) {
             $step = 'Zahlung';
         }
@@ -1278,7 +1279,7 @@ function zahlungsartKorrekt(int $paymentMethodID): int
                 default:
                     // Plugin-Zusatzschritt
                     $additionalInfoExists = true;
-                    $paymentMethod        = PaymentMethod::create($paymentMethod->cModulId);
+                    $paymentMethod        = LegacyMethod::create($paymentMethod->cModulId);
                     if ($paymentMethod && !$paymentMethod->handleAdditional($_POST)) {
                         $additionalInfoExists = false;
                     }
@@ -1659,19 +1660,12 @@ function zahlungsartGueltig($paymentMethod): bool
         }
         global $oPlugin;
         $oPlugin = $plugin;
-
-        $pluginPaymentMethod = $plugin->getPaymentMethods()->getMethodByID($moduleID);
-        if ($pluginPaymentMethod === null) {
-            return false;
-        }
-        $className        = $pluginPaymentMethod->getClassName();
-        $method           = new $className($moduleID);
-        $method->cModulId = $moduleID;
+        $method  = LegacyMethod::create($moduleID);
         /** @var PaymentMethod $method */
-        if ($method && $method->isSelectable() === false) {
+        if ($method === null || $method->isSelectable() === false) {
             return false;
         }
-        if ($method && !$method->isValidIntern()) {
+        if (!$method->isValidIntern()) {
             Shop::Container()->getLogService()->withName('cModulId')->debug(
                 'Die Zahlungsartprüfung (' . $moduleID . ') wurde nicht erfolgreich validiert (isValidIntern).',
                 [$moduleID]

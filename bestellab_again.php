@@ -8,6 +8,7 @@ use JTL\Checkout\Bestellung;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Plugin\Helper;
+use JTL\Plugin\Payment\LegacyMethod;
 use JTL\Session\Frontend;
 use JTL\Shop;
 
@@ -114,7 +115,7 @@ if ($pluginID > 0) {
     $loader = Helper::getLoaderByPluginID($pluginID, $db);
     $plugin = $loader->init($pluginID);
     if ($plugin !== null) {
-        $paymentMethod = PaymentMethod::create($moduleID, 1);
+        $paymentMethod = LegacyMethod::create($moduleID, 1);
         if ($paymentMethod !== null) {
             if ($paymentMethod->validateAdditional()) {
                 $paymentMethod->preparePaymentProcess($order);

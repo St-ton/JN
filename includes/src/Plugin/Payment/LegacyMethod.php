@@ -8,8 +8,10 @@
 
 namespace JTL\Plugin\Payment;
 
+use InvalidArgumentException;
 use JTL\Cart\Cart;
 use JTL\Checkout\Bestellung;
+use JTL\Plugin\Helper as PluginHelper;
 use PaymentMethod;
 
 /**
@@ -429,10 +431,42 @@ class LegacyMethod
 
     /**
      * @param string $moduleID
+     * @param int    $nAgainCheckout
      * @return PaymentMethod|MethodInterface|null
      */
-    public static function create($moduleID)
+    public static function create($moduleID, $nAgainCheckout = 0)
     {
-        return Method::create($moduleID);
+        global $plugin;
+        global $oPlugin;
+        $tmpPlugin     = $plugin;
+        $paymentMethod = null;
+        $pluginID      = PluginHelper::getIDByModuleID($moduleID);
+        if ($pluginID > 0) {
+            $loader = PluginHelper::getLoaderByPluginID($pluginID);
+            try {
+                $plugin = $loader->init($pluginID);
+            } catch (InvalidArgumentException $e) {
+                $plugin = null;
+            }
+            $oPlugin = $plugin;
+            if ($plugin !== null) {
+                $pluginPaymentMethod = $plugin->getPaymentMethods()->getMethodByID($moduleID);
+                if ($pluginPaymentMethod === null) {
+                    return $paymentMethod;
+                }
+                $classFile = $pluginPaymentMethod->getClassFilePath();
+                if (\file_exists($classFile)) {
+                    require_once $classFile;
+                    $className               = $pluginPaymentMethod->getClassName();
+                    $paymentMethod           = new $className($moduleID, $nAgainCheckout);
+                    $paymentMethod->cModulId = $moduleID;
+                }
+            }
+        } elseif ($moduleID === 'za_null_jtl') {
+            $paymentMethod = new FallbackMethod('za_null_jtl');
+        }
+        $plugin = $tmpPlugin;
+
+        return $paymentMethod;
     }
 }

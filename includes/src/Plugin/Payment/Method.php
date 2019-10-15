@@ -668,15 +668,17 @@ class Method implements MethodInterface
     /**
      * @param string $moduleID
      * @param int    $nAgainCheckout
-     * @return MethodInterface|Null
+     * @return MethodInterface|null
      */
     public static function create(string $moduleID, int $nAgainCheckout = 0): ?MethodInterface
     {
-        global $plugin;
-        global $oPlugin;
-        $tmpPlugin     = $plugin;
+        if ($moduleID === 'za_null_jtl') {
+            return new FallbackMethod('za_null_jtl');
+        }
+
         $paymentMethod = null;
         $pluginID      = PluginHelper::getIDByModuleID($moduleID);
+
         if ($pluginID > 0) {
             $loader = PluginHelper::getLoaderByPluginID($pluginID);
             try {
@@ -684,24 +686,21 @@ class Method implements MethodInterface
             } catch (InvalidArgumentException $e) {
                 $plugin = null;
             }
-            $oPlugin = $plugin;
             if ($plugin !== null) {
                 $pluginPaymentMethod = $plugin->getPaymentMethods()->getMethodByID($moduleID);
                 if ($pluginPaymentMethod === null) {
-                    return $paymentMethod;
+                    return null;
                 }
-                $classFile = $pluginPaymentMethod->getClassFilePath();
-                if (\file_exists($classFile)) {
-                    require_once $classFile;
-                    $className               = $pluginPaymentMethod->getClassName();
-                    $paymentMethod           = new $className($moduleID, $nAgainCheckout);
-                    $paymentMethod->cModulId = $moduleID;
+                $className = $pluginPaymentMethod->getClassName();
+                if (class_exists($className)) {
+                    $paymentMethod = new $className($moduleID, $nAgainCheckout);
+                    if (!is_a($paymentMethod, MethodInterface::class)) {
+                        unset($paymentMethod);
+                        $paymentMethod = null;
+                    }
                 }
             }
-        } elseif ($moduleID === 'za_null_jtl') {
-            $paymentMethod = new FallbackMethod('za_null_jtl');
         }
-        $plugin = $tmpPlugin;
 
         return $paymentMethod;
     }

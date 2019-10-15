@@ -137,7 +137,7 @@
                                         {/block}
                                         {/cardheader}
                                         {collapse id="coupon-form"}
-                                            {cardbody class="bg-info"}
+                                            {cardbody}
                                             {block name='basket-index-coupon-form'}
                                                 {form class="form-inline evo-validate" id="basket-coupon-form" method="post" action="{get_static_route id='warenkorb.php'}"}
                                                     {formgroup class="mw-100{if !empty($invalidCouponCode)} has-error{/if}"}

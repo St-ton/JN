@@ -46,7 +46,7 @@
                 {input type="hidden" name="r" value=$oRedirect->nRedirect}
                 {input type="hidden" name="cURL" value=$oRedirect->cURL}
             {/if}
-            {row}
+            {formrow}
                 {col cols=12 lg=6}
                     {button type="submit" variant="primary" block=true}
                         {lang key='login' section='checkout'}
@@ -57,7 +57,7 @@
                         {lang key='forgotPassword'}
                     {/link}
                 {/col}
-            {/row}
+            {/formrow}
         {/formgroup}
     {/block}
 {/block}

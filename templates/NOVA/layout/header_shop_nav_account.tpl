@@ -54,7 +54,7 @@
                     {link href="{get_static_route id='pass.php'}" rel="nofollow" title="{lang key='forgotPassword'}" class="d-block px-5 pt-0 pb-2"}
                         {lang key='forgotPassword'}
                     {/link}
-                    {link href="{get_static_route id='registrieren.php'}" rel="nofollow" title="{lang key='registerNow'}" class="d-block px-5 py-3 bg-info"}
+                    {link href="{get_static_route id='registrieren.php'}" rel="nofollow" title="{lang key='registerNow'}" class="d-block px-5 py-3 bg-gray-light"}
                         {lang key='newHere'} <span class="text-decoration-underline">{lang key='registerNow'}</span>
                     {/link}
                 {/block}

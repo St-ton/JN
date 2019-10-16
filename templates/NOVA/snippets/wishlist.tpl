@@ -531,8 +531,7 @@
                                             title="{lang key='wishlistUpdate' section='login'}"
                                             name="action"
                                             value="update"
-                                            block=true
-                                            class="bg-white"}
+                                            block=true}
                                             <i class="fa fa-sync"></i> {lang key='wishlistUpdate' section='login'}
                                         {/button}
                                     {/if}

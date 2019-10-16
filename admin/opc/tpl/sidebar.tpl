@@ -53,7 +53,8 @@
                         {foreach $group->getPortlets() as $i => $portlet}
                             <button type="button" class="portletButton" draggable="true"
                                     data-portlet-class="{$portlet->getClass()}"
-                                    data-portlet-group="{$groupId}">
+                                    data-portlet-group="{$groupId}"
+                                    data-portlet-css="{$portlet->getCssFile(true)}">
                                 <span class="portletBtnInner">
                                     {$portlet->getButtonHtml()}
                                 </span>

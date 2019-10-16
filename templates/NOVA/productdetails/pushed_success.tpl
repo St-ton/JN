@@ -11,7 +11,7 @@
         {/if}
         {assign var=showXSellingCart value=isset($Xselling->Kauf) && count($Xselling->Kauf->Artikel) > 0}
         {if $card}
-            <div class="text-center card-header bg-success alert-success">
+            <div class="text-center card-header alert-success">
                 {if isset($cartNote)}
                     {block name='productdetails-pushed-success-cart-note-heading'}
                         {$cartNote}

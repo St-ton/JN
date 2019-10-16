@@ -12,8 +12,14 @@
                     {assign var=alt value=$Artikel->cName}
                 {/if}
                 <div class="image-box">
-                    {*{image data=["lazy" => $Artikel->Bilder[0]->cURLKlein] src="{$imageBaseURL}gfx/trans.png" alt=$alt fluid=true}*}
-                    {image lazy=true src=$Artikel->Bilder[0]->cURLKlein alt=$alt fluid=true webp=true}
+                    {image fluid=true webp=true lazy=true
+                        alt=$Artikel->cName
+                        src=$Artikel->Bilder[0]->cURLKlein
+                        srcset="{$Artikel->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                            {$Artikel->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                            {$Artikel->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                        sizes="200px"
+                    }
                 </div>
                 <meta itemprop="image" content="{$Artikel->Bilder[0]->cURLNormal}">
                 <meta itemprop="url" content="{$Artikel->cURLFull}">

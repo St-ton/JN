@@ -26,9 +26,15 @@
                 }
                     <div class="align-items-center d-flex">
                         {if $Einstellungen.navigationsfilter.hersteller_anzeigen_als == 'B'}
-                            {image src=$filterOption->getData('cBildpfadKlein') class="vmiddle filter-img"}
+                            {image lazy=true webo=true
+                                src=$filterOption->getData('cBildpfadKlein')
+                                class="vmiddle filter-img"
+                            }
                         {elseif $Einstellungen.navigationsfilter.hersteller_anzeigen_als === 'BT'}
-                            {image src=$filterOption->getData('cBildpfadKlein') class="vmiddle filter-img"}
+                            {image lazy=true webp=true
+                                src=$filterOption->getData('cBildpfadKlein')
+                                class="vmiddle filter-img"
+                            }
                             <span class="word-break">{$filterOption->getName()}</span>
                             <span class="badge badge-outline-secondary ml-auto">{$filterOption->getCount()}</span>
                         {elseif $Einstellungen.navigationsfilter.hersteller_anzeigen_als === 'T'}
@@ -46,10 +52,10 @@
             {button
                 variant="link"
                 role="button"
-                class="text-right p-0"
+                class="text-right p-0 d-block"
                 data=["toggle"=> "collapse", "target"=>"#box-collps-filter{$filter->getNiceName()}"]
                 block=true}
-                {lang key='showAll'} <i class="fas fa-chevron-down"></i>
+                {lang key='showAll'}
             {/button}
         {/if}
     {/nav}

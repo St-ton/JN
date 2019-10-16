@@ -10,3 +10,9 @@ msgstr "https://jtl-url.de/6jdo7"
 
 msgid "bilderDesc"
 msgstr "Image settings"
+
+msgid "newscategory"
+msgstr "News category"
+
+msgid "News"
+msgstr "News"

@@ -10,3 +10,9 @@ msgstr "https://jtl-url.de/kgce4"
 
 msgid "bilderDesc"
 msgstr "Bildeinstellungen"
+
+msgid "newscategory"
+msgstr "Newskategorie"
+
+msgid "News"
+msgstr "News"

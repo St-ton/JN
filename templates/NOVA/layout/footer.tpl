@@ -175,48 +175,6 @@
                             {/row}{* /row footer-additional *}
                         {/if}
                     {/block}{* /footer-additional *}
-                    {row}
-                        {block name='layout-footer-language'}
-                            {if isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
-                                {dropdown
-                                    id="language-dropdown-footer"
-                                    variant="link btn-sm"
-                                    class="d-block d-md-none col-6 text-center language-dropdown"
-                                    text="<i class='fas fa-language'></i> {lang key='language'}"}
-                                    {foreach $smarty.session.Sprachen as $oSprache}
-                                        {dropdownitem href="{$oSprache->url}" rel="nofollow" }
-                                            {$oSprache->displayLanguage}
-                                        {/dropdownitem}
-                                    {/foreach}
-                                {/dropdown}
-                            {/if}
-                        {/block}
-                        {block name='layout-footer-currency'}
-                            {if isset($smarty.session.Waehrungen) && $smarty.session.Waehrungen|@count > 1}
-                                {dropdown
-                                    id="currency-dropdown-footer"
-                                    variant="link btn-sm"
-                                    class="d-block d-md-none col-6 text-center currency-dropdown"
-                                    text="
-                                        {if $smarty.session.Waehrung->getCode() === 'EUR'}
-                                            <i class='fas fa-euro-sign' title='{$smarty.session.Waehrung->getName()}'></i> {lang key='currency'}
-                                        {elseif $smarty.session.Waehrung->getCode() === 'USD'}
-                                            <i class='fas fa-dollar-sign' title='{$smarty.session.Waehrung->getName()}'></i> {lang key='currency'}
-                                        {elseif $smarty.session.Waehrung->getCode() === 'GBP'}
-                                            <i class='fas fa-pound-sign'' title='{$smarty.session.Waehrung->getName()}''></i> {lang key='currency'}
-                                        {else}
-                                            {$smarty.session.Waehrung->getName()}
-                                        {/if}"
-                                }
-                                    {foreach $smarty.session.Waehrungen as $oWaehrung}
-                                        {dropdownitem href=$oWaehrung->getURLFull() rel="nofollow"}
-                                            {$oWaehrung->getName()}
-                                        {/dropdownitem}
-                                    {/foreach}
-                                {/dropdown}
-                            {/if}
-                        {/block}
-                    {/row}
                     <div class="footnote-vat">
                         {if $NettoPreise == 1}
                             {lang key='footnoteExclusiveVat' assign='footnoteVat'}

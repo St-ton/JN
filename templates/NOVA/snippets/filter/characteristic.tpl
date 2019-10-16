@@ -25,7 +25,11 @@
                     <div class="align-items-center d-flex">
                         <i class="far fa-{if $attributeValue->isActive()}check-{/if}square text-muted mr-2"></i>
                         {if !empty($attributeImageURL)}
-                            {image src=$attributeImageURL alt=$attributeValue->getValue()|escape:'html' class="vmiddle"}
+                            {image lazy=true webp=true
+                                src=$attributeImageURL
+                                alt=$attributeValue->getValue()|escape:'html'
+                                class="vmiddle"
+                            }
                         {/if}
                         <span class="word-break mr-3">{$attributeValue->getValue()|escape:'html'}</span>
                         <span class="badge badge-outline-secondary ml-auto">{$attributeValue->getCount()}</span>
@@ -49,7 +53,11 @@
                         <div class="align-items-center d-flex">
                             <i class="far fa-{if $attributeValue->isActive()}check-{/if}square text-muted mr-2"></i>
                             {if !empty($attributeImageURL)}
-                                {image src=$attributeImageURL alt=$attributeValue->getValue()|escape:'html' class="vmiddle"}
+                                {image lazy=true webp=true
+                                    src=$attributeImageURL
+                                    alt=$attributeValue->getValue()|escape:'html'
+                                    class="vmiddle"
+                                }
                             {/if}
                             <span class="word-break">{$attributeValue->getValue()|escape:'html'}</span>
                             <span class="badge badge-outline-secondary ml-auto">{$attributeValue->getCount()}</span>
@@ -61,7 +69,8 @@
                         data=["toggle"=>"tooltip", "placement"=>"top", "boundary"=>"window"]
                         class="{if $attributeValue->isActive()}active{/if}"
                     }
-                        {image src=$attributeImageURL webp=true
+                        {image lazy=true  webp=true
+                            src=$attributeImageURL
                             alt=$attributeValue->getValue()|escape:'html'
                             title="{$attributeValue->getValue()|escape:'html'}: {$attributeValue->getCount()}"
                             class="vmiddle filter-img"
@@ -75,7 +84,8 @@
                     }
                         <div class="align-items-center d-flex">
                             {if !empty($attributeImageURL)}
-                                {image src=$attributeImageURL webp=true
+                                {image lazy=true webp=true
+                                    src=$attributeImageURL
                                     alt=$attributeValue->getValue()|escape:'html'
                                     title="{$attributeValue->getValue()|escape:'html'}: {$attributeValue->getCount()}"
                                     class="vmiddle filter-img"
@@ -96,10 +106,10 @@
         </div>
         {button variant="link"
             role="button"
-            class="text-right p-0"
+            class="text-right p-0 d-block"
             data=["toggle"=> "collapse", "target"=>"#box-collps-filter-attribute-{$Merkmal->getValue()}"]
             block=true}
-            {lang key='showAll'} <i class="fas fa-chevron-down"></i>
+            {lang key='showAll'}
         {/button}
     {/if}
 {/block}

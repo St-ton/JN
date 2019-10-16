@@ -23240,16 +23240,14 @@ aside .badge-light {
 .nmbr-cfg-group {
   display: flex;
   z-index: 1;
+  font-family: Montserrat, sans-serif;
+  font-weight: 600;
+}
+.nmbr-cfg-group .btn:hover {
+  background-color: #f5f7fa;
 }
 .nmbr-cfg-group input {
   border-radius: 0;
-}
-.nmbr-cfg-group .btn-decrement, .nmbr-cfg-group .btn-increment {
-  color: #525252;
-  background-color: #fff;
-  background-clip: padding-box;
-  border: 1px solid #707070;
-  z-index: 2;
 }
 .nmbr-cfg-group .btn-decrement:focus, .nmbr-cfg-group .btn-increment:focus {
   color: #525252;

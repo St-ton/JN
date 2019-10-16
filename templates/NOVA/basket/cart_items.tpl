@@ -48,7 +48,11 @@
                             {col cols=3 xl=2 class="h-100"}
                                 {if !empty($oPosition->Artikel->cVorschaubild)}
                                     {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}
-                                        {image src=$oPosition->Artikel->cVorschaubild alt=$oPosition->cName|trans fluid=true}
+                                        {image lazy=true webp=true
+                                            src=$oPosition->Artikel->cVorschaubild
+                                            alt=$oPosition->cName|trans
+                                            fluid=true
+                                        }
                                     {/link}
                                 {/if}
                             {/col}

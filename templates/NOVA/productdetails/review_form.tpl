@@ -26,7 +26,15 @@
                             <div class="alert alert-info">{lang key='shareYourRatingGuidelines' section='product rating'}.</div>
                             <div class="vmiddle">
                                 {if !empty($Artikel->Bilder[0]->cPfadMini)}
-                                    {image alt=$Artikel->cName src=$Artikel->Bilder[0]->cURLMini class="image vmiddle"}
+                                    {image webp=true lazy=true
+                                        src=$Artikel->Bilder[0]->cURLMini
+                                        srcset="{$Artikel->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                {$Artikel->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                {$Artikel->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                        sizes="200px"
+                                        alt=$Artikel->cName
+                                        class="vmiddle"
+                                    }
                                 {/if}
                                 <span class="vmiddle">{$Artikel->cName}</span>
                             </div>

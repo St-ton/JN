@@ -3,9 +3,9 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='productdetails-bundle'}
-{if !empty($Products)}
-    {block name='productdetails-bundle-form'}
-        {form action="{if !empty($ProductMain->cURLFull)}{$ProductMain->cURLFull}{else}index.php{/if}" method="post" id="form_bundles" class="evo-validate"}
+    {if !empty($Products)}
+        {block name='productdetails-bundle-form'}
+            {form action="{if !empty($ProductMain->cURLFull)}{$ProductMain->cURLFull}{else}index.php{/if}" method="post" id="form_bundles" class="evo-validate"}
             {block name='productdetails-bundle-hidden-inputs'}
                 {input type="hidden" name="a" value=$ProductMain->kArtikel}
                 {input type="hidden" name="addproductbundle" value="1"}
@@ -40,7 +40,7 @@
                     {/row}
                 {/block}
             {/if}
-        {/form}
-    {/block}
-{/if}
+            {/form}
+        {/block}
+    {/if}
 {/block}

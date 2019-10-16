@@ -7,7 +7,10 @@
         {opcMountPoint id='opc_before_banner'}
         <div class="banner mb-5">
             {block name='snippets-banner-map'}
-                {image alt=$oImageMap->cTitel src=$oImageMap->cBildPfad fluid=true}
+                {image fluid=true lazy=true
+                    src=$oImageMap->cBildPfad
+                    alt=$oImageMap->cTitel
+                }
                 {foreach $oImageMap->oArea_arr as $oImageMapArea}
                     {strip}
                         {link href=$oImageMapArea->cUrl class="area {$oImageMapArea->cStyle}" style="left:{math equation="100/bWidth*posX" bWidth=$oImageMap->fWidth posX=$oImageMapArea->oCoords->x}%;top:{math equation="100/bHeight*posY" bHeight=$oImageMap->fHeight posY=$oImageMapArea->oCoords->y}%;width:{math equation="100/bWidth*aWidth" bWidth=$oImageMap->fWidth aWidth=$oImageMapArea->oCoords->w}%;height:{math equation="100/bHeight*aHeight" bHeight=$oImageMap->fHeight aHeight=$oImageMapArea->oCoords->h}%" title="{$oImageMapArea->cTitel|strip_tags|escape:'html'|escape:'quotes'}"}
@@ -16,7 +19,15 @@
                                 <div class="area-desc">
                                     <div class="text-center mb-3">
                                         {if $oImageMapArea->oArtikel}
-                                            {image src=$oArtikel->cVorschaubild alt=$oArtikel->cName|strip_tags|escape:'quotes'|truncate:60 fluid=true class="mx-auto"}
+                                            {image fluid=true webp=true
+                                                src=$oArtikel->Bilder[0]->cURLMini
+                                                srcset="{$Artikel->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                    {$Artikel->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                    {$Artikel->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                                alt=$oArtikel->cName|strip_tags|escape:'quotes'|truncate:60
+                                                sizes="auto"
+                                                class="mx-auto"
+                                            }
                                         {/if}
                                     </div>
                                     {*{if $oImageMapArea->oArtikel}

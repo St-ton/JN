@@ -89,6 +89,9 @@ header > [class*="container"],
   box-shadow: 0 2px 16px 0 rgba(0,0,0,0.06);
 }
 
+#navbarToggler {
+  z-index: 1;
+}
 //#evo-nav-wrapper {
 //  box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.06);
 //  height: 209px;
@@ -108,7 +111,6 @@ header > [class*="container"],
 //    }
 //  }
 //}
-
 
 header > [class*="container"],
 #main-wrapper #content-wrapper { box-shadow: none; background: transparent; }
@@ -354,7 +356,10 @@ ul.partlist-items {
         img {
           padding: 0;
           width: auto;
-          height: 100%;
+          height: 65px;
+        }
+        .label-variation, .label {
+          display: block;
         }
       }
       &.active img{
@@ -1343,7 +1348,7 @@ a.no-deco {
   text-align: right;
 }
 .nws-preview {
-  height: 200px;
+  height: 250px;
   img {
     object-fit: cover;
     width: 100%;

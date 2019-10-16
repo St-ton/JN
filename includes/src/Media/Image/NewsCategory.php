@@ -71,7 +71,7 @@ class NewsCategory extends AbstractImage
      */
     public static function getCustomName($mixed): string
     {
-        $result = \method_exists($mixed, 'getName') ? $mixed->getName() : $mixed->cName;
+        $result = \method_exists($mixed, 'getName') ? $mixed->getName() : $mixed->title;
 
         return empty($result) ? 'image' : Image::getCleanFilename($result);
     }

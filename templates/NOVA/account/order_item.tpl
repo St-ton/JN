@@ -13,7 +13,10 @@
                                 {if !empty($oPosition->Artikel->cVorschaubild)}
                                     {block name='account-order-item-image'}
                                         {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}
-                                            {image src=$oPosition->Artikel->cVorschaubild alt=$oPosition->cName|trans fluid=true}
+                                            {image webp=true fluid=true lazy=true
+                                                src=$oPosition->Artikel->cVorschaubild
+                                                alt=$oPosition->cName|trans
+                                            }
                                         {/link}
                                     {/block}
                                 {/if}

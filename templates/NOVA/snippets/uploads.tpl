@@ -29,6 +29,7 @@
                                 {/col}
                             {/block}
                         {/if}
+
                         {block name='snippets-uploads-scheme-product-data-main'}
                             {col cols=12}
                                 {block name='snippets-uploads-scheme-product-input'}
@@ -43,7 +44,19 @@
                                     </div>
                                 {/block}
                                 {block name='snippets-uploads-scheme-product-script'}
-                                    {inline_script}<script>
+                                    {inline_script}
+                                        {$availableLocale = [
+                                        'ar', 'az', 'bg', 'ca', 'cr', 'cs', 'da', 'de', 'el', 'es', 'et', 'fa', 'fi', 'fr', 'gl', 'he', 'hu', 'id',
+                                        'it', 'ja', 'ka', 'kr', 'kz', 'lt', 'nl', 'no', 'pl', 'pt', 'ro', 'ru', 'sk', 'sl', 'sv', 'th', 'tr', 'uk',
+                                        'uz', 'vi', 'zh'
+                                        ]}
+                                        {if isset($smarty.session.currentLanguage->cISO639)
+                                        && $smarty.session.currentLanguage->cISO639|in_array:$availableLocale}
+                                            {$uploaderLang = $smarty.session.currentLanguage->cISO639}
+                                        {else}
+                                            {$uploaderLang = 'LANG'}
+                                        {/if}
+                                        <script>
                                         $(function () {
                                             var $el =  $('#fileinput{$oUploadSchema@index}');
                                             $el.fileinput({

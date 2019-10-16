@@ -12,13 +12,13 @@
         <div class="productbox-inner">
             {row}
                 {col cols=12}
-                    {block name='productlist-item-box-image'}
-                        <div class="productbox-image">
-                            {if isset($Artikel->Bilder[0]->cAltAttribut)}
-                                {assign var=alt value=$Artikel->Bilder[0]->cAltAttribut|strip_tags|truncate:60|escape:'html'}
-                            {else}
-                                {assign var=alt value=$Artikel->cName}
-                            {/if}
+                    <div class="productbox-image">
+                        {if isset($Artikel->Bilder[0]->cAltAttribut)}
+                            {assign var=alt value=$Artikel->Bilder[0]->cAltAttribut|strip_tags|truncate:60|escape:'html'}
+                        {else}
+                            {assign var=alt value=$Artikel->cName}
+                        {/if}
+                        <div class="image-content">
                             {block name='productlist-item-box-image'}
                                 {counter assign=imgcounter print=0}
                                 {if isset($Artikel->oSuchspecialBild)}
@@ -33,15 +33,15 @@
                                                 {strip}
                                                     <div>
                                                         {link href=$Artikel->cURLFull}
-                                                            {image data=['lazy'=>$image->cURLMini, 'srcset'=>"{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                                 {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                                 {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w",
-                                                                 'id' => $imgcounter]
-                                                            sizes="(min-width: 1200px) 175px,95vw"
-                                                            alt=$image->cAltAttribut|escape:'html'
-                                                            src=$image->cURLMini
-                                                            fluid=true
-                                                            class='w-100'}
+                                                            {image alt=$alt fluid=true webp=true lazy=true
+                                                                src="{$image->cURLKlein}"
+                                                                srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                                         {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                                         {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                                                sizes="auto"
+                                                                data=["id"  => $imgcounter]
+                                                                class='w-100'
+                                                            }
                                                         {/link}
                                                     </div>
                                                 {/strip}
@@ -74,7 +74,7 @@
                                 </div>
                             {/block}
                         </div>
-                    {/block}
+                    </div>
                 {/col}
                 {col cols=12}
                     {block name='productlist-item-box-caption'}

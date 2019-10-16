@@ -28,7 +28,14 @@
                                                 {$img = $characteristicValue->getImage(\JTL\Media\Image::SIZE_XS)}
                                                 {if $img !== null && $img|strpos:$smarty.const.BILD_KEIN_MERKMALBILD_VORHANDEN === false
                                                 && $img|strpos:$smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN === false}
-                                                    {image src=$img title=$characteristicValue->cWert|escape:'html' alt=$characteristicValue->cWert|escape:'html'}
+                                                    {image fluid=true webp=true lazy=true
+                                                        src=$img
+                                                        srcset="{$characteristicValue->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_merkmalwert_mini_breite}w,
+                                                            {$characteristicValue->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_merkmalwert_klein_breite}w,
+                                                            {$characteristicValue->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_merkmalwert_normal_breite}w"
+                                                        sizes="40px"
+                                                        alt=$characteristicValue->cWert|escape:'html'
+                                                    }
                                                 {else}
                                                     {badge variant="light"}{$characteristicValue->cWert|escape:'html'}{/badge}
                                                 {/if}

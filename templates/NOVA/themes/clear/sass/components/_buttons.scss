@@ -1,30 +1,30 @@
 // theme buttons
 .btn { text-decoration: none; }
 
-.btn-primary {
-  @include button-variant($primary, $primary, $primary, $primary, $primary, $primary);
-  color: $gray-dark;
-  text-decoration: none;
-  border-width: 2px;
-  position: relative;
-  overflow: hidden;
-  &::after {
-    content: '';
-    background-color: $white;
-    opacity: .2;
-    width: 40px;
-    height: 100px;
-    position: absolute;
-    top: -33px;
-    left: -200%;
-    transform: rotateZ(45deg);
-  }
-  @include hover {
-    color: $gray-dark;
-    &::after {
-      transition: all 0.9s ease;
-      left: 200%;
-    }
+
+.btn-primary { overflow: hidden; position: relative; color: $yiq-text-dark;
+  @include hover { background-color: lighten($primary, 8%); border-color: lighten($primary, 8%); color: $yiq-text-dark; }
+
+  &:focus, &.focus { background-color: $primary; border-color: $primary; }
+
+  &.disabled, &:disabled { background-color: $gray-medium; color: $gray; border-color: $gray-medium; }
+
+  &:not(:disabled):not(.disabled):active,
+  &:not(:disabled):not(.disabled).active,
+  .show > &.dropdown-toggle { background-color: $primary; border-color: $primary; color: $yiq-text-dark; }
+}
+
+.btn-outline-primary { border-color: $primary; background-color: transparent; color: $yiq-text-dark; position: relative; overflow: hidden;
+  @include hover { background-color: lighten($primary, 45%); color: $yiq-text-dark; }
+
+  &:focus, &.focus { border-color: $primary; background-color: transparent; color: $yiq-text-dark; }
+
+  &.disabled, &:disabled { background-color: transparent; color: $gray-medium; border-color: $gray-medium; }
+
+  &:not(:disabled):not(.disabled):active,
+  &:not(:disabled):not(.disabled).active,
+  .show > &.dropdown-toggle { border-color: $primary; background-color: $primary; color: $yiq-text-dark;
+    &::after { width: 300%; }
   }
 }
 

@@ -16,7 +16,15 @@
                                             <tr>
                                                 <td class="item-image">
                                                     {if $oPosition->Artikel->Bilder[0]->cPfadMini !== $smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN}
-                                                        {image src=$oPosition->Artikel->Bilder[0]->cURLMini alt=$oPosition->Artikel->cName class="img-sm"}
+                                                        {image lazy=true webp=true
+                                                            src=$oPosition->Artikel->Bilder[0]->cURLMini
+                                                            srcset="{$oPosition->Artikel->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                                {$oPosition->Artikel->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                                {$oPosition->Artikel->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                                            sizes="45px"
+                                                            alt=$oPosition->Artikel->cName
+                                                            class="img-sm"
+                                                        }
                                                     {/if}
                                                 </td>
                                                 <td class="item-name" colspan="2">

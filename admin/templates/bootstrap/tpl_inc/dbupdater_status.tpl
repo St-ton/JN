@@ -92,7 +92,7 @@
         {else}
             <div class="alert alert-success h4">
                 <p class="text-center">
-                    {{__('dbUpToDate')}|sprintf:{$currentDatabaseVersion}}.
+                    {{__('dbUpToDate')}|sprintf:{$currentDatabaseVersion}}
                 </p>
             </div>
         {/if}

@@ -18,7 +18,14 @@
                     && $img !== null
                     && $img|strpos:$smarty.const.BILD_KEIN_MERKMALBILD_VORHANDEN === false
                     && $img|strpos:$smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN === false}
-                        <img src="{$img}" alt="{$characteristic->getName()}" class="vmiddle" />
+                        {image fluid=true webp=true lazy=true
+                            src=$img
+                            srcset="{$characteristic->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_merkmal_mini_breite}w,
+                                    {$characteristic->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_merkmal_klein_breite}w,
+                                    {$characteristic->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_merkmal_normal_breite}w"
+                            sizes="24px"
+                            alt=$characteristic->getName() class="img-xs vmiddle"
+                        }
                     {/if}
                     {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'B'}
                         {$characteristic->cName}

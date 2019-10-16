@@ -24,24 +24,26 @@
                                 {include file='snippets/ribbon.tpl'}
                             {/block}
                         {/if}
-                        {block name="productlist-item-list-image"}
+                        {block name="productlist-item-list-images"}
                             <div class="productbox-images">
                                 <div class="clearfix list-gallery carousel carousel-btn-arrows">
                                     {foreach $Artikel->Bilder as $image}
-                                        {strip}
-                                            <div>
-                                                {image fluid=true webp=true lazy=true
-                                                    alt=$image->cAltAttribut|escape:'html'
-                                                    src=$Artikel->Bilder[0]->cURLKlein
-                                                    srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                        {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                        {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
-                                                    sizes="auto"
-                                                    class='w-100'
-                                                    webp=true
-                                                }
-                                            </div>
-                                        {/strip}
+                                        {block name="productlist-item-list-image"}
+                                            {strip}
+                                                <div>
+                                                    {image fluid=true webp=true lazy=true
+                                                        alt=$image->cAltAttribut|escape:'html'
+                                                        src=$Artikel->Bilder[0]->cURLKlein
+                                                        srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                            {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                            {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                                        sizes="auto"
+                                                        class='w-100'
+                                                        webp=true
+                                                    }
+                                                </div>
+                                            {/strip}
+                                        {/block}
                                     {/foreach}
                                 </div>
                                 {block name='productlist-item-list-include-productlist-actions'}
@@ -70,9 +72,11 @@
             {/col}
             {col md=''}
                 {block name='productlist-item-list-title'}
-                    <div class="productbox-title" itemprop="name">
-                        {link href=$Artikel->cURLFull}{$Artikel->cName}{/link}
-                    </div>
+                    {block name='productlist-item-list-title-heading'}
+                        <div class="productbox-title" itemprop="name">
+                            {link href=$Artikel->cURLFull}{$Artikel->cName}{/link}
+                        </div>
+                    {/block}
                     <meta itemprop="url" content="{$Artikel->cURLFull}">
                     {if $Einstellungen.artikeluebersicht.artikeluebersicht_kurzbeschreibung_anzeigen === 'Y' && $Artikel->cKurzBeschreibung}
                         {block name='productlist-item-list-description'}
@@ -87,31 +91,38 @@
                         {col cols=12 xl=4 class='productbox-details'}
                             {block name='productlist-item-list-details'}
                                 {formrow tag='dl' class="text-nowrap"}
-                                    {col tag='dt' cols=6}{lang key='productNo'}:{/col}
-                                    {col tag='dd' cols=6}{$Artikel->cArtNr}{/col}
+                                    {block name='productlist-item-list-details-product-number'}
+                                        {col tag='dt' cols=6}{lang key='productNo'}:{/col}
+                                        {col tag='dd' cols=6}{$Artikel->cArtNr}{/col}
+                                    {/block}
                                     {if count($Artikel->Variationen) > 0}
-                                        {col tag='dt' cols=6}{lang key='variationsIn' section='productOverview'}:{/col}
-                                        {col tag='dd' cols=6}
-                                            <ul class="list-unstyled mb-0">
-                                                {foreach $Artikel->Variationen as $variation}
-                                                    <li>{$variation->cName}<li>
-                                                    {if $variation@index === 3 && !$variation@last}
-                                                        <li>&hellip;</li>
-                                                        {break}
-                                                    {/if}
-                                                {/foreach}
-                                            </ul>
-                                        {/col}
+                                        {block name='productlist-item-list-details-variations'}
+                                            {col tag='dt' cols=6}{lang key='variationsIn' section='productOverview'}:{/col}
+                                            {col tag='dd' cols=6}
+                                                <ul class="list-unstyled mb-0">
+                                                    {foreach $Artikel->Variationen as $variation}
+                                                        <li>{$variation->cName}<li>
+                                                        {if $variation@index === 3 && !$variation@last}
+                                                            <li>&hellip;</li>
+                                                            {break}
+                                                        {/if}
+                                                    {/foreach}
+                                                </ul>
+                                            {/col}
+                                        {/block}
                                     {/if}
                                     {if !empty($Artikel->cISBN)
                                         && ($Einstellungen.artikeldetails.isbn_display === 'L'
                                             || $Einstellungen.artikeldetails.isbn_display === 'DL')}
-                                        {col tag='dt' cols=6}{lang key='isbn'}:{/col}
-                                        {col tag='dd' cols=6}{$Artikel->cISBN}{/col}
+                                        {block name='productlist-item-list-details-isbn'}
+                                            {col tag='dt' cols=6}{lang key='isbn'}:{/col}
+                                            {col tag='dd' cols=6}{$Artikel->cISBN}{/col}
+                                        {/block}
                                     {/if}
 
-                                    {block name='productlist-item-list-manufacturer'}
-                                        {if $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen !== 'N' && !empty($Artikel->cHersteller)}
+
+                                    {if $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen !== 'N' && !empty($Artikel->cHersteller)}
+                                        {block name='productlist-item-list-manufacturer'}
                                             {col tag='dt' cols=6}{lang key='manufacturer' section='productDetails'}:{/col}
                                             {col tag='dd' cols=6 itemprop='manufacturer' itemscope=true itemtype='http://schema.org/Organization'}
                                                 {if !empty($Artikel->cHerstellerHomepage)}
@@ -136,30 +147,38 @@
                                                 {/if}
                                                 {if !empty($Artikel->cHerstellerHomepage)}</a>{/if}
                                             {/col}
-                                        {/if}
-                                    {/block}
+                                        {/block}
+                                    {/if}
 
                                     {if !empty($Artikel->cUNNummer) && !empty($Artikel->cGefahrnr)
                                         && ($Einstellungen.artikeldetails.adr_hazard_display === 'L'
                                             || $Einstellungen.artikeldetails.adr_hazard_display === 'DL')}
-                                        {col tag='dt' cols=6}{lang key='adrHazardSign'}:{/col}
-                                        {col tag='dd' cols=6}{$Artikel->cGefahrnr}<br>{$Artikel->cUNNummer}{/col}
+                                        {block name='productlist-item-list-details-hazard'}
+                                            {col tag='dt' cols=6}{lang key='adrHazardSign'}:{/col}
+                                            {col tag='dd' cols=6}{$Artikel->cGefahrnr}<br>{$Artikel->cUNNummer}{/col}
+                                        {/block}
                                     {/if}
                                     {if isset($Artikel->dMHD) && isset($Artikel->dMHD_de)}
-                                        {col tag='dt' cols=6 title="{lang key='productMHDTool'}"}{lang key='productMHD'}:{/col}
-                                        {col tag='dd' cols=6}{$Artikel->dMHD_de}{/col}
+                                        {block name='productlist-item-list-details-mhd'}
+                                            {col tag='dt' cols=6 title="{lang key='productMHDTool'}"}{lang key='productMHD'}:{/col}
+                                            {col tag='dd' cols=6}{$Artikel->dMHD_de}{/col}
+                                        {/block}
                                     {/if}
                                     {if $Einstellungen.artikeluebersicht.artikeluebersicht_gewicht_anzeigen === 'Y' && isset($Artikel->cGewicht) && $Artikel->fGewicht > 0}
                                         {col tag='dt' cols=6}{lang key='shippingWeight'}:{/col}
                                         {col tag='dd' cols=6}{$Artikel->cGewicht} {lang key='weightUnit'}{/col}
                                     {/if}
                                     {if $Einstellungen.artikeluebersicht.artikeluebersicht_artikelgewicht_anzeigen === 'Y' && isset($Artikel->cArtikelgewicht) && $Artikel->fArtikelgewicht > 0}
-                                        {col tag='dt' cols=6}{lang key='productWeight'}:{/col}
-                                        {col tag='dd' cols=6}{$Artikel->cArtikelgewicht} {lang key='weightUnit'}{/col}
+                                        {block name='productlist-item-list-details-weight'}
+                                            {col tag='dt' cols=6}{lang key='productWeight'}:{/col}
+                                            {col tag='dd' cols=6}{$Artikel->cArtikelgewicht} {lang key='weightUnit'}{/col}
+                                        {/block}
                                     {/if}
                                     {if $Einstellungen.artikeluebersicht.artikeluebersicht_artikelintervall_anzeigen === 'Y' && $Artikel->fAbnahmeintervall > 0}
-                                        {col tag='dt' cols=6}{lang key='purchaseIntervall' section='productOverview'}:{/col}
-                                        {col tag='dd' cols=6}{$Artikel->fAbnahmeintervall} {$Artikel->cEinheit}{/col}
+                                        {block name='productlist-item-list-details-intervall'}
+                                            {col tag='dt' cols=6}{lang key='purchaseIntervall' section='productOverview'}:{/col}
+                                            {col tag='dd' cols=6}{$Artikel->fAbnahmeintervall} {$Artikel->cEinheit}{/col}
+                                        {/block}
                                     {/if}
                                     {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->fDurchschnittsBewertung > 0}
                                         {block name='productlist-item-list-rating'}
@@ -247,39 +266,47 @@
                                     && (($Artikel->nIstVater === 0 && $Artikel->Variationen|@count === 0) || $hasOnlyListableVariations === 1) && !$Artikel->bHasKonfig}
                                         {if $Artikel->nIstVater && $Artikel->kVaterArtikel == 0}
                                             {col cols=12}
-                                                {alert variation="info" class="choose-variations text-left"}
-                                                    {lang key='chooseVariations' section='messages'}
-                                                {/alert}
+                                                {block name='productlist-item-list-basket-details-variations'}
+                                                    {alert variation="info" class="choose-variations text-left"}
+                                                        {lang key='chooseVariations' section='messages'}
+                                                    {/alert}
+                                                {/block}
                                             {/col}
                                         {else}
                                             {col cols=12}
-                                                {input type="{if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}text{else}number{/if}" min="0"
-                                                    step="{if $Artikel->fAbnahmeintervall > 0}{$Artikel->fAbnahmeintervall}{/if}"
-                                                    size="2"
-                                                    id="quantity{$Artikel->kArtikel}"
-                                                    class="quantity"
-                                                    name="anzahl"
-                                                    autocomplete="off"
-                                                    aria=["label"=>{lang key='quantity'}]
-                                                    data=["decimals"=>{getDecimalLength quantity=$Artikel->fAbnahmeintervall}]
-                                                    value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}"}
+                                                {block name='productlist-item-list-basket-details-quantity'}
+                                                    {input type="{if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}text{else}number{/if}" min="0"
+                                                        step="{if $Artikel->fAbnahmeintervall > 0}{$Artikel->fAbnahmeintervall}{/if}"
+                                                        size="2"
+                                                        id="quantity{$Artikel->kArtikel}"
+                                                        class="quantity"
+                                                        name="anzahl"
+                                                        autocomplete="off"
+                                                        aria=["label"=>{lang key='quantity'}]
+                                                        data=["decimals"=>{getDecimalLength quantity=$Artikel->fAbnahmeintervall}]
+                                                        value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}"}
+                                                {/block}
                                             {/col}
                                             {col cols=12}
-                                                {button type="submit"
-                                                    variant="primary"
-                                                    block=true id="submit{$Artikel->kArtikel}"
-                                                    title="{lang key='addToCart'}"
-                                                    class="mt-3"
-                                                    aria=["label"=>{lang key='addToCart'}]}
-                                                    {lang key='addToCart'}
-                                                {/button}
+                                                {block name='productlist-item-list-basket-details-add-to-cart'}
+                                                    {button type="submit"
+                                                        variant="primary"
+                                                        block=true id="submit{$Artikel->kArtikel}"
+                                                        title="{lang key='addToCart'}"
+                                                        class="mt-3"
+                                                        aria=["label"=>{lang key='addToCart'}]}
+                                                        {lang key='addToCart'}
+                                                    {/button}
+                                                {/block}
                                             {/col}
                                         {/if}
                                     {else}
                                         {col cols=12}
-                                            {link class="btn btn-secondary btn-block" role="button" href=$Artikel->cURLFull}
-                                                {lang key='details'}
-                                            {/link}
+                                            {block name='productlist-item-list-basket-details-details'}
+                                                {link class="btn btn-secondary btn-block" role="button" href=$Artikel->cURLFull}
+                                                    {lang key='details'}
+                                                {/link}
+                                            {/block}
                                         {/col}
                                     {/if}
                                 </div>

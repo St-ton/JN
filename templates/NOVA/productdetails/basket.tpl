@@ -59,7 +59,12 @@
                     {/block}
                 {/if}
             {/if}
-            {if $Artikel->inWarenkorbLegbar == 1 && ($Artikel->fMindestbestellmenge > 1 || ($Artikel->fMindestbestellmenge > 0 && $Artikel->cTeilbar === 'Y') || $Artikel->fAbnahmeintervall > 0 || $Artikel->cTeilbar === 'Y' || (isset($Artikel->FunktionsAttribute[$FKT_ATTRIBUT_MAXBESTELLMENGE]) && $Artikel->FunktionsAttribute[$FKT_ATTRIBUT_MAXBESTELLMENGE] > 0))}
+            {if $Artikel->inWarenkorbLegbar == 1
+            && ($Artikel->fMindestbestellmenge > 1
+                || ($Artikel->fMindestbestellmenge > 0 && $Artikel->cTeilbar === 'Y')
+                || $Artikel->fAbnahmeintervall > 0
+                || $Artikel->cTeilbar === 'Y'
+                || $Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE]|default:0 > 0)}
                 {block name='productdetails-basket-alert-purchase-info'}
                     {alert variant="info" class="mt-2 purchase-info"}
                         {assign var=units value=$Artikel->cEinheit}
@@ -80,9 +85,7 @@
                         {if $Artikel->cTeilbar === 'Y'}
                             <p>{lang key='integralQuantities' section='productDetails'}</p>
                         {/if}
-
-                        {if isset($Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE])
-                        && $Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE] > 0}
+                        {if $Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE]|default:0 > 0}
                             {lang key='maximalPurchase' section='productDetails' assign='maximalPurchase'}
                             <p>{$maximalPurchase|replace:"%d":$Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE]|replace:"%s":$units}</p>
                         {/if}

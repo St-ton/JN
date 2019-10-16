@@ -19,36 +19,43 @@
                             aria=["expanded"=>"false","controls"=>"collapse-download-{$oDownload@iteration}"]
                             data=["toggle"=> "collapse", "target"=>"#collapse-download-{$oDownload@iteration}"]
                         }
-                            {$oDownload->oDownloadSprache->getName()}
+                            {block name='account-downloads-order-downloads-item-heading'}
+                                {$oDownload->oDownloadSprache->getName()}
+                            {/block}
                         {/button}
                     {/cardheader}
                     {collapse id="collapse-download-{$oDownload@iteration}" visible=false}
                         {cardbody}
-                            {row}
-                                {col md=4}{lang key='downloadLimit'}:{/col}
-                                {col md=8}{$oDownload->cLimit|default:{lang key='unlimited'}}{/col}
-                            {/row}
-                            {row}
-                                {col md=4}{lang key='validUntil'}:{/col}
-                                {col md=8}{$oDownload->dGueltigBis|default:{lang key='unlimited'}}{/col}
-                            {/row}
-                            {row}
-                                {col md=4}{lang key='download'}:{/col}
-                                {col md=8}
-                                {if $Bestellung->cStatus == $smarty.const.BESTELLUNG_STATUS_BEZAHLT || $Bestellung->cStatus == $smarty.const.BESTELLUNG_STATUS_VERSANDT}
-                                    {form method="post" action="{get_static_route id='jtl.php'}"}
-                                        {input name="a" type="hidden" value="getdl"}
-                                        {input name="bestellung" type="hidden" value=$Bestellung->kBestellung}
-                                        {input name="dl" type="hidden" value=$oDownload->getDownload()}
-                                        {button size="sm" type="submit"}
-                                            <i class="fa fa-download"></i> {lang key='download'}
-                                        {/button}
-                                    {/form}
-                                {else}
-                                    {lang key='downloadPending'}
-                                {/if}
-                                {/col}
-                            {/row}
+                            {block name='account-downloads-order-downloads-item-body'}
+                                {row}
+                                    {col md=4}{lang key='downloadLimit'}:{/col}
+                                    {col md=8}{$oDownload->cLimit|default:{lang key='unlimited'}}{/col}
+                                {/row}
+                                {row}
+                                    {col md=4}{lang key='validUntil'}:{/col}
+                                    {col md=8}{$oDownload->dGueltigBis|default:{lang key='unlimited'}}{/col}
+                                {/row}
+                                {row}
+                                    {col md=4}{lang key='download'}:{/col}
+                                    {col md=8}
+                                        {if $Bestellung->cStatus == $smarty.const.BESTELLUNG_STATUS_BEZAHLT
+                                            || $Bestellung->cStatus == $smarty.const.BESTELLUNG_STATUS_VERSANDT}
+                                            {form method="post" action="{get_static_route id='jtl.php'}"}
+                                                {input name="a" type="hidden" value="getdl"}
+                                                {input name="bestellung" type="hidden" value=$Bestellung->kBestellung}
+                                                {input name="dl" type="hidden" value=$oDownload->getDownload()}
+                                                {block name='account-downloads-order-downloads-item-download-button'}
+                                                    {button size="sm" type="submit"}
+                                                        <i class="fa fa-download"></i> {lang key='download'}
+                                                    {/button}
+                                                {/block}
+                                            {/form}
+                                        {else}
+                                            {lang key='downloadPending'}
+                                        {/if}
+                                    {/col}
+                                {/row}
+                            {/block}
                         {/cardbody}
                     {/collapse}
                 {/card}
@@ -60,9 +67,11 @@
                 {col cols=12 md=6}
                     {card no-body=true}
                         {cardheader}
-                            <span class="h3">
-                                {lang key='myDownloads'}
-                            </span>
+                            {block name='account-downloads-customer-downloads-heading'}
+                                <span class="h3">
+                                    {lang key='myDownloads'}
+                                </span>
+                            {/block}
                         {/cardheader}
                         {cardbody class="p-0"}
                             <div id="account-download-accordion">
@@ -78,7 +87,9 @@
                                                     aria=["expanded"=>"false","controls"=>"collapse-download-{$oDownload@iteration}"]
                                                     data=["toggle"=> "collapse", "target"=>"#collapse-download-{$oDownload@iteration}"]
                                                 }
-                                                    {$oDownload->oDownloadSprache->getName()}
+                                                    {block name='account-downloads-customer-downloads-item-heading'}
+                                                        {$oDownload->oDownloadSprache->getName()}
+                                                    {/block}
                                                 {/button}
                                             {/cardheader}
                                             {collapse id="collapse-download-{$oDownload@iteration}" visible=false
@@ -86,37 +97,42 @@
                                                 data=["parent"=>"#account-download-accordion"]
                                             }
                                                 {cardbody}
-                                                    {row}
-                                                        {col md=4}{lang key='downloadLimit'}:{/col}
-                                                        {col md=8}{$oDownload->cLimit|default:{lang key='unlimited'}}{/col}
-                                                    {/row}
-                                                    {row}
-                                                        {col md=4}{lang key='validUntil'}:{/col}
-                                                        {col md=8}{$oDownload->dGueltigBis|default:{lang key='unlimited'}}{/col}
-                                                    {/row}
-                                                    {row}
-                                                        {col md=4}{lang key='download'}:{/col}
-                                                        {col md=8}
-                                                        {form method="post" action="{get_static_route id='jtl.php'}"}
-                                                            {input name="kBestellung" type="hidden" value=$oDownload->kBestellung}
-                                                            {input name="kKunde" type="hidden" value=$smarty.session.Kunde->kKunde}
-                                                            {assign var=cStatus value=$smarty.const.BESTELLUNG_STATUS_OFFEN}
-                                                            {foreach $Bestellungen as $Bestellung}
-                                                                {if $Bestellung->kBestellung == $oDownload->kBestellung}
-                                                                    {assign var=cStatus value=$Bestellung->cStatus}
+                                                    {block name='account-downloads-customer-downloads-item-body'}
+                                                        {row}
+                                                            {col md=4}{lang key='downloadLimit'}:{/col}
+                                                            {col md=8}{$oDownload->cLimit|default:{lang key='unlimited'}}{/col}
+                                                        {/row}
+                                                        {row}
+                                                            {col md=4}{lang key='validUntil'}:{/col}
+                                                            {col md=8}{$oDownload->dGueltigBis|default:{lang key='unlimited'}}{/col}
+                                                        {/row}
+                                                        {row}
+                                                            {col md=4}{lang key='download'}:{/col}
+                                                            {col md=8}
+                                                            {form method="post" action="{get_static_route id='jtl.php'}"}
+                                                                {input name="kBestellung" type="hidden" value=$oDownload->kBestellung}
+                                                                {input name="kKunde" type="hidden" value=$smarty.session.Kunde->kKunde}
+                                                                {assign var=cStatus value=$smarty.const.BESTELLUNG_STATUS_OFFEN}
+                                                                {foreach $Bestellungen as $Bestellung}
+                                                                    {if $Bestellung->kBestellung == $oDownload->kBestellung}
+                                                                        {assign var=cStatus value=$Bestellung->cStatus}
+                                                                    {/if}
+                                                                {/foreach}
+                                                                {if $cStatus == $smarty.const.BESTELLUNG_STATUS_BEZAHLT
+                                                                    || $cStatus == $smarty.const.BESTELLUNG_STATUS_VERSANDT}
+                                                                    {input name="dl" type="hidden" value=$oDownload->getDownload()}
+                                                                    {block name='account-downloads-customer-downloads-item-download-button'}
+                                                                        {button size="sm" type="submit"}
+                                                                            <i class="fa fa-download"></i> {lang key='download'}
+                                                                        {/button}
+                                                                    {/block}
+                                                                {else}
+                                                                    {lang key='downloadPending'}
                                                                 {/if}
-                                                            {/foreach}
-                                                            {if $cStatus == $smarty.const.BESTELLUNG_STATUS_BEZAHLT || $cStatus == $smarty.const.BESTELLUNG_STATUS_VERSANDT}
-                                                                {input name="dl" type="hidden" value=$oDownload->getDownload()}
-                                                                {button size="sm" type="submit"}
-                                                                    <i class="fa fa-download"></i> {lang key='download'}
-                                                                {/button}
-                                                            {else}
-                                                                {lang key='downloadPending'}
-                                                            {/if}
-                                                        {/form}
-                                                        {/col}
-                                                    {/row}
+                                                            {/form}
+                                                            {/col}
+                                                        {/row}
+                                                    {/block}
                                                 {/cardbody}
                                             {/collapse}
                                         {/card}

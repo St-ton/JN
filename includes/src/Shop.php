@@ -846,9 +846,9 @@ final class Shop
         if (\SAFE_MODE === true) {
             return;
         }
-        $db               = self::Container()->getDB();
-        $cache            = self::Container()->getCache();
-        $cacheID          = 'plgnbtsrp';
+        $db      = self::Container()->getDB();
+        $cache   = self::Container()->getCache();
+        $cacheID = 'plgnbtsrp';
         if (($plugins = $cache->get($cacheID)) === false) {
             $plugins = map($db->queryPrepared(
                 'SELECT kPlugin, bBootstrap, bExtension

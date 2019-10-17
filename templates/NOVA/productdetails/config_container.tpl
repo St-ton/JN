@@ -51,7 +51,10 @@
                                         {/if}
                                         {if !empty($cBildPfad)}
                                             {col cols=12 lg="{if $oSprache->hatBeschreibung()}4{else}12{/if}" order=0 order-lg=1}
-                                                {image src=$cBildPfad alt=$oSprache->getName() id="img{$kKonfiggruppe}" fluid=true class="w-100"}
+                                                {image id="img{$kKonfiggruppe}" fluid=true fluid-grow=true lazy=true
+                                                    src=$cBildPfad
+                                                    alt=$oSprache->getName()
+                                                }
                                             {/col}
                                         {/if}
                                     {/row}
@@ -93,14 +96,25 @@
                                                                 class="cfg-swatch"
                                                                 required=$oItem@first && $oGruppe->getMin() > 0
                                                             }
-                                                                <div data-id="$oItem->getKonfigitem()" class="config-item text-center mb-5{if $oItem->getEmpfohlen()} bg-info{/if}{if empty($bSelectable)} disabled{/if}{if $checkboxActive} active{/if}">
+                                                                <div data-id="{$oItem->getKonfigitem()}" class="config-item text-center mb-5{if $oItem->getEmpfohlen()} bg-info{/if}{if empty($bSelectable)} disabled{/if}{if $checkboxActive} active{/if}">
 
                                                                     {if isset($aKonfigitemerror_arr[$kKonfigitem]) && $aKonfigitemerror_arr[$kKonfigitem]}
                                                                         <p class="box_error alert alert-danger">{$aKonfigitemerror_arr[$kKonfigitem]}</p>
                                                                     {/if}
                                                                     {badge class="badge-circle"}<i class="fas fa-check mx-auto"></i>{/badge}
                                                                     {if !empty($oItem->getArtikel()->Bilder[0]->cURLNormal)}
-                                                                        <p>{image src=$oItem->getArtikel()->Bilder[0]->cURLNormal fluid=true alt=$oItem->getName() title=$oItem->getName()}</p>
+                                                                        <p>
+                                                                            {$productImage = $oItem->getArtikel()->Bilder[0]}
+                                                                            {image fluid-grow=true webp=true lazy=true
+                                                                                src=$productImage->cURLMini
+                                                                                srcset="{$productImage->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                                                    {$productImage->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                                                    {$productImage->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
+                                                                                    {$productImage->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
+                                                                                sizes="255px"
+                                                                                alt=$oItem->getName()
+                                                                            }
+                                                                        </p>
                                                                     {/if}
                                                                     <p class="mb-2">
                                                                         {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
@@ -165,7 +179,18 @@
                                                                     {/if}
                                                                     {badge class="badge-circle"}<i class="fas fa-check mx-auto"></i>{/badge}
                                                                     {if !empty($oItem->getArtikel()->Bilder[0]->cURLNormal)}
-                                                                        <p>{image src=$oItem->getArtikel()->Bilder[0]->cURLNormal fluid=true alt=$oItem->getName() title=$oItem->getName()}</p>
+                                                                        <p>
+                                                                            {$productImage = $oItem->getArtikel()->Bilder[0]}
+                                                                            {image fluid-grow=true webp=true lazy=true
+                                                                                src=$productImage->cURLMini
+                                                                                srcset="{$productImage->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                                                    {$productImage->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                                                    {$productImage->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
+                                                                                    {$productImage->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
+                                                                                sizes="255px"
+                                                                                alt=$oItem->getName()
+                                                                            }
+                                                                        </p>
                                                                     {/if}
                                                                     <p class="mb-2">
                                                                         {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
@@ -278,7 +303,18 @@
                                                             {row}
                                                                 {col cols=4}
                                                                     {if !empty($oItem->getArtikel()->Bilder[0]->cURLNormal)}
-                                                                        <p>{image src=$oItem->getArtikel()->Bilder[0]->cURLNormal fluid=true alt=$oItem->getName() title=$oItem->getName()}</p>
+                                                                        <p>
+                                                                            {$productImage = $oItem->getArtikel()->Bilder[0]}
+                                                                            {image fluid-grow=true webp=true lazy=true
+                                                                                src=$productImage->cURLMini
+                                                                                srcset="{$productImage->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                                                    {$productImage->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                                                    {$productImage->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
+                                                                                    {$productImage->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
+                                                                                sizes="255px"
+                                                                                alt=$oItem->getName()
+                                                                            }
+                                                                        </p>
                                                                     {/if}
                                                                 {/col}
                                                                 {col cols=8}

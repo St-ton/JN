@@ -72,7 +72,11 @@
                                                                                     <input class="custom-control-input " type="radio" id="gift{$oArtikelGeschenk->kArtikel}" name="gratisgeschenk" value="{$oArtikelGeschenk->kArtikel}" onclick="submit();">
                                                                                     <label for="gift{$oArtikelGeschenk->kArtikel}" class="p-3 custom-control-label {if $selectedFreegift===$oArtikelGeschenk->kArtikel}badge-check{/if}">
                                                                                         {if $selectedFreegift===$oArtikelGeschenk->kArtikel}{badge class="badge-circle"}<i class="fas fa-check mx-auto"></i>{/badge}{/if}
-                                                                                        {image src=$oArtikelGeschenk->Bilder[0]->cURLKlein class="image" fluid=true alt=$oArtikelGeschenk->cName}
+                                                                                        {image lazy=true webp=true
+                                                                                            src=$oArtikelGeschenk->Bilder[0]->cURLKlein
+                                                                                            fluid=true
+                                                                                            alt=$oArtikelGeschenk->cName
+                                                                                        }
                                                                                         <div class="caption">
                                                                                             <p class="small text-muted">{lang key='freeGiftFrom1'} {$oArtikelGeschenk->cBestellwert} {lang key='freeGiftFrom2'}</p>
                                                                                             <p>{$oArtikelGeschenk->cName}</p>
@@ -137,7 +141,7 @@
                                         {/block}
                                         {/cardheader}
                                         {collapse id="coupon-form"}
-                                            {cardbody class="bg-info"}
+                                            {cardbody}
                                             {block name='basket-index-coupon-form'}
                                                 {form class="form-inline evo-validate" id="basket-coupon-form" method="post" action="{get_static_route id='warenkorb.php'}"}
                                                     {formgroup class="mw-100{if !empty($invalidCouponCode)} has-error{/if}"}

@@ -48,8 +48,14 @@
                                             <span class="fas fa-times"></span>
                                         {/link}
                                         {link href=$oArtikel->cURLFull}
-                                            {image src=$oArtikel->Bilder[0]->cURLMini
-                                                 alt=$oArtikel->cName|strip_tags|truncate:60|escape:'html' class="img-xs mr-2"}
+                                            {image fluid=true webp=true lazy=true
+                                                src=$oArtikel->Bilder[0]->cURLMini
+                                                srcset="{$oArtikel->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                        {$oArtikel->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                        {$oArtikel->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                                sizes="24px"
+                                                alt=$oArtikel->cName|strip_tags|truncate:60|escape:'html' class="img-xs mr-2"
+                                            }
                                             {$oArtikel->cName|truncate:25:'...'}
                                         {/link}
                                     {/listgroupitem}

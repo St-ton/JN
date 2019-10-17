@@ -414,7 +414,7 @@ class Image
                     $constraint->aspectRatio();
                 });
             }
-            if ($settings['container'] === true) {
+            if ($settings['container'] === true && $req->getType() !== Image::TYPE_OPC) {
                 $background = $req->getExt() === 'png' ? 'rgba(0,0,0,0)' : $settings['background'];
                 $img->resizeCanvas($maxWidth, $maxHeight, 'center', false, $background);
             }

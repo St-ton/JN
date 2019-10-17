@@ -81,9 +81,17 @@
 
                         {if $newsItem->getPreviewImage() !== ''}
                             {block name='blog-details-image'}
-                                {image src="{$newsItem->getImage(\JTL\Media\Image::SIZE_XL)}"
-                                alt="{$newsItem->getTitle()|escape:'quotes'} - {$newsItem->getMetaTitle()|escape:'quotes'}"
-                                center=true fluid=true fluid-grow=true class="mb-5"}
+                                {image webp=true lazy=true fluid-grow=true
+                                    src=$newsItem->getImage(\JTL\Media\Image::SIZE_MD)
+                                    srcset="{$newsItem->getImage(\JTL\Media\Image::SIZE_XS)} 300w,
+                                        {$newsItem->getImage(\JTL\Media\Image::SIZE_SM)} 600w,
+                                        {$newsItem->getImage(\JTL\Media\Image::SIZE_MD)} 1200w,
+                                        {$newsItem->getImage(\JTL\Media\Image::SIZE_LG)} 1800w"
+                                    sizes="auto"
+                                    alt="{$newsItem->getTitle()|escape:'quotes'} - {$newsItem->getMetaTitle()|escape:'quotes'}"
+                                    center=true
+                                    class="mb-5"
+                                }
                                 <meta itemprop="image" content="{$imageBaseURL}{$newsItem->getPreviewImage()}">
                             {/block}
                         {/if}
@@ -175,16 +183,15 @@
                                         {/row}
 
                                         {block name='blog-details-comments'}
-                                            {listgroup class="list-group-flush p-3 bg-info"}
+                                            {card class='bg-gray-light'}
                                                 {foreach $comments as $comment}
-                                                    {listgroupitem class="bg-info m-0 border-top-0" itemprop="comment"}
-                                                        <p>
-                                                            {$comment->getName()}, {$comment->getDateCreated()->format('d.m.y H:i')}
-                                                        </p>
-                                                        {$comment->getText()}
-                                                    {/listgroupitem}
+                                                    <span class="d-block mb-3">
+                                                        {$comment->getName()}, {$comment->getDateCreated()->format('d.m.y H:i')}:
+                                                    </span>
+                                                    <p>{$comment->getText()}</p>
+                                                    {if !$comment@last}<hr class="my-5">{/if}
                                                 {/foreach}
-                                            {/listgroup}
+                                            {/card}
                                         {/block}
                                     </div>
                                 {/block}

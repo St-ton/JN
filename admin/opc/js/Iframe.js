@@ -54,6 +54,10 @@ class Iframe
 
             this.ctx.opc = this.opc;
 
+            this.jq('[data-opc-portlet-css-link=true]').each((e, elm) => {
+                this.loadedStylesheets.push(elm.href);
+            });
+
             this.loadStylesheet(this.shopUrl + '/admin/opc/css/iframe.css');
             this.loadStylesheet(this.shopUrl + '/templates/NOVA/themes/base/fontawesome/css/all.min.css');
 
@@ -166,9 +170,15 @@ class Iframe
 
     loadPortletPreviewCss(portletCls)
     {
-        this.loadStylesheet(
-            this.shopUrl + '/includes/src/OPC/Portlets/' + portletCls + '/preview.css'
-        );
+        let portletBtn = this.gui.portletButtons.filter("[data-portlet-class='" + portletCls + "']");
+
+        if(portletBtn) {
+            let css = portletBtn.data('portlet-css');
+
+            if(css) {
+                this.loadStylesheet(css);
+            }
+        }
     }
 
     loadMissingPortletPreviewStyles()

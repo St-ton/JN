@@ -1413,9 +1413,6 @@ class Artikel
                 $imagePath = $image->cPfadGross;
                 break;
         }
-        if ($imagePath === null) {
-            Shop::dbg($image, true, '44',99);
-        }
         if ($imagePath !== null && \file_exists(\PFAD_ROOT . $imagePath)) {
             [$width, $height, $type] = \getimagesize(\PFAD_ROOT . $imagePath);
         } else {
@@ -1659,6 +1656,7 @@ class Artikel
             $options->nAttribute                 = 1;
             $options->nArtikelAttribute          = 1;
             $options->nKeineSichtbarkeitBeachten = 1;
+            $options->nStueckliste               = 1;
             $this->oProduktBundleMain->fuelleArtikel((int)$main->kArtikel, $options);
 
             $currency = Frontend::getCurrency();

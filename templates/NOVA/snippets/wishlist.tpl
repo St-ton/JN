@@ -412,7 +412,14 @@
                                         {/if}
                                         {block name='snippets-wishlist-form-basket-image'}
                                             {link class="image-box mx-auto clearer d-block" href=$wlPosition->Artikel->cURLFull}
-                                                {image alt=$wlPosition->Artikel->cName src=$wlPosition->Artikel->Bilder[0]->cURLNormal fluid=true}
+                                                {image fluid=true lazy=true webp=true
+                                                    src=$wlPosition->Artikel->Bilder[0]->cURLMini
+                                                    srcset="{$wlPosition->Artikel->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                        {$wlPosition->Artikel->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                        {$wlPosition->Artikel->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                                    alt=$wlPosition->Artikel->cName|strip_tags|escape:'quotes'|truncate:60
+                                                    sizes="auto"
+                                                }
                                             {/link}
                                         {/block}
                                         {block name='snippets-wishlist-form-basket-name'}
@@ -524,8 +531,7 @@
                                             title="{lang key='wishlistUpdate' section='login'}"
                                             name="action"
                                             value="update"
-                                            block=true
-                                            class="bg-white"}
+                                            block=true}
                                             <i class="fa fa-sync"></i> {lang key='wishlistUpdate' section='login'}
                                         {/button}
                                     {/if}

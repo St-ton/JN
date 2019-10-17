@@ -11,7 +11,14 @@
                     {row class="mb-3 pt-2 pb-2 {cycle values="bg-light,"}"}
                         {block name='productdetails-matrix-list-image'}
                             {col cols=6 md=1}
-                                {image fluid=true lazy=true src=$child->Bilder[0]->cURLMini alt=$child->Bilder[0]->cAltAttribut}
+                                {image fluid=true lazy=true webp=true
+                                    src=$child->Bilder[0]->cURLMini
+                                    srcset="{$child->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                        {$child->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                        {$child->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                    alt=$child->Bilder[0]->cAltAttribut
+                                    sizes="auto"
+                                }
                             {/col}
                         {/block}
                         {block name='productdetails-matrix-list-coming-soon'}

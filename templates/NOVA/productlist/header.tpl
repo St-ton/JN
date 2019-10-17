@@ -34,10 +34,15 @@
     {block name='productlist-header-description'}
         {if $oNavigationsinfo->hasData()}
             <div class="desc clearfix mb-5">
-                {if $oNavigationsinfo->getImageURL() !== $smarty.const.BILD_KEIN_KATEGORIEBILD_VORHANDEN && $oNavigationsinfo->getImageURL() !== 'gfx/keinBild_kl.gif'}
-                    {image fluid-grow=true fluid=true
-                        src="{$oNavigationsinfo->getImageURL()}"
+                {if $oNavigationsinfo->getImageURL() !== $imageBaseURL|cat:$smarty.const.BILD_KEIN_KATEGORIEBILD_VORHANDEN && $oNavigationsinfo->getImageURL() !== 'gfx/keinBild_kl.gif'}
+                    {image fluid-grow=true lazy=true webp=true
+                        src=$oNavigationsinfo->getCategory()->getImage(\JTL\Media\Image::SIZE_XS)
+                        srcset="{$oNavigationsinfo->getCategory()->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_kategorien_mini_breite}w,
+                            {$oNavigationsinfo->getCategory()->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_kategorien_klein_breite}w,
+                            {$oNavigationsinfo->getCategory()->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_kategorien_breite}w,
+                            {$oNavigationsinfo->getCategory()->getImage(\JTL\Media\Image::SIZE_LG)} {$Einstellungen.bilder.bilder_kategorien_gross_breite}w"
                         alt="{if $oNavigationsinfo->getCategory() !== null}{$oNavigationsinfo->getCategory()->cBeschreibung|strip_tags|truncate:40|escape:'html'}{elseif $oNavigationsinfo->getManufacturer() !== null}{$oNavigationsinfo->getManufacturer()->cBeschreibung|strip_tags|truncate:40|escape:'html'}{/if}"
+                        sizes="auto"
                         class="mb-5"
                     }
                 {/if}
@@ -74,7 +79,11 @@
                     {col cols=6 md=4 lg=3}
                         {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'Y'}
                             {link href=$subCategory->getURL()}
-                                {image fluid-grow=true lazy=true src=$subCategory->getImage() alt=$subCategory->getName() class="mb-2"}
+                                {image fluid-grow=true lazy=true webp=true
+                                    src=$subCategory->getImage()
+                                    alt=$subCategory->getName()
+                                    class="mb-2"
+                                }
                             {/link}
                         {/if}
                         {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'B'}

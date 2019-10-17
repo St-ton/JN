@@ -39,7 +39,7 @@
                                             <td class="text-center">
                                                 {form method="post" action="{get_static_route id='jtl.php'}"}
                                                     {input name="kUpload" type="hidden" value=$oUpload->kUpload}
-                                                    {button type="submit" size="sm" name=$oUpload->cName}<i class="fa fa-download"></i>{/button}
+                                                    {button type="submit" size="sm" variant="outline-primary" name=$oUpload->cName}<i class="fa fa-download"></i>{/button}
                                                 {/form}
                                             </td>
                                         </tr>

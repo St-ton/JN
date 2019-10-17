@@ -12,7 +12,7 @@
                 {input type="hidden" name="zusatzschritt" value="1"}
                 {input type="hidden" name="kBestellung" value=$Bestellung->kBestellung}
                 <p class="box_plain">
-                    {button type="submit" value="1"}
+                    {button type="submit" value="1" variant="outline-primary"}
                         {lang key='completeOrder' section='shipping payment'}
                     {/button}
                 </p>

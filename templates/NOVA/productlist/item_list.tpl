@@ -30,14 +30,16 @@
                                     {foreach $Artikel->Bilder as $image}
                                         {strip}
                                             <div>
-                                                {image data=['lazy'=>$image->cURLMini, 'srcset'=>"{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                 {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                 {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"]
-                                                     sizes="(min-width: 1200px) 175px,95vw"
-                                                     alt=$image->cAltAttribut|escape:'html'
-                                                     src=$image->cURLMini
-                                                     fluid=true
-                                                    class='w-100'}
+                                                {image fluid=true webp=true lazy=true
+                                                    alt=$image->cAltAttribut|escape:'html'
+                                                    src=$Artikel->Bilder[0]->cURLKlein
+                                                    srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                        {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                        {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                                    sizes="auto"
+                                                    class='w-100'
+                                                    webp=true
+                                                }
                                             </div>
                                         {/strip}
                                     {/foreach}
@@ -49,6 +51,7 @@
                                 {/block}
                             </div>
                         {/block}
+
                         {if $smarty.session.Kundengruppe->mayViewPrices()
                             && isset($Artikel->SieSparenX)
                             && $Artikel->SieSparenX->anzeigen == 1
@@ -117,7 +120,13 @@
                                                 {if ($Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'BT'
                                                     || $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'B')
                                                     && !empty($Artikel->cHerstellerBildKlein)}
-                                                    {image src=$Artikel->cHerstellerBildKlein alt=$Artikel->cHersteller class="img-xs"}
+                                                    {image webp=true lazy=true fluid-grow=true
+                                                        src=$Artikel->cHerstellerBildURLKlein
+                                                        srcset="{$Artikel->cHerstellerBildURLKlein} {$Einstellungen.bilder.bilder_hersteller_mini_breite}w,
+                                                            {$Artikel->cHerstellerBildURLNormal} {$Einstellungen.bilder.bilder_hersteller_normal_breite}w"
+                                                        alt=$Artikel->cHersteller
+                                                        sizes="25px"
+                                                        class="img-xs"}
                                                     <meta itemprop="image" content="{$ShopURL}/{$Artikel->cHerstellerBildKlein}">
                                                 {/if}
                                                 {if ($Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'BT'
@@ -268,7 +277,7 @@
                                         {/if}
                                     {else}
                                         {col cols=12}
-                                            {link class="btn btn-secondary btn-block" role="button" href=$Artikel->cURLFull}
+                                            {link class="btn btn-outline-primary btn-block" role="button" href=$Artikel->cURLFull}
                                                 {lang key='details'}
                                             {/link}
                                         {/col}

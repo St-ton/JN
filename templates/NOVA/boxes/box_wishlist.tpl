@@ -46,7 +46,14 @@
                                         {/link}
                                         {link href=$oWunschlistePos->Artikel->cURLFull title=$oWunschlistePos->cArtikelName|escape:'quotes'}
                                             {if $oBox->getShowImages()}
-                                                {image alt=$oWunschlistePos->cArtikelName|escape:'quotes' src=$oWunschlistePos->Artikel->Bilder[0]->cURLMini class="img-xs mr-2"}
+                                                {image fluid=true webp=true lazy=true
+                                                    src=$oWunschlistePos->Artikel->Bilder[0]->cURLMini
+                                                    srcset="{$oWunschlistePos->Artikel->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                            {$oWunschlistePos->Artikel->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                            {$oWunschlistePos->Artikel->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                                    sizes="24px"
+                                                    alt=$oWunschlistePos->Artikel->cName|strip_tags|truncate:60|escape:'html' class="img-xs mr-2"
+                                                }
                                             {/if}
                                             {$oWunschlistePos->fAnzahl|replace_delim} &times; {$oWunschlistePos->cArtikelName|truncate:25:"..."}
                                         {/link}
@@ -56,7 +63,7 @@
                         {/listgroup}
                         {block name='boxes-box-wishlist-actions'}
                             <hr class="my-4">
-                            {link href="{get_static_route id='wunschliste.php'}?wl={$oBox->getWishListID()}" class="btn btn-secondary btn-block btn-sm"}
+                            {link href="{get_static_route id='wunschliste.php'}?wl={$oBox->getWishListID()}" class="btn btn-outline-primary btn-block btn-sm"}
                                 {lang key='goToWishlist'}
                             {/link}
                         {/block}

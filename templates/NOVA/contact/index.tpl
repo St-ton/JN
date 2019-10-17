@@ -81,7 +81,7 @@
                                                         {if $Einstellungen.kontakt.kontakt_abfragen_vorname !== 'N'}
                                                             {col cols=12 md=6}
                                                                 {block name='contact-index-name-firstname'}
-                                                                    {include file='snippets/form_group_simple.tpl'options=["text", "firstName", "vorname", {$Vorgaben->cVorname}, {lang key='firstName' section='account data'}, {$Einstellungen.kontakt.kontakt_abfragen_vorname}]}
+                                                                    {include file='snippets/form_group_simple.tpl' options=["text", "firstName", "vorname", {$Vorgaben->cVorname}, {lang key='firstName' section='account data'}, {$Einstellungen.kontakt.kontakt_abfragen_vorname}]}
                                                                 {/block}
                                                             {/col}
                                                         {/if}

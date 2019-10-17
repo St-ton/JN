@@ -17,7 +17,7 @@
             {block name='account-orders-orders'}
                 {foreach $orderPagination->getPageItems() as $order}
                         {card no-body=true class='mb-3'}
-                            {cardheader class="bg-info"}
+                            {cardheader}
                                 {link href="{get_static_route id='jtl.php'}?bestellung={$order->kBestellung}"
                                     title="{lang key='showOrder' section='login'}: {lang key='orderNo' section='login'} {$order->cBestellNr}"
                                     data=["toggle" => "tooltip", "placement" => "bottom"]
@@ -55,7 +55,7 @@
         {block name='account-orders-actions'}
             {row}
                 {col md=3 cols=12}
-                    {link class="btn btn-secondary btn-block" href="{get_static_route id='jtl.php'}"}
+                    {link class="btn btn-outline-primary btn-block" href="{get_static_route id='jtl.php'}"}
                         {lang key='back'}
                     {/link}
                 {/col}

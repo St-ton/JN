@@ -94,7 +94,7 @@
                 </noscript>
             {/if}
             {foreach $opcPageService->getCurPage()->getCssList($opc->isEditMode()) as $cssFile => $cssTrue}
-                <link rel="preload" href="{$cssFile}" as="style"
+                <link rel="preload" href="{$cssFile}" as="style" data-opc-portlet-css-link="true"
                       onload="this.onload=null;this.rel='stylesheet'">
                 <noscript>
                     <link rel="stylesheet" href="{$cssFile}">
@@ -285,7 +285,9 @@
 
     {has_boxes position='left' assign='hasLeftPanel'}
     {block name='layout-header-body-tag'}
-        <body data-page="{$nSeitenTyp}" {if isset($Link) && !empty($Link->getIdentifier())} id="{$Link->getIdentifier()}"{/if}>
+        <body class="{if $Einstellungen.template.theme.button_animated === 'Y'}btn-animated{/if}"
+              data-page="{$nSeitenTyp}"
+              {if isset($Link) && !empty($Link->getIdentifier())} id="{$Link->getIdentifier()}"{/if}>
     {/block}
 
     {if !$bExclusive}

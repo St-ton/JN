@@ -9,7 +9,7 @@ $gray-darker:                       #525252;
 $sand:                              #ebebeb;
 $cool-white:                        #f8f8f8;
 $primary:                           #F8BF00;
-$secondary:                         transparent;
+$secondary:                         $gray-darker;
 $success:                           #088319;
 $bg-success:                        #CDE1D6;
 $info:                              #525252;
@@ -132,6 +132,9 @@ $highlight-border-size:             .375rem;
 
 $body-bg:                           $gray-100;
 $body-color:                        $gray-600;
+
+$headings-color:                    $gray-700;
+$navbar-light-hover-color:          $primary;
 
 $text-muted:                        $gray;
 $input-color-placeholder:           $gray;

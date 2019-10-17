@@ -100,7 +100,15 @@
                                                     {/link}
                                                 </div>
                                                 {link href=$oArtikel->cURLFull}
-                                                    {image src=$oArtikel->cVorschaubild alt=$oArtikel->cName class="image"}
+                                                    {image fluid=true webp=true lazy=true
+                                                        alt=$oArtikel->cName
+                                                        src=$oArtikel->cVorschaubild
+                                                        srcset="{$oArtikel->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                             {$oArtikel->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                             {$oArtikel->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
+                                                             {$oArtikel->Bilder[0]->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
+                                                        sizes="200px"
+                                                    }
                                                 {/link}
                                             </div>
                                             <span>

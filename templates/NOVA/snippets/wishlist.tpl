@@ -68,10 +68,10 @@
                 {if $isCurrenctCustomer === true}
                     {block name='snippets-wishlist-actions'}
                         {col class="col-auto"}
-                            {dropdown variant="link" class="wishlist-options" text="<i class='fas fa-ellipsis-v'></i>" aria=["label"=>"{lang key='rename' section='wishlistOptions'}"]}
+                            {dropdown variant="link no-caret" class="wishlist-options" text="<i class='fas fa-ellipsis-v'></i>" aria=["label"=>"{lang key='rename' section='wishlistOptions'}"]}
                                 {dropdownitem class="text-center position-relative"}
                                 {block name='snippets-wishlist-actions-rename'}
-                                    {button type="submit" variant="link" class="stretched-link" data=["toggle" => "collapse", "target"=>"#edit-wishlist-name"]}
+                                    {button type="submit" variant="link" class="w-100 no-caret" data=["toggle" => "collapse", "target"=>"#edit-wishlist-name"]}
                                         {lang key='rename'}
                                     {/button}
                                 {/block}
@@ -143,7 +143,7 @@
                                 {block name='snippets-wishlist-actions-add-new'}
                                     {button type="submit"
                                         variant="link"
-                                        class="stretched-link"
+                                        class="stretched-link no-caret"
                                         data=["toggle" => "collapse", "target"=>"#create-new-wishlist"]
                                     }
                                         {lang key='wishlistAddNew' section='login'}
@@ -184,7 +184,7 @@
                                     {input name="cSuche" size="35" type="text" value=$wlsearch placeholder="{lang key='wishlistSearch' section='login'}" aria=["label"=>"{lang key='wishlistSearch' section='login'}"]}
                                     {inputgroupaddon append=true}
                                     {block name='snippets-wishlist-search-form-submit'}
-                                        {button name="action" value="search" type="submit"}
+                                        {button name="action" value="search" type="submit" variant="outline-primary"}
                                             <i class="fa fa-search"></i>
                                             <span class="d-none d-md-inline-block">{lang key='wishlistSearchBTN' section='login'}</span>
                                         {/button}
@@ -193,7 +193,7 @@
                                     {if !empty($wlsearch)}
                                         {block name='snippets-wishlist-search-form-remove-search'}
                                             {inputgroupaddon append=true}
-                                            {button type="submit" name="cSuche" value=""}
+                                            {button type="submit" name="cSuche" value="" variant="outline-primary"}
                                                 <i class="fa fa-undo"></i> {lang key='wishlistRemoveSearch' section='login'}
                                             {/button}
                                             {/inputgroupaddon}
@@ -352,7 +352,7 @@
                                                     placeholder="{lang key='wishlistAddNew' section='login'}"
                                                     size="35"}
                                                 {inputgroupaddon append=true}
-                                                    {button type="submit" size="sm" name="action" value="createNew"}
+                                                    {button type="submit" size="sm" name="action" value="createNew" variant="outline-primary"}
                                                         <i class="fa fa-save"></i> {lang key='wishlistSaveNew' section='login'}
                                                     {/button}
                                                 {/inputgroupaddon}
@@ -410,7 +410,14 @@
                                         {/if}
                                         {block name='snippets-wishlist-form-basket-image'}
                                             {link class="image-box mx-auto clear-both d-block" href=$wlPosition->Artikel->cURLFull}
-                                                {image alt=$wlPosition->Artikel->cName src=$wlPosition->Artikel->Bilder[0]->cURLNormal fluid=true}
+                                                {image fluid=true lazy=true webp=true
+                                                    src=$wlPosition->Artikel->Bilder[0]->cURLMini
+                                                    srcset="{$wlPosition->Artikel->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                        {$wlPosition->Artikel->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                        {$wlPosition->Artikel->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                                    alt=$wlPosition->Artikel->cName|strip_tags|escape:'quotes'|truncate:60
+                                                    sizes="auto"
+                                                }
                                             {/link}
                                         {/block}
                                         {block name='snippets-wishlist-form-basket-name'}
@@ -523,7 +530,7 @@
                                             name="action"
                                             value="update"
                                             block=true
-                                            class="bg-white"}
+                                            variant="outline-primary"}
                                             <i class="fa fa-sync"></i> {lang key='wishlistUpdate' section='login'}
                                         {/button}
                                     {/if}

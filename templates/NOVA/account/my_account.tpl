@@ -28,7 +28,7 @@
             {col cols=12 lg=6 class='mb-5'}
                 {block name='account-my-account-orders-content'}
                     {card no-body=true}
-                        {cardheader class="bg-info"}
+                        {cardheader}
                             {row class="align-items-center"}
                                 {col}
                                     <span class="h3 mb-0">
@@ -80,7 +80,7 @@
             {col cols=12 lg=6 class='mb-5'}
                 {block name='account-my-account-billing-address'}
                     {card no-body=true}
-                        {cardheader class="bg-info"}
+                        {cardheader}
                             {row class="align-items-center"}
                                 {col}
                                     <span class="h3 mb-0">
@@ -148,7 +148,7 @@
             {col cols=12 lg=6 class='mb-5'}
                 {block name='account-my-account-wishlist-content'}
                     {card no-body=true id='my-wishlists'}
-                        {cardheader class="bg-info"}
+                        {cardheader}
                             <span class="h3 mb-0">
                                 {link class='text-decoration-none' href="{get_static_route id='wunschliste.php'}"}
                                     {lang key='myWishlists'}
@@ -201,7 +201,7 @@
             {col cols=12 lg=6 class='mb-5'}
                 {block name='account-my-account-comparelist'}
                     {card no-body=true}
-                        {cardheader class='bg-info'}
+                        {cardheader}
                             <span class="h3 mb-0">
                                 {link class='text-decoration-none' href="{get_static_route id='vergleichsliste.php'}"}
                                     {lang key='myCompareList'}

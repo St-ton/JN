@@ -105,7 +105,7 @@
                                         {input type="hidden" name="abmelden" value="1"}
                                         {row}
                                             {col md=4 class='ml-md-auto'}
-                                                {button type="submit" block=true}
+                                                {button type="submit" block=true variant="outline-primary"}
                                                     <span>{lang key='newsletterSendUnsubscribe' section='newsletter'}</span>
                                                 {/button}
                                             {/col}

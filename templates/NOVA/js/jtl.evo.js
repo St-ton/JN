@@ -97,33 +97,24 @@
                 arrows: true,
                 lazyLoad: 'ondemand',
                 slidesToShow: 5,
-                slidesToScroll: 5,
-                responsive: [
+                slidesToScroll: 1,
+                responsive:     [
                     {
-                        breakpoint: 576, // xs
+                        breakpoint: 768, // xs
                         settings: {
-                            slidesToShow: 1,
-                            slidesToScroll: 1,
-                            // centerMode: true,
-                            // centerPadding: '60px',
+                            slidesToShow: 1
                         }
                     },
                     {
-                        breakpoint: 768, // sm
+                        breakpoint: 992, // sm
                         settings: {
-                            slidesToShow: 2,
-                            slidesToScroll: 2,
-                            // centerMode: true,
-                            // centerPadding: '60px',
+                            slidesToShow:2
                         }
                     },
                     {
-                        breakpoint: 992, // md
+                        breakpoint: 1300,
                         settings: {
-                            slidesToShow: 3,
-                            slidesToScroll: 3,
-                            // centerMode: true,
-                            // centerPadding: '60px',
+                            slidesToShow:3
                         }
                     }
                 ]
@@ -135,7 +126,7 @@
             if ($('#content').hasClass('col-lg-9')) {
                 evoSliderOptions.slidesToShow = 4;
             } else {
-                evoSliderOptions.slidesToShow = 6;
+                evoSliderOptions.slidesToShow = 5;
             }
             $('.evo-slider:not(.slick-initialized)').slick(evoSliderOptions);
 
@@ -146,24 +137,29 @@
                 dots:     false,
                 arrows:   true
             });
-
             var optionsNewsSlider = {
-                slidesToShow:   3,
+                slidesToShow:   5,
                 slidesToScroll: 1,
                 arrows:         true,
                 infinite:       false,
                 lazyLoad: 'ondemand',
                 responsive:     [
                     {
-                        breakpoint: 576, // xs
+                        breakpoint: 768, // xs
                         settings: {
                             slidesToShow: 1
                         }
                     },
                     {
-                        breakpoint: 768, // sm
+                        breakpoint: 992, // sm
                         settings: {
-                            slidesToShow: 2
+                            slidesToShow:2
+                        }
+                    },
+                    {
+                        breakpoint: 1300,
+                        settings: {
+                            slidesToShow:3
                         }
                     }
                 ]
@@ -346,7 +342,7 @@
                     //}
                 }
             });*/
-            $('img.lazy', 'body').each(function(i, item) {
+            /*$('img.lazy', 'body').each(function(i, item) {
                 var img = $(this),
                     src = img.data('src');
 
@@ -361,7 +357,7 @@
                         });
                     });
                 }
-            });
+            });*/
         },
 
         bootlint: function() {
@@ -709,8 +705,8 @@
             var config = {
                 decrementButton: "<i class='fas fa-minus'></i>", // button text
                 incrementButton: "<i class='fas fa-plus'></i>", // ..
-                groupClass: "", // css class of the input-group (sizing with input-group-sm, input-group-lg)
-                buttonsClass: "btn-light form-control",
+                groupClass: "input-group", // css class of the input-group (sizing with input-group-sm, input-group-lg)
+                buttonsClass: "btn-outline-secondary form-control",
                 buttonsWidth: "42px",
                 textAlign: "center",
                 autoDelay: 500, // ms holding before auto value change

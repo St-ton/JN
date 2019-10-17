@@ -233,17 +233,17 @@
                                     {input type="hidden" name="abschluss" value="1"}
                                     {input type="hidden" id="comment-hidden" name="kommentar" value=""}
                                     {block name='checkout-step5-confirmation-include-inc-order-items'}
-                                        <div class="text-right mb-1">
-                                            <span class="bg-info px-4 py-2">
-                                                {link class="text-decoration-none " href="{get_static_route id='warenkorb.php'}"}
-                                                    <span class="mr-1 text-decoration-underline d-inline-block">{lang key='change'}</span>
+                                        {card no-body=true class='card-gray card-products'}
+                                            {cardheader class='p-0 text-right'}
+                                                {link class="btn btn-sm btn-link" href="{get_static_route id='warenkorb.php'}"}
+                                                    <span class="text-decoration-underline mr-2">{lang key='change'}</span>
                                                     <span class="fa fa-pencil-alt"></span>
                                                 {/link}
-                                            </span>
-                                        </div>
-                                        <div class="mb-7 bg-info pt-3 px-3">
-                                            {include file='checkout/inc_order_items.tpl' tplscope='confirmation'}
-                                        </div>
+                                            {/cardheader}
+                                            {cardbody class='pt-5'}
+                                                {include file='checkout/inc_order_items.tpl' tplscope='confirmation'}
+                                            {/cardbody}
+                                        {/card}
                                     {/block}
                                     {row class='mt-5'}
                                         {col cols=12 md=6 lg=4 class='ml-auto order-1 order-md-2'}
@@ -252,7 +252,7 @@
                                             {/button}
                                         {/col}
                                         {col cols=12 md=6 lg=3 class='order-2 order-md-1'}
-                                            {link href="{get_static_route id='warenkorb.php'}" class="btn btn-secondary btn-block"}
+                                            {link href="{get_static_route id='warenkorb.php'}" class="btn btn-outline-primary btn-block"}
                                                 {lang key='modifyBasket' section='checkout'}
                                             {/link}
                                         {/col}

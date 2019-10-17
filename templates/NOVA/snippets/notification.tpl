@@ -29,8 +29,10 @@
                                 data=["dismiss"=>"{if isset($button->dismiss)}{$button->dismiss}{/if}"]
                                 aria=["label"=>"{if isset($button->dismiss)}Close{/if}"]
                             }
-                                {if isset($button->fa)}<i class="fa {$button->fa}"></i>{/if}
-                                {$button->title}
+                                {block name='snippets-notification-footer-button'}
+                                    {if isset($button->fa)}<i class="fa {$button->fa}"></i>{/if}
+                                    {$button->title}
+                                {/block}
                             {/link}
                         {/foreach}
                     {/buttongroup}

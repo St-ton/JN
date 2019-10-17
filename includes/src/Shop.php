@@ -843,6 +843,9 @@ final class Shop
     public static function bootstrap(bool $isFrontend = true): void
     {
         self::$isFrontend = $isFrontend;
+        if (\SAFE_MODE === true) {
+            return;
+        }
         $db               = self::Container()->getDB();
         $cache            = self::Container()->getCache();
         $cacheID          = 'plgnbtsrp';

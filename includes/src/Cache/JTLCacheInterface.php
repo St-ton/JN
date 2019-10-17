@@ -155,7 +155,7 @@ interface JTLCacheInterface
      * @param int $lifetime
      * @return JTLCacheInterface
      */
-    public function setCacheLifetime($lifetime): JTLCacheInterface;
+    public function setCacheLifetime(int $lifetime): JTLCacheInterface;
 
     /**
      * set custom file cache directory
@@ -163,7 +163,7 @@ interface JTLCacheInterface
      * @param string $dir
      * @return JTLCacheInterface
      */
-    public function setCacheDir($dir): JTLCacheInterface;
+    public function setCacheDir(string $dir): JTLCacheInterface;
 
     /**
      * get the currently activated cache method

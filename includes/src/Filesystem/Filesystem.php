@@ -9,6 +9,7 @@ namespace JTL\Filesystem;
 use Exception;
 use Generator;
 use JTL\Path;
+use League\Flysystem\FilesystemInterface;
 use Symfony\Component\Finder\Finder;
 use ZipArchive;
 
@@ -19,7 +20,7 @@ use ZipArchive;
 class Filesystem implements IFilesystem
 {
     /**
-     * @var IFilesystem
+     * @var FilesystemInterface
      */
     protected $adapter;
 
@@ -28,7 +29,7 @@ class Filesystem implements IFilesystem
      *
      * @param IFilesystem $adapter
      */
-    public function __construct(IFilesystem $adapter)
+    public function __construct(FilesystemInterface $adapter)
     {
         $this->adapter = $adapter;
     }
@@ -36,9 +37,9 @@ class Filesystem implements IFilesystem
     /**
      * Get the Adapter.
      *
-     * @return IFilesystem adapter
+     * @return FilesystemInterface adapter
      */
-    public function getAdapter()
+    public function getAdapter(): FilesystemInterface
     {
         return $this->adapter;
     }

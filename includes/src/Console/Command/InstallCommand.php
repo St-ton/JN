@@ -7,12 +7,13 @@
 namespace JTL\Console\Command;
 
 use Exception;
-use JTL\Filesystem\Filesystem;
-use JTL\Filesystem\LocalFilesystem;
+use League\Flysystem\Adapter\Local;
+use League\Flysystem\Filesystem;
 use Symfony\Component\Console\Helper\TableStyle;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use VueInstaller\VueInstaller;
 
 /**
  * Class InstallCommand
@@ -172,7 +173,7 @@ class InstallCommand extends Command
         $adminPass       = $this->getOption('admin-password');
         $syncUser        = $this->getOption('sync-user');
         $syncPass        = $this->getOption('sync-password');
-        $localFilesystem = new Filesystem(new LocalFilesystem(['root' => \PFAD_ROOT]));
+        $localFilesystem = new Filesystem(new Local(\PFAD_ROOT, \LOCK_EX, Local::SKIP_LINKS));
 
         if ($uri !== null) {
             if ($scheme = \parse_url($uri, \PHP_URL_SCHEME)) {
@@ -193,7 +194,7 @@ class InstallCommand extends Command
         }
 
         $io->setStep($this->currentStep++, $this->steps, 'Check if shop is installed');
-        $installCheck = (new \VueInstaller('installedcheck', [], true))->run();
+        $installCheck = (new VueInstaller('installedcheck', [], true))->run();
 
         if ($installCheck['installed']) {
             $io->warning('Shop is already installed');
@@ -202,7 +203,7 @@ class InstallCommand extends Command
         $io->success('Shop can be installed');
 
         $io->setStep($this->currentStep++, $this->steps, 'System check');
-        $systemCheckResults = (new \VueInstaller('systemcheck', [], true))->run();
+        $systemCheckResults = (new VueInstaller('systemcheck', [], true))->run();
         $systemCheckFailed  = false;
 
         foreach ($systemCheckResults['testresults'] as $resultGroup) {
@@ -227,19 +228,19 @@ class InstallCommand extends Command
         if ($this->currentUser !== $fileOwner) {
             $paths = $localFilesystem->listContents(\PFAD_ROOT, true);
             foreach ($paths as $path) {
-                $localFilesystem->chown($path->getPath(), $fileOwner);
-                $localFilesystem->chgrp($path->getPath(), $fileGroup);
+                \chown(\PFAD_ROOT . $path->path, $fileOwner);
+                \chgrp(\PFAD_ROOT . $path->path, $fileGroup);
             }
-            $localFilesystem->chown(\PFAD_ROOT, $fileOwner);
+            \chown(\PFAD_ROOT, $fileOwner);
         }
 
         foreach (self::$writeablePaths as $path) {
-            $localFilesystem->chmod($path, 0777);
+            \chmod($path, 0777);
         }
 
         $io->success('Permissions updated');
 
-        $dirCheck = (new \VueInstaller('dircheck', [], true))->run();
+        $dirCheck = (new VueInstaller('dircheck', [], true))->run();
 
         if (\in_array(false, $dirCheck['testresults'])) {
             $this->printDirCheckTable($dirCheck['testresults'], $localFilesystem);
@@ -255,7 +256,7 @@ class InstallCommand extends Command
             'user'   => $dbUser,
             'pass'   => $dbPass
         ];
-        $dbCredentialsCheck = (new \VueInstaller('credentialscheck', $dbCredentials, true))->run();
+        $dbCredentialsCheck = (new VueInstaller('credentialscheck', $dbCredentials, true))->run();
 
         if ($dbCredentialsCheck['error']) {
             $io->error($dbCredentialsCheck['msg']);
@@ -270,7 +271,7 @@ class InstallCommand extends Command
             'wawi'  => ['name' => $syncUser, 'pass' => $syncPass],
         ];
 
-        $installed = (new \VueInstaller('doinstall', $posts, true))->run();
+        $installed = (new VueInstaller('doinstall', $posts, true))->run();
 
         if ($installed['error']) {
             $io->error(\implode(' | ', $installed['msg']));
@@ -288,14 +289,14 @@ class InstallCommand extends Command
 
         $io->setStep($this->currentStep++, $this->steps, 'Remove install dir and set new permissions for config file');
 
-        if ($localFilesystem->exists('/install')) {
-            $localFilesystem->deleteDirectory('/install');
+        if ($localFilesystem->has('/install')) {
+            $localFilesystem->deleteDir('/install');
         }
 
-        if ($localFilesystem->exists('/includes/config.JTL-Shop.ini.php')) {
-            $localFilesystem->chmod('/includes/config.JTL-Shop.ini.php', 0644);
-            $localFilesystem->chown('/includes/config.JTL-Shop.ini.php', $fileOwner);
-            $localFilesystem->chgrp('/includes/config.JTL-Shop.ini.php', $fileGroup);
+        if ($localFilesystem->has('/includes/config.JTL-Shop.ini.php')) {
+            \chmod('/includes/config.JTL-Shop.ini.php', 0644);
+            \chown('/includes/config.JTL-Shop.ini.php', $fileOwner);
+            \chgrp('/includes/config.JTL-Shop.ini.php', $fileGroup);
         }
 
         $io->success('Installation completed.');
@@ -337,7 +338,7 @@ class InstallCommand extends Command
         $headers = ['File/Dir', 'Correct permission', 'Permission'];
 
         foreach ($list as $path => $val) {
-            $permission = \substr(\sprintf('%o', $localFilesystem->getMeta($path)->getPerms()), -4);
+            $permission = $localFilesystem->getVisibility($path);
             $rows[]     = [$path, $val ? '<info> ✔ </info>' : '<comment> • </comment>', $permission];
         }
 

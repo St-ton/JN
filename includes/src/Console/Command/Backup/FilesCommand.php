@@ -7,8 +7,8 @@
 namespace JTL\Console\Command\Backup;
 
 use JTL\Console\Command\Command;
+use League\Flysystem\Adapter\Local;
 use JTL\Filesystem\Filesystem;
-use JTL\Filesystem\LocalFilesystem;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -52,9 +52,7 @@ class FilesCommand extends Command
             'dbeS/logs',
             'jtllogs',
             'install/logs'], $this->getOption('exclude-dir'));
-        $localFilesystem    = new Filesystem(new LocalFilesystem([
-            'root' => \PFAD_ROOT
-        ]));
+        $localFilesystem    = new Filesystem(new Local(\PFAD_ROOT));
 
         $finder = Finder::create()
             ->ignoreVCS(false)

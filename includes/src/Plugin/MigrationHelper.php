@@ -6,12 +6,14 @@
 
 namespace JTL\Plugin;
 
+use DateTime;
 use DirectoryIterator;
+use Exception;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
-use JTL\Filesystem\Filesystem;
-use JTL\Filesystem\LocalFilesystem;
 use JTL\Shop;
+use League\Flysystem\Adapter\Local;
+use League\Flysystem\Filesystem;
 
 /**
  * Class MigrationHelper
@@ -77,11 +79,10 @@ final class MigrationHelper
     public function getIdFromFileName($fileName): ?int
     {
         $matches = [];
-        if (\preg_match(self::MIGRATION_FILE_NAME_PATTERN, \basename($fileName), $matches)) {
-            return (int)$matches[1];
-        }
 
-        return null;
+        return (\preg_match(self::MIGRATION_FILE_NAME_PATTERN, \basename($fileName), $matches))
+            ? (int)$matches[1]
+            : null;
     }
 
     /**
@@ -208,11 +209,10 @@ final class MigrationHelper
     public static function mapClassNameToId($className): ?int
     {
         $matches = [];
-        if (\preg_match(self::MIGRATION_CLASS_NAME_PATTERN, $className, $matches)) {
-            return (int)$matches[1];
-        }
 
-        return null;
+        return \preg_match(self::MIGRATION_CLASS_NAME_PATTERN, $className, $matches)
+            ? (int)$matches[1]
+            : null;
     }
 
     /**
@@ -227,24 +227,24 @@ final class MigrationHelper
     {
         $plugin = Shop::Container()->getDB()->select('tplugin', 'cVerzeichnis', $pluginDir);
         if (empty($plugin)) {
-            throw new \Exception('There is no plugin for the given dir name.');
+            throw new Exception('There is no plugin for the given dir name.');
         }
 
-        $datetime      = new \DateTime('NOW');
+        $datetime      = new DateTime('NOW');
         $timestamp     = $datetime->format('YmdHis');
         $filePath      = 'Migration' . $timestamp;
         $relPath       = 'plugins/' . $pluginDir . '/Migrations';
         $migrationPath = $relPath . '/' . $filePath . '.php';
-        $fileSystem    = new Filesystem(new LocalFilesystem(['root' => \PFAD_ROOT]));
+        $fileSystem    = new Filesystem(new Local(\PFAD_ROOT));
 
-        if (!$fileSystem->exists($relPath)) {
+        if (!$fileSystem->has($relPath)) {
             throw new \Exception('Migrations path doesn\'t exist!');
         }
 
         $content = Shop::Smarty()
             ->assign('description', $description)
             ->assign('author', $author)
-            ->assign('created', $datetime->format(\DateTime::RSS))
+            ->assign('created', $datetime->format(DateTime::RSS))
             ->assign('pluginDir', $pluginDir)
             ->assign('timestamp', $timestamp)
             ->fetch(\PFAD_ROOT . 'includes/src/Console/Command/Plugin/Template/migration.class.tpl');

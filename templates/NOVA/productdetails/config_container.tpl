@@ -21,7 +21,6 @@
                                     data=["toggle"=>"collapse","target"=>"#cfg-grp-cllps-{$kKonfiggruppe}"]
                                     class="text-left text-decoration-none"}
                                     {$oSprache->getName()}{if $oGruppe->getMin() == 0}<span class="optional"> - {lang key='optional'}</span>{/if}
-                                    <span class="ml-3 float-right"><i class="fas fa-chevron-down"></i></span>
                                 {/button}
                             </div>
 
@@ -137,7 +136,7 @@
                                                                                 role="button"
                                                                                 aria=["expanded"=>"false", "controls"=>"desc_{$kKonfigitem}"]
                                                                             }
-                                                                                {lang key='showDescription'} <i class="fas fa-chevron-down"></i></span>
+                                                                                {lang key='showDescription'}
                                                                             {/button}
                                                                             {collapse visible=false id="desc_{$kKonfigitem}" aria=["labelledby"=>"#desc_link_{$kKonfigitem}"]}
                                                                                 {$cBeschreibung}
@@ -213,7 +212,7 @@
                                                                                 role="button"
                                                                                 aria=["expanded"=>"false", "controls"=>"desc_{$kKonfigitem}"]
                                                                             }
-                                                                                {lang key='showDescription'} <i class="fas fa-chevron-down"></i></span>
+                                                                                {lang key='showDescription'}
                                                                             {/button}
                                                                             {collapse visible=false id="desc_{$kKonfigitem}" aria=["labelledby"=>"#desc_link_{$kKonfigitem}"]}
                                                                                 {$cBeschreibung}

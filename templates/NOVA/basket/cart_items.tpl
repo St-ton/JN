@@ -61,9 +61,14 @@
                     {block name='basket-cart-items-items-main-content'}
                         {col cols=$cols xl=$itemInfoCols class="ml-auto"}
                         {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
-                            <p>{link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}{$oPosition->cName|trans}{/link}</p>
+                            {link class='mb-3 d-block' href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}{$oPosition->cName|trans}{/link}
                             {block name='basket-cart-items-product-data'}
-                                <ul class="list-unstyled text-muted small">
+                                <ul class="list-unstyled">
+
+                                    {if $Einstellungen.kaufabwicklung.bestellvorgang_artikelkurzbeschreibung == 'Y' && $oPosition->Artikel->cKurzBeschreibung|strlen > 0}
+                                        <li class="shortdescription pb-1">{$oPosition->Artikel->cKurzBeschreibung}</li>
+                                    {/if}
+
                                     <li class="sku"><strong>{lang key='productNo'}:</strong> {$oPosition->Artikel->cArtNr}</li>
                                     {if isset($oPosition->Artikel->dMHD) && isset($oPosition->Artikel->dMHD_de) && $oPosition->Artikel->dMHD_de !== null}
                                         <li title="{lang key='productMHDTool'}" class="best-before">
@@ -120,10 +125,6 @@
                                                 </span>
                                             </li>
                                         {/foreach}
-                                    {/if}
-
-                                    {if $Einstellungen.kaufabwicklung.bestellvorgang_artikelkurzbeschreibung == 'Y' && $oPosition->Artikel->cKurzBeschreibung|strlen > 0}
-                                        <li class="shortdescription">{$oPosition->Artikel->cKurzBeschreibung}</li>
                                     {/if}
 
                                     {if isset($oPosition->Artikel->cGewicht) && $Einstellungen.artikeldetails.artikeldetails_gewicht_anzeigen === 'Y' && $oPosition->Artikel->fGewicht > 0}
@@ -268,19 +269,16 @@
                         }
                             {col cols=$cols xl=10 class='mt-4 ml-auto' data=['toggle'=>'product-actions']}
                                 {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
-                                    <div class="btn-scale-small d-inline-block">
-                                        {include file='snippets/wishlist_button.tpl' Artikel=$oPosition->Artikel}
-                                    </div>
-                                    <span class="mx-2">|</span>
+                                    {include file='snippets/wishlist_button.tpl' Artikel=$oPosition->Artikel buttonAndText=true}
                                 {/if}
                                 {button type="submit"
-                                variant="link"
-                                size="sm"
-                                class="pl-0 droppos border-0"
-                                name="dropPos"
-                                value=$oPosition@index
-                                title="{lang key='delete'}"}
-                                    <span class="fa fa-trash "></span> <span>{lang key='delete'}</span>
+                                    variant="link"
+                                    size="sm"
+                                    class="p-0 droppos text-decoration-underline text-nowrap"
+                                    name="dropPos"
+                                    value=$oPosition@index
+                                    title="{lang key='delete'}"}
+                                    <span class="fas fa-trash-alt mr-2"></span>{lang key='delete'}
                                 {/button}
                             {/col}
                         {/if}

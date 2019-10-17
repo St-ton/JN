@@ -58,7 +58,7 @@
                                             {if isset($bewertungSterneSelected) && $bewertungSterneSelected > 0}
                                                 {block name='productdetails-reviews-note-all-ratings'}
                                                     <p>
-                                                        {link href="{$Artikel->cURLFull}#tab-votes" class="btn btn-secondary"}
+                                                        {link href="{$Artikel->cURLFull}#tab-votes" class="btn btn-outline-primary "}
                                                         {lang key='allRatings'}
                                                         {/link}
                                                     </p>
@@ -85,7 +85,7 @@
                         </div>
                         {input type="hidden" name="bfa" value="1"}
                         {input type="hidden" name="a" value=$Artikel->kArtikel}
-                        {button type="submit" name="bewerten" value="1" class="w-auto mb-3"}
+                        {button type="submit" name="bewerten" value="1" variant="outline-primary" class="w-auto mb-3"}
                             {if $bereitsBewertet === false}
                                 {lang key='productAssess' section='product rating'}
                             {else}

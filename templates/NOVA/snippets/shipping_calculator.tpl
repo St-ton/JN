@@ -30,7 +30,7 @@
                                 {/inputgroup}
                             {/col}
                             {col cols=12 md=4}
-                                {button block=true name='versandrechnerBTN' type='submit'}
+                                {button block=true name='versandrechnerBTN' type='submit' variant='outline-primary'}
                                     {lang key='estimateShipping' section='checkout'}
                                 {/button}
                             {/col}

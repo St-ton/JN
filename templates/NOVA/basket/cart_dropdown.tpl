@@ -96,7 +96,7 @@
                     {block name='basket-cart-dropdown-buttons'}
                         {row class='mt-3'}
                             {col cols=12 lg=6}
-                                {link href="{get_static_route id='bestellvorgang.php'}?wk=1" class="btn btn-secondary btn-block btn-sm mb-3"}
+                                {link href="{get_static_route id='bestellvorgang.php'}?wk=1" class="btn btn-outline-primary btn-block btn-sm mb-3"}
                                     {lang key='nextStepCheckout' section='checkout'}
                                 {/link}
                             {/col}

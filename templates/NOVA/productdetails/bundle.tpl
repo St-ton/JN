@@ -17,26 +17,26 @@
             {if $smarty.session.Kundengruppe->mayViewPrices()}
                 {block name='productdetails-bundle-form-price'}
                     {row class='mb-7 mt-n2 justify-content-md-center align-items-center'}
-                    {col cols=12 md='auto' class='text-center text-md-right mb-2 mb-md-0'}
-                        <span class="font-weight-bold">
+                        {col cols=12 md='auto' class='text-center text-md-right mb-2 mb-md-0'}
+                            <span class="font-weight-bold">
                                 {lang key='priceForAll' section='productDetails'}:
                                 <span class="price price-sm">{$ProduktBundle->cPriceLocalized[$NettoPreise]}</span>
                             </span>
-                    {if $ProduktBundle->fPriceDiff > 0}
-                        <span class="text-warning ml-1">({lang key='youSave' section='productDetails'}: {$ProduktBundle->cPriceDiffLocalized[$NettoPreise]})</span>
-                    {/if}
-                    {if $ProductMain->cLocalizedVPE}
-                        <span class="font-weight-bold">{lang key='basePrice'}: </span>
-                        <span>{$ProductMain->cLocalizedVPE[$NettoPreise]}</span>
-                    {/if}
-                    {/col}
-                    {col cols=12 md='auto'}
-                    {block name='productdetails-bundle-form-submit'}
-                        {button name="inWarenkorb" type="submit" value="1" block=true}
-                        {lang key='addAllToCart'}
-                        {/button}
-                    {/block}
-                    {/col}
+                            {if $ProduktBundle->fPriceDiff > 0}
+                                <span class="text-warning ml-1">({lang key='youSave' section='productDetails'}: {$ProduktBundle->cPriceDiffLocalized[$NettoPreise]})</span>
+                            {/if}
+                            {if $ProductMain->cLocalizedVPE}
+                                <span class="font-weight-bold">{lang key='basePrice'}: </span>
+                                <span>{$ProductMain->cLocalizedVPE[$NettoPreise]}</span>
+                            {/if}
+                        {/col}
+                        {col cols=12 md='auto'}
+                            {block name='productdetails-bundle-form-submit'}
+                                {button name="inWarenkorb" type="submit" variant="outline-primary" value="1" block=true}
+                                    {lang key='addAllToCart'}
+                                {/button}
+                            {/block}
+                        {/col}
                     {/row}
                 {/block}
             {/if}

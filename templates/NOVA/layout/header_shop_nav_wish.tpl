@@ -3,7 +3,7 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='layout-header-shop-nav-wish'}
-    {if !empty($wishlists)}
+    {if !empty($wishlists) && $Einstellungen.global.global_wunschliste_anzeigen === 'Y'}
         {$wlCount = 0}
         {if isset($smarty.session.Wunschliste->CWunschlistePos_arr)}
             {$wlCount = $smarty.session.Wunschliste->CWunschlistePos_arr|count}

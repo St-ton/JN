@@ -303,7 +303,7 @@
                                     {else}
                                         {col cols=12}
                                             {block name='productlist-item-list-basket-details-details'}
-                                                {link class="btn btn-secondary btn-block" role="button" href=$Artikel->cURLFull}
+                                                {link class="btn btn-outline-primary btn-block" role="button" href=$Artikel->cURLFull}
                                                     {lang key='details'}
                                                 {/link}
                                             {/block}

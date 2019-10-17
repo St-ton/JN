@@ -66,7 +66,7 @@
                                                     {inputgroup}
                                                         {input type="email" name="cEmail" id="newsletter_email" placeholder="{lang key='emailadress'}" aria=['label' => {lang key='emailadress'}]}
                                                         {inputgroupaddon append=true}
-                                                            {button type='submit' variant='dark' class='min-w-sm'}
+                                                            {button type='submit' variant='secondary' class='min-w-sm'}
                                                                 {lang key='newsletterSendSubscribe' section='newsletter'}
                                                             {/button}
                                                         {/inputgroupaddon}

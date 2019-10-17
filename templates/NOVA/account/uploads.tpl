@@ -40,7 +40,7 @@
                                                 {form method="post" action="{get_static_route id='jtl.php'}"}
                                                     {input name="kUpload" type="hidden" value=$oUpload->kUpload}
                                                     {block name='account-uploads-uploads-button'}
-                                                        {button type="submit" size="sm" name=$oUpload->cName}
+                                                        {button type="submit" size="sm" variant="outline-primary" name=$oUpload->cName}
                                                             <i class="fa fa-download"></i>
                                                         {/button}
                                                     {/block}

@@ -1153,10 +1153,6 @@ aside {
   }
 }
 
-#add-to-cart .btn[type='submit'] {
-  line-height: 1.7rem;
-}
-
 .input-group-append > .btn.ml-3{
   border-radius: $border-radius;
 }
@@ -2013,4 +2009,13 @@ main section {
   @include media-breakpoint-up(lg) {
     padding: (map-get($spacers, 1) * 16) 0;
   }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }

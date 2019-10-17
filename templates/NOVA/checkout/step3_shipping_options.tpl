@@ -162,7 +162,7 @@
                                         {/button}
                                     {/col}
                                     {col cols=12 md=4 class='order-2 order-md-1'}
-                                        {button block=true type="link" href="{get_static_route id='bestellvorgang.php'}?editRechnungsadresse=1" variant="secondary"}
+                                        {button block=true type="link" href="{get_static_route id='bestellvorgang.php'}?editRechnungsadresse=1" variant="outline-primary"}
                                             {lang key='back'}
                                         {/button}
                                     {/col}

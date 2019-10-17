@@ -64,10 +64,15 @@
                         {col cols=$cols xl=$itemInfoCols class="ml-auto"}
                         {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
                             {block name='basket-cart-items-product-link'}
-                                <p>{link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}{$oPosition->cName|trans}{/link}</p>
+                                {link class='mb-3 d-block' href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}{$oPosition->cName|trans}{/link}
                             {/block}
                             {block name='basket-cart-items-product-data'}
-                                <ul class="list-unstyled text-muted small">
+                                <ul class="list-unstyled">
+                                    {if $Einstellungen.kaufabwicklung.bestellvorgang_artikelkurzbeschreibung == 'Y' && $oPosition->Artikel->cKurzBeschreibung|strlen > 0}
+                                        {block name='basket-cart-items-product-data-short-desc'}
+                                            <li class="shortdescription">{$oPosition->Artikel->cKurzBeschreibung}</li>
+                                        {/block}
+                                    {/if}
                                     {block name='basket-cart-items-product-data-sku'}
                                         <li class="sku"><strong>{lang key='productNo'}:</strong> {$oPosition->Artikel->cArtNr}</li>
                                     {/block}
@@ -142,12 +147,6 @@
                                                 </li>
                                             {/block}
                                         {/foreach}
-                                    {/if}
-
-                                    {if $Einstellungen.kaufabwicklung.bestellvorgang_artikelkurzbeschreibung == 'Y' && $oPosition->Artikel->cKurzBeschreibung|strlen > 0}
-                                        {block name='basket-cart-items-product-data-short-desc'}
-                                            <li class="shortdescription">{$oPosition->Artikel->cKurzBeschreibung}</li>
-                                        {/block}
                                     {/if}
 
                                     {if isset($oPosition->Artikel->cGewicht) && $Einstellungen.artikeldetails.artikeldetails_gewicht_anzeigen === 'Y' && $oPosition->Artikel->fGewicht > 0}
@@ -294,21 +293,18 @@
                         }
                             {col cols=$cols xl=10 class='mt-4 ml-auto' data=['toggle'=>'product-actions']}
                                 {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
-                                    <div class="btn-scale-small d-inline-block">
-                                        {block name='basket-cart-items-cart-submit-include-wishlist-button'}
-                                            {include file='snippets/wishlist_button.tpl' Artikel=$oPosition->Artikel}
-                                        {/block}
-                                    </div>
-                                    <span class="mx-2">|</span>
+                                    {block name='basket-cart-items-cart-submit-include-wishlist-button'}
+                                        {include file='snippets/wishlist_button.tpl' Artikel=$oPosition->Artikel buttonAndText=true}
+                                    {/block}
                                 {/if}
                                 {button type="submit"
-                                variant="link"
-                                size="sm"
-                                class="pl-0 droppos border-0"
-                                name="dropPos"
-                                value=$oPosition@index
-                                title="{lang key='delete'}"}
-                                    <span class="fa fa-trash "></span> <span>{lang key='delete'}</span>
+                                    variant="link"
+                                    size="sm"
+                                    class="p-0 droppos text-decoration-underline text-nowrap"
+                                    name="dropPos"
+                                    value=$oPosition@index
+                                    title="{lang key='delete'}"}
+                                    <span class="fas fa-trash-alt mr-2"></span>{lang key='delete'}
                                 {/button}
                             {/col}
                         {/if}

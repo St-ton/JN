@@ -21851,6 +21851,11 @@ aside .last-seen-link {
   background-color: #ebebeb;
   transition: all 0.2s ease-in-out;
 }
+.slick-dots li.slick-active button {
+  background-color: #525252;
+  border-color: #525252;
+}
+
 [data-gallery] .slick-slide {
   cursor: zoom-in;
 }

@@ -296,9 +296,16 @@ class PageService
         if (\mb_strlen($params->cPreisspannenFilter) > 0) {
             $res .= ';range:' . $params->cPreisspannenFilter;
         }
+        if (\is_array($params->kHerstellerFilter) && \count($params->kHerstellerFilter) > 1) {
+            $res .= ';manufacturerFilter:' . \implode(',', $params->kHerstellerFilter);
+        } elseif (is_numeric($params->kHerstellerFilter) && $params->kHerstellerFilter > 0) {
+            $res .= ';manufacturerFilter:' . $params->kHerstellerFilter;
+        }
 
         $res .= ';lang:' . ($langId > 0 ? $langId : $params->kSprache);
 
+        echo $res;
+        
         return $res;
     }
 

@@ -191,13 +191,13 @@
 
                     ];
 
-                    var fullscreenHeight = $('#gallery img').height();
-                    var otherElemHeight = parseInt($('#image_wrapper').css('paddingTop')) +
-                        parseInt($('#image_wrapper').css('paddingBottom')) +
-                        parseInt($('#gallery').css('marginBottom')) +
-                        $('#image_fullscreen_close').outerHeight() +
-                        parseInt($('#image_fullscreen_close').css('marginBottom')) +
-                        $('#gallery_preview img').height() + 32;
+                    // var fullscreenHeight = $('#gallery img').height();
+                    // var otherElemHeight = parseInt($('#image_wrapper').css('paddingTop')) +
+                    //     parseInt($('#image_wrapper').css('paddingBottom')) +
+                    //     parseInt($('#gallery').css('marginBottom')) +
+                    //     $('#image_fullscreen_close').outerHeight() +
+                    //     parseInt($('#image_fullscreen_close').css('marginBottom')) +
+                    //     $('#gallery_preview img').height() + 32;
 
                     /*if (fullscreenHeight-otherElemHeight > maxHeight) {
                         var newWidth = parseInt(maxHeight-otherElemHeight);
@@ -215,7 +215,7 @@
 
             function slickreset(){
                 var current = ($('#gallery .slick-current').data('slick-index'));
-                $('#image_wrapper').removeClass('fullscreen');
+                // $('#image_wrapper').removeClass('fullscreen');
                 $('#gallery').slick('unslick');
                 $('#gallery_preview').slick('unslick');
                 slickinit(false, current);
@@ -226,7 +226,7 @@
                     var current = ($('#gallery .slick-current').data('slick-index'));
                     $('#gallery').slick('unslick');
                     $('#gallery_preview').slick('unslick');
-                    $('#image_wrapper').addClass('fullscreen');
+                    // $('#image_wrapper').addClass('fullscreen');
                     slickinit(true, current);
                 });
             }

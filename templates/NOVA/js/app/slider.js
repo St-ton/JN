@@ -1,8 +1,3 @@
-
-// import slick from '../slick.js'
-// import PhotoSwipe from 'photoswipe'
-// import PhotoSwipeUI_Default from 'photoswipe/dist/photoswipe-ui-default'
-
 const Defaults = {
 	mobileFirst: true
 }
@@ -96,10 +91,10 @@ const initGalleries = ((i, element) => {
 initGalleries()
 
 
-$('.productbox-images-detail').slick($.extend(true, {}, Defaults, {
-	rows: 0,
-	dots: false,
-	arrows: true
-}))
+// $('.productbox-images').slick($.extend(true, {}, Defaults, {
+// 	rows: 0,
+// 	dots: false,
+// 	arrows: true
+// }))
 
-// document.dispatchEvent(new CustomEvent('init-slider', { detail: { slick: slick, jquery: $ } }))
+document.dispatchEvent(new CustomEvent('init-slider', { detail: { slick: $.slick, jquery: $ } }))

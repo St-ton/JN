@@ -304,8 +304,6 @@ class PageService
 
         $res .= ';lang:' . ($langId > 0 ? $langId : $params->kSprache);
 
-        echo $res;
-        
         return $res;
     }
 

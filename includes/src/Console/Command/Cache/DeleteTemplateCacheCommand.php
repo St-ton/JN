@@ -8,8 +8,8 @@ namespace JTL\Console\Command\Cache;
 
 use JTL\Console\Command\Command;
 use JTL\Filesystem\Filesystem;
-use JTL\Filesystem\LocalFilesystem;
 use JTL\Shop;
+use League\Flysystem\Adapter\Local;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -41,16 +41,13 @@ class DeleteTemplateCacheCommand extends Command
     {
         $io              = $this->getIO();
         $adminTpl        = $this->getOption('admin');
-        $localFileSystem = new Filesystem(new LocalFilesystem(['root' => \PFAD_ROOT]));
+        $localFileSystem = new Filesystem(new Local(\PFAD_ROOT));
         $activeTemplate  = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'standard');
-
-        $standardTplCacheResponse = $localFileSystem->deleteDirectory('/templates_c/' . $activeTemplate->name);
-
         if ($adminTpl) {
-            $localFileSystem->deleteDirectory('/admin/templates_c/', true);
+            $localFileSystem->deleteDir('/admin/templates_c/');
         }
 
-        if ($standardTplCacheResponse) {
+        if ($localFileSystem->deleteDir('/templates_c/' . $activeTemplate->name)) {
             $io->success('Template cache deleted.');
         } else {
             $io->warning('Nothind to delete.');

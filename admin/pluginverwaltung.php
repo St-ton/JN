@@ -101,12 +101,13 @@ if ($pluginUploaded === true) {
            ->assign('pluginsAvailable', $pluginsAvailable)
            ->assign('pluginsErroneous', $pluginsErroneous);
 
-    $response->html                   = new stdClass();
-    $response->html->verfuegbar       = $smarty->fetch('tpl_inc/pluginverwaltung_uebersicht_verfuegbar.tpl');
-    $response->html->verfuegbar_count = count($pluginsAvailable);
-    $response->html->fehlerhaft       = $smarty->fetch('tpl_inc/pluginverwaltung_uebersicht_fehlerhaft.tpl');
-    $response->html->fehlerhaft_count = $pluginsErroneous->count();
-    die(json_encode($response));
+    $html                  = new stdClass();
+    $html->available       = $smarty->fetch('tpl_inc/pluginverwaltung_uebersicht_verfuegbar.tpl');
+    $html->available_count = $pluginsAvailable->count();
+    $html->erroneous       = $smarty->fetch('tpl_inc/pluginverwaltung_uebersicht_fehlerhaft.tpl');
+    $html->erroneous_count = $pluginsErroneous->count();
+    $response->setHtml($html);
+    die($response->toJson());
 }
 
 if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::validateToken()) {

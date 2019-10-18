@@ -133,19 +133,19 @@ function ackCheck(kPlugin, hash)
                                 if (response.status === 'OK') {ldelim}
                                     var wasActiveVerfuegbar = $('#verfuegbar').hasClass('active'),
                                         wasActiveFehlerhaft = $('#fehlerhaft').hasClass('active');
-                                    $('#verfuegbar').replaceWith(response.html.verfuegbar);
-                                    $('#fehlerhaft').replaceWith(response.html.fehlerhaft);
-                                    $('a[href="#fehlerhaft"]').find('.badge').html(response.html.fehlerhaft_count);
-                                    $('a[href="#verfuegbar"]').find('.badge').html(response.html.verfuegbar_count);
+                                    $('#verfuegbar').replaceWith(response.html.available);
+                                    $('#fehlerhaft').replaceWith(response.html.erroneous);
+                                    $('a[href="#fehlerhaft"]').find('.badge').html(response.html.erroneous_count);
+                                    $('a[href="#verfuegbar"]').find('.badge').html(response.html.available_count);
                                     $('#plugin-upload-success').show().removeClass('hidden');
                                     if (wasActiveFehlerhaft) {ldelim}
                                         $('#fehlerhaft').addClass('active show');
-                                        {rdelim} else if (wasActiveVerfuegbar) {ldelim}
+                                    {rdelim} else if (wasActiveVerfuegbar) {ldelim}
                                         $('#verfuegbar').addClass('active show');
-                                        {rdelim}
-                                    {rdelim} else {ldelim}
-                                        $('#plugin-upload-error').show().removeClass('hidden');
                                     {rdelim}
+                                {rdelim} else {ldelim}
+                                    $('#plugin-upload-error').show().removeClass('hidden');
+                                {rdelim}
                                     var fi = $('#plugin-install-upload');
                                     fi.fileinput('reset');
                                     fi.fileinput('clear');

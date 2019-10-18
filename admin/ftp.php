@@ -10,10 +10,11 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->redirectOnFailure();
 
 use JTL\Alert\Alert;
-use JTL\Filesystem;
+use JTL\Filesystem\Filesystem;
 use JTL\Helpers\Form;
 use JTL\Shop;
 use JTL\Shopsetting;
+use League\Flysystem\Adapter\Ftp;
 
 $shopSettings = Shopsetting::getInstance();
 $alertHelper  = Shop::Container()->getAlertService();
@@ -26,17 +27,19 @@ if (!empty($_POST) && Form::validateToken()) {
 
     if (isset($_POST['test'])) {
         try {
-            $fs = new Filesystem\FtpFilesystem([
-                'hostname' => $_POST['ftp_hostname'],
-                'port'     => (int)$_POST['ftp_port'],
-                'username' => $_POST['ftp_user'],
-                'password' => $_POST['ftp_pass'],
-                'ssl'      => (int)$_POST['ftp_ssl'],
-                'root'     => $_POST['ftp_path'],
-                'timeout'  => 60
-            ]);
+            $fs = new Filesystem(new Ftp([
+                'host'                 => $_POST['ftp_hostname'],
+                'port'                 => (int)($_POST['ftp_port'] ?? 21),
+                'username'             => $_POST['ftp_user'],
+                'password'             => $_POST['ftp_pass'],
+                'ssl'                  => (int)$_POST['ftp_ssl'] === 1,
+                'root'                 => $_POST['ftp_path'],
+                'timeout'              => 60,
+                'passive'              => true,
+                'ignorePassiveAddress' => false
+            ]));
 
-            $isShopRoot = $fs->exists('includes/config.JTL-Shop.ini.php');
+            $isShopRoot = $fs->has('includes/config.JTL-Shop.ini.php');
             if ($isShopRoot) {
                 $alertHelper->addAlert(Alert::TYPE_INFO, __('ftpValidConnection'), 'ftpValidConnection');
             } else {

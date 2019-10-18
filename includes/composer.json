@@ -54,7 +54,8 @@
         "symfony/finder": "^4.2",
         "mobiledetect/mobiledetectlib": "^2.8",
         "league/flysystem": "^1.0",
-        "league/flysystem-sftp": "^1.0"
+        "league/flysystem-sftp": "^1.0",
+        "league/flysystem-ziparchive": "^1.0"
     },
     "require-dev": {
         "phpunit/php-token-stream": "^3.0",

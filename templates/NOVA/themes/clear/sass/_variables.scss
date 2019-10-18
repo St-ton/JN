@@ -1,3 +1,5 @@
+$image-path:                        'images';
+
 // colors
 $fa-font-path:                      "../base/fontawesome/webfonts" !default;
 $gray-lighter:                      #f5f7fa;
@@ -366,3 +368,8 @@ $dropdown-link-active-color	: $dropdown-link-hover-color;
 $dropdown-link-active-bg	: $dropdown-link-hover-bg;
 
 $dropdown-padding-y         : 0;
+
+/* photoswipe */
+$pswp__background-color		: rgba($gray-darker, .5);
+$pswp__assets-path			: '../../js/photoswipe/css/default-skin/';
+

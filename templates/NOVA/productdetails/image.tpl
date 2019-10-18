@@ -30,50 +30,62 @@
                             </div>
                         {/block}
                     {/if}
-                    <div id="gallery_wrapper" class="clearfix">
-                        <div id="gallery" class="mb-3">
-                            {block name='productdetails-image-images'}
-                                {foreach $Artikel->Bilder as $image}
-                                    {strip}
-                                        {image alt=$image->cAltAttribut|escape:'html'
-                                            fluid=true
-                                            lazy=true
-                                            webp=true
-                                            src="{$Artikel->Bilder[0]->cURLNormal}"
-                                            srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
-                                                {$image->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
-                                            sizes="auto"
-                                            data=[
-                                                "list"=>"{$image->galleryJSON|escape:"html"}"
-                                            ]
-                                        }
-                                    {/strip}
-                                {/foreach}
-                            {/block}
-                        </div>
-                    </div>
-                {/col}
-            {/block}
-            {block name='productdetails-image-preview'}
-                {col cols=12 align-self='end'}
-                    {if $Artikel->Bilder|@count > 1}
-                        <div id="gallery_preview_wrapper" class="mx-auto">
-                            <div id="gallery_preview">
-                                {block name='productdetails-image-preview-images'}
-                                    {foreach $Artikel->Bilder as $image}
+                    {block name='productdetails-image-images'}
+                        <div class="product-images productbox-images-detail carousel carousel-showcase" data-slick-group="productImages">
+                            {foreach $Artikel->Bilder as $image}
+                            <div>
+                                <div class="productbox-image-wrapper">
+                                    <div class="productbox-image-wrapper-inner">
                                         {strip}
+                                            {assign var=pswp value='{&quot;src&quot;:&quot;'|cat:{$Artikel->Bilder[0]->cURLGross}|cat:'&quot;,&quot;w&quot;:1006,&quot;h&quot;:1006,&quot;i&quot;:5}'}
                                             {image alt=$image->cAltAttribut|escape:'html'
+                                                class="product-image"
                                                 fluid=true
                                                 lazy=true
                                                 webp=true
-                                                src="{$image->cURLKlein}"
+                                                src="{$Artikel->Bilder[0]->cURLNormal}"
+                                                srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                    {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                    {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
+                                                    {$image->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
+                                                sizes="auto"
+                                                data=[
+                                                    "list"=>"{$image->galleryJSON|escape:"html"}",
+                                                    "pswp"=>"{$pswp}"
+                                                ]
                                             }
                                         {/strip}
-                                    {/foreach}
-                                {/block}
+                                    </div>
+                                </div>
                             </div>
+                            {/foreach}
+                        </div>
+                    {/block}
+                {/col}
+            {/block}
+            {block name='productdetails-image-preview'}
+                {col cols=12}
+                    {if $Artikel->Bilder|@count > 1}
+                        <div class="product-thumbnails carousel carousel-thumbnails mb-5 mb-lg-0 d-none d-lg-flex mx-0" data-slick-group="productImages">
+                            {block name='productdetails-image-preview-images'}
+                                {foreach $Artikel->Bilder as $image}
+                                    <div>
+                                        <div class="productbox-image-wrapper">
+                                            <div class="productbox-image-wrapper-inner p-2">
+                                            {strip}
+                                                {image alt=$image->cAltAttribut|escape:'html'
+                                                    class="product-image"
+                                                    fluid=true
+                                                    lazy=true
+                                                    webp=true
+                                                    src="{$image->cURLKlein}"
+                                                }
+                                            {/strip}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {/foreach}
+                            {/block}
                         </div>
                     {/if}
                 {/col}

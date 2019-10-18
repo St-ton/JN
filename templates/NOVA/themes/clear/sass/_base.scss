@@ -1829,3 +1829,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+.pswp__bg {
+  background: $pswp__background-color;
+}

@@ -27,7 +27,7 @@
                                     {/block}
                                 {/if}
                                 <div class="productbox-images">
-                                    <div class="clearfix list-gallery carousel carousel-btn-arrows">
+                                    <div class="list-gallery carousel carousel-arrows-inside carousel-btn-arrows">
                                         {block name="productlist-item-list-image"}
                                             {foreach $Artikel->Bilder as $image}
                                                 {strip}

@@ -33,6 +33,9 @@ class LegacyMethod
     /** @var Method */
     private $methodInstance;
 
+    /** @var array */
+    private $dynamics = [];
+
     /**
      * @param string $moduleID
      * @param int    $nAgainCheckout
@@ -40,6 +43,13 @@ class LegacyMethod
     public function __construct($moduleID, $nAgainCheckout = 0)
     {
         $this->methodInstance = new Method($moduleID, $nAgainCheckout);
+
+        foreach (array_keys($this->dynamics) as $dynProperty) {
+            if (\property_exists($this->methodInstance, $dynProperty)) {
+                $this->methodInstance->$dynProperty = $this->dynamics[$dynProperty];
+                unset($this->dynamics[$dynProperty]);
+            }
+        }
     }
 
     /**
@@ -47,9 +57,11 @@ class LegacyMethod
      */
     public function __get($name)
     {
-        return \property_exists($this->methodInstance, $name)
-            ? $this->methodInstance->$name
-            : null;
+        if ($this->methodInstance === null || !\property_exists($this->methodInstance, $name)) {
+            return $this->dynamics[$name] ?? null;
+        }
+
+        return $this->methodInstance->$name ?? null;
     }
 
     /**
@@ -57,7 +69,9 @@ class LegacyMethod
      */
     public function __set($name, $value)
     {
-        if (\property_exists($this->methodInstance, $name)) {
+        if ($this->methodInstance === null || !\property_exists($this->methodInstance, $name)) {
+            $this->dynamics[$name] = $value;
+        } else {
             $this->methodInstance->$name = $value;
         }
     }
@@ -67,9 +81,11 @@ class LegacyMethod
      */
     public function __isset($name)
     {
-        return \property_exists($this->methodInstance, $name)
-            ? isset($this->methodInstance->$name)
-            : false;
+        if ($this->methodInstance === null || !\property_exists($this->methodInstance, $name)) {
+            return isset($this->dynamics[$name]);
+        }
+
+        return isset($this->methodInstance->$name);
     }
 
     /**

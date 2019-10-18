@@ -2,7 +2,7 @@
 /**
  * Remove old payment modules
  *
- * @author Felix Moche
+ * @author fm
  * @created Wed, 14 Feb 2018 16:39:00 +0100
  */
 

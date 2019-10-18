@@ -2,7 +2,7 @@
 /**
  * Add language variables for birthday date
  *
- * @author Danny Raufeisen
+ * @author dr
  * @created Mon, 16 Jan 2017 14:56:38 +0100
  */
 

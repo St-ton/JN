@@ -2,7 +2,7 @@
 /**
  * remove-shopinfo-menu-point
  *
- * @author Martin Schophaus
+ * @author mscho
  * @created Thu, 01 Mar 2018 13:52:00 +0100
  */
 
@@ -14,7 +14,7 @@ use JTL\Update\Migration;
  */
 class Migration_20180301135200 extends Migration implements IMigration
 {
-    protected $author      = 'Martin Schophaus';
+    protected $author      = 'mscho';
     protected $description = 'remove-shopinfo-menu-point';
 
     public function up()

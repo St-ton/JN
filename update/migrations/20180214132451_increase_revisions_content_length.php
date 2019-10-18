@@ -2,7 +2,7 @@
 /**
  * Increase migration content length
  *
- * @author Martin Schophaus
+ * @author mscho
  * @created Wed, 14 Feb 2018 13:24:51 +0100
  */
 
@@ -14,7 +14,7 @@ use JTL\Update\Migration;
  */
 class Migration_20180214132451 extends Migration implements IMigration
 {
-    protected $author      = 'Martin Schophaus';
+    protected $author      = 'mscho';
     protected $description = 'Increase revisions content length';
 
     public function up()

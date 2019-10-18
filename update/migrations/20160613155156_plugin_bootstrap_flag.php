@@ -2,7 +2,7 @@
 /**
  * Plugin bootstrap flag
  *
- * @author andy
+ * @author aj
  * @created Mon, 13 Jun 2016 15:51:56 +0200
  */
 
@@ -14,7 +14,7 @@ use JTL\Update\Migration;
  */
 class Migration_20160613155156 extends Migration implements IMigration
 {
-    protected $author = 'andy';
+    protected $author = 'aj';
 
     public function up()
     {

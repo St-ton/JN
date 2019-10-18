@@ -11,7 +11,7 @@ use JTL\Update\Migration;
  */
 class Migration_20180109100600 extends Migration implements IMigration
 {
-    protected $author      = 'Felix Moche';
+    protected $author      = 'fm';
     protected $description = 'Add product filter config';
 
     /**

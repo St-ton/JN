@@ -2,7 +2,7 @@
 /**
  * Change "Amazon Payments" to "Amazon Pay"
  *
- * @author Danny Raufeisen
+ * @author dr
  * @created Tue, 14 Mar 2017 11:01:00 +0100
  */
 

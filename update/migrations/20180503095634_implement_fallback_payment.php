@@ -2,7 +2,7 @@
 /**
  * implement fallback-payment
  *
- * @author Clemens Rudolph
+ * @author cr
  * @created Thu, 03 May 2018 09:56:34 +0200
  */
 
@@ -14,7 +14,7 @@ use JTL\Update\Migration;
  */
 class Migration_20180503095634 extends Migration implements IMigration
 {
-    protected $author      = 'Clemens Rudolph';
+    protected $author      = 'cr';
     protected $description = 'implement fallback-payment';
 
     protected $szPaymentModuleId = 'za_null_jtl';

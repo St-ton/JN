@@ -2,7 +2,7 @@
 /**
  * Create column nMehrfachauswahl for tmerkmal
  *
- * @author Felix Moche
+ * @author fm
  * @created Thu, 11 Mai 2017 15:34:00 +0200
  */
 

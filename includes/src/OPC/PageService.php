@@ -262,49 +262,57 @@ class PageService
      */
     public function createCurrentPageId(int $langId = 0): string
     {
-        $res              = '';
-        $params           = (object)Shop::getParameters();
-        $params->kSprache = Shop::getLanguage();
+        $params    = Shop::getParameters();
+        $pageIdObj = (object)['lang' => Shop::getLanguage()];
 
-        if ($params->kKategorie > 0) {
-            $res .= 'category:' . $params->kKategorie;
-        } elseif ($params->kHersteller > 0) {
-            $res .= 'manufacturer:' . $params->kHersteller;
-        } elseif ($params->kArtikel > 0) {
-            $res .= 'product:' . $params->kArtikel;
-        } elseif ($params->kLink > 0) {
-            $res .= 'link:' . $params->kLink;
-        } elseif ($params->kMerkmalWert > 0) {
-            $res .= 'attrib:' . $params->kMerkmalWert;
-        } elseif ($params->kSuchspecial > 0) {
-            $res .= 'special:' . $params->kSuchspecial;
-        } elseif ($params->kNews > 0) {
-            $res .= 'news:' . $params->kNews;
-        } elseif ($params->kNewsKategorie > 0) {
-            $res .= 'newscat:' . $params->kNewsKategorie;
-        } elseif ($params->kUmfrage > 0) {
-            $res .= 'poll:' . $params->kUmfrage;
-        } elseif (\mb_strlen($params->cSuche) > 0) {
-            $res .= 'search:' . \base64_encode($params->cSuche);
+        if ($params['kKategorie'] > 0) {
+            $pageIdObj->type = 'category';
+            $pageIdObj->id   = $params['kKategorie'];
+        } elseif ($params['kHersteller'] > 0) {
+            $pageIdObj->type = 'manufacturer';
+            $pageIdObj->id   = $params['kHersteller'];
+        } elseif ($params['kArtikel'] > 0) {
+            $pageIdObj->type = 'product';
+            $pageIdObj->id   = $params['kArtikel'];
+        } elseif ($params['kLink'] > 0) {
+            $pageIdObj->type = 'link';
+            $pageIdObj->id   = $params['kLink'];
+        } elseif ($params['kMerkmalWert'] > 0) {
+            $pageIdObj->type = 'attrib';
+            $pageIdObj->id   = $params['kMerkmalWert'];
+        } elseif ($params['kSuchspecial'] > 0) {
+            $pageIdObj->type = 'special';
+            $pageIdObj->id   = $params['kSuchspecial'];
+        } elseif ($params['kNews'] > 0) {
+            $pageIdObj->type = 'news';
+            $pageIdObj->id   = $params['kNews'];
+        } elseif ($params['kNewsKategorie'] > 0) {
+            $pageIdObj->type = 'newscat';
+            $pageIdObj->id   = $params['kNewsKategorie'];
+        } elseif ($params['kUmfrage'] > 0) {
+            $pageIdObj->type = 'poll';
+            $pageIdObj->id   = $params['kUmfrage'];
+        } elseif (\mb_strlen($params['cSuche']) > 0) {
+            $pageIdObj->type = 'search';
+            $pageIdObj->id   = $params['cSuche'];
         } else {
-            $res .= 'other:' . \md5(\serialize($params));
+            $pageIdObj->type = 'other';
+            $pageIdObj->id   = \md5(\serialize($params));
         }
 
-        if (\is_array($params->MerkmalFilter) && \count($params->MerkmalFilter) > 0) {
-            $res .= ';attribs:' . \implode(',', $params->MerkmalFilter);
-        }
-        if (\mb_strlen($params->cPreisspannenFilter) > 0) {
-            $res .= ';range:' . $params->cPreisspannenFilter;
-        }
-        if (\is_array($params->kHerstellerFilter) && \count($params->kHerstellerFilter) > 1) {
-            $res .= ';manufacturerFilter:' . \implode(',', $params->kHerstellerFilter);
-        } elseif (is_numeric($params->kHerstellerFilter) && $params->kHerstellerFilter > 0) {
-            $res .= ';manufacturerFilter:' . $params->kHerstellerFilter;
+        if (!empty($params['MerkmalFilter'])) {
+            $pageIdObj->attribs = $params['MerkmalFilter'];
         }
 
-        $res .= ';lang:' . ($langId > 0 ? $langId : $params->kSprache);
+        if (!empty($params['cPreisspannenFilter'])) {
+            $pageIdObj->range = $params['cPreisspannenFilter'];
+        }
 
-        return $res;
+        if (!empty($params['kHerstellerFilter'])) {
+            $pageIdObj->manufacturerFilter = $params['kHerstellerFilter'];
+        }
+
+        return \json_encode($pageIdObj);
     }
 
     /**

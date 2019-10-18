@@ -840,14 +840,17 @@
             var $navBadgeWish = $(this.options.selector.navBadgeWish);
 
             if (data.wlPosRemove) {
-                let $action = $('button[data-wl-pos="' + data.wlPosRemove + '"]')
+                let $action = $('button[data-wl-pos="' + data.wlPosRemove + '"]');
                 $action.removeClass("on-list");
                 $action.next().removeClass("press");
+                $action.find('.wishlist-icon').addClass('far').removeClass('fas');
             }
             if (data.wlPosAdd) {
-                $('button[data-product-id-wl="' + data.productID + '"]').attr('data-wl-pos', data.wlPosAdd);
-                $('button[data-product-id-wl="' + data.productID + '"]').data('wl-pos', data.wlPosAdd);
-                $('button[data-product-id-wl="' + data.productID + '"]').closest('form').find('input[name="wlPos"]').val(data.wlPosAdd)
+                let $action = $('button[data-product-id-wl="' + data.productID + '"]');
+                $action.attr('data-wl-pos', data.wlPosAdd);
+                $action.data('wl-pos', data.wlPosAdd);
+                $action.closest('form').find('input[name="wlPos"]').val(data.wlPosAdd)
+                $action.find('.wishlist-icon').addClass('fas').removeClass('far');
             }
             $.evo.io().call('updateWishlistDropdown', [$navContainerWish, $navBadgeWish], this, function(error, data) {
                 if (error) {

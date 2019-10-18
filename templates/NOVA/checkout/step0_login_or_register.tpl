@@ -17,18 +17,20 @@
     {row id="register-customer"}
         {col cols=12 id="existing-customer" lg=4 class="mb-3"}
             {block name='checkout-step0-login-or-register-form-login'}
-                {form method="post" action="{get_static_route id='bestellvorgang.php'}" class="evo-validate label-slide bg-info p-3" id="order_register_or_login"}
-                    {block name='checkout-step0-login-or-register-fieldset-form-login-content'}
-                        <fieldset>
-                            {block name='checkout-step0-login-or-register-headline-form-login-content'}
-                                <div class="h2 mb-3">{lang key='alreadyCustomer'}</div>
-                            {/block}
-                            {block name='checkout-step0-login-or-register-include-customer-login'}
-                                {include file='register/form/customer_login.tpl'}
-                            {/block}
-                        </fieldset>
-                    {/block}
-                {/form}
+                {card class='card-gray'}
+                    {form method="post" action="{get_static_route id='bestellvorgang.php'}" class="evo-validate label-slide" id="order_register_or_login"}
+                        {block name='checkout-step0-login-or-register-fieldset-form-login-content'}
+                            <fieldset>
+                                {block name='checkout-step0-login-or-register-headline-form-login-content'}
+                                    <div class="h3 mb-3">{lang key='alreadyCustomer'}</div>
+                                {/block}
+                                {block name='checkout-step0-login-or-register-include-customer-login'}
+                                    {include file='register/form/customer_login.tpl'}
+                                {/block}
+                            </fieldset>
+                        {/block}
+                    {/form}
+                {/card}
             {/block}
             {block name='checkout-step0-login-or-hr'}
                 <div class="d-lg-none d-block">

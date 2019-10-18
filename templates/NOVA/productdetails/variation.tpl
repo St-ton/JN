@@ -164,10 +164,16 @@
                                                                {if $smarty.foreach.Variationswerte.index === 0 && !$showMatrix} required{/if}
                                                                />
                                                         <span class="label-variation">
-                                                            {if !empty($Variationswert->cBildPfadMiniFull)}
-                                                                {image src=$Variationswert->getImage(\JTL\Media\Image::SIZE_XS) alt=$Variationswert->cName|escape:'quotes'
-                                                                     data=['list' => "{prepare_image_details item=$Variationswert json=true}"]
-                                                                     title=$Variationswert->cName}
+                                                            {if !empty($Variationswert->getImage(\JTL\Media\Image::SIZE_XS))
+                                                                && $Variationswert->getImage(\JTL\Media\Image::SIZE_XS)|strpos:$smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN === false}
+                                                                {image fluid=true webp=true lazy=true
+                                                                    src=$Variationswert->getImage(\JTL\Media\Image::SIZE_XS)
+                                                                    srcset="{$Variationswert->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_variationen_mini_breite}w,
+                                                                        {$Variationswert->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_variationen_klein_breite}w,
+                                                                        {$Variationswert->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_variationen_breite}w"
+                                                                    sizes="40px"
+                                                                    alt=$Variationswert->cName|escape:'quotes'
+                                                                }
                                                             {else}
                                                                 {$Variationswert->cName}
                                                             {/if}

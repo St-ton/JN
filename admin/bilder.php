@@ -61,6 +61,11 @@ if (isset($_POST['speichern']) && Form::validateToken()) {
             $cachesToClear[] = $media::getClass(Image::TYPE_PRODUCT);
             continue;
         }
+        if (strpos($item, 'news') !== false) {
+            $cachesToClear[] = $media::getClass(Image::TYPE_NEWS);
+            $cachesToClear[] = $media::getClass(Image::TYPE_NEWSCATEGORY);
+            continue;
+        }
         if (strpos($item, 'quali') !== false
             || strpos($item, 'container') !== false
             || strpos($item, 'skalieren') !== false
@@ -77,13 +82,15 @@ if (isset($_POST['speichern']) && Form::validateToken()) {
 }
 
 $indices = [
-    'kategorien'   => __('category'),
-    'variationen'  => __('variations'),
-    'artikel'      => __('product'),
-    'hersteller'   => __('manufacturer'),
-    'merkmal'      => __('attributes'),
-    'merkmalwert'  => __('attributeValues'),
-    'konfiggruppe' => __('configGroup')
+    'kategorien'    => __('category'),
+    'variationen'   => __('variations'),
+    'artikel'       => __('product'),
+    'hersteller'    => __('manufacturer'),
+    'merkmal'       => __('attributes'),
+    'merkmalwert'   => __('attributeValues'),
+    'konfiggruppe'  => __('configGroup'),
+    'news'          => __('news'),
+    'newskategorie' => __('newscategory')
 ];
 $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_BILDER))
     ->assign('oConfig', Shop::getSettings([CONF_BILDER])['bilder'])

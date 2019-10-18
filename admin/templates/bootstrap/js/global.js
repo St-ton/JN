@@ -699,7 +699,7 @@ function ioManagedCall(adminPath, funcname, params, callback)
  *      returns a HTML string
  * @param onSelect
  */
-function enableTypeahead(selector, funcName, display, suggestion, onSelect)
+function enableTypeahead(selector, funcName, display, suggestion, onSelect, spinnerElm)
 {
     var pendingRequest = null;
 
@@ -727,6 +727,12 @@ function enableTypeahead(selector, funcName, display, suggestion, onSelect)
             }
         )
         .on('typeahead:select', onSelect)
+        .on('typeahead:asyncrequest', e => {
+            $(spinnerElm).show();
+        })
+        .on('typeahead:asynccancel typeahead:asyncreceive', () => {
+            $(spinnerElm).hide();
+        })
     ;
 }
 

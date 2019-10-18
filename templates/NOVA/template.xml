@@ -22,6 +22,10 @@
             <Setting Description="Theme" Key="theme_default" Type="select" Value="clear" Editable="false">
                 <Option Value="clear">clear - Handgemacht mit <![CDATA[&hearts;]]> von JTL</Option>
             </Setting>
+            <Setting Description="Button Hover-Animation anzeigen" Key="button_animated" Type="select" Value="N">
+                <Option Value="Y">Ja</Option>
+                <Option Value="N">Nein</Option>
+            </Setting>
             <Setting Description="Sliderposition" Key="slider_full_width" Type="select" Value="N">
                 <Option Value="N">im Contentbereich</Option>
                 <Option Value="Y">zwischen Header und Content</Option>
@@ -131,16 +135,13 @@
     </Settings>
     <Minify>
         <CSS Name="clear.css">
-            <File Path="themes/base/fontawesome/css/all.min.css"/>
-            <File Path="themes/base/nouislider.min.css"/>
-            <File Path="themes/base/slick/slick-lightbox.css"/>
-            <File Path="js/password/password.min.css"/>
             <File Path="themes/clear/clear.css"/>
             <File Path="themes/clear/custom.css"/>
         </CSS>
         <JS Name="jtl3.js">
+            <File Path="js/lazysizes.min.js"/>
             <File Path="js/jquery.backstretch.min.js"/>
-            <File Path="js/jquery.lazy.js"/>
+            <!--<File Path="js/jquery.lazy.js"/>-->
             <File Path="js/bootstrap-toolkit.js"/>
             <File Path="js/popper.min.js"/>
             <File Path="js/bootstrap.bundle.min.js"/>

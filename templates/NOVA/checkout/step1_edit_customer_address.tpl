@@ -31,7 +31,7 @@
                                 {col cols=12 md=4 xl=3 class='ml-md-auto'}
                                     {input type="hidden" name="unreg_form" value=$unreg_form}
                                     {input type="hidden" name="editRechnungsadresse" value=$editRechnungsadresse}
-                                    {button variant="primary" type="submit" class="submit_once btn-block"}
+                                    {button variant="primary" type="submit" block=true class="submit_once"}
                                         {lang key='sendCustomerData' section='account data'}
                                     {/button}
                                 {/col}

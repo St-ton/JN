@@ -13,6 +13,7 @@ use Symfony\Component\Console\Helper\TableStyle;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use VueInstaller\VueInstaller;
 
 /**
  * Class InstallCommand
@@ -193,7 +194,7 @@ class InstallCommand extends Command
         }
 
         $io->setStep($this->currentStep++, $this->steps, 'Check if shop is installed');
-        $installCheck = (new \VueInstaller('installedcheck', [], true))->run();
+        $installCheck = (new VueInstaller('installedcheck', [], true))->run();
 
         if ($installCheck['installed']) {
             $io->warning('Shop is already installed');
@@ -202,7 +203,7 @@ class InstallCommand extends Command
         $io->success('Shop can be installed');
 
         $io->setStep($this->currentStep++, $this->steps, 'System check');
-        $systemCheckResults = (new \VueInstaller('systemcheck', [], true))->run();
+        $systemCheckResults = (new VueInstaller('systemcheck', [], true))->run();
         $systemCheckFailed  = false;
 
         foreach ($systemCheckResults['testresults'] as $resultGroup) {
@@ -239,7 +240,7 @@ class InstallCommand extends Command
 
         $io->success('Permissions updated');
 
-        $dirCheck = (new \VueInstaller('dircheck', [], true))->run();
+        $dirCheck = (new VueInstaller('dircheck', [], true))->run();
 
         if (\in_array(false, $dirCheck['testresults'])) {
             $this->printDirCheckTable($dirCheck['testresults'], $localFilesystem);
@@ -255,7 +256,7 @@ class InstallCommand extends Command
             'user'   => $dbUser,
             'pass'   => $dbPass
         ];
-        $dbCredentialsCheck = (new \VueInstaller('credentialscheck', $dbCredentials, true))->run();
+        $dbCredentialsCheck = (new VueInstaller('credentialscheck', $dbCredentials, true))->run();
 
         if ($dbCredentialsCheck['error']) {
             $io->error($dbCredentialsCheck['msg']);
@@ -270,7 +271,7 @@ class InstallCommand extends Command
             'wawi'  => ['name' => $syncUser, 'pass' => $syncPass],
         ];
 
-        $installed = (new \VueInstaller('doinstall', $posts, true))->run();
+        $installed = (new VueInstaller('doinstall', $posts, true))->run();
 
         if ($installed['error']) {
             $io->error(\implode(' | ', $installed['msg']));

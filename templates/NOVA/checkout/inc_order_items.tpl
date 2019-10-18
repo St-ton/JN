@@ -17,7 +17,7 @@
 
     {block name='checkout-inc-order-items-order-items'}
         {block name='checkout-inc-order-items-order-items-header'}
-            {row class="font-weight-bold d-none d-lg-flex"}
+            {row class="text-accent d-none d-lg-flex"}
                 {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
                     {col cols=2}{/col}
                 {/if}
@@ -39,7 +39,15 @@
                             {col cols=3 lg=2 class="text-center vcenter"}
                                 {if !empty($oPosition->Artikel->cVorschaubild)}
                                     {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}
-                                        {image src=$oPosition->Artikel->cVorschaubild alt=$oPosition->cName|trans fluid=true}
+                                        {image fluid=true webp=true lazy=true
+                                            alt=$oPosition->cName|trans
+                                            src=$oPosition->Artikel->cVorschaubild
+                                            srcset="{$oPosition->Artikel->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                 {$oPosition->Artikel->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                 {$oPosition->Artikel->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
+                                                 {$oPosition->Artikel->Bilder[0]->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
+                                            sizes="auto"
+                                        }
                                     {/link}
                                 {/if}
                             {/col}
@@ -276,7 +284,7 @@
                     {/if}
                     {block name='checkout-inc-order-items-price-sticky'}
                         <hr>
-                        {row class="bg-info"}
+                        {row}
                             {col}
                                 <span class="price_label"><strong>{lang key='totalSum'}:</strong></span>
                             {/col}

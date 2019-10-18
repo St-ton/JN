@@ -489,9 +489,7 @@ class PortletInstance implements \JsonSerializable
                 'title'    => $title,
             ];
         }
-
-        $decodedName = \rawurldecode(\basename($src));
-        $this->generateAllImageSizes(true, 1, \PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $decodedName);
+        $this->generateAllImageSizes(true, 1, \rawurldecode(\basename($src)));
         foreach ($this->getImages() as $size => $i) {
             $width = self::$dirSizes[$size] ?? null;
             if ($width !== null) {

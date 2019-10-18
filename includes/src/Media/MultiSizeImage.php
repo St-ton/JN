@@ -69,11 +69,12 @@ trait MultiSizeImage
 
     /**
      * @param string $size
+     * @param int    $number
      * @return string|null
      */
-    public function getImage(string $size = Image::SIZE_MD): ?string
+    public function getImage(string $size = Image::SIZE_MD, int $number = 1): ?string
     {
-        return $this->images[$size] ?? null;
+        return $this->images[$number][$size] ?? null;
     }
 
     /**
@@ -153,7 +154,7 @@ trait MultiSizeImage
     {
         $prefix = $full ? Shop::getImageBaseURL() : '';
         foreach (Image::getAllSizes() as $size) {
-            $this->images[$size] = $prefix . $this->generateImagePath($size, $number, $source);
+            $this->images[$number][$size] = $prefix . $this->generateImagePath($size, $number, $source);
         }
 
         return $this->images;
@@ -169,7 +170,7 @@ trait MultiSizeImage
     {
         $prefix = $full ? Shop::getImageBaseURL() : '';
         foreach (Image::getAllSizes() as $size) {
-            $this->images[$size] = $prefix . $this->generateImage($size, $number, $source);
+            $this->images[$number][$size] = $prefix . $this->generateImage($size, $number, $source);
         }
 
         return $this->images;

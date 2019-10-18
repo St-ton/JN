@@ -35,20 +35,20 @@
                             {block name='productdetails-image-images'}
                                 {foreach $Artikel->Bilder as $image}
                                     {strip}
-                                        <div>
-                                            {*sizes based on template*}
-                                            {image alt=$image->cAltAttribut|escape:'html'
-                                                data=["lazy"=>$image->cURLMini,
-                                                    "srcset"=>"{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                        {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                        {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
-                                                        {$image->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w",
-                                                    "list"=>"{$image->galleryJSON|escape:"html"}"
-                                                ]
-                                                sizes="(min-width: 1200px) 1080px,90vw"
-                                                src=$image->cURLMini
-                                             }
-                                        </div>
+                                        {image alt=$image->cAltAttribut|escape:'html'
+                                            fluid=true
+                                            lazy=true
+                                            webp=true
+                                            src="{$Artikel->Bilder[0]->cURLNormal}"
+                                            srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
+                                                {$image->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
+                                            sizes="auto"
+                                            data=[
+                                                "list"=>"{$image->galleryJSON|escape:"html"}"
+                                            ]
+                                        }
                                     {/strip}
                                 {/foreach}
                             {/block}
@@ -64,11 +64,12 @@
                                 {block name='productdetails-image-preview-images'}
                                     {foreach $Artikel->Bilder as $image}
                                         {strip}
-                                            <div>
-                                                {image src="{$imageBaseURL}gfx/trans.png" data=["lazy"=>"{$image->cURLKlein}"]
-                                                    alt="{$image->cAltAttribut|escape:"html"}"
-                                                    fluid=true}
-                                            </div>
+                                            {image alt=$image->cAltAttribut|escape:'html'
+                                                fluid=true
+                                                lazy=true
+                                                webp=true
+                                                src="{$image->cURLKlein}"
+                                            }
                                         {/strip}
                                     {/foreach}
                                 {/block}

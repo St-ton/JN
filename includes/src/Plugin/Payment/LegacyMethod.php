@@ -361,12 +361,12 @@ class LegacyMethod
     /**
      *
      * @param string $cKey
-     * @param string $cValue
+     * @param mixed $cValue
      * @return static
      */
     public function addCache($cKey, $cValue)
     {
-        $this->methodInstance->addCache($cKey, $cValue);
+        $this->methodInstance->addCache($cKey, json_encode($cValue));
 
         return $this;
     }
@@ -384,11 +384,11 @@ class LegacyMethod
 
     /**
      * @param null|string $cKey
-     * @return null
+     * @return mixed
      */
     public function getCache($cKey = null)
     {
-        return $this->methodInstance->getCache($cKey);
+        return json_decode($this->methodInstance->getCache($cKey), false);
     }
 
     /**

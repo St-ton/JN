@@ -1661,7 +1661,6 @@ function zahlungsartGueltig($paymentMethod): bool
         global $oPlugin;
         $oPlugin = $plugin;
         $method  = LegacyMethod::create($moduleID);
-        /** @var PaymentMethod $method */
         if ($method === null || $method->isSelectable() === false) {
             return false;
         }
@@ -1679,8 +1678,7 @@ function zahlungsartGueltig($paymentMethod): bool
 
         return $method->isValid(Frontend::getCustomer(), Frontend::getCart());
     }
-    $instance = new PaymentMethod($moduleID);
-    $method   = $instance::create($moduleID);
+    $method = LegacyMethod::create($moduleID);
     if ($method && $method->isSelectable() === false) {
         return false;
     }

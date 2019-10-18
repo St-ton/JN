@@ -33,7 +33,7 @@
                         <div class="productbox-image-wrapper">
                             <div class="productbox-image-wrapper-inner">
                                 {strip}
-                                    {assign var=pswp value='{&quot;src&quot;:&quot;'|cat:{$Artikel->Bilder[0]->cURLGross}|cat:'&quot;,&quot;w&quot;:1006,&quot;h&quot;:1006,&quot;i&quot;:5}'}
+                                    {assign var=pswp value='{&quot;src&quot;:&quot;'|cat:{$image->cURLGross}|cat:'&quot;,&quot;w&quot;:1006,&quot;h&quot;:1006,&quot;i&quot;:'|cat:{$image@index +1}|cat:'}'}
                                     {image alt=$image->cAltAttribut|escape:'html'
                                         class="product-image"
                                         fluid=true

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -92,7 +92,7 @@ class InstallCommand extends Command
     /**
      * @inheritDoc
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this->steps       = 6;
         $this->currentStep = 1;

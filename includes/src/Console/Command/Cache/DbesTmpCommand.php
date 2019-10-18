@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -21,15 +21,14 @@ class DbesTmpCommand extends Command
     /**
      * @inheritDoc
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('cache:dbes:delete')
             ->setDescription('Delete dbeS cache');
     }
 
     /**
-     * @param InputInterface  $input
-     * @param OutputInterface $output
+     * @inheritDoc
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {

@@ -12,6 +12,7 @@ use JTL\Path;
 use JTL\Shop;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\AdapterInterface;
+use League\Flysystem\FileNotFoundException;
 use League\Flysystem\FilesystemInterface;
 use League\Flysystem\MountManager;
 use League\Flysystem\Plugin\GetWithMetadata;
@@ -162,11 +163,19 @@ class Filesystem extends \League\Flysystem\Filesystem
         $index   = 0;
         foreach ($finder->files() as $file) {
             /** @var SplFileInfo $file */
-            $path = \str_replace(\PFAD_ROOT, '', $file->getPathname());
-            if ($file->getType() === 'dir') {
-                $manager->createDir('zip://' . $path);
-            } else {
-                $manager->copy('root://' . $path, 'zip://' . $path);
+            $path = $file->getPathname();
+            $pos  = \strpos($path, \PFAD_ROOT);
+            if ($pos === 0) {
+                $path = \substr_replace($path, '', $pos, \strlen(\PFAD_ROOT));
+            }
+            try {
+                if ($file->getType() === 'dir') {
+                    $manager->createDir('zip://' . $path);
+                } else {
+                    $manager->copy('root://' . $path, 'zip://' . $path);
+                }
+            } catch (FileNotFoundException $e) {
+                echo '<br>########skipped ' . $file->getPathname();
             }
             if (\is_callable($callback)) {
                 $callback($count, $index);

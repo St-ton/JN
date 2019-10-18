@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -21,17 +21,14 @@ class DeleteFileCacheCommand extends Command
     /**
      * @inheritDoc
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('cache:file:delete')
             ->setDescription('Delete file cache');
     }
 
     /**
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     * @return int|void|null
-     * @throws \Exception
+     * @inheritDoc
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {

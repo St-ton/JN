@@ -516,7 +516,6 @@ final class Installer
         $this->db->update('texportformat', 'kPlugin', $pluginID, $upd);
         $this->db->update('topcportlet', 'kPlugin', $pluginID, $upd);
         $this->db->update('topcblueprint', 'kPlugin', $pluginID, $upd);
-
         $this->updateLangVars($oldPluginID, $pluginID);
         $this->updateConfig($oldPluginID, $pluginID);
         $this->db->update(
@@ -566,8 +565,7 @@ final class Installer
                     ON tpluginsprachvariable.cName =  tpluginsprachvariablecustomsprache.cSprachvariable
                 WHERE tpluginsprachvariablecustomsprache.kPlugin = :pid',
             ['pid' => $oldPluginID],
-            ReturnType::ARRAY_OF_OBJECTS,
-            true
+            ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($customLangVars as $langVar) {
             $this->db->update(

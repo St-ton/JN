@@ -34,7 +34,9 @@
     {block name='productlist-header-description'}
         {if $oNavigationsinfo->hasData()}
             <div class="desc clearfix mb-5">
-                {if $oNavigationsinfo->getImageURL() !== $imageBaseURL|cat:$smarty.const.BILD_KEIN_KATEGORIEBILD_VORHANDEN && $oNavigationsinfo->getImageURL() !== 'gfx/keinBild_kl.gif'}
+                {if $oNavigationsinfo->getImageURL() !== $smarty.const.BILD_KEIN_KATEGORIEBILD_VORHANDEN
+                    && $oNavigationsinfo->getImageURL() !== 'gfx/keinBild_kl.gif'
+                    && $oNavigationsinfo->getImageURL() !== $imageBaseURL|cat:$smarty.const.BILD_KEIN_KATEGORIEBILD_VORHANDEN}
                     {image fluid-grow=true lazy=true webp=true
                         src=$oNavigationsinfo->getCategory()->getImage(\JTL\Media\Image::SIZE_XS)
                         srcset="{$oNavigationsinfo->getCategory()->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_kategorien_mini_breite}w,

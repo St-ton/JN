@@ -34,48 +34,57 @@
             {col sm=8 lg=6}
                 {form id="login_form" action="{get_static_route id='jtl.php'}" method="post" role="form" class="evo-validate label-slide"}
                     <fieldset>
-                        <legend>{lang key='loginForRegisteredCustomers' section='checkout'}</legend>
-                        {include file='snippets/form_group_simple.tpl'
-                            options=[
-                                'email', 'email', 'email', null,
-                                {lang key='emailadress'}, true
-                            ]
-                        }
+                        {block name='account-login-form-submit-legend-login'}
+                            <legend>
+                                {lang key='loginForRegisteredCustomers' section='checkout'}
+                            </legend>
+                        {/block}
+                        {block name='account-login-form-submit-body'}
+                            {include file='snippets/form_group_simple.tpl'
+                                options=[
+                                    'email', 'email', 'email', null,
+                                    {lang key='emailadress'}, true
+                                ]
+                            }
 
-                        {include file='snippets/form_group_simple.tpl'
-                            options=[
-                                'password', 'password', 'passwort', null,
-                                {lang key='password' section='account data'}, true
-                            ]
-                        }
+                            {include file='snippets/form_group_simple.tpl'
+                                options=[
+                                    'password', 'password', 'passwort', null,
+                                    {lang key='password' section='account data'}, true
+                                ]
+                            }
 
-                        {if isset($showLoginCaptcha) && $showLoginCaptcha}
-                           {formgroup class="text-center"}
-                                {captchaMarkup getBody=true}
-                           {/formgroup}
-                        {/if}
+                            {if isset($showLoginCaptcha) && $showLoginCaptcha}
+                                {block name='account-login-form-submit-captcha'}
+                                   {formgroup class="text-center"}
+                                        {captchaMarkup getBody=true}
+                                   {/formgroup}
+                                {/block}
+                            {/if}
 
-                        {block name='account-login-form-submit'}
-                            {formgroup}
-                                {input type="hidden" name="login" value="1"}
-                                {if !empty($oRedirect->cURL)}
-                                    {foreach $oRedirect->oParameter_arr as $oParameter}
-                                        {input type="hidden" name=$oParameter->Name value=$oParameter->Wert}
-                                    {/foreach}
-                                    {input type="hidden" name="r" value=$oRedirect->nRedirect}
-                                    {input type="hidden" name="cURL" value=$oRedirect->cURL}
-                                {/if}
-                                {button type="submit" value="1" block=true variant="primary"}
-                                    {lang key='login' section='checkout'}
-                                {/button}
-                            {/formgroup}
-
-                            <div class="register-or-resetpw top15">
-                                <small>
-                                   {link class="register pull-left" href="{get_static_route id='registrieren.php'}"}<span class="fa fa-pencil"></span> {lang key='newHere'} {lang key='registerNow'}{/link}
-                                   {link class="resetpw ml-3 pull-right" href="{get_static_route id='pass.php'}"}<span class="fa fa-question-circle"></span> {lang key='forgotPassword'}{/link}
-                                </small>
-                            </div>
+                            {block name='account-login-form-submit'}
+                                {formgroup}
+                                    {input type="hidden" name="login" value="1"}
+                                    {if !empty($oRedirect->cURL)}
+                                        {foreach $oRedirect->oParameter_arr as $oParameter}
+                                            {input type="hidden" name=$oParameter->Name value=$oParameter->Wert}
+                                        {/foreach}
+                                        {input type="hidden" name="r" value=$oRedirect->nRedirect}
+                                        {input type="hidden" name="cURL" value=$oRedirect->cURL}
+                                    {/if}
+                                    {block name='account-login-form-submit-button'}
+                                        {button type="submit" value="1" block=true variant="primary"}
+                                            {lang key='login' section='checkout'}
+                                        {/button}
+                                    {/block}
+                                {/formgroup}
+                            {/block}
+                            {block name='account-login-form-submit-register'}
+                               {link class="register" href="{get_static_route id='registrieren.php'}"}<span class="fa fa-pencil"></span> {lang key='newHere'} {lang key='registerNow'}{/link}
+                            {/block}
+                            {block name='account-login-form-submit-resetpw'}
+                               {link class="resetpw ml-3" href="{get_static_route id='pass.php'}"}<span class="fa fa-question-circle"></span> {lang key='forgotPassword'}{/link}
+                            {/block}
                         {/block}
                     </fieldset>
                 {/form}

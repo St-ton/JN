@@ -38,11 +38,14 @@
                                         {include file='snippets/author.tpl' oAuthor=$newsItem->getAuthor() dDate=$dDate cDate=$newsItem->getDateValidFrom()->format('Y-m-d H:i:s')}
                                     {/block} /
                                 {else}
-                                    <div itemprop="author publisher" itemscope itemtype="http://schema.org/Organization" class="d-none">
-                                        <span itemprop="name">{$meta_publisher}</span>
-                                        <meta itemprop="logo" content="{$ShopLogoURL}" />
-                                    </div>
-                                    <time itemprop="datePublished" datetime="{$dDate}" class="d-none">{$dDate}</time><span class="creation-date">{$newsItem->getDateValidFrom()->format('Y-m-d H:i:s')}</span>
+                                    {block name='blog-details-noauthor'}
+                                        <div itemprop="author publisher" itemscope itemtype="http://schema.org/Organization" class="d-none">
+                                            <span itemprop="name">{$meta_publisher}</span>
+                                            <meta itemprop="logo" content="{$ShopLogoURL}" />
+                                        </div>
+                                        <time itemprop="datePublished" datetime="{$dDate}" class="d-none">{$dDate}</time>
+                                        <span class="creation-date">{$newsItem->getDateValidFrom()->format('Y-m-d H:i:s')}</span>
+                                    {/block}
                                 {/if}
                                 <time itemprop="datePublished" datetime="{$dDate}" class="d-none">{$dDate}</time>
                                 {if isset($newsItem->getDateCreated()->format('Y-m-d H:i:s'))}<time itemprop="dateModified" class="d-none">{$newsItem->getDateCreated()->format('Y-m-d H:i:s')}</time>{/if}
@@ -64,18 +67,20 @@
                                     {/block}
                                 {/if}
 
-                                {link class="align-middle no-deco" href="#comments" title="{lang key='readComments' section='news'}"}
-                                    /
-                                    <span class="fas fa-comments"></span>
-                                    <span class="sr-only">
-                                        {if $newsItem->getCommentCount() === 1}
-                                            {lang key='newsComment' section='news'}
-                                        {else}
-                                            {lang key='newsComments' section='news'}
-                                        {/if}
-                                    </span>
-                                    <span itemprop="commentCount">{$newsItem->getCommentCount()}</span>
-                                {/link}
+                                {block name='blog-details-comments-link'}
+                                    {link class="align-middle no-deco" href="#comments" title="{lang key='readComments' section='news'}"}
+                                        /
+                                        <span class="fas fa-comments"></span>
+                                        <span class="sr-only">
+                                            {if $newsItem->getCommentCount() === 1}
+                                                {lang key='newsComment' section='news'}
+                                            {else}
+                                                {lang key='newsComments' section='news'}
+                                            {/if}
+                                        </span>
+                                        <span itemprop="commentCount">{$newsItem->getCommentCount()}</span>
+                                    {/link}
+                                {/block}
                             </div>
                         {/block}
 
@@ -113,41 +118,45 @@
                                     <hr class="my-6">
                                     {row}
                                         {col cols=12}
-                                            <div class="h2">{lang key='newsCommentAdd' section='news'}</div>
-                                            {form method="post" action="{if !empty($newsItem->getSEO())}{$newsItem->getURL()}{else}{get_static_route id='news.php'}{/if}" class="form evo-validate label-slide" id="news-addcomment"}
-                                                {input type="hidden" name="kNews" value=$newsItem->getID()}
-                                                {input type="hidden" name="kommentar_einfuegen" value="1"}
-                                                {input type="hidden" name="n" value=$newsItem->getID()}
+                                            {block name='blog-details-form-comment-heading'}
+                                                <div class="h2">{lang key='newsCommentAdd' section='news'}</div>
+                                            {/block}
+                                            {block name='blog-details-form-comment-form'}
+                                                {form method="post" action="{if !empty($newsItem->getSEO())}{$newsItem->getURL()}{else}{get_static_route id='news.php'}{/if}" class="form evo-validate label-slide" id="news-addcomment"}
+                                                    {input type="hidden" name="kNews" value=$newsItem->getID()}
+                                                    {input type="hidden" name="kommentar_einfuegen" value="1"}
+                                                    {input type="hidden" name="n" value=$newsItem->getID()}
 
-                                                {formgroup}
-                                                {block name='blog-details-form-comment-logged-in'}
-                                                    {formgroup
-                                                        id="commentText"
-                                                        class="{if $nPlausiValue_arr.cKommentar > 0} has-error{/if}"
-                                                        label="<strong>{lang key='newsComment' section='news'}</strong>"
-                                                        label-for="comment-text"
-                                                        label-class="commentForm"
-                                                    }
-                                                        {if $Einstellungen.news.news_kommentare_freischalten === 'Y'}
-                                                            <small class="form-text text-muted">{lang key='commentWillBeValidated' section='news'}</small>
-                                                        {/if}
-                                                        {textarea id="comment-text" name="cKommentar" required=true}{/textarea}
-                                                        {if $nPlausiValue_arr.cKommentar > 0}
-                                                            <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
-                                                                {lang key='fillOut' section='global'}
-                                                            </div>
-                                                        {/if}
+                                                    {formgroup}
+                                                    {block name='blog-details-form-comment-logged-in'}
+                                                        {formgroup
+                                                            id="commentText"
+                                                            class="{if $nPlausiValue_arr.cKommentar > 0} has-error{/if}"
+                                                            label="<strong>{lang key='newsComment' section='news'}</strong>"
+                                                            label-for="comment-text"
+                                                            label-class="commentForm"
+                                                        }
+                                                            {if $Einstellungen.news.news_kommentare_freischalten === 'Y'}
+                                                                <small class="form-text text-muted">{lang key='commentWillBeValidated' section='news'}</small>
+                                                            {/if}
+                                                            {textarea id="comment-text" name="cKommentar" required=true}{/textarea}
+                                                            {if $nPlausiValue_arr.cKommentar > 0}
+                                                                <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
+                                                                    {lang key='fillOut' section='global'}
+                                                                </div>
+                                                            {/if}
+                                                        {/formgroup}
+                                                        {row}
+                                                            {col md=4 xl=3 class='ml-auto'}
+                                                                {button block=true variant="primary" name="speichern" type="submit" class="float-right"}
+                                                                    {lang key='newsCommentSave' section='news'}
+                                                                {/button}
+                                                            {/col}
+                                                        {/row}
+                                                    {/block}
                                                     {/formgroup}
-                                                    {row}
-                                                        {col md=4 xl=3 class='ml-auto'}
-                                                            {button block=true variant="primary" name="speichern" type="submit" class="float-right"}
-                                                                {lang key='newsCommentSave' section='news'}
-                                                            {/button}
-                                                        {/col}
-                                                    {/row}
-                                                {/block}
-                                                {/formgroup}
-                                            {/form}
+                                                {/form}
+                                            {/block}
                                         {/col}
                                     {/row}
                                 {/block}
@@ -169,11 +178,13 @@
                                     <div id="comments">
                                         {row class="align-items-center mb-3"}
                                             {col cols="auto"}
-                                                <div class="h2 section-heading">{lang key='newsComments' section='news'}
-                                                    <span itemprop="commentCount">
-                                                        ({$comments|count})
-                                                    </span>
-                                                </div>
+                                                {block name='blog-details-comments-content-heading'}
+                                                    <div class="h2 section-heading">{lang key='newsComments' section='news'}
+                                                        <span itemprop="commentCount">
+                                                            ({$comments|count})
+                                                        </span>
+                                                    </div>
+                                                {/block}
                                             {/col}
                                             {col cols="6" class="ml-auto ml-auto"}
                                                 {block name='blog-details-include-pagination'}
@@ -198,17 +209,21 @@
                             {/if}
                         {/block}
                     {/if}
-                    <hr class="my-6">
+                    {block name='blog-details-comments-hr'}
+                        <hr class="my-6">
+                    {/block}
                     {block name='blog-details-latest-news'}
-                        <div class="h2">{lang key='news' section='news'}</div>
+                        {block name='blog-details-latest-news-heading'}
+                            <div class="h2">{lang key='news' section='news'}</div>
+                        {/block}
                         {row itemprop="about" itemscope=true itemtype="http://schema.org/Blog" class="news-slider mx-0"}
-                        {foreach $oNews_arr as $newsItem}
-                            {col}
-                            {block name='page-index-include-preview'}
-                                {include file='blog/preview.tpl'}
-                            {/block}
-                            {/col}
-                        {/foreach}
+                            {foreach $oNews_arr as $newsItem}
+                                {col}
+                                    {block name='page-index-include-preview'}
+                                        {include file='blog/preview.tpl'}
+                                    {/block}
+                                {/col}
+                            {/foreach}
                         {/row}
                     {/block}
                 {/container}

@@ -26,72 +26,84 @@
                                         <span class="ml-1 fa fa-pencil-alt"></span>
                                     </div>
                                 {/block}
-                                <hr class="my-3">
-                                <div class="mb-3 form-group">
-                                    {radiogroup stacked=true class='radio-w-100'}
-                                        {foreach $Versandarten as $versandart}
-                                            {block name='checkout-step3-shipping-options-shipment'}
-                                                    {radio
-                                                        name="Versandart"
-                                                        value=$versandart->kVersandart
-                                                        id="del{$versandart->kVersandart}"
-                                                        checked=($Versandarten|@count == 1 || $AktiveVersandart == $versandart->kVersandart)
-                                                        required=($versandart@first)
-                                                        class="justify-content-between"
-                                                    }
-                                                        {formrow class="content"}
-                                                            {col cols=12 sm=5 class='title'}
-                                                                {$versandart->angezeigterName|trans}
-                                                                {if !empty($versandart->angezeigterHinweistext|trans)}
-                                                                    <div>
-                                                                        <small>{$versandart->angezeigterHinweistext|trans}</small>
-                                                                    </div>
-                                                                {/if}
-                                                            {/col}
-                                                            {col cols=12 sm=3}<small class="desc text-info">{$versandart->cLieferdauer|trans}</small>{/col}
-                                                            {col cols=12 sm=4 class='font-weight-bold'}
-                                                                {$versandart->cPreisLocalized}
-                                                                {if !empty($versandart->Zuschlag->fZuschlag)}
-                                                                    <div>
-                                                                        <small>
-                                                                            ({$versandart->Zuschlag->angezeigterName|trans} +{$versandart->Zuschlag->cPreisLocalized})
-                                                                        </small>
-                                                                    </div>
-                                                                {/if}
-                                                            {/col}
-                                                        {/formrow}
-                                                        <span class="btn-block">
-                                                            {if isset($versandart->specificShippingcosts_arr)}
-                                                                {foreach $versandart->specificShippingcosts_arr as $specificShippingcosts}
-                                                                    {block name='checkout-step3-shipping-options-shipping-cost'}
-                                                                        {row}
-                                                                            {col cols=8}
-                                                                                <ul>
-                                                                                    <li>
-                                                                                        <small>{$specificShippingcosts->cName|trans}</small>
-                                                                                    </li>
-                                                                                </ul>
-                                                                            {/col}
-                                                                            {col cols=4}
+                                {block name='checkout-step3-shipping-options-shipping-address-hr'}
+                                    <hr class="my-3">
+                                {/block}
+                                {block name='checkout-step3-shipping-options-shipping-options'}
+                                    <div class="mb-3 form-group">
+                                        {radiogroup stacked=true class='radio-w-100'}
+                                            {foreach $Versandarten as $versandart}
+                                                {block name='checkout-step3-shipping-options-shipment'}
+                                                        {radio
+                                                            name="Versandart"
+                                                            value=$versandart->kVersandart
+                                                            id="del{$versandart->kVersandart}"
+                                                            checked=($Versandarten|@count == 1 || $AktiveVersandart == $versandart->kVersandart)
+                                                            required=($versandart@first)
+                                                            class="justify-content-between"
+                                                        }
+                                                            {formrow class="content"}
+                                                                {block name='checkout-step3-shipping-options-shipping-option-title'}
+                                                                    {col cols=12 sm=5 class='title'}
+                                                                        {$versandart->angezeigterName|trans}
+                                                                        {if !empty($versandart->angezeigterHinweistext|trans)}
+                                                                            <div>
+                                                                                <small>{$versandart->angezeigterHinweistext|trans}</small>
+                                                                            </div>
+                                                                        {/if}
+                                                                    {/col}
+                                                                {/block}
+                                                                {block name='checkout-step3-shipping-options-shipping-option-info'}
+                                                                    {col cols=12 sm=3}<small class="desc text-info">{$versandart->cLieferdauer|trans}</small>{/col}
+                                                                {/block}
+                                                                {block name='checkout-step3-shipping-options-shipping-option-price'}
+                                                                    {col cols=12 sm=4 class='font-weight-bold'}
+                                                                        {$versandart->cPreisLocalized}
+                                                                        {if !empty($versandart->Zuschlag->fZuschlag)}
+                                                                            <div>
                                                                                 <small>
-                                                                                    {$specificShippingcosts->cPreisLocalized}
+                                                                                    ({$versandart->Zuschlag->angezeigterName|trans} +{$versandart->Zuschlag->cPreisLocalized})
                                                                                 </small>
-                                                                            {/col}
-                                                                        {/row}
+                                                                            </div>
+                                                                        {/if}
+                                                                    {/col}
+                                                                {/block}
+                                                            {/formrow}
+                                                            <span class="btn-block">
+                                                                {if isset($versandart->specificShippingcosts_arr)}
+                                                                    {foreach $versandart->specificShippingcosts_arr as $specificShippingcosts}
+                                                                        {block name='checkout-step3-shipping-options-shipping-option-cost'}
+                                                                            {row}
+                                                                                {col cols=8}
+                                                                                    <ul>
+                                                                                        <li>
+                                                                                            <small>{$specificShippingcosts->cName|trans}</small>
+                                                                                        </li>
+                                                                                    </ul>
+                                                                                {/col}
+                                                                                {col cols=4}
+                                                                                    <small>
+                                                                                        {$specificShippingcosts->cPreisLocalized}
+                                                                                    </small>
+                                                                                {/col}
+                                                                            {/row}
+                                                                        {/block}
+                                                                    {/foreach}
+                                                                {/if}
+                                                                {if !empty($versandart->cLieferdauer|trans) && $Einstellungen.global.global_versandermittlung_lieferdauer_anzeigen === 'Y'}
+                                                                    {block name='checkout-step3-shipping-options-shipping-option-shipping-time'}
+                                                                        <small>{lang key='shippingTimeLP'}
+                                                                            : {$versandart->cLieferdauer|trans}
+                                                                        </small>
                                                                     {/block}
-                                                                {/foreach}
-                                                            {/if}
-                                                            {if !empty($versandart->cLieferdauer|trans) && $Einstellungen.global.global_versandermittlung_lieferdauer_anzeigen === 'Y'}
-                                                                <small>{lang key='shippingTimeLP'}
-                                                                    : {$versandart->cLieferdauer|trans}
-                                                                </small>
-                                                            {/if}
-                                                        </span>
-                                                    {/radio}
-                                            {/block}
-                                        {/foreach}
-                                    {/radiogroup}
-                                </div>
+                                                                {/if}
+                                                            </span>
+                                                        {/radio}
+                                                {/block}
+                                            {/foreach}
+                                        {/radiogroup}
+                                    </div>
+                                {/block}
                             </fieldset>
                         {/block}
                         {block name='checkout-step3-shipping-options-fieldset-payment'}
@@ -109,7 +121,9 @@
                                     {block name='checkout-step3-shipping-options-legend-packaging-types'}
                                         <div class="h2">{lang section='checkout' key='additionalPackaging'}</div>
                                     {/block}
-                                    <hr class="my-3">
+                                    {block name='checkout-step3-shipping-options-legend-packaging-types-hr'}
+                                        <hr class="my-3">
+                                    {/block}
                                     {checkboxgroup stacked=true}
                                     {foreach $Verpackungsarten as $oVerpackung}
                                         {block name='checkout-step3-shipping-options-packaging'}
@@ -148,7 +162,7 @@
                                         {/button}
                                     {/col}
                                     {col cols=12 md=4 class='order-2 order-md-1'}
-                                        {button block=true type="link" href="{get_static_route id='bestellvorgang.php'}?editRechnungsadresse=1" variant="secondary"}
+                                        {button block=true type="link" href="{get_static_route id='bestellvorgang.php'}?editRechnungsadresse=1" variant="outline-primary"}
                                             {lang key='back'}
                                         {/button}
                                     {/col}

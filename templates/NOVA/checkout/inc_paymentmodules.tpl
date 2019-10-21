@@ -39,9 +39,13 @@
         {block name='checkout-inc-paymentmodules-method-inner'}
             <div class="payment-method-inner mb-3">
                 {if $Bestellung->Zahlungsart->cModulId === 'za_paypal_jtl'}
-                    {include file='checkout/modules/paypal/bestellabschluss.tpl'}
+                    {block name='checkout-inc-paymentmodules-include-bestellabschluss'}
+                        {include file='checkout/modules/paypal/bestellabschluss.tpl'}
+                    {/block}
                 {elseif $Bestellung->Zahlungsart->cModulId === 'za_kreditkarte_jtl'}
-                    {include file='account/retrospective_payment.tpl'}
+                    {block name='checkout-inc-paymentmodules-include-retrospective-payment'}
+                        {include file='account/retrospective_payment.tpl'}
+                    {/block}
                 {elseif $method !== null && $Bestellung->Zahlungsart->cModulId === $method->getModuleID()}
                     {block name='checkout-inc-paymentmodules-include-plugin'}
                         {include file=$method->getTemplateFilePath()}

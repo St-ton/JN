@@ -19,7 +19,9 @@
                 {include file='snippets/filter/genericFilterItem.tpl' filter=$oBox->getItems()}
             {/block}
             {/collapse}
-            <hr class="my-2">
+            {block name='boxes-box-filter-category-hr'}
+                <hr class="my-2">
+            {/block}
         </div>
     {/if}
 {/block}

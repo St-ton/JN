@@ -26,21 +26,29 @@
                             {/if}
                         {/block}
                         {if (!$device->isMobile() || $device->isTablet()) && $navid === 'header'}
-                            {dropdown class="filter-type-FilterItemSort btn-group" variant="outline-secondary" text="{lang key='sorting' section='productOverview'}"}
-                                {foreach $Suchergebnisse->getSortingOptions() as $option}
-                                    {dropdownitem rel="nofollow" href=$option->getURL() class="filter-item" active=$option->isActive()}
-                                        {$option->getName()}
-                                    {/dropdownitem}
-                                {/foreach}
-                            {/dropdown}
-                            {dropdown class="filter-type-FilterItemLimits btn-group ml-2" variant="outline-secondary" text="{lang key='productsPerPage' section='productOverview'}"}
-                                {foreach $Suchergebnisse->getLimitOptions() as $option}
-                                    {dropdownitem rel="nofollow" href=$option->getURL() class="filter-item" active=$option->isActive()}
-                                        {$option->getName()}
-                                    {/dropdownitem}
-                                {/foreach}
-                            {/dropdown}
-                            {include file='productlist/layout_options.tpl'}
+                            {block name='snippets-productlist-page-nav-actions'}
+                                {block name='snippets-productlist-page-nav-actions-sort'}
+                                    {dropdown class="filter-type-FilterItemSort btn-group" variant="outline-secondary" text="{lang key='sorting' section='productOverview'}"}
+                                        {foreach $Suchergebnisse->getSortingOptions() as $option}
+                                            {dropdownitem rel="nofollow" href=$option->getURL() class="filter-item" active=$option->isActive()}
+                                                {$option->getName()}
+                                            {/dropdownitem}
+                                        {/foreach}
+                                    {/dropdown}
+                                {/block}
+                                {block name='snippets-productlist-page-nav-actions-items'}
+                                    {dropdown class="filter-type-FilterItemLimits btn-group ml-2" variant="outline-secondary" text="{lang key='productsPerPage' section='productOverview'}"}
+                                        {foreach $Suchergebnisse->getLimitOptions() as $option}
+                                            {dropdownitem rel="nofollow" href=$option->getURL() class="filter-item" active=$option->isActive()}
+                                                {$option->getName()}
+                                            {/dropdownitem}
+                                        {/foreach}
+                                    {/dropdown}
+                                {/block}
+                                {block name='snippets-productlist-page-nav-include-layout-options'}
+                                    {include file='productlist/layout_options.tpl'}
+                                {/block}
+                            {/block}
                         {/if}
                     {/col}
                 {/block}
@@ -61,9 +69,11 @@
                                     </li>
                                 {/block}
                                 <li class="page-item dropdown">
-                                    <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <span class="pagination-site">{lang key='page'}</span> {$Suchergebnisse->getPages()->getCurrentPage()}
-                                    </button>
+                                    {block name='snippets-productlist-page-nav-button'}
+                                        <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <span class="pagination-site">{lang key='page'}</span> {$Suchergebnisse->getPages()->getCurrentPage()}
+                                        </button>
+                                    {/block}
                                     <div class="dropdown-menu shadow-none">
                                         {block name='snippets-productlist-page-nav-pages'}
                                             {foreach $filterPagination->getPages() as $page}

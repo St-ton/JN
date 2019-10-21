@@ -294,7 +294,9 @@
         {include file=$opcDir|cat:'tpl/startmenu.tpl'}
 
         {if isset($bAdminWartungsmodus) && $bAdminWartungsmodus}
-            {alert show=true variant="warning" id="maintenance-mode" dismissible=true}{lang key='adminMaintenanceMode'}{/alert}
+            {block name='layout-header-maintenance-alert'}
+                {alert show=true variant="warning" id="maintenance-mode" dismissible=true}{lang key='adminMaintenanceMode'}{/alert}
+            {/block}
         {/if}
 
         {block name='layout-header-header'}
@@ -315,10 +317,11 @@
 
                     {block name='layout-header-category-nav'}
                         {navbar  toggleable=true fill=true type="expand-lg " class="justify-content-start {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}align-items-center{else}align-items-lg-end{/if} px-0 pb-lg-0"}
-
-                            <button class="navbar-toggler mr-3 collapsed {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}d-none{/if}" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                                <span class="navbar-toggler-icon"></span>
-                            </button>
+                            {block name='layout-header-navbar-toggle'}
+                                <button class="navbar-toggler mr-3 collapsed {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}d-none{/if}" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                                    <span class="navbar-toggler-icon"></span>
+                                </button>
+                            {/block}
 
                             {block name='layout-header-logo'}
                                 <div id="logo" itemprop="publisher" itemscope itemtype="http://schema.org/Organization" itemid="">
@@ -340,12 +343,18 @@
                             {/block}
 
                             {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}
-                                <div class="ml-auto ml-lg-0">
-                                    <i class="fas fa-lock align-center mr-2"></i>{lang key='secureCheckout' section='checkout'}
-                                </div>
-                                <div class="ml-auto d-none d-lg-block">
-                                    {include file='layout/header_top_bar.tpl'}
-                                </div>
+                                {block name='layout-header-secure-checkout'}
+                                    <div class="ml-auto ml-lg-0">
+                                        {block name='layout-header-secure-checkout-title'}
+                                            <i class="fas fa-lock align-center mr-2"></i>{lang key='secureCheckout' section='checkout'}
+                                        {/block}
+                                    </div>
+                                    <div class="ml-auto d-none d-lg-block">
+                                        {block name='layout-header-secure-include-header-top-bar'}
+                                            {include file='layout/header_top_bar.tpl'}
+                                        {/block}
+                                    </div>
+                                {/block}
                             {else}
                                 {block name='layout-header-branding-shop-nav'}
                                     {nav id="shop-nav" right=true class="nav-right ml-auto order-lg-last align-items-center flex-shrink-0"}
@@ -378,11 +387,15 @@
     {block name='layout-header-fluid-banner'}
         {assign var=isFluidBanner value=$Einstellungen.template.theme.banner_full_width === 'Y' && isset($oImageMap)}
         {if $isFluidBanner}
-            {include file='snippets/banner.tpl' isFluid=true}
+            {block name='layout-header-fluid-banner-include-banner'}
+                {include file='snippets/banner.tpl' isFluid=true}
+            {/block}
         {/if}
         {assign var=isFluidSlider value=$Einstellungen.template.theme.slider_full_width === 'Y' && isset($oSlider) && count($oSlider->getSlides()) > 0}
         {if $isFluidSlider}
-            {include file='snippets/slider.tpl' isFluid=true}
+            {block name='layout-header-fluid-banner-include-slider'}
+                {include file='snippets/slider.tpl' isFluid=true}
+            {/block}
         {/if}
     {/block}
 

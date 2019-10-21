@@ -45,7 +45,9 @@
                         {col cols=12}
                             {if !isset($checkout) && empty($smarty.session.Kunde->kKunde)}
                                 {opcMountPoint id='opc_before_heading'}
-                                <h1>{lang key='createNewAccount' section='account data'}</h1>
+                                {block name='register-index-new-customer-heading'}
+                                    <h1 class="h2">{lang key='createNewAccount' section='account data'}</h1>
+                                {/block}
                             {/if}
                             {opcMountPoint id='opc_before_form_card'}
                             <div id="panel-register-form">

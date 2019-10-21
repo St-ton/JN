@@ -45,81 +45,109 @@
 
             {block name='layout-index-link-types'}
                 {if $Link->getLinkType() === $smarty.const.LINKTYP_AGB}
-                    <div id="tos" class="well well-sm">
-                        {opcMountPoint id='opc_before_tos'}
-                        {if $AGB !== false}
-                            {container}
-                                {if $AGB->cAGBContentHtml}
-                                    {$AGB->cAGBContentHtml}
-                                {elseif $AGB->cAGBContentText}
-                                    {$AGB->cAGBContentText|nl2br}
-                                {/if}
-                            {/container}
-                        {/if}
-                        {opcMountPoint id='opc_after_tos'}
-                    </div>
+                    {block name='layout-index-link-type-tos'}
+                        <div id="tos" class="well well-sm">
+                            {opcMountPoint id='opc_before_tos'}
+                            {if $AGB !== false}
+                                {container}
+                                    {if $AGB->cAGBContentHtml}
+                                        {$AGB->cAGBContentHtml}
+                                    {elseif $AGB->cAGBContentText}
+                                        {$AGB->cAGBContentText|nl2br}
+                                    {/if}
+                                {/container}
+                            {/if}
+                            {opcMountPoint id='opc_after_tos'}
+                        </div>
+                    {/block}
                 {elseif $Link->getLinkType() === $smarty.const.LINKTYP_WRB}
-                    <div id="revocation-instruction" class="well well-sm">
-                        {opcMountPoint id='opc_before_revocation'}
-                        {if $WRB !== false}
-                            {container}
-                                {if $WRB->cWRBContentHtml}
-                                    {$WRB->cWRBContentHtml}
-                                {elseif $WRB->cWRBContentText}
-                                    {$WRB->cWRBContentText|nl2br}
-                                {/if}
-                            {/container}
-                        {/if}
-                        {opcMountPoint id='opc_after_revocation'}
-                    </div>
+                    {block name='layout-index-link-type-revocation'}
+                        <div id="revocation-instruction" class="well well-sm">
+                            {opcMountPoint id='opc_before_revocation'}
+                            {if $WRB !== false}
+                                {container}
+                                    {if $WRB->cWRBContentHtml}
+                                        {$WRB->cWRBContentHtml}
+                                    {elseif $WRB->cWRBContentText}
+                                        {$WRB->cWRBContentText|nl2br}
+                                    {/if}
+                                {/container}
+                            {/if}
+                            {opcMountPoint id='opc_after_revocation'}
+                        </div>
+                    {/block}
                 {elseif $Link->getLinkType() === $smarty.const.LINKTYP_WRB_FORMULAR}
-                    <div id="revocation-form" class="well well-sm">
-                        {opcMountPoint id='opc_before_revocation_form'}
-                        {if $WRB !== false}
-                            {container}
-                                {if $WRB->cWRBFormContentHtml}
-                                    {$WRB->cWRBFormContentHtml}
-                                {elseif $WRB->cWRBFormContentText}
-                                    {$WRB->cWRBFormContentText|nl2br}
-                                {/if}
-                            {/container}
-                        {/if}
-                        {opcMountPoint id='opc_after_revocation_form'}
-                    </div>
+                    {block name='layout-index-link-type-revocation-form'}
+                        <div id="revocation-form" class="well well-sm">
+                            {opcMountPoint id='opc_before_revocation_form'}
+                            {if $WRB !== false}
+                                {container}
+                                    {if $WRB->cWRBFormContentHtml}
+                                        {$WRB->cWRBFormContentHtml}
+                                    {elseif $WRB->cWRBFormContentText}
+                                        {$WRB->cWRBFormContentText|nl2br}
+                                    {/if}
+                                {/container}
+                            {/if}
+                            {opcMountPoint id='opc_after_revocation_form'}
+                        </div>
+                    {/block}
                 {elseif $Link->getLinkType() === $smarty.const.LINKTYP_DATENSCHUTZ}
-                    <div id="data-privacy" class="well well-sm">
-                        {opcMountPoint id='opc_before_data_privacy'}
-                        {if $WRB !== false}
-                            {container}
-                                {if $WRB->cDSEContentHtml}
-                                    {$WRB->cDSEContentHtml}
-                                {elseif $WRB->cDSEContentText}
-                                    {$WRB->cDSEContentText|nl2br}
-                                {/if}
-                            {/container}
-                        {/if}
-                        {opcMountPoint id='opc_after_data_privacy'}
-                    </div>
+                    {block name='layout-index-link-type-data-privacy'}
+                        <div id="data-privacy" class="well well-sm">
+                            {opcMountPoint id='opc_before_data_privacy'}
+                            {if $WRB !== false}
+                                {container}
+                                    {if $WRB->cDSEContentHtml}
+                                        {$WRB->cDSEContentHtml}
+                                    {elseif $WRB->cDSEContentText}
+                                        {$WRB->cDSEContentText|nl2br}
+                                    {/if}
+                                {/container}
+                            {/if}
+                            {opcMountPoint id='opc_after_data_privacy'}
+                        </div>
+                    {/block}
                 {elseif $Link->getLinkType() === $smarty.const.LINKTYP_STARTSEITE}
-                    {include file='page/index.tpl'}
+                    {block name='layout-index-include-index'}
+                        {include file='page/index.tpl'}
+                    {/block}
                 {elseif $Link->getLinkType() === $smarty.const.LINKTYP_VERSAND}
-                    {include file='page/shipping.tpl'}
+                    {block name='layout-index-include-shipping'}
+                        {include file='page/shipping.tpl'}
+                    {/block}
                 {elseif $Link->getLinkType() === $smarty.const.LINKTYP_LIVESUCHE}
-                    {include file='page/livesearch.tpl'}
+                    {block name='layout-index-include-livesearch'}
+                        {include file='page/livesearch.tpl'}
+                    {/block}
                 {elseif $Link->getLinkType() === $smarty.const.LINKTYP_HERSTELLER}
-                    {include file='page/manufacturers.tpl'}
+                    {block name='layout-index-include-manufacturers'}
+                        {include file='page/manufacturers.tpl'}
+                    {/block}
                 {elseif $Link->getLinkType() === $smarty.const.LINKTYP_NEWSLETTERARCHIV}
-                    {include file='page/newsletter_archive.tpl'}
+                    {block name='layout-index-include-newsletter-archive'}
+                        {include file='page/newsletter_archive.tpl'}
+                    {/block}
                 {elseif $Link->getLinkType() === $smarty.const.LINKTYP_SITEMAP}
-                    {include file='page/sitemap.tpl'}
+                    {block name='layout-index-include-sitemap'}
+                        {include file='page/sitemap.tpl'}
+                    {/block}
                 {elseif $Link->getLinkType() === $smarty.const.LINKTYP_GRATISGESCHENK}
-                    {include file='page/free_gift.tpl'}
+                    {block name='layout-index-include-free-gift'}
+                        {include file='page/free_gift.tpl'}
+                    {/block}
                 {elseif $Link->getLinkType() === $smarty.const.LINKTYP_PLUGIN && empty($nFullscreenTemplate)}
-                    {include file=$cPluginTemplate}
+                    {block name='layout-index-include-plugin'}
+                        {include file=$cPluginTemplate}
+                    {/block}
                 {elseif $Link->getLinkType() === $smarty.const.LINKTYP_AUSWAHLASSISTENT}
-                    {include file='selectionwizard/index.tpl'}
+                    {block name='layout-index-include-selection-wizard'}
+                        {include file='selectionwizard/index.tpl'}
+                    {/block}
                 {elseif $Link->getLinkType() === $smarty.const.LINKTYP_404}
-                    {include file='page/404.tpl'}
+                    {block name='layout-index-include-404'}
+                        {include file='page/404.tpl'}
+                    {/block}
                 {/if}
             {/block}
         {/block}

@@ -46,13 +46,15 @@
                                             {/block}
                                         {/if}
                                     {/foreach}
-                                    {listgroupitem tag="li"}
-                                        <label class="btn-block" for="delivery_new" data-toggle="collapse" data-target="#register_shipping_address:not(.show)">
-                                            {radio name="kLieferadresse" value="-1" id="delivery_new" checked=($kLieferadresse == -1) required=true aria-required=true}
-                                                <span class="control-label label-default">{lang key='createNewShippingAdress' section='account data'}</span>
-                                            {/radio}
-                                        </label>
-                                    {/listgroupitem}
+                                    {block name='checkout-inc-shipping-address-new-address'}
+                                        {listgroupitem tag="li"}
+                                            <label class="btn-block" for="delivery_new" data-toggle="collapse" data-target="#register_shipping_address:not(.show)">
+                                                {radio name="kLieferadresse" value="-1" id="delivery_new" checked=($kLieferadresse == -1) required=true aria-required=true}
+                                                    <span class="control-label label-default">{lang key='createNewShippingAdress' section='account data'}</span>
+                                                {/radio}
+                                            </label>
+                                        {/listgroupitem}
+                                    {/block}
                                     {/listgroup}
                                 {/block}
                                 {block name='checkout-inc-shipping-address-fieldset-register'}

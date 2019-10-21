@@ -16,7 +16,7 @@ defined('JTLCRON') || define('JTLCRON', true);
 if (!defined('PFAD_LOGFILES')) {
     require __DIR__ . '/globalinclude.php';
 }
-if (SAVE_MODE === true) {
+if (SAFE_MODE === true) {
     return;
 }
 if (PHP_SAPI === 'cli') {

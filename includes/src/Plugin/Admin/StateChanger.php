@@ -90,7 +90,8 @@ class StateChanger
         } else {
             $path   = \PFAD_ROOT . \PFAD_PLUGIN;
             $valid  = $this->legacyValidator->validateByPath($path . $pluginData->cVerzeichnis);
-            $loader = new LegacyPluginLoader($this->db, $this->cache);;
+            $loader = new LegacyPluginLoader($this->db, $this->cache);
+            ;
         }
         if (!\in_array($valid, [InstallCode::OK, InstallCode::OK_LEGACY, InstallCode::DUPLICATE_PLUGIN_ID], true)) {
             return $valid;

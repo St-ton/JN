@@ -95,7 +95,7 @@ final class Listing
                 ReturnType::ARRAY_OF_OBJECTS
             );
         }
-        $pluginIDs       = map(
+        $pluginIDs    = map(
             $all,
             function (\stdClass $e) {
                 $e->kPlugin    = (int)$e->kPlugin;

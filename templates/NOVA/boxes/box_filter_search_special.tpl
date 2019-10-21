@@ -25,7 +25,9 @@
                         {include file='snippets/filter/genericFilterItem.tpl' filter=$ssf}
                     {/block}
                 {/collapse}
-                <hr class="my-2">
+                {block name='boxes-box-filter-search-special-hr'}
+                    <hr class="my-2">
+                {/block}
             </div>
         {/if}
     {/if}

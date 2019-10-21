@@ -34,8 +34,14 @@
                 {foreach $oSlider->getSlides() as $oSlide}
                     {if !empty($oSlide->getText())}
                         <div id="slide_caption_{$oSlide->getID()}" class="htmlcaption d-none">
-                            {if isset($oSlide->getTitle())}<strong class="title">{$oSlide->getTitle()}</strong>{/if}
-                            <p class="desc">{$oSlide->getText()}</p>
+                            {if isset($oSlide->getTitle())}
+                                {block name='snippets-slider-slide-captions-title'}
+                                    <strong class="title">{$oSlide->getTitle()}</strong>
+                                {/block}
+                            {/if}
+                            {block name='snippets-slider-slide-captions-desc'}
+                                <p class="desc">{$oSlide->getText()}</p>
+                            {/block}
                         </div>
                     {/if}
                 {/foreach}

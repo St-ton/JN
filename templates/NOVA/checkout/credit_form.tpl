@@ -9,7 +9,9 @@
                 <fieldset>
                     {row}
                         {col cols=12 md=6}
-                            <p class="credit-description">{lang key='creditDesc' section='account data'}</p>
+                            {block name='checkout-credit-form-desc'}
+                                <p class="credit-description">{lang key='creditDesc' section='account data'}</p>
+                            {/block}
                         {/col}
                         {col cols=12 md=6}
                             {block name='checkout-credit-form-alert'}

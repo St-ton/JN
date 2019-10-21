@@ -56,7 +56,11 @@
                     {/if}
                 {/block}
                 {/collapse}
-                {if !$characteristic@last}<hr class="my-2">{/if}
+                {if !$characteristic@last}
+                    {block name='boxes-box-filter-characteristics-hr'}
+                        <hr class="my-2">
+                    {/block}
+                {/if}
             </div>
         {/foreach}
     {/if}

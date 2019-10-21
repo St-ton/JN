@@ -46,12 +46,16 @@
                         {block name='layout-footer-newsletter'}
                             {row class="newsletter-footer" class="text-center text-md-left align-items-center"}
                                 {col cols=12 lg=6}
-                                    <div class="h2">
-                                        {lang key='newsletter' section='newsletter'} {lang key='newsletterSendSubscribe' section='newsletter'}
-                                    </div>
-                                    <p class="info">
-                                        {lang key='unsubscribeAnytime' section='newsletter'}
-                                    </p>
+                                    {block name='layout-footer-newsletter-heading'}
+                                        <div class="h2">
+                                            {lang key='newsletter' section='newsletter'} {lang key='newsletterSendSubscribe' section='newsletter'}
+                                        </div>
+                                    {/block}
+                                    {block name='layout-footer-newsletter-info'}
+                                        <p class="info">
+                                            {lang key='unsubscribeAnytime' section='newsletter'}
+                                        </p>
+                                    {/block}
                                 {/col}
                                 {col cols=12 lg=6}
                                     {block name='layout-footer-form'}

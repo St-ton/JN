@@ -28,6 +28,8 @@ class Migration_20191018152300 extends Migration implements IMigration
 
             if ($idObj->type !== 'search' && $idObj->type !== 'other') {
                 $idObj->id = (int)$idObj->id;
+            } elseif ($idObj->type === 'search') {
+                $idObj->id = \base64_decode($idObj->id);
             }
 
             for ($i = 1; $i < $numfields; $i++) {
@@ -60,7 +62,12 @@ class Migration_20191018152300 extends Migration implements IMigration
             $json      = \json_decode($page->cPageId, true);
             $type      = $json['type'];
             $id        = $json['id'];
-            $oldPageId = $type . ':' . $id;
+
+            if ($type === 'search') {
+                $oldPageId = $type . ':' . \base64_encode($id);
+            } else {
+                $oldPageId = $type . ':' . $id;
+            }
 
             foreach ($json as $key => $val) {
                 if ($key !== 'type' && $key !== 'id') {

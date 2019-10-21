@@ -22693,6 +22693,33 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
   border-right-color: #9a005d;
 }
 
+/* Artikel Bilder Slider vertikal */
+.slick-down,
+.slick-up {
+  outline: none;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  line-height: 1;
+  padding: 0;
+  width: 19px;
+  height: 19px;
+  color: #ccc;
+  opacity: 0.75;
+}
+.slick-down:focus,
+.slick-up:focus {
+  outline: none;
+}
+.slick-down:hover,
+.slick-up:hover {
+  opacity: 1;
+}
+
+#freegift .slick-list {
+  padding-top: 25px;
+}
+
 .stepper {
   align-items: center;
   border: 1px solid #ebebeb;

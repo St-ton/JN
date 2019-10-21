@@ -1,110 +1,26 @@
-//.slick-slide{
-//  text-align: center;
-//  img {
-//    display: block;
-//    margin: 0 auto;
-//  }
-//}
-//
-//.slick-loading .slick-list {
-//  background: #fff url('../base/images/loader.gif') center center no-repeat;
-//}
-//
-//.slick-prev,
-//.slick-next {
-//  position: absolute;
-//  font-size: 0;
-//  cursor: pointer;
-//  background: transparent;
-//  color: transparent;
-//  top: 45%;
-//  -webkit-transform: translate(0, -50%);
-//  -ms-transform: translate(0, -50%);
-//  transform: translate(0, -50%);
-//  border: none;
-//  outline: none;
-//
-//  &:hover,
-//  &:focus {
-//    outline: none;
-//    background: transparent;
-//  }
-//
-//  .slick-disabled:before {
-//    opacity: 0.25;
-//  }
-//}
-//
-//.slick-prev {
-//  z-index: 2;
-//  left: 0;
-//
-//  &[dir="rtl"] {
-//    left: auto;
-//    right: 0;
-//  }
-//}
-//
-//.slick-next {
-//  z-index: 2;
-//  right: 0;
-//
-//  &[dir="rtl"] {
-//    left: 0;
-//    right: auto;
-//  }
-//}
-//
-//.slick-dotted {
-//  margin-bottom: 30px;
-//}
-//
-//// slick
-//.evo-slider,
-//.news-slider {
-//  .slick-prev,
-//  .slick-next {
-//    padding: ($spacer * 1.7) ($spacer / 2);
-//    background: $sand;
-//    &::before {
-//      color: $gray-dark;
-//    }
-//    &:hover, &:focus {
-//      background: $primary;
-//    }
-//  }
-//  .slick-arrow {
-//    transition: all .2s ease-in-out;
-//  }
-//}
-//
-//.news-slider .slick-slide{
-//  text-align: left;
-//}
-//
-///* Artikel Bilder Slider vertikal */
-//.slick-down ,
-//.slick-up {
-//  outline: none;
-//  background: transparent;
-//  border: none;
-//  font-size: 20px;
-//  line-height: 1;
-//  padding: 0;
-//  width: 19px;
-//  height: 19px;
-//  color: #ccc;
-//  opacity: 0.75;
-//
-//  &:focus {
-//    outline: none;
-//  }
-//
-//  &:hover {
-//    opacity: 1;
-//  }
-//}
-//
-//#freegift .slick-list{
-//  padding-top: 25px;
-//}
+/* Artikel Bilder Slider vertikal */
+.slick-down ,
+.slick-up {
+  outline: none;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  line-height: 1;
+  padding: 0;
+  width: 19px;
+  height: 19px;
+  color: #ccc;
+  opacity: 0.75;
+
+  &:focus {
+    outline: none;
+  }
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+#freegift .slick-list{
+  padding-top: 25px;
+}

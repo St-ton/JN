@@ -482,21 +482,6 @@ ul.partlist-items {
   z-index: ($zindex-dropdown - 2);
 }
 
-//.list .product-cell,
-//.gallery .product-cell,
-//.gallery-with-action {
-//  .actions.btn-group {
-//    .btn { margin-right: 8px;
-//      &:last-child { margin-right: 0; }
-//    }
-//  }
-//  .actions-small {
-//    .actions {
-//      position: static; margin: 10px 10px 0 auto;
-//    }
-//  }
-//}
-
 .gallery,
 .list {
   align-items: flex-end;

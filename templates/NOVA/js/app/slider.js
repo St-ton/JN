@@ -90,7 +90,6 @@ const initGalleries = ((i, element) => {
 
 initGalleries()
 
-
 // $('.productbox-images').slick($.extend(true, {}, Defaults, {
 // 	rows: 0,
 // 	dots: false,

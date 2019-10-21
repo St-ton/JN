@@ -402,14 +402,4 @@ abstract class AbstractPlugin implements PluginInterface
     {
         $this->paymentMethods = $paymentMethods;
     }
-
-    /**
-     *
-     */
-    public function constructed(): void
-    {
-        if (\PLUGIN_DEV_MODE === true) {
-
-        }
-    }
 }

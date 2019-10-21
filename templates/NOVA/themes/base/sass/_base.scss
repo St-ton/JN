@@ -89,6 +89,9 @@ header > [class*="container"],
   box-shadow: 0 2px 16px 0 rgba(0,0,0,0.06);
 }
 
+#navbarToggler {
+  z-index: 1;
+}
 //#evo-nav-wrapper {
 //  box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.06);
 //  height: 209px;
@@ -108,7 +111,6 @@ header > [class*="container"],
 //    }
 //  }
 //}
-
 
 header > [class*="container"],
 #main-wrapper #content-wrapper { box-shadow: none; background: transparent; }
@@ -354,7 +356,10 @@ ul.partlist-items {
         img {
           padding: 0;
           width: auto;
-          height: 100%;
+          height: 65px;
+        }
+        .label-variation, .label {
+          display: block;
         }
       }
       &.active img{
@@ -1080,15 +1085,15 @@ aside {
 .nmbr-cfg-group {
   display: flex;
   z-index: 1;
+  font-family: $font-accent;
+  font-weight: $font-weight-semibold;
+  .btn:hover {
+    background-color: $gray-lighter;
+  }
   input {
     border-radius: 0;
   }
   .btn-decrement, .btn-increment {
-    color: $input-color;
-    background-color: $input-bg;
-    background-clip: padding-box;
-    border: $input-border-width solid $input-border-color;
-    z-index: 2;
     @include form-control-focus();
 
     // Placeholder
@@ -1146,10 +1151,6 @@ aside {
       margin-left: -1px;
     }
   }
-}
-
-#add-to-cart .btn[type='submit'] {
-  line-height: 1.7rem;
 }
 
 .input-group-append > .btn.ml-3{
@@ -1343,7 +1344,7 @@ a.no-deco {
   text-align: right;
 }
 .nws-preview {
-  height: 200px;
+  height: 250px;
   img {
     object-fit: cover;
     width: 100%;
@@ -2008,4 +2009,13 @@ main section {
   @include media-breakpoint-up(lg) {
     padding: (map-get($spacers, 1) * 16) 0;
   }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }

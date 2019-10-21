@@ -198,7 +198,7 @@
                         {row}
                             {col cols=4}
                                 {if $nAktuelleSeite <= $nAnzahlSeiten && $nAktuelleSeite != 1}
-                                    {button class="float-left" name="back" type="submit" value="back" formnovalidate=true}
+                                    {button variant="outline-primary" class="float-left" name="back" type="submit" value="back" formnovalidate=true}
                                         <span>&laquo; {lang key='umfrageBack' section='umfrage'}</span>
                                     {/button}
                                 {/if}
@@ -210,7 +210,7 @@
                             {/col}
                             {col cols=4}
                                 {if $nAktuelleSeite > 0 && $nAktuelleSeite < $nAnzahlSeiten}
-                                    {button type="submit" class="float-right" name="next" value="next"}
+                                    {button variant="outline-primary" type="submit" class="float-right" name="next" value="next"}
                                         <span>{lang key='umfrageNext' section='umfrage'}</span>
                                     {/button}
                                 {/if}

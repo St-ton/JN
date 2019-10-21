@@ -16,7 +16,7 @@
                     {input aria=["label"=>"{lang key='quickBuy'}"] type="text" placeholder="{lang key='productNoEAN'}"
                            name="ean" id="quick-purchase"}
                     {inputgroupaddon append=true}
-                        {button type="submit" title="{lang key='intoBasket'}"}
+                        {button type="submit" variant="secondary" title="{lang key='intoBasket'}"}
                             <span class="fas fa-shopping-cart"></span>
                         {/button}
                     {/inputgroupaddon}

@@ -25,7 +25,7 @@
                         {foreach $buttons as $button}
                             {link
                                 href="{get_static_route id=$button->href}"
-                                class="btn{if isset($button->primary) && $button->primary} btn-primary{else} btn-secondary{/if}"
+                                class="btn{if isset($button->primary) && $button->primary} btn-primary{else} btn-outline-primary{/if}"
                                 data=["dismiss"=>"{if isset($button->dismiss)}{$button->dismiss}{/if}"]
                                 aria=["label"=>"{if isset($button->dismiss)}Close{/if}"]
                             }

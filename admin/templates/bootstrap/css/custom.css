@@ -2675,4 +2675,10 @@ input[type=number] {
 .save-wrapper .row > div {
   margin-bottom: 8px;
 }
+.typeahead-spinner {
+  position: absolute;
+  right: 42px;
+  top: 12px;
+  display: none;
+}
 /*# sourceMappingURL=custom.css.map */

@@ -11,4 +11,5 @@ import './plugins/tabdrop.js'
 
 /* view specifics */
 
-import './views/header.js'
+import './views/header/header.js'
+import './views/productdetails.js'

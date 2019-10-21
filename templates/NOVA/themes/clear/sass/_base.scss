@@ -1,4 +1,7 @@
 // theme base
+:root {
+  --vh: 1vh;
+}
 
 html {
   scroll-behavior: smooth;
@@ -227,29 +230,6 @@ ul.partlist-items {
 
 #cfg-container .btn[data-toggle="collapse"][aria-expanded=false] .fa-minus:before {
   content: "\f067";
-}
-
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-  background-color: transparent;
-}
-/**  STYLE 11 */
-::-webkit-scrollbar-track {
-  border-radius: 0;
-  background: rgba(0,0,0,0.1);
-  border: 1px solid $gray-lighter;
-}
-
-::-webkit-scrollbar-thumb {
-  border-radius: 4px;
-  background: $gray-light;
-  border: 0;
-  &:hover,
-  &:active {
-    background: $gray-light;
-    border: 1px solid $gray-dark;
-  }
 }
 
 .badge-not-available{
@@ -1740,3 +1720,5 @@ body {
 .pswp__bg {
   background: $pswp__background-color;
 }
+
+.sticky-sidebar { position: sticky; top: rem(160px); z-index: $zindex-sticky -1; }

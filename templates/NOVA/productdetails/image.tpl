@@ -53,6 +53,11 @@
                 </div>
             {/block}
         {/block}
+
+        {block name='productdetails-image-include-product-images-modal'}
+            {include file='productdetails/product_images_modal.tpl' images=$Artikel->Bilder}
+        {/block}
+
         {block name='productdetails-image-preview'}
             {if $Artikel->Bilder|@count > 1}
                 <div class="product-thumbnails carousel carousel-thumbnails mb-5 mb-lg-0 d-none d-lg-flex mx-0" data-slick-group="productImages">

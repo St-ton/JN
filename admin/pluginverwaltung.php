@@ -22,6 +22,8 @@ use JTL\Plugin\Admin\Validation\LegacyPluginValidator;
 use JTL\Plugin\Admin\Validation\PluginValidator;
 use JTL\Plugin\Helper;
 use JTL\Plugin\InstallCode;
+use JTL\Plugin\LegacyPluginLoader;
+use JTL\Plugin\PluginLoader;
 use JTL\Plugin\State;
 use JTL\Shop;
 use JTL\XMLParser;
@@ -220,7 +222,10 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
             } elseif (isset($_POST['reload'])) { // Reload
                 $plugin = $db->select('tplugin', 'kPlugin', $pluginID);
                 if (isset($plugin->kPlugin) && $plugin->kPlugin > 0) {
-                    $res = $stateChanger->reload($plugin, true);
+                    $loader = (int)$plugin->bExtension === 1
+                        ? new PluginLoader($this->db, $this->cache)
+                        : new LegacyPluginLoader($this->db, $this->cache);
+                    $res    = $stateChanger->reload($loader->init((int)$plugin->kPlugin), true);
                     if ($res === InstallCode::OK || $res === InstallCode::OK_LEGACY) {
                         $notice = __('successPluginRefresh');
                         $reload = true;

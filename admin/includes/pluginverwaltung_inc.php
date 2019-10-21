@@ -96,7 +96,7 @@ function installierePluginVorbereitung($dir, $oldPlugin = 0)
 /**
  * Laedt das Plugin neu, d.h. liest die XML Struktur neu ein, fuehrt neue SQLs aus.
  *
- * @param \JTL\Plugin\LegacyPlugin $oPlugin
+ * @param \JTL\Plugin\LegacyPlugin $plugin
  * @param bool                     $forceReload
  * @return int
  * @throws Exception
@@ -104,7 +104,7 @@ function installierePluginVorbereitung($dir, $oldPlugin = 0)
  * 200 = kein Reload nötig, da info file älter als dZuletztAktualisiert
  * siehe return Codes von installierePluginVorbereitung()
  */
-function reloadPlugin($oPlugin, $forceReload = false)
+function reloadPlugin($plugin, bool $forceReload = false)
 {
     trigger_error(__FILE__ . ': calling ' . __FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $db           = Shop::Container()->getDB();
@@ -116,7 +116,7 @@ function reloadPlugin($oPlugin, $forceReload = false)
         new PluginValidator($db, $parser)
     );
 
-    return $stateChanger->reload($oPlugin, $forceReload);
+    return $stateChanger->reload($plugin, $forceReload);
 }
 
 /**

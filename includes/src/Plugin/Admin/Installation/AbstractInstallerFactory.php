@@ -74,9 +74,7 @@ abstract class AbstractInstallerFactory
         $items->push(new SettingsLinks());
         $items->push(new FrontendLinks());
         $items->push(new PaymentMethods());
-
         $items->push(new Boxes());//@todo: extension check
-
         $items->push(new Templates());
         $items->push(new MailTemplates());
         $items->push(new LanguageVariables());

@@ -61,16 +61,16 @@ class PluginLoader extends AbstractLoader
      */
     public function loadFromCache(): ?PluginInterface
     {
-        return ($extension = $this->cache->get($this->cacheID)) === false ? null : $extension;
+        return ($plugin = $this->cache->get($this->cacheID)) === false ? null : $plugin;
     }
 
     /**
      * @inheritdoc
      */
-    public function saveToCache(PluginInterface $extension): bool
+    public function saveToCache(PluginInterface $plugin): bool
     {
         return $this->cacheID !== null
-            ? $this->cache->set($this->cacheID, $extension, [\CACHING_GROUP_PLUGIN, $extension->getCache()->getGroup()])
+            ? $this->cache->set($this->cacheID, $plugin, [\CACHING_GROUP_PLUGIN, $plugin->getCache()->getGroup()])
             : false;
     }
 

@@ -7,7 +7,7 @@
 }
 
 .slick-loading .slick-list {
-  background: #fff url('../base/images/loader.gif') center center no-repeat;
+  background: #fff url($nova-theme-path + '/base/images/loader.gif') center center no-repeat;
 }
 
 .slick-prev,

@@ -1,6 +1,6 @@
 # JTL-Shop Changelog
 
-##[4.06.15]
+## [4.06.15]
 
 Dieses Update enthält Bugfixes und ein Sicherheitsupdate.
 

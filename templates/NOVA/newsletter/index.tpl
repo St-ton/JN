@@ -25,7 +25,9 @@
                                     {block name='newsletter-index-newsletter-subscribe-subheading'}
                                         <div class="h3">{lang key='newsletterSubscribe' section='newsletter'}</div>
                                     {/block}
+                                    {block name='newsletter-index-newsletter-subscribe-desc'}
                                         <p>{lang key='newsletterSubscribeDesc' section='newsletter'}</p>
+                                    {/block}
                                     {form method="post" action="{get_static_route id='newsletter.php'}" role="form" class="evo-validate label-slide"}
                                     {block name='newsletter-index-newsletter-subscribe-form-content'}
                                         <fieldset>
@@ -89,7 +91,9 @@
                                 {block name='newsletter-index-newsletter-unsubscribe-subheading'}
                                     <div class="h3">{lang key='newsletterUnsubscribe' section='newsletter'}</div>
                                 {/block}
+                                {block name='newsletter-index-newsletter-unsubscribe-desc'}
                                     <p>{lang key='newsletterUnsubscribeDesc' section='newsletter'}</p>
+                                {/block}
                                 {form method="post" action="{get_static_route id='newsletter.php'}" name="newsletterabmelden" class="evo-validate label-slide"}
                                 {block name='newsletter-index-newsletter-unsubscribe-form-content'}
                                     <fieldset>
@@ -118,22 +122,26 @@
             {elseif $cOption === 'anzeigen'}
                 {if isset($oNewsletterHistory) && $oNewsletterHistory->kNewsletterHistory > 0}
                     {block name='newsletter-index-newsletter-history'}
-                        <div class="h3">{lang key='newsletterhistory' section='global'}</div>
-                        <div id="newsletterContent">
-                            <div class="newsletter">
-                                <p class="newsletterSubject">
-                                    <strong>{lang key='newsletterdraftsubject' section='newsletter'}:</strong> {$oNewsletterHistory->cBetreff}
-                                </p>
-                                <p class="newsletterReference">
-                                    {lang key='newsletterdraftdate' section='newsletter'}: {$oNewsletterHistory->Datum}
-                                </p>
-                            </div>
+                        {block name='newsletter-index-newsletter-history-heading'}
+                            <div class="h3">{lang key='newsletterhistory' section='global'}</div>
+                        {/block}
+                        {block name='newsletter-index-newsletter-history-content'}
+                            <div id="newsletterContent">
+                                <div class="newsletter">
+                                    <p class="newsletterSubject">
+                                        <strong>{lang key='newsletterdraftsubject' section='newsletter'}:</strong> {$oNewsletterHistory->cBetreff}
+                                    </p>
+                                    <p class="newsletterReference">
+                                        {lang key='newsletterdraftdate' section='newsletter'}: {$oNewsletterHistory->Datum}
+                                    </p>
+                                </div>
 
-                            <fieldset id="newsletterHtml">
-                                <legend>{lang key='newsletterHtml' section='newsletter'}</legend>
-                                {$oNewsletterHistory->cHTMLStatic|replace:'src="http://':'src="//'}
-                            </fieldset>
-                        </div>
+                                <fieldset id="newsletterHtml">
+                                    <legend>{lang key='newsletterHtml' section='newsletter'}</legend>
+                                    {$oNewsletterHistory->cHTMLStatic|replace:'src="http://':'src="//'}
+                                </fieldset>
+                            </div>
+                        {/block}
                     {/block}
                 {else}
                     {block name='newsletter-index-alert'}

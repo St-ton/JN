@@ -20,7 +20,9 @@
                         {include file='snippets/filter/price_slider.tpl' id='price-slider-box'}
                     {/block}
                 {/collapse}
-                <hr class="my-2">
+                {block name='boxes-box-filter-pricerange-hr'}
+                    <hr class="my-2">
+                {/block}
             </div>
         {/block}
     {/if}

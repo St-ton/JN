@@ -6,7 +6,9 @@
     {counter assign=imgcounter print=0}
     <div class="image-box">
         <div class="image-content">
-            {image alt=$alt fluid=true lazy=true src=$src data=["id" => $imgcounter]}
+            {block name='snippets-image-image'}
+                {image alt=$alt fluid=true lazy=true src=$src data=["id" => $imgcounter]}
+            {/block}
             {if !empty($src)}
                 <meta itemprop="image" content="{$src}">
             {/if}

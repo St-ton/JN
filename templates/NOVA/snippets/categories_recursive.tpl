@@ -49,35 +49,31 @@
                                     || ((isset($activeParent)
                                             && isset($activeParent->kKategorie))
                                         && $activeParent->kKategorie == $category->getID())}active{/if}">
-                                {*{navitem class="{if $hasItems}dropdown{/if} {if $category->kKategorie == $activeId
-                                        || ((isset($activeParent)
+                                    {block name='snippets-categories-recursive-categories-has-items-link'}
+                                        <a class="nav-link px-2 dropdown-toggle" target="_self" href="{$category->getURL()}" data-toggle="collapse"
+                                           data-target="#category_box_{$category->getID()}_{$i}"
+                                           aria-expanded="{if $category->getID() == $activeId
+                                           || ((isset($activeParent)
+                                           && isset($activeParent->kKategorie))
+                                           && $activeParent->kKategorie == $category->getID())}true{else}false{/if}">
+                                            {$category->getShortName()}
+                                        </a>
+                                    {/block}
+                                    {block name='snippets-categories-recursive-categories-has-items-nav'}
+                                        {nav vertical=true class="collapse {if $category->getID() == $activeId
+                                            || ((isset($activeParent)
                                             && isset($activeParent->kKategorie))
-                                        && $activeParent->kKategorie == $category->kKategorie)}active{/if}"
-                                    href="{$category->cURLFull}"
-                                    router-data=["toggle"=>"collapse","target"=>"#category_box_{$category->kKategorie}_{$i}"]
-                                }*}
-                                    <a class="nav-link px-2 dropdown-toggle" target="_self" href="{$category->getURL()}" data-toggle="collapse"
-                                       data-target="#category_box_{$category->getID()}_{$i}"
-                                       aria-expanded="{if $category->getID() == $activeId
-                                       || ((isset($activeParent)
-                                       && isset($activeParent->kKategorie))
-                                       && $activeParent->kKategorie == $category->getID())}true{else}false{/if}">
-                                        {$category->getShortName()}
-                                    </a>
-                                    {nav vertical=true class="collapse {if $category->getID() == $activeId
-                                        || ((isset($activeParent)
-                                        && isset($activeParent->kKategorie))
-                                        && $activeParent->kKategorie == $category->getID())}show{/if}" id="category_box_{$category->getID()}_{$i}"
-                                    }
-                                        {block name='snippets-categories-recursive-include-categories-recursive'}
-                                            {if $category->hasChildren()}
-                                                {include file='snippets/categories_recursive.tpl' i=$i+1 categories=$category->getChildren() limit=$limit activeId=$activeId activeParents=$activeParents}
-                                            {else}
-                                                {include file='snippets/categories_recursive.tpl' i=$i+1 categoryId=$category->getID() limit=$limit categories=null activeId=$activeId activeParents=$activeParents}
-                                            {/if}
-                                        {/block}
-                                    {/nav}
-                                {*{/navitem}*}
+                                            && $activeParent->kKategorie == $category->getID())}show{/if}" id="category_box_{$category->getID()}_{$i}"
+                                        }
+                                            {block name='snippets-categories-recursive-include-categories-recursive'}
+                                                {if $category->hasChildren()}
+                                                    {include file='snippets/categories_recursive.tpl' i=$i+1 categories=$category->getChildren() limit=$limit activeId=$activeId activeParents=$activeParents}
+                                                {else}
+                                                    {include file='snippets/categories_recursive.tpl' i=$i+1 categoryId=$category->getID() limit=$limit categories=null activeId=$activeId activeParents=$activeParents}
+                                                {/if}
+                                            {/block}
+                                        {/nav}
+                                    {/block}
                                 </li>
                             {/block}
                         {else}

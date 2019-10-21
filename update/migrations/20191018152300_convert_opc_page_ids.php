@@ -41,7 +41,7 @@ class Migration_20191018152300 extends Migration implements IMigration
                     $value = (int)$value;
                 } elseif ($key === 'attribs') {
                     $value = explode(',', $value);
-                    $value = array_map($value, 'intval');
+                    $value = array_map('intval', $value);
                 }
 
                 $idObj->{$key} = $value;

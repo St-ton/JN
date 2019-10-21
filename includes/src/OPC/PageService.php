@@ -262,8 +262,12 @@ class PageService
      */
     public function createCurrentPageId(int $langId = 0): string
     {
+        if ($langId === 0) {
+            $langId = \Shop::getLanguage();
+        }
+
         $params    = Shop::getParameters();
-        $pageIdObj = (object)['lang' => Shop::getLanguage()];
+        $pageIdObj = (object)['lang' => $langId];
 
         if ($params['kKategorie'] > 0) {
             $pageIdObj->type = 'category';

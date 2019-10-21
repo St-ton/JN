@@ -179,25 +179,6 @@ class LegacyPluginLoader extends AbstractLoader
     }
 
     /**
-     * @param int $id
-     * @return array
-     */
-    protected function loadHooks(int $id): array
-    {
-        $hooks = \array_map(function ($data) {
-            $hook = new Hook();
-            $hook->setPriority((int)$data->nPriority);
-            $hook->setFile($data->cDateiname);
-            $hook->setID((int)$data->nHook);
-            $hook->setPluginID((int)$data->kPlugin);
-
-            return $hook;
-        }, $this->db->selectAll('tpluginhook', 'kPlugin', $id));
-
-        return $hooks;
-    }
-
-    /**
      * @inheritdoc
      */
     protected function loadPaths(string $pluginDir): Paths

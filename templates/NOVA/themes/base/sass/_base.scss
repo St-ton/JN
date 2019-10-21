@@ -75,7 +75,7 @@ a { transition: color $transition-base-duration $transition-base-timing; }
 }
 
 .dropdown-menu {
-  background: #fff;
+  background: $white;
   z-index: $zindex-sticky + 1;
 }
 

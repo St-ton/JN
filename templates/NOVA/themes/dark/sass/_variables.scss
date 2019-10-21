@@ -1,25 +1,34 @@
 // colors
-$gray-lighter:                      #f5f7fa;
-$gray-light:                        #9b9b9b;
-$gray:                              #707070;
-$gray-dark:                         #525252;
-$gray-medium:                       #ebebeb;
-$gray-darker:                       #525252;
-$sand:                              #ebebeb;
-$cool-white:                        #f8f8f8;
+$gray-lighter:                      #525252;
+$gray-light:                        #707070;
+$gray:                              #ebebeb;
+$gray-dark:                         #9b9b9b;
+$gray-medium:                       #f5f7fa;
+$gray-darker:                       #9b9b9b;
+$sand:                              #525252;
+$cool-white:                        #212121;
 $primary:                           #0ef83c;
 $secondary:                         transparent;
+$secondary:                         transparent;
+$success:                           #088319;
 $success:                           #088319;
 $bg-success:                        #CDE1D6;
-$info:                              #525252;
+$bg-success:                        #CDE1D6;
+$info:                              #ebebeb;
+$info:                              #ebebeb;
+$bg-info:                           #F5F7FA;
 $bg-info:                           #F5F7FA;
 $warning:                           #F39932;
+$warning:                           #F39932;
+$bg-warning:                        #F9F2DC;
 $bg-warning:                        #F9F2DC;
 $danger:                            #B90000;
+$danger:                            #B90000;
+$bg-danger:                         #E8CCD2;
 $bg-danger:                         #E8CCD2;
 
-$white:                             #ffffff;
-$black:                             #000000;
+$white:                             #343434;
+$black:                             #fff;
 
 $dark:                              $gray-dark;
 $gray-100:                          $gray-lighter;
@@ -130,7 +139,7 @@ $transition-base			: all $transition-base-duration $transition-base-timing;
 
 $highlight-border-size:             .375rem;
 
-$body-bg: #343434;
+$body-bg: $white;
 $body-color:                        #eee;
 
 $text-muted:                        $gray;
@@ -153,15 +162,15 @@ $border-radius-sm:                  $border-radius;
 $border-width:                      1px;
 $border-color:                      $gray-medium;
 
-$card-bg:                           #fff;
+$card-bg:                           $white;
 
 $searchcloud-font-size-scaling:     30%;
 $navbar-light-color:                $gray-dark;
 
-$input-bg:                          #fff;
+$input-bg:                          $cool-white;
 $input-focus-box-shadow:            none;
-$list-group-bg:                     #fff;
-$list-group-disabled-bg:            #fff;
+$list-group-bg:                     $cool-white;
+$list-group-disabled-bg:            $cool-white;
 
 $progress-bar-color:                $gray;
 

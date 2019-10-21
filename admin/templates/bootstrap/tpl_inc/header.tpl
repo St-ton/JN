@@ -102,7 +102,7 @@
                             <div class="dropdown-menu dropdown-menu-right">
                                 {foreach $languages as $tag => $langName}
                                     {if $language !== $tag}
-                                        <a class="dropdown-item" onclick="return switchAdminLang('{$tag}')" href="#">
+                                        <a class="dropdown-item" onclick="switchAdminLang('{$tag}')" href="#">
                                             {$langName}
                                         </a>
                                     {/if}

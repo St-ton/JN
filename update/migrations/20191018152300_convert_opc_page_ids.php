@@ -39,6 +39,9 @@ class Migration_20191018152300 extends Migration implements IMigration
 
                 if ($key === 'lang' || $key === 'manufacturerFilter') {
                     $value = (int)$value;
+                } elseif ($key === 'attribs') {
+                    $value = explode(',', $value);
+                    $value = array_map($value, 'intval');
                 }
 
                 $idObj->{$key} = $value;

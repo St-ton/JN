@@ -430,7 +430,7 @@ class Helper
     /**
      * @param int             $id
      * @param LoaderInterface $loader
-     * @return mixed|null
+     * @return BootstrapperInterface|null
      */
     public static function bootstrap(int $id, LoaderInterface $loader)
     {

@@ -34,6 +34,16 @@
         var bootstrapButton = $.fn.button.noConflict();
         $.fn.bootstrapBtn = bootstrapButton;
         setJtlToken('{$smarty.session.jtl_token}');
+
+        function switchAdminLang(tag)
+        {
+            event.target.href = `{strip}
+                benutzerverwaltung.php
+                ?token={$smarty.session.jtl_token}
+                &action=quick_change_language
+                &language=` + tag + `
+                &referer=` + window.location.href{/strip};
+        }
     </script>
 
     <script type="text/javascript"
@@ -92,10 +102,7 @@
                             <div class="dropdown-menu dropdown-menu-right">
                                 {foreach $languages as $tag => $langName}
                                     {if $language !== $tag}
-                                        <a class="dropdown-item" href="{strip}benutzerverwaltung.php
-                                                ?token={$smarty.session.jtl_token}
-                                                &action=quick_change_language
-                                                &language={$tag}{/strip}">
+                                        <a class="dropdown-item" onclick="return switchAdminLang('{$tag}')" href="#">
                                             {$langName}
                                         </a>
                                     {/if}

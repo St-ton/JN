@@ -666,8 +666,9 @@ function benutzerverwaltungActionGroupDelete(array &$messages): string
 function benutzerverwaltungActionQuickChangeLanguage()
 {
     $language = Request::verifyGPDataString('language');
+    $referer  = Request::verifyGPDataString('referer');
     changeAdminUserLanguage($language);
-    header('Location: ' . $_SERVER['HTTP_REFERER']);
+    header('Location: ' . $referer);
 }
 
 /**

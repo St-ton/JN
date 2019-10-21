@@ -18,33 +18,37 @@
                 {block name='checkout-step5-confirmation-delivery-billing-address'}
                     {card no-body=true class="mb-3"}
                         {cardheader}
-                            {row class='align-items-center'}
-                                {col}
-                                    <span class="h3 mb-0">{lang section="account data" key='billingAndDeliveryAddress'}</span>
-                                {/col}
-                                {col class='col-auto'}
-                                    {link class="text-decoration-none" href="{get_static_route id='bestellvorgang.php'}?editRechnungsadresse=1"}
-                                        <span class="mr-1 d-none text-decoration-underline d-md-inline-block">{lang key='change'}</span>
-                                        <span class="fa fa-pencil-alt"></span>
-                                    {/link}
-                                {/col}
-                            {/row}
+                            {block name='checkout-step5-confirmation-delivery-billing-address-header'}
+                                {row class='align-items-center'}
+                                    {col}
+                                        <span class="h3 mb-0">{lang section="account data" key='billingAndDeliveryAddress'}</span>
+                                    {/col}
+                                    {col class='col-auto'}
+                                        {link class="text-decoration-none" href="{get_static_route id='bestellvorgang.php'}?editRechnungsadresse=1"}
+                                            <span class="mr-1 d-none text-decoration-underline d-md-inline-block">{lang key='change'}</span>
+                                            <span class="fa fa-pencil-alt"></span>
+                                        {/link}
+                                    {/col}
+                                {/row}
+                            {/block}
                         {/cardheader}
                         {cardbody}
-                            {row}
-                                {col cols=12 md=6}
-                                    {block name='checkout-step5-confirmation-include-inc-billing-address'}
-                                        <p><strong class="title">{lang key='billingAdress' section='account data'}</strong></p>
-                                        <p>{include file='checkout/inc_billing_address.tpl'}</p>
-                                    {/block}
-                                {/col}
-                                {col cols=12 md=6}
-                                    {block name='checkout-step5-confirmation-include-inc-delivery-address'}
-                                        <p><strong class="title">{lang key='shippingAdress' section='account data'}</strong></p>
-                                        <p>{include file='checkout/inc_delivery_address.tpl'}</p>
-                                    {/block}
-                                {/col}
-                            {/row}
+                            {block name='checkout-step5-confirmation-delivery-billing-address-body'}
+                                {row}
+                                    {col cols=12 md=6}
+                                        {block name='checkout-step5-confirmation-include-inc-billing-address'}
+                                            <p><strong class="title">{lang key='billingAdress' section='account data'}</strong></p>
+                                            <p>{include file='checkout/inc_billing_address.tpl'}</p>
+                                        {/block}
+                                    {/col}
+                                    {col cols=12 md=6}
+                                        {block name='checkout-step5-confirmation-include-inc-delivery-address'}
+                                            <p><strong class="title">{lang key='shippingAdress' section='account data'}</strong></p>
+                                            <p>{include file='checkout/inc_delivery_address.tpl'}</p>
+                                        {/block}
+                                    {/col}
+                                {/row}
+                            {/block}
                         {/cardbody}
                     {/card}
                 {/block}
@@ -53,43 +57,47 @@
                 {block name='checkout-step5-confirmation-shipping-billing-method'}
                     {card no-body=true class="mb-3"}
                         {cardheader}
-                            {row class='align-items-center'}
-                                {col}
-                                    <span class="h3 mb-0">{lang section="account data" key='shippingAndPaymentOptions'}</span>
-                                {/col}
-                                {col class='col-auto'}
-                                    {link class="text-decoration-none" href="{get_static_route id='bestellvorgang.php'}?editVersandart=1"}
-                                        <span class="mr-1 d-none text-decoration-underline d-md-inline-block">{lang key='change'}</span>
-                                        <span class="fa fa-pencil-alt"></span>
-                                    {/link}
-                                {/col}
-                            {/row}
+                            {block name='checkout-step5-confirmation-shipping-billing-method-header'}
+                                {row class='align-items-center'}
+                                    {col}
+                                        <span class="h3 mb-0">{lang section="account data" key='shippingAndPaymentOptions'}</span>
+                                    {/col}
+                                    {col class='col-auto'}
+                                        {link class="text-decoration-none" href="{get_static_route id='bestellvorgang.php'}?editVersandart=1"}
+                                            <span class="mr-1 d-none text-decoration-underline d-md-inline-block">{lang key='change'}</span>
+                                            <span class="fa fa-pencil-alt"></span>
+                                        {/link}
+                                    {/col}
+                                {/row}
+                            {/block}
                         {/cardheader}
                         {cardbody}
-                            {row}
-                                {col cols=12 md=6}
-                                    {block name='checkout-step5-confirmation-shipping-method'}
-                                        <p><strong class="title">{lang key='shippingOptions'}</strong></p>
-                                        <p>{$smarty.session.Versandart->angezeigterName|trans}</p>
+                            {block name='checkout-step5-confirmation-shipping-billing-method-body'}
+                                {row}
+                                    {col cols=12 md=6}
+                                        {block name='checkout-step5-confirmation-shipping-method'}
+                                            <p><strong class="title">{lang key='shippingOptions'}</strong></p>
+                                            <p>{$smarty.session.Versandart->angezeigterName|trans}</p>
 
-                                        {$cEstimatedDelivery = $smarty.session.Warenkorb->getEstimatedDeliveryTime()}
-                                        {if $cEstimatedDelivery|@count_characters > 0}
-                                            <p class="small text-muted">
-                                                <strong>{lang key='shippingTime'}</strong>: {$cEstimatedDelivery}
-                                            </p>
-                                        {/if}
-                                    {/block}
-                                {/col}
-                                {col cols=12 md=6}
-                                    {block name='checkout-step5-confirmation-payment-method'}
-                                        <p><strong class="title">{lang key='paymentOptions'}</strong></p>
-                                        <p>{$smarty.session.Zahlungsart->angezeigterName|trans}</p>
-                                        {if isset($smarty.session.Zahlungsart->cHinweisText) && !empty($smarty.session.Zahlungsart->cHinweisText)}{* this should be localized *}
-                                            <p class="small text-muted">{$smarty.session.Zahlungsart->cHinweisText}</p>
-                                        {/if}
-                                    {/block}
-                                {/col}
-                            {/row}
+                                            {$cEstimatedDelivery = $smarty.session.Warenkorb->getEstimatedDeliveryTime()}
+                                            {if $cEstimatedDelivery|@count_characters > 0}
+                                                <p class="small text-muted">
+                                                    <strong>{lang key='shippingTime'}</strong>: {$cEstimatedDelivery}
+                                                </p>
+                                            {/if}
+                                        {/block}
+                                    {/col}
+                                    {col cols=12 md=6}
+                                        {block name='checkout-step5-confirmation-payment-method'}
+                                            <p><strong class="title">{lang key='paymentOptions'}</strong></p>
+                                            <p>{$smarty.session.Zahlungsart->angezeigterName|trans}</p>
+                                            {if isset($smarty.session.Zahlungsart->cHinweisText) && !empty($smarty.session.Zahlungsart->cHinweisText)}{* this should be localized *}
+                                                <p class="small text-muted">{$smarty.session.Zahlungsart->cHinweisText}</p>
+                                            {/if}
+                                        {/block}
+                                    {/col}
+                                {/row}
+                            {/block}
                         {/cardbody}
                     {/card}
                 {/block}
@@ -99,7 +107,9 @@
                 {block name='checkout-step5-confirmation-comment'}
                     {card no-body=true id="panel-edit-comment" class="mb-3"}
                         {cardheader}
-                            <span class="h3 mb-0">{lang key='comment' section='product rating'}</span>
+                            {block name='checkout-step5-confirmation-comment-header'}
+                                <span class="h3 mb-0">{lang key='comment' section='product rating'}</span>
+                            {/block}
                         {/cardheader}
                         {cardbody class="border-1"}
                             {block name='checkout-step5-confirmation-comment-body'}
@@ -125,7 +135,9 @@
                     {block name='checkout-step5-confirmation-coupon'}
                         {card no-body=true id="panel-edit-coupon" class="mb-3"}
                             {cardheader}
-                                <span class="h3 mb-0">{lang key='coupon' section='account data'}</span>
+                                {block name='checkout-step5-confirmation-coupon-header'}
+                                    <span class="h3 mb-0">{lang key='coupon' section='account data'}</span>
+                                {/block}
                             {/cardheader}
                             {cardbody}
                                 {block name='checkout-step5-confirmation-include-coupon-form'}
@@ -142,12 +154,14 @@
                     {col cols=12}
                         {card id="panel-edit-credit" no-body=true class="mb-3"}
                             {cardheader}
-                                <span class="h3 mb-0">{lang key='credit' section='account data'}</span>
+                                {block name='checkout-step5-confirmation-credit-header'}
+                                    <span class="h3 mb-0">{lang key='credit' section='account data'}</span>
+                                {/block}
                             {/cardheader}
                             {cardbody}
-                            {block name='checkout-step5-confirmation-include-credit-form'}
-                                {include file='checkout/credit_form.tpl'}
-                            {/block}
+                                {block name='checkout-step5-confirmation-include-credit-form'}
+                                    {include file='checkout/credit_form.tpl'}
+                                {/block}
                             {/cardbody}
                         {/card}
                     {/col}
@@ -232,31 +246,37 @@
                                 <div id="panel-submit-order">
                                     {input type="hidden" name="abschluss" value="1"}
                                     {input type="hidden" id="comment-hidden" name="kommentar" value=""}
-                                    {block name='checkout-step5-confirmation-include-inc-order-items'}
+                                    {block name='checkout-step5-confirmation-order-items'}
                                         {card no-body=true class='card-gray card-products'}
                                             {cardheader class='p-0 text-right'}
-                                                {link class="btn btn-sm btn-link" href="{get_static_route id='warenkorb.php'}"}
-                                                    <span class="text-decoration-underline mr-2">{lang key='change'}</span>
-                                                    <span class="fa fa-pencil-alt"></span>
-                                                {/link}
+                                                {block name='checkout-step5-confirmation-order-items-header'}
+                                                    {link class="btn btn-sm btn-link" href="{get_static_route id='warenkorb.php'}"}
+                                                        <span class="text-decoration-underline mr-2">{lang key='change'}</span>
+                                                        <span class="fa fa-pencil-alt"></span>
+                                                    {/link}
+                                                {/block}
                                             {/cardheader}
                                             {cardbody class='pt-5'}
-                                                {include file='checkout/inc_order_items.tpl' tplscope='confirmation'}
+                                                {block name='checkout-step5-confirmation-include-inc-order-items'}
+                                                    {include file='checkout/inc_order_items.tpl' tplscope='confirmation'}
+                                                {/block}
                                             {/cardbody}
                                         {/card}
                                     {/block}
-                                    {row class='mt-5'}
-                                        {col cols=12 md=6 lg=4 class='ml-auto order-1 order-md-2'}
-                                            {button type="submit" variant="primary" id="complete-order-button" block=true class="submit_once mb-3"}
-                                                {lang key='orderLiableToPay' section='checkout'}
-                                            {/button}
-                                        {/col}
-                                        {col cols=12 md=6 lg=3 class='order-2 order-md-1'}
-                                            {link href="{get_static_route id='warenkorb.php'}" class="btn btn-outline-primary btn-block"}
-                                                {lang key='modifyBasket' section='checkout'}
-                                            {/link}
-                                        {/col}
-                                    {/row}
+                                    {block name='checkout-step5-confirmation-order-items-actions'}
+                                        {row class='mt-5'}
+                                            {col cols=12 md=6 lg=4 class='ml-auto order-1 order-md-2'}
+                                                {button type="submit" variant="primary" id="complete-order-button" block=true class="submit_once mb-3"}
+                                                    {lang key='orderLiableToPay' section='checkout'}
+                                                {/button}
+                                            {/col}
+                                            {col cols=12 md=6 lg=3 class='order-2 order-md-1'}
+                                                {link href="{get_static_route id='warenkorb.php'}" class="btn btn-outline-primary btn-block"}
+                                                    {lang key='modifyBasket' section='checkout'}
+                                                {/link}
+                                            {/col}
+                                        {/row}
+                                    {/block}
                                 </div>
                             </div>
                             {/block}

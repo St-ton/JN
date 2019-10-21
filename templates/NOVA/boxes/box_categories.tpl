@@ -3,8 +3,7 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='boxes-box-categories'}
-    {card class="box box-categories word-break mb-md-4"
-        id="sidebox_categories{$oBox->getCustomID()}"}
+    {card class="box box-categories word-break mb-md-4" id="sidebox_categories{$oBox->getCustomID()}"}
         {block name='boxes-box-categories-content'}
             {block name='boxes-box-categories-toggle-title'}
                 {link id="crd-hdr-{$oBox->getID()}"

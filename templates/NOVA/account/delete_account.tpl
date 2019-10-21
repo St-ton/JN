@@ -12,7 +12,7 @@
     {block name='account-delete-account-form'}
         {form id="delete_account" action="{get_static_route id='jtl.php'}" method="post"}
             {block name='account-delete-account-form-submit'}
-            {input type="hidden" name="del_acc" value="1"}
+                {input type="hidden" name="del_acc" value="1"}
                 {row}
                     {col class='ml-auto col-md-auto'}
                         {button type="submit" value="1" block=true variant="danger"}

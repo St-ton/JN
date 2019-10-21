@@ -21724,6 +21724,10 @@ aside .last-seen-link {
   color: #ffffff;
 }
 
+.btn-white {
+  background-color: #ffffff;
+}
+
 .card-gray {
   background: #f5f7fa;
   border: 0;
@@ -22334,10 +22338,10 @@ input[type=radio]:checked + label, input[type=checkbox]:checked + label {
     transition: all 0.2s ease-in-out;
   }
   .productbox.productbox-hover:hover {
-    z-index: 2;
+    z-index: 1001;
   }
   .productbox.productbox-hover:hover .productbox-inner::before {
-    box-shadow: 0 0 0.3125rem rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 1.5rem rgba(0, 0, 0, 0.2);
     left: -1rem;
     right: -1rem;
     top: -1rem;
@@ -22359,6 +22363,9 @@ input[type=radio]:checked + label, input[type=checkbox]:checked + label {
     left: 0;
     top: 0;
     right: 0;
+  }
+  .productbox.productbox-hover.productbox-column:not(:hover) .productbox-onhover {
+    display: none;
   }
 }
 .productbox:not(.productbox-show-variations) .productbox-variations {

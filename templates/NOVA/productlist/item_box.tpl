@@ -79,7 +79,13 @@
                 {col cols=12}
                     {block name='productlist-item-box-caption'}
                         <div class="caption mt-2 text-left">
-                            <div class="productbox-title" itemprop="name">{link href=$Artikel->cURLFull class="text-truncate-fade"}{$Artikel->cKurzbezeichnung}{/link}</div>
+                            {block name='productlist-item-box-caption-short-desc'}
+                                <div class="productbox-title" itemprop="name">
+                                    {link href=$Artikel->cURLFull class="text-truncate-fade"}
+                                        {$Artikel->cKurzbezeichnung}
+                                    {/link}
+                                </div>
+                            {/block}
                             {if $Artikel->cName !== $Artikel->cKurzbezeichnung}<meta itemprop="alternateName" content="{$Artikel->cName}">{/if}
                             <meta itemprop="url" content="{$Artikel->cURLFull}">
                             {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->fDurchschnittsBewertung > 0}

@@ -4,9 +4,9 @@
 		&.productbox-hover {
 			.productbox-inner::before { content: ''; background-color: $card-bg; position: absolute; left: 0; top: 0; right: 0; bottom: 0; transition: $transition-base; }
 
-			&:hover { z-index: 2;
+			&:hover { z-index: 1001;
 				.productbox-inner {
-					&::before { box-shadow: 0 0 rem(5px) transparentize($black, .8); left: -$spacer; right: -$spacer; top: -$spacer; bottom: -$spacer; }
+					&::before { box-shadow: 0 0 rem(24px) transparentize($black, .8); left: -$spacer; right: -$spacer; top: -$spacer; bottom: -$spacer; }
 				}
 				.productbox-ribbon.ribbon { top: -(map-get($spacers, 2)); left: -(map-get($spacers, 4)); }
 			}
@@ -17,6 +17,7 @@
 				&:hover {
 					.productbox-inner { position: absolute; left: 0; top: 0; right: 0; }
 				}
+				&:not(:hover) .productbox-onhover { display: none; }
 			}
 		}
 	}

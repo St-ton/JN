@@ -62,9 +62,9 @@ class Migration_20191018152300 extends Migration implements IMigration
         $pages = $this->fetchAll('SELECT * FROM topcpage');
 
         foreach ($pages as $page) {
-            $json      = \json_decode($page->cPageId, true);
-            $type      = $json['type'];
-            $id        = $json['id'];
+            $json = \json_decode($page->cPageId, true);
+            $type = $json['type'];
+            $id   = $json['id'];
 
             if ($type === 'search') {
                 $oldPageId = $type . ':' . \base64_encode($id);
@@ -81,7 +81,6 @@ class Migration_20191018152300 extends Migration implements IMigration
             }
 
             $page->cPageId = $oldPageId;
-
             $this->execute("UPDATE topcpage SET cPageId = '{$page->cPageId}' WHERE kPage = {$page->kPage}");
         }
     }

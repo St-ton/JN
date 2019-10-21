@@ -4,11 +4,6 @@
  *}
 {block name='productdetails-image'}
     <div id="image_wrapper" class="text-right mb-6" role="group">
-        {block name='productdetails-image-button'}
-            <button id="image_fullscreen_close" type="button" class="btn btn-link float-right font-size-2.5x" aria-label="close">
-                <span aria-hidden="true"><i class="fa fa-times"></i></span>
-            </button>
-        {/block}
         {block name='productdetails-image-main'}
             {if !($Artikel->nIstVater && $Artikel->kVaterArtikel == 0)}
                 {block name='productdetails-image-actions'}

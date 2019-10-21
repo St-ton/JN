@@ -23085,24 +23085,6 @@ header, #main-wrapper {
   background: #fff;
 }
 
-#evo-nav-wrapper {
-  box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.06);
-}
-@media (min-width: 768px) {
-  #evo-nav-wrapper .sticky-top {
-    top: -30px;
-  }
-}
-
-@media (max-width: 767.98px) {
-  #shop-nav {
-    position: static;
-  }
-}
-#shop-nav .nav-item:hover {
-  cursor: pointer;
-}
-
 .tt-dropdown-menu, .tt-menu {
   position: absolute;
   top: 100%;
@@ -23320,10 +23302,6 @@ ul.partlist-items {
 #gallery .slick-prev,
 #gallery .slick-next {
   width: auto;
-}
-
-#image_fullscreen_close {
-  display: none;
 }
 
 #gallery img,

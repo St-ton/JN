@@ -12,15 +12,19 @@
             {row}
             {block name='productlist-result-options-filter-link'}
                 {col cols=12 md=4 class="filter-collapsible-control order-1 order-md-0 d-flex justify-content-between"}
-                    {button variant="outline-secondary"
-                        data=["toggle" => "collapse", "target" => "#filter-collapsible"]
-                        aria=["expanded" => "{if $Einstellungen.template.productlist.initial_display_filter === 'Y'}true{else}false{/if}",
-                            "controls" => "filter-collapsible"]
-                        role="button"
-                    }
-                        <span class="fas fa-filter{if $NaviFilter->getFilterCount() > 0} text-primary{/if}"></span> {lang key='filter'}
-                    {/button}
-                    {include file='productlist/layout_options.tpl'}
+                    {block name='productlist-result-options-filter-link-filter'}
+                        {button variant="outline-secondary"
+                            data=["toggle" => "collapse", "target" => "#filter-collapsible"]
+                            aria=["expanded" => "{if $Einstellungen.template.productlist.initial_display_filter === 'Y'}true{else}false{/if}",
+                                "controls" => "filter-collapsible"]
+                            role="button"
+                        }
+                            <span class="fas fa-filter{if $NaviFilter->getFilterCount() > 0} text-primary{/if}"></span> {lang key='filter'}
+                        {/button}
+                    {/block}
+                    {block name='productlist-result-options-filter-include-layout-options'}
+                        {include file='productlist/layout_options.tpl'}
+                    {/block}
                 {/col}
             {/block}
             {/row}
@@ -37,49 +41,33 @@
                                                 && $subFilter->getVisibility() !== \JTL\Filter\Visibility::SHOW_BOX
                                                 && $filter->getOptions()|count > 0
                                             }
-                                                {button
-                                                    variant="link"
-                                                    class="text-decoration-none text-left"
-                                                    role="button"
-                                                    block=true
-                                                    data=["toggle"=> "collapse", "target"=>"#filter-collapse-{$subFilter->getFrontendName()|@seofy}"]
-                                                }
-                                                    {$subFilter->getFrontendName()}
-                                                    <span class="float-right mx-3 font-italic text-right text-truncate w-40 pr-1">
-                                                        {foreach $subFilter->getOptions() as $filterOption}
-                                                            {assign var=filterIsActive value=$filterOption->isActive() || $NaviFilter->getFilterValue($subFilter->getClassName()) === $filterOption->getValue()}
-                                                            {if $filterIsActive === true}{$filterOption->getName()}{if !$filterOption@last},{/if} {/if}
-                                                        {/foreach}
-                                                    </span>
-                                                {/button}
-                                                {collapse id="filter-collapse-{$subFilter->getFrontendName()|@seofy}" class="mb-2 col-12 col-md-4 max-h-150-scroll"}
-                                                    {include file='snippets/filter/genericFilterItem.tpl' itemClass='' displayAt='content' filter=$subFilter sub=true}
-                                                {/collapse}
+                                                {block name='productlist-result-options-filters-button'}
+                                                    {button
+                                                        variant="link"
+                                                        class="text-decoration-none text-left"
+                                                        role="button"
+                                                        block=true
+                                                        data=["toggle"=> "collapse", "target"=>"#filter-collapse-{$subFilter->getFrontendName()|@seofy}"]
+                                                    }
+                                                        {$subFilter->getFrontendName()}
+                                                        <span class="float-right mx-3 font-italic text-right text-truncate w-40 pr-1">
+                                                            {foreach $subFilter->getOptions() as $filterOption}
+                                                                {assign var=filterIsActive value=$filterOption->isActive() || $NaviFilter->getFilterValue($subFilter->getClassName()) === $filterOption->getValue()}
+                                                                {if $filterIsActive === true}{$filterOption->getName()}{if !$filterOption@last},{/if} {/if}
+                                                            {/foreach}
+                                                        </span>
+                                                    {/button}
+                                                {/block}
+                                                {block name='productlist-result-options-filters-collapse'}
+                                                    {collapse id="filter-collapse-{$subFilter->getFrontendName()|@seofy}" class="mb-2 col-12 col-md-4 max-h-150-scroll"}
+                                                        {include file='snippets/filter/genericFilterItem.tpl' itemClass='' displayAt='content' filter=$subFilter sub=true}
+                                                    {/collapse}
+                                                {/block}
                                             {/if}
                                         {/foreach}
                                     {else}
                                         {if $filter->getFrontendName() === "Preisspanne"}
-                                            {assign var=outerClass value='filter-type-'|cat:$filter->getNiceName()}
-                                            {assign var=innerClass value='dropdown-menu'}
-                                            {assign var=itemClass value=''}
-                                            {button
-                                                variant="link"
-                                                class="text-decoration-none text-left"
-                                                role="button"
-                                                block=true
-                                                data=["toggle"=> "collapse", "target"=>"#filter-collapse-{$filter->getFrontendName()|@seofy}"]
-                                            }
-                                                {$filter->getFrontendName()}
-                                            {/button}
-                                            {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}" class="mb-2 py-3 col-12 col-md-4 max-h-150-scroll" visible=$filter->isActive()}
-                                                {block name='boxes-box-filter-pricerange-include-price-slider'}
-                                                    {include file='snippets/filter/price_slider.tpl' id='price-slider-content'}
-                                                {/block}
-                                            {/collapse}
-                                        {else}
-                                            {if $filter->getInputType() === \JTL\Filter\InputType::SELECT
-                                                && $filter->getOptions()|count > 0
-                                            }
+                                            {block name='productlist-result-options-filters-price-range'}
                                                 {assign var=outerClass value='filter-type-'|cat:$filter->getNiceName()}
                                                 {assign var=innerClass value='dropdown-menu'}
                                                 {assign var=itemClass value=''}
@@ -91,27 +79,55 @@
                                                     data=["toggle"=> "collapse", "target"=>"#filter-collapse-{$filter->getFrontendName()|@seofy}"]
                                                 }
                                                     {$filter->getFrontendName()}
-                                                    <span class="float-right mx-3 font-italic text-right text-truncate w-40 pr-1">
-                                                        {foreach $filter->getOptions() as $filterOption}
-                                                            {*TODO: Preisfilter nicht als aktiv markiert*}
-                                                            {assign var=filterIsActive value=$filterOption->isActive() || $NaviFilter->getFilterValue($filter->getClassName()) === $filterOption->getValue()}
-                                                            {if $filterIsActive === true}{$filterOption->getName()}{if !$filterOption@last},{/if} {/if}
-                                                        {/foreach}
-                                                    </span>
                                                 {/button}
-                                                {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}" class="mb-2 col-12 col-md-4 max-h-150-scroll"}
-                                                    {include file='snippets/filter/genericFilterItem.tpl' displayAt='content' itemClass=$itemClass filter=$filter}
+                                                {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}" class="mb-2 py-3 col-12 col-md-4 max-h-150-scroll" visible=$filter->isActive()}
+                                                    {block name='boxes-box-filter-pricerange-include-price-slider'}
+                                                        {include file='snippets/filter/price_slider.tpl' id='price-slider-content'}
+                                                    {/block}
                                                 {/collapse}
+                                            {/block}
+                                        {else}
+                                            {if $filter->getInputType() === \JTL\Filter\InputType::SELECT
+                                                && $filter->getOptions()|count > 0
+                                            }
+                                                {block name='productlist-result-options-filters-select'}
+                                                    {assign var=outerClass value='filter-type-'|cat:$filter->getNiceName()}
+                                                    {assign var=innerClass value='dropdown-menu'}
+                                                    {assign var=itemClass value=''}
+                                                    {button
+                                                        variant="link"
+                                                        class="text-decoration-none text-left"
+                                                        role="button"
+                                                        block=true
+                                                        data=["toggle"=> "collapse", "target"=>"#filter-collapse-{$filter->getFrontendName()|@seofy}"]
+                                                    }
+                                                        {$filter->getFrontendName()}
+                                                        <span class="float-right mx-3 font-italic text-right text-truncate w-40 pr-1">
+                                                            {foreach $filter->getOptions() as $filterOption}
+                                                                {*TODO: Preisfilter nicht als aktiv markiert*}
+                                                                {assign var=filterIsActive value=$filterOption->isActive() || $NaviFilter->getFilterValue($filter->getClassName()) === $filterOption->getValue()}
+                                                                {if $filterIsActive === true}{$filterOption->getName()}{if !$filterOption@last},{/if} {/if}
+                                                            {/foreach}
+                                                        </span>
+                                                    {/button}
+                                                    {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}" class="mb-2 col-12 col-md-4 max-h-150-scroll"}
+                                                        {include file='snippets/filter/genericFilterItem.tpl' displayAt='content' itemClass=$itemClass filter=$filter}
+                                                    {/collapse}
+                                                {/block}
                                             {elseif $filter->getInputType() === \JTL\Filter\InputType::BUTTON}
-                                                {assign var=outerClass value='no-dropdown filter-type-'|cat:$filter->getNiceName()}
-                                                {assign var=innerClass value='no-dropdown'}
-                                                {assign var=itemClass value='btn btn-light'}
-                                                {include file='snippets/filter/genericFilterItem.tpl' class=$innerClass itemClass=$itemClass filter=$filter}
+                                                {block name='productlist-result-options-filters-button'}
+                                                    {assign var=outerClass value='no-dropdown filter-type-'|cat:$filter->getNiceName()}
+                                                    {assign var=innerClass value='no-dropdown'}
+                                                    {assign var=itemClass value='btn btn-light'}
+                                                    {include file='snippets/filter/genericFilterItem.tpl' class=$innerClass itemClass=$itemClass filter=$filter}
+                                                {/block}
                                             {else}
-                                                {assign var=outerClass value='no-dropdown filter-type-'|cat:$filter->getNiceName()}
-                                                {assign var=innerClass value='no-dropdown'}
-                                                {assign var=itemClass value=''}
-                                                {include file='snippets/filter/genericFilterItem.tpl' class=$innerClass itemClass=$itemClass filter=$filter}
+                                                {block name='productlist-result-options-filters-else'}
+                                                    {assign var=outerClass value='no-dropdown filter-type-'|cat:$filter->getNiceName()}
+                                                    {assign var=innerClass value='no-dropdown'}
+                                                    {assign var=itemClass value=''}
+                                                    {include file='snippets/filter/genericFilterItem.tpl' class=$innerClass itemClass=$itemClass filter=$filter}
+                                                {/block}
                                             {/if}
                                         {/if}
                                     {/if}

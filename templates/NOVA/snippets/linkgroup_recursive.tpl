@@ -27,7 +27,7 @@
                 {get_navigation linkgroupIdentifier=$linkgroupIdentifier assign='links'}
             {/if}
             {if !empty($links)}
-                {block name='snippets-linkgroup-recursive-lis'}
+                {block name='snippets-linkgroup-recursive-list'}
                     {foreach $links as $li}
                         {assign var=hasItems value=$li->getChildLinks()->count() > 0 && (($i+1) < $limit)}
                         {if isset($activeParents) && is_array($activeParents) && isset($activeParents[$i])}

@@ -13,7 +13,9 @@
         && isset($currentProduct->dZulaufDatum_de)
         && $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen !== 'N'}
         {assign var=cZulauf value=$currentProduct->fZulauf|cat:':::'|cat:$currentProduct->dZulaufDatum_de}
-        <span class="status status-1">{lang key='productInflowing' section='productDetails' printf=$cZulauf}</span>
+        {block name='snippets-stock-status-in-flowing'}
+            <span class="status status-1">{lang key='productInflowing' section='productDetails' printf=$cZulauf}</span>
+        {/block}
     {elseif $anzeige !== 'nichts'
         && $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen !== 'N'
         && $currentProduct->cLagerBeachten === 'Y'
@@ -24,16 +26,22 @@
             && $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'I'
             || $currentProduct->cLagerKleinerNull === 'Y'
             && $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U')}
-        <span class="status status-1">{lang key='supplierStockNotice' printf=$currentProduct->fLieferzeit}</span>
+        {block name='snippets-stock-status-supllier-stock-notice'}
+            <span class="status status-1">{lang key='supplierStockNotice' printf=$currentProduct->fLieferzeit}</span>
+        {/block}
     {elseif $anzeige === 'verfuegbarkeit'
         || $anzeige === 'genau'}
-        <span class="status status-{$currentProduct->Lageranzeige->nStatus}">
-            <span class="fas fa-truck mr-2"></span>{$currentProduct->Lageranzeige->cLagerhinweis[$anzeige]}
-        </span>
+        {block name='snippets-stock-status-exact'}
+            <span class="status status-{$currentProduct->Lageranzeige->nStatus}">
+                <span class="fas fa-truck mr-2"></span>{$currentProduct->Lageranzeige->cLagerhinweis[$anzeige]}
+            </span>
+        {/block}
     {elseif $anzeige === 'ampel'}
-        <span class="status status-{$currentProduct->Lageranzeige->nStatus}">
-            <span class="fas fa-truck mr-2"></span>{$currentProduct->Lageranzeige->AmpelText}
-        </span>
+        {block name='snippets-stock-status-traffic-light'}
+            <span class="status status-{$currentProduct->Lageranzeige->nStatus}">
+                <span class="fas fa-truck mr-2"></span>{$currentProduct->Lageranzeige->AmpelText}
+            </span>
+        {/block}
     {/if}
     {block name='snippets-stock-note-include-warehouse'}
         {include file='productdetails/warehouse.tpl' tplscope='detail'}

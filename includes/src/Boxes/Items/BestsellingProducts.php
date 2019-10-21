@@ -11,6 +11,7 @@ use JTL\DB\ReturnType;
 use JTL\Helpers\SearchSpecial;
 use JTL\Session\Frontend;
 use JTL\Shop;
+use function Functional\map;
 
 /**
  * Class BestsellingProducts
@@ -28,22 +29,20 @@ final class BestsellingProducts extends AbstractBox
         $this->setShow(false);
         $customerGroupID = Frontend::getCustomerGroup()->getID();
         if ($customerGroupID && Frontend::getCustomerGroup()->mayViewCategories()) {
-            $res            = [];
             $cached         = true;
             $cacheTags      = [\CACHING_GROUP_BOX, \CACHING_GROUP_ARTICLE];
             $stockFilterSQL = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $parentSQL      = ' AND tartikel.kVaterArtikel = 0';
-            $count          = (int)$this->config['boxen']['box_bestseller_anzahl_anzeige'];
             $cacheID        = 'bx_bstsl_' . $customerGroupID . '_' . \md5($parentSQL . $stockFilterSQL);
             if (($productIDs = Shop::Container()->getCache()->get($cacheID)) === false) {
                 $cached   = false;
-                $minCount = ((int)$this->config['global']['global_bestseller_minanzahl'] > 0)
+                $minCount = (int)$this->config['global']['global_bestseller_minanzahl'] > 0
                     ? (int)$this->config['global']['global_bestseller_minanzahl']
                     : 100;
-                $limit    = (int)$this->config['boxen']['box_bestseller_anzahl_basis'];
-                if ($limit < 1) {
-                    $limit = 10;
-                }
+                $limit    = (int)$this->config['boxen']['box_bestseller_anzahl_basis'] > 0
+                    ? (int)$this->config['boxen']['box_bestseller_anzahl_basis']
+                    : 10;
+
                 $productIDs = Shop::Container()->getDB()->query(
                     'SELECT tartikel.kArtikel
                         FROM tbestseller, tartikel
@@ -59,20 +58,13 @@ final class BestsellingProducts extends AbstractBox
                 );
                 Shop::Container()->getCache()->set($cacheID, $productIDs, $cacheTags);
             }
-            if (\count($productIDs) > 0) {
-                $rndkeys = \array_rand($productIDs, \min($count, \count($productIDs)));
-                if (\is_array($rndkeys)) {
-                    foreach ($rndkeys as $key) {
-                        if (isset($productIDs[$key]->kArtikel) && $productIDs[$key]->kArtikel > 0) {
-                            $res[] = (int)$productIDs[$key]->kArtikel;
-                        }
-                    }
-                } elseif (\is_int($rndkeys)) {
-                    if (isset($productIDs[$rndkeys]->kArtikel) && $productIDs[$rndkeys]->kArtikel > 0) {
-                        $res[] = (int)$productIDs[$rndkeys]->kArtikel;
-                    }
+            \shuffle($productIDs);
+            $res = map(
+                \array_slice($productIDs, 0, $this->config['boxen']['box_bestseller_anzahl_anzeige']),
+                function ($productID) {
+                    return (int)$productID->kArtikel;
                 }
-            }
+            );
 
             if (\count($res) > 0) {
                 $this->setShow(true);

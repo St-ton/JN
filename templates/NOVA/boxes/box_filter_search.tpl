@@ -19,7 +19,9 @@
                 {include file='snippets/filter/search.tpl'}
             {/block}
             {/collapse}
-            <hr class="my-2">
+            {block name='boxes-box-filter-search-hr'}
+                <hr class="my-2">
+            {/block}
         </div>
     {/if}
 {/block}

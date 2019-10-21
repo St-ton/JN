@@ -49,12 +49,12 @@ final class Installer
     /**
      * @var ValidatorInterface
      */
-    private $pluginValidator;
+    private $legacyValidator;
 
     /**
      * @var ValidatorInterface
      */
-    private $extensionValidator;
+    private $pluginValidator;
 
     /**
      * @var PluginInterface|null
@@ -74,10 +74,10 @@ final class Installer
         ValidatorInterface $validator,
         ValidatorInterface $modernValidator
     ) {
-        $this->db                 = $db;
-        $this->uninstaller        = $uninstaller;
-        $this->pluginValidator    = $validator;
-        $this->extensionValidator = $modernValidator;
+        $this->db              = $db;
+        $this->uninstaller     = $uninstaller;
+        $this->legacyValidator = $validator;
+        $this->pluginValidator = $modernValidator;
     }
 
     /**
@@ -121,11 +121,11 @@ final class Installer
         if (empty($this->dir)) {
             return InstallCode::WRONG_PARAM;
         }
-        $validator = $this->pluginValidator;
+        $validator = $this->legacyValidator;
         $baseDir   = \PFAD_ROOT . \PFAD_PLUGIN . \basename($this->dir);
         if (!\file_exists($baseDir . '/' . \PLUGIN_INFO_FILE)) {
             $baseDir   = \PFAD_ROOT . \PLUGIN_DIR . \basename($this->dir);
-            $validator = $this->extensionValidator;
+            $validator = $this->pluginValidator;
             if (!\file_exists($baseDir . '/' . \PLUGIN_INFO_FILE)) {
                 return InstallCode::INFO_XML_MISSING;
             }

@@ -104,14 +104,14 @@ final class Listing
                 return $e;
             }
         );
-        $pluginLoader    = new LegacyPluginLoader($this->db, $this->cache);
-        $extensionLoader = new PluginLoader($this->db, $this->cache);
+        $legacyLoader = new LegacyPluginLoader($this->db, $this->cache);
+        $pluginLoader = new PluginLoader($this->db, $this->cache);
         foreach ($pluginIDs as $pluginID) {
             if ($pluginID->bExtension === 1) {
-                $plugin = $extensionLoader->init($pluginID->kPlugin, true);
-            } else {
-                $pluginLoader->setPlugin(new LegacyPlugin());
                 $plugin = $pluginLoader->init($pluginID->kPlugin, true);
+            } else {
+                $legacyLoader->setPlugin(new LegacyPlugin());
+                $plugin = $legacyLoader->init($pluginID->kPlugin, true);
             }
             $plugin->getMeta()->setUpdateAvailable(
                 $plugin->getCurrentVersion()->greaterThan($plugin->getMeta()->getSemVer())

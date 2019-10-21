@@ -92,7 +92,7 @@
                                 sizes="auto"
                                 alt="{$newsItem->getTitle()|escape:'quotes'} - {$newsItem->getMetaTitle()|escape:'quotes'}"
                                 center=true
-                                class="mb-5"
+                                class="my-5"
                             }
                             <meta itemprop="image" content="{$imageBaseURL}{$newsItem->getPreviewImage()}">
                         {/block}

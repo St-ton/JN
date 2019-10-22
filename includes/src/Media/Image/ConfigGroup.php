@@ -72,7 +72,12 @@ class ConfigGroup extends AbstractImage
         if (isset($mixed->cBildpfad)) {
             return \pathinfo($mixed->cBildpfad)['filename'];
         }
-        $result = empty($mixed->cSeo) ? $mixed->cName : $mixed->cSeo;
+        $result = '';
+        if (isset($mixed->cName)) {
+            $result = $mixed->cName;
+        } elseif (\method_exists($mixed, 'getSprache')) {
+            $result = $mixed->getSprache()->getName();
+        }
 
         return empty($result) ? 'image' : Image::getCleanFilename($result);
     }

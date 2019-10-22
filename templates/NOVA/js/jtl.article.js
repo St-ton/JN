@@ -964,6 +964,9 @@
             }
         },
 
+        variationRefreshAll: function($wrapper) {
+        },
+
         getConfigGroupQuantity: function (groupId) {
             return $('.cfg-group[data-id="' + groupId + '"] .quantity');
         },

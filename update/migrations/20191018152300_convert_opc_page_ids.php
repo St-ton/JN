@@ -29,7 +29,7 @@ class Migration_20191018152300 extends Migration implements IMigration
             if ($idObj->type !== 'search' && $idObj->type !== 'other') {
                 $idObj->id = (int)$idObj->id;
             } elseif ($idObj->type === 'search') {
-                $idObj->id = \base64_decode($idObj->id);
+                $idObj->id = base64_decode($idObj->id);
             }
 
             for ($i = 1; $i < $numfields; $i++) {

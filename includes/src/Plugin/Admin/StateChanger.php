@@ -68,8 +68,6 @@ class StateChanger
     }
 
     /**
-     * Versucht ein ausgewähltes Plugin zu aktivieren
-     *
      * @param int $pluginID
      * @return int
      * @former aktivierePlugin()
@@ -91,7 +89,6 @@ class StateChanger
             $path   = \PFAD_ROOT . \PFAD_PLUGIN;
             $valid  = $this->legacyValidator->validateByPath($path . $pluginData->cVerzeichnis);
             $loader = new LegacyPluginLoader($this->db, $this->cache);
-            ;
         }
         if (!\in_array($valid, [InstallCode::OK, InstallCode::OK_LEGACY, InstallCode::DUPLICATE_PLUGIN_ID], true)) {
             return $valid;
@@ -114,8 +111,6 @@ class StateChanger
     }
 
     /**
-     * Versucht ein ausgewähltes Plugin zu deaktivieren
-     *
      * @param int $pluginID
      * @return int
      * @former deaktivierePlugin()
@@ -144,13 +139,9 @@ class StateChanger
 
 
     /**
-     * Laedt das Plugin neu, d.h. liest die XML Struktur neu ein, fuehrt neue SQLs aus.
-     *
      * @param PluginInterface $plugin
      * @param bool            $forceReload
      * @return int
-     * 200 = kein Reload nötig, da info file älter als dZuletztAktualisiert
-     * siehe return Codes von installierePluginVorbereitung()
      * @former reloadPlugin()
      * @throws \Exception
      */
@@ -171,6 +162,6 @@ class StateChanger
             return $installer->prepare();
         }
 
-        return 200; // kein Reload nötig, da info file älter als dZuletztAktualisiert
+        return 200;
     }
 }

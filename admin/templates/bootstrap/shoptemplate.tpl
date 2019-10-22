@@ -251,6 +251,7 @@
                     <th></th>
                     <th class="text-center">{__('status')}</th>
                     <th class="text-center">{__('version')}</th>
+                    <th class="text-center">{__('shopversion')}</th>
                     <th></th>
                 </tr>
                 </thead>
@@ -346,6 +347,9 @@
                         </td>
                         <td class="text-vcenter text-center">
                             {$oTemplate->cVersion}
+                        </td>
+                        <td class="text-vcenter text-center">
+                            {$oTemplate->cShopVersion}
                         </td>
                         <td class="text-vcenter text-center">
                             {if !empty($oTemplate->bHasError) && $oTemplate->bHasError === true}

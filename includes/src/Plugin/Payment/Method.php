@@ -679,7 +679,7 @@ class Method implements MethodInterface
         $paymentMethod = null;
         $pluginID      = PluginHelper::getIDByModuleID($moduleID);
 
-        if ($pluginID > 0) {
+        if ($pluginID > 0 && \SAFE_MODE === false) {
             $loader = PluginHelper::getLoaderByPluginID($pluginID);
             try {
                 $plugin = $loader->init($pluginID);

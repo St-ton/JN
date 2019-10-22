@@ -195,7 +195,7 @@
                                     {/block}
                                     {block name='productdetails-details-include-stock'}
                                         {col cols=12}
-                                            {row class="border-top border-bottom align-items-end no-gutters {if !isset($availability) && !isset($shippingTime)}py-3 mt-5 px-lg-3 mb-4{/if}"}
+                                            {row class="border-top border-bottom align-items-end no-gutters {if !isset($availability) && !isset($shippingTime)}py-3 mt-5 px-lg-3{/if}"}
                                                 {col}
                                                     {include file='productdetails/stock.tpl'}
                                                 {/col}
@@ -208,6 +208,9 @@
                                                     {/if}
                                                 {/col}
                                             {/row}
+                                            {block name='snippets-stock-note-include-warehouse'}
+                                                {include file='productdetails/warehouse.tpl'}
+                                            {/block}
                                         {/col}
                                     {/block}
                                 {/row}

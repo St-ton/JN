@@ -21,10 +21,19 @@ class Migration_20191009112100 extends Migration implements IMigration
     {
         $this->setLocalization('ger', 'global', 'selectChoose', 'Auswählen');
         $this->setLocalization('eng', 'global', 'selectChoose', 'Choose');
+        $this->setLocalization('ger', 'global', 'warehouseAvailability', 'Bestand pro Lager anzeigen');
+        $this->setLocalization('eng', 'global', 'warehouseAvailability', 'Show stock level per warehouse');
+        $this->setLocalization('ger', 'global', 'warehouse', 'Lager');
+        $this->setLocalization('eng', 'global', 'warehouse', 'Warehouse');
+        $this->setLocalization('ger', 'global', 'status', 'Status');
+        $this->setLocalization('eng', 'global', 'status', 'Status');
     }
 
     public function down()
     {
         $this->removeLocalization('selectChoose');
+        $this->removeLocalization('warehouseAvailability');
+        $this->removeLocalization('status');
+        $this->removeLocalization('warehouse');
     }
 }

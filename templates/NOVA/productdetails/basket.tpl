@@ -4,7 +4,7 @@
  *}
 {block name='productdetails-basket'}
     {if ($Artikel->inWarenkorbLegbar == 1 || $Artikel->nErscheinendesProdukt == 1) || $Artikel->Variationen}
-        <div id="add-to-cart" class="d-print-none product-buy{if $Artikel->nErscheinendesProdukt} coming_soon{/if}">
+        <div id="add-to-cart" class="mt-5 d-print-none product-buy{if $Artikel->nErscheinendesProdukt} coming_soon{/if}">
             {if $Artikel->nErscheinendesProdukt}
                 {block name='productdetails-basket-coming-soon'}
                     <div class="{if $Einstellungen.global.global_erscheinende_kaeuflich === 'Y'}alert alert-warning coming_soon{/if} text-center">

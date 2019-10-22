@@ -97,4 +97,9 @@ interface BootstrapperInterface
      * @return bool
      */
     public function prepareFrontend(LinkInterface $link, JTLSmarty $smarty): bool;
+
+    /**
+     * @return int
+     */
+    public function loaded(): int;
 }

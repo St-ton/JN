@@ -148,7 +148,7 @@ class Application extends BaseApplication
             if ($this->devMode) {
                 $cmds[] = new CreateCommand();
             }
-            if (\defined('PLUGIN_DEV_MODE') && \PLUGIN_DEV_MODE) {
+            if (\PLUGIN_DEV_MODE === true) {
                 $cmds[] = new CreateMigrationCommand();
                 $cmds[] = new CreateCommandCommand();
             }

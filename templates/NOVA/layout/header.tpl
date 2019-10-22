@@ -27,12 +27,6 @@
             {if $nSeitenTyp === $smarty.const.PAGE_ARTIKEL && !empty($Artikel->Bilder)}
                 <meta itemprop="image" content="{$Artikel->Bilder[0]->cURLGross}" />
                 <meta property="og:image" content="{$Artikel->Bilder[0]->cURLGross}">
-            {elseif $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE
-            && $oNavigationsinfo->getImageURL() !== 'gfx/keinBild.gif'
-            && $oNavigationsinfo->getImageURL() !== 'gfx/keinBild_kl.gif'
-            }
-                <meta itemprop="image" content="{$imageBaseURL}{$oNavigationsinfo->getImageURL()}" />
-                <meta property="og:image" content="{$imageBaseURL}{$oNavigationsinfo->getImageURL()}" />
             {elseif $nSeitenTyp === $smarty.const.PAGE_NEWSDETAIL && !empty($newsItem->getPreviewImage())}
                 <meta itemprop="image" content="{$imageBaseURL}{$newsItem->getPreviewImage()}" />
                 <meta property="og:image" content="{$imageBaseURL}{$newsItem->getPreviewImage()}" />

@@ -65,19 +65,19 @@ final class Installer
      * Installer constructor.
      * @param DbInterface        $db
      * @param Uninstaller        $uninstaller
-     * @param ValidatorInterface $validator
-     * @param ValidatorInterface $modernValidator
+     * @param ValidatorInterface $legacyValidator
+     * @param ValidatorInterface $pluginValidator
      */
     public function __construct(
         DbInterface $db,
         Uninstaller $uninstaller,
-        ValidatorInterface $validator,
-        ValidatorInterface $modernValidator
+        ValidatorInterface $legacyValidator,
+        ValidatorInterface $pluginValidator
     ) {
         $this->db              = $db;
         $this->uninstaller     = $uninstaller;
-        $this->legacyValidator = $validator;
-        $this->pluginValidator = $modernValidator;
+        $this->legacyValidator = $legacyValidator;
+        $this->pluginValidator = $pluginValidator;
     }
 
     /**

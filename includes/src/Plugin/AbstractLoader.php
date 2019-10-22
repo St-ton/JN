@@ -173,7 +173,7 @@ abstract class AbstractLoader implements LoaderInterface
      */
     protected function loadHooks(int $id): array
     {
-        $hooks = \array_map(function ($data) {
+        return \array_map(function ($data) {
             $hook = new Hook();
             $hook->setPriority((int)$data->nPriority);
             $hook->setFile($data->cDateiname);
@@ -182,8 +182,6 @@ abstract class AbstractLoader implements LoaderInterface
 
             return $hook;
         }, $this->db->selectAll('tpluginhook', 'kPlugin', $id));
-
-        return $hooks;
     }
 
     /**

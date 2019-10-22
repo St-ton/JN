@@ -58,7 +58,7 @@ abstract class AbstractInstallerFactory
     public function __construct(DbInterface $db, array $xml, $plugin)
     {
         $this->db       = $db;
-        $this->baseNode = $xml['jtlshopplugin'][0] ?? $xml['jtlshop3plugin'][0];
+        $this->baseNode = $xml['jtlshopplugin'][0] ?? $xml['jtlshop3plugin'][0] ?? null;
         $this->plugin   = $plugin;
     }
 
@@ -85,7 +85,6 @@ abstract class AbstractInstallerFactory
         $items->push(new Exports());
         $items->push(new CSS());
         $items->push(new JS());
-
         $items->each(function (ItemInterface $e) {
             $e->setDB($this->db);
             $e->setPlugin($this->plugin);

@@ -62,7 +62,7 @@ class Migration_20191018152300 extends Migration implements IMigration
         $pages = $this->fetchAll('SELECT * FROM topcpage');
 
         foreach ($pages as $page) {
-            $json = \json_decode($page->cPageId, true);
+            $json = json_decode($page->cPageId, true);
             $type = $json['type'];
             $id   = $json['id'];
 

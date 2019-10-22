@@ -334,9 +334,9 @@ class Template
         }
         if (!empty($xml->Parent)) {
             $parentConfig = $this->getData($xml->Parent, $isAdmin);
-            if ($parentConfig !== false && empty($template->cVersion)) {
-                $template->cVersion     = $parentConfig->cVersion;
-                $template->cShopVersion = $parentConfig->cShopVersion;
+            if ($parentConfig !== false) {
+                $template->cVersion     = !empty($template->cVersion) ? $template->cVersion : $parentConfig->cVersion;
+                $template->cShopVersion = !empty($template->cShopVersion) ? $template->cShopVersion : $parentConfig->cShopVersion;
             }
         } else {
             $template->checksums = $this->getChecksums((string)$dir);

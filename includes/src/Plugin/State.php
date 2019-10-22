@@ -14,6 +14,8 @@ use MyCLabs\Enum\Enum;
  */
 class State extends Enum
 {
+    public const NONE = 0;
+
     public const DISABLED = 1;
 
     public const ACTIVATED = 2;

@@ -77,7 +77,7 @@ class Meta
     private $semVer;
 
     /**
-     * @var bool
+     * @var bool|Version
      */
     private $updateAvailable = false;
 
@@ -302,14 +302,22 @@ class Meta
      */
     public function isUpdateAvailable(): bool
     {
-        return $this->updateAvailable;
+        return \is_bool($this->updateAvailable) ? $this->updateAvailable : $this->updateAvailable !== null;
     }
 
     /**
-     * @param bool $updateAvailable
+     * @param bool|Version $updateAvailable
      */
-    public function setUpdateAvailable(bool $updateAvailable): void
+    public function setUpdateAvailable($updateAvailable): void
     {
         $this->updateAvailable = $updateAvailable;
+    }
+
+    /**
+     * @param bool|Version $updateAvailable
+     */
+    public function getUpdateAvailable()
+    {
+        return $this->updateAvailable;
     }
 }

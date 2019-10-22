@@ -293,9 +293,14 @@
     {if !$bExclusive}
         {include file=$opcDir|cat:'tpl/startmenu.tpl'}
 
-        {if isset($bAdminWartungsmodus) && $bAdminWartungsmodus}
+        {if $bAdminWartungsmodus}
             {block name='layout-header-maintenance-alert'}
                 {alert show=true variant="warning" id="maintenance-mode" dismissible=true}{lang key='adminMaintenanceMode'}{/alert}
+            {/block}
+        {/if}
+        {if $smarty.const.SAFE_MODE === true}
+            {block name='layout-header-safemode-alert'}
+                {alert show=true variant="warning" id="safe-mode" dismissible=true}{lang key='safeModeActive'}{/alert}
             {/block}
         {/if}
 

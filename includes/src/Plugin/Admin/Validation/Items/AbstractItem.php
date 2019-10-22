@@ -60,7 +60,7 @@ class AbstractItem implements ValidationItemInterface
     public function __construct(array $baseNode, string $baseDir, string $version, string $pluginID)
     {
         $this->baseNode    = $baseNode;
-        $this->installNode = $baseNode['Install'][0];
+        $this->installNode = $baseNode['Install'][0] ?? null;
         $this->baseDir     = $baseDir;
         $this->dir         = $baseDir . \DIRECTORY_SEPARATOR . \PFAD_PLUGIN_VERSION . $version . \DIRECTORY_SEPARATOR;
         $this->version     = $version;

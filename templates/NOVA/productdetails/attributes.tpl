@@ -103,7 +103,8 @@
                 {/block}
             {/if}
 
-            {if $Einstellungen.artikeldetails.artikeldetails_attribute_anhaengen === 'Y' || (isset($Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ATTRIBUTEANHAENGEN]) && $Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ATTRIBUTEANHAENGEN] == 1)}
+            {if $Einstellungen.artikeldetails.artikeldetails_attribute_anhaengen === 'Y'
+            || $Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_ATTRIBUTEANHAENGEN]|default:0 == 1}
                 {block name='productdetails-attributes-shop-attributes'}
                     {foreach $Artikel->Attribute as $Attribut}
                         <tr class="attr-custom">

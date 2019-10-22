@@ -78,7 +78,7 @@ abstract class AbstractPlugin implements PluginInterface
     /**
      * @var bool
      */
-    protected $isExtension = false;
+    protected $isLegacy = false;
 
     /**
      * @var bool
@@ -278,9 +278,25 @@ abstract class AbstractPlugin implements PluginInterface
     /**
      * @inheritdoc
      */
+    public function isLegacy(): bool
+    {
+        return $this->isLegacy;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setIsLegacy(bool $isLegacy): void
+    {
+        $this->isLegacy = $isLegacy;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function isExtension(): bool
     {
-        return $this->isExtension;
+        return !$this->isLegacy;
     }
 
     /**
@@ -288,7 +304,7 @@ abstract class AbstractPlugin implements PluginInterface
      */
     public function setIsExtension(bool $isExtension): void
     {
-        $this->isExtension = $isExtension;
+        $this->isLegacy = !$isExtension;
     }
 
     /**

@@ -183,7 +183,7 @@ final class Images extends AbstractSync
                 continue;
             }
             $item->cBildPfad = $this->getNewFilename($item->kKonfiggruppe . '.' . $extension);
-            \copy($original, \PFAD_ROOT . \STORAGE_CONFIGGROUPS . $image->cPfad);
+            \copy($original, \PFAD_ROOT . \STORAGE_CONFIGGROUPS . $item->cBildPfad);
             if ($this->createThumbnail(
                 $original,
                 \PFAD_KONFIGURATOR_KLEIN . $item->cBildPfad,

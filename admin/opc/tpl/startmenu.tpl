@@ -19,8 +19,8 @@
                 {
                     id:      {$lang->id},
                     nameDE:  '{$lang->nameDE}',
-                    pageId:  '{$opcPageService->createCurrentPageId($lang->id)}}',
-                    pageUri: '{$opcPageService->getCurPageUri($lang->id)}}',
+                    pageId:  '{$opcPageService->createCurrentPageId($lang->id)}',
+                    pageUri: '{$opcPageService->getCurPageUri($lang->id)}',
                 },
             {/foreach}
         ];
@@ -238,7 +238,7 @@
             <nav id="opc-startmenu">
                 <form method="post" action="{$opcStartUrl}">
                     <input type="hidden" name="jtl_token" value="{$adminSessionToken}">
-                    <input type="hidden" name="pageId" value="{$curPageId}">
+                    <input type="hidden" name="pageId" value="{$curPageId|htmlentities}">
                     <input type="hidden" name="pageUrl" value="{$curPageUrl}">
                     <button type="submit" name="action" value="extend" class="opc-btn-primary">
                         <img src="{$ShopURL}/admin/opc/gfx/icon-opc.svg" alt="OPC Start Icon" id="opc-start-icon">
@@ -306,7 +306,7 @@
                 <div id="opc-sidebar-footer">
                     <form method="post" action="{$opcStartUrl}">
                         <input type="hidden" name="jtl_token" value="{$adminSessionToken}">
-                        <input type="hidden" name="pageId" value="{$curPageId}">
+                        <input type="hidden" name="pageId" value="{$curPageId|htmlentities}">
                         <input type="hidden" name="pageUrl" value="{$curPageUrl}">
                         <button type="submit" name="action" value="extend" class="opc-btn-primary opc-full-width">
                             {__('newDraft')}

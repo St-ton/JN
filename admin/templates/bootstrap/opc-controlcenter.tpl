@@ -54,7 +54,7 @@
                                                 <span class="icon-hover">
                                                     <span class="far fa-info"></span><span class="fas fa-info"></span>
                                                 </span>
-                                                {$page->cPageId}
+                                                {$page->cPageId|htmlentities}
                                             </a>
                                         </td>
                                         <td class="text-center">

@@ -1,5 +1,5 @@
 <div id="deaktiviert" class="tab-pane fade {if isset($cTab) && $cTab === 'deaktiviert'} active show{/if}">
-    {if $pluginsByState.status_1|@count > 0}
+    {if $pluginsDisabled->count() > 0}
         <form name="pluginverwaltung" method="post" action="pluginverwaltung.php">
             {$jtl_token}
             <input type="hidden" name="pluginverwaltung_uebersicht" value="1" />
@@ -23,8 +23,8 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {foreach $pluginsByState.status_1 as $plugin}
-                            <tr {if $plugin->getMeta()->isUpdateAvailable()}class="highlight"{/if}>
+                        {foreach $pluginsDisabled as $plugin}
+                            <tr {if $plugin->isUpdateAvailable()}class="highlight"{/if}>
                                 <td class="check">
                                     <div class="custom-control custom-checkbox">
                                         <input class="custom-control-input" type="checkbox" name="kPlugin[]" id="plugin-check-{$plugin->getID()}" value="{$plugin->getID()}" />
@@ -32,8 +32,8 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <label for="plugin-check-{$plugin->getID()}">{$plugin->getMeta()->getName()}</label>
-                                    {if $plugin->getMeta()->isUpdateAvailable() || (isset($plugin->cInfo) && $plugin->cInfo|strlen > 0)}
+                                    <label for="plugin-check-{$plugin->getID()}">{$plugin->getName()}</label>
+                                    {if $plugin->isUpdateAvailable()}
                                         <p>{__('pluginUpdateExists')}</p>
                                     {/if}
                                 </td>
@@ -57,11 +57,11 @@
                                         {/foreach}
                                     </span>
                                 </td>
-                                <td class="text-center plugin-version">{(string)$plugin->getMeta()->getSemVer()}{if $plugin->getMeta()->isUpdateAvailable()} <span class="label text-success update-info">{(string)$plugin->getCurrentVersion()}</span>{/if}</td>
-                                <td class="text-center plugin-install-date">{$plugin->getMeta()->getDateInstalled()->format('d.m.Y H:i')}</td>
-                                <td class="plugin-folder">{$plugin->getPaths()->getBaseDir()}</td>
+                                <td class="text-center plugin-version">{(string)$plugin->getVersion()}{if $plugin->isUpdateAvailable()} <span class="label text-success update-info">{(string)$plugin->getCurrentVersion()}</span>{/if}</td>
+                                <td class="text-center plugin-install-date">{$plugin->getDateInstalled()->format('d.m.Y H:i')}</td>
+                                <td class="plugin-folder">{$plugin->getPath()}</td>
                                 <td class="text-center plugin-lang-vars">
-                                    {if $plugin->getLocalization()->getTranslations()|@count > 0}
+                                    {if $plugin->getLangVarCount() > 0}
                                         <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}"
                                            class="btn btn-link"
                                            title="{__('modify')}"
@@ -74,7 +74,7 @@
                                     {/if}
                                 </td>
                                 <td class="text-center plugin-frontend-links">
-                                    {if $plugin->getLinks()->getLinks()->count() > 0}
+                                    {if $plugin->getLinkCount() > 0}
                                         <a href="links.php?kPlugin={$plugin->getID()}"
                                            class="btn btn-link"
                                            title="{__('modify')}"
@@ -87,7 +87,7 @@
                                     {/if}
                                 </td>
                                 <td class="text-center plugin-license">
-                                    {if $plugin->getLicense()->hasLicenseCheck()}
+                                    {if $plugin->hasLicenseCheck()}
                                         <button name="lizenzkey" type="submit" title="{__('modify')}"
                                                 class="btn btn-link" value="{$plugin->getID()}" data-toggle="tooltip">
                                             <span class="icon-hover">
@@ -98,7 +98,7 @@
                                     {/if}
                                 </td>
                                 <td class="text-center">
-                                    {if $plugin->getMeta()->isUpdateAvailable()}
+                                    {if $plugin->isUpdateAvailable()}
                                         <a onclick="ackCheck({$plugin->getID()}, 'deaktiviert'); return false;"
                                            class="btn btn-link"
                                            title="{__('pluginBtnUpdate')}"
@@ -124,9 +124,9 @@
                             </div>
                         </div>
                         <div class="ml-auto col-sm-6 col-xl-auto">
-                            <button name="deinstallieren" type="submit" class="btn btn-danger btn-block">
-                                <i class="fas fa-trash-alt"></i> {__('pluginBtnDeInstall')
-                                }</button>
+                            <button name="deinstallieren" type="submit" class="btn btn-danger btn-block uninstall-plugin-btn">
+                                <i class="fas fa-trash-alt"></i> {__('pluginBtnDeInstall')}
+                            </button>
                         </div>
                         <div class="col-sm-6 col-xl-auto">
                             <button name="aktivieren" type="submit" class="btn btn-primary btn-block">

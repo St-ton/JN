@@ -74,7 +74,7 @@ class Migration_20191018152300 extends Migration implements IMigration
 
             foreach ($json as $key => $val) {
                 if ($key === 'attribs') {
-                    $oldPageId .= ';' . $key . ':' . \implode(',', $val);
+                    $oldPageId .= ';' . $key . ':' . implode(',', $val);
                 } elseif ($key !== 'type' && $key !== 'id') {
                     $oldPageId .= ';' . $key . ':' . $val;
                 }

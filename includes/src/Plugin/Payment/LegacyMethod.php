@@ -30,10 +30,14 @@ use PaymentMethod;
  */
 class LegacyMethod
 {
-    /** @var Method */
+    /**
+     * @var Method
+     */
     private $methodInstance;
 
-    /** @var array */
+    /**
+     * @var array
+     */
     private $dynamics = [];
 
     /**
@@ -44,7 +48,7 @@ class LegacyMethod
     {
         $this->methodInstance = new Method($moduleID, $nAgainCheckout);
 
-        foreach (array_keys($this->dynamics) as $dynProperty) {
+        foreach (\array_keys($this->dynamics) as $dynProperty) {
             if (\property_exists($this->methodInstance, $dynProperty)) {
                 $this->methodInstance->$dynProperty = $this->dynamics[$dynProperty];
                 unset($this->dynamics[$dynProperty]);
@@ -360,35 +364,35 @@ class LegacyMethod
 
     /**
      *
-     * @param string $cKey
-     * @param mixed $cValue
+     * @param string $key
+     * @param mixed  $value
      * @return static
      */
-    public function addCache($cKey, $cValue)
+    public function addCache($key, $value)
     {
-        $this->methodInstance->addCache($cKey, json_encode($cValue));
+        $this->methodInstance->addCache($key, \json_encode($value));
 
         return $this;
     }
 
     /**
-     * @param string|null $cKey
+     * @param string|null $key
      * @return static
      */
-    public function unsetCache($cKey = null)
+    public function unsetCache($key = null)
     {
-        $this->methodInstance->unsetCache($cKey);
+        $this->methodInstance->unsetCache($key);
 
         return $this;
     }
 
     /**
-     * @param null|string $cKey
+     * @param null|string $key
      * @return mixed
      */
-    public function getCache($cKey = null)
+    public function getCache($key = null)
     {
-        return json_decode($this->methodInstance->getCache($cKey), false);
+        return \json_decode($this->methodInstance->getCache($key), false);
     }
 
     /**

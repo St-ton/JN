@@ -547,7 +547,7 @@
                                 {include file='snippets/form_group_simple.tpl'
                                     options=[
                                         'date', 'birthday', 'geburtstag',
-                                        {$inputVal_birthday|default:null}, {lang key='birthday' section='account data'},
+                                        {$inputVal_birthday|default:null|date_format:"%Y-%m-%d"}, {lang key='birthday' section='account data'},
                                         $Einstellungen.kunden.kundenregistrierung_abfragen_geburtstag, null, 'billing bday'
                                     ]
                                 }

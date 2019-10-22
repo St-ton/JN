@@ -1,0 +1,40 @@
+#footer {
+	background-color: $gray-lighter;
+	margin-top: auto;
+	padding: $spacer 0 0;
+	a {
+		text-decoration: none;
+	}
+	li {
+		margin-bottom: map-get($spacers, 2);
+	}
+	.footer-additional-wrapper {
+		li {
+			margin-right: map-get($spacers, 2);
+			margin-bottom: map-get($spacers, 2);
+		}
+	}
+	.card {
+		.card-title {
+			color: $gray-dark;
+		}
+		.card-body {
+			padding: 0;
+		}
+	}
+	.nav-link {
+		padding: $nav-link-padding-y*0.4 0;
+	}
+	#copyright {
+		background-color: $gray-dark;
+		color: $gray-lighter;
+	}
+	.footer-logo {
+		width: auto;
+		height: 18px;
+		vertical-align: bottom;
+	}
+	.list-group-item {
+		background: transparent;
+	}
+}

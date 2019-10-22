@@ -217,6 +217,13 @@
   }
 }
 
+.btn-scale-small .btn {
+  min-width: 25px;
+  width: 25px;
+  height: 25px;
+  font-size: 12px;
+}
+
 .btn-white {
   background-color: $white;
 }

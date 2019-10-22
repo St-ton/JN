@@ -3,10 +3,10 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='page-sitemap'}
-    {container}
-        {if $Einstellungen.sitemap.sitemap_seiten_anzeigen === 'Y'}
-            {block name='page-sitemap-pages'}
-                {opcMountPoint id='opc_before_pages'}
+    {if $Einstellungen.sitemap.sitemap_seiten_anzeigen === 'Y'}
+        {block name='page-sitemap-pages'}
+            {opcMountPoint id='opc_before_pages'}
+            {container}
                 {card header={lang key='sitemapSites'} class="mb-5"}
                     {block name='page-sitemap-pages-content'}
                         {row}
@@ -24,11 +24,13 @@
                         {/row}
                     {/block}
                 {/card}
-            {/block}
-        {/if}
-        {if $Einstellungen.sitemap.sitemap_kategorien_anzeigen === 'Y' && isset($oKategorieliste->elemente) && $oKategorieliste->elemente|@count > 0}
-            {block name='page-sitemap-categories'}
-                {opcMountPoint id='opc_before_categories'}
+            {/container}
+        {/block}
+    {/if}
+    {if $Einstellungen.sitemap.sitemap_kategorien_anzeigen === 'Y' && isset($oKategorieliste->elemente) && $oKategorieliste->elemente|@count > 0}
+        {block name='page-sitemap-categories'}
+            {opcMountPoint id='opc_before_categories'}
+            {container}
                 {card header={lang key='sitemapKats'} class="mb-5"}
                     {block name='page-sitemap-categories-content'}
                         {row}
@@ -83,11 +85,13 @@
                         {/row}
                     {/block}
                 {/card}
-            {/block}
-        {/if}
-        {if $Einstellungen.sitemap.sitemap_hersteller_anzeigen === 'Y' && $oHersteller_arr|@count > 0}
-            {block name='page-sitemap-manufacturer'}
-                {opcMountPoint id='opc_before_manufacturers'}
+            {/container}
+        {/block}
+    {/if}
+    {if $Einstellungen.sitemap.sitemap_hersteller_anzeigen === 'Y' && $oHersteller_arr|@count > 0}
+        {block name='page-sitemap-manufacturer'}
+            {opcMountPoint id='opc_before_manufacturers'}
+            {container}
                 {card header={lang key='sitemapNanufacturer'} class="mb-5"}
                     {block name='page-sitemap-manufacturer-content'}
                         {row}
@@ -99,11 +103,13 @@
                         {/row}
                     {/block}
                 {/card}
-            {/block}
-        {/if}
-        {if $Einstellungen.news.news_benutzen === 'Y' && $Einstellungen.sitemap.sitemap_news_anzeigen === 'Y' && !empty($oNewsMonatsUebersicht_arr) && $oNewsMonatsUebersicht_arr|@count > 0}
-            {block name='page-sitemap-news'}
-                {opcMountPoint id='opc_before_news'}
+            {/container}
+        {/block}
+    {/if}
+    {if $Einstellungen.news.news_benutzen === 'Y' && $Einstellungen.sitemap.sitemap_news_anzeigen === 'Y' && !empty($oNewsMonatsUebersicht_arr) && $oNewsMonatsUebersicht_arr|@count > 0}
+        {block name='page-sitemap-news'}
+            {opcMountPoint id='opc_before_news'}
+            {container}
                 {card header={lang key='sitemapNews'} class="mb-5"}
                     {block name='page-sitemap-news-content'}
                         {row}
@@ -123,15 +129,17 @@
                         {/row}
                     {/block}
                 {/card}
-            {/block}
-        {/if}
-        {if $Einstellungen.news.news_benutzen === 'Y'
-            && $Einstellungen.sitemap.sitemap_newskategorien_anzeigen === 'Y'
-            && !empty($oNewsKategorie_arr)
-            && $oNewsKategorie_arr|@count > 0
-        }
-            {block name='page-sitemap-news-categories'}
-                {opcMountPoint id='opc_before_news_categories'}
+            {/container}
+        {/block}
+    {/if}
+    {if $Einstellungen.news.news_benutzen === 'Y'
+        && $Einstellungen.sitemap.sitemap_newskategorien_anzeigen === 'Y'
+        && !empty($oNewsKategorie_arr)
+        && $oNewsKategorie_arr|@count > 0
+    }
+        {block name='page-sitemap-news-categories'}
+            {opcMountPoint id='opc_before_news_categories'}
+            {container}
                 {card header={lang key='sitemapNewsCats'} class="mb-5"}
                     {block name='page-sitemap-news-categories-content'}
                         {row}
@@ -152,7 +160,7 @@
                         {/row}
                     {/block}
                 {/card}
-            {/block}
-        {/if}
-    {/container}
+            {/container}
+        {/block}
+    {/if}
 {/block}

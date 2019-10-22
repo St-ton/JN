@@ -2123,9 +2123,10 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
             }
         }
     }
+    $enDate = \DateTime::createFromFormat('Y-m-d', $data['geburtstag']);
     if (isset($data['geburtstag'])
         && ($errCode = Text::checkDate(
-            $data['geburtstag'],
+            $enDate === false ? $data['geburtstag'] : $enDate->format('d.m.Y'),
             $conf['kunden']['kundenregistrierung_abfragen_geburtstag'] === 'Y'
         )) > 0
     ) {

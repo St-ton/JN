@@ -31,7 +31,7 @@
                             <div class="flt_right">
                                 <a class="news-more-link" href="{$oNews->cURLFull}">{lang key='moreLink' section='news'}</a>
                             </div>
-                            <div class="clearer"></div>
+                            <div class="clear-both"></div>
                         {elseif $oNews->cText|count_characters > 200}
                             {$oNews->cText|truncate:200}
                             <a class="news-more-link" href="{$oNews->cURLFull}">{lang key='moreLink' section='news'}</a>

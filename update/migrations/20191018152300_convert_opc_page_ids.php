@@ -81,7 +81,7 @@ class Migration_20191018152300 extends Migration implements IMigration
             }
 
             $page->cPageId = $oldPageId;
-            $this->execute("UPDATE topcpage SET cPageId = '{$page->cPageId}' WHERE kPage = {$page->kPage}");
+            $this->execute("UPDATE topcpage SET cPageId = '" . $page->cPageId . "' WHERE kPage = " . $page->kPage);
         }
     }
 }

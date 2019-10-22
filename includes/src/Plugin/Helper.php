@@ -113,6 +113,9 @@ class Helper
      */
     public static function getPluginById(string $pluginID): ?PluginInterface
     {
+        if (\SAFE_MODE === true) {
+            return null;
+        }
         $db      = Shop::Container()->getDB();
         $cache   = Shop::Container()->getCache();
         $langID  = Shop::getLanguageID();

@@ -20,13 +20,11 @@
         {/if}
 
         {block name='contact-index-include-extension'}
-            {container}
-                {include file='snippets/extension.tpl'}
-            {/container}
+            {include file='snippets/extension.tpl'}
         {/block}
         {if isset($step)}
-            {container}
-                {if $step === 'formular'}
+            {if $step === 'formular'}
+                {container}
                     {opcMountPoint id='opc_before_form'}
                     {if !empty($Spezialcontent->oben)}
                         {block name='contact-index-custom-content-top'}
@@ -277,8 +275,8 @@
                             </div>
                         {/block}
                     {/if}
-                {/if}
-            {/container}
+                {/container}
+            {/if}
         {/if}
     {/block}
 

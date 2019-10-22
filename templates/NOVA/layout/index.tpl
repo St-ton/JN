@@ -31,9 +31,7 @@
                 {/if}
             {/block}
             {block name='layout-index-include-extension'}
-                {container}
-                    {include file='snippets/extension.tpl'}
-                {/container}
+                {include file='snippets/extension.tpl'}
             {/block}
 
             {block name='layout-index-link-content'}

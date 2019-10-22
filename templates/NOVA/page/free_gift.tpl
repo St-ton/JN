@@ -3,8 +3,8 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='page-freegift'}
+    {opcMountPoint id='opc_before_free_gift'}
     {container}
-        {opcMountPoint id='opc_before_free_gift'}
         <p>{lang key='freeGiftFromOrderValue'}</p>
         {if !empty($oArtikelGeschenk_arr)}
             {opcMountPoint id='opc_before_free_gift_list'}

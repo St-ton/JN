@@ -8,17 +8,17 @@
     {/block}
 
     {block name='newsletter-index-content'}
-        {container}
-            {block name='newsletter-index-include-extension'}
-                {include file='snippets/extension.tpl'}
-            {/block}
-            {if !isset($cPost_arr)}
-                {assign var=cPost_arr value=array()}
-            {/if}
-            {if $cOption === 'eintragen'}
-                {if empty($bBereitsAbonnent)}
-                    {block name='newsletter-index-newsletter-subscribe-form'}
-                        {opcMountPoint id='opc_before_newsletter_subscribe'}
+        {block name='newsletter-index-include-extension'}
+            {include file='snippets/extension.tpl'}
+        {/block}
+        {if !isset($cPost_arr)}
+            {assign var=cPost_arr value=array()}
+        {/if}
+        {if $cOption === 'eintragen'}
+            {if empty($bBereitsAbonnent)}
+                {block name='newsletter-index-newsletter-subscribe-form'}
+                    {opcMountPoint id='opc_before_newsletter_subscribe'}
+                    {container}
                         {row}
                             {col cols=12 lg=8}
                                 <div id="newsletter-subscribe" class="mb-8">
@@ -80,11 +80,13 @@
                                 </div>
                             {/col}
                         {/row}
-                    {/block}
-                {/if}
+                    {/container}
+                {/block}
+            {/if}
 
-                {block name='newsletter-index-newsletter-unsubscribe-form'}
-                    {opcMountPoint id='opc_before_newsletter_unsubscribe'}
+            {block name='newsletter-index-newsletter-unsubscribe-form'}
+                {opcMountPoint id='opc_before_newsletter_unsubscribe'}
+                {container}
                     {row}
                         {col cols=12 lg=8}
                             <div id="newsletter-unsubscribe" class="mt-3">
@@ -118,8 +120,10 @@
                             </div>
                         {/col}
                     {/row}
-                {/block}
-            {elseif $cOption === 'anzeigen'}
+                {/container}
+            {/block}
+        {elseif $cOption === 'anzeigen'}
+            {container}
                 {if isset($oNewsletterHistory) && $oNewsletterHistory->kNewsletterHistory > 0}
                     {block name='newsletter-index-newsletter-history'}
                         {block name='newsletter-index-newsletter-history-heading'}
@@ -148,8 +152,8 @@
                         {alert variant="danger"}{lang key='noEntriesAvailable' section='global'}{/alert}
                     {/block}
                 {/if}
-            {/if}
-        {/container}
+            {/container}
+        {/if}
     {/block}
 
     {block name='newsletter-index-include-footer'}

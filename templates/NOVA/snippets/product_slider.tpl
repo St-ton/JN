@@ -42,15 +42,17 @@
                 <div class="mb-5{if isset($class) && $class|strlen > 0} {$class}{/if}"{if isset($id) && $id|strlen > 0} id="{$id}"{/if}>
                     {if !empty($title)}
                         {block name='snippets-product-slider-other-title'}
-                            <div class="hr-sect h2 mb-5">
-                                {if !empty($moreLink)}
-                                    {link class="text-decoration-none" href=$moreLink title=$moreTitle data-toggle="tooltip" data=["placement"=>"auto right"] aria=["label"=>$moreTitle]}
+                            {container}
+                                <div class="hr-sect h2 mb-5">
+                                    {if !empty($moreLink)}
+                                        {link class="text-decoration-none" href=$moreLink title=$moreTitle data-toggle="tooltip" data=["placement"=>"auto right"] aria=["label"=>$moreTitle]}
+                                            {$title}
+                                        {/link}
+                                    {else}
                                         {$title}
-                                    {/link}
-                                {else}
-                                    {$title}
-                                {/if}
-                            </div>
+                                    {/if}
+                                </div>
+                            {/container}
                         {/block}
                     {/if}
                     {block name='snippets-product-slider-other-products'}

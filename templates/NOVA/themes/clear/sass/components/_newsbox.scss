@@ -1,0 +1,10 @@
+
+.newsbox { display: flex; flex-direction: column; }
+
+.newsbox-image { height: rem(250px);
+	img { object-fit: cover; height: 100%; width: 100%; }
+}
+
+.newsbox-body { flex: 1 1 auto; padding: $spacer 0; }
+
+.newsbox-headline { font-weight: $font-weight-bold; margin: $spacer 0; display: block; }

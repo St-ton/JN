@@ -1085,15 +1085,15 @@ aside {
 .nmbr-cfg-group {
   display: flex;
   z-index: 1;
+  font-family: $font-accent;
+  font-weight: $font-weight-semibold;
+  .btn:hover {
+    background-color: $gray-lighter;
+  }
   input {
     border-radius: 0;
   }
   .btn-decrement, .btn-increment {
-    color: $input-color;
-    background-color: $input-bg;
-    background-clip: padding-box;
-    border: $input-border-width solid $input-border-color;
-    z-index: 2;
     @include form-control-focus();
 
     // Placeholder
@@ -1151,10 +1151,6 @@ aside {
       margin-left: -1px;
     }
   }
-}
-
-#add-to-cart .btn[type='submit'] {
-  line-height: 1.7rem;
 }
 
 .input-group-append > .btn.ml-3{
@@ -2013,4 +2009,13 @@ main section {
   @include media-breakpoint-up(lg) {
     padding: (map-get($spacers, 1) * 16) 0;
   }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }

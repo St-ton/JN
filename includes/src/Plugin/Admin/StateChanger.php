@@ -39,30 +39,30 @@ class StateChanger
     /**
      * @var ValidatorInterface|LegacyPluginValidator
      */
-    private $pluginValidator;
+    private $legacyValidator;
 
     /**
      * @var ValidatorInterface|PluginValidator
      */
-    protected $extensionValidator;
+    protected $pluginValidator;
 
     /**
      * StateChanger constructor.
      * @param DbInterface             $db
      * @param JTLCacheInterface       $cache
+     * @param ValidatorInterface|null $legacyValidator
      * @param ValidatorInterface|null $pluginValidator
-     * @param ValidatorInterface|null $extensionValidator
      */
     public function __construct(
         DbInterface $db,
         JTLCacheInterface $cache,
-        ValidatorInterface $pluginValidator = null,
-        ValidatorInterface $extensionValidator = null
+        ValidatorInterface $legacyValidator = null,
+        ValidatorInterface $pluginValidator = null
     ) {
-        $this->db                 = $db;
-        $this->cache              = $cache;
-        $this->pluginValidator    = $pluginValidator;
-        $this->extensionValidator = $extensionValidator;
+        $this->db              = $db;
+        $this->cache           = $cache;
+        $this->legacyValidator = $legacyValidator;
+        $this->pluginValidator = $pluginValidator;
     }
 
     /**
@@ -83,10 +83,10 @@ class StateChanger
         }
         if ((int)$pluginData->bExtension === 1) {
             $path       = \PFAD_ROOT . \PLUGIN_DIR;
-            $validation = $this->extensionValidator->validateByPath($path . $pluginData->cVerzeichnis);
+            $validation = $this->pluginValidator->validateByPath($path . $pluginData->cVerzeichnis);
         } else {
             $path       = \PFAD_ROOT . \PFAD_PLUGIN;
-            $validation = $this->pluginValidator->validateByPath($path . $pluginData->cVerzeichnis);
+            $validation = $this->legacyValidator->validateByPath($path . $pluginData->cVerzeichnis);
         }
         if ($validation === InstallCode::OK
             || $validation === InstallCode::OK_LEGACY
@@ -174,7 +174,7 @@ class StateChanger
         $lastXMLChange = \filemtime($info);
         if ($forceReload === true || $lastXMLChange > $lastUpdate->getTimestamp()) {
             $uninstaller = new Uninstaller($this->db, $this->cache);
-            $installer   = new Installer($this->db, $uninstaller, $this->pluginValidator, $this->extensionValidator);
+            $installer   = new Installer($this->db, $uninstaller, $this->legacyValidator, $this->pluginValidator);
             $installer->setDir($plugin->getPaths()->getBaseDir());
             $installer->setPlugin($plugin);
 

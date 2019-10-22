@@ -11,6 +11,7 @@ use JTL\DB\ReturnType;
 use JTL\Helpers\SearchSpecial;
 use JTL\Session\Frontend;
 use JTL\Shop;
+use function Functional\map;
 
 /**
  * Class NewProducts
@@ -32,7 +33,7 @@ final class NewProducts extends AbstractBox
             $cached         = true;
             $stockFilterSQL = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $parentSQL      = ' AND tartikel.kVaterArtikel = 0';
-            $limit          = $config['boxen']['box_neuimsortiment_anzahl_anzeige'];
+            $limit          = $config['boxen']['box_neuimsortiment_anzahl_basis'];
             $days           = $config['boxen']['box_neuimsortiment_alter_tage'] > 0
                 ? (int)$config['boxen']['box_neuimsortiment_alter_tage']
                 : 30;
@@ -51,18 +52,23 @@ final class NewProducts extends AbstractBox
                             AND tartikel.cNeu = 'Y' " . $stockFilterSQL . $parentSQL . "
                             AND cNeu = 'Y' 
                             AND DATE_SUB(NOW(), INTERVAL " . $days . ' DAY) < dErstellt
-                        ORDER BY RAND() LIMIT ' . $limit,
+                        LIMIT ' . $limit,
                     ReturnType::ARRAY_OF_OBJECTS
                 );
-                $productIDs = \array_map(function ($e) {
-                    return (int)$e->kArtikel;
-                }, $productIDs);
                 Shop::Container()->getCache()->set($cacheID, $productIDs, $cacheTags);
             }
-            if (\count($productIDs) > 0) {
+            \shuffle($productIDs);
+            $res = map(
+                \array_slice($productIDs, 0, $config['boxen']['box_neuimsortiment_anzahl_anzeige']),
+                function ($productID) {
+                    return (int)$productID->kArtikel;
+                }
+            );
+
+            if (\count($res) > 0) {
                 $this->setShow(true);
                 $products = new ArtikelListe();
-                $products->getArtikelByKeys($productIDs, 0, \count($productIDs));
+                $products->getArtikelByKeys($res, 0, \count($res));
                 $this->setProducts($products);
                 $this->setURL(SearchSpecial::buildURL(\SEARCHSPECIALS_NEWPRODUCTS));
                 \executeHook(\HOOK_BOXEN_INC_NEUIMSORTIMENT, [

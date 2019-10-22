@@ -705,8 +705,8 @@
             var config = {
                 decrementButton: "<i class='fas fa-minus'></i>", // button text
                 incrementButton: "<i class='fas fa-plus'></i>", // ..
-                groupClass: "", // css class of the input-group (sizing with input-group-sm, input-group-lg)
-                buttonsClass: "btn-light form-control",
+                groupClass: "input-group", // css class of the input-group (sizing with input-group-sm, input-group-lg)
+                buttonsClass: "btn-outline-secondary form-control",
                 buttonsWidth: "42px",
                 textAlign: "center",
                 autoDelay: 500, // ms holding before auto value change

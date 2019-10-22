@@ -16,8 +16,8 @@
     {block name='account-order-details-order-details-data'}
         {card no-body=true class='mb-3'}
             {cardheader}
+            {block name='account-order-details-order-heading'}
                 {row class='align-items-center'}
-                {block name='account-order-details-order-heading'}
                     {col cols=12 lg=3 class='border-lg-right'}
                         <span class="font-weight-bold font-size-lg">
                             <span class="far fa-calendar mr-2"></span>{$Bestellung->dErstelldatum_de}
@@ -29,11 +29,12 @@
                     {col cols=6 class='col-lg-auto text-right text-lg-left'}
                         {lang key='orderStatus' section='login'}: {$Bestellung->Status}
                     {/col}
-                {/block}
                 {/row}
+            {/block}
             {/cardheader}
             {if isset($Kunde) && $Kunde->kKunde > 0}
                 {cardbody}
+                {block name='account-order-details-order-body'}
                     {row}
                         {col cols=12 lg=3 class='border-lg-right'}
                             {block name='account-order-details-total'}
@@ -136,12 +137,15 @@
                             </ul>
                         {/col}
                         {col cols=12 lg=9}
-                            <span class="subheadline">{lang key='basket'}</span>
+                            {block name='account-order-details-order-subheading-basket'}
+                                <span class="subheadline">{lang key='basket'}</span>
+                            {/block}
                             {block name='account-order-details-include-order-item'}
                                 {include file='account/order_item.tpl' tplscope='confirmation'}
                             {/block}
                         {/col}
                     {/row}
+                    {/block}
                 {/cardbody}
             {else}
                 {cardbody}
@@ -176,7 +180,9 @@
                                 {/form}
                             {/col}
                             {col cols=12 md=9}
-                                <strong>{lang key='basket'}</strong>
+                                {block name='account-order-details-order-subheading-basket'}
+                                    <span class="subheadline">{lang key='basket'}</span>
+                                {/block}
                                 {block name='account-order-details-include-order-item'}
                                     {include file='account/order_item.tpl' tplscope='confirmation'}
                                 {/block}
@@ -202,11 +208,13 @@
                 <div class="table-responsive mb-3">
                     <table class="table table-striped table-bordered">
                         <thead>
-                            <tr>
-                                <th>{lang key='shippingOrder' section='order'}</th>
-                                <th>{lang key='shippedOn' section='login'}</th>
-                                <th class="text-right">{lang key='packageTracking' section='order'}</th>
-                            </tr>
+                            {block name='account-order-details-delivery-note-header'}
+                                <tr>
+                                    <th>{lang key='shippingOrder' section='order'}</th>
+                                    <th>{lang key='shippedOn' section='login'}</th>
+                                    <th class="text-right">{lang key='packageTracking' section='order'}</th>
+                                </tr>
+                            {/block}
                         </thead>
                         <tbody>
                             {block name='account-order-details-delivery-notes'}
@@ -235,75 +243,85 @@
                             title=(($Bestellung->cStatus == BESTELLUNG_STATUS_TEILVERSANDT) ? {lang key='partialShipped' section='order'} : {lang key='shipped' section='order'})
                             class="fade"
                             size="lg"}
-                            <div class="mb-3">
-                                <strong>{lang key='shippingOrder' section='order'}</strong>: {$oLieferschein->getLieferscheinNr()}<br />
-                                <strong>{lang key='shippedOn' section='login'}</strong>: {$oLieferschein->getErstellt()|date_format:"%d.%m.%Y %H:%M"}<br />
-                            </div>
-
+                            {block name='account-order-details-delivery-note-popup-heading'}
+                                <div class="mb-3">
+                                    <strong>{lang key='shippingOrder' section='order'}</strong>: {$oLieferschein->getLieferscheinNr()}<br />
+                                    <strong>{lang key='shippedOn' section='login'}</strong>: {$oLieferschein->getErstellt()|date_format:"%d.%m.%Y %H:%M"}<br />
+                                </div>
+                            {/block}
                             {if $oLieferschein->getHinweis()|@count_characters > 0}
-                                {alert variant="info" class="mb-3"}{$oLieferschein->getHinweis()}{/alert}
+                                {block name='account-order-details-delivery-note-popup-alert'}
+                                    {alert variant="info" class="mb-3"}{$oLieferschein->getHinweis()}{/alert}
+                                {/block}
                             {/if}
-                            <div class="mb-3">
-                                {foreach $oLieferschein->oVersand_arr as $oVersand}
-                                    {if $oVersand->getIdentCode()}
-                                        <p>{link href=$oVersand->getLogistikVarUrl() target="_blank" class="shipment" title=$oVersand->getIdentCode()}{lang key='packageTracking' section='order'}{/link}</p>
-                                    {/if}
-                                {/foreach}
-                            </div>
-
-                            <table class="table table-striped">
-                                <thead>
-                                <tr>
-                                    <th>{lang key="partialShippedPosition" section="order"}</th>
-                                    <th>{lang key="partialShippedCount" section="order"}</th>
-                                    <th>{lang key='productNo' section='global'}</th>
-                                    <th>{lang key='product' section='global'}</th>
-                                    <th>{lang key="order" section="global"}</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {foreach $oLieferschein->oLieferscheinPos_arr as $oLieferscheinpos}
+                            {block name='account-order-details-delivery-note-popup-tracking'}
+                                <div class="mb-3">
+                                    {foreach $oLieferschein->oVersand_arr as $oVersand}
+                                        {if $oVersand->getIdentCode()}
+                                            <p>
+                                                {link href=$oVersand->getLogistikVarUrl() target="_blank" class="shipment" title=$oVersand->getIdentCode()}
+                                                    {lang key='packageTracking' section='order'}
+                                                {/link}
+                                            </p>
+                                        {/if}
+                                    {/foreach}
+                                </div>
+                            {/block}
+                            {block name='account-order-details-delivery-note-popup-table'}
+                                <table class="table table-striped">
+                                    <thead>
                                     <tr>
-                                        <td>{$oLieferscheinpos@iteration}</td>
-                                        <td>{$oLieferscheinpos->getAnzahl()}</td>
-                                        <td>{$oLieferscheinpos->oPosition->cArtNr}</td>
-                                        <td>
-                                            {$oLieferscheinpos->oPosition->cName}
-                                            <ul class="list-unstyled text-muted small">
-                                                {if !empty($oLieferscheinpos->oPosition->cHinweis)}
-                                                    <li class="text-info notice">{$oLieferscheinpos->oPosition->cHinweis}</li>
-                                                {/if}
+                                        <th>{lang key="partialShippedPosition" section="order"}</th>
+                                        <th>{lang key="partialShippedCount" section="order"}</th>
+                                        <th>{lang key='productNo' section='global'}</th>
+                                        <th>{lang key='product' section='global'}</th>
+                                        <th>{lang key="order" section="global"}</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {foreach $oLieferschein->oLieferscheinPos_arr as $oLieferscheinpos}
+                                        <tr>
+                                            <td>{$oLieferscheinpos@iteration}</td>
+                                            <td>{$oLieferscheinpos->getAnzahl()}</td>
+                                            <td>{$oLieferscheinpos->oPosition->cArtNr}</td>
+                                            <td>
+                                                {$oLieferscheinpos->oPosition->cName}
+                                                <ul class="list-unstyled text-muted small">
+                                                    {if !empty($oLieferscheinpos->oPosition->cHinweis)}
+                                                        <li class="text-info notice">{$oLieferscheinpos->oPosition->cHinweis}</li>
+                                                    {/if}
 
-                                                {* eindeutige Merkmale *}
-                                                {if $oLieferscheinpos->oPosition->Artikel->cHersteller && $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen != "N"}
-                                                    <li class="manufacturer">
-                                                        <strong>{lang key='manufacturer' section='productDetails'}</strong>:
-                                                        <span class="values">
-                                                           {$oLieferscheinpos->oPosition->Artikel->cHersteller}
-                                                        </span>
-                                                    </li>
-                                                {/if}
-
-                                                {if $Einstellungen.kaufabwicklung.bestellvorgang_artikelmerkmale == 'Y' && !empty($oLieferscheinpos->oPosition->Artikel->oMerkmale_arr)}
-                                                    {foreach $oLieferscheinpos->oPosition->Artikel->oMerkmale_arr as $oMerkmale_arr}
-                                                        <li class="characteristic">
-                                                            <strong>{$oMerkmale_arr->cName}</strong>:
+                                                    {* eindeutige Merkmale *}
+                                                    {if $oLieferscheinpos->oPosition->Artikel->cHersteller && $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen != "N"}
+                                                        <li class="manufacturer">
+                                                            <strong>{lang key='manufacturer' section='productDetails'}</strong>:
                                                             <span class="values">
-                                                                {foreach $oMerkmale_arr->oMerkmalWert_arr as $oWert}
-                                                                    {if !$oWert@first}, {/if}
-                                                                    {$oWert->cWert}
-                                                                {/foreach}
+                                                               {$oLieferscheinpos->oPosition->Artikel->cHersteller}
                                                             </span>
                                                         </li>
-                                                    {/foreach}
-                                                {/if}
-                                            </ul>
-                                        </td>
-                                        <td>{$Bestellung->cBestellNr}</td>
-                                    </tr>
-                                {/foreach}
-                                </tbody>
-                            </table>
+                                                    {/if}
+
+                                                    {if $Einstellungen.kaufabwicklung.bestellvorgang_artikelmerkmale == 'Y' && !empty($oLieferscheinpos->oPosition->Artikel->oMerkmale_arr)}
+                                                        {foreach $oLieferscheinpos->oPosition->Artikel->oMerkmale_arr as $oMerkmale_arr}
+                                                            <li class="characteristic">
+                                                                <strong>{$oMerkmale_arr->cName}</strong>:
+                                                                <span class="values">
+                                                                    {foreach $oMerkmale_arr->oMerkmalWert_arr as $oWert}
+                                                                        {if !$oWert@first}, {/if}
+                                                                        {$oWert->cWert}
+                                                                    {/foreach}
+                                                                </span>
+                                                            </li>
+                                                        {/foreach}
+                                                    {/if}
+                                                </ul>
+                                            </td>
+                                            <td>{$Bestellung->cBestellNr}</td>
+                                        </tr>
+                                    {/foreach}
+                                    </tbody>
+                                </table>
+                            {/block}
                         {/modal}
                     {/block}
                 {/foreach}
@@ -319,7 +337,7 @@
         {block name='account-order-details-actions'}
             {row}
                 {col md=3 cols=12}
-                    {link class="btn btn-secondary btn-block" href="{get_static_route id='jtl.php'}?bestellungen=1"}
+                    {link class="btn btn-outline-primary btn-block" href="{get_static_route id='jtl.php'}?bestellungen=1"}
                         {lang key='back'}
                     {/link}
                 {/col}

@@ -12,14 +12,16 @@
                     {assign var=alt value=$Artikel->cName}
                 {/if}
                 <div class="image-box">
-                    {image fluid=true webp=true lazy=true
-                        alt=$Artikel->cName
-                        src=$Artikel->Bilder[0]->cURLKlein
-                        srcset="{$Artikel->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                            {$Artikel->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                            {$Artikel->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
-                        sizes="200px"
-                    }
+                    {block name='productlist-item-slider-image'}
+                        {image fluid=true webp=true lazy=true
+                            alt=$Artikel->cName
+                            src=$Artikel->Bilder[0]->cURLKlein
+                            srcset="{$Artikel->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                {$Artikel->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                {$Artikel->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                            sizes="200px"
+                        }
+                    {/block}
                 </div>
                 <meta itemprop="image" content="{$Artikel->Bilder[0]->cURLNormal}">
                 <meta itemprop="url" content="{$Artikel->cURLFull}">
@@ -29,13 +31,17 @@
             <div class="caption">
                 <div class="title mt-2">
                     {if isset($showPartsList) && $showPartsList === true && isset($Artikel->fAnzahl_stueckliste)}
-                        <span class="article-bundle-info">
-                            <span class="bundle-amount">{$Artikel->fAnzahl_stueckliste}</span> <span class="bundle-times">x</span>
-                        </span>
+                        {block name='productlist-item-slider-caption-bundle'}
+                            <span class="article-bundle-info">
+                                <span class="bundle-amount">{$Artikel->fAnzahl_stueckliste}</span> <span class="bundle-times">x</span>
+                            </span>
+                        {/block}
                     {/if}
-                    {link href=$Artikel->cURLFull}
-                        <span itemprop="name">{$Artikel->cKurzbezeichnung}</span>
-                    {/link}
+                    {block name='productlist-item-slider-caption-short-desc'}
+                        {link href=$Artikel->cURLFull}
+                            <span itemprop="name">{$Artikel->cKurzbezeichnung}</span>
+                        {/link}
+                    {/block}
                 </div>
                 {if $tplscope === 'box'}
                     {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->fDurchschnittsBewertung > 0}

@@ -30,7 +30,7 @@
                                 {/inputgroup}
                             {/col}
                             {col cols=12 md=4}
-                                {button block=true name='versandrechnerBTN' type='submit'}
+                                {button block=true name='versandrechnerBTN' type='submit' variant='outline-primary'}
                                     {lang key='estimateShipping' section='checkout'}
                                 {/button}
                             {/col}
@@ -46,16 +46,20 @@
                 {if !empty($ArtikelabhaengigeVersandarten)}
                     {block name='snippets-shipping-calculator-table-artikelabhaengig'}
                         <table class="table table-striped">
-                            <caption>{lang key='productShippingDesc' section='checkout'}</caption>
+                            {block name='snippets-shipping-calculator-table-artikelabhaengig-caption'}
+                                <caption>{lang key='productShippingDesc' section='checkout'}</caption>
+                            {/block}
                             <tbody>
-                                {foreach $ArtikelabhaengigeVersandarten as $artikelversand}
-                                    <tr>
-                                        <td>{$artikelversand->cName|trans}</td>
-                                        <td class="text-right text-nowrap">
-                                            <strong>{$artikelversand->cPreisLocalized}</strong>
-                                        </td>
-                                    </tr>
-                                {/foreach}
+                                {block name='snippets-shipping-calculator-table-artikelabhaengig-body'}
+                                    {foreach $ArtikelabhaengigeVersandarten as $artikelversand}
+                                        <tr>
+                                            <td>{$artikelversand->cName|trans}</td>
+                                            <td class="text-right text-nowrap">
+                                                <strong>{$artikelversand->cPreisLocalized}</strong>
+                                            </td>
+                                        </tr>
+                                    {/foreach}
+                                {/block}
                             </tbody>
                         </table>
                     {/block}
@@ -63,40 +67,44 @@
                 {if !empty($Versandarten)}
                     {block name='snippets-shipping-calculator-shipping-methods'}
                         <table class="table table-striped">
-                            <caption>{lang key='shippingMethods'}</caption>
+                            {block name='snippets-shipping-calculator-shipping-methods'}
+                                <caption>{lang key='shippingMethods'}</caption>
+                            {/block}
                             <tbody>
-                                {foreach $Versandarten as $versandart}
-                                    <tr id="shipment_{$versandart->kVersandart}">
-                                        <td>
-                                            {if $versandart->cBild}
-                                                {image src=$versandart->cBild alt="{$versandart->angezeigterName|trans}"}
-                                            {else}
-                                                {$versandart->angezeigterName|trans}
-                                            {/if}
-                                            {if $versandart->angezeigterHinweistext|trans}
-                                                <p class="small">
-                                                    {$versandart->angezeigterHinweistext|trans}
-                                                </p>
-                                            {/if}
-                                            {if isset($versandart->Zuschlag) && $versandart->Zuschlag->fZuschlag != 0}
-                                                <p class="small">
-                                                    {$versandart->Zuschlag->angezeigterName|trans}
-                                                        (+{$versandart->Zuschlag->cPreisLocalized})
-                                                </p>
-                                            {/if}
-                                            {if $versandart->cLieferdauer|trans && $Einstellungen.global.global_versandermittlung_lieferdauer_anzeigen === 'Y'}
-                                                <p class="small">
-                                                    {lang key='shippingTimeLP'}: {$versandart->cLieferdauer|trans}
-                                                </p>
-                                            {/if}
-                                        </td>
-                                        <td class="text-right text-nowrap">
-                                            <strong>
-                                                {$versandart->cPreisLocalized}
-                                            </strong>
-                                        </td>
-                                    </tr>
-                                {/foreach}
+                                {block name='snippets-shipping-calculator-shipping-methods-body'}
+                                    {foreach $Versandarten as $versandart}
+                                        <tr id="shipment_{$versandart->kVersandart}">
+                                            <td>
+                                                {if $versandart->cBild}
+                                                    {image src=$versandart->cBild alt="{$versandart->angezeigterName|trans}"}
+                                                {else}
+                                                    {$versandart->angezeigterName|trans}
+                                                {/if}
+                                                {if $versandart->angezeigterHinweistext|trans}
+                                                    <p class="small">
+                                                        {$versandart->angezeigterHinweistext|trans}
+                                                    </p>
+                                                {/if}
+                                                {if isset($versandart->Zuschlag) && $versandart->Zuschlag->fZuschlag != 0}
+                                                    <p class="small">
+                                                        {$versandart->Zuschlag->angezeigterName|trans}
+                                                            (+{$versandart->Zuschlag->cPreisLocalized})
+                                                    </p>
+                                                {/if}
+                                                {if $versandart->cLieferdauer|trans && $Einstellungen.global.global_versandermittlung_lieferdauer_anzeigen === 'Y'}
+                                                    <p class="small">
+                                                        {lang key='shippingTimeLP'}: {$versandart->cLieferdauer|trans}
+                                                    </p>
+                                                {/if}
+                                            </td>
+                                            <td class="text-right text-nowrap">
+                                                <strong>
+                                                    {$versandart->cPreisLocalized}
+                                                </strong>
+                                            </td>
+                                        </tr>
+                                    {/foreach}
+                                {/block}
                             </tbody>
                         </table>
                     {/block}

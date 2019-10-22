@@ -16,7 +16,7 @@ class Migration_20191018152300 extends Migration implements IMigration
      */
     public function up()
     {
-        $pages = $this->fetchAll('SELECT * FROM topcpage');
+        $pages = $this->fetchAll('SELECT kPage, cPageId FROM topcpage');
 
         foreach ($pages as $page) {
             $idObj       = new stdClass();

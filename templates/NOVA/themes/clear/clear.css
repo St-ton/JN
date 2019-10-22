@@ -21623,6 +21623,8 @@ aside .last-seen-link {
 }
 
 .btn-icon-primary {
+  border-color: #9b9b9b;
+  color: #9b9b9b;
   background-color: #ffffff;
 }
 .btn-icon-primary:hover {

@@ -18,6 +18,9 @@ use JTL\Shop;
  */
 function executeHook(int $hookID, $args_arr = [])
 {
+    if (SAFE_MODE === true) {
+        return;
+    }
     global $smarty;
     $timer = Shop::Container()->getDebugBar()->getTimer();
     $timer->startMeasure('shop.hook.' . $hookID);

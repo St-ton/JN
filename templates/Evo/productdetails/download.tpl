@@ -25,19 +25,19 @@
                         {if $oDownload->hasPreview()}
                             {if $oDownload->getPreviewType() === 'music'}
                                 <audio controls controlsList="nodownload" preload="none">
-                                    <source src="{PFAD_DOWNLOADS_PREVIEW_REL}{$oDownload->cPfadVorschau}" >
+                                    <source src="{$smarty.const.PFAD_DOWNLOADS_PREVIEW_REL}{$oDownload->cPfadVorschau}" >
                                     Your browser does not support the audio element.
                                 </audio>
                             {elseif $oDownload->getPreviewType() === 'video'}
                                 <video width="320" height="240" controls controlsList="nodownload" preload="none">
-                                    <source src="{PFAD_DOWNLOADS_PREVIEW_REL}{$oDownload->cPfadVorschau}" >
+                                    <source src="{$smarty.const.PFAD_DOWNLOADS_PREVIEW_REL}{$oDownload->cPfadVorschau}" >
                                     Your browser does not support the video tag.
                                 </video>
                             {elseif $oDownload->getPreviewType() === 'image'}
-                                <img src="{PFAD_DOWNLOADS_PREVIEW_REL}{$oDownload->cPfadVorschau}"
+                                <img src="{$smarty.const.PFAD_DOWNLOADS_PREVIEW_REL}{$oDownload->cPfadVorschau}"
                                      class="img-responsive" alt="{$oDownload->oDownloadSprache->getBeschreibung()|strip_tags}">
                             {else}
-                                <a href="{PFAD_DOWNLOADS_PREVIEW_REL}{$oDownload->cPfadVorschau}"
+                                <a href="{$smarty.const.PFAD_DOWNLOADS_PREVIEW_REL}{$oDownload->cPfadVorschau}"
                                    title="{$oDownload->oDownloadSprache->getName()}" target="_blank">
                                     {$oDownload->oDownloadSprache->getName()}
                                 </a>

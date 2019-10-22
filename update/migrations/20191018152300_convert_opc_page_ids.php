@@ -67,7 +67,7 @@ class Migration_20191018152300 extends Migration implements IMigration
             $id   = $json['id'];
 
             if ($type === 'search') {
-                $oldPageId = $type . ':' . \base64_encode($id);
+                $oldPageId = $type . ':' . base64_encode($id);
             } else {
                 $oldPageId = $type . ':' . $id;
             }

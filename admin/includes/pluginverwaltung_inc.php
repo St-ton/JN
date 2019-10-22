@@ -57,7 +57,8 @@ function updatePlugin(int $pluginID)
     $db        = Shop::Container()->getDB();
     $cache     = Shop::Container()->getCache();
     $parser    = new XMLParser();
-    $installer = new Installer($db,
+    $installer = new Installer(
+        $db,
         new Uninstaller($db, $cache),
         new LegacyPluginValidator($db, $parser),
         new PluginValidator($db, $parser)

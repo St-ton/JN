@@ -50,7 +50,7 @@ class Migration_20191018152300 extends Migration implements IMigration
             $jsonId = json_encode($idObj);
             $page->cPageId = $jsonId;
 
-            $this->execute("UPDATE topcpage SET cPageId = '{$page->cPageId}' WHERE kPage = {$page->kPage}");
+            $this->execute("UPDATE topcpage SET cPageId = '" . $page->cPageId . "' WHERE kPage = " . $page->kPage);
         }
     }
 

@@ -62,7 +62,7 @@
                                         </li>
                                     {/if}
                                     {for $i=$oPagination->getLeftRangePage() to $oPagination->getRightRangePage()}
-                                        <li class="page-item">
+                                        <li class="page-item {if $oPagination->getPage() === $i}active{/if}">
                                             {link class="page-link {if $oPagination->getPage() === $i}active{elseif $i > 0 && $i < $oPagination->getPageCount() - 1}d-none d-sm-block{/if}" href="{$cThisUrl}?{$oPagination->getId()}_nPage={$i}{$cUrlAppend}{$cAnchor}"}
                                                 {$i+1}
                                             {/link}
@@ -108,7 +108,7 @@
 
             {if $showFilter === true && (in_array('count', $parts) || in_array('sort', $parts))}
                 {block name='snippets-pagination-form'}
-                    {col cols="12" md="auto" class="ml-md-auto"}
+                    {col cols="12" md="auto" class="ml-md-auto mt-3 mt-sm-0"}
                         {form action="{$cThisUrl}{$cAnchor}" method="get"}
                             {block name='snippets-pagination-form-content'}
                                 {row}

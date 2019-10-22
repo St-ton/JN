@@ -254,7 +254,7 @@
         || isset($Xselling->Standard->XSellGruppen) && count($Xselling->Standard->XSellGruppen) > 0
         || isset($Xselling->Kauf->Artikel) && count($Xselling->Kauf->Artikel) > 0
         || isset($oAehnlicheArtikel_arr) && count($oAehnlicheArtikel_arr) > 0}
-            {container}
+            {container fluid=true}
                 {if isset($Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen) && $Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen === 'Y' && isset($Artikel->oStueckliste_arr) && $Artikel->oStueckliste_arr|@count > 0}
                     {block name='productdetails-details-include-product-slider-partslist'}
                         <div class="partslist">
@@ -271,28 +271,28 @@
                         </div>
                     {/block}
                 {/if}
+                {if isset($Xselling->Standard) || isset($Xselling->Kauf) || isset($oAehnlicheArtikel_arr)}
+                    <div class="recommendations d-print-none">
+                        {block name='productdetails-details-recommendations'}
+                            {if isset($Xselling->Standard->XSellGruppen) && count($Xselling->Standard->XSellGruppen) > 0}
+                                {foreach $Xselling->Standard->XSellGruppen as $Gruppe}
+                                    {include file='snippets/product_slider.tpl' class='x-supplies' id='slider-xsell-group-'|cat:$Gruppe@iteration productlist=$Gruppe->Artikel title=$Gruppe->Name}
+                                {/foreach}
+                            {/if}
+
+                            {if isset($Xselling->Kauf->Artikel) && count($Xselling->Kauf->Artikel) > 0}
+                                {lang key='customerWhoBoughtXBoughtAlsoY' section='productDetails' assign='slidertitle'}
+                                {include file='snippets/product_slider.tpl' class='x-sell' id='slider-xsell' productlist=$Xselling->Kauf->Artikel title=$slidertitle}
+                            {/if}
+
+                            {if isset($oAehnlicheArtikel_arr) && count($oAehnlicheArtikel_arr) > 0}
+                                {lang key='RelatedProducts' section='productDetails' assign='slidertitle'}
+                                {include file='snippets/product_slider.tpl' class='x-related' id='slider-related' productlist=$oAehnlicheArtikel_arr title=$slidertitle}
+                            {/if}
+                        {/block}
+                    </div>
+                {/if}
             {/container}
-            {if isset($Xselling->Standard) || isset($Xselling->Kauf) || isset($oAehnlicheArtikel_arr)}
-                <div class="recommendations d-print-none">
-                    {block name='productdetails-details-recommendations'}
-                        {if isset($Xselling->Standard->XSellGruppen) && count($Xselling->Standard->XSellGruppen) > 0}
-                            {foreach $Xselling->Standard->XSellGruppen as $Gruppe}
-                                {include file='snippets/product_slider.tpl' class='x-supplies' id='slider-xsell-group-'|cat:$Gruppe@iteration productlist=$Gruppe->Artikel title=$Gruppe->Name}
-                            {/foreach}
-                        {/if}
-
-                        {if isset($Xselling->Kauf->Artikel) && count($Xselling->Kauf->Artikel) > 0}
-                            {lang key='customerWhoBoughtXBoughtAlsoY' section='productDetails' assign='slidertitle'}
-                            {include file='snippets/product_slider.tpl' class='x-sell' id='slider-xsell' productlist=$Xselling->Kauf->Artikel title=$slidertitle}
-                        {/if}
-
-                        {if isset($oAehnlicheArtikel_arr) && count($oAehnlicheArtikel_arr) > 0}
-                            {lang key='RelatedProducts' section='productDetails' assign='slidertitle'}
-                            {include file='snippets/product_slider.tpl' class='x-related' id='slider-related' productlist=$oAehnlicheArtikel_arr title=$slidertitle}
-                        {/if}
-                    {/block}
-                </div>
-            {/if}
         {/if}
         {block name='productdetails-details-include-popups'}
             <div id="article_popups">

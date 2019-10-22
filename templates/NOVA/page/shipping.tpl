@@ -4,8 +4,8 @@
  *}
 {block name='page-shipping'}
     {if isset($Einstellungen.global.global_versandermittlung_anzeigen) && $Einstellungen.global.global_versandermittlung_anzeigen === 'Y'}
+        {opcMountPoint id='opc_before_shipping'}
         {container}
-            {opcMountPoint id='opc_before_shipping'}
             {if isset($smarty.session.Warenkorb->PositionenArr) && $smarty.session.Warenkorb->PositionenArr|@count > 0}
                 {block name='page-shipping-form'}
                     {form method="post"

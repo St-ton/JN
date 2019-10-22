@@ -2,7 +2,7 @@
 /**
  * Rename the settings-menu entries "Einstellungen" into proper names
  *
- * @author Clemens Rudolph
+ * @author cr
  * @created Fri, 27 Oct 2017 11:16:17 +0200
  */
 

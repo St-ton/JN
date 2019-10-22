@@ -11,7 +11,7 @@ use JTL\Update\Migration;
  */
 class Migration_20180108142900 extends Migration implements IMigration
 {
-    protected $author      = 'Felix Moche';
+    protected $author      = 'fm';
     protected $description = 'Remove caching method mysql';
 
     /**

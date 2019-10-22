@@ -2,7 +2,7 @@
 /**
  * fix msg-id spelling for optin
  *
- * @author Clemens Rudolph
+ * @author cr
  * @created Thu, 09 May 2019 12:12:04 +0200
  */
 
@@ -14,7 +14,7 @@ use JTL\Update\Migration;
  */
 class Migration_20190509121204 extends Migration implements IMigration
 {
-    protected $author = 'Clemens Rudolph';
+    protected $author = 'cr';
     protected $description = 'fix msg-id spelling for optin';
 
     public function up()

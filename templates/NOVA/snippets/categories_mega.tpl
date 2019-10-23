@@ -48,38 +48,33 @@
                                 {$category->getName()}
                             {/link}
                             <div class="dropdown-menu">
-                                {block name='snippets-categories-mega-category-child-header'}
-                                    <div class="dropdown-header border-bottom border-primary border-w-5 d-lg-none">
-                                        {row class='align-items-center font-size-base'}
-                                            {col}<a href="#" class="font-size-base" data-nav-back><span class="fas fa-chevron-left mr-4"></span> {$category->getName()}</a>{/col}
-                                            {col class='col-auto'}<a href="{$category->getURL()}"><span class="far fa-arrow-alt-circle-right ml-auto"></span></a>{/col}
-                                        {/row}
-                                    </div>
-                                {/block}
-                                {block name='snippets-categories-mega-category-child-body'}
-                                    <div class="dropdown-body p-0 py-lg-4">
-                                        {container}
-                                            {row class='lg-row-lg nav'}
-                                                {block name='snippets-categories-mega-sub-categories'}
-                                                    {if $category->hasChildren()}
-                                                        {if !empty($category->getChildren())}
-                                                            {assign var=sub_categories value=$category->getChildren()}
-                                                        {else}
-                                                            {get_category_array categoryId=$category->getID() assign='sub_categories'}
-                                                        {/if}
-                                                        {foreach $sub_categories as $sub}
-                                                            {col lg=4 xl=3 class="my-lg-4 nav-item {if $sub->hasChildren()}dropdown{/if}"}
-                                                                {block name='snippets-categories-mega-category-child-body-include-categories-mega-recursive'}
-                                                                    {include file='snippets/categories_mega_recursive.tpl' mainCategory=$sub firstChild=true}
-                                                                {/block}
-                                                            {/col}
-                                                        {/foreach}
+                                <div class="dropdown-body p-0 py-lg-4">
+                                    {container}
+                                        {row class="lg-row-lg nav"}
+                                            {col lg=4 xl=3 class="my-lg-4 nav-item dropdown d-lg-none"}
+                                                {link href="{$category->getURL()}" class="nav-link font-size-base"}
+                                                    <span class="text-truncate font-weight-bold d-block pr-3 pr-lg-0">{lang key='menuShow' printf=$category->getName()}</span>
+                                                {/link}
+                                            {/col}
+                                            {block name='snippets-categories-mega-sub-categories'}
+                                                {if $category->hasChildren()}
+                                                    {if !empty($category->getChildren())}
+                                                        {assign var=sub_categories value=$category->getChildren()}
+                                                    {else}
+                                                        {get_category_array categoryId=$category->getID() assign='sub_categories'}
                                                     {/if}
-                                                {/block}
-                                            {/row}
-                                        {/container}
-                                    </div>
-                                {/block}
+                                                    {foreach $sub_categories as $sub}
+                                                        {col lg=4 xl=3 class="my-lg-4 nav-item {if $sub->hasChildren()}dropdown{/if}"}
+                                                            {block name='snippets-categories-mega-category-child-body-include-categories-mega-recursive'}
+                                                                {include file='snippets/categories_mega_recursive.tpl' mainCategory=$sub firstChild=true}
+                                                            {/block}
+                                                        {/col}
+                                                    {/foreach}
+                                                {/if}
+                                            {/block}
+                                        {/row}
+                                    {/container}
+                                </div>
                             </div>
                         </li>
                     {/block}
@@ -116,7 +111,7 @@
                         {block name='snippets-categories-mega-manufacturers-header'}
                             <div class="dropdown-header border-bottom border-primary border-w-5 d-lg-none">
                                 {row class='align-items-center font-size-base'}
-                                    {col}<a href="#" class="font-size-base" data-nav-back><span class="fas fa-chevron-left mr-4"></span> {lang key='manufacturers'}</a>{/col}
+                                    {col}<a href="#" class="font-size-base" data-nav-back>{lang key='manufacturers'}</a>{/col}
                                     {col class='col-auto'}<a href="{$manufacturerOverview->getURL()}"><span class="far fa-arrow-alt-circle-right ml-auto"></span></a>{/col}
                                 {/row}
                             </div>
@@ -186,7 +181,7 @@
                         <div class="dropdown-menu">
                             {block name='layout-header-top-bar-user-settings-currency-header'}
                                 <div class="dropdown-header border-bottom border-primary border-w-5 d-lg-none">
-                                    <a href="#" class="font-size-base" data-nav-back><span class="fas fa-chevron-left mr-4"></span> {lang key='currency'}</a>
+                                    <a href="#" class="font-size-base" data-nav-back>{lang key='currency'}</a>
                                 </div>
                             {/block}
                             {block name='layout-header-top-bar-user-settings-currency-body'}
@@ -213,7 +208,7 @@
                         <div class="dropdown-menu">
                             {block name='layout-header-top-bar-user-settings-language-header'}
                                 <div class="dropdown-header border-bottom border-primary border-w-5 d-lg-none">
-                                    <a href="#" class="font-size-base" data-nav-back><span class="fas fa-chevron-left mr-4"></span> {lang key='selectLanguage'}</a>
+                                    <a href="#" class="font-size-base" data-nav-back>{lang key='selectLanguage'}</a>
                                 </div>
                             {/block}
                             {block name='layout-header-top-bar-user-settings-language-body'}

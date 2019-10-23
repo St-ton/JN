@@ -45,9 +45,11 @@
                                         {/foreach}
                                     {/dropdown}
                                 {/block}
-                                {block name='snippets-productlist-page-nav-include-layout-options'}
-                                    {include file='productlist/layout_options.tpl'}
-                                {/block}
+                                {if !$device->isMobile()}
+                                    {block name='snippets-productlist-page-nav-include-layout-options'}
+                                        {include file='productlist/layout_options.tpl'}
+                                    {/block}
+                                {/if}
                             {/block}
                         {/if}
                     {/col}
@@ -61,7 +63,7 @@
             {if $Suchergebnisse->getPages()->getMaxPage() > 1 && !($device->isMobile() && $navid === 'header')}
                 {block name='snippets-productlist-page-nav-page-nav'}
                     {col cols=12 md="auto" class="productlist-pagination"}
-                        <nav class="navbar-pagination " aria-label="Productlist Navigation">
+                        <nav class="navbar-pagination" aria-label="Productlist Navigation">
                             <ul class="pagination">
                                 {block name='snippets-productlist-page-nav-first-page'}
                                     <li class="page-item{if $Suchergebnisse->getPages()->getCurrentPage() == 1} disabled{/if}">

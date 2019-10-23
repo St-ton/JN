@@ -27,7 +27,8 @@
                 {assign var=grid value='12'}
             {else}
                 {assign var=style value='gallery'}
-                {assign var=grid value='6'}
+                {assign var=grid value='12'}
+                {assign var=gridsm value='6'}
                 {assign var=gridmd value='4'}
                 {assign var=gridxl value='3'}
                 {if !$bExclusive || empty($boxes.left)}
@@ -53,10 +54,10 @@
                 {opcMountPoint id='opc_before_products'}
                 {row class="product-list" id="product-list" itemprop="mainEntity" itemscope=true itemtype="http://schema.org/ItemList"}
                     {foreach $Suchergebnisse->getProducts() as $Artikel}
-                        {col cols={$grid} md="{if isset($gridmd)}{$gridmd}{/if}" xl="{if isset($gridxl)}{$gridxl}{/if}"
+                        {col cols={$grid} md="{if isset($gridmd)}{$gridmd}{/if}"  sm="{if isset($gridsm)}{$gridsm}{/if}" xl="{if isset($gridxl)}{$gridxl}{/if}"
                              class="product-wrapper {if !($style === 'list' && $Artikel@last)}mb-7{/if}"
                              itemprop="itemListElement" itemscope=true itemtype="http://schema.org/Product"}
-                            {if $style === 'list'}
+                            {if $style === 'list' && !$device->isMobile()}
                                 {block name='productlist-index-include-item-list'}
                                     {include file='productlist/item_list.tpl' tplscope=$style}
                                 {/block}

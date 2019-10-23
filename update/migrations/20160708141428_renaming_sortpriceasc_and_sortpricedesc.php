@@ -2,7 +2,7 @@
 /**
  * renaming_sortPriceAsc_and_sortPriceDesc
  *
- * @author Mirko Schmidt
+ * @author msc
  * @created Fri, 08 Jul 2016 14:14:28 +0200
  */
 
@@ -14,7 +14,7 @@ use JTL\Update\Migration;
  */
 class Migration_20160708141428 extends Migration implements IMigration
 {
-    protected $author = 'Mirko Schmidt';
+    protected $author = 'msc';
 
     public function up()
     {

@@ -2,7 +2,7 @@
 /**
  * update tsynclogin table
  *
- * @author Felix Moche
+ * @author fm
  * @created Mon, 15 Jan 2018 15:08:00 +0100
  */
 

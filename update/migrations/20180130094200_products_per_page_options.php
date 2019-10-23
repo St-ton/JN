@@ -2,7 +2,7 @@
 /**
  * Add products per page options
  *
- * @author Felix Moche
+ * @author fm
  * @created Thu, 30 Jan 2018 09:42:00 +0100
  */
 

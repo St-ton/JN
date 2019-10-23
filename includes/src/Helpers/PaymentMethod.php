@@ -7,6 +7,7 @@
 namespace JTL\Helpers;
 
 use JTL\Checkout\Zahlungsart;
+use JTL\Plugin\Payment\LegacyMethod;
 use JTL\Session\Frontend;
 use JTL\Shop;
 
@@ -109,10 +110,9 @@ class PaymentMethod
             case 'za_null_jtl':
                 break;
             default:
-                require_once \PFAD_ROOT . \PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
-                $paymentMethod = \PaymentMethod::create($paymentMethod->cModulId);
-                if ($paymentMethod !== null) {
-                    return $paymentMethod->isValid($_SESSION['Kunde'] ?? null, Frontend::getCart());
+                $payMethod = LegacyMethod::create($paymentMethod->cModulId);
+                if ($payMethod !== null) {
+                    return $payMethod->isValid(Frontend::getCustomer(), Frontend::getCart());
                 }
                 break;
         }

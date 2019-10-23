@@ -2,7 +2,7 @@
 /**
  * change wrong language-variable-values
  *
- * @author Clemens Rudolph
+ * @author cr
  * @created Tue, 06 Mar 2018 16:09:13 +0100
  */
 

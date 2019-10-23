@@ -2,7 +2,7 @@
 /**
  * delete giropay in tzahlungsartsprache
  *
- * @author Mirko Schmidt
+ * @author msc
  * @created Mon, 23 Jan 2017 09:51:04 +0100
  */
 

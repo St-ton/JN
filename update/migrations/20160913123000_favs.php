@@ -14,7 +14,7 @@ use JTL\Update\Migration;
  */
 class Migration_20160913123000 extends Migration implements IMigration
 {
-    protected $author      = 'andy';
+    protected $author      = 'aj';
     protected $description = 'Create admin favorite table';
 
     public function up()

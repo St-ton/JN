@@ -2,7 +2,7 @@
 /**
  * Alter tzahlungsinfo to represent sync status
  *
- * @author Falk Prüfer
+ * @author fp
  * @created Mon, 27 Feb 2017 10:04:40 +0100
  */
 

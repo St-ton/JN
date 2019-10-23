@@ -2,7 +2,7 @@
 /**
  * Remove table tnewsletterqueue
  *
- * @author Clemens Rudolph
+ * @author cr
  * @created Wed, 05 Jun 2019 11:18:57 +0200
  */
 
@@ -14,7 +14,7 @@ use JTL\Update\Migration;
  */
 class Migration_20190605111857 extends Migration implements IMigration
 {
-    protected $author      = 'Clemens Rudolph';
+    protected $author      = 'cr';
     protected $description = 'Remove table tnewsletterqueue';
 
     public function up()

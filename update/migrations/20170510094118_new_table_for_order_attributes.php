@@ -2,7 +2,7 @@
 /**
  * New Table for order attributes
  *
- * @author Falk Prüfer
+ * @author fp
  * @created Wed, 10 May 2017 09:41:18 +0200
  */
 

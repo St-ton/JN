@@ -8,7 +8,7 @@ namespace JTL\dbeS\Push;
 
 use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
-use PaymentMethod;
+use JTL\Plugin\Payment\LegacyMethod;
 use stdClass;
 
 /**
@@ -34,7 +34,7 @@ final class Invoice extends AbstractPush
         if (!$order) {
             return $this->pushError('Keine Bestellung mit kBestellung ' . $orderID . ' gefunden!');
         }
-        $paymentMethod = PaymentMethod::create($order->cModulId);
+        $paymentMethod = LegacyMethod::create($order->cModulId);
         if (!$paymentMethod) {
             return $this->pushError('Keine Bestellung mit kBestellung ' . $orderID . ' gefunden!');
         }

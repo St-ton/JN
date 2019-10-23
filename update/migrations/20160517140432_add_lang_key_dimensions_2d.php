@@ -2,7 +2,7 @@
 /**
  * add_lang_key_dimensions_2d
  *
- * @author Mirko Schmidt
+ * @author msc
  * @created Tue, 17 May 2016 14:04:32 +0200
  */
 

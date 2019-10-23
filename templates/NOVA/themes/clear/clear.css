@@ -4,6 +4,7 @@
 /* links */
 /* cards */
 /* tables */
+/* breadcrumbs */
 /* navs */
 /* navs */
 /* modals */
@@ -11160,11 +11161,11 @@ input[type=button].btn-block {
 .breadcrumb {
   display: flex;
   flex-wrap: wrap;
-  padding: 0.75rem 1rem;
+  padding: 0.5rem 0;
   margin-bottom: 1rem;
   list-style: none;
   background-color: transparent;
-  border-radius: 0.125rem;
+  border-radius: 0;
 }
 
 .breadcrumb-item + .breadcrumb-item {
@@ -11173,7 +11174,7 @@ input[type=button].btn-block {
 .breadcrumb-item + .breadcrumb-item::before {
   display: inline-block;
   padding-right: 0.5rem;
-  color: #525252;
+  color: #707070;
   content: "/";
 }
 .breadcrumb-item + .breadcrumb-item:hover::before {
@@ -21498,6 +21499,13 @@ aside .last-seen-link {
 }
 .breadcrumb-item.first::before {
   display: none;
+}
+
+.breadcrumb-arrow::before {
+  content: '\f104' !important;
+  font-family: "Font Awesome 5 Free" !important;
+  font-weight: 900;
+  margin-right: 6px;
 }
 
 .breadcrumb-back {

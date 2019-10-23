@@ -5,7 +5,7 @@
 {block name='snippets-categories-mega-recursive'}
     {block name='snippets-categories-mega-recursive-main-link'}
         <a href="{$mainCategory->getURL()}" class="{if $firstChild === true}submenu-headline submenu-headline-toplevel{/if} nav-link {if $mainCategory->hasChildren()}dropdown-toggle{/if}" aria-expanded="false">
-            {$mainCategory->getName()} <span class="badge text-gray-dark product-count">{$mainCategory->getProductCount()}</span>
+            <span class="text-truncate">{$mainCategory->getName()}</span> <span class="badge text-gray-dark product-count">{$mainCategory->getProductCount()}</span>
         </a>
     {/block}
     {if $mainCategory->hasChildren()}
@@ -16,7 +16,8 @@
                         <div class="row align-items-center font-size-base">
                             <div class="col">
                                 <a href="#" class="font-size-base" data-nav-back="">
-                                    <span class="fas fa-chevron-left mr-4"></span>{$mainCategory->getName()}
+                                    <span class="fas fa-chevron-left mr-4"></span>
+                                    <span class="text-truncate">{$mainCategory->getName()}</span>
                                 </a>
                             </div>
                             <div class="col-auto">

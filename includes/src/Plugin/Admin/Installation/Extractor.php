@@ -9,6 +9,7 @@ namespace JTL\Plugin\Admin\Installation;
 use InvalidArgumentException;
 use JTL\XMLParser;
 use League\Flysystem\Adapter\Local;
+use League\Flysystem\FileExistsException;
 use League\Flysystem\Filesystem;
 use League\Flysystem\MountManager;
 use stdClass;
@@ -95,9 +96,16 @@ class Extractor
         foreach ($this->manager->listContents('root://' . \PFAD_DBES_TMP . $dirName, true) as $item) {
             $target = \str_replace(\PFAD_DBES_TMP, '', $item['path']);
             if ($item['type'] === 'dir') {
-                $ok = $ok && $this->manager->createDir('plgn://' . $target);
+                $ok = $ok && ($this->manager->has('plgn://' . $target)
+                        || $this->manager->createDir('plgn://' . $target));
             } else {
-                $ok = $ok && $this->manager->move('root://' . $item['path'], 'plgn://' . $target);
+                try {
+                    $ok = $ok && $this->manager->move('root://' . $item['path'], 'plgn://' . $target);
+                } catch (FileExistsException $e) {
+                    $ok = $ok
+                        && $this->manager->delete('plgn://' . $target)
+                        && $this->manager->move('root://' . $item['path'], 'plgn://' . $target);
+                }
             }
         }
         $this->rootSystem->deleteDir(\PFAD_DBES_TMP . $dirName);

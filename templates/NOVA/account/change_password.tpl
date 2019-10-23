@@ -44,6 +44,11 @@
                             }
                             {block name='account-change-password-form-submit'}
                                 {row}
+                                    {col cols=12 class='col-md'}
+                                        {link class="btn btn-outline-primary btn-block mb-3" href="{get_static_route id='jtl.php'}"}
+                                            {lang key='back'}
+                                        {/link}
+                                    {/col}
                                     {col class='ml-auto col-md-auto'}
                                         {input type="hidden" name="pass_aendern" value="1"}
                                         {button type="submit" value="1" block=true variant="primary"}

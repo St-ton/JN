@@ -2,7 +2,7 @@
 /**
  * add_lang_key_footnoteShipping
  *
- * @author Marco Stickel
+ * @author ms
  * @created Wed, 31 Aug 2016 12:55:00 +0200
  */
 

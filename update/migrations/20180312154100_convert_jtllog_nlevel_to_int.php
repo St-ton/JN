@@ -2,7 +2,7 @@
 /**
  * Update tjtllog.nLevel to INT
  *
- * @author Felix Moche
+ * @author fm
  * @created Mon, 12 Mar 2018 15:41:00 +0100
  */
 

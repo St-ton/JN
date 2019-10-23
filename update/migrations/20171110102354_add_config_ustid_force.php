@@ -2,7 +2,7 @@
 /**
  * add_config_ustid_force
  *
- * @author Clemens Rudolph
+ * @author cr
  * @created Fri, 10 Nov 2017 10:23:54 +0100
  */
 
@@ -14,7 +14,7 @@ use JTL\Update\Migration;
  */
 class Migration_20171110102354 extends Migration implements IMigration
 {
-    protected $author      = 'Clemens Rudolph';
+    protected $author      = 'cr';
     protected $description = 'Add vars and settings for the UstID-check via VIES';
 
     public function up()

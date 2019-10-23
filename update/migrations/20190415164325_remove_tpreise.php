@@ -14,7 +14,7 @@ use JTL\Update\Migration;
  */
 class Migration_20190415164325 extends Migration implements IMigration
 {
-    protected $author = 'Falk Prüfer';
+    protected $author = 'fp';
     protected $description = 'Remove tpreise';
 
     public function up()

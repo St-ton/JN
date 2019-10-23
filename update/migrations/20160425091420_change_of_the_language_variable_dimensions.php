@@ -2,7 +2,7 @@
 /**
  * change_of_the_language_variable_dimensions
  *
- * @author mirko
+ * @author msc
  * @created Mon, 25 Apr 2016 09:14:20 +0200
  */
 

@@ -2,7 +2,7 @@
 /**
  * Revert Migration_20161216110237
  *
- * @author Falk Prüfer
+ * @author fp
  * @created Wed, 01 Feb 2017 16:13:22 +0100
  */
 

@@ -2,7 +2,7 @@
 /**
  * Create index for tkategorie.nLevel
  *
- * @author Falk Prüfer
+ * @author fp
  * @created Thu, 20 Apr 2017 09:49:22 +0200
  */
 

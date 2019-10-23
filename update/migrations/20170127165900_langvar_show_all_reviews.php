@@ -2,7 +2,7 @@
 /**
  * Add language var "show all reviews" to reset review filter
  *
- * @author Danny Raufeisen
+ * @author dr
  * @created Fri, 27 Jan 2017 16:59:00 +0100
  */
 

@@ -2,7 +2,7 @@
 /**
  * add_language_variable_descriptionview
  *
- * @author Mirko Schmidt
+ * @author msc
  * @created Fri, 12 Aug 2016 11:42:10 +0200
  */
 
@@ -14,7 +14,7 @@ use JTL\Update\Migration;
  */
 class Migration_20160812114210 extends Migration implements IMigration
 {
-    protected $author = 'Mirko Schmidt';
+    protected $author = 'msc';
 
     public function up()
     {

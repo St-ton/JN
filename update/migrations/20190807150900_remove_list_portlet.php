@@ -7,12 +7,12 @@ use JTL\Update\Migration;
  * Add default value for topcblueprint.kPlugin
  * Remove List Portlet
  *
- * @author Danny Raufeisen
+ * @author dr
  */
 
 class Migration_20190807150900 extends Migration implements IMigration
 {
-    protected $author      = 'Danny Raufeisen';
+    protected $author      = 'dr';
     protected $description = 'Remove List Portlet';
 
     public function up()

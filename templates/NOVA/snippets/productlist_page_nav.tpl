@@ -58,10 +58,10 @@
                     {lang key="products"} {$Suchergebnisse->getOffsetStart()} - {$Suchergebnisse->getOffsetEnd()} {lang key='of' section='productOverview'} {$Suchergebnisse->getProductCount()}
                 {/col}
             {/block}
-            {if $Suchergebnisse->getPages()->getMaxPage() > 1}
+            {if $Suchergebnisse->getPages()->getMaxPage() > 1 && !($device->isMobile() && $navid === 'header')}
                 {block name='snippets-productlist-page-nav-page-nav'}
                     {col cols=12 md="auto" class="productlist-pagination"}
-                        <nav class="navbar-pagination" aria-label="Productlist Navigation">
+                        <nav class="navbar-pagination " aria-label="Productlist Navigation">
                             <ul class="pagination">
                                 {block name='snippets-productlist-page-nav-first-page'}
                                     <li class="page-item{if $Suchergebnisse->getPages()->getCurrentPage() == 1} disabled{/if}">

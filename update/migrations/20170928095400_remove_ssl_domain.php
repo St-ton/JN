@@ -2,7 +2,7 @@
 /**
  * removes option "Zertifikat ausgestellt auf www/nicht-www"
  *
- * @author Felix Moche
+ * @author fm
  * @created Wed, 28 Sep 2017 09:28:00 +0200
  */
 

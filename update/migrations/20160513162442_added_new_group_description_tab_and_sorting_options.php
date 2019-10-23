@@ -2,7 +2,7 @@
 /**
  * added_new_group_description_tab_and_sorting_options
  *
- * @author Mirko Schmidt
+ * @author msc
  * @created Fri, 13 May 2016 16:24:42 +0200
  */
 

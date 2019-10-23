@@ -6,12 +6,12 @@ use JTL\Update\Migration;
 /**
  * Add default value for topcblueprint.kPlugin
  *
- * @author Danny Raufeisen
+ * @author dr
  */
 
 class Migration_20190227140600 extends Migration implements IMigration
 {
-    protected $author      = 'Danny Raufeisen';
+    protected $author      = 'dr';
     protected $description = 'Add default value for topcblueprint.kPlugin';
 
     public function up()

@@ -2,7 +2,7 @@
 /**
  * Convert encrypted data to utf-8
  *
- * @author Falk Prüfer
+ * @author fp
  * @created Tue, 09 Jan 2018 10:46:08 +0100
  */
 

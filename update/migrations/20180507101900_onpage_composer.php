@@ -6,12 +6,12 @@ use JTL\Update\Migration;
 /**
  * Add OnPage Composer tables
  *
- * @author Marco Stickel
+ * @author ms
  */
 
 class Migration_20180507101900 extends Migration implements IMigration
 {
-    protected $author      = 'Marco Stickel';
+    protected $author      = 'ms';
     protected $description = 'Add OnPage Composer tables';
 
     public function up()

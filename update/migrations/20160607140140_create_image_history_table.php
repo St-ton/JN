@@ -2,7 +2,7 @@
 /**
  * create image history table
  *
- * @author andy
+ * @author aj
  * @created Tue, 07 Jun 2016 14:01:40 +0200
  */
 
@@ -14,7 +14,7 @@ use JTL\Update\Migration;
  */
 class Migration_20160607140140 extends Migration implements IMigration
 {
-    protected $author = 'andy';
+    protected $author = 'aj';
 
     public function up()
     {

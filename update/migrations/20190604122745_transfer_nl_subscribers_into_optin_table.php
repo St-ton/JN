@@ -2,7 +2,7 @@
 /**
  * transfer nl subscribers into optin table
  *
- * @author Clemens Rudolph
+ * @author cr
  * @created Tue, 04 Jun 2019 12:27:45 +0200
  */
 
@@ -16,7 +16,7 @@ use JTL\Update\Migration;
  */
 class Migration_20190604122745 extends Migration implements IMigration
 {
-    protected $author      = 'Clemens Rudolph';
+    protected $author      = 'cr';
     protected $description = 'Transfer NL subscribers into optin table';
 
     public function up()

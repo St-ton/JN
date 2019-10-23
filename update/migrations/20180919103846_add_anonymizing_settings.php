@@ -12,7 +12,7 @@ use JTL\Update\Migration;
  */
 class Migration_20180919103846 extends Migration implements IMigration
 {
-    protected $author      = 'Clemens Rudolph';
+    protected $author      = 'cr';
     protected $description = 'add anonymizing settings';
 
     public function up()

@@ -2,7 +2,7 @@
 /**
  * Enable article fulltext search
  *
- * @author Falk Prüfer
+ * @author fp
  * @created Mon, 09 Jan 2017 11:47:28 +0100
  */
 

@@ -19,8 +19,9 @@ use JTL\Extensions\Upload\Upload;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Language\LanguageHelper;
+use JTL\Plugin\Payment\LegacyMethod;
+use JTL\Plugin\Payment\Method as PaymentMethod;
 use JTL\Shop;
-use PaymentMethod;
 use stdClass;
 
 /**
@@ -520,15 +521,13 @@ class Bestellung
                 $this->Waehrung
             );
             if ($this->kZahlungsart > 0) {
-                require_once \PFAD_ROOT . \PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
                 $this->Zahlungsart = $db->select(
                     'tzahlungsart',
                     'kZahlungsart',
                     (int)$this->kZahlungsart
                 );
                 if ($this->Zahlungsart !== null) {
-                    $oPaymentMethod = new PaymentMethod($this->Zahlungsart->cModulId, 1);
-                    $oZahlungsart   = $oPaymentMethod::create($this->Zahlungsart->cModulId);
+                    $oZahlungsart = LegacyMethod::create($this->Zahlungsart->cModulId, 1);
                     if ($oZahlungsart !== null) {
                         $this->Zahlungsart->bPayAgain = $oZahlungsart->canPayAgain();
                     }

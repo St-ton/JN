@@ -22,6 +22,8 @@ use JTL\Plugin\Admin\Validation\LegacyPluginValidator;
 use JTL\Plugin\Admin\Validation\PluginValidator;
 use JTL\Plugin\Helper;
 use JTL\Plugin\InstallCode;
+use JTL\Plugin\LegacyPluginLoader;
+use JTL\Plugin\PluginLoader;
 use JTL\Plugin\State;
 use JTL\Shop;
 use JTL\XMLParser;
@@ -46,13 +48,13 @@ $db              = Shop::Container()->getDB();
 $cache           = Shop::Container()->getCache();
 $parser          = new XMLParser();
 $uninstaller     = new Uninstaller($db, $cache);
-$validator       = new LegacyPluginValidator($db, $parser);
-$modernValidator = new PluginValidator($db, $parser);
-$listing         = new Listing($db, $cache, $validator, $modernValidator);
-$installer       = new Installer($db, $uninstaller, $validator, $modernValidator);
+$legacyValidator = new LegacyPluginValidator($db, $parser);
+$pluginValidator = new PluginValidator($db, $parser);
+$listing         = new Listing($db, $cache, $legacyValidator, $pluginValidator);
+$installer       = new Installer($db, $uninstaller, $legacyValidator, $pluginValidator);
 $updater         = new Updater($db, $installer);
 $extractor       = new Extractor($parser);
-$stateChanger    = new StateChanger($db, $cache, $validator, $modernValidator);
+$stateChanger    = new StateChanger($db, $cache, $legacyValidator, $pluginValidator);
 if (isset($_SESSION['plugin_msg'])) {
     $notice = $_SESSION['plugin_msg'];
     unset($_SESSION['plugin_msg']);
@@ -95,12 +97,13 @@ if ($pluginUploaded === true) {
         ->assign('pluginsAvailable', $pluginsAvailable)
         ->assign('pluginsErroneous', $pluginsErroneous);
 
-    $response->html                   = new stdClass();
-    $response->html->verfuegbar       = $smarty->fetch('tpl_inc/pluginverwaltung_uebersicht_verfuegbar.tpl');
-    $response->html->verfuegbar_count = count($pluginsAvailable);
-    $response->html->fehlerhaft       = $smarty->fetch('tpl_inc/pluginverwaltung_uebersicht_fehlerhaft.tpl');
-    $response->html->fehlerhaft_count = $pluginsErroneous->count();
-    die(json_encode($response));
+    $html                  = new stdClass();
+    $html->available       = $smarty->fetch('tpl_inc/pluginverwaltung_uebersicht_verfuegbar.tpl');
+    $html->available_count = $pluginsAvailable->count();
+    $html->erroneous       = $smarty->fetch('tpl_inc/pluginverwaltung_uebersicht_fehlerhaft.tpl');
+    $html->erroneous_count = $pluginsErroneous->count();
+    $response->setHtml($html);
+    die($response->toJson());
 }
 
 if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::validateToken()) {
@@ -213,7 +216,10 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
             } elseif (isset($_POST['reload'])) { // Reload
                 $plugin = $db->select('tplugin', 'kPlugin', $pluginID);
                 if (isset($plugin->kPlugin) && $plugin->kPlugin > 0) {
-                    $res = $stateChanger->reload($plugin, true);
+                    $loader = (int)$plugin->bExtension === 1
+                        ? new PluginLoader($db, $cache)
+                        : new LegacyPluginLoader($db, $cache);
+                    $res    = $stateChanger->reload($loader->init((int)$plugin->kPlugin), true);
                     if ($res === InstallCode::OK || $res === InstallCode::OK_LEGACY) {
                         $notice = __('successPluginRefresh');
                         $reload = true;

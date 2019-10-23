@@ -42,7 +42,7 @@
                     {elseif $oNavigationsinfo->getCharacteristicValue() !== null}
                         {$navData = $oNavigationsinfo->getCharacteristicValue()}
                     {/if}
-                    {if $navData|default:null !== null}
+                    {if $navData->getImage(\JTL\Media\Image::SIZE_XS)|default:null !== null}}
                         {image fluid-grow=true lazy=true webp=true
                             src=$navData->getImage(\JTL\Media\Image::SIZE_XS)
                             srcset="{$navData->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_kategorien_mini_breite}w,

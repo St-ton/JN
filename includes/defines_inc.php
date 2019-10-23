@@ -44,7 +44,7 @@ define('CONF_AUSWAHLASSISTENT', 121);
 define('CONF_CACHING', 124);
 define('CONF_LOGO', 125);
 define('CONF_PLUGINZAHLUNGSARTEN', 126);
-define('CONF_FTP', 127);
+define('CONF_FS', 127);
 define('CONF_CRON', 128);
 //
 define('C_WARENKORBPOS_TYP_ARTIKEL', 1);

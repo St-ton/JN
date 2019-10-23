@@ -22,12 +22,12 @@ $alertHelper  = Shop::Container()->getAlertService();
 Shop::Container()->getGetText()->loadConfigLocales(true, true);
 
 if (!empty($_POST) && Form::validateToken()) {
-    $alertHelper->addAlert(Alert::TYPE_SUCCESS, saveAdminSectionSettings(CONF_FTP, $_POST), 'saveSettings');
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, saveAdminSectionSettings(CONF_FS, $_POST), 'saveSettings');
     $shopSettings->reset();
 
     if (isset($_POST['test'])) {
         try {
-            $fs = new Filesystem(new Ftp([
+            $fs         = new Filesystem(new Ftp([
                 'host'                 => $_POST['ftp_hostname'],
                 'port'                 => (int)($_POST['ftp_port'] ?? 21),
                 'username'             => $_POST['ftp_user'],
@@ -38,7 +38,6 @@ if (!empty($_POST) && Form::validateToken()) {
                 'passive'              => true,
                 'ignorePassiveAddress' => false
             ]));
-
             $isShopRoot = $fs->has('includes/config.JTL-Shop.ini.php');
             if ($isShopRoot) {
                 $alertHelper->addAlert(Alert::TYPE_INFO, __('ftpValidConnection'), 'ftpValidConnection');
@@ -50,10 +49,21 @@ if (!empty($_POST) && Form::validateToken()) {
         }
     }
 }
-
-$config = getAdminSectionSettings(CONF_FTP);
+$config = getAdminSectionSettings(CONF_FS);
 Shop::Container()->getGetText()->localizeConfigs($config);
 
+$byMethod = [];
+$conf     = Shop::getSettings([CONF_FS])['fs'];
+foreach ($conf as $item => $value) {
+    [$type, $option] = explode('_', $item);
+    if (!isset($byMethod[$type])) {
+        $byMethod[$type] = [];
+    }
+    $byMethod[$type][$option] = $value;
+}
+//Shop::dbg($byMethod, false, 'by:');
+//Shop::dbg($config, true);
+
 $smarty->assign('oConfig_arr', $config)
-    ->assign('oConfig', Shop::getSettings([CONF_FTP])['ftp'])
-    ->display('ftp.tpl');
+    ->assign('configByMethod', $byMethod)
+    ->display('filesystem.tpl');

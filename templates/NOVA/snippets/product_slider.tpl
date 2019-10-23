@@ -25,7 +25,7 @@
                         {/block}
                     {/if}
                     {block name='snippets-product-slider-box-products'}
-                        <div class="mb-4 {if $tplscope === 'box'}{block name='product-box-slider-class'}evo-box-slider{/block}{elseif $tplscope === 'half'}evo-slider-half{block name='product-slider-class'}evo-slider{/block}{/if}">
+                        <div class="mb-4 carousel carousel-arrows-inside {if $tplscope === 'box'}{block name='product-box-slider-class'}evo-box-slider{/block}{elseif $tplscope === 'half'}evo-slider-half{block name='product-slider-class'}evo-slider{/block}{/if}">
                             {foreach $productlist as $product}
                                 {block name='snippets-product-slider-include-item-slider-box'}
                                     <div class="product-wrapper{if isset($style)} {$style}{/if}" {if isset($Link) && $Link->getLinkType() === $smarty.const.LINKTYP_STARTSEITE}itemprop="about"{else}itemprop="isRelatedTo"{/if} itemscope itemtype="http://schema.org/Product">
@@ -56,7 +56,7 @@
                         {/block}
                     {/if}
                     {block name='snippets-product-slider-other-products'}
-                        <div class="mb-4 {block name='product-slider-class'}{if $tplscope === 'half'}evo-slider-half{else}evo-slider{/if}{/block}">
+                        <div class="mb-4 carousel carousel-arrows-inside {block name='product-slider-class'}{if $tplscope === 'half'}evo-slider-half{else}evo-slider{/if}{/block}">
                             {foreach $productlist as $product}
                                 {block name='snippets-product-slider-include-item-slider'}
                                     <div class="product-wrapper{if isset($style)} {$style}{/if}" {if isset($Link) && $Link->getLinkType() === $smarty.const.LINKTYP_STARTSEITE}itemprop="about"{else}itemprop="isRelatedTo"{/if} itemscope itemtype="http://schema.org/Product">

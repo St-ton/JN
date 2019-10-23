@@ -50,7 +50,7 @@
   &.btn-lg { @include button-size($btn-padding-x-lg / 1.4, $btn-padding-x-lg / 1.4, $btn-font-size-lg * 1.15, 1, 50%); }
 }
 
-.btn-icon-primary { border-color: map-get($grays, dark); color: map-get($grays, dark); background-color: $white;
+.btn-icon-primary { border-color: $gray-light; color: $gray-light; background-color: $white;
   @include hover { border-color: $primary; color: $primary; }
 
   &.disabled, &:disabled { background-color: $gray-medium; color: $white; border-color: $gray-medium; }

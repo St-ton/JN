@@ -1,0 +1,20 @@
+
+.table {
+	tbody:first-child tr:first-child td { border-top: 0; }
+}
+
+.table-bordered-outline {
+	tr { border-width: 0 $table-border-width; border-style: solid; border-color: $table-border-color;
+		&:first-child { border-top-width: $table-border-width; }
+		&:last-child { border-bottom-width: $table-border-width; }
+	}
+	th, td { border-width: 0; }
+}
+
+.table-vertical-middle {
+	th, td { vertical-align: middle; }
+}
+
+.table-border-medium {
+	th, td { border-width: 0 0 $table-border-width 0; border-style: solid; border-color: $gray-medium; padding: 1.5rem 1rem; }
+}

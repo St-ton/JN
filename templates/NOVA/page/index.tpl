@@ -53,7 +53,7 @@
                         </div>
                     {/block}
                     {block name='page-index-news'}
-                        {row itemprop="about" itemscope=true itemtype="http://schema.org/Blog" class="news-slider mx-0"}
+                        {row itemprop="about" itemscope=true itemtype="http://schema.org/Blog" class="carousel carousel-arrows-inside news-slider mx-0"}
                             {foreach $oNews_arr as $newsItem}
                                 {col}
                                     {block name='page-index-include-preview'}

@@ -38,10 +38,14 @@ class Extractor
      */
     private $parser;
 
+    /**
+     * @var Filesystem
+     */
     private $rootSystem;
 
-    private $pluginSystem;
-
+    /**
+     * @var MountManager
+     */
     private $manager;
 
     /**

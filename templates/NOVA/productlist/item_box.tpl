@@ -100,7 +100,7 @@
                         <div class="caption mt-2 text-left">
                             {block name='productlist-item-box-caption-short-desc'}
                                 <div class="productbox-title" itemprop="name">
-                                    {link href=$Artikel->cURLFull class="text-truncate-fade"}
+                                    {link href=$Artikel->cURLFull class="text-clamp-2"}
                                         {$Artikel->cKurzbezeichnung}
                                     {/link}
                                 </div>

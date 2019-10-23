@@ -22693,7 +22693,7 @@ label {
     width: 100%;
     height: 100%;
   }
-  .productbox.productbox-hover.productbox-column:hover .productbox-inner {
+  .productbox.productbox-hover.productbox-column:hover .productbox-inner.pos-abs {
     position: absolute;
     left: 0;
     top: 0;
@@ -24533,6 +24533,13 @@ body {
   position: sticky;
   top: 10rem;
   z-index: 1020 -1;
+}
+
+.text-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 /* utilities */

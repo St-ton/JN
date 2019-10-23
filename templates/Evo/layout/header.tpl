@@ -119,7 +119,7 @@
 <div id="main-wrapper" class="main-wrapper{if $bExclusive} exclusive{/if}{if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'boxed'} boxed{else} fluid{/if}{if $hasLeftPanel} aside-active{/if}">
 {/block}
 {if !$bExclusive}
-    {if isset($bAdminWartungsmodus) && $bAdminWartungsmodus}
+    {if $bAdminWartungsmodus === true}
         <div id="maintenance-mode" class="navbar navbar-inverse">
             <div class="container">
                 <div class="navbar-text text-center">
@@ -128,7 +128,15 @@
             </div>
          </div>
     {/if}
-
+    {if $smarty.const.SAFE_MODE === true}
+        <div id="safe-mode" class="navbar navbar-inverse">
+            <div class="container">
+                <div class="navbar-text text-center">
+                    {lang key='safeModeActive' section='global'}
+                </div>
+            </div>
+         </div>
+    {/if}
     {block name='header'}
         {*{if \JTL\Shop::isAdmin() && $opc->isEditMode() === false}*}
             {*{include file='layout/header_composer_menu.tpl'}*}

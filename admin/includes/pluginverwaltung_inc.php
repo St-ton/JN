@@ -54,14 +54,16 @@ function pluginPlausiIntern($xml, $dir)
 function updatePlugin(int $pluginID)
 {
     trigger_error(__FILE__ . ': calling ' . __FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $db              = Shop::Container()->getDB();
-    $cache           = Shop::Container()->getCache();
-    $parser          = new XMLParser();
-    $uninstaller     = new Uninstaller($db, $cache);
-    $validator       = new LegacyPluginValidator($db, $parser);
-    $modernValidator = new PluginValidator($db, $parser);
-    $installer       = new Installer($db, $uninstaller, $validator, $modernValidator);
-    $updater         = new Updater($db, $installer);
+    $db        = Shop::Container()->getDB();
+    $cache     = Shop::Container()->getCache();
+    $parser    = new XMLParser();
+    $installer = new Installer(
+        $db,
+        new Uninstaller($db, $cache),
+        new LegacyPluginValidator($db, $parser),
+        new PluginValidator($db, $parser)
+    );
+    $updater   = new Updater($db, $installer);
 
     return $updater->update($pluginID);
 }
@@ -77,13 +79,15 @@ function updatePlugin(int $pluginID)
 function installierePluginVorbereitung($dir, $oldPlugin = 0)
 {
     trigger_error(__FILE__ . ': calling ' . __FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $db              = Shop::Container()->getDB();
-    $cache           = Shop::Container()->getCache();
-    $parser          = new XMLParser();
-    $uninstaller     = new Uninstaller($db, $cache);
-    $validator       = new LegacyPluginValidator($db, $parser);
-    $modernValidator = new PluginValidator($db, $parser);
-    $installer       = new Installer($db, $uninstaller, $validator, $modernValidator);
+    $db        = Shop::Container()->getDB();
+    $cache     = Shop::Container()->getCache();
+    $parser    = new XMLParser();
+    $installer = new Installer(
+        $db,
+        new Uninstaller($db, $cache),
+        new LegacyPluginValidator($db, $parser),
+        new PluginValidator($db, $parser)
+    );
     $installer->setDir($dir);
     if ($oldPlugin !== 0) {
         $installer->setPlugin($oldPlugin);

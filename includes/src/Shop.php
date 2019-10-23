@@ -843,9 +843,12 @@ final class Shop
     public static function bootstrap(bool $isFrontend = true): void
     {
         self::$isFrontend = $isFrontend;
-        $db               = self::Container()->getDB();
-        $cache            = self::Container()->getCache();
-        $cacheID          = 'plgnbtsrp';
+        if (\SAFE_MODE === true) {
+            return;
+        }
+        $db      = self::Container()->getDB();
+        $cache   = self::Container()->getCache();
+        $cacheID = 'plgnbtsrp';
         if (($plugins = $cache->get($cacheID)) === false) {
             $plugins = map($db->queryPrepared(
                 'SELECT kPlugin, bBootstrap, bExtension

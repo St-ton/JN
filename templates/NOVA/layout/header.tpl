@@ -293,9 +293,14 @@
     {if !$bExclusive}
         {include file=$opcDir|cat:'tpl/startmenu.tpl'}
 
-        {if isset($bAdminWartungsmodus) && $bAdminWartungsmodus}
+        {if $bAdminWartungsmodus}
             {block name='layout-header-maintenance-alert'}
                 {alert show=true variant="warning" id="maintenance-mode" dismissible=true}{lang key='adminMaintenanceMode'}{/alert}
+            {/block}
+        {/if}
+        {if $smarty.const.SAFE_MODE === true}
+            {block name='layout-header-safemode-alert'}
+                {alert show=true variant="warning" id="safe-mode" dismissible=true}{lang key='safeModeActive'}{/alert}
             {/block}
         {/if}
 
@@ -379,27 +384,32 @@
         {/block}
     {/if}
 
+    {block name='layout-header-main-wrapper-starttag'}
+        <main id="main-wrapper" class="{if $bExclusive} exclusive{/if}{if $hasLeftPanel} aside-active{/if}">
+        {opcMountPoint id='opc_before_main'}
+    {/block}
+
     {block name='layout-header-fluid-banner'}
         {assign var=isFluidBanner value=$Einstellungen.template.theme.banner_full_width === 'Y' && isset($oImageMap)}
         {if $isFluidBanner}
             {block name='layout-header-fluid-banner-include-banner'}
-                {include file='snippets/banner.tpl'}
+                {include file='snippets/banner.tpl' isFluid=true}
             {/block}
         {/if}
         {assign var=isFluidSlider value=$Einstellungen.template.theme.slider_full_width === 'Y' && isset($oSlider) && count($oSlider->getSlides()) > 0}
         {if $isFluidSlider}
             {block name='layout-header-fluid-banner-include-slider'}
-                {include file='snippets/slider.tpl'}
+                {include file='snippets/slider.tpl' isFluid=true}
             {/block}
         {/if}
     {/block}
-    {block name='layout-header-main-wrapper-starttag'}
-        <main id="main-wrapper" class="{if $bExclusive} exclusive{/if}{if $hasLeftPanel} aside-active{/if}">
-        {opcMountPoint id='opc_before_main'}
-    {/block}
+
     {block name='layout-header-content-all-starttags'}
         {block name='layout-header-content-wrapper-starttag'}
-            <div id="content-wrapper" class="container-fluid mt-0 pt-7">
+            <div id="content-wrapper"
+                 class="{if !$bExclusive && !empty($boxes.left|strip_tags|trim) && $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}
+                            container-fluid container-fluid-xl
+                        {/if} mt-0 {if $isFluidBanner || $isFluidSlider}pt-3{else}pt-7{/if}">
         {/block}
 
         {block name='layout-header-breadcrumb'}
@@ -408,13 +418,16 @@
             {/container}
         {/block}
 
-        {block name='layout-header-content-row-starttag'}
-            <div class="row">
+        {block name='layout-header-content-starttag'}
+            <div id="content" class="pb-6">
         {/block}
 
-        {block name='layout-header-content-starttag'}
-            <div id="content" class="col-12{if !$bExclusive && !empty($boxes.left|strip_tags|trim) && $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp} col-lg-8 col-xl-9 ml-auto{/if} order-lg-1 mb-6">
-        {/block}
+        {if !$bExclusive && !empty($boxes.left|strip_tags|trim) && $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}
+            {block name='layout-header-content-productlist-starttags'}
+                <div class="row">
+                    <div class="col-lg-8 col-xl-9 ml-auto order-lg-1">
+            {/block}
+        {/if}
 
         {block name='layout-header-alert'}
             {include file='snippets/alert_list.tpl'}

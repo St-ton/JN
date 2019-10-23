@@ -64,7 +64,7 @@
                                                 </li>
                                             {/if}
                                             {for $i=$oPagination->getLeftRangePage() to $oPagination->getRightRangePage()}
-                                                <li class="page-item">
+                                                <li class="page-item {if $oPagination->getPage() === $i}active{/if}">
                                                     {link class="page-link {if $oPagination->getPage() === $i}active{elseif $i > 0 && $i < $oPagination->getPageCount() - 1}d-none d-sm-block{/if}" href="{$cThisUrl}?{$oPagination->getId()}_nPage={$i}{$cUrlAppend}{$cAnchor}"}
                                                         {$i+1}
                                                     {/link}
@@ -110,14 +110,12 @@
 
                     {if $showFilter === true && (in_array('count', $parts) || in_array('sort', $parts))}
                         {block name='snippets-pagination-form'}
-                            {col cols="auto" class="ml-auto pl-0"}
+                            {col cols="auto" class="ml-auto pl-0 mt-3 mt-sm-0"}
                                 {form action="{$cThisUrl}{$cAnchor}" method="get" class="form-inline float-right"}
                                     {block name='snippets-pagination-form-content'}
-                                        {block name='snippets-pagination-form-hidden'}
-                                            {foreach $cParam_arr as $cParamName => $cParamValue}
-                                                {input type="hidden" name=$cParamName value=$cParamValue}
-                                            {/foreach}
-                                        {/block}
+                                        {foreach $cParam_arr as $cParamName => $cParamValue}
+                                            {input type="hidden" name=$cParamName value=$cParamValue}
+                                        {/foreach}
                                         {if in_array('count', $parts)}
                                             {block name='snippets-pagination-form-items-pre-page'}
                                                 {formgroup class="items-per-page-group ml-3"}

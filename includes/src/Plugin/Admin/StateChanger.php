@@ -82,32 +82,33 @@ class StateChanger
             return InstallCode::NO_PLUGIN_FOUND;
         }
         if ((int)$pluginData->bExtension === 1) {
-            $path   = \PFAD_ROOT . \PLUGIN_DIR;
-            $valid  = $this->pluginValidator->validateByPath($path . $pluginData->cVerzeichnis);
-            $loader = new PluginLoader($this->db, $this->cache);
+            $path      = \PFAD_ROOT . \PLUGIN_DIR;
+            $validator = $this->pluginValidator;
+            $loader    = new PluginLoader($this->db, $this->cache);
         } else {
-            $path   = \PFAD_ROOT . \PFAD_PLUGIN;
-            $valid  = $this->legacyValidator->validateByPath($path . $pluginData->cVerzeichnis);
-            $loader = new LegacyPluginLoader($this->db, $this->cache);
+            $path      = \PFAD_ROOT . \PFAD_PLUGIN;
+            $validator = $this->legacyValidator;
+            $loader    = new LegacyPluginLoader($this->db, $this->cache);
         }
+        $valid = $validator->validateByPath($path . $pluginData->cVerzeichnis);
         if (!\in_array($valid, [InstallCode::OK, InstallCode::OK_LEGACY, InstallCode::DUPLICATE_PLUGIN_ID], true)) {
             return $valid;
         }
-        $affected = $this->db->update(
+        $affectedRow = $this->db->update(
             'tplugin',
             'kPlugin',
             $pluginID,
             (object)['nStatus' => State::ACTIVATED]
         );
-        $this->db->update('tlink', 'kPlugin', $pluginID, (object)['bIsActive' => 1]);
         $this->db->update('tadminwidgets', 'kPlugin', $pluginID, (object)['bActive' => 1]);
+        $this->db->update('tlink', 'kPlugin', $pluginID, (object)['bIsActive' => 1]);
         $this->db->update('topcportlet', 'kPlugin', $pluginID, (object)['bActive' => 1]);
         $this->db->update('topcblueprint', 'kPlugin', $pluginID, (object)['bActive' => 1]);
         if (($p = Helper::bootstrap($pluginID, $loader)) !== null) {
             $p->enabled();
         }
 
-        return $affected > 0 ? InstallCode::OK : InstallCode::NO_PLUGIN_FOUND;
+        return $affectedRow > 0 ? InstallCode::OK : InstallCode::NO_PLUGIN_FOUND;
     }
 
     /**
@@ -120,8 +121,8 @@ class StateChanger
         if ($pluginID <= 0) {
             return InstallCode::WRONG_PARAM;
         }
-        $data   = $this->db->select('tplugin', 'kPlugin', $pluginID);
-        $loader = (int)$data->bExtension === 1
+        $pluginData = $this->db->select('tplugin', 'kPlugin', $pluginID);
+        $loader     = (int)$pluginData->bExtension === 1
             ? new PluginLoader($this->db, $this->cache)
             : new LegacyPluginLoader($this->db, $this->cache);
         if (($p = Helper::bootstrap($pluginID, $loader)) !== null) {
@@ -141,6 +142,7 @@ class StateChanger
     /**
      * @param PluginInterface $plugin
      * @param bool            $forceReload
+     * @throws \Exception
      * @return int
      * @former reloadPlugin()
      * @throws \Exception

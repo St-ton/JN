@@ -14,7 +14,7 @@ use JTL\Update\Migration;
  */
 class Migration_20180202145224 extends Migration implements IMigration
 {
-    protected $author      = 'mscho';
+    protected $author      = 'mschop';
     protected $description = 'Add Table tpasswordreset';
 
     public function up()

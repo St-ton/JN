@@ -158,6 +158,6 @@ function ackCheck(kPlugin, hash)
                     </div>
                 </div>
             </div>
-        {/if}
+        </div>
     </div>
 </div>

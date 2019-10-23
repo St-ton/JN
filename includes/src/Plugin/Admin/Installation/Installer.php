@@ -65,19 +65,19 @@ final class Installer
      * Installer constructor.
      * @param DbInterface        $db
      * @param Uninstaller        $uninstaller
-     * @param ValidatorInterface $validator
-     * @param ValidatorInterface $modernValidator
+     * @param ValidatorInterface $legacyValidator
+     * @param ValidatorInterface $pluginValidator
      */
     public function __construct(
         DbInterface $db,
         Uninstaller $uninstaller,
-        ValidatorInterface $validator,
-        ValidatorInterface $modernValidator
+        ValidatorInterface $legacyValidator,
+        ValidatorInterface $pluginValidator
     ) {
         $this->db              = $db;
         $this->uninstaller     = $uninstaller;
-        $this->legacyValidator = $validator;
-        $this->pluginValidator = $modernValidator;
+        $this->legacyValidator = $legacyValidator;
+        $this->pluginValidator = $pluginValidator;
     }
 
     /**
@@ -121,18 +121,18 @@ final class Installer
         if (empty($this->dir)) {
             return InstallCode::WRONG_PARAM;
         }
-        $validator = $this->legacyValidator;
-        $baseDir   = \PFAD_ROOT . \PFAD_PLUGIN . \basename($this->dir);
-        if (!\file_exists($baseDir . '/' . \PLUGIN_INFO_FILE)) {
-            $baseDir   = \PFAD_ROOT . \PLUGIN_DIR . \basename($this->dir);
-            $validator = $this->pluginValidator;
-            if (!\file_exists($baseDir . '/' . \PLUGIN_INFO_FILE)) {
+        $validator  = $this->pluginValidator;
+        $pluginPath = \PFAD_ROOT . \PLUGIN_DIR . \basename($this->dir);
+        if (!\file_exists($pluginPath . '/' . \PLUGIN_INFO_FILE)) {
+            $pluginPath = \PFAD_ROOT . \PFAD_PLUGIN . \basename($this->dir);
+            $validator  = $this->legacyValidator;
+            if (!\file_exists($pluginPath . '/' . \PLUGIN_INFO_FILE)) {
                 return InstallCode::INFO_XML_MISSING;
             }
         }
-        $validator->setDir($baseDir);
+        $validator->setDir($pluginPath);
         $parser = new XMLParser();
-        $xml    = $parser->parse($baseDir . '/' . \PLUGIN_INFO_FILE);
+        $xml    = $parser->parse($pluginPath . '/' . \PLUGIN_INFO_FILE);
         $code   = $validator->pluginPlausiIntern($xml, $this->plugin !== null);
         if ($code === InstallCode::DUPLICATE_PLUGIN_ID && $this->plugin !== null && $this->plugin->getID() > 0) {
             $code = InstallCode::OK;
@@ -154,9 +154,10 @@ final class Installer
     public function install(array $xml): int
     {
         $baseNode           = $this->getBaseNode($xml);
+        $baseDir            = \basename($this->dir);
         $versionNode        = $baseNode['Install'][0]['Version'] ?? null;
         $xmlVersion         = (int)$baseNode['XMLVersion'];
-        $basePath           = \PFAD_ROOT . \PFAD_PLUGIN . $this->dir . \DIRECTORY_SEPARATOR;
+        $basePath           = \PFAD_ROOT . \PFAD_PLUGIN . $baseDir . \DIRECTORY_SEPARATOR;
         $lastVersionKey     = null;
         $plugin             = new stdClass();
         $plugin->nStatus    = $this->plugin === null ? State::ACTIVATED : $this->plugin->getState();
@@ -168,7 +169,7 @@ final class Installer
             $bootstrapper   = $versionedDir . \OLD_BOOTSTRAPPER;
         } else {
             $version            = $baseNode['Version'];
-            $basePath           = \PFAD_ROOT . \PLUGIN_DIR . $this->dir . \DIRECTORY_SEPARATOR;
+            $basePath           = \PFAD_ROOT . \PLUGIN_DIR . $baseDir . \DIRECTORY_SEPARATOR;
             $versionedDir       = $basePath;
             $versionNode        = [];
             $bootstrapper       = $versionedDir . \PLUGIN_BOOTSTRAPPER;
@@ -180,7 +181,7 @@ final class Installer
         $plugin->cAutor               = $baseNode['Author'];
         $plugin->cURL                 = $baseNode['URL'];
         $plugin->cIcon                = $baseNode['Icon'] ?? null;
-        $plugin->cVerzeichnis         = $this->dir;
+        $plugin->cVerzeichnis         = $baseDir;
         $plugin->cPluginID            = $baseNode['PluginID'];
         $plugin->cStoreID             = $baseNode['StoreID'] ?? null;
         $plugin->cFehler              = '';
@@ -193,11 +194,10 @@ final class Installer
             : $baseNode['CreateDate'];
         $plugin->bBootstrap           = (int)\is_file($bootstrapper);
         $plugin                       = $this->checkLicense($versionedDir, $plugin);
-
-        $plugin->dInstalliert = ($this->plugin !== null && $this->plugin->getID() > 0)
+        $plugin->dInstalliert         = ($this->plugin !== null && $this->plugin->getID() > 0)
             ? $this->plugin->getMeta()->getDateInstalled()->format('Y-m-d H:i:s')
             : 'NOW()';
-        $plugin->kPlugin      = $this->db->insert('tplugin', $plugin);
+        $plugin->kPlugin              = $this->db->insert('tplugin', $plugin);
         $this->flushCache($baseNode);
         if ($plugin->kPlugin <= 0) {
             return InstallCode::WRONG_PARAM;
@@ -440,7 +440,7 @@ final class Installer
             $sql = Text::removeNumerousWhitespaces($sql);
             if (\mb_stripos($sql, 'create table') !== false) {
                 // when using "create table if not exists" statement, the table name is at index 5, otherwise at 2
-                $index = (\mb_stripos($sql, 'create table if not exists') !== false) ? 5 : 2;
+                $index = (\mb_stripos($sql, /** @lang text */'create table if not exists') !== false) ? 5 : 2;
                 $tmp   = \explode(' ', $sql);
                 $table = \str_replace(["'", '`'], '', $tmp[$index]);
                 \preg_match($sqlRegEx, $table, $hits);
@@ -458,7 +458,7 @@ final class Installer
             } elseif (\mb_stripos($sql, 'drop table') !== false) {
                 // SQL versucht eine Tabelle zu löschen => prüfen ob es sich um eine Plugintabelle handelt
                 // when using "drop table if exists" statement, the table name is at index 5, otherwise at 2
-                $index = (\mb_stripos($sql, 'drop table if exists') !== false) ? 4 : 2;
+                $index = (\mb_stripos($sql, /** @lang text */'drop table if exists') !== false) ? 4 : 2;
                 $tmp   = \explode(' ', Text::removeNumerousWhitespaces($sql));
                 $table = \str_replace(["'", '`'], '', $tmp[$index]);
                 \preg_match($sqlRegEx, $table, $hits);
@@ -525,6 +525,7 @@ final class Installer
             (object)['kCustomID' => $oldPluginID]
         );
         $this->updateMailTemplates($oldPluginID, $pluginID);
+        $this->cleanUpMailTemplates();
         $this->db->update('tlink', 'kPlugin', $pluginID, (object)['kPlugin' => $oldPluginID]);
         // tboxen
         // Ausnahme: Gibt es noch eine Boxenvorlage in der Pluginversion?
@@ -644,8 +645,6 @@ final class Installer
         $this->db->update('temailvorlage', 'kPlugin', $pluginID, (object)['kPlugin' => $oldPluginID]);
         $oldMailTpl = $this->db->select('temailvorlage', 'kPlugin', $oldPluginID);
         $newMailTpl = $this->db->select('temailvorlage', 'kPlugin', $pluginID);
-        $newTplID   = 0;
-        $oldTplID   = 0;
         if (isset($newMailTpl->kEmailvorlage, $oldMailTpl->kEmailvorlage)) {
             $this->db->update(
                 'tpluginemailvorlageeinstellungen',
@@ -667,23 +666,42 @@ final class Installer
                 'kEmailvorlage'
             );
             if (isset($newTpl->kEmailvorlage) && $newTpl->kEmailvorlage > 0) {
-                if ($newTplID === 0 || $oldTplID === 0) {
-                    $newTplID = (int)$newTpl->kEmailvorlage;
-                    $oldTplID = (int)$oldTpl->kEmailvorlage;
-                }
+                $newTplID = (int)$newTpl->kEmailvorlage;
+                $oldTplID = (int)$oldTpl->kEmailvorlage;
+                $this->db->delete('temailvorlagesprache', 'kEmailvorlage', $newTplID);
                 $this->db->update(
                     'temailvorlagesprache',
                     'kEmailvorlage',
-                    $oldTpl->kEmailvorlage,
-                    (object)['kEmailvorlage' => $newTpl->kEmailvorlage]
+                    $oldTplID,
+                    (object)['kEmailvorlage' => $newTplID]
+                );
+                $this->db->update(
+                    'tpluginemailvorlageeinstellungen',
+                    'kEmailvorlage',
+                    $oldTplID,
+                    (object)['kEmailvorlage' => $newTplID]
                 );
             }
         }
-        $this->db->update(
-            'tpluginemailvorlageeinstellungen',
-            'kEmailvorlage',
-            $oldTplID,
-            (object)['kEmailvorlage' => $newTplID]
+    }
+
+    private function cleanUpMailTemplates(): void
+    {
+        $this->db->query(
+            'DELETE FROM tpluginemailvorlageeinstellungen
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM temailvorlage
+                    WHERE temailvorlage.kEmailvorlage = tpluginemailvorlageeinstellungen.kEmailvorlage
+                )',
+            ReturnType::DEFAULT
+        );
+        $this->db->query(
+            'DELETE FROM tpluginemailvorlagesprache
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM temailvorlage
+                    WHERE temailvorlage.kEmailvorlage = tpluginemailvorlagesprache.kEmailvorlage
+                )',
+            ReturnType::DEFAULT
         );
     }
 

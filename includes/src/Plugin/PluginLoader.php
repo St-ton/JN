@@ -83,7 +83,6 @@ class PluginLoader extends AbstractLoader
         $paths   = $this->loadPaths($obj->cVerzeichnis);
         $plugin  = new Plugin();
         $getText = Shop::Container()->getGetText();
-
         $getText->setLanguage($_SESSION['AdminAccount']->language ?? $getText->getDefaultLanguage());
         $plugin->setID($id);
         $plugin->setIsExtension(true);
@@ -92,6 +91,7 @@ class PluginLoader extends AbstractLoader
         $plugin->setMeta($this->loadMetaData($obj));
         $this->loadMarkdownFiles($paths->getBasePath(), $plugin->getMeta());
         $this->loadAdminMenu($plugin);
+        $plugin->setHooks($this->loadHooks($id));
         $plugin->setState((int)$obj->nStatus);
         $plugin->setBootstrap(true);
         $plugin->setLinks($this->loadLinks($id));

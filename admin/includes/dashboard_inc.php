@@ -49,7 +49,7 @@ function getWidgets(bool $bActive = true)
         $widget->bExtension = (int)$widget->bExtension;
         $widget->plugin     = null;
 
-        if ($widget->cPluginID !== null) {
+        if ($widget->cPluginID !== null && SAFE_MODE === false) {
             if (array_key_exists($widget->cPluginID, $plugins)) {
                 $widget->plugin = $plugins[$widget->cPluginID];
             } else {
@@ -93,7 +93,7 @@ function getWidgets(bool $bActive = true)
             $className        = '\JTL\Widgets\\' . $widget->cClass;
             $classPath        = null;
 
-            if ($widget->kPlugin > 0) {
+            if ($widget->plugin !== null) {
                 $hit = $widget->plugin->getWidgets()->getWidgetByID($widget->kWidget);
 
                 if ($hit !== null) {

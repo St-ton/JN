@@ -1133,12 +1133,12 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/jtl-software/jtl-shop/tools/sccbs3.git",
-                "reference": "616488897900783e11af94820ba26dc50b36126d"
+                "reference": "7753502b87781b4d1566a0d79cd7660ed7f1e00b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/jtl-software%2Fjtl-shop%2Ftools%2Fsccbs3/repository/archive.zip?sha=616488897900783e11af94820ba26dc50b36126d",
-                "reference": "616488897900783e11af94820ba26dc50b36126d",
+                "url": "https://gitlab.com/api/v4/projects/jtl-software%2Fjtl-shop%2Ftools%2Fsccbs3/repository/archive.zip?sha=7753502b87781b4d1566a0d79cd7660ed7f1e00b",
+                "reference": "7753502b87781b4d1566a0d79cd7660ed7f1e00b",
                 "shasum": ""
             },
             "require": {
@@ -1166,7 +1166,7 @@
             "keywords": [
                 "jtl-shop"
             ],
-            "time": "2019-04-09T12:52:01+00:00"
+            "time": "2019-10-21T10:54:43+00:00"
         },
         {
             "name": "jtlshop/semver",

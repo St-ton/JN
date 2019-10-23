@@ -58,4 +58,24 @@ class Updater
 
         return $this->installer->prepare();
     }
+
+    /**
+     * @param ListingItem $item
+     * @return int
+     */
+    public function updateFromListingItem(ListingItem $item): int
+    {
+        if ($item === null || $item->getID() === 0) {
+            return InstallCode::WRONG_PARAM;
+        }
+        $loader = Helper::getLoaderByPluginID($item->getID(), $this->db);
+        if ($loader === null) {
+            return InstallCode::NO_PLUGIN_FOUND;
+        }
+        $plugin = $loader->init($item->getID(), true);
+        $this->installer->setPlugin($plugin);
+        $this->installer->setDir($item->getUpdateFromDir() ?? $plugin->getPaths()->getBaseDir());
+
+        return $this->installer->prepare();
+    }
 }

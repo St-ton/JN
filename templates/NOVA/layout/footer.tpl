@@ -4,29 +4,32 @@
  *}
 {block name='layout-footer'}
     {block name='layout-footer-content-all-closingtags'}
-        {block name='layout-footer-content-closingtag'}
-            {opcMountPoint id='opc_content' title='Default Area'}
-            </div>{* /content *}
-        {/block}
 
         {block name='layout-footer-aside'}
             {has_boxes position='left' assign='hasLeftBox'}
 
             {if $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp
-                && !$bExclusive
-                && $hasLeftBox
-                && !empty($boxes.left|strip_tags|trim)
+            && !$bExclusive
+            && $hasLeftBox
+            && !empty($boxes.left|strip_tags|trim)
             }
+                {block name='layout-footer-content-productlist-col-closingtag'}
+                    </div>{* /col *}
+                {/block}
                 {block name='layout-footer-sidepanel-left'}
                     <aside id="sidepanel_left" class="d-print-none col-12 col-lg-4 col-xl-3 order-lg-0 pr-lg-5 pr-xl-7">
                         {block name='footer-sidepanel-left-content'}{$boxes.left}{/block}
                     </aside>
                 {/block}
+                {block name='layout-footer-content-productlist-row-closingtag'}
+                    </div>{* /row *}
+                {/block}
             {/if}
         {/block}
 
-        {block name='layout-footer-content-row-closingtag'}
-            </div>{* /row *}
+        {block name='layout-footer-content-closingtag'}
+            {opcMountPoint id='opc_content' title='Default Area'}
+            </div>{* /content *}
         {/block}
 
         {block name='layout-footer-content-wrapper-closingtag'}
@@ -95,7 +98,7 @@
 
                     {block name='layout-footer-additional'}
                         {if $Einstellungen.template.footer.socialmedia_footer === 'Y' || $Einstellungen.template.footer.newsletter_footer === 'Y'}
-                            {row class="footer-additional"}
+                            {row class="mb-3 mt-5"}
                             {if $Einstellungen.template.footer.socialmedia_footer === 'Y'}
                                 {block name='layout-footer-socialmedia'}
                                     {col cols=12 class="footer-additional-wrapper col-auto mx-auto"}
@@ -200,17 +203,19 @@
                         {container fluid=true class='py-3 font-size-sm text-center"'}
                             {row}
                                 {assign var=isBrandFree value=JTL\Shop::isBrandfree()}
-                                {col class="text-right"}
-                                    {if !empty($meta_copyright)}<span itemprop="copyrightHolder">&copy; {$meta_copyright}</span>{/if}
-                                    {if $Einstellungen.global.global_zaehler_anzeigen === 'Y'}{lang key='counter'}: {$Besucherzaehler}{/if}
+                                {col}
+                                    {if !empty($meta_copyright)}
+                                        <span class="mr-2" itemprop="copyrightHolder">&copy; {$meta_copyright}</span>
+                                    {/if}
+                                    {if $Einstellungen.global.global_zaehler_anzeigen === 'Y'}
+                                        {lang key='counter'}: {$Besucherzaehler}
+                                    {/if}
+                                    {if !empty($Einstellungen.global.global_fusszeilehinweis)}
+                                        <span class="ml-2">{$Einstellungen.global.global_fusszeilehinweis}</span>
+                                    {/if}
                                 {/col}
-                                {if !empty($Einstellungen.global.global_fusszeilehinweis)}
-                                    {col class="text-left"}
-                                        {$Einstellungen.global.global_fusszeilehinweis}
-                                    {/col}
-                                {/if}
                                 {if !$isBrandFree}
-                                    {col class="text-right" id="system-credits"}
+                                    {col class="col-auto ml-auto" id="system-credits"}
                                         Powered by {link href="https://jtl-url.de/jtlshop" title="JTL-Shop" target="_blank" rel="noopener nofollow"}JTL-Shop{/link}
                                     {/col}
                                 {/if}

@@ -168,6 +168,23 @@ abstract class AbstractLoader implements LoaderInterface
     }
 
     /**
+     * @param int $id
+     * @return array
+     */
+    protected function loadHooks(int $id): array
+    {
+        return \array_map(function ($data) {
+            $hook = new Hook();
+            $hook->setPriority((int)$data->nPriority);
+            $hook->setFile($data->cDateiname);
+            $hook->setID((int)$data->nHook);
+            $hook->setPluginID((int)$data->kPlugin);
+
+            return $hook;
+        }, $this->db->selectAll('tpluginhook', 'kPlugin', $id));
+    }
+
+    /**
      * @param string $pluginDir
      * @return Paths
      */

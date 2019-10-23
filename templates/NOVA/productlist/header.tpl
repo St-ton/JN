@@ -91,7 +91,7 @@
     {block name='productlist-header-subcategories'}
         {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'N' && $oUnterKategorien_arr|@count > 0}
             {opcMountPoint id='opc_before_subcategories'}
-            {row class="row-eq-height content-cats-small clearfix d-none d-md-flex"}
+            {row class="row-eq-height content-cats-small clearfix"}
                 {foreach $oUnterKategorien_arr as $subCategory}
                     {col cols=6 md=4 lg=3}
                         {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'Y'}

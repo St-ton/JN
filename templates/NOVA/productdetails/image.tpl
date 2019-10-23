@@ -7,7 +7,7 @@
         {block name='productdetails-image-main'}
             {if !($Artikel->nIstVater && $Artikel->kVaterArtikel == 0)}
                 {block name='productdetails-image-actions'}
-                    <div class="product-actions py-2" data-toggle="product-actions">
+                    <div class="product-actions py-2 d-none d-md-flex" data-toggle="product-actions">
                         {if $Einstellungen.artikeldetails.artikeldetails_vergleichsliste_anzeigen === 'Y'}
                             {block name='productdetails-image-include-comparelist-button'}
                                 {include file='snippets/comparelist_button.tpl'}

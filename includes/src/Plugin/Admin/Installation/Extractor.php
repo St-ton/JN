@@ -94,17 +94,18 @@ class Extractor
         $this->manager->mountFilesystem('plgn', new Filesystem(new Local($target)));
         $ok = $this->manager->createDir('plgn://' . $dirName);
         foreach ($this->manager->listContents('root://' . \PFAD_DBES_TMP . $dirName, true) as $item) {
-            $target = \str_replace(\PFAD_DBES_TMP, '', $item['path']);
+            $source = $item['path'];
+            $target = \str_replace(\PFAD_DBES_TMP, '', $source);
             if ($item['type'] === 'dir') {
                 $ok = $ok && ($this->manager->has('plgn://' . $target)
                         || $this->manager->createDir('plgn://' . $target));
             } else {
                 try {
-                    $ok = $ok && $this->manager->move('root://' . $item['path'], 'plgn://' . $target);
+                    $ok = $ok && $this->manager->move('root://' . $source, 'plgn://' . $target);
                 } catch (FileExistsException $e) {
                     $ok = $ok
                         && $this->manager->delete('plgn://' . $target)
-                        && $this->manager->move('root://' . $item['path'], 'plgn://' . $target);
+                        && $this->manager->move('root://' . $source, 'plgn://' . $target);
                 }
             }
         }

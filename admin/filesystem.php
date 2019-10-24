@@ -10,11 +10,11 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->redirectOnFailure();
 
 use JTL\Alert\Alert;
+use JTL\Filesystem\AdapterFactory;
 use JTL\Filesystem\Filesystem;
 use JTL\Helpers\Form;
 use JTL\Shop;
 use JTL\Shopsetting;
-use League\Flysystem\Adapter\Ftp;
 
 $shopSettings = Shopsetting::getInstance();
 $alertHelper  = Shop::Container()->getAlertService();
@@ -27,43 +27,38 @@ if (!empty($_POST) && Form::validateToken()) {
 
     if (isset($_POST['test'])) {
         try {
-            $fs         = new Filesystem(new Ftp([
-                'host'                 => $_POST['ftp_hostname'],
-                'port'                 => (int)($_POST['ftp_port'] ?? 21),
-                'username'             => $_POST['ftp_user'],
-                'password'             => $_POST['ftp_pass'],
-                'ssl'                  => (int)$_POST['ftp_ssl'] === 1,
-                'root'                 => $_POST['ftp_path'],
-                'timeout'              => 60,
-                'passive'              => true,
-                'ignorePassiveAddress' => false
-            ]));
+            $config  = Shop::getSettings([CONF_FS])['fs'];
+            $factory = new AdapterFactory($config);
+            $factory->setFtpConfig([
+                'ftp_host'     => $_POST['ftp_hostname'],
+                'ftp_port'     => (int)($_POST['ftp_port'] ?? 21),
+                'ftp_username' => $_POST['ftp_user'],
+                'ftp_password' => $_POST['ftp_pass'],
+                'ftp_ssl'      => (int)$_POST['ftp_ssl'] === 1,
+                'ftp_root'     => $_POST['ftp_path']
+            ]);
+            $factory->setSftpConfig([
+                'sftp_host'     => $_POST['sftp_hostname'],
+                'sftp_port'     => (int)($_POST['sftp_port'] ?? 22),
+                'sftp_username' => $_POST['sftp_user'],
+                'sftp_password' => $_POST['sftp_pass'],
+                'sftp_privkey'  => $_POST['sftp_privkey'],
+                'sftp_root'     => $_POST['sftp_path']
+            ]);
+            $factory->setAdapter($_POST['fs_adapter']);
+            $fs         = new Filesystem($factory->getAdapter());
             $isShopRoot = $fs->has('includes/config.JTL-Shop.ini.php');
             if ($isShopRoot) {
-                $alertHelper->addAlert(Alert::TYPE_INFO, __('ftpValidConnection'), 'ftpValidConnection');
+                $alertHelper->addAlert(Alert::TYPE_INFO, __('fsValidConnection'), 'fsValidConnection');
             } else {
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('ftpInvalidShopRoot'), 'ftpInvalidShopRoot');
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('fsInvalidShopRoot'), 'fsInvalidShopRoot');
             }
         } catch (Exception $e) {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, $e->getMessage(), 'errorFTP');
+            $alertHelper->addAlert(Alert::TYPE_ERROR, $e->getMessage(), 'errorFS');
         }
     }
 }
 $config = getAdminSectionSettings(CONF_FS);
 Shop::Container()->getGetText()->localizeConfigs($config);
-
-$byMethod = [];
-$conf     = Shop::getSettings([CONF_FS])['fs'];
-foreach ($conf as $item => $value) {
-    [$type, $option] = explode('_', $item);
-    if (!isset($byMethod[$type])) {
-        $byMethod[$type] = [];
-    }
-    $byMethod[$type][$option] = $value;
-}
-//Shop::dbg($byMethod, false, 'by:');
-//Shop::dbg($config, true);
-
 $smarty->assign('oConfig_arr', $config)
-    ->assign('configByMethod', $byMethod)
     ->display('filesystem.tpl');

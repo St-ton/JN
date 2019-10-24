@@ -1,20 +1,20 @@
-msgid "ftp"
-msgstr "FTP-Account"
+msgid "fs"
+msgstr "Dateisystem"
 
-msgid "ftpDesc"
+msgid "fsDesc"
 msgstr " "
 
-msgid "ftpURL"
+msgid "fsURL"
 msgstr " "
 
-msgid "ftpSave"
+msgid "fsSave"
 msgstr "Speichern"
 
-msgid "ftpTest"
+msgid "fsTest"
 msgstr "Testen"
 
-msgid "ftpValidConnection"
+msgid "fsValidConnection"
 msgstr "Die Verbindung war erfolgreich."
 
-msgid "ftpInvalidShopRoot"
-msgstr "Es konnte keine gültige Shop-Installation gefunden werden. Bitte prüfen Sie den FTP-Pfad."
+msgid "fsInvalidShopRoot"
+msgstr "Es konnte keine gültige Shop-Installation gefunden werden. Bitte prüfen Sie den Pfad."

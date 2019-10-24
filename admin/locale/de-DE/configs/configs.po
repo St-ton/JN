@@ -3027,7 +3027,7 @@ msgid "sftp_pass_name"
 msgstr "Passwort"
 
 msgid "sftp_privkey_name"
-msgstr "Private key (Pfad oder Inhalt)"
+msgstr "Private key-Pfad"
 
 msgid "sftp_path_name"
 msgstr "Pfad zum Shop"
@@ -3046,6 +3046,9 @@ msgstr "FTP"
 
 msgid "fs_adapter_value(sftp)"
 msgstr "SFTP"
+
+msgid "methodTest"
+msgstr "Testen"
 
 msgid "cron_type_name"
 msgstr "Pseudo-Cron-Methode"

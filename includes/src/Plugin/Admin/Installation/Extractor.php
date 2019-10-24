@@ -7,12 +7,12 @@
 namespace JTL\Plugin\Admin\Installation;
 
 use InvalidArgumentException;
+use JTL\Shop;
 use JTL\XMLParser;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\FileExistsException;
 use League\Flysystem\Filesystem;
 use League\Flysystem\MountManager;
-use stdClass;
 use ZipArchive;
 
 /**
@@ -85,17 +85,17 @@ class Extractor
         }
         $parsed = $this->parser->parse($info);
         if (isset($parsed['jtlshopplugin']) && \is_array($parsed['jtlshopplugin'])) {
-            $target = self::PLUGINS_DIR;
+            $base = \PLUGIN_DIR;
         } elseif (isset($parsed['jtlshop3plugin']) && \is_array($parsed['jtlshop3plugin'])) {
-            $target = self::LEGACY_PLUGINS_DIR;
+            $base = \PFAD_PLUGIN;
         } else {
             throw new InvalidArgumentException('Cannot find plugin definition in ' . $info);
         }
-        $this->manager->mountFilesystem('plgn', new Filesystem(new Local($target)));
-        $ok = $this->manager->createDir('plgn://' . $dirName);
+        $this->manager->mountFilesystem('plgn', Shop::Container()->get(\JTL\Filesystem\Filesystem::class));
+        $ok = $this->manager->createDir('plgn://' . $base . $dirName);
         foreach ($this->manager->listContents('root://' . \PFAD_DBES_TMP . $dirName, true) as $item) {
             $source = $item['path'];
-            $target = \str_replace(\PFAD_DBES_TMP, '', $source);
+            $target = $base . \str_replace(\PFAD_DBES_TMP, '', $source);
             if ($item['type'] === 'dir') {
                 $ok = $ok && ($this->manager->has('plgn://' . $target)
                         || $this->manager->createDir('plgn://' . $target));
@@ -111,12 +111,12 @@ class Extractor
         }
         $this->rootSystem->deleteDir(\PFAD_DBES_TMP . $dirName);
         if ($ok === true) {
-            $this->response->setPath($target);
+            $this->response->setPath($base . $dirName);
 
             return true;
         }
         $this->response->setStatus(InstallationResponse::STATUS_FAILED);
-        $this->response->addMessage('Cannot move to ' . $target);
+        $this->response->addMessage('Cannot move to ' . $base . $dirName);
 
         return false;
     }

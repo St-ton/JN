@@ -1,44 +1,44 @@
 
-import { debounce, uniqid } from './../helpers.js'
-
+import { debounce, random } from './../helpers.js'
 
 const NAME					= 'navscrollbar'
 const VERSION				= '1.0.0'
-const UNIQID				= uniqid()
+const UNIQID				= random()
 const DATA_KEY				= `jtl.${NAME}`
 const EVENT_KEY				= `.${DATA_KEY}#${UNIQID}`
 const JQUERY_NO_CONFLICT	= $.fn[NAME]
 
 const Default = {
-	classes: {
-		scrollbarInner		: 'nav-scrollbar-inner',
-		scrollbarItems		: 'nav-scrollbar-item',
-		scrollbarArrow		: 'nav-scrollbar-arrow'
-	},
-	templates: {
-		arrowLeft: `
+    classes: {
+        scrollbarInner		: 'nav-scrollbar-inner',
+        scrollbarItems		: 'nav-scrollbar-item',
+        scrollbarArrow		: 'nav-scrollbar-arrow'
+    },
+    templates: {
+        arrowLeft: `
 			<div class="left">
 				<span class="fas fa-chevron-left"></span>
 			</div>
 		`,
-		arrowRight: `
+        arrowRight: `
 			<div class="right">
 				<span class="fas fa-chevron-right"></span>
 			</div>
 		`
-	},
-	showArrowOffset: 0,
-	clickTransitionDuration: 200,
-	enableDrag: false
+    },
+    showArrowOffset: 0,
+    clickTransitionDuration: 500,
+    clickScrollLength: 70, // percentage
+    enableDrag: false,
 }
 
 const Event = {
-	CLICK			: `click${EVENT_KEY}`,
-	MOUSEDOWN		: `mousedown${EVENT_KEY}`,
-	MOUSEMOVE		: `mousemove${EVENT_KEY}`,
-	MOUSEUP			: `mouseup${EVENT_KEY}`,
-	RESIZE			: `resize${EVENT_KEY}`,
-	SCROLL			: `scroll${EVENT_KEY}`
+    CLICK			: `click${EVENT_KEY}`,
+    MOUSEDOWN		: `mousedown${EVENT_KEY}`,
+    MOUSEMOVE		: `mousemove${EVENT_KEY}`,
+    MOUSEUP			: `mouseup${EVENT_KEY}`,
+    RESIZE			: `resize${EVENT_KEY}`,
+    SCROLL			: `scroll${EVENT_KEY}`
 }
 
 let $document	= $(document)
@@ -46,156 +46,156 @@ let $window		= $(window)
 
 
 export default class NavScrollbar {
-	constructor(element, config = {}) {
-		this.element = $(element)
-		this.config = $.extend(true, {}, Default, config)
+    constructor(element, config = {}) {
+        this.element = $(element)
+        this.config = $.extend(true, {}, Default, config)
 
-		this._isDragging = false
-		this._start = 0
-		this._startClientX = 0
-		this._distance = 0
-		this._itemWidth = 0
+        this._isDragging = false
+        this._start = 0
+        this._startClientX = 0
+        this._distance = 0
+        this._itemWidth = 0
 
-		this.$scrollBarInner = this.element.find(`.${this.config.classes.scrollbarInner}`)
-		this.$scrollBarItems = this.element.find(`.${this.config.classes.scrollbarItems}`)
+        this.$scrollBarInner = this.element.find(`.${this.config.classes.scrollbarInner}`)
+        this.$scrollBarItems = this.element.find(`.${this.config.classes.scrollbarItems}`)
 
-		this.$scrollBarArrowLeft	= $(this.config.templates.arrowLeft).addClass(`${this.config.classes.scrollbarArrow} disabled`)
-		this.$scrollBarArrowRight	= $(this.config.templates.arrowRight).addClass(`${this.config.classes.scrollbarArrow} disabled`)
+        this.$scrollBarArrowLeft	= $(this.config.templates.arrowLeft).addClass(`${this.config.classes.scrollbarArrow} disabled`)
+        this.$scrollBarArrowRight	= $(this.config.templates.arrowRight).addClass(`${this.config.classes.scrollbarArrow} disabled`)
 
-		this.element.prepend(this.$scrollBarArrowLeft)
-		this.element.append(this.$scrollBarArrowRight)
+        this.element.prepend(this.$scrollBarArrowLeft)
+        this.element.append(this.$scrollBarArrowRight)
 
-		this.update()
-		this._bindEvents()
-	}
+        this.update()
+        this._bindEvents()
+    }
 
-	/* Public */
+    /* Public */
 
-	scrollToPrev() {
-		this.$scrollBarInner.animate({
-			scrollLeft: this.$scrollBarInner.scrollLeft() - (this.$scrollBarInner.width() - this.$scrollBarArrowLeft.width())
-		}, { duration: this.config.clickTransitionDuration })
-	}
+    scrollToPrev() {
+        this.$scrollBarInner.animate({
+            scrollLeft: this.$scrollBarInner.scrollLeft() - (this.$scrollBarInner.width() / 100 * this.config.clickScrollLength - this.$scrollBarArrowLeft.width())
+        }, { duration: this.config.clickTransitionDuration })
+    }
 
-	scrollToNext() {
-		this.$scrollBarInner.animate({
-			scrollLeft: this.$scrollBarInner.scrollLeft() + (this.$scrollBarInner.width() - this.$scrollBarArrowLeft.width())
-		}, { duration: this.config.clickTransitionDuration })
-	}
+    scrollToNext() {
+        this.$scrollBarInner.animate({
+            scrollLeft: this.$scrollBarInner.scrollLeft() + (this.$scrollBarInner.width() / 100 * this.config.clickScrollLength - this.$scrollBarArrowLeft.width())
+        }, { duration: this.config.clickTransitionDuration })
+    }
 
-	update() {
-		this._updateItemWidth()
+    update() {
+        this._updateItemWidth()
 
-		let widthDifference = Math.round(this._itemWidth - this.$scrollBarInner.width())
-		let scrolledFromLeft = this.$scrollBarInner.scrollLeft()
+        let widthDifference = Math.round(this._itemWidth - this.$scrollBarInner.width())
+        let scrolledFromLeft = this.$scrollBarInner.scrollLeft()
 
-		if(widthDifference <= 0) {
-			this.$scrollBarArrowLeft.addClass('disabled')
-			this.$scrollBarArrowRight.addClass('disabled')
-			return
-		}
+        if(widthDifference <= 0) {
+            this.$scrollBarArrowLeft.addClass('disabled')
+            this.$scrollBarArrowRight.addClass('disabled')
+            return
+        }
 
-		this.$scrollBarArrowLeft[scrolledFromLeft > this.config.showArrowOffset ? 'removeClass' : 'addClass']('disabled')
-		this.$scrollBarArrowRight[scrolledFromLeft + this.config.showArrowOffset < (widthDifference - 8) ? 'removeClass' : 'addClass']('disabled')
-	}
+        this.$scrollBarArrowLeft[scrolledFromLeft > this.config.showArrowOffset ? 'removeClass' : 'addClass']('disabled')
+        this.$scrollBarArrowRight[scrolledFromLeft + this.config.showArrowOffset < (widthDifference - 8) ? 'removeClass' : 'addClass']('disabled')
+    }
 
-	destroy() {
-		this.element.removeData(DATA_KEY)
-		this.element = null
-		this.$scrollBarInner.off(EVENT_KEY)
-		this.$scrollBarArrowLeft.off(EVENT_KEY).remove()
-		this.$scrollBarArrowRight.off(EVENT_KEY).remove()
-		$document.off(EVENT_KEY)
-		$window.off(EVENT_KEY)
-	}
+    destroy() {
+        this.element.removeData(DATA_KEY)
+        this.element = null
+        this.$scrollBarInner.off(EVENT_KEY)
+        this.$scrollBarArrowLeft.off(EVENT_KEY).remove()
+        this.$scrollBarArrowRight.off(EVENT_KEY).remove()
+        $document.off(EVENT_KEY)
+        $window.off(EVENT_KEY)
+    }
 
-	/* Private */
+    /* Private */
 
-	_dragStart(e) {
-		e.preventDefault()
+    _dragStart(e) {
+        e.preventDefault()
 
-		this._startClientX = e.clientX
+        this._startClientX = e.clientX
 
-		this._isDragging = true
-		this._start = e.clientX + this.$scrollBarInner.scrollLeft()
-	}
+        this._isDragging = true
+        this._start = e.clientX + this.$scrollBarInner.scrollLeft()
+    }
 
-	_dragMove(e) {
-		if(!this._isDragging)
-			return
+    _dragMove(e) {
+        if(!this._isDragging)
+            return
 
-		this.$scrollBarInner.scrollLeft(this._start - e.clientX)
-	}
+        this.$scrollBarInner.scrollLeft(this._start - e.clientX)
+    }
 
-	_dragEnd(e) {
-		if(!this._isDragging)
-			return
+    _dragEnd(e) {
+        if(!this._isDragging)
+            return
 
-		this._isDragging = false
+        this._isDragging = false
 
-		if($.contains(this.element.get(0), e.target)) {
-			e.target.removeEventListener('click', this._preventDragClick)
+        if($.contains(this.element.get(0), e.target)) {
+            e.target.removeEventListener('click', this._preventDragClick)
 
-			if(this._startClientX - e.clientX != 0)
-				e.target.addEventListener('click', this._preventDragClick)
-		}
+            if(this._startClientX - e.clientX != 0)
+                e.target.addEventListener('click', this._preventDragClick)
+        }
 
-		this.$scrollBarInner.scrollLeft(this._start - e.clientX)
-	}
+        this.$scrollBarInner.scrollLeft(this._start - e.clientX)
+    }
 
-	_preventDragClick(e) {
-		e.preventDefault()
-		e.stopImmediatePropagation()
-	}
+    _preventDragClick(e) {
+        e.preventDefault()
+        e.stopImmediatePropagation()
+    }
 
-	_updateItemWidth() {
-		this._itemWidth = 0
+    _updateItemWidth() {
+        this._itemWidth = 0
 
-		$.each(this.$scrollBarItems, (i, element) => {
-			this._itemWidth += Math.round(element.offsetWidth)
-		})
-	}
+        $.each(this.$scrollBarItems, (i, element) => {
+            this._itemWidth += Math.round(element.offsetWidth)
+        })
+    }
 
-	_bindEvents() {
-		this.$scrollBarInner.on(Event.SCROLL, debounce(() => this.update()))
+    _bindEvents() {
+        this.$scrollBarInner.on(Event.SCROLL, debounce(() => this.update()))
 
-		this.$scrollBarArrowLeft.on(Event.CLICK, () => this.scrollToPrev())
-		this.$scrollBarArrowRight.on(Event.CLICK, () => this.scrollToNext())
+        this.$scrollBarArrowLeft.on(Event.CLICK, () => this.scrollToPrev())
+        this.$scrollBarArrowRight.on(Event.CLICK, () => this.scrollToNext())
 
-		if(this.config.enableDrag) {
-			this.$scrollBarInner.on(Event.MOUSEDOWN, (e) => this._dragStart(e))
-			$document.on(Event.MOUSEMOVE, (e) => this._dragMove(e))
-			$document.on(Event.MOUSEUP, (e) => this._dragEnd(e))
-		}
+        if(this.config.enableDrag) {
+            this.$scrollBarInner.on(Event.MOUSEDOWN, (e) => this._dragStart(e))
+            $document.on(Event.MOUSEMOVE, (e) => this._dragMove(e))
+            $document.on(Event.MOUSEUP, (e) => this._dragEnd(e))
+        }
 
-		$window.on(Event.RESIZE, debounce(() => this.update()))
-	}
+        $window.on(Event.RESIZE, debounce(() => this.update()))
+    }
 
-	/* Static */
+    /* Static */
 
-	static _jQueryInterface(config = {}) {
-		let _arguments = arguments || null
+    static _jQueryInterface(config = {}) {
+        let _arguments = arguments || null
 
-		return this.each(function() {
-			const $element	= $(this)
-			let data		= $element.data(DATA_KEY)
+        return this.each(function() {
+            const $element	= $(this)
+            let data		= $element.data(DATA_KEY)
 
-			if(!data) {
-				if(typeof config === 'object') {
-					data = new NavScrollbar(this, config)
-					$element.data(DATA_KEY, data)
-				} else {
-					$.error(`cannot call methods on ${NAME} prior to initialization`)
-				}
-			} else {
-				if(typeof data[config] === 'function') {
-					data[config].apply(data, Array.prototype.slice.call(_arguments, 1))
-				} else {
-					$.error(`method ${config} does not exist.`)
-				}
-			}
-		})
-	}
+            if(!data) {
+                if(typeof config === 'object') {
+                    data = new NavScrollbar(this, config)
+                    $element.data(DATA_KEY, data)
+                } else {
+                    $.error(`cannot call methods on ${NAME} prior to initialization`)
+                }
+            } else {
+                if(typeof data[config] === 'function') {
+                    data[config].apply(data, Array.prototype.slice.call(_arguments, 1))
+                } else {
+                    $.error(`method ${config} does not exist.`)
+                }
+            }
+        })
+    }
 }
 
 /**
@@ -207,6 +207,6 @@ export default class NavScrollbar {
 $.fn[NAME]             = NavScrollbar._jQueryInterface
 $.fn[NAME].Constructor = NavScrollbar
 $.fn[NAME].noConflict  = () => {
-	$.fn[NAME] = JQUERY_NO_CONFLICT
-	return NavScrollbar._jQueryInterface
+    $.fn[NAME] = JQUERY_NO_CONFLICT
+    return NavScrollbar._jQueryInterface
 }

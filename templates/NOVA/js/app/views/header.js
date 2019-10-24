@@ -1,4 +1,3 @@
-
 import { debounce, isMobile, onMobile, onDesktop, hasTouch, isDesktop } from './../helpers.js'
 
 let search					= '#search'
@@ -23,40 +22,40 @@ const delayDropdownFadeOut	= 200
 const hasNavScrollbar = () => $navbar.data('jtl.navscrollbar') !== undefined
 
 const onResize = () => {
-	if(isMobile()) {
-		showMobileLevel(mobileCurrentLevel)
+    if(isMobile()) {
+        showMobileLevel(mobileCurrentLevel)
 
-		if(hasNavScrollbar())
-			$navbar.navscrollbar('destroy')
-	} else {
-		$navbarnav.removeAttr('style')
+        if(hasNavScrollbar())
+            $navbar.navscrollbar('destroy')
+    } else {
+        $navbarnav.removeAttr('style')
 
-		if(!hasNavScrollbar())
-			$navbar.navscrollbar()
-	}
+        if(!hasNavScrollbar())
+            $navbar.navscrollbar()
+    }
 }
 
 const showDropdown = (dropdown) => {
-	$activeDropdown = $(dropdown)
-	$activeDropdown.parent().addClass('show')
-	$activeDropdown.next().addClass('show')
-	$activeDropdown.attr('aria-expanded', true)
+    $activeDropdown = $(dropdown)
+    $activeDropdown.parent().addClass('show')
+    $activeDropdown.next().addClass('show')
+    $activeDropdown.attr('aria-expanded', true)
 }
 
 const hideDropdown = () => {
-	if($activeDropdown === null)
-		return
+    if($activeDropdown === null)
+        return
 
-	$activeDropdown.parent().removeClass('show')
-	$activeDropdown.next().removeClass('show')
-	$activeDropdown.attr('aria-expanded', false)
-	$activeDropdown = null
+    $activeDropdown.parent().removeClass('show')
+    $activeDropdown.next().removeClass('show')
+    $activeDropdown.attr('aria-expanded', false)
+    $activeDropdown = null
 }
 
 const showMobileLevel = (level) => {
-	mobileCurrentLevel = level < 0 ? 0 : mobileCurrentLevel
-	$navbarnav.css('transform', `translateX(${mobileCurrentLevel * -100}%)`)
-	$navbar.scrollTop(0)
+    mobileCurrentLevel = level < 0 ? 0 : mobileCurrentLevel
+    $navbarnav.css('transform', `translateX(${mobileCurrentLevel * -100}%)`)
+    $navbar.scrollTop(0)
 }
 
 onResize()
@@ -68,63 +67,63 @@ $document.on('focus blur', search, () => setTimeout(() => { if(hasNavScrollbar()
 
 // desktop
 if(hasTouch()) {
-	$document.on('click', dropdownsToggle, onDesktop((e) => {
-		e.preventDefault()
+    $document.on('click', dropdownsToggle, onDesktop((e) => {
+        e.preventDefault()
 
-		if($activeDropdown !== null && $activeDropdown.get(0) === e.currentTarget) {
-			hideDropdown()
-			return
-		}
+        if($activeDropdown !== null && $activeDropdown.get(0) === e.currentTarget) {
+            hideDropdown()
+            return
+        }
 
-		if($activeDropdown !== null)
-			hideDropdown()
+        if($activeDropdown !== null)
+            hideDropdown()
 
-		showDropdown(e.currentTarget)
-	}))
+        showDropdown(e.currentTarget)
+    }))
 }
 
 $document.on('mouseenter', dropdowns, onDesktop((e) => {
-	if(hasTouch())
-		return
+    if(hasTouch())
+        return
 
-	if(dropdownOutTo != undefined)
-		clearTimeout(dropdownOutTo)
+    if(dropdownOutTo != undefined)
+        clearTimeout(dropdownOutTo)
 
-	let delay = delayDropdownFadeIn
+    let delay = delayDropdownFadeIn
 
-	if($activeDropdown !== null) {
-		hideDropdown()
-		delay = 0
-	}
+    if($activeDropdown !== null) {
+        hideDropdown()
+        delay = 0
+    }
 
-	dropdownInTo = setTimeout(() => {
-		showDropdown($(e.currentTarget).find('> .dropdown-toggle'))
-	}, delay)
+    dropdownInTo = setTimeout(() => {
+        showDropdown($(e.currentTarget).find('> .dropdown-toggle'))
+    }, delay)
 })).on('mouseleave', dropdowns, onDesktop((e) => {
-	if(hasTouch())
-		return
+    if(hasTouch())
+        return
 
-	if(dropdownInTo != undefined)
-		clearTimeout(dropdownInTo)
+    if(dropdownInTo != undefined)
+        clearTimeout(dropdownInTo)
 
-	dropdownOutTo = setTimeout(() => {
-		hideDropdown()
-	}, delayDropdownFadeOut)
+    dropdownOutTo = setTimeout(() => {
+        hideDropdown()
+    }, delayDropdownFadeOut)
 }))
 
 // mobile
 $document.on('click', mobileBackLink, onMobile((e) => {
-	e.preventDefault()
+    e.preventDefault()
 
-	$activeDropdown = $(e.currentTarget).closest('.show').prev()
+    $activeDropdown = $(e.currentTarget).closest('.show').prev()
 
-	showMobileLevel(--mobileCurrentLevel)
-	hideDropdown()
+    showMobileLevel(--mobileCurrentLevel)
+    hideDropdown()
 }))
 
 $document.on('click', dropdownsToggle, onMobile((e) => {
-	e.preventDefault()
+    e.preventDefault()
 
-	showDropdown(e.currentTarget)
-	showMobileLevel(++mobileCurrentLevel)
+    showDropdown(e.currentTarget)
+    showMobileLevel(++mobileCurrentLevel)
 }))

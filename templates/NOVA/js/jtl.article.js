@@ -190,20 +190,6 @@
                         }
 
                     ];
-
-                    var fullscreenHeight = $('#gallery img').height();
-                    var otherElemHeight = parseInt($('#image_wrapper').css('paddingTop')) +
-                        parseInt($('#image_wrapper').css('paddingBottom')) +
-                        parseInt($('#gallery').css('marginBottom')) +
-                        $('#image_fullscreen_close').outerHeight() +
-                        parseInt($('#image_fullscreen_close').css('marginBottom')) +
-                        $('#gallery_preview img').height() + 32;
-
-                    /*if (fullscreenHeight-otherElemHeight > maxHeight) {
-                        var newWidth = parseInt(maxHeight-otherElemHeight);
-                        $('#gallery img').css('width', newWidth);
-                    }*/
-
                 }
 
                 $('#gallery img').css('max-width', w);
@@ -215,7 +201,6 @@
 
             function slickreset(){
                 var current = ($('#gallery .slick-current').data('slick-index'));
-                $('#image_wrapper').removeClass('fullscreen');
                 $('#gallery').slick('unslick');
                 $('#gallery_preview').slick('unslick');
                 slickinit(false, current);
@@ -226,7 +211,6 @@
                     var current = ($('#gallery .slick-current').data('slick-index'));
                     $('#gallery').slick('unslick');
                     $('#gallery_preview').slick('unslick');
-                    $('#image_wrapper').addClass('fullscreen');
                     slickinit(true, current);
                 });
             }
@@ -240,10 +224,6 @@
                         slickreset();
                         addClickListener();
                     }
-                });
-                $('#image_fullscreen_close').on('click', function(e) {
-                    slickreset();
-                    addClickListener();
                 });
             }
         },
@@ -280,14 +260,6 @@
 
         registerSimpleVariations: function($wrapper) {
             var that = this;
-
-            $('.variations select', $wrapper).selectpicker({
-                iconBase: 'fa',
-                tickIcon: 'fa-check',
-                hideDisabled: true,
-                showTick: true
-                /*mobile: true*/
-            });
 
             $('.simple-variations input[type="radio"]', $wrapper)
                 .on('change', function() {
@@ -993,7 +965,6 @@
         },
 
         variationRefreshAll: function($wrapper) {
-            $('.variations select', $wrapper).selectpicker('refresh');
         },
 
         getConfigGroupQuantity: function (groupId) {
@@ -1193,7 +1164,6 @@
 
             $('.variation[data-value] input:checked', $wrapper).prop('checked', false);
             $('.variations select option', $wrapper).prop('selected', false);
-            $('.variations select', $wrapper).selectpicker('refresh');
         },
 
         variationDisableAll: function(wrapper) {
@@ -1301,8 +1271,6 @@
                     $item.data('content', $wrapper.html())
                         .attr('data-content', $wrapper.html());
 
-                    $item.closest('select')
-                        .selectpicker('refresh');
                     break;
                 case 'radio':
                     $item.find('.badge-not-available')

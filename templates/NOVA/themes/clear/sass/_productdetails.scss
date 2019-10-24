@@ -1,0 +1,14 @@
+.product-detail {
+	.product-actions { position: absolute; z-index: 1; right: $grid-gutter-width / 2 + $spacer; top: $spacer; display: flex; justify-content: center; align-items: center;
+		.btn { margin: 0 map-get($spacers, 1); }
+	}
+
+	.product-image { cursor: zoom-in; }
+
+	.slick-slide { transition: opacity $transition-base-timing; }
+
+	.product-thumbnails { width: 100%;
+		.slick-list { width: 100%; }
+		.slick-slide:not(.slick-current) { opacity: .5; }
+	}
+}

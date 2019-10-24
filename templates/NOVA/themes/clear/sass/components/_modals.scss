@@ -1,4 +1,3 @@
-
 .modal-content { padding: $modal-content-padding; }
 
 .modal-title { @include font-size($font-size-base * (20 / $font-size-base)); }
@@ -11,13 +10,10 @@
 	}
 }
 
-.modal-fullview { padding-right: 0 !important;
-	.modal-dialog { margin: 0; max-width: 100%; }
-	.modal-content { width: 100%; height: 100vh; }
-}
-
-@include media-breakpoint-down(md) {
-	.modal-dialog {
-		margin-top: 2rem;
+@include media-breakpoint-down(lg) {
+	.modal-fullview { padding-right: 0 !important;
+		.modal-dialog { margin: 0; max-width: 100%; }
+		.modal-content { width: 100%; }
+		.close { position: fixed; top: 1rem; right: 1rem; transform: none; z-index: $zindex-fixed; }
 	}
 }

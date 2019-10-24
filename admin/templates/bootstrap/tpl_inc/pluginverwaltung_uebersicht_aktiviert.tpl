@@ -137,7 +137,7 @@
                             </div>
                         </div>
                         <div class="ml-auto col-sm-6 col-xl-auto">
-                            <button name="deinstallieren" type="submit" class="btn btn-danger btn-block uninstall-plugin-btn">
+                            <button id="uninstall-enabled-plugin" name="deinstallieren" type="submit" class="btn btn-danger btn-block">
                                 <i class="fas fa-trash-alt"></i> {__('pluginBtnDeInstall')}
                             </button>
                         </div>
@@ -190,10 +190,8 @@
 <script>
     {literal}
     $(document).ready(function() {
-        var token = $('input[name="jtl_token"]').val(),
-            modal = $('#uninstall-modal');
-
-        $('.uninstall-plugin-btn').on('click', function(event) {
+        var modal = $('#uninstall-modal');
+        $('#uninstall-enabled-plugin').on('click', function(event) {
             modal.modal('show');
             return false;
         });

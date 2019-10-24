@@ -874,6 +874,7 @@ final class Shop
             $loader = $plugin->bExtension === 1 ? $extensionLoader : $pluginLoader;
             if (($p = PluginHelper::bootstrap($plugin->kPlugin, $loader)) !== null) {
                 $p->boot($dispatcher);
+                $p->loaded();
             }
         }
     }

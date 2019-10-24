@@ -158,7 +158,9 @@
         },
 
         imagebox: function(wrapper) {
-            var $wrapper = (typeof wrapper === 'undefined' || wrapper.length === 0) ? $('#result-wrapper') : $(wrapper),
+            var $wrapper = (typeof wrapper === 'undefined' || wrapper.length === 0)
+                    ? $('#result-wrapper, .opc-ProductStream-gallery')
+                    : $(wrapper),
                 square   = $('.image-box', $wrapper).first().height() + 'px',
                 padding  = $(window).height() / 2;
 

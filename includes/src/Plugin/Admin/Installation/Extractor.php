@@ -67,9 +67,24 @@ class Extractor
      */
     public function extractPlugin(string $zipFile): InstallationResponse
     {
+        \set_error_handler([$this, 'handlExtractionErrors']);
         $this->unzip($zipFile);
+        \restore_error_handler();
 
         return $this->response;
+    }
+
+    /**
+     * @param int $errno
+     * @param string $errstr
+     * @return bool
+     */
+    public function handlExtractionErrors($errno, $errstr): bool
+    {
+        $this->response->setStatus(InstallationResponse::STATUS_FAILED);
+        $this->response->setError($errstr);
+
+        return true;
     }
 
     /**
@@ -132,43 +147,44 @@ class Extractor
         if (!$zip->open($zipFile) || $zip->numFiles === 0) {
             $this->response->setStatus(InstallationResponse::STATUS_FAILED);
             $this->response->addMessage('Cannot open archive');
-        } else {
-            for ($i = 0; $i < $zip->numFiles; $i++) {
-                if ($i === 0) {
-                    $dirName = $zip->getNameIndex($i);
-                    if (\mb_strpos($dirName, '.') !== false) {
-                        $this->response->setStatus(InstallationResponse::STATUS_FAILED);
-                        $this->response->addMessage('Invalid archive');
 
-                        return false;
-                    }
-                    \preg_match(self::GIT_REGEX, $dirName, $hits);
-                    if (\count($hits) >= 3) {
-                        $dirName = \str_replace($hits[2], '', $dirName);
-                    }
-                    $this->response->setDirName($dirName);
+            return false;
+        }
+        for ($i = 0; $i < $zip->numFiles; $i++) {
+            if ($i === 0) {
+                $dirName = $zip->getNameIndex($i);
+                if (\mb_strpos($dirName, '.') !== false) {
+                    $this->response->setStatus(InstallationResponse::STATUS_FAILED);
+                    $this->response->addMessage('Invalid archive');
+
+                    return false;
                 }
-                $filename = $zip->getNameIndex($i);
-                \preg_match(self::GIT_REGEX, $filename, $hits);
+                \preg_match(self::GIT_REGEX, $dirName, $hits);
                 if (\count($hits) >= 3) {
-                    $zip->renameIndex($i, \str_replace($hits[2], '', $filename));
-                    $filename = $zip->getNameIndex($i);
+                    $dirName = \str_replace($hits[2], '', $dirName);
                 }
-                if ($zip->extractTo(self::UNZIP_DIR, $filename)) {
-                    $this->response->addFileUnpacked($filename);
-                } else {
-                    $this->response->addFileFailed($filename);
-                }
+                $this->response->setDirName($dirName);
             }
-            $zip->close();
-            $this->response->setPath(self::UNZIP_DIR . $dirName);
-            try {
-                $this->moveToPluginsDir($dirName);
-            } catch (InvalidArgumentException $e) {
-                $this->response->addMessage($e->getMessage());
+            $filename = $zip->getNameIndex($i);
+            \preg_match(self::GIT_REGEX, $filename, $hits);
+            if (\count($hits) >= 3) {
+                $zip->renameIndex($i, \str_replace($hits[2], '', $filename));
+                $filename = $zip->getNameIndex($i);
+            }
+            if ($zip->extractTo(self::UNZIP_DIR, $filename)) {
+                $this->response->addFileUnpacked($filename);
+            } else {
+                $this->response->addFileFailed($filename);
+            }
+        }
+        $zip->close();
+        $this->response->setPath(self::UNZIP_DIR . $dirName);
+        try {
+            $this->moveToPluginsDir($dirName);
+        } catch (InvalidArgumentException $e) {
+            $this->response->addMessage($e->getMessage());
 
-                return false;
-            }
+            return false;
         }
 
         return true;

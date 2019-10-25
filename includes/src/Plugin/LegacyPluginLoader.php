@@ -11,7 +11,6 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Language\LanguageHelper;
 use JTL\Plugin\Data\Config;
-use JTL\Plugin\Data\Hook;
 use JTL\Plugin\Data\License;
 use JTL\Plugin\Data\Links;
 use JTL\Plugin\Data\Paths;

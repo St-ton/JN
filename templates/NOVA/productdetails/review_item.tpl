@@ -44,13 +44,23 @@
                                     {block name='productdetails-review-item-buttons'}
                                         {formrow class="review-helpful mt-3 mb-5 mg-lg-0" id="help{$oBewertung->kBewertung}"}
                                             {col class='col-auto ml-auto'}
-                                                {button size="sm" class="helpful btn-icon btn-icon-primary" title="{lang key='yes'}" name="hilfreich_{$oBewertung->kBewertung}" type="submit"}
+                                                {button size="sm"
+                                                    class="btn-icon btn-icon-primary"
+                                                    title="{lang key='yes'}"
+                                                    name="hilfreich_{$oBewertung->kBewertung}"
+                                                    type="submit"
+                                                    variant="icon-primary"}
                                                     <i class="far fa-thumbs-up"></i>
                                                 {/button}
                                                 <span class="d-block"><b>{$oBewertung->nHilfreich}</b></span>
                                             {/col}
                                             {col class='col-auto mr-auto'}
-                                                {button size="sm" class="not_helpful btn-icon btn-icon-primary" title="{lang key='no'}" name="nichthilfreich_{$oBewertung->kBewertung}" type="submit"}
+                                                {button size="sm"
+                                                    class="btn-icon"
+                                                    title="{lang key='no'}"
+                                                    name="nichthilfreich_{$oBewertung->kBewertung}"
+                                                    type="submit"
+                                                    variant="icon-primary"}
                                                     <i class="far fa-thumbs-down"></i>
                                                 {/button}
                                                 <span class="d-block"><b>{$oBewertung->nNichtHilfreich}</b></span>

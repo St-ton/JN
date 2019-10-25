@@ -2,7 +2,7 @@
 /**
  * added_option_for_dimension_of_articles
  *
- * @author Mirko Schmidt
+ * @author msc
  * @created Fri, 13 May 2016 16:23:57 +0200
  */
 

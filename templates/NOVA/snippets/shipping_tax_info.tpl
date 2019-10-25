@@ -24,26 +24,32 @@
         {/block}
         {if $Einstellungen.global.global_versandhinweis === 'zzgl'}
             {block name='snippets-shipping-tax-info-zzgl'}
+                {block name='snippets-shipping-tax-info-zzgl-comma'}
                 ,
+                {/block}
                 {if $Einstellungen.global.global_versandfrei_anzeigen === 'Y' && $taxdata.shippingFreeCountries}
                     {block name='snippets-shipping-tax-info-zzgl-show-shipping-free'}
                         {if $Einstellungen.global.global_versandkostenfrei_darstellung === 'D'}
-                            {lang key='noShippingcostsTo'} {lang key='noShippingCostsAtExtended' section='basket' printf=' ::: '}
-                            {foreach item=country key=cISO from=$taxdata.countries}
-                                <abbr title="{$country}">{$cISO}</abbr>
-                            {/foreach}, {link href="{if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}{/if}" rel="nofollow" class="shipment popup"}
-                                {lang key='shipping' section='basket'}{/link}
+                            {block name='snippets-shipping-tax-info-zzgl-show-shipping-free-D'}
+                                {lang key='noShippingcostsTo'} {lang key='noShippingCostsAtExtended' section='basket' printf=' ::: '}
+                                {foreach item=country key=cISO from=$taxdata.countries}
+                                    <abbr title="{$country}">{$cISO}</abbr>
+                                {/foreach}, {link href="{if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}{/if}" rel="nofollow" class="shipment popup"}
+                                    {lang key='shipping' section='basket'}{/link}
+                            {/block}
                         {else}
-                            {link
-                                href=$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()
-                                rel="nofollow"
-                                class="shipment popup"
-                                data-toggle="tooltip"
-                                data-placement="left"
-                                title="{$taxdata.shippingFreeCountries}, {lang key='else'} {lang key='plus' section='basket'} {lang key='shipping' section='basket'}"
-                            }
-                                {lang key='noShippingcostsTo'}
-                            {/link}
+                            {block name='snippets-shipping-tax-info-zzgl-show-shipping-free-free-link'}
+                                {link
+                                    href=$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()
+                                    rel="nofollow"
+                                    class="shipment popup"
+                                    data-toggle="tooltip"
+                                    data-placement="left"
+                                    title="{$taxdata.shippingFreeCountries}, {lang key='else'} {lang key='plus' section='basket'} {lang key='shipping' section='basket'}"
+                                }
+                                    {lang key='noShippingcostsTo'}
+                                {/link}
+                            {/block}
                         {/if}
                     {/block}
                 {elseif isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}

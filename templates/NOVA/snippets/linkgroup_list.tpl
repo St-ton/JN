@@ -24,31 +24,37 @@
                         {block name='snippets-linkgroup-list-links-dropdown'}
                             {navitemdropdown text=$li->getName() class="{if $activeId == $li->getId()}active{/if}"}
                                 {container}
-                                    {link href=$li->getURL() title=$li->getName()}
-                                        {$li->getName()}
-                                    {/link}
-                                    <hr class="hr-sm d-none d-md-block">
-                                    {row}
-                                    {foreach $li->getChildLinks() as $subli}
-                                        {col cols=12 md=6 lg=3}
-                                            {if !empty($subli->getName())}
-                                                {dropdownitem tag="div" active=($subli->getIsActive() || ($checkLinkParents === true && isset($activeParents) && in_array($subli->getID(), $activeParents)))}
-                                                    <div class="title mt-3">
-                                                        {link href=$subli->getURL() rel="{if $subli->getNoFollow()}nofollow{/if}"}
-                                                            {$subli->getName()}
-                                                        {/link}
-                                                    </div>
-                                                {/dropdownitem}
-                                            {/if}
-                                        {/col}
-                                    {/foreach}
-                                    {/row}
+                                    {block name='snippets-linkgroup-list-links'}
+                                        {link href=$li->getURL() title=$li->getName()}
+                                            {$li->getName()}
+                                        {/link}
+                                    {/block}
+                                    {block name='snippets-linkgroup-list-links-hr'}
+                                        <hr class="hr-sm d-none d-md-block">
+                                    {/block}
+                                    {block name='snippets-linkgroup-list-links-sublinks'}
+                                        {row}
+                                        {foreach $li->getChildLinks() as $subli}
+                                            {col cols=12 md=6 lg=3}
+                                                {if !empty($subli->getName())}
+                                                    {dropdownitem tag="div" active=($subli->getIsActive() || ($checkLinkParents === true && isset($activeParents) && in_array($subli->getID(), $activeParents)))}
+                                                        <div class="title mt-3">
+                                                            {link href=$subli->getURL() rel="{if $subli->getNoFollow()}nofollow{/if}"}
+                                                                {$subli->getName()}
+                                                            {/link}
+                                                        </div>
+                                                    {/dropdownitem}
+                                                {/if}
+                                            {/col}
+                                        {/foreach}
+                                        {/row}
+                                    {/block}
                                 {/container}
                             {/navitemdropdown}
                         {/block}
                     {else}
                         {block name='snippets-linkgroup-list-links-navitem'}
-                            {navitem href=$li->getURL() nofollow=$li->getNoFollow() class="{if $activeId == $li->getId()}active{/if}{if $tplscope=='sitemap'} py-2{/if}" router-class="{if $tplscope=='sitemap'}nice-deco{/if}"}
+                            {navitem href=$li->getURL() nofollow=$li->getNoFollow() class="nav-scrollbar-item {if $activeId == $li->getId()}active{/if}{if $tplscope=='sitemap'} py-2{/if}" router-class="{if $tplscope=='sitemap'}nice-deco{/if}"}
                                 {$li->getName()}
                             {/navitem}
                         {/block}

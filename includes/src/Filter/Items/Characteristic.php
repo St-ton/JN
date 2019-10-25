@@ -500,7 +500,6 @@ class Characteristic extends BaseCharacteristic
                 ->setData('cBildURLNormal', $imageBaseURL . $baseSrcNormal);
             $option->setImageType(Image::TYPE_CHARACTERISTIC);
             $option->setID($filter->kMerkmal);
-            $option->generateAllImageSizes();
             $option->setParam($this->getUrlParam());
             $option->setType($filter->nMehrfachauswahl === 1 ? Type::OR : Type::AND);
             $option->setType($this->getType());
@@ -509,6 +508,7 @@ class Characteristic extends BaseCharacteristic
             $option->setFrontendName($filter->cName);
             $option->setValue($filter->kMerkmal);
             $option->setCount(0);
+            $option->generateAllImageSizes();
             $additionalFilter->setBatchCharacteristicData(
                 $this->batchGetDataForCharacteristicValue($filter->characteristicValues)
             );
@@ -538,12 +538,13 @@ class Characteristic extends BaseCharacteristic
                 $characteristicOption->setCount((int)$filterValue->nAnzahl);
                 $characteristicOption->setImageType(Image::TYPE_CHARACTERISTIC_VALUE);
                 $characteristicOption->setID($filterValue->kMerkmalWert);
-                $characteristicOption->generateAllImageSizes();
                 if ($characteristicOption->isActive()) {
                     $option->setIsActive(true);
                 }
                 $url = $filterURLGenerator->getURL($additionalFilter->init($filterValue->kMerkmalWert));
-                $option->addOption($characteristicOption->setURL($url));
+                $characteristicOption->setURL($url);
+                $characteristicOption->generateAllImageSizes();
+                $option->addOption($characteristicOption);
             }
             // backwards compatibility
             $characteristicOptions = $option->getOptions() ?? [];

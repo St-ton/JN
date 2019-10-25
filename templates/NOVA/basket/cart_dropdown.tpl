@@ -3,7 +3,7 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='basket-cart-dropdown'}
-    {collapse id="nav-cart-collapse" tag="div"  data=["parent"=>"#main-nav-wrapper"] class="mt-md-2 py-0 w-100"}
+    <div class="dropdown-menu dropdown-menu-right lg-min-w-lg">
         {if $smarty.session.Warenkorb->PositionenArr|@count > 0}
             {block name='basket-cart-dropdown-cart-items-content'}
                 <div class="table-responsive max-h-sm lg-max-h">
@@ -14,34 +14,52 @@
                                     {if !$oPosition->istKonfigKind()}
                                         {if $oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL}
                                             <tr>
-                                                <td class="item-image">
-                                                    {if $oPosition->Artikel->Bilder[0]->cPfadMini !== $smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN}
-                                                        {image src=$oPosition->Artikel->Bilder[0]->cURLMini alt=$oPosition->Artikel->cName class="img-sm"}
-                                                    {/if}
-                                                </td>
-                                                <td class="item-name" colspan="2">
-                                                    {$oPosition->nAnzahl|replace_delim}&nbsp;&times;&nbsp;
-                                                    {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans|escape:'html'}
-                                                        {$oPosition->cName|trans}
-                                                    {/link}
-                                                </td>
-                                                <td class="item-price">
-                                                    {if $oPosition->istKonfigVater()}
-                                                        {$oPosition->cKonfigpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
-                                                    {else}
-                                                        {$oPosition->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
-                                                    {/if}
-                                                </td>
+                                                {block name='basket-cart-dropdown-cart-item-item-image'}
+                                                    <td class="item-image">
+                                                        {if $oPosition->Artikel->Bilder[0]->cPfadMini !== $smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN}
+                                                            {image lazy=true webp=true
+                                                                src=$oPosition->Artikel->Bilder[0]->cURLMini
+                                                                srcset="{$oPosition->Artikel->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                                    {$oPosition->Artikel->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                                    {$oPosition->Artikel->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                                                sizes="45px"
+                                                                alt=$oPosition->Artikel->cName
+                                                                class="img-sm"
+                                                            }
+                                                        {/if}
+                                                    </td>
+                                                {/block}
+                                                {block name='basket-cart-dropdown-cart-item-item-link'}
+                                                    <td class="item-name" colspan="2">
+                                                        {$oPosition->nAnzahl|replace_delim}&nbsp;&times;&nbsp;
+                                                        {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans|escape:'html'}
+                                                            {$oPosition->cName|trans}
+                                                        {/link}
+                                                    </td>
+                                                {/block}
+                                                {block name='basket-cart-dropdown-cart-item-item-price'}
+                                                    <td class="item-price">
+                                                        {if $oPosition->istKonfigVater()}
+                                                            {$oPosition->cKonfigpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
+                                                        {else}
+                                                            {$oPosition->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
+                                                        {/if}
+                                                    </td>
+                                                {/block}
                                             </tr>
                                         {else}
                                             <tr>
                                                 <td></td>
-                                                <td class="item-name" colspan="2">
-                                                    {$oPosition->nAnzahl|replace_delim}&nbsp;&times;&nbsp;{$oPosition->cName|trans|escape:'htmlall'}
-                                                </td>
-                                                <td class="item-price">
-                                                    {$oPosition->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
-                                                </td>
+                                                {block name='basket-cart-dropdown-cart-item-no-item-count'}
+                                                    <td class="item-name" colspan="2">
+                                                        {$oPosition->nAnzahl|replace_delim}&nbsp;&times;&nbsp;{$oPosition->cName|trans|escape:'htmlall'}
+                                                    </td>
+                                                {/block}
+                                                {block name='basket-cart-dropdown-cart-item-noitem-price'}
+                                                    <td class="item-price">
+                                                        {$oPosition->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
+                                                    </td>
+                                                {/block}
                                             </tr>
                                         {/if}
                                     {/if}
@@ -54,47 +72,55 @@
                     {block name='basket-cart-dropdown-total'}
                         <ul class="list-unstyled">
                             {if $NettoPreise}
-                                <li class="text-muted mb-2 font-size-sm">
-                                    {lang key='totalSum'} ({lang key='net'}) <span class="float-right text-nowrap">{$WarensummeLocalized[$NettoPreise]}</span>
-                                </li>
+                                {block name='basket-cart-dropdown-cart-item-net'}
+                                    <li class="text-muted mb-2 font-size-sm">
+                                        {lang key='totalSum'} ({lang key='net'}) <span class="float-right text-nowrap">{$WarensummeLocalized[$NettoPreise]}</span>
+                                    </li>
+                                {/block}
                             {/if}
                             {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N' && isset($Steuerpositionen) && $Steuerpositionen|@count > 0}
-                                {foreach $Steuerpositionen as $Steuerposition}
+                                {block name='basket-cart-dropdown-cart-item-tax'}
+                                    {foreach $Steuerpositionen as $Steuerposition}
+                                        <li class="text-muted mb-2 font-size-sm">
+                                            {$Steuerposition->cName}
+                                            <span class="float-right text-nowrap">{$Steuerposition->cPreisLocalized}</span>
+                                        </li>
+                                    {/foreach}
+                                {/block}
+                            {/if}
+                            {block name='basket-cart-dropdown-cart-item-total'}
+                                <li class="font-weight-bold">
+                                    {lang key='totalSum'}: <span class="float-right text-nowrap">{$WarensummeLocalized[0]}</span>
+                                </li>
+                            {/block}
+                            {block name='basket-cart-dropdown-cart-item-favourable-shipping'}
+                                {if isset($FavourableShipping)}
+                                    {if $NettoPreise}
+                                        {$shippingCosts = "`$FavourableShipping->cPriceLocalized[$NettoPreise]` {lang key='plus' section='basket'} {lang key='vat' section='productDetails'}"}
+                                    {else}
+                                        {$shippingCosts = $FavourableShipping->cPriceLocalized[$NettoPreise]}
+                                    {/if}
                                     <li class="text-muted mb-2 font-size-sm">
-                                        {$Steuerposition->cName}
-                                        <span class="float-right text-nowrap">{$Steuerposition->cPreisLocalized}</span>
+                                        {lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL():$shippingCosts:$FavourableShipping->cCountryCode key='shippingInformationSpecific' section='basket'}
                                     </li>
-                                {/foreach}
-                            {/if}
-                            <li class="font-weight-bold">
-                                {lang key='totalSum'}: <span class="float-right text-nowrap">{$WarensummeLocalized[0]}</span>
-                            </li>
-                            {if isset($FavourableShipping)}
-                                {if $NettoPreise}
-                                    {$shippingCosts = "`$FavourableShipping->cPriceLocalized[$NettoPreise]` {lang key='plus' section='basket'} {lang key='vat' section='productDetails'}"}
-                                {else}
-                                    {$shippingCosts = $FavourableShipping->cPriceLocalized[$NettoPreise]}
+                                {elseif empty($FavourableShipping)}
+                                    <li class="text-muted mb-2 font-size-sm">
+                                        {lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() key='shippingInformation' section='basket'}
+                                    </li>
                                 {/if}
-                                <li class="text-muted mb-2 font-size-sm">
-                                    {lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL():$shippingCosts:$FavourableShipping->cCountryCode key='shippingInformationSpecific' section='basket'}
-                                </li>
-                            {elseif empty($FavourableShipping)}
-                                <li class="text-muted mb-2 font-size-sm">
-                                    {lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() key='shippingInformation' section='basket'}
-                                </li>
-                            {/if}
+                            {/block}
                         </ul>
                     {/block}
                     {block name='basket-cart-dropdown-buttons'}
                         {row class='mt-3'}
                             {col cols=12 lg=6}
-                                {link href="{get_static_route id='bestellvorgang.php'}?wk=1" class="btn btn-secondary btn-block mb-3"}
+                                {link href="{get_static_route id='bestellvorgang.php'}?wk=1" class="btn btn-outline-primary btn-block btn-sm mb-3"}
                                     {lang key='nextStepCheckout' section='checkout'}
                                 {/link}
                             {/col}
                             {col cols=12 lg=6}
-                                {link class="btn btn-primary btn-block" title="{lang key='gotoBasket'}" href="{get_static_route id='warenkorb.php'}"}
-                                    <i class="fas fa-shopping-cart"></i> {lang key='gotoBasket'}
+                                {link class="btn btn-primary btn-block btn-sm" title="{lang key='gotoBasket'}" href="{get_static_route id='warenkorb.php'}"}
+                                    {lang key='gotoBasket'}
                                 {/link}
                             {/col}
                         {/row}
@@ -114,10 +140,10 @@
             {/block}
         {else}
             {block name='basket-cart-dropdown-hint-empty'}
-                {dropdownitem href="{{get_static_route id='warenkorb.php'}}" rel="nofollow" title="{lang section='checkout' key='emptybasket'}"}
+                {dropdownitem class='p-2' href="{{get_static_route id='warenkorb.php'}}" rel="nofollow" title="{lang section='checkout' key='emptybasket'}"}
                     {lang section='checkout' key='emptybasket'}
                 {/dropdownitem}
             {/block}
         {/if}
-    {/collapse}
+    </div>
 {/block}

@@ -3,10 +3,14 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='layout-header-shop-nav-account'}
-    {if empty($smarty.session.Kunde->kKunde)}
-        {block name='layout-header-shop-nav-account-logged-out'}
-            {collapse id="nav-account-collapse" tag="div"  data=["parent"=>"#main-nav-wrapper"] class="mt-md-2 py-0 w-100 min-w-lg"}
-                {form action="{get_static_route id='jtl.php' secure=true}" method="post" class="evo-validate px-5 pt-5 pb-3"}
+    {navitemdropdown tag="li"
+        aria=['expanded' => 'false']
+        no-caret=true
+        right=true
+        text='<span class="fas fa-user"></span>'}
+        {if empty($smarty.session.Kunde->kKunde)}
+            {block name='layout-header-shop-nav-account-logged-out'}
+                {form action="{get_static_route id='jtl.php' secure=true}" method="post" class="evo-validate px-5 pt-5 pb-3 lg-min-w-lg"}
                     {block name='layout-header-shop-nav-account-form-content'}
                         <fieldset id="quick-login">
                             {block name='layout-header-nav-account-form-email'}
@@ -50,15 +54,13 @@
                     {link href="{get_static_route id='pass.php'}" rel="nofollow" title="{lang key='forgotPassword'}" class="d-block px-5 pt-0 pb-2"}
                         {lang key='forgotPassword'}
                     {/link}
-                    {link href="{get_static_route id='registrieren.php'}" rel="nofollow" title="{lang key='registerNow'}" class="d-block px-5 py-3 bg-info"}
+                    {link href="{get_static_route id='registrieren.php'}" rel="nofollow" title="{lang key='registerNow'}" class="d-block px-5 py-3 bg-gray-light"}
                         {lang key='newHere'} <span class="text-decoration-underline">{lang key='registerNow'}</span>
                     {/link}
                 {/block}
-            {/collapse}
-        {/block}
-    {else}
-        {block name='layout-header-shop-nav-account-logged-in'}
-            {collapse id="nav-account-collapse" tag="div"  data=["parent"=>"#main-nav-wrapper"] class="mt-md-2"}
+            {/block}
+        {else}
+            {block name='layout-header-shop-nav-account-logged-in'}
                 {dropdownitem href="{get_static_route id='jtl.php' secure=true}" rel="nofollow" title="{lang key='myAccount'}"}
                     {lang key='myAccount'}
                 {/dropdownitem}
@@ -75,7 +77,7 @@
                 {dropdownitem href="{get_static_route id='jtl.php' secure=true}?logout=1" rel="nofollow" title="{lang key='logOut'}"}
                     {lang key='logOut'}
                 {/dropdownitem}
-            {/collapse}
-        {/block}
-    {/if}
+            {/block}
+        {/if}
+    {/navitemdropdown}
 {/block}

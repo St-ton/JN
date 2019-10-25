@@ -4,16 +4,18 @@
  *}
 {block name='basket-cart-items'}
     {input type="submit" name="fake" class="d-none"}
-    {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
-        {$itemInfoCols=3}
-        {$cols=9}
-    {else}
-        {$itemInfoCols=5}
-        {$cols=12}
-    {/if}
-    {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen !== 'Y'}
-        {$itemInfoCols=$itemInfoCols+2}
-    {/if}
+    {block name='basket-cart-items-cols'}
+        {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
+            {$itemInfoCols=3}
+            {$cols=9}
+        {else}
+            {$itemInfoCols=5}
+            {$cols=12}
+        {/if}
+        {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen !== 'Y'}
+            {$itemInfoCols=$itemInfoCols+2}
+        {/if}
+    {/block}
     {block name='basket-cart-items-order-items'}
         {block name='basket-cart-items-order-items-header'}
             {row class="text-accent d-none d-xl-flex pb-3"}
@@ -48,7 +50,11 @@
                             {col cols=3 xl=2 class="h-100"}
                                 {if !empty($oPosition->Artikel->cVorschaubild)}
                                     {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}
-                                        {image src=$oPosition->Artikel->cVorschaubild alt=$oPosition->cName|trans fluid=true}
+                                        {image lazy=true webp=true
+                                            src=$oPosition->Artikel->cVorschaubild
+                                            alt=$oPosition->cName|trans
+                                            fluid=true
+                                        }
                                     {/link}
                                 {/if}
                             {/col}
@@ -57,76 +63,99 @@
                     {block name='basket-cart-items-items-main-content'}
                         {col cols=$cols xl=$itemInfoCols class="ml-auto"}
                         {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
-                            <p>{link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}{$oPosition->cName|trans}{/link}</p>
+                            {block name='basket-cart-items-product-link'}
+                                {link class='mb-3 d-block' href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}{$oPosition->cName|trans}{/link}
+                            {/block}
                             {block name='basket-cart-items-product-data'}
-                                <ul class="list-unstyled text-muted small">
-                                    <li class="sku"><strong>{lang key='productNo'}:</strong> {$oPosition->Artikel->cArtNr}</li>
+                                <ul class="list-unstyled">
+                                    {if $Einstellungen.kaufabwicklung.bestellvorgang_artikelkurzbeschreibung == 'Y' && $oPosition->Artikel->cKurzBeschreibung|strlen > 0}
+                                        {block name='basket-cart-items-product-data-short-desc'}
+                                            <li class="shortdescription">{$oPosition->Artikel->cKurzBeschreibung}</li>
+                                        {/block}
+                                    {/if}
+                                    {block name='basket-cart-items-product-data-sku'}
+                                        <li class="sku"><strong>{lang key='productNo'}:</strong> {$oPosition->Artikel->cArtNr}</li>
+                                    {/block}
                                     {if isset($oPosition->Artikel->dMHD) && isset($oPosition->Artikel->dMHD_de) && $oPosition->Artikel->dMHD_de !== null}
-                                        <li title="{lang key='productMHDTool'}" class="best-before">
-                                            <strong>{lang key='productMHD'}:</strong> {$oPosition->Artikel->dMHD_de}
-                                        </li>
+                                        {block name='basket-cart-items-product-data-mhd'}
+                                            <li title="{lang key='productMHDTool'}" class="best-before">
+                                                <strong>{lang key='productMHD'}:</strong> {$oPosition->Artikel->dMHD_de}
+                                            </li>
+                                        {/block}
                                     {/if}
                                     {if $oPosition->Artikel->cLocalizedVPE && $oPosition->Artikel->cVPE !== 'N'}
-                                        <li class="baseprice"><strong>{lang key='basePrice'}:</strong> {$oPosition->Artikel->cLocalizedVPE[$NettoPreise]}</li>
+                                        {block name='basket-cart-items-product-data-base-price'}
+                                            <li class="baseprice"><strong>{lang key='basePrice'}:</strong> {$oPosition->Artikel->cLocalizedVPE[$NettoPreise]}</li>
+                                        {/block}
                                     {/if}
                                     {if $Einstellungen.kaufabwicklung.warenkorb_varianten_varikombi_anzeigen === 'Y' && isset($oPosition->WarenkorbPosEigenschaftArr) && !empty($oPosition->WarenkorbPosEigenschaftArr)}
                                         {foreach $oPosition->WarenkorbPosEigenschaftArr as $Variation}
-                                            <li class="variation">
-                                                <strong>{$Variation->cEigenschaftName|trans}:</strong> {$Variation->cEigenschaftWertName|trans}
-                                            </li>
+                                            {block name='basket-cart-items-product-data-variations'}
+                                                <li class="variation">
+                                                    <strong>{$Variation->cEigenschaftName|trans}:</strong> {$Variation->cEigenschaftWertName|trans}
+                                                </li>
+                                            {/block}
                                         {/foreach}
                                     {/if}
                                     {if $Einstellungen.kaufabwicklung.bestellvorgang_lieferstatus_anzeigen === 'Y' && $oPosition->cLieferstatus|trans}
-                                        <li class="delivery-status"><strong>{lang key='deliveryStatus'}:</strong> {$oPosition->cLieferstatus|trans}</li>
+                                        {block name='basket-cart-items-product-data-delivery-status'}
+                                            <li class="delivery-status"><strong>{lang key='deliveryStatus'}:</strong> {$oPosition->cLieferstatus|trans}</li>
+                                        {/block}
                                     {/if}
                                     {if !empty($oPosition->cHinweis)}
-                                        <li class="text-info notice">{$oPosition->cHinweis}</li>
+                                        {block name='basket-cart-items-product-data-notice'}
+                                            <li class="text-info notice">{$oPosition->cHinweis}</li>
+                                        {/block}
                                     {/if}
 
                                     {* Buttonloesung eindeutige Merkmale *}
                                     {if $oPosition->Artikel->cHersteller && $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen != "N"}
-                                        <li class="manufacturer">
-                                            <strong>{lang key='manufacturer' section='productDetails'}</strong>:
-                                            <span class="values">
-                                               {$oPosition->Artikel->cHersteller}
-                                            </span>
-                                        </li>
+                                        {block name='basket-cart-items-product-data-manufacturers'}
+                                            <li class="manufacturer">
+                                                <strong>{lang key='manufacturer' section='productDetails'}</strong>:
+                                                <span class="values">
+                                                   {$oPosition->Artikel->cHersteller}
+                                                </span>
+                                            </li>
+                                        {/block}
                                     {/if}
 
                                     {if $Einstellungen.kaufabwicklung.bestellvorgang_artikelmerkmale == 'Y' && !empty($oPosition->Artikel->oMerkmale_arr)}
                                         {foreach $oPosition->Artikel->oMerkmale_arr as $oMerkmale_arr}
-                                            <li class="characteristic">
-                                                <strong>{$oMerkmale_arr->cName}</strong>:
-                                                <span class="values">
-                                                    {foreach $oMerkmale_arr->oMerkmalWert_arr as $oWert}
-                                                        {if !$oWert@first}, {/if}
-                                                        {$oWert->cWert}
-                                                    {/foreach}
-                                                </span>
-                                            </li>
+                                            {block name='basket-cart-items-product-data-attributes'}
+                                                <li class="characteristic">
+                                                    <strong>{$oMerkmale_arr->cName}</strong>:
+                                                    <span class="values">
+                                                        {foreach $oMerkmale_arr->oMerkmalWert_arr as $oWert}
+                                                            {if !$oWert@first}, {/if}
+                                                            {$oWert->cWert}
+                                                        {/foreach}
+                                                    </span>
+                                                </li>
+                                            {/block}
                                         {/foreach}
                                     {/if}
 
                                     {if $Einstellungen.kaufabwicklung.bestellvorgang_artikelattribute == 'Y' && !empty($oPosition->Artikel->Attribute)}
                                         {foreach $oPosition->Artikel->Attribute as $oAttribute_arr}
-                                            <li class="attribute">
-                                                <strong>{$oAttribute_arr->cName}</strong>:
-                                                <span class="values">
-                                                    {$oAttribute_arr->cWert}
-                                                </span>
-                                            </li>
+                                            {block name='basket-cart-items-product-data-attributes-attributes'}
+                                                <li class="attribute">
+                                                    <strong>{$oAttribute_arr->cName}</strong>:
+                                                    <span class="values">
+                                                        {$oAttribute_arr->cWert}
+                                                    </span>
+                                                </li>
+                                            {/block}
                                         {/foreach}
                                     {/if}
 
-                                    {if $Einstellungen.kaufabwicklung.bestellvorgang_artikelkurzbeschreibung == 'Y' && $oPosition->Artikel->cKurzBeschreibung|strlen > 0}
-                                        <li class="shortdescription">{$oPosition->Artikel->cKurzBeschreibung}</li>
-                                    {/if}
-
                                     {if isset($oPosition->Artikel->cGewicht) && $Einstellungen.artikeldetails.artikeldetails_gewicht_anzeigen === 'Y' && $oPosition->Artikel->fGewicht > 0}
-                                        <li class="weight">
-                                            <strong>{lang key='shippingWeight'}: </strong>
-                                            <span class="value">{$oPosition->Artikel->cGewicht} {lang key='weightUnit'}</span>
-                                        </li>
+                                        {block name='basket-cart-items-product-data-weight'}
+                                            <li class="weight">
+                                                <strong>{lang key='shippingWeight'}: </strong>
+                                                <span class="value">{$oPosition->Artikel->cGewicht} {lang key='weightUnit'}</span>
+                                            </li>
+                                        {/block}
                                     {/if}
                                 </ul>
                             {/block}
@@ -264,19 +293,18 @@
                         }
                             {col cols=$cols xl=10 class='mt-4 ml-auto' data=['toggle'=>'product-actions']}
                                 {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
-                                    <div class="btn-scale-small d-inline-block">
-                                        {include file='snippets/wishlist_button.tpl' Artikel=$oPosition->Artikel}
-                                    </div>
-                                    <span class="mx-2">|</span>
+                                    {block name='basket-cart-items-cart-submit-include-wishlist-button'}
+                                        {include file='snippets/wishlist_button.tpl' Artikel=$oPosition->Artikel buttonAndText=true}
+                                    {/block}
                                 {/if}
                                 {button type="submit"
-                                variant="link"
-                                size="sm"
-                                class="pl-0 droppos border-0"
-                                name="dropPos"
-                                value=$oPosition@index
-                                title="{lang key='delete'}"}
-                                    <span class="fa fa-trash "></span> <span>{lang key='delete'}</span>
+                                    variant="link"
+                                    size="sm"
+                                    class="p-0 droppos text-decoration-underline text-nowrap"
+                                    name="dropPos"
+                                    value=$oPosition@index
+                                    title="{lang key='delete'}"}
+                                    <span class="fas fa-trash-alt mr-2"></span>{lang key='delete'}
                                 {/button}
                             {/col}
                         {/if}

@@ -1,5 +1,7 @@
-// colors
+$image-path:                        'images';
 
+// colors
+$fa-font-path:                      "../base/fontawesome/webfonts" !default;
 $gray-lighter:                      #f5f7fa;
 $gray-light:                        #9b9b9b;
 $gray:                              #707070;
@@ -9,7 +11,7 @@ $gray-darker:                       #525252;
 $sand:                              #ebebeb;
 $cool-white:                        #f8f8f8;
 $primary:                           #F8BF00;
-$secondary:                         transparent;
+$secondary:                         $gray-darker;
 $success:                           #088319;
 $bg-success:                        #CDE1D6;
 $info:                              #525252;
@@ -30,6 +32,15 @@ $gray-700:                          $gray-dark;
 
 $yiq-text-dark:                     $gray-darker;
 $yiq-text-light:                    $gray-lighter;
+
+$theme-colors				: ();
+$theme-colors: map-merge((
+        'gray'			: $gray,
+        'gray-light'	: $gray-lighter,
+        'gray-medium'	: $gray-medium,
+        'gray-dark'		: $gray-light,
+        'gray-darker'	: $gray-darker
+), $theme-colors);
 
 // spacer
 
@@ -124,6 +135,9 @@ $highlight-border-size:             .375rem;
 $body-bg:                           $gray-100;
 $body-color:                        $gray-600;
 
+$headings-color:                    $gray-700;
+$navbar-light-hover-color:          $primary;
+
 $text-muted:                        $gray;
 $input-color-placeholder:           $gray;
 
@@ -144,7 +158,11 @@ $border-radius-sm:                  $border-radius;
 $border-width:                      1px;
 $border-color:                      $gray-medium;
 
-$card-bg:                           #fff;
+/* cards */
+
+$card-border-color:                 $gray-lighter;
+$card-cap-bg:                       $gray-lighter;
+$card-bg:                           $white;
 
 $searchcloud-font-size-scaling:     30%;
 $navbar-light-color:                $gray-dark;
@@ -180,19 +198,21 @@ $url-1:                             url(../base/images/loading-sm.gif);
 
 // tooltips
 
-$tooltip-font-size:                 $font-size-base/1.15;
-$tooltip-color:                     $gray-dark;
-$tooltip-bg:                        #fff;
+$tooltip-font-size:                 $font-size-sm;
+$tooltip-color:                     $gray-darker;
+$tooltip-border-color:              $gray-darker;
+$tooltip-bg:                        $white;
 $tooltip-border-radius:             $border-radius;
-$tooltip-arrow-color:               $gray-dark;
-$tooltip-arrow-inner-color:         #fff;
+$tooltip-arrow-color:               $gray-darker;
+$tooltip-arrow-inner-color:         $white;
+$tooltip-border-width:              $border-width;
 
 $tooltip-arrow-inner-width:         .8rem;
 $tooltip-arrow-inner-height:        .4rem;
 $tooltip-arrow-width:               .88rem;
 $tooltip-arrow-height:              .45rem;
 
-$tooltip-margin:                    .25rem;
+$tooltip-margin:                    .5rem;
 
 // input
 
@@ -213,21 +233,21 @@ $custom-select-valid-indicator:     str-replace(url("data:image/svg+xml,%3Csvg x
 $custom-select-background:          $custom-select-indicator no-repeat right center / auto 100%;
 $custom-select-box-shadow:          none;
 
-
-
 // pagination
 
 $pagination-border-width:           0;
 $pagination-bg:                     transparent;
+$pagination-color:                  $link-color;
 
 $pagination-hover-bg:               transparent;
+$pagination-hover-color:            $pagination-color;
 
 $pagination-active-bg:              transparent;
-$pagination-active-color:           $link-color;
+$pagination-active-color:           $pagination-hover-color;
 
 $pagination-focus-box-shadow:       none;
 
-$pagination-disabled-color:         $sand;
+$pagination-disabled-color:         $gray-lighter;
 $pagination-disabled-bg:            transparent;
 
 // breadcrumbs
@@ -293,9 +313,27 @@ $ribbon-bg-colors: map-merge((
         '9' : $ribbon-bg-9
 ), $ribbon-bg-colors);
 
+/* navs */
+
+$nav-tabs-border-radius					: 0;
+
+$nav-tabs-link-hover-border-color		: 0;
+$nav-tabs-link-active-color				: $link-color;
+$nav-tabs-link-active-bg				: transparent;
+$nav-tabs-link-active-border-color		: $primary;
+
 $navbar-nav-link-padding-x: map-get($spacers, 4);
 $navbar-nav-link-padding-y: map-get($spacers, 4);
-$nav-link-padding-x: 0.8rem;
+$nav-link-padding-x: 1rem;
+
+/* navs */
+
+$nav-tabs-border-radius					: 0;
+
+$nav-tabs-link-hover-border-color		: 0;
+$nav-tabs-link-active-color				: $link-color;
+$nav-tabs-link-active-bg				: transparent;
+$nav-tabs-link-active-border-color		: $primary;
 
 /* modals */
 
@@ -310,6 +348,8 @@ $modal-header-border-width		: $border-width;
 $modal-header-padding-y			: map-get($spacers, 2);
 $modal-header-padding-x			: 0;
 
+$modal-backdrop-opacity			: .8;
+
 $modal-md: 700px;
 
 /* progress */
@@ -317,6 +357,27 @@ $modal-md: 700px;
 $progress-bg				: $gray-lighter;
 $progress-box-shadow		: none;
 
+/* options */
+
+$enable-caret				: false;
+$enable-shadows				: true;
+
 /* dropdowns */
 
+$dropdown-box-shadow		: 0 rem(1px) rem(12px) transparentize($black, .84);
+$dropdown-border-width		: 0;
+$dropdown-border-radius		: 0;
+
+$dropdown-link-color		: $gray-darker;
+$dropdown-link-hover-color	: $gray-darker;
+$dropdown-link-hover-bg		: $gray-lighter;
+
+$dropdown-link-active-color	: $dropdown-link-hover-color;
+$dropdown-link-active-bg	: $dropdown-link-hover-bg;
+
 $dropdown-padding-y         : 0;
+
+/* photoswipe */
+$pswp__background-color		: rgba($gray-darker, .5);
+$pswp__assets-path			: '../../js/photoswipe/css/default-skin/';
+

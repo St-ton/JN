@@ -4,29 +4,32 @@
  *}
 {block name='layout-footer'}
     {block name='layout-footer-content-all-closingtags'}
-        {block name='layout-footer-content-closingtag'}
-            {opcMountPoint id='opc_content' title='Default Area'}
-            </div>{* /content *}
-        {/block}
 
         {block name='layout-footer-aside'}
             {has_boxes position='left' assign='hasLeftBox'}
 
             {if $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp
-                && !$bExclusive
-                && $hasLeftBox
-                && !empty($boxes.left|strip_tags|trim)
+            && !$bExclusive
+            && $hasLeftBox
+            && !empty($boxes.left|strip_tags|trim)
             }
+                {block name='layout-footer-content-productlist-col-closingtag'}
+                    </div>{* /col *}
+                {/block}
                 {block name='layout-footer-sidepanel-left'}
                     <aside id="sidepanel_left" class="d-print-none col-12 col-lg-4 col-xl-3 order-lg-0 pr-lg-5 pr-xl-7">
                         {block name='footer-sidepanel-left-content'}{$boxes.left}{/block}
                     </aside>
                 {/block}
+                {block name='layout-footer-content-productlist-row-closingtag'}
+                    </div>{* /row *}
+                {/block}
             {/if}
         {/block}
 
-        {block name='layout-footer-content-row-closingtag'}
-            </div>{* /row *}
+        {block name='layout-footer-content-closingtag'}
+            {opcMountPoint id='opc_content' title='Default Area'}
+            </div>{* /content *}
         {/block}
 
         {block name='layout-footer-content-wrapper-closingtag'}
@@ -46,12 +49,16 @@
                         {block name='layout-footer-newsletter'}
                             {row class="newsletter-footer" class="text-center text-md-left align-items-center"}
                                 {col cols=12 lg=6}
-                                    <div class="h2">
-                                        {lang key='newsletter' section='newsletter'} {lang key='newsletterSendSubscribe' section='newsletter'}
-                                    </div>
-                                    <p class="info">
-                                        {lang key='unsubscribeAnytime' section='newsletter'}
-                                    </p>
+                                    {block name='layout-footer-newsletter-heading'}
+                                        <div class="h2">
+                                            {lang key='newsletter' section='newsletter'} {lang key='newsletterSendSubscribe' section='newsletter'}
+                                        </div>
+                                    {/block}
+                                    {block name='layout-footer-newsletter-info'}
+                                        <p class="info">
+                                            {lang key='unsubscribeAnytime' section='newsletter'}
+                                        </p>
+                                    {/block}
                                 {/col}
                                 {col cols=12 lg=6}
                                     {block name='layout-footer-form'}
@@ -62,7 +69,7 @@
                                                     {inputgroup}
                                                         {input type="email" name="cEmail" id="newsletter_email" placeholder="{lang key='emailadress'}" aria=['label' => {lang key='emailadress'}]}
                                                         {inputgroupaddon append=true}
-                                                            {button type='submit' variant='dark' class='min-w-sm'}
+                                                            {button type='submit' variant='secondary' class='min-w-sm'}
                                                                 {lang key='newsletterSendSubscribe' section='newsletter'}
                                                             {/button}
                                                         {/inputgroupaddon}
@@ -91,7 +98,7 @@
 
                     {block name='layout-footer-additional'}
                         {if $Einstellungen.template.footer.socialmedia_footer === 'Y' || $Einstellungen.template.footer.newsletter_footer === 'Y'}
-                            {row class="footer-additional"}
+                            {row class="mb-3 mt-5"}
                             {if $Einstellungen.template.footer.socialmedia_footer === 'Y'}
                                 {block name='layout-footer-socialmedia'}
                                     {col cols=12 class="footer-additional-wrapper col-auto mx-auto"}
@@ -175,48 +182,6 @@
                             {/row}{* /row footer-additional *}
                         {/if}
                     {/block}{* /footer-additional *}
-                    {row}
-                        {block name='layout-footer-language'}
-                            {if isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
-                                {dropdown
-                                    id="language-dropdown-footer"
-                                    variant="link btn-sm"
-                                    class="d-block d-md-none col-6 text-center language-dropdown"
-                                    text="<i class='fas fa-language'></i> {lang key='language'}"}
-                                    {foreach $smarty.session.Sprachen as $oSprache}
-                                        {dropdownitem href="{$oSprache->url}" rel="nofollow" }
-                                            {$oSprache->displayLanguage}
-                                        {/dropdownitem}
-                                    {/foreach}
-                                {/dropdown}
-                            {/if}
-                        {/block}
-                        {block name='layout-footer-currency'}
-                            {if isset($smarty.session.Waehrungen) && $smarty.session.Waehrungen|@count > 1}
-                                {dropdown
-                                    id="currency-dropdown-footer"
-                                    variant="link btn-sm"
-                                    class="d-block d-md-none col-6 text-center currency-dropdown"
-                                    text="
-                                        {if $smarty.session.Waehrung->getCode() === 'EUR'}
-                                            <i class='fas fa-euro-sign' title='{$smarty.session.Waehrung->getName()}'></i> {lang key='currency'}
-                                        {elseif $smarty.session.Waehrung->getCode() === 'USD'}
-                                            <i class='fas fa-dollar-sign' title='{$smarty.session.Waehrung->getName()}'></i> {lang key='currency'}
-                                        {elseif $smarty.session.Waehrung->getCode() === 'GBP'}
-                                            <i class='fas fa-pound-sign'' title='{$smarty.session.Waehrung->getName()}''></i> {lang key='currency'}
-                                        {else}
-                                            {$smarty.session.Waehrung->getName()}
-                                        {/if}"
-                                }
-                                    {foreach $smarty.session.Waehrungen as $oWaehrung}
-                                        {dropdownitem href=$oWaehrung->getURLFull() rel="nofollow"}
-                                            {$oWaehrung->getName()}
-                                        {/dropdownitem}
-                                    {/foreach}
-                                {/dropdown}
-                            {/if}
-                        {/block}
-                    {/row}
                     <div class="footnote-vat">
                         {if $NettoPreise == 1}
                             {lang key='footnoteExclusiveVat' assign='footnoteVat'}
@@ -238,17 +203,19 @@
                         {container fluid=true class='py-3 font-size-sm text-center"'}
                             {row}
                                 {assign var=isBrandFree value=JTL\Shop::isBrandfree()}
-                                {col class="text-right"}
-                                    {if !empty($meta_copyright)}<span itemprop="copyrightHolder">&copy; {$meta_copyright}</span>{/if}
-                                    {if $Einstellungen.global.global_zaehler_anzeigen === 'Y'}{lang key='counter'}: {$Besucherzaehler}{/if}
+                                {col}
+                                    {if !empty($meta_copyright)}
+                                        <span class="mr-2" itemprop="copyrightHolder">&copy; {$meta_copyright}</span>
+                                    {/if}
+                                    {if $Einstellungen.global.global_zaehler_anzeigen === 'Y'}
+                                        {lang key='counter'}: {$Besucherzaehler}
+                                    {/if}
+                                    {if !empty($Einstellungen.global.global_fusszeilehinweis)}
+                                        <span class="ml-2">{$Einstellungen.global.global_fusszeilehinweis}</span>
+                                    {/if}
                                 {/col}
-                                {if !empty($Einstellungen.global.global_fusszeilehinweis)}
-                                    {col class="text-left"}
-                                        {$Einstellungen.global.global_fusszeilehinweis}
-                                    {/col}
-                                {/if}
                                 {if !$isBrandFree}
-                                    {col class="text-right" id="system-credits"}
+                                    {col class="col-auto ml-auto" id="system-credits"}
                                         Powered by {link href="https://jtl-url.de/jtlshop" title="JTL-Shop" target="_blank" rel="noopener nofollow"}JTL-Shop{/link}
                                     {/col}
                                 {/if}

@@ -2,7 +2,7 @@
 /**
  * Rebuild ttrennzeichen and add unique index
  *
- * @author Felix Moche
+ * @author fm
  * @created Wed, 18 Jan 2018 16:20:00 +0100
  */
 

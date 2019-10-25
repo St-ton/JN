@@ -10,10 +10,11 @@
     {block name='basket-index-content'}
         {container}
             {row}
+                {block name='basket-index-main'}
                 {col cols=12 lg="{if ($Warenkorb->PositionenArr|@count > 0)}7{else}12{/if}"}
+                    {opcMountPoint id='opc_before_heading'}
                     {block name='basket-index-heading'}
-                        {opcMountPoint id='opc_before_heading'}
-                        <h1 class="h2 b-5">{lang key='basket'} ({count($smarty.session.Warenkorb->PositionenArr)} {lang key='products'})</h1>
+                        <h1 class="h2 mb-5">{lang key='basket'} ({count($smarty.session.Warenkorb->PositionenArr)} {lang key='products'})</h1>
                     {/block}
                     {block name='basket-index-include-extension'}
                         {include file='snippets/extension.tpl'}
@@ -58,7 +59,9 @@
                                             {/foreach}
                                             {row id="freegift"}
                                                 {col cols=12}
-                                                    <h3 class="mb-4">{lang key='freeGiftFromOrderValueBasket'}</h3>
+                                                    {block name='basket-index-freegifts-heading'}
+                                                        <h3 class="mb-4">{lang key='freeGiftFromOrderValueBasket'}</h3>
+                                                    {/block}
                                                 {/col}
                                                 {col cols=12}
                                                     {block name='basket-index-form-freegift'}
@@ -72,7 +75,11 @@
                                                                                     <input class="custom-control-input " type="radio" id="gift{$oArtikelGeschenk->kArtikel}" name="gratisgeschenk" value="{$oArtikelGeschenk->kArtikel}" onclick="submit();">
                                                                                     <label for="gift{$oArtikelGeschenk->kArtikel}" class="p-3 custom-control-label {if $selectedFreegift===$oArtikelGeschenk->kArtikel}badge-check{/if}">
                                                                                         {if $selectedFreegift===$oArtikelGeschenk->kArtikel}{badge class="badge-circle"}<i class="fas fa-check mx-auto"></i>{/badge}{/if}
-                                                                                        {image src=$oArtikelGeschenk->Bilder[0]->cURLKlein class="image" fluid=true alt=$oArtikelGeschenk->cName}
+                                                                                        {image lazy=true webp=true
+                                                                                            src=$oArtikelGeschenk->Bilder[0]->cURLKlein
+                                                                                            fluid=true
+                                                                                            alt=$oArtikelGeschenk->cName
+                                                                                        }
                                                                                         <div class="caption">
                                                                                             <p class="small text-muted">{lang key='freeGiftFrom1'} {$oArtikelGeschenk->cBestellwert} {lang key='freeGiftFrom2'}</p>
                                                                                             <p>{$oArtikelGeschenk->cName}</p>
@@ -118,39 +125,38 @@
                                             {lang key='emptybasket' section='checkout'}
                                         {/alert}
                                     {/block}
-                                    {link href=$ShopURL class="btn btn-primary"}{lang key='continueShopping' section='checkout'}{/link}
+                                    {block name='basket-index-empty-continue-shopping'}
+                                        {link href=$ShopURL class="btn btn-primary"}{lang key='continueShopping' section='checkout'}{/link}
+                                    {/block}
                                 {/col}
                             {/row}
                         {/block}
                     {/if}
                 {/col}
+                {/block}
                 {if ($Warenkorb->PositionenArr|@count > 0)}
+                    {block name='basket-index-side'}
                     {col class='ml-auto' cols=12 lg=4}
                         <div class="sticky-top cart-summary">
-                            <div class="h2 mb-4">{lang key="orderOverview" section="account data"}</div>
+                            {block name='basket-index-side-heading'}
+                                <div class="h2 mb-5">{lang key="orderOverview" section="account data"}</div>
+                            {/block}
                             {if $Einstellungen.kaufabwicklung.warenkorb_kupon_anzeigen === 'Y' && $KuponMoeglich == 1}
                                 {block name='basket-index-coupon'}
                                     {card class='card-gray' no-body=true}
                                         {cardheader}
                                         {block name='basket-index-coupon-heading'}
-                                            {row class='align-items-center'}
-                                                {col data=["toggle" => "collapse", "target"=>"#coupon-form"]}
-                                                    <span class="font-weight-bold font-size-lg">{lang key='useCoupon' section='checkout'}</span>
-                                                {/col}
-                                                {col class='col-auto'}
-                                                    {button variant="link" class="btn-sm text-muted dropdown-toggle float-right" data=["toggle" => "collapse", "target"=>"#coupon-form"]}{/button}
-                                                {/col}
-                                            {/row}
+                                            <span class="font-weight-bold font-size-lg" data-toggle="collapse" data-target="#coupon-form">{lang key='useCoupon' section='checkout'}</span>
                                         {/block}
                                         {/cardheader}
                                         {collapse id="coupon-form"}
-                                            {cardbody class="bg-info"}
+                                            {cardbody}
                                             {block name='basket-index-coupon-form'}
                                                 {form class="form-inline evo-validate" id="basket-coupon-form" method="post" action="{get_static_route id='warenkorb.php'}"}
                                                     {formgroup class="mw-100{if !empty($invalidCouponCode)} has-error{/if}"}
                                                     {inputgroup}
                                                         {input aria=["label"=>"{lang key='couponCode' section='account data'}"] type="text" name="Kuponcode" id="couponCode" maxlength="32" placeholder="{lang key='couponCode' section='account data'}" required=true}
-                                                        {button type="submit" value=1}{lang key='useCoupon' section='checkout'}{/button}
+                                                        {button type="submit" value=1 variant="outline-primary"}{lang key='useCoupon' section='checkout'}{/button}
                                                     {/inputgroup}
                                                     {/formgroup}
                                                 {/form}
@@ -161,9 +167,9 @@
                                 {/block}
                             {/if}
                             {card class="card-gray mt-4"}
-                                {block name='baske-index-price-tax'}
+                                {block name='basket-index-price-tax'}
                                     {if $NettoPreise}
-                                        {block name='baske-index-price-net'}
+                                        {block name='basket-index-price-net'}
                                             {row class="total-net"}
                                                 {col class="text-left" cols=7}
                                                     <span class="price_label"><strong>{lang key='totalSum'} ({lang key='net'}):</strong></span>
@@ -176,7 +182,7 @@
                                     {/if}
 
                                     {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N' && $Steuerpositionen|@count > 0}
-                                        {block name='baske-index-tax'}
+                                        {block name='basket-index-tax'}
                                             {foreach $Steuerpositionen as $Steuerposition}
                                                 {row class="tax"}
                                                     {col class="text-left" cols=7}
@@ -191,7 +197,7 @@
                                     {/if}
 
                                     {if isset($smarty.session.Bestellung->GuthabenNutzen) && $smarty.session.Bestellung->GuthabenNutzen == 1}
-                                        {block name='baske-index-credit'}
+                                        {block name='basket-index-credit'}
                                             {row class="customer-credit"}
                                                 {col class="text-left" cols=7}
                                                     {lang key='useCredit' section='account data'}
@@ -202,7 +208,7 @@
                                             {/row}
                                         {/block}
                                     {/if}
-                                    {block name='baske-index-price-sticky'}
+                                    {block name='basket-index-price-sticky'}
                                         {row class="total border-top mt-3 pt-3 font-size-lg"}
                                             {col class="text-left" cols=7}
                                                 <span class="price_label">{lang key='totalSum'}:</span>
@@ -213,7 +219,7 @@
                                         {/row}
                                     {/block}
                                 {/block}
-                                {block name='baske-index-shipping'}
+                                {block name='basket-index-shipping'}
                                     {if isset($FavourableShipping)}
                                         {if $NettoPreise}
                                             {$shippingCosts = "`$FavourableShipping->cPriceLocalized[$NettoPreise]` {lang key='plus' section='basket'} {lang key='vat' section='productDetails'}"}
@@ -247,6 +253,7 @@
                             {/if}
                         </div>
                     {/col}
+                    {/block}
                 {/if}
             {/row}
         {/container}

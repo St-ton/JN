@@ -2,7 +2,7 @@
 /**
  * add option for xselling show parent
  *
- * @author Falk Prüfer
+ * @author fp
  * @created Tue, 14 Jun 2016 15:25:25 +0200
  */
 

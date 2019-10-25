@@ -228,13 +228,14 @@
                                 <input type="hidden" name="article_key" id="article_key"
                                        value="{if (isset($cKey) && $cKey === 'kArtikel') || (isset($oExtension->cKey) && $oExtension->cKey === 'kArtikel')}{$oExtension->cValue}{/if}">
                                 <input class="form-control" type="text" name="article_name" id="article_name">
+                                <i class="fas fa-spinner fa-pulse typeahead-spinner"></i>
                             </div>
                             <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('typeAheadProduct')}</div>
                             <script>
                                 enableTypeahead('#article_name', 'getProducts', 'cName', null, function(e, item) {
                                     $('#article_name').val(item.cName);
                                     $('#article_key').val(item.kArtikel);
-                                });
+                                }, $('#keykArtikel .fa-spinner'));
                                 {if (isset($cKey) && $cKey === 'kArtikel') || (isset($oExtension->cKey) && $oExtension->cKey === 'kArtikel')}
                                     ioCall('getProducts', [[$('#article_key').val()]], function (data) {
                                         $('#article_name').val(data[0].cName);
@@ -248,13 +249,14 @@
                                 <input type="hidden" name="link_key" id="link_key"
                                        value="{if (isset($cKey) && $cKey === 'kLink') || (isset($oExtension->cKey) && $oExtension->cKey === 'kLink')}{$oExtension->cValue}{/if}">
                                 <input class="form-control" type="text" name="link_name" id="link_name">
+                                <i class="fas fa-spinner fa-pulse typeahead-spinner"></i>
                             </div>
                             <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('typeAheadPage')}</div>
                             <script>
                                 enableTypeahead('#link_name', 'getPages', 'cName', null, function(e, item) {
                                     $('#link_name').val(item.cName);
                                     $('#link_key').val(item.kLink);
-                                });
+                                }, $('#keykLink .fa-spinner'));
                                 {if (isset($cKey) && $cKey === 'kLink') || (isset($oExtension->cKey) && $oExtension->cKey === 'kLink')}
                                     ioCall('getPages', [[$('#link_key').val()]], function (data) {
                                         $('#link_name').val(data[0].cName);
@@ -268,13 +270,14 @@
                                 <input type="hidden" name="attribute_key" id="attribute_key"
                                        value="{if (isset($cKey) && $cKey === 'kMerkmalWert') || (isset($oExtension->cKey) && $oExtension->cKey === 'kMerkmalWert')}{$oExtension->cValue}{/if}">
                                 <input class="form-control" type="text" name="attribute_name" id="attribute_name">
+                                <i class="fas fa-spinner fa-pulse typeahead-spinner"></i>
                             </div>
                             <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('typeAheadAttribute')}</div>
                             <script>
                                 enableTypeahead('#attribute_name', 'getAttributes', 'cWert', null, function(e, item) {
                                     $('#attribute_name').val(item.cWert);
                                     $('#attribute_key').val(item.kMerkmalWert);
-                                });
+                                }, $('#keykMerkmalWert .fa-spinner'));
                                 {if (isset($cKey) && $cKey === 'kMerkmalWert') || (isset($oExtension->cKey) && $oExtension->cKey === 'kMerkmalWert')}
                                     ioCall('getAttributes', [[$('#attribute_key').val()]], function (data) {
                                         $('#attribute_name').val(data[0].cWert);
@@ -288,6 +291,7 @@
                                 <input type="hidden" name="categories_key" id="categories_key"
                                        value="{if (isset($cKey) && $cKey === 'kKategorie') || (isset($oExtension->cKey) && $oExtension->cKey === 'kKategorie')}{$oExtension->cValue}{/if}">
                                 <input class="form-control" type="text" name="categories_name" id="categories_name">
+                                <i class="fas fa-spinner fa-pulse typeahead-spinner"></i>
                             </div>
                             <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('typeAheadCategory')}</div>
                             <script>
@@ -300,7 +304,7 @@
                                     }, null, function(e, item) {
                                     $('#categories_name').val(item.cName);
                                     $('#categories_key').val(item.kKategorie);
-                                });
+                                }, $('#keykKategorie .fa-spinner'));
                                 {if (isset($cKey) && $cKey === 'kKategorie') || (isset($oExtension->cKey) && $oExtension->cKey === 'kKategorie')}
                                     ioCall('getCategories', [[$('#categories_key').val()]], function (data) {
                                         $('#categories_name').val(data[0].cName);
@@ -314,13 +318,14 @@
                                 <input type="hidden" name="manufacturer_key" id="manufacturer_key"
                                        value="{if (isset($cKey) && $cKey === 'kHersteller') || (isset($oExtension->cKey) && $oExtension->cKey === 'kHersteller')}{$oExtension->cValue}{/if}">
                                 <input class="form-control" type="text" name="manufacturer_name" id="manufacturer_name">
+                                <i class="fas fa-spinner fa-pulse typeahead-spinner"></i>
                             </div>
                             <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('typeAheadManufacturer')}</div>
                             <script>
                                 enableTypeahead('#manufacturer_name', 'getManufacturers', 'cName', null, function(e, item) {
                                     $('#manufacturer_name').val(item.cName);
                                     $('#manufacturer_key').val(item.kHersteller);
-                                });
+                                }, $('#keykHersteller .fa-spinner'));
                                 {if (isset($cKey) && $cKey === 'kHersteller') || (isset($oExtension->cKey) && $oExtension->cKey === 'kHersteller')}
                                     ioCall('getManufacturers', [[$('#manufacturer_key').val()]], function (data) {
                                         $('#manufacturer_name').val(data[0].cName);

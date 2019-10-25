@@ -32,7 +32,9 @@
                         {/col}
                     {/row}
                     {if !$product@last}
-                        <hr class="my-3">
+                        {block name='boxes-box-last-seen-hr'}
+                            <hr class="my-3">
+                        {/block}
                     {/if}
                 {/block}
             {/foreach}

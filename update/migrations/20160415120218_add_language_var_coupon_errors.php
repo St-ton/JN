@@ -2,7 +2,7 @@
 /**
  * add_language_var_coupon_errors
  *
- * @author mirko
+ * @author msc
  * @created Fri, 15 Apr 2016 12:02:18 +0200
  */
 

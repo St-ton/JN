@@ -10,6 +10,7 @@ use DirectoryIterator;
 use JTL\Backend\FileCheck;
 use JTL\DB\ReturnType;
 use JTL\Shop;
+use JTL\Template as CurrentTemplate;
 use SimpleXMLElement;
 use stdClass;
 
@@ -262,6 +263,12 @@ class Template
             $xml->Ordner = $cOrdner;
         } else {
             $xml = null;
+        }
+        if (\EVO_COMPATIBILITY === false
+            && ((string)$xml->Name === 'Evo' || (string)$xml->Parent ?? '' === 'Evo')
+            && CurrentTemplate::getInstance()->getName() !== (string)$xml->Name
+        ) {
+            return null;
         }
 
         return $xml;

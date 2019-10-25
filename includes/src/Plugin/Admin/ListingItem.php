@@ -6,9 +6,13 @@
 
 namespace JTL\Plugin\Admin;
 
+use DateTime;
 use JTL\Helpers\GeneralObject;
 use JTL\Mapper\PluginValidation;
 use JTL\Plugin\InstallCode;
+use JTL\Plugin\PluginInterface;
+use JTL\Plugin\State;
+use JTLShop\SemVer\Version;
 
 /**
  * Class ListingItem
@@ -42,9 +46,9 @@ class ListingItem
     private $name = '';
 
     /**
-     * @var string
+     * @var Version
      */
-    private $version = '';
+    private $version;
 
     /**
      * @var string
@@ -62,9 +66,14 @@ class ListingItem
     private $icon = '';
 
     /**
+     * @var int
+     */
+    private $id = 0;
+
+    /**
      * @var string
      */
-    private $id = '';
+    private $pluginID = '';
 
     /**
      * @var int
@@ -94,7 +103,62 @@ class ListingItem
     /**
      * @var int
      */
-    private $state = 0;
+    private $state = State::NONE;
+
+    /**
+     * @var bool
+     */
+    private $isLegacy = true;
+
+    /**
+     * @var bool|Version
+     */
+    private $updateAvailable = false;
+
+    /**
+     * @var bool
+     */
+    private $hasLicenseCheck = false;
+
+    /**
+     * @var string
+     */
+    private $license = '';
+
+    /**
+     * @var string|null
+     */
+    private $updateFromDir = null;
+
+    /**
+     * @var DateTime|null
+     */
+    private $dateInstalled;
+
+    /**
+     * @var int
+     */
+    private $langVarCount = 0;
+
+    /**
+     * @var int
+     */
+    private $linkCount = 0;
+
+    /**
+     * @var int
+     */
+    private $optionsCount = 0;
+
+    /**
+     * @var string|null
+     */
+    private $readmeMD;
+
+    /**
+     * @var string|null
+     */
+    private $licenseMD;
 
     /**
      * @param array $xml
@@ -125,7 +189,7 @@ class ListingItem
             $this->name        = $node['Name'] ?? '';
             $this->description = $node['Description'] ?? '';
             $this->author      = $node['Author'] ?? '';
-            $this->id          = $node['PluginID'] ?? '';
+            $this->pluginID    = $node['PluginID'] ?? '';
             $this->icon        = $node['Icon'] ?? null;
             if (isset($node['Install'][0]['Version']) && \is_array($node['Install'][0]['Version'])) {
                 $lastVersion   = \count($node['Install'][0]['Version']) / 2 - 1;
@@ -133,17 +197,50 @@ class ListingItem
                 && isset($node['Install'][0]['Version'][$lastVersion . ' attr']['nr'])
                     ? (int)$node['Install'][0]['Version'][$lastVersion . ' attr']['nr']
                     : 0;
-                $this->version = \number_format($version / 100, 2);
+                $this->version = Version::parse($version);
             } else {
-                $this->version = $node['Version'];
+                $this->version = Version::parse($node['Version']);
             }
         }
         if ($xml['cFehlercode'] !== InstallCode::OK) {
             $mapper             = new PluginValidation();
             $this->hasError     = true;
             $this->errorCode    = $xml['cFehlercode'];
-            $this->errorMessage = $mapper->map($xml['cFehlercode'], $this->getID());
+            $this->errorMessage = $mapper->map($xml['cFehlercode'], $this->getPluginID());
         }
+
+        return $this;
+    }
+
+    /**
+     * @param PluginInterface $plugin
+     * @return $this
+     */
+    public function loadFromPlugin(PluginInterface $plugin): self
+    {
+        $meta = $plugin->getMeta();
+        $this->setName($meta->getName());
+        $this->setDescription($meta->getDescription());
+        $this->setAuthor($meta->getAuthor());
+        $this->setID($plugin->getID());
+        $this->setPluginID($plugin->getPluginID());
+        $this->setPath($plugin->getPaths()->getBaseDir());
+        $this->setDir($plugin->getPaths()->getVersionedPath());
+        $this->setIsLegacy($plugin->isLegacy());
+        $this->setIcon($meta->getIcon());
+        $this->setVersion($meta->getSemVer());
+        $this->setState($plugin->getState());
+        $this->setDateInstalled($meta->getDateInstalled());
+        $this->setLangVarCount($plugin->getLocalization()->getLangVars()->count());
+        $this->setLinkCount($plugin->getLinks()->getLinks()->count());
+        $this->setHasLicenseCheck($plugin->getLicense()->hasLicenseCheck());
+        $this->setOptionsCount($plugin->getConfig()->getOptions()->count()
+            + $plugin->getAdminMenu()->getItems()->count());
+        $this->setReadmeMD($meta->getReadmeMD());
+        $this->setLicenseMD($meta->getLicenseMD());
+        $this->setIsShop5Compatible(!$this->isLegacy());
+        $this->setLicenseKey($plugin->getLicense()->getKey());
+        $this->setUpdateAvailable($plugin->getMeta()->getUpdateAvailable());
 
         return $this;
     }
@@ -229,17 +326,17 @@ class ListingItem
     }
 
     /**
-     * @return string
+     * @return Version
      */
-    public function getVersion(): string
+    public function getVersion(): Version
     {
         return $this->version;
     }
 
     /**
-     * @param string $version
+     * @param Version $version
      */
-    public function setVersion(string $version): void
+    public function setVersion(Version $version): void
     {
         $this->version = $version;
     }
@@ -295,15 +392,31 @@ class ListingItem
     /**
      * @return string
      */
-    public function getID(): string
+    public function getPluginID(): string
     {
-        return $this->id;
+        return $this->pluginID;
     }
 
     /**
      * @param string $id
      */
-    public function setID(string $id): void
+    public function setPluginID(string $pluginID): void
+    {
+        $this->pluginID = $pluginID;
+    }
+
+    /**
+     * @return string
+     */
+    public function getID(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setID(int $id): void
     {
         $this->id = $id;
     }
@@ -402,5 +515,181 @@ class ListingItem
     public function setState(int $state): void
     {
         $this->state = $state;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isLegacy(): bool
+    {
+        return $this->isLegacy;
+    }
+
+    /**
+     * @param bool $isLegacy
+     */
+    public function setIsLegacy(bool $isLegacy): void
+    {
+        $this->isLegacy = $isLegacy;
+    }
+
+    /**
+     * @return bool|Version
+     */
+    public function isUpdateAvailable()
+    {
+        return $this->updateAvailable;
+    }
+
+    /**
+     * @param bool|Version $updateAvailable
+     */
+    public function setUpdateAvailable($updateAvailable): void
+    {
+        $this->updateAvailable = $updateAvailable;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getUpdateFromDir(): ?string
+    {
+        return $this->updateFromDir;
+    }
+
+    /**
+     * @param string|null $updateFromDir
+     */
+    public function setUpdateFromDir(?string $updateFromDir): void
+    {
+        $this->updateFromDir = $updateFromDir;
+    }
+
+    /**
+     * @return DateTime|null
+     */
+    public function getDateInstalled(): ?DateTime
+    {
+        return $this->dateInstalled;
+    }
+
+    /**
+     * @param DateTime|null $dateInstalled
+     */
+    public function setDateInstalled(?DateTime $dateInstalled): void
+    {
+        $this->dateInstalled = $dateInstalled;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLangVarCount(): int
+    {
+        return $this->langVarCount;
+    }
+
+    /**
+     * @param int $langVarCount
+     */
+    public function setLangVarCount(int $langVarCount): void
+    {
+        $this->langVarCount = $langVarCount;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasLicenseCheck(): bool
+    {
+        return $this->hasLicenseCheck;
+    }
+
+    /**
+     * @param bool $hasLicenseCheck
+     */
+    public function setHasLicenseCheck(bool $hasLicenseCheck): void
+    {
+        $this->hasLicenseCheck = $hasLicenseCheck;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLicenseKey(): string
+    {
+        return $this->license;
+    }
+
+    /**
+     * @param string $license
+     */
+    public function setLicenseKey(string $license): void
+    {
+        $this->license = $license;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLinkCount(): int
+    {
+        return $this->linkCount;
+    }
+
+    /**
+     * @param int $linkCount
+     */
+    public function setLinkCount(int $linkCount): void
+    {
+        $this->linkCount = $linkCount;
+    }
+
+    /**
+     * @return int
+     */
+    public function getOptionsCount(): int
+    {
+        return $this->optionsCount;
+    }
+
+    /**
+     * @param int $optionsCount
+     */
+    public function setOptionsCount(int $optionsCount): void
+    {
+        $this->optionsCount = $optionsCount;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getReadmeMD(): ?string
+    {
+        return $this->readmeMD;
+    }
+
+    /**
+     * @param string|null $readmeMD
+     */
+    public function setReadmeMD(?string $readmeMD): void
+    {
+        $this->readmeMD = $readmeMD;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getLicenseMD(): ?string
+    {
+        return $this->licenseMD;
+    }
+
+    /**
+     * @param string|null $licenseMD
+     */
+    public function setLicenseMD(?string $licenseMD): void
+    {
+        $this->licenseMD = $licenseMD;
     }
 }

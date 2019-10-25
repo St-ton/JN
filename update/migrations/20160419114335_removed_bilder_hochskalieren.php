@@ -2,7 +2,7 @@
 /**
  * removed bilder_hochskalieren
  *
- * @author andy
+ * @author aj
  * @created Tue, 19 Apr 2016 11:43:35 +0200
  */
 
@@ -14,7 +14,7 @@ use JTL\Update\Migration;
  */
 class Migration_20160419114335 extends Migration implements IMigration
 {
-    protected $author = 'andy';
+    protected $author = 'aj';
 
     public function up()
     {

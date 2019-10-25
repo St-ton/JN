@@ -2,7 +2,7 @@
 /**
  * Rename options for setting 192
  *
- * @author Falk Prüfer
+ * @author fp
  * @created Thu, 28 Sep 2017 16:24:40 +0200
  */
 

@@ -1223,51 +1223,6 @@ msgstr "Statusseite"
 msgid "bestellabschluss_abschlussseite_value(A)"
 msgstr "Abschluss-Seite"
 
-msgid "box_bestseller_scrollen_value(0)"
-msgstr "Nein"
-
-msgid "box_bestseller_scrollen_value(1)"
-msgstr "Ja, von oben nach unten"
-
-msgid "box_bestseller_scrollen_value(2)"
-msgstr "Ja, von unten nach oben"
-
-msgid "box_sonderangebote_scrollen_value(0)"
-msgstr "Nein"
-
-msgid "box_sonderangebote_scrollen_value(1)"
-msgstr "Ja, von oben nach unten"
-
-msgid "box_sonderangebote_scrollen_value(2)"
-msgstr "Ja, von unten nach oben"
-
-msgid "box_neuimsortiment_scrollen_value(0)"
-msgstr "Nein"
-
-msgid "box_neuimsortiment_scrollen_value(1)"
-msgstr "Ja, von oben nach unten"
-
-msgid "box_neuimsortiment_scrollen_value(2)"
-msgstr "Ja, von unten nach oben"
-
-msgid "box_topangebot_scrollen_value(0)"
-msgstr "Nein"
-
-msgid "box_topangebot_scrollen_value(1)"
-msgstr "Ja, von oben nach unten"
-
-msgid "box_topangebot_scrollen_value(2)"
-msgstr "Ja, von unten nach oben"
-
-msgid "box_erscheinende_scrollen_value(0)"
-msgstr "Nein"
-
-msgid "box_erscheinende_scrollen_value(1)"
-msgstr "Ja, von oben nach unten"
-
-msgid "box_erscheinende_scrollen_value(2)"
-msgstr "Ja, von unten nach oben"
-
 msgid "boxen_livesuche_anzeigen_value(Y)"
 msgstr "Ja"
 
@@ -1285,24 +1240,6 @@ msgstr "Ja"
 
 msgid "boxen_vergleichsliste_anzeigen_value(N)"
 msgstr "Nein"
-
-msgid "boxen_topbewertet_scrollbar_value(0)"
-msgstr "Nein"
-
-msgid "boxen_topbewertet_scrollbar_value(1)"
-msgstr "Ja, von oben nach unten"
-
-msgid "boxen_topbewertet_scrollbar_value(2)"
-msgstr "Ja, von unten nach oben"
-
-msgid "boxen_preisradar_scrollbar_value(0)"
-msgstr "Nein"
-
-msgid "boxen_preisradar_scrollbar_value(1)"
-msgstr "Ja, von oben nach unten"
-
-msgid "boxen_preisradar_scrollbar_value(2)"
-msgstr "Ja, von unten nach oben"
 
 msgid "bilder_artikel_namen_value(0)"
 msgstr "Primärschlüssel (Vorgabe von JTL-Wawi)"

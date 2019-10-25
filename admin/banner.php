@@ -158,7 +158,7 @@ switch ($action) {
             break;
         }
 
-        $smarty->assign('oBanner', $imageMap);
+        $smarty->assign('banner', $imageMap);
         break;
 
     case 'edit':
@@ -169,7 +169,7 @@ switch ($action) {
             ->assign('bannerFiles', holeBannerDateien())
             ->assign('customerGroups', CustomerGroup::getGroups())
             ->assign('nMaxFileSize', getMaxFileSize(ini_get('upload_max_filesize')))
-            ->assign('oBanner', $imageMap);
+            ->assign('banner', $imageMap);
 
         if (!is_object($imageMap)) {
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errrorBannerNotFound'), 'errrorBannerNotFound');
@@ -178,7 +178,7 @@ switch ($action) {
         break;
 
     case 'new':
-        $smarty->assign('oBanner', $imageMap ?? null)
+        $smarty->assign('banner', $imageMap ?? null)
             ->assign('customerGroups', CustomerGroup::getGroups())
             ->assign('nMaxFileSize', getMaxFileSize(ini_get('upload_max_filesize')))
             ->assign('bannerFiles', holeBannerDateien());

@@ -12,26 +12,24 @@
     {block name='checkout-index-content'}
 
         <div id="result-wrapper" data-wrapper="true">
-            {container}
-                <div id="checkout">
-                    {block name='checkout-index-include-inc-steps'}
-                        {include file='checkout/inc_steps.tpl'}
-                    {/block}
-                    {block name='checkout-index-include-extension'}
-                        {include file='snippets/extension.tpl'}
-                    {/block}
-                    {if $step === 'accountwahl'}
-                        {include file='checkout/step0_login_or_register.tpl'}{*bestellvorgang_accountwahl.tpl*}
-                    {elseif $step === 'edit_customer_address' || $step === 'Lieferadresse'}
-                        {include file='checkout/step1_edit_customer_address.tpl'}{*bestellvorgang_unregistriert_formular.tpl*}
-                    {elseif $step === 'Versand' || $step === 'Zahlung'}
-                        {include file='checkout/step3_shipping_options.tpl'}{*bestellvorgang_versand.tpl*}
-                    {elseif $step === 'ZahlungZusatzschritt'}
-                        {include file='checkout/step4_payment_additional.tpl'}{*bestellvorgang_zahlung_zusatzschritt*}
-                    {elseif $step === 'Bestaetigung'}
-                        {include file='checkout/step5_confirmation.tpl'}{*bestellvorgang_bestaetigung*}
-                    {/if}
-                </div>
+            {container id="checkout"}
+                {block name='checkout-index-include-inc-steps'}
+                    {include file='checkout/inc_steps.tpl'}
+                {/block}
+                {block name='checkout-index-include-extension'}
+                    {include file='snippets/extension.tpl'}
+                {/block}
+                {if $step === 'accountwahl'}
+                    {include file='checkout/step0_login_or_register.tpl'}{*bestellvorgang_accountwahl.tpl*}
+                {elseif $step === 'edit_customer_address' || $step === 'Lieferadresse'}
+                    {include file='checkout/step1_edit_customer_address.tpl'}{*bestellvorgang_unregistriert_formular.tpl*}
+                {elseif $step === 'Versand' || $step === 'Zahlung'}
+                    {include file='checkout/step3_shipping_options.tpl'}{*bestellvorgang_versand.tpl*}
+                {elseif $step === 'ZahlungZusatzschritt'}
+                    {include file='checkout/step4_payment_additional.tpl'}{*bestellvorgang_zahlung_zusatzschritt*}
+                {elseif $step === 'Bestaetigung'}
+                    {include file='checkout/step5_confirmation.tpl'}{*bestellvorgang_bestaetigung*}
+                {/if}
             {/container}
         </div>
 

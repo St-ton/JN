@@ -66,10 +66,27 @@ input[type='radio'], input[type='checkbox'] {
 	}
 }
 
-.form-icon-trigger-label { margin: 0; padding: $input-padding-y $input-padding-x; width: ($spacer + 2 * $input-padding-x); margin-left: -($spacer + 2 * $input-padding-x); text-align: center; z-index: 1; cursor: pointer; transition: color $transition-base-duration $transition-base-timing;
+.form-icon-trigger-label { margin: 0; padding: $input-padding-y $input-padding-x; width: ($spacer + 2 * $input-padding-x); text-align: center; z-index: 1; cursor: pointer; transition: color $transition-base-duration $transition-base-timing;
 	@include hover { color: $link-hover-color; }
 }
 
 .custom-select {
 	-webkit-appearance: none;
+}
+
+legend {
+	font-size: 1rem;
+	font-weight: bolder;
+	padding-bottom: 5px;
+	margin: 10px 0 20px 0;
+	border-bottom: solid 1px $sand;
+}
+
+label[for="city"],
+label[for="register-shipping_address-city"] {
+	padding: 0;
+}
+
+label {
+	display: block;
 }

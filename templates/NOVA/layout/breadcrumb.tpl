@@ -6,7 +6,7 @@
     {strip}
     {has_boxes position='left' assign='hasLeftBox'}
     {if !empty($Brotnavi) && !$bExclusive && !$bAjaxRequest && $nSeitenTyp !== $smarty.const.PAGE_STARTSEITE && $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG && $nSeitenTyp !== $smarty.const.PAGE_BESTELLSTATUS}
-        {row class="breadcrumb-wrapper no-gutters"}
+        {row class="breadcrumb-wrapper no-gutters align-items-center"}
             {col cols="auto"}
                 {breadcrumb id="breadcrumb" itemprop="breadcrumb" itemscope=true itemtype="http://schema.org/BreadcrumbList" class="p-0 py-2 mb-0"}
                     {block name='layout-breadcrumb-xs-back'}
@@ -79,7 +79,7 @@
             {col}
             {if !empty($NavigationBlaettern)}
                 {block name='layout-header-product-pagination'}
-                    {if isset($NavigationBlaettern->naechsterArtikel) && $NavigationBlaettern->naechsterArtikel->kArtikel}
+                    {if isset($NavigationBlaettern->naechsterArtikel->kArtikel)}
                         {link class="btn btn-default float-right"
                             href=$NavigationBlaettern->naechsterArtikel->cURLFull
                             title=$NavigationBlaettern->naechsterArtikel->cName
@@ -88,7 +88,7 @@
                             <span class="fa fa-chevron-right"></span>
                         {/link}
                     {/if}
-                    {if isset($NavigationBlaettern->vorherigerArtikel) && $NavigationBlaettern->vorherigerArtikel->kArtikel}
+                    {if isset($NavigationBlaettern->vorherigerArtikel->kArtikel)}
                         {link class="btn btn-default float-right"
                             href=$NavigationBlaettern->vorherigerArtikel->cURLFull
                             title=$NavigationBlaettern->vorherigerArtikel->cName

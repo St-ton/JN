@@ -1394,12 +1394,6 @@ msgstr "Abschluss-Seite nach externer Bezahlung"
 msgid "bestellabschluss_abschlussseite_desc"
 msgstr "Hier legen Sie fest, welche Seite nach einer externen Bezahlung angezeigt werden soll."
 
-msgid "box_bestseller_scrollen_name"
-msgstr "Scrolling benutzen"
-
-msgid "box_bestseller_scrollen_desc"
-msgstr "Hier legen Sie fest, ob es möglich ist, durch die Artikel zu blättern (Ja), oder ob nur die vorgegebene Anzahl an Artikeln angezeigt wird"
-
 msgid "box_bestseller_anzahl_anzeige_name"
 msgstr "Anzahl angezeigter Artikel"
 
@@ -1412,23 +1406,17 @@ msgstr "Basisanzahl Artikel"
 msgid "box_bestseller_anzahl_basis_desc"
 msgstr "Hier legen Sie fest, aus wie vielen Artikeln die anzuzeigenden Artikel ausgesucht werden sollen."
 
-msgid "box_sonderangebote_scrollen_name"
-msgstr "Scrolling benutzen"
-
-msgid "box_sonderangebote_scrollen_desc"
-msgstr "Hier legen Sie fest, ob es möglich ist, durch die Artikel zu blättern (Ja), oder ob nur die vorgegebene Anzahl an Artikeln angezeigt wird"
-
 msgid "box_sonderangebote_anzahl_anzeige_name"
 msgstr "Anzahl angezeigter Artikel"
 
 msgid "box_sonderangebote_anzahl_anzeige_desc"
 msgstr "Hier legen Sie fest, wie viele Artikel in der Box angezeigt werden."
 
-msgid "box_neuimsortiment_scrollen_name"
-msgstr "Scrolling benutzen"
+msgid "box_sonderangebote_anzahl_basis_name"
+msgstr "Basisanzahl Artikel"
 
-msgid "box_neuimsortiment_scrollen_desc"
-msgstr "Hier legen Sie fest, ob es möglich ist, durch die Artikel zu blättern (Ja), oder ob nur die vorgegebene Anzahl an Artikeln angezeigt wird"
+msgid "box_sonderangebote_anzahl_basis_desc"
+msgstr "Hier legen Sie fest, aus wie vielen Artikeln die anzuzeigenden Artikel ausgesucht werden sollen."
 
 msgid "box_neuimsortiment_anzahl_anzeige_name"
 msgstr "Anzahl angezeigter Artikel"
@@ -1442,11 +1430,11 @@ msgstr "Maximales Artikelalter in Tagen"
 msgid "box_neuimsortiment_alter_tage_desc"
 msgstr "Hier legen Sie fest, wie viele Tage lang Artikel als „Neu im Sortiment“ markiert werden."
 
-msgid "box_topangebot_scrollen_name"
-msgstr "Scrolling benutzen"
+msgid "box_neuimsortiment_anzahl_basis_name"
+msgstr "Basisanzahl Artikel"
 
-msgid "box_topangebot_scrollen_desc"
-msgstr "Hier legen Sie fest, ob es möglich ist, durch die Artikel zu blättern (Ja), oder ob nur die vorgegebene Anzahl an Artikeln angezeigt wird"
+msgid "box_neuimsortiment_anzahl_basis_desc"
+msgstr "Hier legen Sie fest, aus wie vielen Artikeln die anzuzeigenden Artikel ausgesucht werden sollen."
 
 msgid "box_topangebot_anzahl_anzeige_name"
 msgstr "Anzahl angezeigter Artikel"
@@ -1454,23 +1442,29 @@ msgstr "Anzahl angezeigter Artikel"
 msgid "box_topangebot_anzahl_anzeige_desc"
 msgstr "Hier legen Sie fest, wie viele Artikel in der Box angezeigt werden."
 
+msgid "box_topangebot_anzahl_basis_name"
+msgstr "Basisanzahl Artikel"
+
+msgid "box_topangebot_anzahl_basis_desc"
+msgstr "Hier legen Sie fest, aus wie vielen Artikeln die anzuzeigenden Artikel ausgesucht werden sollen."
+
 msgid "box_zuletztangesehen_anzahl_name"
 msgstr "Anzahl angezeigter Artikel"
 
 msgid "box_zuletztangesehen_anzahl_desc"
 msgstr "Hier legen Sie fest, wie viele Artikel in der Box angezeigt werden."
 
-msgid "box_erscheinende_scrollen_name"
-msgstr "Scrolling benutzen"
-
-msgid "box_erscheinende_scrollen_desc"
-msgstr "Hier legen Sie fest, ob es möglich ist, durch die Artikel zu blättern (Ja), oder ob nur die vorgegebene Anzahl an Artikeln angezeigt wird"
-
 msgid "box_erscheinende_anzahl_anzeige_name"
 msgstr "Anzahl angezeigter Artikel"
 
 msgid "box_erscheinende_anzahl_anzeige_desc"
 msgstr "Hier legen Sie fest, wie viele Artikel in der Box angezeigt werden."
+
+msgid "box_erscheinende_anzahl_basis_name"
+msgstr "Basisanzahl Artikel"
+
+msgid "box_erscheinende_anzahl_basis_desc"
+msgstr "Hier legen Sie fest, aus wie vielen Artikeln die anzuzeigenden Artikel ausgesucht werden sollen."
 
 msgid "boxen_livesuche_anzeigen_name"
 msgstr "Box anzeigen"
@@ -1502,12 +1496,6 @@ msgstr "Vergleichsliste anzeigen"
 msgid "boxen_vergleichsliste_anzeigen_desc"
 msgstr "Hier legen Sie fest, ob die Vergleichsliste in einer Box angezeigt werden soll."
 
-msgid "boxen_topbewertet_scrollbar_name"
-msgstr "Scrolling nutzen"
-
-msgid "boxen_topbewertet_scrollbar_desc"
-msgstr "Hier legen Sie fest, ob es möglich ist, durch die Artikel zu blättern (Ja), oder ob nur die vorgegebene Anzahl an Artikeln angezeigt wird"
-
 msgid "boxen_topbewertet_anzahl_name"
 msgstr "Anzahl angezeigter Artikel"
 
@@ -1525,24 +1513,6 @@ msgstr "Top bewertet ab welcher Durchschnittsbewertung"
 
 msgid "boxen_topbewertet_minsterne_desc"
 msgstr "Hier legen Sie fest, mit wie vielen Sternen ein Artikel mindestens im Durchschnitt bewertet sein muss, um als „Top bewertet“ zu gelten."
-
-msgid "boxen_preisradar_scrollbar_name"
-msgstr "Scrolling nutzen"
-
-msgid "boxen_preisradar_scrollbar_desc"
-msgstr "Hier legen Sie fest, ob es möglich ist, durch die Artikel zu blättern (Ja), oder ob nur die vorgegebene Anzahl an Artikeln angezeigt wird"
-
-msgid "boxen_preisradar_anzahl_name"
-msgstr "Anzahl angezeigter Artikel"
-
-msgid "boxen_preisradar_anzahl_desc"
-msgstr "Hier legen Sie fest, wie viele Artikel in der Box angezeigt werden."
-
-msgid "boxen_preisradar_anzahltage_name"
-msgstr "Anzahl berücksichtigter Tage"
-
-msgid "boxen_preisradar_anzahltage_desc"
-msgstr "Hier legen Sie fest, wie viele Tage rückwirkend für den Preisverlauf berücksichtigt werden sollen."
 
 msgid "bilder_kategorien_breite_name"
 msgstr "Kategoriebilder Breite"

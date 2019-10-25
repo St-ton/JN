@@ -29,6 +29,7 @@
                                 {/col}
                             {/block}
                         {/if}
+
                         {block name='snippets-uploads-scheme-product-data-main'}
                             {col cols=12}
                                 {block name='snippets-uploads-scheme-product-input'}

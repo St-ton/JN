@@ -156,7 +156,8 @@
                                                 </li>
                                             {/foreach}
                                         </ul>
-                                        {if ($oGruppe->getAnzeigeTyp() == $smarty.const.KONFIG_ANZEIGE_TYP_RADIO || $oGruppe->getAnzeigeTyp() == $smarty.const.KONFIG_ANZEIGE_TYP_DROPDOWN)}
+                                        {if ($oGruppe->getAnzeigeTyp() == $smarty.const.KONFIG_ANZEIGE_TYP_RADIO
+                                        || $oGruppe->getAnzeigeTyp() == $smarty.const.KONFIG_ANZEIGE_TYP_DROPDOWN)}
                                             {assign var=quantity value=$oGruppe->getInitQuantity()}
                                             {if isset($nKonfiggruppeAnzahl_arr) && array_key_exists($kKonfiggruppe, $nKonfiggruppeAnzahl_arr)}
                                                 {assign var=quantity value=$nKonfiggruppeAnzahl_arr[$kKonfiggruppe]}

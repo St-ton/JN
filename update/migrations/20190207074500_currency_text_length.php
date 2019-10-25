@@ -2,7 +2,7 @@
 /**
  * Increase text fiels length for currencies
  *
- * @author Felix Moche
+ * @author fm
  */
 
 use JTL\Update\IMigration;
@@ -13,7 +13,7 @@ use JTL\Update\Migration;
  */
 class Migration_20190207074500 extends Migration implements IMigration
 {
-    protected $author      = 'Felix Moche';
+    protected $author      = 'fm';
     protected $description = 'Increase currency table text fields length';
 
     public function up()

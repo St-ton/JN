@@ -20,13 +20,11 @@
         {/if}
 
         {block name='contact-index-include-extension'}
-            {container}
-                {include file='snippets/extension.tpl'}
-            {/container}
+            {include file='snippets/extension.tpl'}
         {/block}
         {if isset($step)}
-            {container}
-                {if $step === 'formular'}
+            {if $step === 'formular'}
+                {container}
                     {opcMountPoint id='opc_before_form'}
                     {if !empty($Spezialcontent->oben)}
                         {block name='contact-index-custom-content-top'}
@@ -80,7 +78,9 @@
                                                     {row}
                                                         {if $Einstellungen.kontakt.kontakt_abfragen_vorname !== 'N'}
                                                             {col cols=12 md=6}
-                                                                {include file='snippets/form_group_simple.tpl' options=["text", "firstName", "vorname", {$Vorgaben->cVorname}, {lang key='firstName' section='account data'}, {$Einstellungen.kontakt.kontakt_abfragen_vorname}]}
+                                                                {block name='contact-index-name-firstname'}
+                                                                    {include file='snippets/form_group_simple.tpl' options=["text", "firstName", "vorname", {$Vorgaben->cVorname}, {lang key='firstName' section='account data'}, {$Einstellungen.kontakt.kontakt_abfragen_vorname}]}
+                                                                {/block}
                                                             {/col}
                                                         {/if}
                                                         {if $Einstellungen.kontakt.kontakt_abfragen_nachname !== 'N'}
@@ -93,7 +93,9 @@
                                                                         {lang assign='invalidReason' key='lastNameNotNumeric' section='account data'}
                                                                     {/if}
                                                                 {/if}
-                                                                {include file='snippets/form_group_simple.tpl' options=['text' , 'lastName', 'nachname', {$Vorgaben->cNachname}, {lang key='lastName' section='account data'}, {$Einstellungen.kontakt.kontakt_abfragen_nachname}, {$invalidReason}]}
+                                                                {block name='contact-index-name-last-name'}
+                                                                    {include file='snippets/form_group_simple.tpl' options=['text' , 'lastName', 'nachname', {$Vorgaben->cNachname}, {lang key='lastName' section='account data'}, {$Einstellungen.kontakt.kontakt_abfragen_nachname}, {$invalidReason}]}
+                                                                {/block}
                                                             {/col}
                                                         {/if}
                                                     {/row}
@@ -131,14 +133,18 @@
                                                             {col cols=12 md=6}
                                                                 {assign var=invalidReason value=null}
                                                                 {if isset($fehlendeAngaben.tel) && $fehlendeAngaben.tel === 1}{lang assign='invalidReason' key='fillOut'}{elseif isset($fehlendeAngaben.tel) && $fehlendeAngaben.tel === 2}{lang assign='invalidReason' key='invalidTel'}{/if}
-                                                                {include file='snippets/form_group_simple.tpl' options=['tel' , 'tel', 'tel', {$Vorgaben->cTel}, {lang key='tel' section='account data'}, {$Einstellungen.kontakt.kontakt_abfragen_tel}, {$invalidReason}]}
+                                                                {block name='contact-index-tel'}
+                                                                    {include file='snippets/form_group_simple.tpl' options=['tel' , 'tel', 'tel', {$Vorgaben->cTel}, {lang key='tel' section='account data'}, {$Einstellungen.kontakt.kontakt_abfragen_tel}, {$invalidReason}]}
+                                                                {/block}
                                                             {/col}
                                                         {/if}
                                                         {if $Einstellungen.kontakt.kontakt_abfragen_mobil !== 'N'}
                                                             {col cols=12 md=6}
                                                                 {assign var=invalidReason value=null}
                                                                 {if isset($fehlendeAngaben.mobil) && $fehlendeAngaben.mobil === 1}{lang assign='invalidReason' key='fillOut'}{elseif isset($fehlendeAngaben.mobil) && $fehlendeAngaben.mobil === 2}{lang assign='invalidReason' key='invalidTel'}{/if}
-                                                                {include file='snippets/form_group_simple.tpl' options=['tel' , 'mobile', 'mobil', {$Vorgaben->cMobil}, {lang key='mobile' section='account data'}, {$Einstellungen.kontakt.kontakt_abfragen_mobil}, {$invalidReason}]}
+                                                                {block name='contact-index-mobile'}
+                                                                    {include file='snippets/form_group_simple.tpl' options=['tel' , 'mobile', 'mobil', {$Vorgaben->cMobil}, {lang key='mobile' section='account data'}, {$Einstellungen.kontakt.kontakt_abfragen_mobil}, {$invalidReason}]}
+                                                                {/block}
                                                             {/col}
                                                         {/if}
                                                     {/row}
@@ -242,8 +248,8 @@
                                         {/row}
                                     {/block}
                                 {/if}
+                                {opcMountPoint id='opc_before_submit'}
                                 {block name='contact-index-form-submit'}
-                                    {opcMountPoint id='opc_before_submit'}
                                     {row}
                                         {col cols=12 lg=4}{/col}
                                         {col cols=12 lg=8}
@@ -269,8 +275,8 @@
                             </div>
                         {/block}
                     {/if}
-                {/if}
-            {/container}
+                {/container}
+            {/if}
         {/if}
     {/block}
 

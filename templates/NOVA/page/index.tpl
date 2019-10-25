@@ -31,7 +31,9 @@
                     {/if}
                     {assign var=moreLink value=$Box->cURL}
                     {block name='page-index-include-product-slider'}
-                        {include file='snippets/product_slider.tpl' productlist=$Box->Artikel->elemente title=$title hideOverlays=true moreLink=$moreLink moreTitle=$moreTitle}
+                        {container fluid=true}
+                            {include file='snippets/product_slider.tpl' productlist=$Box->Artikel->elemente title=$title hideOverlays=true moreLink=$moreLink moreTitle=$moreTitle}
+                        {/container}
                     {/block}
                 {/if}
             {/foreach}
@@ -44,22 +46,24 @@
             {opcMountPoint id='opc_before_news'}
 
             <section>
-                {block name='page-index-subheading-news'}
-                    <div class="hr-sect h2 mb-5">
-                        {link href="{get_static_route id='news.php'}"}{lang key='news' section='news'}{/link}
-                    </div>
-                {/block}
-                {block name='page-index-news'}
-                    {row itemprop="about" itemscope=true itemtype="http://schema.org/Blog" class="news-slider mx-0"}
-                        {foreach $oNews_arr as $newsItem}
-                            {col}
-                                {block name='page-index-include-preview'}
-                                    {include file='blog/preview.tpl'}
-                                {/block}
-                            {/col}
-                        {/foreach}
-                    {/row}
-                {/block}
+                {container}
+                    {block name='page-index-subheading-news'}
+                        <div class="hr-sect h2 mb-5">
+                            {link href="{get_static_route id='news.php'}"}{lang key='news' section='news'}{/link}
+                        </div>
+                    {/block}
+                    {block name='page-index-news'}
+                        {row itemprop="about" itemscope=true itemtype="http://schema.org/Blog" class="carousel carousel-arrows-inside news-slider mx-0"}
+                            {foreach $oNews_arr as $newsItem}
+                                {col}
+                                    {block name='page-index-include-preview'}
+                                        {include file='blog/preview.tpl'}
+                                    {/block}
+                                {/col}
+                            {/foreach}
+                        {/row}
+                    {/block}
+                {/container}
             </section>
         {/if}
     {/block}

@@ -129,6 +129,16 @@ interface PluginInterface
     /**
      * @return bool
      */
+    public function isLegacy(): bool;
+
+    /**
+     * @param bool $isLegacy
+     */
+    public function setIsLegacy(bool $isLegacy): void;
+
+    /**
+     * @return bool
+     */
     public function isExtension(): bool;
 
     /**

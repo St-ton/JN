@@ -27,12 +27,6 @@
             {if $nSeitenTyp === $smarty.const.PAGE_ARTIKEL && !empty($Artikel->Bilder)}
                 <meta itemprop="image" content="{$Artikel->Bilder[0]->cURLGross}" />
                 <meta property="og:image" content="{$Artikel->Bilder[0]->cURLGross}">
-            {elseif $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE
-            && $oNavigationsinfo->getImageURL() !== 'gfx/keinBild.gif'
-            && $oNavigationsinfo->getImageURL() !== 'gfx/keinBild_kl.gif'
-            }
-                <meta itemprop="image" content="{$imageBaseURL}{$oNavigationsinfo->getImageURL()}" />
-                <meta property="og:image" content="{$imageBaseURL}{$oNavigationsinfo->getImageURL()}" />
             {elseif $nSeitenTyp === $smarty.const.PAGE_NEWSDETAIL && !empty($newsItem->getPreviewImage())}
                 <meta itemprop="image" content="{$imageBaseURL}{$newsItem->getPreviewImage()}" />
                 <meta property="og:image" content="{$imageBaseURL}{$newsItem->getPreviewImage()}" />
@@ -55,7 +49,7 @@
         {/block}
 
         {block name='layout-header-head-resources'}
-            {include file='layout/header_inline_css.tpl'}
+            {*{include file='layout/header_inline_css.tpl'}*}
             {* css *}
             {if !isset($Einstellungen.template.general.use_minify) || $Einstellungen.template.general.use_minify === 'N'}
                 {foreach $cCSS_arr as $cCSS}
@@ -94,7 +88,7 @@
                 </noscript>
             {/if}
             {foreach $opcPageService->getCurPage()->getCssList($opc->isEditMode()) as $cssFile => $cssTrue}
-                <link rel="preload" href="{$cssFile}" as="style"
+                <link rel="preload" href="{$cssFile}" as="style" data-opc-portlet-css-link="true"
                       onload="this.onload=null;this.rel='stylesheet'">
                 <noscript>
                     <link rel="stylesheet" href="{$cssFile}">
@@ -279,19 +273,29 @@
         <script defer src="{$ShopURL}/{$templateDir}js/fileinput/fileinput.min.js"></script>
         <script defer src="{$ShopURL}/{$templateDir}js/fileinput/themes/fas/theme.min.js"></script>
         <script defer src="{$ShopURL}/{$templateDir}js/fileinput/locales/{$uploaderLang}.js"></script>
+        <script defer type="module" src="{$ShopURL}/{$templateDir}js/app/app.js"></script>
     </head>
     {/block}
 
     {has_boxes position='left' assign='hasLeftPanel'}
     {block name='layout-header-body-tag'}
-        <body data-page="{$nSeitenTyp}" {if isset($Link) && !empty($Link->getIdentifier())} id="{$Link->getIdentifier()}"{/if}>
+        <body class="{if $Einstellungen.template.theme.button_animated === 'Y'}btn-animated{/if}"
+              data-page="{$nSeitenTyp}"
+              {if isset($Link) && !empty($Link->getIdentifier())} id="{$Link->getIdentifier()}"{/if}>
     {/block}
 
     {if !$bExclusive}
         {include file=$opcDir|cat:'tpl/startmenu.tpl'}
 
-        {if isset($bAdminWartungsmodus) && $bAdminWartungsmodus}
-            {alert show=true variant="warning" id="maintenance-mode" dismissible=true}{lang key='adminMaintenanceMode'}{/alert}
+        {if $bAdminWartungsmodus}
+            {block name='layout-header-maintenance-alert'}
+                {alert show=true variant="warning" id="maintenance-mode" dismissible=true}{lang key='adminMaintenanceMode'}{/alert}
+            {/block}
+        {/if}
+        {if $smarty.const.SAFE_MODE === true}
+            {block name='layout-header-safemode-alert'}
+                {alert show=true variant="warning" id="safe-mode" dismissible=true}{lang key='safeModeActive'}{/alert}
+            {/block}
         {/if}
 
         {block name='layout-header-header'}
@@ -299,110 +303,107 @@
             <header class="d-print-none{if $isSticky} sticky-top{/if}{if $Einstellungen.template.theme.static_header === 'Y'} fixed-navbar{/if}" id="evo-nav-wrapper">
 
                 {block name='layout-header-container-inner'}
-
-                    <div class="container-fluid px-md-4 clearfix">
+                    <div class="container-fluid container-fluid-xl">
                     {block name='layout-header-branding-top-bar'}
-                        <div class="top-bar pt-2 text-right d-none {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-md-block{/if}">
-                            {include file='layout/header_top_bar.tpl'}
-                        </div>
+                        {if !$device->isMobile()}
+                            {row class="mb-2 d-none {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex{/if}"}
+                                {col class='col-auto ml-auto'}
+                                    {include file='layout/header_top_bar.tpl'}
+                                {/col}
+                            {/row}
+                        {/if}
                     {/block}
 
                     {block name='layout-header-category-nav'}
-                        {navbar id="main-nav-wrapper" toggleable=true fill=true class="navbar-expand-md accordion row py-0 px-0"}
-                            {col id="logo" cols=4 md="auto" order=2 order-md=1 class="mr-auto bg-white" style="z-index: 1;"}
-                                {block name='layout-header-logo'}
-                                    <div class="navbar-brand mr-0 ml-lg-2" itemprop="publisher" itemscope itemtype="http://schema.org/Organization" itemid="">
-                                        <span itemprop="name" class="d-none">{$meta_publisher}</span>
-                                        <meta itemprop="url" content="{$ShopURL}">
-                                        <meta itemprop="logo" content="{$ShopLogoURL}">
+                        {navbar  toggleable=true fill=true type="expand-lg " class="justify-content-start {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}align-items-center{else}align-items-lg-end{/if} px-0 pb-lg-0"}
+                            {block name='layout-header-navbar-toggle'}
+                                <button class="navbar-toggler mr-3 collapsed {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}d-none{/if}" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                                    <span class="navbar-toggler-icon"></span>
+                                </button>
+                            {/block}
 
-                                        {link href=$ShopURL title=$Einstellungen.global.global_shopname}
+                            {block name='layout-header-logo'}
+                                <div id="logo" itemprop="publisher" itemscope itemtype="http://schema.org/Organization" itemid="">
+                                    <span itemprop="name" class="d-none">{$meta_publisher}</span>
+                                    <meta itemprop="url" content="{$ShopURL}">
+                                    <meta itemprop="logo" content="{$ShopLogoURL}">
+                                    {link class="navbar-brand {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}mb-lg-3{/if} mr-lg-6" href=$ShopURL title=$Einstellungen.global.global_shopname}
                                         {if isset($ShopLogoURL)}
-                                            {image src=$ShopLogoURL alt=$Einstellungen.global.global_shopname fluid=true}
+                                            {image src=$ShopLogoURL
+                                            alt=$Einstellungen.global.global_shopname
+                                            fluid=true
+                                            width=160
+                                            height=53}
                                         {else}
                                             <span class="h1">{$Einstellungen.global.global_shopname}</span>
                                         {/if}
-                                        {/link}
+                                    {/link}
+                                </div>
+                            {/block}
+
+                            {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}
+                                {block name='layout-header-secure-checkout'}
+                                    <div class="ml-auto ml-lg-0">
+                                        {block name='layout-header-secure-checkout-title'}
+                                            <i class="fas fa-lock align-center mr-2"></i>{lang key='secureCheckout' section='checkout'}
+                                        {/block}
+                                    </div>
+                                    <div class="ml-auto d-none d-lg-block">
+                                        {block name='layout-header-secure-include-header-top-bar'}
+                                            {include file='layout/header_top_bar.tpl'}
+                                        {/block}
                                     </div>
                                 {/block}
-                            {/col}
-                            {col id="shop-nav" order=3 order-md=3 order-lg=4 class="col-auto bg-white {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}d-none{/if}" style="z-index: 1;"}
+                            {else}
                                 {block name='layout-header-branding-shop-nav'}
-                                    {nav class="nav-right ml-auto order-lg-last align-items-center flex-shrink-0"}
+                                    {nav id="shop-nav" right=true class="nav-right ml-auto order-lg-last align-items-center flex-shrink-0"}
                                         {include file='layout/header_nav_icons.tpl'}
                                     {/nav}
                                 {/block}
-                            {/col}
 
-                            {col md=12 order=1 order-md=5 order-xl=5 class="no-flex-grow {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}d-none{/if}"}
-                                {block name='layout-header-navbar-toggler'}
-                                    {navbartoggle data=["target"=>"#navbarToggler"] class="d-flex d-md-none collapsed"}
-                                {/block}
-                            {/col}
-
-                            {col cols=12 col-md=auto order=5 order-xl=2 class="col-xl {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}d-none{/if}"}
                                 {*categories*}
                                 {block name='layout-header-include-categories-mega'}
-                                    <div id="navbarToggler" class="collapse navbar-collapse" data-parent="#main-nav-wrapper">
-                                        {button id="scrollMenuLeft"  variant="light" class="d-none" aria=["label" => {lang key="scrollMenuLeft" section="aria"}]}
-                                            <i class="fas fa-arrow-left"></i>
-                                        {/button}
-                                        {navbarnav class="megamenu show"}
+                                    <div id="navbarSupportedContent" class="collapse navbar-collapse nav-scrollbar mr-lg-5">
+                                        {navbarnav class="nav-scrollbar-inner mr-auto"}
                                             {include file='snippets/categories_mega.tpl'}
                                         {/navbarnav}
-                                        {button id="scrollMenuRight" variant="light" class="d-none" aria=["label" => {lang key="scrollMenuRight" section="aria"}]}
-                                            <i class="fas fa-arrow-right"></i>
-                                        {/button}
                                     </div>
                                 {/block}
-                            {/col}
-
-                            {col order=6 order-md=2 cols=12 order-lg=3
-                                 class="col-md-auto bg-white{if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG} d-none{/if}"}
-                                {block name='layout-header-include-header-nav-search'}
-                                    {collapse id="nav-search-collapse" tag="div" data=["parent"=>"#main-nav-wrapper"] class="d-md-flex mx-auto float-md-right w-100"}
-                                        {include file='layout/header_nav_search.tpl'}
-                                    {/collapse}
-                                {/block}
-                            {/col}
-
-                            {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}
-                                {col class="d-block text-right text-md-left" order=3}
-                                    <i class="fas fa-lock align-center mr-2"></i>{lang key='secureCheckout' section='checkout'}
-                                {/col}
-                                {col order=4 class="d-none d-md-block"}
-                                    <div class="top-bar text-right">
-                                        {include file='layout/header_top_bar.tpl'}
-                                    </div>
-                                {/col}
                             {/if}
                         {/navbar}
-
                     {/block}
-
                     </div>
                 {/block}
             </header>
         {/block}
     {/if}
 
-    {block name='layout-header-fluid-banner'}
-        {assign var=isFluidBanner value=$Einstellungen.template.theme.banner_full_width === 'Y' && isset($oImageMap)}
-        {if $isFluidBanner}
-            {include file='snippets/banner.tpl'}
-        {/if}
-        {assign var=isFluidSlider value=$Einstellungen.template.theme.slider_full_width === 'Y' && isset($oSlider) && count($oSlider->getSlides()) > 0}
-        {if $isFluidSlider}
-            {include file='snippets/slider.tpl'}
-        {/if}
-    {/block}
     {block name='layout-header-main-wrapper-starttag'}
         <main id="main-wrapper" class="{if $bExclusive} exclusive{/if}{if $hasLeftPanel} aside-active{/if}">
         {opcMountPoint id='opc_before_main'}
     {/block}
+
+    {block name='layout-header-fluid-banner'}
+        {assign var=isFluidBanner value=$Einstellungen.template.theme.banner_full_width === 'Y' && isset($oImageMap)}
+        {if $isFluidBanner}
+            {block name='layout-header-fluid-banner-include-banner'}
+                {include file='snippets/banner.tpl' isFluid=true}
+            {/block}
+        {/if}
+        {assign var=isFluidSlider value=$Einstellungen.template.theme.slider_full_width === 'Y' && isset($oSlider) && count($oSlider->getSlides()) > 0}
+        {if $isFluidSlider}
+            {block name='layout-header-fluid-banner-include-slider'}
+                {include file='snippets/slider.tpl' isFluid=true}
+            {/block}
+        {/if}
+    {/block}
+
     {block name='layout-header-content-all-starttags'}
         {block name='layout-header-content-wrapper-starttag'}
-            <div id="content-wrapper" class="container-fluid mt-0 pt-7">
+            <div id="content-wrapper"
+                 class="{if !$bExclusive && !empty($boxes.left|strip_tags|trim) && $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}
+                            container-fluid container-fluid-xl
+                        {/if} mt-0 {if $isFluidBanner || $isFluidSlider}pt-3{else}pt-7{/if}">
         {/block}
 
         {block name='layout-header-breadcrumb'}
@@ -411,13 +412,16 @@
             {/container}
         {/block}
 
-        {block name='layout-header-content-row-starttag'}
-            <div class="row">
+        {block name='layout-header-content-starttag'}
+            <div id="content" class="pb-6">
         {/block}
 
-        {block name='layout-header-content-starttag'}
-            <div id="content" class="col-12{if !$bExclusive && !empty($boxes.left|strip_tags|trim) && $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp} col-lg-8 col-xl-9 ml-auto{/if} order-lg-1 mb-6">
-        {/block}
+        {if !$bExclusive && !empty($boxes.left|strip_tags|trim) && $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}
+            {block name='layout-header-content-productlist-starttags'}
+                <div class="row">
+                    <div class="col-lg-8 col-xl-9 ml-auto order-lg-1">
+            {/block}
+        {/if}
 
         {block name='layout-header-alert'}
             {include file='snippets/alert_list.tpl'}

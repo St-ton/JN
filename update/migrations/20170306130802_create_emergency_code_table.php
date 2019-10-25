@@ -2,7 +2,7 @@
 /**
  * Create a new table to hold the emergency-codes for the 2FA.
  *
- * @author Clemens Rudolph
+ * @author cr
  * @created Mon, 06 Mar 2017 13:08:02 +0100
  */
 

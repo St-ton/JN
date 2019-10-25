@@ -54,6 +54,11 @@ function getCategoryMenu(categoryId, success) {
     return true;
 }
 
+function initWow()
+{
+    new WOW().init();
+}
+
 function categoryMenu(rootcategory) {
     if (typeof rootcategory === 'undefined') {
         rootcategory = $('.sidebar-offcanvas .navbar-categories').html();
@@ -670,4 +675,5 @@ $(document).ready(function () {
     regionsToState();
     compatibility();
     addValidationListener();
+    initWow();
 });

@@ -248,7 +248,7 @@ final class Listing
      */
     private function sort(): void
     {
-        $this->items->sortBy(function (ListingItem $item) {
+        $this->items = $this->items->sortBy(function (ListingItem $item) {
             return \mb_convert_case($item->getName(), \MB_CASE_LOWER);
         });
     }

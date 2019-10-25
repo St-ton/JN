@@ -24,7 +24,7 @@ class Migration_20190927154900 extends Migration implements IMigration
             'global_cookie_samesite',
             '1',
             \CONF_GLOBAL,
-            'Bildnamen von Herstellerbildern:',
+            'Samesite',
             'selectbox',
             1516,
             (object)[

@@ -323,6 +323,9 @@ msgstr "Zahlenformate"
 msgid "Cache"
 msgstr "Cache"
 
+msgid "Filesystem"
+msgstr "Dateisystem"
+
 # Mid Menu
 msgid "Maintenance"
 msgstr "Wartung"

@@ -310,6 +310,9 @@ msgstr "Number formats"
 msgid "Cache"
 msgstr "Cache"
 
+msgid "Filesystem"
+msgstr "Filesystem"
+
 # Mid Menu
 msgid "Maintenance"
 msgstr "Maintenance"

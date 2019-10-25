@@ -85,7 +85,7 @@ class AdapterFactory
             'username'             => $this->config['ftp_user'],
             'password'             => $this->config['ftp_pass'],
             'ssl'                  => (int)$this->config['ftp_ssl'] === 1,
-            'root'                 => $this->config['ftp_path'],
+            'root'                 => \rtrim($this->config['ftp_path'], '/') . '/',
             'timeout'              => $this->config['fs_timeout'],
             'passive'              => true,
             'ignorePassiveAddress' => false
@@ -103,7 +103,7 @@ class AdapterFactory
             'username'   => $this->config['sftp_user'],
             'password'   => $this->config['sftp_pass'],
             'privateKey' => $this->config['sftp_privkey'],
-            'root'       => $this->config['sftp_path'],
+            'root'       => \rtrim($this->config['sftp_path'], '/') . '/',
             'timeout'    => $this->config['fs_timeout'],
         ];
     }

@@ -86,7 +86,7 @@ class AdapterFactory
             'password'             => $this->config['ftp_pass'],
             'ssl'                  => (int)$this->config['ftp_ssl'] === 1,
             'root'                 => $this->config['ftp_path'],
-            'timeout'              => 60,
+            'timeout'              => $this->config['fs_timeout'],
             'passive'              => true,
             'ignorePassiveAddress' => false
         ];
@@ -104,7 +104,7 @@ class AdapterFactory
             'password'   => $this->config['sftp_pass'],
             'privateKey' => $this->config['sftp_privkey'],
             'root'       => $this->config['sftp_path'],
-            'timeout'    => 60
+            'timeout'    => $this->config['fs_timeout'],
         ];
     }
 }

@@ -251,7 +251,6 @@
         <script>
             $(window).on("load", function (e) {
                 $.backstretch('{$backstretchImgPath}');
-                new WOW().init();
             });
         </script>
     {/if}

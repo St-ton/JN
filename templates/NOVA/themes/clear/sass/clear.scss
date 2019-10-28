@@ -9,6 +9,8 @@
 @import "../../base/nouislider.min";
 @import "../../base/slick/slick-lightbox";
 @import "../../../js/password/password.min";
+@import "../../../js/photoswipe/photoswipe";
+@import "../../../js/photoswipe/css/default-skin/default-skin";
 
 // bootstrap
 @import "../../base/bootstrap/scss/bootstrap.scss";
@@ -42,8 +44,10 @@
 @import "components/buttons";
 @import "components/cards";
 @import "components/carousel";
+@import "components/custom_forms";
 @import "components/collapse";
 @import "components/dropdowns";
+@import "components/figures";
 @import "components/forms";
 @import "components/icons";
 @import "components/modals";
@@ -55,6 +59,8 @@
 @import "components/ribbons";
 @import "components/slider";
 @import "components/stepper";
+@import "components/tabs";
+@import "components/tables";
 
 // theme base
 @import "base";
@@ -64,6 +70,9 @@
 
 /* productlist */
 @import 'productlist';
+
+/* productdetails */
+@import 'productdetails';
 
 /* header */
 @import 'header';

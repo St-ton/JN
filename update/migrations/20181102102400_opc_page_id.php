@@ -6,12 +6,12 @@ use JTL\Update\Migration;
 /**
  * Change OPC page id type
  *
- * @author Danny Raufeisen
+ * @author dr
  */
 
 class Migration_20181102102400 extends Migration implements IMigration
 {
-    protected $author      = 'Danny Raufeisen';
+    protected $author      = 'dr';
     protected $description = 'Change OPC page id type';
 
     public function up()

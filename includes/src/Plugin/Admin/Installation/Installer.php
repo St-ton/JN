@@ -65,19 +65,19 @@ final class Installer
      * Installer constructor.
      * @param DbInterface        $db
      * @param Uninstaller        $uninstaller
-     * @param ValidatorInterface $validator
-     * @param ValidatorInterface $modernValidator
+     * @param ValidatorInterface $legacyValidator
+     * @param ValidatorInterface $pluginValidator
      */
     public function __construct(
         DbInterface $db,
         Uninstaller $uninstaller,
-        ValidatorInterface $validator,
-        ValidatorInterface $modernValidator
+        ValidatorInterface $legacyValidator,
+        ValidatorInterface $pluginValidator
     ) {
         $this->db              = $db;
         $this->uninstaller     = $uninstaller;
-        $this->legacyValidator = $validator;
-        $this->pluginValidator = $modernValidator;
+        $this->legacyValidator = $legacyValidator;
+        $this->pluginValidator = $pluginValidator;
     }
 
     /**
@@ -526,6 +526,7 @@ final class Installer
             (object)['kCustomID' => $oldPluginID]
         );
         $this->updateMailTemplates($oldPluginID, $pluginID);
+        $this->cleanUpMailTemplates();
         $this->db->update('tlink', 'kPlugin', $pluginID, (object)['kPlugin' => $oldPluginID]);
         // tboxen
         // Ausnahme: Gibt es noch eine Boxenvorlage in der Pluginversion?
@@ -645,8 +646,6 @@ final class Installer
         $this->db->update('temailvorlage', 'kPlugin', $pluginID, (object)['kPlugin' => $oldPluginID]);
         $oldMailTpl = $this->db->select('temailvorlage', 'kPlugin', $oldPluginID);
         $newMailTpl = $this->db->select('temailvorlage', 'kPlugin', $pluginID);
-        $newTplID   = 0;
-        $oldTplID   = 0;
         if (isset($newMailTpl->kEmailvorlage, $oldMailTpl->kEmailvorlage)) {
             $this->db->update(
                 'tpluginemailvorlageeinstellungen',
@@ -668,23 +667,42 @@ final class Installer
                 'kEmailvorlage'
             );
             if (isset($newTpl->kEmailvorlage) && $newTpl->kEmailvorlage > 0) {
-                if ($newTplID === 0 || $oldTplID === 0) {
-                    $newTplID = (int)$newTpl->kEmailvorlage;
-                    $oldTplID = (int)$oldTpl->kEmailvorlage;
-                }
+                $newTplID = (int)$newTpl->kEmailvorlage;
+                $oldTplID = (int)$oldTpl->kEmailvorlage;
+                $this->db->delete('temailvorlagesprache', 'kEmailvorlage', $newTplID);
                 $this->db->update(
                     'temailvorlagesprache',
                     'kEmailvorlage',
-                    $oldTpl->kEmailvorlage,
-                    (object)['kEmailvorlage' => $newTpl->kEmailvorlage]
+                    $oldTplID,
+                    (object)['kEmailvorlage' => $newTplID]
+                );
+                $this->db->update(
+                    'tpluginemailvorlageeinstellungen',
+                    'kEmailvorlage',
+                    $oldTplID,
+                    (object)['kEmailvorlage' => $newTplID]
                 );
             }
         }
-        $this->db->update(
-            'tpluginemailvorlageeinstellungen',
-            'kEmailvorlage',
-            $oldTplID,
-            (object)['kEmailvorlage' => $newTplID]
+    }
+
+    private function cleanUpMailTemplates(): void
+    {
+        $this->db->query(
+            'DELETE FROM tpluginemailvorlageeinstellungen
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM temailvorlage
+                    WHERE temailvorlage.kEmailvorlage = tpluginemailvorlageeinstellungen.kEmailvorlage
+                )',
+            ReturnType::DEFAULT
+        );
+        $this->db->query(
+            'DELETE FROM tpluginemailvorlagesprache
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM temailvorlage
+                    WHERE temailvorlage.kEmailvorlage = tpluginemailvorlagesprache.kEmailvorlage
+                )',
+            ReturnType::DEFAULT
         );
     }
 

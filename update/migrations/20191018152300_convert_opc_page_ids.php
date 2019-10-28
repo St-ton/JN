@@ -8,7 +8,7 @@ use JTL\Update\Migration;
  */
 class Migration_20191018152300 extends Migration implements IMigration
 {
-    protected $author      = 'Danny Raufeisen';
+    protected $author      = 'dr';
     protected $description = 'Convert page IDs in topcpage to new json format';
 
     /**

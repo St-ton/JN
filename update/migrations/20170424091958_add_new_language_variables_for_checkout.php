@@ -2,7 +2,7 @@
 /**
  * Add new language variables for checkout
  *
- * @author Falk Prüfer
+ * @author fp
  * @created Mon, 24 Apr 2017 09:19:58 +0200
  */
 

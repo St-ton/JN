@@ -2,7 +2,7 @@
 /**
  * Add customer-fields nSort
  *
- * @author Clemens Rudolph
+ * @author cr
  * @created Thu, 23 Nov 2017 10:08:24 +0100
  */
 

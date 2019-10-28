@@ -76,6 +76,7 @@
                 {block name='productdetails-tabs-tabs'}
                     {opcMountPoint id='opc_before_tabs'}
                     {container class="mb-7"}
+                        <nav class="tab-navigation">
                         {tabs id="product-tabs"}
                         {if $useDescription}
                             {block name='productdetails-tabs-tab-description'}
@@ -182,6 +183,7 @@
                             {/block}
                         {/if}
                         {/tabs}
+                        </nav>
                     {/container}
                 {/block}
             {else}
@@ -228,9 +230,6 @@
                                                         {opcMountPoint id='opc_after_desc'}
                                                     {/block}
                                                     {block name='productdetails-tabs-card-description-attributes'}
-                                                        {if (!empty($Artikel->cBeschreibung) || $useDescriptionWithMediaGroup) && $showAttributesTable}
-                                                            <hr>
-                                                        {/if}
                                                         {block name='productdetails-tabs-include-attributes'}
                                                             {include file='productdetails/attributes.tpl' tplscope='details'
                                                             showProductWeight=$showProductWeight showShippingWeight=$showShippingWeight

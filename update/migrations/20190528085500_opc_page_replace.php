@@ -8,7 +8,7 @@ use JTL\Update\Migration;
  */
 class Migration_20190528085500 extends Migration implements IMigration
 {
-    protected $author      = 'Danny Raufeisen';
+    protected $author      = 'dr';
     protected $description = 'Remove replace column from topcpage';
 
     public function up()

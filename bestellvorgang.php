@@ -15,6 +15,7 @@ use JTL\Extensions\Upload\Upload;
 use JTL\Helpers\Order;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
+use JTL\Plugin\Payment\LegacyMethod;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
@@ -22,7 +23,6 @@ use JTL\Shopsetting;
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'registrieren_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'jtl_inc.php';
 
@@ -198,7 +198,7 @@ if ($step === 'Bestaetigung') {
 }
 if ($step === 'Bestaetigung' && $cart->gibGesamtsummeWaren(true) === 0.0) {
     $savedPayment   = $_SESSION['AktiveZahlungsart'];
-    $oPaymentMethod = PaymentMethod::create('za_null_jtl');
+    $oPaymentMethod = LegacyMethod::create('za_null_jtl');
     zahlungsartKorrekt($oPaymentMethod->kZahlungsart);
 
     if ((isset($_SESSION['Bestellung']->GuthabenNutzen) && (int)$_SESSION['Bestellung']->GuthabenNutzen === 1)

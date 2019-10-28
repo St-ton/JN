@@ -2,7 +2,7 @@
 /**
  * Add available column to redirect table
  *
- * @author Danny Raufeisen
+ * @author dr
  * @created Tue, 09 May 2017 17:00:00 +0200
  */
 

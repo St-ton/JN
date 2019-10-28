@@ -2,7 +2,7 @@
 /**
  * Add news count config in news overview
  *
- * @author Danny Raufeisen
+ * @author dr
  * @created Tue, 21 Mar 2017 11:46:00 +0100
  */
 

@@ -2,7 +2,7 @@
 /**
  * Add cUserAgent to tBesucher
  *
- * @author Falk Prüfer
+ * @author fp
  * @created Tue, 04 Jul 2017 13:37:17 +0200
  */
 

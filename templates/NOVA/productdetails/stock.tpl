@@ -6,10 +6,10 @@
     {assign var=anzeige value=$Einstellungen.artikeldetails.artikel_lagerbestandsanzeige}
     <div class="delivery-status">
     {block name='productdetails-stock-delivery-status'}
-        {row class='align-items-center'}
+        <ul class="list-unstyled mb-0">
             {if !isset($shippingTime)}
                 {block name='productdetails-stock-shipping-time'}
-                    {col cols="{if !isset($availability) && $Artikel->cEstimatedDelivery}6{else}12{/if}"}
+                    <li>
                         {block name='productdetails-stock-availability'}
                             {if $Artikel->inWarenkorbLegbar === $smarty.const.INWKNICHTLEGBAR_UNVERKAEUFLICH}
                                 <span class="status"><small>{lang key='productUnsaleable' section='productDetails'}</small></span>
@@ -42,22 +42,22 @@
                                 <div class="delivery-status">{lang key='deliveryStatus'}: {$Artikel->cLieferstatus}</div>
                             {/block}
                         {/if}
-                    {/col}
+                    </li>
                 {/block}
             {/if}
             {if !isset($availability)}
             {block name='productdetails-stock-estimated-delivery'}
                 {if $Artikel->cEstimatedDelivery}
-                    {col}
+                    <li>
                         <div class="estimated-delivery">
                             {if !isset($shippingTime)}{lang key='shippingTime'}:{/if}
                             <span class="a{$Artikel->Lageranzeige->nStatus}">{$Artikel->cEstimatedDelivery}</span>
                         </div>
-                    {/col}
+                    </li>
                 {/if}
             {/block}
             {/if}
-        {/row}
+        </ul>
     {/block}
     </div>
 {/block}

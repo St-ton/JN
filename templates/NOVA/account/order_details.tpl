@@ -45,7 +45,7 @@
                                     </li>
                                     {if $Bestellung->GuthabenNutzen == 1}
                                     <li class="mb-2">
-                                        {lang key='useCredit' section='account data'}: <span class="float-right text-nowrap">$Bestellung->GutscheinLocalized}</span>
+                                        {lang key='useCredit' section='account data'}: <span class="float-right text-nowrap">{$Bestellung->GutscheinLocalized}</span>
                                     </li>
                                     {/if}
                                     <li class="font-weight-bold mb-2">

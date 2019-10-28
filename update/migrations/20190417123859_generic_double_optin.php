@@ -2,7 +2,7 @@
 /**
  * generic double optin
  *
- * @author Clemens Rudolph
+ * @author cr
  * @created Wed, 17 Apr 2019 12:38:59 +0200
  */
 
@@ -25,7 +25,7 @@ use JTL\Update\Migration;
  */
 class Migration_20190417123859 extends Migration implements IMigration
 {
-    protected $author      = 'Clemens Rudolph';
+    protected $author      = 'cr';
     protected $description = 'generic double optin';
     protected $kEmailvorlage;
 

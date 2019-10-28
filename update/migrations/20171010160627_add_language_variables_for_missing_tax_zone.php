@@ -2,7 +2,7 @@
 /**
  * Add language variables for missing tax zone
  *
- * @author Falk Prüfer
+ * @author fp
  * @created Tue, 10 Oct 2017 16:06:27 +0200
  */
 

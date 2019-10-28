@@ -2,7 +2,7 @@
 /**
  * Change text to mediumtext for tnewsletter
  *
- * @author Falk Prüfer
+ * @author fp
  * @created Thu, 09 Mar 2017 15:12:22 +0100
  */
 

@@ -65,8 +65,8 @@ interface LoaderInterface
     public function loadFromCache(): ?PluginInterface;
 
     /**
-     * @param PluginInterface $extension
+     * @param PluginInterface $plugin
      * @return bool
      */
-    public function saveToCache(PluginInterface $extension): bool;
+    public function saveToCache(PluginInterface $plugin): bool;
 }

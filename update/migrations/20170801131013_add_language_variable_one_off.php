@@ -2,7 +2,7 @@
 /**
  * Add language variable one-off
  *
- * @author Mirko
+ * @author msc
  * @created Tue, 01 Aug 2017 13:10:13 +0200
  */
 

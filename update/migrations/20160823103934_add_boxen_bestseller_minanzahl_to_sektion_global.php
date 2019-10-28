@@ -2,7 +2,7 @@
 /**
  * add_boxen_bestseller_minanzahl_to_sektion_global
  *
- * @author Mirko Schmidt
+ * @author msc
  * @created Tue, 23 Aug 2016 10:39:34 +0200
  */
 

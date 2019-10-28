@@ -65,7 +65,7 @@ class CookieConfig
         $this->domain   = $defaults['domain'] ?? '';
         $this->secure   = $defaults['secure'] ?? false;
         $this->httpOnly = $defaults['httponly'] ?? false;
-        $this->sameSite = $defaults['samesite'] ?? '';
+        $this->sameSite = $defaults['samesite'] ?? 'S';
     }
 
     /**
@@ -75,8 +75,8 @@ class CookieConfig
     {
         $this->secure   = $this->secure || $config['global_cookie_secure'] === 'Y';
         $this->httpOnly = $this->httpOnly || $config['global_cookie_httponly'] === 'Y';
-        if ($config['global_cookie_samesite'] !== 'S') {
-            $this->sameSite = $config['global_cookie_samesite'];
+        if (($config['global_cookie_samesite'] ?? '') !== 'S') {
+            $this->sameSite = $config['global_cookie_samesite'] ?? 'S';
         }
         if ($config['global_cookie_domain'] !== '') {
             $this->domain = $this->experimentalMultiLangDomain($config['global_cookie_domain']);
@@ -87,7 +87,8 @@ class CookieConfig
         if (!empty($config['global_cookie_path'])) {
             $this->path = $config['global_cookie_path'];
         }
-        $this->secure = $this->secure && ($config['kaufabwicklung_ssl_nutzen'] === 'P' || \mb_strpos(\URL_SHOP, 'https://') === 0);
+        $this->secure = $this->secure && ($config['kaufabwicklung_ssl_nutzen'] === 'P'
+                || \mb_strpos(\URL_SHOP, 'https://') === 0);
     }
 
     /**

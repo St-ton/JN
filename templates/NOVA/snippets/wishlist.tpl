@@ -12,8 +12,8 @@
             {include file='snippets/extension.tpl'}
         {/block}
 
+        {container}
         {if $step === 'wunschliste versenden' && $Einstellungen.global.global_wunschliste_freunde_aktiv === 'Y'}
-            {container}
             {block name='snippets-wishlist-content-heading-email'}
                 <div class="h2">{lang key='wishlistViaEmail' section='login'}</div>
             {/block}
@@ -53,9 +53,7 @@
                     {/col}
                 {/row}
             {/block}
-            {/container}
         {else}
-            {container}
             {block name='snippets-wishlist-content-heading'}
                 <div class="h2">
                     {if $isCurrenctCustomer === false && isset($CWunschliste->oKunde->cVorname)}
@@ -70,7 +68,7 @@
                 {if $isCurrenctCustomer === true}
                     {block name='snippets-wishlist-actions'}
                         {col class="col-auto"}
-                            {dropdown variant="link no-caret" class="no-chevron wishlist-options" text="<i class='fas fa-ellipsis-v'></i>" aria=["label"=>"{lang key='rename' section='wishlistOptions'}"]}
+                            {dropdown variant="link no-caret" class="wishlist-options" text="<i class='fas fa-ellipsis-v'></i>" aria=["label"=>"{lang key='rename' section='wishlistOptions'}"]}
                                 {dropdownitem class="text-center position-relative"}
                                 {block name='snippets-wishlist-actions-rename'}
                                     {button type="submit" variant="link" class="w-100 no-caret" data=["toggle" => "collapse", "target"=>"#edit-wishlist-name"]}
@@ -408,7 +406,7 @@
                                                                 name="remove" value=$wlPosition->kWunschlistePos
                                                                 aria=["label"=>"{lang key='wishlistremoveItem' section='login'}"]
                                                                 title="{lang key='wishlistremoveItem' section='login'}"
-                                                                class="wishlist-pos-delete float-right text-decoration-none mb-2 fs-large"
+                                                                class="wishlist-pos-delete float-right text-decoration-none mb-2 font-size-lg"
                                                                 data=["toggle"=>"tooltip"]
                                                             }
                                                                 <i class="fas fa-times"></i>
@@ -569,8 +567,8 @@
                 {/block}
                 {/form}
             {/block}
-            {/container}
         {/if}
+        {/container}
     {/block}
 
     {block name='snippets-wishlist-include-footer'}

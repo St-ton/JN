@@ -1,3 +1,5 @@
+$image-path:                        'images';
+
 // colors
 $gray-lighter:                      #525252;
 $gray-light:                        #707070;
@@ -19,12 +21,8 @@ $info:                              #ebebeb;
 $bg-info:                           #F5F7FA;
 $bg-info:                           #F5F7FA;
 $warning:                           #F39932;
-$warning:                           #F39932;
-$bg-warning:                        #F9F2DC;
 $bg-warning:                        #F9F2DC;
 $danger:                            #B90000;
-$danger:                            #B90000;
-$bg-danger:                         #E8CCD2;
 $bg-danger:                         #E8CCD2;
 
 $white:                             #343434;
@@ -139,8 +137,11 @@ $transition-base			: all $transition-base-duration $transition-base-timing;
 
 $highlight-border-size:             .375rem;
 
-$body-bg: $white;
-$body-color:                        #eee;
+$body-bg:                           $white;
+$body-color:                        $gray-600;
+
+$headings-color:                    $gray-700;
+$navbar-light-hover-color:          $primary;
 
 $text-muted:                        $gray;
 $input-color-placeholder:           $gray;
@@ -162,15 +163,19 @@ $border-radius-sm:                  $border-radius;
 $border-width:                      1px;
 $border-color:                      $gray-medium;
 
+/* cards */
+
+$card-border-color:                 $gray-lighter;
+$card-cap-bg:                       $gray-lighter;
 $card-bg:                           $white;
 
 $searchcloud-font-size-scaling:     30%;
 $navbar-light-color:                $gray-dark;
 
-$input-bg:                          $cool-white;
+$input-bg:                          $white;
 $input-focus-box-shadow:            none;
-$list-group-bg:                     $cool-white;
-$list-group-disabled-bg:            $cool-white;
+$list-group-bg:                     $white;
+$list-group-disabled-bg:            $white;
 
 $progress-bar-color:                $gray;
 
@@ -185,10 +190,10 @@ $table-cell-padding-sm:             map-get($spacers, 2) $spacer;
 $table-striped-order:               even;
 
 $sizes: (
-  20:                               20%,
-  40:                               40%,
-  60:                               60%,
-  80:                               80%
+        20:                               20%,
+        40:                               40%,
+        60:                               60%,
+        80:                               80%
 );
 
 // paths
@@ -198,19 +203,21 @@ $url-1:                             url(../base/images/loading-sm.gif);
 
 // tooltips
 
-$tooltip-font-size:                 $font-size-base/1.15;
-$tooltip-color:                     $gray-dark;
-$tooltip-bg:                        #fff;
+$tooltip-font-size:                 $font-size-sm;
+$tooltip-color:                     $gray-darker;
+$tooltip-border-color:              $gray-darker;
+$tooltip-bg:                        $white;
 $tooltip-border-radius:             $border-radius;
-$tooltip-arrow-color:               $gray-dark;
-$tooltip-arrow-inner-color:         #fff;
+$tooltip-arrow-color:               $gray-darker;
+$tooltip-arrow-inner-color:         $white;
+$tooltip-border-width:              $border-width;
 
 $tooltip-arrow-inner-width:         .8rem;
 $tooltip-arrow-inner-height:        .4rem;
 $tooltip-arrow-width:               .88rem;
 $tooltip-arrow-height:              .45rem;
 
-$tooltip-margin:                    .25rem;
+$tooltip-margin:                    .5rem;
 
 // input
 
@@ -231,21 +238,21 @@ $custom-select-valid-indicator:     str-replace(url("data:image/svg+xml,%3Csvg x
 $custom-select-background:          $custom-select-indicator no-repeat right center / auto 100%;
 $custom-select-box-shadow:          none;
 
-
-
 // pagination
 
 $pagination-border-width:           0;
 $pagination-bg:                     transparent;
+$pagination-color:                  $link-color;
 
 $pagination-hover-bg:               transparent;
+$pagination-hover-color:            $pagination-color;
 
 $pagination-active-bg:              transparent;
-$pagination-active-color:           $link-color;
+$pagination-active-color:           $pagination-hover-color;
 
 $pagination-focus-box-shadow:       none;
 
-$pagination-disabled-color:         $sand;
+$pagination-disabled-color:         $gray-lighter;
 $pagination-disabled-bg:            transparent;
 
 // breadcrumbs
@@ -324,6 +331,15 @@ $navbar-nav-link-padding-x: map-get($spacers, 4);
 $navbar-nav-link-padding-y: map-get($spacers, 4);
 $nav-link-padding-x: 1rem;
 
+/* navs */
+
+$nav-tabs-border-radius					: 0;
+
+$nav-tabs-link-hover-border-color		: 0;
+$nav-tabs-link-active-color				: $link-color;
+$nav-tabs-link-active-bg				: transparent;
+$nav-tabs-link-active-border-color		: $primary;
+
 /* modals */
 
 $modal-inner-padding			: $spacer 0;
@@ -336,6 +352,8 @@ $modal-content-border-radius	: $border-radius;
 $modal-header-border-width		: $border-width;
 $modal-header-padding-y			: map-get($spacers, 2);
 $modal-header-padding-x			: 0;
+
+$modal-backdrop-opacity			: .8;
 
 $modal-md: 700px;
 
@@ -363,3 +381,8 @@ $dropdown-link-active-color	: $dropdown-link-hover-color;
 $dropdown-link-active-bg	: $dropdown-link-hover-bg;
 
 $dropdown-padding-y         : 0;
+
+/* photoswipe */
+$pswp__background-color		: rgba($gray-darker, .5);
+$pswp__assets-path			: '../../js/photoswipe/css/default-skin/';
+

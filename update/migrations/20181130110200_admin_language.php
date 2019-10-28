@@ -2,7 +2,7 @@
 /**
  * Add language column to adminlogin table
  *
- * @author Danny Raufeisen
+ * @author dr
  */
 
 use JTL\Update\IMigration;
@@ -13,7 +13,7 @@ use JTL\Update\Migration;
  */
 class Migration_20181130110200 extends Migration implements IMigration
 {
-    protected $author      = 'Danny Raufeisen';
+    protected $author      = 'dr';
     protected $description = 'Add language column to adminlogin table';
 
     public function up()

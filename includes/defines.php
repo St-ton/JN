@@ -26,6 +26,7 @@ ifndef('IMAGE_COMPATIBILITY_LEVEL', 1);
 ifndef('KEEP_SYNC_FILES', false);
 ifndef('PROFILE_PLUGINS', false);
 ifndef('PROFILE_SHOP', false);
+ifndef('PLUGIN_DEV_MODE', false);
 /**
  * Lieferschwellen-Option: Gleichbleibende Bruttopreise (SHOP-2633)
  * @since 5.0.0
@@ -275,6 +276,8 @@ ifndef('SEO_SLUG_LOWERCASE', true);
 
 // true - child products are grouped by parent for bulk price calculation
 ifndef('DEFAULT_GENERAL_CHILD_ITEM_BULK_PRICING', false);
+
+ifndef('SAFE_MODE', false);
 
 /**
  * @param string     $constant

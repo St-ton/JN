@@ -2,7 +2,7 @@
 /**
  * Create index for lft and rght in tkategorie
  *
- * @author Falk Prüfer
+ * @author fp
  * @created Thu, 01 Mar 2018 13:37:57 +0100
  */
 

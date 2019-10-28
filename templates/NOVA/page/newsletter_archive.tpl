@@ -3,8 +3,8 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='page-newsletter-archive'}
+    {opcMountPoint id='opc_before_newsletter'}
     {container}
-        {opcMountPoint id='opc_before_newsletter'}
         {block name='page-newsletter-archive-toptags'}
             <div id="toptags">{lang key='newsletterhistory'}</div>
         {/block}

@@ -2,7 +2,7 @@
 /**
  * Remove preisanzeige admin menu entry
  *
- * @author Felix Moche
+ * @author fm
  * @created Wed, 28 Feb 2018 19:35:00 +0100
  */
 

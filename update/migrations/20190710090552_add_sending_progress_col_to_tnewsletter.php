@@ -2,7 +2,7 @@
 /**
  * Add sending progress col to tnewsletter
  *
- * @author Clemens Rudolph
+ * @author cr
  * @created Wed, 10 Jul 2019 09:05:52 +0200
  */
 
@@ -14,7 +14,7 @@ use JTL\Update\Migration;
  */
 class Migration_20190710090552 extends Migration implements IMigration
 {
-    protected $author      = 'Clemens Rudolph';
+    protected $author      = 'cr';
     protected $description = 'Add sending progress col to tnewsletter';
 
     public function up()

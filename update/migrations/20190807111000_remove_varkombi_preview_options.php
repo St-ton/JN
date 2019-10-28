@@ -2,7 +2,7 @@
 /**
  * Remove varkombi preview options
  *
- * @author Felix Moche
+ * @author fm
  * @created Wed, 07 Aug 2019 11:10:00 +0200
  */
 

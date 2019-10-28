@@ -37,16 +37,25 @@
                 {if $oNavigationsinfo->getImageURL() !== $smarty.const.BILD_KEIN_KATEGORIEBILD_VORHANDEN
                     && $oNavigationsinfo->getImageURL() !== 'gfx/keinBild_kl.gif'
                     && $oNavigationsinfo->getImageURL() !== $imageBaseURL|cat:$smarty.const.BILD_KEIN_KATEGORIEBILD_VORHANDEN}
-                    {image fluid-grow=true lazy=true webp=true
-                        src=$oNavigationsinfo->getCategory()->getImage(\JTL\Media\Image::SIZE_XS)
-                        srcset="{$oNavigationsinfo->getCategory()->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_kategorien_mini_breite}w,
-                            {$oNavigationsinfo->getCategory()->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_kategorien_klein_breite}w,
-                            {$oNavigationsinfo->getCategory()->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_kategorien_breite}w,
-                            {$oNavigationsinfo->getCategory()->getImage(\JTL\Media\Image::SIZE_LG)} {$Einstellungen.bilder.bilder_kategorien_gross_breite}w"
-                        alt="{if $oNavigationsinfo->getCategory() !== null}{$oNavigationsinfo->getCategory()->cBeschreibung|strip_tags|truncate:40|escape:'html'}{elseif $oNavigationsinfo->getManufacturer() !== null}{$oNavigationsinfo->getManufacturer()->cBeschreibung|strip_tags|truncate:40|escape:'html'}{/if}"
-                        sizes="auto"
-                        class="mb-5"
-                    }
+                    {if $oNavigationsinfo->getCategory() !== null}
+                        {$navData = $oNavigationsinfo->getCategory()}
+                    {elseif $oNavigationsinfo->getManufacturer() !== null}
+                        {$navData = $oNavigationsinfo->getManufacturer()}
+                    {elseif $oNavigationsinfo->getCharacteristicValue() !== null}
+                        {$navData = $oNavigationsinfo->getCharacteristicValue()}
+                    {/if}
+                    {if $navData|default:null !== null}
+                        {image fluid-grow=true lazy=true webp=true
+                            src=$navData->getImage(\JTL\Media\Image::SIZE_XS)
+                            srcset="{$navData->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_kategorien_mini_breite}w,
+                                {$navData->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_kategorien_klein_breite}w,
+                                {$navData->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_kategorien_breite}w,
+                                {$navData->getImage(\JTL\Media\Image::SIZE_LG)} {$Einstellungen.bilder.bilder_kategorien_gross_breite}w"
+                            alt="{$navData->cBeschreibung|strip_tags|truncate:40|escape:'html'}"
+                            sizes="auto"
+                            class="mb-5"
+                        }
+                    {/if}
                 {/if}
                 <div class="title mb-4">
                     {if $oNavigationsinfo->getName()}

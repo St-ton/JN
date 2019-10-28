@@ -2,7 +2,7 @@
 /**
  * Refactor category nested set level
  *
- * @author Falk Prüfer
+ * @author fp
  * @created Tue, 20 Dec 2016 10:52:42 +0100
  */
 

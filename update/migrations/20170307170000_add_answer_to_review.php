@@ -2,7 +2,7 @@
 /**
  * Add answer column to tbewertung
  *
- * @author Danny Raufeisen
+ * @author dr
  * @created Tue, 07 Mar 2017 17:00:00 +0100
  */
 

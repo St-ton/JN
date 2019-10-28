@@ -17,6 +17,7 @@ use JTL\dbeS\Starter;
 use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
+use JTL\Plugin\Payment\LegacyMethod;
 use JTL\Shop;
 use stdClass;
 
@@ -94,7 +95,7 @@ final class Orders extends AbstractSync
             ReturnType::SINGLE_OBJECT
         );
 
-        return empty($order->cModulId) ? false : \PaymentMethod::create($order->cModulId);
+        return empty($order->cModulId) ? false : LegacyMethod::create($order->cModulId);
     }
 
     /**

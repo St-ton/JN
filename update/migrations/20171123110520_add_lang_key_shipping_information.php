@@ -2,7 +2,7 @@
 /**
  * add_lang_key_shipping_information
  *
- * @author Mirko
+ * @author msc
  * @created Thu, 23 Nov 2017 11:05:20 +0100
  */
 
@@ -14,7 +14,7 @@ use JTL\Update\Migration;
  */
 class Migration_20171123110520 extends Migration implements IMigration
 {
-    protected $author      = 'Mirko';
+    protected $author      = 'msc';
     protected $description = 'add_lang_key_shipping_information';
 
     public function up()

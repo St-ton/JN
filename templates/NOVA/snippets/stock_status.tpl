@@ -43,7 +43,4 @@
             </span>
         {/block}
     {/if}
-    {block name='snippets-stock-note-include-warehouse'}
-        {include file='productdetails/warehouse.tpl' tplscope='detail'}
-    {/block}
 {/block}

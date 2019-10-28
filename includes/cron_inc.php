@@ -16,6 +16,9 @@ defined('JTLCRON') || define('JTLCRON', true);
 if (!defined('PFAD_LOGFILES')) {
     require __DIR__ . '/globalinclude.php';
 }
+if (SAFE_MODE === true) {
+    return;
+}
 if (PHP_SAPI === 'cli') {
     $handler = new StreamHandler('php://stdout', Logger::DEBUG);
     $handler->setFormatter(new LineFormatter("[%datetime%] %message% %context%\n", null, false, true));

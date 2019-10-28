@@ -36,7 +36,7 @@
                                     {/if}
                                 {/foreach}
                             {/if}
-                            {card img-src="{if !empty($oMedienDatei->cPfad)}{$PFAD_MEDIAFILES}{$oMedienDatei->cPfad}{elseif !empty($oMedienDatei->cURL)}{$oMedienDatei->cURL}{/if}" title="{$oMedienDatei->cName}" img-top=true img-alt="{$cMediaAltAttr}"}
+                            {card img-src="{if !empty($oMedienDatei->cPfad)}{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}{elseif !empty($oMedienDatei->cURL)}{$oMedienDatei->cURL}{/if}" title="{$oMedienDatei->cName}" img-top=true img-alt="{$cMediaAltAttr}"}
                                 <p>{$oMedienDatei->cBeschreibung}</p>
                             {/card}
                         {/block}
@@ -53,7 +53,7 @@
                                             {if $oMedienDatei->cPfad|strlen > 1 || $oMedienDatei->cURL|strlen > 1}
                                                 {assign var=audiosrc value=$oMedienDatei->cURL}
                                                 {if $oMedienDatei->cPfad|strlen > 1}
-                                                    {assign var=audiosrc value=$PFAD_MEDIAFILES|cat:$oMedienDatei->cPfad}
+                                                    {assign var=audiosrc value=$smarty.const.PFAD_MEDIAFILES|cat:$oMedienDatei->cPfad}
                                                 {/if}
                                                 {if $audiosrc|strlen > 1}
                                                     <audio controls controlsList="nodownload">
@@ -88,7 +88,7 @@
                                         {/if}
                                         {if !empty($oMedienDatei->cPfad)}
                                             <p>
-                                                {link href="{$PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" target="_blank"}{$oMedienDatei->cName}{/link}
+                                                {link href="{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" target="_blank"}{$oMedienDatei->cName}{/link}
                                             </p>
                                         {elseif !empty($oMedienDatei->cURL)}
                                             <p>
@@ -109,15 +109,15 @@
                                     {/col}
                                     {col md=6}
                                         {if !empty($oMedienDatei->cPfad)}
-                                            {link href="{$PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" target="_blank"}
-                                                {image alt="PDF" src="{$PFAD_BILDER}intern/file-pdf.png"}
+                                            {link href="{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" target="_blank"}
+                                                {image alt="PDF" src="{$smarty.const.PFAD_BILDER}intern/file-pdf.png"}
                                             {/link}
                                             <br />
-                                            {link href="{$PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" target="_blank"}
+                                            {link href="{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" target="_blank"}
                                                 {$oMedienDatei->cName}
                                             {/link}
                                         {elseif !empty($oMedienDatei->cURL)}
-                                            {link href=$oMedienDatei->cURL target="_blank"}{image alt="PDF" src="{$PFAD_BILDER}intern/file-pdf.png"}{/link}
+                                            {link href=$oMedienDatei->cURL target="_blank"}{image alt="PDF" src="{$smarty.const.PFAD_BILDER}intern/file-pdf.png"}{/link}
                                             <br />
                                             {link href=$oMedienDatei->cURL target="_blank"}{$oMedienDatei->cName}{/link}
                                         {/if}

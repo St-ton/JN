@@ -2,7 +2,7 @@
 /**
  * Remove option for partial https encryption
  *
- * @author Felix Moche
+ * @author fm
  * @created Fri, 10 Mar 2017 15:38:00 +0100
  */
 

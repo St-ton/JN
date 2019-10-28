@@ -6,7 +6,7 @@
 {if $showAttributesTable}
     <div class="product-attributes mt-3">
     {block name='productdetails-attributes-table'}
-        <table class="table table-condensed table-striped">
+        <table class="table table-sm table-striped table-bordered-outline">
             {if $Einstellungen.artikeldetails.merkmale_anzeigen === 'Y'}
                 {block name='productdetails-attributes-characteristics'}
                     {foreach $Artikel->oMerkmale_arr as $characteristic}
@@ -103,7 +103,8 @@
                 {/block}
             {/if}
 
-            {if $Einstellungen.artikeldetails.artikeldetails_attribute_anhaengen === 'Y' || (isset($Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ATTRIBUTEANHAENGEN]) && $Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ATTRIBUTEANHAENGEN] == 1)}
+            {if $Einstellungen.artikeldetails.artikeldetails_attribute_anhaengen === 'Y'
+            || $Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_ATTRIBUTEANHAENGEN]|default:0 == 1}
                 {block name='productdetails-attributes-shop-attributes'}
                     {foreach $Artikel->Attribute as $Attribut}
                         <tr class="attr-custom">

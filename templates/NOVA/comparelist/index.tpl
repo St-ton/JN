@@ -10,19 +10,21 @@
     {assign var='descriptionLength' value=200}
 
     {block name='comparelist-index-content'}
-        {container}
+        {block name='comparelist-index-heading'}
             {opcMountPoint id='opc_before_heading'}
-            {block name='comparelist-index-heading'}
+            {container}
                 <h1 class="h2">{lang key='compare' section='global'}</h1>
                 <hr class="mt-0 mb-3">
-            {/block}
-            {block name='comparelist-index-include-extension'}
-                {include file='snippets/extension.tpl'}
-            {/block}
+            {/container}
+        {/block}
+        {block name='comparelist-index-include-extension'}
+            {include file='snippets/extension.tpl'}
+        {/block}
 
-            {if $oVergleichsliste->oArtikel_arr|@count > 0}
-                {block name='comparelist-index-filter'}
-                    {opcMountPoint id='opc_before_filter'}
+        {if $oVergleichsliste->oArtikel_arr|@count > 0}
+            {block name='comparelist-index-filter'}
+                {opcMountPoint id='opc_before_filter'}
+                {container}
                     <div id="filter-checkboxes" class="mb-4">
                         {block name='comparelist-index-filter-buttons'}
                             {row}
@@ -79,8 +81,10 @@
                             {/collapse}
                         {/block}
                     </div>
-                {/block}
-                {block name='comparelist-index-products'}
+                {/container}
+            {/block}
+            {block name='comparelist-index-products'}
+                {container}
                     <div class="comparelist table-responsive">
                         <table class="table table-bordered table-hover">
                             <thead>
@@ -287,13 +291,15 @@
                             {/block}
                         </table>
                     </div>
-                {/block}
-            {else}
-                {block name='comparelist-index-empty'}
+                {/container}
+            {/block}
+        {else}
+            {block name='comparelist-index-empty'}
+                {container}
                     {lang key='compareListNoItems'}
-                {/block}
-            {/if}
-        {/container}
+                {/container}
+            {/block}
+        {/if}
 
         {if isset($bAjaxRequest) && $bAjaxRequest}
             {block name='comparelist-index-script-remove'}

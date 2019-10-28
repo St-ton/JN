@@ -2,7 +2,7 @@
 /**
  * delete_serbia_and_montenegro_from_tland
  *
- * @author Mirko Schmidt
+ * @author msc
  * @created Mon, 08 Aug 2016 12:16:33 +0200
  */
 
@@ -14,7 +14,7 @@ use JTL\Update\Migration;
  */
 class Migration_20160808121633 extends Migration implements IMigration
 {
-    protected $author = 'Mirko Schmidt';
+    protected $author = 'msc';
 
     public function up()
     {

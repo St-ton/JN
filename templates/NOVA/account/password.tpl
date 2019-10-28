@@ -9,17 +9,15 @@
 
     {block name='account-password-content'}
         {block name='account-password-include-extension'}
-            {container}
-                {include file='snippets/extension.tpl'}
-            {/container}
+            {include file='snippets/extension.tpl'}
         {/block}
         {block name='account-password-heading'}
             {container}
                 <h1>{lang key='forgotPassword' section='global'}</h1>
             {/container}
         {/block}
-        {if $step === 'formular'}
-            {container}
+        {container}
+            {if $step === 'formular'}
                 {row}
                     {col cols=12 lg=8}
                         {block name='account-password-alert'}
@@ -58,9 +56,7 @@
                         {/block}
                     {/col}
                 {/row}
-            {/container}
-        {elseif $step === 'confirm'}
-            {container}
+            {elseif $step === 'confirm'}
                 {row}
                     {col cols=12 md=8 md-offset=2}
                         {block name='account-password-form-password-reset-confirm'}
@@ -97,14 +93,12 @@
                         {/block}
                     {/col}
                 {/row}
-            {/container}
-        {else}
-            {block name='account-password-alert-success'}
-                {container}
+            {else}
+                {block name='account-password-alert-success'}
                     {alert variant="success"}{lang key='newPasswortWasGenerated' section='forgot password'}{/alert}
-                {/container}
-            {/block}
-        {/if}
+                {/block}
+            {/if}
+        {/container}
     {/block}
 
     {block name='account-password-include-footer'}

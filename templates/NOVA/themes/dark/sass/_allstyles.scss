@@ -1,38 +1,40 @@
-@import "../../base/fontawesome/scss/fontawesome.scss";
-@import "../../base/fontawesome/scss/brands.scss";
-@import "../../base/fontawesome/scss/regular.scss";
-@import "../../base/fontawesome/scss/solid.scss";
-@import "../../base/nouislider.min";
-@import "../../base/slick/slick-lightbox";
-@import "../../../js/password/password.min";
+@import '../../base/fontawesome/scss/fontawesome.scss';
+@import '../../base/fontawesome/scss/brands.scss';
+@import '../../base/fontawesome/scss/regular.scss';
+@import '../../base/fontawesome/scss/solid.scss';
+@import '../../base/nouislider.min';
+@import '../../base/slick/slick-lightbox';
+@import '../../../js/password/password.min';
+@import '../../../js/photoswipe/photoswipe';
+@import '../../../js/photoswipe/css/default-skin/default-skin';
 
 // bootstrap
-@import "../../base/bootstrap/scss/bootstrap.scss";
-@import "../../base/bootstrap-select/bootstrap-select.scss";
+@import '../../base/bootstrap/scss/bootstrap.scss';
+@import '../../base/bootstrap-select/bootstrap-select.scss';
 
 // slick slider
-@import "../../base/slick/slick.scss";
+@import '../../base/slick/slick.scss';
 
 // fileinput
-@import "../../base/fileinput/fileinput.min.scss";
+@import '../../base/fileinput/fileinput.min.scss';
 
 // wow animation
-@import "../../base/wow/animate";
+@import '../../base/wow/animate';
 
 // slider
-@import "../../base/slider/slider";
+@import '../../base/slider/slider';
 
 // theme mixins
-@import "../../base/sass/mixins";
+@import '../../base/sass/mixins';
 
 // theme fonts
-@import "../../base/sass/fonts";
+@import '../../base/sass/fonts';
 
 // components
-@import "../../base/sass/components/all";
+@import '../../base/sass/components/all';
 
 // theme base
-@import "../../base/sass/base";
+@import '../../base/sass/base';
 
 /* utilities */
 @import '../../base/sass/utilities/all';
@@ -40,5 +42,11 @@
 /* productlist */
 @import '../../base/sass/productlist';
 
+/* productdetails */
+@import '../../base/sass/productdetails';
+
 /* header */
 @import '../../base/sass/header';
+
+/* footer */
+@import '../../base/sass/footer';

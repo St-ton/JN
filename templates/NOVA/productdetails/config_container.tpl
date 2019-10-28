@@ -61,9 +61,10 @@
 
                                 {block name='productdetails-config-container-group-items'}
                                     {row class="form-group"}
-                                        {if $oGruppe->getAnzeigeTyp() == $smarty.const.KONFIG_ANZEIGE_TYP_CHECKBOX
-                                        || $oGruppe->getAnzeigeTyp() == $smarty.const.KONFIG_ANZEIGE_TYP_RADIO
-                                        || $oGruppe->getAnzeigeTyp() == $smarty.const.KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI}
+                                        {$viewType = $oGruppe->getAnzeigeTyp()}
+                                        {if $viewType === $smarty.const.KONFIG_ANZEIGE_TYP_CHECKBOX
+                                        || $viewType === $smarty.const.KONFIG_ANZEIGE_TYP_RADIO
+                                        || $viewType === $smarty.const.KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI}
                                             {block name='productdetails-config-container-group-item-type-swatch'}
                                                 {foreach $oGruppe->oItem_arr as $oItem}
                                                     {col cols=6 md=4 lg=3}
@@ -85,7 +86,7 @@
                                                             {$cBeschreibung = $cKurzBeschreibung}
                                                         {/if}
 
-                                                        {if $oGruppe->getAnzeigeTyp() == $smarty.const.KONFIG_ANZEIGE_TYP_RADIO}
+                                                        {if $viewType === $smarty.const.KONFIG_ANZEIGE_TYP_RADIO}
                                                             {radio name="item[{$kKonfiggruppe}][]"
                                                                 value=$oItem->getKonfigitem()
                                                                 disabled=empty($bSelectable)
@@ -243,7 +244,7 @@
                                                     {/col}
                                                 {/foreach}
                                             {/block}
-                                        {elseif $oGruppe->getAnzeigeTyp() == $smarty.const.KONFIG_ANZEIGE_TYP_DROPDOWN}
+                                        {elseif $viewType === $smarty.const.KONFIG_ANZEIGE_TYP_DROPDOWN}
                                             {block name='productdetails-config-container-group-item-type-dropdown'}
                                                 {col cols=12 md=3 data=["id"=>$kKonfiggruppe] class="mb-3"}
                                                     {formgroup}

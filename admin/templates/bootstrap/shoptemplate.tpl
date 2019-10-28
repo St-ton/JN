@@ -250,7 +250,7 @@
                     <th></th>
                     <th></th>
                     <th class="text-center">{__('status')}</th>
-                    <th class="text-center">{__('version')}</th>
+                    {*<th class="text-center">{__('version')}</th>*}
                     <th class="text-center">{__('shopversion')}</th>
                     <th></th>
                 </tr>
@@ -345,9 +345,9 @@
                                 {/if}
                             {/if}
                         </td>
-                        <td class="text-vcenter text-center">
-                            {$oTemplate->cVersion}
-                        </td>
+                        {*<td class="text-vcenter text-center">*}
+                            {*{$oTemplate->cVersion}*}
+                        {*</td>*}
                         <td class="text-vcenter text-center">
                             {$oTemplate->cShopVersion}
                         </td>

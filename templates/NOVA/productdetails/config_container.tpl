@@ -10,8 +10,8 @@
                 {block name='productdetails-config-container-groups'}
                 {foreach $Artikel->oKonfig_arr as $oGruppe}
                     {if $oGruppe->getItemCount() > 0}
-                        {$oSprache = $oGruppe->getSprache()}
-                        {$cBildPfad = $oGruppe->getBildPfad()}
+                        {$configLocalization = $oGruppe->getSprache()}
+                        {$configImagePath = $oGruppe->getImage()}
                         {$kKonfiggruppe = $oGruppe->getKonfiggruppe()}
                         <div class="cfg-group mb-4" data-id="{$kKonfiggruppe}">
                             <div class="hr-sect mt-5 mb-0">
@@ -20,7 +20,7 @@
                                     variant="link"
                                     data=["toggle"=>"collapse","target"=>"#cfg-grp-cllps-{$kKonfiggruppe}"]
                                     class="text-left text-decoration-none"}
-                                    {$oSprache->getName()}{if $oGruppe->getMin() == 0}<span class="optional"> - {lang key='optional'}</span>{/if}
+                                    {$configLocalization->getName()}{if $oGruppe->getMin() == 0}<span class="optional"> - {lang key='optional'}</span>{/if}
                                 {/button}
                             </div>
 
@@ -43,16 +43,16 @@
                                                 {/alert}
                                             {/col}
                                         {/if}
-                                        {if $oSprache->hatBeschreibung()}
-                                            {col cols=12 lg="{if !empty($cBildPfad)}8{else}12{/if}" order=1 order-lg=0}
-                                                <p class="desc">{$oSprache->getBeschreibung()}</p>
+                                        {if $configLocalization->hatBeschreibung()}
+                                            {col cols=12 lg="{if !empty($configImagePath)}8{else}12{/if}" order=1 order-lg=0}
+                                                <p class="desc">{$configLocalization->getBeschreibung()}</p>
                                             {/col}
                                         {/if}
-                                        {if !empty($cBildPfad)}
-                                            {col cols=12 lg="{if $oSprache->hatBeschreibung()}4{else}12{/if}" order=0 order-lg=1}
+                                        {if !empty($configImagePath)}
+                                            {col cols=12 lg="{if $configLocalization->hatBeschreibung()}4{else}12{/if}" order=0 order-lg=1}
                                                 {image id="img{$kKonfiggruppe}" fluid=true fluid-grow=true lazy=true
-                                                    src=$cBildPfad
-                                                    alt=$oSprache->getName()
+                                                    src=$configImagePath
+                                                    alt=$configLocalization->getName()
                                                 }
                                             {/col}
                                         {/if}
@@ -61,9 +61,10 @@
 
                                 {block name='productdetails-config-container-group-items'}
                                     {row class="form-group"}
-                                        {if $oGruppe->getAnzeigeTyp() == $smarty.const.KONFIG_ANZEIGE_TYP_CHECKBOX
-                                        || $oGruppe->getAnzeigeTyp() == $smarty.const.KONFIG_ANZEIGE_TYP_RADIO
-                                        || $oGruppe->getAnzeigeTyp() == $smarty.const.KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI}
+                                        {$viewType = $oGruppe->getAnzeigeTyp()}
+                                        {if $viewType === $smarty.const.KONFIG_ANZEIGE_TYP_CHECKBOX
+                                        || $viewType === $smarty.const.KONFIG_ANZEIGE_TYP_RADIO
+                                        || $viewType === $smarty.const.KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI}
                                             {block name='productdetails-config-container-group-item-type-swatch'}
                                                 {foreach $oGruppe->oItem_arr as $oItem}
                                                     {col cols=6 md=4 lg=3}
@@ -85,7 +86,7 @@
                                                             {$cBeschreibung = $cKurzBeschreibung}
                                                         {/if}
 
-                                                        {if $oGruppe->getAnzeigeTyp() == $smarty.const.KONFIG_ANZEIGE_TYP_RADIO}
+                                                        {if $viewType === $smarty.const.KONFIG_ANZEIGE_TYP_RADIO}
                                                             {radio name="item[{$kKonfiggruppe}][]"
                                                                 value=$oItem->getKonfigitem()
                                                                 disabled=empty($bSelectable)
@@ -243,14 +244,14 @@
                                                     {/col}
                                                 {/foreach}
                                             {/block}
-                                        {elseif $oGruppe->getAnzeigeTyp() == $smarty.const.KONFIG_ANZEIGE_TYP_DROPDOWN}
+                                        {elseif $viewType === $smarty.const.KONFIG_ANZEIGE_TYP_DROPDOWN}
                                             {block name='productdetails-config-container-group-item-type-dropdown'}
                                                 {col cols=12 md=3 data=["id"=>$kKonfiggruppe] class="mb-3"}
                                                     {formgroup}
                                                         {select name="item[{$kKonfiggruppe}][]"
                                                             data=["ref"=>$kKonfiggruppe]
                                                             required=$oGruppe->getMin() > 0
-                                                            aria=["label"=>$oSprache->getName()]
+                                                            aria=["label"=>$configLocalization->getName()]
                                                             class='custom-select'
                                                         }
                                                             <option value="">{lang key='pleaseChoose'}</option>

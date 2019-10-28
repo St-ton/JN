@@ -1364,8 +1364,8 @@ final class Shop
             // mainwords
             if (isset($oSeo->kKey) && \strcasecmp($oSeo->cSeo, $seo) === 0) {
                 if ($seo !== $oSeo->cSeo) {
-                    http_response_code(301);
-                    header('Location: ' . self::getURL() . '/' . $oSeo->cSeo);
+                    \http_response_code(301);
+                    \header('Location: ' . self::getURL() . '/' . $oSeo->cSeo);
                     exit;
                 }
                 self::$cCanonicalURL = self::getURL() . '/' . $oSeo->cSeo;

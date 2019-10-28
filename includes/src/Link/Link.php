@@ -228,6 +228,9 @@ final class Link extends AbstractLink
     public function __wakeup()
     {
         $this->currentLanguageID = Shop::getLanguageID();
+        if ($this->currentLanguageID === 0) {
+            $this->currentLanguageID = $_SESSION['kSprache'] ?? 0;
+        }
     }
 
     /**

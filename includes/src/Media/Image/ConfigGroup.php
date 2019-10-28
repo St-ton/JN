@@ -114,7 +114,12 @@ class ConfigGroup extends AbstractImage
             'SELECT a.kKonfiggruppe AS id, t.cName, cBildPfad AS path
                 FROM tkonfiggruppe a
                 JOIN tkonfiggruppesprache t 
-                    ON a.kKonfiggruppe = t.kKonfiggruppe' . self::getLimitStatement($offset, $limit),
+                    ON a.kKonfiggruppe = t.kKonfiggruppe
+                JOIN tsprache
+                    ON tsprache.kSprache = t.kSprache
+                WHERE tsprache.cShopStandard = \'Y\'
+                  AND cBildPfad IS NOT NULL
+                  AND cBildPfad != \'\'' . self::getLimitStatement($offset, $limit),
             ReturnType::QUERYSINGLE
         );
         while (($image = $images->fetch(PDO::FETCH_OBJ)) !== false) {

@@ -274,7 +274,7 @@ trait PortletHtml
 
         $path = \PFAD_ROOT . \PFAD_TEMPLATES . 'NOVA/themes/base/fontawesome/svgs/' . $subdir . $matches[2] . '.svg';
 
-        if(!\file_exists($path)) {
+        if (!\file_exists($path)) {
             return '';
         }
 

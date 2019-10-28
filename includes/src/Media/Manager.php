@@ -172,7 +172,7 @@ class Manager
      * @param bool   $isAjax
      * @return array
      */
-    public function clearImageCache(string $type, bool $isAjax = false)
+    public function clearImageCache(string $type, bool $isAjax = false): array
     {
         Shop::Container()->getGetText()->loadAdminLocale('pages/bilderverwaltung');
         if ($type !== null && \preg_match('/[a-z]*/', $type)) {

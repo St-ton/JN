@@ -68,5 +68,8 @@ msgstr "Bilder werden generiert…"
 msgid "newscategory"
 msgstr "Newskategorie"
 
+msgid "configgroup"
+msgstr "Konfigurationsgruppe"
+
 msgid "cleanup"
 msgstr "Aufräumen"

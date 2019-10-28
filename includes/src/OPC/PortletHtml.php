@@ -251,4 +251,33 @@ trait PortletHtml
     {
         return Shop::getURL() . '/' . \BILD_KEIN_KATEGORIEBILD_VORHANDEN;
     }
+
+    /**
+     * @param string $faCode
+     * @return string
+     */
+    final public function getFontAwesomeSvg(string $faCode): string
+    {
+        $res = \preg_match('/fa([brs]) fa-(.+)/', $faCode, $matches);
+
+        if ($res !== 1) {
+            return '';
+        }
+
+        if ($matches[1] === 'b') {
+            $subdir = 'brands/';
+        } elseif ($matches[1] === 'r') {
+            $subdir = 'regular/';
+        } elseif ($matches[1] === 's') {
+            $subdir = 'solid/';
+        }
+
+        $path = \PFAD_ROOT . \PFAD_TEMPLATES . 'NOVA/themes/base/fontawesome/svgs/' . $subdir . $matches[2] . '.svg';
+
+        if(!\file_exists($path)) {
+            return '';
+        }
+
+        return \file_get_contents($path);
+    }
 }

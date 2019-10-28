@@ -239,6 +239,18 @@ msgstr "Nein"
 msgid "global_cookie_httponly_value(Y)"
 msgstr "Ja"
 
+msgid "global_cookie_samesite_value(S)"
+msgstr "Standard"
+
+msgid "global_cookie_samesite_value(N)"
+msgstr "Deaktiviert"
+
+msgid "global_cookie_samesite_value(Lax)"
+msgstr "Lax"
+
+msgid "global_cookie_samesite_value(Strict)"
+msgstr "Strict"
+
 msgid "email_methode_value(mail)"
 msgstr "PHP mail()"
 

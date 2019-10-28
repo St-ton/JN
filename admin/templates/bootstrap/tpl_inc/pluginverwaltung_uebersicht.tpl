@@ -1,7 +1,7 @@
 <script type="text/javascript">
 function ackCheck(kPlugin, hash)
 {
-    var bCheck = confirm('Wollen Sie das Plugin wirklich updaten?');
+    var bCheck = confirm('{__('surePluginUpdate')}');
     var href = '';
 
     if (bCheck) {
@@ -18,30 +18,91 @@ function ackCheck(kPlugin, hash)
 {/if}
 </script>
 
-{include file='tpl_inc/seite_header.tpl' cTitel=#pluginverwaltung# cBeschreibung=#pluginverwaltungDesc# cDokuURL=#pluginverwaltungURL#}
-<div id="content" class="container-fluid">
+{include file='tpl_inc/seite_header.tpl' cTitel=__('pluginverwaltung') cBeschreibung=__('pluginverwaltungDesc') cDokuURL=__('pluginverwaltungURL')}
+
+<div>
+    <div class="card">
+        <div class="card-header">
+            <div class="heading-body">
+                <div class="subheading1">{__('pluginverwaltung')}</div>
+            </div>
+            <div class="heading-right">
+                {if $hasAuth}
+                    <a href="store.php" class="btn btn-outline-primary"><i class="fa fa-link"></i> {__('storeRevoke')}</a>
+                {/if}
+            </div>
+            <hr class="mb-n3">
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {if $hasAuth}
+                    <div class="col-md-4 border-right">
+                        <div class="text-center">
+                            <h2>2</h2>
+                            <p>{__('storeUpdatesAvailable')}</p>
+                            <a class="btn btn-outline-primary" href="#">{__('storeListUpdates')}</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4 border-right">
+                        <div class="text-center">
+                            <h2>3</h2>
+                            <p>{__('storePlugins')}</p>
+                            <a class="btn btn-outline-primary" href="#">{__('storeListAll')}</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <h2>{$smarty.now|date_format}</h2>
+                            <p>{__('storeLastUpdate')}</p>
+                            <a class="btn btn-outline-primary" href="#">{__('storeUpdateNow')}</a>
+                        </div>
+                    </div>
+                {else}
+                    <div class="col-md-12">
+                        <div class="alert alert-default" role="alert">{__('storeNotLinkedDesc')}</div>
+                        <a href="store.php" class="btn btn-primary">{__('storeLink')}</a>
+                    </div>
+                {/if}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="content">
     <div id="settings">
-        {if $PluginInstalliertByStatus_arr|@count > 0}
-            <ul class="nav nav-tabs" role="tablist">
-                <li class="tab{if !isset($cTab) || $cTab === 'aktiviert'} active{/if}">
-                    <a data-toggle="tab" role="tab" href="#aktiviert">Aktiviert <span class="badge">{$PluginInstalliertByStatus_arr.status_2|@count}</span></a>
-                </li>
-                <li class="tab{if isset($cTab) && $cTab === 'deaktiviert'} active{/if}">
-                    <a data-toggle="tab" role="tab" href="#deaktiviert">Deaktiviert <span class="badge">{$PluginInstalliertByStatus_arr.status_1|@count}</span></a>
-                </li>
-                <li class="tab{if isset($cTab) && $cTab === 'probleme'} active{/if}">
-                    <a data-toggle="tab" role="tab" href="#probleme">Probleme <span class="badge">{$PluginErrorCount}</span></a>
-                </li>
-                <li class="tab{if isset($cTab) && $cTab === 'verfuegbar'} active{/if}">
-                    <a data-toggle="tab" role="tab" href="#verfuegbar">Verf&uuml;gbar <span class="badge">{if isset($PluginVerfuebar_arr)}{$PluginVerfuebar_arr|@count}{else}0{/if}</span></a>
-                </li>
-                <li class="tab{if isset($cTab) && $cTab === 'fehlerhaft'} active{/if}">
-                    <a data-toggle="tab" role="tab" href="#fehlerhaft">Fehlerhaft <span class="badge">{if isset($PluginFehlerhaft_arr)}{$PluginFehlerhaft_arr|@count}{else}0{/if}</span></a>
-                </li>
-                <li class="tab{if isset($cTab) && $cTab === 'upload'} active{/if}">
-                    <a data-toggle="tab" role="tab" href="#upload">Upload</a>
-                </li>
-            </ul>
+        <div class="tabs">
+            <nav class="tabs-nav">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link {if !isset($cTab) || $cTab === 'aktiviert'} active{/if}" data-toggle="tab" role="tab" href="#aktiviert">
+                            {__('activated')}<span class="badge">{$pluginsInstalled->count()}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {if isset($cTab) && $cTab === 'deaktiviert'} active{/if}" data-toggle="tab" role="tab" href="#deaktiviert">
+                            {__('deactivated')} <span class="badge">{$pluginsDisabled->count()}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {if isset($cTab) && $cTab === 'probleme'} active{/if}" data-toggle="tab" role="tab" href="#probleme">
+                            {__('problems')} <span class="badge">{$pluginsProblematic->count()}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {if isset($cTab) && $cTab === 'verfuegbar'} active{/if}" data-toggle="tab" role="tab" href="#verfuegbar">
+                            {__('available')} <span class="badge">{$pluginsAvailable->count()}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {if isset($cTab) && $cTab === 'fehlerhaft'} active{/if}" data-toggle="tab" role="tab" href="#fehlerhaft">
+                            {__('faulty')} <span class="badge">{$pluginsErroneous->count()}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {if isset($cTab) && $cTab === 'upload'} active{/if}" data-toggle="tab" role="tab" href="#upload">{__('upload')}</a>
+                    </li>
+                </ul>
+            </nav>
             <div class="tab-content">
                 {include file='tpl_inc/pluginverwaltung_uebersicht_aktiviert.tpl'}
                 {include file='tpl_inc/pluginverwaltung_uebersicht_deaktiviert.tpl'}
@@ -62,7 +123,8 @@ function ackCheck(kPlugin, hash)
                             allowedFileExtensions : ['zip'],
                             overwriteInitial: false,
                             showPreview: false,
-                            language: 'de',
+                            cancelClass: 'btn btn-outline-primary',
+                            language: '{$language|mb_substr:0:2}',
                             maxFileSize: 100000,
                             maxFilesNum: 1
                         {rdelim}).on('fileuploaded', function(event, data, previewId, index) {ldelim}
@@ -70,30 +132,30 @@ function ackCheck(kPlugin, hash)
                             if (response.status === 'OK') {ldelim}
                                 var wasActiveVerfuegbar = $('#verfuegbar').hasClass('active'),
                                     wasActiveFehlerhaft = $('#fehlerhaft').hasClass('active');
-                                $('#verfuegbar').replaceWith(response.html.verfuegbar);
-                                $('#fehlerhaft').replaceWith(response.html.fehlerhaft);
-                                $('a[href="#fehlerhaft"]').find('.badge').html(response.html.fehlerhaft_count);
-                                $('a[href="#verfuegbar"]').find('.badge').html(response.html.verfuegbar_count);
+                                $('#verfuegbar').replaceWith(response.html.available);
+                                $('#fehlerhaft').replaceWith(response.html.erroneous);
+                                $('a[href="#fehlerhaft"]').find('.badge').html(response.html.erroneous_count);
+                                $('a[href="#verfuegbar"]').find('.badge').html(response.html.available_count);
                                 $('#plugin-upload-success').show().removeClass('hidden');
                                 if (wasActiveFehlerhaft) {ldelim}
-                                    $('#fehlerhaft').addClass('active in');
-                                    {rdelim} else if (wasActiveVerfuegbar) {ldelim}
-                                    $('#verfuegbar').addClass('active in');
-                                    {rdelim}
-                                {rdelim} else {ldelim}
-                                    $('#plugin-upload-error').show().removeClass('hidden');
+                                    $('#fehlerhaft').addClass('active show');
+                                {rdelim} else if (wasActiveVerfuegbar) {ldelim}
+                                    $('#verfuegbar').addClass('active show');
                                 {rdelim}
-                                var fi = $('#plugin-install-upload');
-                                fi.fileinput('reset');
-                                fi.fileinput('clear');
-                                fi.fileinput('refresh');
-                                fi.fileinput('enable');
+                            {rdelim} else {ldelim}
+                                $('#plugin-upload-error').show().removeClass('hidden');
+                            {rdelim}
+                            var fi = $('#plugin-install-upload');
+                            fi.fileinput('reset');
+                            fi.fileinput('clear');
+                            fi.fileinput('refresh');
+                            fi.fileinput('enable');
                         {rdelim});
                     </script>
-                    <div id="plugin-upload-success" class="alert alert-info hidden">Plugin erfolgreich hochgeladen.</div>
-                    <div id="plugin-upload-error" class="alert alert-danger hidden">Plugin konnte nicht hochgeladen werden.</div>
+                    <div id="plugin-upload-success" class="alert alert-info hidden">{__('successPluginUpload')}</div>
+                    <div id="plugin-upload-error" class="alert alert-danger hidden">{__('errorPluginUpload')}</div>
                 </div>
             </div>
-        {/if}
+        </div>
     </div>
 </div>

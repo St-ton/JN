@@ -1,13 +1,13 @@
 {includeMailTemplate template=header type=plain}
 
-Sehr {if $Kunde->cAnrede == "w"}geehrte{elseif $Kunde->cAnrede == "m"}geehrter{else}geehrte(r){/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
+Guten Tag {$Kunde->cVorname} {$Kunde->cNachname},
 
 wunschgemäß haben wir für Sie in unserem Onlineshop unter {$ShopURL}
 ein Kundenkonto für Sie eingerichtet.
 
-Zur Kontrolle hier noch einmal Ihre Kundendaten: 
+Zur Kontrolle hier noch einmal Ihre Kundendaten:
 
-{$Kunde->cAnredeLocalized} {$Kunde->cVorname} {$Kunde->cNachname}
+{$Kunde->cVorname} {$Kunde->cNachname}
 {$Kunde->cStrasse} {$Kunde->cHausnummer}
 {if $Kunde->cAdressZusatz}{$Kunde->cAdressZusatz}
 {/if}{$Kunde->cPLZ} {$Kunde->cOrt}
@@ -31,7 +31,7 @@ nehmen Sie einfach Kontakt mit uns auf.
 
 Wir wünschen Ihnen viel Spaß beim Stöbern in unserem Sortiment.
 
-Mit freundlichem Gruß,
+Mit freundlichem Gruß
 Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=plain}

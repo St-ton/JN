@@ -1,35 +1,39 @@
 <?php
+
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Add OnPage Composer tables
  *
- * @author Marco Stickel
+ * @author ms
  */
 
 class Migration_20180507101900 extends Migration implements IMigration
 {
-    protected $author      = 'Marco Stickel';
+    protected $author      = 'ms';
     protected $description = 'Add OnPage Composer tables';
 
     public function up()
     {
-        $this->execute("CREATE TABLE topcportlet (
+        $this->execute('CREATE TABLE topcportlet (
             kPortlet INT AUTO_INCREMENT PRIMARY KEY,
             kPlugin INT NOT NULL,
             cTitle VARCHAR(255) NOT NULL,
             cClass VARCHAR(255) NOT NULL,
             cGroup VARCHAR(255) NOT NULL,
             bActive TINYINT NOT NULL DEFAULT 1
-        ) ENGINE=InnoDB COLLATE utf8_unicode_ci");
+        ) ENGINE=InnoDB COLLATE utf8_unicode_ci');
 
-        $this->execute("CREATE TABLE topcblueprint (
+        $this->execute('CREATE TABLE topcblueprint (
             kBlueprint INT AUTO_INCREMENT PRIMARY KEY,
             kPlugin INT NOT NULL,
             cName VARCHAR(255) NOT NULL,
             cJson LONGTEXT,
             bActive TINYINT NOT NULL DEFAULT 1
-        ) ENGINE=InnoDB COLLATE utf8_unicode_ci");
+        ) ENGINE=InnoDB COLLATE utf8_unicode_ci');
 
-        $this->execute("CREATE TABLE topcpage (
+        $this->execute('CREATE TABLE topcpage (
             kPage INT AUTO_INCREMENT PRIMARY KEY,
             cPageId CHAR(32) NOT NULL,
             dPublishFrom DATETIME NULL,
@@ -42,7 +46,7 @@ class Migration_20180507101900 extends Migration implements IMigration
             dLockedAt DATETIME NULL,
             bReplace BOOL NOT NULL,
             UNIQUE KEY (cPageId, dPublishFrom)
-        ) ENGINE=InnoDB COLLATE utf8_unicode_ci");
+        ) ENGINE=InnoDB COLLATE utf8_unicode_ci');
 
         $this->execute("INSERT INTO tadminmenu (kAdminmenueGruppe, cModulId, cLinkname, cURL, cRecht, nSort)
             VALUES ('4', 'core_jtl', 'OnPage Composer', 'opc-controlcenter.php', 'CONTENT_PAGE_VIEW', '115');");
@@ -104,9 +108,9 @@ class Migration_20180507101900 extends Migration implements IMigration
 
     public function down()
     {
-        $this->execute("DROP TABLE topcportlet");
-        $this->execute("DROP TABLE topcblueprint");
-        $this->execute("DROP TABLE topcpage");
+        $this->execute('DROP TABLE topcportlet');
+        $this->execute('DROP TABLE topcblueprint');
+        $this->execute('DROP TABLE topcpage');
 
         $this->execute("DELETE FROM tadminmenu WHERE cLinkname='OnPage Composer';");
         $this->execute("DELETE FROM trevisions WHERE type='opcpage';");

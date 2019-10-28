@@ -18,7 +18,7 @@
                     <tbody>
                     {foreach $oWunschliste_arr as $Wunschliste}
                         <tr>
-                            <td><a href="{get_static_route id='jtl.php'}?wl={$Wunschliste->kWunschliste}">{$Wunschliste->cName}</a></td>
+                            <td><a href="{get_static_route id='wunschliste.php'}?wl={$Wunschliste->kWunschliste}">{$Wunschliste->cName}</a></td>
                             <td>{if $Wunschliste->nStandard == 1}{lang key='active' section='global'}{/if} {if $Wunschliste->nStandard == 0}{lang key='inactive' section='global'}{/if}</td>
                             <td class="text-right">
                                 <form method="post" action="{get_static_route id='jtl.php'}?wllist=1">

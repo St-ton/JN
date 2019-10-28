@@ -12,7 +12,7 @@ class bar_sketch extends bar_base
      */
     public function __construct($colour, $outline_colour, $fun_factor)
     {
-        $this->type      = "bar_sketch";
+        $this->type = 'bar_sketch';
         parent::__construct();
         
         $this->set_colour($colour);
@@ -22,7 +22,7 @@ class bar_sketch extends bar_base
     
     public function set_outline_colour($outline_colour)
     {
-        $tmp = 'outline-colour';
+        $tmp        = 'outline-colour';
         $this->$tmp = $outline_colour;
     }
 }

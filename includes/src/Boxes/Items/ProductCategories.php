@@ -4,23 +4,26 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
+
+use JTL\Helpers\Category;
+use JTL\Session\Frontend;
 
 /**
  * Class ProductCategories
- * @package Boxes
+ * @package JTL\Boxes\Items
  */
 final class ProductCategories extends AbstractBox
 {
     /**
-     * DirectPurchase constructor.
+     * ProductCategories constructor.
      * @param array $config
      */
     public function __construct(array $config)
     {
         parent::__construct($config);
         $show = isset($config['global']['global_sichtbarkeit'])
-            && ((int)$config['global']['global_sichtbarkeit'] !== 3 || \Session::Customer()->getID() > 0);
+            && ((int)$config['global']['global_sichtbarkeit'] !== 3 || Frontend::getCustomer()->getID() > 0);
         $this->setShow($show);
         if ($show === true) {
             $categories = $this->getCategories();
@@ -34,16 +37,16 @@ final class ProductCategories extends AbstractBox
      */
     private function getCategories(): array
     {
-        $categories = \KategorieHelper::getInstance();
+        $categories = Category::getInstance();
         $list       = $categories->combinedGetAll();
         $boxID      = $this->getCustomID();
         if ($boxID > 0) {
             $list2 = [];
-            foreach ($list as $key => $oList) {
-                if (isset($oList->categoryFunctionAttributes[\KAT_ATTRIBUT_KATEGORIEBOX])
-                    && (int)$oList->categoryFunctionAttributes[\KAT_ATTRIBUT_KATEGORIEBOX] === $boxID
+            foreach ($list as $key => $item) {
+                if (isset($item->categoryFunctionAttributes[\KAT_ATTRIBUT_KATEGORIEBOX])
+                    && (int)$item->categoryFunctionAttributes[\KAT_ATTRIBUT_KATEGORIEBOX] === $boxID
                 ) {
-                    $list2[$key] = $oList;
+                    $list2[$key] = $item;
                 }
             }
             $list = $list2;

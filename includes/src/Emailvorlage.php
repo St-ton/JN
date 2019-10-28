@@ -1,11 +1,15 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license       http://jtl-url.de/jtlshoplicense
  */
+
+namespace JTL;
 
 /**
  * Class Emailvorlage
+ * @package JTL
+ * @deprecated since 5.0.0
  */
 class Emailvorlage
 {
@@ -87,45 +91,44 @@ class Emailvorlage
     /**
      * Constructor
      *
-     * @param int  $kEmailvorlage
-     * @param bool $bPlugin
+     * @param int  $id
+     * @param bool $plugin
      */
-    public function __construct(int $kEmailvorlage = 0, bool $bPlugin = false)
+    public function __construct(int $id = 0, bool $plugin = false)
     {
-        if ($kEmailvorlage > 0) {
-            $this->loadFromDB($kEmailvorlage, $bPlugin);
+        \trigger_error(__CLASS__. ' is deprecated.', \E_USER_DEPRECATED);
+        if ($id > 0) {
+            $this->loadFromDB($id, $plugin);
         }
     }
 
     /**
      * Loads database member into class member
      *
-     * @param int  $kEmailvorlage
-     * @param bool $bPlugin
+     * @param int  $id
+     * @param bool $plugin
      * @return $this
      */
-    private function loadFromDB(int $kEmailvorlage, bool $bPlugin): self
+    private function loadFromDB(int $id, bool $plugin): self
     {
-        $cTable        = $bPlugin ? 'tpluginemailvorlage' : 'temailvorlage';
-        $cTableSetting = $bPlugin ? 'tpluginemailvorlageeinstellungen' : 'temailvorlageeinstellungen';
-        $oObj          = Shop::Container()->getDB()->select($cTable, 'kEmailvorlage', $kEmailvorlage);
+        $table = $plugin ? 'tpluginemailvorlageeinstellungen' : 'temailvorlageeinstellungen';
+        $data  = Shop::Container()->getDB()->select('temailvorlage', 'kEmailvorlage', $id);
 
-        if (isset($oObj->kEmailvorlage) && $oObj->kEmailvorlage > 0) {
-            $cMember_arr = array_keys(get_object_vars($oObj));
-            foreach ($cMember_arr as $cMember) {
-                $this->$cMember = $oObj->$cMember;
+        if (isset($data->kEmailvorlage) && $data->kEmailvorlage > 0) {
+            foreach (\array_keys(\get_object_vars($data)) as $member) {
+                $this->$member = $data->$member;
             }
             // Settings
             $this->oEinstellung_arr = Shop::Container()->getDB()->selectAll(
-                $cTableSetting,
+                $table,
                 'kEmailvorlage',
                 $this->kEmailvorlage
             );
             // Assoc bauen
-            if (is_array($this->oEinstellung_arr) && count($this->oEinstellung_arr) > 0) {
+            if (\is_array($this->oEinstellung_arr) && \count($this->oEinstellung_arr) > 0) {
                 $this->oEinstellungAssoc_arr = [];
-                foreach ($this->oEinstellung_arr as $oEinstellung) {
-                    $this->oEinstellungAssoc_arr[$oEinstellung->cKey] = $oEinstellung->cValue;
+                foreach ($this->oEinstellung_arr as $conf) {
+                    $this->oEinstellungAssoc_arr[$conf->cKey] = $conf->cValue;
                 }
             }
         }
@@ -148,9 +151,9 @@ class Emailvorlage
      * @param string
      * @return $this
      */
-    public function setName($cName): self
+    public function setName($name): self
     {
-        $this->cName = $cName;
+        $this->cName = $name;
 
         return $this;
     }
@@ -287,7 +290,7 @@ class Emailvorlage
     /**
      * @return string|null
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->cName;
     }
@@ -295,7 +298,7 @@ class Emailvorlage
     /**
      * @return string|null
      */
-    public function getBeschreibung()
+    public function getBeschreibung(): ?string
     {
         return $this->cBeschreibung;
     }
@@ -303,7 +306,7 @@ class Emailvorlage
     /**
      * @return string|null
      */
-    public function getMailTyp()
+    public function getMailTyp(): ?string
     {
         return $this->cMailTyp;
     }
@@ -311,7 +314,7 @@ class Emailvorlage
     /**
      * @return string|null
      */
-    public function getModulId()
+    public function getModulId(): ?string
     {
         return $this->cModulId;
     }
@@ -319,7 +322,7 @@ class Emailvorlage
     /**
      * @return string|null
      */
-    public function getDateiname()
+    public function getDateiname(): ?string
     {
         return $this->cDateiname;
     }
@@ -327,7 +330,7 @@ class Emailvorlage
     /**
      * @return string|null
      */
-    public function getAktiv()
+    public function getAktiv(): ?string
     {
         return $this->cAktiv;
     }
@@ -335,7 +338,7 @@ class Emailvorlage
     /**
      * @return int|null
      */
-    public function getAKZ()
+    public function getAKZ(): ?int
     {
         return $this->nAKZ;
     }
@@ -343,7 +346,7 @@ class Emailvorlage
     /**
      * @return int|null
      */
-    public function getAGB()
+    public function getAGB(): ?int
     {
         return $this->nAGB;
     }
@@ -351,7 +354,7 @@ class Emailvorlage
     /**
      * @return int|null
      */
-    public function getWRB()
+    public function getWRB(): ?int
     {
         return $this->nWRB;
     }
@@ -359,7 +362,7 @@ class Emailvorlage
     /**
      * @return int|null
      */
-    public function getWRBForm()
+    public function getWRBForm(): ?int
     {
         return $this->nWRBForm;
     }
@@ -367,7 +370,7 @@ class Emailvorlage
     /**
      * @return int|null
      */
-    public function getDSE()
+    public function getDSE(): ?int
     {
         return $this->nDSE;
     }
@@ -375,7 +378,7 @@ class Emailvorlage
     /**
      * @return int|null
      */
-    public function getFehlerhaft()
+    public function getFehlerhaft(): ?int
     {
         return $this->nFehlerhaft;
     }
@@ -385,14 +388,17 @@ class Emailvorlage
      * @param bool   $isPlugin
      * @return Emailvorlage|null
      */
-    public static function load(string $modulId, $isPlugin = false)
+    public static function load(string $modulId, $isPlugin = false): ?self
     {
-        $table   = $isPlugin ? 'tpluginemailvorlage' : 'temailvorlage';
-        $obj     = Shop::Container()->getDB()->select(
-            $table,
-            'cModulId', $modulId,
-            null, null,
-            null, null,
+        \trigger_error(__CLASS__. ' is deprecated.', \E_USER_DEPRECATED);
+        $obj = Shop::Container()->getDB()->select(
+            'temailvorlage',
+            'cModulId',
+            $modulId,
+            null,
+            null,
+            null,
+            null,
             false,
             'kEmailvorlage'
         );

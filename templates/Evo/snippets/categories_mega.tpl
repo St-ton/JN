@@ -20,22 +20,23 @@
         {if !isset($activeId)}
             {if $NaviFilter->hasCategory()}
                 {$activeId = $NaviFilter->getCategory()->getValue()}
-            {elseif $nSeitenTyp == 1 && isset($Artikel)}
+            {elseif $nSeitenTyp === $smarty.const.PAGE_ARTIKEL && isset($Artikel)}
                 {assign var='activeId' value=$Artikel->gibKategorie()}
-            {elseif $nSeitenTyp == 1 && isset($smarty.session.LetzteKategorie)}
+            {elseif $nSeitenTyp === $smarty.const.PAGE_ARTIKEL && isset($smarty.session.LetzteKategorie)}
                 {$activeId = $smarty.session.LetzteKategorie}
             {else}
                 {$activeId = 0}
             {/if}
         {/if}
-        {if !isset($activeParents) && ($nSeitenTyp == 1 || $nSeitenTyp == 2)}
+        {if !isset($activeParents)
+        && ($nSeitenTyp === $smarty.const.PAGE_ARTIKEL || $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE)}
             {get_category_parents categoryId=$activeId assign='activeParents'}
         {/if}
         {foreach $categories as $category}
-            {assign var='isDropdown' value=$category->bUnterKategorien && $category->Unterkategorien|count > 0}
-            <li role="presentation" class="nav-item {if $isDropdown}dropdown megamenu-fw{/if}{if $category->kKategorie == $activeId || (isset($activeParents[0]) && $activeParents[0]->kKategorie == $category->kKategorie)} active{/if}">
-                <a href="{$category->cURLFull}"{if $isDropdown} class="dropdown-toggle nav-link" data-target="#" data-toggle="dropdown" data-hover="dropdown" data-delay="300" data-hover-delay="100" data-close-others="true"{/if}>
-                    {$category->cKurzbezeichnung}
+            {assign var='isDropdown' value=$category->hasChildren()}
+            <li role="presentation" class="nav-item {if $isDropdown}dropdown megamenu-fw{/if}{if $category->getID() == $activeId || (isset($activeParents[0]) && $activeParents[0]->kKategorie == $category->getID())} active{/if}">
+                <a href="{$category->getURL()}"{if $isDropdown} class="dropdown-toggle nav-link" data-target="#" data-toggle="dropdown" data-hover="dropdown" data-delay="300" data-hover-delay="100" data-close-others="true"{/if}>
+                    {$category->getShortName()}
                     {if $isDropdown}<span class="caret"></span>{/if}
                 </a>
                 {if $isDropdown}
@@ -43,8 +44,8 @@
                         <li>
                             <div class="megamenu-content">
                                 <div class="category-title text-center">
-                                    <a href="{$category->cURLFull}">
-                                        {$category->cName}
+                                    <a href="{$category->getURL()}">
+                                        {$category->getName()}
                                     </a>
                                 </div>
                                 <hr class="hr-sm hidden-xs hidden-sm">
@@ -52,70 +53,71 @@
                                     {assign var=hasInfoColumn value=false}
                                     {if $Einstellungen.template.megamenu.show_maincategory_info !== 'N'
                                         && ($Einstellungen.template.megamenu.show_category_images !== 'N'
-                                            && $category->cBildURL !== 'gfx/keinBild.gif'
-                                            || !empty($category->cBeschreibung))}
+                                            && $category->getImageURL() !== 'gfx/keinBild.gif'
+                                            || !empty($category->getDescription()))}
                                         {assign var=hasInfoColumn value=true}
                                         <div class="col-lg-3 visible-lg">
                                             <div class="mega-info-lg top15">
                                                 {if $Einstellungen.template.megamenu.show_category_images !== 'N'
-                                                    && $category->cBildURL !== 'gfx/keinBild.gif'}
-                                                    <a href="{$category->cURLFull}">
-                                                        <img class="img-responsive lazy loading" data-src="{$category->cBildURLFull}"
+                                                    && $category->getImageURL() !== 'gfx/keinBild.gif'}
+                                                    <a href="{$category->getURL()}">
+                                                        <img class="img-responsive lazy loading"
+                                                             data-src="{$category->getImageURL()}"
                                                              src="{$imageBaseURL}gfx/trans.png"
-                                                             alt="{$category->cKurzbezeichnung|escape:'html'}">
+                                                             alt="{$category->getShortName()|escape:'html'}">
                                                     </a>
                                                     <div class="clearall top15"></div>
                                                 {/if}
-                                                <div class="description text-muted small">{$category->cBeschreibung}</div>
+                                                <div class="description text-muted small">{$category->getDescription()}</div>
                                             </div>
                                         </div>
                                     {/if}
                                     <div class="col-xs-12{if $hasInfoColumn} col-lg-9{/if} mega-categories{if $hasInfoColumn} hasInfoColumn{/if}">
                                         <div class="row">
-                                            {if $category->bUnterKategorien}
-                                                {if !empty($category->Unterkategorien)}
-                                                    {assign var=sub_categories value=$category->Unterkategorien}
+                                            {if $category->hasChildren()}
+                                                {if !empty($category->getChildren())}
+                                                    {assign var=sub_categories value=$category->getChildren()}
                                                 {else}
-                                                    {get_category_array categoryId=$category->kKategorie assign='sub_categories'}
+                                                    {get_category_array categoryId=$category->getID() assign='sub_categories'}
                                                 {/if}
                                                 {foreach $sub_categories as $sub}
                                                     <div class="col-xs-12 col-md-6 col-lg-3">
-                                                        <div class="dropdown-item category-wrapper top15{if $sub->kKategorie == $activeId || (isset($activeParents[1]) && $activeParents[1]->kKategorie == $sub->kKategorie)} active{/if}">
+                                                        <div class="dropdown-item category-wrapper top15{if $sub->getID() == $activeId || (isset($activeParents[1]) && $activeParents[1]->kKategorie == $sub->getID())} active{/if}">
                                                             {if $Einstellungen.template.megamenu.show_category_images !== 'N'}
                                                                 <div class="img text-center hidden-xs hidden-sm">
-                                                                    <a href="{$sub->cURLFull}">
-                                                                        <img class="image lazy loading" data-src="{$sub->cBildURLFull}"
+                                                                    <a href="{$sub->getURL()}">
+                                                                        <img class="image lazy loading" data-src="{$sub->getImageURL()}"
                                                                              src="{$imageBaseURL}gfx/trans.png"
-                                                                             alt="{$category->cKurzbezeichnung|escape:'html'}">
+                                                                             alt="{$category->getShortName()|escape:'html'}">
                                                                     </a>
                                                                 </div>
                                                             {/if}
                                                             <div class="caption{if $Einstellungen.template.megamenu.show_category_images !== 'N'} text-center{/if}">
                                                                 <div class="title h5">
-                                                                    <a href="{$sub->cURLFull}">
+                                                                    <a href="{$sub->getURL()}">
                                                                         <span>
-                                                                            {$sub->cKurzbezeichnung}
+                                                                            {$sub->getShortName()}
                                                                         </span>
                                                                     </a>
                                                                 </div>
                                                             </div>
-                                                            {if $show_subcategories && $sub->bUnterKategorien}
-                                                                {if !empty($sub->Unterkategorien)}
-                                                                    {assign var=subsub_categories value=$sub->Unterkategorien}
+                                                            {if $show_subcategories && $sub->hasChildren()}
+                                                                {if !empty($sub->getChildren())}
+                                                                    {assign var=subsub_categories value=$sub->getChildren()}
                                                                 {else}
-                                                                    {get_category_array categoryId=$sub->kKategorie assign='subsub_categories'}
+                                                                    {get_category_array categoryId=$sub->getID() assign='subsub_categories'}
                                                                 {/if}
                                                                 <hr class="hr-sm hidden-xs hidden-sm">
                                                                 <ul class="list-unstyled small subsub">
                                                                     {foreach $subsub_categories as $subsub}
                                                                         {if $subsub@iteration <= $max_subsub_items}
-                                                                            <li{if $subsub->kKategorie == $activeId || (isset($activeParents[2]) && $activeParents[2]->kKategorie == $subsub->kKategorie)} class="active"{/if}>
-                                                                                <a href="{$subsub->cURLFull}">
-                                                                                    {$subsub->cKurzbezeichnung}
+                                                                            <li{if $subsub->getID() == $activeId || (isset($activeParents[2]) && $activeParents[2]->kKategorie == $subsub->getID())} class="active"{/if}>
+                                                                                <a href="{$subsub->getURL()}">
+                                                                                    {$subsub->getShortName()}
                                                                                 </a>
                                                                             </li>
                                                                         {else}
-                                                                            <li class="more"><a href="{$sub->cURLFull}"><i class="fa fa-chevron-circle-right"></i> {lang key='more' section='global'} <span class="remaining">({math equation='total - max' total=$subsub_categories|count max=$max_subsub_items})</span></a></li>
+                                                                            <li class="more"><a href="{$sub->getURL()}"><i class="fa fa-chevron-circle-right"></i> {lang key='more' section='global'} <span class="remaining">({math equation='total - max' total=$subsub_categories|count max=$max_subsub_items})</span></a></li>
                                                                             {break}
                                                                         {/if}
                                                                     {/foreach}
@@ -158,8 +160,8 @@
     {get_manufacturers assign='manufacturers'}
     {if !empty($manufacturers)}
         <li class="dropdown megamenu-fw{if $NaviFilter->hasManufacturer() || $nSeitenTyp == PAGE_HERSTELLER} active{/if}">
-            {assign var='linkKeyHersteller' value=Shop::Container()->getLinkService()->getSpecialPageID(LINKTYP_HERSTELLER)|default:0}
-            {assign var='linkSEOHersteller' value=Shop::Container()->getLinkService()->getLinkByID($linkKeyHersteller)|default:null}
+            {assign var='linkKeyHersteller' value=\JTL\Shop::Container()->getLinkService()->getSpecialPageID(LINKTYP_HERSTELLER)|default:0}
+            {assign var='linkSEOHersteller' value=\JTL\Shop::Container()->getLinkService()->getLinkByID($linkKeyHersteller)|default:null}
             {if $linkSEOHersteller !== null && !empty($linkSEOHersteller->getName())}
                 <a href="{$linkSEOHersteller->getURL()}" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="300" data-hover-delay="100" data-close-others="true">
                     {$linkSEOHersteller->getName()}

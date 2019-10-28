@@ -1,0 +1,92 @@
+
+// floating labels
+.float-label { position: absolute; cursor: text; top: 0; font-size: $input-font-size * .86; margin: 0; padding: 0 rem(5px); transform: translateY(-50%); transition: $transition-base; left: $input-padding-x; z-index: 1; line-height: 1.3; pointer-events: none; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; max-width: calc(100% - (2 * #{$input-padding-x}));
+	&:after { content: " "; display: block; position: absolute; background: $white; height: rem(2px); top: 45%; left: -3em; right: -3em; z-index: -1; }
+}
+
+.form-float-label { position: relative;
+	.form-control {
+		&::placeholder { transition: $transition-base; }
+
+		&:placeholder-shown {
+			&:not(:focus) {
+				&::placeholder { opacity: 0; }
+				& ~ .float-label { top: calc((#{$input-line-height * 1em} + #{$input-btn-padding-y * 2} + #{$input-height-border}) / 2); font-size: $input-font-size; color: $input-placeholder-color;
+					&:after { display: none; }
+				}
+				&.form-control-sm ~ .float-label { top: calc((#{$input-line-height-sm * 1em} + #{$input-btn-padding-y-sm * 2} + #{$input-height-border}) / 2); font-size: $input-font-size-sm; }
+				&.form-control-lg ~ .float-label { top: calc((#{$input-line-height-lg * 1em} + #{$input-btn-padding-y-lg * 2} + #{$input-height-border}) / 2); font-size: $input-font-size-lg; }
+			}
+		}
+	}
+}
+
+@each $state, $data in $form-validation-states {
+	.form-float-label {
+		~ .#{$state}-feedback,
+		~ .#{$state}-tooltip {
+			display: block;
+		}
+	}
+}
+
+.form-control-sm ~ .float-label { font-size: $input-font-size-sm * .8; left: $input-padding-x-sm; max-width: calc(100% - (2 * #{$input-padding-x-sm})); }
+.form-control-lg ~ .float-label { font-size: $input-font-size-lg * .8; left: $input-padding-x-lg; max-width: calc(100% - (2 * #{$input-padding-x-lg})); }
+
+// form counter
+.form-counter { border: $input-border-width solid $input-border-color; border-radius: $input-border-radius;
+	.form-control { border: 0; text-align: center; font-family: $font-accent; font-weight: $font-weight-semibold;
+		&::-webkit-inner-spin-button,
+		&::-webkit-outer-spin-button { appearance: none; margin: 0; }
+	}
+	.input-group-text { border: 0; background: none; font-family: $font-accent; font-weight: $font-weight-semibold; }
+
+	.btn:hover { background-color: $gray-light; }
+}
+
+// labels with images
+.custom-control-label-image { display: flex; align-items: center;
+	&::before, &::after { top: auto; }
+}
+
+// font weight bold for checked inputs
+input[type='radio'], input[type='checkbox'] {
+	&:checked + label { font-weight: $font-weight-bold; }
+}
+
+// toggle password visibility
+[data-toggle-password] { position: absolute; right: rem(15px); top: 50%; transform: translateY(-50%); cursor: pointer; }
+
+// form visibility triggered by icon
+.form-icon-trigger { display: flex; align-items: center; justify-content: flex-end;
+	.form-control { padding-right: ($spacer + 2 * $input-padding-x); transition: $transition-base; width: auto;
+		&:not(:focus) { width: 0; padding: 0; border: 0; opacity: 0;
+			+ .form-icon-trigger-label { margin-left: 0; }
+		}
+	}
+}
+
+.form-icon-trigger-label { margin: 0; padding: $input-padding-y $input-padding-x; width: ($spacer + 2 * $input-padding-x); text-align: center; z-index: 1; cursor: pointer; transition: color $transition-base-duration $transition-base-timing;
+	@include hover { color: $link-hover-color; }
+}
+
+.custom-select {
+	-webkit-appearance: none;
+}
+
+legend {
+	font-size: 1rem;
+	font-weight: bolder;
+	padding-bottom: 5px;
+	margin: 10px 0 20px 0;
+	border-bottom: solid 1px $sand;
+}
+
+label[for="city"],
+label[for="register-shipping_address-city"] {
+	padding: 0;
+}
+
+label {
+	display: block;
+}

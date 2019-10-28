@@ -1,12 +1,12 @@
 {includeMailTemplate template=header type=plain}
 
-Sie haben Ihre Zugangsdaten zu unserem Shop vergessen oder verlegt?
-Kein Problem! Klicken Sie bitte den folgenden Link, um Ihr Passwort
-zurückzusetzen.
+Wir haben eine Anfrage erhalten, Ihr Passwort zu unserem Shop zurückzusetzen.
+Klicken Sie bitte auf den folgenden Link, um Ihr Passwort zurückzusetzen.
 
 {$passwordResetLink}
 
 Wir empfehlen Ihnen, Ihr Passwort in regelmäßigen Abständen zu ändern,
-um möglichem Mißbrauch vorzubeugen
+um einem möglichen Missbrauch vorzubeugen. Sollten Sie das Zurücksetzen Ihres
+Passwortes nicht angefordert haben, können Sie diese E-Mail ignorieren.
 
 {includeMailTemplate template=footer type=plain}

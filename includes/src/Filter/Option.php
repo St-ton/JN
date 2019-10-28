@@ -4,16 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter;
+namespace JTL\Filter;
+
+use JTL\Media\MultiSizeImage;
 
 /**
  * Class Option
  *
- * @package Filter
+ * @package JTL\Filter
  *
  * @property $kHersteller
  * @property $nAnzahlTagging
- * @property $kTag
  * @property $kKategorie
  * @property $nVon
  * @property $cVonLocalized
@@ -27,6 +28,8 @@ namespace Filter;
  */
 class Option extends AbstractFilter
 {
+    use MultiSizeImage;
+
     /**
      * @var string
      */
@@ -92,7 +95,7 @@ class Option extends AbstractFilter
      * @param string $value
      * @return string|null
      */
-    private static function getMapping($value)
+    private static function getMapping($value): ?string
     {
         return self::$mapping[$value] ?? null;
     }
@@ -148,9 +151,9 @@ class Option extends AbstractFilter
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getURL()
+    public function getURL(): ?string
     {
         return $this->url;
     }

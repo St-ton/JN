@@ -1,106 +1,207 @@
-<div id="deaktiviert" class="tab-pane fade {if isset($cTab) && $cTab === 'deaktiviert'} active in{/if}">
-    {if $PluginInstalliertByStatus_arr.status_1|@count > 0}
-        <form name="pluginverwaltung" method="post" action="pluginverwaltung.php">
+<div id="deaktiviert" class="tab-pane fade {if isset($cTab) && $cTab === 'deaktiviert'} active show{/if}">
+    {if $pluginsDisabled->count() > 0}
+        <form name="pluginverwaltung" method="post" action="pluginverwaltung.php" id="disbled-plugins">
             {$jtl_token}
             <input type="hidden" name="pluginverwaltung_uebersicht" value="1" />
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{#pluginListNotActivated#}</h3>
-                </div>
+            <div>
+                <div class="subheading1">{__('pluginListNotActivated')}</div>
+                <hr class="mb-3">
                 <div class="table-responsive">
-                    <table class="list table">
+                    <table class="table table-striped table-align-top">
                         <thead>
                         <tr>
                             <th></th>
-                            <th class="tleft">{#pluginName#}</th>
-                            <th>{#status#}</th>
-                            <th>{#pluginVersion#}</th>
-                            <th>{#pluginInstalled#}</th>
-                            <th>{#pluginFolder#}</th>
-                            <th>{#pluginEditLocales#}</th>
-                            <th>{#pluginEditLinkgrps#}</th>
-                            <th>{#pluginBtnLicence#}</th>
-                            <th>&nbsp;</th>
+                            <th class="text-left">{__('pluginName')}</th>
+                            <th class="text-center">{__('status')}</th>
+                            <th class="text-center">{__('pluginVersion')}</th>
+                            <th class="text-center">{__('pluginInstalled')}</th>
+                            <th>{__('pluginFolder')}</th>
+                            <th class="text-center">{__('pluginEditLocales')}</th>
+                            <th class="text-center">{__('pluginEditLinkgrps')}</th>
+                            <th class="text-center">{__('pluginBtnLicence')}</th>
+                            <th class="text-center">&nbsp;</th>
                         </tr>
                         </thead>
                         <tbody>
-                        {foreach from=$PluginInstalliertByStatus_arr.status_1 item=PluginInstalliert}
-                            <tr {if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|strlen > 0 && $PluginInstalliert->cUpdateFehler == 1}class="highlight"{/if}>
+                        {foreach $pluginsDisabled as $plugin}
+                            <tr {if $plugin->isUpdateAvailable()}class="highlight"{/if}>
                                 <td class="check">
-                                    <input type="checkbox" name="kPlugin[]" id="plugin-check-{$PluginInstalliert->kPlugin}" value="{$PluginInstalliert->kPlugin}" />
+                                    <div class="custom-control custom-checkbox">
+                                        <input class="custom-control-input" type="checkbox" name="kPlugin[]" id="plugin-check-{$plugin->getID()}" value="{$plugin->getID()}" />
+                                        <label class="custom-control-label" for="plugin-check-{$plugin->getID()}"></label>
+                                    </div>
                                 </td>
                                 <td>
-                                    <label for="plugin-check-{$PluginInstalliert->kPlugin}">{$PluginInstalliert->cName}</label
-                                    {if (isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|strlen > 0) || (isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|strlen > 0)}
-                                        <p>
-                                            {if $PluginInstalliert->cUpdateFehler == 1}
-                                                {if isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|strlen > 0}{$PluginInstalliert->cInfo}<br />{/if}{#pluginUpdateExists#}
-                                            {else}
-                                                {if isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|strlen > 0}{$PluginInstalliert->cInfo}<br />{/if}{#pluginUpdateExists#}. <br />{#pluginUpdateExistsError#}: <br />{$PluginInstalliert->cUpdateFehler}
-                                            {/if}
-                                        </p>
+                                    <label for="plugin-check-{$plugin->getID()}">{$plugin->getName()}</label>
+                                    {if $plugin->isUpdateAvailable()}
+                                        <p>{__('pluginUpdateExists')}</p>
                                     {/if}
                                 </td>
-                                <td class="tcenter plugin-status">
-                                    <h4 class="label-wrap text-nowrap">
-                                        <span class="label {if $PluginInstalliert->nStatus === Plugin::PLUGIN_ACTIVATED}success label-success{elseif $PluginInstalliert->nStatus == 1}success label-info{elseif $PluginInstalliert->nStatus == 3}success label-default{elseif $PluginInstalliert->nStatus == 4 || $PluginInstalliert->nStatus == 5}info label-info{elseif $PluginInstalliert->nStatus == 6}danger label-danger{/if}">
-                                            {$PluginInstalliert->cStatus}
+                                <td class="text-center plugin-status">
+                                    <span class="text-nowrap">
+                                        <span class="label {if $plugin->getState() === \JTL\Plugin\State::ACTIVATED} text-success
+                                                {elseif $plugin->getState() === \JTL\Plugin\State::DISABLED} text-warning
+                                                {elseif $plugin->getState() === \JTL\Plugin\State::ERRONEOUS || $plugin->getState() === \JTL\Plugin\State::LICENSE_KEY_INVALID}} text-danger
+                                                {elseif $plugin->getState() === \JTL\Plugin\State::UPDATE_FAILED || $plugin->getState() === \JTL\Plugin\State::LICENSE_KEY_MISSING} text-warning{/if}">
+                                            {$mapper->map($plugin->getState())}
                                         </span>
-                                        {if isset($PluginIndex_arr[$PluginInstalliert->cVerzeichnis]->shop4compatible) && $PluginIndex_arr[$PluginInstalliert->cVerzeichnis]->shop4compatible === false}
-                                            <span title="Achtung: Plugin ist nicht vollst&auml;ndig Shop4-kompatibel! Es k&ouml;nnen daher Probleme beim Betrieb entstehen." class="label warning label-warning"><i class="fa fa-warning"></i></span>
-                                        {/if}
-                                    </h4>
+                                        {foreach $allPluginItems as $p}
+                                            {if $p->getID() === $plugin->getPluginID()}
+                                                {if $p->isShop5Compatible() === false}
+                                                    <span title="{__('dangerPluginNotCompatibleShop5')}" class="label text-warning"><i class="fal fa-exclamation-triangle"></i></span>
+                                                {elseif $p->isShop5Compatible() === false && $p->isShop4Compatible() === false}
+                                                    <span title="{__('dangerPluginNotCompatibleShop4')}" class="label text-warning"><i class="fal fa-exclamation-triangle"></i></span>
+                                                {/if}
+                                                {break}
+                                            {/if}
+                                        {/foreach}
+                                    </span>
                                 </td>
-                                <td class="tcenter plugin-version">{$PluginInstalliert->dVersion}{if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|strlen > 0} <span class="label label-success update-info">{$PluginInstalliert->dUpdate}</span>{/if}</td>
-                                <td class="tcenter plugin-install-date">{$PluginInstalliert->dInstalliert_DE}</td>
-                                <td class="tcenter plugin-folder">{$PluginInstalliert->cVerzeichnis}</td>
-                                <td class="tcenter plugin-lang-vars">
-                                    {if isset($PluginInstalliert->oPluginSprachvariableAssoc_arr) && $PluginInstalliert->oPluginSprachvariableAssoc_arr|@count > 0}
-                                        <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$PluginInstalliert->kPlugin}"
-                                           class="btn btn-default btn-sm" title="{#modify#}"><i class="fa fa-edit"></i></a>
+                                <td class="text-center plugin-version">{(string)$plugin->getVersion()}{if $plugin->isUpdateAvailable()} <span class="label text-success update-info">{(string)$plugin->getCurrentVersion()}</span>{/if}</td>
+                                <td class="text-center plugin-install-date">{$plugin->getDateInstalled()->format('d.m.Y H:i')}</td>
+                                <td class="plugin-folder">{$plugin->getPath()}</td>
+                                <td class="text-center plugin-lang-vars">
+                                    {if $plugin->getLangVarCount() > 0}
+                                        <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}"
+                                           class="btn btn-link"
+                                           title="{__('modify')}"
+                                           data-toggle="tooltip">
+                                            <span class="icon-hover">
+                                                <span class="fal fa-edit"></span>
+                                                <span class="fas fa-edit"></span>
+                                            </span>
+                                        </a>
                                     {/if}
                                 </td>
-                                <td class="tcenter plugin-frontend-links">
-                                    {if isset($PluginInstalliert->oPluginFrontendLink_arr) && $PluginInstalliert->oPluginFrontendLink_arr|@count > 0}
-                                        <a href="links.php?kPlugin={$PluginInstalliert->kPlugin}" class="btn btn-default btn-sm" title="{#modify#}"><i class="fa fa-edit"></i></a>
+                                <td class="text-center plugin-frontend-links">
+                                    {if $plugin->getLinkCount() > 0}
+                                        <a href="links.php?kPlugin={$plugin->getID()}"
+                                           class="btn btn-link"
+                                           title="{__('modify')}"
+                                           data-toggle="tooltip">
+                                            <span class="icon-hover">
+                                                <span class="fal fa-edit"></span>
+                                                <span class="fas fa-edit"></span>
+                                            </span>
+                                        </a>
                                     {/if}
                                 </td>
-                                <td class="tcenter plugin-license">
-                                    {if isset($PluginInstalliert->cLizenzKlasse) && $PluginInstalliert->cLizenzKlasse|strlen > 0}
-                                        {if isset($PluginInstalliert->cLizenzKlasse) && $PluginInstalliert->cLizenzKlasse|strlen > 0}
-                                            <button name="lizenzkey" type="submit" title="{#modify#}"
-                                                    class="btn {if $PluginInstalliert->cLizenz && $PluginInstalliert->cLizenz|strlen > 0}btn-default{else}btn-primary{/if} btn-sm" value="{$PluginInstalliert->kPlugin}">
-                                                <i class="fa fa-edit"></i>
-                                            </button>
-                                        {/if}
+                                <td class="text-center plugin-license">
+                                    {if $plugin->hasLicenseCheck()}
+                                        <button name="lizenzkey" type="submit" title="{__('modify')}"
+                                                class="btn btn-link" value="{$plugin->getID()}" data-toggle="tooltip">
+                                            <span class="icon-hover">
+                                                <span class="fal fa-edit"></span>
+                                                <span class="fas fa-edit"></span>
+                                            </span>
+                                        </button>
                                     {/if}
                                 </td>
-                                <td class="tcenter">
-                                    {if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|strlen > 0 && $PluginInstalliert->cUpdateFehler == 1}
-                                        <a onclick="ackCheck({$PluginInstalliert->kPlugin}, 'deaktiviert'); return false;" class="btn btn-primary btn-sm" title="{#pluginBtnUpdate#}"><i class="fa fa-refresh"></i></a>
+                                <td class="text-center">
+                                    {if $plugin->isUpdateAvailable()}
+                                        <a onclick="ackCheck({$plugin->getID()}, 'deaktiviert'); return false;"
+                                           class="btn btn-link"
+                                           title="{__('pluginBtnUpdate')}"
+                                           data-toggle="tooltip">
+                                            <span class="icon-hover">
+                                                <span class="fal fa-refresh"></span>
+                                                <span class="fas fa-refresh"></span>
+                                            </span>
+                                        </a>
                                     {/if}
                                 </td>
                             </tr>
                         {/foreach}
                         </tbody>
-                        <tfoot>
-                        <tr>
-                            <td class="check"><input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);" /></td>
-                            <td colspan="10"><label for="ALLMSGS2">{#pluginSelectAll#}</label></td>
-                        </tr>
-                        </tfoot>
                     </table>
                 </div>
-                <div class="panel-footer">
-                    <div class="save btn-group">
-                        <button name="aktivieren" type="submit" class="btn btn-primary"><i class="fa fa-share"></i> {#pluginBtnActivate#}</button>
-                        {*<button name="deaktivieren" type="submit" class="btn btn-warning">{#pluginBtnDeActivate#}</button>*}
-                        <button name="deinstallieren" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {#pluginBtnDeInstall#}</button>
+                <div class="card-footer save-wrapper save">
+                    <div class="row">
+                        <div class="col-sm-6 col-xl-auto text-left">
+                            <div class="custom-control custom-checkbox">
+                                <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);" />
+                                <label class="custom-control-label" for="ALLMSGS2">{__('selectAll')}</label>
+                            </div>
+                        </div>
+                        <div class="ml-auto col-sm-6 col-xl-auto">
+                            <button name="deinstallieren" id="uninstall-disabled-plugin" type="submit" class="btn btn-danger btn-block">
+                                <i class="fas fa-trash-alt"></i> {__('pluginBtnDeInstall')}
+                            </button>
+                        </div>
+                        <div class="col-sm-6 col-xl-auto">
+                            <button name="aktivieren" type="submit" class="btn btn-primary btn-block">
+                                <i class="fa fa-share"></i> {__('activate')}
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
         </form>
+
+        <div id="uninstall-disabled-modal" class="modal fade" role="dialog">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">
+                            <i class="fal fa-times"></i>
+                        </button>
+                        <h2 class="modal-title">{__('deletePluginData')}</h2>
+                    </div>
+                    <div class="modal-body">
+
+                    </div>
+                    <div class="modal-footer">
+                        <div class="row">
+                            <div class="ml-auto col-sm-6 col-xl-auto submit">
+                                <button type="button" class="btn btn-danger btn-bock" name="yes" data-dismiss="modal">
+                                    <i class="fa fa-close"></i>&nbsp;{__('deletePluginDataYes')}
+                                </button>
+                            </div> <div class="col-sm-6 col-xl-auto submit">
+                                <button type="button" class="btn btn-outline-primary" name="no" data-dismiss="modal">
+                                    <i class="fa fa-close"></i>&nbsp;{__('deletePluginDataNo')}
+                                </button>
+                            </div>
+                            <div class="col-sm-6 col-xl-auto submit">
+                                <button type="button" class="btn btn-primary" name="cancel" data-dismiss="modal">
+                                    <i class="fal fa-check text-success"></i>&nbsp;{__('cancel')}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            {literal}
+            $(document).ready(function() {
+                var disModal = $('#uninstall-disabled-modal');
+                $('#uninstall-disabled-plugin').on('click', function(event) {
+                    disModal.modal('show');
+                    return false;
+                });
+                disModal.on('hide.bs.modal', function(event) {
+                    if (document.activeElement.name === 'yes' || document.activeElement.name === 'no') {
+                        var data = $('#disbled-plugins').serialize();
+                        data += '&deinstallieren=1&delete-data=';
+                        if (document.activeElement.name === 'yes') {
+                            data += '1';
+                        } else {
+                            data += '0';
+                        }
+                        $.ajax({
+                            type:    'POST',
+                            url:     'pluginverwaltung.php',
+                            data:    data,
+                            success: function () {
+                                location.reload();
+                            }
+                        });
+                    }
+                });
+            });
+            {/literal}
+        </script>
     {else}
-        <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
+        <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
     {/if}
 </div>

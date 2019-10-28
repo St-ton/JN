@@ -23,9 +23,16 @@
                 <div class="row">
                     <div class="col-xs-12 col-md-6">
                         <div class="form-group float-label-control">
-                            <label for="salutation" class="control-label">{lang key='salutation' section='account data'}</label>
-                            <select name="anrede" id="salutation" class="form-control" autocomplete="honorific-prefix">
-                                <option value="" disabled selected>{lang key='salutation' section='account data'}</option>
+                            <label for="salutation" class="control-label">
+                                {lang key='salutation' section='account data'}
+                                {if $Einstellungen.artikeldetails.produktfrage_abfragen_anrede === 'O'}
+                                    <span class="optional"> - {lang key='optional'}</span>
+                                {/if}
+                            </label>
+                            <select name="anrede" id="salutation" class="form-control" autocomplete="honorific-prefix" {if $Einstellungen.artikeldetails.produktfrage_abfragen_anrede === 'Y'}required{/if}>
+                                <option value="" {if $Einstellungen.artikeldetails.produktfrage_abfragen_anrede === 'Y'}disabled{/if} selected>
+                                    {if $Einstellungen.artikeldetails.produktfrage_abfragen_anrede === 'Y'}{lang key='salutation' section='account data'}{else}{lang key='noSalutation'}{/if}
+                                </option>
                                 <option value="w" {if isset($Anfrage->cAnrede) && $Anfrage->cAnrede === 'w'}selected="selected"{/if}>{lang key='salutationW'}</option>
                                 <option value="m" {if isset($Anfrage->cAnrede) && $Anfrage->cAnrede === 'm'}selected="selected"{/if}>{lang key='salutationM'}</option>
                             </select>
@@ -81,7 +88,7 @@
                 <div class="col-xs-12 col-md-6">
                     {include file='snippets/form_group_simple.tpl'
                         options=[
-                            'email', 'email', 'question_email',
+                            'email', 'question_email', 'email',
                             {$Anfrage->cMail|default:null}, {lang key='email' section='account data'},
                             true, $fehlendeAngaben_fragezumprodukt.email|default:null, 'email'
                         ]

@@ -2,23 +2,15 @@
 /**
  * add_indices_at_cCode_from_tkupon
  *
- * @author Mirko Schmidt
+ * @author msc
  * @created Fri, 15 Jul 2016 11:32:29 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
- * Migration
- *
- * Available methods:
- * execute            - returns affected rows
- * fetchOne           - single fetched object
- * fetchAll           - array of fetched objects
- * fetchArray         - array of fetched assoc arrays
- * dropColumn         - drops a column if exists
- * addLocalization    - add localization
- * removeLocalization - remove localization
- * setConfig          - add / update config property
- * removeConfig       - remove config property
+ * Class Migration_20160715113229
  */
 class Migration_20160715113229 extends Migration implements IMigration
 {
@@ -26,11 +18,11 @@ class Migration_20160715113229 extends Migration implements IMigration
 
     public function up()
     {
-        $this->execute("ALTER TABLE `tkupon` ADD INDEX(`cCode`)");
+        $this->execute('ALTER TABLE `tkupon` ADD INDEX(`cCode`)');
     }
 
     public function down()
     {
-        $this->execute("ALTER TABLE tkupon DROP INDEX cCode");
+        $this->execute('ALTER TABLE tkupon DROP INDEX cCode');
     }
 }

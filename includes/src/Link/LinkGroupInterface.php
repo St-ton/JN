@@ -1,16 +1,16 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Link;
+namespace JTL\Link;
 
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 
 /**
- * Class LinkGroup
- * @package Link
+ * Interface LinkGroupInterface
+ * @package JTL\Link
  */
 interface LinkGroupInterface
 {
@@ -40,7 +40,7 @@ interface LinkGroupInterface
     /**
      * @param array $name
      */
-    public function setNames(array $name);
+    public function setNames(array $name): void;
 
     /**
      * @return int
@@ -50,7 +50,7 @@ interface LinkGroupInterface
     /**
      * @param int $id
      */
-    public function setID(int $id);
+    public function setID(int $id): void;
 
     /**
      * @return Collection
@@ -60,7 +60,7 @@ interface LinkGroupInterface
     /**
      * @param Collection $links
      */
-    public function setLinks(Collection $links);
+    public function setLinks(Collection $links): void;
 
     /**
      * @return string
@@ -70,7 +70,7 @@ interface LinkGroupInterface
     /**
      * @param string $template
      */
-    public function setTemplate(string $template);
+    public function setTemplate(string $template): void;
 
     /**
      * @return array
@@ -80,7 +80,7 @@ interface LinkGroupInterface
     /**
      * @param array $languageID
      */
-    public function setLanguageID(array $languageID);
+    public function setLanguageID(array $languageID): void;
 
     /**
      * @return array
@@ -90,7 +90,7 @@ interface LinkGroupInterface
     /**
      * @param array $languageCode
      */
-    public function setLanguageCode(array $languageCode);
+    public function setLanguageCode(array $languageCode): void;
 
     /**
      * @return bool
@@ -100,7 +100,7 @@ interface LinkGroupInterface
     /**
      * @param bool $isSpecial
      */
-    public function setIsSpecial(bool $isSpecial);
+    public function setIsSpecial(bool $isSpecial): void;
 
     /**
      * @param callable $func

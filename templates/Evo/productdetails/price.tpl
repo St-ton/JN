@@ -75,15 +75,6 @@
                     </p>
                 {/block}
 
-                {if $Artikel->oPreisradar}
-                    <div class="priceradar">
-                        {lang key='youSave' section='productDetails'}
-                        <span class="value">{$Artikel->oPreisradar->fDiffLocalized[$NettoPreise]}
-                            ({$Artikel->oPreisradar->fProzentDiff} %)
-                        </span>
-                    </div>
-                {/if}
-                
                 {if $Artikel->Preise->Sonderpreis_aktiv && $Einstellungen.artikeldetails.artikeldetails_sonderpreisanzeige == 2}
                     <div class="instead_of old_price">{lang key='oldPrice'}:
                         <del class="value">{$Artikel->Preise->alterVKLocalized[$NettoPreise]}</del>
@@ -132,7 +123,7 @@
                                     {if $bulkPrice.nAnzahl > 0}
                                         <tr class="bulk-price-{$bulkPrice.nAnzahl}">
                                             <td class="text-right">{$bulkPrice.nAnzahl}</td>
-                                            <td class="text-right bulk-price">{$bulkPrice.cPreisLocalized[$NettoPreise]}</td>
+                                            <td class="text-right bulk-price">{$bulkPrice.cPreisLocalized[$NettoPreise]} <span class="footnote-reference">*</span></td>
                                             {if !empty($bulkPrice.cBasePriceLocalized)}<td class="text-muted bulk-base-price">{$bulkPrice.cBasePriceLocalized[$NettoPreise]}</td>{/if}
                                         </tr>
                                     {/if}

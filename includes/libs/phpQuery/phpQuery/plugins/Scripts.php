@@ -65,8 +65,8 @@ abstract class phpQueryPlugin_Scripts
      */
     public static function __initialize()
     {
-        if (file_exists(dirname(__FILE__)."/Scripts/__config.php")) {
-            include dirname(__FILE__)."/Scripts/__config.php";
+        if (file_exists(dirname(__FILE__).'/Scripts/__config.php')) {
+            include dirname(__FILE__).'/Scripts/__config.php';
             phpQueryObjectPlugin_Scripts::$config = $config;
         }
     }

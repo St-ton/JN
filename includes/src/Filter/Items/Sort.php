@@ -4,21 +4,22 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\Items;
+namespace JTL\Filter\Items;
 
-use Filter\AbstractFilter;
-use Filter\Option;
-use Filter\FilterInterface;
-use Filter\ProductFilter;
-use Filter\SortingOptions\Factory;
-use Filter\SortingOptions\SortDefault;
-use Filter\SortingOptions\SortingOptionInterface;
-use Mapper\SortingType;
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
+use JTL\Filter\AbstractFilter;
+use JTL\Filter\FilterInterface;
+use JTL\Filter\Option;
+use JTL\Filter\ProductFilter;
+use JTL\Filter\SortingOptions\Factory;
+use JTL\Filter\SortingOptions\SortDefault;
+use JTL\Filter\SortingOptions\SortingOptionInterface;
+use JTL\Mapper\SortingType;
+use JTL\Shop;
 
 /**
  * Class Sort
- * @package Filter\Items
+ * @package JTL\Filter\Items
  */
 class Sort extends AbstractFilter
 {
@@ -52,7 +53,7 @@ class Sort extends AbstractFilter
         parent::__construct($productFilter);
         $this->setIsCustom(false)
              ->setUrlParam('Sortierung')
-             ->setFrontendName(\Shop::Lang()->get('sorting', 'productOverview'));
+             ->setFrontendName(Shop::Lang()->get('sorting', 'productOverview'));
         $this->activeSortingType = (int)$this->getConfig('artikeluebersicht')['artikeluebersicht_artikelsortierung'];
         if (isset($_SESSION['Usersortierung'])) {
             $mapper                  = new SortingType();
@@ -83,7 +84,7 @@ class Sort extends AbstractFilter
     /**
      * @param Factory $factory
      */
-    public function setFactory(Factory $factory)
+    public function setFactory(Factory $factory): void
     {
         $this->factory = $factory;
     }
@@ -99,7 +100,7 @@ class Sort extends AbstractFilter
     /**
      * @param Collection $sortingOptions
      */
-    public function setSortingOptions(Collection $sortingOptions)
+    public function setSortingOptions(Collection $sortingOptions): void
     {
         $this->sortingOptions = $sortingOptions;
     }
@@ -115,7 +116,7 @@ class Sort extends AbstractFilter
     /**
      * @param int $activeSortingType
      */
-    public function setActiveSortingType(int $activeSortingType)
+    public function setActiveSortingType(int $activeSortingType): void
     {
         $this->activeSortingType = $activeSortingType;
     }
@@ -123,13 +124,12 @@ class Sort extends AbstractFilter
     /**
      * @throws \LogicException
      */
-    public function registerSortingOptions()
+    public function registerSortingOptions(): void
     {
         if ($this->factory === null) {
             throw new \LogicException('Factory has to be set first.');
         }
-        $sortingOptions = $this->factory->getAll();
-        $this->sortingOptions = $sortingOptions->sortByDesc(function (SortingOptionInterface $i) {
+        $this->sortingOptions = $this->factory->getAll()->sortByDesc(function (SortingOptionInterface $i) {
             return $i->getPriority();
         });
     }

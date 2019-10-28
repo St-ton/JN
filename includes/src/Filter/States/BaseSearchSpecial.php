@@ -4,20 +4,23 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\States;
+namespace JTL\Filter\States;
 
-use Filter\AbstractFilter;
-use Filter\Join;
-use Filter\FilterInterface;
-use Filter\ProductFilter;
+use JTL\Filter\AbstractFilter;
+use JTL\Filter\FilterInterface;
+use JTL\Filter\Join;
+use JTL\Filter\ProductFilter;
+use JTL\MagicCompatibilityTrait;
+use JTL\Session\Frontend;
+use JTL\Shop;
 
 /**
  * Class BaseSearchSpecial
- * @package Filter\States
+ * @package JTL\Filter\States
  */
 class BaseSearchSpecial extends AbstractFilter
 {
-    use \MagicCompatibilityTrait;
+    use MagicCompatibilityTrait;
 
     /**
      * @var array
@@ -55,7 +58,7 @@ class BaseSearchSpecial extends AbstractFilter
      */
     public function setSeo(array $languages): FilterInterface
     {
-        $oSeo_arr = $this->productFilter->getDB()->selectAll(
+        $seoData = $this->productFilter->getDB()->selectAll(
             'tseo',
             ['cKey', 'kKey'],
             ['suchspecial', $this->getValue()],
@@ -64,36 +67,36 @@ class BaseSearchSpecial extends AbstractFilter
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
-            foreach ($oSeo_arr as $oSeo) {
-                $oSeo->kSprache = (int)$oSeo->kSprache;
-                if ($language->kSprache === $oSeo->kSprache) {
-                    $this->cSeo[$language->kSprache] = $oSeo->cSeo;
+            foreach ($seoData as $seo) {
+                $seo->kSprache = (int)$seo->kSprache;
+                if ($language->kSprache === $seo->kSprache) {
+                    $this->cSeo[$language->kSprache] = $seo->cSeo;
                 }
             }
         }
         switch ($this->getValue()) {
             case \SEARCHSPECIALS_BESTSELLER:
-                $this->setName(\Shop::Lang()->get('bestsellers'));
+                $this->setName(Shop::Lang()->get('bestsellers'));
                 break;
             case \SEARCHSPECIALS_SPECIALOFFERS:
-                $this->setName(\Shop::Lang()->get('specialOffers'));
+                $this->setName(Shop::Lang()->get('specialOffers'));
                 break;
             case \SEARCHSPECIALS_NEWPRODUCTS:
-                $this->setName(\Shop::Lang()->get('newProducts'));
+                $this->setName(Shop::Lang()->get('newProducts'));
                 break;
             case \SEARCHSPECIALS_TOPOFFERS:
-                $this->setName(\Shop::Lang()->get('topOffers'));
+                $this->setName(Shop::Lang()->get('topOffers'));
                 break;
             case \SEARCHSPECIALS_UPCOMINGPRODUCTS:
-                $this->setName(\Shop::Lang()->get('upcomingProducts'));
+                $this->setName(Shop::Lang()->get('upcomingProducts'));
                 break;
             case \SEARCHSPECIALS_TOPREVIEWS:
-                $this->setName(\Shop::Lang()->get('topReviews'));
+                $this->setName(Shop::Lang()->get('topReviews'));
                 break;
             default:
                 // invalid search special ID
-                \Shop::$is404        = true;
-                \Shop::$kSuchspecial = 0;
+                Shop::$is404        = true;
+                Shop::$kSuchspecial = 0;
                 break;
         }
 
@@ -115,11 +118,11 @@ class BaseSearchSpecial extends AbstractFilter
     {
         switch ($this->value) {
             case \SEARCHSPECIALS_BESTSELLER:
-                $nAnzahl = (($min = $this->getConfig('global')['global_bestseller_minanzahl']) > 0)
+                $count = (($min = $this->getConfig('global')['global_bestseller_minanzahl']) > 0)
                     ? (int)$min
                     : 100;
 
-                return "ROUND(tbestseller.fAnzahl) >= " . $nAnzahl;
+                return 'ROUND(tbestseller.fAnzahl) >= ' . $count;
 
             case \SEARCHSPECIALS_SPECIALOFFERS:
                 $tasp = 'tartikelsonderpreis';
@@ -129,18 +132,18 @@ class BaseSearchSpecial extends AbstractFilter
                     $tsp  = 'tsp';
                 }
 
-                return $tasp . " .kArtikel = tartikel.kArtikel
-                                    AND " . $tasp . ".cAktiv = 'Y' AND " . $tasp . ".dStart <= NOW()
-                                    AND (" . $tasp . ".dEnde >= CURDATE() OR " . $tasp . ".dEnde IS NULL)
-                                    AND " . $tsp . " .kKundengruppe = " . \Session::CustomerGroup()->getID();
+                return $tasp . ' .kArtikel = tartikel.kArtikel
+                                    AND ' . $tasp . ".cAktiv = 'Y' AND " . $tasp . '.dStart <= NOW()
+                                    AND (' . $tasp . '.dEnde >= CURDATE() OR ' . $tasp . '.dEnde IS NULL)
+                                    AND ' . $tsp . ' .kKundengruppe = ' . Frontend::getCustomerGroup()->getID();
 
             case \SEARCHSPECIALS_NEWPRODUCTS:
-                $alter_tage = (($age = $this->getConfig('boxen')['box_neuimsortiment_alter_tage']) > 0)
+                $days = (($age = $this->getConfig('boxen')['box_neuimsortiment_alter_tage']) > 0)
                     ? (int)$age
                     : 30;
 
                 return "tartikel.cNeu = 'Y' 
-                    AND DATE_SUB(NOW(), INTERVAL $alter_tage DAY) < tartikel.dErstellt 
+                    AND DATE_SUB(NOW(), INTERVAL " . $days . " DAY) < tartikel.dErstellt 
                     AND tartikel.cNeu = 'Y'";
 
             case \SEARCHSPECIALS_TOPOFFERS:
@@ -151,11 +154,11 @@ class BaseSearchSpecial extends AbstractFilter
 
             case \SEARCHSPECIALS_TOPREVIEWS:
                 if (!$this->productFilter->hasRatingFilter()) {
-                    $nMindestSterne = ($min = $this->getConfig('boxen')['boxen_topbewertet_minsterne']) > 0
+                    $minStars = ($min = $this->getConfig('boxen')['boxen_topbewertet_minsterne']) > 0
                         ? (int)$min
                         : 4;
 
-                    return ' ROUND(taex.fDurchschnittsBewertung) >= ' . $nMindestSterne;
+                    return ' ROUND(taex.fDurchschnittsBewertung) >= ' . $minStars;
                 }
                 break;
 

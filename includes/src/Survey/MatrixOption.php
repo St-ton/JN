@@ -4,15 +4,17 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Survey;
+namespace JTL\Survey;
+
+use JTL\MagicCompatibilityTrait;
 
 /**
  * Class MatrixOption
- * @package Survey
+ * @package JTL\Survey
  */
 class MatrixOption
 {
-    use \MagicCompatibilityTrait;
+    use MagicCompatibilityTrait;
 
     /**
      * @var int
@@ -37,7 +39,7 @@ class MatrixOption
     /**
      * @var array
      */
-    private static $mapping = [
+    protected static $mapping = [
         'kUmfrageMatrixOption' => 'ID',
         'kUmfrageFrage'        => 'QuestionID',
         'nSort'                => 'Sort',
@@ -55,7 +57,7 @@ class MatrixOption
     /**
      * @param int $id
      */
-    public function setID(int $id)
+    public function setID(int $id): void
     {
         $this->id = $id;
     }
@@ -71,7 +73,7 @@ class MatrixOption
     /**
      * @param int $questionID
      */
-    public function setQuestionID(int $questionID)
+    public function setQuestionID(int $questionID): void
     {
         $this->questionID = $questionID;
     }
@@ -87,7 +89,7 @@ class MatrixOption
     /**
      * @param int $sort
      */
-    public function setSort(int $sort)
+    public function setSort(int $sort): void
     {
         $this->sort = $sort;
     }
@@ -103,7 +105,7 @@ class MatrixOption
     /**
      * @param string $name
      */
-    public function setName(string $name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }

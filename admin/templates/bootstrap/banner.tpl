@@ -1,27 +1,9 @@
-{include file='tpl_inc/header.tpl' bForceFluid=($cAction === 'area')}
-{config_load file="$lang.conf" section="banner"}
-{include file='tpl_inc/seite_header.tpl' cTitel=#banner# cBeschreibung=#bannerDesc# cDokuURL=#bannerURL#}
+{include file='tpl_inc/header.tpl' bForceFluid=($action === 'area')}
+{config_load file="$lang.conf" section='banner'}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('banner') cBeschreibung=__('bannerDesc') cDokuURL=__('bannerURL')}
 
 <div id="content">
-    {if $cFehler}
-        {if isset($cPlausi_arr.vDatum)}
-            <div class="alert alert-danger">{if $cPlausi_arr.vDatum == 1}Konnte Ihre Eingabe f&uuml;r das 'Aktiv von Datum' nicht verarbeiten.{/if}</div>
-        {/if}
-        {if isset($cPlausi_arr.bDatum)}
-            <div class="alert alert-danger">
-                {if $cPlausi_arr.bDatum == 1}
-                    Konnte Ihre Eingabe f&uuml;r das 'Aktiv bis Datum' nicht verarbeiten.
-                {elseif $cPlausi_arr.bDatum == 2}
-                    Das Datum bis wann ein Banner aktiv ist muss gr&ouml;&szlig;er sein als das 'Aktiv von Datum'.
-                {/if}
-            </div>
-        {/if}
-        {if isset($cPlausi_arr.oFile)}
-            <div class="alert alert-danger"><i class="fa fa-warning"></i> Die Bilddatei ist zu gro&szlig;.</div>
-        {/if}
-    {/if}
-
-    {if $cAction === 'edit' || $cAction === 'new'}
+    {if $action === 'edit' || $action === 'new'}
     <script type="text/javascript">
         var file2large = false;
 
@@ -33,18 +15,19 @@
         }
 
         $(document).ready(function () {
-            $('#nSeitenTyp').change(filterConfigUpdate);
-            $('#cKey').change(filterConfigUpdate);
+            $('#nSeitenTyp').on('change', filterConfigUpdate);
+            $('#cKey').on('change', filterConfigUpdate);
 
             filterConfigUpdate();
 
-            $('form #oFile').change(function(e){
+            $('form #oFile').on('change', function(e){
                 $('form div.alert').slideUp();
-                var filesize= this.files[0].size;
-                var maxsize = {$nMaxFileSize};
+                var filesize     = this.files[0].size;
+                var maxsize      = {$nMaxFileSize};
+                var errorMaxSize = "{__('errorUploadSizeLimit')}";
                 if (filesize >= maxsize) {
                     $('.input-group.file-input')
-                        .after('<div class="alert alert-danger"><i class="fa fa-warning"></i> Die Datei ist gr&ouml;&szlig;er als das Uploadlimit des Servers.</div>')
+                        .after('<div class="alert alert-danger"><i class="fal fa-exclamation-triangle"></i> ' + errorMaxSize + '</div>')
                         .slideDown();
                     file2large = true;
                 } else {
@@ -93,134 +76,166 @@
     <div id="settings">
         <form name="banner" action="banner.php" method="post" enctype="multipart/form-data" onsubmit="checkfile(event);">
             {$jtl_token}
-            <input type="hidden" name="action" value="{$cAction}" />
-            {if $cAction === 'edit'}
-                <input type="hidden" name="kImageMap" value="{$oBanner->kImageMap}" />
+            <input type="hidden" name="action" value="{$action}" />
+            {if $action === 'edit'}
+                <input type="hidden" name="kImageMap" value="{$banner->kImageMap}" />
             {/if}
 
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Allgemein</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="subheading1">{__('general')}</div>
+                    <hr class="mb-n3">
                 </div>
-                <div class="panel-body">
-                    <div class="input-group">
-                        <span class="input-group-addon"><label for="cName">Interner Name *</label></span>
-                        <input class="form-control" type="text" name="cName" id="cName" value="{if isset($cName)}{$cName}{elseif isset($oBanner->cTitel)}{$oBanner->cTitel}{/if}" />
+                <div class="card-body">
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="cName">{__('internalName')} *:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <input class="form-control" type="text" name="cName" id="cName" value="{if isset($cName)}{$cName}{elseif isset($banner->cTitel)}{$banner->cTitel}{/if}" />
+                        </div>
                     </div>
-                    <div class="input-group file-input">
-                        <span class="input-group-addon"><label for="oFile">Banner *</label></span>
-                        <input class="form-control" id="oFile" type="file" name="oFile" />
+                    <div class="form-group form-row align-items-center file-input">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="oFile">{__('banner')} *:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <div class="custom-file">
+                                <input class="custom-file-input" id="oFile" type="file" name="oFile" />
+                                <label class="custom-file-label" for="oFile">
+                                    <span class="text-truncate">{__('fileSelect')}</span>
+                                </label>
+                            </div>
+                        </div>
                     </div>
-                    <div class="input-group">
-                        <span class="input-group-addon"><label for="cPath">&raquo; vorhandene Datei w&auml;hlen</label></span>
-                        <span class="input-group-wrap">
-                        {if $cBannerFile_arr|@count > 0}
-                            <select id="cPath" name="cPath" class="form-control">
-                                <option value="">Banner w&auml;hlen</option>
-                                {foreach $cBannerFile_arr as $cBannerFile}
-                                    <option value="{$cBannerFile}" {if (isset($oBanner->cBildPfad) && $cBannerFile == $oBanner->cBildPfad) || (isset($oBanner->cBild) && $cBannerFile == $oBanner->cBild)}selected="selected"{/if}>{$cBannerFile}</option>
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="cPath">&raquo; {__('chooseAvailableFile')}:</label>
+                        <span class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                        {if $bannerFiles|@count > 0}
+                            <select id="cPath" name="cPath" class="custom-select">
+                                <option value="">{__('chooseBanner')}</option>
+                                {foreach $bannerFiles as $file}
+                                    <option value="{$file}" {if (isset($banner->cBildPfad) && $file === $banner->cBildPfad) || (isset($banner->cBild) && $file === $banner->cBild)}selected="selected"{/if}>{$file}</option>
                                 {/foreach}
                             </select>
                         {else}
-                            Kein Banner im Ordner <strong>{$cBannerLocation}</strong> vorhanden
+                            {{__('warningNoBannerInDir')}|sprintf:{$smarty.const.PFAD_BILDER_BANNER}}
                         {/if}
                         </span>
                     </div>
-                    <div class="input-group">
-                        <span class="input-group-addon"><label for="vDatum">Aktiv von</label></span>
-                        <input class="form-control" type="text" name="vDatum" id="vDatum" value="{if isset($vDatum) && $vDatum > 0}{$vDatum|date_format:"%d.%m.%Y"}{elseif isset($oBanner->vDatum) && $oBanner->vDatum > 0}{$oBanner->vDatum|date_format:"%d.%m.%Y"}{/if}" />
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="vDatum">{__('activeFrom')}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <input class="form-control" type="text" name="vDatum" id="vDatum"/>
+                        </div>
+                        {include
+                            file="snippets/daterange_picker.tpl"
+                            datepickerID="#vDatum"
+                            currentDate="{if isset($vDatum) && $vDatum > 0}{$vDatum|date_format:'%d.%m.%Y'}{elseif isset($banner->vDatum) && $banner->vDatum > 0}{$banner->vDatum|date_format:'%d.%m.%Y'}{/if}"
+                            format="DD.MM.YYYY"
+                            separator="{__('datepickerSeparator')}"
+                            single=true
+                        }
                     </div>
-                    <div class="input-group">
-                        <span class="input-group-addon"><label for="bDatum">Aktiv bis</label></span>
-                        <input class="form-control" type="text" name="bDatum" id="bDatum" value="{if isset($bDatum) && $bDatum > 0}{$bDatum|date_format:"%d.%m.%Y"}{elseif isset($oBanner->bDatum) && $oBanner->bDatum > 0}{$oBanner->bDatum|date_format:"%d.%m.%Y"}{/if}" />
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="bDatum">{__('activeTo')}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <input class="form-control" type="text" name="bDatum" id="bDatum"  />
+                        </div>
+                        {include
+                            file="snippets/daterange_picker.tpl"
+                            datepickerID="#bDatum"
+                            currentDate="{if isset($bDatum) && $bDatum > 0}{$bDatum|date_format:'%d.%m.%Y'}{elseif isset($banner->bDatum) && $banner->bDatum > 0}{$banner->bDatum|date_format:'%d.%m.%Y'}{/if}"
+                            format="DD.MM.YYYY"
+                            separator="{__('datepickerSeparator')}"
+                            single=true
+                        }
                     </div>
                 </div><!-- /.panel-body -->
             </div><!-- /.panel -->
 
             {* extensionpoint begin *}
 
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Anzeigeoptionen</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="subheading1">{__('viewingOptions')}</div>
+                    <hr class="mb-n3">
                 </div>
-                <div class="panel-body">
-                    <div class="input-group">
-                        <span class="input-group-addon"><label for="kSprache">Sprache</label></span>
-                        <span class="input-group-wrap">
-                            <select class="form-control" id="kSprache" name="kSprache">
-                                <option value="0">Alle</option>
-                                {foreach $oSprachen_arr as $oSprache}
-                                    <option value="{$oSprache->kSprache}" {if isset($kSprache) && $kSprache == $oSprache->kSprache}selected="selected" {elseif isset($oExtension->kSprache) && $oExtension->kSprache == $oSprache->kSprache}selected="selected"{/if}>{$oSprache->cNameDeutsch}</option>
+                <div class="card-body">
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="kSprache">{__('changeLanguage')}:</label>
+                        <span class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <select class="custom-select" id="kSprache" name="kSprache">
+                                <option value="0">{__('all')}</option>
+                                {foreach $availableLanguages as $language}
+                                    <option value="{$language->getId()}" {if isset($kSprache) && $kSprache === $language->getId()}selected="selected" {elseif isset($oExtension->kSprache) && (int)$oExtension->kSprache === $language->getId()}selected="selected"{/if}>{$language->getLocalizedName()}</option>
                                 {/foreach}
                             </select>
                         </span>
                     </div>
-                    <div class="input-group">
-                        <span class="input-group-addon"><label for="kKundengruppe">Kundengruppe</label></span>
-                        <span class="input-group-wrap">
-                            <select class="form-control" id="kKundengruppe" name="kKundengruppe">
-                                <option value="0">Alle</option>
-                                {foreach $oKundengruppe_arr as $oKundengruppe}
-                                    <option value="{$oKundengruppe->getID()}"
-                                            {if isset($kKundengruppe) && $kKundengruppe == $oKundengruppe->getID()}selected="selected"
-                                            {elseif isset($oExtension->kKundengruppe) && $oExtension->kKundengruppe == $oKundengruppe->getID()}selected="selected"{/if}
-                                    >{$oKundengruppe->getName()}</option>
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="kKundengruppe">{__('customerGroup')}:</label>
+                        <span class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <select class="custom-select" id="kKundengruppe" name="kKundengruppe">
+                                <option value="0">{__('all')}</option>
+                                {foreach $customerGroups as $customerGroup}
+                                    <option value="{$customerGroup->getID()}"
+                                            {if isset($kKundengruppe) && $kKundengruppe == $customerGroup->getID()}selected="selected"
+                                            {elseif isset($oExtension->kKundengruppe) && $oExtension->kKundengruppe == $customerGroup->getID()}selected="selected"{/if}
+                                    >{$customerGroup->getName()}</option>
                                 {/foreach}
                             </select>
                         </span>
                     </div>
-                    <div class="input-group">
-                        <span class="input-group-addon"><label for="nSeitenTyp">Seitentyp</label></span>
-                        <span class="input-group-wrap">
-                            <select class="form-control" id="nSeitenTyp" name="nSeitenTyp">
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="nSeitenTyp">{__('pageType')}:</label>
+                        <span class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <select class="custom-select" id="nSeitenTyp" name="nSeitenTyp">
                                 {if isset($nSeitenTyp) && intval($nSeitenTyp) > 0}
-                                    {include file="tpl_inc/seiten_liste.tpl" nPage=$nSeitenTyp}
+                                    {include file='tpl_inc/seiten_liste.tpl' nPage=$nSeitenTyp}
                                 {elseif isset($oExtension->nSeite)}
-                                    {include file="tpl_inc/seiten_liste.tpl" nPage=$oExtension->nSeite}
+                                    {include file='tpl_inc/seiten_liste.tpl' nPage=$oExtension->nSeite}
                                 {else}
-                                    {include file="tpl_inc/seiten_liste.tpl" nPage=0}
+                                    {include file='tpl_inc/seiten_liste.tpl' nPage=0}
                                 {/if}
                             </select>
                         </span>
                     </div>
                     <div id="type2" class="custom">
-                        <div class="input-group">
-                            <span class="input-group-addon"><label for="cKey">Filter</label></span>
-                            <span class="input-group-wrap">
-                                <select class="form-control" id="cKey" name="cKey">
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="cKey">{__('filter')}</label>
+                            <span class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <select class="custom-select" id="cKey" name="cKey">
                                     <option value="" {if isset($oExtension->cKey) && $oExtension->cKey === ''}selected="selected"{/if}>
-                                        Kein Filter
-                                    </option>
-                                    <option value="kTag" {if isset($cKey) && $cKey === 'kTag'}selected="selected" {elseif isset($oExtension->cKey) && $oExtension->cKey === 'kTag'}selected="selected"{/if}>
-                                        Tag
+                                        {__('noFilter')}
                                     </option>
                                     <option value="kMerkmalWert" {if isset($cKey) && $cKey === 'kMerkmalWert'}selected="selected" {elseif isset($oExtension->cKey) && $oExtension->cKey === 'kMerkmalWert'}selected="selected"{/if}>
-                                        Merkmal
+                                        {__('attribute')}
                                     </option>
                                     <option value="kKategorie" {if isset($cKey) && $cKey === 'kKategorie'}selected="selected" {elseif isset($oExtension->cKey) && $oExtension->cKey === 'kKategorie'}selected="selected"{/if}>
-                                        Kategorie
+                                        {__('category')}
                                     </option>
                                     <option value="kHersteller" {if isset($cKey) && $cKey === 'kHersteller'}selected="selected" {elseif isset($oExtension->cKey) && $oExtension->cKey === 'kHersteller'}selected="selected"{/if}>
-                                        Hersteller
+                                        {__('manufacturer')}
                                     </option>
                                     <option value="cSuche" {if isset($cKey) && $cKey === 'cSuche'}selected="selected" {elseif isset($oExtension->cKey) && $oExtension->cKey === 'cSuche'}selected="selected"{/if}>
-                                        Suchbegriff
+                                        {__('searchTerm')}
                                     </option>
                                 </select>
                             </span>
                         </div>
                     </div>
                     <div class="nl">
-                        <div id="keykArtikel" class="input-group key">
-                            <span class="input-group-addon"><label for="article_name">Artikel</label></span>
-                            <input type="hidden" name="article_key" id="article_key"
-                                   value="{if (isset($cKey) && $cKey === 'kArtikel') || (isset($oExtension->cKey) && $oExtension->cKey === 'kArtikel')}{$oExtension->cValue}{/if}">
-                            <input class="form-control" type="text" name="article_name" id="article_name">
+                        <div id="keykArtikel" class="form-group form-row align-items-center key">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="article_name">{__('product')}</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <input type="hidden" name="article_key" id="article_key"
+                                       value="{if (isset($cKey) && $cKey === 'kArtikel') || (isset($oExtension->cKey) && $oExtension->cKey === 'kArtikel')}{$oExtension->cValue}{/if}">
+                                <input class="form-control" type="text" name="article_name" id="article_name">
+                                <i class="fas fa-spinner fa-pulse typeahead-spinner"></i>
+                            </div>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('typeAheadProduct')}</div>
                             <script>
                                 enableTypeahead('#article_name', 'getProducts', 'cName', null, function(e, item) {
                                     $('#article_name').val(item.cName);
                                     $('#article_key').val(item.kArtikel);
-                                });
+                                }, $('#keykArtikel .fa-spinner'));
                                 {if (isset($cKey) && $cKey === 'kArtikel') || (isset($oExtension->cKey) && $oExtension->cKey === 'kArtikel')}
                                     ioCall('getProducts', [[$('#article_key').val()]], function (data) {
                                         $('#article_name').val(data[0].cName);
@@ -228,16 +243,20 @@
                                 {/if}
                             </script>
                         </div>
-                        <div id="keykLink" class="input-group key">
-                            <span class="input-group-addon"><label for="link_name">Eigene Seite</label></span>
-                            <input type="hidden" name="link_key" id="link_key"
-                                   value="{if (isset($cKey) && $cKey === 'kLink') || (isset($oExtension->cKey) && $oExtension->cKey === 'kLink')}{$oExtension->cValue}{/if}">
-                            <input class="form-control" type="text" name="link_name" id="link_name">
+                        <div id="keykLink" class="form-group form-row align-items-center key">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="link_name">{__('pageSelf')}</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <input type="hidden" name="link_key" id="link_key"
+                                       value="{if (isset($cKey) && $cKey === 'kLink') || (isset($oExtension->cKey) && $oExtension->cKey === 'kLink')}{$oExtension->cValue}{/if}">
+                                <input class="form-control" type="text" name="link_name" id="link_name">
+                                <i class="fas fa-spinner fa-pulse typeahead-spinner"></i>
+                            </div>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('typeAheadPage')}</div>
                             <script>
                                 enableTypeahead('#link_name', 'getPages', 'cName', null, function(e, item) {
                                     $('#link_name').val(item.cName);
                                     $('#link_key').val(item.kLink);
-                                });
+                                }, $('#keykLink .fa-spinner'));
                                 {if (isset($cKey) && $cKey === 'kLink') || (isset($oExtension->cKey) && $oExtension->cKey === 'kLink')}
                                     ioCall('getPages', [[$('#link_key').val()]], function (data) {
                                         $('#link_name').val(data[0].cName);
@@ -245,33 +264,20 @@
                                 {/if}
                             </script>
                         </div>
-                        <div id="keykTag" class="input-group key">
-                            <span class="input-group-addon"><label for="tag_name">Tag</label></span>
-                            <input type="hidden" name="tag_key" id="tag_key"
-                                   value="{if (isset($cKey) && $cKey === 'kTag') || (isset($oExtension->cKey) && $oExtension->cKey === 'kTag')}{$oExtension->cValue}{/if}">
-                            <input class="form-control" type="text" name="tag_name" id="tag_name">
-                            <script>
-                                enableTypeahead('#tag_name', 'getTags', 'cName', null, function(e, item) {
-                                    $('#tag_name').val(item.cName);
-                                    $('#tag_key').val(item.kTag);
-                                });
-                                {if (isset($cKey) && $cKey === 'kTag') || (isset($oExtension->cKey) && $oExtension->cKey === 'kTag')}
-                                    ioCall('getTags', [[$('#tag_key').val()]], function (data) {
-                                        $('#tag_name').val(data[0].cName);
-                                    });
-                                {/if}
-                            </script>
-                        </div>
-                        <div id="keykMerkmalWert" class="input-group key">
-                            <span class="input-group-addon"><label for="attribute_name">Merkmal</label></span>
-                            <input type="hidden" name="attribute_key" id="attribute_key"
-                                   value="{if (isset($cKey) && $cKey === 'kMerkmalWert') || (isset($oExtension->cKey) && $oExtension->cKey === 'kMerkmalWert')}{$oExtension->cValue}{/if}">
-                            <input class="form-control" type="text" name="attribute_name" id="attribute_name">
+                        <div id="keykMerkmalWert" class="form-group form-row align-items-center key">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="attribute_name">{__('attribute')}</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <input type="hidden" name="attribute_key" id="attribute_key"
+                                       value="{if (isset($cKey) && $cKey === 'kMerkmalWert') || (isset($oExtension->cKey) && $oExtension->cKey === 'kMerkmalWert')}{$oExtension->cValue}{/if}">
+                                <input class="form-control" type="text" name="attribute_name" id="attribute_name">
+                                <i class="fas fa-spinner fa-pulse typeahead-spinner"></i>
+                            </div>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('typeAheadAttribute')}</div>
                             <script>
                                 enableTypeahead('#attribute_name', 'getAttributes', 'cWert', null, function(e, item) {
                                     $('#attribute_name').val(item.cWert);
                                     $('#attribute_key').val(item.kMerkmalWert);
-                                });
+                                }, $('#keykMerkmalWert .fa-spinner'));
                                 {if (isset($cKey) && $cKey === 'kMerkmalWert') || (isset($oExtension->cKey) && $oExtension->cKey === 'kMerkmalWert')}
                                     ioCall('getAttributes', [[$('#attribute_key').val()]], function (data) {
                                         $('#attribute_name').val(data[0].cWert);
@@ -279,16 +285,26 @@
                                 {/if}
                             </script>
                         </div>
-                        <div id="keykKategorie" class="input-group key">
-                            <span class="input-group-addon"><label for="categories_name">Kategorie</label></span>
-                            <input type="hidden" name="categories_key" id="categories_key"
-                                   value="{if (isset($cKey) && $cKey === 'kKategorie') || (isset($oExtension->cKey) && $oExtension->cKey === 'kKategorie')}{$oExtension->cValue}{/if}">
-                            <input class="form-control" type="text" name="categories_name" id="categories_name">
+                        <div id="keykKategorie" class="form-group form-row align-items-center key">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="categories_name">{__('category')}</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <input type="hidden" name="categories_key" id="categories_key"
+                                       value="{if (isset($cKey) && $cKey === 'kKategorie') || (isset($oExtension->cKey) && $oExtension->cKey === 'kKategorie')}{$oExtension->cValue}{/if}">
+                                <input class="form-control" type="text" name="categories_name" id="categories_name">
+                                <i class="fas fa-spinner fa-pulse typeahead-spinner"></i>
+                            </div>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('typeAheadCategory')}</div>
                             <script>
-                                enableTypeahead('#categories_name', 'getCategories', 'cName', null, function(e, item) {
+                                enableTypeahead('#categories_name', 'getCategories', function(item) {
+                                        var parentName = '';
+                                        if (item.parentName !== null) {
+                                            parentName = ' (' + item.parentName + ')';
+                                        }
+                                        return item.cName + parentName;
+                                    }, null, function(e, item) {
                                     $('#categories_name').val(item.cName);
                                     $('#categories_key').val(item.kKategorie);
-                                });
+                                }, $('#keykKategorie .fa-spinner'));
                                 {if (isset($cKey) && $cKey === 'kKategorie') || (isset($oExtension->cKey) && $oExtension->cKey === 'kKategorie')}
                                     ioCall('getCategories', [[$('#categories_key').val()]], function (data) {
                                         $('#categories_name').val(data[0].cName);
@@ -296,16 +312,20 @@
                                 {/if}
                             </script>
                         </div>
-                        <div id="keykHersteller" class="input-group key">
-                            <span class="input-group-addon"><label for="manufacturer_name">Hersteller</label></span>
-                            <input type="hidden" name="manufacturer_key" id="manufacturer_key"
-                                   value="{if (isset($cKey) && $cKey === 'kHersteller') || (isset($oExtension->cKey) && $oExtension->cKey === 'kHersteller')}{$oExtension->cValue}{/if}">
-                            <input class="form-control" type="text" name="manufacturer_name" id="manufacturer_name">
+                        <div id="keykHersteller" class="form-group form-row align-items-center key">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="manufacturer_name">{__('manufacturer')}</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <input type="hidden" name="manufacturer_key" id="manufacturer_key"
+                                       value="{if (isset($cKey) && $cKey === 'kHersteller') || (isset($oExtension->cKey) && $oExtension->cKey === 'kHersteller')}{$oExtension->cValue}{/if}">
+                                <input class="form-control" type="text" name="manufacturer_name" id="manufacturer_name">
+                                <i class="fas fa-spinner fa-pulse typeahead-spinner"></i>
+                            </div>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('typeAheadManufacturer')}</div>
                             <script>
                                 enableTypeahead('#manufacturer_name', 'getManufacturers', 'cName', null, function(e, item) {
                                     $('#manufacturer_name').val(item.cName);
                                     $('#manufacturer_key').val(item.kHersteller);
-                                });
+                                }, $('#keykHersteller .fa-spinner'));
                                 {if (isset($cKey) && $cKey === 'kHersteller') || (isset($oExtension->cKey) && $oExtension->cKey === 'kHersteller')}
                                     ioCall('getManufacturers', [[$('#manufacturer_key').val()]], function (data) {
                                         $('#manufacturer_name').val(data[0].cName);
@@ -313,26 +333,40 @@
                                 {/if}
                             </script>
                         </div>
-                        <div id="keycSuche" class="key input-group">
-                            <span class="input-group-addon"><label for="ikeycSuche">Suchbegriff</label></span>
-                            <input class="form-control" type="text" id="ikeycSuche" name="keycSuche"
-                                   value="{if (isset($cKey) &&  $cKey === 'cSuche') || (isset($oExtension->cKey) && $oExtension->cKey === 'cSuche')}{if isset($keycSuche) && $keycSuche !== ''}{$keycSuche}{else}{$oExtension->cValue}{/if}{/if}" />
+                        <div id="keycSuche" class="key form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="ikeycSuche">{__('searchTerm')}</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <input class="form-control" type="text" id="ikeycSuche" name="keycSuche"
+                                       value="{if (isset($cKey) &&  $cKey === 'cSuche') || (isset($oExtension->cKey) && $oExtension->cKey === 'cSuche')}{if isset($keycSuche) && $keycSuche !== ''}{$keycSuche}{else}{$oExtension->cValue}{/if}{/if}" />
+                            </div>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('enterSearchTerm')}</div>
                         </div>
                     </div>
                     {* extensionpoint end *}
                 </div>
             </div>
 
-            <div class="save_wrapper">
-                <button type="submit" class="btn btn-primary" value="Banner speichern"><i class="fa fa-save"></i> Banner speichern</button>
+            <div class="save-wrapper">
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        <a class="btn btn-outline-primary btn-block" href="banner.php">
+                            {__('goBack')}
+                        </a>
+                    </div>
+                    <div class="col-sm-6 col-xl-auto">
+                        <button type="submit" class="btn btn-primary btn-block" value="Banner speichern">
+                            <i class="fa fa-save"></i> {__('saveBanner')}
+                        </button>
+                    </div>
+                </div>
             </div>
 
         </form>
     </div>
-    {elseif $cAction == 'area'}
+    {elseif $action === 'area'}
     <script type="text/javascript" src="{$shopURL}/includes/libs/flashchart/js/json/json2.js"></script>
-    <script type="text/javascript" src="{$shopURL}/{$PFAD_ADMIN}/{$currentTemplateDir}js/clickareas.js"></script>
-    <link rel="stylesheet" href="{$shopURL}/{$PFAD_ADMIN}/{$currentTemplateDir}css/clickareas.css" type="text/css" media="screen" />
+    <script type="text/javascript" src="{$templateBaseURL}js/clickareas.js"></script>
+    <link rel="stylesheet" href="{$templateBaseURL}css/clickareas.css" type="text/css" media="screen" />
     <script type="text/javascript">
         $(function () {ldelim}
             $.clickareas({ldelim}
@@ -341,14 +375,14 @@
                 'save': '#area_save',
                 'add': '#area_new',
                 'info': '#area_info',
-                'data': {$oBanner|@json_encode nofilter}
+                'data': {$banner|@json_encode nofilter}
             {rdelim});
         {rdelim});
     </script>
     <script type="text/javascript">
         {literal}
         $(document).ready(function () {
-            $('#article_unlink').click(function () {
+            $('#article_unlink').on('click', function () {
                 $('#article_id').val(0);
                 $('#article_name').val('');
                 return false;
@@ -357,44 +391,44 @@
         {/literal}
     </script>
     <div class="category clearall">
-        <div class="left">Zonen</div>
+        <div class="left">{__('zones')}</div>
         <div class="right" id="area_info"></div>
     </div>
     <div id="area_container">
-        <div id="area_editor" class="panel panel-default">
-            <div class="category first panel-heading">
-                <h3 class="panel-title">Einstellungen</h3>
+        <div id="area_editor" class="card">
+            <div class="category first card-header">
+                <div class="subheading1">{__('settings')}</div>
             </div>
-            <div id="settings" class="panel-body">
+            <div id="settings" class="card-body">
                 <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="title">Titel</label>
+                        <label for="title">{__('title')}</label>
                     </span>
                     <input class="form-control" type="text" id="title" name="title" />
                 </div>
                 <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="desc">Beschreibung</label>
+                        <label for="desc">{__('description')}</label>
                     </span>
                     <textarea class="form-control" id="desc" name="desc"></textarea>
                 </div>
                 <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="url">Url</label>
+                        <label for="url">{__('url')}</label>
                     </span>
                     <input class="form-control" type="text" id="url" name="url" />
                 </div>
                 <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="style">CSS-Klasse</label>
+                        <label for="style">{__('cssClass')}</label>
                     </span>
                     <input class="form-control" type="text" id="style" name="style" />
                 </div>
                 <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="article_name">Artikel</label>
+                        <label for="article_name">{__('product')}</label>
                     </span>
-                    <input type="hidden" name="article" id="article" value="{if isset($oBanner->kArtikel)}{$oBanner->kArtikel}{/if}" />
+                    <input type="hidden" name="article" id="article" value="{if isset($banner->kArtikel)}{$banner->kArtikel}{/if}" />
                     <input type="text" name="article_name" id="article_name" value="" class="form-control">
                     <input type="hidden" name="article_id" id="article_id" value="">
                     <script>
@@ -405,78 +439,119 @@
                     </script>
                 </div>
                 <input type="hidden" name="id" id="id" />
-                <div class="save_wrapper btn-group">
-                    <a href="#" class="btn btn-default" id="article_browser">Artikel w&auml;hlen</a>
-                    <a href="#" class="btn btn-default" id="article_unlink">Artikel L&ouml;sen</a>
-                    <button type="button" class="btn btn-danger" id="remove"><i class="fa fa-trash"></i> Zone l&ouml;schen</button>
+                <div class="save-wrapper btn-group">
+                    <a href="#" class="btn btn-default" id="article_browser">{__('chooseProduct')}</a>
+                    <a href="#" class="btn btn-default" id="article_unlink">{__('deleteProduct')}</a>
+                    <button type="button" class="btn btn-danger" id="remove"><i class="fas fa-trash-alt"></i> {__('zone')} {__('delete')}</button>
                 </div>
             </div>
         </div>
         <div id="area_wrapper">
-            <img src="{$oBanner->cBildPfad}" title="" id="clickarea" />
+            <img class="img-fluid" src="{$banner->cBildPfad}" title="" id="clickarea" />
         </div>
     </div>
-    <div class="save_wrapper btn-group">
-        <a class="btn btn-default" href="#" id="area_new"><i class="fa fa-share"></i> Neue Zone</a>
-        <a class="btn btn-primary" href="#" id="area_save"><i class="fa fa-save"></i> Zonen speichern</a>
-        <a class="btn btn-danger" href="banner.php" id="cancel"><i class="fa fa-angle-double-left"></i> zur&uuml;ck</a>
+    <div class="save-wrapper">
+        <div class="row">
+            <div class="ml-auto col-sm-6 col-xl-auto">
+                <a class="btn btn-outline-primary btn-block" href="banner.php" id="cancel">
+                    {__('goBack')}
+                </a>
+            </div>
+            <div class="col-sm-6 col-xl-auto">
+                <a class="btn btn-outline-primary btn-block" href="#" id="area_new">
+                    <i class="fa fa-share"></i> {__('new')} {__('zone')}
+                </a>
+            </div>
+            <div class="col-sm-6 col-xl-auto">
+                <a class="btn btn-primary btn-block" href="#" id="area_save">
+                    <i class="fa fa-save"></i> {__('zones')} {__('save')}
+                </a>
+            </div>
+        </div>
     </div>
     {else}
         <div id="settings">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Vorhandene Banner</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="subheading1">{__('availableBanner')}</div>
+                    <hr class="mb-n3">
                 </div>
-                <table class="list table">
-                    <thead>
-                    <tr>
-                        <th class="tleft" width="25%">Name</th>
-                        <th width="20%">Status</th>
-                        <th class="tleft" width="25%">Laufzeit</th>
-                        <th width="30%">Aktionen</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {foreach $oBanner_arr as $oBanner}
-                        <tr>
-                            <td class="tleft">
-                                {$oBanner->cTitel}
-                            </td>
-                            <td class="tcenter">
-                                <h4 class="label-wrap">
-                                    {if (int)$oBanner->active === 1}
-                                        <span class="label success label-success">aktiv</span>
-                                    {else}
-                                        <span class="label success label-{if $oBanner->vDatum|date_format:'%d.%m.%Y' > {$smarty.now|date_format:'%d.%m.%Y'}}warning{else}danger{/if}">inaktiv</span>
-                                    {/if}
-                                </h4>
-                            </td>
-                            <td>
-                                {$oBanner->vDatum|date_format:'%d.%m.%Y'} - {$oBanner->bDatum|date_format:'%d.%m.%Y'}
-                            </td>
-                            <td class="tcenter">
-                                <form action="banner.php" method="post">
-                                    {$jtl_token}
-                                    <input type="hidden" name="id" value="{$oBanner->kImageMap}" />
-                                    <div class="btn-group">
-                                        <button class="btn btn-default" name="action" value="area" title="verlinken"><i class="fa fa-link"></i></button>
-                                        <button class="btn btn-default" name="action" value="edit" title="bearbeiten"><i class="fa fa-edit"></i></button>
-                                        <button class="btn btn-danger" name="action" value="delete" title="entfernen"><i class="fa fa-trash"></i></button>
-                                    </div>
-                                </form>
-                            </td>
-                        </tr>
-                    {/foreach}
-                    </tbody>
-                </table>
-
-                {if $oBanner_arr|@count === 0}
-                   <div class="panel-body">
-                       <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
-                   </div>
+                <div class="card-body">
+                    {include file='tpl_inc/pagination.tpl' pagination=$pagination}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                            <tr>
+                                <th class="text-left" width="25%">{__('name')}</th>
+                                <th width="20%" class="text-center">{__('active')}</th>
+                                <th class="text-left" width="25%">{__('runTime')}</th>
+                                <th width="30%" class="text-center">{__('action')}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {foreach $banners as $banner}
+                                <tr>
+                                    <td class="text-left">
+                                        {$banner->cTitel}
+                                    </td>
+                                    <td class="text-center">
+                                        {if (int)$banner->active === 1}
+                                            <i class="fal fa-check text-success"></i>
+                                        {else}
+                                            <i class="fal fa-times text-danger"></i>
+                                        {/if}
+                                    </td>
+                                    <td>
+                                        {if $banner->vDatum !== null}
+                                            {$banner->vDatum|date_format:'%d.%m.%Y'}
+                                        {/if} -
+                                        {if $banner->bDatum !== null}
+                                            {$banner->bDatum|date_format:'%d.%m.%Y'}
+                                        {/if}
+                                    </td>
+                                    <td class="text-center">
+                                        <form action="banner.php" method="post">
+                                            {$jtl_token}
+                                            <input type="hidden" name="id" value="{$banner->kImageMap}" />
+                                            <div class="btn-group">
+                                                <button class="btn btn-link px-2" name="action" value="delete" title="{__('delete')}" data-toggle="tooltip">
+                                                    <span class="icon-hover">
+                                                        <span class="fal fa-trash-alt"></span>
+                                                        <span class="fas fa-trash-alt"></span>
+                                                    </span>
+                                                </button>
+                                                <button class="btn btn-link px-2" name="action" value="area" title="{__('actionLink')}" data-toggle="tooltip">
+                                                    <span class="icon-hover">
+                                                        <span class="fal fa-link"></span>
+                                                        <span class="fas fa-link"></span>
+                                                    </span>
+                                                </button>
+                                                <button class="btn btn-link px-2" name="action" value="edit" title="{__('edit')}" data-toggle="tooltip">
+                                                    <span class="icon-hover">
+                                                        <span class="fal fa-edit"></span>
+                                                        <span class="fas fa-edit"></span>
+                                                    </span>
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {/foreach}
+                            </tbody>
+                        </table>
+                    </div>
+                {if $banners|@count === 0}
+                    <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
-                <div class="panel-footer">
-                    <a class="btn btn-primary" href="banner.php?action=new&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> Banner hinzuf&uuml;gen</a>
+                </div>
+                <div class="card-footer save-wrapper">
+                    <div class="row">
+                        <div class="ml-auto col-sm-6 col-xl-auto">
+                            <a class="btn btn-primary btn-block" href="banner.php?action=new&token={$smarty.session.jtl_token}">
+                                <i class="fa fa-share"></i> {__('addBanner')}
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

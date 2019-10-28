@@ -1,0 +1,159 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "news"
+msgstr "News and blog system"
+
+msgid "newsURL"
+msgstr "https://jtl-url.de/7vfnm"
+
+msgid "newsDesc"
+msgstr "With the news and blog system of JTL-Shop, you can keep your customers in the loop at all times. Create new entries and specify how news entries are to be displayed."
+
+msgid "newAdd"
+msgstr "Create news posting"
+
+msgid "newEdit"
+msgstr "Edit news posting"
+
+msgid "newsPreviewText"
+msgstr "Preview text"
+
+msgid "newsValidation"
+msgstr "Created on"
+
+msgid "newsDate"
+msgstr "Created on"
+
+msgid "newsArchive"
+msgstr "Archive"
+
+msgid "newsArchiveLast"
+msgstr "Archived postings"
+
+msgid "newsPicAdd"
+msgstr "Add another image"
+
+msgid "newsPics"
+msgstr "Available images"
+
+msgid "newsActivate"
+msgstr "Approve"
+
+msgid "newsCommentActivate"
+msgstr "Unapproved comments"
+
+msgid "newsComments"
+msgstr "Comments"
+
+msgid "newsSeo"
+msgstr "SEO"
+
+msgid "newsPraefix"
+msgstr "Prefix for monthly overview"
+
+msgid "newsCatCreate"
+msgstr "Create new category"
+
+msgid "newsCatEdit"
+msgstr "Edit category"
+
+msgid "newsCatSort"
+msgstr "Category sorting"
+
+msgid "newsCatParent"
+msgstr "Parent category"
+
+msgid "newsCatLastUpdate"
+msgstr "Last update"
+
+msgid "newsOverview"
+msgstr "News postings"
+
+msgid "newsCatOverview"
+msgstr "Categories"
+
+msgid "newsInfinite"
+msgstr "always"
+
+msgid "newsCommentEdit"
+msgstr "Editing comments"
+
+msgid "newsMetaTitle"
+msgstr "Meta title"
+
+msgid "newsMetaDescription"
+msgstr "Meta description"
+
+msgid "newsMetaKeywords"
+msgstr "Meta keywords"
+
+msgid "newsAuthor"
+msgstr "Author"
+
+msgid "newsMandatoryFields"
+msgstr "(*) mandatory field"
+
+msgid "newsAlreadyExists"
+msgstr "already exists."
+
+msgid "newsDeleteCat"
+msgstr "The following news categories and their subcategories will be deleted:"
+
+msgid "newsDeleteNews"
+msgstr "Delete news"
+
+msgid "newsDeleteComment"
+msgstr "Delete comment"
+
+msgid "errorNewsCatFirst"
+msgstr "Please enter a news category first."
+
+msgid "successNewsCommmentEdit"
+msgstr "News comment edited successfully."
+
+msgid "successNewsDelete"
+msgstr "Selected news postings deleted successfully."
+
+msgid "errorAtLeastOneNews"
+msgstr "Please select at least one news posting."
+
+msgid "successNewsCatDelete"
+msgstr "Selected news categories deleted successfully."
+
+msgid "errorAtLeastOneNewsCat"
+msgstr "Please select at least one news category."
+
+msgid "successNewsImageDelete"
+msgstr "Selected news image deleted successfully."
+
+msgid "errorNewsImageDelete"
+msgstr "Could not delete selected news image."
+
+msgid "errorNewsCatNotFound"
+msgstr "Could not find news category with ID %d."
+
+msgid "successNewsCommentUnlock"
+msgstr "Selected news comments approved successfully."
+
+msgid "goOnEdit"
+msgstr " and continue editing"
+
+msgid "mainCategory"
+msgstr "Main category"
+
+msgid "deleteComment"
+msgstr "Are you sure you want to delete the comments?"
+
+msgid "successNewsSave"
+msgstr "News posting saved successfully."
+
+msgid "successNewsCatSave"
+msgstr "News category entered successfully."
+
+msgid "successNewsCommentDelete"
+msgstr "Selected comments deleted successfully."
+
+msgid "errorAtLeastOneNewsComment"
+msgstr "Please select at least one news comment."

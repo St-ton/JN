@@ -1,12 +1,12 @@
 {includeMailTemplate template=header type=html}
 
-Dear {$Kunde->cAnredeLocalized} {$Kunde->cNachname},<br>
+Dear {$Kunde->cVorname} {$Kunde->cNachname},<br>
 <br>
-As requested, we have closed your account {$Kunde->cMail} effective today.<br>
+As of today, we have closed your account {$Kunde->cMail} as requested.<br>
 <br>
-If you were not satisfied with our services, we would be grateful to let us know so that we can improve our services.<br>
+If you were not satisfied with our services, we would be grateful to receive your feedback so that we can improve them in the future.<br>
 <br>
-Should you want to purchase from us later again, just register and create a new account with us.<br>
+In case you want to purchase from us again at a later time, just register again and create a new account with us.<br>
 <br>
 Yours sincerely,<br>
 <br>

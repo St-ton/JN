@@ -4,23 +4,25 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\Items;
+namespace JTL\Filter\Items;
 
-use DB\ReturnType;
-use Filter\AbstractFilter;
-use Filter\Join;
-use Filter\Option;
-use Filter\FilterInterface;
-use Filter\StateSQL;
-use Filter\ProductFilter;
+use JTL\DB\ReturnType;
+use JTL\Filter\AbstractFilter;
+use JTL\Filter\FilterInterface;
+use JTL\Filter\Join;
+use JTL\Filter\Option;
+use JTL\Filter\ProductFilter;
+use JTL\Filter\StateSQL;
+use JTL\MagicCompatibilityTrait;
+use JTL\Shop;
 
 /**
  * Class Rating
- * @package Filter\Items
+ * @package JTL\Filter\Items
  */
 class Rating extends AbstractFilter
 {
-    use \MagicCompatibilityTrait;
+    use MagicCompatibilityTrait;
 
     /**
      * @var array
@@ -40,7 +42,7 @@ class Rating extends AbstractFilter
         $this->setIsCustom(false)
              ->setUrlParam('bf')
              ->setVisibility($this->getConfig('navigationsfilter')['bewertungsfilter_benutzen'])
-             ->setFrontendName(\Shop::Lang()->get('Votes'));
+             ->setFrontendName(Shop::Lang()->get('Votes'));
     }
 
     /**
@@ -56,9 +58,10 @@ class Rating extends AbstractFilter
      */
     public function setSeo(array $languages): FilterInterface
     {
-        $this->setName(\Shop::Lang()->get('from', 'productDetails') . ' ' .
+        $this->setName(
+            Shop::Lang()->get('from', 'productDetails') . ' ' .
             $this->getValue() . ' ' .
-            \Shop::Lang()->get($this->getValue() > 0 ? 'starPlural' : 'starSingular')
+            Shop::Lang()->get($this->getValue() > 0 ? 'starPlural' : 'starSingular')
         );
 
         return $this;
@@ -125,14 +128,12 @@ class Rating extends AbstractFilter
         $sql->addJoin($this->getSQLJoin());
 
         $baseQuery = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
-
-        $cacheID          = 'fltr_' . \str_replace('\\', '', __CLASS__) . \md5($baseQuery);
+        $cacheID   = 'fltr_' . \str_replace('\\', '', __CLASS__) . \md5($baseQuery);
         if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
             $this->options = $cached;
 
             return $this->options;
         }
-
         $res              = $this->productFilter->getDB()->query(
             'SELECT ssMerkmal.nSterne, COUNT(*) AS nAnzahl
                 FROM (' . $baseQuery . ' ) AS ssMerkmal
@@ -153,9 +154,9 @@ class Rating extends AbstractFilter
                 ->setType($this->getType())
                 ->setClassName($this->getClassName())
                 ->setName(
-                    \Shop::Lang()->get('from', 'productDetails') . ' ' .
+                    Shop::Lang()->get('from', 'productDetails') . ' ' .
                     $row->nSterne . ' ' .
-                    \Shop::Lang()->get($row->nSterne > 1 ? 'starPlural' : 'starSingular')
+                    Shop::Lang()->get($row->nSterne > 1 ? 'starPlural' : 'starSingular')
                 )
                 ->setValue((int)$row->nSterne)
                 ->setCount($stars);
@@ -164,7 +165,7 @@ class Rating extends AbstractFilter
         if (\count($options) === 0) {
             $this->hide();
         }
-        $this->productFilter->getCache()->set($cacheID, $options, [CACHING_GROUP_FILTER]);
+        $this->productFilter->getCache()->set($cacheID, $options, [\CACHING_GROUP_FILTER]);
 
         return $options;
     }

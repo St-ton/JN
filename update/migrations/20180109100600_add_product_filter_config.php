@@ -3,12 +3,15 @@
  * Add product filter config
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Class Migration_20180109100600
  */
 class Migration_20180109100600 extends Migration implements IMigration
 {
-    protected $author      = 'Felix Moche';
+    protected $author      = 'fm';
     protected $description = 'Add product filter config';
 
     /**
@@ -20,11 +23,11 @@ class Migration_20180109100600 extends Migration implements IMigration
         $this->setConfig(
             'tag_filter_type',
             'A',
-            CONF_NAVIGATIONSFILTER,
+            \CONF_NAVIGATIONSFILTER,
             'Typ des Tagfilters',
             'selectbox',
             176,
-            (object) [
+            (object)[
                 'cBeschreibung' => 'Erlaubt Verorderung oder Verundung der Filterwerte',
                 'inputOptions'  => [
                     'A' => 'Verundung',
@@ -35,11 +38,11 @@ class Migration_20180109100600 extends Migration implements IMigration
         $this->setConfig(
             'category_filter_type',
             'A',
-            CONF_NAVIGATIONSFILTER,
+            \CONF_NAVIGATIONSFILTER,
             'Typ des Kategoriefilters',
             'selectbox',
             148,
-            (object) [
+            (object)[
                 'cBeschreibung' => 'Erlaubt Verorderung oder Verundung der Filterwerte',
                 'inputOptions'  => [
                     'A' => 'Verundung',
@@ -50,11 +53,11 @@ class Migration_20180109100600 extends Migration implements IMigration
         $this->setConfig(
             'manufacturer_filter_type',
             'A',
-            CONF_NAVIGATIONSFILTER,
+            \CONF_NAVIGATIONSFILTER,
             'Typ des Herstellerfilters',
             'selectbox',
             121,
-            (object) [
+            (object)[
                 'cBeschreibung' => 'Erlaubt Verorderung oder Verundung der Filterwerte',
                 'inputOptions'  => [
                     'A' => 'Verundung',
@@ -65,11 +68,11 @@ class Migration_20180109100600 extends Migration implements IMigration
         $this->setConfig(
             'search_special_filter_type',
             'A',
-            CONF_NAVIGATIONSFILTER,
+            \CONF_NAVIGATIONSFILTER,
             'Typ des Suchspezialfilters',
             'selectbox',
             141,
-            (object) [
+            (object)[
                 'cBeschreibung' => 'Erlaubt Verorderung oder Verundung der Filterwerte',
                 'inputOptions'  => [
                     'A' => 'Verundung',

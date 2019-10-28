@@ -2,27 +2,19 @@
 /**
  * add_language_variable_descriptionview
  *
- * @author Mirko Schmidt
+ * @author msc
  * @created Fri, 12 Aug 2016 11:42:10 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
- * Migration
- *
- * Available methods:
- * execute            - returns affected rows
- * fetchOne           - single fetched object
- * fetchAll           - array of fetched objects
- * fetchArray         - array of fetched assoc arrays
- * dropColumn         - drops a column if exists
- * addLocalization    - add localization
- * removeLocalization - remove localization
- * setConfig          - add / update config property
- * removeConfig       - remove config property
+ * Class Migration_20160812114210
  */
 class Migration_20160812114210 extends Migration implements IMigration
 {
-    protected $author = 'Mirko Schmidt';
+    protected $author = 'msc';
 
     public function up()
     {

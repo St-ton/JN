@@ -4,11 +4,11 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter;
+namespace JTL\Filter;
 
 /**
- * Class Config
- * @package Filter
+ * Interface ConfigInterface
+ * @package JTL\Filter
  */
 interface ConfigInterface
 {
@@ -25,7 +25,7 @@ interface ConfigInterface
     /**
      * @param int $langID
      */
-    public function setLanguageID(int $langID);
+    public function setLanguageID(int $langID): void;
 
     /**
      * @return array
@@ -46,7 +46,7 @@ interface ConfigInterface
     /**
      * @param array $config
      */
-    public function setConfig(array $config);
+    public function setConfig(array $config): void;
 
     /**
      * @return int
@@ -56,7 +56,7 @@ interface ConfigInterface
     /**
      * @param int $customerGroupID
      */
-    public function setCustomerGroupID(int $customerGroupID);
+    public function setCustomerGroupID(int $customerGroupID): void;
 
     /**
      * @return string

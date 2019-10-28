@@ -4,12 +4,12 @@ class line_base
 {
     public function __construct()
     {
-        $this->type      = "line";
-        $this->text      = "Page views";
-        $tmp = 'font-size';
+        $this->type = 'line';
+        $this->text = 'Page views';
+        $tmp        = 'font-size';
         $this->$tmp = 10;
         
-        $this->values    = array();
+        $this->values = array();
     }
     
     public function set_values($v)
@@ -39,20 +39,20 @@ class line_base
     
     public function set_dot_size($size)
     {
-        $tmp = 'dot-size';
+        $tmp        = 'dot-size';
         $this->$tmp = $size;
     }
     
     public function set_halo_size($size)
     {
-        $tmp = 'halo-size';
+        $tmp        = 'halo-size';
         $this->$tmp = $size;
     }
     
     public function set_key($text, $font_size)
     {
-        $this->text      = $text;
-        $tmp = 'font-size';
+        $this->text = $text;
+        $tmp        = 'font-size';
         $this->$tmp = $font_size;
     }
     
@@ -63,7 +63,7 @@ class line_base
     
     public function set_on_click($text)
     {
-        $tmp = 'on-click';
+        $tmp        = 'on-click';
         $this->$tmp = $text;
     }
     
@@ -74,7 +74,7 @@ class line_base
     
     public function line_style($s)
     {
-        $tmp = "line-style";
+        $tmp        = 'line-style';
         $this->$tmp = $s;
     }
     

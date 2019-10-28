@@ -4,15 +4,15 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\SortingOptions;
+namespace JTL\Filter\SortingOptions;
 
-use Filter\ProductFilter;
-use Mapper\SortingType;
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
+use JTL\Filter\ProductFilter;
+use JTL\Mapper\SortingType;
 
 /**
  * Class Factory
- * @package Filter\SortingOptions
+ * @package JTL\Filter\SortingOptions
  */
 class Factory
 {
@@ -63,7 +63,7 @@ class Factory
      * @param int    $value
      * @param string $className
      */
-    public function registerSortingOption(int $value, string $className)
+    public function registerSortingOption(int $value, string $className): void
     {
         $this->mapping[$value] = $className;
     }
@@ -92,7 +92,7 @@ class Factory
      * @return SortingOptionInterface|null
      * @throws \InvalidArgumentException
      */
-    public function getSortingOption(int $type)
+    public function getSortingOption(int $type): ?SortingOptionInterface
     {
         $mapper  = new SortingType();
         $mapping = $mapper->mapSortTypeToClassName($type);

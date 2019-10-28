@@ -1,14 +1,17 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC;
+namespace JTL\OPC;
+
+use JTL\Helpers\GeneralObject;
+use JTL\Shop;
 
 /**
  * Class Area
- * @package OPC
+ * @package JTL\OPC
  */
 class Area implements \JsonSerializable
 {
@@ -25,7 +28,7 @@ class Area implements \JsonSerializable
     /**
      * @return string
      */
-    public function getId()
+    public function getId(): string
     {
         return $this->id;
     }
@@ -33,7 +36,7 @@ class Area implements \JsonSerializable
     /**
      * Clear the contents
      */
-    public function clear()
+    public function clear(): void
     {
         $this->content = [];
     }
@@ -41,7 +44,7 @@ class Area implements \JsonSerializable
     /**
      * @param PortletInstance $portlet
      */
-    public function addPortlet(PortletInstance $portlet)
+    public function addPortlet(PortletInstance $portlet): void
     {
         $this->content[] = $portlet;
     }
@@ -56,6 +59,7 @@ class Area implements \JsonSerializable
 
     /**
      * @return string
+     * @throws \Exception
      */
     public function getPreviewHtml(): string
     {
@@ -64,11 +68,17 @@ class Area implements \JsonSerializable
             $result .= $portletInstance->getPreviewHtml();
         }
 
+        Shop::fire('shop.OPC.Area.getPreviewHtml', [
+            'area' => $this,
+            'result' => &$result
+        ]);
+
         return $result;
     }
 
     /**
      * @return string
+     * @throws \Exception
      */
     public function getFinalHtml(): string
     {
@@ -77,7 +87,35 @@ class Area implements \JsonSerializable
             $result .= $portletInstance->getFinalHtml();
         }
 
+        Shop::fire('shop.OPC.Area.getFinalHtml', [
+            'area' => $this,
+            'result' => &$result
+        ]);
+
         return $result;
+    }
+
+    /**
+     * @param bool $preview
+     * @return array
+     */
+    public function getCssList(bool $preview = false): array
+    {
+        $list = [];
+
+        foreach ($this->content as $portletInstance) {
+            $cssFile = $portletInstance->getPortlet()->getCssFile($preview);
+
+            if (!empty($cssFile)) {
+                $list[$cssFile] = true;
+            }
+
+            foreach ($portletInstance->getSubareaList()->getAreas() as $area) {
+                $list = $list + $area->getCssList($preview);
+            }
+        }
+
+        return $list;
     }
 
     /**
@@ -85,15 +123,14 @@ class Area implements \JsonSerializable
      * @return $this
      * @throws \Exception
      */
-    public function deserialize($data)
+    public function deserialize(array $data): self
     {
         $this->id = $data['id'];
-
-        if (isset($data['content']) && \is_array($data['content'])) {
+        if (GeneralObject::hasCount('content', $data)) {
             $this->clear();
 
             foreach ($data['content'] as $portletData) {
-                $instance = \Shop::Container()->getOPC()->getPortletInstance($portletData);
+                $instance = Shop::Container()->getOPC()->getPortletInstance($portletData);
                 $this->addPortlet($instance);
             }
         }

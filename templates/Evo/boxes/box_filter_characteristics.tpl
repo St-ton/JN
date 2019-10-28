@@ -4,7 +4,7 @@
  *}
 {foreach $oBox->getItems() as $Merkmal}
     {assign var=kMerkmal value=$Merkmal->kMerkmal}
-    <section class="panel panel-default box box-filter-characteristics">
+    <section class="panel panel-default box box-filter-characteristics" id="sidebox{$oBox->getID()}-{$Merkmal->kMerkmal}">
         {if ($Merkmal->getData('cTyp') === 'SELECTBOX') && $Merkmal->oMerkmalWerte_arr|@count > 1}
             <div class="panel-heading dropdown">
                 <div class="panel-title">
@@ -17,7 +17,7 @@
                 </div>
             </div>
             <div class="box-body panel-body dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                <a href="#" class="dropdown-toggle btn btn-default btn-block" data-toggle="dropdown" role="button" aria-expanded="false">
                      {lang key='selectFilter' section='global'}&nbsp; <span class="fa fa-caret-down"></span>
                 </a>
                 {include file='snippets/filter/characteristic.tpl' Merkmal=$Merkmal class="dropdown-menu"}

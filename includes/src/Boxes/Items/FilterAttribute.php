@@ -4,13 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
 
-use Filter\Visibility;
+use JTL\Filter\Visibility;
+use JTL\Shop;
 
 /**
  * Class FilterAttribute
- * @package Boxes
+ * @package JTL\Boxes\Items
  */
 final class FilterAttribute extends AbstractBox
 {
@@ -21,12 +22,12 @@ final class FilterAttribute extends AbstractBox
     public function __construct(array $config)
     {
         parent::__construct($config);
-        $filter        = \Shop::getProductFilter()->getAttributeFilterCollection();
-        $searchResults = \Shop::getProductFilter()->getSearchResults();
+        $filter        = Shop::getProductFilter()->getCharacteristicFilterCollection();
+        $searchResults = Shop::getProductFilter()->getSearchResults();
         $show          = $filter->getVisibility() !== Visibility::SHOW_NEVER
             && $filter->getVisibility() !== Visibility::SHOW_CONTENT
-            && (!empty($searchResults->getAttributeFilterOptions()) || $filter->isInitialized());
+            && (!empty($searchResults->getCharacteristicFilterOptions()) || $filter->isInitialized());
         $this->setShow($show);
-        $this->setItems($searchResults->getAttributeFilterOptions());
+        $this->setItems($searchResults->getCharacteristicFilterOptions());
     }
 }

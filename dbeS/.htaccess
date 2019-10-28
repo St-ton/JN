@@ -1,4 +1,3 @@
-RewriteEngine off
 <Files *>
     <IfModule mod_authz_core.c>
         Require all denied
@@ -18,3 +17,7 @@ RewriteEngine off
         Allow from all
     </IfModule>
 </Files>
+<IfModule mod_rewrite.c>
+	RewriteEngine on
+	RewriteRule ^(.*)\.php$ index.php?id=$1 [QSA,L]
+</IfModule>

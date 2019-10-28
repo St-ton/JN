@@ -90,7 +90,7 @@ class pie_fade extends base_pie_animation
      */
     public function __construct()
     {
-        $this->type = "fade";
+        $this->type = 'fade';
     }
 }
 

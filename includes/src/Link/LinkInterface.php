@@ -1,16 +1,16 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Link;
+namespace JTL\Link;
 
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 
 /**
- * Class Link
- * @package Link
+ * Interface LinkInterface
+ * @package JTL\Link
  */
 interface LinkInterface
 {
@@ -42,7 +42,7 @@ interface LinkInterface
     /**
      * @param int $id
      */
-    public function setID(int $id);
+    public function setID(int $id): void;
 
     /**
      * @return int
@@ -52,7 +52,7 @@ interface LinkInterface
     /**
      * @param int $parent
      */
-    public function setParent(int $parent);
+    public function setParent(int $parent): void;
 
     /**
      * @return array
@@ -62,7 +62,7 @@ interface LinkInterface
     /**
      * @param array $linkGroups
      */
-    public function setLinkGroups(array $linkGroups);
+    public function setLinkGroups(array $linkGroups): void;
 
     /**
      * @return int
@@ -72,7 +72,7 @@ interface LinkInterface
     /**
      * @param int $linkGroupID
      */
-    public function setLinkGroupID(int $linkGroupID);
+    public function setLinkGroupID(int $linkGroupID): void;
 
     /**
      * @return int
@@ -82,7 +82,7 @@ interface LinkInterface
     /**
      * @param int $pluginID
      */
-    public function setPluginID(int $pluginID);
+    public function setPluginID(int $pluginID): void;
 
     /**
      * @return int
@@ -92,7 +92,7 @@ interface LinkInterface
     /**
      * @param int $linkType
      */
-    public function setLinkType(int $linkType);
+    public function setLinkType(int $linkType): void;
 
     /**
      * @param int|null $idx
@@ -109,11 +109,12 @@ interface LinkInterface
      * @param string $name
      * @param int    $idx
      */
-    public function setName(string $name, int $idx);
+    public function setName(string $name, int $idx): void;
+
     /**
      * @param array $names
      */
-    public function setNames(array $names);
+    public function setNames(array $names): void;
 
     /**
      * @param int|null $idx
@@ -129,13 +130,13 @@ interface LinkInterface
     /**
      * @param array $seo
      */
-    public function setSEOs(array $seo);
+    public function setSEOs(array $seo): void;
 
     /**
      * @param string $url
      * @param int    $idx
      */
-    public function setSEO(string $url, int $idx = null);
+    public function setSEO(string $url, int $idx = null): void;
 
     /**
      * @param int|null $idx
@@ -152,12 +153,12 @@ interface LinkInterface
      * @param string $url
      * @param int    $idx
      */
-    public function setURL(string $url, int $idx);
+    public function setURL(string $url, int $idx): void;
 
     /**
      * @param array $urls
      */
-    public function setURLs(array $urls);
+    public function setURLs(array $urls): void;
 
     /**
      * @param int|null $idx
@@ -174,12 +175,12 @@ interface LinkInterface
      * @param string $title
      * @param int    $idx
      */
-    public function setTitle(string $title, int $idx);
+    public function setTitle(string $title, int $idx): void;
 
     /**
      * @param array $title
      */
-    public function setTitles(array $title);
+    public function setTitles(array $title): void;
 
     /**
      * @return array
@@ -189,7 +190,7 @@ interface LinkInterface
     /**
      * @param array $customerGroups
      */
-    public function setCustomerGroups(array $customerGroups);
+    public function setCustomerGroups(array $customerGroups): void;
 
     /**
      * @param int|null $idx
@@ -206,12 +207,22 @@ interface LinkInterface
      * @param string $languageCode
      * @param int    $idx
      */
-    public function setLanguageCode(string $languageCode, int $idx = 0);
+    public function setLanguageCode(string $languageCode, int $idx = 0): void;
 
     /**
      * @param array $languageCodes
      */
-    public function setLanguageCodes(array $languageCodes);
+    public function setLanguageCodes(array $languageCodes): void;
+
+    /**
+     * @return int
+     */
+    public function getReference(): int;
+
+    /**
+     * @param int $reference
+     */
+    public function setReference(int $reference): void;
 
     /**
      * @return int
@@ -221,7 +232,7 @@ interface LinkInterface
     /**
      * @param int $sort
      */
-    public function setSort(int $sort);
+    public function setSort(int $sort): void;
 
     /**
      * @return bool
@@ -231,7 +242,7 @@ interface LinkInterface
     /**
      * @param bool $ssl
      */
-    public function setSSL(bool $ssl);
+    public function setSSL(bool $ssl): void;
 
     /**
      * @return bool
@@ -241,7 +252,7 @@ interface LinkInterface
     /**
      * @param bool $noFollow
      */
-    public function setNoFollow(bool $noFollow);
+    public function setNoFollow(bool $noFollow): void;
 
     /**
      * @return bool
@@ -251,7 +262,7 @@ interface LinkInterface
     /**
      * @param bool $printButton
      */
-    public function setPrintButton(bool $printButton);
+    public function setPrintButton(bool $printButton): void;
 
     /**
      * @return bool
@@ -261,7 +272,7 @@ interface LinkInterface
     /**
      * @param bool $isActive
      */
-    public function setIsActive(bool $isActive);
+    public function setIsActive(bool $isActive): void;
 
     /**
      * @return bool
@@ -271,7 +282,7 @@ interface LinkInterface
     /**
      * @param bool $enabled
      */
-    public function setIsEnabled(bool $enabled);
+    public function setIsEnabled(bool $enabled): void;
 
     /**
      * @return bool
@@ -281,7 +292,7 @@ interface LinkInterface
     /**
      * @param bool $isFluid
      */
-    public function setIsFluid(bool $isFluid);
+    public function setIsFluid(bool $isFluid): void;
 
     /**
      * @param int $idx
@@ -292,7 +303,7 @@ interface LinkInterface
     /**
      * @param int $languageID
      */
-    public function setLanguageID(int $languageID);
+    public function setLanguageID(int $languageID): void;
 
     /**
      * @return int
@@ -302,7 +313,7 @@ interface LinkInterface
     /**
      * @param int $redirectCode
      */
-    public function setRedirectCode(int $redirectCode);
+    public function setRedirectCode(int $redirectCode): void;
 
     /**
      * @return bool
@@ -312,17 +323,17 @@ interface LinkInterface
     /**
      * @param bool $visibleLoggedInOnly
      */
-    public function setVisibleLoggedInOnly(bool $visibleLoggedInOnly);
+    public function setVisibleLoggedInOnly(bool $visibleLoggedInOnly): void;
 
     /**
      * @return string|null
      */
-    public function getIdentifier();
+    public function getIdentifier(): ?string;
 
     /**
      * @param string|null $identifier
      */
-    public function setIdentifier($identifier);
+    public function setIdentifier($identifier): void;
 
     /**
      * @return bool
@@ -332,7 +343,7 @@ interface LinkInterface
     /**
      * @param bool $pluginEnabled
      */
-    public function setPluginEnabled(bool $pluginEnabled);
+    public function setPluginEnabled(bool $pluginEnabled): void;
 
     /**
      * @return Collection
@@ -342,12 +353,12 @@ interface LinkInterface
     /**
      * @param array|Collection $links
      */
-    public function setChildLinks($links);
+    public function setChildLinks($links): void;
 
     /**
      * @param Link $link
      */
-    public function addChildLink($link);
+    public function addChildLink($link): void;
 
     /**
      * @return string
@@ -357,7 +368,7 @@ interface LinkInterface
     /**
      * @param null|string $fileName
      */
-    public function setFileName(string $fileName);
+    public function setFileName(string $fileName): void;
 
     /**
      * @return string
@@ -373,12 +384,12 @@ interface LinkInterface
      * @param string $content
      * @param int    $idx
      */
-    public function setContent(string $content, int $idx);
+    public function setContent(string $content, int $idx): void;
 
     /**
      * @param array $contents
      */
-    public function setContents(array $contents);
+    public function setContents(array $contents): void;
 
     /**
      * @return string
@@ -394,12 +405,12 @@ interface LinkInterface
      * @param string $metaTitle
      * @param int    $idx
      */
-    public function setMetaTitle(string $metaTitle, int $idx);
+    public function setMetaTitle(string $metaTitle, int $idx): void;
 
     /**
      * @param array $metaTitles
      */
-    public function setMetaTitles(array $metaTitles);
+    public function setMetaTitles(array $metaTitles): void;
 
     /**
      * @return string
@@ -415,12 +426,12 @@ interface LinkInterface
      * @param string $metaKeyword
      * @param int    $idx
      */
-    public function setMetaKeyword(string $metaKeyword, int $idx);
+    public function setMetaKeyword(string $metaKeyword, int $idx): void;
 
     /**
      * @param array $metaKeywords
      */
-    public function setMetaKeywords(array $metaKeywords);
+    public function setMetaKeywords(array $metaKeywords): void;
 
     /**
      * @return string
@@ -436,12 +447,12 @@ interface LinkInterface
      * @param string $metaDescription
      * @param int    $idx
      */
-    public function setMetaDescription(string $metaDescription, int $idx);
+    public function setMetaDescription(string $metaDescription, int $idx): void;
 
     /**
      * @param array $metaDescriptions
      */
-    public function setMetaDescriptions(array $metaDescriptions);
+    public function setMetaDescriptions(array $metaDescriptions): void;
 
     /**
      * @return bool
@@ -451,7 +462,7 @@ interface LinkInterface
     /**
      * @param bool $isVisible
      */
-    public function setVisibility(bool $isVisible);
+    public function setVisibility(bool $isVisible): void;
 
     /**
      * @return int
@@ -461,7 +472,7 @@ interface LinkInterface
     /**
      * @param int $level
      */
-    public function setLevel(int $level);
+    public function setLevel(int $level): void;
 
     /**
      * @return string
@@ -471,7 +482,27 @@ interface LinkInterface
     /**
      * @param string $displayName
      */
-    public function setDisplayName(string $displayName);
+    public function setDisplayName(string $displayName): void;
+
+    /**
+     * @return string
+     */
+    public function getHandler(): string;
+
+    /**
+     * @param string $handler
+     */
+    public function setHandler(string $handler): void;
+
+    /**
+     * @return string
+     */
+    public function getTemplate(): string;
+
+    /**
+     * @param string $template
+     */
+    public function setTemplate(string $template): void;
 
     /**
      * @return LinkInterface[]

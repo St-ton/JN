@@ -43,7 +43,7 @@ class OFC_Elements_Axis extends OFC_Elements_Base
         $this->{'grid-colour'} = $colour;
     }
 
-    public function set_steps($steps=1)
+    public function set_steps($steps = 1)
     {
         $this->steps = $steps;
     }

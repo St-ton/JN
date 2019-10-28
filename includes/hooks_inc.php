@@ -4,6 +4,23 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Cart\Cart;
+use JTL\Cart\CartItem;
+use JTL\Catalog\Category\Kategorie;
+use JTL\Catalog\Hersteller;
+use JTL\Catalog\Product\Artikel;
+use JTL\Catalog\Product\Bewertung;
+use JTL\Catalog\Product\Merkmal;
+use JTL\Catalog\Product\MerkmalWert;
+use JTL\Catalog\Product\Preise;
+use JTL\CheckBox;
+use JTL\Checkout\Bestellung;
+use JTL\Checkout\Lieferadresse;
+use JTL\Customer\Customer;
+use JTL\Emailvorlage;
+use JTL\Firma;
+use JTL\IO\IO;
+
 /**
  * Ende Artikeldetail
  *
@@ -193,6 +210,7 @@ define('HOOK_JTL_PAGE_KUNDENACCOUNTLOESCHEN', 26);
  * Anzeige des Kundenkontos
  *
  * @file jtl.php
+ * @param Lieferadresse[] deliveryAddresses - since 5.0.0
  */
 define('HOOK_JTL_PAGE_MEINKKONTO', 27);
 
@@ -228,6 +246,8 @@ define('HOOK_NAVI_PAGE', 31);
  * Kurz vor der Anzeige in der News Detailansicht
  *
  * @file news.php
+ * @param \JTL\News\Item newsItem - since 5.0.0
+ * @param \JTL\Pagination\Pagination pagination - since 5.0.0
  */
 define('HOOK_NEWS_PAGE_DETAILANSICHT', 32);
 
@@ -235,6 +255,8 @@ define('HOOK_NEWS_PAGE_DETAILANSICHT', 32);
  * Kurz vor der Anzeige in der News Übersicht
  *
  * @file news.php
+ * @param \JTL\News\Category category - since 5.0.0
+ * @param Illuminate\Support\Collection items - since 5.0.0
  */
 define('HOOK_NEWS_PAGE_NEWSUEBERSICHT', 33);
 
@@ -490,11 +512,7 @@ define('HOOK_ARTIKEL_INC_BENACHRICHTIGUNG', 66);
 define('HOOK_ARTIKEL_INC_ARTIKELHINWEISSWITCH', 67);
 
 /**
- * Kurz vor der Rückgabe der Produktstags in den Artikeldetails
- *
- * @file artikel_inc.php
- * @param kArtikel
- * @param tags
+ * @removed in 5.0.0
  */
 define('HOOK_ARTIKEL_INC_PRODUKTTAGGING', 68);
 
@@ -558,7 +576,7 @@ define('HOOK_BESTELLABSCHLUSS_INC_BESTELLUNGINDB', 75);
  * @file bestellvorgang_inc.php
  * @param nReturnValue
  * @param fehlendeAngaben
- * @param Kunde
+ * @param Customer
  * @param cPost_arr
  */
 define('HOOK_BESTELLVORGANG_INC_UNREGISTRIERTBESTELLEN_PLAUSI', 76);
@@ -574,7 +592,7 @@ define('HOOK_BESTELLVORGANG_INC_UNREGISTRIERTBESTELLEN', 77);
  * before saving a rating to the database
  *
  * @file bewertung_inc.php
- * @param rating
+ * @param JTL\Review\ReviewModel rating
  */
 define('HOOK_BEWERTUNG_INC_SPEICHERBEWERTUNG', 78);
 
@@ -593,68 +611,66 @@ define('HOOK_BOXEN_INC_SCHNELLKAUF', 80);
 
 /**
  * @file Boxen.php
- * @param Box box
+ * @param \JTL\Boxes\Items\AbstractBox box
  */
 define('HOOK_BOXEN_INC_ZULETZTANGESEHEN', 81);
 
 /**
  * @file Boxen.php
- * @param \Boxes\Items\BoxInterface box
- * @param array                     cache_tags
+ * @param JTL\Boxes\Items\BoxInterface box
+ * @param array                        cache_tags
  */
 define('HOOK_BOXEN_INC_TOPANGEBOTE', 82);
 
 /**
  * @file Boxen.php
- * @param \Boxes\Items\BoxInterface box
- * @param array                     cache_tags
+ * @param JTL\Boxes\Items\BoxInterface box
+ * @param array                        cache_tags
  */
 define('HOOK_BOXEN_INC_NEUIMSORTIMENT', 83);
 
 /**
  * @file Boxen.php
- * @param \Boxes\Items\BoxInterface box
- * @param array                     cache_tags
+ * @param JTL\Boxes\Items\BoxInterface box
+ * @param array                        cache_tags
  */
 define('HOOK_BOXEN_INC_SONDERANGEBOTE', 84);
 
 /**
  * @file Boxen.php
- * @param \Boxes\Items\BoxInterface box
- * @param array                     cache_tags
+ * @param JTL\Boxes\Items\BoxInterface box
+ * @param array                        cache_tags
  */
 define('HOOK_BOXEN_INC_BESTSELLER', 85);
 
 /**
  * @file Boxen.php
- * @param \Boxes\Items\BoxInterface box
- * @param array                     cache_tags
+ * @param JTL\Boxes\Items\BoxInterface box
+ * @param array                        cache_tags
  */
 define('HOOK_BOXEN_INC_ERSCHEINENDEPRODUKTE', 86);
 
 /**
  * @file Boxen.php
- * @param \Boxes\Items\BoxInterface box
- * @param array                     cache_tags
+ * @param JTL\Boxes\Items\BoxInterface box
+ * @param array                        cache_tags
  */
 define('HOOK_BOXEN_INC_SUCHWOLKE', 87);
 
 /**
- * @file Boxen.php
- * @param \Boxes\Items\BoxInterface box
- * @param array                     cache_tags
+ * @removed in 5.0.0
  */
 define('HOOK_BOXEN_INC_TAGWOLKE', 88);
 
 /**
  * @file Boxen.php
- * @param \Boxes\Items\BoxInterface box
+ * @param JTL\Boxes\Items\BoxInterface box
  */
 define('HOOK_BOXEN_INC_WUNSCHZETTEL', 89);
 
 /**
  * @file Boxen.php
- * @param \Boxes\Items\BoxInterface box
+ * @param JTL\Boxes\Items\BoxInterface box
  */
 define('HOOK_BOXEN_INC_VERGLEICHSLISTE', 90);
 
@@ -665,7 +681,7 @@ define('HOOK_BOXEN_INC_SUCHSPECIALURL', 91);
 
 /**
  * @file Boxen.php
- * @param \Boxes\Items\BoxInterface box
+ * @param JTL\Boxes\Items\BoxInterface box
  * @param array                     cache_tags
  */
 define('HOOK_BOXEN_INC_TOPBEWERTET', 92);
@@ -677,14 +693,14 @@ define('HOOK_BOXEN_INC_NEWS', 93);
 
 /**
  * @file Boxen.php
- * @param \Boxes\Items\BoxInterface box
+ * @param JTL\Boxes\Items\BoxInterface box
  * @param array                     cache_tags
  */
 define('HOOK_BOXEN_INC_NEWSKATEGORIE', 94);
 
 /**
  * @file Boxen.php
- * @param \Boxes\Items\BoxInterface box
+ * @param JTL\Boxes\Items\BoxInterface box
  * @param array                     cache_tags
  */
 define('HOOK_BOXEN_INC_UMFRAGE', 95);
@@ -722,12 +738,15 @@ define('HOOK_LETZTERINCLUDE_INC', 99);
  * after template switch in sendeMail()
  *
  * @file mailTools.php
- * @param JTLSmarty  - mailsmarty
- * @param mail
- * @param kEmailvorlage
- * @param kSprache
- * @param cPluginBody
+ * @param \JTL\Smarty\JTLSmarty mailsmarty
+ * @param \JTL\Mail\Renderer\RendererInterface renderer - since 5.0.0
+ * @param object mail - null since 5.0.0
+ * @param int kEmailvorlage
+ * @param int kSprache
+ * @param string cPluginBody - empty string since 5.0.0
  * @param Emailvorlage
+ * @param \JTL\Mail\Template\TemplateInterface template - since 5.0.0
+ * @param \JTL\Mail\Template\Model model - since 5.0.0
  */
 define('HOOK_MAILTOOLS_INC_SWITCH', 100);
 
@@ -865,6 +884,7 @@ define('HOOK_EIGENSCHAFTWERT_CLASS_LOADFROMDB', 117);
  * after loading a company from the database
  *
  * @file Firma.php
+ * @param Firma instance - since 5.0.0
  */
 define('HOOK_FIRMA_CLASS_LOADFROMDB', 118);
 
@@ -898,6 +918,7 @@ define('HOOK_LIEFERADRESSE_CLASS_LOADFROMDB', 122);
 
 /**
  * @file Merkmal.php
+ * @param Merkmal instance - since 5.0.0
  */
 define('HOOK_MERKMAL_CLASS_LOADFROMDB', 123);
 
@@ -970,6 +991,7 @@ define('HOOK_INDEX_NAVI_HEAD_POSTGET', 132);
  * after instanciating JTLSmarty
  *
  * @file smartyInclude.php
+ * @param \JTL\Smarty\JTLSmarty $smarty
  */
 define('HOOK_SMARTY_INC', 133);
 
@@ -977,6 +999,7 @@ define('HOOK_SMARTY_INC', 133);
  * at the beginning of holeJobs()
  *
  * @file lastjobs.php
+ * @param array jobs - since 5.0.0
  */
 define('HOOK_LASTJOBS_HOLEJOBS', 134);
 
@@ -1028,7 +1051,8 @@ define('HOOK_CRON_EXPORTFORMATE_OUTPUT_FETCHED', 139);
  * at the end of smarty outputfilter
  *
  * @file JTLSmarty.php
- * @param JTLSmarty smarty
+ * @param \JTL\Smarty\JTLSmarty smarty
+ * @param phpQueryObject document
  */
 define('HOOK_SMARTY_OUTPUTFILTER', 140);
 
@@ -1128,12 +1152,13 @@ define('HOOK_ARTIKEL_XML_BEARBEITEDELETES', 152);
  * in sendeMail() before actually sending an email
  *
  * @file mailTools.php
- * @param JTLSmarty  - mailsmarty
- * @param mail
- * @param kEmailvorlage
- * @param kSprache
- * @param cPluginBody
- * @param Emailvorlage
+ * @param \JTL\Smarty\JTLSmarty mailsmarty
+ * @param mail - MailInterface since 5.0.0
+ * @param int kEmailvorlage - 0 since 5.0.0
+ * @param int kSprache
+ * @param string cPluginBody - empty string since 5.0.0
+ * @param object Emailvorlage - null since 5.0.0
+ * @param \JTL\Mail\Template\TemplateInterface template - since 5.0.0
  */
 define('HOOK_MAILTOOLS_SENDEMAIL_ENDE', 153);
 
@@ -1444,7 +1469,7 @@ define('HOOK_CACHE_FLUSH_AFTER', 200);
  *
  * @since 4.0
  * @file JTLSmarty.php
- * @param smarty - JTLSmarty
+ * @param smarty - Smarty\JTLSmarty
  */
 define('HOOK_SMARTY_OUTPUTFILTER_CACHE', 202);
 
@@ -1571,23 +1596,24 @@ define('HOOK_IO_HANDLE_REQUEST', 213);
  *
  * @since 4.0
  * @file class.core.Shop.php
- * @param int - pageType
+ * @param int    pageType
+ * @param string pageName
  */
 define('HOOK_SHOP_SET_PAGE_TYPE', 214);
 
 /**
  * immediately before storing kunde in DB
  *
- * @since 4.03
+ * @param Customer - oKunde
+ *@since 4.03
  * @file Kunde.php
- * @param Kunde - oKunde
  */
 define('HOOK_KUNDE_DB_INSERT', 215);
 
 /**
  * @since 4.03
  * @file Image.php
- * @param Imanee - imanee
+ * @param \Intervention\Image\Image - image
  * @param array  - settings
  * @param string - thumbnail
  */
@@ -1620,7 +1646,7 @@ define('HOOK_GET_ALL_CATEGORIES', 219);
 /**
  * @since 4.04
  * @file seite_inc.php
- * @param array - oNews_arr
+ * @param \Illuminate\Support\Collection - oNews_arr
  * @param array - cacheTags
  * @param bool  - cached
  */
@@ -1649,7 +1675,7 @@ define('HOOK_BACKEND_ACCOUNT_EDIT', 222);
  * @since 4.05
  * @file admin/includes/benutzerverwaltung_inc.php
  * @param Account   - oAccount
- * @param JTLSmarty - smarty
+ * @param \JTL\Smarty\JTLSmarty - smarty
  * @param array     - attribs - extended attributes
  * @param string    - &content
  */
@@ -1658,7 +1684,7 @@ define('HOOK_BACKEND_ACCOUNT_PREPARE_EDIT', 223);
 /**
  * @since 4.05
  * @file seite_inc.php
- * @param boxes - list of boxes for the home page
+ * @param array boxes - list of boxes for the home page
  */
 define('HOOK_BOXEN_HOME', 224);
 
@@ -1684,15 +1710,15 @@ define('HOOK_GET_MANUFACTURERS', 226);
 /**
  * @since 4.06
  * @file admin/templates/bootstrap/php/functions.php
- * @param AdminAccount - oAdminAccount
+ * @param \JTL\Backend\AdminAccount - oAdminAccount
  * @param string       - url
  */
 define('HOOK_BACKEND_FUNCTIONS_GRAVATAR', 227);
 
 /**
- * @since 4.06
+ * @param Cart - oWarenkorb
+ *@since 4.06
  * @file includes/bestellabschluss_inc.php
- * @param Warenkorb - oWarenkorb
  */
 define('HOOK_BESTELLABSCHLUSS_INC_WARENKORBINDB', 228);
 
@@ -1707,19 +1733,30 @@ define('HOOK_BACKEND_SHOP_RESET_AFTER', 229);
 /**
  * on removing a cart position that has been deactivated / deleted in the meantime
  *
+ * @param CartItem oPosition
+ * @param bool     delete
  * @since 5.0.0
  * @file classes/Warenkorb.php
- * @param WarenkorbPos - oPosition
- * @param bool         - &delete
  */
 define('HOOK_WARENKORB_CLASS_LOESCHEDEAKTIVIERTEPOS', 230);
+
+/**
+ * before the ordernumber is returned from baueBestellnummer().
+ *
+ * @since 4.06.14
+ * @file includes/bestellabschluss_inc.php
+ * @param int orderNo
+ * @param string prefix
+ * @param string suffix
+ */
+define('HOOK_BESTELLABSCHLUSS_INC_BAUEBESTELLNUMMER', 231);
 
 /**
  * in ProductFilter::initBaseStates() after initializing the base filters
  *
  * @since 5.0.0
  * @file includes/src/Filter/ProductFilter.php
- * @param \Filter\ProductFilter productFilter
+ * @param \JTL\Filter\ProductFilter productFilter
  */
 define('HOOK_PRODUCTFILTER_INIT', 250);
 
@@ -1728,7 +1765,7 @@ define('HOOK_PRODUCTFILTER_INIT', 250);
  *
  * @since 5.0.0
  * @file includes/src/Filter/ProductFilter.php
- * @param \Filter\ProductFilter productFilter
+ * @param \JTL\Filter\ProductFilter productFilter
  * @param array params
  */
 define('HOOK_PRODUCTFILTER_INIT_STATES', 251);
@@ -1738,7 +1775,7 @@ define('HOOK_PRODUCTFILTER_INIT_STATES', 251);
  *
  * @since 5.0.0
  * @file includes/src/Filter/ProductFilter.php
- * @param \Filter\ProductFilter productFilter
+ * @param \JTL\Filter\ProductFilter productFilter
  */
 define('HOOK_PRODUCTFILTER_CREATE', 252);
 
@@ -1754,14 +1791,14 @@ define('HOOK_PRODUCTFILTER_CREATE', 252);
  * @param array having
  * @param array order
  * @param array limit
- * @param \Filter\ProductFilter productFilter
+ * @param \JTL\Filter\ProductFilter productFilter
  */
 define('HOOK_PRODUCTFILTER_GET_BASE_QUERY', 253);
 
 /**
  * @since 5.0.0
- * @param Filter\SortingOptions\Factory $factory
- * @param \Filter\ProductFilter $productFilter
+ * @param JTL\Filter\SortingOptions\Factory $factory
+ * @param \JTL\Filter\ProductFilter         $productFilter
  */
 define('HOOK_PRODUCTFILTER_REGISTER_SEARCH_OPTION', 254);
 
@@ -1832,12 +1869,62 @@ define('HOOK_CAPTCHA_VALIDATE', 272);
 
 /**
  * @since 5.0.0
- * @file admin/plugin.php.php
+ * @file admin/plugin.php
  * @param Plugin plugin
  * @param bool   hasError
- * @param string msg
  * @param string msg
  * @param string error
  * @param array  options
  */
 define('HOOK_PLUGIN_SAVE_OPTIONS', 280);
+
+/**
+ * @since 5.0.0
+ * @file includes/src/Sitemap/Export.php
+ * @param \JTL\Sitemap\Factories\FactoryInterface[] factories
+ * @param \JTL\Sitemap\Export instance
+ */
+define('HOOK_SITEMAP_EXPORT_GENERATE', 285);
+
+/**
+ * @since 5.0.0
+ * @file includes/src/Sitemap/Export.php
+ * @param \JTL\Sitemap\Export instance
+ */
+define('HOOK_SITEMAP_EXPORT_INIT', 286);
+
+/**
+ * @since 5.0.0
+ * @file includes/src/Mail/Mailer.php
+ * @param \JTL\Mail\Mailer mailer
+ * @param \JTL\Mail\Mail mail
+ */
+define('HOOK_MAIL_PRERENDER', 290);
+
+/**
+ * @since 5.0.0
+ * @file includes/src/Link/Link.php
+ * @param array data
+ */
+define('HOOK_LINK_PRE_MAP', 300);
+
+/**
+ * @since 5.0.0
+ * @file includes/src/Link/Link.php
+ * @param \JTL\Link\Link link
+ */
+define('HOOK_LINK_MAPPED', 301);
+
+/**
+ * @since 5.0.0
+ * @file includes/src/Link/LinkGroup.php
+ * @param \JTL\Link\LinkGroup group
+ */
+define('HOOK_LINKGROUP_MAPPED', 302);
+
+/**
+ * @since 5.0.0
+ * @file includes/src/Link/LinkGroupList.php
+ * @param \JTL\Link\LinkGroupList list
+ */
+define('HOOK_LINKGROUPS_LOADED', 303);

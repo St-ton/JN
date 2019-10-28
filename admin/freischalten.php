@@ -3,118 +3,104 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\Alert\Alert;
+use JTL\Helpers\Form;
+use JTL\Helpers\GeneralObject;
+use JTL\Helpers\Request;
+use JTL\Helpers\Text;
+use JTL\Pagination\Pagination;
+use JTL\Shop;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('UNLOCK_CENTRAL_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'freischalten_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bewertung_inc.php';
-require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
-/** @global JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 setzeSprache();
 
-$cHinweis = '';
-$cFehler  = '';
-$step     = 'freischalten_uebersicht';
+$step                  = 'freischalten_uebersicht';
+$ratingsSQL            = new stdClass();
+$liveSearchSQL         = new stdClass();
+$commentsSQL           = new stdClass();
+$recipientsSQL         = new stdClass();
+$ratingsSQL->cWhere    = '';
+$liveSearchSQL->cWhere = '';
+$liveSearchSQL->cOrder = ' dZuletztGesucht DESC ';
+$commentsSQL->cWhere   = '';
+$recipientsSQL->cWhere = '';
+$recipientsSQL->cOrder = ' tnewsletterempfaenger.dEingetragen DESC';
+$tab                   = Request::verifyGPDataString('tab');
+$alertHelper           = Shop::Container()->getAlertService();
 
-$Einstellungen = Shop::getSettings([CONF_BEWERTUNG]);
+if (Request::verifyGPCDataInt('Suche') === 1) {
+    $search = Shop::Container()->getDB()->escape(Text::filterXSS(Request::verifyGPDataString('cSuche')));
 
-// Suche
-if (!isset($cBewertungSQL)) {
-    $cBewertungSQL = new stdClass();
-}
-if (!isset($cLivesucheSQL)) {
-    $cLivesucheSQL = new stdClass();
-}
-if (!isset($cTagSQL)) {
-    $cTagSQL = new stdClass();
-}
-if (!isset($cNewskommentarSQL)) {
-    $cNewskommentarSQL = new stdClass();
-}
-if (!isset($cNewsletterempfaengerSQL)) {
-    $cNewsletterempfaengerSQL = new stdClass();
-}
-$cBewertungSQL->cWhere            = '';
-$cLivesucheSQL->cWhere            = '';
-$cLivesucheSQL->cOrder            = ' dZuletztGesucht DESC ';
-$cTagSQL->cWhere                  = '';
-$cNewskommentarSQL->cWhere        = '';
-$cNewsletterempfaengerSQL->cWhere = '';
-$cNewsletterempfaengerSQL->cOrder = ' tnewsletterempfaenger.dEingetragen DESC';
-$cTab                             = RequestHelper::verifyGPDataString('tab');
-
-if (RequestHelper::verifyGPCDataInt('Suche') === 1) {
-    $cSuche = Shop::Container()->getDB()->escape(StringHandler::filterXSS(RequestHelper::verifyGPDataString('cSuche')));
-
-    if (strlen($cSuche) > 0) {
-        switch (RequestHelper::verifyGPDataString('cSuchTyp')) {
+    if (mb_strlen($search) > 0) {
+        switch (Request::verifyGPDataString('cSuchTyp')) {
             case 'Bewertung':
-                $cTab                  = 'bewertungen';
-                $cBewertungSQL->cWhere = " AND (tbewertung.cName LIKE '%" . $cSuche . "%'
-                                            OR tbewertung.cTitel LIKE '%" . $cSuche . "%'
-                                            OR tartikel.cName LIKE '%" . $cSuche . "%')";
+                $tab                = 'bewertungen';
+                $ratingsSQL->cWhere = " AND (tbewertung.cName LIKE '%" . $search . "%'
+                                            OR tbewertung.cTitel LIKE '%" . $search . "%'
+                                            OR tartikel.cName LIKE '%" . $search . "%')";
                 break;
             case 'Livesuche':
-                $cTab                  = 'livesearch';
-                $cLivesucheSQL->cWhere = " AND tsuchanfrage.cSuche LIKE '%" . $cSuche . "%'";
-                break;
-            case 'Tag':
-                $cTab            = 'tags';
-                $cTagSQL->cWhere = " AND (ttag.cName LIKE '%" . $cSuche . "%'
-                                        OR tartikel.cName LIKE '%" . $cSuche . "%')";
+                $tab                   = 'livesearch';
+                $liveSearchSQL->cWhere = " AND tsuchanfrage.cSuche LIKE '%" . $search . "%'";
                 break;
             case 'Newskommentar':
-                $cTab                      = 'newscomments';
-                $cNewskommentarSQL->cWhere = " AND (tnewskommentar.cKommentar LIKE '%" . $cSuche . "%'
-                                                OR tkunde.cVorname LIKE '%" . $cSuche . "%'
-                                                OR tkunde.cNachname LIKE '%" . $cSuche . "%'
-                                                OR tnews.cBetreff LIKE '%" . $cSuche . "%')";
+                $tab                 = 'newscomments';
+                $commentsSQL->cWhere = " AND (tnewskommentar.cKommentar LIKE '%" . $search . "%'
+                                                OR tkunde.cVorname LIKE '%" . $search . "%'
+                                                OR tkunde.cNachname LIKE '%" . $search . "%'
+                                                OR t.title LIKE '%" . $search . "%')";
                 break;
             case 'Newsletterempfaenger':
-                $cTab                             = 'newsletter';
-                $cNewsletterempfaengerSQL->cWhere = " AND (tnewsletterempfaenger.cVorname LIKE '%" . $cSuche . "%'
-                                                        OR tnewsletterempfaenger.cNachname LIKE '%" . $cSuche . "%'
-                                                        OR tnewsletterempfaenger.cEmail LIKE '%" . $cSuche . "%')";
+                $tab                   = 'newsletter';
+                $recipientsSQL->cWhere = " AND (tnewsletterempfaenger.cVorname LIKE '%" . $search . "%'
+                                                        OR tnewsletterempfaenger.cNachname LIKE '%" . $search . "%'
+                                                        OR tnewsletterempfaenger.cEmail LIKE '%" . $search . "%')";
                 break;
             default:
                 break;
         }
 
-        $smarty->assign('cSuche', $cSuche)
-               ->assign('cSuchTyp', RequestHelper::verifyGPDataString('cSuchTyp'));
+        $smarty->assign('cSuche', $search)
+               ->assign('cSuchTyp', Request::verifyGPDataString('cSuchTyp'));
     } else {
-        $cFehler = 'Fehler: Bitte geben Sie einen Suchbegriff ein.';
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSearchTermMissing'), 'errorSearchTermMissing');
     }
 }
 
-if (RequestHelper::verifyGPCDataInt('nSort') > 0) {
-    $smarty->assign('nSort', RequestHelper::verifyGPCDataInt('nSort'));
+if (Request::verifyGPCDataInt('nSort') > 0) {
+    $smarty->assign('nSort', Request::verifyGPCDataInt('nSort'));
 
-    switch (RequestHelper::verifyGPCDataInt('nSort')) {
+    switch (Request::verifyGPCDataInt('nSort')) {
         case 1:
-            $cLivesucheSQL->cOrder = ' tsuchanfrage.cSuche ASC ';
+            $liveSearchSQL->cOrder = ' tsuchanfrage.cSuche ASC ';
             break;
         case 11:
-            $cLivesucheSQL->cOrder = ' tsuchanfrage.cSuche DESC ';
+            $liveSearchSQL->cOrder = ' tsuchanfrage.cSuche DESC ';
             break;
         case 2:
-            $cLivesucheSQL->cOrder = ' tsuchanfrage.nAnzahlGesuche DESC ';
+            $liveSearchSQL->cOrder = ' tsuchanfrage.nAnzahlGesuche DESC ';
             break;
         case 22:
-            $cLivesucheSQL->cOrder = ' tsuchanfrage.nAnzahlGesuche ASC ';
+            $liveSearchSQL->cOrder = ' tsuchanfrage.nAnzahlGesuche ASC ';
             break;
         case 3:
-            $cLivesucheSQL->cOrder = ' tsuchanfrage.nAnzahlTreffer DESC ';
+            $liveSearchSQL->cOrder = ' tsuchanfrage.nAnzahlTreffer DESC ';
             break;
         case 33:
-            $cLivesucheSQL->cOrder = ' tsuchanfrage.nAnzahlTreffer ASC ';
+            $liveSearchSQL->cOrder = ' tsuchanfrage.nAnzahlTreffer ASC ';
             break;
         case 4:
-            $cNewsletterempfaengerSQL->cOrder = ' tnewsletterempfaenger.dEingetragen DESC ';
+            $recipientsSQL->cOrder = ' tnewsletterempfaenger.dEingetragen DESC ';
             break;
         case 44:
-            $cNewsletterempfaengerSQL->cOrder = ' tnewsletterempfaenger.dEingetragen ASC ';
+            $recipientsSQL->cOrder = ' tnewsletterempfaenger.dEingetragen ASC ';
             break;
         default:
             break;
@@ -124,162 +110,159 @@ if (RequestHelper::verifyGPCDataInt('nSort') > 0) {
 }
 
 // Freischalten
-if (RequestHelper::verifyGPCDataInt('freischalten') === 1 && FormHelper::validateToken()) {
+if (Request::verifyGPCDataInt('freischalten') === 1 && Form::validateToken()) {
     // Bewertungen
-    if (RequestHelper::verifyGPCDataInt('bewertungen') === 1) {
+    if (Request::verifyGPCDataInt('bewertungen') === 1) {
         if (isset($_POST['freischaltensubmit'])) {
-            if (schalteBewertungFrei($_POST['kBewertung'], $_POST['kArtikel'], $_POST['kBewertungAll'])) {
-                $cHinweis .= 'Ihre markierten Bewertungen wurden erfolgreich freigeschaltet.<br />';
+            if (schalteBewertungFrei($_POST['kBewertung'])) {
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successRatingUnlock'), 'successRatingUnlock');
             } else {
-                $cFehler .= 'Fehler: Bitte markieren Sie mindestens eine Bewertung.<br />';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneRating'), 'errorAtLeastOneRating');
             }
         } elseif (isset($_POST['freischaltenleoschen'])) {
             if (loescheBewertung($_POST['kBewertung'])) {
-                $cHinweis .= 'Ihre markierten Bewertungen wurden erfolgreich gelöscht.<br />';
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successRatingDelete'), 'successRatingDelete');
             } else {
-                $cFehler .= 'Fehler: Bitte markieren Sie mindestens eine Bewertung.<br />';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneRating'), 'errorAtLeastOneRating');
             }
         }
-    } elseif (RequestHelper::verifyGPCDataInt('suchanfragen') === 1) { // Suchanfragen
+    } elseif (Request::verifyGPCDataInt('suchanfragen') === 1) { // Suchanfragen
         // Mappen
         if (isset($_POST['submitMapping'])) {
-            $cMapping = RequestHelper::verifyGPDataString('cMapping');
-            if (strlen($cMapping) > 0) {
-                $nReturnValue = 0;
-                if (is_array($_POST['kSuchanfrage']) && count($_POST['kSuchanfrage']) > 0) {
-                    $nReturnValue = mappeLiveSuche($_POST['kSuchanfrage'], $cMapping); // Mappen
+            $mapping = Request::verifyGPDataString('cMapping');
+            if (mb_strlen($mapping) > 0) {
+                $res = 0;
+                if (GeneralObject::hasCount('kSuchanfrage', $_POST)) {
+                    $res = mappeLiveSuche($_POST['kSuchanfrage'], $mapping);
 
-                    if ($nReturnValue == 1) { // Alles O.K.
+                    if ($res === 1) { // Alles O.K.
                         if (schalteSuchanfragenFrei($_POST['kSuchanfrage'])) {
-                            // Freischalten
-
-                            $cHinweis = 'Ihre markierten Livesuchen wurden erfolgreich auf "' . $cMapping . '" gemappt.';
+                            $alertHelper->addAlert(
+                                Alert::TYPE_SUCCESS,
+                                sprintf(__('successLiveSearchMap'), $mapping),
+                                'successLiveSearchMap'
+                            );
                         } else {
-                            $cFehler = 'Fehler: Ihre Livesuche wurde zwar erfolgreich gemappt, konnte jedoch aufgrund eines unbekannten Fehlers, nicht freigeschaltet werden.';
+                            $alertHelper->addAlert(
+                                Alert::TYPE_ERROR,
+                                __('errorLiveSearchMapNotUnlock'),
+                                'errorLiveSearchMapNotUnlock'
+                            );
                         }
                     } else {
-                        switch ($nReturnValue) {
+                        switch ($res) {
                             case 2:
-                                $cFehler = 'Fehler: Mapping konnte aufgrund eines unbekannten Fehlers nicht durchgeführt werden.';
+                                $searchError = __('errorMapUnknown');
                                 break;
                             case 3:
-                                $cFehler = 'Fehler: Mindestens eine Suchanfrage wurde nicht in der Datenbank gefunden.';
+                                $searchError = __('errorSearchNotFoundDB');
                                 break;
                             case 4:
-                                $cFehler = 'Fehler: Mindestens eine Suchanfrage konnte nicht als Mapping in die Datenbank gespeichert werden.';
+                                $searchError = __('errorMapDB');
                                 break;
                             case 5:
-                                $cFehler = 'Fehler: Sie haben versucht auf eine nicht existierende Suchanfrage zu mappen.';
+                                $searchError = __('errorMapToNotExisting');
                                 break;
                             case 6:
-                                $cFehler = 'Fehler: Es kann nicht auf sich selbst gemappt werden.';
+                                $searchError = __('errorMapSelf');
                                 break;
                             default:
                                 break;
                         }
+                        $alertHelper->addAlert(Alert::TYPE_ERROR, $searchError, 'searchError');
                     }
                 } else {
-                    $cFehler = 'Fehler: Bitte markieren Sie mindestens eine Livesuche.';
+                    $alertHelper->addAlert(
+                        Alert::TYPE_ERROR,
+                        __('errorAtLeastOneLiveSearch'),
+                        'errorAtLeastOneLiveSearch'
+                    );
                 }
             } else {
-                $cFehler = 'Fehler: Bitte geben Sie ein Mappingnamen an.';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorMapNameMissing'), 'errorMapNameMissing');
             }
         }
 
         if (isset($_POST['freischaltensubmit'])) {
-            if (isset($_POST['kSuchanfrage']) && schalteSuchanfragenFrei($_POST['kSuchanfrage'])) {
-                $cHinweis .= 'Ihre markierten Suchanfragen wurden erfolgreich freigeschaltet.<br />';
+            if (schalteSuchanfragenFrei(Request::postVar('kSuchanfrage', []))) {
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSearchUnlock'), 'successSearchUnlock');
             } else {
-                $cFehler .= 'Fehler: Bitte markieren Sie mindestens eine Suchanfrage.<br />';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneSearch'), 'errorAtLeastOneSearch');
             }
         } elseif (isset($_POST['freischaltenleoschen'])) {
-            if (isset($_POST['kSuchanfrage']) && loescheSuchanfragen($_POST['kSuchanfrage'])) {
-                $cHinweis .= 'Ihre markierten Suchanfragen wurden erfolgreich gelöscht.<br />';
+            if (loescheSuchanfragen(Request::postVar('kSuchanfrage', []))) {
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSearchDelete'), 'successSearchDelete');
             } else {
-                $cFehler .= 'Fehler: Bitte markieren Sie mindestens eine Suchanfrage.<br />';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneSearch'), 'errorAtLeastOneSearch');
             }
         }
-    } elseif (RequestHelper::verifyGPCDataInt('tags') === 1 && FormHelper::validateToken()) { // Tags
+    } elseif (Request::verifyGPCDataInt('newskommentare') === 1 && Form::validateToken()) {
         if (isset($_POST['freischaltensubmit'])) {
-            if (isset($_POST['kTag']) && schalteTagsFrei($_POST['kTag'])) {
-                $cHinweis .= 'Ihre markierten Tags wurden erfolgreich freigeschaltet.<br />';
+            if (schalteNewskommentareFrei(Request::postVar('kNewsKommentar', []))) {
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successNewsCommentUnlock'), 'successNewsCommentUnlock');
             } else {
-                $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Tag.<br />';
+                $alertHelper->addAlert(
+                    Alert::TYPE_ERROR,
+                    __('errorAtLeastOneNewsComment'),
+                    'errorAtLeastOneNewsComment'
+                );
             }
         } elseif (isset($_POST['freischaltenleoschen'])) {
-            if (isset($_POST['kTag']) && loescheTags($_POST['kTag'])) {
-                $cHinweis .= 'Ihre markierten Tags wurden erfolgreich gelöscht.<br />';
+            if (loescheNewskommentare(Request::postVar('kNewsKommentar', []))) {
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successNewsCommentDelete'), 'successNewsCommentDelete');
             } else {
-                $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Tag.<br />';
+                $alertHelper->addAlert(
+                    Alert::TYPE_ERROR,
+                    __('errorAtLeastOneNewsComment'),
+                    'errorAtLeastOneNewsComment'
+                );
             }
         }
-    } elseif (RequestHelper::verifyGPCDataInt('newskommentare') === 1 && FormHelper::validateToken()) { // Newskommentare
+    } elseif (Request::verifyGPCDataInt('newsletterempfaenger') === 1 && Form::validateToken()) {
         if (isset($_POST['freischaltensubmit'])) {
-            if (isset($_POST['kNewsKommentar']) && schalteNewskommentareFrei($_POST['kNewsKommentar'])) {
-                $cHinweis .= 'Ihre markierten Newskommentare wurden erfolgreich freigeschaltet.<br />';
+            if (schalteNewsletterempfaengerFrei(Request::postVar('kNewsletterEmpfaenger', []))) {
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successNewsletterUnlock'), 'successNewsletterUnlock');
             } else {
-                $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Newskommentar.<br />';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneNewsletter'), 'errorAtLeastOneNewsletter');
             }
         } elseif (isset($_POST['freischaltenleoschen'])) {
-            if (isset($_POST['kNewsKommentar']) && loescheNewskommentare($_POST['kNewsKommentar'])) {
-                $cHinweis .= 'Ihre markierten Newskommentare wurden erfolgreich gelöscht.<br />';
+            if (loescheNewsletterempfaenger(Request::postVar('kNewsletterEmpfaenger', []))) {
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successNewsletterDelete'), 'successNewsletterDelete');
             } else {
-                $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Newskommentar.<br />';
-            }
-        }
-    } elseif (RequestHelper::verifyGPCDataInt('newsletterempfaenger') === 1 && FormHelper::validateToken()) { // Newsletterempfaenger
-        if (isset($_POST['freischaltensubmit'])) {
-            if (isset($_POST['kNewsletterEmpfaenger']) && schalteNewsletterempfaengerFrei($_POST['kNewsletterEmpfaenger'])) {
-                $cHinweis .= 'Ihre markierten Newsletterempfänger wurden erfolgreich freigeschaltet.<br />';
-            } else {
-                $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Newsletterempfänger.<br />';
-            }
-        } elseif (isset($_POST['freischaltenleoschen'])) {
-            if (isset($_POST['kNewsletterEmpfaenger']) && loescheNewsletterempfaenger($_POST['kNewsletterEmpfaenger'])) {
-                $cHinweis .= 'Ihre markierten Newsletterempfänger wurden erfolgreich gelöscht.<br />';
-            } else {
-                $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Newsletterempfänger.<br />';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneNewsletter'), 'errorAtLeastOneNewsletter');
             }
         }
     }
 }
 
 if ($step === 'freischalten_uebersicht') {
-    $oPagiBewertungen = (new Pagination('bewertungen'))
+    $pagiRatings    = (new Pagination('bewertungen'))
         ->setItemCount(gibMaxBewertungen())
         ->assemble();
-    $oPagiSuchanfragen = (new Pagination('suchanfragen'))
+    $pagiQueries    = (new Pagination('suchanfragen'))
         ->setItemCount(gibMaxSuchanfragen())
         ->assemble();
-    $oPagiTags = (new Pagination('tags'))
-        ->setItemCount(gibMaxTags())
-        ->assemble();
-    $oPagiNewskommentare = (new Pagination('newskommentare'))
+    $pagiComments   = (new Pagination('newskommentare'))
         ->setItemCount(gibMaxNewskommentare())
         ->assemble();
-    $oPagiNewsletterEmpfaenger = (new Pagination('newsletter'))
+    $pagiRecipients = (new Pagination('newsletter'))
         ->setItemCount(gibMaxNewsletterEmpfaenger())
         ->assemble();
-    $oBewertung_arr            = gibBewertungFreischalten(' LIMIT ' . $oPagiBewertungen->getLimitSQL(), $cBewertungSQL);
-    $oSuchanfrage_arr          = gibSuchanfrageFreischalten(' LIMIT ' . $oPagiSuchanfragen->getLimitSQL(), $cLivesucheSQL);
-    $oTag_arr                  = gibTagFreischalten( ' LIMIT ' . $oPagiTags->getLimitSQL(), $cTagSQL);
-    $oNewsKommentar_arr        = gibNewskommentarFreischalten(' LIMIT ' . $oPagiNewskommentare->getLimitSQL(), $cNewskommentarSQL);
-    $oNewsletterEmpfaenger_arr = gibNewsletterEmpfaengerFreischalten(' LIMIT ' . $oPagiNewsletterEmpfaenger->getLimitSQL(), $cNewsletterempfaengerSQL);
-    $smarty->assign('oBewertung_arr', $oBewertung_arr)
-           ->assign('oSuchanfrage_arr', $oSuchanfrage_arr)
-           ->assign('oTag_arr', $oTag_arr)
-           ->assign('oNewsKommentar_arr', $oNewsKommentar_arr)
-           ->assign('oNewsletterEmpfaenger_arr', $oNewsletterEmpfaenger_arr)
-           ->assign('oPagiBewertungen', $oPagiBewertungen)
-           ->assign('oPagiSuchanfragen', $oPagiSuchanfragen)
-           ->assign('oPagiTags', $oPagiTags)
-           ->assign('oPagiNewskommentare', $oPagiNewskommentare)
-           ->assign('oPagiNewsletterEmpfaenger', $oPagiNewsletterEmpfaenger);
+
+    $reviews      = gibBewertungFreischalten(' LIMIT ' . $pagiRatings->getLimitSQL(), $ratingsSQL);
+    $queries      = gibSuchanfrageFreischalten(' LIMIT ' . $pagiQueries->getLimitSQL(), $liveSearchSQL);
+    $newsComments = gibNewskommentarFreischalten(' LIMIT ' . $pagiComments->getLimitSQL(), $commentsSQL);
+    $recipients   = gibNewsletterEmpfaengerFreischalten(' LIMIT ' . $pagiRecipients->getLimitSQL(), $recipientsSQL);
+    $smarty->assign('ratings', $reviews)
+           ->assign('searchQueries', $queries)
+           ->assign('comments', $newsComments)
+           ->assign('recipients', $recipients)
+           ->assign('oPagiBewertungen', $pagiRatings)
+           ->assign('oPagiSuchanfragen', $pagiQueries)
+           ->assign('oPagiNewskommentare', $pagiComments)
+           ->assign('oPagiNewsletterEmpfaenger', $pagiRecipients);
 }
 
-$smarty->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
-       ->assign('step', $step)
-       ->assign('Sprachen', Sprache::getAllLanguages())
-       ->assign('cTab', $cTab)
+$smarty->assign('step', $step)
+       ->assign('cTab', $tab)
        ->display('freischalten.tpl');

@@ -1,12 +1,12 @@
 {includeMailTemplate template=header type=plain}
 
-Sehr {if $Kunde->cAnrede == "w"}geehrte{elseif $Kunde->cAnrede == "m"}geehrter{else}geehrte(r){/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
+Guten Tag {$Kunde->cVorname} {$Kunde->cNachname},
 
-wir haben Ihre Kundengruppe geändert. Sie müßten ab sofort andere Preise als den Standardpreis angezeigt bekommen.
+wir haben Ihre Kundengruppe geändert. Ab sofort sollten Ihnen andere Preise angezeigt werden.
 
-Momentan haben wir es noch nicht geschafft, alle Preise anzupassen.
+Ist dies nicht der Fall, melden Sie sich bitte ab und loggen sich dann erneut ein.
 
-Mit freundlichem Gruß,
+Mit freundlichem Gruß
 Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=plain}

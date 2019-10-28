@@ -23,7 +23,8 @@
                 {assign var='activeId' value=$smarty.session.LetzteKategorie}
             {/if}
         {/if}
-        {if !isset($activeParents) && ($nSeitenTyp == 1 || $nSeitenTyp == 2)}
+        {if !isset($activeParents)
+        && ($nSeitenTyp === $smarty.const.PAGE_ARTIKEL || $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE)}
             {get_category_parents categoryId=$activeId assign='activeParents'}
         {/if}
         {if !isset($activeParents)}
@@ -37,24 +38,21 @@
         {/if}
         {if !empty($categories)}
             {foreach $categories as $category}
-                {assign var='hasItems' value=false}
-                {if isset($category->bUnterKategorien) && $category->bUnterKategorien && (($i+1) < $limit)}
-                    {assign var='hasItems' value=true}
-                {/if}
+                {assign var='hasItems' value=$category->hasChildren() && (($i+1) < $limit)}
                 {if isset($activeParents) && is_array($activeParents) && isset($activeParents[$i])}
                     {assign var='activeParent' value=$activeParents[$i]}
                 {/if}
-                <li{if $category->kKategorie == $activeId || ((isset($activeParent) && isset($activeParent->kKategorie)) && $activeParent->kKategorie == $category->kKategorie)} class="active"{/if}>
-                    <a href="{$category->cURLFull}"{if $hasItems} class="nav-sub"{/if} data-ref="{$category->kKategorie}">
-                        {$category->cKurzbezeichnung}
+                <li{if $category->getID() == $activeId || ((isset($activeParent) && isset($activeParent->kKategorie)) && $activeParent->kKategorie == $category->getID())} class="active"{/if}>
+                    <a href="{$category->getURL()}"{if $hasItems} class="nav-sub"{/if} data-ref="{$category->getID()}">
+                        {$category->getShortName()}
                         {if $hasItems}<i class="fa fa-caret-{$caret} nav-toggle pull-right"></i>{/if}
                     </a>
                     {if $hasItems}
                         <ul class="nav">
-                            {if !empty($category->Unterkategorien)}
-                                {include file='snippets/categories_recursive.tpl' i=$i+1 categories=$category->Unterkategorien limit=$limit activeId=$activeId activeParents=$activeParents}
+                            {if !empty($category->getChildren())}
+                                {include file='snippets/categories_recursive.tpl' i=$i+1 categories=$category->getChildren() limit=$limit activeId=$activeId activeParents=$activeParents}
                             {else}
-                                {include file='snippets/categories_recursive.tpl' i=$i+1 categoryId=$category->kKategorie limit=$limit categories=null activeId=$activeId activeParents=$activeParents}
+                                {include file='snippets/categories_recursive.tpl' i=$i+1 categoryId=$category->getID() limit=$limit categories=null activeId=$activeId activeParents=$activeParents}
                             {/if}
                         </ul>
                     {/if}

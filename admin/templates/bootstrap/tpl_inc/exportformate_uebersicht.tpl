@@ -1,13 +1,13 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=#exportformats# cBeschreibung=#exportformatsDesc# cDokuURL=#exportformatsURL#}
-<div id="content" class="container-fluid">
-    <script type="text/javascript" src="{$currentTemplateDir}js/jquery.progressbar.js"></script>
+{include file='tpl_inc/seite_header.tpl' cTitel=__('exportformats') cBeschreibung=__('exportformatsDesc') cDokuURL=__('exportformatsURL')}
+<div id="content">
+    <script type="text/javascript" src="{$templateBaseURL}js/jquery.progressbar.js"></script>
     <script type="text/javascript">
         var url = "{$shopURL}/{$PFAD_ADMIN}exportformate.php",
             token = "{$smarty.session.jtl_token}",
-            tpl = "{$shopURL}/{$PFAD_ADMIN}{$currentTemplateDir}gfx/jquery";
+            tpl = "{$templateBaseURL}gfx/jquery";
         {literal}
         $(function () {
-            $('#exportall').click(function () {
+            $('#exportall').on('click', function () {
                 $('.extract_async').trigger('click');
                 return false;
             });
@@ -34,7 +34,7 @@
         }
 
         function error_export(cb) {
-            alert('Es ist ein Fehler beim Erstellen der Exportdatei aufgetreten');
+            alert('{/literal}{__('errorExport')}{literal}');
         }
 
         function show_export_info(cb) {
@@ -71,49 +71,82 @@
         {/literal}
     </script>
 
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <h3 class="panel-title">Vorhandene Exportformate</h3>
+    <div class="card">
+        <div class="card-header">
+            <div class="subheading1">{__('availableFormats')}</div>
+            <hr class="mb-n3">
         </div>
-        <div class="table-responsive">
-            <table class="table">
+        <div class="table-responsive card-body">
+            <table class="table table-align-top">
                 <thead>
                 <tr>
-                    <th class="tleft">{#name#}</th>
-                    <th class="tleft" style="width:320px">{#filename#}</th>
-                    <th class="tcenter">{#language#}</th>
-                    <th class="tcenter">{#currency#}</th>
-                    <th class="tcenter">{#customerGroup#}</th>
-                    <th class="tcenter">{#lastModified#}</th>
-                    <th class="tcenter" width="200">{#actions#}</th>
+                    <th class="text-left">{__('name')}</th>
+                    <th class="text-left" style="width:320px">{__('filename')}</th>
+                    <th class="text-center">{__('language')}</th>
+                    <th class="text-center">{__('currency')}</th>
+                    <th class="text-center">{__('customerGroup')}</th>
+                    <th class="text-center">{__('lastModified')}</th>
+                    <th class="text-center">{__('syntax')}</th>
+                    <th class="text-center" width="200">{__('actions')}</th>
                 </tr>
                 </thead>
                 <tbody>
-                {foreach name=exportformate from=$exportformate item=exportformat}
+                {foreach $exportformate as $exportformat}
                     {if $exportformat->nSpecial == 0}
                         <tr>
-                            <td class="tleft"> {$exportformat->cName}</td>
-                            <td class="tleft" id="progress{$exportformat->kExportformat}">
+                            <td class="text-left"> {$exportformat->cName}</td>
+                            <td class="text-left" id="progress{$exportformat->kExportformat}">
                                 <p>{$exportformat->cDateiname}</p>
-
                                 <div></div>
                             </td>
-                            <td class="tcenter">{$exportformat->Sprache->cNameDeutsch}</td>
-                            <td class="tcenter">{$exportformat->Waehrung->cName}</td>
-                            <td class="tcenter">{$exportformat->Kundengruppe->cName}</td>
-                            <td class="tcenter">{if !empty($exportformat->dZuletztErstellt)}{$exportformat->dZuletztErstellt}{else}-{/if}</td>
-                            <td class="tcenter">
+                            <td class="text-center">{$exportformat->Sprache->getLocalizedName()}</td>
+                            <td class="text-center">{$exportformat->Waehrung->cName}</td>
+                            <td class="text-center">{$exportformat->Kundengruppe->cName}</td>
+                            <td class="text-center">{if !empty($exportformat->dZuletztErstellt)}{$exportformat->dZuletztErstellt}{else}-{/if}</td>
+                            <td class="text-center">
+                                {if (int)$exportformat->nFehlerhaft === 1}
+                                    <i class="fal fa-times text-danger"></i>
+                                {else}
+                                    <i class="fal fa-check text-success"></i>
+                                {/if}
+                            </td>
+                            <td class="text-center">
                                 <form method="post" action="exportformate.php">
                                     {$jtl_token}
                                     <input type="hidden" name="kExportformat" value="{$exportformat->kExportformat}" />
                                     <div class="btn-group">
-                                        <button name="action" value="export" class="btn btn-default btn-sm extract notext" title="{#createExportFile#}"><i class="fa fa-plus"></i></button>
+                                        <button name="action" value="delete" class="btn btn-link px-1 remove notext" title="{__('delete')}" onclick="return confirm('{__('sureDeleteFormat')}');" data-toggle="tooltip">
+                                            <span class="icon-hover">
+                                                <span class="fal fa-trash-alt"></span>
+                                                <span class="fas fa-trash-alt"></span>
+                                            </span>
+                                        </button>
+                                        <button name="action" value="export" class="btn btn-link px-1 extract notext" title="{__('createExportFile')}" data-toggle="tooltip">
+                                            <span class="icon-hover">
+                                                <span class="fal fa-plus"></span>
+                                                <span class="fas fa-plus"></span>
+                                            </span>
+                                        </button>
+                                        <button name="action" value="download" class="btn btn-link px-1 download notext" title="{__('download')}" data-toggle="tooltip">
+                                            <span class="icon-hover">
+                                                <span class="fal fa-download"></span>
+                                                <span class="fas fa-download"></span>
+                                            </span>
+                                        </button>
                                         {if !$exportformat->bPluginContentExtern}
-                                            <a href="#" onclick="return init_export('{$exportformat->kExportformat}');" class="btn btn-primary btn-sm extract_async notext" title="{#createExportFileAsync#}"><i class="fa fa-plus-square"></i></a>
+                                            <a href="#" onclick="return init_export('{$exportformat->kExportformat}');" class="btn btn-link px-1 extract_async notext" title="{__('createExportFileAsync')}" data-toggle="tooltip">
+                                                <span class="icon-hover">
+                                                    <span class="fal fa-plus-square"></span>
+                                                    <span class="fas fa-plus-square"></span>
+                                                </span>
+                                            </a>
                                         {/if}
-                                        <button name="action" value="download" class="btn btn-default btn-sm download notext" title="{#download#}"><i class="fa fa-download"></i></button>
-                                        <button name="action" value="edit" class="btn btn-default btn-sm edit notext" title="{#edit#}"><i class="fa fa-edit"></i></button>
-                                        <button name="action" value="delete" class="btn btn-danger btn-sm remove notext" title="{#delete#}" onclick="return confirm('Exportformat l&ouml;schen?');"><i class="fa fa-trash"></i></button>
+                                        <button name="action" value="edit" class="btn btn-link px-1 edit notext" title="{__('edit')}" data-toggle="tooltip">
+                                            <span class="icon-hover">
+                                                <span class="fal fa-edit"></span>
+                                                <span class="fas fa-edit"></span>
+                                            </span>
+                                        </button>
                                     </div>
                                 </form>
                             </td>
@@ -123,10 +156,18 @@
                 </tbody>
             </table>
         </div>
-        <div class="panel-footer">
-            <div class="submit-wrap btn-group">
-                <a class="btn btn-primary" href="exportformate.php?neuerExport=1&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> {#newExportformat#}</a>
-                <a class="btn btn-default" href="#" id="exportall">Alle exportieren</a>
+        <div class="card-footer save-wrapper">
+            <div class="row">
+                <div class="ml-auto col-sm-6 col-xl-auto">
+                    <a class="btn btn-outline-primary btn-block" href="#" id="exportall">
+                        {__('exportAll')}
+                    </a>
+                </div>
+                <div class="col-sm-6 col-xl-auto">
+                    <a class="btn btn-primary btn-block" href="exportformate.php?neuerExport=1&token={$smarty.session.jtl_token}">
+                        <i class="fa fa-share"></i> {__('newExportformat')}
+                    </a>
+                </div>
             </div>
         </div>
     </div>

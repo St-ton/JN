@@ -4,11 +4,11 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter;
+namespace JTL\Filter;
 
 /**
- * Class StateSQLInterface
- * @package Filter
+ * Interface StateSQLInterface
+ * @package JTL\Filter
  */
 interface StateSQLInterface
 {
@@ -26,7 +26,7 @@ interface StateSQLInterface
     /**
      * @param array $having
      */
-    public function setHaving(array $having);
+    public function setHaving(array $having): void;
 
     /**
      * @param string $having
@@ -42,7 +42,7 @@ interface StateSQLInterface
     /**
      * @param array $conditions
      */
-    public function setConditions(array $conditions);
+    public function setConditions(array $conditions): void;
 
     /**
      * @param string $condition
@@ -63,7 +63,7 @@ interface StateSQLInterface
     /**
      * @param JoinInterface[] $joins
      */
-    public function setJoins(array $joins);
+    public function setJoins(array $joins): void;
 
     /**
      * @param JoinInterface $join
@@ -79,7 +79,7 @@ interface StateSQLInterface
     /**
      * @param array $select
      */
-    public function setSelect(array $select);
+    public function setSelect(array $select): void;
 
     /**
      * @param string $select
@@ -90,12 +90,12 @@ interface StateSQLInterface
     /**
      * @return string|null
      */
-    public function getOrderBy();
+    public function getOrderBy(): ?string;
 
     /**
      * @param string|null $orderBy
      */
-    public function setOrderBy($orderBy);
+    public function setOrderBy($orderBy): void;
 
     /**
      * @return string
@@ -105,7 +105,7 @@ interface StateSQLInterface
     /**
      * @param string $limit
      */
-    public function setLimit(string $limit);
+    public function setLimit(string $limit): void;
 
     /**
      * @return array
@@ -121,5 +121,5 @@ interface StateSQLInterface
     /**
      * @param array $groupBy
      */
-    public function setGroupBy(array $groupBy);
+    public function setGroupBy(array $groupBy): void;
 }

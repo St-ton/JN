@@ -4,121 +4,122 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Checkout\Zahlungsart;
+use JTL\DB\ReturnType;
+use JTL\Shop;
+
 /**
- * @param int $kZahlungsart
+ * @param int $paymentMethodID
  * @return array
  */
-function getNames(int $kZahlungsart)
+function getNames(int $paymentMethodID)
 {
-    $namen = [];
-    if (!$kZahlungsart) {
-        return $namen;
+    $res = [];
+    if (!$paymentMethodID) {
+        return $res;
     }
-    $zanamen = Shop::Container()->getDB()->selectAll('tzahlungsartsprache', 'kZahlungsart', $kZahlungsart);
-    $zCount  = count($zanamen);
-    for ($i = 0; $i < $zCount; $i++) {
-        $namen[$zanamen[$i]->cISOSprache] = $zanamen[$i]->cName;
+    $items = Shop::Container()->getDB()->selectAll('tzahlungsartsprache', 'kZahlungsart', $paymentMethodID);
+    foreach ($items as $item) {
+        $res[$item->cISOSprache] = $item->cName;
     }
 
-    return $namen;
+    return $res;
 }
 
 /**
- * @param int $kZahlungsart
+ * @param int $paymentMethodID
  * @return array
  */
-function getshippingTimeNames(int $kZahlungsart)
+function getshippingTimeNames(int $paymentMethodID)
 {
-    $namen = [];
-    if (!$kZahlungsart) {
-        return $namen;
+    $res = [];
+    if (!$paymentMethodID) {
+        return $res;
     }
-    $zanamen = Shop::Container()->getDB()->selectAll('tzahlungsartsprache', 'kZahlungsart', $kZahlungsart);
-    $zCount  = count($zanamen);
-    for ($i = 0; $i < $zCount; $i++) {
-        $namen[$zanamen[$i]->cISOSprache] = $zanamen[$i]->cGebuehrname;
+    $items = Shop::Container()->getDB()->selectAll('tzahlungsartsprache', 'kZahlungsart', $paymentMethodID);
+    foreach ($items as $item) {
+        $res[$item->cISOSprache] = $item->cGebuehrname;
     }
 
-    return $namen;
+    return $res;
 }
 
 /**
- * @param int $kZahlungsart
+ * @param int $paymentMethodID
  * @return array
  */
-function getHinweisTexte(int $kZahlungsart)
+function getHinweisTexte(int $paymentMethodID)
 {
-    $cHinweisTexte_arr = [];
-    if (!$kZahlungsart) {
-        return $cHinweisTexte_arr;
+    $messages = [];
+    if (!$paymentMethodID) {
+        return $messages;
     }
-    $oZahlungsartSprache_arr = Shop::Container()->getDB()->selectAll(
+    $localizations = Shop::Container()->getDB()->selectAll(
         'tzahlungsartsprache',
         'kZahlungsart',
-        $kZahlungsart
+        $paymentMethodID
     );
-    foreach ($oZahlungsartSprache_arr as $oZahlungsartSprache) {
-        $cHinweisTexte_arr[$oZahlungsartSprache->cISOSprache] = $oZahlungsartSprache->cHinweisText;
+    foreach ($localizations as $localization) {
+        $messages[$localization->cISOSprache] = $localization->cHinweisText;
     }
 
-    return $cHinweisTexte_arr;
+    return $messages;
 }
 
 /**
- * @param int $kZahlungsart
+ * @param int $paymentMethodID
  * @return array
  */
-function getHinweisTexteShop(int $kZahlungsart)
+function getHinweisTexteShop(int $paymentMethodID)
 {
-    $cHinweisTexte_arr = [];
-    if (!$kZahlungsart) {
-        return $cHinweisTexte_arr;
+    $messages = [];
+    if (!$paymentMethodID) {
+        return $messages;
     }
-    $oZahlungsartSprache_arr = Shop::Container()->getDB()->selectAll(
+    $localizations = Shop::Container()->getDB()->selectAll(
         'tzahlungsartsprache',
         'kZahlungsart',
-        $kZahlungsart
+        $paymentMethodID
     );
-    foreach ($oZahlungsartSprache_arr as $oZahlungsartSprache) {
-        $cHinweisTexte_arr[$oZahlungsartSprache->cISOSprache] = $oZahlungsartSprache->cHinweisTextShop;
+    foreach ($localizations as $localization) {
+        $messages[$localization->cISOSprache] = $localization->cHinweisTextShop;
     }
 
-    return $cHinweisTexte_arr;
+    return $messages;
 }
 
 /**
- * @param Zahlungsart $zahlungsart
+ * @param Zahlungsart $paymentMethod
  * @return array
  */
-function getGesetzteKundengruppen($zahlungsart)
+function getGesetzteKundengruppen($paymentMethod)
 {
     $ret = [];
-    if (!isset($zahlungsart->cKundengruppen) || !$zahlungsart->cKundengruppen) {
+    if (!isset($paymentMethod->cKundengruppen) || !$paymentMethod->cKundengruppen) {
         $ret[0] = true;
 
         return $ret;
     }
-    $kdgrp = explode(';', $zahlungsart->cKundengruppen);
-    foreach ($kdgrp as $kKundengruppe) {
-        $ret[$kKundengruppe] = true;
+    foreach (explode(';', $paymentMethod->cKundengruppen) as $customerGroupID) {
+        $ret[$customerGroupID] = true;
     }
 
     return $ret;
 }
 
 /**
- * @param string $cSearch
+ * @param string $query
  * @return array $allShippingsByName
  */
-function getPaymentMethodsByName($cSearch)
+function getPaymentMethodsByName($query)
 {
     $paymentMethodsByName = [];
-    foreach (explode(',', $cSearch) as $cSearchPos) {
+    foreach (explode(',', $query) as $string) {
         // Leerzeichen löschen
-        trim($cSearchPos);
+        trim($string);
         // Nur Eingaben mit mehr als 2 Zeichen
-        if (strlen($cSearchPos) > 2) {
-            $paymentMethodsByName_arr = Shop::Container()->getDB()->queryPrepared(
+        if (mb_strlen($string) > 2) {
+            $data = Shop::Container()->getDB()->queryPrepared(
                 'SELECT za.kZahlungsart, za.cName
                     FROM tzahlungsart AS za
                     LEFT JOIN tzahlungsartsprache AS zs 
@@ -126,17 +127,17 @@ function getPaymentMethodsByName($cSearch)
                         AND zs.cName LIKE :search
                     WHERE za.cName LIKE :search 
                     OR zs.cName LIKE :search',
-                ['search' => '%' . $cSearchPos . '%'],
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ['search' => '%' . $string . '%'],
+                ReturnType::ARRAY_OF_OBJECTS
             );
             // Berücksichtige keine fehlerhaften Eingaben
-            if (!empty($paymentMethodsByName_arr)) {
-                if (count($paymentMethodsByName_arr) > 1) {
-                    foreach ($paymentMethodsByName_arr as $paymentMethodByName) {
+            if (!empty($data)) {
+                if (count($data) > 1) {
+                    foreach ($data as $paymentMethodByName) {
                         $paymentMethodsByName[$paymentMethodByName->kZahlungsart] = $paymentMethodByName;
                     }
                 } else {
-                    $paymentMethodsByName[$paymentMethodsByName_arr[0]->kZahlungsart] = $paymentMethodsByName_arr[0];
+                    $paymentMethodsByName[$data[0]->kZahlungsart] = $data[0];
                 }
             }
         }

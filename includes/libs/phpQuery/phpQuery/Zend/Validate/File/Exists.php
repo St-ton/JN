@@ -78,8 +78,8 @@ class Zend_Validate_File_Exists extends Zend_Validate_Abstract
      */
     public function getDirectory($asArray = false)
     {
-        $asArray   = (bool) $asArray;
-        $directory = (string) $this->_directory;
+        $asArray   = (bool)$asArray;
+        $directory = (string)$this->_directory;
         if ($asArray) {
             $directory = explode(',', $directory);
         }

@@ -4,13 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL\Validation\Rules;
+namespace Tests\Services\JTL\Validation\Rules;
+
+use JTL\Services\JTL\Validation\Rules\EqualsLax;
+use Tests\BaseTestCase;
 
 /**
  * Class EqualsLaxTest
  * @package Services\JTL\Validation\Rules
  */
-class EqualsLaxTest extends \PHPUnit_Framework_TestCase
+class EqualsLaxTest extends BaseTestCase
 {
     public function test()
     {

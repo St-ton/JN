@@ -1,0 +1,222 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "pluginverwaltung"
+msgstr "Plug-in administration"
+
+msgid "pluginverwaltungLocales"
+msgstr "Language variables"
+
+msgid "pluginverwaltungLicenceKeyInput"
+msgstr "Licence key for plug-in"
+
+msgid "pluginverwaltungLicenceKey"
+msgstr "Licence key"
+
+msgid "pluginverwaltungDesc"
+msgstr "Plug-ins extend the functionality of JTL-Shop without changing its core. Active plug-ins can be deactivated or uninstalled at any time. Please do not install any updates from unknown sources. <br/><strong>Security note: Plug-ins can access to the entire database of your online shop system.</strong>"
+
+msgid "pluginverwaltungURL"
+msgstr "https://jtl-url.de/gfso0"
+
+msgid "pluginListNotInstalled"
+msgstr "Available plug-ins (not installed)"
+
+msgid "pluginListNotActivated"
+msgstr "Available plug-ins (not active)"
+
+msgid "pluginListNotInstalledAndError"
+msgstr "Faulty plug-ins (not installed)"
+
+msgid "pluginListInstalled"
+msgstr "Installed plug-ins"
+
+msgid "pluginListProblems"
+msgstr "Installed plug-ins still to be configured"
+
+msgid "pluginName"
+msgstr "Name"
+
+msgid "pluginErrorCode"
+msgstr "Error code"
+
+msgid "pluginAuthor"
+msgstr "Author"
+
+msgid "pluginHomepage"
+msgstr "Website"
+
+msgid "pluginDesc"
+msgstr "Description"
+
+msgid "pluginLanguage"
+msgstr "Languages"
+
+msgid "pluginVersion"
+msgstr "Version"
+
+msgid "pluginInfo"
+msgstr "Info"
+
+msgid "pluginInstalled"
+msgstr "Installed on"
+
+msgid "pluginUpdated"
+msgstr "Updated on"
+
+msgid "pluginFolder"
+msgstr "Directory"
+
+msgid "statusInstalled"
+msgstr "Installed"
+
+msgid "statusDeactive"
+msgstr "Deactivated"
+
+msgid "statusNotInstalled"
+msgstr "Not installed"
+
+msgid "statusError"
+msgstr "Faulty"
+
+msgid "pluginBtnUpdate"
+msgstr "Update"
+
+msgid "pluginBtnInstall"
+msgstr "Install"
+
+msgid "pluginBtnDeInstall"
+msgstr "Uninstall"
+
+msgid "pluginBtnReload"
+msgstr "Reload"
+
+msgid "pluginBtnLicenceAdd"
+msgstr "Enter licence key"
+
+msgid "pluginBtnLicenceChange"
+msgstr "Change"
+
+msgid "pluginBtnLicence"
+msgstr "Licence"
+
+msgid "pluginLocalesStd"
+msgstr "Reset to default settings"
+
+msgid "pluginEditLocales"
+msgstr "Language variables"
+
+msgid "pluginEditLinkgrps"
+msgstr "Link groups"
+
+msgid "pluginUpdateExists"
+msgstr "A newer plug-in version was uploaded. The plug-in can now be updated."
+
+msgid "pluginUpdateExistsError"
+msgstr "The plug-in does, however, have the following error."
+
+msgid "successPluginKeySave"
+msgstr "Licence key for plug-in saved successfully."
+
+msgid "errorPluginKeyInvalid"
+msgstr "Invalid licence key! Please check the licence key for potential typing errors and contact the Support team if necessary."
+
+msgid "errorPluginNotFound"
+msgstr "Could not find the plug-ins in the database. Please install it again."
+
+msgid "successPluginActivate"
+msgstr "Selected plug-ins activated successfully."
+
+msgid "errorAtLeastOnePlugin"
+msgstr "Please select at least one plug-in."
+
+msgid "successPluginDeactivate"
+msgstr "Selected plug-ins deactivated successfully."
+
+msgid "errorPluginDeleteSQL"
+msgstr "Could not uninstall plug-in due to an SQL error. Please check the log file."
+
+msgid "successPluginDelete"
+msgstr "Selected plug-ins uninstalled successfully."
+
+msgid "errorPluginNotFoundMultiple"
+msgstr "Could not find one or more plug-ins in the database. Please install the plug-in(s) again."
+
+msgid "successPluginRefresh"
+msgstr "Selected plug-ins updated successfully."
+
+msgid "errorPluginRefresh"
+msgstr "Could not upload one plug-in. Please install the plug-in again."
+
+msgid "successPluginUpdate"
+msgstr "Plug-in updated successfully."
+
+msgid "errorPluginUpdate"
+msgstr "Could not perform update. Error code: "
+
+msgid "successPluginInstall"
+msgstr "Selected plug-ins installed successfully."
+
+msgid "errorPluginInstall"
+msgstr "Error during the installation. Error code: "
+
+msgid "successVariableRestore"
+msgstr "Selected variable successfully reset to default settings."
+
+msgid "surePluginUpdate"
+msgstr "Update plug-in?"
+
+msgid "successPluginUpload"
+msgstr "Plug-in uploaded successfully."
+
+msgid "errorPluginUpload"
+msgstr "Could not upload plug-in. Please contact the Support team."
+
+msgid "sureResetLangVar"
+msgstr "Reset language variable to default settings?<br/><br/> All edited translations of the variable will be deleted."
+
+msgid "dangerPluginNotCompatibleShop5"
+msgstr "Please note that the plug-in is not fully compatible with JTL-Shop&nbsp;5. This might lead to performance issues."
+
+msgid "dangerPluginNotCompatibleShop4"
+msgstr "Please note that the plug-in is not fully compatible with JTL-Shop&nbsp;4. This might lead to performance issues."
+
+msgid "licensePlugin"
+msgstr "Plug-in licence"
+
+msgid "storeNotLinkedDesc"
+msgstr "In order to access content of JTL-Store, connect your JTL account to the marketplace first."
+
+msgid "storeLink"
+msgstr "Connect account"
+
+msgid "storeRevoke"
+msgstr "Cancel connection"
+
+msgid "storeUpdatesAvailable"
+msgstr "Available updates"
+
+msgid "storeListUpdates"
+msgstr "View updates"
+
+msgid "storePlugins"
+msgstr "Licensed plug-ins"
+
+msgid "storeListAll"
+msgstr "View all"
+
+msgid "storeLastUpdate"
+msgstr "Last updated"
+
+msgid "storeUpdateNow"
+msgstr "Update"
+
+msgid "deletePluginData"
+msgstr "Delete plugin data from database?"
+
+msgid "deletePluginDataYes"
+msgstr "Yes, delete all plugin data"
+
+msgid "deletePluginDataNo"
+msgstr "No, keep plugin data"

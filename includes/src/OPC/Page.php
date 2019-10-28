@@ -1,14 +1,16 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC;
+namespace JTL\OPC;
+
+use JTL\Helpers\GeneralObject;
 
 /**
  * Class Page
- * @package OPC
+ * @package JTL\OPC
  */
 class Page implements \JsonSerializable
 {
@@ -61,11 +63,6 @@ class Page implements \JsonSerializable
      * @var null|string
      */
     protected $lockedAt;
-
-    /**
-     * @var bool
-     */
-    protected $replace = false;
 
     /**
      * @var null|AreaList
@@ -121,7 +118,7 @@ class Page implements \JsonSerializable
     /**
      * @return null|string
      */
-    public function getPublishFrom()
+    public function getPublishFrom(): ?string
     {
         return $this->publishFrom;
     }
@@ -140,7 +137,7 @@ class Page implements \JsonSerializable
     /**
      * @return null|string
      */
-    public function getPublishTo()
+    public function getPublishTo(): ?string
     {
         return $this->publishTo;
     }
@@ -168,7 +165,7 @@ class Page implements \JsonSerializable
      * @param string $name
      * @return Page
      */
-    public function setName($name): self
+    public function setName(string $name): self
     {
         $this->name = $name;
 
@@ -216,7 +213,7 @@ class Page implements \JsonSerializable
     /**
      * @return null|string
      */
-    public function getLastModified()
+    public function getLastModified(): ?string
     {
         return $this->lastModified;
     }
@@ -254,7 +251,7 @@ class Page implements \JsonSerializable
     /**
      * @return null|string
      */
-    public function getLockedAt()
+    public function getLockedAt(): ?string
     {
         return $this->lockedAt;
     }
@@ -271,25 +268,6 @@ class Page implements \JsonSerializable
     }
 
     /**
-     * @return bool
-     */
-    public function isReplace(): bool
-    {
-        return $this->replace;
-    }
-
-    /**
-     * @param bool $replace
-     * @return $this
-     */
-    public function setReplace(bool $replace): self
-    {
-        $this->replace = $replace;
-
-        return $this;
-    }
-
-    /**
      * @return AreaList
      */
     public function getAreaList(): AreaList
@@ -298,10 +276,66 @@ class Page implements \JsonSerializable
     }
 
     /**
-     * @param string $json
+     * @param AreaList $newList
      * @return $this
      */
-    public function fromJson($json)
+    public function setAreaList(AreaList $newList): self
+    {
+        $this->areaList = $newList;
+
+        return $this;
+    }
+
+    /**
+     * @param int $publicDraftKey
+     * @return int
+     */
+    public function getStatus(int $publicDraftKey)
+    {
+        $now   = \date('Y-m-d H:i:s');
+        $start = $this->getPublishFrom();
+        $end   = $this->getPublishTo();
+
+        if (!empty($start) && $now >= $start && (empty($end) || $now < $end)) {
+            if ($this->getKey() === $publicDraftKey || $publicDraftKey === 0) {
+                return 0; // public
+            }
+            return 1; // planned
+        }
+        if (!empty($start) && $now < $start) {
+            return 1; // planned
+        }
+        if (empty($start)) {
+            return 2; // draft
+        }
+        if (!empty($start) && !empty($end) && $now > $end) {
+            return 3; // backdate
+        }
+
+        return -1;
+    }
+
+    /**
+     * @param bool $preview
+     * @return array
+     */
+    public function getCssList(bool $preview = false): array
+    {
+        $list = [];
+
+        foreach ($this->areaList->getAreas() as $area) {
+            $list = $list + $area->getCssList($preview);
+        }
+
+        return $list;
+    }
+
+    /**
+     * @param string $json
+     * @return Page
+     * @throws \Exception
+     */
+    public function fromJson(string $json): self
     {
         $this->deserialize(\json_decode($json, true));
 
@@ -310,9 +344,10 @@ class Page implements \JsonSerializable
 
     /**
      * @param array $data
-     * @return $this
+     * @return Page
+     * @throws \Exception
      */
-    public function deserialize($data)
+    public function deserialize(array $data): self
     {
         $this->setKey($data['key'] ?? $this->getKey());
         $this->setId($data['id'] ?? $this->getId());
@@ -322,7 +357,7 @@ class Page implements \JsonSerializable
         $this->setUrl($data['url'] ?? $this->getUrl());
         $this->setRevId($data['revId'] ?? $this->getRevId());
 
-        if (isset($data['areas']) && \is_array($data['areas'])) {
+        if (GeneralObject::isCountable('areas', $data)) {
             $this->getAreaList()->deserialize($data['areas']);
         }
 
@@ -345,7 +380,6 @@ class Page implements \JsonSerializable
             'lastModified' => $this->getLastModified(),
             'lockedBy'     => $this->getLockedBy(),
             'lockedAt'     => $this->getLockedAt(),
-            'replace'      => $this->isReplace(),
             'areaList'     => $this->getAreaList()->jsonSerialize(),
         ];
 

@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Visitor;
+
 /**
  * @return array
  * @deprecated since 5.0.0

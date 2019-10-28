@@ -2,7 +2,7 @@
 
 class x_legend
 {
-    public function __construct($text='')
+    public function __construct($text = '')
     {
         $this->text = $text;
     }

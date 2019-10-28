@@ -1,11 +1,20 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license       http://jtl-url.de/jtlshoplicense
  */
+
+namespace JTL;
+
+use Exception;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Text;
+use PHPMailer\PHPMailer\PHPMailer;
+use stdClass;
 
 /**
  * Class SimpleMail
+ * @package JTL
  */
 class SimpleMail
 {
@@ -49,7 +58,7 @@ class SimpleMail
      *
      * @var array
      */
-    private $cAnhang_arr = [];
+    private $attachments = [];
 
     /**
      * Versandmethode
@@ -113,14 +122,13 @@ class SimpleMail
     private $valid = true;
 
     /**
-     *
-     * @param bool  $bShopMail
-     * @param array $cMailEinstellungen_arr
+     * @param bool  $shopMail
+     * @param array $mailConfig
      */
-    public function __construct(bool $bShopMail = true, array $cMailEinstellungen_arr = [])
+    public function __construct(bool $shopMail = true, array $mailConfig = [])
     {
-        if ($bShopMail === true) {
-            $config = Shop::getSettings([CONF_EMAILS])['emails'];
+        if ($shopMail === true) {
+            $config = Shop::getSettings([\CONF_EMAILS])['emails'];
 
             $this->cMethod        = $config['email_methode'];
             $this->cSendMailPfad  = $config['email_sendmail_pfad'];
@@ -131,24 +139,24 @@ class SimpleMail
             $this->cSMTPPass      = $config['email_smtp_pass'];
             $this->cVerfasserName = $config['email_master_absender_name'];
             $this->cVerfasserMail = $config['email_master_absender'];
-        } elseif (!empty($cMailEinstellungen_arr)) {
-            if (isset($cMailEinstellungen_arr['cMethod']) && !empty($cMailEinstellungen_arr['cMethod'])) {
-                $this->valid = $this->setMethod($cMailEinstellungen_arr['cMethod']);
+        } elseif (!empty($mailConfig)) {
+            if (isset($mailConfig['cMethod']) && !empty($mailConfig['cMethod'])) {
+                $this->valid = $this->setMethod($mailConfig['cMethod']);
             }
 
-            $this->cSendMailPfad = $cMailEinstellungen_arr['cSendMailPfad'];
-            $this->cSMTPHost     = $cMailEinstellungen_arr['cSMTPHost'];
-            $this->cSMTPPort     = (int)$cMailEinstellungen_arr['cSMTPPort'];
-            $this->cSMTPAuth     = $cMailEinstellungen_arr['cSMTPAuth'];
-            $this->cSMTPUser     = $cMailEinstellungen_arr['cSMTPUser'];
-            $this->cSMTPPass     = $cMailEinstellungen_arr['cSMTPPass'];
+            $this->cSendMailPfad = $mailConfig['cSendMailPfad'];
+            $this->cSMTPHost     = $mailConfig['cSMTPHost'];
+            $this->cSMTPPort     = (int)$mailConfig['cSMTPPort'];
+            $this->cSMTPAuth     = $mailConfig['cSMTPAuth'];
+            $this->cSMTPUser     = $mailConfig['cSMTPUser'];
+            $this->cSMTPPass     = $mailConfig['cSMTPPass'];
 
-            if (isset($cMailEinstellungen_arr['cVerfasserName']) && !empty($cMailEinstellungen_arr['cVerfasserName'])) {
-                $this->setVerfasserName($cMailEinstellungen_arr['cVerfasserName']);
+            if (isset($mailConfig['cVerfasserName']) && !empty($mailConfig['cVerfasserName'])) {
+                $this->setVerfasserName($mailConfig['cVerfasserName']);
             }
 
-            if (isset($cMailEinstellungen_arr['cVerfasserMail']) && !empty($cMailEinstellungen_arr['cVerfasserMail'])) {
-                $this->valid = $this->setVerfasserMail($cMailEinstellungen_arr['cVerfasserMail']);
+            if (isset($mailConfig['cVerfasserMail']) && !empty($mailConfig['cVerfasserMail'])) {
+                $this->valid = $this->setVerfasserMail($mailConfig['cVerfasserMail']);
             }
         } else {
             $this->valid = false;
@@ -159,25 +167,25 @@ class SimpleMail
      * Anhang hinzufügen
      * array('cName' => 'Mein Anhang', 'cPath' => '/pfad/zu/meiner/datei.txt');
      *
-     * @param string $cName
-     * @param string $cPath
-     * @param string $cEncoding
-     * @param string $cType
+     * @param string $name
+     * @param string $path
+     * @param string $encoding
+     * @param string $type
      * @return bool
      */
     public function addAttachment(
-        string $cName,
-        string $cPath,
-        string $cEncoding = 'base64',
-        string $cType = 'application/octet-stream'
+        string $name,
+        string $path,
+        string $encoding = 'base64',
+        string $type = 'application/octet-stream'
     ): bool {
-        if (!empty($cName) && file_exists($cPath)) {
-            $cAnhang_arr              = [];
-            $cAnhang_arr['cName']     = $cName;
-            $cAnhang_arr['cPath']     = $cPath;
-            $cAnhang_arr['cEncoding'] = $cEncoding;
-            $cAnhang_arr['cType']     = $cType;
-            $this->cAnhang_arr[]      = $cAnhang_arr;
+        if (!empty($name) && \file_exists($path)) {
+            $attachments              = [];
+            $attachments['cName']     = $name;
+            $attachments['cPath']     = $path;
+            $attachments['cEncoding'] = $encoding;
+            $attachments['cType']     = $type;
+            $this->attachments[]      = $attachments;
 
             return true;
         }
@@ -218,7 +226,11 @@ class SimpleMail
                 case 'QMail':
                     break;
                 case 'smtp':
-                    if (empty($this->cSMTPAuth) || empty($this->cSMTPHost) || empty($this->cSMTPPass) || empty($this->cSMTPUser)) {
+                    if (empty($this->cSMTPAuth)
+                        || empty($this->cSMTPHost)
+                        || empty($this->cSMTPPass)
+                        || empty($this->cSMTPUser)
+                    ) {
                         $this->setErrorLog('SMTP', 'SMTP Daten nicht gesetzt!');
                     }
                     break;
@@ -233,133 +245,129 @@ class SimpleMail
     /**
      * E-Mail verschicken
      *
-     * @param array $cEmpfaenger_arr
-     * @param array $cCC_arr
-     * @param array $cBCC_arr
-     * @param array $cReply_arr
+     * @param array $recipients
+     * @param array $cc
+     * @param array $bcc
+     * @param array $replyTo
      * @return bool
      * @throws Exception
      * @throws \PHPMailer\PHPMailer\Exception
      */
-    public function send(array $cEmpfaenger_arr, $cCC_arr = [], $cBCC_arr = [], $cReply_arr = []): bool
+    public function send(array $recipients, $cc = [], $bcc = [], $replyTo = []): bool
     {
         if ($this->validate() !== true) {
             return false;
         }
-        $oPHPMailer           = new \PHPMailer\PHPMailer\PHPMailer();
-        $oPHPMailer->CharSet  = JTL_CHARSET;
-        $oPHPMailer->Timeout  = SOCKET_TIMEOUT;
-        $oPHPMailer->From     = $this->cVerfasserMail;
-        $oPHPMailer->Sender   = $this->cVerfasserMail;
-        $oPHPMailer->FromName = $this->cVerfasserName;
+        $mailer           = new PHPMailer();
+        $mailer->CharSet  = \JTL_CHARSET;
+        $mailer->Timeout  = \SOCKET_TIMEOUT;
+        $mailer->From     = $this->cVerfasserMail;
+        $mailer->Sender   = $this->cVerfasserMail;
+        $mailer->FromName = $this->cVerfasserName;
 
-        if (!empty($cEmpfaenger_arr)) {
-            foreach ($cEmpfaenger_arr as $cEmpfaenger) {
-                $oPHPMailer->addAddress($cEmpfaenger['cMail'], $cEmpfaenger['cName']);
+        if (!empty($recipients)) {
+            foreach ($recipients as $recipient) {
+                $mailer->addAddress($recipient['cMail'], $recipient['cName']);
             }
         }
-        if (!empty($cCC_arr)) {
-            foreach ($cCC_arr as $cCC) {
-                $oPHPMailer->addCC($cCC['cMail'], $cCC['cName']);
+        if (!empty($cc)) {
+            foreach ($cc as $recipient) {
+                $mailer->addCC($recipient['cMail'], $recipient['cName']);
             }
         }
-        if (!empty($cBCC_arr)) {
-            foreach ($cBCC_arr as $cBCC) {
-                $oPHPMailer->addBCC($cBCC['cMail'], $cBCC['cName']);
+        if (!empty($bcc)) {
+            foreach ($bcc as $recipient) {
+                $mailer->addBCC($recipient['cMail'], $recipient['cName']);
             }
         }
-        if (!empty($cReply_arr)) {
-            foreach ($cReply_arr as $cReply) {
-                $oPHPMailer->addReplyTo($cReply['cMail'], $cReply['cName']);
+        if (!empty($replyTo)) {
+            foreach ($replyTo as $item) {
+                $mailer->addReplyTo($item['cMail'], $item['cName']);
             }
         }
 
-        $oPHPMailer->Subject = $this->cBetreff;
+        $mailer->Subject = $this->cBetreff;
 
         switch ($this->cMethod) {
             case 'mail':
-                $oPHPMailer->isMail();
+                $mailer->isMail();
                 break;
             case 'sendmail':
-                $oPHPMailer->isSendmail();
-                $oPHPMailer->Sendmail = $this->cSendMailPfad;
+                $mailer->isSendmail();
+                $mailer->Sendmail = $this->cSendMailPfad;
                 break;
             case 'qmail':
-                $oPHPMailer->isQmail();
+                $mailer->isQmail();
                 break;
             case 'smtp':
-                $oPHPMailer->isSMTP();
-                $oPHPMailer->Host          = $this->cSMTPHost;
-                $oPHPMailer->Port          = $this->cSMTPPort;
-                $oPHPMailer->SMTPKeepAlive = true;
-                $oPHPMailer->SMTPAuth      = $this->cSMTPAuth;
-                $oPHPMailer->Username      = $this->cSMTPUser;
-                $oPHPMailer->Password      = $this->cSMTPPass;
+                $mailer->isSMTP();
+                $mailer->Host          = $this->cSMTPHost;
+                $mailer->Port          = $this->cSMTPPort;
+                $mailer->SMTPKeepAlive = true;
+                $mailer->SMTPAuth      = $this->cSMTPAuth;
+                $mailer->Username      = $this->cSMTPUser;
+                $mailer->Password      = $this->cSMTPPass;
                 break;
         }
 
         if (!empty($this->cBodyHTML)) {
-            $oPHPMailer->isHTML(true);
-            $oPHPMailer->Body    = $this->cBodyHTML;
-            $oPHPMailer->AltBody = $this->cBodyText;
+            $mailer->isHTML(true);
+            $mailer->Body    = $this->cBodyHTML;
+            $mailer->AltBody = $this->cBodyText;
         } else {
-            $oPHPMailer->isHTML(false);
-            $oPHPMailer->Body = $this->cBodyText;
+            $mailer->isHTML(false);
+            $mailer->Body = $this->cBodyText;
         }
-        foreach ($this->cAnhang_arr as $cAnhang_arr) {
-            $oPHPMailer->addAttachment(
-                $cAnhang_arr['cPath'],
-                $cAnhang_arr['cName'],
-                $cAnhang_arr['cEncoding'],
-                $cAnhang_arr['cType']
+        foreach ($this->attachments as $attachment) {
+            $mailer->addAttachment(
+                $attachment['cPath'],
+                $attachment['cName'],
+                $attachment['cEncoding'],
+                $attachment['cType']
             );
         }
-        $bSent = $oPHPMailer->send();
-        $oPHPMailer->clearAddresses();
+        $sent = $mailer->send();
+        $mailer->clearAddresses();
 
-        return $bSent;
+        return $sent;
     }
 
     /**
      * @return string|null
      */
-    public function getVerfasserMail()
+    public function getVerfasserMail(): ?string
     {
         return $this->cVerfasserMail;
     }
 
     /**
-     *
      * @return string|null
      */
-    public function getVerfasserName()
+    public function getVerfasserName(): ?string
     {
         return $this->cVerfasserName;
     }
 
     /**
-     *
      * @return string|null
      */
-    public function getBetreff()
+    public function getBetreff(): ?string
     {
         return $this->cBetreff;
     }
 
     /**
-     *
      * @return string|null
      */
-    public function getBodyHTML()
+    public function getBodyHTML(): ?string
     {
         return $this->cBodyHTML;
     }
 
     /**
-     *
      * @return string|null
      */
-    public function getBodyText()
+    public function getBodyText(): ?string
     {
         return $this->cBodyText;
     }
@@ -370,7 +378,7 @@ class SimpleMail
      */
     public function setVerfasserMail(string $cVerfasserMail): bool
     {
-        if (filter_var($cVerfasserMail, FILTER_VALIDATE_EMAIL)) {
+        if (\filter_var($cVerfasserMail, \FILTER_VALIDATE_EMAIL)) {
             $this->cVerfasserMail = $cVerfasserMail;
 
             return true;
@@ -443,7 +451,7 @@ class SimpleMail
      * @param string $cKey
      * @param mixed  $cValue
      */
-    public function setErrorLog($cKey, $cValue)
+    public function setErrorLog($cKey, $cValue): void
     {
         $this->cErrorLog[$cKey] = $cValue;
     }
@@ -451,7 +459,7 @@ class SimpleMail
     /**
      * @return string|null
      */
-    public function getMethod()
+    public function getMethod(): ?string
     {
         return $this->cMethod;
     }
@@ -470,60 +478,56 @@ class SimpleMail
 
         return false;
     }
+
     /**
      * Prüft ob eine die angegebende Email in temailblacklist vorhanden ist
      * Gibt true zurück, falls Email geblockt, ansonsten false
      *
-     * @param string $cEmail
+     * @param string $mail
      * @return bool
      */
-    public static function checkBlacklist(string $cEmail): bool
+    public static function checkBlacklist(?string $mail): bool
     {
-        $cEmail = strtolower(StringHandler::filterXSS($cEmail));
-        if (StringHandler::filterEmailAddress($cEmail) === false) {
+        $mail = \mb_convert_case(Text::filterXSS($mail), \MB_CASE_LOWER);
+        if (Text::filterEmailAddress($mail) === false) {
             return true;
         }
-        $conf = Shop::getSettings([CONF_EMAILBLACKLIST]);
+        $conf = Shop::getSettings([\CONF_EMAILBLACKLIST]);
         if ($conf['emailblacklist']['blacklist_benutzen'] !== 'Y') {
             return false;
         }
         $blacklist = Shop::Container()->getDB()->query(
             'SELECT cEmail FROM temailblacklist',
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($blacklist as $item) {
-            if (strpos($item->cEmail, '*') !== false) {
-                preg_match('/' . str_replace('*', "[a-z0-9\-\_\.\@\+]*", $item->cEmail) . '/', $cEmail, $hits);
+            if (\mb_strpos($item->cEmail, '*') !== false) {
+                \preg_match('/' . \str_replace('*', '[a-z0-9\-\_\.\@\+]*', $item->cEmail) . '/', $mail, $hits);
                 // Blocked
-                if (isset($hits[0]) && strlen($cEmail) === strlen($hits[0])) {
-                    // Email schonmal geblockt worden?
-                    $block = Shop::Container()->getDB()->select('temailblacklistblock', 'cEmail', $cEmail);
+                if (isset($hits[0]) && \mb_strlen($mail) === \mb_strlen($hits[0])) {
+                    $block = Shop::Container()->getDB()->select('temailblacklistblock', 'cEmail', $mail);
                     if (!empty($block->cEmail)) {
                         $_upd                = new stdClass();
                         $_upd->dLetzterBlock = 'NOW()';
-                        Shop::Container()->getDB()->update('temailblacklistblock', 'cEmail', $cEmail, $_upd);
+                        Shop::Container()->getDB()->update('temailblacklistblock', 'cEmail', $mail, $_upd);
                     } else {
-                        // temailblacklistblock Eintrag
                         $block                = new stdClass();
-                        $block->cEmail        = $cEmail;
+                        $block->cEmail        = $mail;
                         $block->dLetzterBlock = 'NOW()';
                         Shop::Container()->getDB()->insert('temailblacklistblock', $block);
                     }
 
                     return true;
                 }
-            } elseif (strtolower($item->cEmail) === strtolower($cEmail)) {
-                // Email schonmal geblockt worden?
-                $block = Shop::Container()->getDB()->select('temailblacklistblock', 'cEmail', $cEmail);
-
+            } elseif (\mb_convert_case($item->cEmail, \MB_CASE_LOWER) === \mb_convert_case($mail, \MB_CASE_LOWER)) {
+                $block = Shop::Container()->getDB()->select('temailblacklistblock', 'cEmail', $mail);
                 if (!empty($block->cEmail)) {
                     $_upd                = new stdClass();
                     $_upd->dLetzterBlock = 'NOW()';
-                    Shop::Container()->getDB()->update('temailblacklistblock', 'cEmail', $cEmail, $_upd);
+                    Shop::Container()->getDB()->update('temailblacklistblock', 'cEmail', $mail, $_upd);
                 } else {
-                    // temailblacklistblock Eintrag
                     $block                = new stdClass();
-                    $block->cEmail        = $cEmail;
+                    $block->cEmail        = $mail;
                     $block->dLetzterBlock = 'NOW()';
                     Shop::Container()->getDB()->insert('temailblacklistblock', $block);
                 }

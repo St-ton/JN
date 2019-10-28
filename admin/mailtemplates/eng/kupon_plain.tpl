@@ -1,11 +1,11 @@
 {includeMailTemplate template=header type=plain}
 
-Dear {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
+Dear {$Kunde->cVorname} {$Kunde->cNachname},
 
-we are happy to inform you that you may use the following coupon ({$Kupon->AngezeigterName}) in our online shop:
+We are happy to inform you that the following coupon ({$Kupon->AngezeigterName}) is waiting for you in our online shop:
 
-{if $Kupon->cKuponTyp=="standard"}Value of coupon: {$Kupon->cLocalizedWert} {if $Kupon->cWertTyp=="prozent"}discount{/if}{/if}{if $Kupon->cKuponTyp=="versandkupon"}>You will get free shipping with this coupon!
-    This coupon is valid for the following shipping countries: {$Kupon->cLieferlaender|upper}{/if}
+{if $Kupon->cKuponTyp == $couponTypes.standard}Value of coupon: {$Kupon->cLocalizedWert} {if $Kupon->cWertTyp === 'prozent'}discount{/if}{/if}{if $Kupon->cKuponTyp == $couponTypes.shipping}>You will get free shipping with this coupon!
+    This coupon is valid for the following destination countries: {$Kupon->cLieferlaender|upper}{/if}
 
 Coupon code: {$Kupon->cCode}
 
@@ -15,29 +15,29 @@ Valid from {$Kupon->cGueltigAbLong}{if $Kupon->dGueltigBis != 0} until {$Kupon->
 
 {else}There is no minimum order value!
 
-{/if}{if $Kupon->nVerwendungenProKunde>1}You may use this coupon {$Kupon->nVerwendungenProKunde} times in our shop.
+{/if}{if $Kupon->nVerwendungenProKunde>1}You may use this coupon in our shop {$Kupon->nVerwendungenProKunde} times.
 
-{elseif $Kupon->nVerwendungenProKunde==0}You may use this coupon more often in our shop.
+{elseif $Kupon->nVerwendungenProKunde==0}You may use this coupon in our shop for any number of purchases.
 
-{/if}{if $Kupon->nVerwendungen>0}Please note that this coupon is only valid for a limited time, so be quick.
+{/if}{if $Kupon->nVerwendungen>0}Please note that this coupon is only valid for a certain amount of uses.
 
-{/if}{if count($Kupon->Kategorien)>0}This coupon can be used for products from the following categories:
+{/if}{if count($Kupon->Kategorien)>0}This coupon can be used for items in the following categories:
 
 
-    {foreach name=art from=$Kupon->Kategorien item=Kategorie}
+    {foreach $Kupon->Kategorien as $Kategorie}
         {$Kategorie->cName} >
         {$Kategorie->cURL}
     {/foreach}{/if}
 
-{if count($Kupon->Artikel)>0}This coupon can be used for the following products:
+{if count($Kupon->Artikel)>0}This coupon can be used for the following items:
 
 
-    {foreach name=art from=$Kupon->Artikel item=Artikel}
+    {foreach $Kupon->Artikel as $Artikel}
         {$Artikel->cName} >
-        {$Artikel->cURL}
+        {$Artikel->cURLFull}
     {/foreach}{/if}
 
-You need to type in the coupon code in the checkout process to use it.
+Please enter the coupon code during the checkout process.
 
 Enjoy your next purchase in our shop.
 

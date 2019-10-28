@@ -38,13 +38,14 @@ define('CONF_NEWS', 113);
 define('CONF_SITEMAP', 114);
 define('CONF_UMFRAGE', 115);
 define('CONF_KUNDENWERBENKUNDEN', 116);
-define('CONF_TRUSTEDSHOPS', 117);
 define('CONF_SUCHSPECIAL', 119);
 define('CONF_CHECKBOX', 120);
 define('CONF_AUSWAHLASSISTENT', 121);
 define('CONF_CACHING', 124);
 define('CONF_LOGO', 125);
 define('CONF_PLUGINZAHLUNGSARTEN', 126);
+define('CONF_FTP', 127);
+define('CONF_CRON', 128);
 //
 define('C_WARENKORBPOS_TYP_ARTIKEL', 1);
 define('C_WARENKORBPOS_TYP_VERSANDPOS', 2);
@@ -57,7 +58,6 @@ define('C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR', 8);
 define('C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG', 9);
 define('C_WARENKORBPOS_TYP_VERPACKUNG', 10);
 define('C_WARENKORBPOS_TYP_GRATISGESCHENK', 11);
-define('C_WARENKORBPOS_TYP_TRUSTEDSHOPS', 12);
 //
 define('C_WARENKORBPOS_TYP_ZINSAUFSCHLAG', 13);
 define('C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR', 14);
@@ -79,14 +79,13 @@ define('URLART_KATEGORIE', 2);
 define('URLART_SEITE', 3);
 define('URLART_HERSTELLER', 4);
 define('URLART_LIVESUCHE', 5);
-define('URLART_TAG', 6);
 define('URLART_MERKMAL', 7);
 define('URLART_NEWS', 8);
 define('URLART_NEWSMONAT', 9);
 define('URLART_NEWSKATEGORIE', 10);
 define('URLART_UMFRAGE', 11);
 define('URLART_SEARCHSPECIALS', 12);
-// bestellstati
+// bestellstatus
 define('BESTELLUNG_STATUS_STORNO', -1);
 define('BESTELLUNG_STATUS_OFFEN', 1);
 define('BESTELLUNG_STATUS_IN_BEARBEITUNG', 2);
@@ -125,6 +124,10 @@ define('MAILTEMPLATE_CHECKBOX_SHOPBETREIBER', 'core_jtl_checkbox_shopbetreiber')
 define('MAILTEMPLATE_BEWERTUNG_GUTHABEN', 'core_jtl_bewertung_guthaben');
 define('MAILTEMPLATE_BESTELLUNG_TEILVERSANDT', 'core_jtl_bestellung_teilversandt');
 define('MAILTEMPLATE_ANBIETERKENNZEICHNUNG', 'core_jtl_anbieterkennzeichnung');
+define('MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR_OPTIN', 'core_jtl_verfuegbarkeitsbenachrichtigung_optin');
+define('MAILTEMPLATE_FOOTER', 'core_jtl_footer');
+define('MAILTEMPLATE_HEADER', 'core_jtl_header');
+define('MAILTEMPLATE_AKZ', 'core_jtl_anbieterkennzeichnung');
 // Suche
 define('SEARCH_SORT_NONE', -1);
 define('SEARCH_SORT_STANDARD', 100);
@@ -173,13 +176,11 @@ define('LINKTYP_PASSWORD_VERGESSEN', 10);
 define('LINKTYP_AGB', 11);
 define('LINKTYP_DATENSCHUTZ', 12);
 define('LINKTYP_KONTAKT', 13);
-define('LINKTYP_TAGGING', 14);
 define('LINKTYP_LIVESUCHE', 15);
 define('LINKTYP_HERSTELLER', 16);
 define('LINKTYP_NEWSLETTER', 17);
 define('LINKTYP_NEWSLETTERARCHIV', 18);
 define('LINKTYP_NEWS', 19);
-define('LINKTYP_NEWSARCHIV', 20);
 define('LINKTYP_SITEMAP', 21);
 define('LINKTYP_UMFRAGE', 22);
 define('LINKTYP_GRATISGESCHENK', 23);
@@ -194,6 +195,7 @@ define('LINKTYP_BESTELLVORGANG', 32);
 define('LINKTYP_BESTELLABSCHLUSS', 33);
 define('LINKTYP_WUNSCHLISTE', 34);
 define('LINKTYP_VERGLEICHSLISTE', 35);
+define('LINKTYP_REFERENZ', 36);
 // Artikel
 define('INWKNICHTLEGBAR_LAGER', -1);
 define('INWKNICHTLEGBAR_LAGERVAR', -2);
@@ -262,16 +264,22 @@ define('PFAD_PLUGIN_PAYMENTMETHOD', 'paymentmethod/');
 define('PFAD_PLUGIN_TEMPLATE', 'template/');
 define('PFAD_PLUGIN_BOXEN', 'boxen/');
 define('PFAD_PLUGIN_WIDGET', 'widget/');
-define('PFAD_PLUGIN_PORTLETS', 'portlets/');
+define('PFAD_PLUGIN_PORTLETS', 'Portlets/');
 define('PFAD_PLUGIN_BLUEPRINTS', 'blueprints/');
 define('PFAD_PLUGIN_EXPORTFORMAT', 'exportformat/');
 define('PFAD_PLUGIN_UNINSTALL', 'uninstall/');
+define('PFAD_PLUGIN_MIGRATIONS', 'Migrations/');
+define('PLUGIN_DIR', 'plugins/');
 define('PLUGIN_INFO_FILE', 'info.xml');
 define('PLUGIN_LICENCE_METHODE', 'checkLicence');
 define('PLUGIN_LICENCE_CLASS', 'PluginLicence');
 define('PLUGIN_EXPORTFORMAT_CONTENTFILE', 'PluginContentFile_');
 define('PLUGIN_SEITENHANDLER', 'seite_plugin.php');
-define('PLUGIN_BOOTSTRAPPER', 'bootstrap.php');
+define('PLUGIN_BOOTSTRAPPER', 'Bootstrap.php');
+define('OLD_BOOTSTRAPPER', 'bootstrap.php');
+
+define('JOBQUEUE_LOCKFILE', PFAD_LOGFILES . 'jobqueue.lock');
+
 // Red. Param
 define('R_MINDESTMENGE', 1);
 define('R_LAGER', 2);
@@ -304,13 +312,13 @@ define('SEP_MERKMAL', '__');
 define('SEP_MM_MMW', '--');
 // extract params seperator
 define('EXT_PARAMS_SEPERATORS_REGEX', '\&\?');
-// Updater
-define('U_FILE_PREFIX', 'jtl_update_');
 // JobQueue
 defined('JOBQUEUE_LIMIT_JOBS') || define('JOBQUEUE_LIMIT_JOBS', 5);
 defined('JOBQUEUE_LIMIT_M_EXPORTE') || define('JOBQUEUE_LIMIT_M_EXPORTE', 500);
-define('JOBQUEUE_LIMIT_M_NEWSLETTER', 100);
-define('JOBQUEUE_LIMIT_M_STATUSEMAIL', 1);
+defined('JOBQUEUE_LIMIT_M_NEWSLETTER') || define('JOBQUEUE_LIMIT_M_NEWSLETTER', 100);
+defined('JOBQUEUE_LIMIT_M_STATUSEMAIL') || define('JOBQUEUE_LIMIT_M_STATUSEMAIL', 1);
+defined('JOBQUEUE_LIMIT_M_SITEMAP_ITEMS') || define('JOBQUEUE_LIMIT_M_SITEMAP_ITEMS', 500);
+defined('JOBQUEUE_LIMIT_IMAGE_CACHE_IMAGES') || define('JOBQUEUE_LIMIT_IMAGE_CACHE_IMAGES', 400);
 // Exportformate
 defined('EXPORTFORMAT_LIMIT_M') || define('EXPORTFORMAT_LIMIT_M', 2000);
 defined('EXPORTFORMAT_ASYNC_LIMIT_M') || define('EXPORTFORMAT_ASYNC_LIMIT_M', 15);
@@ -351,7 +359,6 @@ define('PAGE_STARTSEITE', 18); // Startseite
 define('PAGE_VERSAND', 19); // Versand
 define('PAGE_AGB', 20); // AGB
 define('PAGE_DATENSCHUTZ', 21); // Datenschutz
-define('PAGE_TAGGING', 22); // Tagging
 define('PAGE_LIVESUCHE', 23); // Livesuche
 define('PAGE_HERSTELLER', 24); // Hersteller
 define('PAGE_SITEMAP', 25); // Sitemap
@@ -359,7 +366,6 @@ define('PAGE_GRATISGESCHENK', 26); // Gratis Geschenk
 define('PAGE_WRB', 27); // WRB
 define('PAGE_PLUGIN', 28); // Plugin
 define('PAGE_NEWSLETTERARCHIV', 29); // Newsletterarchiv
-define('PAGE_NEWSARCHIV', 30); // Newsarchiv
 define('PAGE_EIGENE', 31); // Eigene Seite
 define('PAGE_AUSWAHLASSISTENT', 32); // Auswahlassistent
 define('PAGE_BESTELLABSCHLUSS', 33); // Bestellabschluss
@@ -389,14 +395,11 @@ define('BOX_SUCHWOLKE', 13);
 define('BOX_SONDERANGEBOT', 14);
 define('BOX_TOP_ANGEBOT', 15);
 define('BOX_TOP_BEWERTET', 16);
-define('BOX_TRUSTEDSHOPS_KUNDENBEWERTUNGEN', 17);
-define('BOX_TRUSTEDSHOPS_GUETESIEGEL', 18);
 define('BOX_IN_KUERZE_VERFUEGBAR', 19);
 define('BOX_GLOBALE_MERKMALE', 20);
 define('BOX_WARENKORB', 21);
 define('BOX_UMFRAGE', 22);
 define('BOX_LINKGRUPPE', 23);
-define('BOX_FILTER_TAG', 24);
 define('BOX_FILTER_PREISSPANNE', 25);
 define('BOX_FILTER_BEWERTUNG', 26);
 define('BOX_FILTER_MERKMALE', 27);
@@ -406,9 +409,7 @@ define('BOX_FILTER_HERSTELLER', 101);
 define('BOX_FILTER_KATEGORIE', 102);
 define('BOX_EIGENE_BOX_OHNE_RAHMEN', 30);
 define('BOX_EIGENE_BOX_MIT_RAHMEN', 31);
-define('BOX_TAGWOLKE', 32);
 define('BOX_KONFIGURATOR', 33);
-define('BOX_PREISRADAR', 100);
 // Kampagnentypen
 define('KAMPAGNE_DEF_HIT', 1);
 define('KAMPAGNE_DEF_VERKAUF', 2);
@@ -432,9 +433,6 @@ define('STATS_ADMIN_TYPE_UMSATZ', 4);
 define('STATS_ADMIN_TYPE_EINSTIEGSSEITEN', 5);
 // Newsletter URL_SHOP Parsevariable für Bilder in der Standardvorlage
 define('NEWSLETTER_STD_VORLAGE_URLSHOP', '$#URL_SHOP#$');
-// Trusted Shops Käuferschutz Varianten
-define('TS_BUYERPROT_CLASSIC', 'CLASSIC');
-define('TS_BUYERPROT_EXCELLENCE', 'EXCELLENCE');
 // CheckBox
 define('CHECKBOX_ORT_REGISTRIERUNG', 1);
 define('CHECKBOX_ORT_BESTELLABSCHLUSS', 2);
@@ -490,7 +488,6 @@ define('TEMPLATE_XML', 'template.xml');
 define('SHOP_SEO', true);
 // Sessionspeicherung 1 => DB, sonst => Dateien
 // Max Anzahl an Variationswerten für Warenkorbmatrix
-define('ART_MATRIX_MAX', 250);
 
 define('BROWSER_UNKNOWN', 0);
 define('BROWSER_MSIE', 1);
@@ -499,3 +496,17 @@ define('BROWSER_CHROME', 3);
 define('BROWSER_SAFARI', 4);
 define('BROWSER_OPERA', 5);
 define('BROWSER_NETSCAPE', 6);
+
+define('FREQ_ALWAYS', 'always');
+define('FREQ_HOURLY', 'hourly');
+define('FREQ_DAILY', 'daily');
+define('FREQ_WEEKLY', 'weekly');
+define('FREQ_MONTHLY', 'monthly');
+define('FREQ_YEARLY', 'yearly');
+define('FREQ_NEVER', 'never');
+
+define('PRIO_VERYHIGH', '1.0');
+define('PRIO_HIGH', '0.7');
+define('PRIO_NORMAL', '0.5');
+define('PRIO_LOW', '0.3');
+define('PRIO_VERYLOW', '0.0');

@@ -42,7 +42,7 @@
 				<tr>
 					<td>
 						<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-							{if $Nachricht->cAnredeLocalized}{$Nachricht->cAnredeLocalized} {/if}{if $Nachricht->cVorname}{$Nachricht->cVorname} {/if}{if $Nachricht->cNachname}{$Nachricht->cNachname}{/if}
+							{if $Nachricht->cVorname}{$Nachricht->cVorname} {/if}{if $Nachricht->cNachname}{$Nachricht->cNachname}{/if}
 							{if $Nachricht->cFirma}<br>{$Nachricht->cFirma}{/if}
 						</font>
 					</td>
@@ -56,7 +56,7 @@
 				<tr>
 					<td>
 						<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-							<strong>Email:</strong>
+							<strong>Email address:</strong>
 						</font>
 					</td>
 				</tr>
@@ -81,7 +81,7 @@
 				<tr>
 					<td>
 						<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-							<strong>Telefon:</strong>
+							<strong>Phone:</strong>
 						</font>
 					</td>
 				</tr>
@@ -107,7 +107,7 @@
 				<tr>
 					<td>
 						<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-							<strong>Mobil:</strong>
+							<strong>Mobile:</strong>
 						</font>
 					</td>
 				</tr>

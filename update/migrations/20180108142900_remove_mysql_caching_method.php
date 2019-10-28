@@ -3,12 +3,15 @@
  * Remove caching method "mysql"
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Class Migration_20180108142900
  */
 class Migration_20180108142900 extends Migration implements IMigration
 {
-    protected $author      = 'Felix Moche';
+    protected $author      = 'fm';
     protected $description = 'Remove caching method mysql';
 
     /**

@@ -45,7 +45,7 @@ class OFC_Chart
 {
     public function OFC_Chart()
     {
-        $this->title = new OFC_Elements_Title("Many data lines");
+        $this->title    = new OFC_Elements_Title('Many data lines');
         $this->elements = array();
     }
 

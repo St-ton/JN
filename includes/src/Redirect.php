@@ -1,11 +1,22 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license       http://jtl-url.de/jtlshoplicense
  */
+
+namespace JTL;
+
+use JTL\DB\ReturnType;
+use JTL\Filter\FilterInterface;
+use JTL\Helpers\Request;
+use JTL\Helpers\Text;
+use JTL\Helpers\URL;
+use JTL\Language\LanguageHelper;
+use stdClass;
 
 /**
  * Class Redirect
+ * @package JTL
  */
 class Redirect
 {
@@ -35,24 +46,24 @@ class Redirect
     public $nCount = 0;
 
     /**
-     * @param int $kRedirect
+     * @param int $id
      */
-    public function __construct(int $kRedirect = 0)
+    public function __construct(int $id = 0)
     {
-        if ($kRedirect > 0) {
-            $this->loadFromDB($kRedirect);
+        if ($id > 0) {
+            $this->loadFromDB($id);
         }
     }
 
     /**
-     * @param int $kRedirect
+     * @param int $id
      * @return $this
      */
-    public function loadFromDB(int $kRedirect): self
+    public function loadFromDB(int $id): self
     {
-        $obj = Shop::Container()->getDB()->select('tredirect', 'kRedirect', $kRedirect);
+        $obj = Shop::Container()->getDB()->select('tredirect', 'kRedirect', $id);
         if ($obj !== null && $obj->kRedirect > 0) {
-            $members = array_keys(get_object_vars($obj));
+            $members = \array_keys(\get_object_vars($obj));
             foreach ($members as $member) {
                 $this->$member = $obj->$member;
             }
@@ -62,13 +73,13 @@ class Redirect
     }
 
     /**
-     * @param int $kRedirect
+     * @param int $id
      * @return $this
      * @deprecated since 4.06 - use Redirect::deleteRedirect() instead
      */
-    public function delete(int $kRedirect): self
+    public function delete(int $id): self
     {
-        self::deleteRedirect($kRedirect);
+        self::deleteRedirect($id);
 
         return $this;
     }
@@ -83,85 +94,87 @@ class Redirect
     }
 
     /**
-     * @param string $cUrl
+     * @param string $url
      * @return null|stdClass
      */
-    public function find(string $cUrl)
+    public function find(string $url): ?stdClass
     {
-        return Shop::Container()->getDB()->select('tredirect', 'cFromUrl', $this->normalize($cUrl));
+        return Shop::Container()->getDB()->select('tredirect', 'cFromUrl', $this->normalize($url));
     }
 
     /**
      * Get a redirect by target
      *
-     * @param string $cToUrl target to search for
+     * @param string $targetURL target to search for
      * @return null|stdClass
      */
-    public function getRedirectByTarget(string $cToUrl)
+    public function getRedirectByTarget(string $targetURL): ?stdClass
     {
-        return Shop::Container()->getDB()->select('tredirect', 'cToUrl', $this->normalize($cToUrl));
+        return Shop::Container()->getDB()->select('tredirect', 'cToUrl', $this->normalize($targetURL));
     }
 
     /**
-     * @param string $cSource
-     * @param string $cDestination
+     * @param string $source
+     * @param string $destination
      * @return bool
      */
-    public function isDeadlock(string $cSource, string $cDestination): bool
+    public function isDeadlock(string $source, string $destination): bool
     {
-        $xPath_arr    = parse_url(Shop::getURL());
-        $cDestination = isset($xPath_arr['path']) ? $xPath_arr['path'] . '/' . $cDestination : $cDestination;
-        $oObj         = Shop::Container()->getDB()->select('tredirect', 'cFromUrl', $cDestination, 'cToUrl', $cSource);
+        $parsed      = \parse_url(Shop::getURL());
+        $destination = isset($parsed['path']) ? $parsed['path'] . '/' . $destination : $destination;
+        $redirect    = Shop::Container()->getDB()->select('tredirect', 'cFromUrl', $destination, 'cToUrl', $source);
 
-        return $oObj !== null && (int)$oObj->kRedirect > 0;
+        return $redirect !== null && (int)$redirect->kRedirect > 0;
     }
 
     /**
-     * @param string $cSource
-     * @param string $cDestination
-     * @param bool   $bForce
+     * @param string $source
+     * @param string $destination
+     * @param bool   $force
      * @return bool
      */
-    public function saveExt(string $cSource, string $cDestination, bool $bForce = false): bool
+    public function saveExt(string $source, string $destination, bool $force = false): bool
     {
-        if (strlen($cSource) > 0 && $cSource[0] !== '/') {
-            $cSource = '/' . $cSource;
+        if (\mb_strlen($source) > 0 && $source[0] !== '/') {
+            $source = '/' . $source;
         }
 
-        if ($bForce
-            || (self::checkAvailability($cDestination)
-                && strlen($cSource) > 1
-                && strlen($cDestination) > 1
-                && $cSource !== $cDestination)
+        if ($force
+            || (self::checkAvailability($destination)
+                && \mb_strlen($source) > 1
+                && \mb_strlen($destination) > 1
+                && $source !== $destination)
         ) {
-            if ($this->isDeadlock($cSource, $cDestination)) {
-                Shop::Container()->getDB()->delete('tredirect', ['cToUrl', 'cFromUrl'], [$cSource, $cDestination]);
+            if ($this->isDeadlock($source, $destination)) {
+                Shop::Container()->getDB()->delete('tredirect', ['cToUrl', 'cFromUrl'], [$source, $destination]);
             }
-            $oTarget = $this->getRedirectByTarget($cSource);
-            if (!empty($oTarget)) {
-                $this->saveExt($oTarget->cFromUrl, $cDestination);
-                $oObj             = new stdClass();
-                $oObj->cToUrl     = StringHandler::convertUTF8($cDestination);
-                $oObj->cAvailable = 'y';
-                Shop::Container()->getDB()->update('tredirect', 'cToUrl', $cSource, $oObj);
+            $target = $this->getRedirectByTarget($source);
+            if (!empty($target)) {
+                $this->saveExt($target->cFromUrl, $destination);
+                $ins             = new stdClass();
+                $ins->cToUrl     = Text::convertUTF8($destination);
+                $ins->cAvailable = 'y';
+                Shop::Container()->getDB()->update('tredirect', 'cToUrl', $source, $ins);
             }
 
-            $oRedirect = $this->find($cSource);
-            if (empty($oRedirect)) {
-                $oObj             = new stdClass();
-                $oObj->cFromUrl   = StringHandler::convertUTF8($cSource);
-                $oObj->cToUrl     = StringHandler::convertUTF8($cDestination);
-                $oObj->cAvailable = 'y';
+            $redirect = $this->find($source);
+            if (empty($redirect)) {
+                $ins             = new stdClass();
+                $ins->cFromUrl   = Text::convertUTF8($source);
+                $ins->cToUrl     = Text::convertUTF8($destination);
+                $ins->cAvailable = 'y';
 
-                $kRedirect = Shop::Container()->getDB()->insert('tredirect', $oObj);
+                $kRedirect = Shop::Container()->getDB()->insert('tredirect', $ins);
                 if ($kRedirect > 0) {
                     return true;
                 }
-            } elseif ($this->normalize($oRedirect->cFromUrl) === $this->normalize($cSource)
-                && empty($oRedirect->cToUrl)
+            } elseif ($this->normalize($redirect->cFromUrl) === $this->normalize($source)
+                && empty($redirect->cToUrl)
                 && Shop::Container()->getDB()->update(
-                    'tredirect', 'cFromUrl', $this->normalize($cSource),
-                    (object)['cToUrl' => StringHandler::convertUTF8($cDestination)]
+                    'tredirect',
+                    'cFromUrl',
+                    $this->normalize($source),
+                    (object)['cToUrl' => Text::convertUTF8($destination)]
                 ) > 0
             ) {
                 // the redirect already exists but has an empty cToUrl => update it
@@ -173,87 +186,78 @@ class Redirect
     }
 
     /**
-     * @param string $cFile
+     * @param string $file
      * @return array
      */
-    public function doImport(string $cFile): array
+    public function doImport(string $file): array
     {
-        $cError_arr = [];
-        if (file_exists($cFile)) {
-            $handle = fopen($cFile, 'r');
+        $errors = [];
+        if (\file_exists($file)) {
+            $handle = \fopen($file, 'r');
             if ($handle) {
-                $oSprache     = Sprache::getDefaultLanguage(true);
-                $cMapping_arr = [];
-                $i            = 0;
-                while (($csv = fgetcsv($handle, 30000, ';')) !== false) {
+                $language = LanguageHelper::getDefaultLanguage();
+                $mapping  = [];
+                $i        = 0;
+                while (($csv = \fgetcsv($handle, 30000, ';')) !== false) {
                     if ($i > 0) {
-                        if ($cMapping_arr !== null) {
-                            $this->import($csv, $i, $cError_arr, $cMapping_arr, $oSprache);
+                        if ($mapping !== null) {
+                            $this->import($csv, $i, $errors, $mapping, $language);
                         } else {
-                            $cError_arr[] = 'Die Kopfzeile entspricht nicht der Konvention!';
+                            $errors[] = 'Die Kopfzeile entspricht nicht der Konvention!';
                             break;
                         }
                     } else {
-                        $cMapping_arr = $this->readHeadRow($csv);
+                        $mapping = $this->readHeadRow($csv);
                     }
                     $i++;
                 }
-
-                fclose($handle);
+                \fclose($handle);
             } else {
-                $cError_arr[] = 'Datei konnte nicht gelesen werden';
+                $errors[] = 'Datei konnte nicht gelesen werden';
             }
         } else {
-            $cError_arr[] = 'Datei konnte nicht gefunden werden';
+            $errors[] = 'Datei konnte nicht gefunden werden';
         }
 
-        return $cError_arr;
+        return $errors;
     }
 
     /**
-     * @param string  $csv
-     * @param int     $nRow
-     * @param array   $cError_arr
-     * @param array   $cMapping_arr
-     * @param object  $oSprache
+     * @param string $csv
+     * @param int    $row
+     * @param array  $errors
+     * @param array  $mapping
+     * @param object $language
      * @return $this
      */
-    protected function import($csv, $nRow, &$cError_arr, $cMapping_arr, $oSprache): self
+    protected function import($csv, $row, &$errors, $mapping, $language): self
     {
-        $xParse_arr = parse_url($csv[$cMapping_arr['sourceurl']]);
-        $cFromUrl   = $xParse_arr['path'];
-        if (isset($xParse_arr['query'])) {
-            $cFromUrl .= '?' . $xParse_arr['query'];
+        $parsed = \parse_url($csv[$mapping['sourceurl']]);
+        $from   = $parsed['path'];
+        if (isset($parsed['query'])) {
+            $from .= '?' . $parsed['query'];
         }
-        $options = ['cFromUrl' => $cFromUrl];
-        $options['cArtNr'] = null;
-        if (isset($csv[$cMapping_arr['articlenumber']])) {
-            $options['cArtNr'] = $csv[$cMapping_arr['articlenumber']];
-        }
-        $options['cToUrl'] = null;
-        if (isset($csv[$cMapping_arr['destinationurl']])) {
-            $options['cToUrl'] = $csv[$cMapping_arr['destinationurl']];
-        }
-        $options['cIso'] = $oSprache->cISO;
-        if (isset($csv[$cMapping_arr['languageiso']])) {
-            $options['cIso'] = $csv[$cMapping_arr['languageiso']];
-        }
+        $options           = ['cFromUrl' => $from];
+        $options['cArtNr'] = $csv[$mapping['articlenumber']] ?? null;
+        $options['cToUrl'] = $csv[$mapping['destinationurl']] ?? null;
+        $options['cIso']   = $csv[$mapping['languageiso']] ?? $language->cISO;
         if ($options['cArtNr'] === null && $options['cToUrl'] === null) {
-            $cError_arr[] = "Row {$nRow}: articlenumber und destinationurl sind nicht vorhanden oder fehlerhaft";
+            $errors[] = 'Row ' . $row . ': articlenumber und destinationurl sind nicht vorhanden oder fehlerhaft';
         } elseif ($options['cArtNr'] !== null && $options['cToUrl'] !== null) {
-            $cError_arr[] = "Row {$nRow}: Nur articlenumber und destinationurl darf vorhanden sein";
+            $errors[] = 'Row ' . $row . ': Nur articlenumber und destinationurl darf vorhanden sein';
         } elseif ($options['cToUrl'] !== null) {
             if (!$this->saveExt($options['cFromUrl'], $options['cToUrl'])) {
-                $cError_arr[] = "Row {$nRow}: Konnte nicht gespeichert werden (Vielleicht bereits vorhanden?)";
+                $errors[] = 'Row ' . $row . ': Konnte nicht gespeichert werden (Vielleicht bereits vorhanden?)';
             }
         } else {
             $cUrl = $this->getArtNrUrl($options['cArtNr'], $options['cIso']);
             if ($cUrl !== null) {
                 if (!$this->saveExt($options['cFromUrl'], $cUrl)) {
-                    $cError_arr[] = "Row {$nRow}: Konnte nicht gespeichert werden (Vielleicht bereits vorhanden?)";
+                    $errors[] = 'Row ' . $row . ': Konnte nicht gespeichert werden (Vielleicht bereits vorhanden?)';
                 }
             } else {
-                $cError_arr[] = "Row {$nRow}: Artikelnummer ({$options['cArtNr']}) konnte nicht im Shop gefunden werden";
+                $errors[] = 'Row ' . $row . ': Artikelnummer (' .
+                    $options['cArtNr'] . ') konnte nicht im Shop gefunden werden';
             }
         }
 
@@ -261,16 +265,16 @@ class Redirect
     }
 
     /**
-     * @param string $cArtNr
-     * @param string $cIso
+     * @param string $artNo
+     * @param string $iso
      * @return null|string
      */
-    public function getArtNrUrl($cArtNr, string $cIso)
+    public function getArtNrUrl($artNo, string $iso): ?string
     {
-        if (strlen($cArtNr) === 0) {
+        if (\mb_strlen($artNo) === 0) {
             return null;
         }
-        $oObj = Shop::Container()->getDB()->executeQueryPrepared(
+        $item = Shop::Container()->getDB()->executeQueryPrepared(
             "SELECT tartikel.kArtikel, tseo.cSeo
                 FROM tartikel
                 LEFT JOIN tsprache 
@@ -279,49 +283,49 @@ class Redirect
                     ON tseo.kKey = tartikel.kArtikel
                     AND tseo.cKey = 'kArtikel'
                     AND tseo.kSprache = tsprache.kSprache
-                WHERE tartikel.cArtNr = :artnr
+                WHERE tartikel.cArtNr = :artno
                 LIMIT 1",
-            ['iso' => strtolower($cIso), 'artnr' => $cArtNr],
-            \DB\ReturnType::SINGLE_OBJECT
+            ['iso' => \mb_convert_case($iso, \MB_CASE_LOWER), 'artno' => $artNo],
+            ReturnType::SINGLE_OBJECT
         );
 
-        return UrlHelper::buildURL($oObj, URLART_ARTIKEL);
+        return URL::buildURL($item, \URLART_ARTIKEL);
     }
 
     /**
      * Parse head row from import file
      *
-     * @param array $cRow_arr
+     * @param array $rows
      * @return array|null
      */
-    public function readHeadRow($cRow_arr)
+    public function readHeadRow($rows): ?array
     {
-        $cMapping_arr = ['sourceurl' => null];
+        $mapping = ['sourceurl' => null];
         // Must not be present in the file
-        $cOption_arr = ['articlenumber', 'destinationurl', 'languageiso'];
-        if (is_array($cRow_arr) && count($cRow_arr) > 0) {
-            $cMember_arr = array_keys($cMapping_arr);
-            foreach ($cRow_arr as $i => $cRow) {
-                $bExist = false;
-                if (in_array($cRow, $cOption_arr, true)) {
-                    $cMapping_arr[$cRow] = $i;
-                    $bExist              = true;
+        $options = ['articlenumber', 'destinationurl', 'languageiso'];
+        if (\is_array($rows) && \count($rows) > 0) {
+            $members = \array_keys($mapping);
+            foreach ($rows as $i => $row) {
+                $exist = false;
+                if (\in_array($row, $options, true)) {
+                    $mapping[$row] = $i;
+                    $exist         = true;
                 } else {
-                    foreach ($cMember_arr as $cMember) {
-                        if ($cMember === $cRow) {
-                            $cMapping_arr[$cMember] = $i;
-                            $bExist                 = true;
+                    foreach ($members as $cMember) {
+                        if ($cMember === $row) {
+                            $mapping[$cMember] = $i;
+                            $exist             = true;
                             break;
                         }
                     }
                 }
 
-                if (!$bExist) {
+                if (!$exist) {
                     return null;
                 }
             }
 
-            return $cMapping_arr;
+            return $mapping;
         }
 
         return null;
@@ -333,16 +337,16 @@ class Redirect
      */
     public function checkFallbackRedirect(string $cUrl)
     {
-        $exploded = explode('/', trim($cUrl, '/'));
-        if (count($exploded) > 0) {
-            $lastPath = $exploded[count($exploded) - 1];
-            $filename = strtok($lastPath, '?');
+        $exploded = \explode('/', \trim($cUrl, '/'));
+        if (\count($exploded) > 0) {
+            $lastPath = $exploded[\count($exploded) - 1];
+            $filename = \strtok($lastPath, '?');
             $seoPath  = Shop::Container()->getDB()->select('tseo', 'cSeo', $lastPath);
             if ($filename === 'jtl.php'
                 || $filename === 'warenkorb.php'
                 || $filename === 'kontakt.php'
                 || $filename === 'news.php'
-                || (isset($seoPath->cSeo) && strlen($seoPath->cSeo) > 0)
+                || (isset($seoPath->cSeo) && \mb_strlen($seoPath->cSeo) > 0)
             ) {
                 return $lastPath;
             }
@@ -352,85 +356,85 @@ class Redirect
     }
 
     /**
-     * @param string $cUrl
+     * @param string $url
      * @return bool|string
      */
-    public function test(string $cUrl)
+    public function test(string $url)
     {
-        //Fallback e.g. if last URL-Path exists in tseo --> do not track 404 hit, instant redirect!
-        if (($fallbackPath = $this->checkFallbackRedirect($cUrl)) !== false) {
+        // Fallback e.g. if last URL-Path exists in tseo --> do not track 404 hit, instant redirect!
+        if (($fallbackPath = $this->checkFallbackRedirect($url)) !== false) {
             return $fallbackPath;
         }
-        $cRedirectUrl = false;
-        $cUrl         = $this->normalize($cUrl);
-        if (is_string($cUrl) && strlen($cUrl) > 0 && $this->isValid($cUrl)) {
-            $parsedUrl       = parse_url($cUrl);
-            $cUrlQueryString = null;
+        $redirectUrl = false;
+        $url         = $this->normalize($url);
+        if (\is_string($url) && \mb_strlen($url) > 0 && $this->isValid($url)) {
+            $parsedUrl   = \parse_url($url);
+            $queryString = null;
             if (isset($parsedUrl['query'], $parsedUrl['path'])) {
-                $cUrl            = $parsedUrl['path'];
-                $cUrlQueryString = $parsedUrl['query'];
+                $url         = $parsedUrl['path'];
+                $queryString = $parsedUrl['query'];
             }
             $foundRedirectWithQuery = false;
-            if (!empty($cUrlQueryString)) {
-                $oItem = $this->find($cUrl . '?' . $cUrlQueryString);
-                if ($oItem !== null) {
-                    $cUrl                   = $cUrl . '?' . $cUrlQueryString;
+            if (!empty($queryString)) {
+                $item = $this->find($url . '?' . $queryString);
+                if ($item !== null) {
+                    $url                   .= '?' . $queryString;
                     $foundRedirectWithQuery = true;
                 }
             } else {
-                $oItem = $this->find($cUrl);
+                $item = $this->find($url);
             }
-            if ($oItem === null) {
-                $conf = Shop::getSettings([CONF_GLOBAL]);
+            if ($item === null) {
+                $conf = Shop::getSettings([\CONF_GLOBAL]);
                 if (!isset($_GET['notrack'])
                     && (!isset($conf['global']['redirect_save_404']) || $conf['global']['redirect_save_404'] === 'Y')
                 ) {
-                    $oItem           = new self();
-                    $oItem->cFromUrl = $cUrl;
-                    $oItem->cToUrl   = '';
-                    unset($oItem->kRedirect);
-                    $oItem->kRedirect = Shop::Container()->getDB()->insert('tredirect', $oItem);
+                    $item           = new self();
+                    $item->cFromUrl = $url;
+                    $item->cToUrl   = '';
+                    unset($item->kRedirect);
+                    $item->kRedirect = Shop::Container()->getDB()->insert('tredirect', $item);
                 }
-            } elseif (strlen($oItem->cToUrl) > 0) {
-                $cRedirectUrl  = $oItem->cToUrl;
-                $cRedirectUrl .= $cUrlQueryString !== null && !$foundRedirectWithQuery
-                    ? '?' . $cUrlQueryString
+            } elseif (\mb_strlen($item->cToUrl) > 0) {
+                $redirectUrl  = $item->cToUrl;
+                $redirectUrl .= $queryString !== null && !$foundRedirectWithQuery
+                    ? '?' . $queryString
                     : '';
             }
-            $cReferer = $_SERVER['HTTP_REFERER'] ?? '';
-            if (strlen($cReferer) > 0) {
-                $cReferer = $this->normalize($cReferer);
+            $referer = $_SERVER['HTTP_REFERER'] ?? '';
+            if (\mb_strlen($referer) > 0) {
+                $referer = $this->normalize($referer);
             }
-            $cIP = RequestHelper::getRealIP();
+            $ip = Request::getRealIP();
             // Eintrag für diese IP bereits vorhanden?
-            $oEntry = Shop::Container()->getDB()->queryPrepared(
+            $entry = Shop::Container()->getDB()->queryPrepared(
                 'SELECT *
                     FROM tredirectreferer tr
                     LEFT JOIN tredirect t 
                         ON t.kRedirect = tr.kRedirect
                     WHERE tr.cIP = :ip
                     AND t.cFromUrl = :frm LIMIT 1',
-                ['ip' => $cIP, 'frm' => $cUrl],
-                \DB\ReturnType::SINGLE_OBJECT
+                ['ip' => $ip, 'frm' => $url],
+                ReturnType::SINGLE_OBJECT
             );
-            if ($oEntry === false || $oEntry === null || (is_object($oEntry) && (int)$oEntry->nCount === 0)) {
-                $oReferer               = new stdClass();
-                $oReferer->kRedirect    = $oItem !== null ? $oItem->kRedirect : 0;
-                $oReferer->kBesucherBot = isset($_SESSION['oBesucher']->kBesucherBot)
+            if ($entry === false || $entry === null || (\is_object($entry) && (int)$entry->nCount === 0)) {
+                $ins               = new stdClass();
+                $ins->kRedirect    = $item !== null ? $item->kRedirect : 0;
+                $ins->kBesucherBot = isset($_SESSION['oBesucher']->kBesucherBot)
                     ? (int)$_SESSION['oBesucher']->kBesucherBot
                     : 0;
-                $oReferer->cRefererUrl  = is_string($cReferer) ? $cReferer : '';
-                $oReferer->cIP          = $cIP;
-                $oReferer->dDate        = time();
-                Shop::Container()->getDB()->insert('tredirectreferer', $oReferer);
-                if ($oItem !== null) {
-                    ++$oItem->nCount;
-                    Shop::Container()->getDB()->update('tredirect', 'kRedirect', $oItem->kRedirect, $oItem);
+                $ins->cRefererUrl  = \is_string($referer) ? $referer : '';
+                $ins->cIP          = $ip;
+                $ins->dDate        = \time();
+                Shop::Container()->getDB()->insert('tredirectreferer', $ins);
+                if ($item !== null) {
+                    ++$item->nCount;
+                    Shop::Container()->getDB()->update('tredirect', 'kRedirect', $item->kRedirect, $item);
                 }
             }
         }
 
-        return $cRedirectUrl;
+        return $redirectUrl;
     }
 
     /**
@@ -439,8 +443,8 @@ class Redirect
      */
     public function isValid(string $cUrl): bool
     {
-        $cPath_arr       = pathinfo($cUrl);
-        $cInvalidExt_arr = [
+        $pathInfo          = \pathinfo($cUrl);
+        $invalidExtensions = [
             'jpg',
             'gif',
             'bmp',
@@ -449,9 +453,9 @@ class Redirect
             'txt',
             'png'
         ];
-        if (isset($cPath_arr['extension']) && strlen($cPath_arr['extension']) > 0) {
-            $cExt = strtolower($cPath_arr['extension']);
-            if (in_array($cExt, $cInvalidExt_arr, true)) {
+        if (isset($pathInfo['extension']) && \mb_strlen($pathInfo['extension']) > 0) {
+            $extension = \mb_convert_case($pathInfo['extension'], \MB_CASE_LOWER);
+            if (\in_array($extension, $invalidExtensions, true)) {
                 return false;
             }
         }
@@ -475,73 +479,69 @@ class Redirect
      */
     public function normalize(string $cUrl): string
     {
-        $oUrl = new UrlHelper();
-        $oUrl->setUrl($cUrl);
+        $url = new URL();
+        $url->setUrl($cUrl);
 
-        return '/' . trim($oUrl->normalize(), "\\/");
+        return '/' . \trim($url->normalize(), '\\/');
     }
 
     /**
-     * @param int    $bUmgeleiteteUrls
-     * @param string $cSuchbegriff
+     * @param int    $redirectedURLs
+     * @param string $query
      * @return int
      */
-    public function getCount($bUmgeleiteteUrls, $cSuchbegriff): int
+    public function getCount($redirectedURLs, $query): int
     {
-        $bUmgeleiteteUrls = (int)$bUmgeleiteteUrls;
-        $qry              = 'SELECT COUNT(*) AS nCount FROM tredirect ';
-        $prep             = [];
-        if ($bUmgeleiteteUrls === 1 || !empty($cSuchbegriff)) {
+        $redirectedURLs = (int)$redirectedURLs;
+        $qry            = 'SELECT COUNT(*) AS nCount FROM tredirect ';
+        $prep           = [];
+        if ($redirectedURLs === 1 || !empty($query)) {
             $qry .= 'WHERE ';
         }
-        if ($bUmgeleiteteUrls === 1) {
+        if ($redirectedURLs === 1) {
             $qry .= ' cToUrl != ""';
         }
-        if (!empty($cSuchbegriff) && $bUmgeleiteteUrls === 1) {
+        if (!empty($query) && $redirectedURLs === 1) {
             $qry .= ' AND ';
         }
-        if (!empty($cSuchbegriff)) {
-            $qry  .= 'cFromUrl LIKE :search';
-            $prep = ['search' => '%' . $cSuchbegriff . '%'];
+        if (!empty($query)) {
+            $qry .= 'cFromUrl LIKE :search';
+            $prep = ['search' => '%' . $query . '%'];
         }
-        $oCount = Shop::Container()->getDB()->executeQueryPrepared($qry, $prep, \DB\ReturnType::SINGLE_OBJECT);
 
-        return (int)$oCount->nCount;
+        return (int)Shop::Container()->getDB()->queryPrepared($qry, $prep, ReturnType::SINGLE_OBJECT)->nCount;
     }
 
     /**
-     * @param int    $start
-     * @param int    $limit
-     * @param string $redirURLs
-     * @param string $sortBy
-     * @param string $dir
-     * @param string $search
-     * @param bool   $dep
+     * @param int        $start
+     * @param int|string $limit
+     * @param string     $redirURLs
+     * @param string     $sortBy
+     * @param string     $dir
+     * @param string     $search
      * @return mixed
      * @deprecated since 4.05 - use Redirect::getRedirects()
      */
-    public function getList($start, $limit, $redirURLs, $sortBy, $dir, $search, $dep = true)
+    public function getList($start, $limit, $redirURLs, $sortBy, $dir, $search)
     {
-        $cWhereSQL_arr = [];
-        $cOrderSQL     = $sortBy . ' ' . $dir;
-        $cLimitSQL     = (int)$start . ',' . (int)$limit;
+        $where = [];
+        $order = $sortBy . ' ' . $dir;
+        $limit = (int)$start . ',' . (int)$limit;
 
         if ($search !== '') {
-            $cWhereSQL_arr[] = "cFromUrl LIKE '%" . $search . "%'";
+            $where[] = "cFromUrl LIKE '%" . $search . "%'";
         }
 
         if ($redirURLs === '1') {
-            $cWhereSQL_arr[] = "cToUrl != ''";
+            $where[] = "cToUrl != ''";
             if ($search !== '') {
-                $cWhereSQL_arr[] = "cToUrl LIKE '%" . $search . "%'";
+                $where[] = "cToUrl LIKE '%" . $search . "%'";
             }
         } elseif ($redirURLs === '2') {
-            $cWhereSQL_arr[] = "cToUrl = ''";
+            $where[] = "cToUrl = ''";
         }
 
-        $cWhereSQL = implode(' AND ', $cWhereSQL_arr);
-
-        return self::getRedirects($cWhereSQL, $cOrderSQL, $cLimitSQL);
+        return self::getRedirects(\implode(' AND ', $where), $order, $limit);
     }
 
     /**
@@ -562,19 +562,21 @@ class Redirect
      */
     public static function getRedirects($cWhereSQL = '', $cOrderSQL = '', $cLimitSQL = ''): array
     {
-        $oRedirect_arr = Shop::Container()->getDB()->query(
+        $redirects = Shop::Container()->getDB()->query(
             'SELECT *
                 FROM tredirect' .
-                ($cWhereSQL !== '' ? ' WHERE ' . $cWhereSQL : '') .
-                ($cOrderSQL !== '' ? ' ORDER BY ' . $cOrderSQL : '') .
-                ($cLimitSQL !== '' ? ' LIMIT ' . $cLimitSQL : ''),
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ($cWhereSQL !== '' ? ' WHERE ' . $cWhereSQL : '') .
+            ($cOrderSQL !== '' ? ' ORDER BY ' . $cOrderSQL : '') .
+            ($cLimitSQL !== '' ? ' LIMIT ' . $cLimitSQL : ''),
+            ReturnType::ARRAY_OF_OBJECTS
         );
-        foreach ($oRedirect_arr as $oRedirect) {
-            $oRedirect->oRedirectReferer_arr = self::getReferers($oRedirect->kRedirect);
+        foreach ($redirects as $redirect) {
+            $redirect->kRedirect            = (int)$redirect->kRedirect;
+            $redirect->nCount               = (int)$redirect->nCount;
+            $redirect->oRedirectReferer_arr = self::getReferers($redirect->kRedirect);
         }
 
-        return $oRedirect_arr;
+        return $redirects;
     }
 
     /**
@@ -586,8 +588,8 @@ class Redirect
         return (int)Shop::Container()->getDB()->query(
             'SELECT COUNT(kRedirect) AS nCount
                 FROM tredirect' .
-                ($cWhereSQL !== '' ? ' WHERE ' . $cWhereSQL : ''),
-            \DB\ReturnType::SINGLE_OBJECT
+            ($cWhereSQL !== '' ? ' WHERE ' . $cWhereSQL : ''),
+            ReturnType::SINGLE_OBJECT
         )->nCount;
     }
 
@@ -608,7 +610,7 @@ class Redirect
                 ORDER BY dDate ASC
                 LIMIT :lmt',
             ['kr' => $kRedirect, 'lmt' => $nLimit],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
     }
 
@@ -620,25 +622,25 @@ class Redirect
         return (int)Shop::Container()->getDB()->query(
             'SELECT COUNT(kRedirect) AS nCount 
                 FROM tredirect',
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         )->nCount;
     }
 
     /**
-     * @param string $cUrl - one of
-     *   * full URL (must be inside the same shop) e.g. http://www.shop.com/path/to/page
-     *   * url path e.g. /path/to/page
-     *   * path relative to the shop root url
+     * @param string $url - one of
+     *                    * full URL (must be inside the same shop) e.g. http://www.shop.com/path/to/page
+     *                    * url path e.g. /path/to/page
+     *                    * path relative to the shop root url
      * @return bool
      */
-    public static function checkAvailability(string $cUrl): bool
+    public static function checkAvailability(string $url): bool
     {
-        if (empty($cUrl)) {
+        if (empty($url)) {
             return false;
         }
 
-        $parsedUrl     = parse_url($cUrl);
-        $parsedShopUrl = parse_url(Shop::getURL() . '/');
+        $parsedUrl     = \parse_url($url);
+        $parsedShopUrl = \parse_url(Shop::getURL() . '/');
         $fullUrlParts  = $parsedUrl;
 
         if (!isset($parsedUrl['host'])) {
@@ -650,11 +652,11 @@ class Redirect
 
         if (!isset($parsedUrl['path'])) {
             $fullUrlParts['path'] = $parsedShopUrl['path'];
-        } elseif (strpos($parsedUrl['path'], $parsedShopUrl['path']) !== 0) {
+        } elseif (\mb_strpos($parsedUrl['path'], $parsedShopUrl['path']) !== 0) {
             if (isset($parsedUrl['host'])) {
                 return false;
             }
-            $fullUrlParts['path'] = $parsedShopUrl['path'] . ltrim($parsedUrl['path'], '/');
+            $fullUrlParts['path'] = $parsedShopUrl['path'] . \ltrim($parsedUrl['path'], '/');
         }
 
         if (isset($parsedUrl['query'])) {
@@ -662,12 +664,10 @@ class Redirect
         } else {
             $fullUrlParts['query'] = 'notrack';
         }
-
-        $cHeader_arr = get_headers(StringHandler::buildUrl($fullUrlParts));
-
-        if ($cHeader_arr !== false) {
-            foreach ($cHeader_arr as $header) {
-                if (preg_match('/^HTTP\\/\\d+\\.\\d+\\s+2\\d\\d\\s+.*$/', $header)) {
+        $headers = \get_headers(Text::buildUrl($fullUrlParts));
+        if ($headers !== false) {
+            foreach ($headers as $header) {
+                if (\preg_match('/^HTTP\\/\\d+\\.\\d+\\s+2\\d\\d\\s+.*$/', $header)) {
                     return true;
                 }
             }
@@ -679,7 +679,7 @@ class Redirect
     /**
      * @param int $kRedirect
      */
-    public static function deleteRedirect(int $kRedirect)
+    public static function deleteRedirect(int $kRedirect): void
     {
         Shop::Container()->getDB()->delete('tredirect', 'kRedirect', $kRedirect);
         Shop::Container()->getDB()->delete('tredirectreferer', 'kRedirect', $kRedirect);
@@ -696,7 +696,7 @@ class Redirect
                 LEFT JOIN tredirectreferer 
                     ON tredirect.kRedirect = tredirectreferer.kRedirect
                 WHERE tredirect.cToUrl = ''",
-            \DB\ReturnType::AFFECTED_ROWS
+            ReturnType::AFFECTED_ROWS
         );
     }
 
@@ -711,23 +711,22 @@ class Redirect
         $redirect    = new self;
         $redirectUrl = $redirect->test($url);
         if ($redirectUrl !== false && $redirectUrl !== $url && '/' . $redirectUrl !== $url) {
-            $cUrl_arr = parse_url($redirectUrl);
-            if (!array_key_exists('scheme', $cUrl_arr)) {
-                $redirectUrl = strpos($redirectUrl, '/') === 0
+            if (!\array_key_exists('scheme', \parse_url($redirectUrl))) {
+                $redirectUrl = \mb_strpos($redirectUrl, '/') === 0
                     ? Shop::getURL() . $redirectUrl
                     : Shop::getURL() . '/' . $redirectUrl;
             }
-            http_response_code(301);
-            header('Location: ' . $redirectUrl);
+            \http_response_code(301);
+            \header('Location: ' . $redirectUrl);
             exit;
         }
-        http_response_code(404);
+        \http_response_code(404);
 
         if ($forceExit || !$redirect->isValid($url)) {
             exit;
         }
         $isFileNotFound = true;
-        executeHook(HOOK_PAGE_NOT_FOUND_PRE_INCLUDE, [
+        \executeHook(\HOOK_PAGE_NOT_FOUND_PRE_INCLUDE, [
             'isFileNotFound'  => &$isFileNotFound,
             $hookInfos['key'] => &$hookInfos['value']
         ]);
@@ -739,52 +738,46 @@ class Redirect
     /**
      * @param object $productFilter
      * @param int    $count
-     * @param bool   $bSeo
+     * @param bool   $seo
      */
-    public static function doMainwordRedirect($productFilter, int $count, bool $bSeo = false)
+    public static function doMainwordRedirect($productFilter, int $count, bool $seo = false): void
     {
-        $cMainword_arr = [
-            'getCategory'       => [
+        $main       = [
+            'getCategory'            => [
                 'cKey'   => 'kKategorie',
                 'cParam' => 'k'
             ],
-            'getManufacturer'   => [
+            'getManufacturer'        => [
                 'cKey'   => 'kHersteller',
                 'cParam' => 'h'
             ],
-            'getSearchQuery'    => [
+            'getSearchQuery'         => [
                 'cKey'   => 'kSuchanfrage',
                 'cParam' => 'l'
             ],
-            'getAttributeValue' => [
+            'getCharacteristicValue' => [
                 'cKey'   => 'kMerkmalWert',
                 'cParam' => 'm'
             ],
-            'getTag'            => [
-                'cKey'   => 'kTag',
-                'cParam' => 't'
-            ],
-            'getSearchSpecial'  => [
+            'getSearchSpecial'       => [
                 'cKey'   => 'kKey',
                 'cParam' => 'q'
             ]
         ];
-
-        $kSprache = Shop::getLanguageID();
+        $languageID = Shop::getLanguageID();
         if ($count === 0 && Shop::getProductFilter()->getFilterCount() > 0) {
-            foreach ($cMainword_arr as $function => $cInfo_arr) {
-                $cParam = $cInfo_arr['cParam'];
-                $data   = method_exists($productFilter, $function)
+            foreach ($main as $function => $info) {
+                $data = \method_exists($productFilter, $function)
                     ? $productFilter->$function()
                     : null;
-                if ($data !== null && method_exists($data, 'getValue') && $data->getValue() > 0) {
-                    /** @var \Filter\FilterInterface $data */
-                    $cUrl = '?' . $cParam . '=' . $data->getValue();
-                    if ($bSeo &&  !empty($data->getSeo($kSprache))) {
-                        $cUrl = $data->getSeo($kSprache);
+                if ($data !== null && \method_exists($data, 'getValue') && $data->getValue() > 0) {
+                    /** @var FilterInterface $data */
+                    $url = '?' . $info['cParam'] . '=' . $data->getValue();
+                    if ($seo && !empty($data->getSeo($languageID))) {
+                        $url = $data->getSeo($languageID);
                     }
-                    if (strlen($cUrl) > 0) {
-                        header('Location: ' . $cUrl, true, 301);
+                    if (\mb_strlen($url) > 0) {
+                        \header('Location: ' . $url, true, 301);
                         exit();
                     }
                 }

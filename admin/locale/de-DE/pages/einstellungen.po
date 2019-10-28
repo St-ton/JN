@@ -1,0 +1,72 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "preferencesURL"
+msgstr "https://jtl-url.de/u56j2"
+
+msgid "preferencesDesc"
+msgstr "Klicken Sie den Bereich an, den Sie einstellen möchten."
+
+msgid "savePreferences"
+msgstr "Einstellungen speichern"
+
+msgid "backToOverview"
+msgstr "Zurück zur Übersicht"
+
+msgid "settingsSaved"
+msgstr "Die Einstellungen wurden erfolgreich gespeichert."
+
+msgid "prefDesc5"
+msgstr ""
+
+msgid "prefURL5"
+msgstr "https://jtl-url.de/c1wy5"
+
+msgid "prefDesc4"
+msgstr ""
+
+msgid "prefURL4"
+msgstr "https://jtl-url.de/hrlop"
+
+msgid "prefDesc9"
+msgstr ""
+
+msgid "prefURL9"
+msgstr "https://jtl-url.de/kgce4"
+
+msgid "prefDesc8"
+msgstr ""
+
+msgid "prefURL8"
+msgstr "https://jtl-url.de/d109m"
+
+msgid "prefDesc3"
+msgstr ""
+
+msgid "prefURL3"
+msgstr "https://jtl-url.de/jnw83"
+
+msgid "prefDesc1"
+msgstr ""
+
+msgid "prefURL1"
+msgstr "https://jtl-url.de/l30th"
+
+msgid "prefDesc6"
+msgstr ""
+
+msgid "prefURL6"
+msgstr "https://jtl-url.de/fa7yt"
+
+msgid "prefDesc7"
+msgstr ""
+
+msgid "prefURL7"
+msgstr "https://jtl-url.de/kxqgt"
+
+msgid "prefDesc2"
+msgstr ""
+
+msgid "prefURL2"
+msgstr "https://jtl-url.de/sdka5"

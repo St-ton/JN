@@ -2,23 +2,15 @@
 /**
  * Rename the settings-menu entries "Einstellungen" into proper names
  *
- * @author Clemens Rudolph
+ * @author cr
  * @created Fri, 27 Oct 2017 11:16:17 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
- * Migration
- *
- * Available methods:
- * execute            - returns affected rows
- * fetchOne           - single fetched object
- * fetchAll           - array of fetched objects
- * fetchArray         - array of fetched assoc arrays
- * dropColumn         - drops a column if exists
- * addLocalization    - add localization
- * removeLocalization - remove localization
- * setConfig          - add / update config property
- * removeConfig       - remove config property
+ * Class Migration_20171027111617
  */
 class Migration_20171027111617 extends Migration implements IMigration
 {

@@ -4,80 +4,74 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\DB\ReturnType;
+use JTL\Linechart;
+use JTL\Piechart;
+use JTL\Shop;
+use JTL\Statistik;
+
 /**
- * @param int    $nTyp
- * @param string $nDateStampVon
- * @param string $nDateStampBis
- * @param int    $nAnzeigeIntervall
+ * @param int    $type
+ * @param string $from
+ * @param string $to
+ * @param int    $intervall
  * @return array|mixed
  */
-function gibBackendStatistik($nTyp, $nDateStampVon, $nDateStampBis, &$nAnzeigeIntervall)
+function gibBackendStatistik(int $type, $from, $to, &$intervall)
 {
-    if ($nTyp > 0 && $nDateStampVon > 0 && $nDateStampBis > 0) {
-        $oStatistik        = new Statistik($nDateStampVon, $nDateStampBis);
-        $nAnzeigeIntervall = $oStatistik->getAnzeigeIntervall();
-        $oStat_arr         = [];
-
-        switch ($nTyp) {
-            // Besucher Stats
+    $data = [];
+    if ($type > 0 && $from > 0 && $to > 0) {
+        $stats     = new Statistik($from, $to);
+        $intervall = $stats->getAnzeigeIntervall();
+        switch ($type) {
             case STATS_ADMIN_TYPE_BESUCHER:
-                $oStat_arr = $oStatistik->holeBesucherStats();
+                $data = $stats->holeBesucherStats();
                 break;
-
-            // Kundenherkunft
             case STATS_ADMIN_TYPE_KUNDENHERKUNFT:
-                $oStat_arr = $oStatistik->holeKundenherkunftStats();
+                $data = $stats->holeKundenherkunftStats();
                 break;
-
-            // Umsatz
             case STATS_ADMIN_TYPE_SUCHMASCHINE:
-                $oStat_arr = $oStatistik->holeBotStats();
+                $data = $stats->holeBotStats();
                 break;
-
-            // Top besuchte Seiten
             case STATS_ADMIN_TYPE_UMSATZ:
-                $oStat_arr = $oStatistik->holeUmsatzStats();
+                $data = $stats->holeUmsatzStats();
                 break;
-
-            // Suchbegriffe
             case STATS_ADMIN_TYPE_EINSTIEGSSEITEN:
-                $oStat_arr = $oStatistik->holeEinstiegsseiten();
+                $data = $stats->holeEinstiegsseiten();
                 break;
         }
-
-        return $oStat_arr;
     }
 
-    return [];
+    return $data;
 }
 
 /**
- * @param int $nTagVon
- * @param int $nMonatVon
- * @param int $nJahrVon
- * @param int $nTagBis
- * @param int $nMonatBis
- * @param int $nJahrBis
+ * @param int $dayFrom
+ * @param int $monthFrom
+ * @param int $yearFrom
+ * @param int $dayUntil
+ * @param int $monthUntil
+ * @param int $yearUntil
  * @return bool
  */
-function statsDatumPlausi($nTagVon, $nMonatVon, $nJahrVon, $nTagBis, $nMonatBis, $nJahrBis)
+function statsDatumPlausi($dayFrom, $monthFrom, $yearFrom, $dayUntil, $monthUntil, $yearUntil)
 {
-    if ($nTagVon <= 0 || $nTagVon > 31) {
+    if ($dayFrom <= 0 || $dayFrom > 31) {
         return false;
     }
-    if ($nMonatVon <= 0 || $nMonatVon > 12) {
+    if ($monthFrom <= 0 || $monthFrom > 12) {
         return false;
     }
-    if ($nJahrVon <= 0) {
+    if ($yearFrom <= 0) {
         return false;
     }
-    if ($nTagBis <= 0 || $nTagBis > 31) {
+    if ($dayUntil <= 0 || $dayUntil > 31) {
         return false;
     }
-    if ($nMonatBis <= 0 || $nMonatBis > 12) {
+    if ($monthUntil <= 0 || $monthUntil > 12) {
         return false;
     }
-    if ($nJahrBis <= 0) {
+    if ($yearUntil <= 0) {
         return false;
     }
 
@@ -85,107 +79,107 @@ function statsDatumPlausi($nTagVon, $nMonatVon, $nJahrVon, $nTagBis, $nMonatBis,
 }
 
 /**
- * @param int $nZeitraum
+ * @param int $timeSpan
  * @return stdClass
  */
-function berechneStatZeitraum($nZeitraum)
+function berechneStatZeitraum($timeSpan)
 {
-    $oZeit                = new stdClass();
-    $oZeit->nDateStampVon = 0;
-    $oZeit->nDateStampBis = 0;
-    if ((int)$nZeitraum > 0) {
-        switch ($nZeitraum) {
+    $res                = new stdClass();
+    $res->nDateStampVon = 0;
+    $res->nDateStampBis = 0;
+    if ((int)$timeSpan > 0) {
+        switch ($timeSpan) {
             // Heute
             case 1:
-                $oZeit->nDateStampVon = mktime(0, 0, 0, (int)date('n'), (int)date('j'), (int)date('Y'));
-                $oZeit->nDateStampBis = mktime(23, 59, 59, (int)date('n'), (int)date('j'), (int)date('Y'));
+                $res->nDateStampVon = mktime(0, 0, 0, (int)date('n'), (int)date('j'), (int)date('Y'));
+                $res->nDateStampBis = mktime(23, 59, 59, (int)date('n'), (int)date('j'), (int)date('Y'));
                 break;
 
             // diese Woche
             case 2:
-                $nDatum_arr           = ermittleDatumWoche(date('Y') . '-' . date('m') . '-' . date('d'));
-                $oZeit->nDateStampVon = $nDatum_arr[0];
-                $oZeit->nDateStampBis = $nDatum_arr[1];
+                $dateData           = ermittleDatumWoche(date('Y') . '-' . date('m') . '-' . date('d'));
+                $res->nDateStampVon = $dateData[0];
+                $res->nDateStampBis = $dateData[1];
                 break;
 
             // letzte Woche
             case 3:
-                $nTag   = (int)date('d') - 7;
-                $nMonat = (int)date('m');
-                $nJahr  = (int)date('Y');
-                if ($nTag < 1) {
-                    $nMonat--;
-                    if ($nMonat < 1) {
-                        $nMonat = 12;
-                        $nJahr--;
+                $day   = (int)date('d') - 7;
+                $month = (int)date('m');
+                $year  = (int)date('Y');
+                if ($day < 1) {
+                    $month--;
+                    if ($month < 1) {
+                        $month = 12;
+                        $year--;
                     }
 
-                    $nTag = (int)date('t', mktime(0, 0, 0, $nMonat, 1, $nJahr));
+                    $day = (int)date('t', mktime(0, 0, 0, $month, 1, $year));
                 }
 
-                $nDatum_arr           = ermittleDatumWoche($nJahr . '-' . $nMonat . '-' . $nTag);
-                $oZeit->nDateStampVon = $nDatum_arr[0];
-                $oZeit->nDateStampBis = $nDatum_arr[1];
+                $dateData           = ermittleDatumWoche($year . '-' . $month . '-' . $day);
+                $res->nDateStampVon = $dateData[0];
+                $res->nDateStampBis = $dateData[1];
                 break;
 
             // diesen Monat
             case 4:
-                $oZeit->nDateStampVon = firstDayOfMonth();
-                $oZeit->nDateStampBis = lastDayOfMonth();
+                $res->nDateStampVon = firstDayOfMonth();
+                $res->nDateStampBis = lastDayOfMonth();
                 break;
 
             // letzten Monat
             case 5:
-                $nMonat = (int)date('m') - 1;
-                $nJahr  = (int)date('Y');
+                $month = (int)date('m') - 1;
+                $year  = (int)date('Y');
 
-                if ($nMonat < 1) {
-                    $nMonat = 12;
-                    $nJahr--;
+                if ($month < 1) {
+                    $month = 12;
+                    $year--;
                 }
 
-                $oZeit->nDateStampVon = firstDayOfMonth($nMonat, $nJahr);
-                $oZeit->nDateStampBis = lastDayOfMonth($nMonat, $nJahr);
+                $res->nDateStampVon = firstDayOfMonth($month, $year);
+                $res->nDateStampBis = lastDayOfMonth($month, $year);
                 break;
 
             // dieses Jahr
             case 6:
-                $oZeit->nDateStampVon = mktime(0, 0, 0, 1, 1, (int)date('Y'));
-                $oZeit->nDateStampBis = mktime(23, 59, 59, 12, 31, (int)date('Y'));
+                $res->nDateStampVon = mktime(0, 0, 0, 1, 1, (int)date('Y'));
+                $res->nDateStampBis = mktime(23, 59, 59, 12, 31, (int)date('Y'));
                 break;
 
             // letztes Jahr
             case 7:
-                $nJahr                = (int)date('Y') - 1;
-                $oZeit->nDateStampVon = mktime(0, 0, 0, 1, 1, $nJahr);
-                $oZeit->nDateStampBis = mktime(23, 59, 59, 12, 31, $nJahr);
+                $year               = (int)date('Y') - 1;
+                $res->nDateStampVon = mktime(0, 0, 0, 1, 1, $year);
+                $res->nDateStampBis = mktime(23, 59, 59, 12, 31, $year);
                 break;
         }
     }
 
-    return $oZeit;
+    return $res;
 }
 
 /**
- * @param array $oStat_arr
- * @param int   $nAnzeigeIntervall
- * @param int   $nTyp
+ * @param array $stats
+ * @param int   $interval
+ * @param int   $type
  * @return string|bool
  */
-function getJSON($oStat_arr, $nAnzeigeIntervall, $nTyp)
+function getJSON($stats, $interval, $type)
 {
     require_once PFAD_ROOT . PFAD_FLASHCHART . 'php-ofc-library/open-flash-chart.php';
     $data = [];
-    if (!is_array($oStat_arr) || count($oStat_arr) === 0) {
+    if (!is_array($stats) || count($stats) === 0) {
         return false;
     }
-    if ((int)$nAnzeigeIntervall === 0) {
+    if ((int)$interval === 0) {
         return false;
     }
-    if (!$nTyp) {
+    if (!$type) {
         return false;
     }
-    foreach ($oStat_arr as $oStat) {
+    foreach ($stats as $oStat) {
         $data[] = (int)$oStat->nCount;
     }
     // min und max berechnen
@@ -202,77 +196,77 @@ function getJSON($oStat_arr, $nAnzeigeIntervall, $nTyp)
     $fMax  = floor($fMax);
     $fStep = floor(($fMax - $fMin) / 10);
 
-    switch ($nTyp) {
+    switch ($type) {
         // Besucher Stats
         case STATS_ADMIN_TYPE_BESUCHER:
-            $cSpalteX = 'dZeit';
+            $colX = 'dZeit';
             // x achse daten
-            $x_labels_arr = [];
-            foreach ($oStat_arr as $oStat) {
-                $x_labels_arr[] = (string) $oStat->$cSpalteX;
+            $xLabels = [];
+            foreach ($stats as $oStat) {
+                $xLabels[] = (string)$oStat->$colX;
             }
 
-            return setDot($data, $x_labels_arr, null, $fMin, $fMax, $fStep, 'Besucher');
+            return setDot($data, $xLabels, null, $fMin, $fMax, $fStep, __('visitor'));
             break;
 
         // Kundenherkunft
         case STATS_ADMIN_TYPE_KUNDENHERKUNFT:
-            $cSpalteX = 'cReferer';
+            $colX = 'cReferer';
             // x achse daten
-            $x_labels_arr = [];
-            foreach ($oStat_arr as $oStat) {
-                $x_labels_arr[] = (string) $oStat->$cSpalteX;
+            $xLabels = [];
+            foreach ($stats as $oStat) {
+                $xLabels[] = (string)$oStat->$colX;
             }
 
-            return setPie($data, $x_labels_arr);
+            return setPie($data, $xLabels);
             break;
 
         // Suchmaschine
         case STATS_ADMIN_TYPE_SUCHMASCHINE:
-            $cSpalteX = 'cUserAgent';
+            $colX = 'cUserAgent';
             // x achse daten
-            $x_labels_arr = [];
-            foreach ($oStat_arr as $oStat) {
-                if (strlen($oStat->$cSpalteX) > 0) {
-                    $x_labels_arr[] = (string) $oStat->$cSpalteX;
+            $xLabels = [];
+            foreach ($stats as $oStat) {
+                if (mb_strlen($oStat->$colX) > 0) {
+                    $xLabels[] = (string)$oStat->$colX;
                 } else {
-                    $cSpalteX       = 'cName';
-                    $x_labels_arr[] = (string) $oStat->$cSpalteX;
+                    $colX      = 'cName';
+                    $xLabels[] = (string)$oStat->$colX;
                 }
             }
 
-            return setPie($data, $x_labels_arr);
+            return setPie($data, $xLabels);
             break;
 
         // Umsatz
         case STATS_ADMIN_TYPE_UMSATZ:
-            $cSpalteX = 'dZeit';
+            $colX = 'dZeit';
             // x achse daten
-            $x_labels_arr = [];
-            foreach ($oStat_arr as $oStat) {
-                $x_labels_arr[] = (string) $oStat->$cSpalteX;
+            $xLabels = [];
+            foreach ($stats as $oStat) {
+                $xLabels[] = (string)$oStat->$colX;
             }
 
-            $oWaehrung = Shop::Container()->getDB()->query(
+            $currency = Shop::Container()->getDB()->query(
                 "SELECT *
                     FROM twaehrung
                     WHERE cStandard = 'Y'",
-                \DB\ReturnType::SINGLE_OBJECT
+                ReturnType::SINGLE_OBJECT
             );
 
-            return setDot($data, $x_labels_arr, null, $fMin, $fMax, $fStep, $oWaehrung->cName);
+            return setDot($data, $xLabels, null, $fMin, $fMax, $fStep, $currency->cName);
             break;
 
         // Suchbegriffe
         case STATS_ADMIN_TYPE_EINSTIEGSSEITEN:
-            $cSpalteX = 'cEinstiegsseite';
+            $colX = 'cEinstiegsseite';
             // x achse daten
-            $x_labels_arr = [];
-            foreach ($oStat_arr as $oStat) {
-                $x_labels_arr[] = (string) $oStat->$cSpalteX;
+            $xLabels = [];
+            foreach ($stats as $oStat) {
+                $xLabels[] = (string)$oStat->$colX;
             }
 
-            return setPie($data, $x_labels_arr);
+            return setPie($data, $xLabels);
             break;
     }
 
@@ -281,15 +275,15 @@ function getJSON($oStat_arr, $nAnzeigeIntervall, $nTyp)
 
 /**
  * @param mixed  $data
- * @param array  $x_labels_arr
- * @param array  $y_labels_arr
+ * @param array  $xLabels
+ * @param array  $yLabels
  * @param float  $fMin
  * @param float  $fMax
  * @param float  $fStep
  * @param string $cToolTip
  * @return string
  */
-function setDot($data, $x_labels_arr, $y_labels_arr, $fMin, $fMax, $fStep, $cToolTip = '')
+function setDot($data, $xLabels, $yLabels, $fMin, $fMax, $fStep, $cToolTip = '')
 {
     $d = new solid_dot();
     $d->size(3);
@@ -309,7 +303,7 @@ function setDot($data, $x_labels_arr, $y_labels_arr, $fMin, $fMax, $fStep, $cToo
     $x_labels->set_steps(1);
     $x_labels->set_vertical();
     $x_labels->set_colour('#000');
-    $x_labels->set_labels($x_labels_arr);
+    $x_labels->set_labels($xLabels);
     // x achse
     $x = new x_axis();
     $x->set_colour('#bfbfbf');
@@ -333,41 +327,41 @@ function setDot($data, $x_labels_arr, $y_labels_arr, $fMin, $fMax, $fStep, $cToo
 }
 
 /**
- * @param array $data_arr
- * @param array $x_labels_arr
+ * @param array $inputData
+ * @param array $xLabels
  * @return string
  */
-function setPie($data_arr, $x_labels_arr)
+function setPie($inputData, $xLabels)
 {
-    $merge_arr = [];
+    $merge = [];
     // Nur max. 10 Werte anzeigen, danach als Sonstiges
-    foreach ($data_arr as $i => $data) {
+    foreach ($inputData as $i => $data) {
         if ($i > 5) {
-            $data_arr[5] += $data;
+            $inputData[5] += $data;
         }
         if ($i > 5) {
-            unset($data_arr[$i]);
+            unset($inputData[$i]);
         }
     }
-    $nValueSonstiges = $data_arr[5] ?? null;
+    $nValueSonstiges = $inputData[5] ?? null;
     $nPosSonstiges   = 0;
-    usort($data_arr, 'cmpStat');
+    usort($inputData, 'cmpStat');
 
-    foreach ($data_arr as $i => $data) {
+    foreach ($inputData as $i => $data) {
         if ($data == $nValueSonstiges) {
             $nPosSonstiges = $i;
             break;
         }
     }
-    foreach ($x_labels_arr as $j => $x_labels) {
+    foreach ($xLabels as $j => $x_labels) {
         if ($j > 5) {
-            unset($x_labels_arr[$j]);
+            unset($xLabels[$j]);
         }
     }
-    $x_labels_arr[$nPosSonstiges] = 'Sonstige';
-    foreach ($data_arr as $i => $data) {
-        $cLabel      = $x_labels_arr[$i] . '(' . number_format((float)$data, 0, ',', '.') . ')';
-        $merge_arr[] = new pie_value($data, $cLabel);
+    $xLabels[$nPosSonstiges] = __('miscellaneous');
+    foreach ($inputData as $i => $data) {
+        $cLabel  = $xLabels[$i] . '(' . number_format((float)$data, 0, ',', '.') . ')';
+        $merge[] = new pie_value($data, $cLabel);
     }
 
     $pie = new pie();
@@ -375,7 +369,7 @@ function setPie($data_arr, $x_labels_arr)
     $pie->set_animate(true);
     $pie->set_tooltip('#val# of #total#<br>#percent# of 100%');
     $pie->set_colours(['#1C9E05', '#D4FA00', '#9E1176', '#FF368D', '#454545']);
-    $pie->set_values($merge_arr);
+    $pie->set_values($merge);
 
     $chart = new open_flash_chart();
     $chart->add_element($pie);
@@ -401,41 +395,41 @@ function cmpStat($a, $b)
 }
 
 /**
- * @param int $nTyp
+ * @param int $type
  * @return mixed
  */
-function gibMappingDaten($nTyp)
+function gibMappingDaten($type)
 {
-    if (!$nTyp) {
+    if (!$type) {
         return [];
     }
 
-    $cMapping_arr                                   = [];
-    $cMapping_arr[STATS_ADMIN_TYPE_BESUCHER]        = [
-        'nCount' => 'Anzahl',
-        'dZeit'  => 'Datum'
+    $mapping                                   = [];
+    $mapping[STATS_ADMIN_TYPE_BESUCHER]        = [
+        'nCount' => __('count'),
+        'dZeit'  => __('date')
     ];
-    $cMapping_arr[STATS_ADMIN_TYPE_KUNDENHERKUNFT]  = [
-        'nCount'   => 'Anzahl',
-        'dZeit'    => 'Datum',
-        'cReferer' => 'Herkunft'
+    $mapping[STATS_ADMIN_TYPE_KUNDENHERKUNFT]  = [
+        'nCount'   => __('count'),
+        'dZeit'    => __('date'),
+        'cReferer' => __('origin')
     ];
-    $cMapping_arr[STATS_ADMIN_TYPE_SUCHMASCHINE]    = [
-        'nCount'     => 'Anzahl',
-        'dZeit'      => 'Datum',
-        'cUserAgent' => 'UserAgent'
+    $mapping[STATS_ADMIN_TYPE_SUCHMASCHINE]    = [
+        'nCount'     => __('count'),
+        'dZeit'      => __('date'),
+        'cUserAgent' => __('userAgent')
     ];
-    $cMapping_arr[STATS_ADMIN_TYPE_UMSATZ]          = [
-        'nCount' => 'Betrag',
-        'dZeit'  => 'Datum'
+    $mapping[STATS_ADMIN_TYPE_UMSATZ]          = [
+        'nCount' => __('amount'),
+        'dZeit'  => __('date')
     ];
-    $cMapping_arr[STATS_ADMIN_TYPE_EINSTIEGSSEITEN] = [
-        'nCount'          => 'Anzahl',
-        'dZeit'           => 'Datum',
-        'cEinstiegsseite' => 'Einstiegsseite'
+    $mapping[STATS_ADMIN_TYPE_EINSTIEGSSEITEN] = [
+        'nCount'          => __('count'),
+        'dZeit'           => __('date'),
+        'cEinstiegsseite' => __('entryPage')
     ];
 
-    return $cMapping_arr[$nTyp];
+    return $mapping[$type];
 }
 
 /**
@@ -445,18 +439,14 @@ function gibMappingDaten($nTyp)
 function GetTypeNameStats($type)
 {
     $names = [
-        1 => 'Besucher',
-        2 => 'Kundenherkunft',
-        3 => 'Suchmaschinen',
-        4 => 'Umsatz',
-        5 => 'Einstiegsseite'
+        1 => __('visitor'),
+        2 => __('customerHeritage'),
+        3 => __('searchEngines'),
+        4 => __('sales'),
+        5 => __('entryPages')
     ];
 
-    if (isset($names[$type])) {
-        return $names[$type];
-    }
-
-    return '';
+    return $names[$type] ?? '';
 }
 
 /**
@@ -489,23 +479,23 @@ function getAxisNames($type)
 }
 
 /**
- * @param array $cMemberRow_arr
- * @param array $cMapping_arr
+ * @param array $members
+ * @param array $mapping
  * @return array
  */
-function mappeDatenMember($cMemberRow_arr, $cMapping_arr)
+function mappeDatenMember($members, $mapping)
 {
-    if (is_array($cMemberRow_arr) && count($cMemberRow_arr) > 0) {
-        foreach ($cMemberRow_arr as $i => $cMember_arr) {
-            foreach ($cMember_arr as $j => $cMember) {
-                $cMemberRow_arr[$i][$j]    = [];
-                $cMemberRow_arr[$i][$j][0] = $cMember;
-                $cMemberRow_arr[$i][$j][1] = $cMapping_arr[$cMember];
+    if (is_array($members) && count($members) > 0) {
+        foreach ($members as $i => $data) {
+            foreach ($data as $j => $member) {
+                $members[$i][$j]    = [];
+                $members[$i][$j][0] = $member;
+                $members[$i][$j][1] = $mapping[$member];
             }
         }
     }
 
-    return $cMemberRow_arr;
+    return $members;
 }
 
 /**
@@ -515,7 +505,7 @@ function mappeDatenMember($cMemberRow_arr, $cMapping_arr)
  * @param int    $mod
  * @return Linechart
  */
-function prepareLineChartStats($stats, $name = 'Serie', $axis, $mod = 1)
+function prepareLineChartStats($stats, $name, $axis, $mod = 1)
 {
     $chart = new Linechart(['active' => false]);
 
@@ -526,7 +516,7 @@ function prepareLineChartStats($stats, $name = 'Serie', $axis, $mod = 1)
         $x    = $axis->x;
         foreach ($stats as $j => $stat) {
             $obj    = new stdClass();
-            $obj->y = (float)$stat->$y;
+            $obj->y = round((float)$stat->$y, 2, 1);
 
             if ($j % $mod === 0) {
                 $chart->addAxis($stat->$x);
@@ -551,7 +541,7 @@ function prepareLineChartStats($stats, $name = 'Serie', $axis, $mod = 1)
  * @param int    $maxEntries
  * @return Piechart
  */
-function preparePieChartStats($stats, $name = 'Serie', $axis, $maxEntries = 6)
+function preparePieChartStats($stats, $name, $axis, $maxEntries = 6)
 {
     $chart = new Piechart(['active' => false]);
     if (is_array($stats) && count($stats) > 0) {
@@ -566,7 +556,7 @@ function preparePieChartStats($stats, $name = 'Serie', $axis, $maxEntries = 6)
             $statstmp  = [];
             $other     = new stdClass();
             $other->$y = 0;
-            $other->$x = 'Sonstige';
+            $other->$x = __('miscellaneous');
             foreach ($stats as $i => $stat) {
                 if ($i < $maxEntries) {
                     $statstmp[] = $stat;
@@ -580,7 +570,7 @@ function preparePieChartStats($stats, $name = 'Serie', $axis, $maxEntries = 6)
         }
 
         foreach ($stats as $stat) {
-            $value  = (float) $stat->$y;
+            $value  = round((float)$stat->$y, 2, 1);
             $data[] = [$stat->$x, $value];
         }
 
@@ -592,17 +582,17 @@ function preparePieChartStats($stats, $name = 'Serie', $axis, $maxEntries = 6)
 }
 
 /**
- * @param array  $Series
+ * @param array  $series
  * @param object $axis
  * @param int    $mod
  * @return Linechart
  */
-function prepareLineChartStatsMulti($Series, $axis, $mod = 1)
+function prepareLineChartStatsMulti($series, $axis, $mod = 1)
 {
     $chart = new Linechart(['active' => false]);
-    if (is_array($Series) && count($Series) > 0) {
+    if (is_array($series) && count($series) > 0) {
         $i = 0;
-        foreach ($Series as $Name => $Serie) {
+        foreach ($series as $Name => $Serie) {
             if (is_array($Serie) && count($Serie) > 0) {
                 $chart->setActive(true);
                 $data = [];
@@ -610,7 +600,7 @@ function prepareLineChartStatsMulti($Series, $axis, $mod = 1)
                 $x    = $axis->x;
                 foreach ($Serie as $j => $stat) {
                     $obj    = new stdClass();
-                    $obj->y = (float) $stat->$y;
+                    $obj->y = round((float)$stat->$y, 2, 1);
 
                     if ($j % $mod === 0) {
                         $chart->addAxis($stat->$x);
@@ -621,8 +611,8 @@ function prepareLineChartStatsMulti($Series, $axis, $mod = 1)
                     $data[] = $obj;
                 }
 
-                $Colors = GetLineChartColors($i);
-                $chart->addSerie($Name, $data, $Colors[0], $Colors[1]);
+                $colors = GetLineChartColors($i);
+                $chart->addSerie($Name, $data, $colors[0], $colors[1], $colors[2]);
                 $chart->memberToJSON();
             }
 
@@ -634,19 +624,15 @@ function prepareLineChartStatsMulti($Series, $axis, $mod = 1)
 }
 
 /**
- * @param int $Number
+ * @param int $number
  * @return mixed
  */
-function GetLineChartColors($Number)
+function GetLineChartColors($number)
 {
-    $Colors = [
-        ['#EDEDED', '#EDEDED'],
-        ['#989898', '#F78D23']
+    $colors = [
+        ['#435a6b', '#a168f2', '#435a6b'],
+        ['#5cbcf6', '#5cbcf6', '#5cbcf6']
     ];
 
-    if (isset($Colors[$Number])) {
-        return $Colors[$Number];
-    }
-
-    return $Colors[0];
+    return $colors[$number] ?? $colors[0];
 }

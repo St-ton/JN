@@ -3,32 +3,113 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\Alert\Alert;
+use JTL\Backend\FileCheck;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Shop;
+
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'filecheck_inc.php';
 
 $oAccount->permission('FILECHECK_VIEW', true, true);
-/** @global JTLSmarty $smarty */
-$cHinweis     = '';
-$cFehler      = '';
-$oDatei_arr   = [];
-$nStat_arr    = [];
-$nReturnValue = getAllFiles($oDatei_arr, $nStat_arr);
 
-if ($nReturnValue !== 1) {
-    switch ($nReturnValue) {
-        case 2:
-            $cFehler = 'Fehler: Die Datei mit der aktuellen Dateiliste existiert nicht.';
+/** @global \JTL\Smarty\JTLSmarty $smarty */
+$fileChecker        = new FileCheck();
+$zipArchiveError    = '';
+$backupMessage      = '';
+$modifiedFilesError = '';
+$orphanedFilesError = '';
+$md5basePath        = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_SHOPMD5;
+$coreMD5HashFile    = $md5basePath . $fileChecker->getVersionString() . '.csv';
+$orphanedFilesFile  = $md5basePath . 'deleted_files_' . $fileChecker->getVersionString() . '.csv';
+$modifiedFiles      = [];
+$orphanedFiles      = [];
+$modifiedFilesCount = 0;
+$orphanedFilesCount = 0;
+$modifiedFilesCheck = $fileChecker->validateCsvFile($coreMD5HashFile, $modifiedFiles, $modifiedFilesCount);
+$orphanedFilesCheck = $fileChecker->validateCsvFile($orphanedFilesFile, $orphanedFiles, $orphanedFilesCount);
+$alertHelper        = Shop::Container()->getAlertService();
+if ($modifiedFilesCheck !== FileCheck::OK) {
+    switch ($modifiedFilesCheck) {
+        case FileCheck::ERROR_INPUT_FILE_MISSING:
+            $modifiedFilesError = __('errorFileNotFound');
             break;
-        case 3:
-            $cFehler = 'Fehler: Die Datei mit der aktuellen Dateiliste ist leer.';
+        case FileCheck::ERROR_NO_HASHES_FOUND:
+            $modifiedFilesError = __('errorFileListEmpty');
             break;
         default:
-            $cFehler = '';
+            $modifiedFilesError = '';
             break;
     }
 }
-$smarty->assign('cHinweis', $cHinweis)
-       ->assign('cFehler', $cFehler)
-       ->assign('oDatei_arr', $oDatei_arr)
-       ->assign('nStat_arr', $nStat_arr)
-       ->display('filecheck.tpl');
+if ($orphanedFilesCheck !== FileCheck::OK) {
+    switch ($orphanedFilesCheck) {
+        case FileCheck::ERROR_INPUT_FILE_MISSING:
+            $orphanedFilesError = __('errorFileNotFound');
+            break;
+        case FileCheck::ERROR_NO_HASHES_FOUND:
+            $orphanedFilesError = __('errorFileListEmpty');
+            break;
+        default:
+            $orphanedFilesError = '';
+            break;
+    }
+} elseif (Request::verifyGPCDataInt('delete-orphans') === 1 && Form::validateToken()) {
+    $backup   = PFAD_ROOT . PFAD_EXPORT_BACKUP . 'orphans_' . date_format(date_create(), 'Y-m-d_H:i:s') . '.zip';
+    $count    = $fileChecker->deleteOrphanedFiles($orphanedFiles, $backup);
+    $newCount = count($orphanedFiles);
+    if ($count === -1) {
+        $zipArchiveError = sprintf(__('errorCreatingZipArchive'), $backup);
+    } else {
+        $backupMessage = sprintf(__('backupText'), $backup, $count);
+    }
+    if ($newCount > 0) {
+        $orphanedFilesError = __('errorNotDeleted');
+    }
+}
+
+$hasModifiedFiles = !empty($modifiedFilesError) || count($modifiedFiles) > 0;
+$hasOrphanedFiles = !empty($orphanedFilesError) || count($orphanedFiles) > 0;
+if (!$hasModifiedFiles && !$hasOrphanedFiles) {
+    $alertHelper->addAlert(
+        Alert::TYPE_NOTE,
+        __('fileCheckNoneModifiedOrphanedFiles'),
+        'fileCheckNoneModifiedOrphanedFiles'
+    );
+}
+$alertHelper->addAlert(
+    Alert::TYPE_INFO,
+    $backupMessage,
+    'backupMessage',
+    ['showInAlertListTemplate' => false]
+);
+$alertHelper->addAlert(
+    Alert::TYPE_ERROR,
+    $zipArchiveError,
+    'zipArchiveError',
+    ['showInAlertListTemplate' => false]
+);
+$alertHelper->addAlert(
+    Alert::TYPE_ERROR,
+    $modifiedFilesError,
+    'modifiedFilesError',
+    ['showInAlertListTemplate' => false]
+);
+$alertHelper->addAlert(
+    Alert::TYPE_ERROR,
+    $orphanedFilesError,
+    'orphanedFilesError',
+    ['showInAlertListTemplate' => false]
+);
+$smarty->assign('modifiedFilesError', $modifiedFilesError !== '')
+    ->assign('orphanedFilesError', $orphanedFilesError !== '')
+    ->assign('modifiedFiles', $modifiedFiles)
+    ->assign('orphanedFiles', $orphanedFiles)
+    ->assign('modifiedFilesCheck', $hasModifiedFiles)
+    ->assign('orphanedFilesCheck', $hasOrphanedFiles)
+    ->assign('errorsCountModifiedFiles', $modifiedFilesCount)
+    ->assign('errorsCountOrphanedFiles', $orphanedFilesCount)
+    ->assign('deleteScript', $fileChecker->generateBashScript())
+    ->display('filecheck.tpl');

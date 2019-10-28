@@ -96,7 +96,7 @@ createDonut = function (categories, data, renderTo) {
 
 $(document).ready(function () {
     //create donut when panel is first opened
-    $('.panel-heading').click(function () {
+    $('.card-header').on('click', function () {
         var id = $(this).attr('data-idx'),
             collapsedElement = $('#profile-' + id),
             closed = collapsedElement.hasClass('in'),

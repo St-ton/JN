@@ -42,13 +42,14 @@ function SearchPicker(options)
 
     $(function () {
         $searchModal.on('show.bs.modal', self.onShow);
+        $searchModal.on('shown.bs.modal', () => $searchInput.focus());
         $searchModal.on('hide.bs.modal', self.onHide);
-        $searchInput.keyup(self.onChangeSearchInput);
-        $applyButton.click(self.onApply);
-        $cancelButton.click(self.onCancel);
-        $resetButton.click(self.onResetSearchInput);
-        $selectAllButton.click(self.selectAllShownItems.bind(self, true));
-        $unselectAllButton.click(self.selectAllShownItems.bind(self, false));
+        $searchInput.on('keyup', self.onChangeSearchInput);
+        $applyButton.on('click', self.onApply);
+        $cancelButton.on('click', self.onCancel);
+        $resetButton.on('click', self.onResetSearchInput);
+        $selectAllButton.on('click', self.selectAllShownItems.bind(self, true));
+        $unselectAllButton.on('click', self.selectAllShownItems.bind(self, false));
         self.init();
     });
 
@@ -121,7 +122,7 @@ function SearchPicker(options)
             .addClass('list-group-item')
             .html('<i class="fa fa-spinner fa-pulse"></i>')
             .appendTo($searchResultList);
-        $listTitle.html('Suche...');
+        $listTitle.html($searchModal.find('[data-name="searchPending"]').html());
 
         if (searchString !== '') {
             if (pendingRequest !== null) {
@@ -156,7 +157,7 @@ function SearchPicker(options)
                 .addClass('list-group-item' + (self.isSelected(key) ? ' active' : ''))
                 .attr('id', searchPickerName + '-' + cleanKey)
                 .css('cursor', 'pointer')
-                .click(function () { self.select(key, !self.isSelected(key)); })
+                .on('click', function () { self.select(key, !self.isSelected(key)); })
                 .html(getRenderedItem(item))
                 .appendTo($searchResultList);
         });
@@ -167,11 +168,11 @@ function SearchPicker(options)
     self.updateListTitle = function ()
     {
         if (searchString !== '') {
-            $listTitle.html('Gefundene Eintr&auml;ge: ' + foundItems.length);
+            $listTitle.html($searchModal.find('[data-name="foundEntries"]').html() + foundItems.length);
         } else if (selectedKeys.length > 0) {
-            $listTitle.html('Alle ausgew&auml;hlten Eintr&auml;ge: ' + selectedKeys.length);
+            $listTitle.html($searchModal.find('[data-name="allSelectedEntries"]').html() + selectedKeys.length);
         } else {
-            $listTitle.html('Bisher sind keine Eintr&auml;ge ausgew&auml;hlt. Nutzen Sie die Suche!');
+            $listTitle.html($searchModal.find('[data-name="noEntriesSelected"]').html());
         }
     };
 

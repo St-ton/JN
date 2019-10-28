@@ -4,10 +4,11 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter;
+namespace JTL\Filter;
 
 /**
- * Class ProductFilterSQL
+ * Interface ProductFilterSQLInterface
+ * @package JTL\Filter
  */
 interface ProductFilterSQLInterface
 {

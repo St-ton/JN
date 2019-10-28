@@ -4,23 +4,23 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL;
+namespace JTL\Services\JTL;
 
 /**
  * Class PasswordService
- * @package Services\JTL
+ * @package JTL\Services\JTL
  */
 class PasswordService implements PasswordServiceInterface
 {
     /**
      * The lowest allowed ascii character in decimal representation
      */
-    const ASCII_MIN = 33;
+    public const ASCII_MIN = 33;
 
     /**
      * The highest allowed ascii character in decimal representation
      */
-    const ASCII_MAX = 127;
+    public const ASCII_MAX = 127;
 
     /**
      * @var CryptoServiceInterface
@@ -48,7 +48,7 @@ class PasswordService implements PasswordServiceInterface
          */
         $result = '';
         for ($x = 0; $x < $length; $x++) {
-            $no     = $this->cryptoService->randomInt(self::ASCII_MIN, self::ASCII_MAX);
+            $no      = $this->cryptoService->randomInt(self::ASCII_MIN, self::ASCII_MAX);
             $result .= \chr($no);
         }
 
@@ -60,7 +60,7 @@ class PasswordService implements PasswordServiceInterface
      */
     public function hash($password): string
     {
-        return password_hash($password, PASSWORD_DEFAULT);
+        return \password_hash($password, \PASSWORD_DEFAULT);
     }
 
     /**
@@ -68,7 +68,7 @@ class PasswordService implements PasswordServiceInterface
      */
     public function verify($password, $hash)
     {
-        $length = \strlen($hash);
+        $length = \mb_strlen($hash);
         if ($length === 32) {
             // very old md5 hashes
             return \md5($password) === $hash;
@@ -77,7 +77,7 @@ class PasswordService implements PasswordServiceInterface
             return \cryptPasswort($password, $hash) !== false;
         }
 
-        return password_verify($password, $hash);
+        return \password_verify($password, $hash);
     }
 
     /**
@@ -85,11 +85,11 @@ class PasswordService implements PasswordServiceInterface
      */
     public function needsRehash($hash): bool
     {
-        $length = \strlen($hash);
+        $length = \mb_strlen($hash);
 
         return $length === 32 || $length === 40
             ? true
-            : password_needs_rehash($hash, PASSWORD_DEFAULT);
+            : \password_needs_rehash($hash, \PASSWORD_DEFAULT);
     }
 
     /**
@@ -97,6 +97,6 @@ class PasswordService implements PasswordServiceInterface
      */
     public function getInfo($hash): array
     {
-        return password_get_info($hash);
+        return \password_get_info($hash);
     }
 }

@@ -1,7 +1,7 @@
 {includeMailTemplate template=header type=plain}
 === {$oMailObjekt->cIntervall} ===
 
---- Period: {$oMailObjekt->dVon} - {$oMailObjekt->dBis} ---
+--- Period: {$oMailObjekt->dVon|date_format:'d.m.Y'} - {$oMailObjekt->dBis|date_format:'d.m.Y'} ---
 
 {if is_array($oMailObjekt->oAnzahlArtikelProKundengruppe)}Products per customer group:
 
@@ -53,14 +53,6 @@ Non-public ratings: {$oMailObjekt->nAnzahlBewertungenNichtFreigeschaltet}
 Rating credit paid: {$oMailObjekt->oAnzahlGezahltesGuthaben->nAnzahl}
 
 Rating credit total: {$oMailObjekt->oAnzahlGezahltesGuthaben->fSummeGuthaben}
-{/if}
-
-{if $oMailObjekt->nAnzahlTags !== -1}
-Tags: {$oMailObjekt->nAnzahlTags}
-{/if}
-
-{if $oMailObjekt->nAnzahlTagsNichtFreigeschaltet !== -1}
-Tags not approved: {$oMailObjekt->nAnzahlTagsNichtFreigeschaltet}
 {/if}
 
 {if $oMailObjekt->nAnzahlGeworbenerKunden !== -1}

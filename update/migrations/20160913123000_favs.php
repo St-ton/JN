@@ -6,21 +6,15 @@
  * @created Mon, 12 Sep 2016 17:30:00 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
- * Migration
- *
- * Available methods:
- * execute            - returns affected rows
- * fetchOne           - single fetched object
- * fetchAll           - array of fetched objects
- * fetchArray         - array of fetched assoc arrays
- * dropColumn         - drops a column if exists
- * addLocalization    - add localization
- * removeLocalization - remove localization
+ * Class Migration_20160913123000
  */
 class Migration_20160913123000 extends Migration implements IMigration
 {
-    protected $author = 'andy';
+    protected $author      = 'aj';
     protected $description = 'Create admin favorite table';
 
     public function up()
@@ -39,6 +33,6 @@ class Migration_20160913123000 extends Migration implements IMigration
 
     public function down()
     {
-        $this->execute("DROP TABLE `tadminfavs`");
+        $this->execute('DROP TABLE `tadminfavs`');
     }
 }

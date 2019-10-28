@@ -3,41 +3,47 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\Helpers\Form;
+use JTL\Helpers\Text;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('ACCOUNT_VIEW', true, true);
 
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
-/** @global JTLSmarty $smarty */
-$cAction  = 'account_view';
+/** @global \JTL\Smarty\JTLSmarty $smarty */
+$action   = 'account_view';
 $messages = [
     'notice' => '',
-    'error'  => '',
+    'error'  => ''
 ];
 
-if (isset($_REQUEST['action']) && FormHelper::validateToken()) {
-    $cAction = StringHandler::filterXSS($_REQUEST['action']);
+if (isset($_REQUEST['action']) && Form::validateToken()) {
+    $action = Text::filterXSS($_REQUEST['action']);
 }
 
-switch ($cAction) {
+switch ($action) {
     case 'account_lock':
-        $cAction = benutzerverwaltungActionAccountLock($smarty, $messages);
+        $action = benutzerverwaltungActionAccountLock($messages);
         break;
     case 'account_unlock':
-        $cAction = benutzerverwaltungActionAccountUnLock($smarty, $messages);
+        $action = benutzerverwaltungActionAccountUnLock($messages);
         break;
     case 'account_edit':
-        $cAction = benutzerverwaltungActionAccountEdit($smarty, $messages);
+        $action = benutzerverwaltungActionAccountEdit($smarty, $messages);
         break;
     case 'account_delete':
-        $cAction = benutzerverwaltungActionAccountDelete($smarty, $messages);
+        $action = benutzerverwaltungActionAccountDelete($messages);
         break;
     case 'group_edit':
-        $cAction = benutzerverwaltungActionGroupEdit($smarty, $messages);
+        $action = benutzerverwaltungActionGroupEdit($smarty, $messages);
         break;
     case 'group_delete':
-        $cAction = benutzerverwaltungActionGroupDelete($smarty, $messages);
+        $action = benutzerverwaltungActionGroupDelete($messages);
+        break;
+    case 'quick_change_language':
+        benutzerverwaltungActionQuickChangeLanguage();
         break;
 }
 
-benutzerverwaltungFinalize($cAction, $smarty, $messages);
+benutzerverwaltungFinalize($action, $smarty, $messages);

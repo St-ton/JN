@@ -4,116 +4,117 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\CheckBox;
+use JTL\Helpers\Text;
+use JTL\Language\LanguageModel;
+use JTL\Shop;
+
 /**
- * @param array $cPost_arr
- * @param array $oSprache_arr
+ * @param array $post
+ * @param LanguageModel[] $languages
  * @return array
  */
-function plausiCheckBox($cPost_arr, $oSprache_arr)
+function plausiCheckBox(array $post, array $languages): array
 {
-    $cPlausi_arr = [];
-    if (!is_array($oSprache_arr) || count($oSprache_arr) === 0) {
-        $cPlausi_arr['oSprache_arr'] = 1;
+    $checks = [];
+    if (!is_array($languages) || count($languages) === 0) {
+        $checks['oSprache_arr'] = 1;
 
-        return $cPlausi_arr;
+        return $checks;
     }
-    if (is_array($cPost_arr) && count($cPost_arr) > 0) {
-        if (!isset($cPost_arr['cName']) || strlen($cPost_arr['cName']) === 0) {
-            $cPlausi_arr['cName'] = 1;
-        }
-        $bText = false;
-        foreach ($oSprache_arr as $oSprache) {
-            if (strlen($cPost_arr['cText_' . $oSprache->cISO]) > 0) {
-                $bText = true;
-                break;
-            }
-        }
-        if (!$bText) {
-            $cPlausi_arr['cText'] = 1;
-        }
-        $bLink = true;
-        if ((int)$cPost_arr['nLink'] === 1) {
-            $bLink = false;
-            if (isset($cPost_arr['kLink']) && (int)$cPost_arr['kLink'] > 0) {
-                $bLink = true;
-            }
-        }
-        if (!$bLink) {
-            $cPlausi_arr['kLink'] = 1;
-        }
-        if (!is_array($cPost_arr['cAnzeigeOrt']) || count($cPost_arr['cAnzeigeOrt']) === 0) {
-            $cPlausi_arr['cAnzeigeOrt'] = 1;
-        } else {
-            foreach ($cPost_arr['cAnzeigeOrt'] as $cAnzeigeOrt) {
-                if ((int)$cAnzeigeOrt === 3 && $cPost_arr['kCheckBoxFunktion'] == 1) {
-                    $cPlausi_arr['cAnzeigeOrt'] = 2;
-                }
-            }
-        }
-        if (!isset($cPost_arr['nPflicht']) || strlen($cPost_arr['nPflicht']) === 0) {
-            $cPlausi_arr['nPflicht'] = 1;
-        }
-        if (!isset($cPost_arr['nAktiv']) || strlen($cPost_arr['nAktiv']) === 0) {
-            $cPlausi_arr['nAktiv'] = 1;
-        }
-        if (!isset($cPost_arr['nLogging']) || strlen($cPost_arr['nLogging']) === 0) {
-            $cPlausi_arr['nLogging'] = 1;
-        }
-        if (!isset($cPost_arr['nSort']) || (int)$cPost_arr['nSort'] === 0) {
-            $cPlausi_arr['nSort'] = 1;
-        }
-        if (!is_array($cPost_arr['kKundengruppe']) || count($cPost_arr['kKundengruppe']) === 0) {
-            $cPlausi_arr['kKundengruppe'] = 1;
+    if (!isset($post['cName']) || mb_strlen($post['cName']) === 0) {
+        $checks['cName'] = 1;
+    }
+    $text = false;
+    $link = true;
+    foreach ($languages as $language) {
+        if (mb_strlen($post['cText_' . $language->getIso()]) > 0) {
+            $text = true;
+            break;
         }
     }
+    if (!$text) {
+        $checks['cText'] = 1;
+    }
+    if ((int)$post['nLink'] === 1) {
+        $link = isset($post['kLink']) && (int)$post['kLink'] > 0;
+    }
+    if (!$link) {
+        $checks['kLink'] = 1;
+    }
+    if (!is_array($post['cAnzeigeOrt']) || count($post['cAnzeigeOrt']) === 0) {
+        $checks['cAnzeigeOrt'] = 1;
+    } else {
+        foreach ($post['cAnzeigeOrt'] as $cAnzeigeOrt) {
+            if ((int)$cAnzeigeOrt === 3 && (int)$post['kCheckBoxFunktion'] === 1) {
+                $checks['cAnzeigeOrt'] = 2;
+            }
+        }
+    }
+    if (!isset($post['nPflicht']) || mb_strlen($post['nPflicht']) === 0) {
+        $checks['nPflicht'] = 1;
+    }
+    if (!isset($post['nAktiv']) || mb_strlen($post['nAktiv']) === 0) {
+        $checks['nAktiv'] = 1;
+    }
+    if (!isset($post['nLogging']) || mb_strlen($post['nLogging']) === 0) {
+        $checks['nLogging'] = 1;
+    }
+    if (!isset($post['nSort']) || (int)$post['nSort'] === 0) {
+        $checks['nSort'] = 1;
+    }
+    if (!is_array($post['kKundengruppe']) || count($post['kKundengruppe']) === 0) {
+        $checks['kKundengruppe'] = 1;
+    }
 
-    return $cPlausi_arr;
+    return $checks;
 }
 
 /**
- * @param array $cPost_arr
- * @param array $oSprache_arr
+ * @param array $post
+ * @param LanguageModel[] $languages
  * @return CheckBox
  */
-function speicherCheckBox($cPost_arr, $oSprache_arr)
+function speicherCheckBox(array $post, array $languages): CheckBox
 {
-    if (isset($cPost_arr['kCheckBox']) && (int)$cPost_arr['kCheckBox'] > 0) {
-        $oCheckBox = new CheckBox((int)$cPost_arr['kCheckBox']);
-        $oCheckBox->deleteCheckBox([(int)$cPost_arr['kCheckBox']]);
+    if (isset($post['kCheckBox']) && (int)$post['kCheckBox'] > 0) {
+        $checkBox = new CheckBox((int)$post['kCheckBox']);
+        $checkBox->deleteCheckBox([(int)$post['kCheckBox']]);
     } else {
-        $oCheckBox = new CheckBox();
+        $checkBox = new CheckBox();
     }
-    $oCheckBox->kLink = 0;
-    if ((int)$cPost_arr['nLink'] === 1) {
-        $oCheckBox->kLink = (int)$cPost_arr['kLink'];
+    $checkBox->kLink = 0;
+    if ((int)$post['nLink'] === 1) {
+        $checkBox->kLink = (int)$post['kLink'];
     }
-    $oCheckBox->kCheckBoxFunktion = (int)$cPost_arr['kCheckBoxFunktion'];
-    $oCheckBox->cName             = htmlspecialchars($cPost_arr['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-    $oCheckBox->cKundengruppe     = StringHandler::createSSK($cPost_arr['kKundengruppe']);
-    $oCheckBox->cAnzeigeOrt       = StringHandler::createSSK($cPost_arr['cAnzeigeOrt']);
-    $oCheckBox->nAktiv            = 0;
-    if ($cPost_arr['nAktiv'] === 'Y') {
-        $oCheckBox->nAktiv = 1;
+    $checkBox->kCheckBoxFunktion = (int)$post['kCheckBoxFunktion'];
+    $checkBox->cName             = htmlspecialchars($post['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+    $checkBox->cKundengruppe     = Text::createSSK($post['kKundengruppe']);
+    $checkBox->cAnzeigeOrt       = Text::createSSK($post['cAnzeigeOrt']);
+    $checkBox->nAktiv            = 0;
+    if ($post['nAktiv'] === 'Y') {
+        $checkBox->nAktiv = 1;
     }
-    $oCheckBox->nPflicht = 0;
-    $oCheckBox->nLogging = 0;
-    if ($cPost_arr['nLogging'] === 'Y') {
-        $oCheckBox->nLogging = 1;
+    $checkBox->nPflicht = 0;
+    $checkBox->nLogging = 0;
+    if ($post['nLogging'] === 'Y') {
+        $checkBox->nLogging = 1;
     }
-    if ($cPost_arr['nPflicht'] === 'Y') {
-        $oCheckBox->nPflicht = 1;
+    if ($post['nPflicht'] === 'Y') {
+        $checkBox->nPflicht = 1;
     }
-    $oCheckBox->nSort       = (int)$cPost_arr['nSort'];
-    $oCheckBox->dErstellt   = 'NOW()';
-    $cTextAssoc_arr         = [];
-    $cBeschreibungAssoc_arr = [];
-    foreach ($oSprache_arr as $oSprache) {
-        $cTextAssoc_arr[$oSprache->cISO]         = str_replace('"', '&quot;', $cPost_arr['cText_' . $oSprache->cISO]);
-        $cBeschreibungAssoc_arr[$oSprache->cISO] = str_replace('"', '&quot;', $cPost_arr['cBeschreibung_' . $oSprache->cISO]);
+    $checkBox->nSort     = (int)$post['nSort'];
+    $checkBox->dErstellt = 'NOW()';
+    $texts               = [];
+    $descr               = [];
+    foreach ($languages as $language) {
+        $code         = $language->getIso();
+        $texts[$code] = str_replace('"', '&quot;', $post['cText_' . $code]);
+        $descr[$code] = str_replace('"', '&quot;', $post['cBeschreibung_' . $code]);
     }
 
-    $oCheckBox->insertDB($cTextAssoc_arr, $cBeschreibungAssoc_arr);
+    $checkBox->insertDB($texts, $descr);
     Shop::Container()->getCache()->flushTags(['checkbox']);
 
-    return $oCheckBox;
+    return $checkBox;
 }

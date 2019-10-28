@@ -4,8 +4,19 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
+namespace JTL;
+
+use DateTime;
+use JTL\DB\ReturnType;
+use JTL\GeneralDataProtection\IpAnonymizer;
+use JTL\Helpers\Request;
+use JTL\Helpers\Text;
+use JTL\Session\Frontend;
+use stdClass;
+
 /**
  * Class Visitor
+ * @package JTL
  * @since 5.0.0
  */
 class Visitor
@@ -13,64 +24,61 @@ class Visitor
     /**
      * @since 5.0.0
      */
-    public static function generateData()
+    public static function generateData(): void
     {
-        $userAgent    = $_SERVER['HTTP_USER_AGENT'] ?? '';
-        $kBesucherBot = self::isSpider($userAgent);
-        // check, if the visitor is a bot and save that
-        if ($kBesucherBot > 0) {
+        $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? '';
+        $botID     = self::isSpider($userAgent);
+        if ($botID > 0) {
             Shop::Container()->getDB()->queryPrepared(
                 'UPDATE tbesucherbot SET dZeit = NOW() WHERE kBesucherBot = :_kBesucherBot',
-                ['_kBesucherBot' => $kBesucherBot],
-                \DB\ReturnType::AFFECTED_ROWS
+                ['_kBesucherBot' => $botID],
+                ReturnType::AFFECTED_ROWS
             );
         }
-        // cleanup `tbesucher`
         self::archive();
-
-        $oVisitor = self::dbLookup($userAgent, RequestHelper::getIP());
-        if ($oVisitor === null) {
+        $visitor = self::dbLookup($userAgent, Request::getRealIP());
+        if ($visitor === null) {
             if (isset($_SESSION['oBesucher'])) {
-                // update the session-object with a new kBesucher-ID(!) (re-write it in the session at the end of the script)
-                $oVisitor = self::updateVisitorObject($_SESSION['oBesucher'], 0, $userAgent, $kBesucherBot);
+                $visitor = self::updateVisitorObject($_SESSION['oBesucher'], 0, $userAgent, $botID);
             } else {
                 // create a new visitor-object
-                $oVisitor = self::createVisitorObject($userAgent, $kBesucherBot);
+                $visitor = self::createVisitorObject($userAgent, $botID);
             }
             // get back the new ID of that visitor (and write it back into the session)
-            $oVisitor->kBesucher = self::dbInsert($oVisitor);
+            $visitor->kBesucher = self::dbInsert($visitor);
             // allways increment the visitor-counter (if no bot)
             Shop::Container()->getDB()->query(
                 'UPDATE tbesucherzaehler SET nZaehler = nZaehler + 1',
-                \DB\ReturnType::AFFECTED_ROWS
+                ReturnType::AFFECTED_ROWS
             );
         } else {
-            $oVisitor->kBesucher    = (int)$oVisitor->kBesucher;
-            $oVisitor->kKunde       = (int)$oVisitor->kKunde;
-            $oVisitor->kBestellung  = (int)$oVisitor->kBestellung;
-            $oVisitor->kBesucherBot = (int)$oVisitor->kBesucherBot;
+            $visitor->kBesucher    = (int)$visitor->kBesucher;
+            $visitor->kKunde       = (int)$visitor->kKunde;
+            $visitor->kBestellung  = (int)$visitor->kBestellung;
+            $visitor->kBesucherBot = (int)$visitor->kBesucherBot;
             // prevent counting internal redirects by counting only the next request above 3 seconds
-            $iTimeDiff = (new DateTime())->getTimestamp() - (new DateTime($oVisitor->dLetzteAktivitaet))->getTimestamp();
-            if ($iTimeDiff > 2) {
-                $oVisitor = self::updateVisitorObject($oVisitor, $oVisitor->kBesucher, $userAgent, $kBesucherBot);
+            $diff = (new DateTime())->getTimestamp() - (new DateTime($visitor->dLetzteAktivitaet))->getTimestamp();
+            if ($diff > 2) {
+                $visitor = self::updateVisitorObject($visitor, $visitor->kBesucher, $userAgent, $botID);
                 // update the db and simultaneously retrieve the ID to update the session below
-                $oVisitor->kBesucher = self::dbUpdate($oVisitor, $oVisitor->kBesucher);
+                $visitor->kBesucher = self::dbUpdate($visitor, $visitor->kBesucher);
             } else {
                 // time-diff is to low! so we do nothing but update this "last-action"-time in the session
-                $oVisitor->dLetzteAktivitaet = (new \DateTime())->format('Y-m-d H:i:s');
+                $visitor->dLetzteAktivitaet = (new DateTime())->format('Y-m-d H:i:s');
             }
         }
-        $_SESSION['oBesucher'] = $oVisitor;
+        $_SESSION['oBesucher'] = $visitor;
     }
 
     /**
      * Besucher nach 3 Std in Besucherarchiv verschieben
+     *
      * @former archiviereBesucher()
-     * @since 5.0.0
+     * @since  5.0.0
      */
-    public static function archive()
+    public static function archive(): void
     {
-        $iInterval = 3;
+        $interval = 3;
         Shop::Container()->getDB()->queryPrepared(
             'INSERT INTO tbesucherarchiv
             (kBesucher, cIP, kKunde, kBestellung, cReferer, cEinstiegsseite, cBrowser,
@@ -79,14 +87,14 @@ class Visitor
             (UNIX_TIMESTAMP(dLetzteAktivitaet) - UNIX_TIMESTAMP(dZeit)) AS nBesuchsdauer, kBesucherBot, dZeit
               FROM tbesucher
               WHERE dLetzteAktivitaet <= DATE_SUB(NOW(), INTERVAL :interval HOUR)',
-            ['interval' => $iInterval],
-            \DB\ReturnType::AFFECTED_ROWS
+            ['interval' => $interval],
+            ReturnType::AFFECTED_ROWS
         );
         Shop::Container()->getDB()->queryPrepared(
             'DELETE FROM tbesucher
                 WHERE dLetzteAktivitaet <= DATE_SUB(NOW(), INTERVAL :interval HOUR)',
-            ['interval' => $iInterval],
-            \DB\ReturnType::AFFECTED_ROWS
+            ['interval' => $interval],
+            ReturnType::AFFECTED_ROWS
         );
     }
 
@@ -95,69 +103,65 @@ class Visitor
      * @param string $ip
      * @return stdClass|null
      * @former dbLookupVisitor()
-     * @since 5.0.0
+     * @since  5.0.0
      */
-    public static function dbLookup($userAgent, $ip)
+    public static function dbLookup($userAgent, $ip): ?stdClass
     {
-        // check if we know that visitor (first by session-id)
-        $oVisitor = Shop::Container()->getDB()->select('tbesucher', 'cSessID', session_id());
-        if (null === $oVisitor) {
-            // try to identify the visitor by its ip and user-agent
-            $oVisitor = Shop::Container()->getDB()->select('tbesucher', 'cID', md5($userAgent . $ip));
-        }
+        $visitor = Shop::Container()->getDB()->select('tbesucher', 'cSessID', \session_id())
+            ?? Shop::Container()->getDB()->select('tbesucher', 'cID', \md5($userAgent . $ip));
 
-        return $oVisitor;
+        return $visitor;
     }
 
     /**
      * @param object $vis
-     * @param int    $visId
-     * @param string $szUserAgent
-     * @param int    $kBesucherBot
+     * @param int    $visitorID
+     * @param string $userAgent
+     * @param int    $botID
      * @return object
      * @since 5.0.0
      */
-    public static function updateVisitorObject($vis, int $visId, $szUserAgent, int $kBesucherBot)
+    public static function updateVisitorObject($vis, int $visitorID, $userAgent, int $botID)
     {
-        $vis->kBesucher         = $visId;
-        $vis->cIP               = RequestHelper::getIP();
-        $vis->cSessID           = session_id();
-        $vis->cID               = md5($szUserAgent . RequestHelper::getIP());
-        $vis->kKunde            = \Session\Session::Customer()->getID();
+        $vis->kBesucher         = $visitorID;
+        $vis->cIP               = (new IpAnonymizer(Request::getRealIP()))->anonymize();
+        $vis->cSessID           = \session_id();
+        $vis->cID               = \md5($userAgent . Request::getRealIP());
+        $vis->kKunde            = Frontend::getCustomer()->getID();
         $vis->kBestellung       = $vis->kKunde > 0 ? self::refreshCustomerOrderId((int)$vis->kKunde) : 0;
         $vis->cReferer          = self::getReferer();
-        $vis->cUserAgent        = StringHandler::filterXSS($_SERVER['HTTP_USER_AGENT']);
+        $vis->cUserAgent        = Text::filterXSS($_SERVER['HTTP_USER_AGENT']);
         $vis->cBrowser          = self::getBrowser();
         $vis->cAusstiegsseite   = $_SERVER['REQUEST_URI'];
-        $vis->dLetzteAktivitaet = (new \DateTime())->format('Y-m-d H:i:s');
-        $vis->kBesucherBot      = $kBesucherBot;
+        $vis->dLetzteAktivitaet = (new DateTime())->format('Y-m-d H:i:s');
+        $vis->kBesucherBot      = $botID;
 
         return $vis;
     }
 
     /**
-     * @param string $szUserAgent
-     * @param int    $kBesucherBot
-     * @return object
+     * @param string $userAgent
+     * @param int    $botID
+     * @return stdClass
      * @since 5.0.0
      */
-    public static function createVisitorObject($szUserAgent, int $kBesucherBot)
+    public static function createVisitorObject($userAgent, int $botID): stdClass
     {
         $vis                    = new stdClass();
         $vis->kBesucher         = 0;
-        $vis->cIP               = RequestHelper::getIP();
-        $vis->cSessID           = session_id();
-        $vis->cID               = md5($szUserAgent . RequestHelper::getIP());
-        $vis->kKunde            = \Session\Session::Customer()->getID();
+        $vis->cIP               = (new IpAnonymizer(Request::getRealIP()))->anonymize();
+        $vis->cSessID           = \session_id();
+        $vis->cID               = \md5($userAgent . Request::getRealIP());
+        $vis->kKunde            = Frontend::getCustomer()->getID();
         $vis->kBestellung       = $vis->kKunde > 0 ? self::refreshCustomerOrderId((int)$vis->kKunde) : 0;
         $vis->cEinstiegsseite   = $_SERVER['REQUEST_URI'];
         $vis->cReferer          = self::getReferer();
-        $vis->cUserAgent        = StringHandler::filterXSS($_SERVER['HTTP_USER_AGENT']);
+        $vis->cUserAgent        = Text::filterXSS($_SERVER['HTTP_USER_AGENT']);
         $vis->cBrowser          = self::getBrowser();
         $vis->cAusstiegsseite   = $_SERVER['REQUEST_URI'];
-        $vis->dLetzteAktivitaet = (new \DateTime())->format('Y-m-d H:i:s');
-        $vis->dZeit             = (new \DateTime())->format('Y-m-d H:i:s');
-        $vis->kBesucherBot      = $kBesucherBot;
+        $vis->dLetzteAktivitaet = (new DateTime())->format('Y-m-d H:i:s');
+        $vis->dZeit             = (new DateTime())->format('Y-m-d H:i:s');
+        $vis->kBesucherBot      = $botID;
         // store search-string from search-engine too
         if ($vis->cReferer !== '') {
             self::analyzeReferer($vis->kBesucher, $vis->cReferer);
@@ -167,90 +171,86 @@ class Visitor
     }
 
     /**
-     * @param object $oVisitor
+     * @param object $visitor
      * @return int
      * @since since 5.0.0
      */
-    public static function dbInsert($oVisitor): int
+    public static function dbInsert($visitor): int
     {
-        return Shop::Container()->getDB()->insert('tbesucher', $oVisitor);
+        return Shop::Container()->getDB()->insert('tbesucher', $visitor);
     }
 
     /**
-     * @param object $oVisitor
-     * @param int    $kBesucher
+     * @param object $visitor
+     * @param int    $visitorID
      * @return int
      * @since since 5.0.0
      */
-    public static function dbUpdate($oVisitor, int $kBesucher): int
+    public static function dbUpdate($visitor, int $visitorID): int
     {
-        return Shop::Container()->getDB()->update('tbesucher', 'kBesucher', $kBesucher, $oVisitor);
+        return Shop::Container()->getDB()->update('tbesucher', 'kBesucher', $visitorID, $visitor);
     }
 
     /**
-     * @param int $nCustomerId
+     * @param int $customerID
      * @return int
      * @since 5.0.0
      */
-    public static function refreshCustomerOrderId(int $nCustomerId): int
+    public static function refreshCustomerOrderId(int $customerID): int
     {
-        $oOrder = Shop::Container()->getDB()->queryPrepared(
-            'SELECT `kBestellung` 
-                FROM `tbestellung` 
-                WHERE `kKunde` = :_nCustomerId
+        $data = Shop::Container()->getDB()->queryPrepared(
+            'SELECT `kBestellung`
+                FROM `tbestellung`
+                WHERE `kKunde` = :cid
                 ORDER BY `dErstellt` DESC LIMIT 1',
-            ['_nCustomerId' => $nCustomerId],
-            \DB\ReturnType::SINGLE_OBJECT
+            ['cid' => $customerID],
+            ReturnType::SINGLE_OBJECT
         );
 
-        return (int)($oOrder->kBestellung ?? 0);
+        return (int)($data->kBestellung ?? 0);
     }
 
     /**
      * @return string
      * @former gibBrowser()
-     * @since 5.0.0
+     * @since  5.0.0
      */
     public static function getBrowser(): string
     {
-        $agent    = strtolower($_SERVER['HTTP_USER_AGENT'] ?? '');
-        $szMobile = '';
-        if (stripos($agent, 'iphone') !== false
-            || stripos($agent, 'ipad') !== false
-            || stripos($agent, 'ipod') !== false
-            || stripos($agent, 'android') !== false
-            || stripos($agent, 'opera mobi') !== false
-            || stripos($agent, 'blackberry') !== false
-            || stripos($agent, 'playbook') !== false
-            || stripos($agent, 'kindle') !== false
-            || stripos($agent, 'windows phone') !== false
+        $agent  = \mb_convert_case($_SERVER['HTTP_USER_AGENT'] ?? '', \MB_CASE_LOWER);
+        $mobile = '';
+        if (\mb_stripos($agent, 'iphone') !== false
+            || \mb_stripos($agent, 'ipad') !== false
+            || \mb_stripos($agent, 'ipod') !== false
+            || \mb_stripos($agent, 'android') !== false
+            || \mb_stripos($agent, 'opera mobi') !== false
+            || \mb_stripos($agent, 'blackberry') !== false
+            || \mb_stripos($agent, 'playbook') !== false
+            || \mb_stripos($agent, 'kindle') !== false
+            || \mb_stripos($agent, 'windows phone') !== false
         ) {
-            $szMobile = '/Mobile';
+            $mobile = '/Mobile';
         }
-        if (strpos($agent, 'msie') !== false) {
-            $pos = strpos($agent, 'msie');
-
-            return 'Internet Explorer ' . (int)substr($agent, $pos + 4) . $szMobile;
+        if (\mb_strpos($agent, 'msie') !== false) {
+            return 'Internet Explorer ' . (int)\mb_substr($agent, \mb_strpos($agent, 'msie') + 4) . $mobile;
         }
-        if (strpos($agent, 'opera') !== false
-            || stripos($agent, 'opr') !== false
-        ) {
-            return 'Opera' . $szMobile;
+        if (\mb_strpos($agent, 'opera') !== false || \mb_stripos($agent, 'opr') !== false) {
+            return 'Opera' . $mobile;
         }
-        if (stripos($agent, 'vivaldi') !== false) {
-            return 'Vivaldi' . $szMobile;
+        if (\mb_stripos($agent, 'vivaldi') !== false) {
+            return 'Vivaldi' . $mobile;
         }
-        if (strpos($agent, 'safari') !== false) {
-            return 'Safari' . $szMobile;
+        if (\mb_strpos($agent, 'safari') !== false) {
+            return 'Safari' . $mobile;
         }
-        if (strpos($agent, 'firefox') !== false) {
-            return 'Firefox' . $szMobile;
+        if (\mb_strpos($agent, 'firefox') !== false) {
+            return 'Firefox' . $mobile;
         }
-        if (strpos($agent, 'chrome') !== false) {
-            return 'Chrome' . $szMobile;
+        if (\mb_strpos($agent, 'chrome') !== false) {
+            return 'Chrome' . $mobile;
         }
 
-        return 'Sonstige' . $szMobile;
+        return 'Sonstige' . $mobile;
     }
 
     /**
@@ -263,47 +263,46 @@ class Visitor
         if (!isset($_SERVER['HTTP_REFERER'])) {
             return '';
         }
-        $parts = explode('/', $_SERVER['HTTP_REFERER']);
 
-        return StringHandler::filterXSS(strtolower($parts[2]));
+        return Text::filterXSS(\mb_convert_case(\explode('/', $_SERVER['HTTP_REFERER'])[2], \MB_CASE_LOWER));
     }
 
     /**
      * @return string
      * @former gibBot()
-     * @since 5.0.0
+     * @since  5.0.0
      */
     public static function getBot(): string
     {
-        $agent = strtolower($_SERVER['HTTP_USER_AGENT']);
-        if (strpos($agent, 'googlebot') !== false) {
+        $agent = \mb_convert_case($_SERVER['HTTP_USER_AGENT'], \MB_CASE_LOWER);
+        if (\mb_strpos($agent, 'googlebot') !== false) {
             return 'Google';
         }
-        if (strpos($agent, 'bingbot') !== false) {
+        if (\mb_strpos($agent, 'bingbot') !== false) {
             return 'Bing';
         }
-        if (strpos($agent, 'inktomi.com') !== false) {
+        if (\mb_strpos($agent, 'inktomi.com') !== false) {
             return 'Inktomi';
         }
-        if (strpos($agent, 'yahoo! slurp') !== false) {
+        if (\mb_strpos($agent, 'yahoo! slurp') !== false) {
             return 'Yahoo!';
         }
-        if (strpos($agent, 'msnbot') !== false) {
+        if (\mb_strpos($agent, 'msnbot') !== false) {
             return 'MSN';
         }
-        if (strpos($agent, 'teoma') !== false) {
+        if (\mb_strpos($agent, 'teoma') !== false) {
             return 'Teoma';
         }
-        if (strpos($agent, 'crawler') !== false) {
+        if (\mb_strpos($agent, 'crawler') !== false) {
             return 'Crawler';
         }
-        if (strpos($agent, 'scooter') !== false) {
+        if (\mb_strpos($agent, 'scooter') !== false) {
             return 'Scooter';
         }
-        if (strpos($agent, 'fireball') !== false) {
+        if (\mb_strpos($agent, 'fireball') !== false) {
             return 'Fireball';
         }
-        if (strpos($agent, 'ask jeeves') !== false) {
+        if (\mb_strpos($agent, 'ask jeeves') !== false) {
             return 'Ask';
         }
 
@@ -311,43 +310,43 @@ class Visitor
     }
 
     /**
-     * @param int    $kBesucher
+     * @param int    $visitorID
      * @param string $referer
      * @former werteRefererAus()
-     * @since 5.0.0
+     * @since  5.0.0
      */
-    public static function analyzeReferer(int $kBesucher, $referer)
+    public static function analyzeReferer(int $visitorID, $referer): void
     {
-        $roh                 = $_SERVER['HTTP_REFERER'] ?? '';
-        $ausdruck            = new stdClass();
-        $ausdruck->kBesucher = $kBesucher;
-        $ausdruck->cRohdaten = StringHandler::filterXSS($_SERVER['HTTP_REFERER']);
-        $param               = '';
-        if (strpos($referer, '.google.') !== false
-            || strpos($referer, 'suche.t-online.') !== false
-            || strpos($referer, 'search.live.') !== false
-            || strpos($referer, '.aol.') !== false
-            || strpos($referer, '.aolsvc.') !== false
-            || strpos($referer, '.ask.') !== false
-            || strpos($referer, 'search.icq.') !== false
-            || strpos($referer, 'search.msn.') !== false
-            || strpos($referer, '.exalead.') !== false
+        $ref             = $_SERVER['HTTP_REFERER'] ?? '';
+        $term            = new stdClass();
+        $term->kBesucher = $visitorID;
+        $term->cRohdaten = Text::filterXSS($_SERVER['HTTP_REFERER']);
+        $param           = '';
+        if (\mb_strpos($referer, '.google.') !== false
+            || \mb_strpos($referer, 'suche.t-online.') !== false
+            || \mb_strpos($referer, 'search.live.') !== false
+            || \mb_strpos($referer, '.aol.') !== false
+            || \mb_strpos($referer, '.aolsvc.') !== false
+            || \mb_strpos($referer, '.ask.') !== false
+            || \mb_strpos($referer, 'search.icq.') !== false
+            || \mb_strpos($referer, 'search.msn.') !== false
+            || \mb_strpos($referer, '.exalead.') !== false
         ) {
             $param = 'q';
-        } elseif (strpos($referer, 'suche.web') !== false) {
+        } elseif (\mb_strpos($referer, 'suche.web') !== false) {
             $param = 'su';
-        } elseif (strpos($referer, 'suche.aolsvc') !== false) {
+        } elseif (\mb_strpos($referer, 'suche.aolsvc') !== false) {
             $param = 'query';
-        } elseif (strpos($referer, 'search.yahoo') !== false) {
+        } elseif (\mb_strpos($referer, 'search.yahoo') !== false) {
             $param = 'p';
-        } elseif (strpos($referer, 'search.ebay') !== false) {
+        } elseif (\mb_strpos($referer, 'search.ebay') !== false) {
             $param = 'satitle';
         }
         if ($param !== '') {
-            preg_match("/(\?$param|&$param)=[^&]+/i", $roh, $treffer);
-            $ausdruck->cSuchanfrage = isset($treffer[0]) ? urldecode(substr($treffer[0], 3)) : null;
-            if ($ausdruck->cSuchanfrage) {
-                Shop::Container()->getDB()->insert('tbesuchersuchausdruecke', $ausdruck);
+            \preg_match("/(\?$param|&$param)=[^&]+/i", $ref, $treffer);
+            $term->cSuchanfrage = isset($treffer[0]) ? \urldecode(\mb_substr($treffer[0], 3)) : null;
+            if ($term->cSuchanfrage) {
+                Shop::Container()->getDB()->insert('tbesuchersuchausdruecke', $term);
             }
         }
     }
@@ -356,24 +355,24 @@ class Visitor
      * @param string $referer
      * @return int
      * @former istSuchmaschine()
-     * @since 5.0.0
+     * @since  5.0.0
      */
     public static function isSearchEngine($referer): int
     {
         if (!$referer) {
             return 0;
         }
-        if (strpos($referer, '.google.') !== false
-            || strpos($referer, '.bing.') !== false
-            || strpos($referer, 'suche.') !== false
-            || strpos($referer, 'search.') !== false
-            || strpos($referer, '.yahoo.') !== false
-            || strpos($referer, '.fireball.') !== false
-            || strpos($referer, '.seekport.') !== false
-            || strpos($referer, '.keywordspy.') !== false
-            || strpos($referer, '.hotfrog.') !== false
-            || strpos($referer, '.altavista.') !== false
-            || strpos($referer, '.ask.') !== false
+        if (\mb_strpos($referer, '.google.') !== false
+            || \mb_strpos($referer, '.bing.') !== false
+            || \mb_strpos($referer, 'suche.') !== false
+            || \mb_strpos($referer, 'search.') !== false
+            || \mb_strpos($referer, '.yahoo.') !== false
+            || \mb_strpos($referer, '.fireball.') !== false
+            || \mb_strpos($referer, '.seekport.') !== false
+            || \mb_strpos($referer, '.keywordspy.') !== false
+            || \mb_strpos($referer, '.hotfrog.') !== false
+            || \mb_strpos($referer, '.altavista.') !== false
+            || \mb_strpos($referer, '.ask.') !== false
         ) {
             return 1;
         }
@@ -385,19 +384,19 @@ class Visitor
      * @param string $userAgent
      * @return int
      * @former istSpider()
-     * @since 5.0.0
+     * @since  5.0.0
      */
     public static function isSpider($userAgent): int
     {
-        $oBesucherBot = null;
-        foreach (array_keys(self::getSpiders()) as $cBotUserAgent) {
-            if (strpos($userAgent, $cBotUserAgent) !== false) {
-                $oBesucherBot = Shop::Container()->getDB()->select('tbesucherbot', 'cUserAgent', $cBotUserAgent);
+        $bot = null;
+        foreach (\array_keys(self::getSpiders()) as $botUserAgent) {
+            if (\mb_strpos($userAgent, $botUserAgent) !== false) {
+                $bot = Shop::Container()->getDB()->select('tbesucherbot', 'cUserAgent', $botUserAgent);
                 break;
             }
         }
 
-        return $oBesucherBot === null ? 0 : (int)$oBesucherBot->kBesucherBot;
+        return $bot === null ? 0 : (int)$bot->kBesucherBot;
     }
 
     /**
@@ -780,7 +779,8 @@ class Visitor
         $spiders['sitetech']                                           = 'SiteTech-Rover';
         $spiders['skymob']                                             = 'Skymob.com';
         $spiders['slcrawler']                                          = 'SLCrawler';
-        $spiders['slurp']                                              = 'Yahoo! Slurp/3.0; http://help.yahoo.com/help/us/ysearch/slurp';
+        $spiders['slurp']                                              = 'Yahoo! Slurp/3.0; ' .
+            'http://help.yahoo.com/help/us/ysearch/slurp';
         $spiders['slysearch']                                          = 'SlySearch';
         $spiders['smartspider']                                        = 'Smart Spider';
         $spiders['snooper']                                            = 'Snooper';
@@ -891,40 +891,34 @@ class Visitor
         $spiders['ypn-rss.overture.com']                               = 'Yahoo Publisher Network';
         $spiders['zealbot']                                            = 'ZealBot';
         $spiders['zyborg']                                             = 'Looksmart';
-        $spiders['DotBot']                                             = 'DotBot/1.1 http://www.dotnetdotcom.org/ crawler@dotnetdotcom.org';
+        $spiders['DotBot']                                             = 'DotBot/1.1 http://www.dotnetdotcom.org/ ' .
+            'crawler@dotnetdotcom.org';
         $spiders['Baiduspider']                                        = 'Baiduspider+(+http://www.baidu.jp/spider/)';
-        $spiders['Twiceler']                                           = 'Twiceler-0.9 http://www.cuil.com/twiceler/robot.html';
-        $spiders['SeznamBot']                                          = 'Seznam Tschechische Suchmaschine http://www.seznam.cz/';
-        $spiders['iisbot']                                             = 'MS Seo Toolkit vom IIS http://www.microsoft.com/web/spotlight/seo.aspx';
+        $spiders['Twiceler']                                           = 'Twiceler-0.9 ' .
+            'http://www.cuil.com/twiceler/robot.html';
+        $spiders['SeznamBot']                                          = 'Seznam Tschechische Suchmaschine ' .
+            'http://www.seznam.cz/';
+        $spiders['iisbot']                                             = 'MS Seo Toolkit vom IIS ' .
+            'http://www.microsoft.com/web/spotlight/seo.aspx';
 
         return $spiders;
     }
 
     /**
-     * @param null|string $userAgent
-     * @return stdClass
+     * @param string $userAgent
+     * @return bool|int
      */
-    public static function getBrowserForUserAgent($userAgent = null): stdClass
+    private static function isMobile($userAgent)
     {
-        $userAgent           = (isset($_SERVER['HTTP_USER_AGENT']) && $userAgent === null)
-            ? $_SERVER['HTTP_USER_AGENT']
-            : $userAgent;
-        $oBrowser            = new stdClass();
-        $oBrowser->nType     = 0;
-        $oBrowser->bMobile   = false;
-        $oBrowser->cName     = 'Unknown';
-        $oBrowser->cBrowser  = 'unknown';
-        $oBrowser->cPlatform = 'unknown';
-        $oBrowser->cVersion  = '0';
-
-        $oBrowser->cAgent  = $userAgent;
-        $oBrowser->bMobile = preg_match('/android|avantgo|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile' .
+        return \preg_match(
+            '/android|avantgo|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile' .
                 '|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker' .
                 '|pocket|psp|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i',
-                $oBrowser->cAgent,
-                $cMatch_arr
-            ) ||
-            preg_match('/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)' .
+            $userAgent,
+            $matches
+        )
+            || \preg_match(
+                '/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)' .
                 '|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )' .
                 '|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa' .
                 '|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob' .
@@ -943,80 +937,104 @@ class Visitor
                 '|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)' .
                 '|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)' .
                 '|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|xda(\-|2|g)|yas\-|your|zeto|zte\-/i',
-                substr($oBrowser->cAgent, 0, 4),
-                $cMatch_arr
+                \mb_substr($userAgent, 0, 4),
+                $matches
             );
-        // platform
-        if (preg_match('/linux/i', $userAgent)) {
-            $oBrowser->cPlatform = 'linux';
-        } elseif (preg_match('/macintosh|mac os x/i', $userAgent)) {
-            $oBrowser->cPlatform = 'mac';
-        } elseif (preg_match('/windows|win32/i', $userAgent)) {
-            $oBrowser->cPlatform = preg_match('/windows mobile|wce/i', $userAgent)
+    }
+
+    /**
+     * @param stdClass $browser
+     * @param string   $userAgent
+     * @return stdClass
+     */
+    private static function getBrowserData(stdClass $browser, $userAgent): stdClass
+    {
+        if (\preg_match('/MSIE/i', $userAgent) && !\preg_match('/Opera/i', $userAgent)) {
+            $browser->nType    = \BROWSER_MSIE;
+            $browser->cName    = 'Internet Explorer';
+            $browser->cBrowser = 'msie';
+        } elseif (\preg_match('/Firefox/i', $userAgent)) {
+            $browser->nType    = \BROWSER_FIREFOX;
+            $browser->cName    = 'Mozilla Firefox';
+            $browser->cBrowser = 'firefox';
+        } elseif (\preg_match('/Chrome/i', $userAgent)) {
+            $browser->nType    = \BROWSER_CHROME;
+            $browser->cName    = 'Google Chrome';
+            $browser->cBrowser = 'chrome';
+        } elseif (\preg_match('/Safari/i', $userAgent)) {
+            $browser->nType = \BROWSER_SAFARI;
+            if (\preg_match('/iPhone/i', $userAgent)) {
+                $browser->cName    = 'Apple iPhone';
+                $browser->cBrowser = 'iphone';
+            } elseif (\preg_match('/iPad/i', $userAgent)) {
+                $browser->cName    = 'Apple iPad';
+                $browser->cBrowser = 'ipad';
+            } elseif (\preg_match('/iPod/i', $userAgent)) {
+                $browser->cName    = 'Apple iPod';
+                $browser->cBrowser = 'ipod';
+            } else {
+                $browser->cName    = 'Apple Safari';
+                $browser->cBrowser = 'safari';
+            }
+        } elseif (\preg_match('/Opera/i', $userAgent)) {
+            $browser->nType = \BROWSER_OPERA;
+            if (\preg_match('/Opera Mini/i', $userAgent)) {
+                $browser->cName    = 'Opera Mini';
+                $browser->cBrowser = 'opera_mini';
+            } else {
+                $browser->cName    = 'Opera';
+                $browser->cBrowser = 'opera';
+            }
+        }
+
+        return $browser;
+    }
+
+    /**
+     * @param null|string $userAgent
+     * @return stdClass
+     */
+    public static function getBrowserForUserAgent($userAgent = null): stdClass
+    {
+        $userAgent          = $userAgent ?? $_SERVER['HTTP_USER_AGENT'] ?? null;
+        $browser            = new stdClass();
+        $browser->nType     = 0;
+        $browser->bMobile   = false;
+        $browser->cName     = 'Unknown';
+        $browser->cBrowser  = 'unknown';
+        $browser->cPlatform = 'unknown';
+        $browser->cVersion  = '0';
+        $browser->cAgent    = $userAgent;
+        $browser->bMobile   = self::isMobile($browser->cAgent);
+        if (\preg_match('/linux/i', $userAgent)) {
+            $browser->cPlatform = 'linux';
+        } elseif (\preg_match('/macintosh|mac os x/i', $userAgent)) {
+            $browser->cPlatform = 'mac';
+        } elseif (\preg_match('/windows|win32/i', $userAgent)) {
+            $browser->cPlatform = \preg_match('/windows mobile|wce/i', $userAgent)
                 ? 'mobile'
                 : 'windows';
         }
-        // browser
-        if (preg_match('/MSIE/i', $userAgent) && !preg_match('/Opera/i', $userAgent)) {
-            $oBrowser->nType    = BROWSER_MSIE;
-            $oBrowser->cName    = 'Internet Explorer';
-            $oBrowser->cBrowser = 'msie';
-        } elseif (preg_match('/Firefox/i', $userAgent)) {
-            $oBrowser->nType    = BROWSER_FIREFOX;
-            $oBrowser->cName    = 'Mozilla Firefox';
-            $oBrowser->cBrowser = 'firefox';
-        } elseif (preg_match('/Chrome/i', $userAgent)) {
-            $oBrowser->nType    = BROWSER_CHROME;
-            $oBrowser->cName    = 'Google Chrome';
-            $oBrowser->cBrowser = 'chrome';
-        } elseif (preg_match('/Safari/i', $userAgent)) {
-            $oBrowser->nType = BROWSER_SAFARI;
-            if (preg_match('/iPhone/i', $userAgent)) {
-                $oBrowser->cName    = 'Apple iPhone';
-                $oBrowser->cBrowser = 'iphone';
-            } elseif (preg_match('/iPad/i', $userAgent)) {
-                $oBrowser->cName    = 'Apple iPad';
-                $oBrowser->cBrowser = 'ipad';
-            } elseif (preg_match('/iPod/i', $userAgent)) {
-                $oBrowser->cName    = 'Apple iPod';
-                $oBrowser->cBrowser = 'ipod';
-            } else {
-                $oBrowser->cName    = 'Apple Safari';
-                $oBrowser->cBrowser = 'safari';
-            }
-        } elseif (preg_match('/Opera/i', $userAgent)) {
-            $oBrowser->nType = BROWSER_OPERA;
-            if (preg_match('/Opera Mini/i', $userAgent)) {
-                $oBrowser->cName    = 'Opera Mini';
-                $oBrowser->cBrowser = 'opera_mini';
-            } else {
-                $oBrowser->cName    = 'Opera';
-                $oBrowser->cBrowser = 'opera';
-            }
-        } elseif (preg_match('/Netscape/i', $userAgent)) {
-            $oBrowser->nType    = BROWSER_NETSCAPE;
-            $oBrowser->cName    = 'Netscape';
-            $oBrowser->cBrowser = 'netscape';
-        }
-        $cKnown   = ['version', 'other', 'mobile', $oBrowser->cBrowser];
-        $cPattern = '/(?<browser>' . implode('|', $cKnown) . ')[\/ ]+(?<version>[0-9.|a-zA-Z.]*)/i';
-        preg_match_all($cPattern, $userAgent, $aMatches);
-        if (count($aMatches['browser']) !== 1) {
-            $oBrowser->cVersion = '0';
-            if (isset($aMatches['version'][0])
-                && strripos($userAgent, 'Version') < strripos($userAgent, $oBrowser->cBrowser)
+        $browser = self::getBrowserData($browser, $userAgent);
+        $known   = ['version', 'other', 'mobile', $browser->cBrowser];
+        $pattern = '/(?<browser>' . \implode('|', $known) . ')[\/ ]+(?<version>[0-9.|a-zA-Z.]*)/i';
+        \preg_match_all($pattern, $userAgent, $browserMatches);
+        if (\count($browserMatches['browser']) !== 1) {
+            $browser->cVersion = '0';
+            if (isset($browserMatches['version'][0])
+                && \mb_strripos($userAgent, 'Version') < \mb_strripos($userAgent, $browser->cBrowser)
             ) {
-                $oBrowser->cVersion = $aMatches['version'][0];
-            } elseif (isset($aMatches['version'][1])) {
-                $oBrowser->cVersion = $aMatches['version'][1];
+                $browser->cVersion = $browserMatches['version'][0];
+            } elseif (isset($browserMatches['version'][1])) {
+                $browser->cVersion = $browserMatches['version'][1];
             }
         } else {
-            $oBrowser->cVersion = $aMatches['version'][0];
+            $browser->cVersion = $browserMatches['version'][0];
         }
-        if (strlen($oBrowser->cVersion) === 0) {
-            $oBrowser->cVersion = '0';
+        if (\mb_strlen($browser->cVersion) === 0) {
+            $browser->cVersion = '0';
         }
 
-        return $oBrowser;
+        return $browser;
     }
 }

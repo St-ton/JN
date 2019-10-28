@@ -77,7 +77,7 @@ class Zend_Validate_File_Extension extends Zend_Validate_Abstract
      */
     public function __construct($extension, $case = false)
     {
-        $this->_case = (boolean) $case;
+        $this->_case = (boolean)$case;
         $this->setExtension($extension);
     }
 
@@ -89,8 +89,8 @@ class Zend_Validate_File_Extension extends Zend_Validate_Abstract
      */
     public function getExtension($asArray = false)
     {
-        $asArray   = (bool) $asArray;
-        $extension = (string) $this->_extension;
+        $asArray   = (bool)$asArray;
+        $extension = (string)$this->_extension;
         if ($asArray) {
             $extension = explode(',', $extension);
         }

@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=html}
 
-Sehr {if $Kunde->cAnrede == "w"}geehrte{elseif $Kunde->cAnrede == "m"}geehrter{else}geehrte(r){/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},<br>
+Guten Tag {$Kunde->cVorname} {$Kunde->cNachname},<br>
 <br>
 wunschgemäß haben wir für Sie in unserem Onlineshop unter
 <strong><a href="{$ShopURL}" target="_blank" style="color: #313131;">{$ShopURL}</a></strong> ein Kundenkonto für Sie eingerichtet.<br>
@@ -25,7 +25,7 @@ Zur Kontrolle hier noch einmal Ihre Kundendaten:<br>
 				<tr>
 					<td>
 						<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-							{$Kunde->cAnredeLocalized} {$Kunde->cVorname} {$Kunde->cNachname}<br>
+							{$Kunde->cVorname} {$Kunde->cNachname}<br>
 							{$Kunde->cStrasse} {$Kunde->cHausnummer}<br>
 							{if $Kunde->cAdressZusatz}{$Kunde->cAdressZusatz}{/if}<br>
 							{$Kunde->cPLZ} {$Kunde->cOrt}<br>
@@ -200,7 +200,7 @@ nehmen Sie einfach Kontakt mit uns auf.<br>
 <br>
 Wir wünschen Ihnen viel Spaß beim Stöbern in unserem Sortiment.<br>
 <br>
-Mit freundlichem Gruß,<br>
+Mit freundlichem Gruß<br>
 Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=html}

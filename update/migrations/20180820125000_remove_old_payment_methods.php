@@ -6,18 +6,21 @@
  * @created Mon, 20 Aug 2018 12:50:00 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Class Migration_20180820125000
  */
 class Migration_20180820125000 extends Migration implements IMigration
 {
-    protected $author = 'fm';
+    protected $author      = 'fm';
     protected $description = 'Remove old payment methods';
 
     public function up()
     {
         $this->execute(
-        "DELETE tversandartzahlungsart, tzahlungsart, tzahlungsartsprache
+            "DELETE tversandartzahlungsart, tzahlungsart, tzahlungsartsprache
             FROM tzahlungsart
             LEFT JOIN tversandartzahlungsart
                 ON tzahlungsart.kZahlungsart = tversandartzahlungsart.kZahlungsart
@@ -61,17 +64,17 @@ class Migration_20180820125000 extends Migration implements IMigration
             'za_wirecard_jtl'
         ) OR cModulId LIKE 'za_ut_%' OR cModulId LIKE 'za_uos_%'");
         $this->execute(
-            "DELETE FROM teinstellungenconfwerte 
-                WHERE kEinstellungenConf NOT IN (SELECT kEinstellungenConf FROM teinstellungenconf)"
+            'DELETE FROM teinstellungenconfwerte 
+                WHERE kEinstellungenConf NOT IN (SELECT kEinstellungenConf FROM teinstellungenconf)'
         );
         $this->execute(
-            "DELETE FROM tversandartzahlungsart
+            'DELETE FROM tversandartzahlungsart
                 WHERE kVersandart NOT IN (SELECT kVersandart FROM tversandart)
-                OR kZahlungsart NOT IN (SELECT kZahlungsart FROM tzahlungsart)"
+                OR kZahlungsart NOT IN (SELECT kZahlungsart FROM tzahlungsart)'
         );
         $this->execute(
-            "DELETE FROM tzahlungsartsprache
-	            WHERE kZahlungsart NOT IN (SELECT kZahlungsart FROM tzahlungsart)"
+            'DELETE FROM tzahlungsartsprache
+	            WHERE kZahlungsart NOT IN (SELECT kZahlungsart FROM tzahlungsart)'
         );
         $this->removeLocalization('ipaymentDesc');
         $this->removeLocalization('payWithIpayment');

@@ -1,0 +1,42 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "statisticTitle"
+msgstr "Statistik"
+
+msgid "statisticBesucherURL"
+msgstr "https://jtl-url.de/sd6h2"
+
+msgid "statisticKundenherkunft"
+msgstr "Kundenherkunft"
+
+msgid "statisticKundenherkunftURL"
+msgstr "https://jtl-url.de/7bf5d"
+
+msgid "statisticSuchmaschine"
+msgstr "Suchmaschinen"
+
+msgid "statisticSuchmaschineURL"
+msgstr "https://jtl-url.de/3va0g"
+
+msgid "statisticUmsatz"
+msgstr "Umsatz"
+
+msgid "statisticUmsatzURL"
+msgstr "https://jtl-url.de/6vzmt"
+
+msgid "statisticEinstiegsseite"
+msgstr "Einstiegsseite"
+
+msgid "statisticEinstiegsseiteURL"
+msgstr "https://jtl-url.de/lmtjs"
+
+msgid "statisticDesc"
+msgstr "Hier finden Sie detaillierte Statistiken für Ihren Onlineshop. Wählen Sie den Zeitraum, für den Sie die Statistiken einsehen möchten."
+
+msgid "sales"
+msgstr "Umsatz"
+
+msgid "statisticType"
+msgstr "Statistiktyp"

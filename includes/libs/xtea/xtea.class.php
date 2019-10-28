@@ -71,7 +71,7 @@ class XTEA
             if ($this->cbc == 1) {
                 //$text mit letztem Geheimtext XOR Verknuepfen
                 //$text is XORed with the previous ciphertext
-                $text[$i] ^= $cipher[$a - 1][0];
+                $text[$i]     ^= $cipher[$a - 1][0];
                 $text[$i + 1] ^= $cipher[$a - 1][1];
             }
 
@@ -79,7 +79,7 @@ class XTEA
             $a++;
         }
 
-        $output = "";
+        $output = '';
         for ($i = 0; $i < count($cipher); $i++) {
             $output .= $this->_long2str($cipher[$i][0]);
             $output .= $this->_long2str($cipher[$i][1]);
@@ -91,7 +91,7 @@ class XTEA
     //Entschluesseln
     public function decrypt($text)
     {
-        $plain  = array();
+        $plain  = [];
         $cipher = $this->_str2long(base64_decode($text));
 
         if ($this->cbc == 1) {
@@ -107,13 +107,13 @@ class XTEA
             //Xor Verknuepfung von $return und Geheimtext aus von den letzten beiden Bloecken
             //XORed $return with the previous ciphertext
             if ($this->cbc == 1) {
-                $plain[] = array($return[0] ^ $cipher[$i - 2], $return[1] ^ $cipher[$i - 1]);
+                $plain[] = [$return[0] ^ $cipher[$i - 2], $return[1] ^ $cipher[$i - 1]];
             } else {//EBC Mode
                 $plain[] = $return;
             }
         }
 
-        $output = "";
+        $output = '';
         for ($i = 0; $i < count($plain); $i++) {
             $output .= $this->_long2str($plain[$i][0]);
             $output .= $this->_long2str($plain[$i][1]);
@@ -130,7 +130,7 @@ class XTEA
         } elseif (isset($key) && !empty($key)) {
             $this->key = $this->_str2long(str_pad($key, 16, $key));
         } else {
-            $this->key = array(0, 0, 0, 0);
+            $this->key = [0, 0, 0, 0];
         }
     }
 
@@ -138,39 +138,40 @@ class XTEA
     public function benchmark($length = 1000)
     {
         //1000 Byte String
-        $string = str_pad("", $length, "text");
+        $string = str_pad('', $length, 'text');
 
         //Key-Setup
         $start1 = time() + (double)microtime();
-        $xtea   = new XTEA("key");
+        $xtea   = new self('key');
         $end1   = time() + (double)microtime();
 
         //Encryption
         $start2 = time() + (double)microtime();
-        $xtea->Encrypt($string);
+        $xtea->encrypt($string);
         $end2 = time() + (double)microtime();
 
-        echo "Encrypting " . $length . " bytes: " . round($end2 - $start2,
-                2) . " seconds (" . round($length / ($end2 - $start2), 2) . " bytes/second)<br>";
+        echo 'Encrypting ' . $length . ' bytes: ' . round(
+            $end2 - $start2,
+            2
+        ) . ' seconds (' . round($length / ($end2 - $start2), 2) . ' bytes/second)<br>';
     }
 
     //verify the correct implementation of the blowfish algorithm
     public function check_implementation()
     {
-        $xtea    = new XTEA("");
-        $vectors = array(
-            array(
-                array(0x00000000, 0x00000000, 0x00000000, 0x00000000),
-                array(0x41414141, 0x41414141),
-                array(0xed23375a, 0x821a8c2d)
-            ),
-            array(
-                array(0x00010203, 0x04050607, 0x08090a0b, 0x0c0d0e0f),
-                array(0x41424344, 0x45464748),
-                array(0x497df3d0, 0x72612cb5)
-            ),
-
-        );
+        $xtea    = new XTEA('');
+        $vectors = [
+            [
+                [0x00000000, 0x00000000, 0x00000000, 0x00000000],
+                [0x41414141, 0x41414141],
+                [0xed23375a, 0x821a8c2d]
+            ],
+            [
+                [0x00010203, 0x04050607, 0x08090a0b, 0x0c0d0e0f],
+                [0x41424344, 0x45464748],
+                [0x497df3d0, 0x72612cb5]
+            ]
+        ];
 
         //Correct implementation?
         $correct = true;
@@ -201,22 +202,26 @@ class XTEA
 
         /* start cycle */
         for ($i = 0; $i < 32; $i++) {
-            $y = $this->_add($y,
+            $y = $this->_add(
+                $y,
                 $this->_add($z << 4 ^ $this->_rshift($z, 5), $z) ^
-                $this->_add($sum, $this->key[$sum & 3]));
+                $this->_add($sum, $this->key[$sum & 3])
+            );
 
             $sum = $this->_add($sum, $delta);
 
-            $z = $this->_add($z,
+            $z = $this->_add(
+                $z,
                 $this->_add($y << 4 ^ $this->_rshift($y, 5), $y) ^
-                $this->_add($sum, $this->key[$this->_rshift($sum, 11) & 3]));
+                $this->_add($sum, $this->key[$this->_rshift($sum, 11) & 3])
+            );
         }
 
         /* end cycle */
         $v[0] = $y;
         $v[1] = $z;
 
-        return array($y, $z);
+        return [$y, $z];
     }
 
     public function block_decrypt($y, $z)
@@ -227,17 +232,21 @@ class XTEA
 
         /* start cycle */
         for ($i = 0; $i < 32; $i++) {
-            $z   = $this->_add($z,
+            $z   = $this->_add(
+                $z,
                 -($this->_add($y << 4 ^ $this->_rshift($y, 5), $y) ^
-                    $this->_add($sum, $this->key[$this->_rshift($sum, 11) & 3])));
+                $this->_add($sum, $this->key[$this->_rshift($sum, 11) & 3]))
+            );
             $sum = $this->_add($sum, -$delta);
-            $y   = $this->_add($y,
+            $y   = $this->_add(
+                $y,
                 -($this->_add($z << 4 ^ $this->_rshift($z, 5), $z) ^
-                    $this->_add($sum, $this->key[$sum & 3])));
+                $this->_add($sum, $this->key[$sum & 3]))
+            );
         }
         /* end cycle */
 
-        return array($y, $z);
+        return [$y, $z];
     }
 
     public function _rshift($integer, $n)
@@ -256,9 +265,9 @@ class XTEA
 
         // do right shift
         if (0 > $integer) {
-            $integer &= 0x7fffffff;                     // remove sign bit before shift
+            $integer  &= 0x7fffffff;                     // remove sign bit before shift
             $integer >>= $n;                            // right shift
-            $integer |= 1 << (31 - $n);                 // set shifted sign bit
+            $integer  |= 1 << (31 - $n);                 // set shifted sign bit
         } else {
             $integer >>= $n;                            // use normal right shift
         }
@@ -301,7 +310,7 @@ class XTEA
     {
         $n         = strlen($data);
         $tmp       = unpack('N*', $data);
-        $data_long = array();
+        $data_long = [];
         $j         = 0;
 
         foreach ($tmp as $value) {

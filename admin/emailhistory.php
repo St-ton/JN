@@ -3,39 +3,42 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\Alert\Alert;
+use JTL\Emailhistory;
+use JTL\Helpers\Form;
+use JTL\Helpers\GeneralObject;
+use JTL\Pagination\Pagination;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('EMAILHISTORY_VIEW', true, true);
-/** @global JTLSmarty $smarty */
-$cHinweis        = '';
-$cFehler         = '';
-$step            = 'uebersicht';
-$nAnzahlProSeite = 30;
-$oEmailhistory   = new Emailhistory();
-$cAction         = (isset($_POST['a']) && FormHelper::validateToken()) ? $_POST['a'] : '';
+/** @global \JTL\Smarty\JTLSmarty $smarty */
+$step        = 'uebersicht';
+$history     = new Emailhistory();
+$action      = (isset($_POST['a']) && Form::validateToken()) ? $_POST['a'] : '';
+$alertHelper = Shop::Container()->getAlertService();
 
-if ($cAction === 'delete') {
+if ($action === 'delete') {
     if (isset($_POST['remove_all'])) {
-        if (true !== $oEmailhistory->deleteAll()) {
-            $cFehler = 'Fehler: eMail-History konnte nicht gelöscht werden!';
+        if ($history->deleteAll() !== true) {
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorHistoryDelete'), 'errorHistoryDelete');
         }
-    } elseif (isset($_POST['kEmailhistory']) && is_array($_POST['kEmailhistory']) && count($_POST['kEmailhistory']) > 0) {
-        $oEmailhistory->deletePack($_POST['kEmailhistory']);
-        $cHinweis = 'Ihre markierten Logbucheinträge wurden erfolgreich gelöscht.';
+    } elseif (GeneralObject::hasCount('kEmailhistory', $_POST)) {
+        $history->deletePack($_POST['kEmailhistory']);
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successHistoryDelete'), 'successHistoryDelete');
     } else {
-        $cFehler = 'Fehler: Bitte markieren Sie mindestens einen Logbucheintrag.';
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSelectEntry'), 'errorSelectEntry');
     }
 }
 
 if ($step === 'uebersicht') {
-    $oPagination = (new Pagination('emailhist'))
-        ->setItemCount($oEmailhistory->getCount())
+    $pagination = (new Pagination('emailhist'))
+        ->setItemCount($history->getCount())
         ->assemble();
-    $smarty->assign('oPagination', $oPagination)
-           ->assign('oEmailhistory_arr', $oEmailhistory->getAll(' LIMIT ' . $oPagination->getLimitSQL()));
+    $smarty->assign('pagination', $pagination)
+        ->assign('oEmailhistory_arr', $history->getAll(' LIMIT ' . $pagination->getLimitSQL()));
 }
 
-$smarty->assign('cHinweis', $cHinweis)
-       ->assign('cFehler', $cFehler)
-       ->assign('step', $step)
-       ->display('emailhistory.tpl');
+$smarty->assign('step', $step)
+    ->display('emailhistory.tpl');

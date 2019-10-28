@@ -67,7 +67,7 @@ class Zend_Validate_Barcode_UpcA extends Zend_Validate_Abstract
      */
     public function isValid($value)
     {
-        $valueString = (string) $value;
+        $valueString = (string)$value;
         $this->_setValue($valueString);
 
         if (strlen($valueString) !== 12) {

@@ -4,16 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\Items;
+namespace JTL\Filter\Items;
 
-use Filter\AbstractFilter;
-use Filter\Option;
-use Filter\FilterInterface;
-use Filter\ProductFilter;
+use JTL\Filter\AbstractFilter;
+use JTL\Filter\FilterInterface;
+use JTL\Filter\Option;
+use JTL\Filter\ProductFilter;
+use JTL\Shop;
 
 /**
  * Class Limit
- * @package Filter\Items
+ * @package JTL\Filter\Items
  */
 class Limit extends AbstractFilter
 {
@@ -27,7 +28,7 @@ class Limit extends AbstractFilter
         parent::__construct($productFilter);
         $this->setIsCustom(false)
              ->setUrlParam('af')
-             ->setFrontendName(\Shop::Lang()->get('productsPerPage', 'productOverview'));
+             ->setFrontendName(Shop::Lang()->get('productsPerPage', 'productOverview'));
     }
 
     /**
@@ -49,7 +50,7 @@ class Limit extends AbstractFilter
                 : 20;
         }
 
-        return \min((int)$limit, ARTICLES_PER_PAGE_HARD_LIMIT);
+        return \min((int)$limit, \ARTICLES_PER_PAGE_HARD_LIMIT);
     }
 
     /**
@@ -87,7 +88,7 @@ class Limit extends AbstractFilter
         $activeValue      = $_SESSION['ArtikelProSeite'] ?? $this->getProductsPerPageLimit();
         foreach ($limitOptions as $i => $limitOption) {
             $limitOption = (int)\trim($limitOption);
-            $name        = $limitOption > 0 ? $limitOption : \Shop::Lang()->get('showAll');
+            $name        = $limitOption > 0 ? $limitOption : Shop::Lang()->get('showAll');
             $options[]   = (new Option())
                 ->setIsActive($activeValue === $limitOption)
                 ->setURL($this->productFilter->getFilterURL()->getURL(
@@ -96,7 +97,7 @@ class Limit extends AbstractFilter
                 ->setType($this->getType())
                 ->setClassName($this->getClassName())
                 ->setParam($this->getUrlParam())
-                ->setName($name)
+                ->setName((string)$name)
                 ->setValue($limitOption)
                 ->setSort($i);
         }

@@ -4,11 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL\Validation;
+namespace JTL\Services\JTL\Validation;
 
 /**
  * Interface ValidationServiceInterface
- * @package Services\JTL\Validation
+ * @package JTL\Services\JTL\Validation
  */
 interface ValidationServiceInterface
 {
@@ -16,21 +16,21 @@ interface ValidationServiceInterface
      * @param string $name
      * @return RuleSet
      */
-    public function getRuleSet(string $name);
+    public function getRuleSet(string $name): RuleSet;
 
     /**
      * @param string  $name
      * @param RuleSet $ruleSet
      * @return void
      */
-    public function setRuleSet(string $name, RuleSet $ruleSet);
+    public function setRuleSet(string $name, RuleSet $ruleSet): void;
 
     /**
      * @param mixed          $value
      * @param RuleSet|string $ruleSet
      * @return ValidationResultInterface
      */
-    public function validate($value, $ruleSet);
+    public function validate($value, $ruleSet): ValidationResultInterface;
 
     /**
      * @param string $name
@@ -97,14 +97,12 @@ interface ValidationServiceInterface
      */
     public function validateGP(string $name, $ruleSet): ValidationResultInterface;
 
-
     /**
-     * @param array|object $set
+     * @param array $set
      * @param array        $rulesConfig
      * @return SetValidationResultInterface
      */
     public function validateSet($set, $rulesConfig): SetValidationResultInterface;
-
 
     /**
      * @param array $rulesConfig

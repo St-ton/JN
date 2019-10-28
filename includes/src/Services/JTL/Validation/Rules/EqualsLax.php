@@ -4,17 +4,20 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL\Validation\Rules;
+namespace JTL\Services\JTL\Validation\Rules;
 
-use Services\JTL\Validation\RuleInterface;
-use Services\JTL\Validation\RuleResult;
+use JTL\Services\JTL\Validation\RuleInterface;
+use JTL\Services\JTL\Validation\RuleResult;
 
 /**
  * Class Equals
- * @package Services\JTL\Validation\Rules
+ * @package JTL\Services\JTL\Validation\Rules
  */
 class EqualsLax implements RuleInterface
 {
+    /**
+     * @var mixed
+     */
     protected $expected;
 
     /**
@@ -30,7 +33,7 @@ class EqualsLax implements RuleInterface
      * @param mixed $value
      * @return RuleResult
      */
-    public function validate($value)
+    public function validate($value): RuleResult
     {
         return $this->expected == $value
             ? new RuleResult(true, '', $value)

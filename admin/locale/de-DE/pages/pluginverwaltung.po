@@ -1,0 +1,222 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "pluginverwaltung"
+msgstr "Plugin-Verwaltung"
+
+msgid "pluginverwaltungLocales"
+msgstr "Sprachvariablen"
+
+msgid "pluginverwaltungLicenceKeyInput"
+msgstr "Lizenzschlüsseleingabe für Plugin"
+
+msgid "pluginverwaltungLicenceKey"
+msgstr "Lizenzschlüssel"
+
+msgid "pluginverwaltungDesc"
+msgstr "Plugins erweitern den Funktionsumfang von JTL-Shop, ohne den Kern zu verändern. Aktive Plugins können jederzeit deaktiviert bzw. komplett deinstalliert werden. Bitte installieren Sie keine Plugins, deren Ursprung Ihnen nicht bekannt ist. <br/><strong>Sicherheitshinweis: Plugins haben Zugriff auf die gesamte Datenbank des Shopsystems.</strong>"
+
+msgid "pluginverwaltungURL"
+msgstr "https://jtl-url.de/5stze"
+
+msgid "pluginListNotInstalled"
+msgstr "Verfügbare Plugins (nicht installiert)"
+
+msgid "pluginListNotActivated"
+msgstr "Verfügbare Plugins (nicht aktiv)"
+
+msgid "pluginListNotInstalledAndError"
+msgstr "Fehlerhafte Plugins (nicht installiert)"
+
+msgid "pluginListInstalled"
+msgstr "Installierte Plugins"
+
+msgid "pluginListProblems"
+msgstr "Installierte Plugins, die konfiguriert werden müssen"
+
+msgid "pluginName"
+msgstr "Name"
+
+msgid "pluginErrorCode"
+msgstr "Fehlercode"
+
+msgid "pluginAuthor"
+msgstr "Autor"
+
+msgid "pluginHomepage"
+msgstr "Website"
+
+msgid "pluginDesc"
+msgstr "Beschreibung"
+
+msgid "pluginLanguage"
+msgstr "Sprachen"
+
+msgid "pluginVersion"
+msgstr "Version"
+
+msgid "pluginInfo"
+msgstr "Info"
+
+msgid "pluginInstalled"
+msgstr "Installiert am"
+
+msgid "pluginUpdated"
+msgstr "Aktualisiert am"
+
+msgid "pluginFolder"
+msgstr "Verzeichnis"
+
+msgid "statusInstalled"
+msgstr "Installiert"
+
+msgid "statusDeactive"
+msgstr "Deaktiviert"
+
+msgid "statusNotInstalled"
+msgstr "Nicht installiert"
+
+msgid "statusError"
+msgstr "Fehlerhaft"
+
+msgid "pluginBtnUpdate"
+msgstr "Aktualisieren"
+
+msgid "pluginBtnInstall"
+msgstr "Installieren"
+
+msgid "pluginBtnDeInstall"
+msgstr "Deinstallieren"
+
+msgid "pluginBtnReload"
+msgstr "Neu laden"
+
+msgid "pluginBtnLicenceAdd"
+msgstr "Lizenzschlüssel eingeben"
+
+msgid "pluginBtnLicenceChange"
+msgstr "Ändern"
+
+msgid "pluginBtnLicence"
+msgstr "Lizenz"
+
+msgid "pluginLocalesStd"
+msgstr "Auf den Installationszustand zurücksetzen"
+
+msgid "pluginEditLocales"
+msgstr "Sprachvariablen"
+
+msgid "pluginEditLinkgrps"
+msgstr "Linkgruppen"
+
+msgid "pluginUpdateExists"
+msgstr "Das Plugin wurde in einer aktuelleren Version hochgeladen und kann aktualisiert werden."
+
+msgid "pluginUpdateExistsError"
+msgstr "Dieses weist jedoch den folgenden Fehler auf"
+
+msgid "successPluginKeySave"
+msgstr "Ihr Plugin-Lizenzschlüssel wurde gespeichert."
+
+msgid "errorPluginKeyInvalid"
+msgstr "Der eingegebene Lizenzschlüssel ist ungültig. Bitte überprüfen Sie den Lizenzschlüssel auf eventuelle Tippfehler und wenden Sie sich ggf. an den Support."
+
+msgid "errorPluginNotFound"
+msgstr "Das Plugin konnte nicht in der Datenbank gefunden werden. Bitte installieren Sie es erneut."
+
+msgid "successPluginActivate"
+msgstr "Die ausgewählten Plugins wurden erfolgreich aktiviert."
+
+msgid "errorAtLeastOnePlugin"
+msgstr "Bitte wählen Sie mindestens ein Plugin aus."
+
+msgid "successPluginDeactivate"
+msgstr "Die ausgewählten Plugins wurden erfolgreich deaktiviert."
+
+msgid "errorPluginDeleteSQL"
+msgstr "Das Plugin konnte aufgrund eines SQL-Fehlers nicht deinstalliert werden. Bitte sehen Sie sich die Log-Datei an."
+
+msgid "successPluginDelete"
+msgstr "Die ausgewählten Plugins wurden erfolgreich deinstalliert."
+
+msgid "errorPluginNotFoundMultiple"
+msgstr "Ein oder mehrere Plugins konnten nicht in der Datenbank gefunden werden. Bitte installieren Sie das/die Plugin(s) erneut."
+
+msgid "successPluginRefresh"
+msgstr "Die ausgewählten Plugins wurden erfolgreich aktualisiert."
+
+msgid "errorPluginRefresh"
+msgstr "Ein Plugin konnte nicht aktualisiert werden. Bitte installieren Sie das Plugin erneut."
+
+msgid "successPluginUpdate"
+msgstr "Das Plugin wurde erfolgreich aktualisiert."
+
+msgid "errorPluginUpdate"
+msgstr "Die Aktualisierung konnte nicht durchgeführt werden. Fehlercode: "
+
+msgid "successPluginInstall"
+msgstr "Die ausgewählten Plugins wurden erfolgreich installiert."
+
+msgid "errorPluginInstall"
+msgstr "Bei der Installation ist ein Fehler aufgetreten. Fehlercode: "
+
+msgid "successVariableRestore"
+msgstr "Sie haben den Installationszustand der ausgewählten Variable erfolgreich wiederhergestellt."
+
+msgid "surePluginUpdate"
+msgstr "Möchten Sie das Plugin wirklich updaten?"
+
+msgid "successPluginUpload"
+msgstr "Plugin erfolgreich hochgeladen."
+
+msgid "errorPluginUpload"
+msgstr "Das Plugin konnte nicht hochgeladen werden. Bitte wenden Sie sich an den Support."
+
+msgid "sureResetLangVar"
+msgstr "Möchten Sie diese Sprachvariable wirklich wieder auf den Installationszustand zurücksetzen?<br/><br/> Dabei gehen alle geänderten Übersetzungen der Variable verloren."
+
+msgid "dangerPluginNotCompatibleShop5"
+msgstr "Bitte beachten Sie, dass das Plugin nicht vollständig mit JTL-Shop&nbsp;5 kompatibel ist. Es können daher Probleme beim Betrieb entstehen."
+
+msgid "dangerPluginNotCompatibleShop4"
+msgstr "Bitte beachten Sie, dass das Plugin nicht vollständig mit JTL-Shop&nbsp;4 kompatibel ist. Es können daher Probleme beim Betrieb entstehen."
+
+msgid "licensePlugin"
+msgstr "Plugin-Lizenz"
+
+msgid "storeNotLinkedDesc"
+msgstr "Um auf Inhalte von JTL-Store zugreifen zu können, müssen Sie zunächst Ihr JTL-Konto mit dem Marktplatz verknüpfen."
+
+msgid "storeLink"
+msgstr "Konto verknüpfen"
+
+msgid "storeRevoke"
+msgstr "Verknüpfung aufheben"
+
+msgid "storeUpdatesAvailable"
+msgstr "Updates verfügbar"
+
+msgid "storeListUpdates"
+msgstr "Updates anzeigen"
+
+msgid "storePlugins"
+msgstr "Lizenzierte Plugins"
+
+msgid "storeListAll"
+msgstr "Alle anzeigen"
+
+msgid "storeLastUpdate"
+msgstr "Zuletzt aktualisiert"
+
+msgid "storeUpdateNow"
+msgstr "Aktualisieren"
+
+msgid "deletePluginData"
+msgstr "Plugindaten aus Datenbank löschen?"
+
+msgid "deletePluginDataYes"
+msgstr "Ja, alle Plugindaten löschen"
+
+msgid "deletePluginDataNo"
+msgstr "Nein, Plugindaten behalten"

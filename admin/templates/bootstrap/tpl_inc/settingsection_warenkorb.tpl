@@ -7,13 +7,13 @@
             $all           = $('#bestellabschluss_bestellnummer_praefix, #bestellabschluss_bestellnummer_anfangsnummer, #bestellabschluss_bestellnummer_suffix'),
             force          = false;
 
-        $praefix.focus(function(e) {
+        $praefix.on('focus', function(e) {
             this.maxLength = 20 - $anfangsnummer.val().length - $suffix.val().length;
         });
-        $anfangsnummer.focus(function(e) {
+        $anfangsnummer.on('focus', function(e) {
             this.maxLength = 20 - $praefix.val().length - $suffix.val().length;
         });
-        $suffix.focus(function(e) {
+        $suffix.on('focus', function(e) {
             this.maxLength = 20 - $anfangsnummer.val().length - $praefix.val().length;
         });
 
@@ -32,7 +32,7 @@
                 updateBestellnummer(this);
             });
 
-        $all.closest('form').submit(function(e) {
+        $all.closest('form').on('submit', function(e) {
             var praefix       = $praefix.val(),
                 anfangsnummer = isNaN(parseInt($anfangsnummer.val())) ? 0 : parseInt($anfangsnummer.val()),
                 suffix        = $suffix.val(),
@@ -42,7 +42,7 @@
 
             if (anfangsnummer > maxVal) {
                 $all.closest('.input-group').addClass('has-error has-feedback');
-                showNotify('warning', 'Bestellnumer nicht zulässig', 'Die max. m&ouml;gliche Bestellnummer ist kleiner als die Anfangsnummer!');
+                showNotify('warning', 'Bestellnumer nicht zulässig', 'Die max. mögliche Bestellnummer ist kleiner als die Anfangsnummer!');
 
                 return false;
             }
@@ -50,7 +50,7 @@
                 $anfangsnummer.closest('.input-group').addClass('has-warning has-feedback');
                 var $notify = createNotify({
                     title: 'Bestellnummerbereich zu gering',
-                    message: 'Es sind nur max. ' + (maxVal - anfangsnummer) + ' Bestellnummern im Format ' + praefix + maxValStr + suffix + ' m&ouml;glich! <button id="forceSave" class="pull-right btn btn-warning"><i class="fa fa-save"></i>Trotzdem speichern!</button>'
+                    message: 'Es sind nur max. ' + (maxVal - anfangsnummer) + ' Bestellnummern im Format ' + praefix + maxValStr + suffix + ' möglich! <button id="forceSave" class="pull-right btn btn-warning"><i class="fa fa-save"></i>Trotzdem speichern!</button>'
                 }, {
                     type: 'info',
                     delay: 12000,
@@ -76,7 +76,7 @@
                 maxValStr     = '9'.repeat(maxValLength),
                 maxVal        = parseInt(maxValStr);
 
-            var result = 'Vorschau: ' + praefix + maxValStr + suffix;
+            var result = {/literal}'{__('preview')}: '{literal} + praefix + maxValStr + suffix;
 
             $(elem).attr('title', result)
                 .tooltip('fixTitle')

@@ -11,10 +11,10 @@
     ymin        - string
 *}
 
-{config_load file="$lang.conf" section="statistics"}
+{config_load file="$lang.conf" section='statistics'}
  
 {if $linechart->getActive()}
-    <div id="{$id}" style="width: {$width}; height: {$height};"></div>
+    <div id="{$id}" style="background: {$chartbg|default:'#fff'}; width: {$width}; height: {$height}; padding: {$chartpad|default:'0'};"></div>
     
     <script type="text/javascript">
         var chart;
@@ -23,35 +23,39 @@
             chart = new Highcharts.Chart({
                 chart: {
                     renderTo: '{$id}',
-                    defaultSeriesType: 'line',
-                    marginRight: 0,
+                    defaultSeriesType: 'area',
+                    marginRight: 15,
                     marginBottom: 50,
                     spacingBottom: 25,
-                    backgroundColor: null,
                     borderColor: '#CCC',
-                    borderWidth: 1
+                    borderWidth: 0
                 },
                 title: {
                     style: {
-                        color: '#333'
+                        color: '#435a6b'
                     },
                     text: '{$headline}',
-                    x: -20 //center
+                    align: 'left'
                 },
-                {if $href}
-                    plotOptions: {
-                        series: {
-                            cursor: 'pointer',
-                            point: {
-                                events: {
-                                    click: function() {
-                                        location.href = this.options.url;
-                                    }
+                plotOptions: {
+                    series: {
+                        cursor: 'pointer',
+                        marker: {
+                            fillColor: '#FFFFFF',
+                            lineWidth: 2,
+                            lineColor: null
+                        },
+                        {if $href}
+                        point: {
+                            events: {
+                                click: function() {
+                                    location.href = this.options.url;
                                 }
                             }
                         }
-                    },
-                {/if}
+                        {/if}
+                    }
+                },
                 legend: {
                     layout: 'vertical',
                     align: 'right',
@@ -65,14 +69,19 @@
                 yAxis: {
                     title: {
                         style: {
-                            color: '#333'
+                            color: '#5cbcf6'
                         },
                         text: '{$ylabel}'
                     },
+                    labels: {
+                        style: {
+                            color: '#5cbcf6'
+                        }
+                    },
                     plotLines: [{
                         value: 0,
-                        width: 1,
-                        color: '#808080'
+                        width: 2,
+                        color: '#ddd'
                     }],
                     {if isset($ymin) && $ymin|@count_characters > 0}
                         min: {$ymin}
@@ -83,5 +92,5 @@
         });
     </script>
 {else}
-    <div class="alert alert-info" role="alert">{#statisticNoData#}</div>
+    <div class="alert alert-info" role="alert">{__('statisticNoData')}</div>
 {/if}

@@ -22,7 +22,7 @@
 
                     {block name='searchspecial-overlay'}
                         {if isset($Artikel->oSuchspecialBild)}
-                            {include file='snippets/searchspecials.tpl' src=$Artikel->oSuchspecialBild->cURLKlein alt=$alt}
+                            {include file='snippets/searchspecials.tpl' src=$Artikel->oSuchspecialBild->getURL($smarty.const.IMAGE_SIZE_SM) alt=$alt}
                         {/if}
                     {/block}
 
@@ -31,9 +31,6 @@
                     {/if}
                 </a>
             {/block}
-            {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y'}
-                {include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}
-            {/if}
         </div>
         <div class="col-xs-5 product-detail">
             {block name='product-title'}
@@ -42,6 +39,9 @@
                 </h4>
                 <meta itemprop="url" content="{$Artikel->cURLFull}">
             {/block}
+            {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y'}
+                {include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}
+            {/if}
             {block name='product-manufacturer'}
                 {if $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen !== 'N'}
                     <div class="media hidden-xs top0 bottom5" itemprop="manufacturer" itemscope itemtype="http://schema.org/Organization">
@@ -138,13 +138,6 @@
                             </li>
                         {/if}
                     </ul>
-                    {if $Einstellungen.artikeluebersicht.artikeluebersicht_varikombi_anzahl > 0 && $Artikel->oVariationKombiVorschau_arr !== null && $Artikel->oVariationKombiVorschau_arr|@count > 0}
-                        <div class="varikombis-thumbs hidden-md hidden-sm">
-                            {foreach $Artikel->oVariationKombiVorschau_arr as $oVariationKombiVorschau}
-                                <a href="{$oVariationKombiVorschau->cURL}" class="thumbnail pull-left"><img src="{$oVariationKombiVorschau->cBildMini}" alt="" /></a>
-                            {/foreach}
-                        </div>
-                    {/if}
                 {/block}
             </div>
         </div>
@@ -156,7 +149,9 @@
                     <div class="delivery-status">
                         {block name='delivery-status'}
                             {assign var=anzeige value=$Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandsanzeige}
-                            {if $Artikel->nErscheinendesProdukt}
+                            {if $Artikel->inWarenkorbLegbar === $smarty.const.INWKNICHTLEGBAR_UNVERKAEUFLICH}
+                                <span class="status"><small>{lang key='productUnsaleable' section='productDetails'}</small></span>
+                            {elseif $Artikel->nErscheinendesProdukt}
                                 <div class="availablefrom">
                                     <small>{lang key='productAvailableFrom'}: {$Artikel->Erscheinungsdatum_de}</small>
                                 </div>
@@ -213,7 +208,7 @@
                                             </button>
                                         </div>
                                     {/if}
-                                    {if $Artikel->verfuegbarkeitsBenachrichtigung === 3 && (($Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerKleinerNull !== 'Y') || $Artikel->cLagerBeachten !== 'Y')}
+                                    {if $Artikel->verfuegbarkeitsBenachrichtigung === 3}
                                         <div class="btn-group btn-group-xs" role="group">
                                             <button type="button" id="n{$Artikel->kArtikel}" class="popup-dep notification btn btn-default btn-left" title="{lang key='requestNotification'}">
                                                 <span class="fa fa-bell"></span>
@@ -244,7 +239,7 @@
                                             {else}
                                                 <div class="quantity-wrapper form-group top7">
                                                     <div class="input-group input-group-sm">
-                                                        <input type="number" min="0"
+                                                        <input type="{if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}text{else}number{/if}" min="0"
                                                                {if $Artikel->fAbnahmeintervall > 0}step="{$Artikel->fAbnahmeintervall}"{/if} size="2"
                                                                id="quantity{$Artikel->kArtikel}" class="quantity form-control text-right" name="anzahl"
                                                                autocomplete="off"
@@ -289,11 +284,8 @@
                             {if $NaviFilter->hasSearchQuery()}
                                 <input type="hidden" name="l" value="{$NaviFilter->getSearchQuery()->getValue()}" />
                             {/if}
-                            {if $NaviFilter->hasAttributeValue()}
-                                <input type="hidden" name="m" value="{$NaviFilter->getAttributeValue()->getValue()}" />
-                            {/if}
-                            {if $NaviFilter->hasTag()}
-                                <input type="hidden" name="t" value="{$NaviFilter->getTag()->getValue()}">
+                            {if $NaviFilter->hasCharacteristicValue()}
+                                <input type="hidden" name="m" value="{$NaviFilter->getCharacteristicValue()->getValue()}" />
                             {/if}
                             {if $NaviFilter->hasCategoryFilter()}
                                 {assign var=cfv value=$NaviFilter->getCategoryFilter()->getValue()}
@@ -315,16 +307,9 @@
                                     <input type="hidden" name="hf" value="{$mfv}" />
                                 {/if}
                             {/if}
-                            {if $NaviFilter->hasAttributeFilter()}
-                                {foreach $NaviFilter->getAttributeFilter() as $attributeFilter}
-                                    <input type="hidden" name="mf{$attributeFilter@iteration}" value="{$attributeFilter->getValue()}" />
-                                {/foreach}
-                            {/if}
-                            {if $NaviFilter->hasTagFilter()}
-                                {foreach $NaviFilter->getTagFilter() as $tagFilter}
-                                    <input type="hidden" name="tf{$tagFilter@iteration}" value="{$tagFilter->getValue()}" />
-                                {/foreach}
-                            {/if}
+                            {foreach $NaviFilter->getCharacteristicFilter() as $filter}
+                                <input type="hidden" name="mf{$filter@iteration}" value="{$filter->getValue()}" />
+                            {/foreach}
                             {/block}
                         </form>
                     </div>

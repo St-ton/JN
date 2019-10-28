@@ -1,5 +1,5 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section="bewertungen"}
+{config_load file="$lang.conf" section='bewertungen'}
 
 {if $step === 'bewertung_uebersicht'}
     {include file='tpl_inc/bewertung_uebersicht.tpl'}

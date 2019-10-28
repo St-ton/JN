@@ -4,11 +4,12 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
 
 /**
  * Class DirectPurchase
- * @package Boxes
+ *
+ * @package JTL\Boxes\Items
  */
 final class DirectPurchase extends AbstractBox
 {

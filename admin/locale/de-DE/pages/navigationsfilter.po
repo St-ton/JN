@@ -1,0 +1,18 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "navigationsfilter"
+msgstr "Artikelfilter"
+
+msgid "navigationsfilterDesc"
+msgstr "Hier stellen Sie die verschiedenen Filtermöglichkeiten in JTL-Shop ein, beispielsweise auf Artikelübersichtsseiten."
+
+msgid "navigationsfilterUrl"
+msgstr "https://jtl-url.de/5u1xg"
+
+msgid "thePriceRangeIsInvalid"
+msgstr "Die Preisspanne ist ungültig."
+
+msgid "thePriceRangeOverlapps"
+msgstr "Die Preisspanne überschneidet sich mit anderen Preisspannen."

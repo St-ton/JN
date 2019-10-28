@@ -3,54 +3,82 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\Alert\Alert;
+use JTL\Backend\Revision;
+use JTL\DB\ReturnType;
+use JTL\Exportformat;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Helpers\Text;
+use JTL\Shop;
+
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
 
+JTL\Shop::Container()->getGetText()->loadConfigLocales(true, true);
+
 $oAccount->permission('EXPORT_FORMATS_VIEW', true, true);
-/** @global JTLSmarty $smarty */
-$fehler              = '';
-$hinweis             = '';
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $step                = 'uebersicht';
 $oSmartyError        = new stdClass();
 $oSmartyError->nCode = 0;
 $link                = null;
-if (isset($_GET['neuerExport']) && (int)$_GET['neuerExport'] === 1 && FormHelper::validateToken()) {
+$db                  = Shop::Container()->getDB();
+$alertHelper         = Shop::Container()->getAlertService();
+if (Request::getInt('neuerExport') === 1 && Form::validateToken()) {
     $step = 'neuer Export';
 }
-// hacky
-if (isset($_GET['kExportformat']) && (int)$_GET['kExportformat'] > 0 && !isset($_GET['action']) && FormHelper::validateToken()) {
+if (Request::getInt('kExportformat') > 0
+    && !isset($_GET['action'])
+    && Form::validateToken()
+) {
     $step                   = 'neuer Export';
     $_POST['kExportformat'] = (int)$_GET['kExportformat'];
 
     if (isset($_GET['err'])) {
         $smarty->assign('oSmartyError', $oSmartyError);
-        $fehler = '<b>Smarty-Syntax Fehler.</b><br />';
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('smartySyntaxError'), 'smartySyntaxError');
         if (is_array($_SESSION['last_error'])) {
-            $fehler .= $_SESSION['last_error']['message'];
+            $alertHelper->addAlert(Alert::TYPE_ERROR, $_SESSION['last_error']['message'], 'last_error');
             unset($_SESSION['last_error']);
         }
     }
 }
-if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && FormHelper::validateToken()) {
-    $ef          = new Exportformat();
+if (Request::postInt('neu_export') === 1 && Form::validateToken()) {
+    $ef          = new Exportformat(0, $db);
     $checkResult = $ef->check($_POST);
     if ($checkResult === true) {
+        unset($_SESSION['exportSyntaxErrorCount']);
         $kExportformat = $ef->getExportformat();
         if ($kExportformat > 0) {
-            //update
-            $kExportformat = (int)$_POST['kExportformat'];
-            $revision = new Revision();
+            $kExportformat = Request::postInt('kExportformat');
+            $revision      = new Revision($db);
             $revision->addRevision('export', $kExportformat);
             $ef->update();
-            $hinweis .= 'Das Exportformat <strong>' . $ef->getName() . '</strong> wurde erfolgreich geändert.';
+            $alertHelper->addAlert(
+                Alert::TYPE_SUCCESS,
+                sprintf(__('successFormatEdit'), $ef->getName()),
+                'successFormatEdit'
+            );
         } else {
-            //insert
             $kExportformat = $ef->save();
-            $hinweis .= 'Das Exportformat <strong>' . $ef->getName() . '</strong> wurde erfolgreich erstellt.';
+            $alertHelper->addAlert(
+                Alert::TYPE_SUCCESS,
+                sprintf(__('successFormatCreate'), $ef->getName()),
+                'successFormatCreate'
+            );
         }
 
-        Shop::Container()->getDB()->delete('texportformateinstellungen', 'kExportformat', $kExportformat);
-        $Conf        = Shop::Container()->getDB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_EXPORTFORMATE, '*', 'nSort');
+        $db->delete('texportformateinstellungen', 'kExportformat', $kExportformat);
+        $Conf = $db->selectAll(
+            'teinstellungenconf',
+            'kEinstellungenSektion',
+            CONF_EXPORTFORMATE,
+            '*',
+            'nSort'
+        );
+        JTL\Shop::Container()->getGetText()->localizeConfigs($Conf);
         $configCount = count($Conf);
         for ($i = 0; $i < $configCount; $i++) {
             $aktWert                = new stdClass();
@@ -66,58 +94,58 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && FormHelper
                     $aktWert->cWert = (int)$aktWert->cWert;
                     break;
                 case 'text':
-                    $aktWert->cWert = substr($aktWert->cWert, 0, 255);
+                    $aktWert->cWert = mb_substr($aktWert->cWert, 0, 255);
                     break;
             }
-            Shop::Container()->getDB()->insert('texportformateinstellungen', $aktWert);
+            $db->insert('texportformateinstellungen', $aktWert);
         }
         $step  = 'uebersicht';
         $error = $ef->checkSyntax();
         if ($error !== false) {
-            $step   = 'neuer Export';
-            $fehler = $error;
+            $step = 'neuer Export';
+            $alertHelper->addAlert(Alert::TYPE_ERROR, $error, 'syntaxError');
         }
     } else {
         $_POST['cContent']   = str_replace('<tab>', "\t", $_POST['cContent']);
-        $_POST['cKopfzeile'] = str_replace('<tab>', "\t", $_POST['cKopfzeile']);
-        $_POST['cFusszeile'] = str_replace('<tab>', "\t", $_POST['cFusszeile']);
+        $_POST['cKopfzeile'] = str_replace('<tab>', "\t", Request::postVar('cKopfzeile', ''));
+        $_POST['cFusszeile'] = str_replace('<tab>', "\t", Request::postVar('cFusszeile', ''));
         $smarty->assign('cPlausiValue_arr', $checkResult)
-               ->assign('cPostVar_arr', StringHandler::filterXSS($_POST));
-        $step   = 'neuer Export';
-        $fehler = 'Fehler: Bitte überprüfen Sie Ihre Eingaben.';
+               ->assign('cPostVar_arr', Text::filterXSS($_POST));
+        $step = 'neuer Export';
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCheckInput'), 'errorCheckInput');
     }
 }
-$cAction       = null;
+$action        = null;
 $kExportformat = null;
-if (isset($_POST['action']) && strlen($_POST['action']) > 0 && (int)$_POST['kExportformat'] > 0) {
-    $cAction       = $_POST['action'];
-    $kExportformat = (int)$_POST['kExportformat'];
-} elseif (isset($_GET['action']) && strlen($_GET['action']) > 0 && (int)$_GET['kExportformat'] > 0) {
-    $cAction       = $_GET['action'];
-    $kExportformat = (int)$_GET['kExportformat'];
+if (mb_strlen(Request::postVar('action', '')) > 0 && Request::postInt('kExportformat') > 0) {
+    $action        = $_POST['action'];
+    $kExportformat = Request::postInt('kExportformat');
+} elseif (mb_strlen(Request::getVar('action', '')) > 0 && Request::getInt('kExportformat') > 0) {
+    $action        = $_GET['action'];
+    $kExportformat = Request::getInt('kExportformat');
 }
-if ($cAction !== null && $kExportformat !== null && FormHelper::validateToken()) {
-    switch ($cAction) {
+if ($action !== null && $kExportformat !== null && Form::validateToken()) {
+    switch ($action) {
         case 'export':
-            $bAsync                = isset($_GET['ajax']);
+            $async                 = isset($_GET['ajax']);
             $queue                 = new stdClass();
             $queue->kExportformat  = $kExportformat;
             $queue->nLimit_n       = 0;
-            $queue->nLimit_m       = $bAsync ? EXPORTFORMAT_ASYNC_LIMIT_M : EXPORTFORMAT_LIMIT_M;
+            $queue->nLimit_m       = $async ? EXPORTFORMAT_ASYNC_LIMIT_M : EXPORTFORMAT_LIMIT_M;
             $queue->nLastArticleID = 0;
             $queue->dErstellt      = 'NOW()';
             $queue->dZuBearbeiten  = 'NOW()';
 
-            $kExportqueue = Shop::Container()->getDB()->insert('texportqueue', $queue);
+            $kExportqueue = $db->insert('texportqueue', $queue);
 
             $cURL = 'do_export.php?&back=admin&token=' . $_SESSION['jtl_token'] . '&e=' . $kExportqueue;
-            if ($bAsync) {
+            if ($async) {
                 $cURL .= '&ajax';
             }
             header('Location: ' . $cURL);
             exit;
         case 'download':
-            $exportformat = Shop::Container()->getDB()->select('texportformat', 'kExportformat', $kExportformat);
+            $exportformat = $db->select('texportformat', 'kExportformat', $kExportformat);
             if ($exportformat->cDateiname && file_exists(PFAD_ROOT . PFAD_EXPORT . $exportformat->cDateiname)) {
                 header('Content-type: text/plain');
                 header('Content-Disposition: attachment; filename=' . $exportformat->cDateiname);
@@ -131,45 +159,56 @@ if ($cAction !== null && $kExportformat !== null && FormHelper::validateToken())
             $_POST['kExportformat'] = $kExportformat;
             break;
         case 'delete':
-            $bDeleted = Shop::Container()->getDB()->query(
+            $bDeleted = $db->query(
                 "DELETE tcron, texportformat, tjobqueue, texportqueue
                    FROM texportformat
                    LEFT JOIN tcron 
-                      ON tcron.kKey = texportformat.kExportformat
-                      AND tcron.cKey = 'kExportformat'
-                      AND tcron.cTabelle = 'texportformat'
+                      ON tcron.foreignKeyID = texportformat.kExportformat
+                      AND tcron.foreignKey = 'kExportformat'
+                      AND tcron.tableName = 'texportformat'
                    LEFT JOIN tjobqueue 
-                      ON tjobqueue.kKey = texportformat.kExportformat
-                      AND tjobqueue.cKey = 'kExportformat'
-                      AND tjobqueue.cTabelle = 'texportformat'
-                      AND tjobqueue.cJobArt = 'exportformat'
+                      ON tjobqueue.foreignKeyID = texportformat.kExportformat
+                      AND tjobqueue.foreignKey = 'kExportformat'
+                      AND tjobqueue.tableName = 'texportformat'
+                      AND tjobqueue.jobType = 'exportformat'
                    LEFT JOIN texportqueue 
                       ON texportqueue.kExportformat = texportformat.kExportformat
                    WHERE texportformat.kExportformat = " . $kExportformat,
-                \DB\ReturnType::AFFECTED_ROWS
+                ReturnType::AFFECTED_ROWS
             );
 
             if ($bDeleted > 0) {
-                $hinweis = 'Exportformat erfolgreich gelöscht.';
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successFormatDelete'), 'successFormatDelete');
             } else {
-                $fehler = 'Exportformat konnte nicht gelöscht werden.';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFormatDelete'), 'errorFormatDelete');
             }
             break;
         case 'exported':
-            $exportformat = Shop::Container()->getDB()->select('texportformat', 'kExportformat', $kExportformat);
+            $exportformat = $db->select('texportformat', 'kExportformat', $kExportformat);
             if ($exportformat->cDateiname
                 && (file_exists(PFAD_ROOT . PFAD_EXPORT . $exportformat->cDateiname)
                     || file_exists(PFAD_ROOT . PFAD_EXPORT . $exportformat->cDateiname . '.zip')
                     || (isset($exportformat->nSplitgroesse) && (int)$exportformat->nSplitgroesse > 0))
             ) {
                 if (empty($_GET['hasError'])) {
-                    $hinweis = 'Das Exportformat <b>' . $exportformat->cName . '</b> wurde erfolgreich erstellt.';
+                    $alertHelper->addAlert(
+                        Alert::TYPE_SUCCESS,
+                        sprintf(__('successFormatCreate'), $exportformat->cName),
+                        'successFormatCreate'
+                    );
                 } else {
-                    $fehler = 'Das Exportformat <b>' . $exportformat->cName . '</b> konnte nicht erstellt werden.' .
-                        ' Fehlende Schreibrechte?';
+                    $alertHelper->addAlert(
+                        Alert::TYPE_ERROR,
+                        sprintf(__('errorFormatCreate'), $exportformat->cName),
+                        'errorFormatCreate'
+                    );
                 }
             } else {
-                $fehler = 'Das Exportformat <b>' . $exportformat->cName . '</b> konnte nicht erstellt werden.';
+                $alertHelper->addAlert(
+                    Alert::TYPE_ERROR,
+                    sprintf(__('errorFormatCreate'), $exportformat->cName),
+                    'errorFormatCreate'
+                );
             }
             break;
         default:
@@ -178,102 +217,94 @@ if ($cAction !== null && $kExportformat !== null && FormHelper::validateToken())
 }
 
 if ($step === 'uebersicht') {
-    $exportformate = Shop::Container()->getDB()->query(
+    $exportformate = $db->query(
         'SELECT * 
             FROM texportformat 
             ORDER BY cName',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
-    $eCount        = count($exportformate);
-    for ($i = 0; $i < $eCount; $i++) {
-        $exportformate[$i]->Sprache              = Shop::Container()->getDB()->select(
-            'tsprache',
-            'kSprache',
-            (int)$exportformate[$i]->kSprache
-        );
-        $exportformate[$i]->Waehrung             = Shop::Container()->getDB()->select(
+    foreach ($exportformate as $item) {
+        $item->kExportformat        = (int)$item->kExportformat;
+        $item->kKundengruppe        = (int)$item->kKundengruppe;
+        $item->kSprache             = (int)$item->kSprache;
+        $item->kWaehrung            = (int)$item->kWaehrung;
+        $item->kKampagne            = (int)$item->kKampagne;
+        $item->kPlugin              = (int)$item->kPlugin;
+        $item->nUseCache            = (int)$item->nUseCache;
+        $item->nFehlerhaft          = (int)$item->nFehlerhaft;
+        $item->nSplitgroesse        = (int)$item->nSplitgroesse;
+        $item->nVarKombiOption      = (int)$item->nVarKombiOption;
+        $item->nSpecial             = (int)$item->nSpecial;
+        $item->Sprache              = Shop::Lang()->getLanguageByID($item->kSprache);
+        $item->Waehrung             = $db->select(
             'twaehrung',
             'kWaehrung',
-            (int)$exportformate[$i]->kWaehrung
+            $item->kWaehrung
         );
-        $exportformate[$i]->Kundengruppe         = Shop::Container()->getDB()->select(
+        $item->Kundengruppe         = $db->select(
             'tkundengruppe',
             'kKundengruppe',
-            (int)$exportformate[$i]->kKundengruppe
+            $item->kKundengruppe
         );
-        $exportformate[$i]->bPluginContentExtern = false;
-        if ($exportformate[$i]->kPlugin > 0
-            && strpos($exportformate[$i]->cContent, PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false
-        ) {
-            $exportformate[$i]->bPluginContentExtern = true;
-        }
+        $item->bPluginContentExtern = $item->kPlugin > 0
+            && mb_strpos($item->cContent, PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false;
     }
     $smarty->assign('exportformate', $exportformate);
 }
 
 if ($step === 'neuer Export') {
-    $smarty->assign('sprachen', Sprache::getAllLanguages())
-           ->assign('kundengruppen', Shop::Container()->getDB()->query(
-               'SELECT * 
-                    FROM tkundengruppe 
-                    ORDER BY cName',
-               \DB\ReturnType::ARRAY_OF_OBJECTS
-           ))
-           ->assign('waehrungen', Shop::Container()->getDB()->query(
+    $smarty->assign('kundengruppen', $db->query(
+        'SELECT * 
+            FROM tkundengruppe 
+            ORDER BY cName',
+        ReturnType::ARRAY_OF_OBJECTS
+    ))
+           ->assign('waehrungen', $db->query(
                'SELECT * 
                     FROM twaehrung 
                     ORDER BY cStandard DESC',
-               \DB\ReturnType::ARRAY_OF_OBJECTS
+               ReturnType::ARRAY_OF_OBJECTS
            ))
-           ->assign('oKampagne_arr', holeAlleKampagnen(false, true));
+           ->assign('oKampagne_arr', holeAlleKampagnen());
 
     $exportformat = null;
-    if (isset($_POST['kExportformat']) && (int)$_POST['kExportformat'] > 0) {
-        $exportformat             = Shop::Container()->getDB()->select(
+    if (Request::postInt('kExportformat') > 0) {
+        $exportformat                  = $db->select(
             'texportformat',
             'kExportformat',
-            (int)$_POST['kExportformat']
+            Request::postInt('kExportformat')
         );
-        $exportformat->cKopfzeile = str_replace("\t", "<tab>", $exportformat->cKopfzeile);
-        $exportformat->cContent   = str_replace("\t", "<tab>", $exportformat->cContent);
-        $exportformat->cFusszeile = str_replace("\t", "<tab>", $exportformat->cFusszeile);
-        if ($exportformat->kPlugin > 0 && strpos($exportformat->cContent, PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false) {
+        $exportformat->cKopfzeile      = str_replace("\t", '<tab>', $exportformat->cKopfzeile);
+        $exportformat->cContent        = str_replace("\t", '<tab>', $exportformat->cContent);
+        $exportformat->cFusszeile      = str_replace("\t", '<tab>', $exportformat->cFusszeile);
+        $exportformat->kExportformat   = (int)$exportformat->kExportformat;
+        $exportformat->kKundengruppe   = (int)$exportformat->kKundengruppe;
+        $exportformat->kSprache        = (int)$exportformat->kSprache;
+        $exportformat->kWaehrung       = (int)$exportformat->kWaehrung;
+        $exportformat->kKampagne       = (int)$exportformat->kKampagne;
+        $exportformat->kPlugin         = (int)$exportformat->kPlugin;
+        $exportformat->nUseCache       = (int)$exportformat->nUseCache;
+        $exportformat->nFehlerhaft     = (int)$exportformat->nFehlerhaft;
+        $exportformat->nSplitgroesse   = (int)$exportformat->nSplitgroesse;
+        $exportformat->nVarKombiOption = (int)$exportformat->nVarKombiOption;
+        $exportformat->nSpecial        = (int)$exportformat->nSpecial;
+        if ($exportformat->kPlugin > 0
+            && mb_strpos($exportformat->cContent, PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false
+        ) {
             $exportformat->bPluginContentFile = true;
         }
         $smarty->assign('Exportformat', $exportformat);
     }
+    $gettext = Shop::Container()->getGetText();
+    $configs = getAdminSectionSettings(CONF_EXPORTFORMATE);
+    $gettext->localizeConfigs($configs);
 
-    $Conf      = Shop::Container()->getDB()->selectAll(
-        'teinstellungenconf',
-        'kEinstellungenSektion',
-        CONF_EXPORTFORMATE,
-        '*',
-        'nSort'
-    );
-    $confCount = count($Conf);
-    for ($i = 0; $i < $confCount; $i++) {
-        if ($Conf[$i]->cInputTyp === 'selectbox') {
-            $Conf[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
-                'teinstellungenconfwerte',
-                'kEinstellungenConf',
-                (int)$Conf[$i]->kEinstellungenConf,
-                '*',
-                'nSort'
-            );
-        }
-        if (isset($exportformat->kExportformat)) {
-            $setValue = Shop::Container()->getDB()->select(
-                'texportformateinstellungen',
-                ['kExportformat', 'cName'],
-                [(int)$exportformat->kExportformat, $Conf[$i]->cWertName]
-            );
-            $Conf[$i]->gesetzterWert = $setValue->cWert ?? null;
-        }
+    foreach ($configs as $config) {
+        $gettext->localizeConfigValues($config, $config->ConfWerte);
     }
-    $smarty->assign('Conf', $Conf);
+
+    $smarty->assign('Conf', $configs);
 }
 
 $smarty->assign('step', $step)
-       ->assign('hinweis', $hinweis)
-       ->assign('fehler', $fehler)
        ->display('exportformate.tpl');

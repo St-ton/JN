@@ -4,62 +4,64 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Catalog\ComparisonList;
+
 /**
- * @param Vergleichsliste $oVergleichsliste
+ * @param ComparisonList $compareList
  * @return array
  * @deprecated since 5.0.0
  */
-function baueMerkmalundVariation($oVergleichsliste)
+function baueMerkmalundVariation($compareList)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Vergleichsliste::buildAttributeAndVariation($oVergleichsliste);
+    return $compareList->buildAttributeAndVariation();
 }
 
 /**
- * @param array $oMerkmale_arr
- * @param int   $kMerkmal
+ * @param array $attributes
+ * @param int   $attributeID
  * @return bool
  * @deprecated since 5.0.0
  */
-function istMerkmalEnthalten($oMerkmale_arr, $kMerkmal)
+function istMerkmalEnthalten($attributes, $attributeID)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Vergleichsliste::containsAttribute($oMerkmale_arr, $kMerkmal);
+    return (new ComparisonList())->containsAttribute($attributes, $attributeID);
 }
 
 /**
- * @param array  $oVariationen_arr
- * @param string $cName
+ * @param array  $variations
+ * @param string $name
  * @return bool
  * @deprecated since 5.0.0
  */
-function istVariationEnthalten($oVariationen_arr, $cName)
+function istVariationEnthalten($variations, $name)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Vergleichsliste::containsVariation($oVariationen_arr, $cName);
+    return (new ComparisonList())->containsVariation($variations, $name);
 }
 
 /**
- * @param array $cExclude
+ * @param array $exclude
  * @param array $config
  * @return string
  * @deprecated since 5.0.0
  */
-function gibMaxPrioSpalteV($cExclude, $config)
+function gibMaxPrioSpalteV($exclude, $config)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Vergleichsliste::gibMaxPrioSpalteV($cExclude, $config);
+    return (new ComparisonList())->getMaxPrioCol($exclude, $config);
 }
 
 /**
  * Fügt nach jedem Preisvergleich eine Statistik in die Datenbank.
  * Es sind allerdings nur 3 Einträge pro IP und Tag möglich
  *
- * @param Vergleichsliste $oVergleichsliste
+ * @param ComparisonList $compareList
  * @deprecated since 5.0.0
  */
-function setzeVergleich($oVergleichsliste)
+function setzeVergleich($compareList)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    Vergleichsliste::setComparison($oVergleichsliste);
+    $compareList->save();
 }

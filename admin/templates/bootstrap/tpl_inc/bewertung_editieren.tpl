@@ -1,44 +1,60 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=#bearbeiteBewertung#}
-<div id="content" class="container-fluid">
-    <form name="umfrage" method="post" action="bewertung.php">
-        {$jtl_token}
-        <input type="hidden" name="bewertung_editieren" value="1" />
-        <input type="hidden" name="tab" value="{$cTab}" />
-        {if isset($nFZ) && $nFZ == 1}<input name="nFZ" type="hidden" value="1">{/if}
-        <input type="hidden" name="kBewertung" value="{$oBewertung->kBewertung}" />
-
-        <table class="kundenfeld table" id="formtable">
-            <tr>
-                <td><label for="cName">{#customerName#}:</label></td>
-                <td><input class="form-control" id="cName" name="cName" type="text" value="{$oBewertung->cName}" /></td>
-            </tr>
-            <tr>
-                <td><label for="cTitel">{#ratingTitle#}:</label></td>
-                <td><input class="form-control" id="cTitel" name="cTitel" type="text" value="{$oBewertung->cTitel}" /></td>
-            </tr>
-            <tr>
-                <td><label for="nSterne">{#ratingStars#}:</label></td>
-                <td>
-                    <select id="nSterne" name="nSterne" class="form-controlcombo">
-                        <option value="1"{if $oBewertung->nSterne == 1} selected{/if}>1</option>
-                        <option value="2"{if $oBewertung->nSterne == 2} selected{/if}>2</option>
-                        <option value="3"{if $oBewertung->nSterne == 3} selected{/if}>3</option>
-                        <option value="4"{if $oBewertung->nSterne == 4} selected{/if}>4</option>
-                        <option value="5"{if $oBewertung->nSterne == 5} selected{/if}>5</option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td><label for="cText">{#ratingText#}:</label></td>
-                <td><textarea id="cText" class="ckeditor" name="cText" rows="15" cols="60">{$oBewertung->cText}</textarea></td>
-            </tr>
-            <tr>
-                <td><label for="cAntwort">{#ratingReply#}:</label></td>
-                <td><textarea id="cAntwort" class="ckeditor" name="cAntwort" rows="15" cols="60">{$oBewertung->cAntwort}</textarea></td>
-            </tr>
-        </table>
-        <div class="save_wrapper">
-            <button name="bewertungsubmit" type="submit" value="{#ratingSave#}" class="btn btn-primary"><i class="fa fa-save"></i> {#ratingSave#}</button>
+{include file='tpl_inc/seite_header.tpl' cTitel=__('bearbeiteBewertung')}
+<div id="content">
+    <div class="card">
+        <div class="card-header">
+            <div class="subheading1">{__('bearbeiteBewertung')}</div>
+            <hr class="mb-n3">
         </div>
-    </form>
+        <form name="umfrage" method="post" action="bewertung.php">
+            <div class="card-body">
+                {$jtl_token}
+                <input type="hidden" name="bewertung_editieren" value="1" />
+                <input type="hidden" name="tab" value="{$cTab}" />
+                {if isset($nFZ) && $nFZ == 1}<input name="nFZ" type="hidden" value="1">{/if}
+                <input type="hidden" name="kBewertung" value="{$review->getId()}" />
+
+                <div class="form-group form-row align-items-center">
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="name">{__('customerName')}:</label>
+                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                        <input class="form-control" id="name" name="cName" type="text" value="{$review->getName()}" />
+                    </div>
+                </div>
+                <div class="form-group form-row align-items-center">
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="title">{__('title')}:</label>
+                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                        <input class="form-control" id="title" name="cTitel" type="text" value="{$review->getTitle()}" />
+                    </div>
+                </div>
+                <div class="form-group form-row align-items-center">
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="stars">{__('ratingStars')}:</label>
+                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                        <select id="stars" name="nSterne" class="custom-select combo">
+                            {for $i=1 to 5}
+                                <option value="{$i}"{if $review->getStars() === $i} selected{/if}>{$i}</option>
+                            {/for}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group form-row align-items-center">
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="content">{__('ratingText')}:</label>
+                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                        <textarea id="content" class="ckeditor" name="cText" rows="15" cols="60">{$review->getContent()}</textarea>
+                    </div>
+                </div>
+                <div class="form-group form-row align-items-center">
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="answer">{__('ratingReply')}</label>
+                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                        <textarea id="answer" class="ckeditor" name="cAntwort" rows="15" cols="60">{$review->getAnswer()}</textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="save-wrapper card-footer">
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        <button name="bewertungsubmit" type="submit" value="{__('save')}" class="btn btn-primary btn-block">{__('saveWithIcon')}</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>

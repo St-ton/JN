@@ -4,14 +4,14 @@ class scatter_line
 {
     public function __construct($colour, $width)
     {
-        $this->type      = "scatter_line";
+        $this->type = 'scatter_line';
         $this->set_colour($colour);
         $this->set_width($width);
     }
     
     public function set_default_dot_style($style)
     {
-        $tmp = 'dot-style';
+        $tmp        = 'dot-style';
         $this->$tmp = $style;
     }
     
@@ -42,8 +42,8 @@ class scatter_line
     
     public function set_key($text, $font_size)
     {
-        $this->text      = $text;
-        $tmp = 'font-size';
+        $this->text = $text;
+        $tmp        = 'font-size';
         $this->$tmp = $font_size;
     }
 }

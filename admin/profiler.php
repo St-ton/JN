@@ -1,28 +1,38 @@
 <?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ */
+
+use JTL\Alert\Alert;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Profiler;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'statistik_inc.php';
 
 $oAccount->permission('PROFILER_VIEW', true, true);
-/** @global JTLSmarty $smarty */
-$tab      = 'uebersicht';
-$cFehler  = '';
-$cHinweis = '';
-$sqlData  = null;
-if (isset($_POST['delete-run-submit']) && FormHelper::validateToken()) {
-    if (isset($_POST['run-id']) && is_numeric($_POST['run-id'])) {
+/** @global \JTL\Smarty\JTLSmarty $smarty */
+$tab         = 'uebersicht';
+$sqlData     = null;
+$alertHelper = Shop::Container()->getAlertService();
+if (isset($_POST['delete-run-submit']) && Form::validateToken()) {
+    if (is_numeric(Request::postVar('run-id'))) {
         $res = deleteProfileRun(false, (int)$_POST['run-id']);
         if (is_numeric($res) && $res > 0) {
-            $cHinweis = 'Eintrag erfolgreich gelöscht.';
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successEntryDelete'), 'successEntryDelete');
         } else {
-            $cFehler = 'Eintrag konnte nicht gelöscht werden.';
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorEntryDelete'), 'errorEntryDelete');
         }
-    } elseif (isset($_POST['delete-all']) && $_POST['delete-all'] === 'y') {
+    } elseif (Request::postVar('delete-all') === 'y') {
         $res = deleteProfileRun(true);
         if (is_numeric($res) && $res > 0) {
-            $cHinweis = 'Einträge erfolgreich gelöscht. ';
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successEntriesDelete'), 'successEntriesDelete');
         } else {
-            $cFehler = 'Einträge konnten nicht gelöscht werden. ';
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorEntriesDelete'), 'errorEntriesDelete');
         }
     }
 }
@@ -73,7 +83,8 @@ if (count($pluginProfilerData) > 0) {
             $hookData->color                 = $colors[$idx];
             foreach ($_hook as $_file) {
                 $hookData->y += ((float)$_file->runtime * 1000);
-                $runtime += $hookData->y;
+                $runtime     += $hookData->y;
+
                 $hookData->drilldown->categories[] = $_file->filename;
                 $hookData->drilldown->data[]       = ((float)$_file->runtime * 1000);
                 $hookData->drilldown->runcount[]   = $_file->runcount;
@@ -93,8 +104,6 @@ if (count($pluginProfilerData) > 0) {
 $sqlProfilerData = Profiler::getSQLProfiles();
 $smarty->assign('pluginProfilerData', $pluginProfilerData)
        ->assign('sqlProfilerData', $sqlProfilerData)
-       ->assign('cHinweis', $cHinweis)
-       ->assign('cFehler', $cFehler)
        ->assign('tab', $tab)
        ->display('profiler.tpl');
 
@@ -106,9 +115,15 @@ $smarty->assign('pluginProfilerData', $pluginProfilerData)
 function deleteProfileRun(bool $all = false, $runID = 0)
 {
     if ($all === true) {
-        $count = Shop::Container()->getDB()->query('DELETE FROM tprofiler', \DB\ReturnType::AFFECTED_ROWS);
-        Shop::Container()->getDB()->query('ALTER TABLE tprofiler AUTO_INCREMENT = 1', \DB\ReturnType::AFFECTED_ROWS);
-        Shop::Container()->getDB()->query('ALTER TABLE tprofiler_runs AUTO_INCREMENT = 1', \DB\ReturnType::AFFECTED_ROWS);
+        $count = Shop::Container()->getDB()->query('DELETE FROM tprofiler', ReturnType::AFFECTED_ROWS);
+        Shop::Container()->getDB()->query(
+            'ALTER TABLE tprofiler AUTO_INCREMENT = 1',
+            ReturnType::AFFECTED_ROWS
+        );
+        Shop::Container()->getDB()->query(
+            'ALTER TABLE tprofiler_runs AUTO_INCREMENT = 1',
+            ReturnType::AFFECTED_ROWS
+        );
 
         return $count;
     }

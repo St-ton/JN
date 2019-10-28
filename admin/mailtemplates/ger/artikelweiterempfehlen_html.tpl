@@ -2,7 +2,7 @@
 
 Hallo {$Nachricht->cName},<br>
 <br>
-anbei kann ich dir nur den folgenden Artikel empfehlen:<br>
+anbei möchte ich dir gern den folgenden Artikel empfehlen:<br>
 <br>
 Schau ihn dir doch mal an: <a href="{$ShopURL}/{$Artikel->cURL}">{$Artikel->cName}</a><br>
 <br>

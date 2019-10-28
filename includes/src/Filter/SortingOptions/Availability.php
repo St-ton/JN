@@ -4,13 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\SortingOptions;
+namespace JTL\Filter\SortingOptions;
 
-use Filter\ProductFilter;
+use JTL\Filter\ProductFilter;
+use JTL\Shop;
 
 /**
  * Class Availability
- * @package Filter\SortingOptions
+ * @package JTL\Filter\SortingOptions
  */
 class Availability extends AbstractSortingOption
 {
@@ -22,7 +23,7 @@ class Availability extends AbstractSortingOption
     {
         parent::__construct($productFilter);
         $this->setOrderBy('tartikel.fLagerbestand DESC, tartikel.cLagerKleinerNull DESC, tartikel.cName');
-        $this->setName(\Shop::Lang()->get('sortAvailability'));
+        $this->setName(Shop::Lang()->get('sortAvailability'));
         $this->setPriority($this->getConfig('artikeluebersicht')['suche_sortierprio_lagerbestand']);
         $this->setValue(\SEARCH_SORT_AVAILABILITY);
     }

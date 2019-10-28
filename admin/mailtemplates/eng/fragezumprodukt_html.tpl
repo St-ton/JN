@@ -31,7 +31,7 @@
 				<tr>
 					<td align="right" valign="top">
 						<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-							<strong>Product:</strong>
+							<strong>Item:</strong>
 						</font>
 					</td>
 				</tr>
@@ -97,9 +97,7 @@
 			</table>
 		</td>
 	</tr>
-    {if !empty($Nachricht->cAnredeLocalized) && !empty($Nachricht->cVorname)
-		|| !empty($Nachricht->cAnredeLocalized) && !empty($Nachricht->cNachname) || !empty($Nachricht->cFirma)
-		|| !empty($Nachricht->cAnredeLocalized) && !empty($Nachricht->cVorname) && !empty($Nachricht->cNachname)}
+    {if !empty($Nachricht->cVorname) || !empty($Nachricht->cNachname) || !empty($Nachricht->cFirma)}
 		<tr>
 			<td class="column mobile-left" align="right" valign="top">
 				<table cellpadding="0" cellspacing="0">
@@ -117,11 +115,9 @@
 					<tr>
 						<td align="left" valign="top">
 							<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                                {if !empty($Nachricht->cAnredeLocalized)}{$Nachricht->cAnredeLocalized} {/if}
                                 {if !empty($Nachricht->cVorname)}{$Nachricht->cVorname} {/if}
                                 {if !empty($Nachricht->cNachname)}{$Nachricht->cNachname}{/if}
-                                {if !empty($Nachricht->cAnredeLocalized) && !empty($Nachricht->cVorname)
-                                	&& !empty($Nachricht->cNachname)}
+                                {if !empty($Nachricht->cVorname) && !empty($Nachricht->cNachname)}
 									<br>
                                 {/if}
                                 {if !empty($Nachricht->cFirma)}{$Nachricht->cFirma}{/if}
@@ -138,7 +134,7 @@
 				<tr>
 					<td align="right" valign="top">
 						<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-							<strong>Email:</strong>
+							<strong>Email address:</strong>
 						</font>
 					</td>
 				</tr>
@@ -163,7 +159,7 @@
 					<tr>
 						<td align="right" valign="top">
 							<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-								<strong>Tel:</strong>
+								<strong>Phone:</strong>
 							</font>
 						</td>
 					</tr>

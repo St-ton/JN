@@ -1,7 +1,7 @@
 Hello,
 
-a new password was requested for your account.
-Please click the following link to reset your password:
+You requested a new password for your account.
+Please click on the following link to reset your password:
 
 {$passwordResetLink}
 

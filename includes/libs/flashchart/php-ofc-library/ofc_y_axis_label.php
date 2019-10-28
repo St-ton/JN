@@ -33,6 +33,6 @@ class y_axis_label
     
     public function set_vertical()
     {
-        $this->rotate = "vertical";
+        $this->rotate = 'vertical';
     }
 }

@@ -1,0 +1,39 @@
+{
+    "name": "jtlshop/vue-install",
+    "description": "Vue.js based installer for Shop5",
+    "version": "1.0.0",
+    "keywords": ["jtl", "jtl-shop"],
+    "homepage": "https://www.jtl-software.de/",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "JTL-Software GmbH",
+            "email": "info@jtl-software.de",
+            "homepage": "https://www.jtl-software.de/"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.9",
+        "fzaninotto/faker": "^1.6",
+        "imanee/imanee": "dev-master",
+        "cocur/slugify": "^2.5",
+        "jtlshop/wizard": "dev-master",
+        "foxy/foxy": "^1.0"
+    },
+    "repositories": [
+        { "type": "vcs", "url": "https://gitlab.com/jtl-software/jtl-shop/tools/wizard.git" }
+    ],
+    "autoload": {
+        "psr-4": { "VueInstaller\\": "lib" }
+    },
+    "config": {
+        "foxy": {
+            "manager": "npm",
+            "manager-version": {
+                "npm": ">=6.0"
+            },
+            "manager-install-options": " && npm run build"
+        }
+    }
+}

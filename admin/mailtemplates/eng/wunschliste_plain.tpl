@@ -3,14 +3,14 @@
 Hello,
 Take a look at my wish list at {$Firma->cName}.
 
-{foreach name=wunschlistepos from=$Wunschliste->CWunschlistePos_arr item=CWunschlistePos}
+{foreach $Wunschliste->CWunschlistePos_arr as $CWunschlistePos}
     *{$CWunschlistePos->cArtikelName}*
     {$ShopURL}/{$CWunschlistePos->Artikel->cURL}
-    {foreach name=eigenschaft from=$CWunschlistePos->CWunschlistePosEigenschaft_arr item=CWunschlistePosEigenschaft}
+    {foreach $CWunschlistePos->CWunschlistePosEigenschaft_arr as $CWunschlistePosEigenschaft}
         {if $CWunschlistePosEigenschaft->cFreifeldWert}
-            {$CWunschlistePosEigenschaft->cEigenschaftName}: {$CWunschlistePosEigenschaft->cFreifeldWert}{if $CWunschlistePos->CWunschlistePosEigenschaft_arr|@count > 1 && !$smarty.foreach.eigenschaft.last}{/if}
+            {$CWunschlistePosEigenschaft->cEigenschaftName}: {$CWunschlistePosEigenschaft->cFreifeldWert}{if $CWunschlistePos->CWunschlistePosEigenschaft_arr|@count > 1 && !$CWunschlistePosEigenschaft@last}{/if}
         {else}
-            {$CWunschlistePosEigenschaft->cEigenschaftName}: {$CWunschlistePosEigenschaft->cEigenschaftWertName}{if $CWunschlistePos->CWunschlistePosEigenschaft_arr|@count > 1 && !$smarty.foreach.eigenschaft.last}{/if}
+            {$CWunschlistePosEigenschaft->cEigenschaftName}: {$CWunschlistePosEigenschaft->cEigenschaftWertName}{if $CWunschlistePos->CWunschlistePosEigenschaft_arr|@count > 1 && !$CWunschlistePosEigenschaft@last}{/if}
         {/if}
     {/foreach}
 {/foreach}
@@ -18,7 +18,7 @@ Take a look at my wish list at {$Firma->cName}.
 View all products
 {$ShopURL}/index.php?wlid={$CWunschliste->cURLID}
 
-Thank you.
+Kind regards,
 {$Kunde->cVorname} {$Kunde->cNachname}
 
 {includeMailTemplate template=footer type=plain}

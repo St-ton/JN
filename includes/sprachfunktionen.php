@@ -4,14 +4,21 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Cart\Cart;
+use JTL\Catalog\Product\Artikel;
+use JTL\Catalog\Product\Preise;
+use JTL\Extensions\Config\Item;
+use JTL\Session\Frontend;
+use JTL\Shop;
+
 /**
- * @param Warenkorb $warenkorb
+ * @param Cart $cart
  * @return string
  */
-function lang_warenkorb_warenkorbEnthaeltXArtikel(Warenkorb $warenkorb): string
+function lang_warenkorb_warenkorbEnthaeltXArtikel(Cart $cart): string
 {
-    if ($warenkorb->hatTeilbareArtikel()) {
-        $nPositionen = $warenkorb->gibAnzahlPositionenExt([C_WARENKORBPOS_TYP_ARTIKEL]);
+    if ($cart->hatTeilbareArtikel()) {
+        $nPositionen = $cart->gibAnzahlPositionenExt([C_WARENKORBPOS_TYP_ARTIKEL]);
         $ret         = Shop::Lang()->get('yourbasketcontains', 'checkout') . ' ' . $nPositionen . ' ';
         if ($nPositionen === 1) {
             $ret .= Shop::Lang()->get('position');
@@ -21,7 +28,7 @@ function lang_warenkorb_warenkorbEnthaeltXArtikel(Warenkorb $warenkorb): string
 
         return $ret;
     }
-    $nArtikel = $warenkorb->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]);
+    $nArtikel = $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]);
     $nArtikel = str_replace('.', ',', $nArtikel);
     if ($nArtikel === 1) {
         return Shop::Lang()->get('yourbasketcontains', 'checkout') . ' ' .
@@ -39,46 +46,49 @@ function lang_warenkorb_warenkorbEnthaeltXArtikel(Warenkorb $warenkorb): string
 }
 
 /**
- * @param Warenkorb $warenkorb
+ * @param Cart $cart
  * @return string,
  */
-function lang_warenkorb_warenkorbLabel(Warenkorb $warenkorb)
+function lang_warenkorb_warenkorbLabel(Cart $cart)
 {
     return Shop::Lang()->get('basket', 'checkout') .
         ' (' .
         Preise::getLocalizedPriceString(
-            $warenkorb->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], !Session::CustomerGroup()->isMerchant())
+            $cart->gibGesamtsummeWarenExt(
+                [C_WARENKORBPOS_TYP_ARTIKEL],
+                !Frontend::getCustomerGroup()->isMerchant()
+            )
         ) . ')';
 }
 
 /**
- * @param Warenkorb $warenkorb
+ * @param Cart $cart
  * @return string
  */
-function lang_warenkorb_bestellungEnthaeltXArtikel(Warenkorb $warenkorb)
+function lang_warenkorb_bestellungEnthaeltXArtikel(Cart $cart)
 {
-    $ret = Shop::Lang()->get('yourordercontains', 'checkout') . ' ' . count($warenkorb->PositionenArr) . ' ';
-    if (count($warenkorb->PositionenArr) === 1) {
+    $ret = Shop::Lang()->get('yourordercontains', 'checkout') . ' ' . count($cart->PositionenArr) . ' ';
+    if (count($cart->PositionenArr) === 1) {
         $ret .= Shop::Lang()->get('position');
     } else {
         $ret .= Shop::Lang()->get('positions');
     }
-    $positionCount = !empty($warenkorb->kWarenkorb)
-        ? $warenkorb->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL])
+    $count = !empty($cart->kWarenkorb)
+        ? $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL])
         : 0;
 
-    return $ret . ' ' . Shop::Lang()->get('with') . ' ' . lang_warenkorb_Artikelanzahl($positionCount);
+    return $ret . ' ' . Shop::Lang()->get('with') . ' ' . lang_warenkorb_Artikelanzahl($count);
 }
 
 /**
- * @param int $anzahlArtikel
+ * @param int $count
  * @return string
  */
-function lang_warenkorb_Artikelanzahl($anzahlArtikel)
+function lang_warenkorb_Artikelanzahl($count)
 {
-    return $anzahlArtikel == 1
-        ? ($anzahlArtikel . ' ' . Shop::Lang()->get('product'))
-        : ($anzahlArtikel . ' ' . Shop::Lang()->get('products'));
+    return $count == 1
+        ? ($count . ' ' . Shop::Lang()->get('product'))
+        : ($count . ' ' . Shop::Lang()->get('products'));
 }
 
 /**
@@ -106,25 +116,25 @@ function lang_steuerposition($ust, $netto)
 }
 
 /**
- * @param string $suchausdruck
- * @param int    $anzahl
+ * @param string $query
+ * @param int    $count
  * @return string
  */
-function lang_suche_mindestanzahl($suchausdruck, $anzahl)
+function lang_suche_mindestanzahl($query, $count)
 {
     return Shop::Lang()->get('expressionHasTo') . ' ' .
-        $anzahl . ' ' .
+        $count . ' ' .
         Shop::Lang()->get('characters') . '<br />' .
-        Shop::Lang()->get('yourSearch') . ': ' . $suchausdruck;
+        Shop::Lang()->get('yourSearch') . ': ' . $query;
 }
 
 /**
- * @param int $status
+ * @param int $state
  * @return string
  */
-function lang_bestellstatus(int $status): string
+function lang_bestellstatus(int $state): string
 {
-    switch ($status) {
+    switch ($state) {
         case BESTELLUNG_STATUS_OFFEN:
             return Shop::Lang()->get('statusPending', 'order');
         case BESTELLUNG_STATUS_IN_BEARBEITUNG:
@@ -143,24 +153,24 @@ function lang_bestellstatus(int $status): string
 }
 
 /**
- * @param Artikel   $Artikel
- * @param int|float $beabsichtigteKaufmenge
- * @param int       $kKonfigitem
+ * @param Artikel   $product
+ * @param int|float $amount
+ * @param int       $configItemID
  * @return string
  */
-function lang_mindestbestellmenge($Artikel, $beabsichtigteKaufmenge, int $kKonfigitem = 0)
+function lang_mindestbestellmenge($product, $amount, int $configItemID = 0)
 {
-    if ($Artikel->cEinheit) {
-        $Artikel->cEinheit = ' ' . $Artikel->cEinheit;
+    if ($product->cEinheit) {
+        $product->cEinheit = ' ' . $product->cEinheit;
     }
-    $cName = $Artikel->cName;
-    if ($kKonfigitem > 0 && class_exists('Konfigitem')) {
-        $cName = (new Konfigitem($kKonfigitem))->getName();
+    $name = $product->cName;
+    if ($configItemID > 0 && class_exists('Konfigitem')) {
+        $name = (new Item($configItemID))->getName();
     }
 
-    return Shop::Lang()->get('product') . ' &quot;' . $cName . '&quot; ' .
+    return Shop::Lang()->get('product') . ' &quot;' . $name . '&quot; ' .
         Shop::Lang()->get('hasMbm', 'messages') . ' (' .
-        $Artikel->fMindestbestellmenge . $Artikel->cEinheit . '). ' .
+        $product->fMindestbestellmenge . $product->cEinheit . '). ' .
         Shop::Lang()->get('yourQuantity', 'messages') . ' ' .
-        (float)$beabsichtigteKaufmenge . $Artikel->cEinheit . '.';
+        (float)$amount . $product->cEinheit . '.';
 }

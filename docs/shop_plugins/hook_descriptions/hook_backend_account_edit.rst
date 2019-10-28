@@ -1,18 +1,26 @@
-HOOK_BACKEND_ACCOUNT_EDIT (ab Version 4.05)
-===========================================
+HOOK_BACKEND_ACCOUNT_EDIT (ab Version 4.05) (222)
+=================================================
+
+Triggerpunkt
+""""""""""""
+
+Beim Validieren, Speichern, Sperren, Entsperren und Löschen von Backend-Benutzern
+
+Beschreibung
+""""""""""""
 
 Dieser Hook ist ein Backend-Hook und wird in ``admin/includes/benutzerverwaltung_inc.php`` beim Validieren, Speichern, Sperren,
 Entsperren und Löschen von Backend-Benutzern getriggert.
 
 Parameter
----------
+"""""""""
 
 ``Account`` **oAccount**
     In **oAccount** wird ein ``Account``-Objekt mit den Grunddaten des zu bearbeiteten Nutzers übergeben. Die Felder entsprechen
     den Spalten der Tabelle ``tadminlogin``.
 
 ``string`` **type**
-    Die Möglichen Werte in **type** sind ``VALIDATE``, ``SAVE``, ``LOCK``, ``UNLOCK`` und ``DELETE``, je nach konkret auszuführender Aktion.
+    Die möglichen Werte in **type** sind ``VALIDATE``, ``SAVE``, ``LOCK``, ``UNLOCK`` und ``DELETE``, je nach konkret auszuführender Aktion.
 
 ``&array`` **attribs**
     Dieses Array wird als Referenz übergeben und enthält die erweiterten Attribute zum Nutzeraccount. Das Array enthält Werte
@@ -40,7 +48,7 @@ Parameter
     vorhanden sind muss der Speichern-Context (``SAVE``) nicht implementiert werden!
 
 Beispiel für eine Implementierung
----------------------------------
+"""""""""""""""""""""""""""""""""
 
 .. code-block:: php
 

@@ -3,34 +3,35 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\Checkout\Bestellung;
+use JTL\Helpers\Request;
+use JTL\Helpers\Text;
+use JTL\Plugin\Helper;
+use JTL\Plugin\Payment\LegacyMethod;
+use JTL\Session\Frontend;
+use JTL\Shop;
+
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellabschluss_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
 Shop::setPageType(PAGE_BESTELLABSCHLUSS);
-$AktuelleSeite = 'BESTELLVORGANG';
-$Einstellungen = Shop::getSettings([
-    CONF_GLOBAL,
-    CONF_RSS,
-    CONF_KUNDEN,
-    CONF_KAUFABWICKLUNG,
-    CONF_ZAHLUNGSARTEN
-]);
-$kBestellung   = (int)$_REQUEST['kBestellung'];
-$linkHelper    = Shop::Container()->getLinkService();
-$bestellung    = new Bestellung($kBestellung, true);
+$orderID    = (int)$_REQUEST['kBestellung'];
+$db         = Shop::Container()->getDB();
+$linkHelper = Shop::Container()->getLinkService();
+$order      = new Bestellung($orderID, true);
 //abfragen, ob diese Bestellung dem Kunden auch gehoert
 //bei Gastbestellungen ist ggf das Kundenobjekt bereits entfernt bzw nRegistriert = 0
-if ($bestellung->oKunde !== null
-    && (int)$bestellung->oKunde->nRegistriert === 1
-    && (int)$bestellung->kKunde !== (int)$_SESSION['Kunde']->kKunde
+if ($order->oKunde !== null
+    && (int)$order->oKunde->nRegistriert === 1
+    && (int)$order->kKunde !== Frontend::getCustomer()->getID()
 ) {
     header('Location: ' . $linkHelper->getStaticRoute('jtl.php'), true, 303);
     exit;
 }
 
-$bestellid         = Shop::Container()->getDB()->select('tbestellid', 'kBestellung', $bestellung->kBestellung);
+$bestellid         = $db->select('tbestellid', 'kBestellung', $order->kBestellung);
 $successPaymentURL = Shop::getURL();
 if ($bestellid->cId) {
     $orderCompleteURL  = $linkHelper->getStaticRoute('bestellabschluss.php');
@@ -39,13 +40,12 @@ if ($bestellid->cId) {
 
 $obj              = new stdClass();
 $obj->tkunde      = $_SESSION['Kunde'];
-$obj->tbestellung = $bestellung;
-Shop::Smarty()->assign('Bestellung', $bestellung);
-
-$oZahlungsInfo = new stdClass();
-if (RequestHelper::verifyGPCDataInt('zusatzschritt') === 1) {
-    $bZusatzangabenDa = false;
-    switch ($bestellung->Zahlungsart->cModulId) {
+$obj->tbestellung = $order;
+$moduleID         = $order->Zahlungsart->cModulId;
+Shop::Smarty()->assign('Bestellung', $order);
+if (Request::verifyGPCDataInt('zusatzschritt') === 1) {
+    $hasAdditionalInformation = false;
+    switch ($moduleID) {
         case 'za_kreditkarte_jtl':
             if ($_POST['kreditkartennr']
                 && $_POST['gueltigkeit']
@@ -54,16 +54,16 @@ if (RequestHelper::verifyGPCDataInt('zusatzschritt') === 1) {
                 && $_POST['inhaber']
             ) {
                 $_SESSION['Zahlungsart']->ZahlungsInfo->cKartenNr    =
-                    StringHandler::htmlentities(stripslashes($_POST['kreditkartennr']), ENT_QUOTES);
+                    Text::htmlentities(stripslashes($_POST['kreditkartennr']), ENT_QUOTES);
                 $_SESSION['Zahlungsart']->ZahlungsInfo->cGueltigkeit =
-                    StringHandler::htmlentities(stripslashes($_POST['gueltigkeit']), ENT_QUOTES);
+                    Text::htmlentities(stripslashes($_POST['gueltigkeit']), ENT_QUOTES);
                 $_SESSION['Zahlungsart']->ZahlungsInfo->cCVV         =
-                    StringHandler::htmlentities(stripslashes($_POST['cvv']), ENT_QUOTES);
+                    Text::htmlentities(stripslashes($_POST['cvv']), ENT_QUOTES);
                 $_SESSION['Zahlungsart']->ZahlungsInfo->cKartenTyp   =
-                    StringHandler::htmlentities(stripslashes($_POST['kartentyp']), ENT_QUOTES);
+                    Text::htmlentities(stripslashes($_POST['kartentyp']), ENT_QUOTES);
                 $_SESSION['Zahlungsart']->ZahlungsInfo->cInhaber     =
-                    StringHandler::htmlentities(stripslashes($_POST['inhaber']), ENT_QUOTES);
-                $bZusatzangabenDa                                    = true;
+                    Text::htmlentities(stripslashes($_POST['inhaber']), ENT_QUOTES);
+                $hasAdditionalInformation                            = true;
             }
             break;
         case 'za_lastschrift_jtl':
@@ -77,28 +77,28 @@ if (RequestHelper::verifyGPCDataInt('zusatzschritt') === 1) {
                     && $_POST['inhaber'])
             ) {
                 $_SESSION['Zahlungsart']->ZahlungsInfo->cBankName =
-                    StringHandler::htmlentities(stripslashes($_POST['bankname']), ENT_QUOTES);
+                    Text::htmlentities(stripslashes($_POST['bankname']), ENT_QUOTES);
                 $_SESSION['Zahlungsart']->ZahlungsInfo->cKontoNr  =
-                    StringHandler::htmlentities(stripslashes($_POST['kontonr']), ENT_QUOTES);
+                    Text::htmlentities(stripslashes($_POST['kontonr']), ENT_QUOTES);
                 $_SESSION['Zahlungsart']->ZahlungsInfo->cBLZ      =
-                    StringHandler::htmlentities(stripslashes($_POST['blz']), ENT_QUOTES);
+                    Text::htmlentities(stripslashes($_POST['blz']), ENT_QUOTES);
                 $_SESSION['Zahlungsart']->ZahlungsInfo->cIBAN     =
-                    StringHandler::htmlentities(stripslashes($_POST['iban']), ENT_QUOTES);
+                    Text::htmlentities(stripslashes($_POST['iban']), ENT_QUOTES);
                 $_SESSION['Zahlungsart']->ZahlungsInfo->cBIC      =
-                    StringHandler::htmlentities(stripslashes($_POST['bic']), ENT_QUOTES);
+                    Text::htmlentities(stripslashes($_POST['bic']), ENT_QUOTES);
                 $_SESSION['Zahlungsart']->ZahlungsInfo->cInhaber  =
-                    StringHandler::htmlentities(stripslashes($_POST['inhaber']), ENT_QUOTES);
-                $bZusatzangabenDa                                 = true;
+                    Text::htmlentities(stripslashes($_POST['inhaber']), ENT_QUOTES);
+                $hasAdditionalInformation                         = true;
             }
             break;
     }
 
-    if ($bZusatzangabenDa) {
-        if (saveZahlungsInfo($bestellung->kKunde, $bestellung->kBestellung)) {
-            Shop::Container()->getDB()->update(
+    if ($hasAdditionalInformation) {
+        if (saveZahlungsInfo($order->kKunde, $order->kBestellung)) {
+            $db->update(
                 'tbestellung',
                 'kBestellung',
-                (int)$bestellung->kBestellung,
+                (int)$order->kBestellung,
                 (object)['cAbgeholt' => 'N']
             );
             unset($_SESSION['Zahlungsart']);
@@ -110,38 +110,31 @@ if (RequestHelper::verifyGPCDataInt('zusatzschritt') === 1) {
     }
 }
 // Zahlungsart als Plugin
-$kPlugin = Plugin::getIDByModuleID($bestellung->Zahlungsart->cModulId);
-if ($kPlugin > 0) {
-    $oPlugin = new Plugin($kPlugin);
-    if ($oPlugin->kPlugin > 0) {
-        require_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' .
-            PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' . PFAD_PLUGIN_PAYMENTMETHOD .
-            $oPlugin->oPluginZahlungsKlasseAssoc_arr[$bestellung->Zahlungsart->cModulId]->cClassPfad;
-        /** @var PaymentMethod $paymentMethod */
-        $pluginName              = $oPlugin->oPluginZahlungsKlasseAssoc_arr[$bestellung->Zahlungsart->cModulId]->cClassName;
-        $paymentMethod           = new $pluginName($bestellung->Zahlungsart->cModulId);
-        $paymentMethod->cModulId = $bestellung->Zahlungsart->cModulId;
-        $paymentMethod->preparePaymentProcess($bestellung);
-        Shop::Smarty()->assign('oPlugin', $oPlugin);
-    }
-} elseif ($bestellung->Zahlungsart->cModulId === 'za_lastschrift_jtl') {
-    // Wenn Zahlungsart = Lastschrift ist => versuche Kundenkontodaten zu holen
-    $oKundenKontodaten = gibKundenKontodaten($_SESSION['Kunde']->kKunde);
-    if ($oKundenKontodaten->kKunde > 0) {
-        Shop::Smarty()->assign('oKundenKontodaten', $oKundenKontodaten);
-    }
-} elseif ($bestellung->Zahlungsart->cModulId === 'za_sofortueberweisung_jtl') {
-    require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'sofortueberweisung/SofortUeberweisung.class.php';
-    $paymentMethod           = new SofortUeberweisung($bestellung->Zahlungsart->cModulId);
-    $paymentMethod->cModulId = $bestellung->Zahlungsart->cModulId;
-    $paymentMethod->preparePaymentProcess($bestellung);
-}
-$AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
-$AufgeklappteKategorien = new KategorieListe();
-$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
+$pluginID = Helper::getIDByModuleID($moduleID);
+if ($pluginID > 0) {
+    $loader = Helper::getLoaderByPluginID($pluginID, $db);
+    $plugin = $loader->init($pluginID);
+    if ($plugin !== null) {
+        $paymentMethod = LegacyMethod::create($moduleID, 1);
+        if ($paymentMethod !== null) {
+            if ($paymentMethod->validateAdditional()) {
+                $paymentMethod->preparePaymentProcess($order);
+            } elseif (!$paymentMethod->handleAdditional($_POST)) {
+                $order->Zahlungsart = gibZahlungsart($order->kZahlungsart);
+            }
+        }
 
-Shop::Smarty()->assign('WarensummeLocalized', Session::Cart()->gibGesamtsummeWarenLocalized())
-    ->assign('Bestellung', $bestellung);
+        Shop::Smarty()->assign('oPlugin', $plugin);
+    }
+} elseif ($moduleID === 'za_lastschrift_jtl') {
+    $customerAccountData = gibKundenKontodaten(Frontend::getCustomer()->getID());
+    if ($customerAccountData->kKunde > 0) {
+        Shop::Smarty()->assign('oKundenKontodaten', $customerAccountData);
+    }
+}
+
+Shop::Smarty()->assign('WarensummeLocalized', Frontend::getCart()->gibGesamtsummeWarenLocalized())
+    ->assign('Bestellung', $order);
 
 unset(
     $_SESSION['Zahlungsart'],

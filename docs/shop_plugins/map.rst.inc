@@ -4,6 +4,9 @@
 :doc:`/shop_plugins/aufbau`
   Hier finden Sie Informationen zur Ordner- und Dateistruktur sowie zum Aufbau der info.xml.
 
+:doc:`/shop_plugins/bootstrapping`
+  Hier finden Sie Informationen zum Bootstrapping-Prozess im JTL-Shop 5+.
+
 :doc:`/shop_plugins/variablen`
   Hier finden Sie Informationen zu Plugin-Variablen.
 
@@ -11,10 +14,13 @@
   Allgemeines über Hooks im JTL-Shop.
 
 :doc:`/shop_plugins/hinweise`
-    Allgemeine Hinweise, Tipps und Tricks zur Entwicklung von Plugins, insbesondere für Shop 4.
+    Allgemeine Hinweise, Tipps und Tricks zur Entwicklung von Plugins, insbesondere für Shop 4+.
 
 :doc:`/shop_plugins/cache`
-  Der Umgang mit dem Objektcache in Shop4.
+  Der Umgang mit dem Objektcache im JTL-Shop.
+
+:doc:`/shop_plugins/mailing`
+  Versenden von Emails.
 
 :doc:`/shop_plugins/hook_list`
   Die einzelnen Hooks des JTL-Shops.

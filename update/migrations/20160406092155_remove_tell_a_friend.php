@@ -6,17 +6,11 @@
  * @created Wed, 06 Apr 2016 09:21:55 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
- * Migration
- *
- * Available methods:
- * execute            - returns affected rows
- * fetchOne           - single fetched object
- * fetchAll           - array of fetched objects
- * fetchArray         - array of fetched assoc arrays
- * dropColumn         - drops a column if exists
- * addLocalization    - add localization
- * removeLocalization - remove localization
+ * Class Migration_20160406092155
  */
 class Migration_20160406092155 extends Migration implements IMigration
 {
@@ -24,12 +18,12 @@ class Migration_20160406092155 extends Migration implements IMigration
 
     public function up()
     {
-        $this->execute("DROP TABLE IF EXISTS `tartikelweiterempfehlenhistory`;");
+        $this->execute('DROP TABLE IF EXISTS `tartikelweiterempfehlenhistory`;');
     }
 
     public function down()
     {
-        $this->execute("CREATE TABLE `tartikelweiterempfehlenhistory` (
+        $this->execute('CREATE TABLE `tartikelweiterempfehlenhistory` (
                       `kArtikelWeiterempfehlenHistory` int(10) unsigned NOT NULL AUTO_INCREMENT,
                       `kArtikel` int(10) unsigned NOT NULL,
                       `kSprache` int(10) unsigned NOT NULL,
@@ -40,6 +34,6 @@ class Migration_20160406092155 extends Migration implements IMigration
                       `dErstellt` datetime NOT NULL,
                       PRIMARY KEY (`kArtikelWeiterempfehlenHistory`),
                       KEY `kArtikel` (`kArtikel`,`kSprache`,`cIP`)
-                    ) ENGINE=MyISAM DEFAULT CHARSET=latin1;");
+                    ) ENGINE=MyISAM DEFAULT CHARSET=latin1;');
     }
 }

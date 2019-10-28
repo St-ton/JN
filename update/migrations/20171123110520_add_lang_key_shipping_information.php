@@ -2,27 +2,19 @@
 /**
  * add_lang_key_shipping_information
  *
- * @author Mirko
+ * @author msc
  * @created Thu, 23 Nov 2017 11:05:20 +0100
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
- * Migration
- *
- * Available methods:
- * execute            - returns affected rows
- * fetchOne           - single fetched object
- * fetchAll           - array of fetched objects
- * fetchArray         - array of fetched assoc arrays
- * dropColumn         - drops a column if exists
- * addLocalization    - add localization
- * removeLocalization - remove localization
- * setConfig          - add / update config property
- * removeConfig       - remove config property
+ * Class Migration_20171123110520
  */
 class Migration_20171123110520 extends Migration implements IMigration
 {
-    protected $author = 'Mirko';
+    protected $author      = 'msc';
     protected $description = 'add_lang_key_shipping_information';
 
     public function up()

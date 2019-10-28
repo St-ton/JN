@@ -1,15 +1,15 @@
 {includeMailTemplate template=header type=plain}
 
-Dear {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
+Dear {$Kunde->cVorname} {$Kunde->cNachname},
 
-We have received your payment of {$Bestellung->WarensummeLocalized[0]} for your order of {$Bestellung->dErstelldatum_en}.
+we have received your payment of {$Bestellung->WarensummeLocalized[0]} for your order of {$Bestellung->dErstelldatum_en}.
 
 Your order is as follows:
 
-{foreach name=pos from=$Bestellung->Positionen item=Position}
-    {if $Position->nPosTyp==1}
+{foreach $Bestellung->Positionen as $Position}
+    {if $Position->nPosTyp == 1}
         {$Position->nAnzahl}x {$Position->cName} - {$Position->cGesamtpreisLocalized[$NettoPreise]}
-        {foreach name=variationen from=$Position->WarenkorbPosEigenschaftArr item=WKPosEigenschaft}
+        {foreach $Position->WarenkorbPosEigenschaftArr as $WKPosEigenschaft}
             {$WKPosEigenschaft->cEigenschaftName}: {$WKPosEigenschaft->cEigenschaftWertName}
         {/foreach}
     {else}
@@ -17,7 +17,7 @@ Your order is as follows:
     {/if}
 {/foreach}
 
-{foreach name=steuerpositionen from=$Bestellung->Steuerpositionen item=Steuerposition}
+{foreach $Bestellung->Steuerpositionen as $Steuerposition}
     {$Steuerposition->cName}: {$Steuerposition->cPreisLocalized}
 {/foreach}
 
@@ -27,7 +27,7 @@ Your order is as follows:
 
 Total: {$Bestellung->WarensummeLocalized[0]}
 
-You will be notified about the dispatch of your goods separately.
+You will be notified of the dispatch of your goods separately.
 
 Yours sincerely,
 

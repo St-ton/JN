@@ -2,9 +2,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
-{if !empty($cFehler)}
-    <div class="alert alert-danger">{$cFehler}</div>
-{/if}
 
 {include file='productwizard/index.tpl'}
 
@@ -12,7 +9,9 @@
     <hr>
     {assign var='moreLink' value=null}
     {assign var='moreTitle' value=null}
-    {include file='snippets/opc_mount_point.tpl' id='opc_home_boxes_prepend'}
+
+    {opcMountPoint id='opc_before_boxes'}
+
     {foreach $StartseiteBoxen as $Box}
         {if isset($Box->Artikel->elemente) && count($Box->Artikel->elemente) > 0 && isset($Box->cURL)}
             {if $Box->name === 'TopAngebot'}
@@ -32,19 +31,19 @@
             {include file='snippets/product_slider.tpl' productlist=$Box->Artikel->elemente title=$title hideOverlays=true moreLink=$moreLink moreTitle=$moreTitle}
         {/if}
     {/foreach}
-    {include file='snippets/opc_mount_point.tpl' id='opc_home_boxes_apppend'}
 {/if}
 
 {block name='index-additional'}
 {if isset($oNews_arr) && $oNews_arr|@count > 0}
     <hr>
-    {include file='snippets/opc_mount_point.tpl' id='opc_home_news_prepend'}
+
+    {opcMountPoint id='opc_before_news'}
+
     <h2>{lang key='news' section='news'}</h2>
     <div itemprop="about" itemscope itemtype="http://schema.org/Blog">
-        {foreach $oNews_arr as $oNewsUebersicht}
+        {foreach $oNews_arr as $newsItem}
             {include file='blog/preview.tpl'}
         {/foreach}
     </div>
-    {include file='snippets/opc_mount_point.tpl' id='opc_home_news_append'}
 {/if}
 {/block}

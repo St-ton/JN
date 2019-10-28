@@ -1,11 +1,21 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license       http://jtl-url.de/jtlshoplicense
  */
 
+namespace JTL;
+
+use JTL\DB\ReturnType;
+use JTL\Helpers\Template as TemplateHelper;
+use JTL\Plugin\State;
+use SimpleXMLElement;
+use stdClass;
+use function Functional\group;
+
 /**
- * Template
+ * Class Template
+ * @package JTL
  */
 class Template
 {
@@ -74,7 +84,7 @@ class Template
      */
     public function __construct()
     {
-        self::$helper = TemplateHelper::getInstance(false);
+        self::$helper = TemplateHelper::getInstance();
         $this->init();
         $this->xmlData          = self::$helper->getData(self::$cTemplate, false);
         self::$frontEndInstance = $this;
@@ -94,52 +104,52 @@ class Template
     public function init(): self
     {
         if (isset($_SESSION['template']->cTemplate)) {
-            self::$cTemplate   = $_SESSION['template']->cTemplate;
-            self::$parent      = $_SESSION['template']->parent;
-            $this->name        = $_SESSION['template']->name;
-            $this->author      = $_SESSION['template']->author;
-            $this->url         = $_SESSION['template']->url;
-            $this->version     = $_SESSION['template']->version;
-            $this->preview     = $_SESSION['template']->preview;
+            self::$cTemplate = $_SESSION['template']->cTemplate;
+            self::$parent    = $_SESSION['template']->parent;
+            $this->name      = $_SESSION['template']->name;
+            $this->author    = $_SESSION['template']->author;
+            $this->url       = $_SESSION['template']->url;
+            $this->version   = $_SESSION['template']->version;
+            $this->preview   = $_SESSION['template']->preview;
 
             return $this;
         }
         $cacheID = 'current_template_' .
             (self::$isAdmin === true ? '_admin' : '');
-        if (($oTemplate = Shop::Cache()->get($cacheID)) !== false) {
-            self::$cTemplate   = $oTemplate->cTemplate;
-            self::$parent      = $oTemplate->parent;
-            $this->name        = $oTemplate->name;
-            $this->author      = $oTemplate->author;
-            $this->url         = $oTemplate->url;
-            $this->version     = $oTemplate->version;
-            $this->preview     = $oTemplate->preview;
+        if (($template = Shop::Container()->getCache()->get($cacheID)) !== false) {
+            self::$cTemplate = $template->cTemplate;
+            self::$parent    = $template->parent;
+            $this->name      = $template->name;
+            $this->author    = $template->author;
+            $this->url       = $template->url;
+            $this->version   = $template->version;
+            $this->preview   = $template->preview;
 
             return $this;
         }
-        $oTemplate = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'standard');
-        if (!empty($oTemplate)) {
-            self::$cTemplate   = $oTemplate->cTemplate;
-            self::$parent      = !empty($oTemplate->parent) ? $oTemplate->parent : null;
-            $this->name        = $oTemplate->name;
-            $this->author      = $oTemplate->author;
-            $this->url         = $oTemplate->url;
-            $this->version     = $oTemplate->version;
-            $this->preview     = $oTemplate->preview;
+        $template = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'standard');
+        if (!empty($template)) {
+            self::$cTemplate = $template->cTemplate;
+            self::$parent    = !empty($template->parent) ? $template->parent : null;
+            $this->name      = $template->name;
+            $this->author    = $template->author;
+            $this->url       = $template->url;
+            $this->version   = $template->version;
+            $this->preview   = $template->preview;
 
-            $tplObject              = new stdClass();
-            $tplObject->cTemplate   = self::$cTemplate;
-            $tplObject->isMobile    = false;
-            $tplObject->parent      = self::$parent;
-            $tplObject->name        = $this->name;
-            $tplObject->version     = $this->version;
-            $tplObject->author      = $this->author;
-            $tplObject->url         = $this->url;
-            $tplObject->preview     = $this->preview;
-            $_SESSION['template']   = $tplObject;
-            $_SESSION['cTemplate']  = self::$cTemplate;
+            $tplObject             = new stdClass();
+            $tplObject->cTemplate  = self::$cTemplate;
+            $tplObject->isMobile   = false;
+            $tplObject->parent     = self::$parent;
+            $tplObject->name       = $this->name;
+            $tplObject->version    = $this->version;
+            $tplObject->author     = $this->author;
+            $tplObject->url        = $this->url;
+            $tplObject->preview    = $this->preview;
+            $_SESSION['template']  = $tplObject;
+            $_SESSION['cTemplate'] = self::$cTemplate;
 
-            Shop::Cache()->set($cacheID, $oTemplate, [CACHING_GROUP_TEMPLATE]);
+            Shop::Container()->getCache()->set($cacheID, $template, [\CACHING_GROUP_TEMPLATE]);
         }
 
         return $this;
@@ -150,7 +160,7 @@ class Template
      *
      * @return string|null
      */
-    public function getFrontendTemplate()
+    public function getFrontendTemplate(): ?string
     {
         $frontendTemplate = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'standard');
         self::$cTemplate  = empty($frontendTemplate->cTemplate) ? null : $frontendTemplate->cTemplate;
@@ -161,7 +171,7 @@ class Template
 
     /**
      * @param null|string $dir
-     * @return null|SimpleXMLElement|SimpleXMLObject
+     * @return null|SimpleXMLElement
      */
     public function leseXML($dir = null)
     {
@@ -176,19 +186,20 @@ class Template
     public function getPluginResources(): array
     {
         $resourcesc = Shop::Container()->getDB()->queryPrepared(
-            'SELECT * FROM tplugin_resources
+            'SELECT * 
+                FROM tplugin_resources AS res
                 JOIN tplugin
-                    ON tplugin.kPlugin = tplugin_resources.kPlugin
+                    ON tplugin.kPlugin = res.kPlugin
                 WHERE tplugin.nStatus = :state
-                ORDER BY tplugin_resources.priority DESC',
-            ['state' => Plugin::PLUGIN_ACTIVATED],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY res.priority DESC',
+            ['state' => State::ACTIVATED],
+            ReturnType::ARRAY_OF_OBJECTS
         );
-        $grouped    = \Functional\group($resourcesc, function ($e) {
+        $grouped    = group($resourcesc, function ($e) {
             return $e->type;
         });
         if (isset($grouped['js'])) {
-            $grouped['js'] = \Functional\group($grouped['js'], function ($e) {
+            $grouped['js'] = group($grouped['js'], function ($e) {
                 return $e->position;
             });
         }
@@ -208,13 +219,16 @@ class Template
      */
     private function getPluginResourcesPath(array $items): array
     {
-        foreach ($items as &$item) {
-            $item->abs = PFAD_ROOT . PFAD_PLUGIN . $item->cVerzeichnis . '/' .
-                PFAD_PLUGIN_VERSION . $item->nVersion . '/' .
-                PFAD_PLUGIN_FRONTEND . $item->type . '/' . $item->path;
-            $item->rel = PFAD_PLUGIN . $item->cVerzeichnis . '/' .
-                PFAD_PLUGIN_VERSION . $item->nVersion . '/' .
-                PFAD_PLUGIN_FRONTEND . $item->type . '/' . $item->path;
+        foreach ($items as $item) {
+            $frontend = \PFAD_PLUGIN_FRONTEND . $item->type . '/' . $item->path;
+            if ((int)$item->bExtension === 1) {
+                $item->rel = \PLUGIN_DIR . $item->cVerzeichnis . '/';
+            } else {
+                $item->rel = \PFAD_PLUGIN . $item->cVerzeichnis . '/';
+                $frontend  = \PFAD_PLUGIN_VERSION . $item->nVersion . '/' . $frontend;
+            }
+            $item->rel .= $frontend;
+            $item->abs  = \PFAD_ROOT . $item->rel;
         }
 
         return $items;
@@ -228,13 +242,13 @@ class Template
      */
     private function checkCondition($node): bool
     {
-        $settingsGroup = constant((string)$node->attributes()->DependsOnSettingGroup);
+        $settingsGroup = \constant((string)$node->attributes()->DependsOnSettingGroup);
         $settingValue  = (string)$node->attributes()->DependsOnSettingValue;
         $comparator    = (string)$node->attributes()->DependsOnSettingComparison;
         $setting       = (string)$node->attributes()->DependsOnSetting;
         $conf          = Shop::getSettings([$settingsGroup]);
-        $hierarchy     = explode('.', $setting);
-        $iterations    = count($hierarchy);
+        $hierarchy     = \explode('.', $setting);
+        $iterations    = \count($hierarchy);
         $i             = 0;
         if (empty($comparator)) {
             $comparator = '==';
@@ -285,83 +299,84 @@ class Template
         }
         $folders[] = $dir;
         $cacheID   = 'tpl_mnfy_dt_' . $dir . $parentHash;
-        if (($tplGroups = Shop::Cache()->get($cacheID)) === false) {
+        if (($tplGroups = Shop::Container()->getCache()->get($cacheID)) === false) {
             $tplGroups = [
                 'plugin_css'     => [],
                 'plugin_js_head' => [],
                 'plugin_js_body' => []
             ];
             foreach ($folders as $dir) {
-                $oXML = self::$helper->getXML($dir);
-                if ($oXML === null) {
+                $xml = self::$helper->getXML($dir);
+                if ($xml === null) {
                     continue;
                 }
-                $cssSource = $oXML->Minify->CSS ?? [];
-                $jsSource  = $oXML->Minify->JS ?? [];
-                /** @var SimpleXMLElement $oCSS */
-                foreach ($cssSource as $oCSS) {
-                    $name = (string)$oCSS->attributes()->Name;
+                $cssSource = $xml->Minify->CSS ?? [];
+                $jsSource  = $xml->Minify->JS ?? [];
+                /** @var SimpleXMLElement $css */
+                foreach ($cssSource as $css) {
+                    $name = (string)$css->attributes()->Name;
                     if (!isset($tplGroups[$name])) {
                         $tplGroups[$name] = [];
                     }
-                    /** @var SimpleXMLElement $oFile */
-                    foreach ($oCSS->File as $oFile) {
-                        $cFile     = (string)$oFile->attributes()->Path;
-                        $cFilePath = self::$isAdmin === false
-                            ? PFAD_ROOT . PFAD_TEMPLATES . $oXML->Ordner . '/' . $cFile
-                            : PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . $oXML->Ordner . '/' . $cFile;
-                        if (file_exists($cFilePath)
-                            && (empty($oFile->attributes()->DependsOnSetting) || $this->checkCondition($oFile) === true)
+                    /** @var SimpleXMLElement $cssFile */
+                    foreach ($css->File as $cssFile) {
+                        $file     = (string)$cssFile->attributes()->Path;
+                        $filePath = self::$isAdmin === false
+                            ? \PFAD_ROOT . \PFAD_TEMPLATES . $xml->Ordner . '/' . $file
+                            : \PFAD_ROOT . \PFAD_ADMIN . \PFAD_TEMPLATES . $xml->Ordner . '/' . $file;
+                        if (\file_exists($filePath)
+                            && (empty($cssFile->attributes()->DependsOnSetting)
+                                || $this->checkCondition($cssFile) === true)
                         ) {
-                            $_file           = PFAD_TEMPLATES . $dir . '/' . (string)$oFile->attributes()->Path;
-                            $cCustomFilePath = str_replace('.css', '_custom.css', $cFilePath);
-                            if (file_exists($cCustomFilePath)) { //add _custom file if existing
-                                $_file                  = str_replace(
+                            $_file          = \PFAD_TEMPLATES . $dir . '/' . (string)$cssFile->attributes()->Path;
+                            $customFilePath = \str_replace('.css', '_custom.css', $filePath);
+                            if (\file_exists($customFilePath)) { //add _custom file if existing
+                                $_file              = \str_replace(
                                     '.css',
                                     '_custom.css',
-                                    PFAD_TEMPLATES . $dir . '/' . (string)$oFile->attributes()->Path
+                                    \PFAD_TEMPLATES . $dir . '/' . (string)$cssFile->attributes()->Path
                                 );
                                 $tplGroups[$name][] = [
-                                    'idx' => str_replace('.css', '_custom.css', (string)$oFile->attributes()->Path),
-                                    'abs' => realpath(PFAD_ROOT . $_file),
+                                    'idx' => \str_replace('.css', '_custom.css', (string)$cssFile->attributes()->Path),
+                                    'abs' => \realpath(\PFAD_ROOT . $_file),
                                     'rel' => $_file
                                 ];
                             } else { //otherwise add normal file
                                 $tplGroups[$name][] = [
-                                    'idx' => $cFile,
-                                    'abs' => realpath(PFAD_ROOT . $_file),
+                                    'idx' => $file,
+                                    'abs' => \realpath(\PFAD_ROOT . $_file),
                                     'rel' => $_file
                                 ];
                             }
                         }
                     }
                 }
-                /** @var SimpleXMLElement $oJS */
-                foreach ($jsSource as $oJS) {
-                    $name = (string)$oJS->attributes()->Name;
+                /** @var SimpleXMLElement $js */
+                foreach ($jsSource as $js) {
+                    $name = (string)$js->attributes()->Name;
                     if (!isset($tplGroups[$name])) {
                         $tplGroups[$name] = [];
                     }
-                    foreach ($oJS->File as $oFile) {
-                        if (!empty($oFile->attributes()->DependsOnSetting) && $this->checkCondition($oFile) !== true) {
+                    foreach ($js->File as $jsFile) {
+                        if (!empty($jsFile->attributes()->DependsOnSetting) && $this->checkCondition($jsFile) !== true) {
                             continue;
                         }
-                        $_file    = PFAD_TEMPLATES . $dir . '/' . (string)$oFile->attributes()->Path;
+                        $_file    = \PFAD_TEMPLATES . $dir . '/' . (string)$jsFile->attributes()->Path;
                         $newEntry = [
-                            'idx' => (string)$oFile->attributes()->Path,
-                            'abs' => PFAD_ROOT . $_file,
+                            'idx' => (string)$jsFile->attributes()->Path,
+                            'abs' => \PFAD_ROOT . $_file,
                             'rel' => $_file
                         ];
                         $found    = false;
-                        if (!empty($oFile->attributes()->override)
-                            && (string)$oFile->attributes()->override === 'true'
+                        if (!empty($jsFile->attributes()->override)
+                            && (string)$jsFile->attributes()->override === 'true'
                         ) {
-                            $idxToOverride = (string)$oFile->attributes()->Path;
-                            $max           = count($tplGroups[$name]);
+                            $idxToOverride = (string)$jsFile->attributes()->Path;
+                            $max           = \count($tplGroups[$name]);
                             for ($i = 0; $i < $max; $i++) {
                                 if ($tplGroups[$name][$i]['idx'] === $idxToOverride) {
                                     $tplGroups[$name][$i] = $newEntry;
-                                    $found                    = true;
+                                    $found                = true;
                                     break;
                                 }
                             }
@@ -374,12 +389,12 @@ class Template
             }
             $pluginRes = $this->getPluginResources();
             foreach ($pluginRes['css'] as $_cssRes) {
-                $cCustomFilePath = str_replace('.css', '_custom.css', $_cssRes->abs);
-                if (file_exists($cCustomFilePath)) {
+                $customFilePath = \str_replace('.css', '_custom.css', $_cssRes->abs);
+                if (\file_exists($customFilePath)) {
                     $tplGroups['plugin_css'][] = [
                         'idx' => $_cssRes->cName,
-                        'abs' => $cCustomFilePath,
-                        'rel' => str_replace('.css', '_custom.css', $_cssRes->rel)
+                        'abs' => $customFilePath,
+                        'rel' => \str_replace('.css', '_custom.css', $_cssRes->rel)
                     ];
                 } else {
                     $tplGroups['plugin_css'][] = [
@@ -403,12 +418,12 @@ class Template
                     'rel' => $_jsbRes->rel
                 ];
             }
-            $cacheTags = [CACHING_GROUP_OPTION, CACHING_GROUP_TEMPLATE, CACHING_GROUP_PLUGIN];
-            executeHook(HOOK_CSS_JS_LIST, [
+            $cacheTags = [\CACHING_GROUP_OPTION, \CACHING_GROUP_TEMPLATE, \CACHING_GROUP_PLUGIN];
+            \executeHook(\HOOK_CSS_JS_LIST, [
                 'groups'     => &$tplGroups,
                 'cache_tags' => &$cacheTags
             ]);
-            Shop::Cache()->set($cacheID, $tplGroups, $cacheTags);
+            Shop::Container()->getCache()->set($cacheID, $tplGroups, $cacheTags);
         }
         foreach ($tplGroups as $name => $_tplGroup) {
             $res[$name] = [];
@@ -418,15 +433,6 @@ class Template
         }
 
         return $res;
-    }
-
-    /**
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    private function getMobileTemplate(): bool
-    {
-        return false;
     }
 
     /**
@@ -452,7 +458,7 @@ class Template
      *
      * @return string|null
      */
-    public function getSkin()
+    public function getSkin(): ?string
     {
         $cSkin = Shop::Container()->getDB()->select(
             'ttemplateeinstellungen',
@@ -491,100 +497,98 @@ class Template
         if ($parent !== null) {
             $folders[] = $parent;
         }
-        $oSection_arr    = [];
+        $sections        = [];
         $ignoredSettings = []; //list of settings that are overridden by child
         foreach ($folders as $dir) {
-            $oXML = self::$helper->getXML($dir);
-            if (!$oXML || !isset($oXML->Settings, $oXML->Settings->Section)) {
+            $xml = self::$helper->getXML($dir);
+            if (!$xml || !isset($xml->Settings, $xml->Settings->Section)) {
                 continue;
             }
             /** @var SimpleXMLElement $oXMLSection */
-            foreach ($oXML->Settings->Section as $oXMLSection) {
-                $oSection  = null;
+            foreach ($xml->Settings->Section as $oXMLSection) {
+                $section   = null;
                 $sectionID = (string)$oXMLSection->attributes()->Key;
                 $exists    = false;
-                foreach ($oSection_arr as &$_section) {
+                foreach ($sections as &$_section) {
                     if ($_section->cKey === $sectionID) {
-                        $exists   = true;
-                        $oSection = $_section;
+                        $exists  = true;
+                        $section = $_section;
                         break;
                     }
                 }
                 if (!$exists) {
-                    $oSection                = new stdClass();
-                    $oSection->cName         = (string)$oXMLSection->attributes()->Name;
-                    $oSection->cKey          = $sectionID;
-                    $oSection->oSettings_arr = [];
+                    $section                = new stdClass();
+                    $section->cName         = (string)$oXMLSection->attributes()->Name;
+                    $section->cKey          = $sectionID;
+                    $section->oSettings_arr = [];
                 }
                 /** @var SimpleXMLElement $XMLSetting */
                 foreach ($oXMLSection->Setting as $XMLSetting) {
-                    $key                     = (string)$XMLSetting->attributes()->Key;
-                    $oSetting                = new stdClass();
-                    $oSetting->rawAttributes = [];
-                    $settingExists           = false;
-                    $atts                    = $XMLSetting->attributes();
-                    if (in_array($key, $ignoredSettings, true)) {
+                    $key                    = (string)$XMLSetting->attributes()->Key;
+                    $setting                = new stdClass();
+                    $setting->rawAttributes = [];
+                    $settingExists          = false;
+                    $atts                   = $XMLSetting->attributes();
+                    if (\in_array($key, $ignoredSettings, true)) {
                         continue;
                     }
                     foreach ($atts as $_k => $_attr) {
-                        $oSetting->rawAttributes[$_k] = (string)$_attr;
+                        $setting->rawAttributes[$_k] = (string)$_attr;
                     }
                     if ((string)$XMLSetting->attributes()->override === 'true') {
                         $ignoredSettings[] = $key;
                     }
-                    $oSetting->cName        = (string)$XMLSetting->attributes()->Description;
-                    $oSetting->cKey         = $key;
-                    $oSetting->cType        = (string)$XMLSetting->attributes()->Type;
-                    $oSetting->cValue       = (string)$XMLSetting->attributes()->Value;
-                    $oSetting->bEditable    = (string)$XMLSetting->attributes()->Editable;
-                    $oSetting->cPlaceholder = (string)$XMLSetting->attributes()->Placeholder;
+                    $setting->cName        = (string)$XMLSetting->attributes()->Description;
+                    $setting->cKey         = $key;
+                    $setting->cType        = (string)$XMLSetting->attributes()->Type;
+                    $setting->cValue       = (string)$XMLSetting->attributes()->Value;
+                    $setting->bEditable    = (string)$XMLSetting->attributes()->Editable;
+                    $setting->cPlaceholder = (string)$XMLSetting->attributes()->Placeholder;
                     // negative values for the 'toggle'-attributes of textarea(resizable), check-boxes and radio-buttons
                     $vToggleValues = ['0', 'no', 'none', 'off', 'false'];
                     // special handling for textarea-type settings
-                    if ('textarea' === $oSetting->cType) {
+                    if ($setting->cType === 'textarea') {
                         // inject the tag-attributes of the TextAreaValue in our oSetting
-                        $oSetting->vTextAreaAttr_arr = [];
+                        $setting->vTextAreaAttr_arr = [];
                         // get the SimpleXMLElement-array
                         $attr = $XMLSetting->TextAreaValue->attributes();
                         // we insert our default "no resizable"
-                        $oSetting->vTextAreaAttr_arr['Resizable'] = 'none';
+                        $setting->vTextAreaAttr_arr['Resizable'] = 'none';
                         foreach ($attr as $_key => $_val) {
-                            $_val                               = (string)$_val; // cast the value(!)
-                            $oSetting->vTextAreaAttr_arr[$_key] = $_val;
+                            $_val                              = (string)$_val; // cast the value(!)
+                            $setting->vTextAreaAttr_arr[$_key] = $_val;
                             // multiple values of 'disable resizing' are allowed,
                             // but only vertical is ok, if 'resizable' is required
-                            if ('Resizable' === (string)$_key) {
-                                in_array($_val, $vToggleValues, true)
-                                    ? $oSetting->vTextAreaAttr_arr[$_key] = 'none'
-                                    : $oSetting->vTextAreaAttr_arr[$_key] = 'vertical';
+                            if ((string)$_key === 'Resizable') {
+                                \in_array($_val, $vToggleValues, true)
+                                    ? $setting->vTextAreaAttr_arr[$_key] = 'none'
+                                    : $setting->vTextAreaAttr_arr[$_key] = 'vertical';
                                 // only vertical, because horizontal breaks the layout
                             } else {
-                                $oSetting->vTextAreaAttr_arr[$_key] = $_val;
+                                $setting->vTextAreaAttr_arr[$_key] = $_val;
                             }
                         }
                         // get the tag-content of "TextAreaValue"; trim leading and trailing spaces
-                        $vszTextLines = mb_split("\n", (string)$XMLSetting->TextAreaValue);
-                        array_walk($vszTextLines, function (&$szLine) {
-                            $szLine = trim($szLine);
-                        });
-                        $oSetting->cTextAreaValue = implode("\n", $vszTextLines);
+                        $textLines = \mb_split("\n", (string)$XMLSetting->TextAreaValue);
+                        \array_walk($textLines, '\trim');
+                        $setting->cTextAreaValue = \implode("\n", $textLines);
                     }
-                    foreach ($oSection->oSettings_arr as $_setting) {
-                        if ($_setting->cKey === $oSetting->cKey) {
+                    foreach ($section->oSettings_arr as $_setting) {
+                        if ($_setting->cKey === $setting->cKey) {
                             $settingExists = true;
-                            $oSetting      = $_setting;
+                            $setting       = $_setting;
                             break;
                         }
                     }
-                    $oSetting->bEditable = strlen($oSetting->bEditable) === 0
+                    $setting->bEditable = \mb_strlen($setting->bEditable) === 0
                         ? true
-                        : (boolean)(int)$oSetting->bEditable;
-                    if ($oSetting->bEditable && isset($oDBSettings[$oSection->cKey][$oSetting->cKey])) {
-                        $oSetting->cValue = $oDBSettings[$oSection->cKey][$oSetting->cKey];
+                        : (bool)(int)$setting->bEditable;
+                    if ($setting->bEditable && isset($oDBSettings[$section->cKey][$setting->cKey])) {
+                        $setting->cValue = $oDBSettings[$section->cKey][$setting->cKey];
                     }
                     if (isset($XMLSetting->Option)) {
-                        if (!isset($oSetting->oOptions_arr)) {
-                            $oSetting->oOptions_arr = [];
+                        if (!isset($setting->oOptions_arr)) {
+                            $setting->oOptions_arr = [];
                         }
                         /** @var SimpleXMLElement $XMLOption */
                         foreach ($XMLSetting->Option as $XMLOption) {
@@ -592,44 +596,44 @@ class Template
                             $oOption->cName   = (string)$XMLOption;
                             $oOption->cValue  = (string)$XMLOption->attributes()->Value;
                             $oOption->cOrdner = $dir; //add current folder to option - useful for theme previews
-                            if ('' === (string)$XMLOption && '' !== (string)$XMLOption->attributes()->Name) {
+                            if ((string)$XMLOption === '' && (string)$XMLOption->attributes()->Name !== '') {
                                 // overwrite the cName (which defaults to the tag-content),
                                 // if it's empty, with the Option-attribute "Name", if we got that
                                 $oOption->cName = (string)$XMLOption->attributes()->Name;
                             }
-                            $oSetting->oOptions_arr[] = $oOption;
+                            $setting->oOptions_arr[] = $oOption;
                         }
                     }
                     if (isset($XMLSetting->Optgroup)) {
-                        if (!isset($oSetting->oOptgroup_arr)) {
-                            $oSetting->oOptgroup_arr = [];
+                        if (!isset($setting->oOptgroup_arr)) {
+                            $setting->oOptgroup_arr = [];
                         }
                         /** @var SimpleXMLElement $XMLOptgroup */
                         foreach ($XMLSetting->Optgroup as $XMLOptgroup) {
-                            $oOptgroup              = new stdClass();
-                            $oOptgroup->cName       = (string)$XMLOptgroup->attributes()->label;
-                            $oOptgroup->oValues_arr = [];
+                            $optgroup              = new stdClass();
+                            $optgroup->cName       = (string)$XMLOptgroup->attributes()->label;
+                            $optgroup->oValues_arr = [];
                             /** @var SimpleXMLElement $XMLOptgroupOption */
                             foreach ($XMLOptgroup->Option as $XMLOptgroupOption) {
-                                $oOptgroupValues          = new stdClass();
-                                $oOptgroupValues->cName   = (string)$XMLOptgroupOption;
-                                $oOptgroupValues->cValue  = (string)$XMLOptgroupOption->attributes()->Value;
-                                $oOptgroup->oValues_arr[] = $oOptgroupValues;
+                                $oOptgroupValues         = new stdClass();
+                                $oOptgroupValues->cName  = (string)$XMLOptgroupOption;
+                                $oOptgroupValues->cValue = (string)$XMLOptgroupOption->attributes()->Value;
+                                $optgroup->oValues_arr[] = $oOptgroupValues;
                             }
-                            $oSetting->oOptgroup_arr[] = $oOptgroup;
+                            $setting->oOptgroup_arr[] = $optgroup;
                         }
                     }
                     if (!$settingExists) {
-                        $oSection->oSettings_arr[] = $oSetting;
+                        $section->oSettings_arr[] = $setting;
                     }
                 }
                 if (!$exists) {
-                    $oSection_arr[] = $oSection;
+                    $sections[] = $section;
                 }
             }
         }
 
-        return $oSection_arr;
+        return $sections;
     }
 
     /**
@@ -644,12 +648,12 @@ class Template
 
         foreach ($dirs as $dir) {
             $oXML = self::$helper->getXML($dir);
-            if (isset($oXML->Boxes) && count($oXML->Boxes) === 1) {
-                $oXMLBoxes_arr = $oXML->Boxes[0];
-                /** @var SimpleXMLElement $oXMLContainer */
-                foreach ($oXMLBoxes_arr as $oXMLContainer) {
-                    $cPosition         = (string)$oXMLContainer->attributes()->Position;
-                    $bAvailable        = (boolean)(int)$oXMLContainer->attributes()->Available;
+            if (isset($oXML->Boxes) && \count($oXML->Boxes) === 1) {
+                $boxXML = $oXML->Boxes[0];
+                /** @var SimpleXMLElement $ditem */
+                foreach ($boxXML as $ditem) {
+                    $cPosition         = (string)$ditem->attributes()->Position;
+                    $bAvailable        = (bool)(int)$ditem->attributes()->Available;
                     $items[$cPosition] = $bAvailable;
                 }
             }
@@ -665,25 +669,25 @@ class Template
      */
     public function leseLessXML($dir): array
     {
-        $oXML           = self::$helper->getXML($dir);
-        $oLessFiles_arr = [];
-        if (!$oXML || !isset($oXML->Lessfiles)) {
-            return $oLessFiles_arr;
+        $xml       = self::$helper->getXML($dir);
+        $lessFiles = [];
+        if (!$xml || !isset($xml->Lessfiles)) {
+            return $lessFiles;
         }
         /** @var SimpleXMLElement $oXMLTheme */
-        foreach ($oXML->Lessfiles->THEME as $oXMLTheme) {
-            $oTheme             = new stdClass();
-            $oTheme->cName      = (string)$oXMLTheme->attributes()->Name;
-            $oTheme->oFiles_arr = [];
+        foreach ($xml->Lessfiles->THEME as $oXMLTheme) {
+            $theme             = new stdClass();
+            $theme->cName      = (string)$oXMLTheme->attributes()->Name;
+            $theme->oFiles_arr = [];
             foreach ($oXMLTheme->File as $cFile) {
-                $oThemeFiles          = new stdClass();
-                $oThemeFiles->cPath   = (string)$cFile->attributes()->Path;
-                $oTheme->oFiles_arr[] = $oThemeFiles;
+                $oThemeFiles         = new stdClass();
+                $oThemeFiles->cPath  = (string)$cFile->attributes()->Path;
+                $theme->oFiles_arr[] = $oThemeFiles;
             }
-            $oLessFiles_arr[$oTheme->cName] = $oTheme;
+            $lessFiles[$theme->cName] = $theme;
         }
 
-        return $oLessFiles_arr;
+        return $lessFiles;
     }
 
     /**
@@ -699,7 +703,7 @@ class Template
         Shop::Container()->getDB()->delete('ttemplate', 'cTemplate', $dir);
         $tplConfig = self::$helper->getXML($dir);
         if (!empty($tplConfig->Parent)) {
-            if (!is_dir(PFAD_ROOT . PFAD_TEMPLATES . (string)$tplConfig->Parent)) {
+            if (!\is_dir(\PFAD_ROOT . \PFAD_TEMPLATES . (string)$tplConfig->Parent)) {
                 return false;
             }
             self::$parent = (string)$tplConfig->Parent;
@@ -708,34 +712,34 @@ class Template
             $parentConfig = false;
         }
 
-        $tplObject              = new stdClass();
-        $tplObject->cTemplate   = $dir;
-        $tplObject->eTyp        = $eTyp;
-        $tplObject->parent      = !empty($tplConfig->Parent)
+        $tplObject            = new stdClass();
+        $tplObject->cTemplate = $dir;
+        $tplObject->eTyp      = $eTyp;
+        $tplObject->parent    = !empty($tplConfig->Parent)
             ? (string)$tplConfig->Parent
             : '_DBNULL_';
-        $tplObject->name        = (string)$tplConfig->Name;
-        $tplObject->author      = (string)$tplConfig->Author;
-        $tplObject->url         = (string)$tplConfig->URL;
-        $tplObject->version     = empty($tplConfig->Version) && $parentConfig
+        $tplObject->name      = (string)$tplConfig->Name;
+        $tplObject->author    = (string)$tplConfig->Author;
+        $tplObject->url       = (string)$tplConfig->URL;
+        $tplObject->version   = empty($tplConfig->Version) && $parentConfig
             ? $parentConfig->Version
             : $tplConfig->Version;
-        $tplObject->preview     = (string)$tplConfig->Preview;
-        $inserted               = Shop::Container()->getDB()->insert('ttemplate', $tplObject);
+        $tplObject->preview   = (string)$tplConfig->Preview;
+        $inserted             = Shop::Container()->getDB()->insert('ttemplate', $tplObject);
         if ($inserted > 0) {
-            if (!$dh = opendir(PFAD_ROOT . PFAD_COMPILEDIR)) {
+            if (!$dh = \opendir(\PFAD_ROOT . \PFAD_COMPILEDIR)) {
                 return false;
             }
-            while (($obj = readdir($dh)) !== false) {
-                if ($obj{0} === '.') {
+            while (($obj = \readdir($dh)) !== false) {
+                if (\mb_strpos($obj, '.') === 0) {
                     continue;
                 }
-                if (!is_dir(PFAD_ROOT . PFAD_COMPILEDIR . $obj)) {
-                    unlink(PFAD_ROOT . PFAD_COMPILEDIR . $obj);
+                if (!\is_dir(\PFAD_ROOT . \PFAD_COMPILEDIR . $obj)) {
+                    \unlink(\PFAD_ROOT . \PFAD_COMPILEDIR . $obj);
                 }
             }
         }
-        Shop::Cache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_TEMPLATE]);
+        Shop::Container()->getCache()->flushTags([\CACHING_GROUP_OPTION, \CACHING_GROUP_TEMPLATE]);
 
         return $inserted > 0;
     }
@@ -754,35 +758,38 @@ class Template
      * set template configuration
      *
      * @param string $dir
-     * @param string $cSektion
-     * @param string $cName
-     * @param string $cWert
+     * @param string $section
+     * @param string $name
+     * @param string $value
      * @return $this
      */
-    public function setConfig($dir, $cSektion, $cName, $cWert): self
+    public function setConfig($dir, $section, $name, $value): self
     {
         $config = Shop::Container()->getDB()->select(
             'ttemplateeinstellungen',
-            'cTemplate', $dir,
-            'cSektion', $cSektion,
-            'cName', $cName
+            'cTemplate',
+            $dir,
+            'cSektion',
+            $section,
+            'cName',
+            $name
         );
         if ($config !== null && isset($config->cTemplate)) {
             Shop::Container()->getDB()->update(
                 'ttemplateeinstellungen',
                 ['cTemplate', 'cSektion', 'cName'],
-                [$dir, $cSektion, $cName],
-                (object)['cWert' => $cWert]
+                [$dir, $section, $name],
+                (object)['cWert' => $value]
             );
         } else {
-            $_ins            = new stdClass();
-            $_ins->cTemplate = $dir;
-            $_ins->cSektion  = $cSektion;
-            $_ins->cName     = $cName;
-            $_ins->cWert     = $cWert;
-            Shop::Container()->getDB()->insert('ttemplateeinstellungen', $_ins);
+            $ins            = new stdClass();
+            $ins->cTemplate = $dir;
+            $ins->cSektion  = $section;
+            $ins->cName     = $name;
+            $ins->cWert     = $value;
+            Shop::Container()->getDB()->insert('ttemplateeinstellungen', $ins);
         }
-        Shop::Cache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_TEMPLATE]);
+        Shop::Container()->getCache()->flushTags([\CACHING_GROUP_OPTION, \CACHING_GROUP_TEMPLATE]);
 
         return $this;
     }
@@ -802,13 +809,13 @@ class Template
      */
     public function getDir($absolute = false): string
     {
-        return $absolute ? (PFAD_ROOT . PFAD_TEMPLATES . self::$cTemplate) : self::$cTemplate;
+        return $absolute ? (\PFAD_ROOT . \PFAD_TEMPLATES . self::$cTemplate) : self::$cTemplate;
     }
 
     /**
      * @return string|null
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -816,7 +823,7 @@ class Template
     /**
      * @return null|string
      */
-    public function getParent()
+    public function getParent(): ?string
     {
         return self::$parent;
     }
@@ -832,7 +839,7 @@ class Template
     /**
      * @return string|null
      */
-    public function getAuthor()
+    public function getAuthor(): ?string
     {
         return $this->author;
     }
@@ -840,7 +847,7 @@ class Template
     /**
      * @return string|null
      */
-    public function getURL()
+    public function getURL(): ?string
     {
         return $this->url;
     }
@@ -856,7 +863,7 @@ class Template
     /**
      * @return string|null
      */
-    public function getPreview()
+    public function getPreview(): ?string
     {
         return $this->preview;
     }
@@ -865,7 +872,7 @@ class Template
      * @param bool $bRedirect
      * @deprecated since 5.0.0
      */
-    public function check($bRedirect = true)
+    public function check($bRedirect = true): void
     {
     }
 }

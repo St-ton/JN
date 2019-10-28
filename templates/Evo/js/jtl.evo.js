@@ -152,13 +152,15 @@
                 $(e).height($('div', $(e)).outerHeight()).addClass('setHeight');
             });
         },
-        
+
         tooltips: function() {
             $('[data-toggle="tooltip"]').tooltip();
         },
 
         imagebox: function(wrapper) {
-            var $wrapper = (typeof wrapper === 'undefined' || wrapper.length === 0) ? $('#result-wrapper') : $(wrapper),
+            var $wrapper = (typeof wrapper === 'undefined' || wrapper.length === 0)
+                    ? $('#result-wrapper, .opc-ProductStream-gallery, .opc-ProductStream-list')
+                    : $(wrapper),
                 square   = $('.image-box', $wrapper).first().height() + 'px',
                 padding  = $(window).height() / 2;
 
@@ -177,13 +179,13 @@
                     //    box.parent().find('.overlay-img').remove();
                     //} else {
                         $(img).lazy(padding, function() {
-                            $(this).load(function() {
+                            $(this).on('load', function() {
                                 img.css('max-height', square);
                                 box.css('line-height', square)
                                     .css('max-height', square)
                                     .removeClass('loading')
                                     .addClass('loaded');
-                            }).error(function() {
+                            }).on('error', function() {
                                 box.removeClass('loading')
                                     .addClass('error');
                             });
@@ -208,12 +210,12 @@
                 document.body.appendChild(s);
             })();
         },
-        
+
         showNotify: function(options) {
             eModal.alert({
                 size: 'lg',
                 buttons: false,
-                title: options.title, 
+                title: options.title,
                 message: options.text,
                 keyboard: true,
                 tabindex: -1,
@@ -222,11 +224,11 @@
                 }
             });
         },
-        
+
         renderCaptcha: function(parameters) {
             this.trigger('captcha.render', parameters);
         },
-        
+
         popupDep: function() {
             var that  = this;
             $('#main-wrapper').on('click', '.popup-dep', function(e) {
@@ -250,11 +252,12 @@
         popover: function() {
             /*
              * <a data-toggle="popover" data-ref="#popover-content123">Click me</a>
-             * <div id="popover-content123" class="popover">content here</div> 
+             * <div id="popover-content123" class="popover">content here</div>
              */
             $('[data-toggle="popover"]').popover({
                 trigger: 'hover',
                 html: true,
+                sanitize: false,
                 content: function() {
                     var ref = $(this).attr('data-ref');
                     return $(ref).html();
@@ -326,21 +329,47 @@
             $submits.first().removeClass('hidden');
 
             $('input[name="Versandart"]', '#checkout-shipping-payment').change(function() {
-                var id    = parseInt($(this).val());
+                var shipmentid = parseInt($(this).val());
+                var paymentid  = $("input[id^='payment']:checked ").val();
                 var $form = $(this).closest('form');
 
-                if (isNaN(id)) {
+                if (isNaN(shipmentid)) {
                     return;
                 }
 
                 $form.find('fieldset, input[type="submit"]')
                     .attr('disabled', true);
 
-                var url = 'bestellvorgang.php?kVersandart=' + id;
+                var url = 'bestellvorgang.php?kVersandart=' + shipmentid + '&kZahlungsart=' + paymentid;
                 $.evo.loadContent(url, function() {
                     $.evo.checkout();
                 }, null, true);
             });
+
+            $('#country').on('change', function (e) {
+                var val = $(this).find(':selected').val();
+
+                $.evo.io().call('checkDeliveryCountry', [val], {}, function (error, data) {
+                    var $shippingSwitch = $('#checkout_register_shipping_address');
+
+                    if (data.response) {
+                        $shippingSwitch.removeAttr('disabled');
+                        $shippingSwitch.parent().removeClass('hidden');
+                    } else {
+                        $shippingSwitch.attr('disabled', true);
+                        $shippingSwitch.parent().addClass('hidden');
+                        if ($shippingSwitch.prop('checked')) {
+                            $shippingSwitch.prop('checked', false);
+                            $('#select_shipping_address').collapse('show');
+                        }
+                    }
+                });
+            });
+        },
+
+        setCompareListHeight: function() {
+            var h = parseInt($('.comparelist .equal-height').outerHeight());
+            $('.comparelist .equal-height').outerHeight(h);
         },
 
         loadContent: function(url, callback, error, animation, wrapper) {
@@ -375,7 +404,7 @@
                 that.trigger('loaded.evo.content', { url: url });
             });
         },
-        
+
         spinner: function(target) {
             var opts = {
               lines: 12             // The number of lines to draw
@@ -402,6 +431,9 @@
 
             if (typeof target === 'undefined') {
                 target = document.getElementsByClassName('product-offer')[0];
+            }
+            if ((typeof target !== 'undefined' && target.id === 'result-wrapper') || $(target).hasClass('product-offer')) {
+                opts.position = 'fixed';
             }
 
             return new Spinner(opts).spin(target);
@@ -439,6 +471,7 @@
             this.preventDropdownToggle();
             this.smoothScroll();
             this.checkout();
+            this.setCompareListHeight();
         }
     };
 

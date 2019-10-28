@@ -18,9 +18,9 @@ class bar_on_show
      */
     public function __construct($type, $cascade, $delay)
     {
-        $this->type = $type;
+        $this->type    = $type;
         $this->cascade = (float)$cascade;
-        $this->delay = (float)$delay;
+        $this->delay   = (float)$delay;
     }
 }
 
@@ -30,7 +30,7 @@ class bar_value
      * @param $top as integer. The Y value of the top of the bar
      * @param OPTIONAL $bottom as integer. The Y value of the bottom of the bar, defaults to Y min.
      */
-    public function __construct($top, $bottom=null)
+    public function __construct($top, $bottom = null)
     {
         $this->top = $top;
         
@@ -54,7 +54,7 @@ class bar extends bar_base
 {
     public function __construct()
     {
-        $this->type      = "bar";
+        $this->type = 'bar';
         parent::__construct();
     }
 }
@@ -63,7 +63,7 @@ class bar_glass extends bar_base
 {
     public function __construct()
     {
-        $this->type      = "bar_glass";
+        $this->type = 'bar_glass';
         parent::__construct();
     }
 }
@@ -72,7 +72,7 @@ class bar_cylinder extends bar_base
 {
     public function __construct()
     {
-        $this->type      = "bar_cylinder";
+        $this->type = 'bar_cylinder';
         parent::__construct();
     }
 }
@@ -81,7 +81,7 @@ class bar_cylinder_outline extends bar_base
 {
     public function __construct()
     {
-        $this->type      = "bar_cylinder_outline";
+        $this->type = 'bar_cylinder_outline';
         parent::__construct();
     }
 }
@@ -90,7 +90,7 @@ class bar_rounded_glass extends bar_base
 {
     public function __construct()
     {
-        $this->type      = "bar_round_glass";
+        $this->type = 'bar_round_glass';
         parent::__construct();
     }
 }
@@ -99,7 +99,7 @@ class bar_round extends bar_base
 {
     public function __construct()
     {
-        $this->type      = "bar_round";
+        $this->type = 'bar_round';
         parent::__construct();
     }
 }
@@ -108,7 +108,7 @@ class bar_dome extends bar_base
 {
     public function __construct()
     {
-        $this->type      = "bar_dome";
+        $this->type = 'bar_dome';
         parent::__construct();
     }
 }
@@ -117,7 +117,7 @@ class bar_round3d extends bar_base
 {
     public function __construct()
     {
-        $this->type      = "bar_round3d";
+        $this->type = 'bar_round3d';
         parent::__construct();
     }
 }
@@ -126,7 +126,7 @@ class bar_3d extends bar_base
 {
     public function __construct()
     {
-        $this->type      = "bar_3d";
+        $this->type = 'bar_3d';
         parent::__construct();
     }
 }

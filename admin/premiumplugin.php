@@ -3,44 +3,73 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\Plugin\PremiumPlugin;
+use JTL\Shop;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('PLUGIN_ADMIN_VIEW', true, true);
-/** @global JTLSmarty $smarty */
-$cHinweis      = '';
-$cFehler       = '';
-$step          = 'uebersicht';
-
-setzeSprache();
-
+/** @global \JTL\Smarty\JTLSmarty $smarty */
+$step     = 'uebersicht';
 $pluginID = $_GET['plugin_id'] ?? 's360_amazon_lpa_shop4';
 $pp       = null;
+setzeSprache();
 if (!empty($pluginID)) {
     $pp = new PremiumPlugin($pluginID);
     if ($pluginID === 's360_amazon_lpa_shop4') {
-        $pp->setLongDescription('Schnell, einfach und sicher.',
-            '"Login und Bezahlen mit Amazon" ist die schnelle, einfache und sichere Art, Shop-Besucher zu Kunden zu machen. 
-        Ermöglichen Sie Millionen von Amazon-Kunden, sich in Ihrem Shop über "Login und Bezahlen mit Amazon" in ihr Amazon-Kundenkonto einzuloggen und mit den dort hinterlegten Zahlungs- und Versandinformationen in Ihrem Shop zu bezahlen. 
-        Jeder Kunde, der ein Amazon-Kundenkonto besitzt, kann "Login und Bezahlen mit Amazon" als Zahlungsart in Ihrem Shop auswählen.');
-        $pp->setShortDescription('Zertifiziertes Plugin für JTL-Shop 4',
-            'Für JTL-Shop 4 steht Ihnen "Login und Bezahlen mit Amazon" als zertifiziertes Plugin direkt im Backend zur Verfügung.');
+        $pp->setLongDescription(
+            'Schnell, einfach und sicher.',
+            '"Login und Bezahlen mit Amazon" ist die schnelle, einfache und sichere Art, ' .
+            'Shop-Besucher zu Kunden zu machen. 
+        Ermöglichen Sie Millionen von Amazon-Kunden, sich in Ihrem Shop über "Login und Bezahlen mit Amazon" 
+        in ihr Amazon-Kundenkonto einzuloggen und mit den dort hinterlegten Zahlungs- und Versandinformationen 
+        in Ihrem Shop zu bezahlen. 
+        Jeder Kunde, der ein Amazon-Kundenkonto besitzt, kann "Login und Bezahlen mit Amazon" als Zahlungsart 
+        in Ihrem Shop auswählen.'
+        );
+        $pp->setShortDescription(
+            'Zertifiziertes Plugin für JTL-Shop 4',
+            'Für JTL-Shop steht Ihnen "Login und Bezahlen mit Amazon" 
+            als zertifiziertes Plugin direkt im Backend zur Verfügung.'
+        );
         $pp->setTitle('Amazon Pay Login & Pay (JTL Shop 4)');
 
         $pp->setAuthor('Solution 360 GmbH');
 
-        $pp->addButton('Jetzt registrieren', 'https://pay.amazon.com/de/?ld=SPEXDEAPA-JTL-CP-DP-2016-07', 'btn btn-primary', 'sign-in')
-           ->addButton('Dokumentation', 'https://shop.solution360.de/downloads/dokus/Plugin_Doku_AmazonLogin&Pay-Shop4.pdf', 'btn btn-default', null, true);
+        $pp->addButton(
+            'Jetzt registrieren',
+            'https://pay.amazon.com/de/?ld=SPEXDEAPA-JTL-CP-DP-2016-07',
+            'btn btn-primary',
+            'sign-in'
+        )
+           ->addButton(
+               'Dokumentation',
+               'https://shop.solution360.de/downloads/dokus/Plugin_Doku_AmazonLogin&Pay-Shop4.pdf',
+               'btn btn-default',
+               null,
+               true
+           );
 
-        $pp->addAdvantage('Neukundengewinnung und verbessertes Einkaufserlebnis - Chance auf höhere Konversion und mehr Umsatz Online-Shop durch vereinfachten Bezahlprozess. Käufer werden zu Ihren Kunden und Sie können Ihre Produkte direkt an sie vermarkten.')
-           ->addAdvantage('Desktop-, Tablet- und Smartphone-optimierte Buttons und Widgets - Erzielen Sie Verkäufe, die Ihnen ohne Mobiloptimierung entgehen würden.')
+        $pp->addAdvantage('Neukundengewinnung und verbessertes Einkaufserlebnis - 
+        Chance auf höhere Konversion und mehr Umsatz Online-Shop durch vereinfachten Bezahlprozess. 
+        Käufer werden zu Ihren Kunden und Sie können Ihre Produkte direkt an sie vermarkten.')
+           ->addAdvantage('Desktop-, Tablet- und Smartphone-optimierte Buttons und Widgets - 
+           Erzielen Sie Verkäufe, die Ihnen ohne Mobiloptimierung entgehen würden.')
            ->addAdvantage('Zahlungsvorgang als Widget in Ihrem Shop - keine Weiterleitung auf eine externe Website')
            ->addAdvantage('Reine Zahlungsabwicklung - keine Weitergabe von Artikel- oder Warenkorbdaten an Amazon')
            ->addAdvantage('Schutz vor Zahlungsausfall und Betrugsversuchen')
-           ->addAdvantage('Kostensenkung durch transaktionsbasiertes Preismodell ohne Grundgebühren, Vorauszahlungen o.Ä.');
+           ->addAdvantage('Kostensenkung durch transaktionsbasiertes Preismodell 
+           ohne Grundgebühren, Vorauszahlungen o.Ä.');
 
-        $pp->addHowTo('Registrieren Sie sich bei Amazon Pay unter <a title="Amazon Pay" href="https://pay.amazon.com/de/?ld=SPEXDEAPA-JTL-CP-DP-2016-07" target="_blank"><i class="fa fa-external-link"></i> https://pay.amazon.com/</a>')
-           ->addHowTo('Aktivieren Sie das Amazon Pay Plugin in Ihrem JTL-Shop 4')
-           ->addHowTo('Konfigurieren Sie das Amazon Pay Plugin mit Hilfe der Dokumentation von Solution 360. Diese finden Sie unter diesem <a title="Dokumentation" href="https://shop.solution360.de/downloads/dokus/Plugin_Doku_AmazonLogin&Pay-Shop4.pdf" target="_blank"><i class="fa fa-external-link"></i> Link</a>.')
+        $pp->addHowTo('Registrieren Sie sich bei Amazon Pay unter 
+<a title="Amazon Pay" href="https://pay.amazon.com/de/?ld=SPEXDEAPA-JTL-CP-DP-2016-07" target="_blank">
+<i class="fa fa-external-link"></i> https://pay.amazon.com/</a>')
+           ->addHowTo('Aktivieren Sie das Amazon Pay Plugin in Ihrem JTL-Shop')
+           ->addHowTo('Konfigurieren Sie das Amazon Pay Plugin mit Hilfe der Dokumentation von Solution 360. 
+Diese finden Sie unter diesem <a title="Dokumentation" 
+href="https://shop.solution360.de/downloads/dokus/Plugin_Doku_AmazonLogin&Pay-Shop4.pdf" 
+target="_blank"><i class="fa fa-external-link"></i> Link</a>.')
            ->addHowTo('Fertig!');
 
         $ss          = new stdClass();
@@ -52,7 +81,8 @@ if (!empty($pluginID)) {
 
         $sp                        = new stdClass();
         $sp->kServicePartner       = 519;
-        $sp->marketPlaceURL        = 'https://www.jtl-software.de/Servicepartner-Detailansicht?id=' . $sp->kServicePartner;
+        $sp->marketPlaceURL        = 'https://www.jtl-software.de/Servicepartner-Detailansicht?id=' .
+            $sp->kServicePartner;
         $sp->oZertifizierungen_arr = [
             'https://bilder.jtl-software.de/zertifikat/jtl_premium_sp_280.png',
             'https://bilder.jtl-software.de/zertifikat/jtl_cert_badge_1_280.png',
@@ -74,20 +104,40 @@ if (!empty($pluginID)) {
 
         $pp->addBadge('amazon_pay_partner_program_logo_dark_premier_partner.png', true);
     } elseif ($pluginID === 'agws_ts_features') {
-        $pp->setLongDescription('Zeigen Sie, dass Ihre Kunden Sie lieben!',
-            'Die einzigartige Trustbadge Technologie ermöglicht es Ihnen automatisiert Shopbewertungen und Produktbewertungen zu sammeln und direkt im Shop konversionssteigernd anzuzeigen. 
-            So zeigen Sie Ihren Besuchern, dass Sie vertrauenswürdig sind und überzeugen Sie in Ihrem Shop beruhigt einkaufen zu können. ');
-        $pp->setShortDescription('Zertifiziertes Plugin für JTL-Shop 4',
-            'Für JTL-Shop 4 steht Ihnen "Trustbadge Reviews" als zertifiziertes Plugin direkt im Backend zur Verfügung.');
+        $pp->setLongDescription(
+            'Zeigen Sie, dass Ihre Kunden Sie lieben!',
+            'Die einzigartige Trustbadge Technologie ermöglicht es Ihnen automatisiert Shopbewertungen und 
+            Produktbewertungen zu sammeln und direkt im Shop konversionssteigernd anzuzeigen. 
+            So zeigen Sie Ihren Besuchern, dass Sie vertrauenswürdig sind und überzeugen Sie in 
+            Ihrem Shop beruhigt einkaufen zu können.'
+        );
+        $pp->setShortDescription(
+            'Zertifiziertes Plugin für JTL-Shop',
+            'Für JTL-Shop steht Ihnen "Trustbadge Reviews" als zertifiziertes 
+            Plugin direkt im Backend zur Verfügung.'
+        );
         $pp->setTitle('Trustbadge Reviews (JTL Shop 4)');
 
         $pp->setAuthor('Trusted Shops GmbH');
 
-        $pp->addButton('Jetzt registrieren', 'https://business.trustedshops.de/produkte/bewertungen/?utm_source=jtl&utm_medium=software-app&utm_content=marketing-page&utm_campaign=jtl-app', 'btn btn-primary', 'sign-in')
-           ->addButton('Dokumentation', 'http://www.trustedshops.de/shopbetreiber/integration/shopsoftware-integration/jtl/?shop_id=&variant=&yOffset=', 'btn btn-default', null, true);
+        $pp->addButton(
+            'Jetzt registrieren',
+            'https://business.trustedshops.de/produkte/bewertungen/?utm_source=jtl&utm_medium=software-app' .
+            '&utm_content=marketing-page&utm_campaign=jtl-app',
+            'btn btn-primary',
+            'sign-in'
+        )->addButton(
+            'Dokumentation',
+            'http://www.trustedshops.de/shopbetreiber/integration/shopsoftware-integration/' .
+            'jtl/?shop_id=&variant=&yOffset=',
+            'btn btn-default',
+            null,
+            true
+        );
 
         $pp->addAdvantage('Sammeln Sie Shop- und Produktbewertungen automatisch von echten Kunden')
-           ->addAdvantage('Steigern Sie Ihre Reichweite durch ein besseres Suchmaschinenranking mit Ihrer individuellen Profilseite')
+           ->addAdvantage('Steigern Sie Ihre Reichweite durch ein besseres Suchmaschinenranking
+            mit Ihrer individuellen Profilseite')
            ->addAdvantage('Erleichtern Sie Ihren Kunden die Kaufentscheidung')
            ->addAdvantage('Erhöhen Sie Ihren Umsatz')
            ->addAdvantage('Zeigen Sie Ihre Vertrauenswürdigkeit')
@@ -115,7 +165,8 @@ if (!empty($pluginID)) {
         $ss->full    = $baseURL . 'agws_ts_features_03.png';
         $pp->addScreenShot($ss);
 
-        $pp->setDownloadLink('http://www.trustedshops.de/shopbetreiber/integration/shopsoftware-integration/jtl/?shop_id=&variant=&yOffset=');
+        $pp->setDownloadLink('http://www.trustedshops.de/shopbetreiber/integration/' .
+            'shopsoftware-integration/jtl/?shop_id=&variant=&yOffset=');
 
         $sp                        = new stdClass();
         $sp->kServicePartner       = 0;

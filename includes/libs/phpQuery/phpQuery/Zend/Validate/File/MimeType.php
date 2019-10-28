@@ -84,8 +84,8 @@ class Zend_Validate_File_MimeType extends Zend_Validate_Abstract
      */
     public function getMimeType($asArray = false)
     {
-        $asArray   = (bool) $asArray;
-        $mimetype = (string) $this->_mimetype;
+        $asArray  = (bool)$asArray;
+        $mimetype = (string)$this->_mimetype;
         if ($asArray) {
             $mimetype = explode(',', $mimetype);
         }

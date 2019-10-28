@@ -4,11 +4,21 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-/**
- * @global JTLSmarty $smarty
- * @global AdminAccount $oAccount
- */
+use JTL\Alert\Alert;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Pagination\DataType;
+use JTL\Pagination\Filter;
+use JTL\Pagination\Operation;
+use JTL\Pagination\Pagination;
+use JTL\Redirect;
+use JTL\Shop;
 
+/**
+ * @global \JTL\Smarty\JTLSmarty     $smarty
+ * @global \JTL\Backend\AdminAccount $oAccount
+ */
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('REDIRECT_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_exporter_inc.php';
@@ -16,32 +26,33 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_importer_inc.php';
 
 handleCsvImportAction('redirects', 'tredirect');
 
-$cHinweis  = '';
-$cFehler   = '';
-$redirects = $_POST['redirects'] ?? [];
+$redirects   = $_POST['redirects'] ?? [];
+$alertHelper = Shop::Container()->getAlertService();
 
-if (FormHelper::validateToken()) {
-    switch (RequestHelper::verifyGPDataString('action')) {
+if (Form::validateToken()) {
+    switch (Request::verifyGPDataString('action')) {
         case 'save':
-            foreach ($redirects as $kRedirect => $redirect) {
-                $oRedirect = new Redirect($kRedirect);
-                if ($oRedirect->kRedirect > 0 && $oRedirect->cToUrl !== $redirect['cToUrl']) {
-                    if (Redirect::checkAvailability($redirect['cToUrl'])) {
-                        $oRedirect->cToUrl     = $redirect['cToUrl'];
-                        $oRedirect->cAvailable = 'y';
-                        Shop::Container()->getDB()->update('tredirect', 'kRedirect', $oRedirect->kRedirect, $oRedirect);
+            foreach ($redirects as $id => $item) {
+                $redirect = new Redirect($id);
+                if ($redirect->kRedirect > 0 && $redirect->cToUrl !== $item['cToUrl']) {
+                    if (Redirect::checkAvailability($item['cToUrl'])) {
+                        $redirect->cToUrl     = $item['cToUrl'];
+                        $redirect->cAvailable = 'y';
+                        Shop::Container()->getDB()->update('tredirect', 'kRedirect', $redirect->kRedirect, $redirect);
                     } else {
-                        $cFehler .=
-                            'Änderungen konnten nicht gespeichert werden, da die weiterzuleitende URL "' .
-                            $redirect['cToUrl'] . '" nicht erreichbar ist.<br>';
+                        $alertHelper->addAlert(
+                            Alert::TYPE_ERROR,
+                            sprintf(__('errorURLNotReachable'), $item['cToUrl']),
+                            'errorURLNotReachable'
+                        );
                     }
                 }
             }
             break;
         case 'delete':
-            foreach ($redirects as $kRedirect => $redirect) {
-                if (isset($redirect['enabled']) && (int)$redirect['enabled'] === 1) {
-                    Redirect::deleteRedirect($kRedirect);
+            foreach ($redirects as $id => $item) {
+                if (isset($item['enabled']) && (int)$item['enabled'] === 1) {
+                    Redirect::deleteRedirect($id);
                 }
             }
             break;
@@ -49,29 +60,35 @@ if (FormHelper::validateToken()) {
             Redirect::deleteUnassigned();
             break;
         case 'new':
-            $oRedirect = new Redirect();
-            if ($oRedirect->saveExt(RequestHelper::verifyGPDataString('cFromUrl'), RequestHelper::verifyGPDataString('cToUrl'))) {
-                $cHinweis = 'Ihre Weiterleitung wurde erfolgreich gespeichert';
+            $redirect = new Redirect();
+            if ($redirect->saveExt(
+                Request::verifyGPDataString('cFromUrl'),
+                Request::verifyGPDataString('cToUrl')
+            )) {
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successRedirectSave'), 'successRedirectSave');
             } else {
-                $cFehler = 'Fehler: Bitte prüfen Sie Ihre Eingaben';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCheckInput'), 'errorCheckInput');
                 $smarty
                     ->assign('cTab', 'new_redirect')
-                    ->assign('cFromUrl', RequestHelper::verifyGPDataString('cFromUrl'))
-                    ->assign('cToUrl', RequestHelper::verifyGPDataString('cToUrl'));
+                    ->assign('cFromUrl', Request::verifyGPDataString('cFromUrl'))
+                    ->assign('cToUrl', Request::verifyGPDataString('cToUrl'));
             }
             break;
         case 'csvimport':
-            $oRedirect = new Redirect();
+            $redirect = new Redirect();
             if (is_uploaded_file($_FILES['cFile']['tmp_name'])) {
-                $cFile = PFAD_ROOT . PFAD_EXPORT . md5($_FILES['cFile']['name'] . time());
-                if (move_uploaded_file($_FILES['cFile']['tmp_name'], $cFile)) {
-                    $cError_arr = $oRedirect->doImport($cFile);
-                    if (count($cError_arr) === 0) {
-                        $cHinweis = 'Der Import wurde erfolgreich durchgeführt';
+                $file = PFAD_ROOT . PFAD_EXPORT . md5($_FILES['cFile']['name'] . time());
+                if (move_uploaded_file($_FILES['cFile']['tmp_name'], $file)) {
+                    $errors = $redirect->doImport($file);
+                    if (count($errors) === 0) {
+                        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successImport'), 'successImport');
                     } else {
-                        @unlink($cFile);
-                        $cFehler = 'Fehler: Der Import konnte nicht durchgeführt werden.' .
-                            'Bitte prüfen Sie die CSV-Datei<br><br>' . implode('<br>', $cError_arr);
+                        @unlink($file);
+                        $alertHelper->addAlert(
+                            Alert::TYPE_ERROR,
+                            __('errorImport') . '<br><br>' . implode('<br>', $errors),
+                            'errorImport'
+                        );
                     }
                 }
             }
@@ -81,47 +98,50 @@ if (FormHelper::validateToken()) {
     }
 }
 
-$oFilter = new Filter();
-$oFilter->addTextfield('URL', 'cFromUrl', 1);
-$oFilter->addTextfield('Ziel-URL', 'cToUrl', 1);
-$oSelect = $oFilter->addSelectfield('Umleitung', 'cToUrl');
-$oSelect->addSelectOption('alle', '');
-$oSelect->addSelectOption('vorhanden', '', 9);
-$oSelect->addSelectOption('fehlend', '', 4);
-$oFilter->addTextfield('Aufrufe', 'nCount', 0, 1);
-$oFilter->assemble();
+$filter = new Filter();
+$filter->addTextfield(__('url'), 'cFromUrl', Operation::CONTAINS);
+$filter->addTextfield(__('redirectTo'), 'cToUrl', Operation::CONTAINS);
+$select = $filter->addSelectfield(__('redirection'), 'cToUrl');
+$select->addSelectOption(__('all'), '');
+$select->addSelectOption(__('available'), '', Operation::NOT_EQUAL);
+$select->addSelectOption(__('missing'), '', Operation::EQUALS);
+$filter->addTextfield(__('calls'), 'nCount', Operation::CUSTOM, DataType::NUMBER);
+$filter->assemble();
 
-$nRedirectCount = Redirect::getRedirectCount($oFilter->getWhereSQL());
+$redirectCount = Redirect::getRedirectCount($filter->getWhereSQL());
 
-$oPagination = new Pagination();
-$oPagination
-    ->setItemCount($nRedirectCount)
+$pagination = new Pagination();
+$pagination
+    ->setItemCount($redirectCount)
     ->setSortByOptions([
-        ['cFromUrl', 'URL'],
-        ['cToUrl', 'Ziel-URL'],
-        ['nCount', 'Aufrufe']
+        ['cFromUrl', __('url')],
+        ['cToUrl', __('redirectTo')],
+        ['nCount', __('calls')]
     ])
     ->assemble();
 
-$oRedirect_arr = Redirect::getRedirects(
-    $oFilter->getWhereSQL(), $oPagination->getOrderSQL(), $oPagination->getLimitSQL()
+$list = Redirect::getRedirects(
+    $filter->getWhereSQL(),
+    $pagination->getOrderSQL(),
+    $pagination->getLimitSQL()
 );
 
 handleCsvExportAction(
-    'redirects', 'redirects.csv',
-    function () use ($oFilter, $oPagination, $nRedirectCount)
-    {
-        $cWhereSQL = $oFilter->getWhereSQL();
-        $cOrderSQL = $oPagination->getOrderSQL();
+    'redirects',
+    'redirects.csv',
+    function () use ($filter, $pagination, $redirectCount) {
+        $db    = Shop::Container()->getDB();
+        $where = $filter->getWhereSQL();
+        $order = $pagination->getOrderSQL();
 
-        for ($i = 0; $i < $nRedirectCount; $i += 1000) {
-            $oRedirectIter = Shop::Container()->getDB()->query(
+        for ($i = 0; $i < $redirectCount; $i += 1000) {
+            $oRedirectIter = $db->query(
                 'SELECT cFromUrl, cToUrl
                     FROM tredirect' .
-                    ($cWhereSQL !== '' ? ' WHERE ' . $cWhereSQL : '') .
-                    ($cOrderSQL !== '' ? ' ORDER BY ' . $cOrderSQL : '') .
-                    " LIMIT $i, 1000",
-                \DB\ReturnType::QUERYSINGLE
+                    ($where !== '' ? ' WHERE ' . $where : '') .
+                    ($order !== '' ? ' ORDER BY ' . $order : '') .
+                    ' LIMIT ' . $i . ', 1000',
+                ReturnType::QUERYSINGLE
             );
 
             foreach ($oRedirectIter as $oRedirect) {
@@ -131,11 +151,8 @@ handleCsvExportAction(
     }
 );
 
-$smarty
-    ->assign('cHinweis', $cHinweis)
-    ->assign('cFehler', $cFehler)
-    ->assign('oFilter', $oFilter)
-    ->assign('oPagination', $oPagination)
-    ->assign('oRedirect_arr', $oRedirect_arr)
-    ->assign('nTotalRedirectCount', Redirect::getRedirectCount())
-    ->display('redirect.tpl');
+$smarty->assign('oFilter', $filter)
+       ->assign('pagination', $pagination)
+       ->assign('oRedirect_arr', $list)
+       ->assign('nTotalRedirectCount', Redirect::getRedirectCount())
+       ->display('redirect.tpl');

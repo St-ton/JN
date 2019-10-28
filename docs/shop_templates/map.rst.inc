@@ -31,3 +31,6 @@ Es stehen verschiedene Möglichkeiten für individuelle Templateanpassungen zur 
 
 :doc:`/shop_templates/short_checkout`
   Welche Änderungen gibt es im Zusammenhang mit dem verkürzten Checkout ab Version 4.06.
+
+:doc:`/shop_templates/overlays`
+  Wie können Overlays (z.B. für "Bestseller") angelegt werden.

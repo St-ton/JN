@@ -14,14 +14,14 @@
             {if isset($Artikel->oVariationDetailPreis_arr[$kEigenschaftWert]->Preise->cAufpreisLocalized[$NettoPreise])}
                 <span class="label label-info label-surcharge">{$Artikel->oVariationDetailPreis_arr[$kEigenschaftWert]->Preise->cAufpreisLocalized[$NettoPreise]}
                 {if !empty($Artikel->oVariationDetailPreis_arr[$kEigenschaftWert]->Preise->PreisecPreisVPEWertInklAufpreis[$NettoPreise])}
-                    , {$Artikel->oVariationDetailPreis_arr[$kEigenschaftWert]->Preise->PreisecPreisVPEWertInklAufpreis[$NettoPreise]}
+                      &nbsp;({$Artikel->oVariationDetailPreis_arr[$kEigenschaftWert]->Preise->PreisecPreisVPEWertInklAufpreis[$NettoPreise]})
                 {/if}
                 </span>
             {/if}
         {elseif $Einstellungen.artikeldetails.artikel_variationspreisanzeige == 2}
             <span class="label label-info label-surcharge">{$Artikel->oVariationDetailPreis_arr[$kEigenschaftWert]->Preise->cVKLocalized[$NettoPreise]}
             {if !empty($Artikel->oVariationDetailPreis_arr[$kEigenschaftWert]->Preise->PreisecPreisVPEWertInklAufpreis[$NettoPreise])}
-                , {$Artikel->oVariationDetailPreis_arr[$kEigenschaftWert]->Preise->PreisecPreisVPEWertInklAufpreis[$NettoPreise]}
+                &nbsp;({$Artikel->oVariationDetailPreis_arr[$kEigenschaftWert]->Preise->PreisecPreisVPEWertInklAufpreis[$NettoPreise]})
             {/if}
             </span>
         {/if}
@@ -40,13 +40,13 @@
     {if $Einstellungen.artikeldetails.artikel_variationspreisanzeige == 1 && $Variationswert->fAufpreisNetto!=0}
         <span class="label label-info label-surcharge">{$Variationswert->cAufpreisLocalized[$NettoPreise]}
         {if !empty($Variationswert->cPreisVPEWertAufpreis[$NettoPreise]) && $Artikel->nVariationOhneFreifeldAnzahl == 1}
-            ({$Variationswert->cPreisVPEWertAufpreis[$NettoPreise]})
+            &nbsp;({$Variationswert->cPreisVPEWertAufpreis[$NettoPreise]})
         {/if}
         </span>
     {elseif $Einstellungen.artikeldetails.artikel_variationspreisanzeige == 2 && $Variationswert->fAufpreisNetto!=0}
         <span class="label label-info label-surcharge">{$Variationswert->cPreisInklAufpreis[$NettoPreise]}
         {if !empty($Variationswert->cPreisVPEWertInklAufpreis[$NettoPreise]) && $Artikel->nVariationOhneFreifeldAnzahl == 1}
-            ({$Variationswert->cPreisVPEWertInklAufpreis[$NettoPreise]})
+            &nbsp;({$Variationswert->cPreisVPEWertInklAufpreis[$NettoPreise]})
         {/if}
         </span>
     {/if}

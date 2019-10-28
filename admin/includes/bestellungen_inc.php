@@ -4,108 +4,104 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Checkout\Bestellung;
+use JTL\DB\ReturnType;
+use JTL\Shop;
+
 /**
- * @param string $cLimitSQL
- * @param string $cSuchFilter
+ * @param string $limitSQL
+ * @param string $query
  * @return array
  */
-function gibBestellungsUebersicht($cLimitSQL, $cSuchFilter): array
+function gibBestellungsUebersicht(string $limitSQL, string $query): array
 {
-    $oBestellung_arr = [];
-    $cSuchFilterSQL  = '';
-    if (strlen($cSuchFilter)) {
-        $cSuchFilterSQL = " WHERE cBestellNr LIKE '%" . Shop::Container()->getDB()->escape($cSuchFilter) . "%'";
+    $orders       = [];
+    $searchFilter = '';
+    if (mb_strlen($query)) {
+        $searchFilter = " WHERE cBestellNr LIKE '%" . Shop::Container()->getDB()->escape($query) . "%'";
     }
-    $oBestellungToday_arr = Shop::Container()->getDB()->query(
+    $items = Shop::Container()->getDB()->query(
         'SELECT kBestellung
             FROM tbestellung
-            ' . $cSuchFilterSQL . '
-            ORDER BY dErstellt DESC' . $cLimitSQL,
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+            ' . $searchFilter . '
+            ORDER BY dErstellt DESC' . $limitSQL,
+        ReturnType::ARRAY_OF_OBJECTS
     );
-    foreach ($oBestellungToday_arr as $oBestellungToday) {
-        if (isset($oBestellungToday->kBestellung) && $oBestellungToday->kBestellung > 0) {
-            $oBestellung = new Bestellung($oBestellungToday->kBestellung);
-            $oBestellung->fuelleBestellung(true, 0, false);
-            $oBestellung_arr[] = $oBestellung;
+    foreach ($items as $item) {
+        if (isset($item->kBestellung) && $item->kBestellung > 0) {
+            $order = new Bestellung((int)$item->kBestellung);
+            $order->fuelleBestellung(true, 0, false);
+            $orders[] = $order;
         }
     }
 
-    return $oBestellung_arr;
+    return $orders;
 }
 
 /**
- * @param string $cSuchFilter
+ * @param string $query
  * @return int
  */
-function gibAnzahlBestellungen($cSuchFilter): int
+function gibAnzahlBestellungen($query): int
 {
-    $cSuchFilterSQL = (strlen($cSuchFilter) > 0)
-        ? " WHERE cBestellNr LIKE '%" . Shop::Container()->getDB()->escape($cSuchFilter) . "%'"
+    $filterSQL = (mb_strlen($query) > 0)
+        ? " WHERE cBestellNr LIKE '%" . Shop::Container()->getDB()->escape($query) . "%'"
         : '';
-    $oBestellung = Shop::Container()->getDB()->query(
-        'SELECT COUNT(*) AS nAnzahl
-            FROM tbestellung' . $cSuchFilterSQL,
-        \DB\ReturnType::SINGLE_OBJECT
-    );
-    if (isset($oBestellung->nAnzahl) && $oBestellung->nAnzahl > 0) {
-        return (int)$oBestellung->nAnzahl;
-    }
 
-    return 0;
+    return (int)Shop::Container()->getDB()->query(
+        'SELECT COUNT(*) AS cnt
+            FROM tbestellung' . $filterSQL,
+        ReturnType::SINGLE_OBJECT
+    )->cnt;
 }
 
 /**
- * @param array $kBestellung_arr
+ * @param array $orderIDs
  * @return int
  */
-function setzeAbgeholtZurueck(array $kBestellung_arr): int
+function setzeAbgeholtZurueck(array $orderIDs): int
 {
-    if (is_array($kBestellung_arr) && count($kBestellung_arr) > 0) {
-        $kBestellung_arr = array_map(function ($i) { return (int)$i; }, $kBestellung_arr);
-        // Kunden cAbgeholt zurücksetzen
-        $oKunde_arr = Shop::Container()->getDB()->query(
-            "SELECT kKunde
-                FROM tbestellung
-                WHERE kBestellung IN(" . implode(',', $kBestellung_arr) . ")
-                    AND cAbgeholt = 'Y'",
-            \DB\ReturnType::ARRAY_OF_OBJECTS
-        );
-        if (is_array($oKunde_arr) && count($oKunde_arr) > 0) {
-            $kKunde_arr = [];
-            foreach ($oKunde_arr as $oKunde) {
-                $oKunde->kKunde = (int)$oKunde->kKunde;
-                if (!in_array($oKunde->kKunde, $kKunde_arr, true)) {
-                    $kKunde_arr[] = $oKunde->kKunde;
-                }
-            }
-            Shop::Container()->getDB()->query(
-                "UPDATE tkunde
-                    SET cAbgeholt = 'N'
-                    WHERE kKunde IN(" . implode(',', $kKunde_arr) . ")",
-                \DB\ReturnType::AFFECTED_ROWS
-            );
-        }
-        // Bestellungen cAbgeholt zurücksetzen
-        Shop::Container()->getDB()->query(
-            "UPDATE tbestellung
-                SET cAbgeholt = 'N'
-                WHERE kBestellung IN(" . implode(',', $kBestellung_arr) . ")
-                    AND cAbgeholt = 'Y'",
-            \DB\ReturnType::AFFECTED_ROWS
-        );
-
-        // Zahlungsinfo cAbgeholt zurücksetzen
-        Shop::Container()->getDB()->query(
-            "UPDATE tzahlungsinfo
-                SET cAbgeholt = 'N'
-                WHERE kBestellung IN(" . implode(',', $kBestellung_arr) . ")
-                    AND cAbgeholt = 'Y'",
-            \DB\ReturnType::AFFECTED_ROWS
-        );
-
-        return -1;
+    if (!is_array($orderIDs) || count($orderIDs) === 0) {
+        return 1;
     }
 
-    return 1; // Array mit Keys nicht vorhanden oder leer
+    $orderList = implode(',', array_map('\intval', $orderIDs));
+    $customers = Shop::Container()->getDB()->query(
+        'SELECT kKunde
+            FROM tbestellung
+            WHERE kBestellung IN(' . $orderList . ")
+                AND cAbgeholt = 'Y'",
+        ReturnType::ARRAY_OF_OBJECTS
+    );
+    if (count($customers) > 0) {
+        $customerIDs = [];
+        foreach ($customers as $customer) {
+            $customer->kKunde = (int)$customer->kKunde;
+            if (!in_array($customer->kKunde, $customerIDs, true)) {
+                $customerIDs[] = $customer->kKunde;
+            }
+        }
+        Shop::Container()->getDB()->query(
+            "UPDATE tkunde
+                SET cAbgeholt = 'N'
+                WHERE kKunde IN(" . implode(',', $customerIDs) . ')',
+            ReturnType::DEFAULT
+        );
+    }
+    Shop::Container()->getDB()->query(
+        "UPDATE tbestellung
+            SET cAbgeholt = 'N'
+            WHERE kBestellung IN(" . $orderList . ")
+                AND cAbgeholt = 'Y'",
+        ReturnType::DEFAULT
+    );
+    Shop::Container()->getDB()->query(
+        "UPDATE tzahlungsinfo
+            SET cAbgeholt = 'N'
+            WHERE kBestellung IN(" . $orderList . ")
+                AND cAbgeholt = 'Y'",
+        ReturnType::DEFAULT
+    );
+
+    return -1;
 }

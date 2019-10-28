@@ -1,25 +1,37 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=#deleteLinkGroup#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('deleteLinkGroup')}
 <div id="content">
-    <form method="post" action="links.php">
-        {$jtl_token}
-        <input type="hidden" name="loesch_linkgruppe" value="1" />
-        <input type="hidden" name="kLinkgruppe" value="{$oLinkgruppe->kLinkgruppe}" />
+    <div class="card">
+        <div class="card-body">
+            <form method="post" action="links.php">
+                {$jtl_token}
+                <input type="hidden" name="action" value="confirm-delete" />
+                <input type="hidden" name="kLinkgruppe" value="{$linkGroup->getID()}" />
 
-        <div class="alert alert-danger">
-            <p><strong>Vorsicht</strong>: Alle Links innerhalb dieser Linkgruppe werden ebenfalls gel&ouml;scht</p>
-            {if $affectedLinkNames|count > 0}
-                <p>Die folgenden Links werden in anderen Linkgruppen referenziert und werden ebenfalls gelöscht:</p>
-                <ul class="list">
-                    {foreach $affectedLinkNames as $link}
-                        <li>{$link}</li>
-                    {/foreach}
-                </ul>
-            {/if}
-            <p>Wollen Sie die Linkgruppe "<strong>{$oLinkgruppe->cName}</strong>" wirklich l&ouml;schen?</p>
+                <div class="alert alert-danger">
+                    <p><strong>{__('danger')}</strong>: {__('dangerDeleteAllLinksInLinkGroup')}</p>
+                    {if $affectedLinkNames|count > 0}
+                        <p>{__('dangerDeleteLinksAlso')}:</p>
+                        <ul class="list">
+                            {foreach $affectedLinkNames as $link}
+                                <li>{$link}</li>
+                            {/foreach}
+                        </ul>
+                    {/if}
+                    <p>{{__('sureDeleteLinkGroup')}|sprintf:{$linkGroup->getName()}}</p>
+                </div>
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto mb-2">
+                        <button type="submit" name="confirmation" value="1" value="{__('yes')}" class="btn btn-danger btn-block min-w-sm">
+                            <i class="fal fa-check"></i> {__('yes')}
+                        </button>
+                    </div>
+                    <div class="col-sm-6 col-xl-auto">
+                        <button type="submit" name="confirmation" value="0" value="{__('no')}" class="btn btn-outline-primary btn-block min-w-sm">
+                            <i class="fa fa-close"></i> {__('no')}
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
-        <div class="btn-group">
-            <input name="loeschConfirmJaSubmit" type="submit" value="{#loeschlinkgruppeYes#}" class="btn btn-danger" />
-            <input name="loeschConfirmNeinSubmit" type="submit" value="{#loeschlinkgruppeNo#}" class="btn btn-default" />
-        </div>
-    </form>
+    </div>
 </div>

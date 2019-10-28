@@ -7,55 +7,94 @@
     {if !empty($tab)}
         <input type="hidden" name="tab" value="{$tab}" />
     {/if}
-    <div class="panel panel-default settings">
+    <div class="settings">
         {if !empty($title)}
-            <div class="panel-heading">
-                <h3 class="panel-title">{$title}</h3>
-            </div>
+            <span class="subheading1">{$title}</span>
+            <hr class="mb-3">
         {/if}
-        <div class="panel-body">
-            {foreach name=conf from=$config item=configItem}
+        <div>
+            {foreach $config as $configItem}
                 {if $configItem->cConf === 'Y'}
-                    <div class="input-group">
-                        <span class="input-group-addon">
-                            <label for="{$configItem->cWertName}">{$configItem->cName}{if $configItem->cWertName|strpos:"_bestandskundenguthaben" || $configItem->cWertName|strpos:"_neukundenguthaben"}<span id="EinstellungAjax_{$configItem->cWertName}"></span>{/if}</label>
-                        </span>
-                        <span class="input-group-wrap">
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="{$configItem->cWertName}">
+                            {$configItem->cName}:
+                        </label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             {if $configItem->cInputTyp === 'selectbox'}
-                                <select name="{$configItem->cWertName}" id="{$configItem->cWertName}" class="form-control combo">
-                                    {foreach name=selectfor from=$configItem->ConfWerte item=wert}
+                                <select name="{$configItem->cWertName}" id="{$configItem->cWertName}" class="custom-select combo">
+                                    {foreach $configItem->ConfWerte as $wert}
                                         <option value="{$wert->cWert}" {if $configItem->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
                                     {/foreach}
                                 </select>
                             {elseif $configItem->cInputTyp === 'listbox'}
-                                <select name="{$configItem->cWertName}[]" id="{$configItem->cWertName}" multiple="multiple" class="form-control combo">
-                                {foreach name=selectfor from=$configItem->ConfWerte item=wert}
-                                    <option value="{$wert->kKundengruppe}" {foreach name=werte from=$configItem->gesetzterWert item=gesetzterWert}{if $gesetzterWert->cWert == $wert->kKundengruppe}selected{/if}{/foreach}>{$wert->cName}</option>
+                                <select name="{$configItem->cWertName}[]"
+                                        id="{$configItem->cWertName}"
+                                        multiple="multiple"
+                                        class="selectpicker custom-select combo"
+                                        data-selected-text-format="count > 2"
+                                        data-size="7">
+                                {foreach $configItem->ConfWerte as $wert}
+                                    <option value="{$wert->kKundengruppe}" {foreach $configItem->gesetzterWert as $gesetzterWert}{if $gesetzterWert->cWert == $wert->kKundengruppe}selected{/if}{/foreach}>{$wert->cName}</option>
                                 {/foreach}
                                 </select>
                             {elseif $configItem->cInputTyp === 'number'}
-                                <input class="form-control" type="number" step="any" name="{$configItem->cWertName}" id="{$configItem->cWertName}" value="{if isset($configItem->gesetzterWert)}{$configItem->gesetzterWert}{/if}" tabindex="1"{if $configItem->cWertName|strpos:"_bestandskundenguthaben" || $configItem->cWertName|strpos:"_neukundenguthaben"} onKeyUp="setzePreisAjax(false, 'EinstellungAjax_{$configItem->cWertName}', this);"{/if} />
+                                <div class="input-group form-counter">
+                                    <div class="input-group-prepend">
+                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
+                                            <span class="fas fa-minus"></span>
+                                        </button>
+                                    </div>
+                                    <input class="form-control"
+                                           type="number"
+                                           name="{$configItem->cWertName}"
+                                           id="{$configItem->cWertName}"
+                                           value="{if isset($configItem->gesetzterWert)}{$configItem->gesetzterWert}{/if}"
+                                           tabindex="1"
+                                            {if $configItem->cWertName|strpos:'_bestandskundenguthaben' || $configItem->cWertName|strpos:'_neukundenguthaben'}
+                                                onKeyUp="setzePreisAjax(false, 'EinstellungAjax_{$configItem->cWertName}', this);"
+                                            {/if} />
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
+                                            <span class="fas fa-plus"></span>
+                                        </button>
+                                    </div>
+                                </div>
                             {elseif $configItem->cInputTyp === 'selectkdngrp'}
-                                <select name="{$configItem->cWertName}[]" id="{$configItem->cWertName}" class="form-control combo">
-                                {foreach name=selectfor from=$configItem->ConfWerte item=wert}
-                                    <option value="{$wert->kKundengruppe}" {foreach name=werte from=$configItem->gesetzterWert item=gesetzterWert}{if $gesetzterWert->cWert == $wert->kKundengruppe}selected{/if}{/foreach}>{$wert->cName}</option>
+                                <select name="{$configItem->cWertName}[]" id="{$configItem->cWertName}" class="custom-select combo">
+                                {foreach $configItem->ConfWerte as $wert}
+                                    <option value="{$wert->kKundengruppe}" {foreach $configItem->gesetzterWert as $gesetzterWert}{if $gesetzterWert->cWert == $wert->kKundengruppe}selected{/if}{/foreach}>{$wert->cName}</option>
                                 {/foreach}
                                 </select>
                             {elseif $configItem->cInputTyp === 'pass'}
                                 <input class="form-control" type="password" name="{$configItem->cWertName}" id="{$configItem->cWertName}"  value="{if isset($configItem->gesetzterWert)}{$configItem->gesetzterWert}{/if}" />
                             {else}
-                                <input class="form-control" type="text" name="{$configItem->cWertName}" id="{$configItem->cWertName}"  value="{if isset($configItem->gesetzterWert)}{$configItem->gesetzterWert}{/if}" tabindex="1"{if $configItem->cWertName|strpos:"_bestandskundenguthaben" || $configItem->cWertName|strpos:"_neukundenguthaben"} onKeyUp="setzePreisAjax(false, 'EinstellungAjax_{$configItem->cWertName}', this);"{/if} />
+                                <input class="form-control"
+                                       type="text"
+                                       name="{$configItem->cWertName}"
+                                       id="{$configItem->cWertName}"
+                                       value="{if isset($configItem->gesetzterWert)}{$configItem->gesetzterWert}{/if}"
+                                       tabindex="1"
+                                        {if $configItem->cWertName|strpos:'_bestandskundenguthaben' || $configItem->cWertName|strpos:'_neukundenguthaben'}
+                                            onKeyUp="setzePreisAjax(false, 'EinstellungAjax_{$configItem->cWertName}', this);"
+                                        {/if} />
                             {/if}
-                        </span>
+                            {if $configItem->cWertName|strpos:'_bestandskundenguthaben' || $configItem->cWertName|strpos:'_neukundenguthaben'}
+                                <span id="EinstellungAjax_{$configItem->cWertName}"></span>
+                            {/if}
+                        </div>
                         {if $configItem->cBeschreibung}
-                            <span class="input-group-addon">{getHelpDesc cDesc=$configItem->cBeschreibung cID=$configItem->kEinstellungenConf}</span>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=$configItem->cBeschreibung cID=$configItem->kEinstellungenConf}</div>
                         {/if}
                     </div>
                 {/if}
             {/foreach}
         </div>
-        <div class="panel-footer">
-            <button name="speichern" type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {if !empty($buttonCaption)}{$buttonCaption}{else}{#save#}{/if}</button>
+        <div class="save-wrapper card-footer">
+            <div class="row">
+                <div class="ml-auto col-sm-6 col-xl-auto">
+                    <button name="speichern" type="submit" class="btn btn-primary btn-block">{if !empty($buttonCaption)}{$buttonCaption}{else}{__('saveWithIcon')}{/if}</button>
+                </div>
+            </div>
         </div>
     </div>
 </form>

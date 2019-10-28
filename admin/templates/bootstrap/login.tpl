@@ -1,6 +1,6 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section="login"}
-{config_load file="$lang.conf" section="shopupdate"}
+{config_load file="$lang.conf" section='login'}
+{config_load file="$lang.conf" section='shopupdate'}
 
 <script type="text/javascript">
     {literal}
@@ -12,14 +12,13 @@
 <div class="vertical-center">
     <div class="container">
         <div id="login_wrapper">
-            <p class="text-center">
-                <img src="{$currentTemplateDir}gfx/shop-login.png" alt="JTL-Shop" class="logo" />
-            </p>
-            <div id="login_outer" class="panel panel-default">
-                <div class="panel-body">
-
-                    {if isset($cFehler) && $cFehler}
-                        <div class="alert alert-danger">{$cFehler}</div>
+            <div id="login_outer" class="card">
+                <div class="card-body">
+                    <p class="text-center mb-4">
+                        <img class="brand-logo" width="120" height="38" src="{$templateBaseURL}gfx/JTL-Shop-Logo-rgb.png" alt="JTL-Shop">
+                    </p>
+                    {if $alertError}
+                        {include file='snippets/alert_list.tpl'}
                         <script type="text/javascript">
                             {literal}
                             $(document).ready(function () {
@@ -28,12 +27,7 @@
                             {/literal}
                         </script>
                     {elseif isset($pw_updated) && $pw_updated === true}
-                        <div class="alert alert-success" role="alert"><i class="fa fa-info-circle"></i> Passwort wurde erfolgreich ge&auml;ndert.</div>
-                    {else}
-                        {if !isset($smarty.session.AdminAccount->TwoFA_active) || false === $smarty.session.AdminAccount->TwoFA_active }  {* added for 2FA *}
-                            <p class="text-muted">{#login#}</p>
-                        {else}
-                        {/if}
+                        <div class="alert alert-success" role="alert"><i class="fal fa-info-circle"></i> {__('successPasswordChange')}</div>
                     {/if}
 
                     <form method="post" action="index.php" class="form-horizontal" role="form">
@@ -42,14 +36,10 @@
                         {if isset($uri) && $uri|strlen > 0}
                             <input type="hidden" name="uri" value="{$uri}" />
                         {/if}
-
-                        {* BEGIN google-2FA-authentiocation *}
                         {if isset($smarty.session.AdminAccount->TwoFA_active) && true === $smarty.session.AdminAccount->TwoFA_active }  {* added for 2FA *}
-                            {* forwarded index, no content in this vars! *}
                             <input type="hidden" name="benutzer" value="">
                             <input type="hidden" name="passwort" value="">
-
-                            <p class="text-muted">{#TwoFALogin#}</p>
+                            <p class="text-muted">{__('TwoFALogin')}</p>
                             <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-user"></i></span>
                                 <input class="form-control" type="text" placeholder="2fa-code" name="TwoFA_code" id="inputTwoFA" value="" size="20" tabindex="10" />
@@ -62,9 +52,7 @@
                                 <script>
                                     $(document).ready(function () {
                                         $("[id$=inputTwoFA]").focus();
-
                                         var distance = (218 / 30);
-
                                         // "eye-candy" .. make a bar smaller every second, from a length of 30(s)
                                         var date = new Date();
                                         var sec = date.getSeconds();
@@ -101,38 +89,29 @@
                                 </script>
                             {/literal}
                         {else}
-
-                            {* BEGIN regular authentication (additionaly active once before 2fa) *}
                             <div class="input-group">
-                                <span class="input-group-addon"><i class="fa fa-user"></i></span>
-                                <input class="form-control" type="text" placeholder="{#username#}" name="benutzer" id="user_login" value="" size="20" tabindex="10" />
+                                <div class="input-group-prepend"><span class="input-group-text"><i class="fa fa-user"></i></span></div>
+                                <input class="form-control" type="text" placeholder="{__('username')}" name="benutzer" id="user_login" value="" size="20" tabindex="10" />
                             </div>
-                            <div class="input-group">
-                                <span class="input-group-addon"><i class="fa fa-lock"></i></span>
-                                <input class="form-control" type="password" placeholder="{#password#}" name="passwort" id="user_pass" value="" size="20" tabindex="20" />
+                            <div class="input-group mt-2">
+                                <div class="input-group-prepend"><span class="input-group-text"><i class="fa fa-lock"></i></span></div>
+                                <input class="form-control" type="password" placeholder="{__('password')}" name="passwort" id="user_pass" value="" size="20" tabindex="20" />
                             </div>
                             {if isset($code_adminlogin) && $code_adminlogin}
                                 {captchaMarkup getBody=true}
                             {/if}
-                            {* END regular authentication *}
-
                         {/if}
-                        {* END google-2FA-authentiocation *}
-
-                        <button type="submit" value="Anmelden" tabindex="100" class="btn btn-primary btn-block btn-md">Anmelden</button>
+                        <button type="submit" value="Anmelden" tabindex="100" class="btn btn-primary btn-block mt-3">{__('login')}</button>
                         {if isset($smarty.session.AdminAccount->TwoFA_active) && true === $smarty.session.AdminAccount->TwoFA_active }
-                            <button type="button" tabindex="110" class="btn btn-default btn-block btn-md" onclick="switchUser();">Benutzer wechseln</button>
+                            <button type="button" tabindex="110" class="btn btn-default btn-block btn-md" onclick="switchUser();">{__('changerUser')}</button>
                         {/if}
                     </form>
                 </div>
             </div>
-            <p class="forgot-pw-wrap">
-                <a href="pass.php" title="Passwort vergessen"><i class="fa fa-lock"></i> Passwort vergessen?</a>
+            <p class="forgot-pw-wrap text-center">
+                <small><a href="pass.php" title="{__('forgotPassword')}"><i class="fa fa-lock"></i> {__('forgotPassword')}</a></small>
             </p>
         </div>
     </div>
 </div>
 {include file='tpl_inc/footer.tpl'}
-
-{* vim: set expandtab:tw=4:sw=4 *}
-

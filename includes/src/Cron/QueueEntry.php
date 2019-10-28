@@ -4,91 +4,116 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Cron;
+namespace JTL\Cron;
+
+use DateTime;
+use stdClass;
 
 /**
  * Class QueueEntry
- * @package Cron
+ * @package JTL\Cron
  */
 class QueueEntry
 {
     /**
      * @var int
      */
-    public $kJobQueue;
+    public $jobQueueID;
 
     /**
      * @var int
      */
-    public $kCron;
+    public $cronID;
 
     /**
      * @var int
      */
-    public $kKey;
+    public $foreignKeyID;
 
     /**
+     * @var int
+     */
+    public $taskLimit;
+
+    /**
+     * @var int
+     */
+    public $tasksExecuted;
+
+    /**
+     * @var int
+     */
+    public $lastProductID;
+
+    /**
+     * @var int
+     */
+    public $isRunning;
+
+    /**
+     * @var string
+     */
+    public $jobType;
+
+    /**
+     * @var string
+     */
+    public $tableName;
+
+    /**
+     * @var string
+     */
+    public $foreignKey;
+
+    /**
+     * @var DateTime
+     */
+    public $startTime;
+
+    /**
+     * @var DateTime
+     */
+    public $lastStart;
+
+    /**
+     * @var DateTime
+     */
+    public $lastFinish;
+
+    /**
+     * compatability only
+     *
      * @var int
      */
     public $nLimitN;
 
     /**
+     * compatability only
+     *
      * @var int
      */
     public $nLimitM;
 
     /**
-     * @var int
-     */
-    public $nLastArticleID;
-
-    /**
-     * @var int
-     */
-    public $nInArbeit;
-
-    /**
-     * @var string
-     */
-    public $cJobArt;
-
-    /**
-     * @var string
-     */
-    public $cTabelle;
-
-    /**
-     * @var string
-     */
-    public $cKey;
-
-    /**
-     * @var \DateTime
-     */
-    public $dStartZeit;
-
-    /**
-     * @var \DateTime
-     */
-    public $dZuletztGelaufen;
-
-    /**
      * QueueEntry constructor.
-     * @param $data
+     * @param stdClass $data
      */
-    public function __construct($data)
+    public function __construct(stdClass $data)
     {
-        $this->kJobQueue        = (int)$data->kJobQueue;
-        $this->kCron            = (int)$data->kCron;
-        $this->kKey             = (int)$data->kKey;
-        $this->nLimitN          = (int)$data->nLimitN;
-        $this->nLimitM          = (int)$data->nLimitM;
-        $this->nLastArticleID   = (int)$data->nLastArticleID;
-        $this->nInArbeit        = 0;
-        $this->cJobArt          = $data->cJobArt;
-        $this->cTabelle         = $data->cTabelle;
-        $this->cKey             = $data->cKey;
-        $this->dStartZeit       = new \DateTime($data->dStartZeit ?? '');
-        $this->dZuletztGelaufen = new \DateTime($data->dZuletztGelaufen ?? '');
+        $this->jobQueueID    = (int)$data->jobQueueID;
+        $this->cronID        = (int)$data->cronID;
+        $this->foreignKeyID  = (int)$data->foreignKeyID;
+        $this->taskLimit     = (int)$data->taskLimit;
+        $this->nLimitN       = (int)$data->tasksExecuted;
+        $this->tasksExecuted = (int)$data->tasksExecuted;
+        $this->nLimitM       = (int)$data->taskLimit;
+        $this->lastProductID = (int)$data->lastProductID;
+        $this->isRunning     = 0;
+        $this->jobType       = $data->jobType;
+        $this->tableName     = $data->tableName;
+        $this->foreignKey    = $data->foreignKey;
+        $this->startTime     = new DateTime($data->startTime ?? '');
+        $this->lastStart     = new DateTime($data->lastStart ?? '');
+        $this->lastFinish    = new DateTime($data->lastFinish ?? '');
     }
 }

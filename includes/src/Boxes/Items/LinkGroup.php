@@ -4,16 +4,18 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
+
+use JTL\Shop;
 
 /**
  * Class LinkGroup
- * @package Boxes
+ * @package JTL\Boxes\Items
  */
 final class LinkGroup extends AbstractBox
 {
     /**
-     * @var LinkGroup|null
+     * @var \JTL\Link\LinkGroup|null
      */
     private $linkGroup;
 
@@ -29,18 +31,18 @@ final class LinkGroup extends AbstractBox
     public function __construct(array $config)
     {
         parent::__construct($config);
-        parent::addMapping('oLinkGruppe', 'LinkGroup');
-        parent::addMapping('oLinkGruppeTemplate', 'LinkGroupTemplate');
+        $this->addMapping('oLinkGruppe', 'LinkGroup');
+        $this->addMapping('oLinkGruppeTemplate', 'LinkGroupTemplate');
     }
 
     /**
      * @inheritdoc
      */
-    public function map(array $boxData)
+    public function map(array $boxData): void
     {
         parent::map($boxData);
         $this->setShow(false);
-        $this->linkGroup = \Shop::Container()->getLinkService()->getLinkGroupByID($this->getCustomID());
+        $this->linkGroup = Shop::Container()->getLinkService()->getLinkGroupByID($this->getCustomID());
         if ($this->linkGroup !== null) {
             $this->setShow($this->linkGroup->getLinks()->count() > 0);
             $this->setLinkGroupTemplate($this->linkGroup->getTemplate());
@@ -50,9 +52,9 @@ final class LinkGroup extends AbstractBox
     }
 
     /**
-     * @return LinkGroup|null
+     * @return \JTL\Link\LinkGroup|null
      */
-    public function getLinkGroup()
+    public function getLinkGroup(): ?\JTL\Link\LinkGroup
     {
         return $this->linkGroup;
     }
@@ -60,7 +62,7 @@ final class LinkGroup extends AbstractBox
     /**
      * @param LinkGroup|null $linkGroup
      */
-    public function setLinkGroup($linkGroup)
+    public function setLinkGroup($linkGroup): void
     {
         $this->linkGroup = $linkGroup;
     }
@@ -76,7 +78,7 @@ final class LinkGroup extends AbstractBox
     /**
      * @param null|string $linkGroupTemplate
      */
-    public function setLinkGroupTemplate(string $linkGroupTemplate)
+    public function setLinkGroupTemplate(string $linkGroupTemplate): void
     {
         $this->linkGroupTemplate = $linkGroupTemplate;
     }

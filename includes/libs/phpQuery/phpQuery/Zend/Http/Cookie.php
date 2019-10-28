@@ -102,20 +102,20 @@ class Zend_Http_Cookie
             throw new Zend_Http_Exception("Cookie name cannot contain these characters: =,; \\t\\r\\n\\013\\014 ({$name})");
         }
 
-        if (! $this->name = (string) $name) {
+        if (! $this->name = (string)$name) {
             require_once 'Zend/Http/Exception.php';
             throw new Zend_Http_Exception('Cookies must have a name');
         }
 
-        if (! $this->domain = (string) $domain) {
+        if (! $this->domain = (string)$domain) {
             require_once 'Zend/Http/Exception.php';
             throw new Zend_Http_Exception('Cookies must have a domain');
         }
 
-        $this->value = (string) $value;
-        $this->expires = ($expires === null ? null : (int) $expires);
-        $this->path = ($path ? $path : '/');
-        $this->secure = $secure;
+        $this->value   = (string)$value;
+        $this->expires = ($expires === null ? null : (int)$expires);
+        $this->path    = ($path ? $path : '/');
+        $this->secure  = $secure;
     }
 
     /**
@@ -223,7 +223,7 @@ class Zend_Http_Cookie
         }
 
         // Make sure we have a valid Zend_Uri_Http object
-        if (! ($uri->valid() && ($uri->getScheme() == 'http' || $uri->getScheme() =='https'))) {
+        if (! ($uri->valid() && ($uri->getScheme() == 'http' || $uri->getScheme() == 'https'))) {
             require_once 'Zend/Http/Exception.php';
             throw new Zend_Http_Exception('Passed URI is not a valid HTTP or HTTPS URI');
         }
@@ -241,11 +241,11 @@ class Zend_Http_Cookie
 
         // Validate domain and path
         // Domain is validated using tail match, while path is validated using head match
-        $domain_preg = preg_quote($this->getDomain(), "/");
+        $domain_preg = preg_quote($this->getDomain(), '/');
         if (! preg_match("/{$domain_preg}$/", $uri->getHost())) {
             return false;
         }
-        $path_preg = preg_quote($this->getPath(), "/");
+        $path_preg = preg_quote($this->getPath(), '/');
         if (! preg_match("/^{$path_preg}/", $uri->getPath())) {
             return false;
         }
@@ -295,14 +295,14 @@ class Zend_Http_Cookie
 
         // Get the name and value of the cookie
         list($name, $value) = explode('=', trim(array_shift($parts)), 2);
-        $name  = trim($name);
-        $value = urldecode(trim($value));
+        $name               = trim($name);
+        $value              = urldecode(trim($value));
 
         // Set default domain and path
         if ($ref_uri instanceof Zend_Uri_Http) {
             $domain = $ref_uri->getHost();
-            $path = $ref_uri->getPath();
-            $path = substr($path, 0, strrpos($path, '/'));
+            $path   = $ref_uri->getPath();
+            $path   = substr($path, 0, strrpos($path, '/'));
         }
 
         // Set other cookie parameters

@@ -1,39 +1,39 @@
 {includeMailTemplate template=header type=plain}
 
-Dear {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
+Dear {$Kunde->cVorname} {$Kunde->cNachname},
 
-The tracking status for order no. {$Bestellung->cBestellNr} has changed.
+the tracking status for order no. {$Bestellung->cBestellNr} has changed.
 
-{foreach name=pos from=$Bestellung->oLieferschein_arr item=oLieferschein}
+{foreach $Bestellung->oLieferschein_arr as $oLieferschein}
     {if !$oLieferschein->getEmailVerschickt()}
-        {foreach from=$oLieferschein->oPosition_arr item=Position}
-            {$Position->nAusgeliefert} x {if $Position->nPosTyp==1}{$Position->cName} {if $Position->cArtNr}({$Position->cArtNr}){/if}
-            {foreach name=variationen from=$Position->WarenkorbPosEigenschaftArr item=WKPosEigenschaft}
+        {foreach $oLieferschein->oPosition_arr as $Position}
+            {$Position->nAusgeliefert} x {if $Position->nPosTyp == 1}{$Position->cName} {if $Position->cArtNr}({$Position->cArtNr}){/if}
+            {foreach $Position->WarenkorbPosEigenschaftArr as $WKPosEigenschaft}
                 {$WKPosEigenschaft->cEigenschaftName}: {$WKPosEigenschaft->cEigenschaftWertName}
             {/foreach}
             {if $Position->cSeriennummer|strlen > 0}
-                Serialnumber: {$Position->cSeriennummer}
+                Serial number: {$Position->cSeriennummer}
             {/if}
             {if $Position->dMHD|strlen > 0}
-                Best before: {$Position->dMHD}
+                shelf life expiration date: {$Position->dMHD}
             {/if}
             {if $Position->cChargeNr|strlen > 0}
-                Charge: {$Position->cChargeNr}
+                Batch: {$Position->cChargeNr}
             {/if}
         {else}
             {$Position->cName}
         {/if}
         {/foreach}
 
-        {foreach from=$oLieferschein->oVersand_arr item=oVersand}
+        {foreach $oLieferschein->oVersand_arr as $oVersand}
             {if $oVersand->getIdentCode()|strlen > 0}
-                Tracking-Url: {$oVersand->getLogistikVarUrl()}
+                Tracking URL: {$oVersand->getLogistikVarUrl()}
             {/if}
         {/foreach}
     {/if}
 {/foreach}
 
-You will be notified about the subsequent status of your order separately.
+You will be notified of the status of your order separately.
 
 Yours sincerely,
 {$Firma->cName}

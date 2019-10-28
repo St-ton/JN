@@ -151,7 +151,7 @@ class Zend_Validate_File_Count extends Zend_Validate_Abstract
             throw new Zend_Validate_Exception('The minimum must be less than or equal to the maximum file count, but '
                 . " {$min} > {$this->_max}");
         } else {
-            $this->_min = max(0, (integer) $min);
+            $this->_min = max(0, (integer)$min);
         }
 
         return $this;
@@ -180,10 +180,10 @@ class Zend_Validate_File_Count extends Zend_Validate_Abstract
             $this->_max = null;
         } elseif (($this->_min !== null) and ($max < $this->_min)) {
             require_once 'Zend/Validate/Exception.php';
-            throw new Zend_Validate_Exception("The maximum must be greater than or equal to the minimum file count, but "
+            throw new Zend_Validate_Exception('The maximum must be greater than or equal to the minimum file count, but '
                 . "{$max} < {$this->_min}");
         } else {
-            $this->_max = (integer) $max;
+            $this->_max = (integer)$max;
         }
 
         return $this;

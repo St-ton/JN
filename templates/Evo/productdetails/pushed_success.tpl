@@ -13,7 +13,7 @@
             <div class="row clearfix">
                 {assign var='showXSellingCart' value=isset($Xselling->Kauf) && count($Xselling->Kauf->Artikel) > 0}
                 <div class="col-sm-5{if !$showXSellingCart} col-sm-offset-4{/if} text-center">
-                    <h4 class="success-title">{$hinweis}</h4>
+                    <h4 class="success-title">{$cartNote}</h4>
                     {block name='pushed-success-product-cell'}
                     <div class="product-cell text-center{if isset($class)} {$class}{/if}">
                         <div class="row">

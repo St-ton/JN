@@ -4,15 +4,17 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\Pagination;
+namespace JTL\Filter\Pagination;
+
+use JTL\MagicCompatibilityTrait;
 
 /**
  * Class Info
- * @package Filter\Pagination
+ * @package JTL\Filter\Pagination
  */
 class Info
 {
-    use \MagicCompatibilityTrait;
+    use MagicCompatibilityTrait;
 
     /**
      * @var int
@@ -55,7 +57,7 @@ class Info
     /**
      * @param int $currentPage
      */
-    public function setCurrentPage(int $currentPage)
+    public function setCurrentPage(int $currentPage): void
     {
         $this->currentPage = $currentPage;
     }
@@ -71,7 +73,7 @@ class Info
     /**
      * @param int $totalPages
      */
-    public function setTotalPages(int $totalPages)
+    public function setTotalPages(int $totalPages): void
     {
         $this->totalPages = $totalPages;
     }
@@ -87,7 +89,7 @@ class Info
     /**
      * @param int $minPage
      */
-    public function setMinPage(int $minPage)
+    public function setMinPage(int $minPage): void
     {
         $this->minPage = $minPage;
     }
@@ -103,9 +105,8 @@ class Info
     /**
      * @param int $maxPage
      */
-    public function setMaxPage(int $maxPage)
+    public function setMaxPage(int $maxPage): void
     {
         $this->maxPage = $maxPage;
     }
-
 }

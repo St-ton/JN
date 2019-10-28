@@ -1,7 +1,7 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section="navigationsfilter"}
-{include file='tpl_inc/seite_header.tpl' cTitel=#navigationsfilter# cBeschreibung=#navigationsfilterDesc#
-         cDokuURL=#navigationsfilterUrl#}
+{config_load file="$lang.conf" section='navigationsfilter'}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('navigationsfilter') cBeschreibung=__('navigationsfilterDesc')
+         cDokuURL=__('navigationsfilterUrl')}
 
 <script>
     var bManuell = false;
@@ -9,8 +9,8 @@
     $(function()
     {
         $('#einstellen').submit(validateFormData);
-        $('#btn-add-range').click(function() { addPriceRange(); });
-        $('.btn-remove-range').click(removePriceRange);
+        $('#btn-add-range').on('click', function() { addPriceRange(); });
+        $('.btn-remove-range').on('click', removePriceRange);
 
         selectCheck(document.getElementById('preisspannenfilter_anzeige_berechnung'));
 
@@ -29,15 +29,15 @@
         $('#price-rows').append(
             '<div class="price-row">' +
                 '<button type="button" class="btn-remove-range btn btn-danger btn-sm">' +
-                    '<i class="fa fa-trash"></i></button> ' +
-                '<label for="nVon_' + n + '">{#navigationsfilterFrom#}:</label> ' +
+                    '<i class="fas fa-trash-alt"></i></button> ' +
+                '<label for="nVon_' + n + '">{__('from')}:</label> ' +
                 '<input id="nVon_' + n + '" class="form-control" name="nVon[]" type="text" value="' + nVon + '"> ' +
-                '<label for="nBis_' + n + '">{#navigationsfilterTo#}:</label> ' +
+                '<label for="nBis_' + n + '">{__('to')}:</label> ' +
                 '<input id="nBis_' + n + '" class="form-control" name="nBis[]" type="text" value="' + nBis + '">' +
             '</div>'
         );
 
-        $('.btn-remove-range').off('click').click(removePriceRange);
+        $('.btn-remove-range').off('click').on('click', removePriceRange);
     }
 
     function removePriceRange()
@@ -88,13 +88,13 @@
                 $row.removeClass('has-error');
 
                 if(nVon === '' || nBis === '') {
-                    cFehler += 'Ein oder mehrere Felder sind nicht gesetzt.<br>';
+                    cFehler += '{__('errorFillRequired')}' + '<br>';
                     $row.addClass('has-error');
                 } else if(fVon >= fBis) {
-                    cFehler += 'Die Preisspanne ' + fVon + ' bis ' + fBis + ' ist ung&uuml;tig.<br>';
+                    cFehler += '{__('thePriceRangeIsInvalid')} (' + fVon + ' {__('to')} ' + fBis + ').<br>';
                     $row.addClass('has-error');
                 } else if(fVon < lastUpperBound) {
-                    cFehler += 'Die Preisspanne ' + fVon + ' bis ' + fBis + ' &uuml;berschneidet sich mit anderen.<br>';
+                    cFehler += '{__('thePriceRangeOverlapps')} (' + fVon + ' {__('to')} ' + fBis + ').<br>';
                     $row.addClass('has-error');
                 }
 
@@ -109,49 +109,59 @@
     }
 </script>
 
-<div id="content" class="container-fluid">
+<div id="content">
     <form name="einstellen" method="post" id="einstellen">
         {$jtl_token}
         <input type="hidden" name="speichern" value="1"/>
         <div id="settings">
             {assign var=open value=false}
-            {foreach name=conf from=$oConfig_arr item=oConfig}
+            {foreach $oConfig_arr as $oConfig}
                 {if $oConfig->cConf === 'Y'}
-                    <div class="item input-group">
-                        <span class="input-group-addon">
-                            <label for="{$oConfig->cWertName}">{$oConfig->cName}</label>
-                        </span>
+                    <div class="item form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="{$oConfig->cWertName}">{$oConfig->cName}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         {if $oConfig->cInputTyp === 'selectbox'}
-                            <span class="input-group-wrap">
-                                <select id="{$oConfig->cWertName}" name="{$oConfig->cWertName}"
-                                        class="form-control combo"
-                                        {if $oConfig->cWertName === 'preisspannenfilter_anzeige_berechnung'}
-                                            onChange="selectCheck(this);"
-                                        {/if}>
-                                    {foreach name=selectfor from=$oConfig->ConfWerte item=wert}
-                                        <option value="{$wert->cWert}"
-                                                {if $oConfig->gesetzterWert == $wert->cWert}selected{/if}>
-                                            {$wert->cName}
-                                        </option>
-                                    {/foreach}
-                                </select>
-                            </span>
+                            <select id="{$oConfig->cWertName}" name="{$oConfig->cWertName}"
+                                    class="custom-select combo"
+                                    {if $oConfig->cWertName === 'preisspannenfilter_anzeige_berechnung'}
+                                        onChange="selectCheck(this);"
+                                    {/if}>
+                                {foreach $oConfig->ConfWerte as $wert}
+                                    <option value="{$wert->cWert}"
+                                            {if $oConfig->gesetzterWert == $wert->cWert}selected{/if}>
+                                        {$wert->cName}
+                                    </option>
+                                {/foreach}
+                            </select>
                         {elseif $oConfig->cInputTyp === 'number'}
-                            <input class="form-control" type="number" name="{$oConfig->cWertName}"
-                                   id="{$oConfig->cWertName}"
-                                   value="{if isset($oConfig->gesetzterWert)}{$oConfig->gesetzterWert}{/if}"
-                                   tabindex="1">
+                            <div class="input-group form-counter">
+                                <div class="input-group-prepend">
+                                    <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
+                                        <span class="fas fa-minus"></span>
+                                    </button>
+                                </div>
+                                <input class="form-control" type="number" name="{$oConfig->cWertName}"
+                               id="{$oConfig->cWertName}"
+                               value="{if isset($oConfig->gesetzterWert)}{$oConfig->gesetzterWert}{/if}"
+                               tabindex="1">
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
+                                        <span class="fas fa-plus"></span>
+                                    </button>
+                                </div>
+                            </div>
                         {else}
                             <input class="form-control" type="text" name="{$oConfig->cWertName}"
                                    id="{$oConfig->cWertName}"
                                    value="{if isset($oConfig->gesetzterWert)}{$oConfig->gesetzterWert}{/if}"
                                    tabindex="1">
                         {/if}
-                        <span class="input-group-addon">
-                            {if $oConfig->cBeschreibung}
+                        </div>
+                        {if $oConfig->cBeschreibung}
+                            <span class="col-auto ml-sm-n4 order-2 order-sm-3">
                                 {getHelpDesc cDesc=$oConfig->cBeschreibung cID=$oConfig->kEinstellungenConf}
-                            {/if}
-                        </span>
+                            </span>
+                        {/if}
                         {if $oConfig->cWertName === 'preisspannenfilter_anzeige_berechnung'}
                     </div>
                     <div id="Werte" style="display: {if $oConfig->gesetzterWert === 'M'}block{else}none{/if};"
@@ -159,7 +169,7 @@
                         <div id="ranges-error-alert" class="alert alert-danger" style="display: none;"></div>
                         <div id="price-rows"></div>
                         <button type="button" class="btn btn-info btn-sm" id="btn-add-range">
-                            <i class="fa fa-plus"></i>
+                            <i class="fal fa-plus"></i>
                         </button>
                     </div>
                     <div class="item input-group">
@@ -171,14 +181,14 @@
                     </div>
                 </div>
                         {/if}
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="subheading1">
                             {$oConfig->cName}
-                            <span class="pull-right">{getHelpDesc cID=$oConfig->kEinstellungenConf}</span>
-                        </h3>
+                        </div>
+                        <hr class="mb-n3">
                     </div>
-                    <div class="panel-body">
+                    <div class="card-body">
                         {assign var=open value=true}
                     {/if}
                 {/if}
@@ -188,12 +198,15 @@
                 </div>
             {/if}
         </div>
-        <p class="submit">
-            <button name="speichern" class="btn btn-primary" type="submit" value="{#navigationsfilterSave#}">
-                <i class="fa fa-save"></i> {#navigationsfilterSave#}
-            </button>
-        </p>
+        <div class="submit card-footer save-wrapper">
+            <div class="row">
+                <div class="ml-auto col-sm-6 col-xl-auto">
+                    <button name="speichern" class="btn btn-primary btn-block" type="submit" value="{__('save')}">
+                        {__('saveWithIcon')}
+                    </button>
+                </div>
+            </div>
+        </div>
     </form>
 </div>
-
 {include file='tpl_inc/footer.tpl'}

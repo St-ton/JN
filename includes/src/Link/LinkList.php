@@ -1,20 +1,20 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Link;
+namespace JTL\Link;
 
-use DB\DbInterface;
-use DB\ReturnType;
+use Illuminate\Support\Collection;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
 use function Functional\group;
 use function Functional\map;
-use Tightenco\Collect\Support\Collection;
 
 /**
  * Class LinkList
- * @package Link
+ * @package JTL\Link
  */
 final class LinkList implements LinkListInterface
 {
@@ -52,47 +52,65 @@ final class LinkList implements LinkListInterface
         if (\count($this->linkIDs) === 0) {
             return $this->links;
         }
+        $realIDs  = $this->db->query(
+            'SELECT `kLink`, `reference`, `kVaterLink`
+                FROM tlink 
+                WHERE kLink IN (' . \implode(',', $this->linkIDs) . ')',
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+        $loadData = [];
+        $realData = [];
+        foreach ($realIDs as $realID) {
+            $ref             = (int)$realID->reference;
+            $link            = (int)$realID->kLink;
+            $real            = $ref > 0 ? $ref : $link;
+            $realData[$link] = $real;
+            $loadData[$real] = (object)['linkID' => $link, 'parentID' => (int)$realID->kVaterLink];
+        }
         $linkLanguages = $this->db->query(
-            "SELECT tlink.*, tlinksprache.cISOSprache,
-                tlink.cName AS displayName,
-                tlinksprache.cName AS localizedName, 
-                tlinksprache.cTitle AS localizedTitle, 
-                tsprache.kSprache, 
-                tlinksprache.cContent AS content,
-                tlinksprache.cMetaDescription AS metaDescription,
-                tlinksprache.cMetaKeywords AS metaKeywords,
-                tlinksprache.cMetaTitle AS metaTitle,
-                tseo.kSprache AS languageID,
-                tseo.cSeo AS localizedUrl,
+            "SELECT tlink.*, loc.cISOSprache,
+                tlink.cName AS displayName, loc.cName AS localizedName, loc.cTitle AS localizedTitle, 
+                loc.cContent AS content,
+                loc.cMetaDescription AS metaDescription, loc.cMetaKeywords AS metaKeywords, loc.cMetaTitle AS metaTitle,
+                tsprache.kSprache, tseo.kSprache AS languageID, tseo.cSeo AS localizedUrl,
                 tspezialseite.cDateiname,
                 tplugin.nStatus AS pluginState,
-                GROUP_CONCAT(tlinkgroupassociations.linkGroupID) AS linkGroups
+                pld.cDatei AS handler, pld.cTemplate AS template, pld.cFullscreenTemplate AS fullscreenTemplate,
+                GROUP_CONCAT(assoc.linkGroupID) AS linkGroups
             FROM tlink
-                JOIN tlinksprache
-                    ON tlink.kLink = tlinksprache.kLink
+                JOIN tlinksprache loc
+                    ON tlink.kLink = loc.kLink
                 JOIN tsprache
-                    ON tsprache.cISO = tlinksprache.cISOSprache
+                    ON tsprache.cISO = loc.cISOSprache
                 JOIN tseo
                     ON tseo.cKey = 'kLink'
-                    AND tseo.kKey = tlinksprache.kLink
+                    AND tseo.kKey = loc.kLink
                     AND tseo.kSprache = tsprache.kSprache
-                LEFT JOIN tlinkgroupassociations
-                    ON tlinkgroupassociations.linkID = tlinksprache.kLink
+                LEFT JOIN tlinkgroupassociations assoc
+                    ON assoc.linkID = loc.kLink
                 LEFT JOIN tspezialseite
                     ON tspezialseite.nLinkart = tlink.nLinkart
                 LEFT JOIN tplugin
                     ON tplugin.kPlugin = tlink.kPlugin
-                WHERE tlink.kLink IN (" . \implode(',', $this->linkIDs) . ")
+                LEFT JOIN tpluginlinkdatei pld
+                    ON tplugin.kPlugin = pld.kPlugin
+                    AND tlink.kLink = pld.kLink
+                WHERE tlink.kLink IN (" . \implode(',', $realData) . ')
                 GROUP BY tlink.kLink, tseo.kSprache
-                ORDER BY tlink.nSort, tlink.cName",
+                ORDER BY tlink.nSort, tlink.cName',
             ReturnType::ARRAY_OF_OBJECTS
         );
         $links         = map(group($linkLanguages, function ($e) {
             return (int)$e->kLink;
-        }), function ($e, $linkID) {
-            $l = new Link($this->db);
-            $l->setID($linkID);
+        }), function ($e, $linkID) use ($loadData) {
+            $referenced = $loadData[$linkID]->linkID;
+            $l          = new Link($this->db);
+            $l->setID($loadData[$linkID]->linkID);
             $l->map($e);
+            if ($referenced !== $linkID) {
+                $l->setReference($linkID);
+                $l->setParent($loadData[$linkID]->parentID);
+            }
 
             return $l;
         });
@@ -114,7 +132,7 @@ final class LinkList implements LinkListInterface
     /**
      * @inheritdoc
      */
-    public function setLinks(Collection $links)
+    public function setLinks(Collection $links): void
     {
         $this->links = $links;
     }
@@ -122,7 +140,7 @@ final class LinkList implements LinkListInterface
     /**
      * @inheritdoc
      */
-    public function addLink(LinkInterface $link)
+    public function addLink(LinkInterface $link): void
     {
         $this->links->push($link);
     }

@@ -3,243 +3,180 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\Alert\Alert;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Helpers\Text;
+use JTL\Newsletter\Newsletter;
+use JTL\Shop;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('IMPORT_NEWSLETTER_RECEIVER_VIEW', true, true);
-/** @global JTLSmarty $smarty */
-require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
-
-//jtl2
-$format  = ['cAnrede', 'cVorname', 'cNachname', 'cEmail'];
-$hinweis = '';
-$fehler  = '';
-
-if ((int)$_POST['newsletterimport'] === 1 &&
-    isset($_POST['newsletterimport'], $_FILES['csv']['tmp_name']) &&
-    FormHelper::validateToken() &&
-    strlen($_FILES['csv']['tmp_name']) > 0
+/** @global \JTL\Smarty\JTLSmarty $smarty */
+$alertHelper = Shop::Container()->getAlertService();
+if (isset($_FILES['csv']['tmp_name'])
+    && Request::postInt('newsletterimport') === 1
+    && Form::validateToken()
+    && mb_strlen($_FILES['csv']['tmp_name']) > 0
 ) {
     $file = fopen($_FILES['csv']['tmp_name'], 'r');
     if ($file !== false) {
-        $row      = 0;
-        $formatId = -1;
-        $fmt      = [];
+        $format    = ['cAnrede', 'cVorname', 'cNachname', 'cEmail'];
+        $row       = 0;
+        $formatId  = -1;
+        $fmt       = [];
+        $importMsg = '';
         while ($data = fgetcsv($file, 2000, ';', '"')) {
             if ($row === 0) {
-                $hinweis .= 'Checke Kopfzeile ...';
-                $fmt = checkformat($data);
+                $importMsg .= __('checkHead');
+                $fmt        = checkformat($data, $format);
                 if ($fmt === -1) {
-                    $fehler = 'Format nicht erkannt!';
+                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFormatUnknown'), 'errorFormatUnknown');
                     break;
                 }
-                $hinweis .= '<br /><br />Importiere...<br />';
+                $importMsg .= '<br /><br />' . __('importPending') . '<br />';
             } else {
-                $hinweis .= '<br />Zeile ' . $row . ': ' . processImport($fmt, $data);
+                $importMsg .= '<br />' . __('row') . $row . ': ' . processImport($fmt, $data);
             }
             $row++;
         }
+        $alertHelper->addAlert(Alert::TYPE_NOTE, $importMsg, 'importMessage');
         fclose($file);
     }
 }
 
-$smarty->assign('sprachen', Sprache::getAllLanguages())
-       ->assign('kundengruppen', Shop::Container()->getDB()->query(
-           'SELECT * FROM tkundengruppe ORDER BY cName',
-           \DB\ReturnType::ARRAY_OF_OBJECTS
-       ))
-       ->assign('hinweis', $hinweis)
-       ->assign('fehler', $fehler)
-       ->display('newsletterimport.tpl');
+$smarty->assign('kundengruppen', Shop::Container()->getDB()->query(
+    'SELECT * FROM tkundengruppe ORDER BY cName',
+    ReturnType::ARRAY_OF_OBJECTS
+))
+    ->display('newsletterimport.tpl');
 
 /**
- * Class NewsletterEmpfaenger
- */
-class NewsletterEmpfaenger
-{
-    public $cAnrede;
-    public $cEmail;
-    public $cVorname;
-    public $cNachname;
-    public $kKunde = 0;
-    public $kSprache;
-    public $cOptCode;
-    public $cLoeschCode;
-    public $dEingetragen;
-    public $nAktiv = 1;
-}
-
-/**
- * @param int $length
- * @param int $myseed
- * @return string
- */
-function generatePW($length = 8, $myseed = 1)
-{
-    $dummy = array_merge(range('0', '9'), range('a', 'z'), range('A', 'Z'));
-    mt_srand((double) microtime() * 1000000 * $myseed);
-    for ($i = 1; $i <= (count($dummy) * 2); $i++) {
-        $swap         = mt_rand(0, count($dummy) - 1);
-        $tmp          = $dummy[$swap];
-        $dummy[$swap] = $dummy[0];
-        $dummy[0]     = $tmp;
-    }
-
-    return substr(implode('', $dummy), 0, $length);
-}
-
-/**
- * @param $cMail
+ * @param string $email
  * @return bool
  */
-function pruefeNLEBlacklist($cMail)
+function checkBlacklist(string $email): bool
 {
-    $oNEB = Shop::Container()->getDB()->select(
+    $blacklist = Shop::Container()->getDB()->select(
         'tnewsletterempfaengerblacklist',
         'cMail',
-        StringHandler::filterXSS(strip_tags($cMail))
+        $email
     );
 
-    return !empty($oNEB->cMail);
+    return !empty($blacklist->cMail);
 }
 
 /**
  * @param array $data
+ * @param array $formats
  * @return array|int
  */
-function checkformat($data)
+function checkformat(array $data, array $formats)
 {
     $fmt = [];
     $cnt = count($data);
     for ($i = 0; $i < $cnt; $i++) {
-        // jtl-shop/issues#296
-        if (!empty($data[$i]) && in_array($data[$i], $GLOBALS['format'], true)) {
+        if (!empty($data[$i]) && in_array($data[$i], $formats, true)) {
             $fmt[$i] = $data[$i];
         }
     }
-    if (!in_array('cEmail', $fmt, true)) {
-        return -1;
-    }
 
-    return $fmt;
+    return in_array('cEmail', $fmt, true) ? $fmt : -1;
 }
 
 /**
- * OptCode erstellen und ueberpruefen
- * Werte fuer $dbfeld 'cOptCode','cLoeschCode'
- *
- * @param $dbfeld
- * @param $email
+ * @param array $fmt
+ * @param array $data
  * @return string
  */
-function create_NewsletterCode($dbfeld, $email)
+function processImport(array $fmt, array $data): string
 {
-    $CodeNeu = md5($email . time() . rand(123, 456));
-    while (!unique_NewsletterCode($dbfeld, $CodeNeu)) {
-        $CodeNeu = md5($email . time() . rand(123, 456));
-    }
-
-    return $CodeNeu;
-}
-
-/**
- * @param $dbfeld
- * @param $code
- * @return bool
- */
-function unique_NewsletterCode($dbfeld, $code)
-{
-    $res = Shop::Container()->getDB()->select('tnewsletterempfaenger', $dbfeld, $code);
-
-    return !(isset($res->kNewsletterEmpfaenger) && $res->kNewsletterEmpfaenger > 0);
-}
-
-/**
- * @param $fmt
- * @param $data
- * @return string
- */
-function processImport($fmt, $data)
-{
-    unset($oTMP, $newsletterempfaenger);
-
-    $newsletterempfaenger = new NewsletterEmpfaenger();
-    $cnt                  = count($fmt); // only columns that have no empty header jtl-shop/issues#296
+    $recipient = new class
+    {
+        public $cAnrede;
+        public $cEmail;
+        public $cVorname;
+        public $cNachname;
+        public $kKunde = 0;
+        public $kSprache;
+        public $cOptCode;
+        public $cLoeschCode;
+        public $dEingetragen;
+        public $nAktiv = 1;
+    };
+    $cnt       = count($fmt); // only columns that have no empty header jtl-shop/issues#296
     for ($i = 0; $i < $cnt; $i++) {
         if (!empty($fmt[$i])) {
-            $newsletterempfaenger->{$fmt[$i]} = $data[$i];
+            $recipient->{$fmt[$i]} = $data[$i];
         }
     }
 
-    if (StringHandler::filterEmailAddress($newsletterempfaenger->cEmail) === false) {
-        return "keine gültige Email ($newsletterempfaenger->cEmail)! Übergehe diesen Datensatz.";
+    if (Text::filterEmailAddress($recipient->cEmail) === false) {
+        return sprintf(__('errorEmailInvalid'), $recipient->cEmail);
     }
-    // NewsletterEmpfaengerBlacklist
-    if (pruefeNLEBlacklist($newsletterempfaenger->cEmail)) {
-        return "keine gültige Email ($newsletterempfaenger->cEmail)! " .
-            "Kunde hat sich auf die Blacklist setzen lassen! Übergehe diesen Datensatz.";
+    if (checkBlacklist($recipient->cEmail)) {
+        return __('errorEmailInvalidBlacklist');
     }
-
-    if (!$newsletterempfaenger->cNachname) {
-        return 'kein Nachname! Übergehe diesen Datensatz.';
+    if (!$recipient->cNachname) {
+        return __('errorSurnameMissing');
     }
-
-    $old_mail = Shop::Container()->getDB()->select('tnewsletterempfaenger', 'cEmail', $newsletterempfaenger->cEmail);
-    if (isset($old_mail->kNewsletterEmpfaenger) && $old_mail->kNewsletterEmpfaenger > 0) {
-        return 'Newsletterempfänger mit dieser Emailadresse bereits vorhanden: (' .
-            $newsletterempfaenger->cEmail . ')! Übergehe Datensatz.';
+    $db       = Shop::Container()->getDB();
+    $instance = new Newsletter($db, []);
+    $oldMail  = $db->select('tnewsletterempfaenger', 'cEmail', $recipient->cEmail);
+    if (isset($oldMail->kNewsletterEmpfaenger) && $oldMail->kNewsletterEmpfaenger > 0) {
+        return sprintf(__('errorEmailExists'), $recipient->cEmail);
     }
 
-    if ($newsletterempfaenger->cAnrede === 'f') {
-        $newsletterempfaenger->cAnrede = 'Frau';
+    if ($recipient->cAnrede === 'f') {
+        $recipient->cAnrede = 'Frau';
     }
-    if ($newsletterempfaenger->cAnrede === 'm' || $newsletterempfaenger->cAnrede === 'h') {
-        $newsletterempfaenger->cAnrede = 'Herr';
+    if ($recipient->cAnrede === 'm' || $recipient->cAnrede === 'h') {
+        $recipient->cAnrede = 'Herr';
     }
-    $newsletterempfaenger->cOptCode    = create_NewsletterCode('cOptCode', $newsletterempfaenger->cEmail);
-    $newsletterempfaenger->cLoeschCode = create_NewsletterCode('cLoeschCode', $newsletterempfaenger->cEmail);
-    // Datum  des Eintrags setzen
-    $newsletterempfaenger->dEingetragen = 'NOW()';
-    $newsletterempfaenger->kSprache     = $_POST['kSprache'];
-    // Ist der Newsletterempfaenger registrierter Kunde?
-    $newsletterempfaenger->kKunde = 0;
-    $KundenDaten                  = Shop::Container()->getDB()->select('tkunde', 'cMail', $newsletterempfaenger->cEmail);
-    if ($KundenDaten->kKunde > 0) {
-        $newsletterempfaenger->kKunde   = $KundenDaten->kKunde;
-        $newsletterempfaenger->kSprache = $KundenDaten->kSprache;
+    $recipient->cOptCode     = $instance->createCode('cOptCode', $recipient->cEmail);
+    $recipient->cLoeschCode  = $instance->createCode('cLoeschCode', $recipient->cEmail);
+    $recipient->dEingetragen = 'NOW()';
+    $recipient->kSprache     = $_POST['kSprache'];
+    $recipient->kKunde       = 0;
+
+    $customerData = $db->select('tkunde', 'cMail', $recipient->cEmail);
+    if ($customerData !== null && $customerData->kKunde > 0) {
+        $recipient->kKunde   = (int)$customerData->kKunde;
+        $recipient->kSprache = (int)$customerData->kSprache;
     }
-    $oTMP               = new stdClass();
-    $oTMP->cAnrede      = $newsletterempfaenger->cAnrede;
-    $oTMP->cVorname     = $newsletterempfaenger->cVorname;
-    $oTMP->cNachname    = $newsletterempfaenger->cNachname;
-    $oTMP->kKunde       = $newsletterempfaenger->kKunde;
-    $oTMP->cEmail       = $newsletterempfaenger->cEmail;
-    $oTMP->dEingetragen = $newsletterempfaenger->dEingetragen;
-    $oTMP->kSprache     = $newsletterempfaenger->kSprache;
-    $oTMP->cOptCode     = $newsletterempfaenger->cOptCode;
-    $oTMP->cLoeschCode  = $newsletterempfaenger->cLoeschCode;
-    $oTMP->nAktiv       = $newsletterempfaenger->nAktiv;
-    // In DB schreiben
-    if (Shop::Container()->getDB()->insert('tnewsletterempfaenger', $oTMP)) {
-        // NewsletterEmpfaengerHistory fuettern
-        $oTMP               = new stdClass();
-        $oTMP->cAnrede      = $newsletterempfaenger->cAnrede;
-        $oTMP->cVorname     = $newsletterempfaenger->cVorname;
-        $oTMP->cNachname    = $newsletterempfaenger->cNachname;
-        $oTMP->kKunde       = $newsletterempfaenger->kKunde;
-        $oTMP->cEmail       = $newsletterempfaenger->cEmail;
-        $oTMP->dEingetragen = $newsletterempfaenger->dEingetragen;
-        $oTMP->kSprache     = $newsletterempfaenger->kSprache;
-        $oTMP->cOptCode     = $newsletterempfaenger->cOptCode;
-        $oTMP->cLoeschCode  = $newsletterempfaenger->cLoeschCode;
-        $oTMP->cAktion      = 'Daten-Import';
-        $res                = Shop::Container()->getDB()->insert('tnewsletterempfaengerhistory', $oTMP);
+    $ins               = new stdClass();
+    $ins->cAnrede      = $recipient->cAnrede;
+    $ins->cVorname     = $recipient->cVorname;
+    $ins->cNachname    = $recipient->cNachname;
+    $ins->kKunde       = $recipient->kKunde;
+    $ins->cEmail       = $recipient->cEmail;
+    $ins->dEingetragen = $recipient->dEingetragen;
+    $ins->kSprache     = $recipient->kSprache;
+    $ins->cOptCode     = $recipient->cOptCode;
+    $ins->cLoeschCode  = $recipient->cLoeschCode;
+    $ins->nAktiv       = $recipient->nAktiv;
+    if ($db->insert('tnewsletterempfaenger', $ins)) {
+        $ins               = new stdClass();
+        $ins->cAnrede      = $recipient->cAnrede;
+        $ins->cVorname     = $recipient->cVorname;
+        $ins->cNachname    = $recipient->cNachname;
+        $ins->kKunde       = $recipient->kKunde;
+        $ins->cEmail       = $recipient->cEmail;
+        $ins->dEingetragen = $recipient->dEingetragen;
+        $ins->kSprache     = $recipient->kSprache;
+        $ins->cOptCode     = $recipient->cOptCode;
+        $ins->cLoeschCode  = $recipient->cLoeschCode;
+        $ins->cAktion      = 'Daten-Import';
+        $res               = $db->insert('tnewsletterempfaengerhistory', $ins);
         if ($res) {
-            return 'Datensatz OK. Importiere: ' .
-                $newsletterempfaenger->cVorname . ' ' .
-                $newsletterempfaenger->cNachname;
+            return __('successImport') .
+                $recipient->cVorname . ' ' .
+                $recipient->cNachname;
         }
     }
 
-    return 'Fehler beim Import dieser Zeile!';
+    return __('errorImportRow');
 }

@@ -18,10 +18,7 @@
         {/if}
     
         {include file='snippets/extension.tpl'}
-        {if !empty($hinweis)}
-            <div class="alert alert-info">{$hinweis}</div>
-        {/if}
-        {if !empty($fehlendeAngaben) && !$hinweis}
+        {if !empty($fehlendeAngaben)}
             <div class="alert alert-danger">{lang key='mandatoryFieldNotification' section='errorMessages'}</div>
         {/if}
         {if isset($fehlendeAngaben.email_vorhanden) && $fehlendeAngaben.email_vorhanden == 1}
@@ -33,15 +30,19 @@
         <div id="new_customer" class="row">
             <div class="col-xs-12">
                 {if !isset($checkout) && empty($smarty.session.Kunde->kKunde)}
+                    {opcMountPoint id='opc_before_heading'}
                     <h1>{lang key='createNewAccount' section='account data'}</h1>
                 {/if}
                 <div class="panel-wrap" id="panel-register-form">
+                    {opcMountPoint id='opc_before_form'}
                     {include file='register/form.tpl'}
                 </div>
             </div>
         </div>
     {elseif $step === 'formular eingegangen'}
+        {opcMountPoint id='opc_before_heading'}
         <h1>{lang key='accountCreated' section='global'}</h1>
+        {opcMountPoint id='opc_after_heading'}
         <p>{lang key='activateAccountDesc' section='global'}</p>
     {/if}
 {/block}

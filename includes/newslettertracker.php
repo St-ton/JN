@@ -3,47 +3,52 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\Helpers\Request;
+use JTL\Campaign;
+use JTL\Session\Frontend;
+use JTL\Shop;
+
 require_once __DIR__ . '/globalinclude.php';
 
-$session = \Session\Session::getInstance();
+$session = Frontend::getInstance();
 
 // kK   = kKampagne
 // kN   = kNewsletter
 // kNE  = kNewsletterEmpfaenger
-if (RequestHelper::verifyGPCDataInt('kK') > 0
-    && RequestHelper::verifyGPCDataInt('kN') > 0
-    && RequestHelper::verifyGPCDataInt('kNE') > 0
+if (Request::verifyGPCDataInt('kK') > 0
+    && Request::verifyGPCDataInt('kN') > 0
+    && Request::verifyGPCDataInt('kNE') > 0
 ) {
-    $kKampagne             = RequestHelper::verifyGPCDataInt('kK');
-    $kNewsletter           = RequestHelper::verifyGPCDataInt('kN');
-    $kNewsletterEmpfaenger = RequestHelper::verifyGPCDataInt('kNE');
+    $campaignID   = Request::verifyGPCDataInt('kK');
+    $newsletterID = Request::verifyGPCDataInt('kN');
+    $recipientID  = Request::verifyGPCDataInt('kNE');
     // Prüfe ob der Newsletter vom Newsletterempfänger bereits geöffnet wurde.
-    $oNewsletterTrackTMP = Shop::Container()->getDB()->select(
+    $tracking = Shop::Container()->getDB()->select(
         'tnewslettertrack',
         'kKampagne',
-        $kKampagne,
+        $campaignID,
         'kNewsletter',
-        $kNewsletter,
+        $newsletterID,
         'kNewsletterEmpfaenger',
-        $kNewsletterEmpfaenger,
+        $recipientID,
         false,
         'kNewsletterTrack'
     );
-    if (!isset($oNewsletterTrackTMP->kNewsletterTrack)) {
-        $oNewsletterTrack                        = new stdClass();
-        $oNewsletterTrack->kKampagne             = $kKampagne;
-        $oNewsletterTrack->kNewsletter           = $kNewsletter;
-        $oNewsletterTrack->kNewsletterEmpfaenger = $kNewsletterEmpfaenger;
-        $oNewsletterTrack->dErstellt             = 'NOW()';
+    if (!isset($tracking->kNewsletterTrack)) {
+        $newTracking                        = new stdClass();
+        $newTracking->kKampagne             = $campaignID;
+        $newTracking->kNewsletter           = $newsletterID;
+        $newTracking->kNewsletterEmpfaenger = $recipientID;
+        $newTracking->dErstellt             = 'NOW()';
 
-        $kNewsletterTrack = Shop::Container()->getDB()->insert('tnewslettertrack', $oNewsletterTrack);
-
-        if ($kNewsletterTrack > 0) {
-            $oKampagne = new Kampagne($kKampagne);
+        $id = Shop::Container()->getDB()->insert('tnewslettertrack', $newTracking);
+        if ($id > 0) {
+            $campaign = new Campaign($campaignID);
             // Kampagnenbesucher in die Session
-            $_SESSION['Kampagnenbesucher'] = $oKampagne;
+            $_SESSION['Kampagnenbesucher'] = $campaign;
 
-            Kampagne::setCampaignAction(KAMPAGNE_DEF_NEWSLETTER, $kNewsletterTrack, 1);
+            Campaign::setCampaignAction(KAMPAGNE_DEF_NEWSLETTER, $id, 1);
         }
     }
 }

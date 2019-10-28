@@ -4,17 +4,24 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL\Validation;
+namespace JTL\Services\JTL\Validation;
 
 use function Functional\none;
 
 /**
  * Class ObjectValidationResult
- * @package Services\JTL\Validation
+ * @package JTL\Services\JTL\Validation
  */
 class SetValidationResult implements SetValidationResultInterface
 {
+    /**
+     * @var array
+     */
     protected $fieldResults = [];
+
+    /**
+     * @var array|object
+     */
     protected $set;
 
     /**
@@ -29,7 +36,7 @@ class SetValidationResult implements SetValidationResultInterface
     /**
      * @inheritdoc
      */
-    public function setFieldResult($fieldName, ValidationResultInterface $valueValidationResult)
+    public function setFieldResult($fieldName, ValidationResultInterface $valueValidationResult): void
     {
         $this->fieldResults[$fieldName] = $valueValidationResult;
     }
@@ -37,7 +44,7 @@ class SetValidationResult implements SetValidationResultInterface
     /**
      * @inheritdoc
      */
-    public function getFieldResult($fieldName)
+    public function getFieldResult($fieldName): ValidationResultInterface
     {
         return $this->fieldResults[$fieldName];
     }
@@ -45,7 +52,7 @@ class SetValidationResult implements SetValidationResultInterface
     /**
      * @inheritdoc
      */
-    public function getSetAsArray()
+    public function getSetAsArray(): ?array
     {
         return $this->isValid() ? $this->set : null;
     }
@@ -53,7 +60,7 @@ class SetValidationResult implements SetValidationResultInterface
     /**
      * @inheritdoc
      */
-    public function getSetAsArrayInsecure()
+    public function getSetAsArrayInsecure(): array
     {
         return $this->set;
     }
@@ -77,7 +84,7 @@ class SetValidationResult implements SetValidationResultInterface
     /**
      * @inheritdoc
      */
-    public function isValid()
+    public function isValid(): bool
     {
         return none($this->fieldResults, function (ValidationResultInterface $fieldResult) {
             return !$fieldResult->isValid();

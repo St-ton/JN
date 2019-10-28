@@ -7,16 +7,6 @@
 {/block}
 
 {block name='content'}
-    {if !empty($hinweis)}
-        <div class="alert alert-success">
-            {$hinweis}
-        </div>
-    {/if}
-    {if !empty($fehler)}
-        <div class="alert alert-danger">
-            {$fehler}
-        </div>
-    {/if}
     {include file='snippets/extension.tpl'}
     {if !isset($cPost_arr)}
         {assign var=cPost_arr value=array()}
@@ -24,6 +14,7 @@
     {if $cOption === 'eintragen'}
         {if empty($bBereitsAbonnent)}
             {block name='newsletter-subscribe'}
+            {opcMountPoint id='opc_before_newsletter_subscribe'}
             <div id="newsletter-subscribe" class="panel-wrap">
                 <div class="panel panel-default">
                     <div class="panel-heading">
@@ -35,13 +26,6 @@
     
                         <form method="post" action="{get_static_route id='newsletter.php'}" role="form" class="evo-validate">
                             <fieldset>
-                                <div class="form-group float-label-control">
-                                    <label for="newslettertitle" class="control-label">{lang key='newslettertitle' section='newsletter'}</label>
-                                    <select id="newslettertitle" name="cAnrede" class="form-control">
-                                        <option value="w"{if (isset($oKunde->cAnrede) && $oKunde->cAnrede === 'w')} selected="selected"{/if}>{lang key='salutationW'}</option>
-                                        <option value="m"{if (isset($oKunde->cAnrede) && $oKunde->cAnrede === 'm')} selected="selected"{/if}>{lang key='salutationM'}</option>
-                                    </select>
-                                </div>
                                 {if !empty($oPlausi->cPost_arr.cVorname)}
                                     {assign var='inputVal_firstname' value=$oPlausi->cPost_arr.cVorname}
                                 {elseif !empty($oKunde->cVorname)}
@@ -117,6 +101,7 @@
         {/if}
         
         {block name='newsletter-unsubscribe'}
+        {opcMountPoint id='opc_before_newsletter_unsubscribe'}
         <div id="newsletter-unsubscribe" class="panel-wrap top15">
             <div class="panel panel-default">
                 <div class="panel-heading">

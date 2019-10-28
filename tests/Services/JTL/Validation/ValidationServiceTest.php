@@ -4,16 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL\Validation;
+namespace Tests\Services\JTL\Validation;
 
-
-use Services\JTL\Validation\Rules\Email;
+use JTL\Services\JTL\Validation\RuleSet;
+use JTL\Services\JTL\Validation\ValidationService;
+use Tests\BaseTestCase;
 
 /**
  * Class ValidationServiceTest
  * @package Services\JTL\Validation
  */
-class ValidationServiceTest extends \PHPUnit_Framework_TestCase
+class ValidationServiceTest extends BaseTestCase
 {
     public function test_validate_happyPath()
     {
@@ -118,22 +119,22 @@ class ValidationServiceTest extends \PHPUnit_Framework_TestCase
 
     public function test_validateSet_happyPath()
     {
-        $keySet = (new RuleSet())->integer()->gt(0);
+        $keySet  = (new RuleSet())->integer()->gt(0);
         $mailSet = (new RuleSet())->email();
 
         $rulesConfig = [
-            'userId'  => $keySet,
-            'email' => $mailSet,
+            'userId' => $keySet,
+            'email'  => $mailSet,
         ];
-        $array = [
+        $array       = [
             'userId' => 10,
-            'email' => 'martin.schophaus@jtl-software.com',
+            'email'  => 'martin.schophaus@jtl-software.com',
         ];
 
         $vs = new ValidationService([], [], []);
         $this->assertTrue($vs->validateSet($array, $rulesConfig)->isValid());
 
-        $array['userId'] = 'hallo';
+        $array['userId']  = 'hallo';
         $validationResult = $vs->validateSet($array, $rulesConfig);
         $this->assertFalse($validationResult->isValid());
         $this->assertTrue($validationResult->getFieldResult('email')->isValid());
@@ -145,56 +146,56 @@ class ValidationServiceTest extends \PHPUnit_Framework_TestCase
 
     public function test_validateSet_keyDiffBetweenDefinitionAndSet_throwsException()
     {
-        $keySet = (new RuleSet())->integer()->gt(0);
+        $keySet  = (new RuleSet())->integer()->gt(0);
         $mailSet = (new RuleSet())->email();
 
         $rulesConfig = [
-            'userId'  => $keySet,
-            'email' => $mailSet,
+            'userId' => $keySet,
+            'email'  => $mailSet,
         ];
-        $array = [
-            'userId' => 10,
-            'email' => 'martin.schophaus@jtl-software.com',
+        $array       = [
+            'userId'              => 10,
+            'email'               => 'martin.schophaus@jtl-software.com',
             'something_malicious' => '<script>alert("evil things")</script>',
         ];
-        $vs = new ValidationService([], [], []);
+        $vs          = new ValidationService([], [], []);
         $this->expectException(\Exception::class);
         $vs->validateSet($array, $rulesConfig);
     }
 
     public function test_validateSet_nestedSet_throwsException()
     {
-        $keySet = (new RuleSet())->integer()->gt(0);
+        $keySet  = (new RuleSet())->integer()->gt(0);
         $mailSet = (new RuleSet())->email();
 
         $rulesConfig = [
-            'userId'  => $keySet,
-            'email' => $mailSet,
+            'userId' => $keySet,
+            'email'  => $mailSet,
         ];
-        $array = [
+        $array       = [
             'userId' => [10, 20],
-            'email' => 'martin.schophaus@jtl-software.com',
+            'email'  => 'martin.schophaus@jtl-software.com',
         ];
-        $vs = new ValidationService([], [], []);
+        $vs          = new ValidationService([], [], []);
         $this->expectException(\Exception::class);
         $vs->validateSet($array, $rulesConfig);
     }
 
     public function test_validateSet_worksWithObjects()
     {
-        $keySet = (new RuleSet())->integer()->gt(0);
+        $keySet  = (new RuleSet())->integer()->gt(0);
         $mailSet = (new RuleSet())->email();
 
         $rulesConfig = [
-            'userId'  => $keySet,
-            'email' => $mailSet,
+            'userId' => $keySet,
+            'email'  => $mailSet,
         ];
-        $array = [
+        $array       = [
             'userId' => 10,
-            'email' => 'martin.schophaus@jtl-software.com',
+            'email'  => 'martin.schophaus@jtl-software.com',
         ];
-        $vs = new ValidationService([], [], []);
-        $result = $vs->validateSet((object)$array, $rulesConfig);
+        $vs          = new ValidationService([], [], []);
+        $result      = $vs->validateSet($array, $rulesConfig);
         $this->assertTrue($result->isValid());
     }
 

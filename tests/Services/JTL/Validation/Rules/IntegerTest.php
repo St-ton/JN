@@ -6,11 +6,14 @@
 
 namespace Services\JTL\Validation\Rules;
 
+use JTL\Services\JTL\Validation\Rules\Integer;
+use Tests\BaseTestCase;
+
 /**
  * Class IntegerTest
  * @package Services\JTL\Validation\Rules
  */
-class IntegerTest extends \PHPUnit_Framework_TestCase
+class IntegerTest extends BaseTestCase
 {
     public function test()
     {

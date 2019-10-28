@@ -123,7 +123,7 @@ class DOMDocumentWrapper
     public function load($markup, $contentType = null, $newDocumentID = null)
     {
         $this->contentType = strtolower($contentType);
-        $loaded = false;
+        $loaded            = false;
         if ($markup instanceof DOMDocument) {
             $this->document = $markup;
             $this->root     = $this->document;
@@ -149,7 +149,7 @@ class DOMDocumentWrapper
     protected function afterMarkupLoad()
     {
         if ($this->isXHTML) {
-            $this->xpath->registerNamespace("html", "http://www.w3.org/1999/xhtml");
+            $this->xpath->registerNamespace('html', 'http://www.w3.org/1999/xhtml');
         }
     }
 
@@ -211,8 +211,8 @@ class DOMDocumentWrapper
         if (!$version) {
             $version = '1.0';
         }
-        $this->document = new DOMDocument($version, $charset);
-        $this->charset  = $this->document->encoding;
+        $this->document                     = new DOMDocument($version, $charset);
+        $this->charset                      = $this->document->encoding;
         $this->document->formatOutput       = true;
         $this->document->preserveWhiteSpace = true;
     }
@@ -232,8 +232,8 @@ class DOMDocumentWrapper
         if (!isset($this->isDocumentFragment)) {
             $this->isDocumentFragment = self::isDocumentFragmentHTML($markup);
         }
-        $charset            = null;
-        $documentCharset    = $this->charsetFromHTML($markup);
+        $charset         = null;
+        $documentCharset = $this->charsetFromHTML($markup);
         if ($documentCharset) {
             $charset = $documentCharset;
             $markup  = $this->charsetFixHTML($markup);
@@ -248,7 +248,7 @@ class DOMDocumentWrapper
         // HTTP 1.1 says that the default charset is ISO-8859-1
         // @see http://www.w3.org/International/O-HTTP-charset
         if (!$documentCharset) {
-            $documentCharset    = JTL_CHARSET;
+            $documentCharset = JTL_CHARSET;
         }
         // Should be careful here, still need 'magic encoding detection' since lots of pages have other 'default encoding'
         // Worse, some pages can have mixed encodings... we'll try not to worry about that
@@ -268,11 +268,11 @@ class DOMDocumentWrapper
                     // Tricky..
                 }
                 if ($docEncoding !== $requestedCharset) {
-                    $markup = mb_convert_encoding($markup, $requestedCharset, $docEncoding);
+                    $markup  = mb_convert_encoding($markup, $requestedCharset, $docEncoding);
                     $charset = $requestedCharset;
                 }
             } else {
-                phpQuery::debug("TODO: charset conversion without mbstring...");
+                phpQuery::debug('TODO: charset conversion without mbstring...');
             }
         }
         if ($this->isDocumentFragment) {
@@ -354,7 +354,7 @@ class DOMDocumentWrapper
             // see http://pl2.php.net/manual/en/book.dom.php#78929
             // LIBXML_DTDLOAD (>= PHP 5.1)
             // does XML ctalogues works with LIBXML_NONET
-            //		$this->document->resolveExternals = true;
+            //      $this->document->resolveExternals = true;
             // TODO test LIBXML_COMPACT for performance improvement
             // create document
             $this->documentCreate($charset);
@@ -378,7 +378,7 @@ class DOMDocumentWrapper
 
             return $return;
         }
-        throw new Exception("Error loading XML markup");
+        throw new Exception('Error loading XML markup');
     }
 
     /**
@@ -391,7 +391,7 @@ class DOMDocumentWrapper
             return strpos($this->contentType, 'xhtml') !== false;
         }
 
-        return strpos($markup, "<!DOCTYPE html") !== false;
+        return strpos($markup, '<!DOCTYPE html') !== false;
     }
 
     /**
@@ -433,7 +433,8 @@ class DOMDocumentWrapper
         // find meta tag
         preg_match(
             '@<meta[^>]+http-equiv\\s*=\\s*(["|\'])Content-Type\\1([^>]+?)>@i',
-            $markup, $matches
+            $markup,
+            $matches
         );
         if (!isset($matches[0])) {
             return [null, null];
@@ -467,7 +468,8 @@ class DOMDocumentWrapper
         // find declaration
         preg_match(
             '@<' . '?xml[^>]+encoding\\s*=\\s*(["|\'])(.*?)\\1@i',
-            $markup, $matches
+            $markup,
+            $matches
         );
 
         return isset($matches[2])
@@ -488,7 +490,9 @@ class DOMDocumentWrapper
         // find meta tag
         preg_match(
             '@\s*<meta[^>]+http-equiv\\s*=\\s*(["|\'])Content-Type\\1([^>]+?)>@i',
-            $markup, $matches, PREG_OFFSET_CAPTURE
+            $markup,
+            $matches,
+            PREG_OFFSET_CAPTURE
         );
         if (!isset($matches[0])) {
             return;
@@ -601,7 +605,7 @@ class DOMDocumentWrapper
             // string markup
             $fake = $this->documentFragmentCreate($source, $sourceCharset);
             if ($fake === false) {
-                throw new Exception("Error loading documentFragment markup");
+                throw new Exception('Error loading documentFragment markup');
             }
 
             return $this->import($fake->root->childNodes);

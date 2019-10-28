@@ -21,7 +21,7 @@
             }
 
             createNotify({
-                title: 'Volltextsuche verwenden',
+                title: '{__('useFulltextSearch')}',
                 message: msg
             }, {
                 type: type
@@ -37,7 +37,7 @@
         function showCacheNotification(pResult) {
             var isError = pResult && pResult.error;
             createNotify({
-                title: 'Sucheinstellungen &auml;ndern',
+                title: '{__('searchSettingsChange')}',
                 message: isError ? pResult.error.message : pResult.hinweis
             }, {
                 type: isError ? 'danger' : 'info'
@@ -53,7 +53,7 @@
     $(document).ready(function () {
         $('#suche_fulltext').val('N')
             .prop('disabled', 'disabled')
-            .prop('title', 'Die Volltextsuche erfordert MySQL ab Version 5.6!');
+            .prop('title', '{__('fulltextSearchMysql')}');
     });
 </script>
 {/if}

@@ -1,0 +1,75 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "bilderverwaltung"
+msgstr "Bilderverwaltung"
+
+msgid "bilderverwaltungURL"
+msgstr "https://jtl-url.de/sbk4m"
+
+msgid "bilderverwaltungDesc"
+msgstr "Hier sehen Sie eine Übersicht zu den aktuell bereits generierten Artikelbildern und ggf. aufgetretenen Fehlern. Artikelbilder werden in den verschiedenen verfügbaren Größen in JTL-Shop erst dann generiert, wenn diese zum ersten Mal im Frontend aufgerufen werden. Dies kann vereinzelt zu längeren Ladezeiten führen. Über „Generieren“ können Sie alle noch nicht erzeugten Bilder automatisch erstellen lassen. Über „Cache leeren“ können Sie alle erzeugten Bilder löschen."
+
+msgid "headlineTyp"
+msgstr "Typ"
+
+msgid "headlineTotal"
+msgstr "Insgesamt"
+
+msgid "headlineCache"
+msgstr "Im Cache"
+
+msgid "headlineSize"
+msgstr "Größe"
+
+msgid "deleteCachedPics"
+msgstr " Cache leeren"
+
+msgid "generatePics"
+msgstr " Generieren"
+
+msgid "currentCorruptedPics"
+msgstr "Aktuell fehlerhafte Bilder:"
+
+msgid "articlenr"
+msgstr "Artikelnummer"
+
+msgid "articlePic"
+msgstr "Artikelbild"
+
+msgid "corruptedPicsNote"
+msgstr "Fehlerhafte Bilder sind Bilder, die zwar einen Eintrag in der Datenbank haben, allerdings nicht als Datei auf dem Server vorhanden sind. Es werden maximal 50 Ergebnisse angezeigt."
+
+msgid "successCacheReset"
+msgstr "Cache wurde erfolgreich zurückgesetzt."
+
+msgid "successImageCleanup"
+msgstr "Bilder wurden erfolgreich aufgeräumt."
+
+msgid "pendingImageCleanup"
+msgstr "Bilder werden aufgeräumt…"
+
+msgid "successImageDelete"
+msgstr "Bilder wurden erfolgreich gelöscht."
+
+msgid "successImageGenerate"
+msgstr "Bilder wurden erfolgreich generiert."
+
+msgid "pendingImageDelete"
+msgstr "Bilder werden gelöscht…"
+
+msgid "pendingStatisticCalc"
+msgstr "Statistiken werden berechnet…"
+
+msgid "pendingImageGenerate"
+msgstr "Bilder werden generiert…"
+
+msgid "newscategory"
+msgstr "Newskategorie"
+
+msgid "configgroup"
+msgstr "Konfigurationsgruppe"
+
+msgid "cleanup"
+msgstr "Aufräumen"

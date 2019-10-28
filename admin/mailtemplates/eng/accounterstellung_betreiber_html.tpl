@@ -1,8 +1,8 @@
 {includeMailTemplate template=header type=html}
 
-Dear {$Kunde->cAnredeLocalized} {$Kunde->cNachname},<br>
+Dear {$Kunde->cVorname} {$Kunde->cNachname},<br>
 <br>
-As requested we have created an account for you in our online shop at <strong><a href="{$ShopURL}" target="_blank" style="color: #313131;">{$ShopURL}</a></strong>.<br>
+As requested we have created an account for you for our online shop at <strong><a href="{$ShopURL}" target="_blank" style="color: #313131;">{$ShopURL}</a></strong>.<br>
 <br>
 Please review your account details:<br>
 <br>
@@ -24,7 +24,7 @@ Please review your account details:<br>
 				<tr>
 					<td>
 						<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-							{$Kunde->cAnredeLocalized} {$Kunde->cVorname} {$Kunde->cNachname}<br>
+							{$Kunde->cVorname} {$Kunde->cNachname}<br>
 							{$Kunde->cStrasse} {$Kunde->cHausnummer}<br>
 							{if $Kunde->cAdressZusatz}{$Kunde->cAdressZusatz}{/if}<br>
 							{$Kunde->cPLZ} {$Kunde->cOrt}<br>
@@ -43,7 +43,7 @@ Please review your account details:<br>
 				<tr>
 					<td>
 						<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-							<strong>Tel:</strong>
+							<strong>Phone:</strong>
 						</font>
 					</td>
 				</tr>
@@ -120,7 +120,7 @@ Please review your account details:<br>
 				<tr>
 					<td>
 						<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-							<strong>Email:</strong>
+							<strong>Email address:</strong>
 						</font>
 					</td>
 				</tr>
@@ -189,11 +189,10 @@ Please review your account details:<br>
 	</tr>
 	{/if}
 </table><br>
-Using these account details you can log into your personal account in
-future and track the current status of your order.<br>
+Using these account details you can log in to your personal account and track the current status of your order.<br>
 <br>
 We are happy to welcome you as a new customer. If you have any
-questions on our range or special products, please simply contact us.<br>
+questions concerning our product portfolio or special items, please do not hesitate to contact us.<br>
 <br>
 We hope you will enjoy exploring our range of products.<br>
 <br>

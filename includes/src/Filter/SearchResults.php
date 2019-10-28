@@ -4,26 +4,28 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter;
+namespace JTL\Filter;
 
-use Boxes\Items\AbstractBox;
-use Filter\Pagination\Info;
+use Illuminate\Support\Collection;
+use JTL\Boxes\Items\AbstractBox;
+use JTL\Filter\Pagination\Info;
+use JTL\Helpers\Text;
+use JTL\MagicCompatibilityTrait;
 use function Functional\every;
 use function Functional\filter;
 use function Functional\invoke;
 use function Functional\map;
-use Tightenco\Collect\Support\Collection;
 
 /**
  * Class SearchResults
- * @package Filter
+ * @package JTL\Filter
  */
 class SearchResults implements SearchResultsInterface
 {
-    use \MagicCompatibilityTrait;
+    use MagicCompatibilityTrait;
 
     /**
-     * @var \Tightenco\Collect\Support\Collection()
+     * @var Collection()
      * @former Artikel
      */
     private $products;
@@ -89,15 +91,9 @@ class SearchResults implements SearchResultsInterface
 
     /**
      * @var Option[]
-     * @former Tags
-     */
-    private $tagFilterOptions = [];
-
-    /**
-     * @var Option[]
      * @former MerkmalFilter
      */
-    private $attributeFilterOptions = [];
+    private $characteristicFilterOptions = [];
 
     /**
      * @var Option[]
@@ -143,10 +139,6 @@ class SearchResults implements SearchResultsInterface
      * @var string
      */
     public $searchFilterJSON;
-    /**
-     * @var string
-     */
-    public $tagFilterJSON;
 
     /**
      * @var array
@@ -173,14 +165,12 @@ class SearchResults implements SearchResultsInterface
         'SucheErfolglos'      => 'SearchUnsuccessful',
         'Herstellerauswahl'   => 'ManufacturerFilterOptions',
         'Bewertung'           => 'RatingFilterOptions',
-        'Tags'                => 'TagFilterOptions',
-        'MerkmalFilter'       => 'AttributeFilterOptions',
+        'MerkmalFilter'       => 'CharacteristicFilterOptions',
         'Preisspanne'         => 'PriceRangeFilterOptions',
         'Kategorieauswahl'    => 'CategoryFilterOptions',
         'SuchFilter'          => 'SearchFilterOptions',
         'Suchspecialauswahl'  => 'SearchSpecialFilterOptions',
         'SuchFilterJSON'      => 'SearchFilterJSON',
-        'TagJSON'             => 'TagFilterJSON'
     ];
 
     public function __construct()
@@ -355,7 +345,7 @@ class SearchResults implements SearchResultsInterface
     /**
      * @inheritdoc
      */
-    public function getSearchTerm()
+    public function getSearchTerm(): ?string
     {
         return $this->searchTerm;
     }
@@ -373,7 +363,7 @@ class SearchResults implements SearchResultsInterface
     /**
      * @inheritdoc
      */
-    public function getSearchTermWrite()
+    public function getSearchTermWrite(): ?string
     {
         return $this->searchTermWrite;
     }
@@ -445,35 +435,17 @@ class SearchResults implements SearchResultsInterface
     /**
      * @inheritdoc
      */
-    public function getTagFilterOptions(): array
+    public function getCharacteristicFilterOptions(): array
     {
-        return $this->tagFilterOptions;
+        return $this->characteristicFilterOptions;
     }
 
     /**
      * @inheritdoc
      */
-    public function setTagFilterOptions($options): SearchResultsInterface
+    public function setCharacteristicFilterOptions($options): SearchResultsInterface
     {
-        $this->tagFilterOptions = $options;
-
-        return $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getAttributeFilterOptions(): array
-    {
-        return $this->attributeFilterOptions;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setAttributeFilterOptions($options): SearchResultsInterface
-    {
-        $this->attributeFilterOptions = $options;
+        $this->characteristicFilterOptions = $options;
 
         return $this;
     }
@@ -571,25 +543,7 @@ class SearchResults implements SearchResultsInterface
     /**
      * @inheritdoc
      */
-    public function getTagFilterJSON()
-    {
-        return $this->tagFilterJSON;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setTagFilterJSON($json): SearchResultsInterface
-    {
-        $this->tagFilterJSON = $json;
-
-        return $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getSearchFilterJSON()
+    public function getSearchFilterJSON(): ?string
     {
         return $this->searchFilterJSON;
     }
@@ -607,7 +561,7 @@ class SearchResults implements SearchResultsInterface
     /**
      * @inheritdoc
      */
-    public function getError()
+    public function getError(): ?string
     {
         return $this->error;
     }
@@ -664,15 +618,14 @@ class SearchResults implements SearchResultsInterface
     public function getAllFilterOptions(): array
     {
         return [
-            'manufacturerFilterOptions'  => $this->getManufacturerFilterOptions(),
-            'ratingFilterOptions'        => $this->getRatingFilterOptions(),
-            'tagFilterOptions'           => $this->getTagFilterOptions(),
-            'attributeFilterOptions'     => $this->getAttributeFilterOptions(),
-            'priceRangeFilterOptions'    => $this->getPriceRangeFilterOptions(),
-            'categoryFilterOptions'      => $this->getCategoryFilterOptions(),
-            'searchFilterOptions'        => $this->getSearchFilterOptions(),
-            'searchSpecialFilterOptions' => $this->getSearchSpecialFilterOptions(),
-            'customFilterOptions'        => $this->getCustomFilterOptions()
+            'manufacturerFilterOptions'   => $this->getManufacturerFilterOptions(),
+            'ratingFilterOptions'         => $this->getRatingFilterOptions(),
+            'CharacteristicFilterOptions' => $this->getCharacteristicFilterOptions(),
+            'priceRangeFilterOptions'     => $this->getPriceRangeFilterOptions(),
+            'categoryFilterOptions'       => $this->getCategoryFilterOptions(),
+            'searchFilterOptions'         => $this->getSearchFilterOptions(),
+            'searchSpecialFilterOptions'  => $this->getSearchSpecialFilterOptions(),
+            'customFilterOptions'         => $this->getCustomFilterOptions()
         ];
     }
 
@@ -680,15 +633,16 @@ class SearchResults implements SearchResultsInterface
      * @param FilterInterface[] $activeFilters
      * @param FilterInterface[] $availableFilters
      */
-    private function autoActivateOptions($activeFilters, $availableFilters)
+    private function autoActivateOptions($activeFilters, $availableFilters): void
     {
         foreach ($activeFilters as $activeFilter) {
             $class        = $activeFilter->getClassName();
             $activeValues = $activeFilter->getActiveValues();
             foreach ($this->getActiveFiltersByClassName($availableFilters, $class, $activeValues) as $filter) {
+                /** @var FilterInterface $filter */
                 $currentValues = $filter->getActiveValues();
                 $act           = \is_array($currentValues)
-                    ? map($currentValues, function ($e) {
+                    ? map($currentValues, function (FilterInterface $e) {
                         return $e->getValue();
                     })
                     : [$currentValues->getValue()];
@@ -701,7 +655,7 @@ class SearchResults implements SearchResultsInterface
      * @param FilterInterface $filter
      * @param array           $values
      */
-    private function updateOptions(FilterInterface $filter, $values)
+    private function updateOptions(FilterInterface $filter, $values): void
     {
         invoke(filter($filter->getOptions(), function (Option $e) use ($values) {
             return \in_array($e->getValue(), $values, true);
@@ -710,8 +664,8 @@ class SearchResults implements SearchResultsInterface
 
     /**
      * @param FilterInterface[] $filters
-     * @param string $class
-     * @param array $activeValues
+     * @param string            $class
+     * @param array             $activeValues
      * @return array
      */
     private function getActiveFiltersByClassName($filters, $class, $activeValues): array
@@ -730,18 +684,17 @@ class SearchResults implements SearchResultsInterface
         $selectionWizard = false
     ): SearchResultsInterface {
         // @todo: make option
-        $hideActiveOnly          = true;
-        $manufacturerOptions     = $productFilter->getManufacturerFilter()->getOptions();
-        $ratingOptions           = $productFilter->getRatingFilter()->getOptions();
-        $tagOptions              = $productFilter->getTag()->getOptions();
-        $categoryOptions         = $productFilter->getCategoryFilter()->getOptions();
-        $priceRangeOptions       = $productFilter->getPriceRangeFilter()->getOptions($this->getProductCount());
-        $searchSpecialFilters    = $productFilter->getSearchSpecialFilter()->getOptions();
-        $attribtuteFilterOptions = $productFilter->getAttributeFilterCollection()->getOptions([
+        $hideActiveOnly              = true;
+        $manufacturerOptions         = $productFilter->getManufacturerFilter()->getOptions();
+        $ratingOptions               = $productFilter->getRatingFilter()->getOptions();
+        $categoryOptions             = $productFilter->getCategoryFilter()->getOptions();
+        $priceRangeOptions           = $productFilter->getPriceRangeFilter()->getOptions($this->getProductCount());
+        $searchSpecialFilters        = $productFilter->getSearchSpecialFilter()->getOptions();
+        $characteristicFilterOptions = $productFilter->getCharacteristicFilterCollection()->getOptions([
             'oAktuelleKategorie' => $currentCategory,
             'bForce'             => $selectionWizard === true
         ]);
-        $searchFilterOptions     = [];
+        $searchFilterOptions         = [];
         foreach ($productFilter->getSearchFilter() as $searchFilter) {
             $opt = $searchFilter->getOptions();
             if (\is_array($opt)) {
@@ -762,36 +715,28 @@ class SearchResults implements SearchResultsInterface
                 return $e;
             }
         );
+        $json                = AbstractBox::getJSONString(
+            \array_map(
+                function ($e) {
+                    $e->cURL = Text::htmlentitydecode($e->cURL);
+
+                    return $e;
+                },
+                $searchFilterOptions
+            )
+        );
 
         $this->setManufacturerFilterOptions($manufacturerOptions)
-             ->setSortingOptions($productFilter->getSorting()->getOptions())
-             ->setLimitOptions($productFilter->getLimits()->getOptions())
-             ->setRatingFilterOptions($ratingOptions)
-             ->setTagFilterOptions($tagOptions)
-             ->setPriceRangeFilterOptions($priceRangeOptions)
-             ->setCategoryFilterOptions($categoryOptions)
-             ->setSearchFilterOptions($searchFilterOptions)
-             ->setSearchSpecialFilterOptions($searchSpecialFilters)
-             ->setAttributeFilterOptions($attribtuteFilterOptions)
-             ->setCustomFilterOptions($customFilterOptions)
-             ->setSearchFilterJSON(AbstractBox::getJSONString(\array_map(
-                 function ($e) {
-                     $e->cURL = \StringHandler::htmlentitydecode($e->cURL);
-
-                     return $e;
-                 },
-                 $searchFilterOptions
-             )));
-
-        if ($productFilter->getFilterConfig()->getConfig('navigationsfilter')['allgemein_tagfilter_benutzen'] !== 'N') {
-            $this->setTagFilterJSON(AbstractBox::getJSONString(\array_map(
-                function ($e) {
-                    /** @var Option $e */
-                    return $e->setURL(\StringHandler::htmlentitydecode($e->getURL()));
-                },
-                $tagOptions
-            )));
-        }
+            ->setSortingOptions($productFilter->getSorting()->getOptions())
+            ->setLimitOptions($productFilter->getLimits()->getOptions())
+            ->setRatingFilterOptions($ratingOptions)
+            ->setPriceRangeFilterOptions($priceRangeOptions)
+            ->setCategoryFilterOptions($categoryOptions)
+            ->setSearchFilterOptions($searchFilterOptions)
+            ->setSearchSpecialFilterOptions($searchSpecialFilters)
+            ->setCharacteristicFilterOptions($characteristicFilterOptions)
+            ->setCustomFilterOptions($customFilterOptions)
+            ->setSearchFilterJSON($json);
 
         if (empty($searchSpecialFilters)) {
             // hide category filter when a category is being browsed
@@ -825,10 +770,10 @@ class SearchResults implements SearchResultsInterface
         if (empty($ratingOptions)) {
             $productFilter->getRatingFilter()->hide();
         }
-        if (\count($attribtuteFilterOptions) < 1) {
-            $productFilter->getAttributeFilterCollection()->hide();
+        if (\count($characteristicFilterOptions) < 1) {
+            $productFilter->getCharacteristicFilterCollection()->hide();
         } elseif ($hideActiveOnly === true) {
-            foreach ($attribtuteFilterOptions as $af) {
+            foreach ($characteristicFilterOptions as $af) {
                 /** @var Option $af */
                 $options = $af->getOptions();
                 if (\is_array($options)
@@ -845,15 +790,15 @@ class SearchResults implements SearchResultsInterface
                     $af->hide();
                 }
             }
-            if (every($attribtuteFilterOptions, function (Option $item) {
+            if (every($characteristicFilterOptions, function (Option $item) {
                 return $item->getVisibility() === Visibility::SHOW_NEVER;
             })) {
                 // hide the whole attribute filter collection if every filter consists of only active options
-                $productFilter->getAttributeFilterCollection()->hide();
+                $productFilter->getCharacteristicFilterCollection()->hide();
             }
         }
-        $productFilter->getAttributeFilterCollection()
-                      ->setFilterCollection($attribtuteFilterOptions);
+        $productFilter->getCharacteristicFilterCollection()
+            ->setFilterCollection($characteristicFilterOptions);
 
         return $this;
     }

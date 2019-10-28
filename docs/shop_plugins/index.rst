@@ -6,14 +6,16 @@ Plugins
 
     allgemein
     aufbau
+    bootstrapping
     variablen
     hooks
-    hinweise
+    hook_list
     container
     cache
-    hook_list
+    mailing
     fehlercodes
-    short_checkout
     sicherheit
+    short_checkout
+    hinweise
 
 .. include:: /shop_plugins/map.rst.inc

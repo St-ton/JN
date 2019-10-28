@@ -1,13 +1,13 @@
 {includeMailTemplate template=header type=html}
 
-Sehr {if $Kunde->cAnrede == "w"}geehrte{elseif $Kunde->cAnrede == "m"}geehrter{else}geehrte(r){/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},<br>
+Guten Tag {$Kunde->cVorname} {$Kunde->cNachname},
 <br>
 vielen Dank für Ihre Bestellung bei {$Einstellungen.global.global_shopname}.<br>
 <br>
 {if $Verfuegbarkeit_arr.cArtikelName_arr|@count > 0}
 {$Verfuegbarkeit_arr.cHinweis}
 <table cellpadding="0" cellspacing="0" border="0">
-    {foreach from=$Verfuegbarkeit_arr.cArtikelName_arr item=cArtikelname}
+    {foreach $Verfuegbarkeit_arr.cArtikelName_arr as $cArtikelname}
     <tr>
         <td width="18">&bull;</td>
         <td align="left" valign="middle">{$cArtikelname}</td>
@@ -17,19 +17,19 @@ vielen Dank für Ihre Bestellung bei {$Einstellungen.global.global_shopname}.<br
 {/if}
 Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Positionen:<br>
 <br>
-{foreach name=pos from=$Bestellung->Positionen item=Position}
+{foreach $Bestellung->Positionen as $Position}
     <table cellpadding="10" cellspacing="0" border="0" width="100%" style="border-bottom: 1px dotted #929292;">
         <tr>
-            <td class="column" {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === "Y"}width="50%"{else}width="70%"{/if} align="left" valign="top">
-                {if $Position->nPosTyp==1}
+            <td class="column" {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}width="50%"{else}width="70%"{/if} align="left" valign="top">
+                {if $Position->nPosTyp == 1}
                     {if !empty($Position->kKonfigitem)} * {/if}<strong>{$Position->cName}</strong> {if $Position->cArtNr}({$Position->cArtNr}){/if}
                     {if isset($Position->Artikel->nErscheinendesProdukt) && $Position->Artikel->nErscheinendesProdukt}
                         <br>Verfügbar ab: <strong>{$Position->Artikel->Erscheinungsdatum_de}</strong>
                     {/if}
-                    {if $Einstellungen.kaufabwicklung.bestellvorgang_lieferstatus_anzeigen === "Y" && $Position->cLieferstatus}
+                    {if $Einstellungen.kaufabwicklung.bestellvorgang_lieferstatus_anzeigen === 'Y' && $Position->cLieferstatus}
                         <br><small>Lieferzeit: {$Position->cLieferstatus}</small>
                     {/if}<br>
-                    {foreach name=variationen from=$Position->WarenkorbPosEigenschaftArr item=WKPosEigenschaft}
+                    {foreach $Position->WarenkorbPosEigenschaftArr as $WKPosEigenschaft}
                         <br><strong>{$WKPosEigenschaft->cEigenschaftName}</strong>: {$WKPosEigenschaft->cEigenschaftWertName}
                     {/foreach}
                 {else}
@@ -39,7 +39,7 @@ Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Pos
             <td class="column" width="10%" align="left" valign="top">
                 <strong class="mobile-only">Anzahl:</strong> {$Position->nAnzahl}
             </td>
-            {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === "Y" && isset($Position->cEinzelpreisLocalized)}
+            {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y' && isset($Position->cEinzelpreisLocalized)}
                 <td class="column" width="20%" align="right" valign="top">
                     {$Position->cEinzelpreisLocalized[$NettoPreise]}
                 </td>
@@ -51,8 +51,8 @@ Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Pos
     </table>
 {/foreach}
 <table cellpadding="10" cellspacing="0" border="0" width="100%" style="border-bottom: 1px dotted #929292;">
-    {if $Einstellungen.global.global_steuerpos_anzeigen!="N"}
-        {foreach name=steuerpositionen from=$Bestellung->Steuerpositionen item=Steuerposition}
+    {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N'}
+        {foreach $Bestellung->Steuerpositionen as $Steuerposition}
             <tr>
                 <td align="right" valign="top">
                     {$Steuerposition->cName}:
@@ -63,7 +63,7 @@ Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Pos
             </tr>
         {/foreach}
     {/if}
-    {if isset($Bestellung->GuthabenNutzen) && $Bestellung->GuthabenNutzen==1}
+    {if isset($Bestellung->GuthabenNutzen) && $Bestellung->GuthabenNutzen == 1}
         <tr>
             <td align="right" valign="top">
                 Gutschein:
@@ -113,7 +113,7 @@ Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Pos
                     <td>
                         <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
                             {if !empty($Kunde->cFirma)}{$Kunde->cFirma}<br>{/if}
-                            {$Kunde->cAnredeLocalized} {$Kunde->cVorname} {$Kunde->cNachname}<br>
+                            {$Kunde->cVorname} {$Kunde->cNachname}<br>
                             {$Kunde->cStrasse} {$Kunde->cHausnummer}<br>
                             {if $Kunde->cAdressZusatz}{$Kunde->cAdressZusatz}<br>{/if}
                             {$Kunde->cPLZ} {$Kunde->cOrt}<br>
@@ -209,7 +209,7 @@ Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Pos
                 <tr>
                     <td>
                         <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                            <strong>Email:</strong>
+                            <strong>E-Mail:</strong>
                         </font>
                     </td>
                 </tr>
@@ -285,7 +285,7 @@ Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Pos
                         <td>
                             <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
                                 {if !empty($Bestellung->Lieferadresse->cFirma)}{$Bestellung->Lieferadresse->cFirma}<br>{/if}
-                                {$Bestellung->Lieferadresse->cAnredeLocalized} {$Bestellung->Lieferadresse->cVorname} {$Bestellung->Lieferadresse->cNachname}<br>
+                                {$Bestellung->Lieferadresse->cVorname} {$Bestellung->Lieferadresse->cNachname}<br>
                                 {$Bestellung->Lieferadresse->cStrasse} {$Bestellung->Lieferadresse->cHausnummer}<br>
                                 {if $Bestellung->Lieferadresse->cAdressZusatz}{$Bestellung->Lieferadresse->cAdressZusatz}<br>{/if}
                                 {$Bestellung->Lieferadresse->cPLZ} {$Bestellung->Lieferadresse->cOrt}<br>
@@ -414,7 +414,7 @@ Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Pos
 {/if}
 Sie haben folgende Zahlungsart gewählt: {$Bestellung->cZahlungsartName}<br>
 <br>
-{if $Bestellung->Zahlungsart->cModulId === "za_ueberweisung_jtl"}
+{if $Bestellung->Zahlungsart->cModulId === 'za_ueberweisung_jtl'}
     <strong>Bitte führen Sie die folgende Überweisung durch:</strong><br>
     <br>
     <table cellpadding="0" cellspacing="0" border="0" width="100%" style="border-bottom: 1px dotted #929292;">
@@ -563,175 +563,34 @@ Sie haben folgende Zahlungsart gewählt: {$Bestellung->cZahlungsartName}<br>
             </td>
         </tr>
     </table>
-{elseif $Bestellung->Zahlungsart->cModulId === "za_nachnahme_jtl"}
-{elseif $Bestellung->Zahlungsart->cModulId === "za_kreditkarte_jtl"}
-{elseif $Bestellung->Zahlungsart->cModulId === "za_rechnung_jtl"}
-{elseif $Bestellung->Zahlungsart->cModulId === "za_lastschrift_jtl"}
-{elseif $Bestellung->Zahlungsart->cModulId === "za_barzahlung_jtl"}
-{elseif $Bestellung->Zahlungsart->cModulId === "za_paypal_jtl"}
-{elseif $Bestellung->Zahlungsart->cModulId === "za_moneybookers_jtl"}
+{elseif $Bestellung->Zahlungsart->cModulId === 'za_nachnahme_jtl'}
+{elseif $Bestellung->Zahlungsart->cModulId === 'za_kreditkarte_jtl'}
+{elseif $Bestellung->Zahlungsart->cModulId === 'za_rechnung_jtl'}
+{elseif $Bestellung->Zahlungsart->cModulId === 'za_lastschrift_jtl'}
+{elseif $Bestellung->Zahlungsart->cModulId === 'za_barzahlung_jtl'}
+{elseif $Bestellung->Zahlungsart->cModulId === 'za_paypal_jtl'}
 {/if}
 {if isset($Zahlungsart->cHinweisText) && $Zahlungsart->cHinweisText|strlen > 0}
     {$Zahlungsart->cHinweisText}<br>
     <br>
 {/if}
-{if $Bestellung->Zahlungsart->cModulId === "za_rechnung_jtl"}
-{elseif $Bestellung->Zahlungsart->cModulId === "za_lastschrift_jtl"}
-    Wir belasten in Kürze folgendes Bankkonto um die fällige Summe:<br>
+{if $Bestellung->Zahlungsart->cModulId === 'za_rechnung_jtl'}
+{elseif $Bestellung->Zahlungsart->cModulId === 'za_lastschrift_jtl'}
+    Wir belasten in Kürze folgendes Bankkonto mit der fälligen Summe:<br>
     <br>
     Kontoinhaber: {$Bestellung->Zahlungsinfo->cInhaber}<br>
     IBAN: {$Bestellung->Zahlungsinfo->cIBAN}<br>
     BIC: {$Bestellung->Zahlungsinfo->cBIC}<br>
     Bank: {$Bestellung->Zahlungsinfo->cBankName}<br>
     <br>
-{elseif $Bestellung->Zahlungsart->cModulId === "za_barzahlung_jtl"}
-{elseif $Bestellung->Zahlungsart->cModulId === "za_paypal_jtl"}
-    Falls Sie Ihre Zahlung per PayPal noch nicht durchgeführt haben, nutzen Sie folgende Emailadresse als Empfänger: {$Einstellungen.zahlungsarten.zahlungsart_paypal_empfaengermail}
-{elseif $Bestellung->Zahlungsart->cModulId === "za_moneybookers_jtl"}
-{elseif $Bestellung->Zahlungsart->cModulId=="za_billpay_invoice_jtl" || $Bestellung->Zahlungsart->cModulId=="za_billpay_rate_payment_jtl"}
-    <strong>Bitte überweisen Sie den Gesamtbetrag auf folgendes Konto:</strong><br>
-    <br>
-    <table cellpadding="0" cellspacing="0" border="0" width="100%">
-        <tr>
-            <td class="column mobile-left" width="20%" align="right" valign="top">
-                <table cellpadding="0" cellspacing="6">
-                    <tr>
-                        <td>
-                            <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                                <strong>Kontoinhaber:</strong>
-                            </font>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-            <td class="column" width="80%" align="left" valign="top" bgcolor="#ffffff">
-                <table cellpadding="0" cellspacing="6">
-                    <tr>
-                        <td>
-                            <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                                {$Bestellung->Zahlungsinfo->cInhaber}
-                            </font>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        <tr>
-            <td class="column mobile-left" align="right" valign="top">
-                <table cellpadding="0" cellspacing="6">
-                    <tr>
-                        <td>
-                            <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                                <strong>Bankinstitut:</strong>
-                            </font>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-            <td class="column" align="left" valign="top" bgcolor="#ffffff">
-                <table cellpadding="0" cellspacing="6">
-                    <tr>
-                        <td>
-                            <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                                {$Bestellung->Zahlungsinfo->cBankName}
-                            </font>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        <tr>
-            <td class="column mobile-left" align="right" valign="top">
-                <table cellpadding="0" cellspacing="6">
-                    <tr>
-                        <td>
-                            <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                                <strong>IBAN:</strong>
-                            </font>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-            <td class="column" align="left" valign="top" bgcolor="#ffffff">
-                <table cellpadding="0" cellspacing="6">
-                    <tr>
-                        <td>
-                            <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                                {$Bestellung->Zahlungsinfo->cIBAN}
-                            </font>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        <tr>
-            <td class="column mobile-left" align="right" valign="top">
-                <table cellpadding="0" cellspacing="6">
-                    <tr>
-                        <td>
-                            <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                                <strong>BIC:</strong>
-                            </font>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-            <td class="column" align="left" valign="top" bgcolor="#ffffff">
-                <table cellpadding="0" cellspacing="6">
-                    <tr>
-                        <td>
-                            <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                                {$Bestellung->Zahlungsinfo->cBIC}
-                            </font>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        <tr>
-            <td class="column mobile-left" align="right" valign="top">
-                <table cellpadding="0" cellspacing="6">
-                    <tr>
-                        <td>
-                            <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                                <strong>Verwendungszweck:</strong>
-                            </font>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-            <td class="column" align="left" valign="top" bgcolor="#ffffff">
-                <table cellpadding="0" cellspacing="6">
-                    <tr>
-                        <td>
-                            <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                                {$Bestellung->Zahlungsinfo->cVerwendungszweck}
-                            </font>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
-    <br>
-{elseif $Bestellung->Zahlungsart->cModulId=="za_billpay_direct_debit_jtl"}
-Vielen Dank, dass Sie sich beim Kauf der Ware für die BillPay Lastschrift entschieden haben.<br />
-Wir buchen den Rechnungsbetrag in den nächsten Tagen von dem bei der Bestellung angegebenen Konto ab.<br />
-<br />
-{elseif $Bestellung->Zahlungsart->cModulId=="za_billpay_paylater_jtl"}
-Vielen Dank, dass Sie sich für die Zahlung mit PayLater entschieden haben.<br />
-Die fälligen Beträge werden von dem bei der Bestellung angegebenen Konto abgebucht.<br />
-Zusätzlich zu dieser Rechnung bekommen Sie von BillPay in Kürze einen Teilzahlungsplan mit detaillierten Informationen über Ihre Teilzahlung.<br />
-<br />
+{elseif $Bestellung->Zahlungsart->cModulId === 'za_barzahlung_jtl'}
+{elseif $Bestellung->Zahlungsart->cModulId === 'za_paypal_jtl'}
+    Falls Sie Ihre Zahlung per PayPal noch nicht durchgeführt haben, nutzen Sie folgende E-Mail-Adresse als Empfänger: {$Einstellungen.zahlungsarten.zahlungsart_paypal_empfaengermail}
 {/if}
 Über den weiteren Verlauf Ihrer Bestellung werden wir Sie jeweils gesondert informieren.<br>
 <br>
-{if !empty($oTrustedShopsBewertenButton->cURL)}
-    Waren Sie mit Ihrer Bestellung zufrieden? Dann würden wir uns über eine Empfehlung freuen ... es dauert auch nur eine Minute.<br>
-    <a href="{$oTrustedShopsBewertenButton->cURL}"><img src="{$oTrustedShopsBewertenButton->cPicURL}" alt="Bewerten Sie uns!"></a><br><br>
-{/if}<br>
 <br>
-Mit freundlichem Gruß,<br>
+Mit freundlichem Gruß<br>
 Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=html}

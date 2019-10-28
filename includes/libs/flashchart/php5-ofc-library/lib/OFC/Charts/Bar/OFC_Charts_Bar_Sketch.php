@@ -26,7 +26,7 @@ class OFC_Charts_Bar_Sketch extends OFC_Charts_Bar
     {
         parent::OFC_Charts_Bar();
 
-        $this->type      = 'bar_sketch';
+        $this->type = 'bar_sketch';
 
         $this->set_colour($colour);
         $this->set_outline_colour($outline_colour);

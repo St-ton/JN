@@ -8,22 +8,12 @@
 
 {block name='content'}
     <h1>{$CWunschliste->cName}{if $isCurrenctCustomer === false && isset($CWunschliste->oKunde->cVorname)} {lang key='from' section='product rating' alt_section='login,productDetails,productOverview,global,'} {$CWunschliste->oKunde->cVorname}{/if}</h1>
-    
-    {if !empty($cHinweis)}
-        <div class="alert alert-info">{$cHinweis}</div>
-    {/if}
-    {if !empty($cFehler)}
-        <div class="alert alert-danger">{$cFehler}</div>
-    {/if}
 
     {include file='snippets/extension.tpl'}
 
     {if $step === 'wunschliste versenden' && $Einstellungen.global.global_wunschliste_freunde_aktiv === 'Y'}
         {*{include file='account/wishlist_email_form.tpl'}*}
         <h1>{lang key='wishlistViaEmail' section='login'}</h1>
-        {if !empty($cHinweis)}
-            <p class="alert alert-info">{$cHinweis}</p>
-        {/if}
         <div class="row">
             <div class="col-xs-12">
                 {block name='wishlist-email-form'}
@@ -62,15 +52,15 @@
                     {$jtl_token}
                     {if $CWunschliste->nOeffentlich == 1 && !empty($cURLID)}
                         <input type="hidden" name="wlid" value="{$cURLID}" />
-                    {else}
-                        <input type="hidden" name="kWunschliste" value="{$CWunschliste->kWunschliste}" />
                     {/if}
+                    <input type="hidden" name="kWunschliste" value="{$CWunschliste->kWunschliste}" />
+                    <input type="hidden" name="action" value="search" />
                     <div class="input-group">
                         <input name="cSuche" size="35" type="text" value="{$wlsearch}" placeholder="{lang key='wishlistSearch' section='login'}" class="form-control" />
                         <span class="input-group-btn">
-                            <button class="btn btn-default" name="action" value="search" type="submit"><i class="fa fa-search"></i> {lang key='wishlistSearchBTN' section='login'}</button>
+                            <button class="btn btn-default" type="submit"><i class="fa fa-search"></i> {lang key='wishlistSearchBTN' section='login'}</button>
                             {if !empty($wlsearch)}
-                                <a href="{get_static_route id='wunschliste.php'}?wl={$CWunschliste->kWunschliste}" class="btn btn-default">{lang key='wishlistRemoveSearch' section='login'}</a>
+                                <button class="btn btn-default" name="cSuche" value="" type="submit"><i class="fa fa-undo"></i> {lang key='wishlistRemoveSearch' section='login'}</button>
                             {/if}
                         </span>
                     </div>
@@ -82,6 +72,9 @@
             {block name='wishlist'}
                 <input type="hidden" name="wla" value="1"/>
                 <input type="hidden" name="kWunschliste" value="{$CWunschliste->kWunschliste}"/>
+                {if $CWunschliste->nOeffentlich == 1 && !empty($cURLID)}
+                    <input type="hidden" name="wlid" value="{$cURLID}" />
+                {/if}
                 {if !empty($wlsearch)}
                     <input type="hidden" name="wlsearch" value="1"/>
                     <input type="hidden" name="cSuche" value="{$wlsearch}"/>
@@ -143,7 +136,7 @@
                                     <td></td>
                                     <td class="text-right">
                                         <div class="btn-group-vertical">
-                                            <button href="{get_static_route id='jtl.php'}?wl={$CWunschliste->kWunschliste}&wlplo={$wlPosition->kWunschlistePos}{if isset($wlsearch)}&wlsearch=1&cSuche={$wlsearch}{/if}"
+                                            <button type="submit" href="{get_static_route id='jtl.php'}?wl={$CWunschliste->kWunschliste}&wlplo={$wlPosition->kWunschlistePos}{if isset($wlsearch)}&wlsearch=1&cSuche={$wlsearch}{/if}"
                                                class="btn btn-default"
                                                title="{lang key='wishlistremoveItem' section='login'}">
                                                 <span class="fa fa-trash-o"></span>
@@ -153,9 +146,15 @@
                                 {else}
                                     <td>
                                         <input{if $isCurrenctCustomer !== true} readonly="readonly"{/if}
+                                                type="{if $wlPosition->Artikel->cTeilbar === 'Y' && $wlPosition->Artikel->fAbnahmeintervall == 0}text{else}number{/if}"
                                                 name="Anzahl_{$wlPosition->kWunschlistePos}"
-                                                class="wunschliste_anzahl form-control" type="text" size="1"
-                                                value="{$wlPosition->fAnzahl|replace_delim}"><br/>{$wlPosition->Artikel->cEinheit}
+                                                class="wunschliste_anzahl form-control" type="text"
+                                                size="1"
+                                                min="0"
+                                                {if $wlPosition->Artikel->fAbnahmeintervall > 0}
+                                                    step="{$wlPosition->Artikel->fAbnahmeintervall}"
+                                                {/if}
+                                                value="{$wlPosition->fAnzahl}"><br/>{$wlPosition->Artikel->cEinheit}
                                     </td>
                                     <td class="text-right">
                                         <div class="btn-group-vertical">

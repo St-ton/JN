@@ -6,6 +6,9 @@
  * @created Wed, 17 Feb 2016 11:54:35 +0100
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Class Migration_20160217115435
  */

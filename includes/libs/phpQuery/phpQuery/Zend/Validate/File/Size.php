@@ -96,8 +96,8 @@ class Zend_Validate_File_Size extends Zend_Validate_Abstract
                 $min = $min['min'];
             } elseif ($count === 2) {
                 $minValue = array_shift($min);
-                $max = array_shift($min);
-                $min = $minValue;
+                $max      = array_shift($min);
+                $min      = $minValue;
             } elseif ($count === 1) {
                 $min = array_shift($min);
                 $max = null;
@@ -124,7 +124,7 @@ class Zend_Validate_File_Size extends Zend_Validate_Abstract
      */
     public function getMin($unit = true)
     {
-        $unit = (bool) $unit;
+        $unit = (bool)$unit;
         $min  = $this->_min;
         if ($unit) {
             $min = $this->_toByteString($min);
@@ -141,7 +141,7 @@ class Zend_Validate_File_Size extends Zend_Validate_Abstract
      */
     public function setMin($min)
     {
-        $min = (integer) $this->_fromByteString($min);
+        $min = (integer)$this->_fromByteString($min);
         if (($this->_max !== null) && ($min > $this->_max)) {
             require_once 'Zend/Validate/Exception.php';
             throw new Zend_Validate_Exception("The minimum must be less than or equal to the maximum filesize, but $min >"
@@ -160,7 +160,7 @@ class Zend_Validate_File_Size extends Zend_Validate_Abstract
      */
     public function getMax($unit = true)
     {
-        $unit = (bool) $unit;
+        $unit = (bool)$unit;
         $max  = $this->_max;
         if ($unit) {
             $max = $this->_toByteString($max);
@@ -177,10 +177,10 @@ class Zend_Validate_File_Size extends Zend_Validate_Abstract
      */
     public function setMax($max)
     {
-        $max = (integer) $this->_fromByteString($max);
+        $max = (integer)$this->_fromByteString($max);
         if (($this->_min !== null) && ($max < $this->_min)) {
             require_once 'Zend/Validate/Exception.php';
-            throw new Zend_Validate_Exception("The maximum must be greater than or equal to the minimum filesize, but "
+            throw new Zend_Validate_Exception('The maximum must be greater than or equal to the minimum filesize, but '
                                             . "$max < {$this->_min}");
         } else {
             $this->_max = $max;
@@ -208,7 +208,7 @@ class Zend_Validate_File_Size extends Zend_Validate_Abstract
         }
 
         // limited to 4GB files
-        $size = sprintf("%u", @filesize($value));
+        $size = sprintf('%u', @filesize($value));
         $this->_setValue($size);
 
         // Check to see if it's smaller than min size
@@ -237,7 +237,7 @@ class Zend_Validate_File_Size extends Zend_Validate_Abstract
     protected function _toByteString($size)
     {
         $sizes = array('B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
-        for ($i=0; $size > 1024 && $i < 9; $i++) {
+        for ($i = 0; $size > 1024 && $i < 9; $i++) {
             $size /= 1024;
         }
         return round($size, 2).$sizes[$i];
@@ -252,7 +252,7 @@ class Zend_Validate_File_Size extends Zend_Validate_Abstract
     protected function _fromByteString($size)
     {
         if (is_numeric($size)) {
-            return (integer) $size;
+            return (integer)$size;
         }
 
         $type  = trim(substr($size, -2));

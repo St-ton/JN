@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Language\LanguageHelper;
+use JTL\Shop;
+
 /**
  * @return array
  * @deprecated since 5.0.0
@@ -11,7 +14,7 @@
 function gibSuchSpalten()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return \Filter\States\BaseSearchQuery::getSearchRows(Shop::getSettings([CONF_ARTIKELUEBERSICHT]));
+    return JTL\Filter\States\BaseSearchQuery::getSearchRows(Shop::getSettings([CONF_ARTIKELUEBERSICHT]));
 }
 
 /**
@@ -23,7 +26,7 @@ function gibSuchSpalten()
 function gibMaxPrioSpalte($exclude, $conf = null)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return \Filter\States\BaseSearchQuery::getPrioritizedRows($exclude, $conf);
+    return JTL\Filter\States\BaseSearchQuery::getPrioritizedRows($exclude, $conf);
 }
 
 /**
@@ -51,68 +54,69 @@ function pruefeSuchspaltenKlassen($searchColumns, $searchColumn, $nonAllowed)
 }
 
 /**
- * @param string $cSuche
- * @param int    $nAnzahlTreffer
- * @param bool   $bEchteSuche
- * @param int    $kSpracheExt
- * @param bool   $bSpamFilter
+ * @param string $search
+ * @param int    $hits
+ * @param bool   $realSearch
+ * @param int    $langIDExt
+ * @param bool   $filterSpam
  * @return bool
  * @deprecated since 4.06
  */
-function suchanfragenSpeichern($cSuche, $nAnzahlTreffer, $bEchteSuche = false, $kSpracheExt = 0, $bSpamFilter = true)
+function suchanfragenSpeichern($search, $hits, $realSearch = false, $langIDExt = 0, $filterSpam = true)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Shop::getProductFilter()->Suche->saveQuery($nAnzahlTreffer, $cSuche, $bEchteSuche, $kSpracheExt, $bSpamFilter);
+    return Shop::getProductFilter()->Suche->saveQuery($hits, $search, $realSearch, $langIDExt, $filterSpam);
 }
 
 /**
- * @param string $Suchausdruck
- * @param int    $kSpracheExt
+ * @param string $query
+ * @param int    $languageID
  * @return mixed
  * @deprecated since 4.05
  */
-function mappingBeachten($Suchausdruck, $kSpracheExt = 0)
+function mappingBeachten($query, int $languageID = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $kSprache = ((int)$kSpracheExt > 0) ? (int)$kSpracheExt : Sprache::getDefaultLanguage(true)->kSprache;
-    if (strlen($Suchausdruck) > 0) {
-        $SuchausdruckmappingTMP = Shop::Container()->getDB()->select(
+    $languageID = $languageID > 0 ? $languageID : LanguageHelper::getDefaultLanguage()->kSprache;
+    if (mb_strlen($query) > 0) {
+        $db      = Shop::Container()->getDB();
+        $tmp     = $db->select(
             'tsuchanfragemapping',
             'kSprache',
-            $kSprache,
+            $languageID,
             'cSuche',
-            $Suchausdruck,
+            $query,
             null,
             null,
             false,
             'cSucheNeu'
         );
-        $Suchausdruckmapping    = $SuchausdruckmappingTMP;
-        while ($SuchausdruckmappingTMP !== null &&
-            isset($SuchausdruckmappingTMP->cSucheNeu) &&
-            strlen($SuchausdruckmappingTMP->cSucheNeu) > 0
-        ) {
-            $SuchausdruckmappingTMP = Shop::Container()->getDB()->select(
+        $mapping = $tmp;
+        while ($tmp !== null && isset($tmp->cSucheNeu) && mb_strlen($tmp->cSucheNeu) > 0) {
+            $tmp = $db->select(
                 'tsuchanfragemapping',
                 'kSprache',
-                $kSprache,
+                $languageID,
                 'cSuche',
-                $SuchausdruckmappingTMP->cSucheNeu,
+                $tmp->cSucheNeu,
                 null,
                 null,
                 false,
                 'cSucheNeu'
             );
-            if (isset($SuchausdruckmappingTMP->cSucheNeu) && strlen($SuchausdruckmappingTMP->cSucheNeu) > 0) {
-                $Suchausdruckmapping = $SuchausdruckmappingTMP;
+            if (isset($tmp->cSucheNeu) && mb_strlen($tmp->cSucheNeu) > 0) {
+                $mapping = $tmp;
             }
         }
-        if (isset($Suchausdruckmapping->cSucheNeu) && strlen($Suchausdruckmapping->cSucheNeu) > 0) {
-            $Suchausdruck = $Suchausdruckmapping->cSucheNeu;
+        if (isset($mapping->cSucheNeu) && mb_strlen($mapping->cSucheNeu) > 0) {
+            $query = $mapping->cSucheNeu;
         }
     }
+    if (isset($mapping->cSucheNeu) && mb_strlen($mapping->cSucheNeu) > 0) {
+        $query = $mapping->cSucheNeu;
+    }
 
-    return $Suchausdruck;
+    return $query;
 }
 
 /**
@@ -127,35 +131,35 @@ function suchausdruckVorbereiten($query)
 }
 
 /**
- * @param array $cSuch_arr
+ * @param array $search
  * @return array
  * @deprecated since 4.06 - it's never used anyways
  */
-function suchausdruckAlleKombis($cSuch_arr)
+function suchausdruckAlleKombis($search): array
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $cSuchTMP_arr = [];
-    $cnt          = count($cSuch_arr);
+    $res = [];
+    $cnt = count($search);
     if ($cnt > 3 || $cnt === 1) {
         return [];
     }
 
     switch ($cnt) {
         case 2:
-            $cSuchTMP_arr[] = $cSuch_arr[0] . ' ' . $cSuch_arr[1];
-            $cSuchTMP_arr[] = $cSuch_arr[1] . ' ' . $cSuch_arr[0];
+            $res[] = $search[0] . ' ' . $search[1];
+            $res[] = $search[1] . ' ' . $search[0];
             break;
         case 3:
-            $cSuchTMP_arr[] = $cSuch_arr[0] . ' ' . $cSuch_arr[1] . ' ' . $cSuch_arr[2];
-            $cSuchTMP_arr[] = $cSuch_arr[0] . ' ' . $cSuch_arr[2] . ' ' . $cSuch_arr[1];
-            $cSuchTMP_arr[] = $cSuch_arr[2] . ' ' . $cSuch_arr[1] . ' ' . $cSuch_arr[0];
-            $cSuchTMP_arr[] = $cSuch_arr[2] . ' ' . $cSuch_arr[0] . ' ' . $cSuch_arr[1];
-            $cSuchTMP_arr[] = $cSuch_arr[1] . ' ' . $cSuch_arr[0] . ' ' . $cSuch_arr[2];
-            $cSuchTMP_arr[] = $cSuch_arr[1] . ' ' . $cSuch_arr[2] . ' ' . $cSuch_arr[0];
+            $res[] = $search[0] . ' ' . $search[1] . ' ' . $search[2];
+            $res[] = $search[0] . ' ' . $search[2] . ' ' . $search[1];
+            $res[] = $search[2] . ' ' . $search[1] . ' ' . $search[0];
+            $res[] = $search[2] . ' ' . $search[0] . ' ' . $search[1];
+            $res[] = $search[1] . ' ' . $search[0] . ' ' . $search[2];
+            $res[] = $search[1] . ' ' . $search[2] . ' ' . $search[0];
             break;
         default:
             break;
     }
 
-    return $cSuchTMP_arr;
+    return $res;
 }

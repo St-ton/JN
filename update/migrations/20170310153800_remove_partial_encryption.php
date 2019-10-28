@@ -2,27 +2,19 @@
 /**
  * Remove option for partial https encryption
  *
- * @author Felix Moche
+ * @author fm
  * @created Fri, 10 Mar 2017 15:38:00 +0100
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
- * Migration
- *
- * Available methods:
- * execute            - returns affected rows
- * fetchOne           - single fetched object
- * fetchAll           - array of fetched objects
- * fetchArray         - array of fetched assoc arrays
- * dropColumn         - drops a column if exists
- * addLocalization    - add localization
- * removeLocalization - remove localization
- * setConfig          - add / update config property
- * removeConfig       - remove config property
+ * Class Migration_20170310153800
  */
 class Migration_20170310153800 extends Migration implements IMigration
 {
-    protected $author = 'fm';
+    protected $author      = 'fm';
     protected $description = 'Remove partial https encryption option';
 
     public function up()

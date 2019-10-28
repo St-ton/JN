@@ -1,47 +1,51 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section='shopsitemap'}
-
-{include file='tpl_inc/seite_header.tpl' cTitel=#shopsitemap# cBeschreibung=#shopsitemapDesc# cDokuURL=#shopsitemapURL#}
-<div id="content" class="container-fluid">
+{include file='tpl_inc/seite_header.tpl' cTitel=__('shopsitemap') cBeschreibung=__('shopsitemapDesc') cDokuURL=__('shopsitemapURL')}
+<div id="content">
     <form name="einstellen" method="post" action="shopsitemap.php" id="einstellen">
         {$jtl_token}
         <input type="hidden" name="speichern" value="1" />
         <div id="settings">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{#settings#}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="subheading1">{__('settings')}</div>
+                    <hr class="mb-n3">
                 </div>
-                <div class="panel-body">
-                    {foreach name=conf from=$oConfig_arr item=cnf}
+                <div class="card-body">
+                    {foreach $oConfig_arr as $cnf}
                         {if $cnf->cConf === 'Y'}
-                            <div class="input-group item{if isset($cnf->kEinstellungenConf) && isset($cSuche) && $cnf->kEinstellungenConf == $cSuche} highlight{/if}">
-                                <span class="input-group-addon">
-                                    <label for="{$cnf->cWertName}">{$cnf->cName}</label>
-                                </span>
+                            <div class="form-group form-row align-items-center item{if isset($cnf->kEinstellungenConf) && isset($cSuche) && $cnf->kEinstellungenConf == $cSuche} highlight{/if}">
+                                <label class="col col-sm-4 col-form-label text-sm-right" for="{$cnf->cWertName}">{$cnf->cName}:</label>
+                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 {if $cnf->cInputTyp === 'selectbox'}
-                                    <span class="input-group-wrap">
-                                        <select class="form-control" name="{$cnf->cWertName}" id="{$cnf->cWertName}">
-                                            {foreach name=selectfor from=$cnf->ConfWerte item=wert}
-                                                <option value="{$wert->cWert}" {if $cnf->gesetzterWert==$wert->cWert}selected{/if}>{$wert->cName}</option>
+                                        <select class="custom-select" name="{$cnf->cWertName}" id="{$cnf->cWertName}">
+                                            {foreach $cnf->ConfWerte as $wert}
+                                                <option value="{$wert->cWert}" {if $cnf->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
                                             {/foreach}
                                         </select>
-                                    </span>
                                 {elseif $cnf->cInputTyp === 'pass'}
                                     <input class="form-control" type="password" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{$cnf->gesetzterWert}" tabindex="1" />
                                 {else}
                                     <input class="form-control" type="text" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{$cnf->gesetzterWert}" tabindex="1" />
                                 {/if}
-                                <span class="input-group-addon">
-                                    {if $cnf->cBeschreibung}
+                                </div>
+                                {if $cnf->cBeschreibung}
+                                    <div class="col-auto ml-sm-n4 order-2 order-sm-3">
                                         {getHelpDesc cDesc=$cnf->cBeschreibung cID=$cnf->kEinstellungenConf}
-                                    {/if}
-                                </span>
+                                    </div>
+                                {/if}
                             </div>
                         {/if}
                     {/foreach}
                 </div>
-                <div class="panel-footer">
-                    <button name="speichern" type="submit" value="{#shopsitemapSave#}" class="btn btn-primary"><i class="fa fa-save"></i> {#shopsitemapSave#}</button>
+                <div class="save-wrapper card-footer">
+                    <div class="row">
+                        <div class="ml-auto col-sm-6 col-xl-auto">
+                            <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary btn-block">
+                                {__('saveWithIcon')}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

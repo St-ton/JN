@@ -1,11 +1,16 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license       http://jtl-url.de/jtlshoplicense
  */
+
+namespace JTL;
+
+use stdClass;
 
 /**
  * Class Piechart
+ * @package JTL
  */
 class Piechart extends Chartdata
 {

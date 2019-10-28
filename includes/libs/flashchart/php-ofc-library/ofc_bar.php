@@ -4,7 +4,7 @@ include_once 'ofc_bar_base.php';
 
 class bar_value
 {
-    public function __construct($top, $bottom=null)
+    public function __construct($top, $bottom = null)
     {
         $this->top = $top;
         
@@ -28,7 +28,7 @@ class bar extends bar_base
 {
     public function __construct()
     {
-        $this->type      = "bar";
+        $this->type = 'bar';
         parent::__construct();
     }
 }

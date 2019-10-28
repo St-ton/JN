@@ -13,7 +13,7 @@
         <img data-lazy="{$Artikel->Bilder[0]->cURLKlein}" src="{$imageBaseURL}gfx/trans.png" alt="{$alt}" />
         {block name='searchspecial-overlay'}
             {if isset($Artikel->oSuchspecialBild)}
-                {include file='snippets/searchspecials.tpl' src=$Artikel->oSuchspecialBild->cURLKlein alt=$alt}
+                {include file='snippets/searchspecials.tpl' src=$Artikel->oSuchspecialBild->getURL($smarty.const.IMAGE_SIZE_XS) alt=$alt}
             {/if}
         {/block}
     </a>

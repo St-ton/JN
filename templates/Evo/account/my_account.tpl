@@ -2,7 +2,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
-<h1 class="menu-title">{lang key='welcome' section='login'} {if $Kunde->cAnrede === 'w'}{lang key='salutationW'}{elseif $Kunde->cAnrede === 'm'}{lang key='salutationM'}{/if} {$smarty.session.Kunde->cNachname}</h1>
+<h1 class="menu-title">{lang key='welcome' section='login'} {$smarty.session.Kunde->cVorname} {$smarty.session.Kunde->cNachname}</h1>
 
 <div class="row">
     <div class="col-xs-12 col-md-6">

@@ -1,7 +1,7 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section="dbcheck"}
-{include file='tpl_inc/seite_header.tpl' cTitel=#dbcheck# cBeschreibung=#dbcheckDesc# cDokuURL=#dbcheckURL#}
-<div id="content" class="container-fluid">
+{config_load file="$lang.conf" section='dbcheck'}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('dbcheck') cBeschreibung=__('dbcheckDesc') cDokuURL=__('dbcheckURL')}
+<div id="content">
     {if $maintenanceResult !== null}
         {if $maintenanceResult|is_array}
             <ul class="list-group">
@@ -12,7 +12,7 @@
                 {/foreach}
             </ul>
         {else}
-            <div class="alert alert-info">Konnte Aktion nicht ausf&uuml;hren.</div>
+            <div class="alert alert-info">{__('errorDoAction')}</div>
         {/if}
     {/if}
     <div id="pageCheck">
@@ -20,30 +20,23 @@
             {if isset($engineUpdate)}
                 {include file='tpl_inc/dbcheck_engineupdate.tpl'}
             {else}
-                <div class="alert alert-info"><strong>Anzahl Tabellen:</strong> {$cDBFileStruct_arr|@count}<br /><strong>Anzahl modifizierter Tabellen:</strong> {$cDBError_arr|@count}</div>
-                {if $cDBError_arr|@count > 0}
-                    <p>
-                        <button id="viewAll" name="viewAll" type="button" class="btn btn-primary hide" value="Alle anzeigen"><i class="fa fa-share"></i> Alle anzeigen</button>
-                        <button id="viewModified" name="viewModified" type="button" class="btn btn-danger viewModified" value="Modifizierte anzeigen"><i class="fa fa-warning"></i> Modifizierte anzeigen</button>
-                    </p>
-                    <br />
-                {/if}
+                <div class="alert alert-info"><strong>{__('countTables')}:</strong> {$cDBFileStruct_arr|@count}<br /><strong>{__('showModifiedTables')}:</strong> {$cDBError_arr|@count}</div>
             {/if}
             <form action="dbcheck.php" method="post">
-                <div id="contentCheck" class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">DB-Struktur</h3>
+                <div id="contentCheck" class="card">
+                    <div class="card-header">
+                        <div class="subheading1">{__('databaseStructure')}</div>
                     </div>
                     <table class="table req">
                         <thead>
                         <tr>
-                            <th>Tabelle</th>
-                            <th>Engine</th>
-                            <th>Kollation</th>
-                            <th class="centered">Zeilen</th>
-                            <th class="centered">Daten</th>
-                            <th>Status</th>
-                            <th class="centered">Aktion</th>
+                            <th>{__('table')}</th>
+                            <th>{__('engine')}</th>
+                            <th>{__('collation')}</th>
+                            <th class="centered">{__('rows')}</th>
+                            <th class="centered">{__('data')}</th>
+                            <th>{__('status')}</th>
+                            <th class="centered">{__('action')}</th>
                         </tr>
                         </thead>
                         {foreach name=datei from=$cDBFileStruct_arr key=cTable item=oDatei}
@@ -67,16 +60,16 @@
                                     {/if}
                                 </td>
                                 <td class="centered">
-                                    {if $cTable|array_key_exists:$cDBStruct_arr}{$cDBStruct_arr.$cTable->TABLE_ROWS|number_format:0:",":"."}{/if}
+                                    {if $cTable|array_key_exists:$cDBStruct_arr}{$cDBStruct_arr.$cTable->TABLE_ROWS|number_format:0:',':'.'}{/if}
                                 </td>
                                 <td class="centered">
-                                    {if $cTable|array_key_exists:$cDBStruct_arr}{$cDBStruct_arr.$cTable->DATA_SIZE|formatByteSize:"%.0f"|upper|strip:"&nbsp;"}{/if}
+                                    {if $cTable|array_key_exists:$cDBStruct_arr}{$cDBStruct_arr.$cTable->DATA_SIZE|formatByteSize:'%.0f'|upper|strip:'&nbsp;'}{/if}
                                 </td>
                                 <td>
                                     {if $hasError}
-                                        <span class="badge red">{$cDBError_arr[$cTable]}</span>
+                                        <span class="badge red">{$cDBError_arr[$cTable]->errMsg}</span>
                                     {else}
-                                        <span class="badge green">OK</span>
+                                        <span class="badge green">{__('ok')}</span>
                                     {/if}
                                 </td>
                                 <td class="centered">
@@ -88,29 +81,43 @@
                                         {elseif (($cDBStruct_arr.$cTable->Migration & DBMigrationHelper::MIGRATE_COLUMN) !== DBMigrationHelper::MIGRATE_NONE) && $DB_Version->collation_utf8 && $DB_Version->innodb->support}
                                             <a href="#" class="btn btn-default" data-action="migrate" data-table="{$cTable}" data-step="2"><i class="fa fa-cogs"></i></a>
                                         {elseif !$hasError}
-                                            <input id="check-{$smarty.foreach.datei.iteration}" type="checkbox" name="check[]" value="{$cTable}" />
+                                        <div class="custom-control custom-checkbox">
+                                            <input class="custom-control-input" id="check-{$smarty.foreach.datei.iteration}" type="checkbox" name="check[]" value="{$cTable}" />
+                                            <label class="custom-control-label" for="check-{$smarty.foreach.datei.iteration}"></label>
+                                        </div>
                                         {/if}
                                     {/if}
                                 </td>
                             </tr>
                         {/foreach}
                     </table>
-                    <div class="panel-footer">
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <input type="checkbox" name="ALL_MSG" id="ALLMSGS" onclick="AllMessages(this.form);"/> <label for="ALLMSGS">alle markieren</label>
-                            </span>
-                            <select name="action" class="form-control">
-                                <option value="">Aktion</option>
-                                <option value="optimize">optimieren</option>
-                                <option value="repair">reparieren</option>
-                                <option value="analyze">analysieren</option>
-                                <option value="check">pr&uuml;fen</option>
-                            </select>
-                            <div class="input-group-btn">
-                                <button type="submit" class="btn btn-primary">absenden</button>
+                </div>
+                <div class="save-wrapper">
+                    <div class="row">
+                        <div class="col-sm-6 col-xl-auto text-left">
+                            <div class="custom-control custom-checkbox">
+                                <input class="custom-control-input" type="checkbox" name="ALL_MSG" id="ALLMSGS" onclick="AllMessages(this.form);"/>
+                                <label class="custom-control-label" for="ALLMSGS">{__('markAll')}</label>
                             </div>
                         </div>
+                        <div class="col-sm-6 col-xl-auto">
+                            <select name="action" class="custom-select">
+                                <option value="">{__('action')}</option>
+                                <option value="optimize">{__('optimize')}</option>
+                                <option value="repair">{__('repair')}</option>
+                                <option value="analyze">{__('analyse')}</option>
+                                <option value="check">{__('check')}</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-6 col-xl-auto">
+                            <button type="submit" class="btn btn-primary">{__('send')}</button>
+                        </div>
+                        {if $cDBError_arr|@count > 0}
+                        <div class="col-sm-6 col-xl-auto ml-auto">
+                            <button id="viewAll" name="viewAll" type="button" class="btn btn-primary fade" value="Alle anzeigen"><i class="fa fa-share"></i> {__('showAll')}</button>
+                            <button id="viewModified" name="viewModified" type="button" class="btn btn-danger viewModified fade show" value="Modifizierte anzeigen"><i class="fal fa-exclamation-triangle"></i> {__('showModified')}</button>
+                        </div>
+                        {/if}
                     </div>
                 </div>
             </form>
@@ -121,7 +128,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4><span>&nbsp;</span> <img src="{$shopURL}/{$PFAD_ADMIN}/{$currentTemplateDir}gfx/widgets/ajax-loader.gif"></h4>
+                <h2><span>&nbsp;</span> <img src="{$templateBaseURL}gfx/widgets/ajax-loader.gif"></h2>
             </div>
             <div class="modal-body">
                 <div class="progress" data-notify="progressbar">
@@ -129,8 +136,12 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <div class="btn-group">
-                    <button id="cancelWait" class="btn btn-danger"><i class="fa fa-close"></i>&nbsp;Migration abbrechen</button>
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        <button id="cancelWait" class="btn btn-danger btn-block">
+                            <i class="fa fa-close"></i>&nbsp;{__('migrationCancel')}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -139,23 +150,23 @@
 <script>
     {literal}
     $(document).ready(function () {
-        $('#viewAll').click(function () {
-            $('#viewAll').hide();
-            $('#viewModified').show().removeClass('hide');
+        $('#viewAll').on('click', function () {
+            $('#viewAll').removeClass('show').hide();
+            $('#viewModified').addClass('show').show();
             $('.unmodified').show();
             $('.modified').show();
             colorLines();
         });
 
-        $('#viewModified').click(function () {
-            $('#viewAll').show().removeClass('hide');
-            $('#viewModified').hide();
+        $('#viewModified').on('click', function () {
+            $('#viewAll').addClass('show').show();
+            $('#viewModified').removeClass('show').hide();
             $('.unmodified').hide();
             $('.modified').show();
             colorLines();
         });
 
-        $('*[data-action="migrate"]').click(function (e) {
+        $('*[data-action="migrate"]').on('click', function (e) {
             var $this = $(this);
 
             e.preventDefault();
@@ -163,7 +174,7 @@
             doSingleMigration($this.data('table'), $this.data('step'), $this.closest('tr'));
         });
 
-        $('#cancelWait').click(function (e) {
+        $('#cancelWait').on('click', function (e) {
             cancelWait(true);
             e.preventDefault();
         });
@@ -209,7 +220,7 @@
         var $modalWait = $("#modalWait");
 
         if (typeof msg !== 'undefined' && msg !== null && msg !== '') {
-            $('h4 > span', $modalWait).text(msg);
+            $('h2 > span', $modalWait).text(msg);
         }
         if (typeof step !== 'undefined' && step !== null && step > 0) {
             var progressMax     = $('.progress-bar', $modalWait).attr('aria-valuemax');
@@ -241,9 +252,9 @@
             step = 1;
         }
         if (typeof table !== 'undefined' && table !== '') {
-            updateModalWait('Migrieren von ' + table + ' - Schritt ' + step);
+            updateModalWait(sprintf('{/literal}{__('migrationOf')}{literal}', table, step));
         }
-        ioCall('migrateToInnoDB_utf8', ['migrate', table, step],
+        ioCall('migrateToInnoDB_utf8', ['migrate_single', table, step],
             function (data, context) {
                 if (data && typeof data.status !== 'undefined' && data.status !== 'failure') {
                     if (data.status === 'migrate' && data.nextStep === 2) {
@@ -255,12 +266,12 @@
                         closeModalWait();
                     }
                 } else {
-                    window.alert('Bei der Migration der Tabelle ' + table + ' ist ein Fehler aufgetreten!');
+                    window.alert(sprintf('{/literal}{__('errorMigrationTable')}{literal}', table));
                     window.location.reload(true);
                 }
             },
             function (responseJSON) {
-                window.alert('Bei der Migration der Tabelle ' + table + ' ist ein Fehler aufgetreten!');
+                window.alert(sprintf('{/literal}{__('errorMigrationTable')}{literal}', table));
                 window.location.reload(true);
             },
             {}
@@ -271,7 +282,7 @@
         if ($cols.length > 0) {
             $($cols[1]).html('<span class="badge alert-info">InnoDB</span>');
             $($cols[2]).html('<span class="badge alert-info">utf8_general_ci</span>');
-            $($cols[5]).html('<span class="badge green">OK</span>');
+            $($cols[5]).html('<span class="badge green">{/literal}{__('ok')}{literal}</span>');
             $($cols[6]).html('');
         }
     }

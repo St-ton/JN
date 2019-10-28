@@ -1,0 +1,28 @@
+
+@include font-face('Open Sans', '#{$font-path}/opensans-regular-webfont', 'Open Sans Regular' 'OpenSans-Regular', normal, $font-weight-normal);
+@include font-face('Open Sans', '#{$font-path}/opensans-bold-webfont', 'Open Sans Bold' 'OpenSans-Bold', normal, $font-weight-bold);
+@include font-face('Open Sans', '#{$font-path}/opensans-semibold-webfont', 'Open Sans Semibold' 'OpenSans-Semibold', normal, $font-weight-semibold);
+
+body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+#page-wrapper { transition: visibility .2s ease-in-out, opacity .2s ease-in-out;
+	&.disable-transitions {
+		*, *:before, *:after { transition: none !important; }
+	}
+
+	.no-js & { transition: none;
+		&.hidden { opacity: 1; visibility: visible; }
+	}
+}
+
+.opaque-background {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	outline: 0;
+	background: $black;
+	opacity: 0.5;
+	z-index: -1;
+}

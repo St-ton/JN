@@ -4,130 +4,119 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Helpers\Request;
+
 /**
  * This pagination implementation is deprecated. Use the Pagination admin class instead!
  */
 
 /**
- * @param int $nAktuelleSeite
- * @param int $nAnzahl
- * @param int $nAnzahlProSeite
+ * @param int $currentPage
+ * @param int $count
+ * @param int $perPage
  * @return stdClass
  * @deprecated since 4.05
  */
-function baueBlaetterNavi($nAktuelleSeite, $nAnzahl, $nAnzahlProSeite)
+function baueBlaetterNavi(int $currentPage, int $count, int $perPage)
 {
-    $nAnzahl               = (int)$nAnzahl;
-    $nAnzahlProSeite       = (int)$nAnzahlProSeite;
-    $oBlaetterNavi         = new stdClass();
-    $oBlaetterNavi->nAktiv = 0;
+    $nav         = new stdClass();
+    $nav->nAktiv = 0;
 
-    if ($nAnzahl > $nAnzahlProSeite) {
-        $nBlaetterAnzahl_arr = [];
-
-        $nSeiten     = ceil($nAnzahl / $nAnzahlProSeite);
-        $nMaxAnzeige = 5; // Zeige in der Navigation nur maximal X Seiten an
-        $nAnfang     = 0; // Wenn die aktuelle Seite - $nMaxAnzeige größer 0 ist, wird nAnfang gesetzt
-        $nEnde       = 0; // Wenn die aktuelle Seite + $nMaxAnzeige <= $nSeitenist, wird nEnde gesetzt
-        $nVon        = 0; // Diese Variablen ermitteln die aktuellen Seiten in der Navigation, die angezeigt werden sollen.
-        $nBis        = 0; // Begrenzt durch $nMaxAnzeige.
-        $nVoherige   = $nAktuelleSeite - 1; // Zum zurück blättern in der Navigation
-        if ($nVoherige <= 0) {
-            $nVoherige = 1;
+    if ($count > $perPage) {
+        $counts   = [];
+        $pages    = ceil($count / $perPage);
+        $maxItems = 5;
+        $start    = 0;
+        $end      = 0;
+        $prev     = $currentPage - 1; // Zum zurück blättern in der Navigation
+        if ($prev <= 0) {
+            $prev = 1;
         }
-        $nNaechste = $nAktuelleSeite + 1; // Zum vorwärts blättern in der Navigation
-        if ($nNaechste >= $nSeiten) {
-            $nNaechste = $nSeiten;
+        $next = $currentPage + 1; // Zum vorwärts blättern in der Navigation
+        if ($next >= $pages) {
+            $next = $pages;
         }
 
-        if ($nSeiten > $nMaxAnzeige) {
+        if ($pages > $maxItems) {
             // Ist die aktuelle Seite nach dem abzug der Begrenzung größer oder gleich 1?
-            if (($nAktuelleSeite - $nMaxAnzeige) >= 1) {
-                $nAnfang = 1;
-                $nVon    = ($nAktuelleSeite - $nMaxAnzeige) + 1;
+            if (($currentPage - $maxItems) >= 1) {
+                $start = 1;
+                $nVon  = ($currentPage - $maxItems) + 1;
             } else {
-                $nAnfang = 0;
-                $nVon    = 1;
+                $start = 0;
+                $nVon  = 1;
             }
             // Ist die aktuelle Seite nach dem addieren der Begrenzung kleiner als die maximale Anzahl der Seiten
-            if (($nAktuelleSeite + $nMaxAnzeige) < $nSeiten) {
-                $nEnde = $nSeiten;
-                $nBis  = ($nAktuelleSeite + $nMaxAnzeige) - 1;
+            if (($currentPage + $maxItems) < $pages) {
+                $end  = $pages;
+                $nBis = ($currentPage + $maxItems) - 1;
             } else {
-                $nEnde = 0;
-                $nBis  = $nSeiten;
+                $end  = 0;
+                $nBis = $pages;
             }
             // Baue die Seiten für die Navigation
             for ($i = $nVon; $i <= $nBis; $i++) {
-                $nBlaetterAnzahl_arr[] = $i;
+                $counts[] = $i;
             }
         } else {
             // Baue die Seiten für die Navigation
-            for ($i = 1; $i <= $nSeiten; $i++) {
-                $nBlaetterAnzahl_arr[] = $i;
+            for ($i = 1; $i <= $pages; $i++) {
+                $counts[] = $i;
             }
         }
 
         // Blaetter Objekt um später in Smarty damit zu arbeiten
-        $oBlaetterNavi->nSeiten             = $nSeiten;
-        $oBlaetterNavi->nVoherige           = $nVoherige;
-        $oBlaetterNavi->nNaechste           = $nNaechste;
-        $oBlaetterNavi->nAnfang             = $nAnfang;
-        $oBlaetterNavi->nEnde               = $nEnde;
-        $oBlaetterNavi->nBlaetterAnzahl_arr = $nBlaetterAnzahl_arr;
-        $oBlaetterNavi->nAktiv              = 1;
-        $oBlaetterNavi->nAnzahl             = $nAnzahl;
+        $nav->nSeiten             = $pages;
+        $nav->nVoherige           = $prev;
+        $nav->nNaechste           = $next;
+        $nav->nAnfang             = $start;
+        $nav->nEnde               = $end;
+        $nav->nBlaetterAnzahl_arr = $counts;
+        $nav->nAktiv              = 1;
+        $nav->nAnzahl             = $count;
     }
 
-    $oBlaetterNavi->nAktuelleSeite = $nAktuelleSeite;
-    $oBlaetterNavi->nVon           = (($oBlaetterNavi->nAktuelleSeite - 1) * $nAnzahlProSeite) + 1;
-    $oBlaetterNavi->nBis           = $oBlaetterNavi->nAktuelleSeite * $nAnzahlProSeite;
-    if ($oBlaetterNavi->nBis > $nAnzahl) {
-        $oBlaetterNavi->nBis = $nAnzahl;
+    $nav->nAktuelleSeite = $currentPage;
+    $nav->nVon           = (($nav->nAktuelleSeite - 1) * $perPage) + 1;
+    $nav->nBis           = $nav->nAktuelleSeite * $perPage;
+    if ($nav->nBis > $count) {
+        $nav->nBis = $count;
     }
 
-    //if($oBlaetterNavi->nBis > $nAnzahl)
-    //$oBlaetterNavi->nBis -= 1;
-
-    return $oBlaetterNavi;
+    return $nav;
 }
 
 /**
- * @param int $nAnzahl
- * @param int $nAnzahlProSeite
+ * @param int $count
+ * @param int $perPage
  * @return bool|stdClass
  * @deprecated since 4.05
  */
-function baueBlaetterNaviGetterSetter($nAnzahl, $nAnzahlProSeite)
+function baueBlaetterNaviGetterSetter(int $count, int $perPage)
 {
-    $nAnzahl           = (int)$nAnzahl;
-    $nAnzahlProSeite   = (int)$nAnzahlProSeite;
-    $oBlaetterNaviConf = new stdClass();
+    $conf = new stdClass();
+    if ($count <= 0 || $perPage <= 0) {
+        return false;
+    }
+    for ($i = 1; $i <= $count; $i++) {
+        $offset         = 'nOffset' . $i;
+        $sql            = 'cSQL' . $i;
+        $nAktuelleSeite = 'nAktuelleSeite' . $i;
+        $cLimit         = 'cLimit' . $i;
 
-    if ($nAnzahl > 0 && $nAnzahlProSeite > 0) {
-        // Baue Getter
-        for ($i = 1; $i <= $nAnzahl; $i++) {
-            $cOffset        = 'nOffset' . $i;
-            $cSQL           = 'cSQL' . $i;
-            $nAktuelleSeite = 'nAktuelleSeite' . $i;
-            $cLimit         = 'cLimit' . $i;
-
-            $oBlaetterNaviConf->$cOffset        = 0;
-            $oBlaetterNaviConf->$cSQL           = ' LIMIT ' . $nAnzahlProSeite;
-            $oBlaetterNaviConf->$nAktuelleSeite = 1;
-            $oBlaetterNaviConf->$cLimit         = 0;
-            // GET || POST
-            if (RequestHelper::verifyGPCDataInt('s' . $i) > 0) {
-                $nSeite                             = RequestHelper::verifyGPCDataInt('s' . $i);
-                $oBlaetterNaviConf->$cOffset        = (($nSeite - 1) * $nAnzahlProSeite);
-                $oBlaetterNaviConf->$cSQL           = ' LIMIT ' . (($nSeite - 1) * $nAnzahlProSeite) . ", " . $nAnzahlProSeite;
-                $oBlaetterNaviConf->$nAktuelleSeite = $nSeite;
-                $oBlaetterNaviConf->$cLimit         = (($nSeite - 1) * $nAnzahlProSeite);
-            }
+        $conf->$offset         = 0;
+        $conf->$sql            = ' LIMIT ' . $perPage;
+        $conf->$nAktuelleSeite = 1;
+        $conf->$cLimit         = 0;
+        // GET || POST
+        if (Request::verifyGPCDataInt('s' . $i) > 0) {
+            $page                  = Request::verifyGPCDataInt('s' . $i);
+            $conf->$offset         = (($page - 1) * $perPage);
+            $conf->$sql            = ' LIMIT ' . (($page - 1) * $perPage) . ', ' . $perPage;
+            $conf->$nAktuelleSeite = $page;
+            $conf->$cLimit         = (($page - 1) * $perPage);
         }
-
-        return $oBlaetterNaviConf;
     }
 
-    return false;
+    return $conf;
 }

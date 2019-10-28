@@ -1,0 +1,24 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Container"
+msgstr "Container"
+
+msgid "minHeightPX"
+msgstr "Mindesthöhe in px"
+
+msgid "boxedContainer"
+msgstr "Boxed Container"
+
+msgid "imageParallax"
+msgstr "mitlaufendes Bild (parallax)"
+
+msgid "backgroundVideo"
+msgstr "Hintergrundvideo"
+
+msgid "noBackground"
+msgstr "kein Hintergrund"
+
+msgid "placeholderImage"
+msgstr "Platzhalterbild"

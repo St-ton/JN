@@ -2,21 +2,15 @@
 /**
  * add_language_var_coupon_errors
  *
- * @author mirko
+ * @author msc
  * @created Fri, 15 Apr 2016 12:02:18 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
- * Migration
- *
- * Available methods:
- * execute            - returns affected rows
- * fetchOne           - single fetched object
- * fetchAll           - array of fetched objects
- * fetchArray         - array of fetched assoc arrays
- * dropColumn         - drops a column if exists
- * addLocalization    - add localization
- * removeLocalization - remove localization
+ * Class Migration_20160415120218
  */
 class Migration_20160415120218 extends Migration implements IMigration
 {

@@ -4,36 +4,36 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-//mainword
-$kKonfigPos            = RequestHelper::verifyGPCDataInt('ek');
-$kKategorie            = RequestHelper::verifyGPCDataInt('k');
-$kArtikel              = RequestHelper::verifyGPCDataInt('a');
-$kVariKindArtikel      = RequestHelper::verifyGPCDataInt('a2');
-$kSeite                = RequestHelper::verifyGPCDataInt('s');
-$kLink                 = RequestHelper::verifyGPCDataInt('s');
-$kHersteller           = RequestHelper::verifyGPCDataInt('h');
-$kSuchanfrage          = RequestHelper::verifyGPCDataInt('l');
-$kMerkmalWert          = RequestHelper::verifyGPCDataInt('m');
-$kTag                  = RequestHelper::verifyGPCDataInt('t');
-$kSuchspecial          = RequestHelper::verifyGPCDataInt('q');
-$kNews                 = RequestHelper::verifyGPCDataInt('n');
-$kNewsMonatsUebersicht = RequestHelper::verifyGPCDataInt('nm');
-$kNewsKategorie        = RequestHelper::verifyGPCDataInt('nk');
-$kUmfrage              = RequestHelper::verifyGPCDataInt('u');
-//filter
-$nBewertungSterneFilter = RequestHelper::verifyGPCDataInt('bf');
-$cPreisspannenFilter    = RequestHelper::verifyGPDataString('pf');
-$kHerstellerFilter      = RequestHelper::verifyGPCDataInt('hf');
-$kKategorieFilter       = RequestHelper::verifyGPCDataInt('kf');
-$kSuchspecialFilter     = RequestHelper::verifyGPCDataInt('qf');
-$kSuchFilter            = RequestHelper::verifyGPCDataInt('sf');
-// Erweiterte Artikelübersicht Darstellung
-$nDarstellung = RequestHelper::verifyGPCDataInt('ed');
-$nSortierung  = RequestHelper::verifyGPCDataInt('sortierreihenfolge');
-$nSort        = RequestHelper::verifyGPCDataInt('Sortierung');
+use JTL\Helpers\Request;
 
-$show            = RequestHelper::verifyGPCDataInt('show');
-$vergleichsliste = RequestHelper::verifyGPCDataInt('vla');
+$kKonfigPos            = Request::verifyGPCDataInt('ek');
+$kKategorie            = Request::verifyGPCDataInt('k');
+$kArtikel              = Request::verifyGPCDataInt('a');
+$kVariKindArtikel      = Request::verifyGPCDataInt('a2');
+$kSeite                = Request::verifyGPCDataInt('s');
+$kLink                 = Request::verifyGPCDataInt('s');
+$kHersteller           = Request::verifyGPCDataInt('h');
+$kSuchanfrage          = Request::verifyGPCDataInt('l');
+$kMerkmalWert          = Request::verifyGPCDataInt('m');
+$kSuchspecial          = Request::verifyGPCDataInt('q');
+$kNews                 = Request::verifyGPCDataInt('n');
+$kNewsMonatsUebersicht = Request::verifyGPCDataInt('nm');
+$kNewsKategorie        = Request::verifyGPCDataInt('nk');
+$kUmfrage              = Request::verifyGPCDataInt('u');
+// filter
+$nBewertungSterneFilter = Request::verifyGPCDataInt('bf');
+$cPreisspannenFilter    = Request::verifyGPDataString('pf');
+$kHerstellerFilter      = Request::verifyGPCDataInt('hf');
+$kKategorieFilter       = Request::verifyGPCDataInt('kf');
+$kSuchspecialFilter     = Request::verifyGPCDataInt('qf');
+$kSuchFilter            = Request::verifyGPCDataInt('sf');
+// Erweiterte Artikelübersicht Darstellung
+$nDarstellung = Request::verifyGPCDataInt('ed');
+$nSortierung  = Request::verifyGPCDataInt('sortierreihenfolge');
+$nSort        = Request::verifyGPCDataInt('Sortierung');
+
+$show            = Request::verifyGPCDataInt('show');
+$vergleichsliste = Request::verifyGPCDataInt('vla');
 $bFileNotFound   = false;
 $cCanonicalURL   = '';
 $is404           = false;

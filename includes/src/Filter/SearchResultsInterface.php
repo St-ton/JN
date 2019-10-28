@@ -4,14 +4,15 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter;
+namespace JTL\Filter;
 
-use Filter\Pagination\Info;
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
+use JTL\Catalog\Category\Kategorie;
+use JTL\Filter\Pagination\Info;
 
 /**
- * Class SearchResults
- * @package Filter
+ * Interface SearchResultsInterface
+ * @package JTL\Filter
  */
 interface SearchResultsInterface
 {
@@ -43,12 +44,12 @@ interface SearchResultsInterface
     public function setProductKeys(Collection $keys): SearchResultsInterface;
 
     /**
-     * @return \Tightenco\Collect\Support\Collection()
+     * @return Collection
      */
     public function getProducts(): Collection;
 
     /**
-     * @param \Tightenco\Collect\Support\Collection() $products
+     * @param Collection $products
      * @return $this
      */
     public function setProducts($products): SearchResultsInterface;
@@ -111,7 +112,7 @@ interface SearchResultsInterface
     /**
      * @return string|null
      */
-    public function getSearchTerm();
+    public function getSearchTerm(): ?string;
 
     /**
      * @param string $searchTerm
@@ -120,9 +121,9 @@ interface SearchResultsInterface
     public function setSearchTerm($searchTerm): SearchResultsInterface;
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getSearchTermWrite();
+    public function getSearchTermWrite(): ?string;
 
     /**
      * @param string $searchTerm
@@ -166,24 +167,13 @@ interface SearchResultsInterface
     /**
      * @return Option[]
      */
-    public function getTagFilterOptions(): array;
+    public function getCharacteristicFilterOptions(): array;
 
     /**
      * @param Option[] $options
      * @return $this
      */
-    public function setTagFilterOptions($options): SearchResultsInterface;
-
-    /**
-     * @return Option[]
-     */
-    public function getAttributeFilterOptions(): array;
-
-    /**
-     * @param Option[] $options
-     * @return $this
-     */
-    public function setAttributeFilterOptions($options): SearchResultsInterface;
+    public function setCharacteristicFilterOptions($options): SearchResultsInterface;
 
     /**
      * @return Option[]
@@ -243,18 +233,7 @@ interface SearchResultsInterface
     /**
      * @return string|null
      */
-    public function getTagFilterJSON();
-
-    /**
-     * @param string $json
-     * @return $this
-     */
-    public function setTagFilterJSON($json): SearchResultsInterface;
-
-    /**
-     * @return string|null
-     */
-    public function getSearchFilterJSON();
+    public function getSearchFilterJSON(): ?string;
 
     /**
      * @param string $json
@@ -265,7 +244,7 @@ interface SearchResultsInterface
     /**
      * @return string|null
      */
-    public function getError();
+    public function getError(): ?string;
 
     /**
      * @param string $error
@@ -301,9 +280,9 @@ interface SearchResultsInterface
     public function getAllFilterOptions(): array;
 
     /**
-     * @param ProductFilter   $productFilter
-     * @param null|\Kategorie $currentCategory
-     * @param bool            $selectionWizard
+     * @param ProductFilter  $productFilter
+     * @param null|Kategorie $currentCategory
+     * @param bool           $selectionWizard
      * @return $this
      */
     public function setFilterOptions(

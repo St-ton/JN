@@ -1,10 +1,10 @@
 {includeMailTemplate template=header type=html}
 
-Sehr {if $Kunde->cAnrede == "w"}geehrte{elseif $Kunde->cAnrede == "m"}geehrter{else}geehrte(r){/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},<br>
+Guten Tag {$Kunde->cVorname} {$Kunde->cNachname},
 <br>
-der Versandstatus Ihrer Bestellung mit der Bestell-Nr. {$Bestellung->cBestellNr} hat sich geändert.<br>
+der Versandstatus Ihrer Bestellung mit Bestellnummer {$Bestellung->cBestellNr} hat sich geändert.<br>
 <br>
-{foreach name=pos from=$Bestellung->oLieferschein_arr item=oLieferschein}
+{foreach $Bestellung->oLieferschein_arr as $oLieferschein}
     {if !$oLieferschein->getEmailVerschickt()}
         <table cellpadding="10" cellspacing="0" border="0" width="100%" style="border-bottom: 1px dotted #929292;">
             <tr>
@@ -15,15 +15,15 @@ der Versandstatus Ihrer Bestellung mit der Bestell-Nr. {$Bestellung->cBestellNr}
                     Position
                 </td>
             </tr>
-            {foreach from=$oLieferschein->oPosition_arr item=Position}
+            {foreach $oLieferschein->oPosition_arr as $Position}
                 <tr>
                     <td align="left" valign="top">
                         {$Position->nAusgeliefert}
                     </td>
                     <td align="left" valign="top">
-                        {if $Position->nPosTyp==1}
+                        {if $Position->nPosTyp == 1}
                             <strong>{$Position->cName}</strong> {if $Position->cArtNr}({$Position->cArtNr}){/if}
-                            {foreach name=variationen from=$Position->WarenkorbPosEigenschaftArr item=WKPosEigenschaft}
+                            {foreach $Position->WarenkorbPosEigenschaftArr as $WKPosEigenschaft}
                                 <br>{$WKPosEigenschaft->cEigenschaftName}: {$WKPosEigenschaft->cEigenschaftWertName}
                             {/foreach}
 
@@ -48,7 +48,7 @@ der Versandstatus Ihrer Bestellung mit der Bestell-Nr. {$Bestellung->cBestellNr}
                 </tr>
             {/foreach}
         </table>
-        {foreach from=$oLieferschein->oVersand_arr item=oVersand}
+        {foreach $oLieferschein->oVersand_arr as $oVersand}
             {if $oVersand->getIdentCode()|strlen > 0}
                 <br><strong>Tracking-Url:</strong> <a href="{$oVersand->getLogistikVarUrl()}">{$oVersand->getIdentCode()}</a>
             {/if}
@@ -58,7 +58,7 @@ der Versandstatus Ihrer Bestellung mit der Bestell-Nr. {$Bestellung->cBestellNr}
 <br>
 Über den weiteren Verlauf Ihrer Bestellung werden wir Sie jeweils gesondert informieren.<br>
 <br>
-Mit freundlichem Gruß,<br>
+Mit freundlichem Gruß<br>
 Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=html}

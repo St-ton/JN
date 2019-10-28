@@ -4,13 +4,16 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter;
+namespace JTL\Filter;
 
-use Session\Session;
+use JTL\Language\LanguageHelper;
+use JTL\Session\Frontend;
+use JTL\Shop;
+use JTL\Shopsetting;
 
 /**
  * Class Config
- * @package Filter
+ * @package JTL\Filter
  */
 class Config implements ConfigInterface
 {
@@ -45,11 +48,11 @@ class Config implements ConfigInterface
     public static function getDefault(): ConfigInterface
     {
         $config = new self();
-        $config->setLanguageID(\Shop::getLanguageID());
-        $config->setLanguages(\Sprache::getInstance()->getLangArray());
-        $config->setConfig(\Shopsetting::getInstance()->getAll());
-        $config->setCustomerGroupID(Session::CustomerGroup()->getID());
-        $config->setBaseURL(\Shop::getURL() . '/');
+        $config->setLanguageID(Shop::getLanguageID());
+        $config->setLanguages(LanguageHelper::getInstance()->getLangArray());
+        $config->setConfig(Shopsetting::getInstance()->getAll());
+        $config->setCustomerGroupID(Frontend::getCustomerGroup()->getID());
+        $config->setBaseURL(Shop::getURL() . '/');
 
         return $config;
     }
@@ -65,7 +68,7 @@ class Config implements ConfigInterface
     /**
      * @inheritdoc
      */
-    public function setLanguageID(int $langID)
+    public function setLanguageID(int $langID): void
     {
         $this->langID = $langID;
     }
@@ -81,7 +84,7 @@ class Config implements ConfigInterface
     /**
      * @inheritdoc
      */
-    public function setLanguages(array $languages)
+    public function setLanguages(array $languages): void
     {
         $this->languages = $languages;
     }
@@ -97,7 +100,7 @@ class Config implements ConfigInterface
     /**
      * @inheritdoc
      */
-    public function setConfig(array $config)
+    public function setConfig(array $config): void
     {
         $this->config = $config;
     }
@@ -113,7 +116,7 @@ class Config implements ConfigInterface
     /**
      * @inheritdoc
      */
-    public function setCustomerGroupID(int $customerGroupID)
+    public function setCustomerGroupID(int $customerGroupID): void
     {
         $this->customerGroupID = $customerGroupID;
     }
@@ -129,7 +132,7 @@ class Config implements ConfigInterface
     /**
      * @inheritdoc
      */
-    public function setBaseURL(string $baseURL)
+    public function setBaseURL(string $baseURL): void
     {
         $this->baseURL = $baseURL;
     }

@@ -4,15 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL\Validation\Rules;
+namespace JTL\Services\JTL\Validation\Rules;
 
-
-use Services\JTL\Validation\RuleInterface;
-use Services\JTL\Validation\RuleResult;
+use JTL\Services\JTL\Validation\RuleInterface;
+use JTL\Services\JTL\Validation\RuleResult;
 
 /**
  * Class Between
- * @package Services\JTL\Validation\Rules
+ * @package JTL\Services\JTL\Validation\Rules
  *
  * Validates, that the $value is between an $lower and an $upper bound.
  *
@@ -37,7 +36,7 @@ class Between implements RuleInterface
     /**
      * @inheritdoc
      */
-    public function validate($value)
+    public function validate($value): RuleResult
     {
         if ($value < $this->lower) {
             return new RuleResult(false, 'value too low', $value);

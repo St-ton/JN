@@ -1,0 +1,15 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Tabs"
+msgstr "Tabs"
+
+msgid "tabOne"
+msgstr "Tab eins"
+
+msgid "tabTwo"
+msgstr "Tab zwei"
+
+msgid "tabThree"
+msgstr "Tab drei"

@@ -32,13 +32,11 @@
                         <fieldset id="quick-login">
                             <div class="form-group">
                                 <input type="email" name="email" id="email_quick" class="form-control"
-                                       placeholder="{lang key='emailadress'}" required
-                                       autocomplete="quick-login-email"/>
+                                       placeholder="{lang key='emailadress'}" required autocomplete="quick-login username"/>
                             </div>
                             <div class="form-group">
                                 <input type="password" name="passwort" id="password_quick" class="form-control"
-                                       placeholder="{lang key='password'}" required
-                                       autocomplete="quick-login-password"/>
+                                       placeholder="{lang key='password'}" required autocomplete="quick-login current-password"/>
                             </div>
                             {if isset($showLoginCaptcha) && $showLoginCaptcha}
                                 <div class="form-group text-center float-label-control">
@@ -69,7 +67,7 @@
         {else}
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="{lang key='hello'}">
                 <span class="fa fa-user"></span>
-                <span class="hidden-xs hidden-sm hidden-md"> {lang key='hello'} {if $smarty.session.Kunde->cAnrede === 'w'}{lang key='salutationW'}{elseif $smarty.session.Kunde->cAnrede === 'm'}{lang key='salutationM'}{/if} {$smarty.session.Kunde->cNachname}</span>
+                <span class="hidden-xs hidden-sm hidden-md"> {lang key='hello'}, {$smarty.session.Kunde->cVorname} {$smarty.session.Kunde->cNachname}</span>
                 <span class="caret"></span>
             </a>
             <ul class="dropdown-menu dropdown-menu-right">
@@ -84,7 +82,7 @@
     </li>
     {include file='layout/header_shop_nav_compare.tpl'}
     {include file='layout/header_shop_nav_wish.tpl'}
-    <li class="hidden-xs cart-menu dropdown{if $WarenkorbArtikelanzahl >= 1} items{/if}{if $nSeitenTyp == 3} current{/if}" data-toggle="basket-items">
+    <li class="hidden-xs cart-menu dropdown{if $nSeitenTyp == 3} current{/if}" data-toggle="basket-items">
         {include file='basket/cart_dropdown_label.tpl'}
     </li>
     {/block}

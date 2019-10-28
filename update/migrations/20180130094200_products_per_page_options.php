@@ -2,9 +2,13 @@
 /**
  * Add products per page options
  *
- * @author Felix Moche
+ * @author fm
  * @created Thu, 30 Jan 2018 09:42:00 +0100
  */
+
+use JTL\Shopsetting;
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
 
 /**
  * Class Migration_20180130094200
@@ -23,7 +27,7 @@ class Migration_20180130094200 extends Migration implements IMigration
         $this->setConfig(
             'products_per_page_list',
             '10,20,30,40,50',
-            CONF_ARTIKELUEBERSICHT,
+            \CONF_ARTIKELUEBERSICHT,
             'Auswahloptionen Artikel pro Seite in Listenansicht',
             'text',
             845,
@@ -34,7 +38,7 @@ class Migration_20180130094200 extends Migration implements IMigration
         $this->setConfig(
             'products_per_page_gallery',
             '9,12,15,18,21',
-            CONF_ARTIKELUEBERSICHT,
+            \CONF_ARTIKELUEBERSICHT,
             'Auswahloptionen Artikel pro Seite in Gallerieansicht',
             'text',
             855,

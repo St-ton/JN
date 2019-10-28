@@ -4,6 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Catalog\Category\KategorieListe;
+use JTL\Helpers\Category;
+use JTL\Helpers\CMS;
+use JTL\Link\LinkInterface;
+use JTL\Shop;
+use JTL\Sitemap\Sitemap;
+
 /**
  * @return array
  * @deprecated since 5.0.0
@@ -11,7 +18,7 @@
 function gibStartBoxen()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return CMSHelper::getHomeBoxes();
+    return CMS::getHomeBoxes();
 }
 
 /**
@@ -22,16 +29,14 @@ function gibStartBoxen()
 function gibNews($conf)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return CMSHelper::getHomeNews($conf);
+    return CMS::getHomeNews($conf);
 }
 
 /**
- * @param array $search
- * @param array $conf
- * @return null|stdClass
+ * @return null
  * @deprecated since 5.0.0
  */
-function gibNextBoxPrio($search, $conf)
+function gibNextBoxPrio()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return null;
@@ -45,7 +50,7 @@ function gibNextBoxPrio($search, $conf)
 function gibLivesucheTop($conf)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return CMSHelper::getLiveSearchTop($conf);
+    return CMS::getLiveSearchTop($conf);
 }
 
 /**
@@ -56,7 +61,7 @@ function gibLivesucheTop($conf)
 function gibLivesucheLast($conf)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return CMSHelper::getLiveSearchLast($conf);
+    return CMS::getLiveSearchLast($conf);
 }
 
 /**
@@ -67,7 +72,7 @@ function gibLivesucheLast($conf)
 function gibTagging($conf)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return CMSHelper::getTagging($conf);
+    return [];
 }
 
 /**
@@ -77,7 +82,7 @@ function gibTagging($conf)
 function gibNewsletterHistory()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return CMSHelper::getNewsletterHistory();
+    return CMS::getNewsletterHistory();
 }
 
 /**
@@ -88,15 +93,14 @@ function gibNewsletterHistory()
 function gibGratisGeschenkArtikel($conf)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return CMSHelper::getFreeGifts($conf);
+    return CMS::getFreeGifts($conf);
 }
 
 /**
- * @param array $Einstellungen
  * @return null
  * @deprecated since 5.0.0
  */
-function gibAuswahlAssistentFragen($Einstellungen)
+function gibAuswahlAssistentFragen()
 {
     trigger_error(__FUNCTION__ . ' is deprecated and does not do anything useful.', E_USER_DEPRECATED);
     return null;
@@ -109,48 +113,41 @@ function gibAuswahlAssistentFragen($Einstellungen)
 function gibSitemapKategorien()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $oKategorieliste           = new KategorieListe();
-    $oKategorieliste->elemente = KategorieHelper::getInstance()->combinedGetAll();
+    $categoryList           = new KategorieListe();
+    $categoryList->elemente = Category::getInstance()->combinedGetAll();
 
-    return $oKategorieliste;
+    return $categoryList;
 }
 
 /**
- * @return array
  * @deprecated since 5.0.0
  */
 function gibSitemapGlobaleMerkmale()
 {
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $sm = new \JTL\Sitemap(Shop::Container()->getDB(), Shop::Container()->getCache(), Shop::getConfig([CONF_SITEMAP]));
-
-    return $sm->getGlobalAttributes();
+    trigger_error(__FUNCTION__ . ' is deprecated and does not do anything useful.', E_USER_DEPRECATED);
 }
 
 /**
- * @param object $oMerkmal
  * @deprecated since 5.0.0
  */
-function verarbeiteMerkmalBild(&$oMerkmal)
+function verarbeiteMerkmalBild()
 {
     trigger_error(__FUNCTION__ . ' is deprecated and does not do anything useful.', E_USER_DEPRECATED);
 }
 
 /**
- * @param object $oMerkmalWert
  * @deprecated since 5.0.0
  */
-function verarbeiteMerkmalWertBild(&$oMerkmalWert)
+function verarbeiteMerkmalWertBild()
 {
     trigger_error(__FUNCTION__ . ' is deprecated and does not do anything useful.', E_USER_DEPRECATED);
 }
 
 /**
- * @param array $conf
  * @return array
  * @deprecated since 5.0.0
  */
-function gibBoxNews($conf)
+function gibBoxNews()
 {
     trigger_error(__FUNCTION__ . ' is deprecated and does not return anything useful.', E_USER_DEPRECATED);
     return [];
@@ -163,7 +160,7 @@ function gibBoxNews($conf)
 function gibSitemapNews()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $sm = new \JTL\Sitemap(Shop::Container()->getDB(), Shop::Container()->getCache(), Shop::getConfig([CONF_NEWS]));
+    $sm = new Sitemap(Shop::Container()->getDB(), Shop::Container()->getCache(), Shop::getConfig([CONF_NEWS]));
 
     return $sm->getNews();
 }
@@ -175,21 +172,21 @@ function gibSitemapNews()
 function gibNewsKategorie()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $sm = new \JTL\Sitemap(Shop::Container()->getDB(), Shop::Container()->getCache(), Shop::getConfig([CONF_SITEMAP]));
+    $sm = new Sitemap(Shop::Container()->getDB(), Shop::Container()->getCache(), Shop::getConfig([CONF_SITEMAP]));
 
     return $sm->getNewsCategories();
 }
 
 /**
- * @param array $conf
- * @param JTLSmarty $smarty
+ * @param array                 $conf
+ * @param \JTL\Smarty\JTLSmarty $smarty
  * @deprecated since 5.0.0
  */
 function gibSeiteSitemap($conf, $smarty)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     Shop::setPageType(PAGE_SITEMAP);
-    $sm = new \JTL\Sitemap(Shop::Container()->getDB(), Shop::Container()->getCache(), $conf);
+    $sm = new Sitemap(Shop::Container()->getDB(), Shop::Container()->getCache(), $conf);
     $sm->assignData($smarty);
 }
 
@@ -202,10 +199,10 @@ function pruefeSpezialseite(int $nLinkart)
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $specialPages = Shop::Container()->getLinkService()->getLinkGroupByName('specialpages');
     if ($nLinkart > 0 && $specialPages !== null) {
-        $res = $specialPages->getLinks()->first(function (\Link\LinkInterface $l) use ($nLinkart) {
+        $res = $specialPages->getLinks()->first(function (LinkInterface $l) use ($nLinkart) {
             return $l->getLinkType() === $nLinkart;
         });
-        /** @var \Link\LinkInterface $res */
+        /** @var LinkInterface $res */
         if ($res !== null && $res->getFileName() !== '') {
             header('Location: ' . Shop::Container()->getLinkService()->getStaticRoute($res->getFileName()));
             exit();

@@ -4,76 +4,78 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Visitor;
+
 /**
- * @param string $szUserAgent
- * @param string $szIp
+ * @param string $userAgent
+ * @param string $ip
  * @return object
  * @deprecated since 5.0.0
  */
-function dbLookupVisitor($szUserAgent, $szIp)
+function dbLookupVisitor($userAgent, $ip)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Visitor::dbLookup() instead.', E_USER_DEPRECATED);
-    return Visitor::dbLookup($szUserAgent, $szIp);
+    return Visitor::dbLookup($userAgent, $ip);
 }
 
 /**
- * @param object $oVisitor
- * @param int    $visitorId
- * @param string $szUserAgent
- * @param int    $kBesucherBot
+ * @param object $visitor
+ * @param int    $visitorID
+ * @param string $userAgent
+ * @param int    $botID
  * @return object
  * @deprecated since 5.0.0
  */
-function updateVisitorObject($oVisitor, int $visitorId,  $szUserAgent, $kBesucherBot)
+function updateVisitorObject($visitor, int $visitorID, $userAgent, $botID)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Visitor::updateVisitorObject($oVisitor, $visitorId, $szUserAgent, $kBesucherBot);
+    return Visitor::updateVisitorObject($visitor, $visitorID, $userAgent, $botID);
 }
 
 /**
- * @param string $szUserAgent
- * @param int    $kBesucherBot
+ * @param string $userAgent
+ * @param int    $botID
  * @return object
  * @deprecated since 5.0.0
  */
-function createVisitorObject($szUserAgent, int $kBesucherBot)
+function createVisitorObject($userAgent, int $botID)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Visitor::createVisitorObject($szUserAgent, $kBesucherBot);
+    return Visitor::createVisitorObject($userAgent, $botID);
 }
 
 /**
- * @param object $oVisitor
+ * @param object $visitor
  * @return int [LAST_INSERT_ID|0(on fail)]
  * @deprecated since 5.0.0
  */
-function dbInsertVisitor($oVisitor)
+function dbInsertVisitor($visitor)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Visitor::dbInsert($oVisitor);
+    return Visitor::dbInsert($visitor);
 }
 
 /**
- * @param object $oVisitor
- * @param int    $kBesucher
+ * @param object $visitor
+ * @param int    $visitorID
  * @return int
  * @deprecated since 5.0.0
  */
-function dbUpdateVisitor($oVisitor, int $kBesucher)
+function dbUpdateVisitor($visitor, int $visitorID)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Visitor::dbUpdate($oVisitor, $kBesucher);
+    return Visitor::dbUpdate($visitor, $visitorID);
 }
 
 /**
- * @param int $nCustomerId
+ * @param int $customerID
  * @return int [$kBestellung|0]
  * @deprecated since 5.0.0
  */
-function refreshCustomerOrderId(int $nCustomerId)
+function refreshCustomerOrderId(int $customerID)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Visitor::refreshCustomerOrderId($nCustomerId);
+    return Visitor::refreshCustomerOrderId($customerID);
 }
 
 /**
@@ -107,14 +109,14 @@ function gibBot()
 }
 
 /**
- * @param int    $kBesucher
+ * @param int    $visitorID
  * @param string $referer
  * @deprecated since 5.0.0
  */
-function werteRefererAus(int $kBesucher, $referer)
+function werteRefererAus(int $visitorID, $referer)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    Visitor::analyzeReferer($kBesucher, $referer);
+    Visitor::analyzeReferer($visitorID, $referer);
 }
 
 /**
@@ -129,12 +131,12 @@ function istSuchmaschine($referer)
 }
 
 /**
- * @param string $cUserAgent
+ * @param string $userAgent
  * @return int
  * @deprecated since 5.0.0
  */
-function istSpider($cUserAgent)
+function istSpider($userAgent)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Visitor::isSpider($cUserAgent);
+    return Visitor::isSpider($userAgent);
 }

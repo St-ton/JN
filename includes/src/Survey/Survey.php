@@ -4,21 +4,25 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Survey;
+namespace JTL\Survey;
 
-
-use DB\DbInterface;
-use DB\ReturnType;
+use DateTime;
+use Illuminate\Support\Collection;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Text;
+use JTL\MagicCompatibilityTrait;
+use JTL\Nice;
+use stdClass;
 use function Functional\group;
-use Tightenco\Collect\Support\Collection;
 
 /**
  * Class Survey
- * @package JTL
+ * @package JTL\Survey
  */
 class Survey
 {
-    use \MagicCompatibilityTrait;
+    use MagicCompatibilityTrait;
 
     /**
      * @var int
@@ -66,17 +70,17 @@ class Survey
     private $isActive = false;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     private $validFrom;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     private $validUntil;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     private $created;
 
@@ -101,7 +105,7 @@ class Survey
     private $db;
 
     /**
-     * @var \Nice
+     * @var Nice
      */
     private $nice;
 
@@ -113,7 +117,7 @@ class Survey
     /**
      * @var array
      */
-    private static $mapping = [
+    protected static $mapping = [
         'kUmfrage'          => 'ID',
         'kSprache'          => 'LanguageID',
         'kKupon'            => 'CouponID',
@@ -135,10 +139,10 @@ class Survey
     /**
      * Survey constructor.
      * @param DbInterface           $db
-     * @param \Nice                 $nice
+     * @param Nice                  $nice
      * @param SurveyQuestionFactory $factory
      */
-    public function __construct(DbInterface $db, \Nice $nice, SurveyQuestionFactory $factory)
+    public function __construct(DbInterface $db, Nice $nice, SurveyQuestionFactory $factory)
     {
         $this->db        = $db;
         $this->nice      = $nice;
@@ -156,9 +160,10 @@ class Survey
             return $this;
         }
         $survey = $this->db->queryPrepared(
-            "SELECT tumfrage.kUmfrage, tumfrage.kSprache, tumfrage.kKupon, tumfrage.cKundengruppe, tumfrage.cName, 
-                tumfrage.cBeschreibung, tumfrage.fGuthaben, tumfrage.nBonuspunkte, tumfrage.nAktiv, tumfrage.dGueltigVon, 
-                tumfrage.dGueltigBis, tumfrage.dErstellt, tseo.cSeo, COUNT(tumfragefrage.kUmfrageFrage) AS nAnzahlFragen
+            "SELECT tumfrage.kUmfrage, tumfrage.kSprache, tumfrage.kKupon, tumfrage.cKundengruppe,
+                tumfrage.cName, tumfrage.cBeschreibung, tumfrage.fGuthaben, tumfrage.nBonuspunkte, 
+                tumfrage.nAktiv, tumfrage.dGueltigVon, tumfrage.dGueltigBis, tumfrage.dErstellt, 
+                tseo.cSeo, COUNT(tumfragefrage.kUmfrageFrage) AS nAnzahlFragen
                 FROM tumfrage
                 JOIN tumfragefrage 
                     ON tumfragefrage.kUmfrage = tumfrage.kUmfrage
@@ -198,7 +203,7 @@ class Survey
                 ['sid' => $this->getID()],
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            $questions = group($questions, function (\stdClass $e) {
+            $questions = group($questions, function (stdClass $e) {
                 return $e->kUmfrageFrage;
             });
             foreach ($questions as $questionID => $questionData) {
@@ -221,7 +226,7 @@ class Survey
     /**
      * @param int|string $id
      */
-    public function setID($id)
+    public function setID($id): void
     {
         $this->id = (int)$id;
     }
@@ -237,7 +242,7 @@ class Survey
     /**
      * @param int|string $languageID
      */
-    public function setLanguageID($languageID)
+    public function setLanguageID($languageID): void
     {
         $this->languageID = (int)$languageID;
     }
@@ -253,7 +258,7 @@ class Survey
     /**
      * @param int|string $couponID
      */
-    public function setCouponID($couponID)
+    public function setCouponID($couponID): void
     {
         $this->couponID = (int)$couponID;
     }
@@ -269,10 +274,10 @@ class Survey
     /**
      * @param array|string $customerGroups
      */
-    public function setCustomerGroups($customerGroups)
+    public function setCustomerGroups($customerGroups): void
     {
         if (!\is_array($customerGroups)) {
-            $customerGroups = \StringHandler::parseSSK($customerGroups);
+            $customerGroups = Text::parseSSK($customerGroups);
         }
         $this->customerGroups = $customerGroups;
     }
@@ -288,7 +293,7 @@ class Survey
     /**
      * @param string $name
      */
-    public function setName(string $name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
@@ -304,7 +309,7 @@ class Survey
     /**
      * @param string $description
      */
-    public function setDescription(string $description)
+    public function setDescription(string $description): void
     {
         $this->description = $description;
     }
@@ -320,7 +325,7 @@ class Survey
     /**
      * @param float|string $credits
      */
-    public function setCredits($credits)
+    public function setCredits($credits): void
     {
         $this->credits = (float)$credits;
     }
@@ -336,7 +341,7 @@ class Survey
     /**
      * @param int|string $bonusCredits
      */
-    public function setBonusCredits($bonusCredits)
+    public function setBonusCredits($bonusCredits): void
     {
         $this->bonusCredits = (int)$bonusCredits;
     }
@@ -352,64 +357,64 @@ class Survey
     /**
      * @param bool|string $isActive
      */
-    public function setIsActive($isActive)
+    public function setIsActive($isActive): void
     {
         $this->isActive = (bool)$isActive;
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getValidFrom(): \DateTime
+    public function getValidFrom(): DateTime
     {
         return $this->validFrom;
     }
 
     /**
-     * @param \DateTime|string $validFrom
+     * @param DateTime|string $validFrom
      */
-    public function setValidFrom($validFrom)
+    public function setValidFrom($validFrom): void
     {
         if (\is_string($validFrom)) {
-            $validFrom = new \DateTime($validFrom);
+            $validFrom = new DateTime($validFrom);
         }
         $this->validFrom = $validFrom;
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getValidUntil(): \DateTime
+    public function getValidUntil(): DateTime
     {
         return $this->validUntil;
     }
 
     /**
-     * @param \DateTime|string $validUntil
+     * @param DateTime|string $validUntil
      */
-    public function setValidUntil($validUntil)
+    public function setValidUntil($validUntil): void
     {
         if (\is_string($validUntil)) {
-            $validUntil = new \DateTime($validUntil);
+            $validUntil = new DateTime($validUntil);
         }
         $this->validUntil = $validUntil;
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getCreated(): \DateTime
+    public function getCreated(): DateTime
     {
         return $this->created;
     }
 
     /**
-     * @param \DateTime|string $created
+     * @param DateTime|string $created
      */
-    public function setCreated($created)
+    public function setCreated($created): void
     {
         if (\is_string($created)) {
-            $created = new \DateTime($created);
+            $created = new DateTime($created);
         }
         $this->created = $created;
     }
@@ -425,7 +430,7 @@ class Survey
     /**
      * @param string $url
      */
-    public function setURL(string $url)
+    public function setURL(string $url): void
     {
         $this->url = $url;
     }
@@ -441,7 +446,7 @@ class Survey
     /**
      * @param int|string $count
      */
-    public function setQuestionCount($count)
+    public function setQuestionCount($count): void
     {
         $this->questionCount = (int)$count;
     }
@@ -450,7 +455,7 @@ class Survey
      * @param int $id
      * @return SurveyQuestion|null
      */
-    public function getQuestionByID(int $id)
+    public function getQuestionByID(int $id): ?SurveyQuestion
     {
         return $this->questions->first(function (SurveyQuestion $q) use ($id) {
             return $q->getID() === $id;
@@ -468,7 +473,7 @@ class Survey
     /**
      * @param Collection $questions
      */
-    public function setQuestions(Collection $questions)
+    public function setQuestions(Collection $questions): void
     {
         $this->questions     = $questions;
         $this->questionCount = $questions->count();
@@ -495,7 +500,7 @@ class Survey
     /**
      * @param DbInterface $db
      */
-    public function setDb(DbInterface $db)
+    public function setDb(DbInterface $db): void
     {
         $this->db = $db;
     }
@@ -507,7 +512,7 @@ class Survey
     {
         $res            = \get_object_vars($this);
         $res['db']      = '*truncated*';
-        $res['nice']    = '*truncated*';
+        $res['Nice']    = '*truncated*';
         $res['factory'] = '*truncated*';
 
         return $res;

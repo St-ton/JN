@@ -1,13 +1,17 @@
 <?php
+
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Remove marketplace admin menu entry and widget
  *
- * @author Danny Raufeisen
+ * @author dr
  */
 
 class Migration_20180731094600 extends Migration implements IMigration
 {
-    protected $author      = 'Danny Raufeisen';
+    protected $author      = 'dr';
     protected $description = 'Remove marketplace admin menu entry and widget';
 
     public function up()

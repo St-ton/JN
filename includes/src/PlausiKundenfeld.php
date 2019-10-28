@@ -1,31 +1,34 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license       http://jtl-url.de/jtlshoplicense
  */
+
+namespace JTL;
 
 /**
  * Class PlausiKundenfeld
+ * @package JTL
  */
 class PlausiKundenfeld extends Plausi
 {
     /**
-     * @param null|string $cTyp
-     * @param bool        $bUpdate
+     * @param null|string $type
+     * @param bool        $update
      * @return bool
      */
-    public function doPlausi($cTyp = null, bool $bUpdate = false): bool
+    public function doPlausi($type = null, bool $update = false): bool
     {
-        if (count($this->xPostVar_arr) === 0) {
+        if (\count($this->xPostVar_arr) === 0) {
             return false;
         }
-        if (!isset($this->xPostVar_arr['cName']) || strlen($this->xPostVar_arr['cName']) === 0) {
+        if (!isset($this->xPostVar_arr['cName']) || \mb_strlen($this->xPostVar_arr['cName']) === 0) {
             $this->xPlausiVar_arr['cName'] = 1;
         }
-        if (!isset($this->xPostVar_arr['cWawi']) || strlen($this->xPostVar_arr['cWawi']) === 0) {
+        if (!isset($this->xPostVar_arr['cWawi']) || \mb_strlen($this->xPostVar_arr['cWawi']) === 0) {
             $this->xPlausiVar_arr['cWawi'] = 1;
         }
-        if (!isset($this->xPostVar_arr['cTyp']) || strlen($this->xPostVar_arr['cTyp']) === 0) {
+        if (!isset($this->xPostVar_arr['cTyp']) || \mb_strlen($this->xPostVar_arr['cTyp']) === 0) {
             $this->xPlausiVar_arr['cTyp'] = 1;
         }
         if (!isset($this->xPostVar_arr['nSort'])) {
@@ -37,8 +40,8 @@ class PlausiKundenfeld extends Plausi
         if (!isset($this->xPostVar_arr['nEdit'])) {
             $this->xPlausiVar_arr['nEdit'] = 1;
         }
-        if ($cTyp === 'auswahl') {
-            if (is_array($this->xPostVar_arr['cfValues'])) {
+        if ($type === 'auswahl') {
+            if (\is_array($this->xPostVar_arr['cfValues'])) {
                 foreach ($this->xPostVar_arr['cfValues'] as $szFieldValue) {
                     // empty value are not allowed
                     if (empty($szFieldValue['cWert'])) {
@@ -49,13 +52,15 @@ class PlausiKundenfeld extends Plausi
                 // empty arrays should not be savable
                 $this->xPlausiVar_arr['cWert'] = 1;
             }
-        } elseif (!$bUpdate) {
-            $oKundenfeld = Shop::Container()->getDB()->select(
+        } elseif (!$update) {
+            $field = Shop::Container()->getDB()->select(
                 'tkundenfeld',
-                'kSprache', (int)$_SESSION['kSprache'],
-                'cName', Shop::Container()->getDB()->escape($this->xPostVar_arr['cName'])
+                'kSprache',
+                (int)$_SESSION['kSprache'],
+                'cName',
+                $this->xPostVar_arr['cName']
             );
-            if (isset($oKundenfeld->kKundenfeld) && $oKundenfeld->kKundenfeld > 0) {
+            if (isset($field->kKundenfeld) && $field->kKundenfeld > 0) {
                 $this->xPlausiVar_arr['cName'] = 2;
             }
         }

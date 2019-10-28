@@ -1,38 +1,45 @@
 {if $account}
+        <button class="navbar-toggler sidebar-toggler collapsed" type="button" data-toggle="collapse" data-target="#sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        </div>
     </div>
 </div>{* /backend-wrapper *}
 
-<script type="text/javascript">
-if (typeof CKEDITOR !== 'undefined') {ldelim}
-    CKEDITOR.editorConfig = function(config) {ldelim}
-         config.language = 'de';
-        // config.uiColor = '#AADC6E';
-        config.startupMode = '{if isset($Einstellungen.global.admin_ckeditor_mode) && $Einstellungen.global.admin_ckeditor_mode === 'Q'}source{else}wysiwyg{/if}';
-        config.htmlEncodeOutput = false;
-        config.basicEntities = false;
-        config.htmlEncodeOutput = false;
-        config.allowedContent = true;
-        config.enterMode = CKEDITOR.ENTER_P;
-        config.entities = false;
-        config.entities_latin = false;
-        config.entities_greek = false;
-        config.ignoreEmptyParagraph = false;
-        config.filebrowserBrowseUrl = '{$PFAD_KCFINDER}browse.php?type=Sonstiges&token={$smarty.session.jtl_token}';
-        config.filebrowserImageBrowseUrl = '{$PFAD_KCFINDER}browse.php?type=Bilder&token={$smarty.session.jtl_token}';
-        config.filebrowserFlashBrowseUrl = '{$PFAD_KCFINDER}browse.php?type=Videos&token={$smarty.session.jtl_token}';
-        config.filebrowserUploadUrl = '{$PFAD_KCFINDER}upload.php?type=Sonstiges&token={$smarty.session.jtl_token}';
-        config.filebrowserImageUploadUrl = '{$PFAD_KCFINDER}upload.php?type=Bilder&token={$smarty.session.jtl_token}';
-        config.filebrowserFlashUploadUrl = '{$PFAD_KCFINDER}upload.php?type=Videos&token={$smarty.session.jtl_token}';
-        config.extraPlugins = 'codemirror';
-        config.fillEmptyBlocks = false;
-        config.autoParagraph = false;
-        {*config.codemirror = {ldelim}*}
-            {*mode: 'smartymixed'*}
-        {*{rdelim};*}
-    {rdelim};
-    CKEDITOR.editorConfig(CKEDITOR.config);
-{rdelim}
-$('.select2').select2();
+<script>
+    if(typeof CKEDITOR !== 'undefined') {
+        CKEDITOR.editorConfig = function(config) {
+            config.language = '{$language}';
+            config.removeDialogTabs = 'link:upload;image:Upload';
+            config.defaultLanguage = 'en';
+            config.startupMode = '{if isset($Einstellungen.global.admin_ckeditor_mode)
+                && $Einstellungen.global.admin_ckeditor_mode === 'Q'}source{else}wysiwyg{/if}';
+            config.htmlEncodeOutput = false;
+            config.basicEntities = false;
+            config.htmlEncodeOutput = false;
+            config.allowedContent = true;
+            config.enterMode = CKEDITOR.ENTER_P;
+            config.entities = false;
+            config.entities_latin = false;
+            config.entities_greek = false;
+            config.ignoreEmptyParagraph = false;
+            config.filebrowserBrowseUrl      = 'elfinder.php?ckeditor=1&mediafilesType=misc&token={$smarty.session.jtl_token}';
+            config.filebrowserImageBrowseUrl = 'elfinder.php?ckeditor=1&mediafilesType=image&token={$smarty.session.jtl_token}';
+            config.filebrowserFlashBrowseUrl = 'elfinder.php?ckeditor=1&mediafilesType=video&token={$smarty.session.jtl_token}';
+            config.filebrowserUploadUrl      = 'elfinder.php?ckeditor=1&mediafilesType=misc&token={$smarty.session.jtl_token}';
+            config.filebrowserImageUploadUrl = 'elfinder.php?ckeditor=1&mediafilesType=image&token={$smarty.session.jtl_token}';
+            config.filebrowserFlashUploadUrl = 'elfinder.php?ckeditor=1&mediafilesType=video&token={$smarty.session.jtl_token}';
+            config.extraPlugins = 'codemirror';
+            config.fillEmptyBlocks = false;
+            config.autoParagraph = false;
+        };
+        CKEDITOR.editorConfig(CKEDITOR.config);
+        $.each(CKEDITOR.dtd.$removeEmpty, function (i, value) {
+            CKEDITOR.dtd.$removeEmpty[i] = false;
+        });
+    }
+    $('.select2').select2();
 </script>
 
 {/if}

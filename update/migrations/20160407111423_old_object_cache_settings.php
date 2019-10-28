@@ -6,6 +6,9 @@
  * @created Th, 7 Apr 2016 11:14:23 +0100
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Class Migration_20160407111423
  */
@@ -15,7 +18,7 @@ class Migration_20160407111423 extends Migration implements IMigration
 
     public function up()
     {
-        $this->execute("DELETE FROM `teinstellungenconf` WHERE kEinstellungenSektion = 123;");
+        $this->execute('DELETE FROM `teinstellungenconf` WHERE kEinstellungenSektion = 123;');
     }
 
     public function down()

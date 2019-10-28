@@ -4,11 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace DB\Services;
+namespace JTL\DB\Services;
 
 /**
  * Interface GcServiceInterface
- * @package DB\Services
+ * @package JTL\DB\Services
  */
 interface GcServiceInterface
 {

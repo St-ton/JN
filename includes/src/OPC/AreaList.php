@@ -1,14 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC;
+namespace JTL\OPC;
 
 /**
  * Class AreaList
- * @package OPC
+ * @package JTL\OPC
  */
 class AreaList implements \JsonSerializable
 {
@@ -51,7 +51,7 @@ class AreaList implements \JsonSerializable
      * @param string $id
      * @return Area
      */
-    public function getArea($id)
+    public function getArea($id): Area
     {
         return $this->areas[$id];
     }
@@ -78,6 +78,8 @@ class AreaList implements \JsonSerializable
     }
 
     /**
+     * @return array
+     * @throws \Exception
      * @return string[] the rendered HTML content of this page
      */
     public function getFinalHtml(): array
@@ -92,8 +94,9 @@ class AreaList implements \JsonSerializable
 
     /**
      * @param array $data
+     * @throws \Exception
      */
-    public function deserialize($data)
+    public function deserialize(array $data): void
     {
         $this->clear();
 

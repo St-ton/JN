@@ -1,0 +1,25 @@
+<?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license       http://jtl-url.de/jtlshoplicense
+ */
+
+if (PHP_SAPI !== 'cli') {
+    echo 'Error: Shop CLI should be invoked via the CLI version of PHP, not the ' . PHP_SAPI . ' SAPI' . PHP_EOL;
+    exit;
+}
+
+set_error_handler(function($code, $description, $file = null, $line = null, $context = null) {
+    if ($code === E_ERROR) {
+        echo $error . ' (' . $code . '): ' . $description . ' in [' . $file . ', line ' . $line . ']' . PHP_EOL;
+        exit;
+    }
+});
+
+require_once __DIR__.'/includes/globalinclude.php';
+if (file_exists(__DIR__.'/install/vendor/autoload.php')) {
+    require_once __DIR__.'/install/vendor/autoload.php';
+}
+$application = new \JTL\Console\Application();
+$application->initPluginCommands();
+$application->run();

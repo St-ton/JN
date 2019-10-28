@@ -1,19 +1,18 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=#lang# cBeschreibung=#langDesc# cDokuURL=#langURL#}
-<div id="content" class="container-fluid">
-    <div class="panel panel-default settings">
-        <div class="panel-heading">
-            <h3 class="panel-title">{#newLangVar#}</h3>
+{include file='tpl_inc/seite_header.tpl' cTitel=__('lang') cBeschreibung=__('langDesc') cDokuURL=__('langURL')}
+<div id="content">
+    <div class="card settings">
+        <div class="card-header">
+            <div class="subheading1">{__('newLangVar')}</div>
+            <hr class="mb-n3">
         </div>
         <form action="sprache.php" method="post">
             {$jtl_token}
             <input type="hidden" name="tab" value="{$tab}">
-            <div class="panel-body">
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <label for="kSprachsektion">{#langSection#}</label>
-                    </span>
-                    <span class="input-group-wrap">
-                        <select class="form-control" name="kSprachsektion" id="kSprachsektion">
+            <div class="card-body">
+                <div class="form-group form-row align-items-center">
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="kSprachsektion">{__('langSection')}:</label>
+                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                        <select class="custom-select" name="kSprachsektion" id="kSprachsektion">
                             {foreach $oSektion_arr as $oSektion}
                                 <option value="{$oSektion->kSprachsektion}"
                                         {if $oVariable->kSprachsektion === (int)$oSektion->kSprachsektion}selected{/if}>
@@ -21,67 +20,64 @@
                                 </option>
                             {/foreach}
                         </select>
-                    </span>
+                    </div>
                 </div>
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <label for="cName">{#variableName#}</label>
-                    </span>
-                    <span class="input-group-wrap">
+                <div class="form-group form-row align-items-center">
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="cName">{__('variableName')}:</label>
+                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         <input type="text" class="form-control" name="cName" id="cName" value="{$oVariable->cName}">
-                    </span>
+                    </div>
                 </div>
-                {foreach $oSprache_arr as $oSprache}
-                    {if isset($oVariable->cWertAlt_arr[$oSprache->cISO])}
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="bOverwrite_{$oSprache->cISO}_yes">
-                                    <input type="radio" id="bOverwrite_{$oSprache->cISO}_yes"
-                                           name="bOverwrite_arr[{$oSprache->cISO}]" value="1">
-                                    {$oSprache->cNameDeutsch} ({#new#})
-                                </label>
-                            </span>
-                            <span class="input-group-wrap">
-                                <input type="text" class="form-control" name="cWert_arr[{$oSprache->cISO}]"
-                                       id="cWert_{$oSprache->cISO}" value="{if !empty($oVariable->cWert_arr[$oSprache->cISO])}{$oVariable->cWert_arr[$oSprache->cISO]}{/if}">
-                            </span>
+                {foreach $oSprache_arr as $language}
+                    {assign var=langCode value=$language->getIso()}
+                    {if isset($oVariable->cWertAlt_arr[$langCode])}
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="bOverwrite_{$langCode}_yes">
+                                <input type="radio" id="bOverwrite_{$langCode}_yes"
+                                       name="bOverwrite_arr[{$langCode}]" value="1">
+                                {$language->getLocalizedName()} ({__('new')}):
+                            </label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <input type="text" class="form-control" name="cWert_arr[{$langCode}]"
+                                       id="cWert_{$langCode}" value="{if !empty($oVariable->cWert_arr[$langCode])}{$oVariable->cWert_arr[$langCode]}{/if}">
+                            </div>
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="bOverwrite_{$oSprache->cISO}_no">
-                                    <input type="radio" id="bOverwrite_{$oSprache->cISO}_no"
-                                           name="bOverwrite_arr[{$oSprache->cISO}]" value="0" checked>
-                                    {$oSprache->cNameDeutsch} ({#current#})
+                        <div class="form-group form-row align-items-center">
+                                <label class="col col-sm-4 col-form-label text-sm-right" for="bOverwrite_{$langCode}_no">
+                                    <input type="radio" id="bOverwrite_{$langCode}_no"
+                                           name="bOverwrite_arr[{$langCode}]" value="0" checked>
+                                    {$language->getLocalizedName()} ({__('current')}):
                                 </label>
-                            </span>
-                                <span class="input-group-wrap">
-                                <input type="text" class="form-control" name="cWertAlt_arr[{$oSprache->cISO}]" disabled
-                                       id="cWertAlt_{$oSprache->cISO}"
-                                       value="{if !empty($oVariable->cWertAlt_arr[$oSprache->cISO])}{$oVariable->cWertAlt_arr[$oSprache->cISO]}{/if}">
-                            </span>
+                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <input type="text" class="form-control" name="cWertAlt_arr[{$langCode}]" disabled
+                                       id="cWertAlt_{$langCode}"
+                                       value="{if !empty($oVariable->cWertAlt_arr[$langCode])}{$oVariable->cWertAlt_arr[$langCode]}{/if}">
+                            </div>
                         </div>
                     {else}
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="cWert_{$oSprache->cISO}">
-                                    {$oSprache->cNameDeutsch}
+                        <div class="form-group form-row align-items-center">
+                                <label class="col col-sm-4 col-form-label text-sm-right" for="cWert_{$langCode}">
+                                    {$language->getLocalizedName()}:
                                 </label>
-                            </span>
-                            <span class="input-group-wrap">
-                                <input type="text" class="form-control" name="cWert_arr[{$oSprache->cISO}]"
-                                       id="cWert_{$oSprache->cISO}" value="{$oVariable->cWert_arr[$oSprache->cISO]|default:''}">
-                            </span>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <input type="text" class="form-control" name="cWert_arr[{$langCode}]"
+                                       id="cWert_{$langCode}" value="{$oVariable->cWert_arr[$langCode]|default:''}">
+                            </div>
                         </div>
                     {/if}
                 {/foreach}
             </div>
-            <div class="panel-footer">
-                <div class="btn-group">
-                    <button type="submit" class="btn btn-primary" name="action" value="savevar">
-                        <i class="fa fa-save"></i>
-                        {#save#}
-                    </button>
-                    <a href="sprache.php?tab={$tab}" class="btn btn-danger">{#goBack#}</a>
+            <div class="card-footer save-wrapper">
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        <a href="sprache.php?tab={$tab}" class="btn btn-outline-primary btn-block">{__('goBack')}</a>
+                    </div>
+                    <div class="col-sm-6 col-xl-auto">
+                        <button type="submit" class="btn btn-primary btn-block" name="action" value="savevar">
+                            <i class="fa fa-save"></i>
+                            {__('save')}
+                        </button>
+                    </div>
                 </div>
             </div>
         </form>

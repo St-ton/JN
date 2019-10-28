@@ -2,27 +2,19 @@
 /**
  * remove-shopinfo-menu-point
  *
- * @author Martin Schophaus
+ * @author mschop
  * @created Thu, 01 Mar 2018 13:52:00 +0100
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
- * Migration
- *
- * Available methods:
- * execute            - returns affected rows
- * fetchOne           - single fetched object
- * fetchAll           - array of fetched objects
- * fetchArray         - array of fetched assoc arrays
- * dropColumn         - drops a column if exists
- * addLocalization    - add localization
- * removeLocalization - remove localization
- * setConfig          - add / update config property
- * removeConfig       - remove config property
+ * Class Migration_20180301135200
  */
 class Migration_20180301135200 extends Migration implements IMigration
 {
-    protected $author = 'Martin Schophaus';
+    protected $author      = 'mschop';
     protected $description = 'remove-shopinfo-menu-point';
 
     public function up()

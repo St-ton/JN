@@ -1,12 +1,10 @@
 {includeMailTemplate template=header type=plain}
 
-Dear {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
+Dear {$Kunde->cVorname} {$Kunde->cNachname},
 
-You now belong to our customer group: {$Kundengruppe->cName} in our onlineshop {$Einstellungen.global.global_shopname} ({$URL_SHOP}), which entitles you to different price conditions {if $Kundengruppe->fRabatt>0}(for example {$Kundengruppe->fRabatt|replace:".":","}% global discount){/if}.
+You are now part of the customer group {$Kundengruppe->cName} in our online shop {$Einstellungen.global.global_shopname} ({$URL_SHOP}) and are therefore entitled to different price conditions {if $Kundengruppe->fRabatt>0}(for example {$Kundengruppe->fRabatt|replace:".":","}% global discount){/if}.
 
-If you have any questions on our range or special products, please simply contact us.
-
-We hope you will enjoy exploring our range of products.
+In case you do not see the new prices, please log off and on again.
 
 Yours sincerely,
 {$Firma->cName}

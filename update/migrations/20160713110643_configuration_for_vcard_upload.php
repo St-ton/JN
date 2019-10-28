@@ -6,17 +6,11 @@
  * @created Wed, 13 Jul 2016 11:06:43 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
- * Migration
- *
- * Available methods:
- * execute            - returns affected rows
- * fetchOne           - single fetched object
- * fetchAll           - array of fetched objects
- * fetchArray         - array of fetched assoc arrays
- * dropColumn         - drops a column if exists
- * addLocalization    - add localization
- * removeLocalization - remove localization
+ * Class Migration_20160713110643
  */
 class Migration_20160713110643 extends Migration implements IMigration
 {
@@ -24,13 +18,22 @@ class Migration_20160713110643 extends Migration implements IMigration
 
     public function up()
     {
-        $this->setConfig('kundenregistrierung_vcardupload', 'Y', 6, 'vCard Upload erlauben', 'selectbox', 240, (object)[
-            'cBeschreibung' => 'Erlaubt dem Kunden bei der Registrierung das Hochladen einer elektronischen Visitenkarte (vCard) im vcf-Format.',
-            'inputOptions'  => [
-                'Y' => 'Ja',
-                'N' => 'Nein',
+        $this->setConfig(
+            'kundenregistrierung_vcardupload',
+            'Y',
+            \CONF_KUNDEN,
+            'vCard Upload erlauben',
+            'selectbox',
+            240,
+            (object)[
+                'cBeschreibung' => 'Erlaubt dem Kunden bei der Registrierung das Hochladen einer elektronischen ' .
+                    'Visitenkarte (vCard) im vcf-Format.',
+                'inputOptions'  => [
+                    'Y' => 'Ja',
+                    'N' => 'Nein',
+                ]
             ]
-        ]);
+        );
 
         $this->setLocalization('ger', 'account data', 'uploadVCard', 'vCard hochladen');
         $this->setLocalization('eng', 'account data', 'uploadVCard', 'Upload vCard');

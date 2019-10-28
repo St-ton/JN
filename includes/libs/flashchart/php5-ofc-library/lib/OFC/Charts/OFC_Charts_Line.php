@@ -56,7 +56,7 @@ class OFC_Charts_Line extends OFC_Charts_Base
 
     public function set_key($text, $font_size)
     {
-        $this->text = $text;
+        $this->text          = $text;
         $this->{'font-size'} = $font_size;
     }
 }

@@ -2,27 +2,19 @@
 /**
  * new_tstaat
  *
- * @author Clemens Rudolph
+ * @author cr
  * @created Fri, 03 Nov 2017 12:50:32 +0100
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
- * Migration
- *
- * Available methods:
- * execute            - returns affected rows
- * fetchOne           - single fetched object
- * fetchAll           - array of fetched objects
- * fetchArray         - array of fetched assoc arrays
- * dropColumn         - drops a column if exists
- * addLocalization    - add localization
- * removeLocalization - remove localization
- * setConfig          - add / update config property
- * removeConfig       - remove config property
+ * Class Migration_20171103125032
  */
 class Migration_20171103125032 extends Migration implements IMigration
 {
-    protected $author = 'cr';
+    protected $author      = 'cr';
     protected $description = 're-create the table tstaat, transfer to valid ISO 3166-2';
 
     /**
@@ -33,7 +25,7 @@ class Migration_20171103125032 extends Migration implements IMigration
      */
     public function up()
     {
-		$szSql = <<<SQL
+        $szSql = <<<SQL
 
 DROP TABLE IF EXISTS `tstaat`;
 
@@ -1254,13 +1246,13 @@ SET NAMES latin1;
 
 SQL;
 
-		/*$this->execute($szSql);  see above for explanation*/
-        Shop::Container()->getDB()->executeQuery($szSql, 3);
+        /*$this->execute($szSql);  see above for explanation*/
+        $this->execute($szSql);
     }
 
     public function down()
     {
-		$szSql = <<<SQL
+        $szSql = <<<SQL
 
 DROP TABLE IF EXISTS `tstaat`;
 
@@ -1767,7 +1759,6 @@ VALUES
     , (486,'FR','Französisch-Guayana','973')
 SQL;
 
-		$this->execute($szSql);
+        $this->execute($szSql);
     }
 }
-

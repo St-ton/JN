@@ -4,11 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL;
+namespace JTL\Services\JTL;
 
 /**
  * Class CryptoService
- * @package Services\JTL
+ *
+ * @package JTL\Services\JTL
  */
 class CryptoService implements CryptoServiceInterface
 {
@@ -17,7 +18,7 @@ class CryptoService implements CryptoServiceInterface
      */
     public function randomBytes($bytesAmount): string
     {
-        return random_bytes($bytesAmount);
+        return \random_bytes($bytesAmount);
     }
 
     /**
@@ -33,7 +34,7 @@ class CryptoService implements CryptoServiceInterface
      */
     public function randomInt($min, $max): int
     {
-        return random_int($min, $max);
+        return \random_int($min, $max);
     }
 
     /**
@@ -45,24 +46,24 @@ class CryptoService implements CryptoServiceInterface
     }
 
     /**
-     * @param string $cText
+     * @param string $text
      * @return string
      */
-    public function encryptXTEA(string $cText): string
+    public function encryptXTEA(string $text): string
     {
-        return \strlen($cText) > 0
-            ? (new \XTEA(BLOWFISH_KEY))->encrypt($cText)
-            : $cText;
+        return \mb_strlen($text) > 0
+            ? (new \XTEA(\BLOWFISH_KEY))->encrypt($text)
+            : $text;
     }
 
     /**
-     * @param string $cText
+     * @param string $text
      * @return string
      */
-    public function decryptXTEA(string $cText): string
+    public function decryptXTEA(string $text): string
     {
-        return \strlen($cText) > 0
-            ? (new \XTEA(BLOWFISH_KEY))->decrypt($cText)
-            : $cText;
+        return \mb_strlen($text) > 0
+            ? (new \XTEA(\BLOWFISH_KEY))->decrypt($text)
+            : $text;
     }
 }

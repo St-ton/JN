@@ -4,13 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL\Validation\Rules;
+namespace Tests\Services\JTL\Validation\Rules;
+
+use JTL\Services\JTL\Validation\Rules\PhoneNumber;
+use Tests\BaseTestCase;
 
 /**
  * Class PhoneNumberTest
  * @package Services\JTL\Validation\Rules
  */
-class PhoneNumberTest extends \PHPUnit_Framework_TestCase
+class PhoneNumberTest extends BaseTestCase
 {
     public function test()
     {

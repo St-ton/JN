@@ -40,7 +40,7 @@
                                                 {else}
                                                     {assign var=bSelectable value=0}
                                                 {/if}
-                                                <li class="list-group-item {if $oItem->getEmpfohlen()}alert-info{/if}{if empty($bSelectable)} disabled{/if}" data-id="{$oItem->getKonfigitem()}">
+                                                <li class="form-group list-group-item {if $oItem->getEmpfohlen()}alert-info{/if}{if empty($bSelectable)} disabled{/if}" data-id="{$oItem->getKonfigitem()}">
                                                     {assign var=kKonfigitem value=$oItem->getKonfigitem()}
                                                     {assign var=cKurzBeschreibung value=$oItem->getKurzBeschreibung()}
                                                     {if !empty($cKurzBeschreibung)}
@@ -49,25 +49,27 @@
                                                         {assign var=cBeschreibung value=$oItem->getBeschreibung()}
                                                     {/if}
                                                     {if $oItem@first}
-                                                        {if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN || $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI}
+                                                        {if $oGruppe->getAnzeigeTyp() == $smarty.const.KONFIG_ANZEIGE_TYP_DROPDOWN || $oGruppe->getAnzeigeTyp() == $smarty.const.KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI}
                                                         <div class="item clearfix{if isset($aKonfigitemerror_arr[$kKonfigitem]) && $aKonfigitemerror_arr[$kKonfigitem]} error{/if}">
                                                             <select class="form-control" name="item[{$kKonfiggruppe}][]"
-                                                                {if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI} multiple="multiple" size="4"{/if} ref="{$kKonfiggruppe}"{if $oGruppe->getMin() > 0} required{/if}>
-                                                                {if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN}
+                                                                {if $oGruppe->getAnzeigeTyp() == $smarty.const.KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI} multiple="multiple" size="4"{/if} ref="{$kKonfiggruppe}"{if $oGruppe->getMin() > 0} required{/if}>
+                                                                {if $oGruppe->getAnzeigeTyp() == $smarty.const.KONFIG_ANZEIGE_TYP_DROPDOWN}
                                                                     <option value="">{lang key='pleaseChoose'}</option>
                                                                 {/if}
                                                         {/if}
                                                     {/if}
-                                                    {if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_CHECKBOX || $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_RADIO}
-                                                        <div class="{if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_CHECKBOX}checkbox{else}radio{/if}">
+                                                    {if $oGruppe->getAnzeigeTyp() == $smarty.const.KONFIG_ANZEIGE_TYP_CHECKBOX || $oGruppe->getAnzeigeTyp() == $smarty.const.KONFIG_ANZEIGE_TYP_RADIO}
+                                                        <div class="{if $oGruppe->getAnzeigeTyp() == $smarty.const.KONFIG_ANZEIGE_TYP_CHECKBOX}checkbox{else}radio{/if}">
                                                             <label class="btn-block">
-                                                                <input type="{if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_CHECKBOX}checkbox{else}radio{/if}"
+                                                                <input type="{if $oGruppe->getAnzeigeTyp() == $smarty.const.KONFIG_ANZEIGE_TYP_CHECKBOX}checkbox{else}radio{/if}"
                                                                        name="item[{$kKonfiggruppe}][]"
                                                                        id="item{$oItem->getKonfigitem()}"
                                                                        value="{$oItem->getKonfigitem()}"
                                                                        {if empty($bSelectable)} disabled{/if}
                                                                        {if isset($nKonfigitem_arr)} data-selected="{if in_array($oItem->getKonfigitem(), $nKonfigitem_arr)}true{else}false{/if}"{else}
-                                                                       {if (!empty($aKonfigerror_arr) && isset($smarty.post.item) && isset($smarty.post.item[$kKonfiggruppe]) && $oItem->getKonfigitem()|in_array:$smarty.post.item[$kKonfiggruppe]) || ($oItem->getSelektiert() && (!isset($aKonfigerror_arr) || !$aKonfigerror_arr))} checked="checked"{/if}{/if} />
+                                                                       {if (!empty($aKonfigerror_arr) && isset($smarty.post.item) && isset($smarty.post.item[$kKonfiggruppe]) && $oItem->getKonfigitem()|in_array:$smarty.post.item[$kKonfiggruppe]) || ($oItem->getSelektiert() && (!isset($aKonfigerror_arr) || !$aKonfigerror_arr))} checked="checked"{/if}{/if}
+                                                                       {if $oGruppe->getAnzeigeTyp() == $smarty.const.KONFIG_ANZEIGE_TYP_RADIO && $oItem@first && $oGruppe->getMin() > 0}required="required"{/if}
+                                                                />
                                                                 {if $oItem->getMin() == $oItem->getMax()}{$oItem->getInitial()}x {/if}
                                                                 {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
                                                                 {if $smarty.session.Kundengruppe->mayViewPrices()}
@@ -83,7 +85,7 @@
                                                                 {/if}
                                                             </label>
                                                         </div>
-                                                        {if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_CHECKBOX}
+                                                        {if $oGruppe->getAnzeigeTyp() == $smarty.const.KONFIG_ANZEIGE_TYP_CHECKBOX}
                                                             {assign var=itemQuantity value=$oItem->getInitial()}
                                                             {if isset($nKonfigitemAnzahl_arr) && array_key_exists($oItem->getKonfigitem(), $nKonfiggruppeAnzahl_arr)}
                                                                 {assign var=itemQuantity value=$nKonfigitemAnzahl_arr[$oItem->getKonfigitem()]}
@@ -108,13 +110,13 @@
                                                                 </div>
                                                             {/if}
                                                         {/if}
-                                                    {elseif $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN || $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI}
+                                                    {elseif $oGruppe->getAnzeigeTyp() == $smarty.const.KONFIG_ANZEIGE_TYP_DROPDOWN || $oGruppe->getAnzeigeTyp() == $smarty.const.KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI}
                                                         <option value="{$oItem->getKonfigitem()}"
                                                                 id="item{$oItem->getKonfigitem()}"
                                                                 {if empty($bSelectable)} disabled{/if}
                                                                 {if isset($nKonfigitem_arr)} data-selected="{if in_array($oItem->getKonfigitem(), $nKonfigitem_arr)}true{else}false{/if}"
                                                                 {else}{if $oItem->getSelektiert() && (!isset($aKonfigerror_arr) || !$aKonfigerror_arr)}selected="selected"{/if}{/if}>
-                                                            {if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI}{$oItem->getInitial()} &times; {/if}
+                                                            {if $oGruppe->getAnzeigeTyp() == $smarty.const.KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI}{$oItem->getInitial()} &times; {/if}
                                                             {$oItem->getName()}{if empty($bSelectable)} - {lang section='productDetails' key='productOutOfStock'}{/if}
                                                             {if $smarty.session.Kundengruppe->mayViewPrices()}
                                                                 &nbsp;&nbsp;&nbsp;&nbsp;
@@ -124,9 +126,9 @@
                                                         </option>
                                                     {/if}
                                                     {if $oItem@last}
-                                                        {if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN || $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI}
+                                                        {if $oGruppe->getAnzeigeTyp() == $smarty.const.KONFIG_ANZEIGE_TYP_DROPDOWN || $oGruppe->getAnzeigeTyp() == $smarty.const.KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI}
                                                             </select>
-                                                            {if !empty($cBeschreibung) && $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN}
+                                                            {if !empty($cBeschreibung) && $oGruppe->getAnzeigeTyp() == $smarty.const.KONFIG_ANZEIGE_TYP_DROPDOWN}
                                                                 <a class="small filter-collapsible-control{if empty($cBeschreibung)} hidden{/if}" data-toggle="collapse" href="#filter-collapsible_dropdown_{$kKonfiggruppe}" aria-expanded="false" aria-controls="filter-collapsible">
                                                                     {lang key='showDescription'} <i class="caret"></i>
                                                                 </a>
@@ -138,13 +140,13 @@
                                                         <p class="box_error alert alert-danger">{$aKonfigitemerror_arr[$kKonfigitem]}</p>
                                                     {/if}
 
-                                                    {if !empty($cBeschreibung) && $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN}
+                                                    {if !empty($cBeschreibung) && $oGruppe->getAnzeigeTyp() == $smarty.const.KONFIG_ANZEIGE_TYP_DROPDOWN}
                                                     <div class="panel-collapse">
                                                         <div id="filter-collapsible_dropdown_{$kKonfiggruppe}" class="collapse top10 panel-body{if empty($cBeschreibung)} hidden{/if}">
                                                             {$cBeschreibung}
                                                         </div>
                                                     </div>
-                                                    {elseif !empty($cBeschreibung) && ($oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_CHECKBOX || $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_RADIO)}
+                                                    {elseif !empty($cBeschreibung) && ($oGruppe->getAnzeigeTyp() == $smarty.const.KONFIG_ANZEIGE_TYP_CHECKBOX || $oGruppe->getAnzeigeTyp() == $smarty.const.KONFIG_ANZEIGE_TYP_RADIO)}
                                                         <div class="panel-collapse">
                                                             <div id="filter-collapsible_checkdio_{$oItem->getKonfigitem()}" class="collapse top10 panel-body">
                                                                 {$cBeschreibung}
@@ -154,7 +156,8 @@
                                                 </li>
                                             {/foreach}
                                         </ul>
-                                        {if ($oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_RADIO || $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN)}
+                                        {if ($oGruppe->getAnzeigeTyp() == $smarty.const.KONFIG_ANZEIGE_TYP_RADIO
+                                        || $oGruppe->getAnzeigeTyp() == $smarty.const.KONFIG_ANZEIGE_TYP_DROPDOWN)}
                                             {assign var=quantity value=$oGruppe->getInitQuantity()}
                                             {if isset($nKonfiggruppeAnzahl_arr) && array_key_exists($kKonfiggruppe, $nKonfiggruppeAnzahl_arr)}
                                                 {assign var=quantity value=$nKonfiggruppeAnzahl_arr[$kKonfiggruppe]}
@@ -200,6 +203,9 @@
                         <tr>
                             <td colspan="3" class="text-right word-break">
                                 <strong class="price"></strong>
+                                <p class="vat_info text-muted">
+                                    <small>{include file='snippets/shipping_tax_info.tpl' taxdata=$Artikel->taxData}</small>
+                                </p>
                             </td>
                         </tr>
                         </tfoot>

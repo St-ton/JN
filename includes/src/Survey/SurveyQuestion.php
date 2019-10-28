@@ -4,21 +4,23 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Survey;
+namespace JTL\Survey;
 
-use DB\DbInterface;
-use DB\ReturnType;
+use Illuminate\Support\Collection;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use JTL\MagicCompatibilityTrait;
+use stdClass;
 use function Functional\first;
 use function Functional\map;
-use Tightenco\Collect\Support\Collection;
 
 /**
  * Class SurveyQuestion
- * @package JTL
+ * @package JTL\Survey
  */
 class SurveyQuestion
 {
-    use \MagicCompatibilityTrait;
+    use MagicCompatibilityTrait;
 
     /**
      * @var int
@@ -83,7 +85,7 @@ class SurveyQuestion
     /**
      * @var array
      */
-    private static $mapping = [
+    protected static $mapping = [
         'kUmfrageFrage'            => 'ID',
         'kUmfrage'                 => 'SurveyID',
         'cTyp'                     => 'Type',
@@ -108,10 +110,10 @@ class SurveyQuestion
     }
 
     /**
-     * @param \stdClass $data
+     * @param stdClass $data
      * @return $this
      */
-    public function map(\stdClass $data): self
+    public function map(stdClass $data): self
     {
         foreach (\get_object_vars($data) as $var => $value) {
             if (($mapping = self::getMapping($var)) !== null) {
@@ -184,7 +186,7 @@ class SurveyQuestion
             ['id' => $id],
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $question = map($question, function (\stdClass $e) {
+        $question = map($question, function (stdClass $e) {
             return $e->kUmfragefrage;
         });
         $this->mapGroup($question);
@@ -203,7 +205,7 @@ class SurveyQuestion
     /**
      * @param int|string $id
      */
-    public function setID($id)
+    public function setID($id): void
     {
         $this->id = (int)$id;
     }
@@ -219,7 +221,7 @@ class SurveyQuestion
     /**
      * @param int|string $surveyID
      */
-    public function setSurveyID($surveyID)
+    public function setSurveyID($surveyID): void
     {
         $this->surveyID = (int)$surveyID;
     }
@@ -235,7 +237,7 @@ class SurveyQuestion
     /**
      * @param string $type
      */
-    public function setType(string $type)
+    public function setType(string $type): void
     {
         $this->type = $type;
     }
@@ -251,7 +253,7 @@ class SurveyQuestion
     /**
      * @param string $name
      */
-    public function setName(string $name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
@@ -267,7 +269,7 @@ class SurveyQuestion
     /**
      * @param string $description
      */
-    public function setDescription(string $description)
+    public function setDescription(string $description): void
     {
         $this->description = $description;
     }
@@ -283,7 +285,7 @@ class SurveyQuestion
     /**
      * @param int|string $sort
      */
-    public function setSort($sort)
+    public function setSort($sort): void
     {
         $this->sort = (int)$sort;
     }
@@ -307,7 +309,7 @@ class SurveyQuestion
     /**
      * @param bool|string $freeField
      */
-    public function setFreeField($freeField)
+    public function setFreeField($freeField): void
     {
         $this->freeField = (bool)$freeField;
     }
@@ -331,7 +333,7 @@ class SurveyQuestion
     /**
      * @param bool|string $required
      */
-    public function setRequired($required)
+    public function setRequired($required): void
     {
         $this->required = (bool)$required;
     }
@@ -347,7 +349,7 @@ class SurveyQuestion
     /**
      * @param Collection $matrixOptions
      */
-    public function setMatrixOptions(Collection $matrixOptions)
+    public function setMatrixOptions(Collection $matrixOptions): void
     {
         $this->matrixOptions = $matrixOptions;
     }
@@ -363,7 +365,7 @@ class SurveyQuestion
     /**
      * @param Collection $answerOptions
      */
-    public function setAnswerOptions(Collection $answerOptions)
+    public function setAnswerOptions(Collection $answerOptions): void
     {
         $this->answerOptions = $answerOptions;
     }
@@ -382,7 +384,7 @@ class SurveyQuestion
     /**
      * @param array $givenAnswer
      */
-    public function setGivenAnswer(array $givenAnswer)
+    public function setGivenAnswer(array $givenAnswer): void
     {
         $this->givenAnswer = $givenAnswer;
     }
@@ -398,7 +400,7 @@ class SurveyQuestion
     /**
      * @param DbInterface $db
      */
-    public function setDB(DbInterface $db)
+    public function setDB(DbInterface $db): void
     {
         $this->db = $db;
     }

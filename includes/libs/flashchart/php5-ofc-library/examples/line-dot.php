@@ -24,7 +24,7 @@ $data_1 = array();
 $data_2 = array();
 $data_3 = array();
 
-for ($i=0; $i<6.2; $i+=0.2) {
+for ($i = 0; $i < 6.2; $i += 0.2) {
     $data_1[] = (sin($i) * 1.9) + 7;
     $data_2[] = (sin($i) * 1.9) + 10;
     $data_3[] = (sin($i) * 1.9) + 4;
@@ -34,7 +34,7 @@ for ($i=0; $i<6.2; $i+=0.2) {
   //$labels[] = number_format($tmp,2);
 }
 
-$title = new OFC_Elements_Title(date("D M d Y"));
+$title = new OFC_Elements_Title(date('D M d Y'));
 
 $line_1 = new OFC_Charts_Line_Dot();
 $line_1->set_values($data_1);

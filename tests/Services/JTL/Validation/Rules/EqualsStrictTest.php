@@ -4,13 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL\Validation\Rules;
+namespace Tests\Services\JTL\Validation\Rules;
+
+use JTL\Services\JTL\Validation\Rules\EqualsStrict;
+use Tests\BaseTestCase;
 
 /**
  * Class EqualsStrictTest
  * @package Services\JTL\Validation\Rules
  */
-class EqualsStrictTest extends \PHPUnit_Framework_TestCase
+class EqualsStrictTest extends BaseTestCase
 {
     public function test()
     {

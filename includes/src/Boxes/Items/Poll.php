@@ -4,13 +4,16 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
 
-use DB\ReturnType;
+use JTL\DB\ReturnType;
+use JTL\Helpers\URL;
+use JTL\Session\Frontend;
+use JTL\Shop;
 
 /**
- * Class BoxSurvey
- * @package Boxes
+ * Class Poll
+ * @package JTL\Boxes\Items
  */
 final class Poll extends AbstractBox
 {
@@ -21,17 +24,17 @@ final class Poll extends AbstractBox
     public function __construct(array $config)
     {
         parent::__construct($config);
-        parent::addMapping('oUmfrage_arr', 'Items');
-        $cSQL      = ($conf = $this->config['umfrage']['umfrage_box_anzahl']) > 0
+        $this->addMapping('oUmfrage_arr', 'Items');
+        $sql       = ($conf = $this->config['umfrage']['umfrage_box_anzahl']) > 0
             ? ' LIMIT ' . (int)$conf
             : '';
-        $langID    = \Shop::getLanguageID();
-        $cacheID   = 'bu_' . $langID . '_' . \Session::CustomerGroup()->getID() . \md5($cSQL);
+        $langID    = Shop::getLanguageID();
+        $cacheID   = 'bu_' . $langID . '_' . Frontend::getCustomerGroup()->getID() . \md5($sql);
         $cacheTags = [\CACHING_GROUP_BOX, \CACHING_GROUP_CORE];
         $cached    = true;
-        if (($polls = \Shop::Container()->getCache()->get($cacheID)) === false) {
+        if (($polls = Shop::Container()->getCache()->get($cacheID)) === false) {
             $cached = false;
-            $polls  = \Shop::Container()->getDB()->queryPrepared(
+            $polls  = Shop::Container()->getDB()->queryPrepared(
                 "SELECT tumfrage.kUmfrage, tumfrage.kSprache, tumfrage.kKupon, tumfrage.cKundengruppe, 
                 tumfrage.cName, tumfrage.cBeschreibung, tumfrage.fGuthaben, tumfrage.nBonuspunkte, 
                 tumfrage.nAktiv, tumfrage.dGueltigVon, tumfrage.dGueltigBis, tumfrage.dErstellt, tseo.cSeo,
@@ -51,15 +54,15 @@ final class Poll extends AbstractBox
                             OR FIND_IN_SET(':cid', REPLACE(cKundengruppe, ';', ',')) > 0)
                         AND NOW() BETWEEN dGueltigVon AND COALESCE(dGueltigBis, NOW())
                     GROUP BY tumfrage.kUmfrage
-                    ORDER BY tumfrage.dGueltigVon DESC" . $cSQL,
-                ['lid' => $langID, 'cid' => \Session::CustomerGroup()->getID()],
+                    ORDER BY tumfrage.dGueltigVon DESC" . $sql,
+                ['lid' => $langID, 'cid' => Frontend::getCustomerGroup()->getID()],
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            \Shop::Container()->getCache()->set($cacheID, $polls, $cacheTags);
+            Shop::Container()->getCache()->set($cacheID, $polls, $cacheTags);
         }
         foreach ($polls as $poll) {
-            $poll->cURL     = \UrlHelper::buildURL($poll, \URLART_UMFRAGE);
-            $poll->cURLFull = \UrlHelper::buildURL($poll, \URLART_UMFRAGE, true);
+            $poll->cURL     = URL::buildURL($poll, \URLART_UMFRAGE);
+            $poll->cURLFull = URL::buildURL($poll, \URLART_UMFRAGE, true);
         }
         $this->setItems($polls);
         $this->setShow(\count($polls) > 0);

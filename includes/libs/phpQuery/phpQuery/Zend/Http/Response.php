@@ -166,7 +166,7 @@ class Zend_Http_Response
 
         foreach ($headers as $name => $value) {
             if (is_int($name)) {
-                list($name, $value) = explode(": ", $value, 1);
+                list($name, $value) = explode(': ', $value, 1);
             }
 
             $this->headers[ucwords(strtolower($name))] = $value;
@@ -255,7 +255,6 @@ class Zend_Http_Response
 
         // Decode the body if it was transfer-encoded
         switch ($this->getHeader('transfer-encoding')) {
-
             // Handle chunked body
             case 'chunked':
                 $body = self::decodeChunkedBody($this->body);
@@ -270,7 +269,6 @@ class Zend_Http_Response
 
         // Decode any content-encoding (gzip or deflate) if needed
         switch (strtolower($this->getHeader('content-encoding'))) {
-
             // Handle gzip encoding
             case 'gzip':
                 $body = self::decodeGzip($body);
@@ -434,10 +432,10 @@ class Zend_Http_Response
      */
     public static function extractCode($response_str)
     {
-        preg_match("|^HTTP/[\d\.x]+ (\d+)|", $response_str, $m);
+        preg_match('|^HTTP/[\d\.x]+ (\d+)|', $response_str, $m);
 
         if (isset($m[1])) {
-            return (int) $m[1];
+            return (int)$m[1];
         } else {
             return false;
         }
@@ -468,7 +466,7 @@ class Zend_Http_Response
      */
     public static function extractVersion($response_str)
     {
-        preg_match("|^HTTP/([\d\.x]+) \d+|", $response_str, $m);
+        preg_match('|^HTTP/([\d\.x]+) \d+|', $response_str, $m);
 
         if (isset($m[1])) {
             return $m[1];
@@ -500,13 +498,13 @@ class Zend_Http_Response
 
         foreach ($lines as $line) {
             $line = trim($line, "\r\n");
-            if ($line == "") {
+            if ($line == '') {
                 break;
             }
 
-            if (preg_match("|^([\w-]+):\s+(.+)|", $line, $m)) {
+            if (preg_match('|^([\w-]+):\s+(.+)|', $line, $m)) {
                 unset($last_header);
-                $h_name = strtolower($m[1]);
+                $h_name  = strtolower($m[1]);
                 $h_value = $m[2];
 
                 if (isset($headers[$h_name])) {
@@ -519,10 +517,10 @@ class Zend_Http_Response
                     $headers[$h_name] = $h_value;
                 }
                 $last_header = $h_name;
-            } elseif (preg_match("|^\s+(.+)$|", $line, $m) && $last_header !== null) {
+            } elseif (preg_match('|^\s+(.+)$|', $line, $m) && $last_header !== null) {
                 if (is_array($headers[$last_header])) {
                     end($headers[$last_header]);
-                    $last_header_key = key($headers[$last_header]);
+                    $last_header_key                          = key($headers[$last_header]);
                     $headers[$last_header][$last_header_key] .= $m[1];
                 } else {
                     $headers[$last_header] .= $m[1];
@@ -566,10 +564,10 @@ class Zend_Http_Response
             }
 
             $length = hexdec(trim($m[1]));
-            $cut = strlen($m[0]);
+            $cut    = strlen($m[0]);
 
             $decBody .= substr($body, $cut, $length);
-            $body = substr($body, $cut + $length + 2);
+            $body     = substr($body, $cut + $length + 2);
         }
 
         return $decBody;

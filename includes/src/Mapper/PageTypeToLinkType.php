@@ -4,11 +4,11 @@
  * @license       http;//jtl-url.de/jtlshoplicense
  */
 
-namespace Mapper;
+namespace JTL\Mapper;
 
 /**
  * Class PageTypeToLinkType
- * @package Mapper
+ * @package JTL\Mapper
  */
 class PageTypeToLinkType
 {
@@ -26,6 +26,7 @@ class PageTypeToLinkType
             case \PAGE_VERSAND:
                 return \LINKTYP_VERSAND;
             case \PAGE_LOGIN:
+            case \PAGE_MEINKONTO:
                 return \LINKTYP_LOGIN;
             case \PAGE_REGISTRIERUNG:
                 return \LINKTYP_REGISTRIEREN;
@@ -39,8 +40,6 @@ class PageTypeToLinkType
                 return \LINKTYP_DATENSCHUTZ;
             case \PAGE_KONTAKT:
                 return \LINKTYP_KONTAKT;
-            case \PAGE_TAGGING:
-                return \LINKTYP_TAGGING;
             case \PAGE_LIVESUCHE:
                 return \LINKTYP_LIVESUCHE;
             case \PAGE_HERSTELLER:
@@ -50,9 +49,10 @@ class PageTypeToLinkType
             case \PAGE_NEWSLETTERARCHIV:
                 return \LINKTYP_NEWSLETTERARCHIV;
             case \PAGE_NEWS:
+            case \PAGE_NEWSDETAIL:
+            case \PAGE_NEWSKATEGORIE:
+            case \PAGE_NEWSMONAT:
                 return \LINKTYP_NEWS;
-            case \PAGE_NEWSARCHIV:
-                return \LINKTYP_NEWSARCHIV;
             case \PAGE_SITEMAP:
                 return \LINKTYP_SITEMAP;
             case \PAGE_UMFRAGE:
@@ -75,7 +75,7 @@ class PageTypeToLinkType
                 return \LINKTYP_WUNSCHLISTE;
             case \PAGE_VERGLEICHSLISTE:
                 return \LINKTYP_VERGLEICHSLISTE;
-            default;
+            default:
                 return 0;
         }
     }

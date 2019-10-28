@@ -1,11 +1,17 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license       http://jtl-url.de/jtlshoplicense
  */
+
+namespace JTL;
+
+use JTL\DB\ReturnType;
+use stdClass;
 
 /**
  * Class Slide
+ * @package JTL
  */
 class Slide
 {
@@ -88,7 +94,7 @@ class Slide
      * @param string $type
      * @return string|null
      */
-    private function getMapping(string $type)
+    private function getMapping(string $type): ?string
     {
         return self::$mapping[$type] ?? null;
     }
@@ -116,7 +122,7 @@ class Slide
 
             $slide = Shop::Container()->getDB()->select('tslide', 'kSlide', $id);
 
-            if (is_object($slide)) {
+            if (\is_object($slide)) {
                 $this->set($slide);
 
                 return true;
@@ -132,7 +138,7 @@ class Slide
      */
     public function map(stdClass $data): self
     {
-        foreach (get_object_vars($data) as $field => $value) {
+        foreach (\get_object_vars($data) as $field => $value) {
             if (($mapping = $this->getMapping($field)) !== null) {
                 $method = 'set' . $mapping;
                 $this->$method($value);
@@ -149,7 +155,7 @@ class Slide
      */
     public function set(stdClass $data): self
     {
-        foreach (get_object_vars($data) as $field => $value) {
+        foreach (\get_object_vars($data) as $field => $value) {
             if (($mapping = $this->getMapping($field)) !== null) {
                 $method = 'set' . $mapping;
                 $this->$method($value);
@@ -164,9 +170,9 @@ class Slide
      */
     private function setAbsoluteImagePaths(): self
     {
-        $basePath                = Shop::getImageBaseURL() . PFAD_MEDIAFILES;
-        $this->absoluteImage     = $basePath . str_replace($basePath, '', $this->image);
-        $this->absoluteThumbnail = $basePath . str_replace($basePath, '', $this->thumbnail);
+        $basePath                = Shop::getImageBaseURL() . \PFAD_MEDIAFILES;
+        $this->absoluteImage     = $basePath . \str_replace($basePath, '', $this->image);
+        $this->absoluteThumbnail = $basePath . \str_replace($basePath, '', $this->thumbnail);
 
         return $this;
     }
@@ -177,23 +183,23 @@ class Slide
     public function save(): bool
     {
         if (!empty($this->image)) {
-            $cShopUrl  = parse_url(Shop::getURL(), PHP_URL_PATH);
-            $cShopUrl2 = parse_url(URL_SHOP, PHP_URL_PATH);
-            if (strrpos($cShopUrl, '/') !== (strlen($cShopUrl) - 1)) {
-                $cShopUrl .= '/';
+            $shopURL  = \parse_url(Shop::getURL(), \PHP_URL_PATH);
+            $shopURL2 = \parse_url(\URL_SHOP, \PHP_URL_PATH);
+            if (\mb_strrpos($shopURL, '/') !== (\mb_strlen($shopURL) - 1)) {
+                $shopURL .= '/';
             }
-            if (strrpos($cShopUrl2, '/') !== (strlen($cShopUrl2) - 1)) {
-                $cShopUrl2 .= '/';
+            if (\mb_strrpos($shopURL2, '/') !== (\mb_strlen($shopURL2) - 1)) {
+                $shopURL2 .= '/';
             }
-            $cPfad  = $cShopUrl . PFAD_MEDIAFILES;
-            $cPfad2 = $cShopUrl2 . PFAD_MEDIAFILES;
-            if (strpos($this->image, $cPfad) !== false) {
-                $nStrLength      = strlen($cPfad);
-                $this->image     = substr($this->image, $nStrLength);
+            $path  = $shopURL . \PFAD_MEDIAFILES;
+            $path2 = $shopURL2 . \PFAD_MEDIAFILES;
+            if (\mb_strpos($this->image, $path) !== false) {
+                $len             = \mb_strlen($path);
+                $this->image     = \mb_substr($this->image, $len);
                 $this->thumbnail = '.thumbs/' . $this->image;
-            } elseif (strpos($this->image, $cPfad2) !== false) {
-                $nStrLength      = strlen($cPfad2);
-                $this->image     = substr($this->image, $nStrLength);
+            } elseif (\mb_strpos($this->image, $path2) !== false) {
+                $len             = \mb_strlen($path2);
+                $this->image     = \mb_substr($this->image, $len);
                 $this->thumbnail = '.thumbs/' . $this->image;
             }
         }
@@ -240,9 +246,9 @@ class Slide
                         WHERE kSlider = :sliderID
                         ORDER BY nSort DESC LIMIT 1',
                     ['sliderID' => $this->sliderID],
-                    \DB\ReturnType::SINGLE_OBJECT
+                    ReturnType::SINGLE_OBJECT
                 );
-                $slide->nSort = (!is_object($oSort) || (int)$oSort->nSort === 0) ? 1 : ($oSort->nSort + 1);
+                $slide->nSort = (!\is_object($oSort) || (int)$oSort->nSort === 0) ? 1 : ($oSort->nSort + 1);
             }
             $id = Shop::Container()->getDB()->insert('tslide', $slide);
             if ($id > 0) {
@@ -274,7 +280,7 @@ class Slide
     /**
      * @param int|string $id
      */
-    public function setID($id)
+    public function setID($id): void
     {
         $this->id = (int)$id;
     }
@@ -290,7 +296,7 @@ class Slide
     /**
      * @param int|string $sliderID
      */
-    public function setSliderID($sliderID)
+    public function setSliderID($sliderID): void
     {
         $this->sliderID = (int)$sliderID;
     }
@@ -306,7 +312,7 @@ class Slide
     /**
      * @param string $title
      */
-    public function setTitle(string $title)
+    public function setTitle(string $title): void
     {
         $this->title = $title;
     }
@@ -322,7 +328,7 @@ class Slide
     /**
      * @param string $image
      */
-    public function setImage(string $image)
+    public function setImage(string $image): void
     {
         $this->image = $image;
     }
@@ -338,7 +344,7 @@ class Slide
     /**
      * @param string $text
      */
-    public function setText(string $text)
+    public function setText(string $text): void
     {
         $this->text = $text;
     }
@@ -354,7 +360,7 @@ class Slide
     /**
      * @param string $thumbnail
      */
-    public function setThumbnail(string $thumbnail)
+    public function setThumbnail(string $thumbnail): void
     {
         $this->thumbnail = $thumbnail;
     }
@@ -370,7 +376,7 @@ class Slide
     /**
      * @param string $link
      */
-    public function setLink(string $link)
+    public function setLink(string $link): void
     {
         $this->link = $link;
     }
@@ -386,7 +392,7 @@ class Slide
     /**
      * @param int|string $sort
      */
-    public function setSort($sort)
+    public function setSort($sort): void
     {
         $this->sort = (int)$sort;
     }
@@ -402,7 +408,7 @@ class Slide
     /**
      * @param string $absoluteImage
      */
-    public function setAbsoluteImage(string $absoluteImage)
+    public function setAbsoluteImage(string $absoluteImage): void
     {
         $this->absoluteImage = $absoluteImage;
     }
@@ -418,7 +424,7 @@ class Slide
     /**
      * @param string $absoluteThumbnail
      */
-    public function setAbsoluteThumbnail(string $absoluteThumbnail)
+    public function setAbsoluteThumbnail(string $absoluteThumbnail): void
     {
         $this->absoluteThumbnail = $absoluteThumbnail;
     }

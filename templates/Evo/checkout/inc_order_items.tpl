@@ -122,11 +122,20 @@
                                 <li class="shortdescription">{$oPosition->Artikel->cKurzBeschreibung}</li>
                             {/if}
 
-                            {if isset($oPosition->Artikel->cGewicht) && $Einstellungen.artikeldetails.artikeldetails_gewicht_anzeigen === 'Y' && $oPosition->Artikel->fGewicht > 0}
-                                <li class="weight">
-                                    <strong>{lang key='shippingWeight' section='global'}: </strong>
-                                    <span class="value">{$oPosition->Artikel->cGewicht} {lang key='weightUnit' section='global'}</span>
-                                </li>
+                            {if $oPosition->istKonfigVater()}
+                                {if isset($oPosition->getTotalConfigWeight()) && $Einstellungen.artikeldetails.artikeldetails_gewicht_anzeigen === 'Y' && $oPosition->getTotalConfigWeight() > 0}
+                                    <li class="weight">
+                                        <strong>{lang key='shippingWeight' section='global'}: </strong>
+                                        <span class="value">{$oPosition->getTotalConfigWeight()} {lang key='weightUnit' section='global'}</span>
+                                    </li>
+                                {/if}
+                            {else}
+                                {if isset($oPosition->Artikel->cGewicht) && $Einstellungen.artikeldetails.artikeldetails_gewicht_anzeigen === 'Y' && $oPosition->Artikel->fGewicht > 0}
+                                    <li class="weight">
+                                        <strong>{lang key='shippingWeight' section='global'}: </strong>
+                                        <span class="value">{$oPosition->Artikel->cGewicht} {lang key='weightUnit' section='global'}</span>
+                                    </li>
+                                {/if}
                             {/if}
                         </ul>
                     {else}
@@ -182,6 +191,16 @@
                             {/foreach}
                         </ul>
                     {/if}
+                    {if !empty($oPosition->Artikel->kStueckliste) && !empty($oPosition->Artikel->oStueckliste_arr)}
+                        <ul class="partlist-items text-muted small">
+                            {foreach $oPosition->Artikel->oStueckliste_arr as $partListItem}
+                                <li>
+                                    <span class="qty">{$partListItem->fAnzahl_stueckliste}x</span>
+                                    {$partListItem->cName|trans}
+                                </li>
+                            {/foreach}
+                        </ul>
+                    {/if}
                 </td>
 
                 <td class="qty-col">
@@ -224,7 +243,17 @@
                                                         {/if}
                                                     </label>:
                                                     <div id="quantity-grp{$oPosition@index}" class="choose_quantity input-group">
-                                                        <input name="anzahl[{$oPosition@index}]" id="quantity{$oPosition@index}" class="form-control quantity form-control text-right" size="3" value="{$oPosition->nAnzahl}" />
+                                                        <input name="anzahl[{$oPosition@index}]"
+                                                               type="{if $oPosition->Artikel->cTeilbar === 'Y' && $oPosition->Artikel->fAbnahmeintervall == 0}text{else}number{/if}"
+                                                               id="quantity{$oPosition@index}"
+                                                               class="form-control quantity form-control text-right"
+                                                               size="3"
+                                                               min="0"
+                                                                {if $oPosition->Artikel->fAbnahmeintervall > 0}
+                                                                    step="{$oPosition->Artikel->fAbnahmeintervall}"
+                                                                {/if}
+                                                               value="{$oPosition->nAnzahl}"
+                                                        />
                                                         <span class="input-group-btn">
                                                             <button type="submit" class="btn btn-default" title="{lang key='refresh' section='checkout'}"><i class="fa fa-refresh"></i></button>
                                                         </span>
@@ -328,7 +357,15 @@
                      <td class="hidden-xs"></td>
                  {/if}
                  <td class="text-right" colspan="2">{lang key='useCredit' section='account data'}</td>
-                 <td class="text-right" colspan="{if $tplscope === 'cart'}4{else}3{/if}">{$smarty.session.Bestellung->GutscheinLocalized}</td>
+                 <td class="text-right" colspan="{if $tplscope === 'cart'}4{else}3{/if}">{$smarty.session.Bestellung->GutscheinLocalized}
+                    {if $tplscope == 'cart'}
+                        &nbsp;
+                        <button type="submit" class="btn btn-xs btn-small" title="Guthaben nicht verrechnen" name="dropPos" value="assetToUse">
+                            <span class="fa fa-trash"></span>
+                        </button>
+                    {/if}
+                 </td>
+
              </tr>
         {/if}
 
@@ -353,7 +390,7 @@
             <tr class="shipping-costs text-right">
                 <td colspan="{$colspan}"><small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL():$shippingCosts:$FavourableShipping->cCountryCode key='shippingInformationSpecific' section='basket'}</small></td>
             </tr>
-        {elseif empty($FavourableShipping)}
+        {elseif empty($FavourableShipping) && empty($smarty.session.Versandart)}
             <tr class="shipping-costs text-right">
                 <td colspan="{$colspan}"><small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() key='shippingInformation' section='basket'}</small></td>
             </tr>

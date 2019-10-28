@@ -4,12 +4,11 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Renderer;
+namespace JTL\Boxes\Renderer;
 
 /**
  * Class ContainerRenderer
- *
- * @package Boxes
+ * @package JTL\Boxes\Renderer
  */
 class ContainerRenderer extends DefaultRenderer
 {

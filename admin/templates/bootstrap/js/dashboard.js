@@ -30,24 +30,24 @@ $(function () {
         var hidden = $('.widget-hidden', widget).length > 0;
 
         // add click handler for widgets collapse button
-        $('<a href="#"><i class="fa fa-chevron-circle-' + (hidden ? 'down' : 'up') + '"></li></a>')
-            .click(function (e) {
+        $('<a href="#" class="btn-sm"><i class="fa fa-chevron-' + (hidden ? 'down' : 'up') + '"></li></a>')
+            .on('click', function (e) {
                 if ($widgetContent.is(':hidden')) {
                     ioCall('expandWidget', [widgetId, 1]);
                     $widgetContent.slideDown('fast');
-                    $('i', this).attr('class', 'fa fa-chevron-circle-up');
+                    $('i', this).attr('class', 'fa fa-chevron-up');
                 } else {
                     ioCall('expandWidget', [widgetId, 0]);
                     $widgetContent.slideUp('fast');
-                    $('i', this).attr('class', 'fa fa-chevron-circle-down');
+                    $('i', this).attr('class', 'fa fa-chevron-down');
                 }
                 e.preventDefault();
             })
             .appendTo($('.options', widget));
 
         // add click handler for widgets close button
-        $('<a href="#"><i class="fa fa-times"></li></a>')
-            .click(function (e) {
+        $('<a href="#" class="ml-2 btn-sm"><i class="fal fa-times"></li></a>')
+            .on('click', function (e) {
                 ioCall('closeWidget', [widgetId]);
                 $widget.slideUp('fast');
                 e.preventDefault();

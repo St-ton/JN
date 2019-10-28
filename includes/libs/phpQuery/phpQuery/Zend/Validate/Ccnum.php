@@ -38,7 +38,7 @@ class Zend_Validate_Ccnum extends Zend_Validate_Abstract
     /**
      * Validation failure message key for when the value is not of valid length
      */
-    const LENGTH   = 'ccnumLength';
+    const LENGTH = 'ccnumLength';
 
     /**
      * Validation failure message key for when the value fails the mod-10 checksum
@@ -95,8 +95,8 @@ class Zend_Validate_Ccnum extends Zend_Validate_Abstract
         $weight = 2;
 
         for ($i = $length - 2; $i >= 0; $i--) {
-            $digit = $weight * $valueFiltered[$i];
-            $sum += floor($digit / 10) + $digit % 10;
+            $digit  = $weight * $valueFiltered[$i];
+            $sum   += floor($digit / 10) + $digit % 10;
             $weight = $weight % 2 + 1;
         }
 

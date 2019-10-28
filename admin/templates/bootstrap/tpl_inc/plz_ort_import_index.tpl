@@ -1,29 +1,32 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=#plz_ort_import# cBeschreibung=#plz_ort_importDesc#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('plz_ort_import') cBeschreibung=__('plz_ort_importDesc')}
 <div id="content">
-    <div class="boxWrapper row">
-        <div class="boxLeft col-md-12">
-            <div class="panel panel-default">
-                <form id="importForm" action="/plz_ort_import.php">
-                    {$jtl_token}
-                    <div class="panel-heading">
-                        <h3>{#plz_ort_available#}</h3>
-                    </div>
-                    <div class="panel-body">
-                        {include file='tpl_inc/plz_ort_import_index_list.tpl'}
-                    </div>
-                    <div class="boxOptionRow panel-footer">
-                        <a href="#" class="btn btn-primary" data-callback="plz_ort_import_new"><i class="fa fa-download"></i> {#plz_ort_import_new#}</a>
-                    </div>
-                </form>
+    <div class="card">
+        <form id="importForm" action="/plz_ort_import.php">
+            {$jtl_token}
+            <div class="card-header">
+                <div class="subheading1">{__('plz_ort_available')}</div>
+                <hr class="mb-n3">
             </div>
-        </div>
+            <div class="card-body">
+                {include file='tpl_inc/plz_ort_import_index_list.tpl'}
+            </div>
+            <div class="card-footer save-wrapper">
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        <a href="#" class="btn btn-primary btn-block" data-callback="plz_ort_import_new">
+                            <i class="fa fa-download"></i> {__('plz_ort_import_new')}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
 <div id="modalWait" class="modal fade" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4>{#plz_ort_import_load#} <img src="{$shopURL}/{$smarty.const.PFAD_ADMIN}/templates/bootstrap/gfx/widgets/ajax-loader.gif"></h4>
+                <h2>{__('plz_ort_import_load')} <img src="{$shopURL}/{$smarty.const.PFAD_ADMIN}/templates/bootstrap/gfx/widgets/ajax-loader.gif"></h2>
             </div>
         </div>
     </div>
@@ -32,15 +35,23 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header alert-warning">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4><i class="fa fa-warning"></i> {#plz_ort_import#}</h4>
+                <button type="button" class="close" data-dismiss="modal">
+                    <i class="fal fa-times"></i>
+                </button>
+                <h2><i class="fal fa-exclamation-triangle"></i> {__('plz_ort_import')}</h2>
             </div>
             <div class="modal-body">
-                {#plz_ort_import_tmp_exists#}
+                {__('plz_ort_import_tmp_exists')}
             </div>
             <div class="modal-footer">
-                <a href="#" class="btn btn-default" data-dismiss="modal"><i class="fa fa-exclamation"></i> {#plz_ort_import_delete_no#}</a>
-                <a href="#" class="btn btn-primary" data-callback="plz_ort_import_delete_temp" data-dismiss="modal"><i class="fa fa-trash"></i> {#plz_ort_import_delete_yes#}</a>
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        <a href="#" class="btn btn-outline-primary" data-dismiss="modal"><i class="fa fa-exclamation"></i> {__('plz_ort_import_delete_no')}</a>
+                    </div>
+                    <div class="col-sm-6 col-xl-auto">
+                        <a href="#" class="btn btn-primary" data-callback="plz_ort_import_delete_temp" data-dismiss="modal"><i class="fas fa-trash-alt"></i> {__('plz_ort_import_delete_yes')}</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -49,14 +60,16 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4><i class="fa fa-question-circle"></i> {#plz_ort_import#}</h4>
+                <button type="button" class="close" data-dismiss="modal">
+                    <i class="fal fa-times"></i>
+                </button>
+                <h2><i class="fa fa-question-circle"></i> {__('plz_ort_import')}</h2>
             </div>
             <div class="modal-body">
-                {#plz_ort_import_help#|sprintf:$smarty.const.PLZIMPORT_URL}
+                {{__('plz_ort_import_help')}|sprintf:{$smarty.const.PLZIMPORT_URL}}
             </div>
-            <div class="modal-footer">
-                <a href="#" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-check"></i> {#plz_ort_import_ok#}</a>
+            <div class="modal-footer text-right">
+                <a href="#" class="btn btn-primary" data-dismiss="modal"><i class="fal fa-check text-success"></i> {__('ok')}</a>
             </div>
         </div>
     </div>
@@ -120,7 +133,7 @@
         $('[data-callback]').attr('disabled', true);
         ioCall('plzimportActionUpdateIndex', [], function(result) {
             if (result) {
-                $('#importForm .panel-body').html(result.listHTML);
+                window.location.reload();
             }
             $('[data-callback]').attr('disabled', false);
         });
@@ -213,7 +226,7 @@
     }
 
     function plz_ort_import_delete_temp() {
-        notify = showImportNotify('PLZ-Orte Import', 'Tempor&auml;rer Import wird gel&ouml;scht...');
+        notify = showImportNotify('PLZ-Orte Import', 'Temporärer Import wird gelöscht...');
         ioCall('plzimportActionDelTempImport', [], function(result) {
             notify.update({
                 progress: 100,

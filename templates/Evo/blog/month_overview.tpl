@@ -4,17 +4,6 @@
  *}
 <h1>{lang key='newsMonthOverview' section='news'}</h1>
 
-{if !empty($hinweis)}
-    <div class="alert alert-info">
-        {$hinweis}
-    </div>
-{/if}
-{if !empty($fehler)}
-    <div class="alert alert-danger">
-        {$fehler}
-    </div>
-{/if}
-
 {if $noarchiv}
     {lang key='noNewsArchiv' section='news'}.
 {else}
@@ -40,11 +29,12 @@
                         {if $oNews->cVorschauText|count_characters > 0}
                             {$oNews->cVorschauText}
                             <div class="flt_right">
-                                <a class="news-more-link" href="{$oNews->cURL}">{lang key='moreLink' section='news'}</a>
+                                <a class="news-more-link" href="{$oNews->cURLFull}">{lang key='moreLink' section='news'}</a>
                             </div>
-                            <div class="clearer"></div>
+                            <div class="clear-both"></div>
                         {elseif $oNews->cText|count_characters > 200}
-                            {$oNews->cText|truncate:200:$oNews->cMehrURL}
+                            {$oNews->cText|truncate:200}
+                            <a class="news-more-link" href="{$oNews->cURLFull}">{lang key='moreLink' section='news'}</a>
                         {else}
                             {$oNews->cText}
                         {/if}

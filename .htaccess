@@ -90,7 +90,7 @@
   #REWRITE ANPASSUNG 2 (auf www.meinedomain.de umleiten)
   #Ihr Shop sollte nicht unter www.meinedomain.de und nur meinedomain.de erreichbar sein, siehe: https://guide.jtl-software.de/index.php?title=JTL-Shop3-Neuinstallation#4._Einrichtung_einer_Domainweiterleitung
   #Achten Sie darauf, daß Sie bei Verwendung der SSL-Verschlüsselung das Weiterleitungsziel unbedingt mit https und nicht nur mit http angeben!
-  #RewriteCond %{HTTP_HOST} ^meinedomain.de
+  #RewriteCond %{HTTP_HOST} !^www\.meinedomain\.de$ [NC]
   #RewriteRule ^(.*)$ http(s)://www.meinedomain.de/$1 [R=301,L]
 
   #REWRITE ANPASSUNG 3 (Entfernt abschließenden Slash per 301-Redirect)
@@ -106,9 +106,10 @@
 
   #Rewrite der JTL-Shop-URLs
   #Aendern Sie an diesen Zeilen nichts!
+  RewriteRule ^templates_c/filecache/.*$ - [R=403,NC,L]
   RewriteRule ^((urllist|sitemap_).*\.(xml|txt)(\.gz)?)$ includes/sitemap.php?datei=$1 [L]
   RewriteRule ^export/((sitemap_).*\.(xml|txt)(\.gz)?)$ $1 [L]
-  RewriteRule ^asset/(.*)$ includes/libs/minify/?g=$1 [L]
+  RewriteRule ^asset/(.*)$ includes/libs/minify/?g=$1 [QSA,L]
   RewriteRule ^robots.txt$ robots.php [L]
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d

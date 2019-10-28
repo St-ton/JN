@@ -3,18 +3,14 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 
-<h1>{lang key='umfrage' section='umfrage'}</h1>
+{opcMountPoint id='opc_before_heading'}
 
-{if !empty($hinweis)}
-    <div class="alert aler-info">{$hinweis}</div>
-{/if}
-{if !empty($fehler)}
-    <div class="alert alert-danger">{$fehler}</div>
-{/if}
+<h1>{lang key='umfrage' section='umfrage'}</h1>
 
 {include file='snippets/extension.tpl'}
 
 {if $oUmfrage_arr|@count > 0}
+    {opcMountPoint id='opc_before_overview'}
     <div id="voting_overview">
         {block name='poll-overview'}
             {foreach $oUmfrage_arr as $oUmfrage}

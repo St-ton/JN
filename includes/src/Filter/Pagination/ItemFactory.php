@@ -4,11 +4,11 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\Pagination;
+namespace JTL\Filter\Pagination;
 
 /**
  * Class ItemFactory
- * @package Filter\Pagination
+ * @package JTL\Filter\Pagination
  */
 class ItemFactory
 {

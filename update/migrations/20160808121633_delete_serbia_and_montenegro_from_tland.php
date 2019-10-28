@@ -2,27 +2,19 @@
 /**
  * delete_serbia_and_montenegro_from_tland
  *
- * @author Mirko Schmidt
+ * @author msc
  * @created Mon, 08 Aug 2016 12:16:33 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
- * Migration
- *
- * Available methods:
- * execute            - returns affected rows
- * fetchOne           - single fetched object
- * fetchAll           - array of fetched objects
- * fetchArray         - array of fetched assoc arrays
- * dropColumn         - drops a column if exists
- * addLocalization    - add localization
- * removeLocalization - remove localization
- * setConfig          - add / update config property
- * removeConfig       - remove config property
+ * Class Migration_20160808121633
  */
 class Migration_20160808121633 extends Migration implements IMigration
 {
-    protected $author = 'Mirko Schmidt';
+    protected $author = 'msc';
 
     public function up()
     {

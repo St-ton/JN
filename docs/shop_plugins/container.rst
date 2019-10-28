@@ -1,7 +1,7 @@
 Container
 =========
 
-Seit Shop 5.0 steht im JTL-Shop ein sogenannter "Dependency Injection Container" zur Verfügung. In Zukunft wird ein
+Seit Shop 5.0.0 steht im JTL-Shop ein sogenannter "Dependency Injection Container" zur Verfügung. In Zukunft wird ein
 Großteil aller JTL-Shop-Komponenten über diesen Container bereit gestellt. Zudem kann das Verhalten des Shops über die
 im Container registrierten Komponenten von Plugins modifiziert oder erweitert werden.
 
@@ -13,12 +13,13 @@ im Internet. Wir empfehlen Entwicklern daher zunächst, sich mit SOLID und im Be
 zu machen.
 
 Container / Komponente holen
--------------------------
+----------------------------
 
 .. code-block:: php
 
     <?php
 
+    use JTL\Shop;
     use Services\JTL\PasswordServiceInterface;
 
     $container       = Shop::Container();
@@ -34,7 +35,8 @@ Komponenten eine Methode zum Container hinzugefügt.
 
     <?php
 
-    use Services\JTL\PasswordServiceInterface;
+    use JTL\Shop;
+    use JTL\Services\JTL\PasswordServiceInterface;
 
     $container       = Shop::Container();
     $passwordService = $container->getPasswordService();
@@ -53,7 +55,7 @@ DefaultServicesInterface definierten Komponenten sind immer verfügbar).
 
     <?php
 
-    use Services\JTL\PasswordServiceInterface;
+    use JTL\Services\JTL\PasswordServiceInterface;
 
     $container = Shop::Container();
     if ($container->has(PasswordServiceInterface::class)) {
@@ -92,7 +94,7 @@ Nun können Sie die entsprechende Komponente im Container registrieren:
 
     <?php
 
-    $container = Shop::Container();
+    $container = JTL\Shop::Container();
     $container->setFactory(HelloWorldGeneratorInterface::class, function($container) {
         return new HelloWorldGenerator();
     });
@@ -103,7 +105,7 @@ Nun steht ihre Komponente über den Container bereit und kann wie folgt abgerufe
 
     <?php
 
-    $container           = Shop::Container();
+    $container           = JTL\Shop::Container();
     $HelloWorldGenerator = $container->get(HelloWorldInterface::class);
     $HelloWorldGenerator->get(); // "Hello World" wird ausgegeben
 
@@ -118,7 +120,7 @@ Komponenten, wenn Ihre Implementation zuverlässig funktioniert.
 .. code-block:: php
 
     <?php
-    
+
     class TrimmedHelloWorldGenerator implements HelloWorldGeneratorInterface
     {
         public function get()
@@ -182,7 +184,7 @@ wählen.
 .. code-block:: php
 
     <?php
-    $container = Shop::Container();
+    $container = JTL\Shop::Container();
 
     $container->setSingleton(HelloWorldGeneratorInterface::class, function() { ... });
     // oder

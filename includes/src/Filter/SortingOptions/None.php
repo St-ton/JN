@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\SortingOptions;
+namespace JTL\Filter\SortingOptions;
 
-use Filter\ProductFilter;
+use JTL\Filter\ProductFilter;
 
 /**
  * Class None
- * @package Filter\SortingOptions
+ * @package JTL\Filter\SortingOptions
  */
 class None extends AbstractSortingOption
 {

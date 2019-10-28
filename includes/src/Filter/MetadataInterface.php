@@ -4,17 +4,23 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter;
+namespace JTL\Filter;
+
+use JTL\Catalog\Category\Kategorie;
+use JTL\Catalog\Category\KategorieListe;
+use JTL\Catalog\Hersteller;
+use JTL\Catalog\Product\MerkmalWert;
 
 /**
- * Class Metadata
+ * Interface MetadataInterface
+ * @package JTL\Filter
  */
 interface MetadataInterface
 {
     /**
-     * @return array
+     * @return string
      */
-    public function getBreadCrumb(): array;
+    public function getBreadCrumb(): string;
 
     /**
      * @param string $breadCrumb
@@ -56,37 +62,37 @@ interface MetadataInterface
     public function setMetaKeywords($metaKeywords): MetadataInterface;
 
     /**
-     * @return \Kategorie|null
+     * @return Kategorie|null
      */
-    public function getCategory();
+    public function getCategory(): ?Kategorie;
 
     /**
-     * @param \Kategorie $category
+     * @param Kategorie $category
      * @return MetadataInterface
      */
-    public function setCategory(\Kategorie $category): MetadataInterface;
+    public function setCategory(Kategorie $category): MetadataInterface;
 
     /**
-     * @return \Hersteller|null
+     * @return Hersteller|null
      */
-    public function getManufacturer();
+    public function getManufacturer(): ?Hersteller;
 
     /**
-     * @param \Hersteller $manufacturer
+     * @param Hersteller $manufacturer
      * @return MetadataInterface
      */
-    public function setManufacturer(\Hersteller $manufacturer): MetadataInterface;
+    public function setManufacturer(Hersteller $manufacturer): MetadataInterface;
 
     /**
-     * @return \MerkmalWert|null
+     * @return MerkmalWert|null
      */
-    public function getAttributeValue();
+    public function getCharacteristicValue(): ?MerkmalWert;
 
     /**
-     * @param \MerkmalWert $attributeValue
+     * @param MerkmalWert $value
      * @return MetadataInterface
      */
-    public function setAttributeValue(\MerkmalWert $attributeValue): MetadataInterface;
+    public function setCharacteristicValue(MerkmalWert $value): MetadataInterface;
 
     /**
      * @return string
@@ -116,17 +122,22 @@ interface MetadataInterface
     public function hasData(): bool;
 
     /**
-     * @param \Kategorie|null      $category
-     * @param \KategorieListe|null $openCategories
+     * @return array
+     */
+    public static function getGlobalMetaData(): array;
+
+    /**
+     * @param Kategorie|null      $category
+     * @param KategorieListe|null $list
      * @return $this
      */
-    public function getNavigationInfo(\Kategorie $category = null, \KategorieListe $openCategories = null): MetadataInterface;
+    public function getNavigationInfo(Kategorie $category = null, KategorieListe $list = null): MetadataInterface;
 
     /**
      * @param array                  $products
      * @param SearchResultsInterface $searchResults
      * @param array                  $globalMeta
-     * @param \Kategorie|null        $category
+     * @param Kategorie|null         $category
      * @return string
      */
     public function generateMetaDescription(
@@ -137,19 +148,19 @@ interface MetadataInterface
     ): string;
 
     /**
-     * @param array           $products
-     * @param \Kategorie|null $category
+     * @param array               $products
+     * @param Kategorie|null $category
      * @return string
      */
-    public function generateMetaKeywords($products, \Kategorie $category = null): string;
+    public function generateMetaKeywords($products, Kategorie $category = null): string;
 
     /**
      * @param SearchResultsInterface $searchResults
      * @param array                  $globalMeta
-     * @param \Kategorie|null        $category
+     * @param Kategorie|null    $category
      * @return string
      */
-    public function generateMetaTitle($searchResults, $globalMeta, \Kategorie $category = null): string;
+    public function generateMetaTitle($searchResults, $globalMeta, Kategorie $category = null): string;
 
     /**
      * Erstellt für die NaviMetas die gesetzten Mainwords + Filter und stellt diese vor jedem Meta an.
@@ -169,12 +180,6 @@ interface MetadataInterface
      * @return string
      */
     public function getHeader(): string;
-
-    /**
-     * @return string|null
-     * @deprecated since 5.0.0
-     */
-    public function getBreadCrumbName();
 
     /**
      * @param int $viewType

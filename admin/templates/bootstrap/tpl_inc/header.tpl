@@ -1,250 +1,136 @@
-{assign var='bForceFluid' value=$bForceFluid|default:false}
+{assign var=bForceFluid value=$bForceFluid|default:false}
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="robots" content="noindex,nofollow" />
-    <title>JTL-Shop Administration</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex,nofollow">
+    <title>{__('shopTitle')}</title>
     {assign var=urlPostfix value='?v='|cat:$adminTplVersion}
-    <link type="image/x-icon" href="{$faviconAdminURL}" rel="icon" />
+    <link type="image/x-icon" href="{$faviconAdminURL}" rel="icon">
     {$admin_css}
-    <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}lib/codemirror.css{$urlPostfix}" />
-    <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}addon/hint/show-hint.css{$urlPostfix}" />
-    <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}addon/display/fullscreen.css{$urlPostfix}" />
-    <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}addon/scroll/simplescrollbars.css{$urlPostfix}" />
+    <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}lib/codemirror.css{$urlPostfix}">
+    <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}addon/hint/show-hint.css{$urlPostfix}">
+    <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}addon/display/fullscreen.css{$urlPostfix}">
+    <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}addon/scroll/simplescrollbars.css{$urlPostfix}">
     {$admin_js}
-    <script type="text/javascript" src="{$PFAD_CKEDITOR}ckeditor.js{$urlPostfix}"></script>
-    <script type="text/javascript" src="{$PFAD_CODEMIRROR}lib/codemirror.js{$urlPostfix}"></script>
-    <script type="text/javascript" src="{$PFAD_CODEMIRROR}addon/hint/show-hint.js{$urlPostfix}"></script>
-    <script type="text/javascript" src="{$PFAD_CODEMIRROR}addon/hint/sql-hint.js{$urlPostfix}"></script>
-    <script type="text/javascript" src="{$PFAD_CODEMIRROR}addon/scroll/simplescrollbars.js{$urlPostfix}"></script>
-    <script type="text/javascript" src="{$PFAD_CODEMIRROR}addon/display/fullscreen.js{$urlPostfix}"></script>
-    <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/css/css.js{$urlPostfix}"></script>
-    <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/javascript/javascript.js{$urlPostfix}"></script>
-    <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/xml/xml.js{$urlPostfix}"></script>
-    <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/php/php.js{$urlPostfix}"></script>
-    <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/htmlmixed/htmlmixed.js{$urlPostfix}"></script>
-    <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/smarty/smarty.js{$urlPostfix}"></script>
-    <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/smartymixed/smartymixed.js{$urlPostfix}"></script>
-    <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/sql/sql.js{$urlPostfix}"></script>
-    <script type="text/javascript" src="{$URL_SHOP}/{$PFAD_ADMIN}{$currentTemplateDir}js/codemirror_init.js{$urlPostfix}"></script>
-    <script type="text/javascript">
+    <script src="{$PFAD_CKEDITOR}ckeditor.js{$urlPostfix}"></script>
+    <script src="{$PFAD_CODEMIRROR}lib/codemirror.js{$urlPostfix}"></script>
+    <script src="{$PFAD_CODEMIRROR}addon/hint/show-hint.js{$urlPostfix}"></script>
+    <script src="{$PFAD_CODEMIRROR}addon/hint/sql-hint.js{$urlPostfix}"></script>
+    <script src="{$PFAD_CODEMIRROR}addon/scroll/simplescrollbars.js{$urlPostfix}"></script>
+    <script src="{$PFAD_CODEMIRROR}addon/display/fullscreen.js{$urlPostfix}"></script>
+    <script src="{$PFAD_CODEMIRROR}mode/css/css.js{$urlPostfix}"></script>
+    <script src="{$PFAD_CODEMIRROR}mode/javascript/javascript.js{$urlPostfix}"></script>
+    <script src="{$PFAD_CODEMIRROR}mode/xml/xml.js{$urlPostfix}"></script>
+    <script src="{$PFAD_CODEMIRROR}mode/php/php.js{$urlPostfix}"></script>
+    <script src="{$PFAD_CODEMIRROR}mode/htmlmixed/htmlmixed.js{$urlPostfix}"></script>
+    <script src="{$PFAD_CODEMIRROR}mode/smarty/smarty.js{$urlPostfix}"></script>
+    <script src="{$PFAD_CODEMIRROR}mode/smartymixed/smartymixed.js{$urlPostfix}"></script>
+    <script src="{$PFAD_CODEMIRROR}mode/sql/sql.js{$urlPostfix}"></script>
+    <script src="{$templateBaseURL}js/codemirror_init.js{$urlPostfix}"></script>
+    <script>
         var bootstrapButton = $.fn.button.noConflict();
         $.fn.bootstrapBtn = bootstrapButton;
+        setJtlToken('{$smarty.session.jtl_token}');
+
+        function switchAdminLang(tag)
+        {
+            event.target.href = `{strip}
+                benutzerverwaltung.php
+                ?token={$smarty.session.jtl_token}
+                &action=quick_change_language
+                &language=` + tag + `
+                &referer=` + window.location.href{/strip};
+        }
     </script>
-    <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
+
+    <script type="text/javascript"
+            src="{$templateBaseURL}js/fileinput/locales/{$language|mb_substr:0:2}.js"></script>
+    <script type="module" src="{$templateBaseURL}js/app/app.js"></script>
+    {include file='snippets/selectpicker.tpl'}
 </head>
 <body>
 {if $account !== false && isset($smarty.session.loginIsValid) && $smarty.session.loginIsValid === true}
-    {if permission('SETTINGS_SEARCH_VIEW')}
-        <div id="main-search" class="modal fade" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <input placeholder="Suchbegriff" name="cSuche" type="search" value="" autocomplete="off" />
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    </div>
-                    <div class="modal-body">
-                    </div>
+    {getCurrentPage assign='currentPage'}
+    <div class="spinner"></div>
+    <div id="page-wrapper" class="backend-wrapper hidden disable-transitions{if $currentPage === 'index' || $currentPage === 'status'} dashboard{/if}">
+        {if !$hasPendingUpdates}
+        {include file='tpl_inc/backend_sidebar.tpl'}
+        {/if}
+        <div class="backend-main sidebar-offset">
+            {if !$hasPendingUpdates}
+            <div id="topbar" class="backend-navbar row mx-0 align-items-center topbar flex-nowrap">
+                <div class="col search">
+                    {include file='tpl_inc/backend_search.tpl'}
                 </div>
-            </div>
-        </div>
-        <script>
-        var $grid    = null;
-        setJtlToken('{$smarty.session.jtl_token}');
-
-        $(function () {
-            var lastQuery = null,
-                $search_frame = $('#main-search'),
-                $search_input = $search_frame.find('input[type="search"]'),
-                $search_result = $search_frame.find('div.modal-body');
-
-            function searchEvent(event) {
-                var setResult = function(content) {
-                        content = content || '';
-
-                        if ($grid) {
-                            $grid.masonry('destroy');
-                        }
-
-                        $search_result.html(content);
-
-                        $grid = $search_result.masonry({
-                            itemSelector: '.grid-item',
-                            columnWidth: '.grid-item',
-                            percentPosition: true
-                        });
-                    },
-                    query = $(event.target).val() || '';
-                if (query.length < 3 || event.keyCode === 27) {
-                    setResult(null);
-                    lastQuery = null;
-                } else if(query !== lastQuery) {
-                    lastQuery = query;
-                    ioCall('adminSearch', [query], function (data) {
-                        setResult(data.data.tpl);
-                    });
-                }
-            }
-
-            $search_frame.on('shown.bs.modal', function (e) {
-                $search_input.on('keyup', searchEvent).focus();
-            });
-
-            $search_frame.on('hidden.bs.modal', function (e) {
-                $('body').focus();
-                $search_input.off('keyup', searchEvent);
-            });
-
-            $(document).on('keydown', function (event) {
-                if (event.keyCode === 71 && event.ctrlKey) {
-                    event.preventDefault();
-                    $search_frame.modal('toggle');
-                }
-                if (event.keyCode === 13) {
-                    szSearchString = $("[name$=cSuche]").val();
-                    if ('' !== szSearchString) {
-                        document.location.href = 'einstellungen.php?cSuche=' + szSearchString + '&einstellungen_suchen=1';
-                    }
-                }
-            });
-        });
-        </script>
-    {/if}
-    {getCurrentPage assign="currentPage"}
-    {$fluid = ['index', 'marktplatz', 'dbmanager', 'status']}
-    <div class="backend-wrapper
-         {if $bForceFluid || $currentPage|in_array:$fluid}container-fluid{else}container{/if}
-         {if $currentPage === 'index' || $currentPage === 'status'} dashboard{/if}
-         {if $currentPage === 'marktplatz'} marktplatz{/if}">
-        <nav class="navbar navbar-inverse navbar-fixed-top yamm" role="navigation">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#nbc-1" aria-expanded="false" aria-controls="navbar">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href="index.php"><img src="{$currentTemplateDir}gfx/shop-logo.png" alt="JTL-Shop" /></a>
-                </div>
-                <div class="navbar-collapse collapse" id="nbc-1">
-                    <ul class="nav navbar-nav">
-                        {foreach name=linkobergruppen from=$oLinkOberGruppe_arr item=oLinkOberGruppe}
-                            {if $oLinkOberGruppe->oLinkGruppe_arr|@count === 0 && $oLinkOberGruppe->oLink_arr|@count === 1}
-                                <li {if isset($oLinkOberGruppe->class)}class="{$oLinkOberGruppe->class}"{/if}>
-                                    <a href="{$oLinkOberGruppe->oLink_arr[0]->cURL}" class="parent">
-                                        {$oLinkOberGruppe->oLink_arr[0]->cLinkname}
-                                    </a>
-                                </li>
-                            {else}
-                                <li class="dropdown {if isset($oLinkOberGruppe->class)}{$oLinkOberGruppe->class}{/if}">
-                                    <a href="#" class="dropdown-toggle parent" data-toggle="dropdown">{$oLinkOberGruppe->cName}
-                                        <span class="caret"> </span>
-                                    </a>
-                                    <ul class="dropdown-menu{if $oLinkOberGruppe->oLinkGruppe_arr|@count === 0} single-menu{/if}" role="main">
-                                        <li>
-                                            <div class="yamm-content">
-                                                {foreach name=linkuntergruppen from=$oLinkOberGruppe->oLinkGruppe_arr item=oLinkGruppe}
-                                                    {if $oLinkGruppe->oLink_arr|@count > 0}
-                                                    <div class="list-wrapper">
-                                                        <ul class="left list-unstyled">
-                                                            <li class="dropdown-header" id="dropdown-header-{$oLinkGruppe->cName|replace:' ':'-'|replace:'&':''|lower}">
-                                                                {$oLinkGruppe->cName}
-                                                            </li>
-                                                            {foreach name=linkgruppenlinks from=$oLinkGruppe->oLink_arr item=oLink}
-                                                                <li class="{if $smarty.foreach.linkgruppenlinks.first}subfirst{/if}{if !$oLink->cRecht|permission} noperm{/if}">
-                                                                    <a href="{$oLink->cURL}">{$oLink->cLinkname}</a>
-                                                                </li>
-                                                            {/foreach}
-                                                            {*<li class="divider"></li>*}
-                                                        </ul>
-                                                    </div>
-                                                    {/if}
-                                                {/foreach}
-                                                <ul class="left list-unstyled single">
-                                                {foreach name=linkuntergruppenlinks from=$oLinkOberGruppe->oLink_arr item=oLink}
-                                                    <li class="{if $smarty.foreach.linkuntergruppenlinks.first}subfirst{/if} {if !$oLink->cRecht|permission}noperm{/if}">
-                                                        <a href="{$oLink->cURL}">{$oLink->cLinkname}</a>
-                                                    </li>
-                                                {/foreach}
-                                                </ul>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </li>
-                            {/if}
-                        {/foreach}
-                    </ul>
-                    <ul class="nav navbar-nav navbar-right">
-                        <li class="dropdown" id="notify-drop">{include file="tpl_inc/notify_drop.tpl"}</li>
-                        <li class="dropdown" id="favs-drop">{include file="tpl_inc/favs_drop.tpl"}</li>
-                        {if permission('DASHBOARD_VIEW')}
-                            <li>
-                                <a class="link-dashboard" href="index.php" title="Dashboard"><i class="fa fa-home"></i></a>
-                            </li>
-                        {/if}
-                        {if permission('SETTINGS_SEARCH_VIEW')}
-                            <li>
-                                <a class="link-search" data-toggle="modal" href="#main-search" title="Suche"><i class="fa fa-search"></i></a>
-                            </li>
-                        {/if}
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle parent" data-toggle="dropdown" title="Hilfe">
-                                <i class="fa fa-medkit" aria-hidden="true"></i>
-                            </a>
-                            <ul class="dropdown-menu" role="main">
-                                <li>
-                                    <a href="https://jtl-url.de/shopschritte" target="_blank" rel="noopener">Erste Schritte</a>
-                                    <a href="https://jtl-url.de/shopguide" target="_blank" rel="noopener">JTL Guide</a>
-                                    <a href="https://forum.jtl-software.de" target="_blank" rel="noopener">JTL Forum</a>
-                                    <a href="https://www.jtl-software.de/Training" target="_blank" rel="noopener">Training</a>
-                                    <a href="https://www.jtl-software.de/Servicepartner" target="_blank" rel="noopener">Servicepartner</a>
-                                </li>
-                            </ul>
+                <div class="col-auto ml-auto px-2">
+                    <ul class="nav align-items-center">
+                        <li class="nav-item dropdown mr-3" id="favs-drop">
+                            {include file="tpl_inc/favs_drop.tpl"}
                         </li>
-                        <li class="dropdown avatar">
-                            <a href="#" class="dropdown-toggle parent" data-toggle="dropdown">
-                                <img src="{gravatarImage email=$account->cMail}" title="{$account->cMail}" class="img-circle" />
+                        <li class="nav-item dropdown">
+                            <a href="#" class="nav-link text-dark-gray px-2" data-toggle="dropdown">
+                                <span class="fal fa-map-marker-question fa-fw"></span>
                             </a>
-                            <ul class="dropdown-menu" role="main">
-                                <li>
-                                    {*if permission('ACCOUNT_VIEW')}
-                                        <a class="link-profile" href="benutzerverwaltung.php" title="Profil"><i class="fa fa-user"></i> Profil</a>
-                                    {/if*}
-                                    <a class="link-shop" href="{$URL_SHOP}" title="Zum Shop"><i class="fa fa-shopping-cart"></i> Zum Shop</a>
-                                    <a class="link-logout" href="logout.php?token={$smarty.session.jtl_token}" title="{#logout#}"><i class="fa fa-sign-out"></i> {#logout#}</a>
-                                </li>
-                            </ul>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <span class="dropdown-header">Hilfecenter</span>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="https://jtl-url.de/shopschritte" target="_blank" rel="noopener">
+                                    {__('firstSteps')}
+                                </a>
+                                <a class="dropdown-item" href="https://jtl-url.de/shopguide" target="_blank" rel="noopener">
+                                    {__('jtlGuide')}
+                                </a>
+                                <a class="dropdown-item" href="https://forum.jtl-software.de" target="_blank" rel="noopener">
+                                    {__('jtlForum')}
+                                </a>
+                                <a class="dropdown-item" href="https://www.jtl-software.de/Training" target="_blank" rel="noopener">
+                                    {__('training')}
+                                </a>
+                                <a class="dropdown-item" href="https://www.jtl-software.de/Servicepartner" target="_blank" rel="noopener">
+                                    {__('servicePartners')}
+                                </a>
+                            </div>
                         </li>
-                        {*
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle parent" data-toggle="dropdown">
-                                <i class="fa fa-bars" aria-hidden="true"></i>
+                        <li class="nav-item dropdown" id="notify-drop">{include file="tpl_inc/notify_drop.tpl"}</li>
+                        <li class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle parent btn-toggle" data-toggle="dropdown">
+                                <i class="fal fa-language d-sm-none"></i> <span class="d-sm-block d-none">{$languageName}</span>
                             </a>
-                            <ul class="dropdown-menu" role="main">
-                                <li>
-                                    <a class="link-shop" href="{$URL_SHOP}" title="Zum Shop"><i class="fa fa-shopping-cart"></i> Zum Shop</a>
-                                </li>
-                                {if permission('DASHBOARD_VIEW')}
-                                    <li>
-                                        <a class="link-dashboard" href="index.php" title="Dashboard"><i class="fa fa-tachometer"></i> Dashboard</a>
-                                    </li>
-                                {/if}
-                                <li>
-                                    <a class="link-logout" href="logout.php?token={$smarty.session.jtl_token}" title="{#logout#}"><i class="fa fa-sign-out"></i> {#logout#}</a>
-                                </li>
-                            </ul>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                {foreach $languages as $tag => $langName}
+                                    {if $language !== $tag}
+                                        <a class="dropdown-item" onclick="switchAdminLang('{$tag}')" href="#">
+                                            {$langName}
+                                        </a>
+                                    {/if}
+                                {/foreach}
+                            </div>
                         </li>
-                        *}
                     </ul>
                 </div>
+                <div class="col-auto border-left border-dark-gray">
+                    <div class="dropdown avatar">
+                        <button class="btn btn-link text-decoration-none dropdown-toggle p-0" data-toggle="dropdown">
+                            <img src="{gravatarImage email=$account->cMail}" class="img-circle">
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <a class="dropdown-item link-shop" href="{$URL_SHOP}" title="Zum Shop">
+                                <i class="fa fa-shopping-cart"></i> {__('goShop')}
+                            </a>
+                            <a class="dropdown-item link-logout" href="logout.php?token={$smarty.session.jtl_token}"
+                               title="{__('logout')}">
+                                <i class="fa fa-sign-out"></i> {__('logout')}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="opaque-background"></div>
             </div>
-        </nav>
-        <div id="content_wrapper" class="container-fluid">
+            {/if}
+            <div class="backend-content" id="content_wrapper">
+
+            {include file='snippets/alert_list.tpl'}
 {/if}

@@ -4,58 +4,68 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
 
-use DB\ReturnType;
+use JTL\Catalog\Product\ArtikelListe;
+use JTL\DB\ReturnType;
+use JTL\Helpers\SearchSpecial;
+use JTL\Session\Frontend;
+use JTL\Shop;
+use function Functional\map;
 
 /**
  * Class UpcomingProducts
- * @package Boxes
+ * @package JTL\Boxes\Items
  */
 final class UpcomingProducts extends AbstractBox
 {
     /**
-     * Cart constructor.
+     * UpcomingProducts constructor.
      * @param array $config
      */
     public function __construct(array $config)
     {
         parent::__construct($config);
         $this->setShow(false);
-        $customerGroupID = \Session::CustomerGroup()->getID();
-        if ($customerGroupID > 0 && \Session::CustomerGroup()->mayViewCategories()) {
+        $customerGroupID = Frontend::getCustomerGroup()->getID();
+        if ($customerGroupID > 0 && Frontend::getCustomerGroup()->mayViewCategories()) {
             $cached         = true;
             $cacheTags      = [\CACHING_GROUP_BOX, \CACHING_GROUP_ARTICLE];
-            $stockFilterSQL = \Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
+            $stockFilterSQL = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $parentSQL      = ' AND tartikel.kVaterArtikel = 0';
-            $limit          = (int)$config['boxen']['box_erscheinende_anzahl_anzeige'];
+            $limit          = (int)$config['boxen']['box_erscheinende_anzahl_basis'];
             $cacheID        = 'box_ikv_' . $customerGroupID . '_' . $limit . \md5($stockFilterSQL . $parentSQL);
-            if (($productIDs = \Shop::Container()->getCache()->get($cacheID)) === false) {
-                $productIDs = \Shop::Container()->getDB()->queryPrepared(
-                    "SELECT tartikel.kArtikel
+            if (($productIDs = Shop::Container()->getCache()->get($cacheID)) === false) {
+                $productIDs = Shop::Container()->getDB()->queryPrepared(
+                    'SELECT tartikel.kArtikel
                         FROM tartikel
                         LEFT JOIN tartikelsichtbarkeit 
                             ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                             AND tartikelsichtbarkeit.kKundengruppe = :cid
-                        WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                            $stockFilterSQL
-                            $parentSQL
+                        WHERE tartikelsichtbarkeit.kArtikel IS NULL ' .
+                            $stockFilterSQL . ' ' .
+                            $parentSQL . '
                             AND NOW() < tartikel.dErscheinungsdatum
-                        ORDER BY RAND() LIMIT :lmt",
+                        LIMIT :lmt',
                     ['cid' => $customerGroupID, 'lmt' => $limit],
                     ReturnType::ARRAY_OF_OBJECTS
                 );
-                $productIDs = \array_map(function ($e) {
-                    return (int)$e->kArtikel;
-                }, $productIDs);
-                \Shop::Container()->getCache()->set($cacheID, $productIDs, $cacheTags);
+                Shop::Container()->getCache()->set($cacheID, $productIDs, $cacheTags);
             }
-            if (\count($productIDs) > 0) {
+            \shuffle($productIDs);
+            $res = map(
+                \array_slice($productIDs, 0, $config['boxen']['box_erscheinende_anzahl_anzeige']),
+                function ($productID) {
+                    return (int)$productID->kArtikel;
+                }
+            );
+
+            if (\count($res) > 0) {
                 $this->setShow(true);
-                $products = new \ArtikelListe();
-                $products->getArtikelByKeys($productIDs, 0, \count($productIDs));
+                $products = new ArtikelListe();
+                $products->getArtikelByKeys($res, 0, \count($res));
                 $this->setProducts($products);
-                $this->setURL(\SearchSpecialHelper::buildURL(\SEARCHSPECIALS_UPCOMINGPRODUCTS));
+                $this->setURL(SearchSpecial::buildURL(\SEARCHSPECIALS_UPCOMINGPRODUCTS));
                 \executeHook(\HOOK_BOXEN_INC_ERSCHEINENDEPRODUKTE, [
                     'box'        => &$this,
                     'cache_tags' => &$cacheTags,

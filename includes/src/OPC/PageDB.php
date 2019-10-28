@@ -1,17 +1,21 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC;
+namespace JTL\OPC;
 
-use DB\DbInterface;
-use DB\ReturnType;
+use Exception;
+use JTL\Shop;
+use JTL\Backend\Revision;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use stdClass;
 
 /**
  * Class PageDB
- * @package OPC
+ * @package JTL\OPC
  */
 class PageDB
 {
@@ -34,7 +38,7 @@ class PageDB
      */
     public function getPageCount(): int
     {
-        return $this->shopDB->query(
+        return (int)$this->shopDB->query(
             'SELECT COUNT(DISTINCT cPageId) AS count FROM topcpage',
             ReturnType::SINGLE_OBJECT
         )->count;
@@ -43,7 +47,7 @@ class PageDB
     /**
      * @return array
      */
-    public function getPages()
+    public function getPages(): array
     {
         return $this->shopDB->query(
             'SELECT cPageId, cPageUrl FROM topcpage GROUP BY cPageId, cPageUrl',
@@ -75,15 +79,15 @@ class PageDB
 
     /**
      * @param int $key
-     * @return object
-     * @throws \Exception
+     * @return stdClass
+     * @throws Exception
      */
-    public function getDraftRow(int $key)
+    public function getDraftRow(int $key): stdClass
     {
         $draftRow = $this->shopDB->select('topcpage', 'kPage', $key);
 
         if (!\is_object($draftRow)) {
-            throw new \Exception('The OPC page draft could not be found in the database.');
+            throw new Exception('The OPC page draft could not be found in the database.');
         }
 
         return $draftRow;
@@ -92,15 +96,15 @@ class PageDB
     /**
      * @param int $revId
      * @return object
-     * @throws \Exception
+     * @throws Exception
      */
     public function getRevisionRow(int $revId)
     {
-        $revision    = new \Revision();
+        $revision    = new Revision($this->shopDB);
         $revisionRow = $revision->getRevision($revId);
 
         if (!\is_object($revisionRow)) {
-            throw new \Exception('The OPC page revision could not be found in the database.');
+            throw new Exception('The OPC page revision could not be found in the database.');
         }
 
         return \json_decode($revisionRow->content);
@@ -108,9 +112,9 @@ class PageDB
 
     /**
      * @param string $id
-     * @return null|\stdClass
+     * @return null|stdClass
      */
-    public function getPublicPageRow(string $id)
+    public function getPublicPageRow(string $id): ?stdClass
     {
         $publicRow = $this->shopDB->queryPrepared(
             'SELECT * FROM topcpage
@@ -129,6 +133,7 @@ class PageDB
     /**
      * @param string $id
      * @return Page[]
+     * @throws Exception
      */
     public function getDrafts(string $id): array
     {
@@ -142,9 +147,30 @@ class PageDB
     }
 
     /**
+     * @param string $id
+     * @return array
+     */
+    public function getOtherLanguageDraftRows(string $id): array
+    {
+        $pageIdFields       = \explode(';', $id);
+        $langField          = \array_pop($pageIdFields);
+        $languageKey        = \explode(':', $langField);
+        $languageKey        = (int)$languageKey[1];
+        $pageIdSearchPrefix = \implode(';', $pageIdFields) . ';lang:';
+
+        return $this->shopDB->query(
+            "SELECT o.*, s.kSprache, s.cNameEnglisch
+                FROM topcpage AS o
+                    JOIN tsprache AS s ON CONCAT('$pageIdSearchPrefix', s.kSprache) = o.cPageId
+                WHERE kSprache != $languageKey",
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+    }
+
+    /**
      * @param int $key
      * @return Page
-     * @throws \Exception
+     * @throws Exception
      */
     public function getDraft(int $key) : Page
     {
@@ -156,9 +182,9 @@ class PageDB
     /**
      * @param int $revId
      * @return Page
-     * @throws \Exception
+     * @throws Exception
      */
-    public function getRevision(int $revId) : Page
+    public function getRevision(int $revId): Page
     {
         $revisionRow = $this->getRevisionRow($revId);
 
@@ -171,40 +197,51 @@ class PageDB
      */
     public function getRevisionList(int $key): array
     {
-        $revision = new \Revision();
+        $revision = new Revision($this->shopDB);
 
         return $revision->getRevisions('opcpage', $key);
     }
 
     /**
      * @param string $id
-     * @return null|Page
+     * @return Page|null
+     * @throws Exception
      */
-    public function getPublicPage(string $id)
+    public function getPublicPage(string $id): ?Page
     {
         $publicRow = $this->getPublicPageRow($id);
+        $page      = null;
 
-        if (!\is_object($publicRow)) {
-            return null;
+        if (\is_object($publicRow)) {
+            $page = $this->getPageFromRow($publicRow);
         }
 
-        return $this->getPageFromRow($publicRow);
+        Shop::fire('shop.OPC.PageDB.getPublicPage', [
+            'id' => $id,
+            'page' => &$page
+        ]);
+
+        return $page;
     }
 
     /**
      * @param Page $page
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function saveDraft(Page $page): self
     {
         if ($page->getUrl() === ''
             || $page->getLastModified() === ''
             || $page->getLockedAt() === ''
-            || \strlen($page->getId()) !== 32
+            || $page->getId() === ''
         ) {
-            throw new \Exception('The OPC page data to be saved is incomplete or invalid.');
+            throw new Exception('The OPC page data to be saved is incomplete or invalid.');
         }
+
+        Shop::fire('shop.OPC.PageDB.saveDraft:afterValidate', [
+            'page' => &$page
+        ]);
 
         $page->setLastModified(\date('Y-m-d H:i:s'));
 
@@ -218,7 +255,6 @@ class PageDB
             'dLastModified' => $page->getLastModified() ?? '_DBNULL_',
             'cLockedBy'     => $page->getLockedBy(),
             'dLockedAt'     => $page->getLockedAt() ?? '_DBNULL_',
-            'bReplace'      => (int)$page->isReplace(),
         ];
 
         if ($page->getKey() > 0) {
@@ -227,18 +263,18 @@ class PageDB
             $newAreasJson = $pageDB->cAreasJson;
 
             if ($oldAreasJson !== $newAreasJson) {
-                $revision = new \Revision();
-                $revision->addRevision('opcpage', $dbPage->kPage);
+                $revision = new Revision($this->shopDB);
+                $revision->addRevision('opcpage', (int)$dbPage->kPage);
             }
 
             if ($this->shopDB->update('topcpage', 'kPage', $page->getKey(), $pageDB) === -1) {
-                throw new \Exception('The OPC page could not be updated in the DB.');
+                throw new Exception('The OPC page could not be updated in the DB.');
             }
         } else {
             $key = $this->shopDB->insert('topcpage', $pageDB);
 
             if ($key === 0) {
-                throw new \Exception('The OPC page could not be inserted into the DB.');
+                throw new Exception('The OPC page could not be inserted into the DB.');
             }
 
             $page->setKey($key);
@@ -250,7 +286,7 @@ class PageDB
     /**
      * @param Page $page existing page draft
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function saveDraftLockStatus(Page $page): self
     {
@@ -260,7 +296,7 @@ class PageDB
         ];
 
         if ($this->shopDB->update('topcpage', 'kPage', $page->getKey(), $pageDB) === -1) {
-            throw new \Exception('The OPC page could not be updated in the DB.');
+            throw new Exception('The OPC page could not be updated in the DB.');
         }
 
         return $this;
@@ -269,7 +305,7 @@ class PageDB
     /**
      * @param Page $page existing page draft
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function saveDraftPublicationStatus(Page $page): self
     {
@@ -280,7 +316,26 @@ class PageDB
         ];
 
         if ($this->shopDB->update('topcpage', 'kPage', $page->getKey(), $pageDB) === -1) {
-            throw new \Exception('The OPC page publication status could not be updated in the DB.');
+            throw new Exception('The OPC page publication status could not be updated in the DB.');
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param int $draftKey
+     * @param string $draftName
+     * @return PageDB
+     * @throws Exception
+     */
+    public function saveDraftName(int $draftKey, string $draftName): self
+    {
+        $pageDB = (object)[
+            'cName' => $draftName,
+        ];
+
+        if ($this->shopDB->update('topcpage', 'kPage', $draftKey, $pageDB) === -1) {
+            throw new Exception('The OPC draft name could not be updated in the DB.');
         }
 
         return $this;
@@ -309,13 +364,14 @@ class PageDB
     }
 
     /**
-     * @param object $row
+     * @param $row
      * @return Page
+     * @throws Exception
      */
-    protected function getPageFromRow($row) : Page
+    protected function getPageFromRow($row): Page
     {
         $page = (new Page())
-            ->setKey($row->kPage)
+            ->setKey((int)$row->kPage)
             ->setId($row->cPageId)
             ->setPublishFrom($row->dPublishFrom)
             ->setPublishTo($row->dPublishTo)
@@ -323,14 +379,18 @@ class PageDB
             ->setUrl($row->cPageUrl)
             ->setLastModified($row->dLastModified)
             ->setLockedBy($row->cLockedBy)
-            ->setLockedAt($row->dLockedAt)
-            ->setReplace($row->bReplace);
+            ->setLockedAt($row->dLockedAt);
 
         $areaData = \json_decode($row->cAreasJson, true);
 
         if ($areaData !== null) {
             $page->getAreaList()->deserialize($areaData);
         }
+
+        Shop::fire('shop.OPC.PageDB.getPageRow', [
+            'row' => &$row,
+            'page' => &$page
+        ]);
 
         return $page;
     }

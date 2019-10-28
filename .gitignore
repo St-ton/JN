@@ -34,6 +34,13 @@
 /media/image/product/*
 /media/image/storage/*
 /media/image/avatare/*
+/media/image/category/*
+/media/image/characteristic/*
+/media/image/characteristicvalue/*
+/media/image/manufacturer/*
+/media/image/news/*
+/media/image/newscategory/*
+/media/image/opc/*
 
 # mediafiles
 /mediafiles/Bilder/*
@@ -75,8 +82,5 @@
 !/mediafiles/Bilder/.lg/.gitkeep
 !/mediafiles/Bilder/.xl/.gitkeep
 bootstrap/*
-includes/vendor/*
 node_modules/
-/tools/bin/*
-/tools/dist/*
 /uploads/*

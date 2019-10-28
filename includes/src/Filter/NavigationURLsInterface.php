@@ -4,11 +4,11 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter;
+namespace JTL\Filter;
 
 /**
- * Class NavigationURLs
- * @package Filter
+ * Interface NavigationURLsInterface
+ * @package JTL\Filter
  */
 interface NavigationURLsInterface
 {
@@ -33,17 +33,6 @@ interface NavigationURLsInterface
      * @return NavigationURLsInterface
      */
     public function setRatings(string $ratings): NavigationURLsInterface;
-
-    /**
-     * @return string
-     */
-    public function getTags(): string;
-
-    /**
-     * @param string $tags
-     * @return NavigationURLsInterface
-     */
-    public function setTags(string $tags): NavigationURLsInterface;
 
     /**
      * @return string
@@ -88,38 +77,38 @@ interface NavigationURLsInterface
     /**
      * @return array
      */
-    public function getAttributes(): array;
+    public function getCharacteristics(): array;
 
     /**
-     * @param string $attributes
+     * @param string $characteristics
      * @return NavigationURLsInterface
      */
-    public function setAttributes(string $attributes): NavigationURLsInterface;
+    public function setCharacteristics(string $characteristics): NavigationURLsInterface;
 
     /**
      * @param string|int $idx
-     * @param string     $attribute
+     * @param string     $characteristic
      * @return NavigationURLsInterface
      */
-    public function addAttribute($idx, string $attribute): NavigationURLsInterface;
+    public function addCharacteristic($idx, string $characteristic): NavigationURLsInterface;
 
     /**
      * @return array
      */
-    public function getAttributeValues(): array;
+    public function getCharacteristicValues(): array;
 
     /**
-     * @param string $attributeValues
+     * @param string $value
      * @return NavigationURLsInterface
      */
-    public function setAttributeValues(string $attributeValues): NavigationURLsInterface;
+    public function setCharacteristicValues(string $value): NavigationURLsInterface;
 
     /**
      * @param string|int $idx
-     * @param string     $attributeValue
+     * @param string     $value
      * @return NavigationURLsInterface
      */
-    public function addAttributeValue($idx, string $attributeValue): NavigationURLsInterface;
+    public function addCharacteristicValue($idx, string $value): NavigationURLsInterface;
 
     /**
      * @return array

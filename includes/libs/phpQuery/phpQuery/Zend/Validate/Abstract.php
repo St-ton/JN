@@ -121,7 +121,7 @@ abstract class Zend_Validate_Abstract implements Zend_Validate_Interface
     public function setMessage($messageString, $messageKey = null)
     {
         if ($messageKey === null) {
-            $keys = array_keys($this->_messageTemplates);
+            $keys       = array_keys($this->_messageTemplates);
             $messageKey = current($keys);
         }
         if (!isset($this->_messageTemplates[$messageKey])) {
@@ -202,7 +202,7 @@ abstract class Zend_Validate_Abstract implements Zend_Validate_Interface
             $value = str_repeat('*', strlen($value));
         }
 
-        $message = str_replace('%value%', (string) $value, $message);
+        $message = str_replace('%value%', (string)$value, $message);
         foreach ($this->_messageVariables as $ident => $property) {
             $message = str_replace("%$ident%", $this->$property, $message);
         }
@@ -217,7 +217,7 @@ abstract class Zend_Validate_Abstract implements Zend_Validate_Interface
     protected function _error($messageKey = null, $value = null)
     {
         if ($messageKey === null) {
-            $keys = array_keys($this->_messageTemplates);
+            $keys       = array_keys($this->_messageTemplates);
             $messageKey = current($keys);
         }
         if ($value === null) {
@@ -259,7 +259,7 @@ abstract class Zend_Validate_Abstract implements Zend_Validate_Interface
      */
     public function setObscureValue($flag)
     {
-        $this->_obscureValue = (bool) $flag;
+        $this->_obscureValue = (bool)$flag;
         return $this;
     }
 

@@ -2,27 +2,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
-{if !empty($cKuponfehler_arr.ungueltig)}
-    {if $cKuponfehler_arr.ungueltig == 1}
-        <div class="alert alert-danger">{lang key='couponErr1' section='global'}</div>{/if}
-    {if $cKuponfehler_arr.ungueltig == 2}
-        <div class="alert alert-danger">{lang key='couponErr2' section='global'}</div>{/if}
-    {if $cKuponfehler_arr.ungueltig == 3}
-        <div class="alert alert-danger">{lang key='couponErr3' section='global'}</div>{/if}
-    {if $cKuponfehler_arr.ungueltig == 4}
-        <div class="alert alert-danger">{lang key='couponErr4' section='global'}</div>{/if}
-    {if $cKuponfehler_arr.ungueltig == 6}
-        <div class="alert alert-danger">{lang key='couponErr6' section='global'}</div>{/if}
-    {if $cKuponfehler_arr.ungueltig == 11}
-        <div class="alert alert-danger">{lang key='invalidCouponCode' section='checkout'}</div>
-    {/if}
-    {if $cKuponfehler_arr.ungueltig == 12}
-        <div class="alert alert-danger">{lang key='invalidCouponCode' section='checkout'}</div>
-    {/if}
-    {if $cKuponfehler_arr.ungueltig != 1 && $cKuponfehler_arr.ungueltig != 2 && $cKuponfehler_arr.ungueltig != 3 && $cKuponfehler_arr.ungueltig != 4 && $cKuponfehler_arr.ungueltig != 6 && $cKuponfehler_arr.ungueltig != 11}
-        <div class="alert alert-danger">{lang key='couponErr99' section='global'}</div>
-    {/if}
-{/if}
 
 {if $KuponMoeglich == 1}
     <form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form form-inline evo-validate">

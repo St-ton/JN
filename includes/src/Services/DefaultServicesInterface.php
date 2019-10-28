@@ -4,20 +4,31 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services;
+namespace JTL\Services;
 
-use Boxes\FactoryInterface;
-use Cache\JTLCacheInterface;
-use DB\DbInterface;
-use DB\Services\GcServiceInterface;
-use Exceptions\CircularReferenceException;
-use Exceptions\ServiceNotFoundException;
+use JTL\Backend\AdminAccount;
+use JTL\Boxes\FactoryInterface;
+use JTL\Cache\JTLCacheInterface;
+use JTL\DB\DbInterface;
+use JTL\DB\Services\GcServiceInterface;
+use JTL\Debug\JTLDebugBar;
+use JTL\Exceptions\CircularReferenceException;
+use JTL\Exceptions\ServiceNotFoundException;
+use JTL\L10n\GetText;
+use JTL\OPC\DB;
+use JTL\OPC\Locker;
+use JTL\OPC\PageDB;
+use JTL\OPC\PageService;
+use JTL\OPC\Service;
+use JTL\Services\JTL\AlertServiceInterface;
+use JTL\Services\JTL\BoxServiceInterface;
+use JTL\Services\JTL\CaptchaServiceInterface;
+use JTL\Services\JTL\CountryServiceInterface;
+use JTL\Services\JTL\CryptoServiceInterface;
+use JTL\Services\JTL\LinkServiceInterface;
+use JTL\Services\JTL\NewsServiceInterface;
+use JTL\Services\JTL\PasswordServiceInterface;
 use Monolog\Logger;
-use Services\JTL\BoxServiceInterface;
-use Services\JTL\CaptchaServiceInterface;
-use Services\JTL\CryptoServiceInterface;
-use Services\JTL\LinkServiceInterface;
-use Services\JTL\PasswordServiceInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -26,7 +37,7 @@ use Psr\Log\LoggerInterface;
  * This interface provides default services, that are provided by JTL-Shop core. Those Services are provided through a
  * separate interface for improving IntelliSense support for external and internal developers
  *
- * @package Services
+ * @package JTL\Services
  */
 interface DefaultServicesInterface extends ContainerInterface
 {
@@ -63,29 +74,29 @@ interface DefaultServicesInterface extends ContainerInterface
     public function getBackendLogService() : LoggerInterface;
 
     /**
-     * @return \OPC\Service
+     * @return Service
      */
-    public function getOPC(): \OPC\Service;
+    public function getOPC(): Service;
 
     /**
-     * @return \OPC\PageService
+     * @return PageService
      */
-    public function getOPCPageService(): \OPC\PageService;
+    public function getOPCPageService(): PageService;
 
     /**
-     * @return \OPC\DB
+     * @return DB
      */
-    public function getOPCDB(): \OPC\DB;
+    public function getOPCDB(): DB;
 
     /**
-     * @return \OPC\PageDB
+     * @return PageDB
      */
-    public function getOPCPageDB(): \OPC\PageDB;
+    public function getOPCPageDB(): PageDB;
 
     /**
-     * @return \OPC\Locker
+     * @return Locker
      */
-    public function getOPCLocker(): \OPC\Locker;
+    public function getOPCLocker(): Locker;
 
     /**
      * @return Logger
@@ -113,4 +124,35 @@ interface DefaultServicesInterface extends ContainerInterface
      * @return CaptchaServiceInterface
      */
     public function getCaptchaService() : CaptchaServiceInterface;
+
+    /**
+     * @return NewsServiceInterface
+     */
+    public function getNewsService() : NewsServiceInterface;
+
+    /**
+     * @return AlertServiceInterface
+     */
+    public function getAlertService() : AlertServiceInterface;
+
+    /**
+     * @return GetText
+     */
+    public function getGetText() : GetText;
+
+    /**
+     * @return AdminAccount
+     */
+    public function getAdminAccount(): AdminAccount;
+
+    /**
+     * @return JTLDebugBar
+     */
+    public function getDebugBar(): JTLDebugBar;
+
+
+    /**
+     * @return CountryServiceInterface
+     */
+    public function getCountryService() : CountryServiceInterface;
 }

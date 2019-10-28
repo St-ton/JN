@@ -4,17 +4,22 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert\Alert;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Pagination\Pagination;
+use JTL\Shop;
+
 /**
- * @global JTLSmarty $smarty
- * @global AdminAccount $oAccount
+ * @global \JTL\Smarty\JTLSmarty     $smarty
+ * @global \JTL\Backend\AdminAccount $oAccount
  */
 
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 
-$notice = '';
-$error  = '';
-$action = RequestHelper::verifyGPDataString('action');
+$action      = Request::verifyGPDataString('action');
+$alertHelper = Shop::Container()->getAlertService();
 
 $opc       = Shop::Container()->getOPC();
 $opcPage   = Shop::Container()->getOPCPageService();
@@ -24,15 +29,15 @@ $pagesPagi = (new Pagination('pages'))
     ->setItemCount($opcPageDB->getPageCount())
     ->assemble();
 
-if (FormHelper::validateToken()) {
+if (Form::validateToken()) {
     if ($action === 'restore') {
-        $pageId = RequestHelper::verifyGPDataString('pageId');
+        $pageId = Request::verifyGPDataString('pageId');
         $opcPage->deletePage($pageId);
-        $notice = 'Der Composer-Inhalt für die Seite wurde zurückgesetzt.';
+        $alertHelper->addAlert(Alert::TYPE_NOTE, __('opcNoticePageReset'), 'opcNoticePageReset');
     } elseif ($action === 'discard') {
-        $pageKey = RequestHelper::verifyGPCDataInt('pageKey');
+        $pageKey = Request::verifyGPCDataInt('pageKey');
         $opcPage->deleteDraft($pageKey);
-        $notice = 'Der Entwurf wurde gelöscht.';
+        $alertHelper->addAlert(Alert::TYPE_NOTE, __('opcNoticeDraftDelete'), 'opcNoticeDraftDelete');
     }
 }
 
@@ -40,6 +45,4 @@ $smarty
     ->assign('opc', $opc)
     ->assign('opcPageDB', $opcPageDB)
     ->assign('pagesPagi', $pagesPagi)
-    ->assign('cHinweis', $notice)
-    ->assign('cFehler', $error)
     ->display('opc-controlcenter.tpl');

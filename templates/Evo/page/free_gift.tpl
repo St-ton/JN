@@ -2,9 +2,12 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
+{opcMountPoint id='opc_before_free_gift'}
+
 <p class="box_info">{lang key='freeGiftFromOrderValue'}</p>
 {if !empty($oArtikelGeschenk_arr)}
-    {include file='snippets/opc_mount_point.tpl' id='opc_free_gift_prepend'}
+    {opcMountPoint id='opc_before_free_gift_list'}
+
     <div id="freegift" class="row row-eq-height">
         {foreach $oArtikelGeschenk_arr as $oArtikelGeschenk}
             <div class="col-sm-6 col-md-4 text-center">
@@ -16,5 +19,4 @@
             </div>
         {/foreach}
     </div>
-    {include file='snippets/opc_mount_point.tpl' id='opc_free_gift_append'}
 {/if}

@@ -4,16 +4,17 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
 
 /**
  * Class Login
- * @package Boxes
+ *
+ * @package JTL\Boxes\Items
  */
 final class Login extends AbstractBox
 {
     /**
-     * DirectPurchase constructor.
+     * Login constructor.
      * @param array $config
      */
     public function __construct(array $config)

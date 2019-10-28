@@ -7,18 +7,10 @@
 {/block}
 
 {block name='content'}
-    <h1>{lang key='forgotPassword' section='global'}</h1>
-    
     {include file='snippets/extension.tpl'}
-    {if !empty($cFehler)}
-        <div class="alert alert-danger">{$cFehler}</div>
-    {/if}
+    <h1>{lang key='forgotPassword' section='global'}</h1>
     {if $step === 'formular'}
-        {if empty($hinweis)}
-            <div class="alert alert-info">{lang key='forgotPasswordDesc' section='forgot password'}</div>
-        {else}
-            <div class="alert alert-danger">{$hinweis}</div>
-        {/if}
+        {$alertList->displayAlertByKey('forgotPasswordDesc')}
         <div class="row">
             <div class="col-xs-12 col-md-8 col-md-offset-2">
                 {block name='password-reset-form'}
@@ -48,9 +40,6 @@
             </div>
         </div>
     {elseif $step === 'confirm'}
-        {if $hinweis}
-            <div class="alert alert-danger">{$hinweis}</div>
-        {/if}
         <div class="row">
             <div class="col-xs-12 col-md-8 col-md-offset-2">
                 {block name='password-reset-confirm'}

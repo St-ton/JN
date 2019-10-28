@@ -28,7 +28,7 @@ Die wichtigsten LESS-Variablen im Überblick
 Farben
 ------
 
-.. code-block:: scss
+.. code-block:: less
 
     @brand-primary:         #428bca;
     @brand-success:         #5cb85c;
@@ -60,7 +60,7 @@ Farben
 Schrift
 -------
 
-.. code-block:: scss
+.. code-block:: less
 
     @font-family-sans-serif:  "Helvetica Neue", Helvetica, Arial, sans-serif;
     @font-family-serif:       Georgia, "Times New Roman", Times, serif;
@@ -75,7 +75,7 @@ Schrift
 | **@font-size-base:** Standardschriftgröße für Fliestext, Links etc.
 |
 
-.. code-block:: scss
+.. code-block:: less
 
     @headings-font-family:    inherit;
     @headings-font-weight:    500;
@@ -97,7 +97,7 @@ Schrift
 Buttons
 -------
 
-.. code-block:: scss
+.. code-block:: less
 
     @btn-font-weight:                normal;
 
@@ -125,7 +125,7 @@ Buttons
 Navigation
 ----------
 
-.. code-block:: scss
+.. code-block:: less
 
     @navbar-default-color:             #777;
     @navbar-default-bg:                #f8f8f8;
@@ -331,8 +331,6 @@ Der Funktion können die folgenden Parameter übergeben werden:
 +-------------------------+----------+-----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------+
 | kMerkmalWert            | String   | -               | Primärschlüssel eines Merkmalwerts, siehe Datenbank tmerkmalwert.kMerkmalwert                                                                           |
 +-------------------------+----------+-----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------+
-| kTag                    | String   | -               | Primärschlüssel eines Tags siehe ttag.kTag                                                                                                              |
-+-------------------------+----------+-----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------+
 | kSuchspecial            | Numeric  | -               | Filterung nach Suchspecials, siehe Tabelle unten Suchspecialschlüssel                                                                                   |
 +-------------------------+----------+-----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------+
 | kKategorieFilter        | Numeric  | -               | Zusätzlicher Filter nach einer Kategorie in Kombination mit einem Hauptfilter z.B. kHersteller.                                                         |
@@ -348,8 +346,6 @@ Der Funktion können die folgenden Parameter übergeben werden:
 | cMerkmalFilter          | String   | -               | Primärschlüssel der Merkmalwerte durch Semikolon getrennt z.B. "100;101". Primärschlüsselangabe siehe Datenbank tmerkmalwert.kMerkmalwert               |
 +-------------------------+----------+-----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------+
 | cSuchFilter             | String   | -               | Primärschlüssel der Suchfilter durch Semikolon getrennt z.B. "200;201". Primärschlüsselangabe siehe Datenbank tsuchcache.kSuchCache                     |
-+-------------------------+----------+-----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------+
-| cTagFilter              | String   | -               | Primärschlüssel der Tags durch Semikolon getrennt z.B. "300;301". Primärschlüsselangabe siehe Datenbank ttag.kTag                                       |
 +-------------------------+----------+-----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------+
 | cSuche                  | String   | -               | Suchbegriff z.B. "zwiebel ananas baguette"                                                                                                              |
 +-------------------------+----------+-----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------+
@@ -371,55 +367,59 @@ Den folgenden Code binden wir im Template in die Datei /tpl_inc/seite_startseite
 
 **Sortierungsschlüssel**
 
-+----------------------+----------+
-| Standard             | 100      |
-+======================+==========+
-| Name A-Z             | 1        |
-+----------------------+----------+
-| Name Z-A             | 2        |
-+----------------------+----------+
-| Preis 1..9           | 3        |
-+----------------------+----------+
-| Preis 9..1           | 4        |
-+----------------------+----------+
-| EAN                  | 5        |
-+----------------------+----------+
-| neuste zuerst        | 6        |
-+----------------------+----------+
-| Artikelnummer        | 7        |
-+----------------------+----------+
-| Verfügbarkeit        | 8        |
-+----------------------+----------+
-| Gewicht              | 9        |
-+----------------------+----------+
-| Erscheinungsdatum    | 10       |
-+----------------------+----------+
-| Bestseller           | 11       |
-+----------------------+----------+
-| Bewertungen          | 12       |
-+----------------------+----------+
++----------------------+----------+--------------------------+
+| Name                 | Wert     | Konstante                |
++======================+==========+==========================+
+| Standard             | 100      | SEARCH_SORT_STANDARD     |
++----------------------+----------+--------------------------+
+| Name A-Z             | 1        | SEARCH_SORT_NAME_ASC     |
++----------------------+----------+--------------------------+
+| Name Z-A             | 2        | SEARCH_SORT_NAME_DESC    |
++----------------------+----------+--------------------------+
+| Preis 1..9           | 3        | SEARCH_SORT_PRICE_ASC    |
++----------------------+----------+--------------------------+
+| Preis 9..1           | 4        | SEARCH_SORT_PRICE_DESC   |
++----------------------+----------+--------------------------+
+| EAN                  | 5        | SEARCH_SORT_EAN          |
++----------------------+----------+--------------------------+
+| neuste zuerst        | 6        | SEARCH_SORT_NEWEST_FIRST |
++----------------------+----------+--------------------------+
+| Artikelnummer        | 7        | SEARCH_SORT_PRODUCTNO    |
++----------------------+----------+--------------------------+
+| Verfügbarkeit        | 8        | SEARCH_SORT_AVAILABILITY |
++----------------------+----------+--------------------------+
+| Gewicht              | 9        | SEARCH_SORT_WEIGHT       |
++----------------------+----------+--------------------------+
+| Erscheinungsdatum    | 10       | SEARCH_SORT_DATEOFISSUE  |
++----------------------+----------+--------------------------+
+| Bestseller           | 11       | SEARCH_SORT_BESTSELLER   |
++----------------------+----------+--------------------------+
+| Bewertungen          | 12       | SEARCH_SORT_RATING       |
++----------------------+----------+--------------------------+
 
 **Suchspecialschlüssel**
 
-+-----------------------+----------+
-| Bestseller            | 100      |
-+=======================+==========+
-| Sonderangebote        | 1        |
-+-----------------------+----------+
-| Neu im Sortiment      | 2        |
-+-----------------------+----------+
-| Top Angebote          | 3        |
-+-----------------------+----------+
-| In Kürze verfügbar    | 4        |
-+-----------------------+----------+
-| Top bewertet          | 5        |
-+-----------------------+----------+
-| Ausverkauft           | 6        |
-+-----------------------+----------+
-| Auf Lager             | 7        |
-+-----------------------+----------+
-| Vorbestellung Möglich | 8        |
-+-----------------------+----------+
++-----------------------+----------+---------------------------------+
+| Name                  | Wert     | Konstante                       |
++=======================+==========+=================================+
+| Bestseller            | 1        | SEARCHSPECIALS_BESTSELLER       |
++-----------------------+----------+---------------------------------+
+| Sonderangebote        | 2        | SEARCHSPECIALS_SPECIALOFFERS    |
++-----------------------+----------+---------------------------------+
+| Neu im Sortiment      | 3        | SEARCHSPECIALS_NEWPRODUCTS      |
++-----------------------+----------+---------------------------------+
+| Top Angebote          | 4        | SEARCHSPECIALS_TOPOFFERS        |
++-----------------------+----------+---------------------------------+
+| In Kürze verfügbar    | 5        | SEARCHSPECIALS_UPCOMINGPRODUCTS |
++-----------------------+----------+---------------------------------+
+| Top bewertet          | 6        | SEARCHSPECIALS_TOPREVIEWS       |
++-----------------------+----------+---------------------------------+
+| Ausverkauft           | 7        | SEARCHSPECIALS_OUTOFSTOCK       |
++-----------------------+----------+---------------------------------+
+| Auf Lager             | 8        | SEARCHSPECIALS_ONSTOCK          |
++-----------------------+----------+---------------------------------+
+| Vorbestellung möglich | 9        | SEARCHSPECIALS_PREORDER         |
++-----------------------+----------+---------------------------------+
 
 ***********************************************************
 Eigene Kategorielisten erzeugen und im Template integrieren

@@ -1,0 +1,40 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
+{block name='boxes-box-linkgroups'}
+    {card class="box box-linkgroup mb-md-7 text-left" id="box{$oBox->getID()}" no-body=true}
+        {block name='boxes-box-linkgroups-toggle-title'}
+            {link
+                id="crd-hdr-{$oBox->getID()}"
+                href="#crd-cllps-{$oBox->getID()}"
+                data=["toggle"=>"collapse"]
+                role="button"
+                aria=["expanded"=>"false","controls"=>"crd-cllps-{$oBox->getID()}"]
+                class="text-decoration-none font-weight-bold mb-2 d-md-none dropdown-toggle"}
+                {$oBox->getTitle()}
+            {/link}
+        {/block}
+        {block name='boxes-box-linkgroups-title'}
+            <div class="productlist-filter-headline d-none d-md-flex">
+                {$oBox->getTitle()}
+            </div>
+        {/block}
+        {block name='boxes-box-linkgroups-content'}
+            {collapse
+                class="d-md-block"
+                visible=false
+                id="crd-cllps-{$oBox->getID()}"
+                aria=["labelledby"=>"crd-hdr-{$oBox->getID()}"]}
+                    {nav vertical=true}
+                    {block name='boxes-box-linkgroups-include-linkgroups-recursive'}
+                        {include file='snippets/linkgroup_recursive.tpl' linkgroupIdentifier=$oBox->getLinkGroupTemplate() dropdownSupport=true  tplscope='box'}
+                    {/block}
+                    {/nav}
+            {/collapse}
+        {/block}
+    {/card}
+    {block name='boxes-box-linkgroups-hr-end'}
+        <hr class="my-3 d-flex d-md-none">
+    {/block}
+{/block}

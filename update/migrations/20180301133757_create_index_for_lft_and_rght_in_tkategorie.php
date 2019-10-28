@@ -2,23 +2,15 @@
 /**
  * Create index for lft and rght in tkategorie
  *
- * @author Falk Prüfer
+ * @author fp
  * @created Thu, 01 Mar 2018 13:37:57 +0100
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
- * Migration
- *
- * Available methods:
- * execute            - returns affected rows
- * fetchOne           - single fetched object
- * fetchAll           - array of fetched objects
- * fetchArray         - array of fetched assoc arrays
- * dropColumn         - drops a column if exists
- * addLocalization    - add localization
- * removeLocalization - remove localization
- * setConfig          - add / update config property
- * removeConfig       - remove config property
+ * Class Migration_20180301133757
  */
 class Migration_20180301133757 extends Migration implements IMigration
 {
@@ -52,16 +44,16 @@ class Migration_20180301133757 extends Migration implements IMigration
         }
 
         $this->execute(
-            "ALTER TABLE `tkategorie` 
-                ADD INDEX `idx_tkategorie_lft_rght` (`lft` ASC, `rght` ASC);"
+            'ALTER TABLE `tkategorie` 
+                ADD INDEX `idx_tkategorie_lft_rght` (`lft` ASC, `rght` ASC);'
         );
     }
 
     public function down()
     {
         $this->execute(
-            "ALTER TABLE `tkategorie` 
-                DROP INDEX `idx_tkategorie_lft_rght`"
+            'ALTER TABLE `tkategorie` 
+                DROP INDEX `idx_tkategorie_lft_rght`'
         );
     }
 }

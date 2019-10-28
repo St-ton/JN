@@ -1,16 +1,16 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Link;
+namespace JTL\Link;
 
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 
 /**
- * Class LinkList
- * @package Link
+ * Interface LinkListInterface
+ * @package JTL\Link
  */
 interface LinkListInterface
 {
@@ -28,10 +28,10 @@ interface LinkListInterface
     /**
      * @param Collection $links
      */
-    public function setLinks(Collection $links);
+    public function setLinks(Collection $links): void;
 
     /**
      * @param LinkInterface $link
      */
-    public function addLink(LinkInterface $link);
+    public function addLink(LinkInterface $link): void;
 }

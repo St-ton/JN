@@ -4,15 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL\Validation\Rules;
+namespace JTL\Services\JTL\Validation\Rules;
 
-
-use Services\JTL\Validation\RuleInterface;
-use Services\JTL\Validation\RuleResult;
+use JTL\Services\JTL\Validation\RuleInterface;
+use JTL\Services\JTL\Validation\RuleResult;
 
 /**
  * Class DateTime
- * @package Services\JTL\Validation\Rules
+ * @package JTL\Services\JTL\Validation\Rules
  *
  * Validates that the $value is an valid datetime according to the specified format.
  *
@@ -34,7 +33,7 @@ class DateTime implements RuleInterface
     /**
      * @inheritdoc
      */
-    public function validate($value)
+    public function validate($value): RuleResult
     {
         if ($value instanceof \DateTime) {
             return new RuleResult(true, '', $value);

@@ -5,58 +5,51 @@
  */
 
 /**
- * @param \Survey\SurveyQuestion[] $oUmfrageFrage_arr
  * @return int
  * @deprecated since 5.0.0
  */
-function bestimmeAnzahlSeiten($oUmfrageFrage_arr)
+function bestimmeAnzahlSeiten()
 {
     return 1;
 }
 
 /**
- * @param \Survey\SurveyQuestion[] $oUmfrageFrage_arr
  * @return array
  * @deprecated since 5.0.0
  */
-function baueSeitenAnfaenge($oUmfrageFrage_arr)
+function baueSeitenAnfaenge()
 {
     return [];
 }
 
 /**
- * @param array $oUmfrageFrage_arr
- * @param int   $nAnzahlFragen
  * @return array
  * @deprecated since 5.0.0
  */
-function baueSeitenNavi($oUmfrageFrage_arr, $nAnzahlFragen)
+function baueSeitenNavi()
 {
     return [];
 }
 
 /**
- * @param array $cPost_arr
  * @deprecated since 5.0.0
  */
-function speicherFragenInSession($cPost_arr)
+function speicherFragenInSession()
 {
 }
 
 /**
- * @param array $cPost_arr
  * @deprecated since 5.0.0
  */
-function findeFragenUndUpdateSession($cPost_arr)
+function findeFragenUndUpdateSession()
 {
 }
 
 /**
- * @param array $questions
  * @return array
  * @deprecated since 5.0.0
  */
-function findeFragenInSession($questions)
+function findeFragenInSession()
 {
     return [];
 }
@@ -72,44 +65,37 @@ function setzeUmfrageErgebnisse()
  * Return 0 falls alles in Ordnung
  * Return $kUmfrageFrage falls inkorrekte oder leere Antwort
  *
- * @param array $cPost_arr
  * @return int
  * @deprecated since 5.0.0
  */
-function pruefeEingabe($cPost_arr)
+function pruefeEingabe()
 {
     return 0;
 }
 
 /**
- * @param int    $kUmfrage
- * @param int    $kKunde
- * @param string $cIP
  * @return bool
  * @deprecated since 5.0.0
  */
-function pruefeUserUmfrage($kUmfrage, $kKunde, $cIP = '')
+function pruefeUserUmfrage()
 {
     return false;
 }
 
 /**
- * @param float $fGuthaben
- * @param int   $kKunde
  * @return bool
  * @deprecated since 5.0.0
  */
-function gibKundeGuthaben($fGuthaben, $kKunde)
+function gibKundeGuthaben()
 {
     return false;
 }
 
 /**
- * @param int $kUmfrage
  * @return mixed
  * @deprecated since 5.0.0
  */
-function holeAktuelleUmfrage($kUmfrage)
+function holeAktuelleUmfrage()
 {
     return false;
 }
@@ -124,21 +110,15 @@ function holeUmfrageUebersicht()
 }
 
 /**
- * @param object $oUmfrage
  * @deprecated since 5.0.0
  */
-function bearbeiteUmfrageAuswertung($oUmfrage)
+function bearbeiteUmfrageAuswertung()
 {
 }
 
 /**
- * @param int            $kUmfrage
- * @param \Survey\Survey $oUmfrage
- * @param array          $oUmfrageFrageTMP_arr
- * @param array          $oNavi_arr
- * @param int            $nAktuelleSeite
  * @deprecated since 5.0.0
  */
-function bearbeiteUmfrageDurchfuehrung(int $kUmfrage, $oUmfrage, &$oUmfrageFrageTMP_arr, &$oNavi_arr, &$nAktuelleSeite)
+function bearbeiteUmfrageDurchfuehrung()
 {
 }

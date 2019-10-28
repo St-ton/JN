@@ -4,34 +4,36 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
 
-use DB\ReturnType;
+use JTL\DB\ReturnType;
+use JTL\Helpers\URL;
+use JTL\Shop;
 
 /**
  * Class SearchCloud
- * @package Boxes
+ * @package JTL\Boxes\Items
  */
 final class SearchCloud extends AbstractBox
 {
     /**
-     * Cart constructor.
+     * SearchCloud constructor.
      * @param array $config
      */
     public function __construct(array $config)
     {
         parent::__construct($config);
-        parent::addMapping('Suchbegriffe', 'Items');
-        parent::addMapping('SuchbegriffeJSON', 'JSON');
+        $this->addMapping('Suchbegriffe', 'Items');
+        $this->addMapping('SuchbegriffeJSON', 'JSON');
         $this->setShow(false);
-        $langID    = \Shop::getLanguageID();
+        $langID    = Shop::getLanguageID();
         $limit     = (int)$config['boxen']['boxen_livesuche_count'];
         $cacheID   = 'bx_stgs_' . $langID . '_' . $limit;
         $cacheTags = [\CACHING_GROUP_BOX, \CACHING_GROUP_ARTICLE];
         $cached    = true;
-        if (($searchCloudEntries = \Shop::Container()->getCache()->get($cacheID)) === false) {
-            $cached             = false;
-            $searchCloudEntries = \Shop::Container()->getDB()->queryPrepared(
+        if (($items = Shop::Container()->getCache()->get($cacheID)) === false) {
+            $cached = false;
+            $items  = Shop::Container()->getDB()->queryPrepared(
                 "SELECT tsuchanfrage.kSuchanfrage, tsuchanfrage.kSprache, tsuchanfrage.cSuche, 
                     tsuchanfrage.nAktiv, tsuchanfrage.nAnzahlTreffer, tsuchanfrage.nAnzahlGesuche, 
                     tsuchanfrage.dZuletztGesucht, tseo.cSeo
@@ -49,21 +51,21 @@ final class SearchCloud extends AbstractBox
                 ['lid' => $langID, 'lmt' => $limit],
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            \Shop::Container()->getCache()->set($cacheID, $searchCloudEntries, $cacheTags);
+            Shop::Container()->getCache()->set($cacheID, $items, $cacheTags);
         }
-        if (($count = \count($searchCloudEntries)) > 0) {
-            $prio_step = ($searchCloudEntries[0]->nAnzahlGesuche - $searchCloudEntries[$count - 1]->nAnzahlGesuche) / 9;
-            foreach ($searchCloudEntries as $cloudEntry) {
+        if (($count = \count($items)) > 0) {
+            $prio_step = ($items[0]->nAnzahlGesuche - $items[$count - 1]->nAnzahlGesuche) / 9;
+            foreach ($items as $cloudEntry) {
                 $cloudEntry->Klasse   = ($prio_step < 1) ?
                     \rand(1, 10) :
-                    (\round(($cloudEntry->nAnzahlGesuche - $searchCloudEntries[$count - 1]->nAnzahlGesuche) / $prio_step) + 1);
-                $cloudEntry->cURL     = \UrlHelper::buildURL($cloudEntry, \URLART_LIVESUCHE);
-                $cloudEntry->cURLFull = \UrlHelper::buildURL($cloudEntry, \URLART_LIVESUCHE, true);
+                    (\round(($cloudEntry->nAnzahlGesuche - $items[$count - 1]->nAnzahlGesuche) / $prio_step) + 1);
+                $cloudEntry->cURL     = URL::buildURL($cloudEntry, \URLART_LIVESUCHE);
+                $cloudEntry->cURLFull = URL::buildURL($cloudEntry, \URLART_LIVESUCHE, true);
             }
             $this->setShow(true);
-            \shuffle($searchCloudEntries);
-            $this->setItems($searchCloudEntries);
-            $this->setJSON(AbstractBox::getJSONString($searchCloudEntries));
+            \shuffle($items);
+            $this->setItems($items);
+            $this->setJSON(AbstractBox::getJSONString($items));
             \executeHook(\HOOK_BOXEN_INC_SUCHWOLKE, [
                 'box'        => &$this,
                 'cache_tags' => &$cacheTags,

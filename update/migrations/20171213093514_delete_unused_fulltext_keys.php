@@ -6,19 +6,11 @@
  * @created Wed, 13 Dec 2017 09:35:14 +0100
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
- * Migration
- *
- * Available methods:
- * execute            - returns affected rows
- * fetchOne           - single fetched object
- * fetchAll           - array of fetched objects
- * fetchArray         - array of fetched assoc arrays
- * dropColumn         - drops a column if exists
- * addLocalization    - add localization
- * removeLocalization - remove localization
- * setConfig          - add / update config property
- * removeConfig       - remove config property
+ * Class Migration_20171213093514
  */
 class Migration_20171213093514 extends Migration implements IMigration
 {
@@ -28,14 +20,14 @@ class Migration_20171213093514 extends Migration implements IMigration
     public function up()
     {
         foreach (['tartikel', 'tartikelsprache'] as $table) {
-            $oKeys = $this->fetchAll(
+            $keys = $this->fetchAll(
                 "SHOW INDEX FROM `{$table}` 
                     WHERE Index_type = 'FULLTEXT' 
 	                    AND Column_name IN ('cBeschreibung', 'cKurzBeschreibung')
                         AND Key_name != 'idx_{$table}_fulltext'"
             );
-            if (is_array($oKeys)) {
-                foreach ($oKeys as $key) {
+            if (is_array($keys)) {
+                foreach ($keys as $key) {
                     $this->execute("ALTER TABLE $table DROP KEY {$key->Key_name}");
                 }
             }

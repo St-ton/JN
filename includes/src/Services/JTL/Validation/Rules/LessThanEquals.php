@@ -4,14 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL\Validation\Rules;
+namespace JTL\Services\JTL\Validation\Rules;
 
-use Services\JTL\Validation\RuleInterface;
-use Services\JTL\Validation\RuleResult;
+use JTL\Services\JTL\Validation\RuleInterface;
+use JTL\Services\JTL\Validation\RuleResult;
 
 /**
  * Class LessThan
- * @package Services\JTL\Validation\Rules
+ * @package JTL\Services\JTL\Validation\Rules
  */
 class LessThanEquals implements RuleInterface
 {
@@ -29,7 +29,7 @@ class LessThanEquals implements RuleInterface
     /**
      * @inheritdoc
      */
-    public function validate($value)
+    public function validate($value): RuleResult
     {
         return $value <= $this->value
             ? new RuleResult(true, '', $value)

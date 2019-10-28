@@ -4,30 +4,37 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\DB\ReturnType;
+use JTL\Helpers\Request;
+use JTL\Helpers\Text;
+use JTL\Shop;
+
 /**
  * @deprecated since 4.05
- * @param array $cDateinameSplit_arr
- * @param int   $nDateiZaehler
+ * @param array $splits
+ * @param int   $fileCounter
  * @return string
  */
-function gibDateiname($cDateinameSplit_arr, $nDateiZaehler)
+function gibDateiname($splits, $fileCounter)
 {
-    if (is_array($cDateinameSplit_arr) && count($cDateinameSplit_arr) > 1) {
-        return $cDateinameSplit_arr[0] . $nDateiZaehler . $cDateinameSplit_arr[1];
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    if (is_array($splits) && count($splits) > 1) {
+        return $splits[0] . $fileCounter . $splits[1];
     }
 
-    return $cDateinameSplit_arr[0] . $nDateiZaehler;
+    return $splits[0] . $fileCounter;
 }
 
 /**
  * @deprecated since 4.05
- * @param array $cDateinameSplit_arr
- * @param int   $nDateiZaehler
+ * @param array $splits
+ * @param int   $fileCounter
  * @return string
  */
-function gibDateiPfad($cDateinameSplit_arr, $nDateiZaehler)
+function gibDateiPfad($splits, $fileCounter)
 {
-    return PFAD_ROOT . PFAD_EXPORT . gibDateiname($cDateinameSplit_arr, $nDateiZaehler);
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    return PFAD_ROOT . PFAD_EXPORT . gibDateiname($splits, $fileCounter);
 }
 
 /**
@@ -36,98 +43,96 @@ function gibDateiPfad($cDateinameSplit_arr, $nDateiZaehler)
  */
 function pruefeExportformat()
 {
-    $cPlausiValue_arr = [];
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    $checks = [];
     // Name
-    if (!isset($_POST['cName']) || strlen($_POST['cName']) === 0) {
-        $cPlausiValue_arr['cName'] = 1;
+    if (mb_strlen(Request::postVar('cName', '')) === 0) {
+        $checks['cName'] = 1;
     }
     // Dateiname
-    if (!isset($_POST['cDateiname']) || strlen($_POST['cDateiname']) === 0) {
-        $cPlausiValue_arr['cDateiname'] = 1;
+    if (mb_strlen(Request::postVar('cDateiname', '')) === 0) {
+        $checks['cDateiname'] = 1;
     }
     // Dateiname Endung fehlt
-    if (strpos($_POST['cDateiname'], '.') === false) {
-        $cPlausiValue_arr['cDateiname'] = 2;
+    if (mb_strpos(Request::postVar('cDateiname', ''), '.') === false) {
+        $checks['cDateiname'] = 2;
     }
-    // Content
-    if (!isset($_POST['cContent']) || strlen($_POST['cContent']) === 0) {
-        $cPlausiValue_arr['cContent'] = 1;
+    if (mb_strlen(Request::postVar('cContent', '')) === 0) {
+        $checks['cContent'] = 1;
     }
-    // Sprache
-    if (!isset($_POST['kSprache']) || (int)$_POST['kSprache'] === 0) {
-        $cPlausiValue_arr['kSprache'] = 1;
+    if (Request::postInt('kSprache') === 0) {
+        $checks['kSprache'] = 1;
     }
-    // Sprache
-    if (!isset($_POST['kWaehrung']) || (int)$_POST['kWaehrung'] === 0) {
-        $cPlausiValue_arr['kWaehrung'] = 1;
+    if (Request::postInt('kWaehrung') === 0) {
+        $checks['kWaehrung'] = 1;
     }
-    // Kundengruppe
-    if (!isset($_POST['kKundengruppe']) || (int)$_POST['kKundengruppe'] === 0) {
-        $cPlausiValue_arr['kKundengruppe'] = 1;
+    if (Request::postInt('kKundengruppe') === 0) {
+        $checks['kKundengruppe'] = 1;
     }
 
-    return $cPlausiValue_arr;
+    return $checks;
 }
 
 /**
  * Falls eingestellt, wird die Exportdatei in mehrere Dateien gesplittet
  *
  * @deprecated since 4.05
- * @param object $oExportformat
+ * @param object $export
  */
-function splitteExportDatei($oExportformat)
+function splitteExportDatei($export)
 {
-    if (isset($oExportformat->nSplitgroesse) &&
-        (int)$oExportformat->nSplitgroesse > 0 &&
-        file_exists(PFAD_ROOT . PFAD_EXPORT . $oExportformat->cDateiname)
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    if (isset($export->nSplitgroesse)
+        && (int)$export->nSplitgroesse > 0
+        && file_exists(PFAD_ROOT . PFAD_EXPORT . $export->cDateiname)
     ) {
-        $nDateiZaehler       = 1;
-        $cDateinameSplit_arr = [];
-        $nFileTypePos        = strrpos($oExportformat->cDateiname, '.');
+        $fileCounter = 1;
+        $splits      = [];
+        $extIndex    = mb_strrpos($export->cDateiname, '.');
         // Dateiname splitten nach Name + Typ
-        if ($nFileTypePos === false) {
-            $cDateinameSplit_arr[0] = $oExportformat->cDateiname;
+        if ($extIndex === false) {
+            $splits[0] = $export->cDateiname;
         } else {
-            $cDateinameSplit_arr[0] = substr($oExportformat->cDateiname, 0, $nFileTypePos);
-            $cDateinameSplit_arr[1] = substr($oExportformat->cDateiname, $nFileTypePos);
+            $splits[0] = mb_substr($export->cDateiname, 0, $extIndex);
+            $splits[1] = mb_substr($export->cDateiname, $extIndex);
         }
         // Ist die angelegte Datei größer als die Einstellung im Exportformat?
         clearstatcache();
-        if (filesize(PFAD_ROOT . PFAD_EXPORT . $oExportformat->cDateiname) >=
-            ($oExportformat->nSplitgroesse * 1024 * 1024 - 102400)) {
+        if (filesize(PFAD_ROOT . PFAD_EXPORT . $export->cDateiname) >=
+            ($export->nSplitgroesse * 1024 * 1024 - 102400)) {
             sleep(2);
-            loescheExportDateien($oExportformat->cDateiname, $cDateinameSplit_arr[0]);
-            $handle     = fopen(PFAD_ROOT . PFAD_EXPORT . $oExportformat->cDateiname, 'r');
-            $nZeile     = 1;
-            $new_handle = fopen(gibDateiPfad($cDateinameSplit_arr, $nDateiZaehler), 'w');
-            $nSizeDatei = 0;
+            loescheExportDateien($export->cDateiname, $splits[0]);
+            $handle    = fopen(PFAD_ROOT . PFAD_EXPORT . $export->cDateiname, 'r');
+            $row       = 1;
+            $newHandle = fopen(gibDateiPfad($splits, $fileCounter), 'w');
+            $fileSize  = 0;
             while (($cContent = fgets($handle)) !== false) {
-                if ($nZeile > 1) {
-                    $nSizeZeile = strlen($cContent) + 2;
+                if ($row > 1) {
+                    $rowSize = mb_strlen($cContent) + 2;
                     //Schwelle erreicht?
-                    if ($nSizeDatei <= ($oExportformat->nSplitgroesse * 1024 * 1024 - 102400)) {
+                    if ($fileSize <= ($export->nSplitgroesse * 1024 * 1024 - 102400)) {
                         // Schreibe Content
-                        fwrite($new_handle, $cContent);
-                        $nSizeDatei += $nSizeZeile;
+                        fwrite($newHandle, $cContent);
+                        $fileSize += $rowSize;
                     } else {
                         //neue Datei
-                        schreibeFusszeile($new_handle, $oExportformat->cFusszeile, $oExportformat->cKodierung);
-                        fclose($new_handle);
-                        $nDateiZaehler++;
-                        $new_handle = fopen(gibDateiPfad($cDateinameSplit_arr, $nDateiZaehler), 'w');
-                        schreibeKopfzeile($new_handle, $oExportformat->cKopfzeile, $oExportformat->cKodierung);
+                        schreibeFusszeile($newHandle, $export->cFusszeile, $export->cKodierung);
+                        fclose($newHandle);
+                        $fileCounter++;
+                        $newHandle = fopen(gibDateiPfad($splits, $fileCounter), 'w');
+                        schreibeKopfzeile($newHandle, $export->cKopfzeile, $export->cKodierung);
                         // Schreibe Content
-                        fwrite($new_handle, $cContent);
-                        $nSizeDatei = $nSizeZeile;
+                        fwrite($newHandle, $cContent);
+                        $fileSize = $rowSize;
                     }
-                } elseif ($nZeile === 1) {
-                    schreibeKopfzeile($new_handle, $oExportformat->cKopfzeile, $oExportformat->cKodierung);
+                } elseif ($row === 1) {
+                    schreibeKopfzeile($newHandle, $export->cKopfzeile, $export->cKodierung);
                 }
-                $nZeile++;
+                $row++;
             }
-            fclose($new_handle);
+            fclose($newHandle);
             fclose($handle);
-            unlink(PFAD_ROOT . PFAD_EXPORT . $oExportformat->cDateiname);
+            unlink(PFAD_ROOT . PFAD_EXPORT . $export->cDateiname);
         }
     }
 }
@@ -140,7 +145,7 @@ function splitteExportDatei($oExportformat)
  */
 function schreibeKopfzeile($dateiHandle, $cKopfzeile, $cKodierung)
 {
-    //export begin
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     if ($cKopfzeile) {
         if ($cKodierung === 'UTF-8' || $cKodierung === 'UTF-8noBOM') {
             if ($cKodierung === 'UTF-8') {
@@ -148,7 +153,7 @@ function schreibeKopfzeile($dateiHandle, $cKopfzeile, $cKodierung)
             }
             fwrite($dateiHandle, $cKopfzeile . "\n");
         } else {
-            fwrite($dateiHandle, StringHandler::convertISO($cKopfzeile . "\n"));
+            fwrite($dateiHandle, Text::convertISO($cKopfzeile . "\n"));
         }
     }
 }
@@ -161,11 +166,12 @@ function schreibeKopfzeile($dateiHandle, $cKopfzeile, $cKodierung)
  */
 function schreibeFusszeile($dateiHandle, $cFusszeile, $cKodierung)
 {
-    if (strlen($cFusszeile) > 0) {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    if (mb_strlen($cFusszeile) > 0) {
         if ($cKodierung === 'UTF-8' || $cKodierung === 'UTF-8noBOM') {
             fwrite($dateiHandle, $cFusszeile);
         } else {
-            fwrite($dateiHandle, StringHandler::convertISO($cFusszeile));
+            fwrite($dateiHandle, Text::convertISO($cFusszeile));
         }
     }
 }
@@ -177,11 +183,12 @@ function schreibeFusszeile($dateiHandle, $cFusszeile, $cKodierung)
  */
 function loescheExportDateien($cDateiname, $cDateinameSplit)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     if (is_dir(PFAD_ROOT . PFAD_EXPORT)) {
         $dir = opendir(PFAD_ROOT . PFAD_EXPORT);
         if ($dir !== false) {
             while (($cDatei = readdir($dir)) !== false) {
-                if ($cDatei !== $cDateiname && strpos($cDatei, $cDateinameSplit) !== false) {
+                if ($cDatei !== $cDateiname && mb_strpos($cDatei, $cDateinameSplit) !== false) {
                     @unlink(PFAD_ROOT . PFAD_EXPORT . $cDatei);
                 }
             }
@@ -193,19 +200,20 @@ function loescheExportDateien($cDateiname, $cDateinameSplit)
 /**
  * @param int $kExportformat
  * @return array
+ * @deprecated since 4.05
  */
-function getEinstellungenExport($kExportformat)
+function getEinstellungenExport(int $kExportformat)
 {
-    $kExportformat = (int)$kExportformat;
-    $ret           = [];
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    $ret = [];
     if ($kExportformat > 0) {
-        $einst = Shop::Container()->getDB()->selectAll(
+        $conf = Shop::Container()->getDB()->selectAll(
             'texportformateinstellungen',
             'kExportformat',
             $kExportformat,
             'cName, cWert'
         );
-        foreach ($einst as $eins) {
+        foreach ($conf as $eins) {
             if ($eins->cName) {
                 $ret[$eins->cName] = $eins->cWert;
             }
@@ -217,82 +225,80 @@ function getEinstellungenExport($kExportformat)
 
 /**
  * @deprecated since 4.05
- * @param object $oExportformat
+ * @param object $export
  * @return array
  */
-function baueArtikelExportSQL(&$oExportformat)
+function baueArtikelExportSQL(&$export)
 {
-    $cSQL_arr          = [];
-    $cSQL_arr['Where'] = '';
-    $cSQL_arr['Join']  = '';
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    $sql          = [];
+    $sql['Where'] = '';
+    $sql['Join']  = '';
 
-    if (empty($oExportformat->kExportformat)) {
-        return $cSQL_arr;
+    if (empty($export->kExportformat)) {
+        return $sql;
     }
-    $cExportEinstellungAssoc_arr = getEinstellungenExport($oExportformat->kExportformat);
+    $conf = getEinstellungenExport($export->kExportformat);
 
-    switch ($oExportformat->nVarKombiOption) {
+    switch ($export->nVarKombiOption) {
         case 2:
-            $cSQL_arr['Where'] = ' AND kVaterArtikel = 0';
+            $sql['Where'] = ' AND kVaterArtikel = 0';
             break;
         case 3:
-            $cSQL_arr['Where'] = ' AND (tartikel.nIstVater != 1 OR tartikel.kEigenschaftKombi > 0)';
+            $sql['Where'] = ' AND (tartikel.nIstVater != 1 OR tartikel.kEigenschaftKombi > 0)';
             break;
     }
-    if (isset($cExportEinstellungAssoc_arr['exportformate_lager_ueber_null'])
-        && $cExportEinstellungAssoc_arr['exportformate_lager_ueber_null'] === 'Y'
-    ) {
-        $cSQL_arr['Where'] .= " AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y'))";
-    } elseif (isset($cExportEinstellungAssoc_arr['exportformate_lager_ueber_null'])
-        && $cExportEinstellungAssoc_arr['exportformate_lager_ueber_null'] === 'O'
-    ) {
-        $cSQL_arr['Where'] .= " AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y') 
+    if (isset($conf['exportformate_lager_ueber_null']) && $conf['exportformate_lager_ueber_null'] === 'Y') {
+        $sql['Where'] .= " AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y'))";
+    } elseif (isset($conf['exportformate_lager_ueber_null']) && $conf['exportformate_lager_ueber_null'] === 'O') {
+        $sql['Where'] .= " AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y') 
                                     OR tartikel.cLagerKleinerNull = 'Y')";
     }
 
-    if (isset($cExportEinstellungAssoc_arr['exportformate_preis_ueber_null'])
-        && $cExportEinstellungAssoc_arr['exportformate_preis_ueber_null'] === 'Y'
-    ) {
-        $cSQL_arr['Join'] .= ' JOIN tpreise ON tpreise.kArtikel = tartikel.kArtikel
-                                AND tpreise.kKundengruppe = ' . (int)$oExportformat->kKundengruppe . '
-                                AND tpreise.fVKNetto > 0';
+    if (isset($conf['exportformate_preis_ueber_null']) && $conf['exportformate_preis_ueber_null'] === 'Y') {
+        $sql['Join'] .= ' JOIN tpreis ON tpreis.kArtikel = tartikel.kArtikel
+                                AND tpreis.kKundengruppe = ' . (int)$export->kKundengruppe . '
+                          JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
+                                AND tpreisdetail.nAnzahlAb = 0
+                                AND tpreisdetail.fVKNetto > 0';
     }
 
-    if (isset($cExportEinstellungAssoc_arr['exportformate_beschreibung'])
-        && $cExportEinstellungAssoc_arr['exportformate_beschreibung'] === 'Y'
+    if (isset($conf['exportformate_beschreibung']) && $conf['exportformate_beschreibung'] === 'Y'
     ) {
-        $cSQL_arr['Where'] .= " AND tartikel.cBeschreibung != ''";
+        $sql['Where'] .= " AND tartikel.cBeschreibung != ''";
     }
 
-    return $cSQL_arr;
+    return $sql;
 }
 
 /**
  * @deprecated since 4.05
- * @param object $oExportformat
+ * @param object $export
  * @return mixed
  */
-function holeMaxExportArtikelAnzahl(&$oExportformat)
+function holeMaxExportArtikelAnzahl(&$export)
 {
-    $cSQL_arr = baueArtikelExportSQL($oExportformat);
-    $conf     = Shop::getSettings([CONF_GLOBAL]);
-    $sql      = 'AND NOT (DATE(tartikel.dErscheinungsdatum) > CURDATE())';
-    if (isset($conf['global']['global_erscheinende_kaeuflich']) &&
-        $conf['global']['global_erscheinende_kaeuflich'] === 'Y') {
-        $sql = 'AND (
-                    NOT (DATE(tartikel.dErscheinungsdatum) > CURDATE())
-                    OR  (
-                            DATE(tartikel.dErscheinungsdatum) > CURDATE()
-                            AND (tartikel.cLagerBeachten = "N" 
-                                OR tartikel.fLagerbestand > 0 OR tartikel.cLagerKleinerNull = "Y")
-                        )
-                )';
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    $data = baueArtikelExportSQL($export);
+    $conf = Shop::getSettings([CONF_GLOBAL]);
+    $sql  = 'AND tartikel.dErscheinungsdatum IS NULL OR (DATE(tartikel.dErscheinungsdatum) <= CURDATE())';
+    if (isset($conf['global']['global_erscheinende_kaeuflich'])
+        && $conf['global']['global_erscheinende_kaeuflich'] === 'Y'
+    ) {
+        $sql = "AND (
+                    tartikel.dErscheinungsdatum IS NULL 
+                    OR (DATE(tartikel.dErscheinungsdatum) <= CURDATE())
+                    OR (
+                        DATE(tartikel.dErscheinungsdatum) > CURDATE()
+                        AND (tartikel.cLagerBeachten = 'N' 
+                            OR tartikel.fLagerbestand > 0 OR tartikel.cLagerKleinerNull = 'Y')
+                    )
+                )";
     }
-    $cid = 'xp_' . md5(json_encode($cSQL_arr) . $sql);
-    if (($count = Shop::Cache()->get($cid)) !== false) {
+    $cid = 'xp_' . md5(json_encode($data) . $sql);
+    if (($count = Shop::Container()->getCache()->get($cid)) !== false) {
         return $count;
     }
-
     $count = Shop::Container()->getDB()->query(
         "SELECT COUNT(*) AS nAnzahl
             FROM tartikel
@@ -301,14 +307,13 @@ function holeMaxExportArtikelAnzahl(&$oExportformat)
                 AND tartikelattribut.cName = '" . FKT_ATTRIBUT_KEINE_PREISSUCHMASCHINEN . "'
             LEFT JOIN tartikelsichtbarkeit 
                 ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
-                AND tartikelsichtbarkeit.kKundengruppe = " . (int)$oExportformat->kKundengruppe . "
-            " . $cSQL_arr['Join'] . "
-            WHERE tartikelattribut.kArtikelAttribut IS NULL" . $cSQL_arr['Where'] . "
-                AND tartikelsichtbarkeit.kArtikel IS NULL
-                {$sql}",
-        \DB\ReturnType::SINGLE_OBJECT
+                AND tartikelsichtbarkeit.kKundengruppe = " . (int)$export->kKundengruppe . '
+            ' . $data['Join'] . '
+            WHERE tartikelattribut.kArtikelAttribut IS NULL' . $data['Where'] . '
+                AND tartikelsichtbarkeit.kArtikel IS NULL ' . $sql,
+        ReturnType::SINGLE_OBJECT
     );
-    Shop::Cache()->set($cid, $count, [CACHING_GROUP_CORE], 120);
+    Shop::Container()->getCache()->set($cid, $count, [CACHING_GROUP_CORE], 120);
 
     return $count;
 }

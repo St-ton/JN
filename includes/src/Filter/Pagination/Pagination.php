@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\Pagination;
+namespace JTL\Filter\Pagination;
 
-use Filter\ProductFilter;
+use JTL\Filter\ProductFilter;
 
 /**
  * Class Pagination
- * @package Filter\Pagination
+ * @package JTL\Filter\Pagination
  */
 class Pagination
 {
@@ -70,7 +70,7 @@ class Pagination
             return $this->pages;
         }
         $naviURL = $this->productFilter->getFilterURL()->getURL();
-        $sep     = \strpos($naviURL, '?') === false
+        $sep     = \mb_strpos($naviURL, '?') === false
             ? \SEP_SEITE
             : '&amp;seite=';
         $active  = $pages->getCurrentPage();
@@ -124,7 +124,7 @@ class Pagination
     /**
      * @param array $pages
      */
-    public function setPages(array $pages)
+    public function setPages(array $pages): void
     {
         $this->pages = $pages;
     }
@@ -140,7 +140,7 @@ class Pagination
     /**
      * @param Item $prev
      */
-    public function setPrev(Item $prev)
+    public function setPrev(Item $prev): void
     {
         $this->prev = $prev;
     }
@@ -156,7 +156,7 @@ class Pagination
     /**
      * @param Item $next
      */
-    public function setNext(Item $next)
+    public function setNext(Item $next): void
     {
         $this->next = $next;
     }

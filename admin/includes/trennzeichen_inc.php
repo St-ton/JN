@@ -4,34 +4,40 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Catalog\Separator;
+use JTL\Shop;
+
 /**
- * @param array $cPostAssoc_arr
+ * @param array $post
  * @return bool
  */
-function speicherTrennzeichen(array $cPostAssoc_arr): bool
+function speicherTrennzeichen(array $post): bool
 {
     foreach ([JTL_SEPARATOR_WEIGHT, JTL_SEPARATOR_AMOUNT, JTL_SEPARATOR_LENGTH] as $nEinheit) {
-        if (isset($cPostAssoc_arr['nDezimal_' . $nEinheit],
-            $cPostAssoc_arr['cDezZeichen_' . $nEinheit],
-            $cPostAssoc_arr['cTausenderZeichen_' . $nEinheit])
-        ) {
-            $oTrennzeichen = new Trennzeichen();
-            $oTrennzeichen->setSprache($_SESSION['kSprache'])
+        if (isset(
+            $post['nDezimal_' . $nEinheit],
+            $post['cDezZeichen_' . $nEinheit],
+            $post['cTausenderZeichen_' . $nEinheit]
+        )) {
+            $trennzeichen = new Separator();
+            $trennzeichen->setSprache($_SESSION['kSprache'])
                           ->setEinheit($nEinheit)
-                          ->setDezimalstellen($cPostAssoc_arr['nDezimal_' . $nEinheit])
-                          ->setDezimalZeichen($cPostAssoc_arr['cDezZeichen_' . $nEinheit])
-                          ->setTausenderZeichen($cPostAssoc_arr['cTausenderZeichen_' . $nEinheit]);
+                          ->setDezimalstellen($post['nDezimal_' . $nEinheit])
+                          ->setDezimalZeichen($post['cDezZeichen_' . $nEinheit])
+                          ->setTausenderZeichen($post['cTausenderZeichen_' . $nEinheit]);
             $idx = 'kTrennzeichen_' . $nEinheit;
-            if (isset($cPostAssoc_arr[$idx])) {
-                $oTrennzeichen->setTrennzeichen($cPostAssoc_arr[$idx])
+            if (isset($post[$idx])) {
+                $trennzeichen->setTrennzeichen($post[$idx])
                               ->update();
-            } elseif (!$oTrennzeichen->save()) {
+            } elseif (!$trennzeichen->save()) {
                 return false;
             }
         }
     }
 
-    Shop::Cache()->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_CATEGORY, CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
+    Shop::Container()->getCache()->flushTags(
+        [CACHING_GROUP_CORE, CACHING_GROUP_CATEGORY, CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]
+    );
 
     return true;
 }

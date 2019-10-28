@@ -1,11 +1,11 @@
 {includeMailTemplate template=header type=html}
 
-Sehr {if $Kunde->cAnrede == "w"}geehrte{elseif $Kunde->cAnrede == "m"}geehrter{else}geehrte(r){/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},<br>
+Guten Tag {$Kunde->cVorname} {$Kunde->cNachname},
 <br>
 Ihre Bestellung bei {$Einstellungen.global.global_shopname} wurde soeben storniert.
 <strong>Bestellnummer:</strong> {$Bestellung->cBestellNr}<br>
 <br>
-Mit freundlichem Gruß,<br>
+Mit freundlichem Gruß<br>
 Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=html}

@@ -14,7 +14,7 @@
 											{$Firma->cStrasse} {$Firma->cHausnummer}<br>
 											{$Firma->cPLZ} {$Firma->cOrt}<br>
 											{$Firma->cLand}<br>
-											Tel.: {$Firma->cTel}<br>
+											Phone: {$Firma->cTel}<br>
 											{if $Firma->cFax|strlen>0}Fax.: {$Firma->cFax}{/if}<br>
 											<a href="{$Firma->cWWW}" target="_blank" style="color: #313131;">{$Firma->cWWW}</a><br>
 											{$Firma->cUSTID}

@@ -4,13 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\SortingOptions;
+namespace JTL\Filter\SortingOptions;
 
-use Filter\ProductFilter;
+use JTL\Filter\ProductFilter;
+use JTL\Shop;
 
 /**
  * Class EAN
- * @package Filter\SortingOptions
+ * @package JTL\Filter\SortingOptions
  */
 class EAN extends AbstractSortingOption
 {
@@ -22,7 +23,7 @@ class EAN extends AbstractSortingOption
     {
         parent::__construct($productFilter);
         $this->setOrderBy('tartikel.cBarcode, tartikel.cName');
-        $this->setName(\Shop::Lang()->get('sortEan'));
+        $this->setName(Shop::Lang()->get('sortEan'));
         $this->setPriority($this->getConfig('artikeluebersicht')['suche_sortierprio_ean']);
         $this->setValue(\SEARCH_SORT_EAN);
     }

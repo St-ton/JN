@@ -3,26 +3,32 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\Alert\Alert;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Media\Media;
+use JTL\Shop;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('DISPLAY_BRANDING_VIEW', true, true);
-/** @global JTLSmarty $smarty */
-$cHinweis = '';
-$cFehler  = '';
-$step     = 'branding_uebersicht';
+/** @global \JTL\Smarty\JTLSmarty $smarty */
+$step        = 'branding_uebersicht';
+$alertHelper = Shop::Container()->getAlertService();
 
-if (RequestHelper::verifyGPCDataInt('branding') === 1) {
+if (Request::verifyGPCDataInt('branding') === 1) {
     $step = 'branding_detail';
-    if (isset($_POST['speicher_einstellung']) && (int)$_POST['speicher_einstellung'] === 1 && FormHelper::validateToken()) {
-        if (speicherEinstellung(RequestHelper::verifyGPCDataInt('kBranding'), $_POST, $_FILES)) {
-            $cHinweis .= 'Ihre Einstellung wurde erfolgreich gespeichert.<br />';
+    if (Request::postInt('speicher_einstellung') === 1 && Form::validateToken()) {
+        if (speicherEinstellung(Request::verifyGPCDataInt('kBranding'), $_POST, $_FILES)) {
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
         } else {
-            $cFehler .= 'Fehler: Bitte füllen Sie alle Felder komplett aus.<br />';
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
         }
     }
-    // Hole bestimmtes branding
-    if (RequestHelper::verifyGPCDataInt('kBranding') > 0) {
-        $smarty->assign('oBranding', gibBranding(RequestHelper::verifyGPCDataInt('kBranding')));
+    if (Request::verifyGPCDataInt('kBranding') > 0) {
+        $smarty->assign('oBranding', gibBranding(Request::verifyGPCDataInt('kBranding')));
     }
 } else {
     $smarty->assign('oBranding', gibBranding(1));
@@ -31,8 +37,6 @@ if (RequestHelper::verifyGPCDataInt('branding') === 1) {
 $smarty->assign('cRnd', time())
        ->assign('oBranding_arr', gibBrandings())
        ->assign('PFAD_BRANDINGBILDER', PFAD_BRANDINGBILDER)
-       ->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
        ->assign('step', $step)
        ->display('branding.tpl');
 
@@ -45,10 +49,10 @@ function gibBrandings()
 }
 
 /**
- * @param int $kBranding
+ * @param int $brandingID
  * @return mixed
  */
-function gibBranding(int $kBranding)
+function gibBranding(int $brandingID)
 {
     return Shop::Container()->getDB()->queryPrepared(
         'SELECT tbranding.*, tbranding.kBranding AS kBrandingTMP, tbrandingeinstellung.*
@@ -57,54 +61,51 @@ function gibBranding(int $kBranding)
                 ON tbrandingeinstellung.kBranding = tbranding.kBranding
             WHERE tbranding.kBranding = :bid
             GROUP BY tbranding.kBranding',
-        ['bid' => $kBranding],
-        \DB\ReturnType::SINGLE_OBJECT
+        ['bid' => $brandingID],
+        ReturnType::SINGLE_OBJECT
     );
 }
 
 /**
- * @param int   $kBranding
- * @param array $cPost_arr
- * @param array $cFiles_arr
+ * @param int   $brandingID
+ * @param array $post
+ * @param array $files
  * @return bool
  */
-function speicherEinstellung(int $kBranding, $cPost_arr, $cFiles_arr)
+function speicherEinstellung(int $brandingID, array $post, array $files)
 {
-    $oBrandingEinstellung               = new stdClass();
-    $oBrandingEinstellung->kBranding    = $kBranding;
-    $oBrandingEinstellung->cPosition    = $cPost_arr['cPosition'];
-    $oBrandingEinstellung->nAktiv       = $cPost_arr['nAktiv'];
-    $oBrandingEinstellung->dTransparenz = $cPost_arr['dTransparenz'];
-    $oBrandingEinstellung->dGroesse     = $cPost_arr['dGroesse'];
+    $conf               = new stdClass();
+    $conf->kBranding    = $brandingID;
+    $conf->cPosition    = $post['cPosition'];
+    $conf->nAktiv       = $post['nAktiv'];
+    $conf->dTransparenz = $post['dTransparenz'];
+    $conf->dGroesse     = $post['dGroesse'];
 
-    if (strlen($cFiles_arr['cBrandingBild']['name']) > 0) {
-        $oBrandingEinstellung->cBrandingBild = 'kBranding_' . $kBranding .
-            mappeFileTyp($cFiles_arr['cBrandingBild']['type']);
+    if (mb_strlen($files['cBrandingBild']['name']) > 0) {
+        $conf->cBrandingBild = 'kBranding_' . $brandingID . mappeFileTyp($files['cBrandingBild']['type']);
     } else {
-        $oBrandingEinstellungTMP             = Shop::Container()->getDB()->select(
+        $tmpConf             = Shop::Container()->getDB()->select(
             'tbrandingeinstellung',
             'kBranding',
-            $kBranding
+            $brandingID
         );
-        $oBrandingEinstellung->cBrandingBild = !empty($oBrandingEinstellungTMP->cBrandingBild)
-            ? $oBrandingEinstellungTMP->cBrandingBild
+        $conf->cBrandingBild = !empty($tmpConf->cBrandingBild)
+            ? $tmpConf->cBrandingBild
             : '';
     }
 
-    if ($oBrandingEinstellung->kBranding > 0
-        && strlen($oBrandingEinstellung->cPosition) > 0
-        && strlen($oBrandingEinstellung->cBrandingBild) > 0
-    ) {
+    if ($conf->kBranding > 0 && mb_strlen($conf->cPosition) > 0 && mb_strlen($conf->cBrandingBild) > 0) {
         // Alte Einstellung loeschen
-        Shop::Container()->getDB()->delete('tbrandingeinstellung', 'kBranding', $kBranding);
+        Shop::Container()->getDB()->delete('tbrandingeinstellung', 'kBranding', $brandingID);
 
-        if (strlen($cFiles_arr['cBrandingBild']['name']) > 0) {
-            loescheBrandingBild($oBrandingEinstellung->kBranding);
-            speicherBrandingBild($cFiles_arr, $oBrandingEinstellung->kBranding);
+        if (mb_strlen($files['cBrandingBild']['name']) > 0) {
+            loescheBrandingBild($conf->kBranding);
+            speicherBrandingBild($files, $conf->kBranding);
         }
-
-        Shop::Container()->getDB()->insert('tbrandingeinstellung', $oBrandingEinstellung);
-        MediaImage::clearCache('product');
+        Shop::Container()->getDB()->insert('tbrandingeinstellung', $conf);
+        $data = Shop::Container()->getDB()->select('tbranding', 'kBranding', $conf->kBranding);
+        $type = Media::getClass($data->cBildKategorie ?? '');
+        $type::clearCache();
 
         return true;
     }
@@ -113,52 +114,52 @@ function speicherEinstellung(int $kBranding, $cPost_arr, $cFiles_arr)
 }
 
 /**
- * @param array $cFiles_arr
- * @param int   $kBranding
+ * @param array $files
+ * @param int   $brandingID
  * @return bool
  * @todo: make size (2097152) configurable?
  */
-function speicherBrandingBild($cFiles_arr, int $kBranding)
+function speicherBrandingBild($files, int $brandingID)
 {
-    if (($cFiles_arr['cBrandingBild']['type'] === 'image/jpeg'
-        || $cFiles_arr['cBrandingBild']['type'] === 'image/pjpeg'
-        || $cFiles_arr['cBrandingBild']['type'] === 'image/gif'
-        || $cFiles_arr['cBrandingBild']['type'] === 'image/png'
-        || $cFiles_arr['cBrandingBild']['type'] === 'image/bmp'
-    ) && $cFiles_arr['cBrandingBild']['size'] <= 2097152
+    if (($files['cBrandingBild']['type'] === 'image/jpeg'
+        || $files['cBrandingBild']['type'] === 'image/pjpeg'
+        || $files['cBrandingBild']['type'] === 'image/gif'
+        || $files['cBrandingBild']['type'] === 'image/png'
+        || $files['cBrandingBild']['type'] === 'image/bmp'
+    ) && $files['cBrandingBild']['size'] <= 2097152
     ) {
-        $cUploadDatei = PFAD_ROOT . PFAD_BRANDINGBILDER . 'kBranding_' .
-            $kBranding . mappeFileTyp($cFiles_arr['cBrandingBild']['type']);
+        $upload = PFAD_ROOT . PFAD_BRANDINGBILDER . 'kBranding_' .
+            $brandingID . mappeFileTyp($files['cBrandingBild']['type']);
 
-        return move_uploaded_file($cFiles_arr['cBrandingBild']['tmp_name'], $cUploadDatei);
+        return move_uploaded_file($files['cBrandingBild']['tmp_name'], $upload);
     }
 
     return false;
 }
 
 /**
- * @param int $kBranding
+ * @param int $brandingID
  */
-function loescheBrandingBild(int $kBranding)
+function loescheBrandingBild(int $brandingID)
 {
-    if (file_exists(PFAD_ROOT . PFAD_BRANDINGBILDER . 'kBranding_' . $kBranding . '.jpg')) {
-        @unlink(PFAD_ROOT . PFAD_BRANDINGBILDER . 'kBranding_' . $kBranding . '.jpg');
-    } elseif (file_exists(PFAD_ROOT . PFAD_BRANDINGBILDER . 'kBranding_' . $kBranding . '.png')) {
-        @unlink(PFAD_ROOT . PFAD_BRANDINGBILDER . 'kBranding_' . $kBranding . '.png');
-    } elseif (file_exists(PFAD_ROOT . PFAD_BRANDINGBILDER . 'kBranding_' . $kBranding . '.gif')) {
-        @unlink(PFAD_ROOT . PFAD_BRANDINGBILDER . 'kBranding_' . $kBranding . '.gif');
-    } elseif (file_exists(PFAD_ROOT . PFAD_BRANDINGBILDER . 'kBranding_' . $kBranding . '.bmp')) {
-        @unlink(PFAD_ROOT . PFAD_BRANDINGBILDER . 'kBranding_' . $kBranding . '.bmp');
+    if (file_exists(PFAD_ROOT . PFAD_BRANDINGBILDER . 'kBranding_' . $brandingID . '.jpg')) {
+        @unlink(PFAD_ROOT . PFAD_BRANDINGBILDER . 'kBranding_' . $brandingID . '.jpg');
+    } elseif (file_exists(PFAD_ROOT . PFAD_BRANDINGBILDER . 'kBranding_' . $brandingID . '.png')) {
+        @unlink(PFAD_ROOT . PFAD_BRANDINGBILDER . 'kBranding_' . $brandingID . '.png');
+    } elseif (file_exists(PFAD_ROOT . PFAD_BRANDINGBILDER . 'kBranding_' . $brandingID . '.gif')) {
+        @unlink(PFAD_ROOT . PFAD_BRANDINGBILDER . 'kBranding_' . $brandingID . '.gif');
+    } elseif (file_exists(PFAD_ROOT . PFAD_BRANDINGBILDER . 'kBranding_' . $brandingID . '.bmp')) {
+        @unlink(PFAD_ROOT . PFAD_BRANDINGBILDER . 'kBranding_' . $brandingID . '.bmp');
     }
 }
 
 /**
- * @param string $cTyp
+ * @param string $ype
  * @return string
  */
-function mappeFileTyp($cTyp)
+function mappeFileTyp(string $ype)
 {
-    switch ($cTyp) {
+    switch ($ype) {
         case 'image/jpeg':
             return '.jpg';
         case 'image/pjpeg':

@@ -4,15 +4,15 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\SortingOptions;
+namespace JTL\Filter\SortingOptions;
 
-use Filter\Join;
-use Filter\Option;
-use Filter\ProductFilter;
+use JTL\Filter\Join;
+use JTL\Filter\Option;
+use JTL\Filter\ProductFilter;
 
 /**
  * Class AbstractSortingOption
- * @package Filter\SortingOptions
+ * @package JTL\Filter\SortingOptions
  */
 abstract class AbstractSortingOption extends Option implements SortingOptionInterface
 {
@@ -62,7 +62,7 @@ abstract class AbstractSortingOption extends Option implements SortingOptionInte
     /**
      * @inheritdoc
      */
-    public function setJoin(Join $join)
+    public function setJoin(Join $join): void
     {
         $this->join = $join;
     }
@@ -78,7 +78,7 @@ abstract class AbstractSortingOption extends Option implements SortingOptionInte
     /**
      * @inheritdoc
      */
-    public function setOrderBy(string $orderBy)
+    public function setOrderBy(string $orderBy): void
     {
         $this->orderBy = $orderBy;
     }
@@ -94,7 +94,7 @@ abstract class AbstractSortingOption extends Option implements SortingOptionInte
     /**
      * @inheritdoc
      */
-    public function setPriority(int $priority)
+    public function setPriority(int $priority): void
     {
         $this->priority = $priority;
     }

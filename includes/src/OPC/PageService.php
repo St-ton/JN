@@ -1,14 +1,19 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC;
+namespace JTL\OPC;
+
+use JTL\Backend\AdminIO;
+use JTL\Helpers\Request;
+use JTL\IO\IOResponse;
+use JTL\Shop;
 
 /**
  * Class PageService
- * @package OPC
+ * @package JTL\OPC
  */
 class PageService
 {
@@ -40,14 +45,17 @@ class PageService
     /**
      * PageService constructor.
      * @param Service $opc
-     * @param PageDB  $pageDB
-     * @param Locker  $locker
+     * @param PageDB $pageDB
+     * @param Locker $locker
+     * @throws \SmartyException
      */
     public function __construct(Service $opc, PageDB $pageDB, Locker $locker)
     {
         $this->opc    = $opc;
         $this->pageDB = $pageDB;
         $this->locker = $locker;
+
+        Shop::Smarty()->registerPlugin('function', 'opcMountPoint', [$this, 'renderMountPoint']);
     }
 
     /**
@@ -67,23 +75,58 @@ class PageService
             'publicateDraft',
             'saveDraft',
             'createPagePreview',
-            'createPageLivePreview',
             'deleteDraft',
+            'changeDraftName',
+            'getDraftStatusHtml',
         ];
     }
 
     /**
-     * @param \AdminIO $io
+     * @param AdminIO $io
      * @throws \Exception
      */
-    public function registerAdminIOFunctions(\AdminIO $io)
+    public function registerAdminIOFunctions(AdminIO $io): void
     {
-        $this->adminName = $io->getAccount()->account()->cLogin;
+        $adminAccount = $io->getAccount();
+
+        if ($adminAccount === null) {
+            throw new \Exception('Admin account was not set on AdminIO.');
+        }
+
+        $this->adminName = $adminAccount->account()->cLogin;
 
         foreach ($this->getPageIOFunctionNames() as $functionName) {
             $publicFunctionName = 'opc' . \ucfirst($functionName);
             $io->register($publicFunctionName, [$this, $functionName], null, 'CONTENT_PAGE_VIEW');
         }
+    }
+
+    /**
+     * @param $params
+     * @param $smarty
+     * @return string
+     * @throws \Exception
+     */
+    public function renderMountPoint($params)
+    {
+        $id     = $params['id'];
+        $title  = $params['title'] ?? $id;
+        $output = '';
+
+        if ($this->opc->isEditMode()) {
+            $output = '<div class="opc-area opc-rootarea" data-area-id="' . $id . '" data-title="' . $title
+                . '"></div>';
+        } elseif ($this->getCurPage()->getAreaList()->hasArea($id)) {
+            $output = $this->getCurPage()->getAreaList()->getArea($id)->getFinalHtml();
+        }
+
+        Shop::fire('shop.OPC.PageService.renderMountPoint', [
+            'output' => &$output,
+            'id' => $id,
+            'title' => $title,
+        ]);
+
+        return $output;
     }
 
     /**
@@ -126,9 +169,10 @@ class PageService
 
     /**
      * @param string $id
-     * @return null|Page
+     * @return Page|null
+     * @throws \Exception
      */
-    public function getPublicPage(string $id)
+    public function getPublicPage(string $id): ?Page
     {
         return $this->pageDB->getPublicPage($id);
     }
@@ -140,6 +184,7 @@ class PageService
     public function getCurPage(): Page
     {
         $isEditMode    = $this->opc->isEditMode();
+        $isPreviewMode = $this->opc->isPreviewMode();
         $editedPageKey = $this->opc->getEditedPageKey();
 
         if ($this->curPage === null) {
@@ -147,12 +192,13 @@ class PageService
                 $this->curPage = new Page();
             } elseif ($isEditMode && $editedPageKey > 0) {
                 $this->curPage = $this->getDraft($editedPageKey);
+            } elseif ($isPreviewMode) {
+                $pageData      = $this->getPreviewPageData();
+                $this->curPage = $this->createPageFromData($pageData);
             } else {
-                $curPageUrl                    = '/' . \ltrim(\Shop::getRequestUri(), '/');
-                $curPageParameters             = \Shop::getParameters();
-                $curPageParameters['kSprache'] = \Shop::getLanguage();
-                $curPageId                     = \md5(\serialize($curPageParameters));
-                $this->curPage                 = $this->getPublicPage($curPageId) ?? new Page();
+                $curPageUrl    = $this->getCurPageUri();
+                $curPageId     = $this->createCurrentPageId();
+                $this->curPage = $this->getPublicPage($curPageId) ?? new Page();
                 $this->curPage->setId($curPageId);
                 $this->curPage->setUrl($curPageUrl);
             }
@@ -162,13 +208,136 @@ class PageService
     }
 
     /**
+     * @param int $langId
+     * @return string
+     */
+    public function getCurPageUri(int $langId = 0)
+    {
+        if ($langId > 0) {
+            $languages = $_SESSION['Sprachen'];
+            foreach ($languages as $language) {
+                if ($language->id === $langId) {
+                    $uri = $language->url;
+                    break;
+                }
+            }
+        } else {
+            $uri = $_SERVER['HTTP_X_REWRITE_URL'] ?? $_SERVER['REQUEST_URI'];
+        }
+
+        $shopURLdata = \parse_url(Shop::getURL());
+        $baseURLdata = \parse_url($uri);
+
+        if (empty($shopURLdata['path'])) {
+            $shopURLdata['path'] = '/';
+        }
+
+        if (!isset($baseURLdata['path'])) {
+            return '/';
+        }
+
+        $result = \mb_substr($baseURLdata['path'], \mb_strlen($shopURLdata['path']));
+
+        if (isset($baseURLdata['query'])) {
+            $result .= '?' . $baseURLdata['query'];
+        }
+
+        $result = '/' . \ltrim($result, '/');
+
+        return $result;
+    }
+
+    /**
+     * @param string $id
+     * @return array
+     */
+    public function getOtherLanguageDrafts(string $id): array
+    {
+        return $this->pageDB->getOtherLanguageDraftRows($id);
+    }
+
+    /**
+     * @param int $langId
+     * @return string
+     */
+    public function createCurrentPageId(int $langId = 0): string
+    {
+        if ($langId === 0) {
+            $langId = \Shop::getLanguage();
+        }
+
+        $params    = Shop::getParameters();
+        $pageIdObj = (object)['lang' => $langId];
+
+        if ($params['kKategorie'] > 0) {
+            $pageIdObj->type = 'category';
+            $pageIdObj->id   = $params['kKategorie'];
+        } elseif ($params['kHersteller'] > 0) {
+            $pageIdObj->type = 'manufacturer';
+            $pageIdObj->id   = $params['kHersteller'];
+        } elseif ($params['kArtikel'] > 0) {
+            $pageIdObj->type = 'product';
+            $pageIdObj->id   = $params['kArtikel'];
+        } elseif ($params['kLink'] > 0) {
+            $pageIdObj->type = 'link';
+            $pageIdObj->id   = $params['kLink'];
+        } elseif ($params['kMerkmalWert'] > 0) {
+            $pageIdObj->type = 'attrib';
+            $pageIdObj->id   = $params['kMerkmalWert'];
+        } elseif ($params['kSuchspecial'] > 0) {
+            $pageIdObj->type = 'special';
+            $pageIdObj->id   = $params['kSuchspecial'];
+        } elseif ($params['kNews'] > 0) {
+            $pageIdObj->type = 'news';
+            $pageIdObj->id   = $params['kNews'];
+        } elseif ($params['kNewsKategorie'] > 0) {
+            $pageIdObj->type = 'newscat';
+            $pageIdObj->id   = $params['kNewsKategorie'];
+        } elseif ($params['kUmfrage'] > 0) {
+            $pageIdObj->type = 'poll';
+            $pageIdObj->id   = $params['kUmfrage'];
+        } elseif (\mb_strlen($params['cSuche']) > 0) {
+            $pageIdObj->type = 'search';
+            $pageIdObj->id   = $params['cSuche'];
+        } else {
+            $pageIdObj->type = 'other';
+            $pageIdObj->id   = \md5(\serialize($params));
+        }
+
+        if (!empty($params['MerkmalFilter'])) {
+            $pageIdObj->attribs = $params['MerkmalFilter'];
+        }
+
+        if (!empty($params['cPreisspannenFilter'])) {
+            $pageIdObj->range = $params['cPreisspannenFilter'];
+        }
+
+        if (!empty($params['kHerstellerFilter'])) {
+            $pageIdObj->manufacturerFilter = $params['kHerstellerFilter'];
+        }
+
+        return \json_encode($pageIdObj);
+    }
+
+    /**
      * @param string $id
      * @return Page[]
+     * @throws \Exception
      */
     public function getDrafts(string $id): array
     {
         if ($this->opc->isOPCInstalled()) {
-            return $this->pageDB->getDrafts($id);
+            $drafts         = $this->pageDB->getDrafts($id);
+            $publicDraft    = $this->getPublicPage($id);
+            $publicDraftKey = $publicDraft === null ? 0 : $publicDraft->getKey();
+            \usort($drafts, function ($a, $b) use ($publicDraftKey) {
+                /**
+                 * @var Page $a
+                 * @var Page $b
+                 */
+                return $a->getStatus($publicDraftKey) - $b->getStatus($publicDraftKey);
+            });
+            return $drafts;
         }
 
         return [];
@@ -208,7 +377,7 @@ class PageService
      * @param array $data
      * @throws \Exception
      */
-    public function saveDraft(array $data)
+    public function saveDraft(array $data): void
     {
         $draft = $this->getDraft($data['key'])->deserialize($data);
         $this->pageDB->saveDraft($draft);
@@ -218,7 +387,7 @@ class PageService
      * @param array $data
      * @throws \Exception
      */
-    public function publicateDraft(array $data)
+    public function publicateDraft(array $data): void
     {
         $page = (new Page())->deserialize($data);
         $this->pageDB->saveDraftPublicationStatus($page);
@@ -228,7 +397,7 @@ class PageService
      * @param string $id
      * @return $this
      */
-    public function deletePage(string $id)
+    public function deletePage(string $id): self
     {
         $this->pageDB->deletePage($id);
 
@@ -251,7 +420,7 @@ class PageService
      * @return bool true if the draft could be locked, false if it is still locked by some other user
      * @throws \Exception
      */
-    public function lockDraft($key)
+    public function lockDraft(int $key): bool
     {
         $draft = $this->getDraft($key);
 
@@ -262,7 +431,7 @@ class PageService
      * @param int $key
      * @throws \Exception
      */
-    public function unlockDraft(int $key)
+    public function unlockDraft(int $key): void
     {
         $page = (new Page())->setKey($key);
         $this->locker->unlock($page);
@@ -270,23 +439,59 @@ class PageService
 
     /**
      * @param array $data
-     * @return string[]
+     * @return Page
+     * @throws \Exception
      */
-    public function createPagePreview(array $data): array
+    public function createPageFromData(array $data): Page
     {
-        $page = (new Page())->deserialize($data);
-
-        return $page->getAreaList()->getPreviewHtml();
+        return (new Page())->deserialize($data);
     }
 
     /**
      * @param array $data
      * @return string[]
+     * @throws \Exception
      */
-    public function createPageLivePreview(array $data): array
+    public function createPagePreview(array $data): array
     {
-        $page = (new Page())->deserialize($data);
+        return $this->createPageFromData($data)->getAreaList()->getPreviewHtml();
+    }
 
-        return $page->getAreaList()->getFinalHtml();
+    /**
+     * @return array
+     */
+    public function getPreviewPageData()
+    {
+        return \json_decode(Request::verifyGPDataString('pageData'), true);
+    }
+
+    /**
+     * @param int $draftKey
+     * @param string $draftName
+     * @throws \Exception
+     */
+    public function changeDraftName(int $draftKey, string $draftName)
+    {
+        $this->pageDB->saveDraftName($draftKey, $draftName);
+    }
+
+    /**
+     * @param int $draftKey
+     * @return IOResponse
+     * @throws \SmartyException
+     */
+    public function getDraftStatusHtml(int $draftKey): IOResponse
+    {
+        $draft    = $this->getDraft($draftKey);
+        $smarty   = Shop::Smarty();
+        $response = new IOResponse();
+
+        $draftStatusHtml = $smarty
+            ->assign('page', $draft)
+            ->fetch(\PFAD_ROOT . \PFAD_ADMIN . 'opc/tpl/draftstatus.tpl');
+
+        $response->assign('opcDraftStatus', 'innerHTML', $draftStatusHtml);
+
+        return $response;
     }
 }

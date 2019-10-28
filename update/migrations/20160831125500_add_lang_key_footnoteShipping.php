@@ -2,23 +2,15 @@
 /**
  * add_lang_key_footnoteShipping
  *
- * @author Marco Stickel
+ * @author ms
  * @created Wed, 31 Aug 2016 12:55:00 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
- * Migration
- *
- * Available methods:
- * execute            - returns affected rows
- * fetchOne           - single fetched object
- * fetchAll           - array of fetched objects
- * fetchArray         - array of fetched assoc arrays
- * dropColumn         - drops a column if exists
- * addLocalization    - add localization
- * removeLocalization - remove localization
- * setConfig          - add / update config property
- * removeConfig       - remove config property
+ * Class Migration_20160831125500
  */
 class Migration_20160831125500 extends Migration implements IMigration
 {
@@ -51,4 +43,3 @@ class Migration_20160831125500 extends Migration implements IMigration
         $this->setLocalization('eng', 'global', 'footnoteExclusiveVat', 'All prices exclusive legal <abbr title="value added tax">VAT</abbr> plus <a href="#SHIPPING_LINK#">shipping costs</a>');
     }
 }
-

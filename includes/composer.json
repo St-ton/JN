@@ -1,65 +1,102 @@
 {
-    "name": "jtl/shop4",
-    "type": "library",
+    "name": "jtl/shop",
+    "license": "proprietary",
+    "description": "Das Shopsystem von JTL-Software",
+    "type": "project",
     "homepage": "https://www.jtl-software.de",
     "require": {
-        "php": ">=7.0",
-        "Imanee/Imanee": "dev-master",
+        "php": ">=7.2",
+        "ext-bcmath": "*",
+        "ext-curl": "*",
+        "ext-dom": "*",
+        "ext-ftp": "*",
+        "ext-gd": "*",
+        "ext-iconv": "*",
+        "ext-intl": "*",
+        "ext-json": "*",
+        "ext-libxml": "*",
+        "ext-mbstring": "*",
+        "ext-pdo": "*",
+        "ext-posix": "*",
+        "ext-simplexml": "*",
+        "ext-soap": "*",
+        "ext-xml": "*",
+        "ext-zip": "*",
+        "ext-zlib": "*",
+        "intervention/image": "^2.4",
         "ifsnop/mysqldump-php": "^2.1",
-        "symfony/var-dumper": "^3.0",
-        "jtlshop/shop4-systemcheck": "^1.0",
+        "symfony/var-dumper": "^4.2",
+        "jtlshop/shop5-systemcheck": "dev-master",
+        "jtlshop/sccbs3": "dev-master",
+        "jtlshop/scc": "dev-master",
         "smarty/smarty": "~3.1",
         "jdorn/sql-formatter": "^1.2",
-        "andyftw/ssllabs-php": "^1.2",
         "phpmyadmin/sql-parser": "^3.4",
         "phpgangsta/googleauthenticator": "dev-master",
-        "phpmailer/phpmailer": "~6.0",
+        "phpmailer/phpmailer": "^6.0",
         "jtlshop/qrcodegenerator": "dev-master",
-        "erusev/parsedown": "dev-master",
-        "pclzip/pclzip": "^2.8",
+        "erusev/parsedown": "1.8.0-beta-5",
+        "chamilo/pclzip": "^2.8",
         "psr/container": "1.0.0",
-        "lstrojny/functional-php": "~1.7",
+        "lstrojny/functional-php": "^1.8",
         "monolog/monolog": "^1.23",
-        "tightenco/collect": "~5.5.0",
         "eloquent/pathogen": "~0.6",
         "mrclay/minify": "~3.0.0",
-        "myclabs/php-enum": "^1.5",
-        "jtlshop/semver": "~0.0.5"
+        "myclabs/php-enum": "^1.6",
+        "jtlshop/semver": "~0.0.5",
+        "studio-42/elfinder": "^2.1",
+        "maximebf/debugbar": "^1.15",
+        "gettext/gettext": "^4.6",
+        "jtl/oauth2-client": "^1.0",
+        "squizlabs/php_codesniffer": "^3.4",
+        "illuminate/container": "^5.7",
+        "symfony/console": "^4.2",
+        "symfony/finder": "^4.2",
+        "mobiledetect/mobiledetectlib": "^2.8"
     },
     "require-dev": {
-        "phpunit/php-token-stream": "~1.2",
+        "phpunit/php-token-stream": "^3.0",
         "nikic/php-parser": "^2.1",
-        "Symfony/Finder": "^2.8",
-        "friendsofphp/php-cs-fixer": "~2.1",
-        "phpunit/phpunit": "~5.7"
+        "phpmd/phpmd": "@stable",
+        "phpunit/phpunit": "^7.3",
+        "sensiolabs/security-checker": "^5.0",
+        "squizlabs/php_codesniffer": "^3.4"
     },
-    "config": {
-        "platform": {
-            "php": "7.0"
-        }
+    "suggest": {
+        "ext-redis": "Better caching method",
+        "ext-exif": "Improves getting image meta data",
+        "ext-zend-opcache": "Improves performance"
     },
     "repositories": [
         {
-            "type": "package",
-            "package": {
-                "name": "jtlshop/shop4-systemcheck",
-                "version": "1.1.0",
-                "source": {
-                    "url": "https://gitlab.jtl-software.de/jtlshop/shop4-systemcheck.git",
-                    "type": "git",
-                    "reference": "1.1.0"
-                }
-            }
+            "type": "vcs",
+            "url": "https://gitlab.com/jtl-software/jtl-shop/tools/shop5-systemcheck.git"
         },
         {
             "type": "vcs",
-            "url": "https://gitlab.jtl-software.de/jtlshop/qrcodegenerator.git"
+            "url": "https://gitlab.com/jtl-software/jtl-shop/tools/qrcodegenerator.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://gitlab.com/jtl-software/jtl-shop/tools/sccbs3.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://gitlab.com/jtl-software/jtl-shop/tools/scc.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://gitlab.com/jtl-software/oauth2/client.git"
         }
+
     ],
     "autoload": {
-        "files": [ "vendor/jtlshop/shop4-systemcheck/lib/bootstrap.php" ],
         "psr-4": {
-            "": "src/"
+            "JTL\\": ["src/"],
+            "Plugin\\": ["../plugins/"]
         }
+    },
+    "autoload-dev": {
+        "psr-4": { "Tests\\": "../tests/" }
     }
 }

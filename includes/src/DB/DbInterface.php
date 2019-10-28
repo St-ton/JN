@@ -4,15 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace DB;
+namespace JTL\DB;
 
 /**
- * Class NiceDB
- * Class for handling mysql DB
+ * Interface DbInterface
+ * @package JTL\DB
  */
 interface DbInterface extends \Serializable
 {
-
     /**
      * Database configuration
      *
@@ -76,19 +75,17 @@ interface DbInterface extends \Serializable
      * @param string   $tableName - table name
      * @param object   $object - object to insert
      * @param int|bool $echo - true -> print statement
-     * @param bool     $bExecuteHook - true -> execute corresponding hook
      * @return int - 0 if fails, PrimaryKeyValue if successful
      */
-    public function insertRow(string $tableName, $object, bool $echo = false, bool $bExecuteHook = false): int;
+    public function insertRow(string $tableName, $object, bool $echo = false): int;
 
     /**
      * @param string   $tableName
      * @param object   $object
      * @param int|bool $echo
-     * @param bool     $bExecuteHook
      * @return int
      */
-    public function insert(string $tableName, $object, bool $echo = false, bool $bExecuteHook = false): int;
+    public function insert(string $tableName, $object, bool $echo = false): int;
 
     /**
      * update table row
@@ -111,6 +108,15 @@ interface DbInterface extends \Serializable
      * @return int
      */
     public function update(string $tableName, $keyname, $keyvalue, $object, bool $echo = false): int;
+
+    /**
+     * @param string $tableName
+     * @param object $object
+     * @param array  $excludeUpdate
+     * @param bool   $echo
+     * @return int - -1 if fails, 0 if update, PrimaryKeyValue if successful inserted
+     */
+    public function upsert(string $tableName, $object, array $excludeUpdate = [], bool $echo = false): int;
 
     /**
      * selects all (*) values in a single row from a table - gives just one row back!
@@ -213,27 +219,26 @@ interface DbInterface extends \Serializable
      * 10 - result of querysingle
      * 11 - fetch both arrays
      * @param int|bool $echo print current stmt
-     * @param bool     $bExecuteHook should function executeHook be executed
      * @param callable $fnInfo statistic callback
      * @return array|object|int - 0 if fails, 1 if successful or LastInsertID if specified
      * @throws \InvalidArgumentException
      */
-    public function executeQuery($stmt, $return, bool $echo = false, bool $bExecuteHook = false, $fnInfo = null);
+    public function executeQuery(string $stmt, int $return, bool $echo = false, $fnInfo = null);
 
     /**
      * @param string   $stmt
      * @param int      $return
      * @param int|bool $echo
-     * @param bool     $bExecuteHook
      * @return int|object|array
      */
-    public function query($stmt, $return, bool $echo = false, bool $bExecuteHook = false);
+    public function query($stmt, $return, bool $echo = false);
 
     /**
      * executes query and returns misc data
      *
      * @param string   $stmt - Statement to be executed
-     * @param array    $params - An array of values with as many elements as there are bound parameters in the SQL statement being executed
+     * @param array    $params - An array of values with as many elements as there
+     * are bound parameters in the SQL statement being executed
      * @param int      $return - what should be returned.
      * 1  - single fetched object
      * 2  - array of fetched objects
@@ -244,17 +249,15 @@ interface DbInterface extends \Serializable
      * 10 - result of querysingle
      * 11 - fetch both arrays
      * @param int|bool $echo print current stmt
-     * @param bool     $bExecuteHook should function executeHook be executed
      * @param callable $fnInfo statistic callback
-     * @return array|object|int - 0 if fails, 1 if successful or LastInsertID if specified
+     * @return array|object|int|bool - 0 if fails, 1 if successful or LastInsertID if specified
      * @throws \InvalidArgumentException
      */
     public function executeQueryPrepared(
-        $stmt,
+        string $stmt,
         array $params,
-        $return,
+        int $return,
         bool $echo = false,
-        bool $bExecuteHook = false,
         $fnInfo = null
     );
 
@@ -263,18 +266,16 @@ interface DbInterface extends \Serializable
      * @param array    $params
      * @param int      $return
      * @param int|bool $echo
-     * @param bool     $bExecuteHook
      * @param mixed    $fnINfo
      * @return int|object|array
      */
-    public function queryPrepared($stmt, $params, $return, bool $echo = false, bool $bExecuteHook = false, $fnINfo = null);
-
-    /**
-     * @param string $stmt
-     * @param array  $params
-     * @return \Generator|int
-     */
-    public function executeYield($stmt, array $params = []);
+    public function queryPrepared(
+        string $stmt,
+        array $params,
+        int $return,
+        bool $echo = false,
+        $fnINfo = null
+    );
 
     /**
      * delete row from table
@@ -343,6 +344,7 @@ interface DbInterface extends \Serializable
      *
      * @param string $entry - entry to log
      * @return $this
+     * @deprecated since 5.0.0
      */
     public function writeLog(string $entry): DbInterface;
 

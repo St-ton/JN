@@ -3,11 +3,18 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\DB\ReturnType;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Shop;
+use JTL\Update\DBManager;
+
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbcheck_inc.php';
 
 $oAccount->permission('DBCHECK_VIEW', true, true);
-/** @global JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $tables = DBManager::getStatus(DB_NAME);
 $smarty->assign('tables', $tables);
 
@@ -34,7 +41,12 @@ function exec_query($query)
 $jsTypo = (object)['tables' => []];
 foreach ($tables as $table => $info) {
     $columns                = DBManager::getColumns($table);
-    $columns                = array_map(function($n) { return null; }, $columns);
+    $columns                = array_map(
+        function ($n) {
+            return null;
+        },
+        $columns
+    );
     $jsTypo->tables[$table] = $columns;
 }
 $smarty->assign('jsTypo', $jsTypo);
@@ -47,17 +59,17 @@ switch (true) {
         $indexes = DBManager::getIndexes($table);
 
         $smarty->assign('selectedTable', $table)
-               ->assign('status', $status)
-               ->assign('columns', $columns)
-               ->assign('indexes', $indexes)
-               ->assign('sub', 'table')
-               ->display('dbmanager.tpl');
+            ->assign('status', $status)
+            ->assign('columns', $columns)
+            ->assign('indexes', $indexes)
+            ->assign('sub', 'table')
+            ->display('dbmanager.tpl');
         break;
 
     case isset($_GET['select']):
         $table = $_GET['select'];
 
-        if (!preg_match('/^\w+$/i', $table, $m) || !FormHelper::validateToken()) {
+        if (!preg_match('/^\w+$/i', $table, $m) || !Form::validateToken()) {
             die('Not allowed.');
         }
 
@@ -70,14 +82,11 @@ switch (true) {
             'offset' => 0,
             'where'  => []
         ];
-
-        $filter = $_GET['filter'] ?? [];
-        $filter = array_merge($defaultFilter, $filter);
-
+        $filter        = $_GET['filter'] ?? [];
+        $filter        = array_merge($defaultFilter, $filter);
         // validate filter
         $filter['limit'] = (int)$filter['limit'];
-        $page            = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-
+        $page            = Request::getInt('page', 1);
         if ($page < 1) {
             $page = 1;
         }
@@ -88,21 +97,19 @@ switch (true) {
 
         $filter['offset'] = ($page - 1) * $filter['limit'];
 
-        $baseQuery = "SELECT * FROM " . $table;
-
+        $baseQuery = 'SELECT * FROM ' . $table;
         // query parts
         $queryParams = [];
         $queryParts  = ['select' => $baseQuery];
-
         // where
         if (isset($filter['where']['col'])) {
-            $whereParts = [];
+            $whereParts  = [];
             $columnCount = count($filter['where']['col']);
             for ($i = 0; $i < $columnCount; $i++) {
                 if (!empty($filter['where']['col'][$i]) && !empty($filter['where']['op'][$i])) {
                     $col = $filter['where']['col'][$i];
                     $val = $filter['where']['val'][$i];
-                    $op  = strtoupper($filter['where']['op'][$i]);
+                    $op  = mb_convert_case($filter['where']['op'][$i], MB_CASE_UPPER);
                     if ($op === 'LIKE %%') {
                         $op  = 'LIKE';
                         $val = sprintf('%%%s%%', trim($val, '%'));
@@ -115,12 +122,10 @@ switch (true) {
                 $queryParts['where'] = 'WHERE ' . implode(' AND ', $whereParts);
             }
         }
-
         // count without limit
         $query = implode(' ', $queryParts);
-        $count = Shop::Container()->getDB()->queryPrepared($query, $queryParams, \DB\ReturnType::AFFECTED_ROWS);
+        $count = Shop::Container()->getDB()->queryPrepared($query, $queryParams, ReturnType::AFFECTED_ROWS);
         $pages = (int)ceil($count / $filter['limit']);
-
         // limit
         $queryParams['limit_count']  = $filter['limit'];
         $queryParams['limit_offset'] = $filter['offset'];
@@ -131,8 +136,7 @@ switch (true) {
         $data  = Shop::Container()->getDB()->queryPrepared(
             $query,
             $queryParams,
-            \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS,
-            false,
+            ReturnType::ARRAY_OF_ASSOC_ARRAYS,
             false,
             function ($o) use (&$info) {
                 $info = $o;
@@ -140,16 +144,16 @@ switch (true) {
         );
 
         $smarty->assign('selectedTable', $table)
-               ->assign('data', $data)
-               ->assign('page', $page)
-               ->assign('query', $query)
-               ->assign('count', $count)
-               ->assign('pages', $pages)
-               ->assign('filter', $filter)
-               ->assign('columns', $columns)
-               ->assign('info', $info)
-               ->assign('sub', 'select')
-               ->display('dbmanager.tpl');
+            ->assign('data', $data)
+            ->assign('page', $page)
+            ->assign('query', $query)
+            ->assign('count', $count)
+            ->assign('pages', $pages)
+            ->assign('filter', $filter)
+            ->assign('columns', $columns)
+            ->assign('info', $info)
+            ->assign('sub', 'select')
+            ->display('dbmanager.tpl');
         break;
 
     case isset($_GET['command']):
@@ -160,42 +164,32 @@ switch (true) {
         } elseif (isset($_POST['sql_query_edit'])) {
             $query = $_POST['sql_query_edit'];
         }
-
-        if ($query !== null && FormHelper::validateToken()) {
+        if ($query !== null && Form::validateToken()) {
             try {
                 $parser = new SqlParser\Parser($query);
-
                 if (is_array($parser->errors) && count($parser->errors) > 0) {
                     throw $parser->errors[0];
                 }
                 $q = SqlParser\Utils\Query::getAll($query);
-
                 if ($q['is_select'] !== true) {
-                    throw new \Exception(sprintf('Query is restricted to SELECT statements'));
+                    throw new Exception(sprintf('Query is restricted to SELECT statements'));
                 }
-
                 foreach ($q['select_tables'] as $t) {
-                    $table  = $t[0];
-                    $dbname = $t[1];
+                    [$table, $dbname] = $t;
                     if ($dbname !== null && strcasecmp($dbname, DB_NAME) !== 0) {
-                        throw new \Exception(sprintf('Well, at least u tried :)'));
+                        throw new Exception(sprintf('Well, at least u tried :)'));
                     }
-                    if (in_array(strtolower($table), $restrictedTables, true)) {
-                        throw new \Exception(sprintf('Permission denied for table `%s`', $table));
+                    if (in_array(mb_convert_case($table, MB_CASE_LOWER), $restrictedTables, true)) {
+                        throw new Exception(sprintf('Permission denied for table `%s`', $table));
                     }
                 }
-
                 $stmt = $q['statement'];
-
                 if ($q['limit'] === false) {
                     $stmt->limit = new SqlParser\Components\Limit(50, 0);
                 }
-
                 $newQuery = $stmt->build();
                 $query    = SqlParser\Utils\Formatter::format($newQuery, ['type' => 'text']);
-
-                $result = exec_query($newQuery);
-
+                $result   = exec_query($newQuery);
                 $smarty->assign('result', $result);
             } catch (Exception $e) {
                 $smarty->assign('error', $e);
@@ -207,14 +201,14 @@ switch (true) {
         }
 
         $smarty->assign('sub', 'command')
-               ->display('dbmanager.tpl');
+            ->display('dbmanager.tpl');
         break;
 
     default:
         $definedTables = array_keys(getDBFileStruct() ?: []);
 
         $smarty->assign('definedTables', $definedTables)
-               ->assign('sub', 'default')
-               ->display('dbmanager.tpl');
+            ->assign('sub', 'default')
+            ->display('dbmanager.tpl');
         break;
 }

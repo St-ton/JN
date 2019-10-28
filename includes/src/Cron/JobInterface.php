@@ -4,14 +4,15 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Cron;
+namespace JTL\Cron;
 
-use DB\DbInterface;
+use DateTime;
+use JTL\DB\DbInterface;
 use Psr\Log\LoggerInterface;
 
 /**
- * Class Job
- * @package Cron
+ * Interface JobInterface
+ * @package JTL\Cron
  */
 interface JobInterface
 {
@@ -19,8 +20,31 @@ interface JobInterface
      * JobInterface constructor.
      * @param DbInterface     $db
      * @param LoggerInterface $logger
+     * @param JobHydrator     $hydrator
      */
-    public function __construct(DbInterface $db, LoggerInterface $logger);
+    public function __construct(DbInterface $db, LoggerInterface $logger, JobHydrator $hydrator);
+
+    /**
+     * @return int
+     */
+    public function insert(): int;
+
+    /**
+     * @return bool
+     */
+    public function delete(): bool;
+
+    /**
+     * @param QueueEntry $queueEntry
+     * @return bool
+     */
+    public function saveProgress(QueueEntry $queueEntry): bool;
+
+    /**
+     * @param QueueEntry|\stdClass $data
+     * @return object
+     */
+    public function hydrate($data);
 
     /**
      * @return string
@@ -30,7 +54,7 @@ interface JobInterface
     /**
      * @param string $type
      */
-    public function setType(string $type);
+    public function setType(string $type): void;
 
     /**
      * @return int
@@ -40,7 +64,7 @@ interface JobInterface
     /**
      * @param int $limit
      */
-    public function setLimit(int $limit);
+    public function setLimit(int $limit): void;
 
     /**
      * @return int
@@ -50,47 +74,82 @@ interface JobInterface
     /**
      * @param int $id
      */
-    public function setID(int $id);
+    public function setID(int $id): void;
 
     /**
-     * @return \DateTime
+     * @return DateTime|null
      */
-    public function getDateLastStarted(): \DateTime;
+    public function getDateLastStarted(): ?DateTime;
 
     /**
-     * @param \DateTime $dateLastStarted
+     * @param DateTime|string|null $date
      */
-    public function setDateLastStarted(\DateTime $dateLastStarted);
+    public function setDateLastStarted($date): void;
 
     /**
-     * @return int
+     * @inheritdoc
      */
-    public function getForeignKeyID(): int;
+    public function getDateLastFinished(): ?DateTime;
 
     /**
-     * @param int $foreignKeyID
+     * @inheritdoc
      */
-    public function setForeignKeyID(int $foreignKeyID);
+    public function setDateLastFinished($date): void;
 
     /**
-     * @return string
+     * @param string|null $date
      */
-    public function getForeignKey(): string;
+    public function setLastStarted(?string $date): void;
 
     /**
-     * @param string $foreignKey
+     * @return DateTime|null
      */
-    public function setForeignKey(string $foreignKey);
+    public function getStartTime(): ?DateTime;
 
     /**
-     * @return string
+     * @param DateTime|string|null $startTime
      */
-    public function getTable(): string;
+    public function setStartTime($startTime): void;
 
     /**
-     * @param string $table
+     * @return DateTime
      */
-    public function setTable(string $table);
+    public function getStartDate(): ?DateTime;
+
+    /**
+     * @param DateTime|string $date
+     */
+    public function setStartDate($date): void;
+
+    /**
+     * @return int|null
+     */
+    public function getForeignKeyID(): ?int;
+
+    /**
+     * @param int|null $foreignKeyID
+     */
+    public function setForeignKeyID(?int $foreignKeyID): void;
+
+    /**
+     * @return string|null
+     */
+    public function getForeignKey(): ?string;
+
+    /**
+     * @param string|null $foreignKey
+     */
+    public function setForeignKey(?string $foreignKey): void;
+
+    /**
+     * @return string|null
+     */
+    public function getTableName(): ?string;
+
+    /**
+     * @param string|null $table
+     */
+    public function setTableName(?string $table): void;
 
     /**
      * @param QueueEntry $queueEntry
@@ -106,7 +165,7 @@ interface JobInterface
     /**
      * @param int $executed
      */
-    public function setExecuted(int $executed);
+    public function setExecuted(int $executed): void;
 
     /**
      * @return int
@@ -116,7 +175,7 @@ interface JobInterface
     /**
      * @param int $cronID
      */
-    public function setCronID(int $cronID);
+    public function setCronID(int $cronID): void;
 
     /**
      * @return bool
@@ -126,7 +185,27 @@ interface JobInterface
     /**
      * @param bool $finished
      */
-    public function setFinished(bool $finished);
+    public function setFinished(bool $finished): void;
+
+    /**
+     * @return bool
+     */
+    public function isRunning(): bool;
+
+    /**
+     * @param bool $running
+     */
+    public function setRunning(bool $running): void;
+
+    /**
+     * @return int
+     */
+    public function getFrequency(): int;
+
+    /**
+     * @param int $frequency
+     */
+    public function setFrequency(int $frequency): void;
 
     /**
      * @return int
@@ -136,5 +215,5 @@ interface JobInterface
     /**
      * @param int $queueID
      */
-    public function setQueueID(int $queueID);
+    public function setQueueID(int $queueID): void;
 }

@@ -1,6 +1,6 @@
 $(document).ready(function() {
 
-    $('#nAnimationSpeed, #nPauseTime').change(function() {
+    $('#nAnimationSpeed, #nPauseTime').on('change', function() {
         var nAnimationSpeed = parseInt($('#nAnimationSpeed').val()),
             nPauseTime = parseInt($('#nPauseTime').val());
         if(nAnimationSpeed > nPauseTime) {
@@ -14,7 +14,7 @@ $(document).ready(function() {
         }
     });
 
-    $('.random_effects').click(function() {
+    $('.random_effects').on('click', function() {
         if($('#cRandomEffects').prop('checked')){
             $('select[name=cSelectedEffects]').attr('disabled',true);
             $('select[name=cAvaibleEffects]').attr('disabled',true);
@@ -31,7 +31,7 @@ $(document).ready(function() {
         }
     });
 
-    $('form#slider').submit(function() {
+    $('form#slider').on('submit', function() {
         if( $('.random_effects').prop('checked') !== true){
             var effects = new Array();
             $.each($('select[name=cSelectedEffects] option'), function(index,value) {
@@ -41,7 +41,7 @@ $(document).ready(function() {
         }
     });
 
-    $('button.select_add').click(function() {
+    $('button.select_add').on('click', function() {
         $.each($('select[name=cAvaibleEffects]').val(), function(index,value) {
             var exists = false,
                 html;
@@ -60,14 +60,14 @@ $(document).ready(function() {
         });
     });
 
-    $('button.select_remove').click(function() {
+    $('button.select_remove').on('click', function() {
         $.each($('select[name=cSelectedEffects] option:selected'), function(index,value) {
             $(this).remove();
         });
     });
 
-    $('#nSeitenTyp').change(filterConfigUpdate);
-    $('#cKey').change(filterConfigUpdate);
+    $('#nSeitenTyp').on('change', filterConfigUpdate);
+    $('#cKey').on('change', filterConfigUpdate);
 
     filterConfigUpdate();
 
@@ -135,19 +135,12 @@ $(function() {
     });
 });
 
-function select_image( key ) {
-    var id = key,
-        shop_url = $('.shop_url').html(),
-        kcfinder_path = $('.kcfinder_path').html();
-
-    window.KCFinder = {
-        callBack: function(url) {
-            $('#img'+id).attr('src', url);
-            $('input[name="aSlide\['+id+'\]\[cBild\]"]').val(url);
-            kcFinder.close();
-        }
-    };
-    var kcFinder = window.open(kcfinder_path+'browse.php?type=Bilder&lang=de', 'kcfinder_textbox','status=0, toolbar=0, location=0, menubar=0, directories=0, resizable=1, scrollbars=0, width=800, height=600,');
+function select_image(key)
+{
+    openElFinder(function(url) {
+        $('#img' + key).attr('src', url);
+        $('input[name="aSlide\[' + key + '\]\[cBild\]"]').val(url);
+    }, 'image');
 }
 
 var count = 0;

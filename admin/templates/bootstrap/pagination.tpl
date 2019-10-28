@@ -8,9 +8,9 @@
 
 {if isset($oBlaetterNavi->nAktiv) && $oBlaetterNavi->nAktiv == 1}
     <div class="block clearall">
-        <div class="pages tleft">
+        <div class="pages text-left">
             <span class="pageinfo">
-                Eintrag: <strong>{$oBlaetterNavi->nVon}</strong> - {$oBlaetterNavi->nBis} von {$oBlaetterNavi->nAnzahl}
+                {__('entry')}: <strong>{$oBlaetterNavi->nVon}</strong> - {$oBlaetterNavi->nBis} {__('of')} {$oBlaetterNavi->nAnzahl}
             </span>
             <ul class="pagination">
                 {if $oBlaetterNavi->nAktuelleSeite == 1}
@@ -25,7 +25,7 @@
                     </li>
                     <li class="pagination-item"><span class="page">...</span></li>
                 {/if}
-                {foreach name=blaetternavi from=$oBlaetterNavi->nBlaetterAnzahl_arr item=Blatt}
+                {foreach $oBlaetterNavi->nBlaetterAnzahl_arr as $Blatt}
                     <li class="pagination-item{if $oBlaetterNavi->nAktuelleSeite == $Blatt} active{/if}">
                         <a class="page" href="{$cUrl}?s{$cSite}={$Blatt}{$cParams}{$hash}">{$Blatt}</a>
                     </li>

@@ -4,7 +4,8 @@
  *}
 {if $Einstellungen.sitemap.sitemap_seiten_anzeigen === 'Y'}
     {block name='sitemap-pages'}
-        {include file='snippets/opc_mount_point.tpl' id='opc_sitemap_linkgroups_prepend'}
+        {opcMountPoint id='opc_before_pages'}
+
         <div class="sitemap panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">{block name='sitemap-pages-title'}{lang key='sitemapSites'}{/block}</h3>
@@ -12,11 +13,11 @@
             <div class="panel-body">
                 {block name='sitemap-pages-body'}
                     <div class="row">
-                        {foreach $linkgroups as $oLinkgruppe}
-                            {if isset($oLinkgruppe->cName) && $oLinkgruppe->cName !== 'hidden' && isset($oLinkgruppe->Links) && !empty($oLinkgruppe->Links)}
+                        {foreach $linkgroups as $linkgroup}
+                            {if isset($linkgroup->getName()) && $linkgroup->getName() !== 'hidden' && !empty($linkgroup->getLinks())}
                                 <div class="col-sm-6 col-md-4">
                                     <ul class="list-unstyled">
-                                        {include file='snippets/linkgroup_list.tpl' linkgroupIdentifier=$linkgroupName tplscope='sitemap'}
+                                        {include file='snippets/linkgroup_list.tpl' linkgroupIdentifier=$linkgroup->getTemplate() tplscope='sitemap'}
                                     </ul>
                                 </div>
                             {/if}
@@ -25,12 +26,12 @@
                 {/block}
             </div>
         </div>
-        {include file='snippets/opc_mount_point.tpl' id='opc_sitemap_linkgroups_append'}
     {/block}
 {/if}
 {if $Einstellungen.sitemap.sitemap_kategorien_anzeigen === 'Y' && isset($oKategorieliste->elemente) && $oKategorieliste->elemente|@count > 0}
     {block name='sitemap-categories'}
-        {include file='snippets/opc_mount_point.tpl' id='opc_sitemap_categories_prepend'}
+        {opcMountPoint id='opc_before_categories'}
+
         <div class="sitemap panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">{block name='sitemap-categories-title'}{lang key='sitemapKats'}{/block}</h3>
@@ -40,30 +41,30 @@
                     <div class="row">
                         {* first: categories with subcategories only *}
                         {foreach $oKategorieliste->elemente as $oKategorie}
-                            {if $oKategorie->Unterkategorien|@count > 0}
+                            {if $oKategorie->getChildren()|@count > 0}
                                 <div class="col-sm-6 col-md-4">
                                     <ul class="list-unstyled">
                                         <li>
-                                            <a href="{$oKategorie->cURLFull}" title="{$oKategorie->cName}">
+                                            <a href="{$oKategorie->getURL()}" title="{$oKategorie->getName()}">
                                                 <strong>
-                                                    {$oKategorie->cKurzbezeichnung}
+                                                    {$oKategorie->getShortName()}
                                                 </strong>
                                             </a>
                                         </li>
-                                        {foreach $oKategorie->Unterkategorien as $oSubKategorie}
+                                        {foreach $oKategorie->getChildren() as $oSubKategorie}
                                             <li>
-                                                <a href="{$oSubKategorie->cURLFull}" title="{$oKategorie->cName}">
-                                                    {$oSubKategorie->cKurzbezeichnung}
+                                                <a href="{$oSubKategorie->getURL()}" title="{$oKategorie->getName()}">
+                                                    {$oSubKategorie->getShortName()}
                                                 </a>
                                             </li>
-                                            {if $oSubKategorie->Unterkategorien|@count > 0}
+                                            {if $oSubKategorie->getChildren()|@count > 0}
                                                 <li>
                                                     <ul class="list-unstyled sub-categories">
-                                                        {foreach $oSubKategorie->Unterkategorien as $oSubSubKategorie}
+                                                        {foreach $oSubKategorie->getChildren() as $oSubSubKategorie}
                                                             <li>
-                                                                <a href="{$oSubSubKategorie->cURLFull}"
-                                                                   title="{$oKategorie->cName}">
-                                                                    {$oSubSubKategorie->cKurzbezeichnung}
+                                                                <a href="{$oSubSubKategorie->getURL()}"
+                                                                   title="{$oKategorie->getName()}">
+                                                                    {$oSubSubKategorie->getShortName()}
                                                                 </a>
                                                             </li>
                                                         {/foreach}
@@ -81,10 +82,10 @@
                             <ul class="list-unstyled">
                                 {* <li><b>{lang key='otherCategories'}</b></li> *}
                                 {foreach $oKategorieliste->elemente as $oKategorie}
-                                    {if $oKategorie->Unterkategorien|@count == 0}
+                                    {if $oKategorie->getChildren()|@count == 0}
                                         <li>
-                                            &nbsp;&nbsp;<a href="{$oKategorie->cURLFull}" title="{$oKategorie->cName}">
-                                                {$oKategorie->cKurzbezeichnung}
+                                            &nbsp;&nbsp;<a href="{$oKategorie->getURL()}" title="{$oKategorie->getName()}">
+                                                {$oKategorie->getShortName()}
                                             </a>
                                         </li>
                                     {/if}
@@ -95,36 +96,12 @@
                 {/block}
             </div>
         </div>
-        {include file='snippets/opc_mount_point.tpl' id='opc_sitemap_categories_append'}
-    {/block}
-{/if}
-{if $Einstellungen.sitemap.sitemap_globalemerkmale_anzeigen === 'Y' && $oGlobaleMerkmale_arr|@count > 0}
-    {block name='sitemap-global-attributes'}
-        {include file='snippets/opc_mount_point.tpl' id='opc_sitemap_attributes_prepend'}
-        <div class="sitemap panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">{block name='sitemap-global-attributes-title'}{lang key='sitemapGlobalAttributes'}{/block}</h3></div>
-            <div class="panel-body">
-                {block name='sitemap-global-attributes-body'}
-                    {foreach $oGlobaleMerkmale_arr as $oGlobaleMerkmale}
-                        <strong>{$oGlobaleMerkmale->cName}</strong>
-                        <ul class="list-unstyled">
-                            {foreach $oGlobaleMerkmale->oMerkmalWert_arr as $oGlobaleMerkmaleWerte}
-                                <li class="p33">
-                                    <a href="{$oGlobaleMerkmaleWerte->cURL}">{$oGlobaleMerkmaleWerte->cWert}</a>
-                                </li>
-                            {/foreach}
-                        </ul>
-                    {/foreach}
-                {/block}
-            </div>
-        </div>
-        {include file='snippets/opc_mount_point.tpl' id='opc_sitemap_attributes_append'}
     {/block}
 {/if}
 {if $Einstellungen.sitemap.sitemap_hersteller_anzeigen === 'Y' && $oHersteller_arr|@count > 0}
     {block name='sitemap-manufacturer'}
-        {include file='snippets/opc_mount_point.tpl' id='opc_sitemap_manufactutrers_prepend'}
+        {opcMountPoint id='opc_before_manufacturers'}
+
         <div class="sitemap panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">{block name='sitemap-manufacturer-title'}{lang key='sitemapNanufacturer'}{/block}</h3>
@@ -139,12 +116,12 @@
                 {/block}
             </div>
         </div>
-        {include file='snippets/opc_mount_point.tpl' id='opc_sitemap_manufactutrers_append'}
     {/block}
 {/if}
 {if $Einstellungen.news.news_benutzen === 'Y' && $Einstellungen.sitemap.sitemap_news_anzeigen === 'Y' && !empty($oNewsMonatsUebersicht_arr) && $oNewsMonatsUebersicht_arr|@count > 0}
     {block name='sitemap-news'}
-        {include file='snippets/opc_mount_point.tpl' id='opc_sitemap_news_prepend'}
+        {opcMountPoint id='opc_before_news'}
+
         <div class="sitemap panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">{block name='sitemap-news-title'}{lang key='sitemapNews'}{/block}</h3>
@@ -169,12 +146,12 @@
                 {/block}
             </div>
         </div>
-        {include file='snippets/opc_mount_point.tpl' id='opc_sitemap_news_append'}
     {/block}
 {/if}
 {if $Einstellungen.news.news_benutzen === 'Y' && $Einstellungen.sitemap.sitemap_newskategorien_anzeigen === 'Y' && !empty($oNewsKategorie_arr) && $oNewsKategorie_arr|@count > 0}
     {block name='sitemap-news-categories'}
-        {include file='snippets/opc_mount_point.tpl' id='opc_sitemap_news_cat_prepend'}
+        {opcMountPoint id='opc_before_news_categories'}
+
         <div class="sitemap panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">{block name='sitemap-news-categories-title'}{lang key='sitemapNewsCats'}{/block}</h3>
@@ -198,6 +175,5 @@
                 {/block}
             </div>
         </div>
-        {include file='snippets/opc_mount_point.tpl' id='opc_sitemap_news_cat_append'}
     {/block}
 {/if}

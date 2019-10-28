@@ -9,17 +9,13 @@
 {block name='content'}
     {if isset($smarty.get.reg)}
         <div class="alert alert-success">{lang key='accountCreated' section='global'}</div>
-    {elseif !isset($hinweis)}
-        <div class="alert alert-info">{lang key='myAccountDesc' section='login'}</div>
-    {elseif !empty($hinweis)}
-        <div class="alert alert-info">{$hinweis}</div>
     {/if}
 
     {include file='snippets/extension.tpl'}
 
     {if isset($nWarenkorb2PersMerge) && $nWarenkorb2PersMerge === 1}
         <script type="text/javascript">
-            $(function() {
+            $(window).on('load', function() {
                 eModal.confirm({ldelim}
                         message: '{lang key='basket2PersMerge' section='login'}',
                         label1: '{lang key='no' section='global'}',
@@ -34,15 +30,19 @@
             });
         </script>
     {/if}
-    
-    {$showLoginPanel = true}
+    {if !isset($showLoginPanel)}
+        {$showLoginPanel = true}
+    {/if}
     {if $step === 'login' || (isset($editRechnungsadresse) && $editRechnungsadresse)}
         {$showLoginPanel = false}
     {/if}
 
+    {opcMountPoint id='opc_before_account'}
+
     <div id="account" class="row">
         {if $showLoginPanel}
             <div class="col-xs-12 col-md-3">
+                {opcMountPoint id='opc_before_menu'}
                 <div class="list-group">
                     <a href="{get_static_route id='jtl.php'}" class="list-group-item{if $step === 'mein Konto'} active{/if}">
                         {lang key='accountOverview' section='account data'}
@@ -62,10 +62,14 @@
                         {lang key='allRatings'}
                     </a>
                 </div>
+                {opcMountPoint id='opc_after_menu'}
             </div>
         {/if}
     
         <div class="col-xs-12 {if !$showLoginPanel}col-md-12{else}col-md-9{/if}">
+            {if $showLoginPanel}
+                {opcMountPoint id='opc_before_account_page'}
+            {/if}
             {if $step === 'login'}
                 {include file='account/login.tpl'}
             {elseif $step === 'mein Konto'}
@@ -82,14 +86,13 @@
                 {include file='account/delete_account.tpl'}
             {elseif $step === 'wunschliste'}
                 {include file='account/wishlists.tpl'}
-            {elseif $step === 'wunschliste anzeigen'}
-                {include file='account/wishlist.tpl'}
-            {elseif $step === 'wunschliste versenden'}
-                {include file='account/wishlist_email_form.tpl'}
             {elseif $step === 'kunden_werben_kunden'}
                 {include file='account/customers_recruiting.tpl'}
             {elseif $step === 'bewertungen'}
                 {include file='account/feedback.tpl'}
+            {/if}
+            {if $showLoginPanel}
+                {opcMountPoint id='opc_after_account_page'}
             {/if}
         </div>
     </div>

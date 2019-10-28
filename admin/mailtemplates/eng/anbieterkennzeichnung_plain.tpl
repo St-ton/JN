@@ -3,7 +3,7 @@
 {$Firma->cStrasse} {$Firma->cHausnummer}
 {$Firma->cPLZ} {$Firma->cOrt}
 {$Firma->cLand}
-Tel.: {$Firma->cTel}
+Phone: {$Firma->cTel}
 {if $Firma->cFax|strlen>0}Fax.: {$Firma->cFax}{/if}
 {$Firma->cWWW}
 {$Firma->cUSTID}

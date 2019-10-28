@@ -1,0 +1,417 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "opcNotInstalled"
+msgstr "Das Update für den OnPage Composer wurde nicht ordnungsgemäß installiert. Bitte aktualisieren Sie die Migrationen."
+
+# OPC GUI
+
+msgid "Import"
+msgstr "Import"
+
+msgid "Export"
+msgstr "Export"
+
+msgid "Publish"
+msgstr "Veröffentlichen"
+
+msgid "Save page"
+msgstr "Seite speichern"
+
+msgid "Close OnPage-Composer"
+msgstr "OnPage Composer schließen"
+
+msgid "Portlets"
+msgstr "Portlets"
+
+msgid "Blueprints"
+msgstr "Vorlagen"
+
+msgid "Revisions"
+msgstr "Versionen"
+
+msgid "Page structure"
+msgstr "Seitenstruktur"
+
+msgid "Import blueprint"
+msgstr "Vorlage importieren"
+
+msgid "Unsaved revision"
+msgstr "Nicht gespeicherte Version"
+
+msgid "Current revision"
+msgstr "Aktuelle Version"
+
+msgid "Please wait..."
+msgstr "Bitte warten…"
+
+msgid "Edit Portlet"
+msgstr "Portlet bearbeiten"
+
+msgid "Save this Portlet as a blueprint"
+msgstr "Portlet als Vorlage speichern"
+
+msgid "Blueprint name"
+msgstr "Vorlagenname"
+
+msgid "Delete Blueprint?"
+msgstr "Vorlage löschen?"
+
+# Config Tabs
+
+msgid "Styles"
+msgstr "Stile"
+
+msgid "Animation"
+msgstr "Animation"
+
+# Styles tab
+
+msgid "Font color"
+msgstr "Schriftfarbe"
+
+msgid "Visibility"
+msgstr "Sichtbarkeit"
+
+msgid "hide"
+msgstr "ausblenden"
+
+msgid "Background color"
+msgstr "Hintergrundfarbe"
+
+msgid "Font size"
+msgstr "Schriftgröße"
+
+# Animations tab
+
+msgid "Animation style"
+msgstr "Animationstyp"
+
+msgid "Duration"
+msgstr "Dauer"
+
+msgid "Delay"
+msgstr "Verzögerung"
+
+msgid "Offset (px)"
+msgstr "Abstand (Pixel)"
+
+msgid "Iteration"
+msgstr "Wiederholung"
+
+msgid "Change the animation duration (e.g. 2s)"
+msgstr "Dauer der Animation (z.&nbsp;B. 2 s)"
+
+msgid "Delay before the animation starts"
+msgstr "Wartezeit, bis die Animation beginnt"
+
+msgid "Distance to start the animation (related to the browser bottom)"
+msgstr "Die Animation beginnt erst, wenn zwischen der Oberkante des entsprechenden Elements und der Unterkante des aktuellen Browserfensters der angegebene Scroll-Abstand in Pixeln erreicht ist. Somit lässt sich z.&nbsp;B. verhindern, dass eine Animation schon startet, obwohl das Element noch nicht ganz sichtbar ist."
+
+msgid "Number of times the animation is repeated"
+msgstr "Anzahl Wiederholungen"
+
+msgid "onPageComposer"
+msgstr "OnPage Composer"
+
+msgid "toggleNavigation"
+msgstr "Navigation ein-/ausschalten"
+
+msgid "somethingHappend"
+msgstr "Es ist ein unbekannter Fehler aufgetreten."
+
+msgid "noteInfoInGuide"
+msgstr "Sie finden neben den nachfolgend aufgelisteten Touren auch ausführliche Informationen in unserem <a href=\"https://guide.jtl-software.de\" target=\"_blank\"><i class=\"fa fa-external-link\"></i> Guide</a>."
+
+msgid "generalIntroduction"
+msgstr "Allgemeine Einführung"
+
+msgid "getToKnowComposer"
+msgstr "Lernen Sie den OnPage Composer kennen und legen Sie Ihr erstes Portlet an."
+
+msgid "animation"
+msgstr "Animation"
+
+msgid "noteMovementOnPage"
+msgstr "Sie hätten gern etwas mehr Bewegung auf Ihren Seiten?"
+
+msgid "noteSaveAsTemplate"
+msgstr "Sie haben eine tolle Ansicht angelegt, die Sie häufiger verwenden möchten?<br/> Legen Sie sie doch als Vorlage an und greifen Sie so einfach immer wieder darauf zu."
+
+msgid "settingsMore"
+msgstr "Einstellungen (Vertiefung)"
+
+msgid "noteTricks"
+msgstr "Lernen Sie hier ein paar Tricks, um Ihre Seiten für die verschiedenen Display-Formate fit zu machen."
+
+msgid "startTour"
+msgstr "Tour starten"
+
+msgid "draftPublic"
+msgstr "Diesen Entwurf veröffentlichen"
+
+msgid "draftName"
+msgstr "Interner Name"
+
+msgid "restoreChanges"
+msgstr "Lokale Änderungen wiederherstellen"
+
+msgid "restoreUnsaved"
+msgstr "Dieser Entwurf wurde während der letzten Sitzung nicht gespeichert. Letzte Änderungen weiter bearbeiten?"
+
+msgid "noCurrent"
+msgstr "Nein, Änderungen verwerfen"
+
+msgid "yesRestore"
+msgstr "Ja, weiter bearbeiten"
+
+msgid "editSettings"
+msgstr "Einstellungen bearbeiten"
+
+msgid "copySelect"
+msgstr "Auswahl kopieren"
+
+msgid "saveTemplate"
+msgstr "Auswahl als Vorlage speichern"
+
+msgid "goUp"
+msgstr "Nächsthöhere Ebene auswählen"
+
+msgid "deleteSelect"
+msgstr "Auswahl löschen [Entf]"
+
+msgid "templateTitle"
+msgstr "Name der Vorlage"
+
+msgid "availableFilters"
+msgstr "Verfügbare Filter"
+
+msgid "activeFilters"
+msgstr "Aktive Filter"
+
+msgid "noMoreFilters"
+msgstr "Keine weiteren Filter vorhanden."
+
+msgid "entryMove"
+msgstr "Eintrag verschieben"
+
+msgid "entryDelete"
+msgstr "Eintrag löschen"
+
+msgid "imageSelect"
+msgstr "Bild auswählen"
+
+msgid "alternativeText"
+msgstr "Alternativtext"
+
+msgid "imageAdd"
+msgstr "Bild hinzufügen"
+
+msgid "videoTagNotSupported"
+msgstr "Ihr Browser unterstützt das Video-Tag nicht."
+
+msgid "zoneNew"
+msgstr "Neue Zone"
+
+msgid "zoneDelete"
+msgstr "Zone löschen"
+
+msgid "templateDeleteSure"
+msgstr "Wollen Sie diese Vorlage wirklich löschen?"
+
+msgid "publishNot"
+msgstr "Nicht veröffentlichen"
+
+msgid "publishImmediately"
+msgstr "Sofort veröffentlichen"
+
+msgid "selectDate"
+msgstr "Zeitraum auswählen"
+
+msgid "indefinitePeriodOfTime"
+msgstr "Auf unbestimmte Zeit"
+
+msgid "draftUpper"
+msgstr "ENTWURF"
+
+msgid "publicUpper"
+msgstr "ÖFFENTLICH"
+
+msgid "plannedUpper"
+msgstr "GEPLANT"
+
+msgid "pastUpper"
+msgstr "VERGANGEN"
+
+msgid "publicSince"
+msgstr "veröffentlicht am"
+
+msgid "publicUntil"
+msgstr "öffentlich bis"
+
+msgid "plannedFrom"
+msgstr "geplant ab"
+
+msgid "publicFrom"
+msgstr "ab"
+
+msgid "publicTill"
+msgstr "bis"
+
+msgid "noPublicationPlanned"
+msgstr "keine Veröffentlichung geplant"
+
+msgid "duplicate"
+msgstr "Duplizieren"
+
+msgid "useForOtherLang"
+msgstr "Für andere Sprache übernehmen"
+
+msgid "editPage"
+msgstr "Seite bearbeiten"
+
+msgid "newDraft"
+msgstr "Neuer Entwurf"
+
+msgid "allDrafts"
+msgstr "Alle Entwürfe"
+
+msgid "deleteDraftsContinue"
+msgstr "Entwürfe werden gelöscht! Fortfahren?"
+
+msgid "draftDeleteSure"
+msgstr "Wollen Sie diesen Entwurf wirklich löschen?"
+
+msgid "label"
+msgstr "Label"
+
+msgid "style"
+msgstr "Stil"
+
+msgid "stylePrimary"
+msgstr "Primär"
+
+msgid "styleSuccess"
+msgstr "Erfolg"
+
+msgid "styleInfo"
+msgstr "Info"
+
+msgid "styleWarning"
+msgstr "Warnung"
+
+msgid "styleDanger"
+msgstr "Gefahr"
+
+msgid "Icon"
+msgstr "Icon"
+
+msgid "background"
+msgstr "Hintergrund"
+
+msgid "backgroundImage"
+msgstr "Hintergrundbild"
+
+msgid "video"
+msgstr "Video"
+
+msgid "vertical"
+msgstr "vertikal"
+
+msgid "horizontal"
+msgstr "horizontal"
+
+msgid "grid"
+msgstr "Gitter"
+
+msgid "alternate"
+msgstr "Abwechselnd"
+
+msgid "columns"
+msgstr "Spalten"
+
+msgid "margin"
+msgstr "Außenabstand"
+
+msgid "border"
+msgstr "Rahmen"
+
+msgid "padding"
+msgstr "Innenabstand"
+
+msgid "Border style"
+msgstr "Rahmenstil"
+
+msgid "Border color"
+msgstr "Rahmenfarbe"
+
+msgid "Border radius"
+msgstr "Rahmenabrundung"
+
+msgid "noAction"
+msgstr "Keine Aktion"
+
+msgid "lightbox"
+msgstr "Lightbox"
+
+msgid "linked"
+msgstr "Verlinkung"
+
+msgid "unset"
+msgstr "nicht gesetzt"
+
+msgid "dotted"
+msgstr "gepunktet"
+
+msgid "dashed"
+msgstr "gestrichelt"
+
+msgid "solid"
+msgstr "durchgezogen"
+
+msgid "mobileXS"
+msgstr "Mobil (XS)"
+
+msgid "tabletSM"
+msgstr "Tablet (SM)"
+
+msgid "desktopMD"
+msgstr "Desktop (MD)"
+
+msgid "desktopLG"
+msgstr "Großer Desktop (LG)"
+
+msgid "Custom"
+msgstr "Benutzerdefiniert"
+
+
+msgid "active"
+msgstr "aktiv"
+
+msgid "planned"
+msgstr "geplant"
+
+msgid "draft"
+msgstr "Entwurf"
+
+msgid "past"
+msgstr "vergangen"
+
+msgid "activeSince"
+msgstr "Aktiv seit"
+
+msgid "activeUntil"
+msgstr "Aktiv bis"
+
+msgid "scheduledFor"
+msgstr "Geplant ab"
+
+msgid "notScheduled"
+msgstr "Unveröffentlicht"
+
+msgid "expiredOn"
+msgstr "Abgelaufen am"
+
+msgid "dropPortletHere"
+msgstr "Portlet hier einfügen"

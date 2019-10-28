@@ -479,12 +479,12 @@ abstract class phpQuery
                 $content = preg_replace_callback(
                     $regex,
                     function ($m) {
-                        return $m[1] . $m[2] . $m[3] . "<?php "
+                        return $m[1] . $m[2] . $m[3] . '<?php '
                             . str_replace(
-                                ["%20", "%3E", "%09", "&#10;", "&#9;", "%7B", "%24", "%7D", "%22", "%5B", "%5D"],
-                                [" ", ">", "	", "\n", "	", "{", "$", "}", '"', "[", "]"],
+                                ['%20', '%3E', '%09', '&#10;', '&#9;', '%7B', '%24', '%7D', '%22', '%5B', '%5D'],
+                                [' ', '>', '	', "\n", '	', '{', '$', '}', '"', '[', ']'],
                                 htmlspecialchars_decode($m[4])
-                            ) . " ?>" . $m[5] . $m[2];
+                            ) . ' ?>' . $m[5] . $m[2];
                     },
                     $content
                 );
@@ -638,7 +638,7 @@ abstract class phpQuery
                 $targetRef2 = &self::$pluginsStaticMethods;
                 break;
             default:
-                throw new Exception("Unsupported \$target type");
+                throw new Exception('Unsupported $target type');
         }
         if (is_string($source)) {
             $source = [$source => $source];
@@ -827,8 +827,8 @@ abstract class phpQuery
             // reuse existing XHR object, but clean it up
             $client = $xhr;
             $client->setAuth(false);
-            $client->setHeaders("If-Modified-Since", null);
-            $client->setHeaders("Referer", null);
+            $client->setHeaders('If-Modified-Since', null);
+            $client->setHeaders('Referer', null);
             $client->resetParameters();
         } else {
             // create new XHR object
@@ -847,17 +847,17 @@ abstract class phpQuery
         $host = parse_url($options['url'], PHP_URL_HOST);
         if (!in_array($host, self::$ajaxAllowedHosts, true)) {
             throw new Exception("Request not permitted, host '$host' not present in "
-                . "phpQuery::\$ajaxAllowedHosts");
+                . 'phpQuery::$ajaxAllowedHosts');
         }
         // JSONP
-        $jsre = "/=\\?(&|$)/";
+        $jsre = '/=\\?(&|$)/';
         if (isset($options['dataType']) && $options['dataType'] === 'jsonp') {
             $jsonpCallbackParam = $options['jsonp']
                 ? $options['jsonp']
                 : 'callback';
             if (strtolower($options['type']) === 'get') {
                 if (!preg_match($jsre, $options['url'])) {
-                    $sep            = strpos($options['url'], '?')
+                    $sep             = strpos($options['url'], '?')
                         ? '&' : '?';
                     $options['url'] .= "$sep$jsonpCallbackParam=?";
                 }
@@ -915,16 +915,17 @@ abstract class phpQuery
         }
         if (isset($options['ifModified']) && $options['ifModified']) {
             $client->setHeaders(
-                "If-Modified-Since",
+                'If-Modified-Since',
                 self::$lastModified
                     ? self::$lastModified
                     : 'Thu, 01 Jan 1970 00:00:00 GMT'
             );
         }
-        $client->setHeaders('Accept',
+        $client->setHeaders(
+            'Accept',
             isset($options['dataType'])
             && isset(self::$ajaxSettings['accepts'][$options['dataType']])
-                ? self::$ajaxSettings['accepts'][$options['dataType']] . ", */*"
+                ? self::$ajaxSettings['accepts'][$options['dataType']] . ', */*'
                 : self::$ajaxSettings['accepts']['_default']
         );
         // TODO $options['processData']
@@ -957,7 +958,7 @@ abstract class phpQuery
         }
         if (self::$debug) {
             self::debug("{$options['type']}: {$options['url']}\n");
-            self::debug("Options: <pre>" . var_export($options, true) . "</pre>\n");
+            self::debug('Options: <pre>' . var_export($options, true) . "</pre>\n");
         }
         // request
         $response = $client->request();
@@ -982,11 +983,14 @@ abstract class phpQuery
             }
             if ($options['global']) {
                 phpQueryEvents::trigger(
-                    $documentID, 'ajaxError', [
+                    $documentID,
+                    'ajaxError',
+                    [
                     $client,
                     $response->getMessage(),
                     $options
-                ]);
+                    ]
+                );
             }
         }
         if (isset($options['complete']) && $options['complete']) {
@@ -1558,7 +1562,8 @@ abstract class phpQuery
         // search are return if alredy exists
         foreach (self::$documents[$documentID]->dataNodes as $k => $dataNode) {
             if ($node->isSameNode($dataNode)) {
-                unset(self::$documents[$documentID]->dataNodes[$k],
+                unset(
+                    self::$documents[$documentID]->dataNodes[$k],
                     self::$documents[$documentID]->data[$dataNode->dataID]
                 );
             }

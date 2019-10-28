@@ -1,11 +1,14 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license       http://jtl-url.de/jtlshoplicense
  */
+
+namespace JTL;
 
 /**
  * Class Plausi
+ * @package JTL
  */
 class Plausi
 {
@@ -36,27 +39,24 @@ class Plausi
     }
 
     /**
-     * @param array      $xVar_arr
-     * @param array|null $hasHTML_arr
+     * @param array      $variables
+     * @param array|null $hasHTML
      * @param bool       $toEntities
      * @return bool
      */
-    public function setPostVar($xVar_arr, $hasHTML_arr = null, bool $toEntities = false): bool
+    public function setPostVar($variables, $hasHTML = null, bool $toEntities = false): bool
     {
-        if (is_array($xVar_arr) && count($xVar_arr) > 0) {
-            if (is_array($hasHTML_arr)) {
-                $exclude_keys = array_fill_keys($hasHTML_arr, 1);
-                $filter_arr   = array_diff_key($xVar_arr, $exclude_keys);
-                $exclude_arr  = array_intersect_key($xVar_arr, $exclude_keys);
-
+        if (\is_array($variables) && \count($variables) > 0) {
+            if (\is_array($hasHTML)) {
+                $excludeKeys = \array_fill_keys($hasHTML, 1);
+                $filter      = \array_diff_key($variables, $excludeKeys);
+                $excludes    = \array_intersect_key($variables, $excludeKeys);
                 if ($toEntities) {
-                    array_walk($exclude_arr, function (&$value) {
-                        $value = htmlentities($value);
-                    });
+                    \array_map('\htmlentities', $excludes);
                 }
-                $this->xPostVar_arr = array_merge($xVar_arr, $filter_arr, $exclude_arr);
+                $this->xPostVar_arr = \array_merge($variables, $filter, $excludes);
             } else {
-                $this->xPostVar_arr = $xVar_arr;
+                $this->xPostVar_arr = $variables;
             }
 
             return true;
@@ -66,26 +66,25 @@ class Plausi
     }
 
     /**
-     * @param array $xVar_arr
+     * @param array $variables
      * @return bool
      */
-    public function setPlausiVar($xVar_arr): bool
+    public function setPlausiVar($variables): bool
     {
-        if (is_array($xVar_arr) && count($xVar_arr) > 0) {
-            $this->xPlausiVar_arr = $xVar_arr;
-
-            return true;
+        if (!\is_array($variables) || \count($variables) === 0) {
+            return false;
         }
+        $this->xPlausiVar_arr = $variables;
 
-        return false;
+        return true;
     }
 
     /**
-     * @param null $cTyp
-     * @param bool $bUpdate
+     * @param null $type
+     * @param bool $update
      * @return bool
      */
-    public function doPlausi($cTyp = null, bool $bUpdate = false): bool
+    public function doPlausi($type = null, bool $update = false): bool
     {
         return false;
     }

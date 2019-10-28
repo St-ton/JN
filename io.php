@@ -3,13 +3,18 @@
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\Helpers\Request;
+use JTL\IO\IO;
+use JTL\IO\IOMethods;
+use JTL\Shop;
+
 ob_start();
 
 require_once __DIR__ . '/includes/globalinclude.php';
 
-$AktuelleSeite = 'IO';
-$io            = IO::getInstance();
-$ioMethods     = new IOMethods($io);
+$io        = IO::getInstance();
+$ioMethods = new IOMethods($io);
 $ioMethods->registerMethods();
 Shop::Smarty()->setCaching(false)
     ->assign('BILD_KEIN_KATEGORIEBILD_VORHANDEN', BILD_KEIN_KATEGORIEBILD_VORHANDEN)
@@ -23,7 +28,7 @@ Shop::Smarty()->setCaching(false)
 Shop::setPageType(PAGE_IO);
 
 if (!isset($_REQUEST['io'])) {
-    header(RequestHelper::makeHTTPHeader(400));
+    header(Request::makeHTTPHeader(400));
     exit;
 }
 
@@ -38,7 +43,7 @@ try {
     $data = $io->handleRequest($request);
 } catch (Exception $e) {
     $data = $e->getMessage();
-    header(RequestHelper::makeHTTPHeader(500));
+    header(Request::makeHTTPHeader(500));
 }
 
 ob_end_clean();

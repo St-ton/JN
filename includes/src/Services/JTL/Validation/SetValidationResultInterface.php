@@ -4,11 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL\Validation;
+namespace JTL\Services\JTL\Validation;
 
 /**
  * Interface ObjectValidationResultInterface
- * @package Services\JTL\Validation
+ * @package JTL\Services\JTL\Validation
  */
 interface SetValidationResultInterface
 {
@@ -17,23 +17,23 @@ interface SetValidationResultInterface
      * @param ValidationResultInterface $valueValidationResult
      * @return void
      */
-    public function setFieldResult($fieldName, ValidationResultInterface $valueValidationResult);
+    public function setFieldResult($fieldName, ValidationResultInterface $valueValidationResult): void;
 
     /**
      * @param string $fieldName
      * @return ValidationResultInterface
      */
-    public function getFieldResult($fieldName);
+    public function getFieldResult($fieldName): ValidationResultInterface;
 
     /**
      * @return array|null
      */
-    public function getSetAsArray();
+    public function getSetAsArray(): ?array;
 
     /**
      * @return array
      */
-    public function getSetAsArrayInsecure();
+    public function getSetAsArrayInsecure(): array;
 
     /**
      * @return object|null
@@ -48,5 +48,5 @@ interface SetValidationResultInterface
     /**
      * @return bool
      */
-    public function isValid();
+    public function isValid(): bool;
 }

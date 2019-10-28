@@ -4,11 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL;
+namespace JTL\Services\JTL;
 
 /**
  * Interface PasswordServiceInterface
- * @package Services\JTL
+ * @package JTL\Services\JTL
  */
 interface PasswordServiceInterface
 {

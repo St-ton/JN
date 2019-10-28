@@ -6,26 +6,31 @@
  * @created Thu, 05 Jun 2018 12:20:00 +0200
  */
 
+use JTL\DB\ReturnType;
+use JTL\Helpers\Text;
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Class Migration_20180705122000
  */
 class Migration_20180705122000 extends Migration implements IMigration
 {
-    protected $author = 'fm';
+    protected $author      = 'fm';
     protected $description = 'Split cron intervals';
 
     public function up()
     {
-        $statusMail = Shop::Container()->getDB()->query('SELECT * FROM tstatusemail', \DB\ReturnType::SINGLE_OBJECT);
+        $statusMail = $this->getDB()->query('SELECT * FROM tstatusemail', ReturnType::SINGLE_OBJECT);
         $updates    = [];
         if ($statusMail !== false) {
-            foreach (StringHandler::parseSSK($statusMail->cIntervall) as $interval) {
-                $interval      = (int)$interval;
-                $upd           = new stdClass();
-                $upd->cEmail   = $statusMail->cEmail;
+            foreach (Text::parseSSKint($statusMail->cIntervall) as $interval) {
+                $interval       = (int)$interval;
+                $upd            = new stdClass();
+                $upd->cEmail    = $statusMail->cEmail;
                 $upd->nInterval = $interval;
-                $upd->cInhalt  = $statusMail->cInhalt;
-                $upd->nAktiv   = $statusMail->nAktiv;
+                $upd->cInhalt   = $statusMail->cInhalt;
+                $upd->nAktiv    = $statusMail->nAktiv;
                 if ($interval === 1) {
                     $upd->dLastSent = $statusMail->dLetzterTagesVersand;
                 } elseif ($interval === 7) {
@@ -47,7 +52,7 @@ class Migration_20180705122000 extends Migration implements IMigration
             ADD COLUMN `id` INT NOT NULL AUTO_INCREMENT,
             ADD PRIMARY KEY (`id`)');
         foreach ($updates as $update) {
-            Shop::Container()->getDB()->insert('tstatusemail', $update);
+            $this->getDB()->insert('tstatusemail', $update);
         }
     }
 

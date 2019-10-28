@@ -1,29 +1,25 @@
 {includeMailTemplate template=header type=plain}
 
-Dear {$Kunde->cAnredeLocalized}  {$Kunde->cNachname},
+Dear {$Kunde->cVorname}  {$Kunde->cNachname},
 
-We would love it if you could write a rating and share your experience with your recently products.
+We are always greatful for feedback on recently bought products. We would love for you to leave a rating!
 
-Please click on the product to rate it:
+Please click on the item to rate it:
 
-{foreach name=pos from=$Bestellung->Positionen item=Position}
-    {if $Position->nPosTyp==1}
+{foreach $Bestellung->Positionen as $Position}
+    {if $Position->nPosTyp == 1}
         {$Position->cName} ({$Position->cArtNr})
         {$ShopURL}/index.php?a={$Position->kArtikel}&bewertung_anzeigen=1#tab-votes
 
-        {foreach name=variationen from=$Position->WarenkorbPosEigenschaftArr item=WKPosEigenschaft}
+        {foreach $Position->WarenkorbPosEigenschaftArr as $WKPosEigenschaft}
 
             {$WKPosEigenschaft->cEigenschaftName}: {$WKPosEigenschaft->cEigenschaftWertName}
         {/foreach}
     {/if}
 {/foreach}
 
-Thank you for sharing!
+Thanks for sharing your feedback!
 
-{if !empty($oTrustedShopsBewertenButton->cURL)}
-Were you satisfied with your order? If so, we hope you'll take a minute to write a recommendation.
-{$oTrustedShopsBewertenButton->cURL}
-{/if}
 
 Yours sincerely,
 {$Firma->cName}

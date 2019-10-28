@@ -62,7 +62,7 @@ if (!function_exists('mb_strpos')) {
      * @param int $offset
      * @return bool|int
      */
-    function mb_strpos($haystack, $needle, $offset=0)
+    function mb_strpos($haystack, $needle, $offset = 0)
     {
         return strpos($haystack, $needle, $offset);
     }
@@ -79,7 +79,7 @@ if (!function_exists('mb_stripos')) {
      * @param int $offset
      * @return int
      */
-    function mb_stripos($haystack, $needle, $offset=0)
+    function mb_stripos($haystack, $needle, $offset = 0)
     {
         return stripos($haystack, $needle, $offset);
     }
@@ -97,7 +97,7 @@ if (!function_exists('mb_substr')) {
      * @param int $length
      * @return string
      */
-    function mb_substr($str, $start, $length=0)
+    function mb_substr($str, $start, $length = 0)
     {
         return substr($str, $start, $length);
     }

@@ -4,18 +4,29 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services;
+namespace JTL\Services;
 
-use Boxes\FactoryInterface;
-use Cache\JTLCacheInterface;
-use DB\DbInterface;
-use DB\Services\GcServiceInterface;
+use JTL\Backend\AdminAccount;
+use JTL\Boxes\FactoryInterface;
+use JTL\Cache\JTLCacheInterface;
+use JTL\DB\DbInterface;
+use JTL\DB\Services\GcServiceInterface;
+use JTL\Debug\JTLDebugBar;
+use JTL\L10n\GetText;
+use JTL\OPC\DB;
+use JTL\OPC\Locker;
+use JTL\OPC\PageDB;
+use JTL\OPC\PageService;
+use JTL\OPC\Service;
+use JTL\Services\JTL\AlertServiceInterface;
+use JTL\Services\JTL\BoxServiceInterface;
+use JTL\Services\JTL\CaptchaServiceInterface;
+use JTL\Services\JTL\CountryServiceInterface;
+use JTL\Services\JTL\CryptoServiceInterface;
+use JTL\Services\JTL\LinkServiceInterface;
+use JTL\Services\JTL\NewsServiceInterface;
+use JTL\Services\JTL\PasswordServiceInterface;
 use Monolog\Logger;
-use Services\JTL\BoxServiceInterface;
-use Services\JTL\CaptchaServiceInterface;
-use Services\JTL\CryptoServiceInterface;
-use Services\JTL\LinkServiceInterface;
-use Services\JTL\PasswordServiceInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -24,7 +35,7 @@ use Psr\Log\LoggerInterface;
  * This class provides default services, that are provided by JTL-Shop core. Those Services are provided though a
  * separate interface for improving IntelliSense support for external and internal developers
  *
- * @package Services
+ * @package JTL\Services
  */
 class Container extends ContainerBase implements DefaultServicesInterface
 {
@@ -119,41 +130,89 @@ class Container extends ContainerBase implements DefaultServicesInterface
     /**
      * @inheritdoc
      */
-    public function getOPC(): \OPC\Service
+    public function getOPC(): Service
     {
-        return $this->get(\OPC\Service::class);
+        return $this->get(Service::class);
     }
 
     /**
      * @inheritdoc
      */
-    public function getOPCPageService(): \OPC\PageService
+    public function getOPCPageService(): PageService
     {
-        return $this->get(\OPC\PageService::class);
+        return $this->get(PageService::class);
     }
 
     /**
      * @inheritdoc
      */
-    public function getOPCDB(): \OPC\DB
+    public function getOPCDB(): DB
     {
-        return $this->get(\OPC\DB::class);
+        return $this->get(DB::class);
     }
 
     /**
      * @inheritdoc
      */
-    public function getOPCPageDB(): \OPC\PageDB
+    public function getOPCPageDB(): PageDB
     {
-        return $this->get(\OPC\PageDB::class);
+        return $this->get(PageDB::class);
     }
 
     /**
      * @inheritdoc
      */
-    public function getOPCLocker(): \OPC\Locker
+    public function getOPCLocker(): Locker
     {
-        return $this->get(\OPC\Locker::class);
+        return $this->get(Locker::class);
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function getNewsService(): NewsServiceInterface
+    {
+        return $this->get(NewsServiceInterface::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getAlertService(): AlertServiceInterface
+    {
+        return $this->get(AlertServiceInterface::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getGetText(): GetText
+    {
+        return $this->get(GetText::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getAdminAccount(): AdminAccount
+    {
+        return $this->get(AdminAccount::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getDebugBar(): JTLDebugBar
+    {
+        return $this->get(JTLDebugBar::class);
+    }
+
+
+    /**
+     * @inheritdoc
+     */
+    public function getCountryService(): CountryServiceInterface
+    {
+        return $this->get(CountryServiceInterface::class);
+    }
 }

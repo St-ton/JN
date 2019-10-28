@@ -4,14 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes;
+namespace JTL\Boxes;
 
 use MyCLabs\Enum\Enum;
 
 /**
- * Class ComponentPropertyType
+ * Class Position
  *
- * @package Boxes
+ * @package JTL\Boxes
  * @method Position LEFT()
  * @method Position RIGHT()
  * @method Position BOTTOM()
@@ -19,11 +19,11 @@ use MyCLabs\Enum\Enum;
  */
 class Position extends Enum
 {
-    const LEFT = 'left';
+    public const LEFT = 'left';
 
-    const RIGHT = 'right';
+    public const RIGHT = 'right';
 
-    const BOTTOM = 'bottom';
+    public const BOTTOM = 'bottom';
 
-    const TOP = 'top';
+    public const TOP = 'top';
 }

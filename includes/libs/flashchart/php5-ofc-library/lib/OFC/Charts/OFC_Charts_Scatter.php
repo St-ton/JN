@@ -22,7 +22,7 @@ require_once('OFC/Charts/OFC_Charts_Base.php');
 
 class OFC_Charts_Scatter_Value
 {
-    public function __construct($x, $y, $dot_size=-1)
+    public function __construct($x, $y, $dot_size = -1)
     {
         $this->x = $x;
         $this->y = $y;
@@ -39,7 +39,7 @@ class OFC_Charts_Scatter extends OFC_Charts_Base
     {
         parent::__construct();
 
-        $this->type      = 'scatter';
+        $this->type = 'scatter';
         $this->set_colour($colour);
         $this->set_dot_size($dot_size);
     }

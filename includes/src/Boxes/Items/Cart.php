@@ -4,11 +4,12 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
 
 /**
  * Class Cart
- * @package Boxes
+ *
+ * @package JTL\Boxes\Items
  */
 final class Cart extends AbstractBox
 {
@@ -19,11 +20,11 @@ final class Cart extends AbstractBox
     public function __construct(array $config)
     {
         parent::__construct($config);
-        parent::addMapping('elemente', 'Items');
+        $this->addMapping('elemente', 'Items');
         if (isset($_SESSION['Warenkorb']->PositionenArr)) {
             $products = [];
-            foreach ($_SESSION['Warenkorb']->PositionenArr as $position) {
-                $products[] = $position;
+            foreach ($_SESSION['Warenkorb']->PositionenArr as $item) {
+                $products[] = $item;
             }
             $this->setItems(\array_reverse($products));
         }

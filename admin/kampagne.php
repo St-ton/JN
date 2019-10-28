@@ -3,18 +3,27 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\Alert\Alert;
+use JTL\Campaign;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Form;
+use JTL\Helpers\GeneralObject;
+use JTL\Helpers\Request;
+use JTL\Pagination\Pagination;
+use JTL\Shop;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('STATS_CAMPAIGN_VIEW', true, true);
-/** @global JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'kampagne_inc.php';
 
-$cHinweis          = '';
-$cFehler           = '';
-$kKampagne         = 0;
-$kKampagneDef      = 0;
-$cStamp            = '';
-$step              = 'kampagne_uebersicht';
+$campaignID   = 0;
+$definitionID = 0;
+$stamp        = '';
+$step         = 'kampagne_uebersicht';
+$alertHelper  = Shop::Container()->getAlertService();
 
 // Zeitraum
 // 1 = Monat
@@ -36,80 +45,84 @@ if (!isset($_SESSION['Kampagne']->cSort)) {
     $_SESSION['Kampagne']->cSort = 'DESC';
 }
 
-$cDatumNow_arr = DateHelper::getDateParts(date('Y-m-d H:i:s'));
+$now = new DateTimeImmutable();
 // Tab
-if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
+if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
+    $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
-if (RequestHelper::verifyGPCDataInt('neu') === 1 && FormHelper::validateToken()) {
+if (Request::verifyGPCDataInt('neu') === 1 && Form::validateToken()) {
     $step = 'kampagne_erstellen';
-} elseif (RequestHelper::verifyGPCDataInt('editieren') === 1 && RequestHelper::verifyGPCDataInt('kKampagne') > 0 && FormHelper::validateToken()) {
+} elseif (Request::verifyGPCDataInt('editieren') === 1
+    && Request::verifyGPCDataInt('kKampagne') > 0
+    && Form::validateToken()
+) {
     // Editieren
-    $step      = 'kampagne_erstellen';
-    $kKampagne = RequestHelper::verifyGPCDataInt('kKampagne');
-} elseif (RequestHelper::verifyGPCDataInt('detail') === 1 && RequestHelper::verifyGPCDataInt('kKampagne') > 0 && FormHelper::validateToken()) {
+    $step       = 'kampagne_erstellen';
+    $campaignID = Request::verifyGPCDataInt('kKampagne');
+} elseif (Request::verifyGPCDataInt('detail') === 1
+    && Request::verifyGPCDataInt('kKampagne') > 0
+    && Form::validateToken()
+) {
     // Detail
-    $step      = 'kampagne_detail';
-    $kKampagne = RequestHelper::verifyGPCDataInt('kKampagne');
+    $step       = 'kampagne_detail';
+    $campaignID = Request::verifyGPCDataInt('kKampagne');
     // Zeitraum / Ansicht
-    setzeDetailZeitraum($cDatumNow_arr);
-} elseif (RequestHelper::verifyGPCDataInt('defdetail') === 1
-    && RequestHelper::verifyGPCDataInt('kKampagne') > 0
-    && RequestHelper::verifyGPCDataInt('kKampagneDef') > 0
-    && FormHelper::validateToken()
+    setzeDetailZeitraum($now);
+} elseif (Request::verifyGPCDataInt('defdetail') === 1
+    && Request::verifyGPCDataInt('kKampagne') > 0
+    && Request::verifyGPCDataInt('kKampagneDef') > 0
+    && Form::validateToken()
 ) { // Def Detail
     $step         = 'kampagne_defdetail';
-    $kKampagne    = RequestHelper::verifyGPCDataInt('kKampagne');
-    $kKampagneDef = RequestHelper::verifyGPCDataInt('kKampagneDef');
-    $cStamp       = RequestHelper::verifyGPDataString('cStamp');
-} elseif (RequestHelper::verifyGPCDataInt('erstellen_speichern') === 1 && FormHelper::validateToken()) {
+    $campaignID   = Request::verifyGPCDataInt('kKampagne');
+    $definitionID = Request::verifyGPCDataInt('kKampagneDef');
+    $stamp        = Request::verifyGPDataString('cStamp');
+} elseif (Request::verifyGPCDataInt('erstellen_speichern') === 1 && Form::validateToken()) {
     // Speichern / Editieren
-    $oKampagne             = new Kampagne();
-    $oKampagne->cName      = $_POST['cName'];
-    $oKampagne->cParameter = $_POST['cParameter'];
-    $oKampagne->cWert      = $_POST['cWert'];
-    $oKampagne->nDynamisch = $_POST['nDynamisch'];
-    $oKampagne->nAktiv     = $_POST['nAktiv'];
-    $oKampagne->dErstellt  = 'NOW()';
+    $campaign             = new Campaign();
+    $campaign->cName      = $_POST['cName'] ?? '';
+    $campaign->cParameter = $_POST['cParameter'];
+    $campaign->cWert      = $_POST['cWert'] ?? '';
+    $campaign->nDynamisch = $_POST['nDynamisch'] ?? 0;
+    $campaign->nAktiv     = $_POST['nAktiv'] ?? 0;
+    $campaign->dErstellt  = 'NOW()';
 
     // Editieren
-    if (RequestHelper::verifyGPCDataInt('kKampagne') > 0) {
-        $oKampagne->kKampagne = RequestHelper::verifyGPCDataInt('kKampagne');
+    if (Request::verifyGPCDataInt('kKampagne') > 0) {
+        $campaign->kKampagne = Request::verifyGPCDataInt('kKampagne');
     }
 
-    $nReturnValue = speicherKampagne($oKampagne);
-
-    if ($nReturnValue === 1) {
-        $cHinweis = 'Ihre Kampagne wurde erfolgreich gespeichert.';
+    $res = speicherKampagne($campaign);
+    if ($res === 1) {
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCampaignSave'), 'successCampaignSave');
     } else {
-        $cFehler = mappeFehlerCodeSpeichern($nReturnValue);
-        $smarty->assign('oKampagne', $oKampagne);
+        $alertHelper->addAlert(Alert::TYPE_ERROR, mappeFehlerCodeSpeichern($res), 'campaignError');
+        $smarty->assign('oKampagne', $campaign);
         $step = 'kampagne_erstellen';
     }
-} elseif (RequestHelper::verifyGPCDataInt('delete') === 1 && FormHelper::validateToken()) {
+} elseif (Request::verifyGPCDataInt('delete') === 1 && Form::validateToken()) {
     // Loeschen
-    if (isset($_POST['kKampagne']) && is_array($_POST['kKampagne']) && count($_POST['kKampagne']) > 0) {
-        $nReturnValue = loescheGewaehlteKampagnen($_POST['kKampagne']);
-
-        if ($nReturnValue == 1) {
-            $cHinweis = 'Ihre ausgewählten Kampagnen wurden erfolgreich gelöscht.';
+    if (GeneralObject::hasCount('kKampagne', $_POST)) {
+        $res = loescheGewaehlteKampagnen($_POST['kKampagne']);
+        if ($res === 1) {
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCampaignDelete'), 'successCampaignDelete');
         }
     } else {
-        $cFehler = 'Fehler: Bitte markieren Sie mindestens eine Kampagne.';
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneCampaign'), 'errorAtLeastOneCampaign');
     }
-} elseif (RequestHelper::verifyGPCDataInt('nAnsicht') > 0) { // Ansicht
-    $_SESSION['Kampagne']->nAnsicht = RequestHelper::verifyGPCDataInt('nAnsicht');
-} elseif (RequestHelper::verifyGPCDataInt('nStamp') === -1 || RequestHelper::verifyGPCDataInt('nStamp') === 1) { // Zeitraum
+} elseif (Request::verifyGPCDataInt('nAnsicht') > 0) { // Ansicht
+    $_SESSION['Kampagne']->nAnsicht = Request::verifyGPCDataInt('nAnsicht');
+} elseif (Request::verifyGPCDataInt('nStamp') === -1 || Request::verifyGPCDataInt('nStamp') === 1) {
     // Vergangenheit
-    if (RequestHelper::verifyGPCDataInt('nStamp') === -1) {
+    if (Request::verifyGPCDataInt('nStamp') === -1) {
         $_SESSION['Kampagne']->cStamp = gibStamp($_SESSION['Kampagne']->cStamp, -1, $_SESSION['Kampagne']->nAnsicht);
-    } elseif (RequestHelper::verifyGPCDataInt('nStamp') === 1) {
+    } elseif (Request::verifyGPCDataInt('nStamp') === 1) {
         // Zukunft
         $_SESSION['Kampagne']->cStamp = gibStamp($_SESSION['Kampagne']->cStamp, 1, $_SESSION['Kampagne']->nAnsicht);
     }
-} elseif (RequestHelper::verifyGPCDataInt('nSort') > 0) { // Sortierung
+} elseif (Request::verifyGPCDataInt('nSort') > 0) { // Sortierung
     // ASC / DESC
-    if ($_SESSION['Kampagne']->nSort == RequestHelper::verifyGPCDataInt('nSort')) {
+    if ($_SESSION['Kampagne']->nSort == Request::verifyGPCDataInt('nSort')) {
         if ($_SESSION['Kampagne']->cSort === 'ASC') {
             $_SESSION['Kampagne']->cSort = 'DESC';
         } else {
@@ -117,125 +130,126 @@ if (RequestHelper::verifyGPCDataInt('neu') === 1 && FormHelper::validateToken())
         }
     }
 
-    $_SESSION['Kampagne']->nSort = RequestHelper::verifyGPCDataInt('nSort');
+    $_SESSION['Kampagne']->nSort = Request::verifyGPCDataInt('nSort');
 }
 if ($step === 'kampagne_uebersicht') {
-    $oKampagne_arr    = holeAlleKampagnen(true, false);
-    $oKampagneDef_arr = holeAlleKampagnenDefinitionen();
-
-    $nGroessterKey = 0;
-    if (is_array($oKampagne_arr) && count($oKampagne_arr) > 0) {
-        $cMemeber_arr  = array_keys($oKampagne_arr);
-        $nGroessterKey = $cMemeber_arr[count($cMemeber_arr) - 1];
+    $campaigns   = holeAlleKampagnen(true, false);
+    $definitions = holeAlleKampagnenDefinitionen();
+    $maxKey      = 0;
+    if (is_array($campaigns) && count($campaigns) > 0) {
+        $members = array_keys($campaigns);
+        $maxKey  = $members[count($members) - 1];
     }
 
-    $smarty->assign('nGroessterKey', $nGroessterKey)
-           ->assign('oKampagne_arr', $oKampagne_arr)
-           ->assign('oKampagneDef_arr', $oKampagneDef_arr)
-           ->assign('oKampagneStat_arr', holeKampagneGesamtStats($oKampagne_arr, $oKampagneDef_arr));
+    $smarty->assign('nGroessterKey', $maxKey)
+        ->assign('oKampagne_arr', $campaigns)
+        ->assign('oKampagneDef_arr', $definitions)
+        ->assign('oKampagneStat_arr', holeKampagneGesamtStats($campaigns, $definitions));
 } elseif ($step === 'kampagne_erstellen') { // Erstellen / Editieren
-    if ($kKampagne > 0) {
-        $smarty->assign('oKampagne', holeKampagne($kKampagne));
+    if ($campaignID > 0) {
+        $smarty->assign('oKampagne', holeKampagne($campaignID));
     }
 } elseif ($step === 'kampagne_detail') { // Detailseite
-    if ($kKampagne > 0) {
-        $oKampagne_arr    = holeAlleKampagnen(true, false);
-        $oKampagneDef_arr = holeAlleKampagnenDefinitionen();
+    if ($campaignID > 0) {
+        $campaigns   = holeAlleKampagnen(true, false);
+        $definitions = holeAlleKampagnenDefinitionen();
         if (!isset($_SESSION['Kampagne']->oKampagneDetailGraph)) {
             $_SESSION['Kampagne']->oKampagneDetailGraph = new stdClass();
         }
-        $_SESSION['Kampagne']->oKampagneDetailGraph->oKampagneDef_arr = $oKampagneDef_arr;
+        $_SESSION['Kampagne']->oKampagneDetailGraph->oKampagneDef_arr = $definitions;
         $_SESSION['nDiagrammTyp']                                     = 5;
 
-        $Stats = holeKampagneDetailStats($kKampagne, $oKampagneDef_arr);
+        $stats = holeKampagneDetailStats($campaignID, $definitions);
         // Highchart
-        $Charts = [];
+        $charts = [];
         for ($i = 1; $i <= 10; $i++) {
-            $Charts[$i] = PrepareLineChartKamp($Stats, $i);
+            $charts[$i] = PrepareLineChartKamp($stats, $i);
         }
 
         $smarty->assign('TypeNames', GetTypes())
-               ->assign('Charts', $Charts)
-               ->assign('oKampagne', holeKampagne($kKampagne))
-               ->assign('oKampagneStat_arr', $Stats)
-               ->assign('oKampagne_arr', $oKampagne_arr)
-               ->assign('oKampagneDef_arr', $oKampagneDef_arr)
-               ->assign('nRand', time());
+            ->assign('Charts', $charts)
+            ->assign('oKampagne', holeKampagne($campaignID))
+            ->assign('oKampagneStat_arr', $stats)
+            ->assign('oKampagne_arr', $campaigns)
+            ->assign('oKampagneDef_arr', $definitions)
+            ->assign('nRand', time());
     }
 } elseif ($step === 'kampagne_defdetail') { // DefDetailseite
-    if (strlen($cStamp) === 0) {
-        $cStamp = checkGesamtStatZeitParam();
+    if (mb_strlen($stamp) === 0) {
+        $stamp = checkGesamtStatZeitParam();
     }
 
-    if ($kKampagne > 0 && $kKampagneDef > 0 && strlen($cStamp) > 0) {
-        $oKampagneDef = holeKampagneDef($kKampagneDef);
-        $cMember_arr  = [];
-        $cStampText   = '';
-        $cSQLSELECT   = '';
-        $cSQLWHERE    = '';
-        baueDefDetailSELECTWHERE($cSQLSELECT, $cSQLWHERE, $cStamp);
+    if ($campaignID > 0 && $definitionID > 0 && mb_strlen($stamp) > 0) {
+        $definition = holeKampagneDef($definitionID);
+        $members    = [];
+        $stampText  = '';
+        $select     = '';
+        $where      = '';
+        baueDefDetailSELECTWHERE($select, $where, $stamp);
 
-        $oStats_arr = Shop::Container()->getDB()->query(
-            'SELECT kKampagne, kKampagneDef, kKey ' . $cSQLSELECT . '
+        $stats = Shop::Container()->getDB()->query(
+            'SELECT kKampagne, kKampagneDef, kKey ' . $select . '
                 FROM tkampagnevorgang
-                ' . $cSQLWHERE . '
-                    AND kKampagne = ' . (int)$kKampagne . '
-                    AND kKampagneDef = ' . (int)$oKampagneDef->kKampagneDef,
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+                ' . $where . '
+                    AND kKampagne = ' . (int)$campaignID . '
+                    AND kKampagneDef = ' . (int)$definition->kKampagneDef,
+            ReturnType::ARRAY_OF_OBJECTS
         );
 
-        $oPagiDefDetail = (new Pagination('defdetail'))
-            ->setItemCount(count($oStats_arr))
+        $paginationDefinitionDetail = (new Pagination('defdetail'))
+            ->setItemCount(count($stats))
             ->assemble();
-        $oKampagneStat_arr = holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, $cStampText, $cMember_arr,
-            ' LIMIT ' . $oPagiDefDetail->getLimitSQL());
+        $campaignStats              = holeKampagneDefDetailStats(
+            $campaignID,
+            $definition,
+            $stamp,
+            $stampText,
+            $members,
+            ' LIMIT ' . $paginationDefinitionDetail->getLimitSQL()
+        );
 
-        $smarty->assign('oPagiDefDetail', $oPagiDefDetail)
-            ->assign('oKampagne', holeKampagne($kKampagne))
-            ->assign('oKampagneStat_arr', $oKampagneStat_arr)
-            ->assign('oKampagneDef', $oKampagneDef)
-            ->assign('cMember_arr', $cMember_arr)
-            ->assign('cStampText', $cStampText)
-            ->assign('cStamp', $cStamp)
-            ->assign('nGesamtAnzahlDefDetail', count($oStats_arr));
+        $smarty->assign('oPagiDefDetail', $paginationDefinitionDetail)
+            ->assign('oKampagne', holeKampagne($campaignID))
+            ->assign('oKampagneStat_arr', $campaignStats)
+            ->assign('oKampagneDef', $definition)
+            ->assign('cMember_arr', $members)
+            ->assign('cStampText', $stampText)
+            ->assign('cStamp', $stamp)
+            ->assign('nGesamtAnzahlDefDetail', count($stats));
     }
 }
 
-$cDatum_arr = DateHelper::getDateParts($_SESSION['Kampagne']->cStamp);
+$date = date_create($_SESSION['Kampagne']->cStamp);
 switch ((int)$_SESSION['Kampagne']->nAnsicht) {
     case 1:    // Monat
-        $cZeitraum = '01.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'] . ' - ' .
-            date('t', mktime(0, 0, 0, (int)$cDatum_arr['cMonat'], 1, (int)$cDatum_arr['cJahr'])) .
-            '.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'];
-        $bGreaterNow = (int)$cDatumNow_arr['cMonat'] === (int)$cDatum_arr['cMonat']
-            && (int)$cDatumNow_arr['cJahr'] === (int)$cDatum_arr['cJahr'];
-        $smarty->assign('cZeitraum', $cZeitraum)
-            ->assign('cZeitraumParam', base64_encode($cZeitraum))
-            ->assign('bGreaterNow', $bGreaterNow);
+        $timeSpan   = '01.' . date_format($date, 'm.Y') . ' - ' . date_format($date, 't.m.Y');
+        $greaterNow = (int)$now->format('n') === (int)date_format($date, 'n')
+            && (int)$now->format('Y') === (int)date_format($date, 'Y');
+        $smarty->assign('cZeitraum', $timeSpan)
+            ->assign('cZeitraumParam', base64_encode($timeSpan))
+            ->assign('bGreaterNow', $greaterNow);
         break;
     case 2:    // Woche
-        $cDate_arr   = ermittleDatumWoche($cDatum_arr['cJahr'] . '-' . $cDatum_arr['cMonat'] . '-' . $cDatum_arr['cTag']);
-        $cZeitraum   = date('d.m.Y', $cDate_arr[0]) . ' - ' . date('d.m.Y', $cDate_arr[1]);
-        $bGreaterNow = date('Y-m-d', $cDate_arr[1]) >= $cDatumNow_arr['cDatum'];
-        $smarty->assign('cZeitraum', $cZeitraum)
-            ->assign('cZeitraumParam', base64_encode($cZeitraum))
-            ->assign('bGreaterNow', $bGreaterNow);
+        $dateParts  = ermittleDatumWoche(date_format($date, 'Y-m-d'));
+        $timeSpan   = date('d.m.Y', $dateParts[0]) . ' - ' . date('d.m.Y', $dateParts[1]);
+        $greaterNow = date('Y-m-d', $dateParts[1]) >= $now->format('Y-m-d');
+        $smarty->assign('cZeitraum', $timeSpan)
+            ->assign('cZeitraumParam', base64_encode($timeSpan))
+            ->assign('bGreaterNow', $greaterNow);
         break;
     case 3:    // Tag
-        $cZeitraum   = $cDatum_arr['cTag'] . '.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'];
-        $bGreaterNow = (int)$cDatumNow_arr['cTag'] === (int)$cDatum_arr['cTag']
-            && (int)$cDatumNow_arr['cMonat'] === (int)$cDatum_arr['cMonat']
-            && (int)$cDatumNow_arr['cJahr'] === (int)$cDatum_arr['cJahr'];
-        $smarty->assign('cZeitraum', $cZeitraum)
-            ->assign('cZeitraumParam', base64_encode($cZeitraum))
-            ->assign('bGreaterNow', $bGreaterNow);
+    default:
+        $timeSpan   = date_format($date, 'd.m.Y');
+        $greaterNow = (int)$now->format('n') === (int)date_format($date, 'n')
+            && (int)$now->format('Y') === (int)date_format($date, 'Y');
+        $smarty->assign('cZeitraum', $timeSpan)
+            ->assign('cZeitraumParam', base64_encode($timeSpan))
+            ->assign('bGreaterNow', $greaterNow);
         break;
 }
 
 $smarty->assign('PFAD_ADMIN', PFAD_ADMIN)
-       ->assign('PFAD_TEMPLATES', PFAD_TEMPLATES)
-       ->assign('PFAD_GFX', PFAD_GFX)
-       ->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
-       ->assign('step', $step)
-       ->display('kampagne.tpl');
+    ->assign('PFAD_TEMPLATES', PFAD_TEMPLATES)
+    ->assign('PFAD_GFX', PFAD_GFX)
+    ->assign('step', $step)
+    ->display('kampagne.tpl');

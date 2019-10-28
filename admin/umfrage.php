@@ -3,311 +3,320 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\Alert\Alert;
+use JTL\Customer\CustomerGroup;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Form;
+use JTL\Helpers\GeneralObject;
+use JTL\Helpers\Request;
+use JTL\Helpers\Seo;
+use JTL\Helpers\Text;
+use JTL\Nice;
+use JTL\Pagination\Pagination;
+use JTL\Shop;
+
 require_once __DIR__ . '/includes/admininclude.php';
-require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'umfrage_inc.php';
 
 $oAccount->permission('EXTENSION_VOTE_VIEW', true, true);
-/** @global JTLSmarty $smarty */
-$Einstellungen = Shop::getSettings([CONF_UMFRAGE]);
-$cHinweis      = '';
-$cFehler       = '';
-$step          = 'umfrage_uebersicht';
-$kUmfrage      = 0;
-$kUmfrageTMP   = RequestHelper::verifyGPCDataInt('kUmfrage') > 0
-    ? RequestHelper::verifyGPCDataInt('kUmfrage')
-    : RequestHelper::verifyGPCDataInt('kU');
+/** @global \JTL\Smarty\JTLSmarty $smarty */
+$db          = Shop::Container()->getDB();
+$alertHelper = Shop::Container()->getAlertService();
+$step        = 'umfrage_uebersicht';
+$surveyID    = 0;
+$tmpID       = Request::verifyGPCDataInt('kUmfrage') > 0
+    ? Request::verifyGPCDataInt('kUmfrage')
+    : Request::verifyGPCDataInt('kU');
 setzeSprache();
-if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
+if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
+    $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
-$Sprachen    = Sprache::getAllLanguages();
-$oSpracheTMP = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$_SESSION['kSprache']);
 $oNice = Nice::getInstance();
 if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
-    if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
-        $cHinweis .= saveAdminSectionSettings(CONF_UMFRAGE, $_POST);
+    if (Request::postInt('einstellungen') > 0) {
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, saveAdminSectionSettings(CONF_UMFRAGE, $_POST), 'saveSettings');
     }
-    if (RequestHelper::verifyGPCDataInt('umfrage') === 1 && FormHelper::validateToken()) {
-        if (isset($_POST['umfrage_erstellen']) && (int)$_POST['umfrage_erstellen'] === 1) {
+    if (Request::verifyGPCDataInt('umfrage') === 1 && Form::validateToken()) {
+        if (Request::postInt('umfrage_erstellen') === 1) {
             $step = 'umfrage_erstellen';
-        } elseif (isset($_GET['umfrage_editieren']) && (int)$_GET['umfrage_editieren'] === 1) {
+        } elseif (Request::getInt('umfrage_editieren') === 1) {
             $step     = 'umfrage_editieren';
-            $kUmfrage = (int)$_GET['kUmfrage'];
-
-            if ($kUmfrage > 0) {
-                $oUmfrage = Shop::Container()->getDB()->query(
+            $surveyID = Request::getInt('kUmfrage');
+            if ($surveyID > 0) {
+                $survey                    = $db->query(
                     "SELECT *, DATE_FORMAT(dGueltigVon, '%d.%m.%Y %H:%i') AS dGueltigVon_de, 
                         DATE_FORMAT(dGueltigBis, '%d.%m.%Y %H:%i') AS dGueltigBis_de
                         FROM tumfrage
-                        WHERE kUmfrage = " . $kUmfrage,
-                    \DB\ReturnType::SINGLE_OBJECT
+                        WHERE kUmfrage = " . $surveyID,
+                    ReturnType::SINGLE_OBJECT
                 );
-                $oUmfrage->kKundengruppe_arr = StringHandler::parseSSK($oUmfrage->cKundengruppe);
+                $survey->kKundengruppe_arr = Text::parseSSK($survey->cKundengruppe);
 
-                $smarty->assign('oUmfrage', $oUmfrage)
-                       ->assign('s1', RequestHelper::verifyGPCDataInt('s1'));
+                $smarty->assign('oUmfrage', $survey)
+                    ->assign('s1', Request::verifyGPCDataInt('s1'));
             } else {
-                $cFehler .= 'Fehler: Ihre Umfrage konnte nicht gefunden werden.<br />';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorPollNotFound'), 'errorPollNotFound');
                 $step = 'umfrage_uebersicht';
             }
         }
-        if (isset($_GET['a']) && $_GET['a'] === 'a_loeschen') {
+        if (Request::getVar('a') === 'a_loeschen') {
             $step                 = 'umfrage_frage_bearbeiten';
-            $kUmfrageFrage        = (int)$_GET['kUF'];
-            $kUmfrageFrageAntwort = (int)$_GET['kUFA'];
+            $questionID           = Request::getInt('kUF');
+            $kUmfrageFrageAntwort = Request::getInt('kUFA');
             if ($kUmfrageFrageAntwort > 0) {
-                Shop::Container()->getDB()->query(
+                $db->query(
                     'DELETE tumfragefrageantwort, tumfragedurchfuehrungantwort
                         FROM tumfragefrageantwort
                         LEFT JOIN tumfragedurchfuehrungantwort
-                            ON tumfragedurchfuehrungantwort.kUmfrageFrageAntwort = tumfragefrageantwort.kUmfrageFrageAntwort
+                            ON tumfragedurchfuehrungantwort.kUmfrageFrageAntwort = 
+                               tumfragefrageantwort.kUmfrageFrageAntwort
                         WHERE tumfragefrageantwort.kUmfrageFrageAntwort = ' . $kUmfrageFrageAntwort,
-                    \DB\ReturnType::AFFECTED_ROWS
+                    ReturnType::AFFECTED_ROWS
                 );
             }
-            Shop::Cache()->flushTags([CACHING_GROUP_CORE]);
-        } elseif (isset($_GET['a']) && $_GET['a'] === 'o_loeschen') {
+            Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
+        } elseif (Request::getVar('a') === 'o_loeschen') {
             $step                 = 'umfrage_frage_bearbeiten';
-            $kUmfrageFrage        = (int)$_GET['kUF'];
-            $kUmfrageMatrixOption = (int)$_GET['kUFO'];
+            $questionID           = Request::getInt('kUF');
+            $kUmfrageMatrixOption = Request::getInt('kUFO');
             if ($kUmfrageMatrixOption > 0) {
-                Shop::Container()->getDB()->query(
+                $db->query(
                     'DELETE tumfragematrixoption, tumfragedurchfuehrungantwort
                         FROM tumfragematrixoption
                         LEFT JOIN tumfragedurchfuehrungantwort
-                            ON tumfragedurchfuehrungantwort.kUmfrageMatrixOption = tumfragematrixoption.kUmfrageMatrixOption
+                            ON tumfragedurchfuehrungantwort.kUmfrageMatrixOption = 
+                               tumfragematrixoption.kUmfrageMatrixOption
                         WHERE tumfragematrixoption.kUmfrageMatrixOption = ' . $kUmfrageMatrixOption,
-                    \DB\ReturnType::AFFECTED_ROWS
+                    ReturnType::AFFECTED_ROWS
                 );
             }
-            Shop::Cache()->flushTags([CACHING_GROUP_CORE]);
+            Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
         }
 
         // Umfrage speichern
-        if (isset($_POST['umfrage_speichern']) && (int)$_POST['umfrage_speichern']) {
+        if (Request::postInt('umfrage_speichern') > 0) {
             $step = 'umfrage_erstellen';
-
-            if (isset($_POST['umfrage_edit_speichern'], $_POST['kUmfrage'])
-                && (int)$_POST['umfrage_edit_speichern'] === 1 && (int)$_POST['kUmfrage'] > 0
-            ) {
-                $kUmfrage = (int)$_POST['kUmfrage'];
+            if (Request::postInt('umfrage_edit_speichern') === 1 && Request::postInt('kUmfrage') > 0) {
+                $surveyID = Request::postInt('kUmfrage');
             }
-            $cName  = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-            $kKupon = isset($_POST['kKupon']) ? (int)$_POST['kKupon'] : 0;
-            if ($kKupon <= 0 || !isset($kKupon)) {
-                $kKupon = 0;
+            $name     = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+            $couponID = Request::postInt('kKupon');
+            if ($couponID <= 0 || !isset($couponID)) {
+                $couponID = 0;
             }
-            $cSeo              = $_POST['cSeo'];
-            $kKundengruppe_arr = $_POST['kKundengruppe'];
-            $cBeschreibung     = $_POST['cBeschreibung'];
-            $fGuthaben         = isset($_POST['fGuthaben']) ?
+            $cSeo             = $_POST['cSeo'];
+            $customerGroupIDs = $_POST['kKundengruppe'];
+            $description      = $_POST['cBeschreibung'];
+            $fGuthaben        = isset($_POST['fGuthaben']) ?
                 (float)str_replace(',', '.', $_POST['fGuthaben'])
                 : 0;
-            if ($fGuthaben <= 0 || !isset($kKupon)) {
+            if ($fGuthaben <= 0 || !isset($couponID)) {
                 $fGuthaben = 0;
             }
-            $nBonuspunkte = isset($_POST['nBonuspunkte'])
-                ? (int)$_POST['nBonuspunkte'] 
-                : 0;
-            if ($nBonuspunkte <= 0 || !isset($kKupon)) {
+            $nBonuspunkte = Request::postInt('nBonuspunkte');
+            if ($nBonuspunkte <= 0 || !isset($couponID)) {
                 $nBonuspunkte = 0;
             }
-            $nAktiv      = (int)$_POST['nAktiv'];
+            $active      = Request::postInt('nAktiv');
             $dGueltigVon = $_POST['dGueltigVon'];
             $dGueltigBis = $_POST['dGueltigBis'];
 
             // Sind die wichtigen Daten vorhanden?
-            if (strlen($cName) > 0
-                && (is_array($kKundengruppe_arr) && count($kKundengruppe_arr) > 0)
-                && strlen($dGueltigVon) > 0
+            if (mb_strlen($name) > 0
+                && (is_array($customerGroupIDs) && count($customerGroupIDs) > 0)
+                && mb_strlen($dGueltigVon) > 0
             ) {
-                if (($kKupon === 0 && $fGuthaben === 0 && $nBonuspunkte === 0)
-                    || ($kKupon > 0 && $fGuthaben === 0 && $nBonuspunkte === 0)
-                    || ($kKupon === 0 && $fGuthaben > 0 && $nBonuspunkte === 0)
-                    || ($kKupon === 0 && $fGuthaben === 0 && $nBonuspunkte > 0)
+                if (($couponID === 0 && $fGuthaben === 0 && $nBonuspunkte === 0)
+                    || ($couponID > 0 && $fGuthaben === 0 && $nBonuspunkte === 0)
+                    || ($couponID === 0 && $fGuthaben > 0 && $nBonuspunkte === 0)
+                    || ($couponID === 0 && $fGuthaben === 0 && $nBonuspunkte > 0)
                 ) {
-                    $step                    = 'umfrage_frage_erstellen';
-                    $oUmfrage                = new stdClass();
-                    $oUmfrage->kSprache      = $_SESSION['kSprache'];
-                    $oUmfrage->kKupon        = $kKupon;
-                    $oUmfrage->cName         = $cName;
-                    $oUmfrage->cKundengruppe = ';' . implode(';', $kKundengruppe_arr) . ';';
-                    $oUmfrage->cBeschreibung = $cBeschreibung;
-                    $oUmfrage->fGuthaben     = $fGuthaben;
-                    $oUmfrage->nBonuspunkte  = $nBonuspunkte;
-                    $oUmfrage->nAktiv        = $nAktiv;
-                    $oUmfrage->dErstellt     = (new DateTime())->format('Y-m-d H:i:s');
+                    $step                  = 'umfrage_frage_erstellen';
+                    $survey                = new stdClass();
+                    $survey->kSprache      = $_SESSION['kSprache'];
+                    $survey->kKupon        = $couponID;
+                    $survey->cName         = $name;
+                    $survey->cKundengruppe = ';' . implode(';', $customerGroupIDs) . ';';
+                    $survey->cBeschreibung = $description;
+                    $survey->fGuthaben     = $fGuthaben;
+                    $survey->nBonuspunkte  = $nBonuspunkte;
+                    $survey->nAktiv        = $active;
+                    $survey->dErstellt     = (new DateTime())->format('Y-m-d H:i:s');
 
-                    $validFrom             = DateTime::createFromFormat('d.m.Y H:i', $dGueltigVon);
-                    $validFrom             = $validFrom === false ? 'NOW()' : $validFrom->format('Y-m-d H:i:00');
-                    $validUntil            = DateTime::createFromFormat('d.m.Y H:i', $dGueltigBis);
-                    $validUntil            = $validUntil === false ? '_DBNULL_' : $validUntil->format('Y-m-d H:i:00');
-                    $oUmfrage->dGueltigVon = $validFrom;
-                    $oUmfrage->dGueltigBis = $validUntil;
+                    $validFrom           = DateTime::createFromFormat('d.m.Y H:i', $dGueltigVon);
+                    $validFrom           = $validFrom === false ? 'NOW()' : $validFrom->format('Y-m-d H:i:00');
+                    $validUntil          = DateTime::createFromFormat('d.m.Y H:i', $dGueltigBis);
+                    $validUntil          = $validUntil === false ? '_DBNULL_' : $validUntil->format('Y-m-d H:i:00');
+                    $survey->dGueltigVon = $validFrom;
+                    $survey->dGueltigBis = $validUntil;
 
                     $nNewsOld = 0;
-                    if (isset($_POST['umfrage_edit_speichern']) && (int)$_POST['umfrage_edit_speichern'] === 1) {
+                    if (Request::postInt('umfrage_edit_speichern') === 1) {
                         $nNewsOld = 1;
                         $step     = 'umfrage_uebersicht';
-                        Shop::Container()->getDB()->delete('tumfrage', 'kUmfrage', $kUmfrage);
-                        Shop::Container()->getDB()->delete('tseo', ['cKey', 'kKey'], ['kUmfrage', $kUmfrage]);
+                        $db->delete('tumfrage', 'kUmfrage', $surveyID);
+                        $db->delete('tseo', ['cKey', 'kKey'], ['kUmfrage', $surveyID]);
                     }
-                    $oUmfrage->cSeo = checkSeo(getSeo(strlen($cSeo) > 0 ? $cSeo : $cName));
-                    if (isset($kUmfrage) && $kUmfrage > 0) {
-                        $oUmfrage->kUmfrage = $kUmfrage;
-                        Shop::Container()->getDB()->insert('tumfrage', $oUmfrage);
+                    $survey->cSeo = Seo::checkSeo(Seo::getSeo(mb_strlen($cSeo) > 0 ? $cSeo : $name));
+                    if (isset($surveyID) && $surveyID > 0) {
+                        $survey->kUmfrage = $surveyID;
+                        $db->insert('tumfrage', $survey);
                     } else {
-                        $kUmfrage = Shop::Container()->getDB()->insert('tumfrage', $oUmfrage);
+                        $surveyID = $db->insert('tumfrage', $survey);
                     }
-                    Shop::Container()->getDB()->delete(
-                        'tseo', 
-                        ['cKey', 'kKey', 'kSprache'], 
-                        ['kUmfrage', $kUmfrage, (int)$_SESSION['kSprache']]
+                    $db->delete(
+                        'tseo',
+                        ['cKey', 'kKey', 'kSprache'],
+                        ['kUmfrage', $surveyID, (int)$_SESSION['kSprache']]
                     );
                     // SEO tseo eintragen
-                    $oSeo           = new stdClass();
-                    $oSeo->cSeo     = $oUmfrage->cSeo;
-                    $oSeo->cKey     = 'kUmfrage';
-                    $oSeo->kKey     = $kUmfrage;
-                    $oSeo->kSprache = $_SESSION['kSprache'];
-                    Shop::Container()->getDB()->insert('tseo', $oSeo);
+                    $seo           = new stdClass();
+                    $seo->cSeo     = $survey->cSeo;
+                    $seo->cKey     = 'kUmfrage';
+                    $seo->kKey     = $surveyID;
+                    $seo->kSprache = $_SESSION['kSprache'];
+                    $db->insert('tseo', $seo);
 
-                    $kUmfrageTMP = $kUmfrage;
+                    $tmpID = $surveyID;
 
-                    $cHinweis .= 'Ihre Umfrage wurde erfolgreich gespeichert. Bitte folgen Sie nun den weiteren Schritten.<br />';
-                    Shop::Cache()->flushTags([CACHING_GROUP_CORE]);
+                    $alertHelper->addAlert(
+                        Alert::TYPE_SUCCESS,
+                        __('successPollCreateNextSteps'),
+                        'successPollCreateNextSteps'
+                    );
+                    Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
                 } else {
-                    $cFehler .= 'Fehler: Bitte geben Sie nur eine Belohnungsart an.<br />';
+                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorRewardMissing'), 'errorRewardMissing');
                 }
             } else {
-                $cFehler .= 'Fehler: Bitte geben Sie einen Namen, mindestens eine Kundengruppe und ein gültiges Anfangsdatum ein.<br />';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorDataMissing'), 'errorDataMissing');
             }
-        } elseif (isset($_POST['umfrage_frage_speichern']) && (int)$_POST['umfrage_frage_speichern'] === 1) {
-            $kUmfrage                 = (int)$_POST['kUmfrage'];
-            $kUmfrageFrage            = isset($_POST['kUmfrageFrage']) ? (int)$_POST['kUmfrageFrage'] : 0;
-            $cName                    = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-            $cTyp                     = $_POST['cTyp'];
-            $nSort                    = isset($_POST['nSort']) ? (int)$_POST['nSort'] : 0;
-            $cBeschreibung            = $_POST['cBeschreibung'] ?? '';
-            $cNameOption              = $_POST['cNameOption'] ?? null;
-            $cNameAntwort             = $_POST['cNameAntwort'] ?? null;
-            $nFreifeld                = $_POST['nFreifeld'] ?? null;
-            $nNotwendig               = $_POST['nNotwendig'] ?? null;
-            $kUmfrageFrageAntwort_arr = $_POST['kUmfrageFrageAntwort'] ?? [];
-            $kUmfrageMatrixOption_arr = $_POST['kUmfrageMatrixOption'] ?? [];
-            $nSortAntwort_arr         = $_POST['nSortAntwort'] ?? 0;
-            $nSortOption_arr          = $_POST['nSortOption'] ?? null;
+        } elseif (Request::postInt('umfrage_frage_speichern') === 1) {
+            $surveyID      = Request::postInt('kUmfrage');
+            $questionID    = Request::postInt('kUmfrageFrage');
+            $name          = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+            $type          = $_POST['cTyp'];
+            $sort          = Request::postInt('nSort');
+            $description   = $_POST['cBeschreibung'] ?? '';
+            $nameOption    = $_POST['cNameOption'] ?? null;
+            $nameAnswer    = $_POST['cNameAntwort'] ?? null;
+            $free          = $_POST['nFreifeld'] ?? null;
+            $required      = $_POST['nNotwendig'] ?? null;
+            $answerIDs     = $_POST['kUmfrageFrageAntwort'] ?? [];
+            $matrixOptions = $_POST['kUmfrageMatrixOption'] ?? [];
+            $sortAnwers    = $_POST['nSortAntwort'] ?? 0;
+            $sortOptions   = $_POST['nSortOption'] ?? null;
 
             if (isset($_POST['nocheinefrage'])) {
                 $step = 'umfrage_frage_erstellen';
             }
 
-            if ($kUmfrage > 0 && strlen($cName) > 0 && strlen($cTyp) > 0) {
-                unset($oUmfrageFrage);
-                $oUmfrageFrage                = new stdClass();
-                $oUmfrageFrage->kUmfrage      = $kUmfrage;
-                $oUmfrageFrage->cTyp          = $cTyp;
-                $oUmfrageFrage->cName         = $cName;
-                $oUmfrageFrage->cBeschreibung = $cBeschreibung;
-                $oUmfrageFrage->nSort         = $nSort;
-                $oUmfrageFrage->nFreifeld     = $nFreifeld;
-                $oUmfrageFrage->nNotwendig    = $nNotwendig;
+            if ($surveyID > 0 && mb_strlen($name) > 0 && mb_strlen($type) > 0) {
+                $question                = new stdClass();
+                $question->kUmfrage      = $surveyID;
+                $question->cTyp          = $type;
+                $question->cName         = $name;
+                $question->cBeschreibung = $description;
+                $question->nSort         = $sort;
+                $question->nFreifeld     = $free;
+                $question->nNotwendig    = $required;
 
                 $nNewsOld = 0;
-                if (isset($_POST['umfrage_frage_edit_speichern']) && (int)$_POST['umfrage_frage_edit_speichern'] === 1) {
-                    $nNewsOld      = 1;
-                    $step          = 'umfrage_vorschau';
-                    $kUmfrageFrage = (int)$_POST['kUmfrageFrage'];
-                    if (!pruefeTyp($cTyp, $kUmfrageFrage)) {
-                        $cFehler .= 'Fehler: Ihr Fragentyp ist leider nicht kompatibel mit dem voherigen. Um den Fragetyp zu ändern, resetten Sie bitte die Frage.';
+                if (Request::postInt('umfrage_frage_edit_speichern') === 1) {
+                    $nNewsOld   = 1;
+                    $step       = 'umfrage_vorschau';
+                    $questionID = Request::postInt('kUmfrageFrage');
+                    if (!pruefeTyp($type, $questionID)) {
+                        $alertHelper->addAlert(
+                            Alert::TYPE_ERROR,
+                            __('errorQuestionTypeNotCompatible'),
+                            'errorQuestionTypeNotCompatible'
+                        );
                         $step = 'umfrage_frage_bearbeiten';
                     }
-                    Shop::Container()->getDB()->delete('tumfragefrage', 'kUmfrageFrage', $kUmfrageFrage);
+                    $db->delete('tumfragefrage', 'kUmfrageFrage', $questionID);
                 }
                 $oAnzahlAUndOVorhanden                   = new stdClass();
                 $oAnzahlAUndOVorhanden->nAnzahlAntworten = 0;
                 $oAnzahlAUndOVorhanden->nAnzahlOptionen  = 0;
 
-                if ($kUmfrageFrage > 0 && $step !== 'umfrage_frage_bearbeiten') {
-                    $oUmfrageFrage->kUmfrageFrage = $kUmfrageFrage;
-                    Shop::Container()->getDB()->insert('tumfragefrage', $oUmfrageFrage);
-                    // Update vorhandene Antworten bzw. Optionen
+                if ($questionID > 0 && $step !== 'umfrage_frage_bearbeiten') {
+                    $question->kUmfrageFrage = $questionID;
+                    $db->insert('tumfragefrage', $question);
                     $oAnzahlAUndOVorhanden = updateAntwortUndOption(
-                        $kUmfrageFrage,
-                        $cTyp,
-                        $cNameOption,
-                        $cNameAntwort,
-                        $nSortAntwort_arr,
-                        $nSortOption_arr,
-                        $kUmfrageFrageAntwort_arr,
-                        $kUmfrageMatrixOption_arr
+                        $questionID,
+                        $type,
+                        $nameOption,
+                        $nameAnswer,
+                        $sortAnwers,
+                        $sortOptions,
+                        $answerIDs,
+                        $matrixOptions
                     );
                 } else {
-                    $kUmfrageFrage = Shop::Container()->getDB()->insert('tumfragefrage', $oUmfrageFrage);
+                    $questionID = $db->insert('tumfragefrage', $question);
                 }
                 speicherAntwortZuFrage(
-                    $kUmfrageFrage,
-                    $cTyp,
-                    $cNameOption,
-                    $cNameAntwort,
-                    $nSortAntwort_arr,
-                    $nSortOption_arr,
+                    $questionID,
+                    $type,
+                    $nameOption,
+                    $nameAnswer,
+                    $sortAnwers,
+                    $sortOptions,
                     $oAnzahlAUndOVorhanden
                 );
 
-                $cHinweis .= 'Ihr Frage wurde erfolgreich gespeichert.<br />';
-                Shop::Cache()->flushTags([CACHING_GROUP_CORE]);
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successQuestionSave'), 'successQuestionSave');
+                Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
             } else {
                 $step = 'umfrage_frage_erstellen';
-                $cFehler .= 'Fehler: Bitte tragen Sie mindestens einen Namen und einen Typ ein.<br />';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorMinNameTypeMissing'), 'errorMinNameTypeMissing');
             }
-        } elseif (isset($_POST['umfrage_loeschen']) && (int)$_POST['umfrage_loeschen'] === 1) {
+        } elseif (Request::postInt('umfrage_loeschen') === 1) {
             // Umfrage loeschen
-            if (is_array($_POST['kUmfrage']) && count($_POST['kUmfrage']) > 0) {
-                foreach ($_POST['kUmfrage'] as $kUmfrage) {
-                    $kUmfrage = (int)$kUmfrage;
-                    // tumfrage loeschen
-                    Shop::Container()->getDB()->delete('tumfrage', 'kUmfrage', $kUmfrage);
-
-                    $oUmfrageFrage_arr = Shop::Container()->getDB()->query(
+            $surveyIDs = Request::verifyGPDataIntegerArray('kUmfrage');
+            if (count($surveyIDs) > 0) {
+                foreach ($surveyIDs as $surveyID) {
+                    $db->delete('tumfrage', 'kUmfrage', $surveyID);
+                    $surveyQuestions = $db->query(
                         'SELECT kUmfrageFrage
                             FROM tumfragefrage
-                            WHERE kUmfrage = ' . $kUmfrage,
-                        \DB\ReturnType::ARRAY_OF_OBJECTS
+                            WHERE kUmfrage = ' . $surveyID,
+                        ReturnType::ARRAY_OF_OBJECTS
                     );
-                    foreach ($oUmfrageFrage_arr as $oUmfrageFrage) {
-                        loescheFrage($oUmfrageFrage->kUmfrageFrage);
+                    foreach ($surveyQuestions as $question) {
+                        loescheFrage((int)$question->kUmfrageFrage);
                     }
                     // tseo loeschen
-                    Shop::Container()->getDB()->delete('tseo', ['cKey', 'kKey'], ['kUmfrage', $kUmfrage]);
+                    $db->delete('tseo', ['cKey', 'kKey'], ['kUmfrage', $surveyID]);
                     // Umfrage Durchfuehrung loeschen
-                    Shop::Container()->getDB()->query(
+                    $db->query(
                         'DELETE tumfragedurchfuehrung, tumfragedurchfuehrungantwort 
                             FROM tumfragedurchfuehrung
                             LEFT JOIN tumfragedurchfuehrungantwort 
-                              ON tumfragedurchfuehrungantwort.kUmfrageDurchfuehrung = tumfragedurchfuehrung.kUmfrageDurchfuehrung
-                            WHERE tumfragedurchfuehrung.kUmfrage = ' . $kUmfrage,
-                        \DB\ReturnType::AFFECTED_ROWS
+                              ON tumfragedurchfuehrungantwort.kUmfrageDurchfuehrung = 
+                                 tumfragedurchfuehrung.kUmfrageDurchfuehrung
+                            WHERE tumfragedurchfuehrung.kUmfrage = ' . $surveyID,
+                        ReturnType::AFFECTED_ROWS
                     );
                 }
-                $cHinweis .= 'Ihre markierten Umfragen wurden erfolgreich gelöscht.<br />';
-                Shop::Cache()->flushTags([CACHING_GROUP_CORE]);
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successPollDelete'), 'successPollDelete');
+                Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
             } else {
-                $cFehler .= 'Fehler: Bitte markieren Sie mindestens eine Umfrage.<br />';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('successAtLeastOnePoll'), 'successAtLeastOnePoll');
             }
-        } elseif (isset($_POST['umfrage_frage_loeschen']) && (int)$_POST['umfrage_frage_loeschen'] === 1) {
+        } elseif (Request::postInt('umfrage_frage_loeschen') === 1) {
             // Frage loeschen
             $step = 'umfrage_vorschau';
             // Ganze Frage loeschen mit allen Antworten und Matrixen
             if (is_array($_POST['kUmfrageFrage']) && count($_POST['kUmfrageFrage']) > 0) {
-                foreach ($_POST['kUmfrageFrage'] as $kUmfrageFrage) {
-                    $kUmfrageFrage = (int)$kUmfrageFrage;
-
-                    loescheFrage($kUmfrageFrage);
+                foreach ($_POST['kUmfrageFrage'] as $questionID) {
+                    $questionID = (int)$questionID;
+                    loescheFrage($questionID);
                 }
 
-                $cHinweis = 'Ihre markierten Fragen wurden erfolgreich gelöscht.<br>';
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successQuestionDelete'), 'successQuestionDelete');
             }
             // Bestimmte Antworten loeschen
             if (isset($_POST['kUmfrageFrageAntwort'])
@@ -317,186 +326,180 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 foreach ($_POST['kUmfrageFrageAntwort'] as $kUmfrageFrageAntwort) {
                     $kUmfrageFrageAntwort = (int)$kUmfrageFrageAntwort;
 
-                    Shop::Container()->getDB()->query(
+                    $db->query(
                         'DELETE tumfragefrageantwort, tumfragedurchfuehrungantwort 
                             FROM tumfragefrageantwort
                             LEFT JOIN tumfragedurchfuehrungantwort
-                                ON tumfragedurchfuehrungantwort.kUmfrageFrageAntwort = tumfragefrageantwort.kUmfrageFrageAntwort
+                                ON tumfragedurchfuehrungantwort.kUmfrageFrageAntwort = 
+                                   tumfragefrageantwort.kUmfrageFrageAntwort
                             WHERE tumfragefrageantwort.kUmfrageFrageAntwort = ' . $kUmfrageFrageAntwort,
-                        \DB\ReturnType::AFFECTED_ROWS
+                        ReturnType::AFFECTED_ROWS
                     );
                 }
-                $cHinweis .= 'Ihre markierten Antworten wurden erfolgreich gelöscht.<br>';
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successAnswerDelete'), 'successAnswerDelete');
             }
             // Bestimmte Optionen loeschen
-            if (isset($_POST['kUmfrageMatrixOption'])
-                && is_array($_POST['kUmfrageMatrixOption'])
-                && count($_POST['kUmfrageMatrixOption']) > 0
-            ) {
+            if (GeneralObject::hasCount('kUmfrageMatrixOption', $_POST)) {
                 foreach ($_POST['kUmfrageMatrixOption'] as $kUmfrageMatrixOption) {
                     $kUmfrageMatrixOption = (int)$kUmfrageMatrixOption;
-                    Shop::Container()->getDB()->query(
+                    $db->query(
                         'DELETE tumfragematrixoption, tumfragedurchfuehrungantwort 
                             FROM tumfragematrixoption
                             LEFT JOIN tumfragedurchfuehrungantwort
-                                ON tumfragedurchfuehrungantwort.kUmfrageMatrixOption = tumfragematrixoption.kUmfrageMatrixOption
+                                ON tumfragedurchfuehrungantwort.kUmfrageMatrixOption = 
+                                   tumfragematrixoption.kUmfrageMatrixOption
                             WHERE tumfragematrixoption.kUmfrageMatrixOption = ' . $kUmfrageMatrixOption,
-                        \DB\ReturnType::AFFECTED_ROWS
+                        ReturnType::AFFECTED_ROWS
                     );
                 }
 
-                $cHinweis .= 'Ihre markierten Optionen wurden erfolgreich gelöscht.<br />';
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successOptionDelete'), 'successOptionDelete');
             }
-            Shop::Cache()->flushTags([CACHING_GROUP_CORE]);
-        } elseif (isset($_POST['umfrage_frage_hinzufuegen'])
-            && (int)$_POST['umfrage_frage_hinzufuegen'] === 1
-        ) { // Frage hinzufuegen
+            Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
+        } elseif (Request::postInt('umfrage_frage_hinzufuegen') === 1) {
             $step = 'umfrage_frage_erstellen';
-            $smarty->assign('kUmfrageTMP', $kUmfrageTMP);
-        } elseif (RequestHelper::verifyGPCDataInt('umfrage_statistik') === 1) {
-            // Umfragestatistik anschauen
-            $oUmfrageDurchfuehrung_arr = Shop::Container()->getDB()->query(
+            $smarty->assign('kUmfrageTMP', $tmpID);
+        } elseif (Request::verifyGPCDataInt('umfrage_statistik') === 1) {
+            $conducts = $db->query(
                 'SELECT kUmfrageDurchfuehrung
                     FROM tumfragedurchfuehrung
-                    WHERE kUmfrage = ' . $kUmfrageTMP,
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                    WHERE kUmfrage = ' . $tmpID,
+                ReturnType::ARRAY_OF_OBJECTS
             );
 
-            if (count($oUmfrageDurchfuehrung_arr) > 0) {
+            if (count($conducts) > 0) {
                 $step = 'umfrage_statistik';
-                $smarty->assign('oUmfrageStats', holeUmfrageStatistik($kUmfrageTMP));
+                $smarty->assign('oUmfrageStats', holeUmfrageStatistik($tmpID));
             } else {
                 $step = 'umfrage_vorschau';
-                $cFehler .= 'Fehler: Für diese Umfrage gibt es noch keine Stastistik.';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorNoStatistic'), 'errorNoStatistic');
             }
-        } elseif (isset($_GET['a']) && $_GET['a'] === 'zeige_sonstige') {
+        } elseif (Request::getVar('a') === 'zeige_sonstige') {
             // Umfragestatistik Sonstige Texte anzeigen
-            $step          = 'umfrage_statistik';
-            $kUmfrageFrage = (int)$_GET['uf'];
-            $nAnzahlAnwort = (int)$_GET['aa'];
-            $nMaxAntworten = (int)$_GET['ma'];
-
-            if ($kUmfrageFrage > 0 && $nMaxAntworten > 0) {
+            $step       = 'umfrage_statistik';
+            $questionID = Request::getInt('uf');
+            $maxAnswers = Request::getInt('aa');
+            $limit      = Request::getInt('ma');
+            if ($questionID > 0 && $limit > 0) {
                 $step = 'umfrage_statistik_sonstige_texte';
-                $smarty->assign('oUmfrageFrage', holeSonstigeTextAntworten($kUmfrageFrage, $nAnzahlAnwort, $nMaxAntworten));
+                $smarty->assign('oUmfrageFrage', holeSonstigeTextAntworten(
+                    $questionID,
+                    $maxAnswers,
+                    $limit
+                ));
             }
-        } elseif ((isset($_GET['fe']) && (int)$_GET['fe'] === 1) ||
-            ($step === 'umfrage_frage_bearbeiten' && FormHelper::validateToken())
-        ) { // Frage bearbeiten
+        } elseif (Request::getInt('fe') === 1 || ($step === 'umfrage_frage_bearbeiten' && Form::validateToken())) {
+            // Frage bearbeiten
             $step = 'umfrage_frage_erstellen';
-
-            if (RequestHelper::verifyGPCDataInt('kUmfrageFrage') > 0) {
-                $kUmfrageFrage = RequestHelper::verifyGPCDataInt('kUmfrageFrage');
+            if (Request::verifyGPCDataInt('kUmfrageFrage') > 0) {
+                $questionID = Request::verifyGPCDataInt('kUmfrageFrage');
             } else {
-                $kUmfrageFrage = RequestHelper::verifyGPCDataInt('kUF');
+                $questionID = Request::verifyGPCDataInt('kUF');
             }
-            $oUmfrageFrage = Shop::Container()->getDB()->select('tumfragefrage', 'kUmfrageFrage', $kUmfrageFrage);
-            if (isset($oUmfrageFrage->kUmfrageFrage) && $oUmfrageFrage->kUmfrageFrage > 0) {
-                $oUmfrageFrage->oUmfrageFrageAntwort_arr = Shop::Container()->getDB()->selectAll(
-                    'tumfragefrageantwort', 
-                    'kUmfrageFrage', 
-                    (int)$oUmfrageFrage->kUmfrageFrage, 
-                    '*', 
+            $question = $db->select('tumfragefrage', 'kUmfrageFrage', $questionID);
+            if (isset($question->kUmfrageFrage) && $question->kUmfrageFrage > 0) {
+                $question->oUmfrageFrageAntwort_arr = $db->selectAll(
+                    'tumfragefrageantwort',
+                    'kUmfrageFrage',
+                    (int)$question->kUmfrageFrage,
+                    '*',
                     'nSort'
                 );
-                $oUmfrageFrage->oUmfrageMatrixOption_arr = Shop::Container()->getDB()->selectAll(
-                    'tumfragematrixoption', 
-                    'kUmfrageFrage', 
-                    (int)$oUmfrageFrage->kUmfrageFrage,
+                $question->oUmfrageMatrixOption_arr = $db->selectAll(
+                    'tumfragematrixoption',
+                    'kUmfrageFrage',
+                    (int)$question->kUmfrageFrage,
                     '*',
                     'nSort'
                 );
             }
 
-            $smarty->assign('oUmfrageFrage', $oUmfrageFrage)
-                   ->assign('kUmfrageTMP', $kUmfrageTMP);
+            $smarty->assign('oUmfrageFrage', $question)
+                ->assign('kUmfrageTMP', $tmpID);
         }
         // Umfrage Detail
-        if ((isset($_GET['ud']) && (int)$_GET['ud'] === 1) || $step === 'umfrage_vorschau') {
-            $kUmfrage = RequestHelper::verifyGPCDataInt('kUmfrage');
-
-            if ($kUmfrage > 0) {
-                $step     = 'umfrage_vorschau';
-                $oUmfrage = Shop::Container()->getDB()->query(
+        if (Request::getInt('ud') === 1 || $step === 'umfrage_vorschau') {
+            $surveyID = Request::verifyGPCDataInt('kUmfrage');
+            if ($surveyID > 0) {
+                $step   = 'umfrage_vorschau';
+                $survey = $db->query(
                     "SELECT *, DATE_FORMAT(dGueltigVon, '%d.%m.%Y %H:%i') AS dGueltigVon_de, 
                         DATE_FORMAT(dGueltigBis, '%d.%m.%Y %H:%i') AS dGueltigBis_de,
                         DATE_FORMAT(dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_de
                         FROM tumfrage
-                        WHERE kUmfrage = " . $kUmfrage,
-                    \DB\ReturnType::SINGLE_OBJECT
+                        WHERE kUmfrage = " . $surveyID,
+                    ReturnType::SINGLE_OBJECT
                 );
-                if ($oUmfrage->kUmfrage > 0) {
-                    $oUmfrage->cKundengruppe_arr = [];
-
-                    $kKundengruppe_arr = StringHandler::parseSSK($oUmfrage->cKundengruppe);
-                    foreach ($kKundengruppe_arr as $kKundengruppe) {
-                        if ($kKundengruppe == -1) {
-                            $oUmfrage->cKundengruppe_arr[] = 'Alle';
+                if ($survey->kUmfrage > 0) {
+                    $survey->cKundengruppe_arr = [];
+                    foreach (Text::parseSSKint($survey->cKundengruppe) as $customerGroupID) {
+                        if ($customerGroupID === -1) {
+                            $survey->cKundengruppe_arr[] = 'Alle';
                         } else {
-                            $oKundengruppe = Shop::Container()->getDB()->select('tkundengruppe', 'kKundengruppe', (int)$kKundengruppe);
-                            if (!empty($oKundengruppe->cName)) {
-                                $oUmfrage->cKundengruppe_arr[] = $oKundengruppe->cName;
+                            $customerGroup = $db->select(
+                                'tkundengruppe',
+                                'kKundengruppe',
+                                $customerGroupID
+                            );
+                            if (!empty($customerGroup->cName)) {
+                                $survey->cKundengruppe_arr[] = $customerGroup->cName;
                             }
                         }
                     }
-                    $oUmfrage->oUmfrageFrage_arr = Shop::Container()->getDB()->selectAll(
+                    $survey->oUmfrageFrage_arr = $db->selectAll(
                         'tumfragefrage',
                         'kUmfrage',
-                        $kUmfrage,
+                        $surveyID,
                         '*',
                         'nSort'
                     );
-                    foreach ($oUmfrage->oUmfrageFrage_arr as $i => $oUmfrageFrage) {
-                        // Mappe Fragentyp
-                        $oUmfrage->oUmfrageFrage_arr[$i]->cTypMapped = mappeFragenTyp($oUmfrageFrage->cTyp);
-
-                        $oUmfrage->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr = Shop::Container()->getDB()->selectAll(
+                    foreach ($survey->oUmfrageFrage_arr as $i => $question) {
+                        $question->cTypMapped               = mappeFragenTyp($question->cTyp);
+                        $question->oUmfrageFrageAntwort_arr = $db->selectAll(
                             'tumfragefrageantwort',
                             'kUmfrageFrage',
-                            (int)$oUmfrage->oUmfrageFrage_arr[$i]->kUmfrageFrage,
+                            (int)$question->kUmfrageFrage,
                             'kUmfrageFrageAntwort, kUmfrageFrage, cName',
                             'nSort'
                         );
-                        $oUmfrage->oUmfrageFrage_arr[$i]->oUmfrageMatrixOption_arr = Shop::Container()->getDB()->selectAll(
+                        $question->oUmfrageMatrixOption_arr = $db->selectAll(
                             'tumfragematrixoption',
                             'kUmfrageFrage',
-                            (int)$oUmfrage->oUmfrageFrage_arr[$i]->kUmfrageFrage,
+                            (int)$question->kUmfrageFrage,
                             'kUmfrageMatrixOption, kUmfrageFrage, cName',
                             'nSort'
                         );
                     }
-                    $smarty->assign('oUmfrage', $oUmfrage);
+                    $smarty->assign('oUmfrage', $survey);
                 }
             } else {
-                $cFehler .= 'Fehler: Bitte wählen Sie eine korrekte Umfrage aus.<br>';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorPollSelect'), 'errorPollSelect');
             }
         }
-        if ($kUmfrageTMP > 0
-            && (!isset($_POST['umfrage_frage_edit_speichern']) || (int)$_POST['umfrage_frage_edit_speichern'] !== 1)
-            && (!isset($_GET['fe']) || (int)$_GET['fe']) !== 1
-        ) {
-            $smarty->assign('oUmfrageFrage_arr', Shop::Container()->getDB()->selectAll(
-                'tumfragefrage',
-                'kUmfrage',
-                $kUmfrageTMP,
-                '*',
-                'nSort')
-            )->assign('kUmfrageTMP', $kUmfrageTMP);
+        if ($tmpID > 0 && Request::getInt('fe') !== 1 && Request::postInt('umfrage_frage_edit_speichern') !== 1) {
+            $smarty->assign(
+                'oUmfrageFrage_arr',
+                $db->selectAll(
+                    'tumfragefrage',
+                    'kUmfrage',
+                    $tmpID,
+                    '*',
+                    'nSort'
+                )
+            )->assign('kUmfrageTMP', $tmpID);
         }
     }
-    // Hole Umfrage aus DB
     if ($step === 'umfrage_uebersicht') {
-        $oUmfrageAnzahl = Shop::Container()->getDB()->query(
-            'SELECT COUNT(*) AS nAnzahl
+        $surveyCount = (int)$db->query(
+            'SELECT COUNT(*) AS cnt
                 FROM tumfrage
                 WHERE kSprache = ' . (int)$_SESSION['kSprache'],
-            \DB\ReturnType::SINGLE_OBJECT
-        );
-        // Pagination
-        $oPagination = (new Pagination())
-            ->setItemCount((int)$oUmfrageAnzahl->nAnzahl)
+            ReturnType::SINGLE_OBJECT
+        )->cnt;
+        $pagination  = (new Pagination())
+            ->setItemCount($surveyCount)
             ->assemble();
-        $oUmfrage_arr = Shop::Container()->getDB()->query(
+        $surveys     = $db->query(
             "SELECT tumfrage.*, DATE_FORMAT(tumfrage.dGueltigVon, '%d.%m.%Y %H:%i') AS dGueltigVon_de, 
                 DATE_FORMAT(tumfrage.dGueltigBis, '%d.%m.%Y %H:%i') AS dGueltigBis_de,
                 DATE_FORMAT(tumfrage.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_de, 
@@ -504,71 +507,38 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 FROM tumfrage
                 LEFT JOIN tumfragefrage 
                     ON tumfragefrage.kUmfrage = tumfrage.kUmfrage
-                WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
+                WHERE kSprache = " . (int)$_SESSION['kSprache'] . '
                 GROUP BY tumfrage.kUmfrage
                 ORDER BY dGueltigVon DESC
-                LIMIT " . $oPagination->getLimitSQL(),
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+                LIMIT ' . $pagination->getLimitSQL(),
+            ReturnType::ARRAY_OF_OBJECTS
         );
-        foreach ($oUmfrage_arr as $i => $oUmfrage) {
-            $oUmfrage_arr[$i]->cKundengruppe_arr = [];
-            $kKundengruppe_arr                   = StringHandler::parseSSK($oUmfrage->cKundengruppe);
-
-            foreach ($kKundengruppe_arr as $kKundengruppe) {
-                if ($kKundengruppe == -1) {
-                    $oUmfrage_arr[$i]->cKundengruppe_arr[] = 'Alle';
+        foreach ($surveys as $i => $survey) {
+            $survey->cKundengruppe_arr = [];
+            foreach (Text::parseSSKint($survey->cKundengruppe) as $customerGroupID) {
+                if ($customerGroupID === -1) {
+                    $surveys[$i]->cKundengruppe_arr[] = 'Alle';
                 } else {
-                    $oKundengruppe = Shop::Container()->getDB()->query(
+                    $customerGroup = $db->queryPrepared(
                         'SELECT cName
                             FROM tkundengruppe
-                            WHERE kKundengruppe = ' . (int)$kKundengruppe,
-                        \DB\ReturnType::SINGLE_OBJECT
+                            WHERE kKundengruppe = :cgid',
+                        ['cgid' => $customerGroupID],
+                        ReturnType::SINGLE_OBJECT
                     );
-                    if (!empty($oKundengruppe->cName)) {
-                        $oUmfrage_arr[$i]->cKundengruppe_arr[] = $oKundengruppe->cName;
+                    if (!empty($customerGroup->cName)) {
+                        $surveys[$i]->cKundengruppe_arr[] = $customerGroup->cName;
                     }
                 }
             }
         }
-        $oConfig_arr = Shop::Container()->getDB()->selectAll(
-            'teinstellungenconf',
-            'kEinstellungenSektion',
-            CONF_UMFRAGE,
-            '*',
-            'nSort'
-        );
-        $configCount = count($oConfig_arr);
-        for ($i = 0; $i < $configCount; $i++) {
-            if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-                $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
-                    'teinstellungenconfwerte',
-                    'kEinstellungenConf',
-                    (int)$oConfig_arr[$i]->kEinstellungenConf,
-                    '*',
-                    'nSort'
-                );
-            }
-            $oSetValue = Shop::Container()->getDB()->select(
-                'teinstellungen',
-                'kEinstellungenSektion',
-                CONF_UMFRAGE,
-                'cName',
-                $oConfig_arr[$i]->cWertName
-            );
-            $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
-        }
 
-        $smarty->assign('oConfig_arr', $oConfig_arr)
-               ->assign('oUmfrage_arr', $oUmfrage_arr)
-               ->assign('oPagination', $oPagination);
+        $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_UMFRAGE))
+            ->assign('oUmfrage_arr', $surveys)
+            ->assign('pagination', $pagination);
     }
-    $customerGroups = Shop::Container()->getDB()->query(
-        'SELECT kKundengruppe, cName
-            FROM tkundengruppe
-            ORDER BY cStandard DESC',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
-    );
-    $coupons = Shop::Container()->getDB()->query(
+    $langData = $db->select('tsprache', 'kSprache', (int)$_SESSION['kSprache']);
+    $coupons  = $db->queryPrepared(
         "SELECT tkupon.kKupon, tkuponsprache.cName
             FROM tkupon
             LEFT JOIN tkuponsprache 
@@ -577,20 +547,18 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 AND (tkupon.dGueltigBis >= NOW() OR tkupon.dGueltigBis IS NULL)
                 AND (tkupon.nVerwendungenBisher <= tkupon.nVerwendungen OR tkupon.nVerwendungen = 0)
                 AND tkupon.cAktiv = 'Y'
-                AND tkuponsprache.cISOSprache= '" . $oSpracheTMP->cISO . "'
+                AND tkuponsprache.cISOSprache = :ccode
             ORDER BY tkupon.cName",
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ['ccode' => $langData->cISO],
+        ReturnType::ARRAY_OF_OBJECTS
     );
 
-    $smarty->assign('oKundengruppe_arr', $customerGroups)
-           ->assign('oKupon_arr', $coupons);
+    $smarty->assign('customerGroups', CustomerGroup::getGroups())
+        ->assign('oKupon_arr', $coupons);
 } else {
     $smarty->assign('noModule', true);
 }
 
-$smarty->assign('Sprachen', $Sprachen)
-       ->assign('kSprache', $_SESSION['kSprache'])
-       ->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
-       ->assign('step', $step)
-       ->display('umfrage.tpl');
+$smarty->assign('kSprache', $_SESSION['kSprache'])
+    ->assign('step', $step)
+    ->display('umfrage.tpl');

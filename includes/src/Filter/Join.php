@@ -4,11 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter;
+namespace JTL\Filter;
 
 /**
  * Class Join
- * @package Filter
+ * @package JTL\Filter
  */
 class Join implements JoinInterface
 {

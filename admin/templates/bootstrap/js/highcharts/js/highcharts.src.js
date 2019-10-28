@@ -1072,7 +1072,7 @@ if (!globalAdapter && win.jQuery) {
 	 * @param {Function} fn The event handler
 	 */
 	addEvent = function (el, event, fn) {
-		jQ(el).bind(event, fn);
+		jQ(el).on(event, fn);
 	};
 
 	/**
@@ -1089,7 +1089,7 @@ if (!globalAdapter && win.jQuery) {
 			el[func] = function () {};
 		}
 
-		jQ(el).unbind(eventType, handler);
+		jQ(el).off(eventType, handler);
 	};
 
 	/**

@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
 
-use Boxes\Renderer\ContainerRenderer;
+use JTL\Boxes\Renderer\ContainerRenderer;
 
 /**
  * Class Container
- * @package Boxes
+ * @package JTL\Boxes\Items
  */
 class Container extends AbstractBox
 {
@@ -21,8 +21,8 @@ class Container extends AbstractBox
     public function __construct(array $config)
     {
         parent::__construct($config);
-        parent::addMapping('innerHTML', 'HTML');
-        parent::addMapping('oContainer_arr', 'Children');
+        $this->addMapping('innerHTML', 'HTML');
+        $this->addMapping('oContainer_arr', 'Children');
     }
 
     /**

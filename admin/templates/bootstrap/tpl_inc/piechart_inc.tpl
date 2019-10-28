@@ -8,7 +8,8 @@
 *}
 
 {if $piechart->getActive()}
-    <div id="{$id}" style="width: {$width}; height: {$height};"></div>
+    <div id="{$id}" style="background: {$chartbg|default:'#fff'}; width: {$width}; height: {$height}; padding: {$chartpad|default:'0'};"></div>
+
 
     <script type="text/javascript">
     {literal}
@@ -21,10 +22,9 @@
                 renderTo: '{$id}',
     {literal}
                 defaultSeriesType: 'line',
-                backgroundColor: null,
+                backgroundColor: '#fff',
                 borderColor: '#CCC',
-                borderWidth: 1,
-                plotBackgroundColor: null,
+                borderWidth: 0,
                 plotBorderWidth: null,
                 plotShadow: false
             },
@@ -61,5 +61,5 @@
     {/literal}
     </script>
 {else}
-    <div class="alert alert-info" role="alert">{#statisticNoData#}</div>
+    <div class="alert alert-info" role="alert">{__('statisticNoData')}</div>
 {/if}

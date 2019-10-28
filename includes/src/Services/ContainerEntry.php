@@ -4,17 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services;
+namespace JTL\Services;
 
 /**
  * Class ContainerEntry
- * @package Services
+ * @package JTL\Services
  */
 class ContainerEntry
 {
-    const TYPE_FACTORY = 1;
+    public const TYPE_FACTORY = 1;
 
-    const TYPE_SINGLETON = 2;
+    public const TYPE_SINGLETON = 2;
 
     /**
      * @var callable
@@ -41,7 +41,7 @@ class ContainerEntry
      * @param callable $factory
      * @param int      $type
      */
-    public function __construct(callable $factory, $type)
+    public function __construct(callable $factory, int $type)
     {
         if ($type !== self::TYPE_FACTORY && $type !== self::TYPE_SINGLETON) {
             throw new \InvalidArgumentException('$type incorrect');
@@ -69,7 +69,7 @@ class ContainerEntry
     /**
      * @param object $instance
      */
-    public function setInstance($instance)
+    public function setInstance($instance): void
     {
         $this->instance = $instance;
     }
@@ -77,7 +77,7 @@ class ContainerEntry
     /**
      * @return callable
      */
-    public function getFactory()
+    public function getFactory(): callable
     {
         return $this->factory;
     }
@@ -85,7 +85,7 @@ class ContainerEntry
     /**
      * @return int
      */
-    public function getType()
+    public function getType(): int
     {
         return $this->type;
     }
@@ -98,12 +98,12 @@ class ContainerEntry
         return $this->locked;
     }
 
-    public function lock()
+    public function lock(): void
     {
         $this->locked = true;
     }
 
-    public function unlock()
+    public function unlock(): void
     {
         $this->locked = false;
     }

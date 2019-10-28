@@ -3,8 +3,8 @@
 
 $data = array();
 
-for ($i=0; $i<6.2; $i+=0.2) {
-    $tmp = sin($i) * 1.9;
+for ($i = 0; $i < 6.2; $i += 0.2) {
+    $tmp    = sin($i) * 1.9;
     $data[] = $tmp;
 }
 
@@ -28,7 +28,7 @@ $y_axis->set_range(-2, 2, 2);
 $y_axis->labels = null;
 $y_axis->set_offset(false);
 
-$x_axis = new OFC_Elements_Axis_X();
+$x_axis         = new OFC_Elements_Axis_X();
 $x_axis->labels = $data;
 $x_axis->set_steps(2);
 

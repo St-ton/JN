@@ -3,113 +3,117 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\Alert\Alert;
+use JTL\CheckBox;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Helpers\Text;
+use JTL\Session\Frontend;
+use JTL\Shop;
+
 require_once __DIR__ . '/includes/globalinclude.php';
-$session = \Session\Session::getInstance();
 require_once PFAD_ROOT . PFAD_INCLUDES . 'kontakt_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
 Shop::setPageType(PAGE_KONTAKT);
-$AktuelleSeite = 'KONTAKT';
-$Einstellungen = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_KONTAKTFORMULAR]);
-$linkHelper    = Shop::Container()->getLinkService();
-$kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_KONTAKT);
-$link          = $linkHelper->getPageLink($kLink);
-//hole alle OberKategorien
-$AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
-$AufgeklappteKategorien = new KategorieListe();
-$cCanonicalURL          = '';
-$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
-if (FormHelper::checkSubject()) {
-    $step            = 'formular';
-    $fehlendeAngaben = [];
-    if (isset($_POST['kontakt']) && (int)$_POST['kontakt'] === 1) {
-        $fehlendeAngaben = FormHelper::getMissingContactFormData();
-        $kKundengruppe   = Session::CustomerGroup()->getID();
-        // CheckBox Plausi
-        $oCheckBox       = new CheckBox();
-        $fehlendeAngaben = array_merge(
-            $fehlendeAngaben,
-            $oCheckBox->validateCheckBox(CHECKBOX_ORT_KONTAKT, $kKundengruppe, $_POST, true)
+$smarty         = Shop::Smarty();
+$conf           = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_KONTAKTFORMULAR]);
+$linkHelper     = Shop::Container()->getLinkService();
+$kLink          = $linkHelper->getSpecialPageLinkKey(LINKTYP_KONTAKT);
+$link           = $linkHelper->getPageLink($kLink);
+$cCanonicalURL  = '';
+$specialContent = new stdClass();
+$alertHelper    = Shop::Container()->getAlertService();
+$lang           = Shop::getLanguageCode();
+if (Form::checkSubject()) {
+    $step        = 'formular';
+    $missingData = [];
+    if (Request::postInt('kontakt') === 1) {
+        $missingData     = Form::getMissingContactFormData();
+        $customerGroupID = Frontend::getCustomerGroup()->getID();
+        $checkBox        = new CheckBox();
+        $missingData     = array_merge(
+            $missingData,
+            $checkBox->validateCheckBox(CHECKBOX_ORT_KONTAKT, $customerGroupID, $_POST, true)
         );
-        $nReturnValue    = FormHelper::eingabenKorrekt($fehlendeAngaben);
-        Shop::Smarty()->assign('cPost_arr', StringHandler::filterXSS($_POST));
+        $ok              = Form::eingabenKorrekt($missingData);
+        $smarty->assign('cPost_arr', Text::filterXSS($_POST));
         executeHook(HOOK_KONTAKT_PAGE_PLAUSI);
 
-        if ($nReturnValue) {
+        if ($ok) {
             $step = 'floodschutz';
-            if (!FormHelper::checkFloodProtection($Einstellungen['kontakt']['kontakt_sperre_minuten'])) {
-                $oNachricht = FormHelper::baueKontaktFormularVorgaben();
-                // CheckBox Spezialfunktion ausfuehren
-                $oCheckBox->triggerSpecialFunction(
+            if (!Form::checkFloodProtection($conf['kontakt']['kontakt_sperre_minuten'])) {
+                $msg = Form::baueKontaktFormularVorgaben();
+                $checkBox->triggerSpecialFunction(
                     CHECKBOX_ORT_KONTAKT,
-                    $kKundengruppe,
+                    $customerGroupID,
                     true,
                     $_POST,
-                    ['oKunde' => $oNachricht, 'oNachricht' => $oNachricht]
-                )->checkLogging(CHECKBOX_ORT_KONTAKT, $kKundengruppe, $_POST, true);
-                FormHelper::editMessage();
+                    ['oKunde' => $msg, 'oNachricht' => $msg]
+                )->checkLogging(CHECKBOX_ORT_KONTAKT, $customerGroupID, $_POST, true);
+                Form::editMessage();
                 $step = 'nachricht versendet';
             }
         }
     }
-    $lang     = $_SESSION['cISOSprache'];
-    $Contents = Shop::Container()->getDB()->selectAll(
+
+    $contents = Shop::Container()->getDB()->selectAll(
         'tspezialcontentsprache',
         ['nSpezialContent', 'cISOSprache'],
         [(int)SC_KONTAKTFORMULAR, $lang]
     );
-    $SpezialContent = new stdClass();
-    foreach ($Contents as $Content) {
-        $SpezialContent->{$Content->cTyp} = $Content->cContent;
+    foreach ($contents as $content) {
+        $specialContent->{$content->cTyp} = $content->cContent;
     }
     $subjects = Shop::Container()->getDB()->query(
         "SELECT *
             FROM tkontaktbetreff
-            WHERE (cKundengruppen = 0 
-            OR FIND_IN_SET('" . Session::CustomerGroup()->getID()
-                . "', REPLACE(cKundengruppen, ';', ',')) > 0) 
+            WHERE (cKundengruppen = 0
+            OR FIND_IN_SET('" . Frontend::getCustomerGroup()->getID()
+        . "', REPLACE(cKundengruppen, ';', ',')) > 0)
             ORDER BY nSort",
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($subjects as $subject) {
-        if ($subject->kKontaktBetreff > 0) {
-            $localization = Shop::Container()->getDB()->select(
-                'tkontaktbetreffsprache',
-                'kKontaktBetreff',
-                (int)$subject->kKontaktBetreff,
-                'cISOSprache',
-                $lang
-            );
-            $subject->AngezeigterName = $localization->cName;
-        }
+        $localization             = Shop::Container()->getDB()->select(
+            'tkontaktbetreffsprache',
+            'kKontaktBetreff',
+            (int)$subject->kKontaktBetreff,
+            'cISOSprache',
+            $lang
+        );
+        $subject->AngezeigterName = $localization->cName ?? $subject->cName;
     }
-    $Vorgaben = FormHelper::baueKontaktFormularVorgaben();
-    // Canonical
+    if ($step === 'nachricht versendet') {
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, Shop::Lang()->get('messageSent', 'contact'), 'messageSent');
+    } elseif ($step === 'floodschutz') {
+        $alertHelper->addAlert(
+            Alert::TYPE_DANGER,
+            Shop::Lang()->get('youSentUsAMessageShortTimeBefore', 'contact'),
+            'youSentUsAMessageShortTimeBefore'
+        );
+    }
     $cCanonicalURL = $linkHelper->getStaticRoute('kontakt.php');
-    // Metaangaben
-    $oMeta            = $linkHelper->buildSpecialPageMeta(LINKTYP_KONTAKT, $lang);
-    $cMetaTitle       = $oMeta->cTitle;
-    $cMetaDescription = $oMeta->cDesc;
-    $cMetaKeywords    = $oMeta->cKeywords;
-    Shop::Smarty()->assign('step', $step)
-        ->assign('code', false)
-        ->assign('betreffs', $subjects)
-        ->assign('hinweis', $hinweis ?? null)
-        ->assign('Vorgaben', $Vorgaben)
-        ->assign('fehlendeAngaben', $fehlendeAngaben)
-        ->assign('nAnzeigeOrt', CHECKBOX_ORT_KONTAKT);
+
+    $smarty->assign('step', $step)
+           ->assign('code', false)
+           ->assign('betreffs', $subjects)
+           ->assign('Vorgaben', Form::baueKontaktFormularVorgaben())
+           ->assign('fehlendeAngaben', $missingData)
+           ->assign('nAnzeigeOrt', CHECKBOX_ORT_KONTAKT);
 } else {
     Shop::Container()->getLogService()->error('Kein Kontaktbetreff vorhanden! Bitte im Backend unter ' .
         'Einstellungen -> Kontaktformular -> Betreffs einen Betreff hinzuf&uuml;gen.');
-    Shop::Smarty()->assign('hinweis', Shop::Lang()->get('noSubjectAvailable', 'contact'));
-    $SpezialContent = new stdClass();
+
+    $alertHelper->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('noSubjectAvailable', 'contact'), 'noSubjectAvailable');
 }
 
-Shop::Smarty()->assign('Link', $link)
-              ->assign('Spezialcontent', $SpezialContent);
+$smarty->assign('Link', $link)
+       ->assign('Spezialcontent', $specialContent);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 executeHook(HOOK_KONTAKT_PAGE);
-Shop::Smarty()->display('contact/index.tpl');
+$smarty->display('contact/index.tpl');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';

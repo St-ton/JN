@@ -2,6 +2,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
+{assign var=anzeige value=$Einstellungen.artikeldetails.artikel_lagerbestandsanzeige}
 {capture name='outofstock' assign='outofstockInfo'}<span class="delivery-status"><small class="status-0">{lang key='soldout'}</small></span>{/capture}
 <div class="table-responsive">
     <table class="table table-striped variation-matrix">
@@ -15,7 +16,7 @@
                         {if $Artikel->oVariBoxMatrixBild_arr|@count > 0 && (($Artikel->nIstVater == 1 && $Artikel->oVariBoxMatrixBild_arr[0]->nRichtung == 0) || $Artikel->nIstVater == 0)}
                             {foreach $Artikel->oVariBoxMatrixBild_arr as $oVariBoxMatrixBild}
                                 {if $oVariBoxMatrixBild->kEigenschaftWert == $oVariationWertHead->kEigenschaftWert}
-                                    <img src="{$oVariBoxMatrixBild->cBild}" class="img-responsive" alt=""><br>
+                                    <img src="{$oVariBoxMatrixBild->cBild}" class="img-responsive" alt="{$oVariationWertHead->cName}"><br>
                                 {/if}
                             {/foreach}
                         {/if}
@@ -34,7 +35,7 @@
                             {if $Artikel->oVariBoxMatrixBild_arr|@count > 0 && (($Artikel->nIstVater == 1 && $Artikel->oVariBoxMatrixBild_arr[0]->nRichtung == 1) || $Artikel->nIstVater == 0)}
                                 {foreach $Artikel->oVariBoxMatrixBild_arr as $oVariBoxMatrixBild}
                                     {if $oVariBoxMatrixBild->kEigenschaftWert == $oVariationWert1->kEigenschaftWert}
-                                        <img src="{$oVariBoxMatrixBild->cBild}" alt=""><br>
+                                        <img src="{$oVariBoxMatrixBild->cBild}" alt="{$oVariationWert1->cName}"><br>
                                     {/if}
                                 {/foreach}
                             {/if}
@@ -42,18 +43,13 @@
                         </td>
                         {foreach $Artikel->VariationenOhneFreifeld[0]->Werte as $oVariationWert0}
                             {assign var=bAusblenden value=false}
-                            {if $Artikel->nVariationKombiNichtMoeglich_arr|@count > 0}
-                                {foreach $Artikel->nVariationKombiNichtMoeglich_arr[$kEigenschaftWert1] as $kEigenschaftWertNichtMoeglich}
-                                    {if $kEigenschaftWertNichtMoeglich == $oVariationWert0->kEigenschaftWert && $Einstellungen.artikeldetails.artikeldetails_warenkorbmatrix_lagerbeachten !== 'N'}
-                                        {assign var=bAusblenden value=true}
-                                    {/if}
-                                {/foreach}
+                            {assign var=cVariBox value=$oVariationWert0->kEigenschaft|cat:':'|cat:$oVariationWert0->kEigenschaftWert|cat:'_'|cat:$oVariationWert1->kEigenschaft|cat:':'|cat:$oVariationWert1->kEigenschaftWert}
+                            {if isset($Artikel->oVariationKombiKinderAssoc_arr[$cVariBox])}
+                                {assign var=child value=$Artikel->oVariationKombiKinderAssoc_arr[$cVariBox]}
+                            {elseif $Artikel->nIstVater}
+                                {assign var=bAusblenden value=true}
                             {/if}
                             {if !$bAusblenden}
-                                {assign var=cVariBox value=$oVariationWert0->kEigenschaft|cat:':'|cat:$oVariationWert0->kEigenschaftWert|cat:'_'|cat:$oVariationWert1->kEigenschaft|cat:':'|cat:$oVariationWert1->kEigenschaftWert}
-                                {if isset($Artikel->oVariationKombiKinderAssoc_arr[$cVariBox])}
-                                    {assign var=child value=$Artikel->oVariationKombiKinderAssoc_arr[$cVariBox]}
-                                {/if}
                                 <td class="form-inline vcenter">
                                     {if $Einstellungen.global.global_erscheinende_kaeuflich === 'N' && isset($child->nErscheinendesProdukt) && $child->nErscheinendesProdukt == 1}
                                         <small>
@@ -65,11 +61,15 @@
                                                 {lang key='productAvailableFrom'}: <strong>{$child->Erscheinungsdatum_de}</strong>
                                             </small>
                                         {else}
-                                            {$outofstockInfo}
+                                            {if !empty($child)}
+                                                {include file='snippets/stock_status.tpl' currentProduct=$child}
+                                            {else}
+                                                {$outofstockInfo}
+                                            {/if}
                                         {/if}
                                     {elseif (isset($child->bHasKonfig) && $child->bHasKonfig == true) || (isset($child->nVariationAnzahl) && isset($child->nVariationOhneFreifeldAnzahl) && $child->nVariationAnzahl > $child->nVariationOhneFreifeldAnzahl)}
                                         <div class="center-sm">
-                                            <a class="btn btn-default configurepos" href="{$ShopURL}/?a={$child->kArtikel}"><i class="fa fa-cogs"></i><span class="hidden-xs"> {lang key='configure'}</span></a>
+                                            <a class="btn btn-default configurepos" href="{$child->cSeo}"><i class="fa fa-cogs"></i><span class="hidden-xs"> {lang key='configure'}</span></a>
                                         </div>
                                         {if isset($child->nErscheinendesProdukt) && $child->nErscheinendesProdukt == 1}
                                             <div>
@@ -81,25 +81,11 @@
                                         <div class="delivery-status">
                                             <small>
                                                 {if !isset($child->nErscheinendesProdukt) || !$child->nErscheinendesProdukt}
-                                                    {if $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige !== 'nichts' && (isset($child->cLagerBeachten) && $child->cLagerBeachten === 'Y') &&
-                                                    ($child->cLagerKleinerNull === 'N' || $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U') &&
-                                                    $child->fLagerbestand <= 0 && $child->fZulauf > 0 && isset($child->dZulaufDatum_de)}
-                                                        {assign var=cZulauf value=$child->fZulauf|cat:':::'|cat:$child->dZulaufDatum_de}
-                                                        <span class="status status-1"><i class="fa fa-truck"></i> {lang key='productInflowing' section='productDetails' printf=$cZulauf}</span>
-                                                    {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige !== 'nichts' && $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen !== 'N' && $child->cLagerBeachten === 'Y' &&
-                                                    $child->fLagerbestand <= 0 && $child->fLieferantenlagerbestand > 0 && $child->fLieferzeit > 0 &&
-                                                    ($child->cLagerKleinerNull === 'N' || $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U')}
-                                                        <span class="status status-1"><i class="fa fa-truck"></i> {lang key='supplierStockNotice' printf=$child->fLieferzeit}</span>
-                                                    {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'verfuegbarkeit' || $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'genau'}
-                                                        <span class="status status-{$child->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$child->Lageranzeige->cLagerhinweis[$Einstellungen.artikeldetails.artikel_lagerbestandsanzeige]}</span>
-                                                    {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'ampel'}
-                                                        <span class="status status-{$child->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$child->Lageranzeige->AmpelText}</span>
-                                                    {/if}
-                                                    {include file='productdetails/warehouse.tpl' tplscope='detail'}
+                                                    {include file='snippets/stock_status.tpl' currentProduct=$child}
                                                 {else}
-                                                    {if $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'verfuegbarkeit' || $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'genau' && ((isset($child->fLagerbestand) && $child->fLagerbestand > 0) || (isset($child->cLagerKleinerNull) && $child->cLagerKleinerNull === 'Y'))}
-                                                        <span class="status status-{$child->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$child->Lageranzeige->cLagerhinweis[$Einstellungen.artikeldetails.artikel_lagerbestandsanzeige]}</span>
-                                                    {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'ampel' && ((isset($child->fLagerbestand) && $child->fLagerbestand > 0) || (isset($child->cLagerKleinerNull) && $child->cLagerKleinerNull === 'Y'))}
+                                                    {if $anzeige === 'verfuegbarkeit' || $anzeige === 'genau' && ((isset($child->fLagerbestand) && $child->fLagerbestand > 0) || (isset($child->cLagerKleinerNull) && $child->cLagerKleinerNull === 'Y'))}
+                                                        <span class="status status-{$child->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$child->Lageranzeige->cLagerhinweis[$anzeige]}</span>
+                                                    {elseif $anzeige === 'ampel' && ((isset($child->fLagerbestand) && $child->fLagerbestand > 0) || (isset($child->cLagerKleinerNull) && $child->cLagerKleinerNull === 'Y'))}
                                                         <span class="status status-{$child->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$child->Lageranzeige->AmpelText}</span>
                                                     {/if}
                                                 {/if}
@@ -169,25 +155,11 @@
                                             <small>
                                                 {if $Artikel->nIstVater == 1}
                                                     {if isset($child->nErscheinendesProdukt) && !$child->nErscheinendesProdukt}
-                                                        {if $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige !== 'nichts' && $child->cLagerBeachten === 'Y' &&
-                                                        ($child->cLagerKleinerNull === 'N' || $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U') &&
-                                                        $child->fLagerbestand <= 0 && $child->fZulauf > 0 && isset($child->dZulaufDatum_de)}
-                                                            {assign var=cZulauf value=$child->fZulauf|cat:':::'|cat:$child->dZulaufDatum_de}
-                                                            <span class="status status-1"><i class="fa fa-truck"></i> {lang key='productInflowing' section='productDetails' printf=$cZulauf}</span>
-                                                        {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige !== 'nichts' && $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen !== 'N' && $child->cLagerBeachten === 'Y' &&
-                                                        $child->fLagerbestand <= 0 && $child->fLieferantenlagerbestand > 0 && $child->fLieferzeit > 0 &&
-                                                        ($child->cLagerKleinerNull === 'N' || $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U')}
-                                                            <span class="status status-1"><i class="fa fa-truck"></i> {lang key='supplierStockNotice' printf=$child->fLieferzeit}</span>
-                                                        {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'verfuegbarkeit' || $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'genau'}
-                                                            <span class="status status-{$child->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$child->Lageranzeige->cLagerhinweis[$Einstellungen.artikeldetails.artikel_lagerbestandsanzeige]}</span>
-                                                        {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'ampel'}
-                                                            <span class="status status-{$child->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$child->Lageranzeige->AmpelText}</span>
-                                                        {/if}
-                                                        {include file='productdetails/warehouse.tpl' tplscope='detail'}
+                                                        {include file='snippets/stock_status.tpl' currentProduct=$child}
                                                     {else}
-                                                        {if $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'verfuegbarkeit' || $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'genau' && ((isset($child->fLagerbestand) && $child->fLagerbestand > 0) || (isset($child->cLagerKleinerNull) && $child->cLagerKleinerNull === 'Y'))}
-                                                            <span class="status status-{$child->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$child->Lageranzeige->cLagerhinweis[$Einstellungen.artikeldetails.artikel_lagerbestandsanzeige]}</span>
-                                                        {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'ampel' && ((isset($child->fLagerbestand) && $child->fLagerbestand > 0) || (isset($child->cLagerKleinerNull) && $child->cLagerKleinerNull === 'Y'))}
+                                                        {if $anzeige === 'verfuegbarkeit' || $anzeige === 'genau' && ((isset($child->fLagerbestand) && $child->fLagerbestand > 0) || (isset($child->cLagerKleinerNull) && $child->cLagerKleinerNull === 'Y'))}
+                                                            <span class="status status-{$child->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$child->Lageranzeige->cLagerhinweis[$anzeige]}</span>
+                                                        {elseif $anzeige === 'ampel' && ((isset($child->fLagerbestand) && $child->fLagerbestand > 0) || (isset($child->cLagerKleinerNull) && $child->cLagerKleinerNull === 'Y'))}
                                                             <span class="status status-{$child->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$child->Lageranzeige->AmpelText}</span>
                                                         {/if}
                                                     {/if}
@@ -221,7 +193,7 @@
                                 {if $Artikel->oVariBoxMatrixBild_arr|@count > 0}
                                     {foreach $Artikel->oVariBoxMatrixBild_arr as $oVariBoxMatrixBild}
                                         {if $oVariBoxMatrixBild->kEigenschaftWert == $oVariationWertHead->kEigenschaftWert}
-                                            <img src="{$oVariBoxMatrixBild->cBild}" alt=""><br>
+                                            <img src="{$oVariBoxMatrixBild->cBild}" alt="{$oVariationWertHead->cName}"><br>
                                         {/if}
                                     {/foreach}
                                 {/if}
@@ -250,11 +222,15 @@
                                             {lang key='productAvailableFrom'}: <strong>{$child->Erscheinungsdatum_de}</strong>
                                         </small>
                                     {else}
-                                        {$outofstockInfo}
+                                        {if !empty($child)}
+                                            {include file='snippets/stock_status.tpl' currentProduct=$child}
+                                        {else}
+                                            {$outofstockInfo}
+                                        {/if}
                                     {/if}
                                 {elseif (isset($child->bHasKonfig) && $child->bHasKonfig == true) || (isset($child->nVariationAnzahl) && isset($child->nVariationOhneFreifeldAnzahl) && $child->nVariationAnzahl > $child->nVariationOhneFreifeldAnzahl)}
                                     <div class="center-sm">
-                                        <a class="btn btn-default configurepos" href="{$ShopURL}/?a={$child->kArtikel}"><i class="fa fa-cogs"></i><span class="hidden-xs"> {lang key='configure'}</span></a>
+                                        <a class="btn btn-default configurepos" href="{$child->cSeo}"><i class="fa fa-cogs"></i><span class="hidden-xs"> {lang key='configure'}</span></a>
                                     </div>
                                     {if isset($child->nErscheinendesProdukt) && $child->nErscheinendesProdukt == 1}
                                         <div>
@@ -266,25 +242,11 @@
                                     <div class="delivery-status">
                                         <small>
                                             {if !$child->nErscheinendesProdukt}
-                                                {if $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige !== 'nichts' && $child->cLagerBeachten === 'Y' &&
-                                                ($child->cLagerKleinerNull === 'N' || $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U') &&
-                                                $child->fLagerbestand <= 0 && $child->fZulauf > 0 && isset($child->dZulaufDatum_de)}
-                                                    {assign var=cZulauf value=$child->fZulauf|cat:':::'|cat:$child->dZulaufDatum_de}
-                                                    <span class="status status-1"><i class="fa fa-truck"></i> {lang key='productInflowing' section='productDetails' printf=$cZulauf}</span>
-                                                {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige !== 'nichts' && $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen !== 'N' && $child->cLagerBeachten === 'Y' &&
-                                                $child->fLagerbestand <= 0 && $child->fLieferantenlagerbestand > 0 && $child->fLieferzeit > 0 &&
-                                                ($child->cLagerKleinerNull === 'N' || $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U')}
-                                                    <span class="status status-1"><i class="fa fa-truck"></i> {lang key='supplierStockNotice' printf=$child->fLieferzeit}</span>
-                                                {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'verfuegbarkeit' || $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'genau'}
-                                                    <span class="status status-{$child->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$child->Lageranzeige->cLagerhinweis[$Einstellungen.artikeldetails.artikel_lagerbestandsanzeige]}</span>
-                                                {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'ampel'}
-                                                    <span class="status status-{$child->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$child->Lageranzeige->AmpelText}</span>
-                                                {/if}
-                                                {include file='productdetails/warehouse.tpl' tplscope='detail'}
+                                                {include file='snippets/stock_status.tpl' currentProduct=$child}
                                             {else}
-                                                {if $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'verfuegbarkeit' || $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'genau' && ($child->fLagerbestand > 0 || $child->cLagerKleinerNull === 'Y')}
-                                                    <span class="status status-{$child->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$child->Lageranzeige->cLagerhinweis[$Einstellungen.artikeldetails.artikel_lagerbestandsanzeige]}</span>
-                                                {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'ampel' && ($child->fLagerbestand > 0 || $child->cLagerKleinerNull === 'Y')}
+                                                {if $anzeige === 'verfuegbarkeit' || $anzeige === 'genau' && ($child->fLagerbestand > 0 || $child->cLagerKleinerNull === 'Y')}
+                                                    <span class="status status-{$child->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$child->Lageranzeige->cLagerhinweis[$anzeige]}</span>
+                                                {elseif $anzeige === 'ampel' && ($child->fLagerbestand > 0 || $child->cLagerKleinerNull === 'Y')}
                                                     <span class="status status-{$child->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$child->Lageranzeige->AmpelText}</span>
                                                 {/if}
                                             {/if}
@@ -316,25 +278,11 @@
                                         <small>
                                             {if $Artikel->nIstVater == 1}
                                                 {if isset($child->nErscheinendesProdukt) && !$child->nErscheinendesProdukt}
-                                                    {if $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige !== 'nichts' && $child->cLagerBeachten === 'Y' &&
-                                                    ($child->cLagerKleinerNull === 'N' || $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U') &&
-                                                    $child->fLagerbestand <= 0 && $child->fZulauf > 0 && isset($child->dZulaufDatum_de)}
-                                                        {assign var=cZulauf value=$child->fZulauf|cat:':::'|cat:$child->dZulaufDatum_de}
-                                                        <span class="status status-1"><i class="fa fa-truck"></i> {lang key='productInflowing' section='productDetails' printf=$cZulauf}</span>
-                                                    {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige !== 'nichts' && $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen !== 'N' && $child->cLagerBeachten === 'Y' &&
-                                                    $child->fLagerbestand <= 0 && $child->fLieferantenlagerbestand > 0 && $child->fLieferzeit > 0 &&
-                                                    ($child->cLagerKleinerNull === 'N' || $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U')}
-                                                        <span class="status status-1"><i class="fa fa-truck"></i> {lang key='supplierStockNotice' printf=$child->fLieferzeit}</span>
-                                                    {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'verfuegbarkeit' || $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'genau'}
-                                                        <span class="status status-{$child->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$child->Lageranzeige->cLagerhinweis[$Einstellungen.artikeldetails.artikel_lagerbestandsanzeige]}</span>
-                                                    {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'ampel'}
-                                                        <span class="status status-{$child->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$child->Lageranzeige->AmpelText}</span>
-                                                    {/if}
-                                                    {include file='productdetails/warehouse.tpl' tplscope='detail'}
+                                                    {include file='snippets/stock_status.tpl' currentProduct=$child}
                                                 {else}
-                                                    {if $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'verfuegbarkeit' || $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'genau' && ($child->fLagerbestand > 0 || $child->cLagerKleinerNull === 'Y')}
-                                                        <span class="status status-{$child->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$child->Lageranzeige->cLagerhinweis[$Einstellungen.artikeldetails.artikel_lagerbestandsanzeige]}</span>
-                                                    {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'ampel' && ((isset($child->fLagerbestand) && $child->fLagerbestand > 0) || (isset($child->cLagerKleinerNull) && $child->cLagerKleinerNull === 'Y'))}
+                                                    {if $anzeige === 'verfuegbarkeit' || $anzeige === 'genau' && ($child->fLagerbestand > 0 || $child->cLagerKleinerNull === 'Y')}
+                                                        <span class="status status-{$child->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$child->Lageranzeige->cLagerhinweis[$anzeige]}</span>
+                                                    {elseif $anzeige === 'ampel' && ((isset($child->fLagerbestand) && $child->fLagerbestand > 0) || (isset($child->cLagerKleinerNull) && $child->cLagerKleinerNull === 'Y'))}
                                                         <span class="status status-{$child->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$child->Lageranzeige->AmpelText}</span>
                                                     {/if}
                                                 {/if}
@@ -361,7 +309,7 @@
                                 {if $Artikel->oVariBoxMatrixBild_arr|@count > 0}
                                     {foreach $Artikel->oVariBoxMatrixBild_arr as $oVariBoxMatrixBild}
                                         {if $oVariBoxMatrixBild->kEigenschaftWert == $oVariationWertHead->kEigenschaftWert}
-                                            <img src="{$oVariBoxMatrixBild->cBild}" alt="">
+                                            <img src="{$oVariBoxMatrixBild->cBild}" alt="{$oVariationWertHead->cName}">
                                         {/if}
                                     {/foreach}
                                 {/if}
@@ -378,10 +326,14 @@
                                             {lang key='productAvailableFrom'}: <strong>{$child->Erscheinungsdatum_de}</strong>
                                         </small>
                                     {else}
-                                        {$outofstockInfo}
+                                        {if !empty($child)}
+                                            {include file='snippets/stock_status.tpl' currentProduct=$child}
+                                        {else}
+                                            {$outofstockInfo}
+                                        {/if}
                                     {/if}
                                 {elseif (isset($child->bHasKonfig) && $child->bHasKonfig == true) || (isset($child->nVariationAnzahl) && isset($child->nVariationOhneFreifeldAnzahl) && $child->nVariationAnzahl > $child->nVariationOhneFreifeldAnzahl)}
-                                    <a class="btn btn-default configurepos" href="{$ShopURL}/?a={$child->kArtikel}"><i class="fa fa-cogs"></i><span class="hidden-xs"> {lang key='configure'}</span></a>
+                                    <a class="btn btn-default configurepos" href="{$child->cSeo}"><i class="fa fa-cogs"></i><span class="hidden-xs"> {lang key='configure'}</span></a>
                                     {if isset($child->nErscheinendesProdukt) && $child->nErscheinendesProdukt == 1}
                                         <div>
                                             <small>
@@ -392,26 +344,11 @@
                                     <div class="delivery-status">
                                         <small>
                                             {if !$child->nErscheinendesProdukt}
-                                                {if $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige !== 'nichts'
-                                                && $child->cLagerBeachten === 'Y'
-                                                && ($child->cLagerKleinerNull === 'N' || $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U')
-                                                && $child->fLagerbestand <= 0 && $child->fZulauf > 0 && isset($child->dZulaufDatum_de)}
-                                                    {assign var=cZulauf value=$child->fZulauf|cat:':::'|cat:$child->dZulaufDatum_de}
-                                                    <span class="status status-1"><i class="fa fa-truck"></i> {lang key='productInflowing' section='productDetails' printf=$cZulauf}</span>
-                                                {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige !== 'nichts' && $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen !== 'N' && $child->cLagerBeachten === 'Y' &&
-                                                $child->fLagerbestand <= 0 && $child->fLieferantenlagerbestand > 0 && $child->fLieferzeit > 0 &&
-                                                ($child->cLagerKleinerNull === 'N' || $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U')}
-                                                    <span class="status status-1"><i class="fa fa-truck"></i> {lang key='supplierStockNotice' printf=$child->fLieferzeit}</span>
-                                                {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'verfuegbarkeit' || $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'genau'}
-                                                    <span class="status status-{$child->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$child->Lageranzeige->cLagerhinweis[$Einstellungen.artikeldetails.artikel_lagerbestandsanzeige]}</span>
-                                                {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'ampel'}
-                                                    <span class="status status-{$child->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$child->Lageranzeige->AmpelText}</span>
-                                                {/if}
-                                                {include file='productdetails/warehouse.tpl' tplscope='detail'}
+                                                {include file='snippets/stock_status.tpl' currentProduct=$child}
                                             {else}
-                                                {if $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'verfuegbarkeit' || $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'genau' && ($child->fLagerbestand > 0 || $child->cLagerKleinerNull === 'Y')}
-                                                    <span class="status status-{$child->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$child->Lageranzeige->cLagerhinweis[$Einstellungen.artikeldetails.artikel_lagerbestandsanzeige]}</span>
-                                                {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'ampel' && ((isset($child->fLagerbestand) && $child->fLagerbestand > 0) || (isset($child->cLagerKleinerNull) && $child->cLagerKleinerNull === 'Y'))}
+                                                {if $anzeige === 'verfuegbarkeit' || $anzeige === 'genau' && ($child->fLagerbestand > 0 || $child->cLagerKleinerNull === 'Y')}
+                                                    <span class="status status-{$child->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$child->Lageranzeige->cLagerhinweis[$anzeige]}</span>
+                                                {elseif $anzeige === 'ampel' && ((isset($child->fLagerbestand) && $child->fLagerbestand > 0) || (isset($child->cLagerKleinerNull) && $child->cLagerKleinerNull === 'Y'))}
                                                     <span class="status status-{$child->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$child->Lageranzeige->AmpelText}</span>
                                                 {/if}
                                             {/if}
@@ -449,27 +386,11 @@
                                         <small>
                                             {if $Artikel->nIstVater == 1}
                                                 {if isset($child->nErscheinendesProdukt) && !$child->nErscheinendesProdukt}
-                                                    {if $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige !== 'nichts'
-                                                    && $child->cLagerBeachten === 'Y'
-                                                    && ($child->cLagerKleinerNull === 'N' || $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U')
-                                                    && $child->fLagerbestand <= 0 && $child->fZulauf > 0 && isset($child->dZulaufDatum_de)}
-                                                        {assign var=cZulauf value=$child->fZulauf|cat:':::'|cat:$child->dZulaufDatum_de}
-                                                        <span class="status status-1"><i class="fa fa-truck"></i> {lang key='productInflowing' section='productDetails' printf=$cZulauf}</span>
-                                                    {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige !== 'nichts' && $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen !== 'N'
-                                                    && $child->cLagerBeachten === 'Y'
-                                                    && $child->fLagerbestand <= 0 && $child->fLieferantenlagerbestand > 0 && $child->fLieferzeit > 0
-                                                    && ($child->cLagerKleinerNull === 'N' || $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U')}
-                                                        <span class="status status-1"><i class="fa fa-truck"></i> {lang key='supplierStockNotice' printf=$child->fLieferzeit}</span>
-                                                    {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'verfuegbarkeit' || $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'genau'}
-                                                        <span class="status status-{$child->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$child->Lageranzeige->cLagerhinweis[$Einstellungen.artikeldetails.artikel_lagerbestandsanzeige]}</span>
-                                                    {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'ampel'}
-                                                        <span class="status status-{$child->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$child->Lageranzeige->AmpelText}</span>
-                                                    {/if}
-                                                    {include file='productdetails/warehouse.tpl' tplscope='detail'}
+                                                    {include file='snippets/stock_status.tpl' currentProduct=$child}
                                                 {else}
-                                                    {if $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'verfuegbarkeit' || $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'genau' && ((isset($child->fLagerbestand) && $child->fLagerbestand > 0) || (isset($child->cLagerKleinerNull) && $child->cLagerKleinerNull === 'Y'))}
-                                                        <span class="status status-{$child->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$child->Lageranzeige->cLagerhinweis[$Einstellungen.artikeldetails.artikel_lagerbestandsanzeige]}</span>
-                                                    {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'ampel' && ((isset($child->fLagerbestand) && $child->fLagerbestand > 0) || (isset($child->cLagerKleinerNull) && $child->cLagerKleinerNull === 'Y'))}
+                                                    {if $anzeige === 'verfuegbarkeit' || $anzeige === 'genau' && ((isset($child->fLagerbestand) && $child->fLagerbestand > 0) || (isset($child->cLagerKleinerNull) && $child->cLagerKleinerNull === 'Y'))}
+                                                        <span class="status status-{$child->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$child->Lageranzeige->cLagerhinweis[$anzeige]}</span>
+                                                    {elseif $anzeige === 'ampel' && ((isset($child->fLagerbestand) && $child->fLagerbestand > 0) || (isset($child->cLagerKleinerNull) && $child->cLagerKleinerNull === 'Y'))}
                                                         <span class="status status-{$child->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$child->Lageranzeige->AmpelText}</span>
                                                     {/if}
                                                 {/if}

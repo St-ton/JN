@@ -4,77 +4,90 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert\Alert;
+use JTL\Backend\AdminLoginStatus;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Helpers\Text;
+use JTL\Profiler;
+use JTL\Session\Backend;
+use JTL\Shop;
+use JTL\Template;
+use JTL\Update\Updater;
 use JTLShop\SemVer\Version;
+use Systemcheck\Platform\Filesystem;
 
 require_once __DIR__ . '/includes/admininclude.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
-/** @global JTLSmarty $smarty */
-/** @global AdminAccount $oAccount */
-$oUpdater = new Updater();
-$cFehler  = '';
-if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
-    $ret['captcha'] = 0;
-    $ret['csrf']    = 0;
-    if (file_exists(CAPTCHA_LOCKFILE)) {
-        $ret['captcha'] = Shop::Container()->getCaptchaService()->validate($_POST) ? 0 : 2;
-    }
+/** @global \JTL\Smarty\JTLSmarty     $smarty */
+/** @global \JTL\Backend\AdminAccount $oAccount */
+$db          = Shop::Container()->getDB();
+$alertHelper = Shop::Container()->getAlertService();
+$oUpdater    = new Updater($db);
+if (Request::postInt('adminlogin') === 1) {
+    $csrfOK = true;
     // Check if shop version is new enough for csrf validation
     if (Shop::getShopDatabaseVersion()->equals(Version::parse('4.0.0'))
-        || Shop::getShopDatabaseVersion()->greaterThan(Version::parse('4.0.0'))) {
-        // Check if template version is new enough for csrf validation
-        $tpl = AdminTemplate::getInstance();
-        if ($tpl::$cTemplate === 'bootstrap' && !FormHelper::validateToken()) {
-            $ret['csrf'] = 1;
-        }
+        || Shop::getShopDatabaseVersion()->greaterThan(Version::parse('4.0.0'))
+    ) {
+        $csrfOK = Form::validateToken();
     }
     $loginName = isset($_POST['benutzer'])
-        ? StringHandler::filterXSS(Shop::Container()->getDB()->escape($_POST['benutzer']))
+        ? Text::filterXSS($db->escape($_POST['benutzer']))
         : '---';
-    if ($ret['captcha'] === 0 && $ret['csrf'] === 0) {
-        $cLogin  = $_POST['benutzer'];
-        $cPass   = $_POST['passwort'];
-        $nReturn = $oAccount->login($cLogin, $cPass);
-        switch ($nReturn) {
+    if ($csrfOK === true) {
+        switch ($oAccount->login($_POST['benutzer'], $_POST['passwort'])) {
+            case AdminLoginStatus::ERROR_LOCKED:
             case AdminLoginStatus::ERROR_INVALID_PASSWORD_LOCKED:
-                @touch(CAPTCHA_LOCKFILE);
+                $lockTime = $oAccount->getLockedMinutes();
+                $alertHelper->addAlert(
+                    Alert::TYPE_ERROR,
+                    sprintf(__('lockForMinutes'), $lockTime),
+                    'errorFillRequired'
+                );
                 break;
 
             case AdminLoginStatus::ERROR_USER_NOT_FOUND:
             case AdminLoginStatus::ERROR_INVALID_PASSWORD:
-                $cFehler = 'Benutzername oder Passwort falsch';
-                if (isset($_SESSION['AdminAccount']->TwoFA_expired) && true === $_SESSION['AdminAccount']->TwoFA_expired) {
-                    $cFehler = '2-Faktor-Auth-Code abgelaufen';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorWrongPasswordUser'), 'errorWrongPasswordUser');
+                if (isset($_SESSION['AdminAccount']->TwoFA_expired)
+                    && $_SESSION['AdminAccount']->TwoFA_expired === true
+                ) {
+                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTwoFactorExpired'), 'errorTwoFactorExpired');
                 }
                 break;
 
             case AdminLoginStatus::ERROR_USER_DISABLED:
-                $cFehler = 'Anmeldung zur Zeit nicht möglich';
+                $alertHelper->addAlert(
+                    Alert::TYPE_ERROR,
+                    __('errorLoginTemporaryNotPossible'),
+                    'errorLoginTemporaryNotPossible'
+                );
                 break;
 
             case AdminLoginStatus::ERROR_LOGIN_EXPIRED:
-                $cFehler = 'Anmeldedaten nicht mehr gültig';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorLoginDataExpired'), 'errorLoginDataExpired');
                 break;
 
             case AdminLoginStatus::ERROR_TWO_FACTOR_AUTH_EXPIRED:
-                if (isset($_SESSION['AdminAccount']->TwoFA_expired) && true === $_SESSION['AdminAccount']->TwoFA_expired) {
-                    $cFehler = '2-Faktor-Authentifizierungs-Code abgelaufen';
+                if (isset($_SESSION['AdminAccount']->TwoFA_expired)
+                    && $_SESSION['AdminAccount']->TwoFA_expired === true
+                ) {
+                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTwoFactorExpired'), 'errorTwoFactorExpired');
                 }
                 break;
 
             case AdminLoginStatus::ERROR_NOT_AUTHORIZED:
-                $cFehler = 'Keine Berechtigungen vorhanden';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorNoPermission'), 'errorNoPermission');
                 break;
 
             case AdminLoginStatus::LOGIN_OK:
+                Backend::getInstance()->reHash();
                 $_SESSION['loginIsValid'] = true; // "enable" the "header.tpl"-navigation again
-                if (file_exists(CAPTCHA_LOCKFILE)) {
-                    unlink(CAPTCHA_LOCKFILE);
-                }
                 if ($oAccount->permission('SHOP_UPDATE_VIEW') && $oUpdater->hasPendingUpdates()) {
                     header('Location: ' . Shop::getURL(true) . '/' . PFAD_ADMIN . 'dbupdater.php');
                     exit;
                 }
-                if (isset($_REQUEST['uri']) && strlen(trim($_REQUEST['uri'])) > 0) {
+                if (isset($_REQUEST['uri']) && mb_strlen(trim($_REQUEST['uri'])) > 0) {
                     redirectToURI($_REQUEST['uri']);
                 }
                 header('Location: ' . Shop::getURL(true) . '/' . PFAD_ADMIN . 'index.php');
@@ -82,10 +95,8 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
 
                 break;
         }
-    } elseif ($ret['captcha'] !== 0) {
-        $cFehler = 'Captcha-Code falsch';
-    } elseif ($ret['csrf'] !== 0) {
-        $cFehler = 'Cross site request forgery! Sind Cookies aktiviert?';
+    } elseif ($csrfOK !== true) {
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCSRF'), 'errorCSRF');
     }
 }
 $type          = '';
@@ -117,13 +128,12 @@ switch ($profilerState) {
         $type = 'Datenbank-, XHProf und Plugin';
         break;
 }
-if (file_exists(CAPTCHA_LOCKFILE)) {
-    $smarty->assign('code_adminlogin', Shop::Container()->getCaptchaService()->isEnabled());
-}
+
 $smarty->assign('bProfilerActive', $profilerState !== 0)
        ->assign('profilerType', $type)
-       ->assign('pw_updated', isset($_GET['pw_updated']) && $_GET['pw_updated'] === 'true')
-       ->assign('cFehler', $cFehler)
+       ->assign('pw_updated', Request::getVar('pw_updated') === 'true')
+       ->assign('alertError', $alertHelper->alertTypeExists(Alert::TYPE_ERROR))
+       ->assign('alertList', $alertHelper)
        ->assign('updateMessage', $updateMessage ?? null);
 
 
@@ -133,23 +143,20 @@ $smarty->assign('bProfilerActive', $profilerState !== 0)
  */
 function openDashboard()
 {
-    global $oAccount, $smarty;
+    global $oAccount;
 
-    if (isset($_REQUEST['uri']) && strlen(trim($_REQUEST['uri'])) > 0) {
+    $smarty = Shop::Smarty();
+    if (isset($_REQUEST['uri']) && mb_strlen(trim($_REQUEST['uri'])) > 0) {
         redirectToURI($_REQUEST['uri']);
     }
     $_SESSION['loginIsValid'] = true;
     if ($oAccount->permission('DASHBOARD_VIEW')) {
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dashboard_inc.php';
 
-        $oFsCheck = new Systemcheck_Platform_Filesystem(PFAD_ROOT);
-        $oFsCheck->getFoldersChecked();
-
         $smarty->assign('bDashboard', true)
-               ->assign('oPermissionStat', $oFsCheck->getFolderStats())
-               ->assign('bUpdateError', ((isset($_POST['shopupdate']) && $_POST['shopupdate'] === '1') ? '1' : false))
-               ->assign('bTemplateDiffers', APPLICATION_VERSION !== Template::getInstance()->getVersion())
-               ->assign('oActiveWidget_arr', getWidgets(true))
+               ->assign('bUpdateError', (Request::postInt('shopupdate') === 1 ? '1' : false))
+               ->assign('bTemplateDiffers', Template::getInstance()->getVersion() !== APPLICATION_VERSION)
+               ->assign('oActiveWidget_arr', getWidgets())
                ->assign('oAvailableWidget_arr', getWidgets(false))
                ->assign('bInstallExists', is_dir(PFAD_ROOT . 'install'));
     }
@@ -170,28 +177,25 @@ function redirectToURI($szURI)
 
 unset($_SESSION['AdminAccount']->TwoFA_active);
 if ($oAccount->getIsAuthenticated()) {
-    // at this point, the user is logged in with his regular credentials
+    Shop::Container()->getGetText()->loadAdminLocale('widgets');
     if (!$oAccount->getIsTwoFaAuthenticated()) {
-        // activate the 2FA-code input-field in the login-template(-page)
         $_SESSION['AdminAccount']->TwoFA_active = true;
-        $_SESSION['jtl_token']                  = $_POST['jtl_token'] ?? ''; // restore first generated token from POST!
-        // if our check failed, we redirect to login
-        if (isset($_POST['TwoFA_code']) && '' !== $_POST['TwoFA_code']) {
+        // restore first generated token from POST
+        $_SESSION['jtl_token'] = $_POST['jtl_token'] ?? '';
+        if (Request::postVar('TwoFA_code', '') !== '') {
             if ($oAccount->doTwoFA()) {
+                Backend::getInstance()->reHash();
                 $_SESSION['AdminAccount']->TwoFA_expired = false;
                 $_SESSION['AdminAccount']->TwoFA_valid   = true;
-                $_SESSION['loginIsValid']                = true; // "enable" the "header.tpl"-navigation again
-                $smarty->assign('cFehler', ''); // reset a previously (falsely arised) error-message
-
-                openDashboard(); // and exit here
+                $_SESSION['loginIsValid']                = true;
+                openDashboard();
             }
         } else {
             $_SESSION['AdminAccount']->TwoFA_expired = true;
         }
-        // "redirect" to the "login not valid"
-        // (we've received a wrong code and give the user the chance to retry)
+        Shop::Container()->getGetText()->loadAdminLocale('pages/login');
         $oAccount->redirectOnUrl();
-        $smarty->assign('uri', isset($_REQUEST['uri']) && strlen(trim($_REQUEST['uri'])) > 0
+        $smarty->assign('uri', isset($_REQUEST['uri']) && mb_strlen(trim($_REQUEST['uri'])) > 0
             ? trim($_REQUEST['uri'])
             : '')
                ->display('login.tpl');
@@ -200,8 +204,14 @@ if ($oAccount->getIsAuthenticated()) {
     openDashboard();
 } else {
     $oAccount->redirectOnUrl();
-    $smarty->assign('uri', isset($_REQUEST['uri']) && strlen(trim($_REQUEST['uri'])) > 0
+    if (Request::getInt('errCode', null) === AdminLoginStatus::ERROR_SESSION_INVALID) {
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSessionExpired'), 'errorSessionExpired');
+    }
+    Shop::Container()->getGetText()->loadAdminLocale('pages/login');
+    $smarty->assign('uri', isset($_REQUEST['uri']) && mb_strlen(trim($_REQUEST['uri'])) > 0
         ? trim($_REQUEST['uri'])
         : '')
+           ->assign('alertError', $alertHelper->alertTypeExists(Alert::TYPE_ERROR))
+           ->assign('alertList', $alertHelper)
            ->display('login.tpl');
 }

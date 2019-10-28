@@ -4,16 +4,27 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL\Validation;
+namespace JTL\Services\JTL\Validation;
 
 /**
  * Class ValidationResult
- * @package Services\JTL\Validation
+ * @package JTL\Services\JTL\Validation
  */
 class RuleResult implements RuleResultInterface
 {
+    /**
+     * @var bool
+     */
     protected $isValid;
+
+    /**
+     * @var string
+     */
     protected $messageId;
+
+    /**
+     * @var mixed|null
+     */
     protected $transformedValue;
 
     /**
@@ -32,7 +43,7 @@ class RuleResult implements RuleResultInterface
     /**
      * @return bool
      */
-    public function isValid()
+    public function isValid(): bool
     {
         return $this->isValid;
     }
@@ -40,7 +51,7 @@ class RuleResult implements RuleResultInterface
     /**
      * @return string
      */
-    public function getMessageId()
+    public function getMessageId(): string
     {
         return $this->messageId;
     }

@@ -77,7 +77,7 @@ class Zend_Validate_Alnum extends Zend_Validate_Abstract
      */
     public function __construct($allowWhiteSpace = false)
     {
-        $this->allowWhiteSpace = (boolean) $allowWhiteSpace;
+        $this->allowWhiteSpace = (boolean)$allowWhiteSpace;
     }
 
     /**
@@ -90,7 +90,7 @@ class Zend_Validate_Alnum extends Zend_Validate_Abstract
      */
     public function isValid($value)
     {
-        $valueString = (string) $value;
+        $valueString = (string)$value;
 
         $this->_setValue($valueString);
 

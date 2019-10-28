@@ -41,7 +41,7 @@ class Zend_Validate_NotEmpty extends Zend_Validate_Abstract
      * @var array
      */
     protected $_messageTemplates = array(
-        self::IS_EMPTY => "Value is empty, but a non-empty value is required"
+        self::IS_EMPTY => 'Value is empty, but a non-empty value is required'
     );
 
     /**
@@ -54,7 +54,7 @@ class Zend_Validate_NotEmpty extends Zend_Validate_Abstract
      */
     public function isValid($value)
     {
-        $this->_setValue((string) $value);
+        $this->_setValue((string)$value);
 
         if (is_string($value)
             && (('' === $value)

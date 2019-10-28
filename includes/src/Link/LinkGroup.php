@@ -1,29 +1,31 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Link;
+namespace JTL\Link;
 
-use DB\DbInterface;
-use DB\ReturnType;
+use Illuminate\Support\Collection;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use JTL\MagicCompatibilityTrait;
+use JTL\Shop;
 use function Functional\flatten;
 use function Functional\map;
-use Tightenco\Collect\Support\Collection;
 
 /**
  * Class LinkGroup
- * @package Link
+ * @package JTL\Link
  */
 final class LinkGroup implements LinkGroupInterface
 {
-    use \MagicCompatibilityTrait;
+    use MagicCompatibilityTrait;
 
     /**
      * @var array
      */
-    private static $mapping = [
+    public static $mapping = [
         'cLocalizedName' => 'Name',
         'Links'          => 'Links'
     ];
@@ -32,6 +34,11 @@ final class LinkGroup implements LinkGroupInterface
      * @var array
      */
     private $names = [];
+
+    /**
+     * @var string
+     */
+    private $groupName;
 
     /**
      * @var int
@@ -85,13 +92,13 @@ final class LinkGroup implements LinkGroupInterface
     {
         $this->id       = $id;
         $groupLanguages = $this->db->queryPrepared(
-            'SELECT tlinkgruppesprache.*, tlinkgruppe.cTemplatename AS template, tsprache.kSprache 
-                FROM tlinkgruppe
-                JOIN tlinkgruppesprache
-					ON tlinkgruppe.kLinkgruppe = tlinkgruppesprache.kLinkgruppe
-                JOIN tsprache 
-                    ON tsprache.cISO = tlinkgruppesprache.cISOSprache
-                WHERE tlinkgruppe.kLinkgruppe = :lgid',
+            'SELECT l.*, g.cTemplatename AS template, g.cName AS groupName, lang.kSprache 
+                FROM tlinkgruppe AS g 
+                JOIN tlinkgruppesprache AS l
+					ON g.kLinkgruppe = l.kLinkgruppe
+                JOIN tsprache AS lang
+                    ON lang.cISO = l.cISOSprache
+                WHERE g.kLinkgruppe = :lgid',
             ['lgid' => $this->id],
             ReturnType::ARRAY_OF_OBJECTS
         );
@@ -113,6 +120,7 @@ final class LinkGroup implements LinkGroupInterface
             $this->names[$langID]        = $groupLanguage->cName;
             $this->languageCode[$langID] = $groupLanguage->cISOSprache;
             $this->template              = $groupLanguage->template;
+            $this->groupName             = $groupLanguage->groupName;
         }
         $this->links = (new LinkList($this->db))->createLinks(map(flatten($this->db->queryPrepared(
             'SELECT kLink
@@ -126,8 +134,25 @@ final class LinkGroup implements LinkGroupInterface
         )), function ($e) {
             return (int)$e;
         }));
+        \executeHook(\HOOK_LINKGROUP_MAPPED, ['group' => $this]);
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getGroupName(): string
+    {
+        return $this->groupName;
+    }
+
+    /**
+     * @param string $groupName
+     */
+    public function setGroupName(string $groupName): void
+    {
+        $this->groupName = $groupName;
     }
 
     /**
@@ -135,9 +160,7 @@ final class LinkGroup implements LinkGroupInterface
      */
     public function getName(int $idx = null): string
     {
-        $idx = $idx ?? \Shop::getLanguageID();
-
-        return $this->names[$idx] ?? '';
+        return $this->names[$idx ?? Shop::getLanguageID()] ?? '';
     }
 
     /**
@@ -151,7 +174,7 @@ final class LinkGroup implements LinkGroupInterface
     /**
      * @inheritdoc
      */
-    public function setNames(array $names)
+    public function setNames(array $names): void
     {
         $this->names = $names;
     }
@@ -167,7 +190,7 @@ final class LinkGroup implements LinkGroupInterface
     /**
      * @inheritdoc
      */
-    public function setID(int $id)
+    public function setID(int $id): void
     {
         $this->id = $id;
     }
@@ -183,7 +206,7 @@ final class LinkGroup implements LinkGroupInterface
     /**
      * @inheritdoc
      */
-    public function setLinks(Collection $links)
+    public function setLinks(Collection $links): void
     {
         $this->links = $links;
     }
@@ -199,7 +222,7 @@ final class LinkGroup implements LinkGroupInterface
     /**
      * @inheritdoc
      */
-    public function setTemplate(string $template)
+    public function setTemplate(string $template): void
     {
         $this->template = $template;
     }
@@ -225,7 +248,7 @@ final class LinkGroup implements LinkGroupInterface
     /**
      * @inheritdoc
      */
-    public function setLanguageID(array $languageID)
+    public function setLanguageID(array $languageID): void
     {
         $this->languageID = $languageID;
     }
@@ -241,7 +264,7 @@ final class LinkGroup implements LinkGroupInterface
     /**
      * @inheritdoc
      */
-    public function setLanguageCode(array $languageCode)
+    public function setLanguageCode(array $languageCode): void
     {
         $this->languageCode = $languageCode;
     }
@@ -257,7 +280,7 @@ final class LinkGroup implements LinkGroupInterface
     /**
      * @inheritdoc
      */
-    public function setIsSpecial(bool $isSpecial)
+    public function setIsSpecial(bool $isSpecial): void
     {
         $this->isSpecial = $isSpecial;
     }

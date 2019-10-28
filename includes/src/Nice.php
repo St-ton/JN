@@ -1,11 +1,18 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license       http://jtl-url.de/jtlshoplicense
  */
+
+namespace JTL;
+
+use JTL\DB\ReturnType;
+use stdClass;
+use XTEA;
 
 /**
  * Class Nice
+ * @package JTL
  */
 class Nice
 {
@@ -17,22 +24,22 @@ class Nice
     /**
      * @var string
      */
-    private $cBrocken = '';
+    private $brocken;
 
     /**
      * @var string
      */
-    private $cAPIKey = '';
+    private $apiKey = '';
 
     /**
      * @var string
      */
-    private $cDomain = '';
+    private $domain = '';
 
     /**
      * @var array
      */
-    private $kShopModul_arr = [];
+    private $moduleIDs = [];
 
     /**
      * @return Nice
@@ -43,94 +50,90 @@ class Nice
     }
 
     /**
-     * Konstruktor
-     * Zum Erstellen eines Nice-Objects die static function getInstance() nutzen
+     * Nice constructor.
      */
     protected function __construct()
     {
-        if (($this->cBrocken = Shop::Cache()->get('cbrocken')) === false) {
-            // Hole Brocken
-            $oBrocken = Shop::Container()->getDB()->query(
-                'SELECT cBrocken 
-                    FROM tbrocken 
-                    LIMIT 1',
-                \DB\ReturnType::SINGLE_OBJECT
-            );
-            if (!empty($oBrocken->cBrocken)) {
-                // Brocken encrypten
-                $cPassA         = substr(base64_decode($oBrocken->cBrocken), 0, 9);
-                $cPassE         = substr(
-                    base64_decode($oBrocken->cBrocken),
-                    strlen(base64_decode($oBrocken->cBrocken)) - 11
-                );
-                $cBlowfishKey   = $cPassA . $cPassE;
-                $oXTEA          = new XTEA($cBlowfishKey);
-                $this->cBrocken = $oXTEA->decrypt(str_replace(
-                        [$cPassA, $cPassE],
-                        ['', ''],
-                        base64_decode($oBrocken->cBrocken))
-                );
-                Shop::Cache()->set('cbrocken', $this->cBrocken, [CACHING_GROUP_CORE]);
+        $this->brocken = $this->load();
+        if (\mb_strlen($this->brocken) > 0) {
+            $parts = \explode(';', $this->brocken);
+            if (!empty($parts[0])) {
+                $this->apiKey = $parts[0];
             }
-        }
-        // Brocken zerlegen
-        if (is_string($this->cBrocken) && strlen($this->cBrocken) > 0) {
-            $cBrocken_arr = explode(';', $this->cBrocken);
-            if (is_array($cBrocken_arr)) {
-                if (!empty($cBrocken_arr[0])) {
-                    $this->cAPIKey = $cBrocken_arr[0];
-                }
-                if (!empty($cBrocken_arr[1])) {
-                    $this->cDomain = trim($cBrocken_arr[1]);
-                }
-                $bCount = count($cBrocken_arr);
-                if ($bCount > 2) {
-                    for ($i = 2; $i < $bCount; $i++) {
-                        $this->kShopModul_arr[] = (int)$cBrocken_arr[$i];
-                    }
+            if (!empty($parts[1])) {
+                $this->domain = \trim($parts[1]);
+            }
+            if (($count = \count($parts)) > 2) {
+                for ($i = 2; $i < $count; $i++) {
+                    $this->moduleIDs[] = (int)$parts[$i];
                 }
             }
         }
-
-        $this->ladeDefines();
+        $this->initConstants();
         self::$instance = $this;
     }
 
     /**
-     * @param int $kShopModulCheck
+     * @return string
+     */
+    private function load(): string
+    {
+        $cacheID = 'cbrocken';
+        if (($brocken = Shop::Container()->getCache()->get($cacheID)) === false) {
+            $data = Shop::Container()->getDB()->query(
+                'SELECT cBrocken 
+                    FROM tbrocken 
+                    LIMIT 1',
+                ReturnType::SINGLE_OBJECT
+            );
+            if (!empty($data->cBrocken)) {
+                $passA   = \mb_substr(\base64_decode($data->cBrocken), 0, 9);
+                $passE   = \mb_substr(
+                    \base64_decode($data->cBrocken),
+                    \mb_strlen(\base64_decode($data->cBrocken)) - 11
+                );
+                $xtea    = new XTEA($passA . $passE);
+                $brocken = $xtea->decrypt(
+                    \str_replace(
+                        [$passA, $passE],
+                        ['', ''],
+                        \base64_decode($data->cBrocken)
+                    )
+                );
+                Shop::Container()->getCache()->set($cacheID, $brocken, [\CACHING_GROUP_CORE]);
+            }
+        }
+
+        return $brocken;
+    }
+
+    /**
+     * @param int $moduleID
      * @return bool
      */
-    public function checkErweiterung($kShopModulCheck): bool
+    public function checkErweiterung(int $moduleID): bool
     {
-        return ($this->cAPIKey !== ''
-            && strlen($this->cAPIKey) > 0
-            && !empty($this->cDomain)
-            && count($this->kShopModul_arr) > 0)
-            ? in_array((int)$kShopModulCheck, $this->kShopModul_arr, true)
+        return ($this->apiKey !== ''
+            && \mb_strlen($this->apiKey) > 0
+            && !empty($this->domain)
+            && \count($this->moduleIDs) > 0)
+            ? \in_array($moduleID, $this->moduleIDs, true)
             : false;
     }
 
     /**
      * @return $this
      */
-    private function ladeDefines(): self
+    private function initConstants(): self
     {
-        // SEO Modul - Suchmaschinenoptimierung
-        defined('SHOP_ERWEITERUNG_SEO') || define('SHOP_ERWEITERUNG_SEO', 8001);
-        // Umfragen Modul
-        defined('SHOP_ERWEITERUNG_UMFRAGE') || define('SHOP_ERWEITERUNG_UMFRAGE', 8021);
-        // Auswahlassistent Modul
-        defined('SHOP_ERWEITERUNG_AUSWAHLASSISTENT') || define('SHOP_ERWEITERUNG_AUSWAHLASSISTENT', 8031);
-        // Upload Modul
-        defined('SHOP_ERWEITERUNG_UPLOADS') || define('SHOP_ERWEITERUNG_UPLOADS', 8041);
-        // Download Modul
-        defined('SHOP_ERWEITERUNG_DOWNLOADS') || define('SHOP_ERWEITERUNG_DOWNLOADS', 8051);
-        // Konfigurator Modul
-        defined('SHOP_ERWEITERUNG_KONFIGURATOR') || define('SHOP_ERWEITERUNG_KONFIGURATOR', 8061);
-        // Warenrücksendung Modul
-        defined('SHOP_ERWEITERUNG_WARENRUECKSENDUNG') || define('SHOP_ERWEITERUNG_WARENRUECKSENDUNG', 8071);
-        // Brandfree Option
-        defined('SHOP_ERWEITERUNG_BRANDFREE') || define('SHOP_ERWEITERUNG_BRANDFREE', 8081);
+        \ifndef('SHOP_ERWEITERUNG_SEO', 8001);
+        \ifndef('SHOP_ERWEITERUNG_UMFRAGE', 8021);
+        \ifndef('SHOP_ERWEITERUNG_AUSWAHLASSISTENT', 8031);
+        \ifndef('SHOP_ERWEITERUNG_UPLOADS', 8041);
+        \ifndef('SHOP_ERWEITERUNG_DOWNLOADS', 8051);
+        \ifndef('SHOP_ERWEITERUNG_KONFIGURATOR', 8061);
+        \ifndef('SHOP_ERWEITERUNG_WARENRUECKSENDUNG', 8071);
+        \ifndef('SHOP_ERWEITERUNG_BRANDFREE', 8081);
 
         return $this;
     }
@@ -140,52 +143,48 @@ class Nice
      */
     public function gibAlleMoeglichenModule(): array
     {
+        Shop::Container()->getGetText()->loadAdminLocale('widgets');
+
         $modules = [];
-        if (!defined(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
-            $this->ladeDefines();
+        if (!\defined(\SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
+            $this->initConstants();
         }
-        // Umfragen Modul
-        $oModul           = new stdClass();
-        $oModul->kModulId = SHOP_ERWEITERUNG_UMFRAGE;
-        $oModul->cName    = 'Umfragen Modul';
-        $oModul->cDefine  = 'SHOP_ERWEITERUNG_UMFRAGE';
-        $oModul->cURL     = '';
-        $modules[]        = $oModul;
-        // Auswahlassistent Modul
-        $oModul           = new stdClass();
-        $oModul->kModulId = SHOP_ERWEITERUNG_AUSWAHLASSISTENT;
-        $oModul->cName    = 'Auswahlassistent Modul';
-        $oModul->cDefine  = 'SHOP_ERWEITERUNG_AUSWAHLASSISTENT';
-        $oModul->cURL     = '';
-        $modules[]        = $oModul;
-        // Upload Modul
-        $oModul           = new stdClass();
-        $oModul->kModulId = SHOP_ERWEITERUNG_UPLOADS;
-        $oModul->cName    = 'Upload Modul';
-        $oModul->cDefine  = 'SHOP_ERWEITERUNG_UPLOADS';
-        $oModul->cURL     = '';
-        $modules[]        = $oModul;
-        // Upload Modul
-        $oModul           = new stdClass();
-        $oModul->kModulId = SHOP_ERWEITERUNG_DOWNLOADS;
-        $oModul->cName    = 'Download Modul';
-        $oModul->cDefine  = 'SHOP_ERWEITERUNG_DOWNLOADS';
-        $oModul->cURL     = '';
-        $modules[]        = $oModul;
-        // Konfigurator Modul
-        $oModul           = new stdClass();
-        $oModul->kModulId = SHOP_ERWEITERUNG_KONFIGURATOR;
-        $oModul->cName    = 'Konfigurator Modul';
-        $oModul->cDefine  = 'SHOP_ERWEITERUNG_KONFIGURATOR';
-        $oModul->cURL     = '';
-        $modules[]        = $oModul;
-        // Brandfree Option
-        $oModul           = new stdClass();
-        $oModul->kModulId = SHOP_ERWEITERUNG_BRANDFREE;
-        $oModul->cName    = 'Brandfree Option';
-        $oModul->cDefine  = 'SHOP_ERWEITERUNG_BRANDFREE';
-        $oModul->cURL     = '';
-        $modules[]        = $oModul;
+        $module           = new stdClass();
+        $module->kModulId = \SHOP_ERWEITERUNG_UMFRAGE;
+        $module->cName    = __('moduleSurvey');
+        $module->cDefine  = 'SHOP_ERWEITERUNG_UMFRAGE';
+        $module->cURL     = 'https://jtl-url.de/ykepb';
+        $modules[]        = $module;
+        $module           = new stdClass();
+        $module->kModulId = \SHOP_ERWEITERUNG_AUSWAHLASSISTENT;
+        $module->cName    = __('moduleSelectionWizard');
+        $module->cDefine  = 'SHOP_ERWEITERUNG_AUSWAHLASSISTENT';
+        $module->cURL     = 'https://jtl-url.de/q6tox';
+        $modules[]        = $module;
+        $module           = new stdClass();
+        $module->kModulId = \SHOP_ERWEITERUNG_UPLOADS;
+        $module->cName    = __('moduleUpload');
+        $module->cDefine  = 'SHOP_ERWEITERUNG_UPLOADS';
+        $module->cURL     = 'https://jtl-url.de/7-cop';
+        $modules[]        = $module;
+        $module           = new stdClass();
+        $module->kModulId = \SHOP_ERWEITERUNG_DOWNLOADS;
+        $module->cName    = __('moduleDownload');
+        $module->cDefine  = 'SHOP_ERWEITERUNG_DOWNLOADS';
+        $module->cURL     = 'https://jtl-url.de/i0zvj';
+        $modules[]        = $module;
+        $module           = new stdClass();
+        $module->kModulId = \SHOP_ERWEITERUNG_KONFIGURATOR;
+        $module->cName    = __('moduleConfigurator');
+        $module->cDefine  = 'SHOP_ERWEITERUNG_KONFIGURATOR';
+        $module->cURL     = 'https://jtl-url.de/ni9f5';
+        $modules[]        = $module;
+        $module           = new stdClass();
+        $module->kModulId = \SHOP_ERWEITERUNG_BRANDFREE;
+        $module->cName    = __('moduleBrandFree');
+        $module->cDefine  = 'SHOP_ERWEITERUNG_BRANDFREE';
+        $module->cURL     = 'https://jtl-url.de/t4egb';
+        $modules[]        = $module;
 
         return $modules;
     }
@@ -195,7 +194,7 @@ class Nice
      */
     public function getBrocken(): string
     {
-        return $this->cBrocken;
+        return $this->brocken;
     }
 
     /**
@@ -203,7 +202,7 @@ class Nice
      */
     public function getAPIKey(): string
     {
-        return $this->cAPIKey;
+        return $this->apiKey;
     }
 
     /**
@@ -211,7 +210,7 @@ class Nice
      */
     public function getDomain(): string
     {
-        return $this->cDomain;
+        return $this->domain;
     }
 
     /**
@@ -219,6 +218,6 @@ class Nice
      */
     public function getShopModul(): array
     {
-        return $this->kShopModul_arr;
+        return $this->moduleIDs;
     }
 }

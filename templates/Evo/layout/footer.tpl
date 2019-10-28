@@ -4,6 +4,7 @@
  *}
 {block name='content-all-closingtags'}
     {block name='content-closingtag'}
+        {opcMountPoint id='opc_content'}
     </div>{* /content *}
     {/block}
 
@@ -17,19 +18,19 @@
         {/block}
     {/if}
     {/block}
-    
+
     {block name='content-row-closingtag'}
     </div>{* /row *}
     {/block}
-    
+
     {block name='content-container-block-closingtag'}
     </div>{* /container-block *}
     {/block}
-    
+
     {block name='content-container-closingtag'}
     </div>{* /container *}
     {/block}
-    
+
     {block name='content-wrapper-closingtag'}
     </div>{* /content-wrapper*}
     {/block}
@@ -53,22 +54,6 @@
                     {/foreach}
                 </div>
             {/if}
-            {*{load_boxes_raw type='bottom' assign='arrBoxBottom' array=true}*}
-            {*{if isset($arrBoxBottom) && count($arrBoxBottom) > 0}*}
-                {*<div class="row" id="footer-boxes">*}
-                    {*{foreach $arrBoxBottom as $box}*}
-                        {*{if ($box.obj->getBaseType() !== 0 && $box.obj->show())*}
-                        {*|| ($box.obj->getBaseType() === 0 && !empty($box.obj->getChildren()))}*}
-                            {*<div class="{block name='footer-boxes-class'}col-xs-12 col-sm-6 col-md-3{/block}">*}
-                                {*{if isset($box.obj) && isset($box.tpl)}*}
-                                    {*{assign var=oBox value=$box.obj}*}
-                                    {*{include file=$box.tpl}*}
-                                {*{/if}*}
-                            {*</div>*}
-                        {*{/if}*}
-                    {*{/foreach}*}
-                {*</div>*}
-            {*{/if}*}
             {/block}
 
             {block name='footer-additional'}
@@ -117,9 +102,6 @@
                                 {if !empty($Einstellungen.template.footer.twitter)}
                                     <a href="{if $Einstellungen.template.footer.twitter|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.twitter}" class="btn-social btn-twitter" title="Twitter" target="_blank" rel="noopener"><i class="fa fa-twitter-square"></i></a>
                                 {/if}
-                                {if !empty($Einstellungen.template.footer.googleplus)}
-                                    <a href="{if $Einstellungen.template.footer.googleplus|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.googleplus}" class="btn-social btn-googleplus" title="Google+" target="_blank" rel="noopener"><i class="fa fa-google-plus-square"></i></a>
-                                {/if}
                                 {if !empty($Einstellungen.template.footer.youtube)}
                                     <a href="{if $Einstellungen.template.footer.youtube|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.youtube}" class="btn-social btn-youtube" title="YouTube" target="_blank" rel="noopener"><i class="fa fa-youtube-square"></i></a>
                                 {/if}
@@ -160,13 +142,13 @@
                         <ul id="language-dropdown-small" class="dropdown-menu dropdown-menu-right">
                             {foreach $smarty.session.Sprachen as $Sprache}
                                 {if $Sprache->kSprache == $smarty.session.kSprache}
-                                    <li class="active lang-{$lang} visible-xs"><a>{if $lang === 'ger'}{$Sprache->cNameDeutsch}{else}{$Sprache->cNameEnglisch}{/if}</a></li>
+                                    <li class="active lang-{$lang} visible-xs"><a>{$Sprache->displayLanguage}</a></li>
                                 {/if}
                             {/foreach}
                             {foreach $smarty.session.Sprachen as $oSprache}
                                 {if $oSprache->kSprache != $smarty.session.kSprache}
                                     <li>
-                                        <a href="{$oSprache->cURL}" class="link_lang {$oSprache->cISO}" rel="nofollow">{if $lang === 'ger'}{$oSprache->cNameDeutsch}{else}{$oSprache->cNameEnglisch}{/if}</a>
+                                        <a href="{$oSprache->cURL}" class="link_lang {$oSprache->cISO}" rel="nofollow">{$oSprache->displayLanguage}</a>
                                     </li>
                                 {/if}
                             {/foreach}
@@ -222,7 +204,7 @@
         <div id="copyright" {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout !== 'boxed'} class="container-block"{/if}>
             {block name='footer-copyright'}
                 <div class="container{if $Einstellungen.template.theme.pagelayout === 'full-width'}-fluid{/if}">
-                    {assign var=isBrandFree value=Shop::isBrandfree()}
+                    {assign var=isBrandFree value=\JTL\Shop::isBrandfree()}
                     {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout !== 'fluid'}
                         <div class="container-block clearfix">
                     {/if}
@@ -262,47 +244,17 @@
 
     {if !$bExclusive && !$isFluidContent && isset($Einstellungen.template.theme.background_image) && $Einstellungen.template.theme.background_image !== ''}
         {if $Einstellungen.template.theme.background_image === 'custom'}
-            {assign var='backstretchImgPath' value=$currentTemplateDir|cat:'themes/'|cat:$Einstellungen.template.theme.theme_default|cat:'/background.jpg'}
+            {assign var='backstretchImgPath' value=$ShopURL|cat:'/'|cat:$currentTemplateDir|cat:'themes/'|cat:$Einstellungen.template.theme.theme_default|cat:'/background.jpg'}
         {else}
-            {assign var='backstretchImgPath' value=$currentTemplateDir|cat:'themes/base/images/backgrounds/background_'|cat:$Einstellungen.template.theme.background_image|cat:'.jpg'}
+            {assign var='backstretchImgPath' value=$ShopURL|cat:'/'|cat:$currentTemplateDir|cat:'themes/base/images/backgrounds/background_'|cat:$Einstellungen.template.theme.background_image|cat:'.jpg'}
         {/if}
         <script>
-            $(window).load(function() {
+            $(window).on("load", function (e) {
                 $.backstretch('{$backstretchImgPath}');
-                new WOW().init();
             });
         </script>
     {/if}
-
-    {if !empty($Einstellungen.global.global_google_analytics_id)}
-        <script type="text/javascript">
-            function gaOptout() {
-              document.cookie = disableStr + '=true; expires=Thu, 31 Dec 2099 23:59:59 UTC; path=/';
-              window[disableStr] = true;
-            }
-
-            var gaProperty = '{$Einstellungen.global.global_google_analytics_id}',
-                disableStr = 'ga-disable-' + gaProperty;
-            if (document.cookie.indexOf(disableStr + '=true') > -1) {
-              window[disableStr] = true;
-            } else {
-                var _gaq = _gaq || [];
-                _gaq.push(['_setAccount', '{$Einstellungen.global.global_google_analytics_id}']);
-                _gaq.push(['_gat._anonymizeIp']);
-                _gaq.push(['_trackPageview']);
-                (function () {ldelim}
-                    var ga = document.createElement('script'),
-                        s;
-                    ga.type = 'text/javascript';
-                    ga.async = true;
-                    ga.src = ('https:' === document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-                    s = document.getElementsByTagName('script')[0];
-                    s.parentNode.insertBefore(ga, s);
-                {rdelim})();
-            }
-        </script>
-    {/if}
-
+    {$dbgBarBody}
     <script>
         jtl.load({strip}[
             {* evo js *}

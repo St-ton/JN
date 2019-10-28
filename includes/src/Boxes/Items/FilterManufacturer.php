@@ -4,25 +4,26 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
 
-use Filter\Visibility;
+use JTL\Filter\Visibility;
+use JTL\Shop;
 
 /**
  * Class FilterManufacturer
- * @package Boxes
+ * @package JTL\Boxes\Items
  */
 final class FilterManufacturer extends AbstractBox
 {
     /**
-     * FilterAttribute constructor.
+     * FilterManufacturer constructor.
      * @param array $config
      */
     public function __construct(array $config)
     {
         parent::__construct($config);
-        $filter        = \Shop::getProductFilter()->getManufacturerFilter();
-        $searchResults = \Shop::getProductFilter()->getSearchResults();
+        $filter        = Shop::getProductFilter()->getManufacturerFilter();
+        $searchResults = Shop::getProductFilter()->getSearchResults();
         $show          = $filter->getVisibility() !== Visibility::SHOW_NEVER
             && $filter->getVisibility() !== Visibility::SHOW_CONTENT
             && (!empty($searchResults->getManufacturerFilterOptions()) || $filter->isInitialized());

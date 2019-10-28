@@ -9,13 +9,6 @@
             {foreach $Artikel->oVariationKombiKinderAssoc_arr as $child}
                 {if $Einstellungen.artikeldetails.artikeldetails_warenkorbmatrix_lagerbeachten !== 'Y' ||
                 ($Einstellungen.artikeldetails.artikeldetails_warenkorbmatrix_lagerbeachten === 'Y' && $child->inWarenkorbLegbar == 1)}
-                    {assign var=cVariBox value=''}
-                    {foreach $child->oVariationKombi_arr as $variation}
-                        {if $cVariBox|strlen > 0}
-                            {assign var=cVariBox value=$cVariBox|cat:'_'}
-                        {/if}
-                        {assign var=cVariBox value=$cVariBox|cat:$variation->kEigenschaft|cat:':'|cat:$variation->kEigenschaftWert}
-                    {/foreach}
                     <tr class="row">
                         <td class="hidden-xs col-sm-1">
                             <img class="img-responsive" src="{$child->Bilder[0]->cURLMini}" alt="{$child->Bilder[0]->cAltAttribut}">
@@ -36,16 +29,16 @@
                         </td>
                         <td class="col-xs-4 col-sm-3">
                             {if $child->inWarenkorbLegbar == 1 && !$child->bHasKonfig && ($child->nVariationAnzahl == $child->nVariationOhneFreifeldAnzahl)}
-                                <div class="input-group input-group-sm pull-right{if isset($smarty.session.variBoxAnzahl_arr[$cVariBox]->bError) && $smarty.session.variBoxAnzahl_arr[$cVariBox]->bError} has-error{/if}">
+                                <div class="input-group input-group-sm pull-right{if isset($smarty.session.variBoxAnzahl_arr[$child->kArtikel]->bError) && $smarty.session.variBoxAnzahl_arr[$child->kArtikel]->bError} has-error{/if}">
                                     {if $child->cEinheit}
                                         <span class="input-group-addon unit hidden-xs">{$child->cEinheit}: </span>
                                     {/if}
                                     <input
                                         size="3" placeholder="0"
                                         class="form-control text-right"
-                                        name="variBoxAnzahl[{$cVariBox}]"
+                                        name="variBoxAnzahl[{$child->kArtikel}]"
                                         type="text"
-                                        value="{if isset($smarty.session.variBoxAnzahl_arr[$cVariBox]->fAnzahl)}{$smarty.session.variBoxAnzahl_arr[$cVariBox]->fAnzahl|replace_delim}{/if}">
+                                        value="{if isset($smarty.session.variBoxAnzahl_arr[$child->kArtikel]->fAnzahl)}{$smarty.session.variBoxAnzahl_arr[$child->kArtikel]->fAnzahl|replace_delim}{/if}">
                                 </div>
                             {/if}
                         </td>

@@ -3,6 +3,22 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\Alert\Alert;
+use JTL\Catalog\Category\Kategorie;
+use JTL\Catalog\Category\KategorieListe;
+use JTL\Catalog\Product\ArtikelListe;
+use JTL\Catalog\Product\Bestseller;
+use JTL\Extensions\SelectionWizard\Wizard;
+use JTL\Filter\ProductFilter;
+use JTL\Helpers\Category;
+use JTL\Helpers\Product;
+use JTL\Helpers\Request;
+use JTL\Session\Frontend;
+use JTL\Shop;
+use JTL\Shopsetting;
+use JTL\Smarty\JTLSmarty;
+
 if (!defined('PFAD_ROOT')) {
     http_response_code(400);
     exit();
@@ -10,28 +26,26 @@ if (!defined('PFAD_ROOT')) {
 require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 Shop::setPageType(PAGE_ARTIKELLISTE);
 /** @global JTLSmarty $smarty */
-/** @global \Filter\ProductFilter $NaviFilter*/
-$Einstellungen      = Shopsetting::getInstance()->getAll();
-$conf               = $Einstellungen;
+/** @global ProductFilter $NaviFilter*/
+$conf               = Shopsetting::getInstance()->getAll();
 $bestsellers        = [];
-$suchanfrage        = '';
 $doSearch           = true;
-$KategorieInhalt    = null;
+$categoryContent    = null;
 $AktuelleKategorie  = new Kategorie();
 $expandedCategories = new KategorieListe();
 $hasError           = false;
-$cParameter_arr     = Shop::getParameters();
+$params             = Shop::getParameters();
+/** @var ProductFilter $NaviFilter */
 if ($NaviFilter->hasCategory()) {
-    $AktuelleSeite               = 'PRODUKTE';
-    $kKategorie                  = $NaviFilter->getCategory()->getValue();
-    $_SESSION['LetzteKategorie'] = $kKategorie;
+    $categoryID                  = $NaviFilter->getCategory()->getValue();
+    $_SESSION['LetzteKategorie'] = $categoryID;
     if ($AktuelleKategorie->kKategorie === null) {
         // temp. workaround: do not return 404 when non-localized existing category is loaded
-        if (KategorieHelper::categoryExists($kKategorie)) {
-            $AktuelleKategorie->loadFromDB($kKategorie);
+        if (Category::categoryExists($categoryID)) {
+            $AktuelleKategorie->loadFromDB($categoryID);
         } else {
-            Shop::$is404             = true;
-            $cParameter_arr['is404'] = true;
+            Shop::$is404     = true;
+            $params['is404'] = true;
 
             return;
         }
@@ -41,14 +55,21 @@ if ($NaviFilter->hasCategory()) {
 $NaviFilter->setUserSort($AktuelleKategorie);
 $oSuchergebnisse = $NaviFilter->generateSearchResults($AktuelleKategorie);
 $pages           = $oSuchergebnisse->getPages();
+if ($oSuchergebnisse->getProductCount() === 0) {
+    Shop::Container()->getAlertService()->addAlert(
+        Alert::TYPE_NOTE,
+        Shop::Lang()->get('noFilterResults'),
+        'noFilterResults',
+        ['showInAlertListTemplate' => false]
+    );
+}
 if ($conf['navigationsfilter']['allgemein_weiterleitung'] === 'Y' && $oSuchergebnisse->getVisibleProductCount() === 1) {
     $hasSubCategories = ($categoryID = $NaviFilter->getCategory()->getValue()) > 0
-        ? (new \Kategorie(
+        ? (new Kategorie(
             $categoryID,
             $NaviFilter->getFilterConfig()->getLanguageID(),
-            $NaviFilter->getFilterConfig()->getCustomerGroupID())
-        )
-            ->existierenUnterkategorien()
+            $NaviFilter->getFilterConfig()->getCustomerGroupID()
+        ))->existierenUnterkategorien()
         : false;
     if ($NaviFilter->getFilterCount() > 0
         || $NaviFilter->getRealSearch() !== null
@@ -57,8 +78,8 @@ if ($conf['navigationsfilter']['allgemein_weiterleitung'] === 'Y' && $oSuchergeb
         http_response_code(301);
         $product = $oSuchergebnisse->getProducts()->pop();
         $url     = empty($product->cURL)
-            ? (\Shop::getURL() . '/?a=' . $product->kArtikel)
-            : (\Shop::getURL() . '/' . $product->cURL);
+            ? (JTL\Shop::getURL() . '/?a=' . $product->kArtikel)
+            : (JTL\Shop::getURL() . '/' . $product->cURL);
         header('Location: ' . $url);
         exit;
     }
@@ -71,35 +92,32 @@ if ($pages->getCurrentPage() > 0
     header('Location: ' . $NaviFilter->getFilterURL()->getURL());
     exit;
 }
-Redirect::doMainwordRedirect($NaviFilter, $oSuchergebnisse->getVisibleProductCount(), true);
 if ($conf['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'] === 'Y') {
-    $productsIDs = $oSuchergebnisse->getProducts()->map(function ($article) {
-        return (int)$article->kArtikel;
+    $productsIDs = $oSuchergebnisse->getProducts()->map(function ($product) {
+        return (int)$product->kArtikel;
     });
     $bestsellers = Bestseller::buildBestsellers(
         $productsIDs,
-        Session::CustomerGroup()->getID(),
-        Session::CustomerGroup()->mayViewCategories(),
+        Frontend::getCustomerGroup()->getID(),
+        Frontend::getCustomerGroup()->mayViewCategories(),
         false,
         (int)$conf['artikeluebersicht']['artikeluebersicht_bestseller_anzahl'],
         (int)$conf['global']['global_bestseller_minanzahl']
     );
-    $products = $oSuchergebnisse->getProducts()->all();
+    $products    = $oSuchergebnisse->getProducts()->all();
     Bestseller::ignoreProducts($products, $bestsellers);
 }
-if (RequestHelper::verifyGPCDataInt('zahl') > 0) {
-    $_SESSION['ArtikelProSeite'] = RequestHelper::verifyGPCDataInt('zahl');
+if (Request::verifyGPCDataInt('zahl') > 0) {
+    $_SESSION['ArtikelProSeite'] = Request::verifyGPCDataInt('zahl');
 }
-if (!isset($_SESSION['ArtikelProSeite'])
-    && $conf['artikeluebersicht']['artikeluebersicht_erw_darstellung'] === 'N'
-) {
+if (!isset($_SESSION['ArtikelProSeite']) && $conf['artikeluebersicht']['artikeluebersicht_erw_darstellung'] === 'N') {
     $_SESSION['ArtikelProSeite'] = min(
         (int)$conf['artikeluebersicht']['artikeluebersicht_artikelproseite'],
         ARTICLES_PER_PAGE_HARD_LIMIT
     );
 }
 $oSuchergebnisse->getProducts()->transform(function ($product) use ($conf) {
-    $product->verfuegbarkeitsBenachrichtigung = ArtikelHelper::showAvailabilityForm(
+    $product->verfuegbarkeitsBenachrichtigung = Product::showAvailabilityForm(
         $product,
         $conf['artikeldetails']['benachrichtigung_nutzen']
     );
@@ -108,24 +126,23 @@ $oSuchergebnisse->getProducts()->transform(function ($product) use ($conf) {
 });
 if ($oSuchergebnisse->getProducts()->count() === 0) {
     if ($NaviFilter->hasCategory()) {
-        $KategorieInhalt                  = new stdClass();
-        $KategorieInhalt->Unterkategorien = new KategorieListe();
-        $h                                = KategorieHelper::getInstance();
+        $categoryContent                  = new stdClass();
+        $categoryContent->Unterkategorien = new KategorieListe();
+        $h                                = Category::getInstance();
         $children                         = $h->getCategoryById($NaviFilter->getCategory()->getValue());
-        if ($children !== false && isset($children->Unterkategorien)) {
-            $KategorieInhalt->Unterkategorien->elemente = $children->Unterkategorien;
+        $tb                               = $conf['artikeluebersicht']['topbest_anzeigen'];
+        if ($children !== null && $children->hasChildren()) {
+            $categoryContent->Unterkategorien->elemente = $children->getChildren();
         }
-
-        $tb = $conf['artikeluebersicht']['topbest_anzeigen'];
         if ($tb === 'Top' || $tb === 'TopBest') {
-            $KategorieInhalt->TopArtikel = new ArtikelListe();
-            $KategorieInhalt->TopArtikel->holeTopArtikel($KategorieInhalt->Unterkategorien);
+            $categoryContent->TopArtikel = new ArtikelListe();
+            $categoryContent->TopArtikel->holeTopArtikel($categoryContent->Unterkategorien);
         }
         if ($tb === 'Bestseller' || $tb === 'TopBest') {
-            $KategorieInhalt->BestsellerArtikel = new ArtikelListe();
-            $KategorieInhalt->BestsellerArtikel->holeBestsellerArtikel(
-                $KategorieInhalt->Unterkategorien,
-                $KategorieInhalt->TopArtikel ?? null
+            $categoryContent->BestsellerArtikel = new ArtikelListe();
+            $categoryContent->BestsellerArtikel->holeBestsellerArtikel(
+                $categoryContent->Unterkategorien,
+                $categoryContent->TopArtikel ?? null
             );
         }
     } else {
@@ -133,24 +150,31 @@ if ($oSuchergebnisse->getProducts()->count() === 0) {
     }
 }
 $oNavigationsinfo = $NaviFilter->getMetaData()->getNavigationInfo($AktuelleKategorie, $expandedCategories);
-if (strpos(basename($NaviFilter->getFilterURL()->getURL()), '.php') === false) {
+if (mb_strpos(basename($NaviFilter->getFilterURL()->getURL()), '.php') === false) {
     $cCanonicalURL = $NaviFilter->getFilterURL()->getURL(null, true) . ($pages->getCurrentPage() > 1
         ? SEP_SEITE . $pages->getCurrentPage()
         : '');
 }
-AuswahlAssistent::startIfRequired(
+Wizard::startIfRequired(
     AUSWAHLASSISTENT_ORT_KATEGORIE,
-    $cParameter_arr['kKategorie'],
+    $params['kKategorie'],
     Shop::getLanguageID(),
     $smarty,
     [],
     $NaviFilter
 );
-$pagination = new \Filter\Pagination\Pagination($NaviFilter, new \Filter\Pagination\ItemFactory());
+$pagination = new JTL\Filter\Pagination\Pagination($NaviFilter, new JTL\Filter\Pagination\ItemFactory());
 $pagination->create($pages);
+
+$priceRanges = $NaviFilter->getPriceRangeFilter()->getOptions();
+if (($priceRangesCount = count($priceRanges)) > 0) {
+    $priceRangeMax = end($priceRanges)->getData('nBis');
+}
+
 $smarty->assign('NaviFilter', $NaviFilter)
-       ->assign('KategorieInhalt', $KategorieInhalt)
-       ->assign('oErweiterteDarstellung', $NaviFilter->getMetaData()->getExtendedView($cParameter_arr['nDarstellung']))
+       ->assign('priceRangeMax', $priceRangeMax ?? 0)
+       ->assign('KategorieInhalt', $categoryContent)
+       ->assign('oErweiterteDarstellung', $NaviFilter->getMetaData()->getExtendedView($params['nDarstellung']))
        ->assign('oBestseller_arr', $bestsellers)
        ->assign('oNaviSeite_arr', $pagination->getItemsCompat())
        ->assign('filterPagination', $pagination)
@@ -161,12 +185,12 @@ $smarty->assign('NaviFilter', $NaviFilter)
 
 executeHook(HOOK_FILTER_PAGE);
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
-$oGlobaleMetaAngabenAssoc_arr = \Filter\Metadata::getGlobalMetaData();
+$globalMetaData = JTL\Filter\Metadata::getGlobalMetaData();
 $smarty->assign(
     'meta_title',
     $oNavigationsinfo->generateMetaTitle(
         $oSuchergebnisse,
-        $oGlobaleMetaAngabenAssoc_arr,
+        $globalMetaData,
         $AktuelleKategorie
     )
 )->assign(
@@ -174,7 +198,7 @@ $smarty->assign(
     $oNavigationsinfo->generateMetaDescription(
         $oSuchergebnisse->getProducts()->all(),
         $oSuchergebnisse,
-        $oGlobaleMetaAngabenAssoc_arr,
+        $globalMetaData,
         $AktuelleKategorie
     )
 )->assign(

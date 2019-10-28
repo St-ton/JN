@@ -1,67 +1,76 @@
 <hr>
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">Revisionen</h3>
+<div class="card">
+    <div class="card-header">
+        <div class="subheading1">{__('revisions')}</div>
+        <hr class="mb-n3">
     </div>
-    <div class="panel-body">
+    <div class="card-body">
         {if $revisions|count > 0}
             {if !empty($data)}
                 {if $secondary === true}
                     {foreach $data as $foreignKey => $localized}
                         {foreach $show as $attribute}
-                            <div class="hidden" id="original-{$attribute|escape}-{$foreignKey}">{if isset($localized->$attribute)}{$localized->$attribute|escape}{elseif is_string($localized)}{$localized|escape}{/if}</div>
+                            <div class="d-none" id="original-{$attribute|escape}-{$foreignKey}">{if isset($localized->$attribute)}{$localized->$attribute|escape}{elseif is_string($localized)}{$localized|escape}{/if}</div>
                         {/foreach}
                     {/foreach}
                 {else}
                     {foreach $show as $attribute}
-                        <div class="hidden original" id="original-{$attribute|escape}" data-references="{$attribute|escape}">{$data->$attribute|escape}</div>
+                        <div class="d-none original" id="original-{$attribute|escape}" data-references="{$attribute|escape}">{$data->$attribute|escape}</div>
                     {/foreach}
                 {/if}
             {/if}
-            <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+            <div id="accordion" role="tablist" aria-multiselectable="true">
                 {foreach $revisions as $revision}
-                    <div class="panel panel-default">
-                        <div class="panel-heading" role="tab" data-idx="{$revision@iteration}" id="heading-revision-{$revision@iteration}">
-                            <h4 class="panel-title">
-                                <a data-toggle="collapse" data-parent="#accordion" href="#revision-{$revision@iteration}" aria-expanded="true" aria-controls="profile-{$revision@iteration}">
-                                    <span class="badge left">{$revision->timestamp}</span> {$revision->author}
-                                </a>
-                            </h4>
+                    <div class="card mb-2">
+                        <div class="card-header py-2" role="tab" data-idx="{$revision@iteration}" id="heading-revision-{$revision@iteration}">
+                            <a class="align-items-center text-decoration-none" data-toggle="collapse" data-parent="#accordion" href="#revision-{$revision@iteration}" aria-expanded="true" aria-controls="profile-{$revision@iteration}">
+                                <span class="badge">{$revision->timestamp}</span>
+                                <span> | {$revision->author}</span>
+                                <i class="fas fa-plus float-right"></i>
+                            </a>
                         </div>
-                        <div id="revision-{$revision@iteration}" data-idx="{$revision@iteration}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-revision-{$revision@iteration}">
-                            <div class="panel-body">
+                        <div id="revision-{$revision@iteration}" data-idx="{$revision@iteration}" class="collapse" role="tabpanel" aria-labelledby="heading-revision-{$revision@iteration}">
+                            <div class="card-body">
                                 <div class="list-group revision-content">
                                     {if $secondary === true && isset($revision->content->references)}
                                         {foreach $revision->content->references as $secondaryKey => $ref}
                                             {foreach $show as $attribute}
                                                 {if isset($ref->$attribute)}
-                                                    <h4>{$attribute|escape} ({$secondaryKey}):</h4>
+                                                    <div class="subheading2 mt-4">{$attribute|escape} ({$secondaryKey}):</div>
                                                     <div id="diff-{$revision@iteration}-{$attribute|escape}-{$secondaryKey}"></div>
-                                                    <div class="hidden" data-references="{$attribute|escape}" data-references-secondary="{$secondaryKey}">{$ref->$attribute|escape}</div>
+                                                    <div class="d-none" data-references="{$attribute|escape}" data-references-secondary="{$secondaryKey}">{$ref->$attribute|escape}</div>
                                                 {/if}
                                             {/foreach}
                                         {/foreach}
                                     {else}
                                         {foreach $show as $attribute}
                                             {if isset($revision->content->$attribute)}
-                                                <h4>{$attribute|escape}</h4>
+                                                <div class="subheading2 mt-4">{$attribute|escape}</div>
                                                 <div id="diff-{$revision@iteration}-{$attribute|escape}"></div>
-                                                <div class="hidden" data-references="{$attribute|escape}" data-references-secondary="">{$revision->content->$attribute|escape}</div>
+                                                <div class="d-none" data-references="{$attribute|escape}" data-references-secondary="">{$revision->content->$attribute|escape}</div>
                                             {/if}
                                         {/foreach}
                                     {/if}
                                 </div>
                             </div>
-                            <div class="panel-footer">
+                            <div class="card-footer">
                                 <form class="restore-revision" method="post">
                                     {$jtl_token}
                                     <input type="hidden" value="{$revision->id}" name="revision-id" />
                                     <input type="hidden" value="{$revision->type}" name="revision-type" />
                                     <input type="hidden" value="{if $secondary === true}1{else}0{/if}" name="revision-secondary" />
-                                    <span class="btn-group">
-                                        <button type="submit" class="btn btn-primary" name="revision-action" value="restore"><i class="fa fa-refresh"></i> Revision wiederherstellen</button>
-                                        <button type="submit" class="btn btn-danger" name="revision-action" value="delete"><i class="fa fa-trash"></i> Revision l&ouml;schen</button>
-                                    </span>
+                                    <div class="row">
+                                        <div class="ml-auto col-sm-6 col-xl-auto">
+                                            <button type="submit" class="btn btn-danger" name="revision-action" value="delete">
+                                                <i class="fas fa-trash-alt"></i> {__('revisionDelete')}
+                                            </button>
+                                        </div>
+                                        <div class="col-sm-6 col-xl-auto">
+                                            <button type="submit" class="btn btn-primary" name="revision-action" value="restore">
+                                                <i class="fa fa-refresh"></i> {__('revisionRestore')}
+                                            </button>
+                                        </div>
+                                    </div>
                                 </form>
                             </div>
                         </div>
@@ -69,7 +78,7 @@
                 {/foreach}
             </div>
         {else}
-            <div class="alert alert-info">Keine Revisionen vorhanden.</div>
+            <div class="alert alert-info">{__('noRevisions')}</div>
         {/if}
     </div>
 </div>
@@ -141,12 +150,12 @@
     }
 
     $(document).ready(function () {
-        $('.panel-collapse').on('shown.bs.collapse', function (a,b) {
+        $('.collapse').on('shown.bs.collapse', function (a,b) {
             var id               = $(this).attr('data-idx'),
                 collapsedElement = $('#revision-' + id),
                 closed           = collapsedElement.hasClass('in'),
                 hasDiff          = false,
-                revisionContent  = collapsedElement.find('.revision-content .hidden');
+                revisionContent  = collapsedElement.find('.revision-content .d-none');
             revisionContent.each(function(idx, elem) {
                 var jelem,
                     reference,

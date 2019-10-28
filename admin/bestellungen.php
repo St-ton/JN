@@ -3,51 +3,53 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\Alert\Alert;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Helpers\Text;
+use JTL\Pagination\Pagination;
+
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'bestellungen_inc.php';
-/** @global JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $oAccount->permission('ORDER_VIEW', true, true);
 
-$cHinweis        = '';
-$cFehler         = '';
-$step            = 'bestellungen_uebersicht';
-$cSuchFilter     = '';
-$nAnzahlProSeite = 15;
-
+$step         = 'bestellungen_uebersicht';
+$searchFilter = '';
+$alertHelper  = Shop::Container()->getAlertService();
 // Bestellung Wawi Abholung zuruecksetzen
-if (RequestHelper::verifyGPCDataInt('zuruecksetzen') === 1 && FormHelper::validateToken()) {
+if (Request::verifyGPCDataInt('zuruecksetzen') === 1 && Form::validateToken()) {
     if (isset($_POST['kBestellung'])) {
         switch (setzeAbgeholtZurueck($_POST['kBestellung'])) {
             case -1: // Alles O.K.
-                $cHinweis = 'Ihr markierten Bestellungen wurden erfolgreich zurückgesetzt.';
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successOrderReset'), 'successOrderReset');
                 break;
             case 1:  // Array mit Keys nicht vorhanden oder leer
-                $cFehler = 'Fehler: Bitte markieren Sie mindestens eine Bestellung.';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneOrder'), 'errorAtLeastOneOrder');
                 break;
         }
     } else {
-        $cFehler = 'Fehler: Bitte markieren Sie mindestens eine Bestellung.';
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneOrder'), 'errorAtLeastOneOrder');
     }
-} elseif (RequestHelper::verifyGPCDataInt('Suche') === 1) { // Bestellnummer gesucht
-    $cSuche = StringHandler::filterXSS(RequestHelper::verifyGPDataString('cSuche'));
-    if (strlen($cSuche) > 0) {
-        $cSuchFilter = $cSuche;
+} elseif (Request::verifyGPCDataInt('Suche') === 1) { // Bestellnummer gesucht
+    $query = Text::filterXSS(Request::verifyGPDataString('cSuche'));
+    if (mb_strlen($query) > 0) {
+        $searchFilter = $query;
     } else {
-        $cFehler = 'Fehler: Bitte geben Sie eine Bestellnummer ein.';
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorMissingOrderNumber'), 'errorMissingOrderNumber');
     }
 }
 
 if ($step === 'bestellungen_uebersicht') {
-    $oPagination     = (new Pagination('bestellungen'))
-        ->setItemCount(gibAnzahlBestellungen($cSuchFilter))
+    $pagination = (new Pagination('bestellungen'))
+        ->setItemCount(gibAnzahlBestellungen($searchFilter))
         ->assemble();
-    $oBestellung_arr = gibBestellungsUebersicht(' LIMIT ' . $oPagination->getLimitSQL(), $cSuchFilter);
-    $smarty->assign('oBestellung_arr', $oBestellung_arr)
-           ->assign('oPagination', $oPagination);
+    $orders     = gibBestellungsUebersicht(' LIMIT ' . $pagination->getLimitSQL(), $searchFilter);
+    $smarty->assign('orders', $orders)
+           ->assign('pagination', $pagination);
 }
 
-$smarty->assign('cHinweis', $cHinweis)
-       ->assign('cSuche', $cSuchFilter)
-       ->assign('cFehler', $cFehler)
+$smarty->assign('cSuche', $searchFilter)
        ->assign('step', $step)
        ->display('bestellungen.tpl');

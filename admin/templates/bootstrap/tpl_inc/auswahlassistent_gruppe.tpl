@@ -1,10 +1,12 @@
 {if (isset($oGruppe->kAuswahlAssistentGruppe) && $oGruppe->kAuswahlAssistentGruppe > 0) || (isset($kAuswahlAssistentGruppe) && $kAuswahlAssistentGruppe > 0)}
-    {assign var="cTitel" value=#auswahlassistent#|cat:' - '|cat:#aaGroupEdit#}
+    {assign var=subheading value=__('aaGroupEdit')}
+    {assign var=cTitel value=__('auswahlassistent')|cat:' - '|cat:$subheading}
 {else}
-    {assign var="cTitel" value=#auswahlassistent#|cat:' - '|cat:#aaGroup#}
+    {assign var=subheading value=__('aaGroup')}
+    {assign var=cTitel value=__('auswahlassistent')|cat:' - '|cat:$subheading}
 {/if}
 
-{include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=#auswahlassistentDesc# cDokuURL=#auswahlassistentURL#}
+{include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=__('auswahlassistentDesc') cDokuURL=__('auswahlassistentURL')}
 
 <div id="content">
     {if !isset($noModule) || !$noModule}
@@ -17,31 +19,35 @@
                 <input class="form-control" name="kAuswahlAssistentGruppe" type="hidden"
                        value="{if isset($kAuswahlAssistentGruppe) && $kAuswahlAssistentGruppe > 0}{$kAuswahlAssistentGruppe}{else}{$oGruppe->kAuswahlAssistentGruppe}{/if}">
             {/if}
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    <div class="input-group">
-                    <span class="input-group-addon">
-                        <label for="cName">{#aaName#}{if isset($cPlausi_arr.cName)} <span class="fillout">{#FillOut#}</span>{/if}</label>
-                    </span>
-                        <input name="cName" id="cName" type="text"
-                               class="form-control{if isset($cPlausi_arr.cName)} fieldfillout{/if}"
-                               value="{if isset($cPost_arr.cName)}{$cPost_arr.cName}{elseif isset($oGruppe->cName)}{$oGruppe->cName}{/if}">
-                        <span class="input-group-addon">{getHelpDesc cDesc="Welchen Namen soll die Gruppe erhalten?"}</span>
+            <div class="card">
+                <div class="card-header">
+                    <div class="subheading1">{$subheading}</div>
+                    <hr class="mb-n3">
+                </div>
+                <div class="card-body">
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="cName">{__('name')}{if isset($cPlausi_arr.cName)} <span class="fillout">{__('FillOut')}</span>{/if}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <input name="cName" id="cName" type="text"
+                                   class="form-control{if isset($cPlausi_arr.cName)} fieldfillout{/if}"
+                                   value="{if isset($cPost_arr.cName)}{$cPost_arr.cName}{elseif isset($oGruppe->cName)}{$oGruppe->cName}{/if}">
+                        </div>
+                        <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc="{__('hintName')}"}</div>
                     </div>
 
-                    <div class="input-group">
-                        <span class="input-group-addon">
-                            <label for="cBeschreibung">{#aaDesc#}</label>
-                        </span>
-                        <textarea id="cBeschreibung" name="cBeschreibung"
-                                  class="form-control description">{if isset($cPost_arr.cBeschreibung)}{$cPost_arr.cBeschreibung}{elseif isset($oGruppe->cBeschreibung)}{$oGruppe->cBeschreibung}{/if}</textarea>
-                        <span class="input-group-addon">{getHelpDesc cDesc="Wie soll die Beschreibung lauten?"}</span>
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="cBeschreibung">{__('description')}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <textarea id="cBeschreibung" name="cBeschreibung"
+                                      class="form-control description">{if isset($cPost_arr.cBeschreibung)}{$cPost_arr.cBeschreibung}{elseif isset($oGruppe->cBeschreibung)}{$oGruppe->cBeschreibung}{/if}</textarea>
+                        </div>
+                        <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc="{__('hintDesc')}"}</div>
                     </div>
 
                     {include file='tpl_inc/searchpicker_modal.tpl'
                         searchPickerName='categoryPicker'
-                        modalTitle='Kategorien ausw&auml;hlen'
-                        searchInputLabel='Suche Kategorien'
+                        modalTitle="{__('titleChooseCategory')}"
+                        searchInputLabel="{__('labelSearchCategory')}"
                     }
                     <script>
                         $(function () {
@@ -64,46 +70,38 @@
                         }
                     </script>
 
-                    <div class="input-group">
-                        <span class="input-group-addon">
-                            <label for="assign_categories_list">{#aaKat#}{if isset($cPlausi_arr.cOrt)} <span class="fillout">{#FillOut#}</span>{/if}
-                                {if isset($cPlausi_arr.cKategorie) && $cPlausi_arr.cKategorie != 3} <span class="fillout">{#aaKatSyntax#}</span>{/if}
-                                {if isset($cPlausi_arr.cKategorie) && $cPlausi_arr.cKategorie == 3} <span class="fillout">{#aaKatTaken#}</span>{/if}
-                            </label>
-                        </span>
-                        <span class="input-group-wrap">
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="assign_categories_list">{__('category')}{if isset($cPlausi_arr.cOrt)} <span class="fillout">{__('FillOut')}</span>{/if}
+                            {if isset($cPlausi_arr.cKategorie) && $cPlausi_arr.cKategorie != 3} <span class="fillout">{__('aaKatSyntax')}</span>{/if}
+                            {if isset($cPlausi_arr.cKategorie) && $cPlausi_arr.cKategorie == 3} <span class="fillout">{__('aaKatTaken')}</span>{/if}:
+                        </label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <input name="cKategorie" id="assign_categories_list" type="text"
                                    class="form-control{if isset($cPlausi_arr.cOrt)} fieldfillout{/if}"
                                    value="{if isset($cPost_arr.cKategorie)}{$cPost_arr.cKategorie}{elseif isset($oGruppe->cKategorie)}{$oGruppe->cKategorie}{/if}">
-                        </span>
-                        <span class="input-group-addon">
-                            <button type="button" class="btn btn-info btn-xs" data-toggle="modal"
-                                    data-target="#categoryPicker-modal"
-                                    title="In welcher Kategorie soll die Gruppe angezeigt werden?">
-                                <i class="fa fa-edit"></i>
-                            </button>
-                        </span>
+                        </div>
+                        <div class="col-auto ml-sm-n4 order-2 order-sm-3">
+                            {include file='snippets/searchpicker_button.tpl' target='#categoryPicker-modal' title="{__('questionCatInGroup')}"}
+                        </div>
                     </div>
 
-                    <div class="input-group">
-                        <span class="input-group-addon">
-                            <label for="kLink_arr">{#aaSpecialSite#}{if isset($cPlausi_arr.cOrt)} <span class="fillout">{#FillOut#}</span>{/if}
-                                {if isset($cPlausi_arr.kLink_arr)} <span class="fillout">{#aaLinkTaken#}</span>{/if}
-                            </label>
-                        </span>
-                        <span class="input-group-wrap">
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right"for="kLink_arr">{__('aaSpecialSite')}{if isset($cPlausi_arr.cOrt)} <span class="fillout">{__('FillOut')}</span>{/if}
+                            {if isset($cPlausi_arr.kLink_arr)} <span class="fillout">{__('aaLinkTaken')}</span>{/if}:
+                        </label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             {if $oLink_arr|count > 0}
-                                <select id="kLink_arr" name="kLink_arr[]"  class="form-control{if isset($cPlausi_arr.cOrt)} fieldfillout{/if}" multiple>
-                                    {foreach name="links" from=$oLink_arr item=oLink}
+                                <select id="kLink_arr" name="kLink_arr[]"  class="custom-select{if isset($cPlausi_arr.cOrt)} fieldfillout{/if}" multiple>
+                                    {foreach $oLink_arr as $oLink}
                                         {assign var=bAOSelect value=false}
                                         {if isset($oGruppe->oAuswahlAssistentOrt_arr) && $oGruppe->oAuswahlAssistentOrt_arr|@count > 0}
-                                            {foreach name=gruppelinks from=$oGruppe->oAuswahlAssistentOrt_arr item=oAuswahlAssistentOrt}
-                                                {if $oLink->kLink == $oAuswahlAssistentOrt->kKey && $oAuswahlAssistentOrt->cKey == $AUSWAHLASSISTENT_ORT_LINK}
+                                            {foreach $oGruppe->oAuswahlAssistentOrt_arr as $oAuswahlAssistentOrt}
+                                                {if $oLink->kLink == $oAuswahlAssistentOrt->kKey && $oAuswahlAssistentOrt->cKey == $smarty.const.AUSWAHLASSISTENT_ORT_LINK}
                                                     {assign var=bAOSelect value=true}
                                                 {/if}
                                             {/foreach}
                                         {elseif isset($cPost_arr.kLink_arr) && $cPost_arr.kLink_arr|@count > 0}
-                                            {foreach name=gruppelinks from=$cPost_arr.kLink_arr item=kLink}
+                                            {foreach $cPost_arr.kLink_arr as $kLink}
                                                 {if $kLink == $oLink->kLink}
                                                     {assign var=bAOSelect value=true}
                                                 {/if}
@@ -113,63 +111,65 @@
                                     {/foreach}
                                 </select>
                             {else}
-                                <input type="text" disabled value="Keine Spezialseite &quot;Auswahlassistent&quot; vorhanden." class="form-control" />
+                                <input type="text" disabled value="{__('noSpecialPageAvailable')}" class="form-control" />
                             {/if}
-                        </span>
-                        <span class="input-group-addon">
-                            {getHelpDesc cDesc="Auf welcher Spezialseite soll die Gruppe angezeigt werden? (Mehrfachauswahl und Abwahl mit STRG m&ouml;glich)"}
-                        </span>
+                        </div>
+                        <div class="col-auto ml-sm-n4 order-2 order-sm-3">
+                            {getHelpDesc cDesc="{__('hintSpecialPage')}"}
+                        </div>
                     </div>
 
-                    <div class="input-group">
-                        <span class="input-group-addon">
-                            <label for="nStartseite">{#aaStartSite#}{if isset($cPlausi_arr.cOrt)} <span class="fillout">{#FillOut#}</span>{/if}
-                                {if isset($cPlausi_arr.nStartseite)} <span class="fillout">{#aaStartseiteTaken#}</span>{/if}
-                            </label>
-                        </span>
-                        <span class="input-group-wrap">
-                            <select id="nStartseite" name="nStartseite"  class="form-control{if isset($cPlausi_arr.cOrt)} fieldfillout{/if}">
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="nStartseite">{__('startPage')}{if isset($cPlausi_arr.cOrt)} <span class="fillout">{__('FillOut')}</span>{/if}
+                            {if isset($cPlausi_arr.nStartseite)} <span class="fillout">{__('aaStartseiteTaken')}</span>{/if}:
+                        </label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <select id="nStartseite" name="nStartseite"  class="custom-select{if isset($cPlausi_arr.cOrt)} fieldfillout{/if}">
                                 <option value="0"{if (isset($cPost_arr.nStartseite) && $cPost_arr.nStartseite == 0) || (isset($oGruppe->nStartseite) && $oGruppe->nStartseite == 0)} selected{/if}>
-                                    Nein
+                                    {__('no')}
                                 </option>
                                 <option value="1"{if (isset($cPost_arr.nStartseite) && $cPost_arr.nStartseite == 1) || (isset($oGruppe->nStartseite) && $oGruppe->nStartseite == 1)} selected{/if}>
-                                    Ja
+                                    {__('yes')}
                                 </option>
                             </select>
-                        </span>
-                        <span class="input-group-addon">{getHelpDesc cDesc="Soll die Gruppe auf der Startseite angezeigt werden? (Es darf immer nur eine Gruppe auf der Startseite aktiv sein)"}</span>
+                        </div>
+                        <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc="{__('hintGroupOnHome')}"}</div>
                     </div>
 
-                    <div class="input-group">
-                        <span class="input-group-addon">
-                            <label for="nAktiv">{#aaActive#}</label>
-                        </span>
-                        <span class="input-group-wrap">
-                            <select id="nAktiv" class="form-control" name="nAktiv">
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="nAktiv">{__('active')}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <select id="nAktiv" class="custom-select" name="nAktiv">
                                 <option value="1"{if (isset($cPost_arr.nAktiv) && $cPost_arr.nAktiv == 1) || (isset($oGruppe->nAktiv) && $oGruppe->nAktiv == 1)} selected{/if}>
-                                    Ja
+                                    {__('yes')}
                                 </option>
                                 <option value="0"{if (isset($cPost_arr.nAktiv) && $cPost_arr.nAktiv == 0) || (isset($oGruppe->nAktiv) && $oGruppe->nAktiv == 0)} selected{/if}>
-                                    Nein
+                                    {__('no')}
                                 </option>
                             </select>
-                        </span>
-                        <span class="input-group-addon">
-                            {getHelpDesc cDesc="Soll die Checkbox im Frontend aktiv und somit sichtbar sein?"}
-                        </span>
+                        </div>
+                        <div class="col-auto ml-sm-n4 order-2 order-sm-3">
+                            {getHelpDesc cDesc="{__('hintShowCheckbox')}"}
+                        </div>
                     </div>
                 </div>
-                <div class="panel-footer">
-                    <div class="btn-group">
-                        <button name="speicherGruppe" type="submit" value="save" class="btn btn-primary"><i class="fa fa-save"></i> {#save#}</button>
-                        <a href="auswahlassistent.php" class="btn btn-danger">{#goBack#}</a>
+                <div class="card-footer save-wrapper">
+                    <div class="row">
+                        <div class="ml-auto col-sm-6 col-xl-auto">
+                            <a href="auswahlassistent.php" class="btn btn-outline-primary btn-block">{__('goBack')}</a>
+                        </div>
+                        <div class="col-sm-6 col-xl-auto">
+                            <button name="speicherGruppe" type="submit" value="save" class="btn btn-primary btn-block">
+                                {__('saveWithIcon')}
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div id="ajax_list_picker" class="ajax_list_picker categories">{include file="tpl_inc/popup_kategoriesuche.tpl"}</div>
+            <div id="ajax_list_picker" class="ajax_list_picker categories">{include file='tpl_inc/popup_kategoriesuche.tpl'}</div>
         </form>
     {else}
-        <div class="alert alert-danger">{#noModuleAvailable#}</div>
+        <div class="alert alert-danger">{__('noModuleAvailable')}</div>
     {/if}
 </div>
 

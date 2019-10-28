@@ -3,157 +3,153 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\Alert\Alert;
+use JTL\Backend\CustomerFields;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Helpers\Text;
+use JTL\PlausiKundenfeld;
+use JTL\Shop;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('ORDER_CUSTOMERFIELDS_VIEW', true, true);
 
-/** @global JTLSmarty $smarty */
-$Einstellungen  = Shop::getSettings([CONF_KUNDENFELD]);
-$customerFields = CustomerFields::getInstance((int)$_SESSION['kSprache']);
-$cHinweis       = '';
-$cFehler        = '';
-$step           = 'uebersicht';
+/** @global \JTL\Smarty\JTLSmarty $smarty */
+$cf          = CustomerFields::getInstance((int)$_SESSION['kSprache']);
+$step        = 'uebersicht';
+$alertHelper = Shop::Container()->getAlertService();
 
 setzeSprache();
 
-// Tabs
-$smarty->assign('cTab', $cStep ?? null);
-if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
+$smarty->assign('cTab', $step ?? null);
+if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
+    $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 
-// Einstellungen
-if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
-    $cHinweis .= saveAdminSectionSettings(CONF_KUNDENFELD, $_POST);
-} elseif (isset($_POST['kundenfelder']) && (int)$_POST['kundenfelder'] === 1 && FormHelper::validateToken()) {
+if (Request::postInt('einstellungen') > 0) {
+    $alertHelper->addAlert(
+        Alert::TYPE_SUCCESS,
+        saveAdminSectionSettings(CONF_KUNDENFELD, $_POST),
+        'saveSettings'
+    );
+} elseif (Request::postInt('kundenfelder') === 1 && Form::validateToken()) {
     $success = true;
     if (isset($_POST['loeschen'])) {
-        $kKundenfeld_arr = $_POST['kKundenfeld'];
-        if (is_array($kKundenfeld_arr) && count($kKundenfeld_arr) > 0) {
-            foreach ($kKundenfeld_arr as $kKundenfeld) {
-                $success = $success && $customerFields->delete((int)$kKundenfeld);
+        $fieldIDs = $_POST['kKundenfeld'];
+        if (is_array($fieldIDs) && count($fieldIDs) > 0) {
+            foreach ($fieldIDs as $fieldID) {
+                $success = $success && $cf->delete((int)$fieldID);
             }
             if ($success) {
-                $cHinweis .= 'Die ausgewählten Kundenfelder wurden erfolgreich gelöscht.<br />';
+                $alertHelper->addAlert(
+                    Alert::TYPE_SUCCESS,
+                    __('successCustomerFieldDelete'),
+                    'successCustomerFieldDelete'
+                );
             } else {
-                $cFehler .= 'Die ausgewählten Kundenfelder konnten nicht gelöscht werden.<br />';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCustomerFieldDelete'), 'errorCustomerFieldDelete');
             }
         } else {
-            $cFehler .= 'Fehler: Bitte wählen Sie mindestens ein Kundenfeld aus.<br />';
+            $alertHelper->addAlert(
+                Alert::TYPE_ERROR,
+                __('errorAtLeastOneCustomerField'),
+                'errorAtLeastOneCustomerField'
+            );
         }
     } elseif (isset($_POST['aktualisieren'])) {
-        // Kundenfelder auslesen und in Smarty assignen
-        foreach ($customerFields->getCustomerFields() as $customerField) {
+        foreach ($cf->getCustomerFields() as $customerField) {
             $customerField->nSort = (int)$_POST['nSort_' . $customerField->kKundenfeld];
-            $success              = $success && $customerFields->save($customerField);
+            $success              = $success && $cf->save($customerField);
         }
         if ($success) {
-            $cHinweis .= 'Ihre Kundenfelder wurden erfolgreich aktualisiert.<br />';
+            $alertHelper->addAlert(
+                Alert::TYPE_SUCCESS,
+                __('successCustomerFieldUpdate'),
+                'successCustomerFieldUpdate'
+            );
         } else {
-            $cFehler .= 'Ihre Kundenfelder konnten nicht aktualisiert werden.<br />';
+            $alertHelper->addAlert(
+                Alert::TYPE_ERROR,
+                __('errorCustomerFieldUpdate'),
+                'errorCustomerFieldUpdate'
+            );
         }
     } else { // Speichern
         $customerField = (object)[
-            'kKundenfeld' => (int)$_POST['kKundenfeld'],
+            'kKundenfeld' => (int)($_POST['kKundenfeld'] ?? 0),
             'kSprache'    => (int)$_SESSION['kSprache'],
-            'cName'       => StringHandler::htmlspecialchars(StringHandler::filterXSS($_POST['cName']), ENT_COMPAT | ENT_HTML401),
-            'cWawi'       => StringHandler::filterXSS(str_replace(['"',"'"], '', $_POST['cWawi'])),
-            'cTyp'        => StringHandler::filterXSS($_POST['cTyp']),
-            'nSort'       => (int)$_POST['nSort'],
-            'nPflicht'    => (int)$_POST['nPflicht'],
-            'nEditierbar' => (int)$_POST['nEdit'],
+            'cName'       => Text::htmlspecialchars(
+                Text::filterXSS($_POST['cName']),
+                ENT_COMPAT | ENT_HTML401
+            ),
+            'cWawi'       => Text::filterXSS(str_replace(['"', "'"], '', $_POST['cWawi'])),
+            'cTyp'        => Text::filterXSS($_POST['cTyp']),
+            'nSort'       => Request::postInt('nSort'),
+            'nPflicht'    => Request::postInt('nPflicht'),
+            'nEditierbar' => Request::postInt('nEdit'),
         ];
 
         $cfValues = $_POST['cfValues'] ?? null;
+        $check    = new PlausiKundenfeld();
+        $check->setPostVar($_POST);
+        $check->doPlausi($customerField->cTyp, $customerField->kKundenfeld > 0);
 
-        // Plausi
-        $oPlausi = new PlausiKundenfeld();
-        $oPlausi->setPostVar($_POST);
-        $oPlausi->doPlausi($customerField->cTyp, $customerField->kKundenfeld > 0);
-
-        if (count($oPlausi->getPlausiVar()) === 0) {
-            // Update?
-            if ($customerFields->save($customerField, $cfValues)) {
-                $cHinweis .= 'Ihr Kundenfeld wurde erfolgreich gespeichert.<br />';
+        if (count($check->getPlausiVar()) === 0) {
+            if ($cf->save($customerField, $cfValues)) {
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCustomerFieldSave'), 'successCustomerFieldSave');
             } else {
-                $cFehler .= 'Ihr Kundenfeld konnte nicht gespeichert werden.<br />';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCustomerFieldSave'), 'errorCustomerFieldSave');
             }
         } else {
-            $vWrongFields = $oPlausi->getPlausiVar();
-            if (isset($vWrongFields['cName']) && 2 === $vWrongFields['cName']) {
-                $cFehler = 'Ein Feld mit diesen Namen existiert bereits!';
+            $erroneousFields = $check->getPlausiVar();
+            if (isset($erroneousFields['cName']) && $erroneousFields['cName'] === 2) {
+                $alertHelper->addAlert(
+                    Alert::TYPE_ERROR,
+                    __('errorCustomerFieldNameExists'),
+                    'errorCustomerFieldNameExists'
+                );
             } else {
-                $cFehler = 'Fehler: Bitte füllen Sie alle Pflichtangaben aus!';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
             }
-            $smarty->assign('xPlausiVar_arr', $oPlausi->getPlausiVar())
-                   ->assign('xPostVar_arr', $oPlausi->getPostVar())
+            $smarty->assign('xPlausiVar_arr', $check->getPlausiVar())
+                   ->assign('xPostVar_arr', $check->getPostVar())
                    ->assign('kKundenfeld', $customerField->kKundenfeld);
         }
     }
-} elseif (RequestHelper::verifyGPDataString('a') === 'edit') { // Editieren
-    $kKundenfeld = RequestHelper::verifyGPCDataInt('kKundenfeld');
-
-    if ($kKundenfeld > 0) {
-        $customerField = $customerFields->getCustomerField($kKundenfeld);
+} elseif (Request::verifyGPDataString('a') === 'edit') {
+    $fieldID = Request::verifyGPCDataInt('kKundenfeld');
+    if ($fieldID > 0) {
+        $customerField = $cf->getCustomerField($fieldID);
 
         if ($customerField !== null) {
-            $customerField->oKundenfeldWert_arr = $customerFields->getCustomerFieldValues($customerField);
+            $customerField->oKundenfeldWert_arr = $cf->getCustomerFieldValues($customerField);
             $smarty->assign('oKundenfeld', $customerField);
         }
     }
 }
-
-$oConfig_arr = Shop::Container()->getDB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_KUNDENFELD, '*', 'nSort');
-$configCount = count($oConfig_arr);
-for ($i = 0; $i < $configCount; $i++) {
-    if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-        $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
-            'teinstellungenconfwerte',
-            'kEinstellungenConf',
-            (int)$oConfig_arr[$i]->kEinstellungenConf,
-            '*',
-            'nSort'
-        );
-    }
-
-    $oSetValue = Shop::Container()->getDB()->select(
-        'teinstellungen',
-        'kEinstellungenSektion',
-        CONF_KUNDENFELD,
-        'cName',
-        $oConfig_arr[$i]->cWertName
-    );
-
-    $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
-}
-// Kundenfelder auslesen und in Smarty assignen
-$oKundenfeld_arr = $customerFields->getCustomerFields();
-// tkundenfeldwert nachschauen ob dort Werte fuer tkundenfeld enthalten sind
-foreach ($oKundenfeld_arr as $i => $oKundenfeld) {
-    if ($oKundenfeld->cTyp === 'auswahl') {
-        $oKundenfeld_arr[$i]->oKundenfeldWert_arr = $customerFields->getCustomerFieldValues($oKundenfeld);
+$fields = $cf->getCustomerFields();
+foreach ($fields as $field) {
+    if ($field->cTyp === 'auswahl') {
+        $field->oKundenfeldWert_arr = $cf->getCustomerFieldValues($field);
     }
 }
-
 // calculate the highest sort-order number (based on the 'ORDER BY' above)
 // to recommend the user the next sort-order-value, instead of a placeholder
-$oLastElement      = end($oKundenfeld_arr);
-$nHighestSortValue = (false !== $oLastElement) ? $oLastElement->nSort : 0;
-$oPreLastElement   = prev($oKundenfeld_arr);
-if (false === $oPreLastElement) {
-    $nHighestSortDiff = ($oLastElement === false || $oLastElement->nSort === 0) ? 1 : $oLastElement->nSort;
+$lastElement      = end($fields);
+$highestSortValue = $lastElement !== false ? $lastElement->nSort : 0;
+$preLastElement   = prev($fields);
+if ($preLastElement === false) {
+    $highestSortDiff = ($lastElement === false || $lastElement->nSort === 0) ? 1 : $lastElement->nSort;
 } else {
-    $nHighestSortDiff = $oLastElement->nSort - $oPreLastElement->nSort;
+    $highestSortDiff = $lastElement->nSort - $preLastElement->nSort;
 }
-reset($oKundenfeld_arr); // we leave the array in a safe state
+reset($fields); // we leave the array in a safe state
 
-$smarty->assign('oKundenfeld_arr', $oKundenfeld_arr)
-       ->assign('nHighestSortValue', $nHighestSortValue)
-       ->assign('nHighestSortDiff', $nHighestSortDiff)
-       ->assign('oConfig_arr', $oConfig_arr)
-       ->assign('Sprachen', Sprache::getAllLanguages())
-       ->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
+$smarty->assign('oKundenfeld_arr', $fields)
+       ->assign('nHighestSortValue', $highestSortValue)
+       ->assign('nHighestSortDiff', $highestSortDiff)
+       ->assign('oConfig_arr', getAdminSectionSettings(CONF_KUNDENFELD))
        ->assign('step', $step)
        ->display('kundenfeld.tpl');
-

@@ -4,11 +4,12 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
 
 /**
- * Class CompareList
- * @package Boxes
+ * Class BoxDefault
+ *
+ * @package JTL\Boxes\Items
  */
 class BoxDefault extends AbstractBox
 {

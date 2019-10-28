@@ -2,14 +2,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
-{if !empty($hinweis)}
-    <div class="alert alert-danger">
-        {$hinweis}
-    </div>
-{/if}
-{if !empty($cFehler)}
-    <div class="alert alert-danger">{$cFehler}</div>
-{/if}
 <div class="row">
     <div class="col-xs-12">
         {if !isset($Versandarten)}
@@ -29,13 +21,12 @@
                                         <span class="control-label label-default">
                                             <span class="content">
                                                 <span class="title">{$versandart->angezeigterName|trans}</span>
-                                                <small class="desc text-info">{$versandart->cLieferdauer|trans}</small>
                                             </span>
                                             {if $versandart->cBild}
                                                 <img class="img-responsive-width img-sm" src="{$versandart->cBild}" alt="{$versandart->angezeigterName|trans}">
                                             {/if}
                                             <span class="content text-muted">
-                                                {$versandart->angezeigterHinweistext|trans}
+                                                <small>{$versandart->angezeigterHinweistext|trans}</small>
                                             </span>
                                             <span class="badge pull-right">{$versandart->cPreisLocalized}</span>
                                             {if isset($versandart->specificShippingcosts_arr)}
@@ -63,11 +54,11 @@
                                                 </small>
                                             </span>
                                             {/if}
-                                            {if !empty($versandart->cLieferdauer|trans) && $Einstellungen.global.global_versandermittlung_lieferdauer_anzeigen === 'Y'}
-                                            <span class="btn-block">
-                                                <small>{lang key='shippingTimeLP' section='global'}
-                                                    : {$versandart->cLieferdauer|trans}</small>
-                                            </span>
+                                            {if !empty($versandart->cLieferdauer|trans)}
+                                                <span class="btn-block">
+                                                    <small>{lang key='shippingTimeLP' section='global'}
+                                                        : {$versandart->cLieferdauer|trans}</small>
+                                                </span>
                                             {/if}
                                         </span>
                                     </label>
@@ -116,7 +107,7 @@
                 <div class="text-right">
                     <input type="hidden" name="versandartwahl" value="1" />
                     <input type="hidden" name="zahlungsartwahl" value="1" />
-                    <input type="submit" value="{lang key='continueOrder' section='account data'}" class="submit btn btn-lg submit-once btn-primary hidden" />
+                    <input type="submit" value="{lang key='continueOrder' section='account data'}" class="submit btn btn-lg submit_once btn-primary hidden" />
                 </div>
                 {/if}
             </form>

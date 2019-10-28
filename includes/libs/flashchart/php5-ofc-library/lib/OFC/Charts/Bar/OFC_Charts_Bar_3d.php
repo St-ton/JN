@@ -25,7 +25,7 @@ class bar_3d_value
     public function __construct($top)
     {
         $this->top = $top;
-//		$this->bottom = $bottom;
+//      $this->bottom = $bottom;
     }
 
     public function set_colour($colour)
@@ -45,6 +45,6 @@ class OFC_Charts_Bar_3d extends OFC_Charts_Bar
     {
         parent::__construct();
 
-        $this->type      = 'bar_3d';
+        $this->type = 'bar_3d';
     }
 }

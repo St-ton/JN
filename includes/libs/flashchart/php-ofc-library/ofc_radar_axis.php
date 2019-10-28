@@ -29,7 +29,7 @@ class radar_axis
     
     public function set_grid_colour($colour)
     {
-        $tmp = 'grid-colour';
+        $tmp        = 'grid-colour';
         $this->$tmp = $colour;
     }
     
@@ -40,7 +40,7 @@ class radar_axis
     
     public function set_spoke_labels($labels)
     {
-        $tmp = 'spoke-labels';
+        $tmp        = 'spoke-labels';
         $this->$tmp = $labels;
     }
 }

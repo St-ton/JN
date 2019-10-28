@@ -147,6 +147,13 @@
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
             </Setting>
+            <Setting Description="Anzahl der sichtbaren Filteroptionen in Boxen. (&lt;small&gt;weiter Optionen können eingeblendet werden&lt;/small&gt;)" Key="filter_max_options" Type="select" Value="5">
+                <Option Value="3"><![CDATA[max. 3]]></Option>
+                <Option Value="5"><![CDATA[max. 5]]></Option>
+                <Option Value="9"><![CDATA[max. 9]]></Option>
+                <Option Value="12"><![CDATA[max. 12]]></Option>
+                <Option Value="-1"><![CDATA[keine Beschr&auml;nkung]]></Option>
+            </Setting>
         </Section>
         <Section Name="Footer-Einstellungen" Key="footer">
             <Setting Description="Newsletter-Anmeldung im Footer" Key="newsletter_footer" Type="select" Value="N">
@@ -159,7 +166,6 @@
             </Setting>
             <Setting Description="Facebook-Link" Key="facebook" Type="text" Value=""/>
             <Setting Description="Twitter-Link" Key="twitter" Type="text" Value=""/>
-            <Setting Description="GooglePlus-Link" Key="googleplus" Type="text" Value=""/>
             <Setting Description="YouTube-Link" Key="youtube" Type="text" Value=""/>
             <Setting Description="Xing-Link" Key="xing" Type="text" Value=""/>
             <Setting Description="LinkedIn-Link" Key="linkedin" Type="text" Value=""/>
@@ -305,7 +311,6 @@
             <File Path="themes/yeti/custom.css"/>
         </CSS>
         <JS Name="jtl3.js">
-            <File Path="js/jquery.touch.min.js"/>
             <File Path="js/jquery.backstretch.min.js"/>
             <File Path="js/jquery.dimension.js"/>
             <File Path="js/jquery.offcanvas.js"/>

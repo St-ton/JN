@@ -4,224 +4,259 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\DB\ReturnType;
+use JTL\Helpers\Request;
+use JTL\Helpers\Text;
+use JTL\IO\IOResponse;
+use JTL\Network\JTLApi;
+use JTL\Plugin\Helper;
+use JTL\Plugin\State;
+use JTL\Shop;
+use JTL\Smarty\ContextType;
+use JTL\Smarty\JTLSmarty;
+
 /**
  * @param bool $bActive
  * @return array
  */
 function getWidgets(bool $bActive = true)
 {
-    $oWidget_arr = Shop::Container()->getDB()->selectAll(
-        'tadminwidgets',
-        'bActive',
-        (int)$bActive, '*',
-        'eContainer ASC, nPos ASC'
+    $cache        = Shop::Container()->getCache();
+    $db           = Shop::Container()->getDB();
+    $gettext      = Shop::Container()->getGetText();
+    $loaderLegacy = Helper::getLoader(false, $db, $cache);
+    $loaderExt    = Helper::getLoader(true, $db, $cache);
+    $plugins      = [];
+
+    $widgets = $db->queryPrepared(
+        'SELECT tadminwidgets.*, tplugin.cPluginID, tplugin.bExtension
+            FROM tadminwidgets
+            LEFT JOIN tplugin 
+                ON tplugin.kPlugin = tadminwidgets.kPlugin
+            WHERE bActive = :active
+                AND (tplugin.nStatus IS NULL OR tplugin.nStatus = :activated)
+            ORDER BY eContainer ASC, nPos ASC',
+        ['active' => (int)$bActive, 'activated' => State::ACTIVATED],
+        ReturnType::ARRAY_OF_OBJECTS
     );
-    if ($bActive) {
-        foreach ($oWidget_arr as $i => $oWidget) {
-            $oWidget_arr[$i]->cContent = '';
-            $cClass                    = 'Widget' . $oWidget->cClass;
-            $cClassFile                = 'class.' . $cClass . '.php';
-            $cClassPath                = PFAD_ROOT . PFAD_ADMIN . 'includes/widgets/' . $cClassFile;
-            $oWidget->cNiceTitle       = str_replace(['--', ' '], '-', $oWidget->cTitle);
-            $oWidget->cNiceTitle       = strtolower(preg_replace('/[äüöß\(\)\/\\\]/iu', '', $oWidget->cNiceTitle));
-            $oPlugin = null;
-            if (isset($oWidget->kPlugin) && $oWidget->kPlugin > 0) {
-                $oPlugin    = new Plugin($oWidget->kPlugin);
-                $cClass     = 'Widget' . $oPlugin->oPluginAdminWidgetAssoc_arr[$oWidget->kWidget]->cClass;
-                $cClassPath = $oPlugin->oPluginAdminWidgetAssoc_arr[$oWidget->kWidget]->cClassAbs;
-            }
-            if (file_exists($cClassPath)) {
-                require_once $cClassPath;
-                if (class_exists($cClass)) {
-                    /** @var WidgetBase $oClassObj */
-                    $oClassObj                 = new $cClass(null, null, $oPlugin);
-                    $oWidget_arr[$i]->cContent = $oClassObj->getContent();
+
+    foreach ($widgets as $widget) {
+        $widget->kWidget    = (int)$widget->kWidget;
+        $widget->kPlugin    = (int)$widget->kPlugin;
+        $widget->nPos       = (int)$widget->nPos;
+        $widget->bExpanded  = (int)$widget->bExpanded;
+        $widget->bActive    = (int)$widget->bActive;
+        $widget->bExtension = (int)$widget->bExtension;
+        $widget->plugin     = null;
+
+        if ($widget->cPluginID !== null && SAFE_MODE === false) {
+            if (array_key_exists($widget->cPluginID, $plugins)) {
+                $widget->plugin = $plugins[$widget->cPluginID];
+            } else {
+                if ($widget->bExtension === 1) {
+                    $widget->plugin = $loaderExt->init((int)$widget->kPlugin);
+                } else {
+                    $widget->plugin = $loaderLegacy->init((int)$widget->kPlugin);
                 }
+
+                $plugins[$widget->cPluginID] = $widget->plugin;
+            }
+
+            if ($widget->bExtension) {
+                $gettext->loadPluginLocale('widgets/' . $widget->cClass, $widget->plugin);
+            }
+        } else {
+            $gettext->loadAdminLocale('widgets/' . $widget->cClass);
+            $widget->plugin = null;
+        }
+
+        $msgid  = $widget->cClass . '_title';
+        $msgstr = __($msgid);
+
+        if ($msgid !== $msgstr) {
+            $widget->cTitle = $msgstr;
+        }
+
+        $msgid  = $widget->cClass . '_desc';
+        $msgstr = __($msgid);
+
+        if ($msgid !== $msgstr) {
+            $widget->cDescription = $msgstr;
+        }
+    }
+
+    if ($bActive) {
+        $smarty = JTLSmarty::getInstance(false, ContextType::BACKEND);
+
+        foreach ($widgets as $widget) {
+            $widget->cContent = '';
+            $className        = '\JTL\Widgets\\' . $widget->cClass;
+            $classPath        = null;
+
+            if ($widget->plugin !== null) {
+                $hit = $widget->plugin->getWidgets()->getWidgetByID($widget->kWidget);
+
+                if ($hit !== null) {
+                    $className = $hit->className;
+                    $classPath = $hit->classFile;
+
+                    if (file_exists($classPath)) {
+                        require_once $classPath;
+                    }
+                }
+            }
+
+            if (class_exists($className)) {
+                /** @var \JTL\Widgets\AbstractWidget $instance */
+                $instance         = new $className($smarty, $db, $widget->plugin);
+                $widget->cContent = $instance->getContent();
+                $widget->hasBody  = $instance->hasBody;
             }
         }
     }
 
-    return $oWidget_arr;
+    return $widgets;
 }
 
 /**
  * @param int    $kWidget
  * @param string $eContainer
- * @param int    $nPos
+ * @param int    $pos
  */
-function setWidgetPosition($kWidget, $eContainer, $nPos)
+function setWidgetPosition(int $kWidget, $eContainer, int $pos)
 {
     $upd             = new stdClass();
     $upd->eContainer = $eContainer;
-    $upd->nPos       = (int)$nPos;
-    Shop::Container()->getDB()->update('tadminwidgets', 'kWidget', (int)$kWidget, $upd);
+    $upd->nPos       = $pos;
+    Shop::Container()->getDB()->update('tadminwidgets', 'kWidget', $kWidget, $upd);
 }
 
 /**
  * @param int $kWidget
  */
-function closeWidget($kWidget)
+function closeWidget(int $kWidget)
 {
-    $upd          = new stdClass();
-    $upd->bActive = 0;
-    Shop::Container()->getDB()->update('tadminwidgets', 'kWidget', (int)$kWidget, $upd);
+    Shop::Container()->getDB()->update('tadminwidgets', 'kWidget', $kWidget, (object)['bActive' => 0]);
 }
 
 /**
  * @param int $kWidget
  */
-function addWidget($kWidget)
+function addWidget(int $kWidget)
 {
-    $upd          = new stdClass();
-    $upd->bActive = 1;
-    Shop::Container()->getDB()->update('tadminwidgets', 'kWidget', (int)$kWidget, $upd);
+    Shop::Container()->getDB()->update('tadminwidgets', 'kWidget', $kWidget, (object)['bActive' => 1]);
 }
 
 /**
  * @param int $kWidget
  * @param int $bExpand
  */
-function expandWidget($kWidget, $bExpand)
+function expandWidget(int $kWidget, int $bExpand)
 {
-    $upd            = new stdClass();
-    $upd->bExpanded = (int)$bExpand;
-    Shop::Container()->getDB()->update('tadminwidgets', 'kWidget', (int)$kWidget, $upd);
+    Shop::Container()->getDB()->update('tadminwidgets', 'kWidget', $kWidget, (object)['bExpanded' => $bExpand]);
 }
 
 /**
- * @param int $kWidget
- * @return string
- */
-function getWidgetContent($kWidget)
-{
-    $cContent = '';
-    $oWidget  = Shop::Container()->getDB()->select('tadminwidgets', 'kWidget', (int)$kWidget);
-
-    if (!is_object($oWidget)) {
-        return '';
-    }
-
-    $cClass     = 'Widget' . $oWidget->cClass;
-    $cClassFile = 'class.' . $cClass . '.php';
-    $cClassPath = 'includes/widgets/' . $cClassFile;
-
-    if (file_exists($cClassPath)) {
-        require_once $cClassPath;
-        if (class_exists($cClass)) {
-            /** @var WidgetBase $oClassObj */
-            $oClassObj = new $cClass();
-            $cContent  = $oClassObj->getContent();
-        }
-    }
-
-    return $cContent;
-}
-
-/**
- * @param string $cURL
- * @param int    $nTimeout
+ * @param string $url
+ * @param int    $timeout
  * @return mixed|string
  * @deprecated since 4.06
  */
-function getRemoteData($cURL, $nTimeout = 15)
+function getRemoteData($url, $timeout = 15)
 {
-    $cData = '';
+    $data = '';
     if (function_exists('curl_init')) {
         $curl = curl_init();
 
-        curl_setopt($curl, CURLOPT_URL, $cURL);
-        curl_setopt($curl, CURLOPT_TIMEOUT, $nTimeout);
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_TIMEOUT, $timeout);
         curl_setopt($curl, CURLOPT_MAXREDIRS, 5);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, false);
         curl_setopt($curl, CURLOPT_REFERER, Shop::getURL());
 
-        $cData = curl_exec($curl);
+        $data = curl_exec($curl);
         curl_close($curl);
     } elseif (ini_get('allow_url_fopen')) {
-        @ini_set('default_socket_timeout', $nTimeout);
-        $fileHandle = @fopen($cURL, 'r');
+        @ini_set('default_socket_timeout', $timeout);
+        $fileHandle = @fopen($url, 'r');
         if ($fileHandle) {
-            @stream_set_timeout($fileHandle, $nTimeout);
-            $cData = fgets($fileHandle);
+            @stream_set_timeout($fileHandle, $timeout);
+            $data = fgets($fileHandle);
             fclose($fileHandle);
         }
     }
 
-    return $cData;
+    return $data;
 }
 
 /**
- * @param string $cURL
- * @param string $cDataName
- * @param string $cTpl
- * @param string $cWrapperID
- * @param string $cPost
- * @param null   $cCallback
- * @param bool   $bDecodeUTF8
+ * @param string $url
+ * @param string $dataName
+ * @param string $tpl
+ * @param string $wrapperID
+ * @param string $post
+ * @param null   $callback
+ * @param bool   $decodeUTF8
  * @return IOResponse
  * @throws SmartyException
  */
-function getRemoteDataIO($cURL, $cDataName, $cTpl, $cWrapperID, $cPost = null, $cCallback = null, $bDecodeUTF8 = false)
+function getRemoteDataIO($url, $dataName, $tpl, $wrapperID, $post = null, $callback = null, $decodeUTF8 = false)
 {
-    $response         = new IOResponse();
-    $oURLsToCache_arr = ['oNews_arr', 'oMarketplace_arr', 'oMarketplaceUpdates_arr', 'oPatch_arr', 'oDuk', 'oHelp_arr'];
-
-    if (in_array($cDataName, $oURLsToCache_arr, true)) {
-        $cacheID = $cDataName . '_' . $cTpl . '_' . md5($cWrapperID . $cURL);
-        if (($cData = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $cData = RequestHelper::http_get_contents($cURL, 15, $cPost);
-            Shop::Cache()->set($cacheID, $cData, [CACHING_GROUP_OBJECT], 3600);
+    Shop::Container()->getGetText()->loadAdminLocale('widgets');
+    $response    = new IOResponse();
+    $urlsToCache = ['oNews_arr', 'oMarketplace_arr', 'oMarketplaceUpdates_arr', 'oPatch_arr', 'oDuk', 'oHelp_arr'];
+    if (in_array($dataName, $urlsToCache, true)) {
+        $cacheID = str_replace('/', '_', $dataName . '_' . $tpl . '_' . md5($wrapperID . $url));
+        if (($remoteData = Shop::Container()->getCache()->get($cacheID)) === false) {
+            $remoteData = Request::http_get_contents($url, 15, $post);
+            Shop::Container()->getCache()->set($cacheID, $remoteData, [CACHING_GROUP_OBJECT], 3600);
         }
     } else {
-        $cData = RequestHelper::http_get_contents($cURL, 15, $cPost);
+        $remoteData = Request::http_get_contents($url, 15, $post);
     }
 
-    if (strpos($cData, '<?xml') === 0) {
-        $oData = simplexml_load_string($cData);
+    if (mb_strpos($remoteData, '<?xml') === 0) {
+        $data = simplexml_load_string($remoteData);
     } else {
-        $oData = json_decode($cData);
+        $data = json_decode($remoteData);
     }
-    $oData    = $bDecodeUTF8 ? StringHandler::utf8_convert_recursive($oData) : $oData;
-    Shop::Smarty()->assign($cDataName, $oData);
-    $cWrapper = Shop::Smarty()->fetch('tpl_inc/' . $cTpl);
-    $response->assign($cWrapperID, 'innerHTML', $cWrapper);
+    $data    = $decodeUTF8 ? Text::utf8_convert_recursive($data) : $data;
+    $wrapper = Shop::Smarty()->assign($dataName, $data)->fetch('tpl_inc/' . $tpl);
+    $response->assign($wrapperID, 'innerHTML', $wrapper);
 
-    if ($cCallback !== null) {
-        $response->script("if(typeof {$cCallback} === 'function') {$cCallback}({$cData});");
+    if ($callback !== null) {
+        $response->script("if(typeof {$callback} === 'function') {$callback}({$remoteData});");
     }
 
     return $response;
 }
 
 /**
- * @param string $cTpl
- * @param string $cWrapperID
+ * @param string $tpl
+ * @param string $wrapperID
  * @return IOResponse
  * @throws SmartyException
  */
-function getShopInfoIO($cTpl, $cWrapperID)
+function getShopInfoIO($tpl, $wrapperID)
 {
-    $response = new IOResponse();
+    Shop::Container()->getGetText()->loadAdminLocale('widgets');
 
-    $api              = Shop::Container()->get(\Network\JTLApi::class);
-    $oSubscription    = $api->getSubscription();
+    $response         = new IOResponse();
+    $api              = Shop::Container()->get(JTLApi::class);
     $oLatestVersion   = $api->getLatestVersion();
-    $bUpdateAvailable = $api->hasNewerVersion();
-
     $strLatestVersion = $oLatestVersion
-        ? sprintf('%.2f', $oLatestVersion->version / 100)
+        ? sprintf('%d.%02d', $oLatestVersion->getMajor(), $oLatestVersion->getMinor())
         : null;
 
-    Shop::Smarty()->assign('oSubscription', $oSubscription);
-    Shop::Smarty()->assign('oVersion', $oLatestVersion);
-    Shop::Smarty()->assign('strLatestVersion', $strLatestVersion);
-    Shop::Smarty()->assign('bUpdateAvailable', $bUpdateAvailable);
+    $wrapper = Shop::Smarty()
+        ->assign('oSubscription', $api->getSubscription())
+        ->assign('oVersion', $oLatestVersion)
+        ->assign('strLatestVersion', $strLatestVersion)
+        ->assign('bUpdateAvailable', $api->hasNewerVersion())
+        ->fetch('tpl_inc/' . $tpl);
 
-    $cWrapper = Shop::Smarty()->fetch('tpl_inc/' . $cTpl);
-    $response->assign($cWrapperID, 'innerHTML', $cWrapper);
-
-    return $response;
+    return $response->assign($wrapperID, 'innerHTML', $wrapper);
 }
 
 /**
@@ -230,11 +265,10 @@ function getShopInfoIO($cTpl, $cWrapperID)
  */
 function getAvailableWidgetsIO()
 {
-    $response             = new IOResponse();
-    $oAvailableWidget_arr = getWidgets(false);
-    Shop::Smarty()->assign('oAvailableWidget_arr', $oAvailableWidget_arr);
-    $cWrapper = Shop::Smarty()->fetch('tpl_inc/widget_selector.tpl');
-    $response->assign('settings', 'innerHTML', $cWrapper);
+    $response         = new IOResponse();
+    $availableWidgets = getWidgets(false);
+    $wrapper          = Shop::Smarty()->assign('oAvailableWidget_arr', $availableWidgets)
+                                      ->fetch('tpl_inc/widget_selector.tpl');
 
-    return $response;
+    return $response->assign('settings', 'innerHTML', $wrapper);
 }

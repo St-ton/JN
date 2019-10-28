@@ -4,13 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL\Validation\Rules;
+namespace Tests\Services\JTL\Validation\Rules;
+
+use JTL\Services\JTL\Validation\Rules\LessThan;
+use Tests\BaseTestCase;
 
 /**
  * Class LessThanTest
  * @package Services\JTL\Validation\Rules
  */
-class LessThanTest extends \PHPUnit_Framework_TestCase
+class LessThanTest extends BaseTestCase
 {
     public function test()
     {

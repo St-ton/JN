@@ -1,0 +1,123 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "paymentmethods"
+msgstr "Payment methods"
+
+msgid "paymentmethodsURL"
+msgstr "https://jtl-url.de/vjrdl"
+
+msgid "paymentmethodName"
+msgstr "Name of the payment method"
+
+msgid "installedPaymentmethods"
+msgstr "The following payment methods are installed:"
+
+msgid "name"
+msgstr "Payment method"
+
+msgid "moduleid"
+msgstr "Module"
+
+msgid "configurePaymentmethod"
+msgstr "Here you can adjust the settings for this payment method."
+
+msgid "restrictedToCustomerGroups"
+msgstr "Available to customer groups"
+
+msgid "feeName"
+msgstr "Fee name"
+
+msgid "pictureURL"
+msgstr "Image URL"
+
+msgid "pictureDesc"
+msgstr "Enter the path or URL of the image that is to be displayed instead of the name of the payment method during checkout."
+
+msgid "noticeText"
+msgstr "Note"
+
+msgid "noticeTextShop"
+msgstr "Note (online shop)"
+
+msgid "noticeTextEmail"
+msgstr "Note (email)"
+
+msgid "paymentAckMail"
+msgstr "Email: Confirmation of payment"
+
+msgid "paymentCancelMail"
+msgstr "Email: Order cancellation"
+
+msgid "duringOrder"
+msgstr "Payment before order completion"
+
+msgid "paymentmethodsCheckAll"
+msgstr "Check requirements of all payment methods"
+
+msgid "log"
+msgstr "Log"
+
+msgid "viewLog"
+msgstr "View log"
+
+msgid "logText"
+msgstr "Text"
+
+msgid "logDate"
+msgstr "Date"
+
+msgid "logLevel"
+msgstr "Error level"
+
+msgid "logError"
+msgstr "Error"
+
+msgid "logNotice"
+msgstr "Notice"
+
+msgid "logDebug"
+msgstr "Debug"
+
+msgid "logReset"
+msgstr "Reset log"
+
+msgid "payments"
+msgstr "Payments received for "
+
+msgid "paymentsURL"
+msgstr "https://jtl-url.de/vjrdl"
+
+msgid "paymentsDesc"
+msgstr "Here you can view the payments received for a specific payment method and its synchronisation status with JTL-Wawi."
+
+msgid "successPaymentMethodCheck"
+msgstr "Payment methods tested for operational readiness."
+
+msgid "successLogReset"
+msgstr "Error log for %s reset successfully."
+
+msgid "noLogs"
+msgstr "No logs available."
+
+msgid "amountPayed"
+msgstr "Amount paid"
+
+msgid "syncedWithWawi"
+msgstr "Already transferred to JTL-Wawi"
+
+msgid "wawiSyncReset"
+msgstr "Put down for transfer to JTL-Wawi during next synchronisation"
+
+msgid "installedPaymentTypes"
+msgstr "Installed payment methods"
+
+msgid "successPaymentMethodSave"
+msgstr "Payment method saved successfully."
+
+msgid "errorPaymentMethodNotFound"
+msgstr "Could not find payment method."
+
+msgid "feeNameHint"
+msgstr "Enter a name for a potential charge for the payment method. The name of the charge will be displayed during checkout. The amount of the charge is specified individually for each shipping method for which the shipping method is available."

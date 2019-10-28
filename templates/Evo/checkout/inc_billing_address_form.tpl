@@ -15,9 +15,16 @@
         {if $Einstellungen.kunden.kundenregistrierung_abfragen_anrede !== 'N'}
             <div class="col-xs-12 col-md-6">
                 <div class="form-group float-label-control{if isset($fehlendeAngaben.anrede)} has-error{/if}">
-                    <label for="salutation" class="control-label">{lang key='salutation' section='account data'}</label>
-                    <select name="anrede" id="salutation" class="form-control" required autocomplete="billing sex">
-                        <option value="" selected="selected" disabled>{lang key='salutation' section='account data'}</option>
+                    <label for="salutation" class="control-label">
+                        {lang key='salutation' section='account data'}
+                        {if $Einstellungen.kunden.kundenregistrierung_abfragen_anrede === 'O'}
+                            <span class="optional"> - {lang key='optional'}</span>
+                        {/if}
+                    </label>
+                    <select name="anrede" id="salutation" class="form-control" {if $Einstellungen.kunden.kundenregistrierung_abfragen_anrede === 'Y'}required{/if} autocomplete="billing sex">
+                        <option value="" selected="selected" {if $Einstellungen.kunden.kundenregistrierung_abfragen_anrede === 'Y'}disabled{/if}>
+                            {if $Einstellungen.kunden.kundenregistrierung_abfragen_anrede === 'Y'}{lang key='salutation' section='account data'}{else}{lang key='noSalutation'}{/if}
+                        </option>
                         <option value="w" {if isset($cPost_var['anrede']) && $cPost_var['anrede'] === 'w'}selected="selected"{elseif isset($Kunde->cAnrede) && $Kunde->cAnrede === 'w'}selected="selected"{/if}>{lang key='salutationW'}</option>
                         <option value="m" {if isset($cPost_var['anrede']) && $cPost_var['anrede'] === 'm'}selected="selected"{elseif isset($Kunde->cAnrede) && $Kunde->cAnrede === 'm'}selected="selected"{/if}>{lang key='salutationM'}</option>
                     </select>
@@ -184,7 +191,7 @@
                 <select name="land" id="country" class="country-input form-control" required autocomplete="billing country">
                     <option value="" disabled>{lang key='country' section='account data'}</option>
                     {foreach $laender as $land}
-                        <option value="{$land->cISO}" {if $cIso === $land->cISO}selected="selected"{/if}>{$land->cName}</option>
+                        <option value="{$land->getISO()}" {if $cIso === $land->getISO()}selected="selected"{/if}>{$land->getName()}</option>
                     {/foreach}
                 </select>
                 {if isset($fehlendeAngaben.land)}
@@ -453,8 +460,8 @@
                 {/if}
                 {include file='snippets/form_group_simple.tpl'
                     options=[
-                        'text', 'birthday', 'geburtstag',
-                        {$inputVal_birthday|default:null}, {lang key='birthday' section='account data'},
+                        'date', 'birthday', 'geburtstag',
+                        {$inputVal_birthday|default:null|date_format:"%Y-%m-%d"}, {lang key='birthday' section='account data'},
                         $Einstellungen.kunden.kundenregistrierung_abfragen_geburtstag, null, 'billing bday'
                     ]
                 }
@@ -467,31 +474,41 @@
     <div class="row">
         <div class="col-xs-12 col-md-6">
             {if $step === 'formular' || $step === 'edit_customer_address' || $step === 'Lieferadresse' || $step === 'rechnungsdaten'}
+                {if ($step === 'formular' || $step === 'edit_customer_address') && isset($Kunde)}
+                    {assign var="customerAttributes" value=$Kunde->getCustomerAttributes()}
+                {/if}
                 {foreach $oKundenfeld_arr as $oKundenfeld}
-                    {assign var=kKundenfeld value=$oKundenfeld->kKundenfeld}
+                    {assign var="kKundenfeld" value=$oKundenfeld->getID()}
+                    {if isset($customerAttributes[$kKundenfeld])}
+                        {assign var="cKundenattributWert" value=$customerAttributes[$kKundenfeld]->getValue()}
+                        {assign var="isKundenattributEditable" value=$customerAttributes[$kKundenfeld]->isEditable()}
+                    {else}
+                        {assign var="cKundenattributWert" value=''}
+                        {assign var="isKundenattributEditable" value=true}
+                    {/if}
                     <div class="form-group float-label-control{if isset($fehlendeAngaben.custom[$kKundenfeld])} has-error{/if}">
-                        <label class="control-label" for="custom_{$kKundenfeld}">{$oKundenfeld->cName}
-                            {if $oKundenfeld->nPflicht != 1}
+                        <label class="control-label" for="custom_{$kKundenfeld}">{$oKundenfeld->getLabel()}
+                            {if !$oKundenfeld->isRequired()}
                                 <span class="optional"> - {lang key='optional'}</span>
                             {/if}
                         </label>
-                        {if $oKundenfeld->cTyp !== 'auswahl'}
+                        {if $oKundenfeld->getType() !== \JTL\Customer\CustomerField::TYPE_SELECT}
                             <input
-                            type="{if $oKundenfeld->cTyp === 'zahl'}number{elseif $oKundenfeld->cTyp === 'datum'}date{else}text{/if}"
+                            type="{if $oKundenfeld->getType() === \JTL\Customer\CustomerField::TYPE_NUMBER}number{elseif $oKundenfeld->getType() === \JTL\Customer\CustomerField::TYPE_DATE}date{else}text{/if}"
                             name="custom_{$kKundenfeld}"
                             id="custom_{$kKundenfeld}"
-                            value="{if isset($cKundenattribut_arr[$kKundenfeld]->cWert) && ($step === 'formular' || $step === 'edit_customer_address')}{$cKundenattribut_arr[$kKundenfeld]->cWert}{elseif isset($Kunde->cKundenattribut_arr[$kKundenfeld]->cWert)}{$Kunde->cKundenattribut_arr[$kKundenfeld]->cWert}{/if}"
+                            value="{$cKundenattributWert}"
                             class="form-control"
-                            placeholder="{$oKundenfeld->cName}"
-                            {if ($oKundenfeld->nPflicht == 1 && $oKundenfeld->nEditierbar == 1) || ($oKundenfeld->nEditierbar == 0 && !empty($cKundenattribut_arr[$kKundenfeld]->cWert))} required{/if}
+                            placeholder="{$oKundenfeld->getLabel()}"
+                            {if $oKundenfeld->isRequired()} required{/if}
                             data-toggle="floatLabel"
                             data-value="no-js"
-                            {if $oKundenfeld->nEditierbar == 0 && !empty($cKundenattribut_arr[$kKundenfeld]->cWert)}readonly{/if}/>
+                            {if !$isKundenattributEditable}readonly{/if}/>
                         {else}
-                            <select name="custom_{$kKundenfeld}" class="form-control" {if $oKundenfeld->nEditierbar == 0 && !empty($cKundenattribut_arr[$kKundenfeld]->cWert)}disabled{/if}{if $oKundenfeld->nPflicht == 1} required{/if}>
+                            <select name="custom_{$kKundenfeld}" class="form-control" {if !$isKundenattributEditable}disabled{/if}{if $oKundenfeld->isRequired()} required{/if}>
                                 <option value="" selected disabled>{lang key='pleaseChoose'}</option>
-                                {foreach $oKundenfeld->oKundenfeldWert_arr as $oKundenfeldWert}
-                                    <option value="{$oKundenfeldWert->cWert}" {if ($step === 'formular' || $step === 'edit_customer_address') && isset($cKundenattribut_arr[$kKundenfeld]->cWert) && ($oKundenfeldWert->cWert == $cKundenattribut_arr[$kKundenfeld]->cWert)}selected{elseif isset($Kunde->cKundenattribut_arr[$kKundenfeld]->cWert) && ($oKundenfeldWert->cWert == $Kunde->cKundenattribut_arr[$kKundenfeld]->cWert)}selected{/if}>{$oKundenfeldWert->cWert}</option>
+                                {foreach $oKundenfeld->getValues() as $oKundenfeldWert}
+                                    <option value="{$oKundenfeldWert}" {if ($oKundenfeldWert == $cKundenattributWert)}selected{/if}>{$oKundenfeldWert}</option>
                                 {/foreach}
                             </select>
                         {/if}
@@ -516,10 +533,10 @@
 </fieldset>
 {/if}
 {if !isset($fehlendeAngaben)}
-    {assign var=fehlendeAngaben value=array()}
+    {assign var="fehlendeAngaben" value=array()}
 {/if}
 {if !isset($cPost_arr)}
-    {assign var=cPost_arr value=array()}
+    {assign var="cPost_arr" value=array()}
 {/if}
 {hasCheckBoxForLocation nAnzeigeOrt=$nAnzeigeOrt cPlausi_arr=$fehlendeAngaben cPost_arr=$cPost_arr bReturn='bHasCheckbox'}
 {if $bHasCheckbox}

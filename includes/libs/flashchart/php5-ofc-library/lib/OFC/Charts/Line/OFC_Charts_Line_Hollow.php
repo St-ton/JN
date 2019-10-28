@@ -26,6 +26,6 @@ class OFC_Charts_Line_Hollow extends OFC_Charts_Line
     {
         parent::__construct();
 
-        $this->type      = 'line_hollow';
+        $this->type = 'line_hollow';
     }
 }

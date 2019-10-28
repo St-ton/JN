@@ -1,11 +1,11 @@
 <script type="text/javascript">
     $(document).ready(function () {
-        ioCall('getRemoteData', ['{$JTLURL_GET_SHOPNEWS}', 'oNews_arr', 'widgets/news_data.tpl', 'news_data_wrapper']);
+        ioCall('getRemoteData', ['{$smarty.const.JTLURL_GET_SHOPNEWS}', 'oNews_arr', 'widgets/news_data.tpl', 'news_data_wrapper']);
     });
 </script>
 
 <div class="widget-custom-data">
     <div id="news_data_wrapper">
-        <p class="ajax_preloader">Wird geladen...</p>
+        <p class="ajax_preloader"><i class="fa fas fa-spinner fa-spin"></i> {__('loading')}</p>
     </div>
 </div>

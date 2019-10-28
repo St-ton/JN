@@ -103,7 +103,7 @@ class Zend_Registry extends ArrayObject
 
         if (!is_string($registryClassName)) {
             require_once 'Zend/Exception.php';
-            throw new Zend_Exception("Argument is not a class name");
+            throw new Zend_Exception('Argument is not a class name');
         }
 
         /**

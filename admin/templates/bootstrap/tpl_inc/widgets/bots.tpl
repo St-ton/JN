@@ -3,8 +3,8 @@
         <table class="table table-condensed table-hover table-blank">
             <thead>
                 <tr>
-                    <th>Name / User-Agent</th>
-                    <th class="tright">Anzahl</th>
+                    <th>{__('name')} / {__('userAgent')}</th>
+                    <th class="text-right">{__('count')}</th>
                 </tr>
             </thead>
             <tbody>
@@ -16,16 +16,16 @@
                             {elseif isset($oBots->cUserAgent) && $oBots->cUserAgent|strlen > 0}
                                 {$oBots->cUserAgent}
                             {else}
-                                Unbekannt
+                                {__('unknown')}
                             {/if}
                         </td>
-                        <td class="tright">{$oBots->nCount}</td>
+                        <td class="text-right">{$oBots->nCount}</td>
                     </tr>
                 {/foreach}
             </tbody>
         </table>
-        Mehr Details unter <a href="statistik.php?s=3">Statistiken</a>
+        {__('moreDetailsStatistics')}
     {else}
-        <div class="alert alert-info">Keine Statistiken gefunden</div>
+        <div class="alert alert-info">{__('noStatisticsFound')}</div>
     {/if}
 </div>

@@ -6,7 +6,7 @@ class bar_stack extends bar_base
 {
     public function __construct()
     {
-        $this->type      = "bar_stack";
+        $this->type = 'bar_stack';
         parent::__construct();
     }
     
@@ -33,7 +33,7 @@ class bar_stack_value
 {
     public function __construct($val, $colour)
     {
-        $this->val = $val;
+        $this->val    = $val;
         $this->colour = $colour;
     }
     
@@ -48,8 +48,8 @@ class bar_stack_key
     public function __construct($colour, $text, $font_size)
     {
         $this->colour = $colour;
-        $this->text = $text;
-        $tmp = 'font-size';
-        $this->$tmp = $font_size;
+        $this->text   = $text;
+        $tmp          = 'font-size';
+        $this->$tmp   = $font_size;
     }
 }

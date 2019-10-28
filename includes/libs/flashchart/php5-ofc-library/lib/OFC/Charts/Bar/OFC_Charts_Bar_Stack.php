@@ -24,7 +24,7 @@ class OFC_Charts_Bar_Stack_Value
 {
     public function __construct($val, $colour)
     {
-        $this->val = $val;
+        $this->val    = $val;
         $this->colour = $colour;
     }
 }
@@ -35,7 +35,7 @@ class OFC_Charts_Bar_Stack extends OFC_Charts_Bar
     {
         parent::__construct();
 
-        $this->type      = 'bar_stack';
+        $this->type = 'bar_stack';
     }
 
     public function append_stack($v)

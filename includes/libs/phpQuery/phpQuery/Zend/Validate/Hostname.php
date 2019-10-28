@@ -86,12 +86,12 @@ class Zend_Validate_Hostname extends Zend_Validate_Abstract
     /**
      * Allows Internet domain names (e.g., example.com)
      */
-    const ALLOW_DNS   = 1;
+    const ALLOW_DNS = 1;
 
     /**
      * Allows IP addresses
      */
-    const ALLOW_IP    = 2;
+    const ALLOW_IP = 2;
 
     /**
      * Allows local network names (e.g., localhost, www.localdomain)
@@ -101,7 +101,7 @@ class Zend_Validate_Hostname extends Zend_Validate_Abstract
     /**
      * Allows all types of hostnames
      */
-    const ALLOW_ALL   = 7;
+    const ALLOW_ALL = 7;
 
     /**
      * Whether IDN domains are validated
@@ -235,7 +235,7 @@ class Zend_Validate_Hostname extends Zend_Validate_Abstract
      */
     public function setValidateIdn($allowed)
     {
-        $this->_validateIdn = (bool) $allowed;
+        $this->_validateIdn = (bool)$allowed;
     }
 
     /**
@@ -247,7 +247,7 @@ class Zend_Validate_Hostname extends Zend_Validate_Abstract
      */
     public function setValidateTld($allowed)
     {
-        $this->_validateTld = (bool) $allowed;
+        $this->_validateTld = (bool)$allowed;
     }
 
     /**
@@ -275,7 +275,7 @@ class Zend_Validate_Hostname extends Zend_Validate_Abstract
      */
     public function isValid($value)
     {
-        $valueString = (string) $value;
+        $valueString = (string)$value;
 
         $this->_setValue($valueString);
 
@@ -319,15 +319,15 @@ class Zend_Validate_Hostname extends Zend_Validate_Abstract
                      * @see Zend_Validate_Hostname_Interface
                      */
                     $labelChars = 'a-z0-9';
-                    $utf8 = false;
-                    $classFile = 'Zend/Validate/Hostname/' . ucfirst($this->_tld) . '.php';
+                    $utf8       = false;
+                    $classFile  = 'Zend/Validate/Hostname/' . ucfirst($this->_tld) . '.php';
                     if ($this->_validateIdn) {
                         if (Zend_Loader::isReadable($classFile)) {
                             // Load additional characters
                             $className = 'Zend_Validate_Hostname_' . ucfirst($this->_tld);
                             Zend_Loader::loadClass($className);
                             $labelChars .= call_user_func(array($className, 'getCharacters'));
-                            $utf8 = true;
+                            $utf8        = true;
                         }
                     }
 
@@ -386,7 +386,7 @@ class Zend_Validate_Hostname extends Zend_Validate_Abstract
 
         // Check input against local network name schema; last chance to pass validation
         $regexLocal = '/^(([a-zA-Z0-9\x2d]{1,63}\x2e)*[a-zA-Z0-9\x2d]{1,63}){1,254}$/';
-        $status = @preg_match($regexLocal, $valueString);
+        $status     = @preg_match($regexLocal, $valueString);
         if (false === $status) {
             /**
              * Regex error

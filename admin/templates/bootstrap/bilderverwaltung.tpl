@@ -2,63 +2,63 @@
 {$corruptedPicsTypes = []}
 {$corruptedPics = false}
 
-{include file='tpl_inc/seite_header.tpl' cTitel=#bilderverwaltung# cBeschreibung=#bilderverwaltungDesc# cDokuURL=#bilderverwaltungURL#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('bilderverwaltung') cBeschreibung=__('bilderverwaltungDesc') cDokuURL=__('bilderverwaltungURL')}
 <div id="content">
-    {if isset($success)}
-        <div class="alert alert-success"><i class="fa fa-info-circle"></i> {$success}</div>
-    {/if}
-    <div class="table-responsive">
-        <table class="list table" id="cache-items">
-            <thead>
-            <tr>
-                <th class="tleft">{#headlineTyp#}</th>
-                <th class="text-center">{#headlineTotal#}</th>
-                <th class="text-center abbr">{#headlineCache#}</th>
-                <th class="text-center">{#headlineCorrupted#}</th>
-                <th class="text-center" width="125">{#headlineSize#}</th>
-                <th class="text-center" width="200">{#headlineAction#}</th>
-            </tr>
-            </thead>
-            <tbody>
-            {foreach from=$items item="item"}
-                {$corruptedPicsTypes[{$item->type}] = $item->stats->corrupted}
-                <tr data-type="{$item->type}">
-                    <td class="item-name">{$item->name}</td>
-                    <td class="text-center">
-                        <span class="item-total">
-                          {$item->stats->total}
-                        </span>
-                    </td>
-                    <td class="text-center">
-                        <span class="item-generated">
-                          {(($item->stats->generated[$SIZE_XS] + $item->stats->generated[$SIZE_SM] + $item->stats->generated[$SIZE_MD] + $item->stats->generated[$SIZE_LG]) / 4)|round:0}
-                        </span>
-                        (
-                        <span class="item-fallback">
-                            {$item->stats->fallback}
-                        </span>
-                        )
-                    </td>
-                    <td class="text-center">
-                        <span class="item-corrupted">{$item->stats->corrupted}</span>
-                    </td>
-                    <td class="text-center item-total-size">
-                        <i class="fa fa-spinner fa-spin"></i>
-                    </td>
-                    <td class="text-center action-buttons">
-                        <div class="btn-group btn-group-xs" role="group">
-                            <a class="btn btn-default" href="#" data-callback="flush" data-type="{$item->type}"><i class="fa fa-trash-o"></i>{#deleteCachedPics#}</a>
-                            <a class="btn btn-default" href="#" data-callback="generate"><i class="fa fa-cog"></i>{#generatePics#}</a>
-                        </div>
-                    </td>
-                </tr>
-            {/foreach}
-            </tbody>
-        </table>
-    </div>
-
-    <div class="footnote small text-muted">
-        <p>{#fallbackNote#}</p>
+    <div class="card">
+        <div class="card-body">
+            {if isset($success)}
+                <div class="alert alert-success"><i class="fal fa-info-circle"></i> {$success}</div>
+            {/if}
+            <div class="table-responsive">
+                <table class="list table" id="cache-items" style="width: 100%">
+                    <thead>
+                    <tr>
+                        <th class="text-left">{__('headlineTyp')}</th>
+                        <th class="text-center">{__('headlineTotal')}</th>
+                        <th class="text-center abbr">{__('headlineCache')}</th>
+                        <th class="text-center">{__('faulty')}</th>
+                        <th class="text-center" style="width:125px">{__('headlineSize')}</th>
+                        <th class="text-center" style="width:200px">{__('actions')}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {foreach $items as $item}
+                        {$corruptedPicsTypes[{$item->type}] = $item->stats->getCorrupted()}
+                        <tr data-type="{$item->type}">
+                            <td class="item-name">{$item->name}</td>
+                            <td class="text-center">
+                                <span class="item-total">
+                                  {$item->stats->getTotal()}
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <span class="item-generated">
+                                  {(($item->stats->getGeneratedBySize(Image::SIZE_XS) + $item->stats->getGeneratedBySize(Image::SIZE_SM) + $item->stats->getGeneratedBySize(Image::SIZE_MD) + $item->stats->getGeneratedBySize(Image::SIZE_LG)) / 4)|round:0}
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <span class="item-corrupted">{$item->stats->getCorrupted()}</span>
+                            </td>
+                            <td class="text-center item-total-size">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </td>
+                            <td class="text-center action-buttons">
+                                <a class="btn btn-outline-primary btn-sm mb-2" href="#" data-callback="flush" data-type="{$item->type}">
+                                    <i class="fas fa-trash-alt"></i>{__('deleteCachedPics')}
+                                </a>
+                                <a class="btn btn-outline-primary btn-sm mb-2" href="#" data-callback="cleanup" data-type="{$item->type}">
+                                    <i class="fas fa-trash"></i>{__('cleanup')}
+                                </a>
+                                <a class="btn btn-primary btn-sm" href="#" data-callback="generate" data-type="{$item->type}">
+                                    <i class="fa fa-cog"></i>{__('generatePics')}
+                                </a>
+                            </td>
+                        </tr>
+                    {/foreach}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     {foreach $corruptedPicsTypes as $corruptedPicsType}
@@ -69,31 +69,30 @@
 
     {if $corruptedPics}
         <h3 class="top40">
-            {#currentCorruptedPics#}
+            {__('currentCorruptedPics')}
         </h3>
-        <p class="small text-muted">{#corruptedPicsNote#}</p>
+        <p class="small text-muted">{__('corruptedPicsNote')}</p>
         <table class="list table table-condensed">
             {foreach $corruptedImagesByType as $corruptedImages}
                 <thead>
                 <tr>
-                    <th>{#articlePic#}</th>
-                    <th>{#articlenr#}</th>
+                    <th>{__('articlePic')}</th>
+                    <th>{__('articlenr')}</th>
                 </tr>
                 </thead>
                 <tbody>
-                {foreach from=$corruptedImages key=key item="corruptedImage"}
+                {foreach from=$corruptedImages key=key item='corruptedImage'}
                     <tr>
                         <td class="col-xs-7 word-break-all">{$corruptedImage->picture}</td>
                         <td class="col-xs-5">
                             {$moreCorruptedImages = false}
                             <div class="input-group">
-                                {foreach name='corruptedImageArticle' from=$corruptedImage->article item="article"}
-                                    {if $smarty.foreach.corruptedImageArticle.iteration <= 3}
+                                {foreach $corruptedImage->article as $article}
+                                    {if $article@iteration <= 3}
                                         <a href="{$article->articleURLFull}" rel="nofollow" target="_blank">
                                             {$article->articleNr}
                                         </a>
-                                        {if !$smarty.foreach.corruptedImageArticle.last
-                                        && $smarty.foreach.corruptedImageArticle.iteration < 3} |{/if}
+                                        {if !$article@last && $article@iteration < 3} |{/if}
                                     {else}
                                         {$moreCorruptedImages = true}
                                         {$moreCorruptedImage = $key}
@@ -101,18 +100,18 @@
                                     {/if}
                                 {/foreach}
                                 {if $moreCorruptedImages}
-                                    <a class="btn btn-default btn-xs" data-toggle="collapse"
+                                    <a class="btn btn-default btn-sm" data-toggle="collapse"
                                         href="#dropdownCorruptedImages-{$moreCorruptedImage}"
                                         aria-controls="dropdownCorruptedImages-{$moreCorruptedImage}">
-                                        {#more#} <span class="caret"></span>
+                                        {__('more')} <span class="caret"></span>
                                     </a>
                                     <div class="collapse" id="dropdownCorruptedImages-{$moreCorruptedImage}">
-                                        {foreach name='corruptedImageArticle' from=$corruptedImage->article item="article"}
-                                            {if $smarty.foreach.corruptedImageArticle.iteration > 3}
+                                        {foreach $corruptedImage->article as $article}
+                                            {if $article@iteration > 3}
                                                 <a href="{$article->articleURLFull}" rel="nofollow" target="_blank">
                                                     {$article->articleNr}
                                                 </a>
-                                                {if !$smarty.foreach.corruptedImageArticle.last} |{/if}
+                                                {if !$article@last} |{/if}
                                             {/if}
                                         {/foreach}
                                     </div>
@@ -140,7 +139,6 @@
                 $('.item-total', item).text(data.total);
                 $('.item-corrupted', item).text(data.corrupted);
                 $('.item-total-size', item).text(formatSize(data.totalSize));
-
                 $(['xs', 'sm', 'md', 'lg']).each(function (i, size) {
                     totalCached += data.generated[size];
                 });
@@ -152,19 +150,15 @@
     var lastResults = null,
         lastTick = null,
         running = false,
-        notify = null
+        notify = null;
 
-    function generate() {
-        startGenerate('product');
-    }
-
-    function cleanup() {
+    function cleanup(param) {
         running = true;
         lastResults = [];
         lastTick = new Date();
-        notify = showGenerateNotify('Bilder werden aufger&auml;umt', 'L&ouml;sche Bilder...');
+        notify = showGenerateNotify('{/literal}{__('pendingImageCleanup')}{literal}', '{/literal}{__('successImageDelete')}{literal}');
         $('.action-buttons a').attr('disabled', true);
-        doCleanup(0);
+        doCleanup((typeof param.data('type') !== 'undefined') ? param.data('type') : 'product', 0);
     }
 
     function stopCleanup() {
@@ -177,15 +171,15 @@
 
         notify.update({
             progress: 100,
-            message: 'Insgesamt ' + result.deletedImages + ' Bilder gel&ouml;scht.',
+            message: result.deletedImages + '{/literal} {__('successImageDelete')}{literal}',
             type: 'success',
-            title: 'Bilder erfolgreich aufger&auml;umt'
+            title: '{/literal}{__('successImageCleanup')}{literal}'
         });
     }
 
-    function doCleanup(index) {
+    function doCleanup(type, index) {
         lastTick = new Date().getTime();
-        ioCall('cleanupStorage', [index], function (result) {
+        ioCall('cleanupStorage', [type, index], function (result) {
             var items = result.deletes,
                 deleted = result.deletedImages,
                 total = result.total,
@@ -220,7 +214,7 @@
             }
 
             if (result.nextIndex > 0 && result.nextIndex < total && running) {
-                doCleanup(result.nextIndex);
+                doCleanup(type, result.nextIndex);
             }
         });
     }
@@ -237,6 +231,10 @@
                 stopCleanup();
             }
         });
+    }
+
+    function generate(param) {
+        startGenerate((typeof param.data('type') !== 'undefined') ? param.data('type') : 'product');
     }
 
     function flush(param) {
@@ -256,7 +254,7 @@
         running = true;
         lastResults = [];
         lastTick = new Date();
-        notify = showGenerateNotify('Bilder werden generiert', 'Statistiken werden berechnet...');
+        notify = showGenerateNotify('{/literal}{__('pendingImageGenerate')}{literal}', '{/literal}{__('pendingStatisticCalc')}{literal}');
 
         $('.action-buttons a').attr('disabled', true);
         doGenerate(type, 0);
@@ -275,7 +273,7 @@
             progress: 100,
             message: '&nbsp;',
             type: 'success',
-            title: 'Bilder erfolgreich generiert'
+            title: '{/literal}{__('successImageGenerate')}{literal}'
         });
     }
 
@@ -374,7 +372,7 @@
     }
 
     $(function () {
-        $('[data-callback]').click(function (e) {
+        $('[data-callback]').on('click', function (e) {
             e.preventDefault();
             var $element = $(this);
             if ($element.attr('disabled') !== undefined) {

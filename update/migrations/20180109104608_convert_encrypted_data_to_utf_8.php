@@ -2,31 +2,38 @@
 /**
  * Convert encrypted data to utf-8
  *
- * @author Falk Prüfer
+ * @author fp
  * @created Tue, 09 Jan 2018 10:46:08 +0100
  */
 
+use JTL\Helpers\Text;
+use JTL\Shop;
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
- * Migration
- *
- * Available methods:
- * execute            - returns affected rows
- * fetchOne           - single fetched object
- * fetchAll           - array of fetched objects
- * fetchArray         - array of fetched assoc arrays
- * dropColumn         - drops a column if exists
- * addLocalization    - add localization
- * removeLocalization - remove localization
- * setConfig          - add / update config property
- * removeConfig       - remove config property
+ * Class Migration_20180109104608
  */
 class Migration_20180109104608 extends Migration implements IMigration
 {
-    protected $author      = 'fp';
+    protected $author = 'fp';
+
     protected $description = 'Convert encrypted data to utf-8';
-    protected $properties  = [
+
+    protected $properties = [
         'tkunde'            => ['kKunde', 'cNachname', 'cFirma', 'cZusatz', 'cStrasse'],
-        'tzahlungsinfo'     => ['kZahlungsInfo', 'cBankName', 'cKartenNr', 'cCVV', 'cKontoNr', 'cBLZ', 'cIBAN', 'cBIC', 'cInhaber', 'cVerwendungszweck'],
+        'tzahlungsinfo'     => [
+            'kZahlungsInfo',
+            'cBankName',
+            'cKartenNr',
+            'cCVV',
+            'cKontoNr',
+            'cBLZ',
+            'cIBAN',
+            'cBIC',
+            'cInhaber',
+            'cVerwendungszweck'
+        ],
         'tkundenkontodaten' => ['kKundenKontodaten', 'cBankName', 'nKonto', 'cBLZ', 'cIBAN', 'cBIC', 'cInhaber'],
     ];
 
@@ -43,13 +50,13 @@ class Migration_20180109104608 extends Migration implements IMigration
             foreach ($dataSet as $dataObj) {
                 foreach ($propNames as $propName) {
                     $dataObj->$propName = $cryptoService->decryptXTEA($dataObj->$propName);
-                    if (!StringHandler::is_utf8($dataObj->$propName)) {
-                        $dataObj->$propName = StringHandler::convertUTF8($dataObj->$propName);
+                    if (!Text::is_utf8($dataObj->$propName)) {
+                        $dataObj->$propName = Text::convertUTF8($dataObj->$propName);
                     }
                     $dataObj->$propName = $cryptoService->encryptXTEA($dataObj->$propName);
                 }
 
-                Shop::Container()->getDB()->update($tableName, $keyName, $dataObj->$keyName, $dataObj);
+                $this->getDB()->update($tableName, $keyName, $dataObj->$keyName, $dataObj);
             }
         }
     }
@@ -67,13 +74,13 @@ class Migration_20180109104608 extends Migration implements IMigration
             foreach ($dataSet as $dataObj) {
                 foreach ($propNames as $propName) {
                     $dataObj->$propName = $cryptoService->decryptXTEA($dataObj->$propName);
-                    if (StringHandler::is_utf8($dataObj->$propName)) {
-                        $dataObj->$propName = StringHandler::convertISO($dataObj->$propName);
+                    if (Text::is_utf8($dataObj->$propName)) {
+                        $dataObj->$propName = Text::convertISO($dataObj->$propName);
                     }
                     $dataObj->$propName = $cryptoService->encryptXTEA($dataObj->$propName);
                 }
 
-                Shop::Container()->getDB()->update($tableName, $keyName, $dataObj->$keyName, $dataObj);
+                $this->getDB()->update($tableName, $keyName, $dataObj->$keyName, $dataObj);
             }
         }
     }

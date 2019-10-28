@@ -3,9 +3,6 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 <div id="order-confirm">
-    {if $hinweis}
-       <p class="alert alert-danger">{$hinweis}</p>
-    {/if}
     {if !empty($smarty.get.mailBlocked)}
         <p class="alert alert-danger">{lang key='kwkEmailblocked' section='errorMessages'}</p>
     {/if}

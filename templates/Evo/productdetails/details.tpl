@@ -3,48 +3,23 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {has_boxes position='left' assign='hasLeftBox'}
-{if !empty($hinweis)}
-    {if isset($bWarenkorbHinzugefuegt) && $bWarenkorbHinzugefuegt}
-        {include file='productdetails/pushed_success.tpl'}
-    {else}
-        <div class="alert alert-success">
-            {$hinweis}
-        </div>
-    {/if}
-{/if}
-{if !empty($fehler)}
-    <div class="alert alert-danger">
-        {$fehler}
-    </div>
-{/if}
-{if !empty($ProdukttagHinweis)}
-    <div class="alert alert-success">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-        {$ProdukttagHinweis}
-    </div>
-{/if}
-{if isset($PositiveFeedback) && count($PositiveFeedback) > 0}
-    {foreach $PositiveFeedback as $feedback}
-        <div class="alert alert-success">{$feedback}</div>
-    {/foreach}
-{/if}
-{if isset($Artikelhinweise) && count($Artikelhinweise) > 0}
-    {foreach $Artikelhinweise as $Artikelhinweis}
-        <div class="alert alert-danger">{$Artikelhinweis}</div>
-    {/foreach}
+{if isset($bWarenkorbHinzugefuegt) && $bWarenkorbHinzugefuegt}
+    {include file='productdetails/pushed_success.tpl'}
+{else}
+    {$alertList->displayAlertByKey('productNote')}
 {/if}
 
 <div class="h1 visible-xs text-center">{$Artikel->cName}</div>
 
-{include file='snippets/opc_mount_point.tpl' id='opc_article_content_prepend'}
+{opcMountPoint id='opc_before_buy_form'}
 
 <form id="buy_form" method="post" action="{$Artikel->cURLFull}" class="evo-validate">
     {$jtl_token}
     <div class="row product-primary" id="product-offer">
         <div class="product-gallery {if $hasLeftBox}col-sm-5{else}col-sm-6{/if}">
+            {opcMountPoint id='opc_before_gallery'}
             {include file='productdetails/image.tpl'}
+            {opcMountPoint id='opc_after_gallery'}
         </div>
         <div class="product-info {if $hasLeftBox}col-sm-7{else}col-sm-6{/if}">
             {block name='productdetails-info'}
@@ -69,7 +44,8 @@
 
                 <div class="product-headline hidden-xs">
                     {block name='productdetails-info-product-title'}
-                    <h1 class="fn product-title" itemprop="name">{$Artikel->cName}</h1>
+                        {opcMountPoint id='opc_before_headline'}
+                        <h1 class="fn product-title" itemprop="name">{$Artikel->cName}</h1>
                     {/block}
                 </div>
 
@@ -129,14 +105,16 @@
                 {/block}
 
                 {block name='productdetails-info-description-wrapper'}
-                {if $Einstellungen.artikeldetails.artikeldetails_kurzbeschreibung_anzeigen === 'Y' && $Artikel->cKurzBeschreibung}
-                    {block name='productdetails-info-description'}
-                    <div class="shortdesc" itemprop="description">
-                        {$Artikel->cKurzBeschreibung}
-                    </div>
-                    {/block}
-                    <div class="clearfix top10"></div>
-                {/if}
+                    {if $Einstellungen.artikeldetails.artikeldetails_kurzbeschreibung_anzeigen === 'Y' && $Artikel->cKurzBeschreibung}
+                        {block name='productdetails-info-description'}
+                            {opcMountPoint id='opc_before_short_desc'}
+                            <div class="shortdesc" itemprop="description">
+                                {$Artikel->cKurzBeschreibung}
+                            </div>
+                        {/block}
+                        <div class="clearfix top10"></div>
+                    {/if}
+                    {opcMountPoint id='opc_after_short_desc'}
                 {/block}
 
                 {block name='productdetails-info-category-wrapper'}
@@ -200,6 +178,7 @@
                 {/if}
             </div>{* /product-info-inner *}
             {/block}{* productdetails-info *}
+            {opcMountPoint id='opc_after_product_info'}
         </div>{* /col *}
         {if $Artikel->bHasKonfig}
             {block name='productdetails-config'}
@@ -217,8 +196,6 @@
     {/block}
 </form>
 
-{include file='snippets/opc_mount_point.tpl' id='opc_article_content_append'}
-
 {if !isset($smarty.get.quickView) || $smarty.get.quickView != 1}
     <div class="clearfix"></div>
 
@@ -227,8 +204,6 @@
     {/block}
 
     <div class="clearfix"></div>
-
-    {include file='snippets/opc_mount_point.tpl' id='opc_article_tabs_prepend'}
 
     {*SLIDERS*}
     {if isset($Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen) && $Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen === 'Y' && isset($Artikel->oStueckliste_arr) && $Artikel->oStueckliste_arr|@count > 0

@@ -4,13 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL\Validation\Rules;
+namespace Tests\Services\JTL\Validation\Rules;
+
+use JTL\Services\JTL\Validation\Rules\GreaterThanEquals;
+use Tests\BaseTestCase;
 
 /**
  * Class GreaterThanEqualsTest
  * @package Services\JTL\Validation\Rules
  */
-class GreaterThanEqualsTest extends \PHPUnit_Framework_TestCase
+class GreaterThanEqualsTest extends BaseTestCase
 {
     public function test()
     {

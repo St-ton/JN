@@ -9,7 +9,9 @@ ifndef('JTL_CHARSET', 'utf-8');
 ifndef('DB_CHARSET', 'utf8');
 ifndef('DB_COLLATE', 'utf8_unicode_ci');
 ini_set('default_charset', JTL_CHARSET);
-date_default_timezone_set('Europe/Berlin');
+mb_internal_encoding(strtoupper(JTL_CHARSET));
+ifndef('SHOP_TIMEZONE', 'Europe/Berlin');
+date_default_timezone_set(SHOP_TIMEZONE);
 ifndef('DS', DIRECTORY_SEPARATOR);
 // Log-Levels
 ifndef('SYNC_LOG_LEVEL', E_ERROR | E_PARSE);
@@ -18,11 +20,18 @@ ifndef('SHOP_LOG_LEVEL', E_ERROR | E_PARSE);
 ifndef('SMARTY_LOG_LEVEL', E_ERROR | E_PARSE);
 error_reporting(SHOP_LOG_LEVEL);
 ifndef('TEMPLATE_COMPATIBILITY', false);
+ifndef('EVO_COMPATIBILITY', true);
 // Image compatibility level 0 => disabled, 1 => referenced in history table, 2 => automatic detection
 ifndef('IMAGE_COMPATIBILITY_LEVEL', 1);
 ifndef('KEEP_SYNC_FILES', false);
 ifndef('PROFILE_PLUGINS', false);
 ifndef('PROFILE_SHOP', false);
+ifndef('PLUGIN_DEV_MODE', false);
+/**
+ * Lieferschwellen-Option: Gleichbleibende Bruttopreise (SHOP-2633)
+ * @since 5.0.0
+ */
+ifndef('CONSISTENT_GROSS_PRICES', true);
 
 ifndef('DB_DEFAULT_SQL_MODE', false);
 
@@ -34,6 +43,8 @@ ifndef('DB_DEFAULT_SQL_MODE', false);
 ifndef('PROFILE_QUERIES', false);
 ifndef('PROFILE_QUERIES_ECHO', false);
 
+ifndef('ADMIN_MIGRATION', false);
+
 ifndef('IO_LOG_CONSOLE', false);
 ifndef('DEFAULT_CURL_OPT_VERIFYPEER', true);
 ifndef('DEFAULT_CURL_OPT_VERIFYHOST', 2);
@@ -41,12 +52,17 @@ ini_set('session.use_trans_sid', 0);
 // Logging (in logs/) 0 => aus, 1 => nur errors, 2 => errors, notifications, 3 => errors, notifications, debug
 ifndef('ES_LOGGING', 1);
 ifndef('ES_DB_LOGGING', 0);
+ifndef('DEBUG_LEVEL', 0);
+ifndef('NICEDB_DEBUG_STMT_LEN', 500);
+ifndef('NICEDB_EXCEPTION_ECHO', false);
+ifndef('NICEDB_EXCEPTION_BACKTRACE', false);
 // PHP Error Handler
 ifndef('PHP_ERROR_HANDLER', false);
 ifndef('DEBUG_FRAME', false);
 ifndef('SMARTY_DEBUG_CONSOLE', false);
 ifndef('SMARTY_SHOW_LANGKEY', false);
 ifndef('SMARTY_FORCE_COMPILE', false);
+ifndef('SMARTY_USE_SUB_DIRS', false);
 ifndef('JTL_INCLUDE_ONLY_DB', 0);
 ifndef('SOCKET_TIMEOUT', 30);
 ifndef('ARTICLES_PER_PAGE_HARD_LIMIT', 100);
@@ -83,7 +99,6 @@ ifndef('PFAD_CLASSES_CORE', PFAD_CLASSES . 'core/');  // DEPRECATED
 ifndef('PFAD_OBJECT_CACHING', 'caching/');
 ifndef('PFAD_GFX', 'gfx/');
 ifndef('PFAD_GFX_AMPEL', PFAD_GFX . 'ampel/');
-ifndef('PFAD_GFX_BEWERTUNG_STERNE', PFAD_GFX . 'bewertung_sterne/');
 ifndef('PFAD_DBES', 'dbeS/');
 ifndef('PFAD_DBES_TMP', PFAD_DBES . 'tmp/');
 ifndef('PFAD_BILDER', 'bilder/');
@@ -98,7 +113,10 @@ ifndef('PFAD_SHOPLOGO', PFAD_BILDER_INTERN . 'shoplogo/');
 ifndef('PFAD_ADMIN', 'admin/');
 ifndef('PFAD_EMAILVORLAGEN', PFAD_ADMIN . 'mailtemplates/');
 ifndef('PFAD_MEDIAFILES', 'mediafiles/');
-ifndef('PFAD_GFX_TRUSTEDSHOPS', PFAD_BILDER_INTERN . 'trustedshops/');
+ifndef('IMAGE_SIZE_XS', 'xs');
+ifndef('IMAGE_SIZE_SM', 'sm');
+ifndef('IMAGE_SIZE_MD', 'md');
+ifndef('IMAGE_SIZE_LG', 'lg');
 ifndef('PFAD_PRODUKTBILDER', PFAD_BILDER . 'produkte/');
 ifndef('PFAD_PRODUKTBILDER_MINI', PFAD_PRODUKTBILDER . 'mini/');
 ifndef('PFAD_PRODUKTBILDER_KLEIN', PFAD_PRODUKTBILDER . 'klein/');
@@ -124,6 +142,7 @@ ifndef('PFAD_SUCHSPECIALOVERLAY_KLEIN', PFAD_SUCHSPECIALOVERLAY . 'klein/');
 ifndef('PFAD_SUCHSPECIALOVERLAY_NORMAL', PFAD_SUCHSPECIALOVERLAY . 'normal/');
 ifndef('PFAD_SUCHSPECIALOVERLAY_GROSS', PFAD_SUCHSPECIALOVERLAY . 'gross/');
 ifndef('PFAD_SUCHSPECIALOVERLAY_RETINA', PFAD_SUCHSPECIALOVERLAY . 'retina/');
+ifndef('PFAD_OVERLAY_TEMPLATE', '/images/overlay/');
 ifndef('PFAD_KONFIGURATOR_KLEIN', PFAD_BILDER . 'konfigurator/klein/');
 ifndef('PFAD_LOGFILES', PFAD_ROOT . 'jtllogs/');
 ifndef('PFAD_EXPORT', 'export/');
@@ -139,13 +158,18 @@ ifndef('PFAD_DOWNLOADS_REL', 'downloads/');
 ifndef('PFAD_DOWNLOADS_PREVIEW_REL', PFAD_DOWNLOADS_REL . 'vorschau/');
 ifndef('PFAD_DOWNLOADS', PFAD_ROOT . PFAD_DOWNLOADS_REL);
 ifndef('PFAD_DOWNLOADS_PREVIEW', PFAD_ROOT . PFAD_DOWNLOADS_PREVIEW_REL);
-ifndef('PFAD_UPLOADIFY', PFAD_INCLUDES_LIBS . 'uploadify/');
 ifndef('PFAD_UPLOAD_CALLBACK', PFAD_INCLUDES_EXT . 'uploads_cb.php');
 ifndef('PFAD_IMAGEMAP', PFAD_BILDER . 'banner/');
-ifndef('PFAD_KCFINDER', PFAD_INCLUDES_LIBS . 'kcfinder-2.5.4/');
 ifndef('PFAD_EMAILTEMPLATES', 'templates_mail/');
 ifndef('PFAD_MEDIA_IMAGE', 'media/image/');
 ifndef('PFAD_MEDIA_IMAGE_STORAGE', PFAD_MEDIA_IMAGE . 'storage/');
+ifndef('STORAGE_VARIATIONS', PFAD_MEDIA_IMAGE_STORAGE . 'variations/');
+ifndef('STORAGE_CONFIGGROUPS', PFAD_MEDIA_IMAGE_STORAGE . 'configgroups/');
+ifndef('STORAGE_MANUFACTURERS', PFAD_MEDIA_IMAGE_STORAGE . 'manufacturers/');
+ifndef('STORAGE_CATEGORIES', PFAD_MEDIA_IMAGE_STORAGE . 'categories/');
+ifndef('STORAGE_CHARACTERISTICS', PFAD_MEDIA_IMAGE_STORAGE . 'characteristics/');
+ifndef('STORAGE_CHARACTERISTIC_VALUES', PFAD_MEDIA_IMAGE_STORAGE . 'characteristicvalues/');
+ifndef('STORAGE_OPC', PFAD_MEDIA_IMAGE_STORAGE . 'opc/');
 // Plugins
 ifndef('PFAD_PLUGIN', PFAD_INCLUDES . 'plugins/');
 // dbeS
@@ -163,7 +187,9 @@ ifndef('BILD_KEIN_MERKMALBILD_VORHANDEN', PFAD_GFX . 'keinBild.gif');
 ifndef('BILD_KEIN_MERKMALWERTBILD_VORHANDEN', PFAD_GFX . 'keinBild_kl.gif');
 ifndef('BILD_UPLOAD_ZUGRIFF_VERWEIGERT', PFAD_GFX . 'keinBild.gif');
 //MediaImage Regex
-ifndef('MEDIAIMAGE_REGEX', '/^media\/image\/(?P<type>product|category|variation|manufacturer)\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg)\/(?P<name>[a-zA-Z0-9\-_]+)(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif)$/');
+ifndef('MEDIAIMAGE_REGEX', '/^media\/image\/(?P<type>product)' .
+    '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|xl|os)\/(?P<name>[a-zA-Z0-9\-_]+)' .
+    '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/');
 // Suchcache Lebensdauer in Minuten nach letzter Artikeländerung durch JTL-Wawi
 ifndef('SUCHCACHE_LEBENSDAUER', 60);
 // Steuersatz Standardland OVERRIDE - setzt ein anderes Steuerland, als im Shop angegeben (upper case, ISO 3166-2)
@@ -182,6 +208,8 @@ ifndef('CATEGORY_FILTER_ITEM_LIMIT', -1);
 ifndef('PRODUCT_LIST_SHOW_RATINGS', false);
 ifndef('IMAGE_CLEANUP_LIMIT', 50);
 ifndef('OBJECT_CACHE_DIR', PFAD_ROOT . PFAD_COMPILEDIR . 'filecache/');
+
+ifndef('SITEMAP_ITEMS_LIMIT', 25000);
 // CMS Image Widths
 ifndef('WIDTH_OPC_IMAGE_XS', '480');
 ifndef('WIDTH_OPC_IMAGE_SM', '720');
@@ -196,13 +224,20 @@ ifndef('REDIS_CONNECT_TIMEOUT', 3);
 ifndef('SAVE_BOT_SESSION', 0);
 ifndef('ES_SESSIONS', 0);
 
+ifndef('MAX_REVISIONS', 5);
+
+ifndef('SHOW_DEBUG_BAR', false);
+
+ifndef('ART_MATRIX_MAX', 250);
+
 // security
+ifndef('EXPORTFORMAT_ALLOW_PHP', false);
 ifndef('NEWSLETTER_USE_SECURITY', true);
 ifndef('MAILTEMPLATE_USE_SECURITY', true);
 ifndef('EXPORTFORMAT_USE_SECURITY', true);
 ifndef('EXPORTFORMAT_ALLOWED_FORMATS', 'txt,csv,xml,html,htm,json,yaml,yml');
 ifndef('PASSWORD_DEFAULT_LENGTH', 12);
-ifndef('SECURE_PHP_FUNCTIONS', "
+ifndef('SECURE_PHP_FUNCTIONS', '
     addcslashes, addslashes, bin2hex, chop, chr, chunk_split, count_chars, crypt, explode, html_entity_decode,
     htmlentities, htmlspecialchars_decode, htmlspecialchars, implode, join, lcfirst, levenshtein, ltrim, md5, metaphone,
     money_format, nl2br, number_format, ord, rtrim, sha1, similar_text, soundex, sprintf, str_ireplace, str_pad,
@@ -232,10 +267,17 @@ ifndef('SECURE_PHP_FUNCTIONS', "
     json_decode, json_encode, json_last_error_msg, json_last_error,
     
     yaml_emit, yaml_parse,
-");
+');
 
 // 0 => off, 1 => html comments, 2 => static badges, 3 => scrolling badges with borders
 ifndef('SHOW_TEMPLATE_HINTS', 0);
+
+ifndef('SEO_SLUG_LOWERCASE', true);
+
+// true - child products are grouped by parent for bulk price calculation
+ifndef('DEFAULT_GENERAL_CHILD_ITEM_BULK_PRICING', false);
+
+ifndef('SAFE_MODE', false);
 
 /**
  * @param string     $constant
@@ -256,8 +298,8 @@ function shop_writeable_paths()
     global $shop_writeable_paths;
 
     return array_map(function ($v) {
-        if (strpos($v, PFAD_ROOT) === 0) {
-            $v = substr($v, strlen(PFAD_ROOT));
+        if (mb_strpos($v, PFAD_ROOT) === 0) {
+            $v = mb_substr($v, mb_strlen(PFAD_ROOT));
         }
 
         return trim($v, '/\\');

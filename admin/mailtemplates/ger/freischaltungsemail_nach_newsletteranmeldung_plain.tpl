@@ -1,19 +1,17 @@
 {includeMailTemplate template=header type=plain}
 
-{if isset($Kunde->kKunde) && $Kunde->kKunde > 0}
-	Sehr {if $Kunde->cAnrede == "w"}geehrte{elseif $Kunde->cAnrede == "m"}geehrter{else}geehrte(r){/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
-{else}
-	Sehr {if $NewsletterEmpfaenger->cAnrede=="w"}geehrte Frau{else}geehrter Herr{/if} {$NewsletterEmpfaenger->cNachname},
-{/if}
+Guten Tag,
 
-wir freuen uns, Sie als Newsletter-Abonnent bei {$Firma->cName} begrüßen zu können.
+wir freuen uns, Sie als Newsletter-Abonnent bei {$Firma->cName} begrüßen zu dürfen.
 
-Bitte klicken Sie den folgenden Freischaltcode, um Newsletter zu empfangen:
+Bitte klicken Sie auf den folgenden Freischaltcode, um Newsletter zu empfangen:
 {$NewsletterEmpfaenger->cFreischaltURL}
 
-Sie können sich jederzeit vom Newsletter abmelden indem Sie entweder den Löschcode <a href="{$NewsletterEmpfaenger->cLoeschURL}">{$NewsletterEmpfaenger->cLoeschURL}</a>} eingeben oder den Link Newsletter im Shop besuchen.
+Sie können sich ebenso jederzeit vom Newsletter abmelden, indem Sie entweder den Lösch-Link
+{$NewsletterEmpfaenger->cLoeschURL}
+mit Ihrem Browser aufrufen oder sich im Shop anmelden und den "Newsletter"-Link besuchen.
 
-Mit freundlichem Gruß,
+Mit freundlichem Gruß
 Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=plain}

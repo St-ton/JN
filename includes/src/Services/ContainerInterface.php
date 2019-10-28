@@ -4,33 +4,32 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services;
+namespace JTL\Services;
 
 /**
  * Interface ContainerInterface
+ * @package JTL\Services
  */
 interface ContainerInterface extends \Psr\Container\ContainerInterface
 {
     /**
      * @param string   $id
      * @param callable $factory
-     * @return null
      * @throws \InvalidArgumentException
      * @throws \Exception
      */
-    public function setSingleton($id, $factory);
+    public function setSingleton($id, $factory): void;
 
     /**
      * @param string   $id
      * @param callable $factory
-     * @return null
      * @throws \InvalidArgumentException
      */
-    public function setFactory($id, $factory);
+    public function setFactory($id, $factory): void;
 
     /**
      * @param string $id
-     * @return callable
+     * @return mixed
      */
     public function getFactoryMethod($id);
 }

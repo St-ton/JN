@@ -4,14 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter;
+namespace JTL\Filter;
 
 use MyCLabs\Enum\Enum;
 
 /**
- * Class ComponentPropertyType
+ * Class Visibility
  *
- * @package Filter
+ * @package JTL\Filter
  * @method static Visibility SHOW_NEVER()
  * @method static Visibility SHOW_BOX()
  * @method static Visibility SHOW_CONTENT()
@@ -22,20 +22,20 @@ class Visibility extends Enum
     /**
      * never show filter
      */
-    const SHOW_NEVER = 0;
+    public const SHOW_NEVER = 0;
 
     /**
      * show filter in box
      */
-    const SHOW_BOX = 1;
+    public const SHOW_BOX = 1;
 
     /**
      * show filter in content area
      */
-    const SHOW_CONTENT = 2;
+    public const SHOW_CONTENT = 2;
 
     /**
      * always show filter
      */
-    const SHOW_ALWAYS = 3;
+    public const SHOW_ALWAYS = 3;
 }

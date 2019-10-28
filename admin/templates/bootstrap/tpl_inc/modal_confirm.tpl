@@ -8,14 +8,22 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">{$modalTitle}</h4>
+                <h2 class="modal-title">{$modalTitle}</h2>
             </div>
             <div class="modal-body">{if isset($modalBody)}{$modalBody}{/if}</div>
             <div class="modal-footer">
-                <p>{#wantToConfirm#}</p>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-times"></i> {#cancel#}</button>
-                    <button id="{$modalID}-confirm" type="button" class="btn btn-primary"><i class="fa fa-check"></i> {#confirm#}</button>
+                <p>{__('wantToConfirm')}</p>
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        <button type="button" class="btn btn-outline-primary" data-dismiss="modal">
+                            {__('cancelWithIcon')}
+                        </button>
+                    </div>
+                    <div class="col-sm-6 col-xl-auto">
+                        <button id="{$modalID}-confirm" type="button" class="btn btn-primary">
+                            <i class="fal fa-check text-success"></i> {__('confirm')}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -23,7 +31,7 @@
 </div>
 <script>
     $(document).ready(function(){
-        $('#{$modalID}-confirm').click(function(){
+        $('#{$modalID}-confirm').on('click', function(){
             var $modalButton = $('button[data-target="#{$modalID}-modal"');
 
             if($modalButton.data('href')) {

@@ -1,0 +1,384 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "opcNotInstalled"
+msgstr "The OPC update was not installed properly. Please update the migrations."
+
+# OPC GUI
+
+msgid "Import"
+msgstr "Import"
+
+msgid "Export"
+msgstr "Export"
+
+msgid "Publish"
+msgstr "Publish"
+
+msgid "Save page"
+msgstr "Save page"
+
+msgid "Close OnPage-Composer"
+msgstr "Close OnPage Composer"
+
+msgid "Portlets"
+msgstr "Portlets"
+
+msgid "Blueprints"
+msgstr "Templates"
+
+msgid "Revisions"
+msgstr "Versions"
+
+msgid "Page structure"
+msgstr "Page structure"
+
+msgid "Import blueprint"
+msgstr "Import template"
+
+msgid "Unsaved revision"
+msgstr "Unsaved version"
+
+msgid "Current revision"
+msgstr "Current revision"
+
+msgid "Please wait..."
+msgstr "Please wait…"
+
+msgid "Edit Portlet"
+msgstr "Edit portlet"
+
+msgid "Save this Portlet as a blueprint"
+msgstr "Save portlet as template"
+
+msgid "Blueprint name"
+msgstr "Template name"
+
+msgid "Delete Blueprint?"
+msgstr "Delete template?"
+
+# Config Tabs
+
+msgid "Styles"
+msgstr "Styles"
+
+msgid "Animation"
+msgstr "Animation"
+
+# Styles tab
+
+msgid "Font color"
+msgstr "Font colour"
+
+msgid "Visibility"
+msgstr "Visible for"
+
+msgid "hide"
+msgstr "hide"
+
+msgid "Background color"
+msgstr "Background colour"
+
+msgid "Font size"
+msgstr "Font size"
+
+# Animations tab
+
+msgid "Animation style"
+msgstr "Animation type"
+
+msgid "Duration"
+msgstr "Duration"
+
+msgid "Delay"
+msgstr "Delay"
+
+msgid "Offset (px)"
+msgstr "Distance (pixels)"
+
+msgid "Iteration"
+msgstr "Repetition"
+
+msgid "Change the animation duration (e.g. 2s)"
+msgstr "Duration of the animation (e.g. 2 s)"
+
+msgid "Delay before the animation starts"
+msgstr "Time until animation begins"
+
+msgid "Distance to start the animation (related to the browser bottom)"
+msgstr "The animation starts when the scrolling distance between the top edge of the respective element and the bottom edge of the current browser window equals the entered pixel value. By adjusting this setting, you can, for example, prevent an animation from starting while the element is not&nbsp;yet completely visible."
+
+msgid "Number of times the animation is repeated"
+msgstr "Number of repetitions"
+
+msgid "onPageComposer"
+msgstr "OnPage Composer"
+
+msgid "toggleNavigation"
+msgstr "Toggle navigation"
+
+msgid "somethingHappend"
+msgstr "An unknown error occurred."
+
+msgid "noteInfoInGuide"
+msgstr "Aside from the guided tours listed below, you can also find a lot of information in the <a href=\"https://guide.jtl-software.com\" target=\"_blank\"><i class=\"fa fa-external-link\"></i> JTL-Guide</a>."
+
+msgid "generalIntroduction"
+msgstr "General introduction"
+
+msgid "getToKnowComposer"
+msgstr "Get to know the OnPage Composer and create your first portlet."
+
+msgid "animation"
+msgstr "Animation"
+
+msgid "noteMovementOnPage"
+msgstr "Would you like to have more moving elements on your pages?"
+
+msgid "noteSaveAsTemplate"
+msgstr "You have created a great view that you would like to use more often?<br/> Why don’t you save it as a template so that you can easily use it again and again?"
+
+msgid "settingsMore"
+msgstr "Settings (advanced)"
+
+msgid "noteTricks"
+msgstr "Get to know a few tips and tricks to optimise your online shop for a variety of display formats."
+
+msgid "startTour"
+msgstr "Start tour"
+
+msgid "draftPublic"
+msgstr "Publish this draft"
+
+msgid "draftName"
+msgstr "Internal name"
+
+msgid "restoreChanges"
+msgstr "Restoring local changes"
+
+msgid "restoreUnsaved"
+msgstr "This draft contains unsaved local changes. Would you like to restore the changes?"
+
+msgid "noCurrent"
+msgstr "No, edit current version"
+
+msgid "yesRestore"
+msgstr "Yes, restore changes"
+
+msgid "editSettings"
+msgstr "Edit settings"
+
+msgid "copySelect"
+msgstr "Copy selection"
+
+msgid "saveTemplate"
+msgstr "Save selection as a template"
+
+msgid "goUp"
+msgstr "Select next higher level"
+
+msgid "deleteSelect"
+msgstr "Delete selection [Del]"
+
+msgid "templateTitle"
+msgstr "Template name"
+
+msgid "availableFilters"
+msgstr "Available filters"
+
+msgid "activeFilters"
+msgstr "Active filters"
+
+msgid "noMoreFilters"
+msgstr "No more filters available."
+
+msgid "entryMove"
+msgstr "Move entry"
+
+msgid "entryDelete"
+msgstr "Delete entry"
+
+msgid "imageSelect"
+msgstr "Select image"
+
+msgid "alternativeText"
+msgstr "Alternativ text"
+
+msgid "imageAdd"
+msgstr "Add image"
+
+msgid "videoTagNotSupported"
+msgstr "Your browser does not support the video tag."
+
+msgid "zoneNew"
+msgstr "New area"
+
+msgid "zoneDelete"
+msgstr "Delete area"
+
+msgid "templateDeleteSure"
+msgstr "Are you sure to delete the template?"
+
+msgid "publishNot"
+msgstr "Do not publish"
+
+msgid "publishImmediately"
+msgstr "Publish immediately"
+
+msgid "selectDate"
+msgstr "Select date"
+
+msgid "indefinitePeriodOfTime"
+msgstr "For an indefinite period of time"
+
+msgid "draftUpper"
+msgstr "DRAFT"
+
+msgid "publicUpper"
+msgstr "PUBLIC"
+
+msgid "plannedUpper"
+msgstr "PLANNED"
+
+msgid "pastUpper"
+msgstr "PAST"
+
+msgid "publicSince"
+msgstr "published since"
+
+msgid "publicUntil"
+msgstr "public until"
+
+msgid "publicFrom"
+msgstr "Public from:"
+
+msgid "publicTill"
+msgstr "Public until:"
+
+msgid "plannedFrom"
+msgstr "public from"
+
+msgid "noPublicationPlanned"
+msgstr "no pulication planned"
+
+msgid "duplicate"
+msgstr "Duplicate"
+
+msgid "useForOtherLang"
+msgstr "Use for other languages"
+
+msgid "editPage"
+msgstr "Edit page"
+
+msgid "newDraft"
+msgstr "New draft"
+
+msgid "allDrafts"
+msgstr "All drafts"
+
+msgid "deleteDraftsContinue"
+msgstr "drafts are deleted! Continue?"
+
+msgid "draftDeleteSure"
+msgstr "Wollen Sie diesen Entwurf wirklich löschen?"
+
+msgid "label"
+msgstr "Label"
+
+msgid "style"
+msgstr "Stil"
+
+msgid "stylePrimary"
+msgstr "Primär"
+
+msgid "styleSuccess"
+msgstr "Erfolg"
+
+msgid "styleInfo"
+msgstr "Info"
+
+msgid "styleWarning"
+msgstr "Warnung"
+
+msgid "styleDanger"
+msgstr "Gefahr"
+
+msgid "Icon"
+msgstr "Icon"
+
+msgid "background"
+msgstr "Hintergrund"
+
+msgid "backgroundImage"
+msgstr "Hintergrundbild"
+
+msgid "video"
+msgstr "Video"
+
+msgid "vertical"
+msgstr "vertical"
+
+msgid "horizontal"
+msgstr "horizontal"
+
+msgid "grid"
+msgstr "Gitter"
+
+msgid "alternate"
+msgstr "Abwechselnd"
+
+msgid "columns"
+msgstr "Spalten"
+
+msgid "noAction"
+msgstr "No Action"
+
+msgid "lightbox"
+msgstr "Lightbox"
+
+msgid "linked"
+msgstr "Link"
+
+msgid "mobileXS"
+msgstr "Mobile (XS)"
+
+msgid "tabletSM"
+msgstr "Tablet (SM)"
+
+msgid "desktopMD"
+msgstr "Desktop (MD)"
+
+msgid "desktopLG"
+msgstr "Large Desktop (LG)"
+
+
+msgid "active"
+msgstr "active"
+
+msgid "planned"
+msgstr "geplant"
+
+msgid "draft"
+msgstr "Entwurf"
+
+msgid "past"
+msgstr "vergangen"
+
+msgid "activeSince"
+msgstr "active since"
+
+msgid "activeUntil"
+msgstr "active until"
+
+msgid "scheduledFor"
+msgstr "scheduled for"
+
+msgid "notScheduled"
+msgstr "not scheduled"
+
+msgid "expiredOn"
+msgstr "expired on"
+
+msgid "dropPortletHere"
+msgstr "Drop Portlet here"

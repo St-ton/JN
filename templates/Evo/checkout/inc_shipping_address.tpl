@@ -2,22 +2,23 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
-{if isset($fehlendeAngaben.shipping_address)}
-    {assign var='fehlendeAngabenShipping' value=$fehlendeAngaben.shipping_address}
+{if isset($fehlendeAngaben.shippingAddress)}
+    {assign var='fehlendeAngabenShipping' value=$fehlendeAngaben.shippingAddress}
 {else}
     {assign var='fehlendeAngabenShipping' value=null}
 {/if}
+{assign var="showShippingAddress" value=(isset($Lieferadresse) || !empty($kLieferadresse) || isset($forceDeliveryAddress))}
 <div class="form-group checkbox control-toggle">
     <input type="hidden" name="shipping_address" value="1">
-    <label for="checkout_register_shipping_address" class="btn-block" data-toggle="collapse" data-target="#select_shipping_address">
-        <input id="checkout_register_shipping_address" class="radio-checkbox" type="checkbox" name="shipping_address" value="0"{if !isset($Lieferadresse) && empty($kLieferadresse)} checked="checked"{/if} />
+    <label for="checkout_register_shipping_address" class="btn-block{if isset($forceDeliveryAddress)} hidden{/if}" data-toggle="collapse" data-target="#select_shipping_address">
+        <input id="checkout_register_shipping_address" class="radio-checkbox" type="checkbox" name="shipping_address" value="0"{if !$showShippingAddress} checked="checked"{/if} />
         <span class="control-label label-default">
             {lang key='shippingAdressEqualBillingAdress' section='account data'}
         </span>
     </label>
 </div>
 {block name='checkout-enter-shipping-address'}
-<div id="select_shipping_address" class="collapse collapse-non-validate{if isset($Lieferadresse) || !empty($kLieferadresse)} in{/if}" aria-expanded="{if isset($Lieferadresse) || !empty($kLieferadresse)}true{else}false{/if}">
+<div id="select_shipping_address" class="collapse collapse-non-validate{if $showShippingAddress} in{/if}" aria-expanded="{if $showShippingAddress}true{else}false{/if}">
     {block name='checkout-enter-shipping-address-body'}
     {if !empty($smarty.session.Kunde->kKunde) && isset($Lieferadressen) && $Lieferadressen|count > 0}
         <fieldset>
@@ -61,10 +62,10 @@
     {/block}
 </div>
 {/block}
-{if isset($smarty.get.editLieferadresse)}
+{if isset($smarty.get.editLieferadresse) || $step === 'Lieferadresse'}
 {literal}
     <script type="text/javascript">
-        $(document).ready(function () {
+        $(window).on('load', function () {
             $('#checkout_register_shipping_address').prop('checked', false);
             $('#select_shipping_address').addClass('in');
             $.evo.extended().smoothScrollToAnchor('#checkout_register_shipping_address');

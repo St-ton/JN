@@ -1,0 +1,29 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
+{block name='layout-header-nav-search'}
+    {block name='layout-header-nav-search-search'}
+        <li class="nav-item d-none d-lg-block">
+            {form action='index.php' method='get'}
+                <div class="form-icon-trigger">
+                    {input id="search-header" name="qs" type="text" class="ac_input" placeholder="{lang key='search'}" autocomplete="off" aria=["label"=>"{lang key='search'}"]}
+                    <label class="form-icon-trigger-label" for="search-header"><span class="fas fa-search"></span></label>
+                    {input type='submit' name='search'}
+                </div>
+            {/form}
+        </li>
+    {/block}
+    {block name='layout-header-nav-search-search-dropdown'}
+        {navitemdropdown class='d-block d-lg-none' text='<i class="fas fa-search"></i>' right=true no-caret=true}
+            <div class="dropdown-body">
+                {form action='index.php' method='get'}
+                    {input name="qs" type="text" class="ac_input w-100" placeholder="{lang key='search'}" autocomplete="off" aria=["label"=>"{lang key='search'}"]}
+                    {button class="mt-3" type="submit" size="sm" variant="primary" block=true name="search" id="search-submit-button" aria=["label"=>"{lang key='search'}"]}
+                        {lang key='search'}
+                    {/button}
+                {/form}
+            </div>
+        {/navitemdropdown}
+    {/block}
+{/block}

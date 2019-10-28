@@ -3,7 +3,7 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {foreach $oBox->getItems() as $oMerkmal}
-    <section class="panel panel-default box box-global-characteristics" id="sidebox{$oBox->getID()}">
+    <section class="panel panel-default box box-global-characteristics" id="sidebox{$oBox->getID()}-{$oMerkmal->kMerkmal}">
         <div class="panel-heading">
             <div class="panel-title">
             {if !empty($oMerkmal->cBildpfadKlein) && $oMerkmal->cBildpfadKlein !== $smarty.const.BILD_KEIN_MERKMALBILD_VORHANDEN}
@@ -38,7 +38,7 @@
                 <ul class="nav nav-list">
                     {foreach $oMerkmal->oMerkmalWert_arr as $oMerkmalWert}
                         <li>
-                            <a href="{$oMerkmalWert->cURL}"{if $NaviFilter->hasAttributeValue() && isset($oMerkmalWert->kMerkmalWert) && $NaviFilter->getAttributeValue()->getValue() == $oMerkmalWert->kMerkmalWert} class="active"{/if}>
+                            <a href="{$oMerkmalWert->cURL}"{if $NaviFilter->hasCharacteristicValue() && isset($oMerkmalWert->kMerkmalWert) && $NaviFilter->getCharacteristicValue()->getValue() == $oMerkmalWert->kMerkmalWert} class="active"{/if}>
                                 {if ($oMerkmal->cTyp === 'BILD' || $oMerkmal->cTyp === 'BILD-TEXT') && $oMerkmalWert->nBildKleinVorhanden === 1}
                                    <img src="{$oMerkmalWert->cBildURLKlein}" alt="{$oMerkmalWert->cWert|escape:'quotes'}" />
                                 {/if}

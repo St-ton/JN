@@ -2,25 +2,19 @@
 /**
  * removed bilder_hochskalieren
  *
- * @author andy
+ * @author aj
  * @created Tue, 19 Apr 2016 11:43:35 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
- * Migration
- *
- * Available methods:
- * execute            - returns affected rows
- * fetchOne           - single fetched object
- * fetchAll           - array of fetched objects
- * fetchArray         - array of fetched assoc arrays
- * dropColumn         - drops a column if exists
- * addLocalization    - add localization
- * removeLocalization - remove localization
+ * Class Migration_20160419114335
  */
 class Migration_20160419114335 extends Migration implements IMigration
 {
-    protected $author = 'andy';
+    protected $author = 'aj';
 
     public function up()
     {

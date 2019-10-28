@@ -1,0 +1,138 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "freischalten"
+msgstr "Approvals"
+
+msgid "freischaltenURL"
+msgstr "https://jtl-url.de/z3qa0"
+
+msgid "freischaltenDesc"
+msgstr "Here you approve customer reviews, live searches, news comments and the recipients of newsletters in the currently selected language."
+
+msgid "freischaltenActivate"
+msgstr "Approve"
+
+msgid "freischaltenReviewsCustomer"
+msgstr "Customer name"
+
+msgid "freischaltenReviewsText"
+msgstr "Review text"
+
+msgid "freischaltenReviewsDate"
+msgstr "Created on"
+
+msgid "freischaltenLivesearch"
+msgstr "Live search"
+
+msgid "freischaltenLivesearchSearch"
+msgstr "Search"
+
+msgid "freischaltenLivesearchCount"
+msgstr "Number of searches"
+
+msgid "freischaltenLivesearchHits"
+msgstr "Search results"
+
+msgid "freischaltenLiveseachDate"
+msgstr "Last searched on"
+
+msgid "freischaltenNewsComments"
+msgstr "News comments"
+
+msgid "freischaltenNewsCommentsHeadline"
+msgstr "Headline"
+
+msgid "freischaltenNewsCommentsDate"
+msgstr "Created on"
+
+msgid "freischaltenNewsletterReceiver"
+msgstr "Newsletter recipient"
+
+msgid "freischaltenSearchItem"
+msgstr "Search term"
+
+msgid "freischaltenSearchType"
+msgstr "Search category"
+
+msgid "freischaltenMappingOn"
+msgstr "Link with"
+
+msgid "freischaltenMappingOnBTN"
+msgstr "Link"
+
+msgid "freischaltenMappingDesc"
+msgstr "* Warning: * When a link exists, live searches are approved immediately."
+
+msgid "errorSearchTermMissing"
+msgstr "Please enter a search term."
+
+msgid "successRatingUnlock"
+msgstr "Selected reviews approved successfully."
+
+msgid "errorAtLeastOneRating"
+msgstr "Please select at least one review."
+
+msgid "successRatingDelete"
+msgstr "Selected reviews deleted successfully."
+
+msgid "successLiveSearchMap"
+msgstr "Selected live searches linked with %s successfully."
+
+msgid "errorLiveSearchMapNotUnlock"
+msgstr "The live search was linked successfully but could not be approved due to an unknown error."
+
+msgid "errorMapUnknown"
+msgstr "Could not perform linking due to an unknown error."
+
+msgid "errorSearchNotFoundDB"
+msgstr "Could not find at least one search query in the database."
+
+msgid "errorMapDB"
+msgstr "Could not save at least one search query as a link in the database."
+
+msgid "errorMapToNotExisting"
+msgstr "The search query to be linked does not exist."
+
+msgid "errorMapSelf"
+msgstr "A live search cannot be linked with itself."
+
+msgid "errorAtLeastOneLiveSearch"
+msgstr "Please select at least one live search."
+
+msgid "errorMapNameMissing"
+msgstr "Please enter a name for the link."
+
+msgid "successSearchUnlock"
+msgstr "Selected search queries approved successfully."
+
+msgid "errorAtLeastOneSearch"
+msgstr "Please select at least one search query."
+
+msgid "successSearchDelete"
+msgstr "Selected search queries deleted successfully."
+
+msgid "successNewsCommentUnlock"
+msgstr "Selected news comments approved successfully."
+
+msgid "errorAtLeastOneNewsComment"
+msgstr "Please select at least one news comment."
+
+msgid "successNewsCommentDelete"
+msgstr "Selected news comments deleted successfully."
+
+msgid "successNewsletterUnlock"
+msgstr "Selected newsletter recipients approved successfully."
+
+msgid "errorAtLeastOneNewsletter"
+msgstr "Please select at least one newsletter recipient."
+
+msgid "successNewsletterDelete"
+msgstr "Selected newsletter recipients deleted successfully."
+
+msgid "unlockMarked"
+msgstr "Approve selected"
+
+msgid "linkMarked"
+msgstr "Link approved with"

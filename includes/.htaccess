@@ -1,4 +1,4 @@
-<FilesMatch "\.(php|sql|xml|json|log|tpl)$">
+<FilesMatch "\.(php|phtml|phar|sql|xml|json|log|tpl)$">
     <IfModule mod_authz_core.c>
         Require all denied
     </IfModule>
@@ -37,7 +37,6 @@
         Allow from all
     </IfModule>
 </Files>
-
 
 <Files cron_inc.php>
     <IfModule mod_authz_core.c>

@@ -4,11 +4,11 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Mapper;
+namespace JTL\Mapper;
 
 /**
  * Class LinkTypeToPageType
- * @package Mapper
+ * @package JTL\Mapper
  */
 class LinkTypeToPageType
 {
@@ -41,8 +41,6 @@ class LinkTypeToPageType
                 return \PAGE_DATENSCHUTZ;
             case \LINKTYP_KONTAKT:
                 return \PAGE_KONTAKT;
-            case \LINKTYP_TAGGING:
-                return \PAGE_TAGGING;
             case \LINKTYP_LIVESUCHE:
                 return \PAGE_LIVESUCHE;
             case \LINKTYP_HERSTELLER:
@@ -53,8 +51,6 @@ class LinkTypeToPageType
                 return \PAGE_NEWSLETTERARCHIV;
             case \LINKTYP_NEWS:
                 return \PAGE_NEWS;
-            case \LINKTYP_NEWSARCHIV:
-                return \PAGE_NEWSARCHIV;
             case \LINKTYP_SITEMAP:
                 return \PAGE_SITEMAP;
             case \LINKTYP_UMFRAGE:

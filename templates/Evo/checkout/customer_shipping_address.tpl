@@ -8,9 +8,16 @@
     {if $Einstellungen.kunden.lieferadresse_abfragen_anrede !== 'N'}
         <div class="col-xs-12 col-md-6">
             <div class="form-group float-label-control{if !empty($fehlendeAngaben.anrede)} has-error{/if}">
-                <label for="{$prefix}-{$name}-salutation" class="control-label">{lang key='salutation' section='account data'}</label>
-                <select name="{$prefix}[{$name}][anrede]" id="{$prefix}-{$name}-salutation" class="form-control" required autocomplete="shipping sex">
-                    <option value="" selected="selected" disabled>{lang key='salutation' section='account data'}</option>
+                <label for="{$prefix}-{$name}-salutation" class="control-label">
+                    {lang key='salutation' section='account data'}
+                    {if $Einstellungen.kunden.lieferadresse_abfragen_anrede === 'O'}
+                        <span class="optional"> - {lang key='optional'}</span>
+                    {/if}
+                </label>
+                <select name="{$prefix}[{$name}][anrede]" id="{$prefix}-{$name}-salutation" class="form-control" {if $Einstellungen.kunden.lieferadresse_abfragen_anrede === 'Y'}required{/if} autocomplete="shipping sex">
+                    <option value="" selected="selected" {if $Einstellungen.kunden.lieferadresse_abfragen_anrede === 'Y'}disabled{/if}>
+                        {if $Einstellungen.kunden.lieferadresse_abfragen_anrede === 'Y'}{lang key='salutation' section='account data'}{else}{lang key='noSalutation'}{/if}
+                    </option>
                     <option value="w"{if isset($Lieferadresse->cAnrede) && $Lieferadresse->cAnrede === 'w'} selected="selected"{/if}>{lang key='salutationW'}</option>
                     <option value="m"{if isset($Lieferadresse->cAnrede) && $Lieferadresse->cAnrede === 'm'} selected="selected"{/if}>{lang key='salutationM'}</option>
                 </select>
@@ -138,16 +145,16 @@
             <label class="control-label" for="{$prefix}-{$name}-country">{lang key='country' section='account data'}</label>
             <select name="{$prefix}[{$name}][land]" id="{$prefix}-{$name}-country" class="country-input form-control" autocomplete="shipping country">
                 <option value="" selected disabled>{lang key='country' section='account data'}*</option>
-                {foreach $laender as $land}
-                    <option value="{$land->cISO}" {if ($Einstellungen.kunden.kundenregistrierung_standardland == $land->cISO && empty($Lieferadresse->cLand)) || (isset($Lieferadresse->cLand) && $Lieferadresse->cLand == $land->cISO)}selected="selected"{/if}>{$land->cName}</option>
+                {foreach $LieferLaender as $land}
+                    <option value="{$land->getISO()}" {if ($Einstellungen.kunden.kundenregistrierung_standardland == $land->getISO() && empty($Lieferadresse->cLand)) || (isset($Lieferadresse->cLand) && $Lieferadresse->cLand == $land->getISO())}selected="selected"{/if}>{$land->getName()}</option>
                 {/foreach}
             </select>
         </div>
     </div>
     {if $Einstellungen.kunden.lieferadresse_abfragen_bundesland !== 'N'}
         {getStates cIso=$cIso assign='oShippingStates'}
-        {if isset($cPost_var['bundesland'])}
-            {assign var='cState' value=$cPost_var['bundesland']}
+        {if isset($Lieferadresse->cBundesland)}
+            {assign var='cState' value=$Lieferadresse->cBundesland}
         {elseif !empty($Kunde->cBundesland)}
             {assign var='cState' value=$Kunde->cBundesland}
         {else}
@@ -171,7 +178,7 @@
                     >
                         <option value="" selected disabled>{lang key='pleaseChoose' section='global'}</option>
                         {foreach $oShippingStates as $oState}
-                            <option value="{$oState->cCode}" {if $cState === $oState->cName}selected{/if}>{$oState->cName}</option>
+                            <option value="{$oState->cCode}" {if $cState === $oState->cName || $cState === $oState->cCode}selected{/if}>{$oState->cName}</option>
                         {/foreach}
                     </select>
                 {else}
@@ -210,8 +217,15 @@
                 data-toggle="postcode" data-city="#{$prefix}-{$name}-city" data-country="#{$prefix}-{$name}-country"
                 required
                 autocomplete="shipping postal-code">
-            {if !empty($fehlendeAngaben.plz)}
-                <div class="form-error-msg text-danger">{lang key='fillOut' section='global'}</div>{/if}
+            {if isset($fehlendeAngaben.plz)}
+                <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
+                    {if $fehlendeAngaben.plz >= 2}
+                        {lang key='checkPLZCity' section='checkout'}
+                    {else}
+                        {lang key='fillOut' section='global'}
+                    {/if}
+                </div>
+            {/if}
         </div>
     </div>
 
@@ -222,12 +236,14 @@
                    value="{if isset($Lieferadresse->cOrt)}{$Lieferadresse->cOrt}{/if}" id="{$prefix}-{$name}-city"
                    class="city_input form-control" placeholder="{lang key='city' section='account data'}" required
                    autocomplete="shipping address-level2">
-            {if !empty($fehlendeAngaben.ort)}
-                {if $fehlendeAngaben.ort == 3}
-                    <div class="form-error-msg text-danger">{lang key='cityNotNumeric' section='account data'}</div>
-                {else}
-                    <div class="form-error-msg text-danger">{lang key='fillOut' section='global'}</div>
-                {/if}
+            {if isset($fehlendeAngaben.ort)}
+                <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
+                    {if $fehlendeAngaben.ort==3}
+                        {lang key='cityNotNumeric' section='account data'}
+                    {else}
+                        {lang key='fillOut' section='global'}
+                    {/if}
+                </div>
             {/if}
         </div>
     </div>

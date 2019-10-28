@@ -4,11 +4,15 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
+
+use JTL\Catalog\Product\Preise;
+use JTL\Helpers\Text;
+use JTL\Session\Frontend;
 
 /**
  * Class Wishlist
- * @package Boxes
+ * @package JTL\Boxes\Items
  */
 final class Wishlist extends AbstractBox
 {
@@ -24,12 +28,12 @@ final class Wishlist extends AbstractBox
     public function __construct(array $config)
     {
         parent::__construct($config);
-        parent::addMapping('nBilderAnzeigen', 'ShowImages');
-        parent::addMapping('CWunschlistePos_arr', 'Items');
+        $this->addMapping('nBilderAnzeigen', 'ShowImages');
+        $this->addMapping('CWunschlistePos_arr', 'Items');
         $this->setShow(true);
-        if (!empty(\Session::WishList()->kWunschliste)) {
-            $this->setWishListID(\Session::WishList()->kWunschliste);
-            $wishlistItems    = \Session::WishList()->CWunschlistePos_arr;
+        if (!empty(Frontend::getWishList()->kWunschliste)) {
+            $this->setWishListID(Frontend::getWishList()->kWunschliste);
+            $wishlistItems    = Frontend::getWishList()->CWunschlistePos_arr;
             $validPostVars    = ['a', 'k', 's', 'h', 'l', 'm', 't', 'hf', 'kf', 'show', 'suche'];
             $additionalParams = '';
             $postMembers      = \array_keys($_REQUEST);
@@ -38,17 +42,17 @@ final class Wishlist extends AbstractBox
                     $additionalParams .= '&' . $postMember . '=' . $_REQUEST[$postMember];
                 }
             }
-            $additionalParams = \StringHandler::filterXSS($additionalParams);
+            $additionalParams = Text::filterXSS($additionalParams);
             foreach ($wishlistItems as $wishlistItem) {
                 $cRequestURI  = $_SERVER['REQUEST_URI'] ?? $_SERVER['SCRIPT_NAME'];
-                $nPosAnd      = \strrpos($cRequestURI, '&');
-                $nPosQuest    = \strrpos($cRequestURI, '?');
-                $nPosWD       = \strpos($cRequestURI, 'wlplo=');
+                $nPosAnd      = \mb_strrpos($cRequestURI, '&');
+                $nPosQuest    = \mb_strrpos($cRequestURI, '?');
+                $nPosWD       = \mb_strpos($cRequestURI, 'wlplo=');
                 $cDeleteParam = '?wlplo='; // z.b. index.php
                 if ($nPosWD) {
-                    $cRequestURI = \substr($cRequestURI, 0, $nPosWD);
+                    $cRequestURI = \mb_substr($cRequestURI, 0, $nPosWD);
                 }
-                if ($nPosAnd === \strlen($cRequestURI) - 1) {
+                if ($nPosAnd === \mb_strlen($cRequestURI) - 1) {
                     // z.b. index.php?a=4&
                     $cDeleteParam = 'wlplo=';
                 } elseif ($nPosAnd) {
@@ -57,7 +61,7 @@ final class Wishlist extends AbstractBox
                 } elseif ($nPosQuest) {
                     // z.b. index.php?a=4
                     $cDeleteParam = '&wlplo=';
-                } elseif ($nPosQuest === \strlen($cRequestURI) - 1) {
+                } elseif ($nPosQuest === \mb_strlen($cRequestURI) - 1) {
                     // z.b. index.php?
                     $cDeleteParam = 'wlplo=';
                 }
@@ -65,17 +69,17 @@ final class Wishlist extends AbstractBox
                     $cDeleteParam .
                     $wishlistItem->kWunschlistePos .
                     $additionalParams;
-                if (\Session::CustomerGroup()->isMerchant()) {
-                    $fPreis = isset($wishlistItem->Artikel->Preise->fVKNetto)
+                if (Frontend::getCustomerGroup()->isMerchant()) {
+                    $price = isset($wishlistItem->Artikel->Preise->fVKNetto)
                         ? (int)$wishlistItem->fAnzahl * $wishlistItem->Artikel->Preise->fVKNetto
                         : 0;
                 } else {
-                    $fPreis = isset($wishlistItem->Artikel->Preise->fVKNetto)
+                    $price = isset($wishlistItem->Artikel->Preise->fVKNetto)
                         ? (int)$wishlistItem->fAnzahl * ($wishlistItem->Artikel->Preise->fVKNetto *
                             (100 + $_SESSION['Steuersatz'][$wishlistItem->Artikel->kSteuerklasse]) / 100)
                         : 0;
                 }
-                $wishlistItem->cPreis = \Preise::getLocalizedPriceString($fPreis, \Session::Currency());
+                $wishlistItem->cPreis = Preise::getLocalizedPriceString($price, Frontend::getCurrency());
             }
             $this->setItemCount((int)$this->config['boxen']['boxen_wunschzettel_anzahl']);
             $this->setItems(\array_reverse($wishlistItems));
@@ -94,7 +98,7 @@ final class Wishlist extends AbstractBox
     /**
      * @param int $id
      */
-    public function setWishListID(int $id)
+    public function setWishListID(int $id): void
     {
         $this->wishListID = $id;
     }
@@ -110,8 +114,7 @@ final class Wishlist extends AbstractBox
     /**
      * @param string $value
      */
-    public function setShowImages($value)
+    public function setShowImages($value): void
     {
-
     }
 }

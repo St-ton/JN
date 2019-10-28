@@ -3,6 +3,7 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 <h1>{if !empty($oRedirect->cName)}{$oRedirect->cName}{else}{lang key='loginTitle' section='login'}{/if}</h1>
+{opcMountPoint id='opc_before_login'}
 {if !$bCookieErlaubt}
     <div class="alert alert-danger hidden" id="no-cookies-warning" style="display:none;">
      <strong>{lang key='noCookieHeader' section='errorMessages'}</strong>
@@ -15,11 +16,9 @@
            {rdelim}
        {rdelim});
     </script>
-{elseif empty($cHinweis)}
+{elseif !$alertNote}
     <div class="alert alert-info">{lang key='loginDesc' section='login'} {if isset($oRedirect) && $oRedirect->cName}{lang key='redirectDesc1'} {$oRedirect->cName} {lang key='redirectDesc2'}.{/if}</div>
 {/if}
-
-{include file='snippets/extension.tpl'}
 
 <div class="row">
     <div class="col-sm-8 col-sm-offset-2">

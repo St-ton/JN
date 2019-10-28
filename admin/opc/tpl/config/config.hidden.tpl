@@ -1,0 +1,1 @@
+<input type="hidden" name="{$propname} " value="{$propval}" id="config-{$propname}">

@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\SortingOptions;
+namespace JTL\Filter\SortingOptions;
 
-use Filter\Join;
+use JTL\Filter\Join;
 
 /**
  * Interface SortingOptionInterface
- * @package Filter\SortingOptions
+ * @package JTL\Filter\SortingOptions
  */
 interface SortingOptionInterface
 {
@@ -22,7 +22,7 @@ interface SortingOptionInterface
     /**
      * @param Join $join
      */
-    public function setJoin(Join $join);
+    public function setJoin(Join $join): void;
 
     /**
      * @return string
@@ -32,7 +32,7 @@ interface SortingOptionInterface
     /**
      * @param string $orderBy
      */
-    public function setOrderBy(string $orderBy);
+    public function setOrderBy(string $orderBy): void;
 
     /**
      * @return int
@@ -42,7 +42,7 @@ interface SortingOptionInterface
     /**
      * @param int $priority
      */
-    public function setPriority(int $priority);
+    public function setPriority(int $priority): void;
 
     /**
      * @return int|string|array

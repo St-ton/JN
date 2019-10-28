@@ -16,7 +16,7 @@
         fullscreen: false,
         template: {
             inline: '<div class="image-gallery has-thumbs">' +
-            '<ul class="image-container v-wrap carousel vertical slide"></ul>' +
+            '<ul class="image-container carousel vertical slide"></ul>' +
                 '<div class="thumbs">' +
                     '<button name="btnGalleryPre" type="button" class="btnGalleryPre slick-up"></button>' +
                     '<div class="thumbs-box">' +

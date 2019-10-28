@@ -6,15 +6,16 @@
  * @since         5.0
  */
 
-namespace Services\JTL;
+namespace JTL\Services\JTL;
 
 use Exception;
-use Session;
-use Shop;
+use JTL\Session\Frontend;
+use JTL\Shop;
+use JTL\Smarty\JTLSmarty;
 
 /**
  * Class SimpleCaptchaService
- * @package Services\JTL
+ * @package JTL\Services\JTL
  */
 class SimpleCaptchaService implements CaptchaServiceInterface
 {
@@ -49,7 +50,7 @@ class SimpleCaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     * @param \JTLSmarty $smarty
+     * @param JTLSmarty $smarty
      * @return string
      */
     public function getHeadMarkup($smarty): string
@@ -58,7 +59,7 @@ class SimpleCaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     * @param \JTLSmarty $smarty
+     * @param JTLSmarty $smarty
      * @return string
      * @throws \SmartyException
      */
@@ -72,14 +73,14 @@ class SimpleCaptchaService implements CaptchaServiceInterface
         try {
             $token = $cryptoService->randomString(8);
             $code  = $cryptoService->randomString(12);
-            $code  = $code . ':' . \time();
+            $code .= ':' . \time();
         } catch (Exception $e) {
             $token = 'token';
             $code  = \rand() . ':' . \time();
         }
 
-        Session::set('simplecaptcha.token', $token);
-        Session::set('simplecaptcha.code', $code);
+        Frontend::set('simplecaptcha.token', $token);
+        Frontend::set('simplecaptcha.code', $code);
 
         return $smarty->assign('captchaToken', $token)
                       ->assign('captchaCode', \sha1($code))
@@ -96,17 +97,17 @@ class SimpleCaptchaService implements CaptchaServiceInterface
             return true;
         }
 
-        $token = Session::get('simplecaptcha.token');
-        $code  = Session::get('simplecaptcha.code');
+        $token = Frontend::get('simplecaptcha.token');
+        $code  = Frontend::get('simplecaptcha.code');
 
         if (!isset($token, $code)) {
             return false;
         }
 
-        Session::set('simplecaptcha.token', null);
-        Session::set('simplecaptcha.code', null);
+        Frontend::set('simplecaptcha.token', null);
+        Frontend::set('simplecaptcha.code', null);
 
-        $time = \substr($code, \strpos($code, ':') + 1);
+        $time = \mb_substr($code, \mb_strpos($code, ':') + 1);
 
         // if form is filled out during lower than 5 seconds it must be a bot...
         return \time() > $time + 5
@@ -121,18 +122,18 @@ class SimpleCaptchaService implements CaptchaServiceInterface
      */
     public static function encodeCode(string $plain): string
     {
-        if (\strlen($plain) !== 4) {
+        if (\mb_strlen($plain) !== 4) {
             return '0';
         }
         $cryptoService = Shop::Container()->getCryptoService();
-        $key           = BLOWFISH_KEY;
-        $mod1          = (\ord($key[0]) + \ord($key[1]) + \ord($key[2])) % 9 + 1;
-        $mod2          = \strlen($_SERVER['DOCUMENT_ROOT']) % 9 + 1;
+        $key           = \BLOWFISH_KEY;
+        $mod1          = (\mb_ord($key[0]) + \mb_ord($key[1]) + \mb_ord($key[2])) % 9 + 1;
+        $mod2          = \mb_strlen($_SERVER['DOCUMENT_ROOT']) % 9 + 1;
 
-        $s1 = \ord($plain{0}) - $mod2 + $mod1 + 123;
-        $s2 = \ord($plain{1}) - $mod1 + $mod2 + 234;
-        $s3 = \ord($plain{2}) + $mod1 + 345;
-        $s4 = \ord($plain{3}) + $mod2 + 456;
+        $s1 = \mb_ord($plain{0}) - $mod2 + $mod1 + 123;
+        $s2 = \mb_ord($plain{1}) - $mod1 + $mod2 + 234;
+        $s3 = \mb_ord($plain{2}) + $mod1 + 345;
+        $s4 = \mb_ord($plain{3}) + $mod2 + 456;
 
         $r1 = $cryptoService->randomInt(100, 999);
         $r2 = $cryptoService->randomInt(0, 9);

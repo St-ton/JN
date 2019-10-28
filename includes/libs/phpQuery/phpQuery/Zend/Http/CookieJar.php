@@ -20,9 +20,9 @@
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
-require_once "Zend/Uri.php";
-require_once "Zend/Http/Cookie.php";
-require_once "Zend/Http/Response.php";
+require_once 'Zend/Uri.php';
+require_once 'Zend/Http/Cookie.php';
+require_once 'Zend/Http/Response.php';
 
 /**
  * A Zend_Http_CookieJar object is designed to contain and maintain HTTP cookies, and should
@@ -110,7 +110,7 @@ class Zend_Http_CookieJar
 
         if ($cookie instanceof Zend_Http_Cookie) {
             $domain = $cookie->getDomain();
-            $path = $cookie->getPath();
+            $path   = $cookie->getPath();
             if (! isset($this->cookies[$domain])) {
                 $this->cookies[$domain] = array();
             }
@@ -173,15 +173,18 @@ class Zend_Http_CookieJar
      * @param int $now Override the current time when checking for expiry time
      * @return array|string
      */
-    public function getMatchingCookies($uri, $matchSessionCookies = true,
-        $ret_as = self::COOKIE_OBJECT, $now = null)
-    {
+    public function getMatchingCookies(
+        $uri,
+        $matchSessionCookies = true,
+        $ret_as = self::COOKIE_OBJECT,
+        $now = null
+    ) {
         if (is_string($uri)) {
             $uri = Zend_Uri::factory($uri);
         }
         if (! $uri instanceof Zend_Uri_Http) {
             require_once 'Zend/Http/Exception.php';
-            throw new Zend_Http_Exception("Invalid URI string or object passed");
+            throw new Zend_Http_Exception('Invalid URI string or object passed');
         }
 
         // Set path
@@ -312,7 +315,7 @@ class Zend_Http_CookieJar
         $ret = array();
 
         foreach (array_keys($this->cookies) as $cdom) {
-            $regex = "/" . preg_quote($cdom, "/") . "$/i";
+            $regex = '/' . preg_quote($cdom, '/') . '$/i';
             if (preg_match($regex, $domain)) {
                 $ret[$cdom] = &$this->cookies[$cdom];
             }
@@ -339,7 +342,7 @@ class Zend_Http_CookieJar
 
         foreach ($domains as $dom => $paths_array) {
             foreach (array_keys($paths_array) as $cpath) {
-                $regex = "|^" . preg_quote($cpath, "|") . "|i";
+                $regex = '|^' . preg_quote($cpath, '|') . '|i';
                 if (preg_match($regex, $path)) {
                     if (! isset($ret[$dom])) {
                         $ret[$dom] = array();

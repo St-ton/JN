@@ -1,0 +1,18 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "imageTitle"
+msgstr "Images"
+
+msgid "bilderURL"
+msgstr "https://jtl-url.de/6jdo7"
+
+msgid "bilderDesc"
+msgstr "Image settings"
+
+msgid "newscategory"
+msgstr "News category"
+
+msgid "News"
+msgstr "News"

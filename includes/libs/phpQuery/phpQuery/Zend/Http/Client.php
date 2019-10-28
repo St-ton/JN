@@ -468,7 +468,7 @@ class Zend_Http_Client
     protected function _setParameter($type, $name, $value)
     {
         $parray = [];
-        $type = strtolower($type);
+        $type   = strtolower($type);
         switch ($type) {
             case 'get':
                 $parray = &$this->paramsGet;
@@ -536,8 +536,8 @@ class Zend_Http_Client
             }
 
             $this->auth = array(
-                'user' => (string) $user,
-                'password' => (string) $password,
+                'user' => (string)$user,
+                'password' => (string)$password,
                 'type' => $type
             );
         }
@@ -626,8 +626,8 @@ class Zend_Http_Client
             }
         } else {
             if ($cookie instanceof Zend_Http_Cookie) {
-                $name = $cookie->getName();
-                $value = $cookie->getValue();
+                $name   = $cookie->getName();
+                $value  = $cookie->getValue();
                 $cookie = $name;
             }
 
@@ -803,7 +803,7 @@ class Zend_Http_Client
         }
 
         $this->adapter = $adapter;
-        $config = $this->config;
+        $config        = $this->config;
         unset($config['adapter']);
         $this->adapter->setConfig($config);
     }
@@ -827,7 +827,7 @@ class Zend_Http_Client
             $this->setMethod($method);
         }
         $this->redirectCounter = 0;
-        $response = null;
+        $response              = null;
 
         // Make sure the adapter is loaded
         if ($this->adapter == null) {
@@ -848,15 +848,23 @@ class Zend_Http_Client
                 $uri->setQuery($query);
             }
 
-            $body = $this->_prepareBody();
+            $body    = $this->_prepareBody();
             $headers = $this->_prepareHeaders();
 
             // Open the connection, send the request and read the response
-            $this->adapter->connect($uri->getHost(), $uri->getPort(),
-                ($uri->getScheme() == 'https' ? true : false));
+            $this->adapter->connect(
+                $uri->getHost(),
+                $uri->getPort(),
+                ($uri->getScheme() == 'https' ? true : false)
+            );
 
-            $this->last_request = $this->adapter->write($this->method,
-                $uri, $this->config['httpversion'], $headers, $body);
+            $this->last_request = $this->adapter->write(
+                $this->method,
+                $uri,
+                $this->config['httpversion'],
+                $headers,
+                $body
+            );
 
             $response = $this->adapter->read();
             if (! $response) {
@@ -907,7 +915,7 @@ class Zend_Http_Client
                     } else {
                         // Get the current path directory, removing any trailing slashes
                         $path = $this->uri->getPath();
-                        $path = rtrim(substr($path, 0, strrpos($path, '/')), "/");
+                        $path = rtrim(substr($path, 0, strrpos($path, '/')), '/');
                         $this->uri->setPath($path . '/' . $location);
                     }
                 }
@@ -946,7 +954,7 @@ class Zend_Http_Client
         // Set the connection header
         if (! isset($this->headers['connection'])) {
             if (! $this->config['keepalive']) {
-                $headers[] = "Connection: close";
+                $headers[] = 'Connection: close';
             }
         }
 
@@ -973,14 +981,17 @@ class Zend_Http_Client
 
         // Set HTTP authentication if needed
         if (is_array($this->auth)) {
-            $auth = self::encodeAuthHeader($this->auth['user'], $this->auth['password'], $this->auth['type']);
+            $auth      = self::encodeAuthHeader($this->auth['user'], $this->auth['password'], $this->auth['type']);
             $headers[] = "Authorization: {$auth}";
         }
 
         // Load cookies from cookie jar
         if (isset($this->cookiejar)) {
-            $cookstr = $this->cookiejar->getMatchingCookies($this->uri,
-                true, Zend_Http_CookieJar::COOKIE_STRING_CONCAT);
+            $cookstr = $this->cookiejar->getMatchingCookies(
+                $this->uri,
+                true,
+                Zend_Http_CookieJar::COOKIE_STRING_CONCAT
+            );
 
             if ($cookstr) {
                 $headers[] = "Cookie: {$cookstr}";
@@ -1059,7 +1070,7 @@ class Zend_Http_Client
                     /** @see Zend_Http_Client_Exception */
                     require_once 'Zend/Http/Client/Exception.php';
                     throw new Zend_Http_Client_Exception("Cannot handle content type '{$this->enctype}' automatically." .
-                        " Please use Zend_Http_Client::setRawData to send this kind of content.");
+                        ' Please use Zend_Http_Client::setRawData to send this kind of content.');
                     break;
             }
         }

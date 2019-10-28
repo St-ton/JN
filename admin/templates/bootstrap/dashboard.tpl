@@ -2,11 +2,11 @@
 {config_load file="$lang.conf" section='login'}
 {config_load file="$lang.conf" section='shopupdate'}
 
-{if permission('DASHBOARD_VIEW')}
+{if 'DASHBOARD_VIEW'|permission}
     <script type="text/javascript" src="../includes/libs/flashchart/js/json/json2.js"></script>
     <script type="text/javascript" src="../includes/libs/flashchart/js/swfobject.js"></script>
-    <script type="text/javascript" src="{$currentTemplateDir}js/html.sortable.js"></script>
-    <script type="text/javascript" src="{$currentTemplateDir}js/dashboard.js"></script>
+    <script type="text/javascript" src="{$templateBaseURL}js/html.sortable.js"></script>
+    <script type="text/javascript" src="{$templateBaseURL}js/dashboard.js"></script>
     <script type="text/javascript">
 
     function addWidget(kWidget) {
@@ -22,35 +22,35 @@
     });
     </script>
 
-    <div id="content" class="nomargin">
+    <div id="content">
+        <div class="row">
+            <div class="col">
+                <h1 class="content-header-headline">{__('dashboard')}</h1>
+            </div>
+            <div class="col-auto ml-auto">
+                <div class="dropleft d-inline-block">
+                    <button class="btn btn-link btn-lg px-0" type="button" id="helpcenter" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="icon-hover">
+                            <span class="fal fa-cog"></span>
+                            <span class="fas fa-cog"></span>
+                        </span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right min-w-lg" aria-labelledby="helpcenter">
+                        {include file='tpl_inc/widget_selector.tpl' oAvailableWidget_arr=$oAvailableWidget_arr}
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="row">
             {include file='tpl_inc/widget_container.tpl' eContainer='left'}
             {include file='tpl_inc/widget_container.tpl' eContainer='center'}
             {include file='tpl_inc/widget_container.tpl' eContainer='right'}
         </div>
     </div>
-
-    <div id="switcher">
-        <div class="switcher" id="dashboard-config">
-            <a href="#" class="dropdown-toggle parent btn-toggle" data-toggle="dropdown">
-                <i class="fa fa-gear"></i>
-            </a>
-            <div class="switcher-wrapper">
-                <div class="switcher-header">
-                    <h2>Widgets</h2>
-                </div>
-                <div class="switcher-content">
-                    <div id="settings">
-                        {include file='tpl_inc/widget_selector.tpl' oAvailableWidget_arr=$oAvailableWidget_arr}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 {else}
-    {include file='tpl_inc/seite_header.tpl' cTitel=#dashboard#}
+    {include file='tpl_inc/seite_header.tpl' cTitel=__('dashboard')}
     <div class="alert alert-success">
-        <strong>Es stehen keine weiteren Informationen zur Verf&uuml;gung.</strong>
+        <strong>{__('noMoreInfo')}</strong>
     </div>
 {/if}
 

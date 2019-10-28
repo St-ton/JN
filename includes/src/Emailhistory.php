@@ -1,11 +1,18 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license       http://jtl-url.de/jtlshoplicense
  */
+
+namespace JTL;
+
+use Exception;
+use JTL\DB\ReturnType;
+use stdClass;
 
 /**
  * Class Emailhistory
+ * @package JTL
  */
 class Emailhistory
 {
@@ -50,37 +57,33 @@ class Emailhistory
     public $dSent;
 
     /**
-     * @param null|int    $kEmailhistory
-     * @param null|object $oObj
+     * @param null|int    $id
+     * @param null|object $data
      */
-    public function __construct($kEmailhistory = null, $oObj = null)
+    public function __construct($id = null, $data = null)
     {
-        if ((int)$kEmailhistory > 0) {
-            $this->loadFromDB($kEmailhistory);
-        } elseif ($oObj !== null && is_object($oObj)) {
-            $cMember_arr = array_keys(get_object_vars($oObj));
-            if (is_array($cMember_arr) && count($cMember_arr) > 0) {
-                foreach ($cMember_arr as $cMember) {
-                    $cMethod = 'set' . substr($cMember, 1);
-                    if (method_exists($this, $cMethod)) {
-                        $this->$cMethod($oObj->$cMember);
-                    }
+        if ((int)$id > 0) {
+            $this->loadFromDB($id);
+        } elseif ($data !== null && \is_object($data)) {
+            foreach (\array_keys(\get_object_vars($data)) as $member) {
+                $methodName = 'set' . \mb_substr($member, 1);
+                if (\method_exists($this, $methodName)) {
+                    $this->$methodName($data->$member);
                 }
             }
         }
     }
 
     /**
-     * @param int $kEmailhistory
+     * @param int $id
      * @return $this
      */
-    protected function loadFromDB(int $kEmailhistory): self
+    protected function loadFromDB(int $id): self
     {
-        $oObj = Shop::Container()->getDB()->select('temailhistory', 'kEmailhistory', $kEmailhistory);
-        if (isset($oObj->kEmailhistory) && $oObj->kEmailhistory > 0) {
-            $cMember_arr = array_keys(get_object_vars($oObj));
-            foreach ($cMember_arr as $cMember) {
-                $this->$cMember = $oObj->$cMember;
+        $data = Shop::Container()->getDB()->select('temailhistory', 'kEmailhistory', $id);
+        if (isset($data->kEmailhistory) && $data->kEmailhistory > 0) {
+            foreach (\array_keys(\get_object_vars($data)) as $member) {
+                $this->$member = $data->$member;
             }
         }
 
@@ -88,26 +91,23 @@ class Emailhistory
     }
 
     /**
-     * @param bool $bPrim
+     * @param bool $primary
      * @return bool|int
      * @throws Exception
      */
-    public function save(bool $bPrim = true)
+    public function save(bool $primary = true)
     {
-        $oObj        = new stdClass();
-        $cMember_arr = array_keys(get_object_vars($this));
-        if (is_array($cMember_arr) && count($cMember_arr) > 0) {
-            foreach ($cMember_arr as $cMember) {
-                $oObj->$cMember = $this->$cMember;
-            }
+        $ins = new stdClass();
+        foreach (\array_keys(\get_object_vars($this)) as $member) {
+            $ins->$member = $this->$member;
         }
-        if (isset($oObj->kEmailhistory) && (int)$oObj->kEmailhistory > 0) {
+        if (isset($ins->kEmailhistory) && (int)$ins->kEmailhistory > 0) {
             return $this->update();
         }
-        unset($oObj->kEmailhistory);
-        $kPrim = Shop::Container()->getDB()->insert('temailhistory', $oObj);
+        unset($ins->kEmailhistory);
+        $kPrim = Shop::Container()->getDB()->insert('temailhistory', $ins);
         if ($kPrim > 0) {
-            return $bPrim ? $kPrim : true;
+            return $primary ? $kPrim : true;
         }
 
         return false;
@@ -119,24 +119,25 @@ class Emailhistory
      */
     public function update(): int
     {
-        $cQuery      = 'UPDATE temailhistory SET ';
-        $cSet_arr    = [];
-        $cMember_arr = array_keys(get_object_vars($this));
-        if (is_array($cMember_arr) && count($cMember_arr) > 0) {
-            foreach ($cMember_arr as $cMember) {
-                $cMethod = 'get' . substr($cMember, 1);
-                if (method_exists($this, $cMethod)) {
-                    $val        = $this->$cMethod();
-                    $mValue     = $val === null
+        $sql     = 'UPDATE temailhistory SET ';
+        $set     = [];
+        $members = \array_keys(\get_object_vars($this));
+        if (\is_array($members) && \count($members) > 0) {
+            $db = Shop::Container()->getDB();
+            foreach ($members as $member) {
+                $methodName = 'get' . \mb_substr($member, 1);
+                if (\method_exists($this, $methodName)) {
+                    $val    = $this->$methodName();
+                    $mValue = $val === null
                         ? 'NULL'
-                        : ("'" . Shop::Container()->getDB()->escape($val) . "'");
-                    $cSet_arr[] = "{$cMember} = {$mValue}";
+                        : ("'" . $db->escape($val) . "'");
+                    $set[]  = $member . ' = ' . $mValue;
                 }
             }
-            $cQuery .= implode(', ', $cSet_arr);
-            $cQuery .= " WHERE kEmailhistory = {$this->getEmailhistory()}";
+            $sql .= \implode(', ', $set);
+            $sql .= ' WHERE kEmailhistory = ' . $this->getEmailhistory();
 
-            return Shop::Container()->getDB()->query($cQuery, \DB\ReturnType::AFFECTED_ROWS);
+            return $db->query($sql, ReturnType::AFFECTED_ROWS);
         }
         throw new Exception('ERROR: Object has no members!');
     }
@@ -150,26 +151,25 @@ class Emailhistory
     }
 
     /**
-     * @param string $cSqlLimit
+     * @param string $limitSQL
      * @return array
      */
-    public function getAll($cSqlLimit = ''): array
+    public function getAll(string $limitSQL = ''): array
     {
-        if ($cSqlLimit === null) {
-            $cSqlLimit = '';
-        }
-        $oObj_arr = Shop::Container()->getDB()->query(
+        $historyData = Shop::Container()->getDB()->query(
             'SELECT * 
                 FROM temailhistory 
-                ORDER BY dSent DESC' . $cSqlLimit,
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY dSent DESC' . $limitSQL,
+            ReturnType::ARRAY_OF_OBJECTS
         );
-        $oEmailhistory_arr = [];
-        foreach ($oObj_arr as $oObj) {
-            $oEmailhistory_arr[] = new self(null, $oObj);
+        $history     = [];
+        foreach ($historyData as $item) {
+            $item->kEmailhistory = (int)$item->kEmailhistory;
+            $item->kEmailvorlage = (int)$item->kEmailvorlage;
+            $history[]           = new self(null, $item);
         }
 
-        return $oEmailhistory_arr;
+        return $history;
     }
 
     /**
@@ -177,28 +177,28 @@ class Emailhistory
      */
     public function getCount(): int
     {
-        $oObj = Shop::Container()->getDB()->query(
+        return (int)Shop::Container()->getDB()->query(
             'SELECT COUNT(*) AS nCount FROM temailhistory',
-            \DB\ReturnType::SINGLE_OBJECT
-        );
-
-        return (int)$oObj->nCount;
+            ReturnType::SINGLE_OBJECT
+        )->nCount;
     }
 
     /**
-     * @param array $kEmailhistory_arr
+     * @param array $ids
      * @return bool|int
      */
-    public function deletePack(array $kEmailhistory_arr)
+    public function deletePack(array $ids)
     {
-        if (count($kEmailhistory_arr) > 0) {
-            $kEmailhistory_arr = array_map(function ($i) { return (int)$i; }, $kEmailhistory_arr);
+        if (\count($ids) > 0) {
+            $ids = \array_map(function ($i) {
+                return (int)$i;
+            }, $ids);
 
             return Shop::Container()->getDB()->query(
                 'DELETE 
                     FROM temailhistory 
-                    WHERE kEmailhistory IN (' . implode(',', $kEmailhistory_arr) . ')',
-                \DB\ReturnType::AFFECTED_ROWS
+                    WHERE kEmailhistory IN (' . \implode(',', $ids) . ')',
+                ReturnType::AFFECTED_ROWS
             );
         }
 
@@ -207,13 +207,13 @@ class Emailhistory
 
     /**
      * truncate the email-history-table
-     *
      * @return int
      */
     public function deleteAll(): int
     {
         Shop::Container()->getLogService()->notice('eMail-History gelöscht');
-        return !Shop::Container()->getDB()->query('TRUNCATE TABLE temailhistory', \DB\ReturnType::AFFECTED_ROWS);
+
+        return !Shop::Container()->getDB()->query('TRUNCATE TABLE temailhistory', ReturnType::AFFECTED_ROWS);
     }
 
     /**
@@ -257,7 +257,7 @@ class Emailhistory
     /**
      * @return string|null
      */
-    public function getSubject()
+    public function getSubject(): ?string
     {
         return $this->cSubject;
     }
@@ -276,7 +276,7 @@ class Emailhistory
     /**
      * @return string|null
      */
-    public function getFromName()
+    public function getFromName(): ?string
     {
         return $this->cFromName;
     }
@@ -295,7 +295,7 @@ class Emailhistory
     /**
      * @return string|null
      */
-    public function getFromEmail()
+    public function getFromEmail(): ?string
     {
         return $this->cFromEmail;
     }
@@ -314,7 +314,7 @@ class Emailhistory
     /**
      * @return string|null
      */
-    public function getToName()
+    public function getToName(): ?string
     {
         return $this->cToName;
     }
@@ -333,7 +333,7 @@ class Emailhistory
     /**
      * @return string|null
      */
-    public function getToEmail()
+    public function getToEmail(): ?string
     {
         return $this->cToEmail;
     }
@@ -352,7 +352,7 @@ class Emailhistory
     /**
      * @return string|null
      */
-    public function getSent()
+    public function getSent(): ?string
     {
         return $this->dSent;
     }

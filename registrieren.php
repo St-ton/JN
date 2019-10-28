@@ -3,24 +3,24 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\Alert\Alert;
+use JTL\Helpers\Request;
+use JTL\Session\Frontend;
+use JTL\Shop;
+
 require_once __DIR__ . '/includes/globalinclude.php';
 
 $linkHelper = Shop::Container()->getLinkService();
-if (isset($_SESSION['Kunde']->kKunde)
-    && $_SESSION['Kunde']->kKunde > 0
-    && RequestHelper::verifyGPCDataInt('editRechnungsadresse') === 0
-) {
+if (Request::verifyGPCDataInt('editRechnungsadresse') === 0 && Frontend::getCustomer()->getID() > 0) {
     header('Location: ' . $linkHelper->getStaticRoute('jtl.php'), true, 301);
 }
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'newsletter_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'registrieren_inc.php';
 
 Shop::setPageType(PAGE_REGISTRIERUNG);
-$AktuelleSeite        = 'REGISTRIEREN';
-$Einstellungen        = Shop::getSettings([
+$conf  = Shop::getSettings([
     CONF_GLOBAL,
     CONF_RSS,
     CONF_KUNDEN,
@@ -28,59 +28,46 @@ $Einstellungen        = Shop::getSettings([
     CONF_KUNDENWERBENKUNDEN,
     CONF_NEWSLETTER
 ]);
-$kLink                = $linkHelper->getSpecialPageLinkKey(LINKTYP_REGISTRIEREN);
-$link                 = $linkHelper->getPageLink($kLink);
-$step                 = 'formular';
-$hinweis              = '';
-$titel                = Shop::Lang()->get('newAccount', 'login');
-$editRechnungsadresse = isset($_GET['editRechnungsadresse'])
-    ? (int)$_GET['editRechnungsadresse']
-    : 0;
+$kLink = $linkHelper->getSpecialPageLinkKey(LINKTYP_REGISTRIEREN);
+$link  = $linkHelper->getPageLink($kLink);
+$step  = 'formular';
+$titel = Shop::Lang()->get('newAccount', 'login');
+$edit  = Request::getInt('editRechnungsadresse');
 if (isset($_POST['editRechnungsadresse'])) {
-    $editRechnungsadresse = (int)$_POST['editRechnungsadresse'];
+    $edit = (int)$_POST['editRechnungsadresse'];
 }
-// Kunde speichern
-if (isset($_POST['form']) && (int)$_POST['form'] === 1) {
+if (Request::postInt('form') === 1) {
     kundeSpeichern($_POST);
 }
-// Kunde ändern
-if (isset($_GET['editRechnungsadresse']) && (int)$_GET['editRechnungsadresse'] === 1) {
+if (Request::getInt('editRechnungsadresse') === 1) {
     gibKunde();
 }
 if ($step === 'formular') {
-    gibFormularDaten(RequestHelper::verifyGPCDataInt('checkout'));
+    gibFormularDaten(Request::verifyGPCDataInt('checkout'));
 }
-if (isset($_FILES['vcard'])
-    && $Einstellungen['kunden']['kundenregistrierung_vcardupload'] === 'Y'
-    && FormHelper::validateToken()
-) {
-    gibKundeFromVCard($_FILES['vcard']['tmp_name']);
-}
-// hole aktuelle Kategorie, falls eine gesetzt
-$AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
-$AufgeklappteKategorien = new KategorieListe();
-$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
-Shop::Smarty()->assign('editRechnungsadresse', $editRechnungsadresse)
+Shop::Smarty()->assign('editRechnungsadresse', $edit)
     ->assign('Ueberschrift', $titel)
     ->assign('Link', $link)
-    ->assign('hinweis', $hinweis)
     ->assign('step', $step)
     ->assign('nAnzeigeOrt', CHECKBOX_ORT_REGISTRIERUNG)
-    ->assign('code_registrieren', false);
+    ->assign('code_registrieren', false)
+    ->assign('unregForm', 0);
 
 $cCanonicalURL = $linkHelper->getStaticRoute('registrieren.php');
-// Metaangaben
-$oMeta            = $linkHelper->buildSpecialPageMeta(LINKTYP_REGISTRIEREN);
-$cMetaTitle       = $oMeta->cTitle;
-$cMetaDescription = $oMeta->cDesc;
-$cMetaKeywords    = $oMeta->cKeywords;
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
-//Zum prüfen wie lange ein User/Bot gebraucht hat um das Registrieren-Formular auszufüllen
-if (isset($Einstellungen['kunden']['kundenregistrierung_pruefen_zeit'])
-    && $Einstellungen['kunden']['kundenregistrierung_pruefen_zeit'] === 'Y'
+if (isset($conf['kunden']['kundenregistrierung_pruefen_zeit'])
+    && $conf['kunden']['kundenregistrierung_pruefen_zeit'] === 'Y'
 ) {
     $_SESSION['dRegZeit'] = time();
+}
+
+if (Request::verifyGPCDataInt('accountDeleted') === 1) {
+    Shop::Container()->getAlertService()->addAlert(
+        Alert::TYPE_SUCCESS,
+        Shop::Lang()->get('accountDeleted', 'messages'),
+        'accountDeleted'
+    );
 }
 
 executeHook(HOOK_REGISTRIEREN_PAGE);

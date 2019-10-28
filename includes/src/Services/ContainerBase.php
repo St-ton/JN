@@ -4,125 +4,38 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services;
+namespace JTL\Services;
 
-use Exceptions\CircularReferenceException;
-use Exceptions\ServiceNotFoundException;
+use Illuminate\Container\Container as IlluminateContainer;
 
 /**
  * Class ContainerBase
+ * @package JTL\Services
  */
-class ContainerBase implements ContainerInterface
+class ContainerBase extends IlluminateContainer implements ContainerInterface
 {
     /**
-     * @var ContainerEntry[]
-     */
-    protected $entries = [];
-
-    /**
      * @inheritdoc
      */
-    public function setSingleton($id, $factory)
+    public function setSingleton($id, $factory): void
     {
-        if (!\is_string($id) || !\is_callable($factory)) {
-            throw new \InvalidArgumentException();
-        }
-        $this->checkUninitialized($id);
-        $this->checkOverrideMatchingType($id, ContainerEntry::TYPE_SINGLETON);
-        $this->entries[$id] = new ContainerEntry($factory, ContainerEntry::TYPE_SINGLETON);
+        $this->singleton($id, $factory);
     }
 
     /**
      * @inheritdoc
      */
-    public function setFactory($id, $factory)
+    public function setFactory($id, $factory): void
     {
-        if (!\is_string($id) || !\is_callable($factory)) {
-            throw new \InvalidArgumentException();
-        }
-        $this->checkOverrideMatchingType($id, ContainerEntry::TYPE_FACTORY);
-        $this->entries[$id] = new ContainerEntry($factory, ContainerEntry::TYPE_FACTORY);
+        $this->bind($id, $factory);
     }
 
     /**
-     * @inheritdoc
+     * @param string $id
+     * @return mixed
      */
     public function getFactoryMethod($id)
     {
-        $this->checkExistence($id);
-
-        return $this->entries[$id]->getFactory();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function get($id)
-    {
-        $this->checkExistence($id);
-        $entry = $this->entries[$id];
-        if ($entry->isLocked()) {
-            throw new CircularReferenceException($id);
-        }
-        $entry->lock();
-        $factory = $entry->getFactory();
-
-        if ($entry->getType() === ContainerEntry::TYPE_FACTORY) {
-            $result = $factory($this);
-        } elseif ($entry->hasInstance()) {
-            $result = $entry->getInstance();
-        } else {
-            $instance = $factory($this);
-            $entry->setInstance($instance);
-            $result = $instance;
-        }
-
-        $entry->unlock();
-
-        return $result;
-    }
-
-    /**
-     * @param string $id
-     * @return bool
-     */
-    public function has($id): bool
-    {
-        return isset($this->entries[$id]);
-    }
-
-    /**
-     * @param string $id
-     * @throws ServiceNotFoundException
-     */
-    protected function checkExistence($id)
-    {
-        if (!$this->has($id)) {
-            throw new ServiceNotFoundException($id);
-        }
-    }
-
-    /**
-     * @param string $id
-     * @throws \Exception
-     */
-    protected function checkUninitialized($id)
-    {
-        if (isset($this->entries[$id]) && $this->entries[$id]->hasInstance()) {
-            throw new \Exception('Singleton Service already used');
-        }
-    }
-
-    /**
-     * @param string $id
-     * @param int    $type
-     * @throws \Exception
-     */
-    protected function checkOverrideMatchingType($id, $type)
-    {
-        if ($this->has($id) && $this->entries[$id]->getType() !== $type) {
-            $actual = $this->entries[$id]->getType();
-            throw new \Exception("Overriding type $actual with $type is not allowed. (component-id: $id)");
-        }
+        return $this->get($id);
     }
 }

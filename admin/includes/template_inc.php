@@ -4,19 +4,22 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Shop;
+use JTL\Template;
+
 /**
- * @param string $cOrdner
- * @param string $eTyp
+ * @param string $dir
+ * @param string $type
  * @return bool
  */
-function __switchTemplate(string $cOrdner, string $eTyp = 'standard')
+function __switchTemplate(string $dir, string $type = 'standard')
 {
-    $cOrdner   = Shop::Container()->getDB()->escape($cOrdner);
-    $oTemplate = Template::getInstance();
-    $bCheck    = $oTemplate->setTemplate($cOrdner, $eTyp);
-    if ($bCheck) {
+    $dir      = Shop::Container()->getDB()->escape($dir);
+    $template = Template::getInstance();
+    $check    = $template->setTemplate($dir, $type);
+    if ($check) {
         unset($_SESSION['cTemplate'], $_SESSION['template']);
     }
 
-    return $bCheck;
+    return $check;
 }

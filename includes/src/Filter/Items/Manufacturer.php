@@ -4,16 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\Items;
+namespace JTL\Filter\Items;
 
-use Filter\FilterInterface;
-use Filter\Type;
-use Filter\ProductFilter;
-use Filter\States\BaseManufacturer;
+use JTL\Filter\FilterInterface;
+use JTL\Filter\ProductFilter;
+use JTL\Filter\States\BaseManufacturer;
+use JTL\Filter\Type;
+use JTL\Shop;
 
 /**
  * Class Manufacturer
- * @package Filter\Items
+ * @package JTL\Filter\Items
  */
 class Manufacturer extends BaseManufacturer
 {
@@ -29,7 +30,7 @@ class Manufacturer extends BaseManufacturer
              ->setUrlParam('hf')
              ->setUrlParamSEO(\SEP_HST)
              ->setVisibility($this->getConfig('navigationsfilter')['allgemein_herstellerfilter_benutzen'])
-             ->setFrontendName(\Shop::Lang()->get('allManufacturers'))
+             ->setFrontendName(Shop::Lang()->get('allManufacturers'))
              ->setType($this->getConfig('navigationsfilter')['manufacturer_filter_type'] === 'O'
                  ? Type::OR
                  : Type::AND);

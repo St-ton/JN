@@ -4,26 +4,31 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Cron;
+namespace JTL\Cron;
 
 use MyCLabs\Enum\Enum;
 
 /**
  * Class Type
- * @package Cron
+ * @package JTL\Cron
  */
 class Type extends Enum
 {
-    const EXPORT = 'exportformat';
+    public const EXPORT = 'exportformat';
 
-    const STATUSMAIL = 'statusemail';
+    public const STATUSMAIL = 'statusemail';
 
-    const TS_RATING = 'tskundenbewertung';
+    public const TS_RATING = 'tskundenbewertung';
 
-    const CLEAR_CACHE = 'clearcache';
+    public const CLEAR_CACHE = 'clearcache';
 
-    const NEWSLETTER = 'newsletter';
+    public const NEWSLETTER = 'newsletter';
 
-    const PLUGIN = 'plugin';
+    public const PLUGIN = 'plugin';
 
+    public const DATAPROTECTION = 'dataprotection';
+
+    public const IMAGECACHE = 'imagecache';
+
+    public const STORE = 'store';
 }

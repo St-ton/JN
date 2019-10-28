@@ -144,7 +144,7 @@ class Zend_Validate_EmailAddress extends Zend_Validate_Abstract
      */
     public function setValidateMx($allowed)
     {
-        $this->_validateMx = (bool) $allowed;
+        $this->_validateMx = (bool)$allowed;
     }
 
     /**
@@ -160,7 +160,7 @@ class Zend_Validate_EmailAddress extends Zend_Validate_Abstract
      */
     public function isValid($value)
     {
-        $valueString = (string) $value;
+        $valueString = (string)$value;
 
         $this->_setValue($valueString);
 
@@ -221,9 +221,9 @@ class Zend_Validate_EmailAddress extends Zend_Validate_Abstract
             // Quoted-string characters are: DQUOTE *([FWS] qtext/quoted-pair) [FWS] DQUOTE
             // qtext: Non white space controls, and the rest of the US-ASCII characters not
             //   including "\" or the quote character
-            $noWsCtl    = '\x01-\x08\x0b\x0c\x0e-\x1f\x7f';
-            $qtext      = $noWsCtl . '\x21\x23-\x5b\x5d-\x7e';
-            $ws         = '\x20\x09';
+            $noWsCtl = '\x01-\x08\x0b\x0c\x0e-\x1f\x7f';
+            $qtext   = $noWsCtl . '\x21\x23-\x5b\x5d-\x7e';
+            $ws      = '\x20\x09';
             if (preg_match('/^\x22([' . $ws . $qtext . '])*[$ws]?\x22$/', $this->_localPart)) {
                 $localResult = true;
             } else {

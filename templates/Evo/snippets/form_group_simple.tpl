@@ -25,54 +25,57 @@
     {assign var='isRequired' value=false}
 {/if}
 
+{assign var="inputNameTmp" value=$inputName|replace:"register[shipping_address][":""|replace:"]":""}
+
 {if isset($invalidReason) && $invalidReason|strlen > 0}
     {assign var='hasError' value=true}
-{elseif !empty($fehlendeAngaben) && isset($fehlendeAngaben.{$inputName})}
+{elseif !empty($fehlendeAngaben) && isset($fehlendeAngaben.{$inputNameTmp})}
+    {assign var='errCode' value=$fehlendeAngaben.{$inputNameTmp}}
     {assign var='hasError' value=true}
-    {if $inputName === 'email'}
-        {if $fehlendeAngaben.email == 1}
+    {if $inputNameTmp === 'email'}
+        {if $errCode == 1}
             {lang assign='invalidReason' key='fillOut' section='global'}
-        {elseif $fehlendeAngaben.email == 2}
+        {elseif $errCode == 2}
             {lang assign='invalidReason' key='invalidEmail' section='global'}
-        {elseif $fehlendeAngaben.email == 3}
+        {elseif $errCode == 3}
             {lang assign='invalidReason' key='blockedEmail' section='global'}
-        {elseif $fehlendeAngaben.email == 4}
+        {elseif $errCode == 4}
             {lang assign='invalidReason' key='noDnsEmail' section='account data'}
-        {elseif $fehlendeAngaben.email == 5}
+        {elseif $errCode == 5}
             {lang assign='invalidReason' key='emailNotAvailable' section='account data'}
         {/if}
-    {elseif $inputName === 'mobil'
-        || $inputName === 'tel'
-        || $inputName === 'fax'}
-        {if $fehlendeAngaben.{$inputName} == 1}
+    {elseif $inputNameTmp === 'mobil'
+        || $inputNameTmp === 'tel'
+        || $inputNameTmp === 'fax'}
+        {if $errCode == 1}
             {lang assign='invalidReason' key='fillOut' section='global'}
-        {elseif $fehlendeAngaben.{$inputName} == 2}
+        {elseif $errCode == 2}
             {lang assign='invalidReason' key='invalidTel' section='global'}
         {/if}
-    {elseif $inputName === 'vorname'}
-        {if $fehlendeAngaben.vorname == 1}
+    {elseif $inputNameTmp === 'vorname'}
+        {if $errCode == 1}
             {lang assign='invalidReason' key='fillOut' section='global'}
-        {elseif $fehlendeAngaben.vorname == 2}
+        {elseif $errCode == 2}
             {lang assign='invalidReason' key='firstNameNotNumeric' section='account data'}
         {/if}
-    {elseif $inputName === 'nachname'}
-        {if $fehlendeAngaben.nachname == 1}
+    {elseif $inputNameTmp === 'nachname'}
+        {if $errCode == 1}
             {lang assign='invalidReason' key='fillOut' section='global'}
-        {elseif $fehlendeAngaben.nachname == 2}
+        {elseif $errCode == 2}
             {lang assign='invalidReason' key='lastNameNotNumeric' section='account data'}
         {/if}
-    {elseif $inputName === 'geburtstag'}
-        {if $fehlendeAngaben.geburtstag == 1}
+    {elseif $inputNameTmp === 'geburtstag'}
+        {if $errCode == 1}
             {lang assign='invalidReason' key='fillOut' section='global'}
-        {elseif $fehlendeAngaben.geburtstag == 2}
+        {elseif $errCode == 2}
             {lang assign='invalidReason' key='invalidDateformat' section='global'}
-        {elseif $fehlendeAngaben.geburtstag == 3}
+        {elseif $errCode == 3}
             {lang assign='invalidReason' key='invalidDate' section='global'}
         {/if}
-    {elseif $inputName === 'www'}
-        {if $fehlendeAngaben.www == 1}
+    {elseif $inputNameTmp === 'www'}
+        {if $errCode == 1}
             {lang assign='invalidReason' key='fillOut' section='global'}
-        {elseif $fehlendeAngaben.www == 2}
+        {elseif $errCode == 2}
             {lang assign='invalidReason' key='invalidURL' section='global'}
         {/if}
     {else}

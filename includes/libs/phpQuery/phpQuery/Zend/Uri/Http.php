@@ -473,7 +473,7 @@ class Zend_Uri_Http extends Zend_Uri
         }
 
         // Check the port against the allowed values
-        return ctype_digit((string) $port) and 1 <= $port and $port <= 65535;
+        return ctype_digit((string)$port) and 1 <= $port and $port <= 65535;
     }
 
     /**
@@ -533,7 +533,7 @@ class Zend_Uri_Http extends Zend_Uri
             throw new Zend_Uri_Exception('Internal error: path validation failed');
         }
 
-        return (boolean) $status;
+        return (boolean)$status;
     }
 
     /**
@@ -620,7 +620,7 @@ class Zend_Uri_Http extends Zend_Uri
             $query = http_build_query($query, '', '&');
         } else {
             // If it is a string, make sure it is valid. If not parse and encode it
-            $query = (string) $query;
+            $query = (string)$query;
             if ($this->validateQuery($query) === false) {
                 parse_str($query, $queryArray);
                 $query = http_build_query($queryArray, '', '&');
@@ -676,7 +676,7 @@ class Zend_Uri_Http extends Zend_Uri
             throw new Zend_Uri_Exception('Internal error: fragment validation failed');
         }
 
-        return (boolean) $status;
+        return (boolean)$status;
     }
 
     /**

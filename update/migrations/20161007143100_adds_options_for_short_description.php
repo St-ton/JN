@@ -6,19 +6,11 @@
  * @created Fri, 07 Oct 2016 14:31:00 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
- * Migration
- *
- * Available methods:
- * execute            - returns affected rows
- * fetchOne           - single fetched object
- * fetchAll           - array of fetched objects
- * fetchArray         - array of fetched assoc arrays
- * dropColumn         - drops a column if exists
- * addLocalization    - add localization
- * removeLocalization - remove localization
- * setConfig          - add / update config property
- * removeConfig       - remove config property
+ * Class Migration_20161007143100
  */
 class Migration_20161007143100 extends Migration implements IMigration
 {
@@ -26,18 +18,36 @@ class Migration_20161007143100 extends Migration implements IMigration
 
     public function up()
     {
-        $this->setConfig('artikeldetails_kurzbeschreibung_anzeigen', 'Y', 5, 'Kurzbeschreibung anzeigen', 'selectbox', 365, (object)[
-            'cBeschreibung' => 'Soll die Kurzbeschreibung des Artikels auf der Detailseite angezeigt werden?',
-            'inputOptions'  => [
-                'Y' => 'Ja',
-                'N' => 'Nein'
-            ]]);
-        $this->setConfig('artikeluebersicht_kurzbeschreibung_anzeigen', 'N', 4, 'Kurzbeschreibung anzeigen', 'selectbox', 315, (object)[
-            'cBeschreibung' => 'Soll die Kurzbeschreibung des Artikels auf &Uuml;bersichtsseiten angezeigt werden?',
-            'inputOptions'  => [
-                'Y' => 'Ja',
-                'N' => 'Nein'
-            ]]);
+        $this->setConfig(
+            'artikeldetails_kurzbeschreibung_anzeigen',
+            'Y',
+            \CONF_ARTIKELDETAILS,
+            'Kurzbeschreibung anzeigen',
+            'selectbox',
+            365,
+            (object)[
+                'cBeschreibung' => 'Soll die Kurzbeschreibung des Artikels auf der Detailseite angezeigt werden?',
+                'inputOptions'  => [
+                    'Y' => 'Ja',
+                    'N' => 'Nein'
+                ]
+            ]
+        );
+        $this->setConfig(
+            'artikeluebersicht_kurzbeschreibung_anzeigen',
+            'N',
+            \CONF_ARTIKELUEBERSICHT,
+            'Kurzbeschreibung anzeigen',
+            'selectbox',
+            315,
+            (object)[
+                'cBeschreibung' => 'Soll die Kurzbeschreibung des Artikels auf &Uuml;bersichtsseiten angezeigt werden?',
+                'inputOptions'  => [
+                    'Y' => 'Ja',
+                    'N' => 'Nein'
+                ]
+            ]
+        );
     }
 
     public function down()

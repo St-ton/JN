@@ -9,14 +9,8 @@
     {assign var='unreg_form' value=1}
     {assign var='unreg_step' value='formular'}
 {/if}
-{if !empty($cFehler)}
-    <div class="alert alert-danger">{$cFehler}</div>
-{/if}
-{if !empty($fehlendeAngaben) && !$hinweis}
+{if !empty($fehlendeAngaben) && !$alertNote}
     <div class="alert alert-danger">{lang key='mandatoryFieldNotification' section='errorMessages'}</div>
-{/if}
-{if $hinweis}
-    <div class="alert alert-info">{$hinweis}</div>
 {/if}
 <div class="row">
     <div class="col-xs-12">

@@ -80,7 +80,7 @@ class Zend_Validate_Barcode extends Zend_Validate_Abstract
 
         require_once 'Zend/Validate/Barcode/' . $className . '.php';
 
-        $class = 'Zend_Validate_Barcode_' . $className;
+        $class                   = 'Zend_Validate_Barcode_' . $className;
         $this->_barcodeValidator = new $class;
     }
 

@@ -4,122 +4,121 @@
  *  (c) 2010 Andreas Juetten <andreasjuetten@gmx.de>
  */
 
-define('LF', "\n\n");
+namespace JTL;
 
 /**
  * Class SimpleCSS
+ * @package JTL
  */
 class SimpleCSS
 {
+    protected const LF = "\n\n";
+
     /**
      * @var array
      */
     public $cCSS_arr = [];
 
     /**
-     * @param string $cSelector
-     * @param string $cAttribute
-     * @param string $cValue
+     * @param string $selector
+     * @param string $attribute
+     * @param string $value
      * @return $this
      */
-    public function addCSS($cSelector, $cAttribute, $cValue): self
+    public function addCSS($selector, $attribute, $value): self
     {
-        if (isset($this->cCSS_arr[$cSelector])) {
-            $this->cCSS_arr[$cSelector] = array_merge($this->cCSS_arr[$cSelector], [$cAttribute => $cValue]);
+        if (isset($this->cCSS_arr[$selector])) {
+            $this->cCSS_arr[$selector] = \array_merge($this->cCSS_arr[$selector], [$attribute => $value]);
         } else {
-            $this->cCSS_arr[$cSelector] = [$cAttribute => $cValue];
+            $this->cCSS_arr[$selector] = [$attribute => $value];
         }
 
         return $this;
     }
 
     /**
-     * @param string $cFile
+     * @param string $filename
      * @return bool
      */
-    public function addFile(string $cFile): bool
+    public function addFile(string $filename): bool
     {
-        if (!file_exists($cFile)) {
+        if (!\file_exists($filename)) {
             return false;
         }
-        $cData            = file_get_contents($cFile);
-        $cData            = preg_replace('!/\*.*?\*/!s', '', $cData);
-        $cData_arr        = preg_split('/\{|\}/', $cData);
-        $dataCount        = count($cData_arr);
-        $cSelector_arr    = [];
-        $cCSSBaseAttr_arr = [];
+        $data              = \file_get_contents($filename);
+        $data              = \preg_replace('!/\*.*?\*/!s', '', $data);
+        $split             = \preg_split('/\{|\}/', $data);
+        $dataCount         = \count($split);
+        $selectors         = [];
+        $cssBaseAttributes = [];
         for ($i = 0; $i < $dataCount; $i++) {
             if ($i % 2 === 0) {
-                $cCSSBaseAttr_arr = [];
-                $cSelector_arr    = explode(',', $cData_arr[$i]);
+                $cssBaseAttributes = [];
+                $selectors         = \explode(',', $split[$i]);
             } else {
-                $cAttr_arr = explode(';', $cData_arr[$i]);
-                $cAttr_arr = $this->trimCSSData($cAttr_arr);
-                foreach ($cAttr_arr as $cAttr) {
-                    $cTmpAttr_arr = explode(':', $cAttr);
-                    if (is_array($cTmpAttr_arr) && count($cTmpAttr_arr) === 2) {
-                        $cName                    = trim($cTmpAttr_arr[0]);
-                        $cCSSBaseAttr_arr[$cName] = trim($cTmpAttr_arr[1]);
+                $attributes = \explode(';', $split[$i]);
+                $attributes = $this->trimCSSData($attributes);
+                foreach ($attributes as $attribute) {
+                    $tmp = \explode(':', $attribute);
+                    if (\is_array($tmp) && \count($tmp) === 2) {
+                        $name                     = \trim($tmp[0]);
+                        $cssBaseAttributes[$name] = \trim($tmp[1]);
                     }
                 }
 
-                foreach ($cSelector_arr as $cSelector) {
-                    $cSelector = trim($cSelector);
-                    $cSelector = preg_replace('#\s+#', ' ', $cSelector);
-                    if (isset($this->cCSS_arr[$cSelector])) {
-                        $this->cCSS_arr[$cSelector] = array_merge($this->cCSS_arr[$cSelector], $cCSSBaseAttr_arr);
+                foreach ($selectors as $selector) {
+                    $selector = \trim($selector);
+                    $selector = \preg_replace('#\s+#', ' ', $selector);
+                    if (isset($this->cCSS_arr[$selector])) {
+                        $this->cCSS_arr[$selector] = \array_merge($this->cCSS_arr[$selector], $cssBaseAttributes);
                     } else {
-                        $this->cCSS_arr[$cSelector] = $cCSSBaseAttr_arr;
+                        $this->cCSS_arr[$selector] = $cssBaseAttributes;
                     }
                 }
             }
         }
 
-        return count($this->cCSS_arr) > 0;
+        return \count($this->cCSS_arr) > 0;
     }
 
     /**
-     * @param array $cData_arr
+     * @param array $data
      * @return array
      */
-    public function trimCSSData(array $cData_arr): array
+    public function trimCSSData(array $data): array
     {
-        $cCSS_arr = [];
-        foreach ($cData_arr as $cData) {
-            $cData = trim($cData);
+        $css = [];
+        foreach ($data as $cData) {
+            $cData = \trim($cData);
             if ($cData !== '') {
-                $cCSS_arr[] = $cData;
+                $css[] = $cData;
             }
         }
 
-        return $cCSS_arr;
+        return $css;
     }
 
     /**
-     * @param string $cSelector
+     * @param string $selector
      * @return mixed|bool
      */
-    public function getSelector($cSelector)
+    public function getSelector($selector)
     {
-        if (is_array($this->cCSS_arr) && count($this->cCSS_arr) && isset($this->cCSS_arr[$cSelector])) {
-            return $this->cCSS_arr[$cSelector];
-        }
-
-        return false;
+        return $this->cCSS_arr[$selector] ?? false;
     }
 
     /**
-     * @param string $cSelector
-     * @param string $cKey
+     * @param string $selector
+     * @param string $key
      * @return mixed|bool
      */
-    public function getAttribute($cSelector, $cKey)
+    public function getAttribute($selector, $key)
     {
-        $cAttr_arr = $this->getSelector($cSelector);
-        if (is_array($cAttr_arr) && count($cAttr_arr)) {
-            foreach ($cAttr_arr as $cAttrKey => $cValue) {
-                if (strcasecmp($cAttrKey, $cKey) === 0) {
-                    return $cValue;
+        $item = $this->getSelector($selector);
+        if (\is_array($item) && \count($item)) {
+            foreach ($item as $attrKey => $value) {
+                if (\strcasecmp($attrKey, $key) === 0) {
+                    return $value;
                 }
             }
         }
@@ -132,7 +131,7 @@ class SimpleCSS
      */
     public function getCSS(): array
     {
-        return is_array($this->cCSS_arr) && count($this->cCSS_arr)
+        return \is_array($this->cCSS_arr) && \count($this->cCSS_arr)
             ? $this->cCSS_arr
             : [];
     }
@@ -142,71 +141,69 @@ class SimpleCSS
      */
     public function renderCSS(): string
     {
-        $cOut = '';
-        if (is_array($this->cCSS_arr) && count($this->cCSS_arr)) {
-            foreach ($this->cCSS_arr as $cSelector => $cAttribute) {
-                $cOut .= $cSelector . ' {' . LF;
-                foreach ($cAttribute as $cKey => $cValue) {
-                    if (strlen($cKey) && strlen($cValue)) {
-                        $cOut .= '   ' . $cKey . ': ' . $cValue . ';' . LF;
+        $ret = '';
+        if (\is_array($this->cCSS_arr) && \count($this->cCSS_arr)) {
+            foreach ($this->cCSS_arr as $selector => $attribute) {
+                $ret .= $selector . ' {' . self::LF;
+                foreach ($attribute as $cKey => $cValue) {
+                    if (\mb_strlen($cKey) && \mb_strlen($cValue)) {
+                        $ret .= '   ' . $cKey . ': ' . $cValue . ';' . self::LF;
                     }
                 }
-                $cOut .= '}' . LF;
+                $ret .= '}' . self::LF;
             }
         }
 
-        return $cOut;
+        return $ret;
     }
 
     /**
-     * @param string $cOrdner
+     * @param string $dir
      * @return string
      */
-    public function getTemplatePath(string $cOrdner): string
+    public function getTemplatePath(string $dir): string
     {
-        return realpath(PFAD_ROOT . PFAD_TEMPLATES . basename($cOrdner)) . '/';
+        return \realpath(\PFAD_ROOT . \PFAD_TEMPLATES . \basename($dir)) . '/';
     }
 
     /**
-     * @param string $cOrdner
+     * @param string $dir
      * @return string
      */
-    public function getCustomCSSFile(string $cOrdner): string
+    public function getCustomCSSFile(string $dir): string
     {
-        return $this->getTemplatePath($cOrdner) . 'themes/custom.css';
+        return $this->getTemplatePath($dir) . 'themes/custom.css';
     }
 
     /**
-     * @param string $cValue
-     * @param string $cType
-     * @return bool|string
+     * @param string $value
+     * @param string $type
+     * @return bool|string|array
      */
-    public function getAttrAs($cValue, $cType)
+    public function getAttrAs($value, $type)
     {
-        $cMatch_arr = [];
-
-        switch ($cType) {
-            case 'color': {
+        $matches = [];
+        switch ($type) {
+            case 'color':
                 // rgb(255,255,255)
-                if (preg_match('/rgb(\s*)\(([\d\s]+),([\d\s]+),([\d\s]+)\)/', $cValue, $cMatch_arr)) {
-                    return $this->rgb2html((int)$cMatch_arr[2], (int)$cMatch_arr[3], (int)$cMatch_arr[4]);
+                if (\preg_match('/rgb(\s*)\(([\d\s]+),([\d\s]+),([\d\s]+)\)/', $value, $matches)) {
+                    return $this->rgb2html((int)$matches[2], (int)$matches[3], (int)$matches[4]);
                 } // #fff or #ffffff
-                if (preg_match('/#([\w\d]+)/', $cValue, $cMatch_arr)) {
-                    return trim($cMatch_arr[0]);
+                if (\preg_match('/#([\w\d]+)/', $value, $matches)) {
+                    return  \trim($matches[0]);
                 }
                 break;
-            }
 
-            case 'size': {
+            case 'size':
                 // 1.2em 15% '12 px'
-                if (preg_match('/([\d\.]+)(.*)/', $cValue, $cMatch_arr)) {
-                    $cOut['numeric'] = (float)$cMatch_arr[1];
-                    $cOut['unit']    = trim($cMatch_arr[2]);
+                if (\preg_match('/([\d\.]+)(.*)/', $value, $matches)) {
+                    $out            = [];
+                    $out['numeric'] = (float)$matches[1];
+                    $out['unit']    = \trim($matches[2]);
 
-                    return $cOut;
+                    return $out;
                 }
                 break;
-            }
 
             default:
                 break;
@@ -223,20 +220,20 @@ class SimpleCSS
      */
     public function rgb2html($r, $g, $b): string
     {
-        if (is_array($r) && count($r) === 3) {
-            list($r, $g, $b) = $r;
+        if (\is_array($r) && \count($r) === 3) {
+            [$r, $g, $b] = $r;
         }
         $r = (int)$r;
         $g = (int)$g;
         $b = (int)$b;
 
-        $r = dechex($r < 0 ? 0 : ($r > 255 ? 255 : $r));
-        $g = dechex($g < 0 ? 0 : ($g > 255 ? 255 : $g));
-        $b = dechex($b < 0 ? 0 : ($b > 255 ? 255 : $b));
+        $r = \dechex($r < 0 ? 0 : ($r > 255 ? 255 : $r));
+        $g = \dechex($g < 0 ? 0 : ($g > 255 ? 255 : $g));
+        $b = \dechex($b < 0 ? 0 : ($b > 255 ? 255 : $b));
 
-        $color = (strlen($r) < 2 ? '0' : '') . $r;
-        $color .= (strlen($g) < 2 ? '0' : '') . $g;
-        $color .= (strlen($b) < 2 ? '0' : '') . $b;
+        $color  = (\mb_strlen($r) < 2 ? '0' : '') . $r;
+        $color .= (\mb_strlen($g) < 2 ? '0' : '') . $g;
+        $color .= (\mb_strlen($b) < 2 ? '0' : '') . $b;
 
         return '#' . $color;
     }
@@ -247,23 +244,23 @@ class SimpleCSS
      */
     public function html2rgb($color)
     {
-        if ($color[0] === '#') {
-            $color = substr($color, 1);
+        if (\mb_strpos($color, '#') === 0) {
+            $color = \mb_substr($color, 1);
         }
-        if (strlen($color) === 6) {
-            list($r, $g, $b) = [
+        if (\mb_strlen($color) === 6) {
+            [$r, $g, $b] = [
                 $color[0] . $color[1],
                 $color[2] . $color[3],
                 $color[4] . $color[5]
             ];
-        } elseif (strlen($color) === 3) {
-            list($r, $g, $b) = [$color[0] . $color[0], $color[1] . $color[1], $color[2] . $color[2]];
+        } elseif (\mb_strlen($color) === 3) {
+            [$r, $g, $b] = [$color[0] . $color[0], $color[1] . $color[1], $color[2] . $color[2]];
         } else {
             return false;
         }
-        $r = hexdec($r);
-        $g = hexdec($g);
-        $b = hexdec($b);
+        $r = \hexdec($r);
+        $g = \hexdec($g);
+        $b = \hexdec($b);
 
         return [$r, $g, $b];
     }

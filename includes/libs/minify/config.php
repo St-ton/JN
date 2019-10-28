@@ -6,7 +6,6 @@
  * @package Minify
  */
 
-
 /**
  * Enable the static serving feature
  */
@@ -38,7 +37,6 @@ $min_builderPassword = 'admin';
  */
 $min_errorLogger = false;
 
-
 /**
  * To allow debug mode output, you must set this option to true.
  *
@@ -61,7 +59,10 @@ $min_allowDebugFlag = false;
 //$min_cachePath = 'c:\\WINDOWS\\Temp';
 //$min_cachePath = '/tmp';
 //$min_cachePath = preg_replace('/^\\d+;/', '', session_save_path());
+$min_cachePath = PFAD_ROOT . PFAD_COMPILEDIR;
 
+$min_factories = [];
+$min_envArgs   = null;
 
 /**
  * To use APC/Memcache/ZendPlatform for cache storage, require the class and
@@ -198,4 +199,3 @@ $min_uploaderHoursBehind = 0;
  */
 //$min_factories['minify'] = ... a callable accepting a Minify\App object
 //$min_factories['controller'] = ... a callable accepting a Minify\App object
-

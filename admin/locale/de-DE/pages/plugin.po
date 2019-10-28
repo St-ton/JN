@@ -1,0 +1,15 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "plugin"
+msgstr "Plugin"
+
+msgid "pluginVersion"
+msgstr "Version"
+
+msgid "pluginAuthor"
+msgstr "Autor"
+
+msgid "pluginHomepage"
+msgstr "Website"

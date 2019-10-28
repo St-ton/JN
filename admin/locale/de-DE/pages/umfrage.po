@@ -1,0 +1,189 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "umfrage"
+msgstr "Umfragesystem"
+
+msgid "umfrageDesc"
+msgstr "Hier können Sie Umfragen unter Ihren Kunden erstellen, mit denen Sie beispielsweise die Zufriedenheit Ihrer Kunden messen oder Marktforschung zu neuen gewünschten Produkten betreiben können. Um das Umfragemodul benutzen zu können, müssen Sie es vorher im JTL-Kundencenter erwerben oder testen und die Lizenz in der Onlineshop-Anbindung von JTL-Wawi aktivieren."
+
+msgid "umfrageURL"
+msgstr "https://jtl-url.de/nx0d7"
+
+msgid "umfrageAdd"
+msgstr "Neue Umfrage erstellen"
+
+msgid "umfrageOverview"
+msgstr "Umfragen"
+
+msgid "umfrageValidation"
+msgstr "Gültigkeit"
+
+msgid "umfrageDate"
+msgstr "Erstellt am"
+
+msgid "umfrageInfinite"
+msgstr "immer"
+
+msgid "umfrageExtraPoints"
+msgstr "Bonuspunkte"
+
+msgid "umfrageNoCoupon"
+msgstr "Keinen Coupon"
+
+msgid "umfrageType"
+msgstr "Typ"
+
+msgid "umfrageAnotherQ"
+msgstr "Weitere Frage"
+
+msgid "umfrageSaveQ"
+msgstr "Speichern und beenden"
+
+msgid "umfrageEnterQ"
+msgstr "Fragen hinzufügen"
+
+msgid "umfrageEnter"
+msgstr "Umfrage erstellen"
+
+msgid "umfrageQ"
+msgstr "Frage"
+
+msgid "umfrageQType"
+msgstr "Typ"
+
+msgid "umfrageQs"
+msgstr "Fragen"
+
+msgid "umfrageQA"
+msgstr "Antworten"
+
+msgid "umfrageQASing"
+msgstr "Antwort"
+
+msgid "umfrageQO"
+msgstr "Optionen"
+
+msgid "umfrageQAdd"
+msgstr "Frage hinzufügen"
+
+msgid "umfrageQFreeField"
+msgstr "Freifeld hinzufügen"
+
+msgid "umfrageQEssential"
+msgstr "Pflichtfrage"
+
+msgid "umfrageStats"
+msgstr "Statistik"
+
+msgid "umfrageStatsView"
+msgstr "Statistik aufrufen"
+
+msgid "umfrageQResPercent"
+msgstr "Antworten (Prozent)"
+
+msgid "umfrageQResCount"
+msgstr "Antworten (Anzahl)"
+
+msgid "umfrageQMax"
+msgstr "Gesamtanzahl"
+
+msgid "umfrageTryCount"
+msgstr "Anzahl vollständiger Durchläufe"
+
+msgid "umfrageQCount"
+msgstr "Anzahl Fragen"
+
+msgid "umfrageQADelete"
+msgstr "Antwort löschen"
+
+msgid "umfrageQODelete"
+msgstr "Option löschen"
+
+msgid "umfrageQSort"
+msgstr "Sortierung"
+
+msgid "errorPollNotFound"
+msgstr "Die Umfrage konnte nicht gefunden werden."
+
+msgid "successPollCreateNextSteps"
+msgstr "Die Umfrage wurde erfolgreich gespeichert. Bitte folgen Sie nun den weiteren Schritten."
+
+msgid "errorRewardMissing"
+msgstr "Bitte geben Sie nur eine Belohnungsart an."
+
+msgid "errorDataMissing"
+msgstr "Bitte geben Sie einen Namen, mindestens eine Kundengruppe und ein gültiges Anfangsdatum ein."
+
+msgid "errorQuestionTypeNotCompatible"
+msgstr "Der gewählte Fragentyp ist leider nicht kompatibel mit dem vorherigen. Um den Fragetyp zu ändern, setzen Sie bitte die Frage zurück."
+
+msgid "successQuestionSave"
+msgstr "Die Frage wurde erfolgreich gespeichert."
+
+msgid "errorMinNameTypeMissing"
+msgstr "Bitte tragen Sie mindestens eine Frage und einen Typ ein."
+
+msgid "successPollDelete"
+msgstr "Die markierten Umfragen wurden erfolgreich gelöscht."
+
+msgid "successAtLeastOnePoll"
+msgstr "Bitte markieren Sie mindestens eine Umfrage."
+
+msgid "successQuestionDelete"
+msgstr "Die markierten Fragen wurden erfolgreich gelöscht."
+
+msgid "successAnswerDelete"
+msgstr "Die markierten Antworten wurden erfolgreich gelöscht."
+
+msgid "successOptionDelete"
+msgstr "Die markierten Optionen wurden erfolgreich gelöscht."
+
+msgid "errorNoStatistic"
+msgstr "Für diese Umfrage gibt es noch keine Statistik."
+
+msgid "errorPollSelect"
+msgstr "Die von Ihnen gewählte Umfrage existiert nicht."
+
+msgid "questionTypeMultipleChoiceOne"
+msgstr "Radiobutton (eine Antwort wählbar)"
+
+msgid "questionTypeMultipleChoiceMany"
+msgstr "Mehrfachauswahl (mehrere Antworten wählbar)"
+
+msgid "questionTypeSelectboxOne"
+msgstr "Liste (Einfachauswahl)"
+
+msgid "questionTypeSelectboxMany"
+msgstr "Liste (Mehrfachauswahl)"
+
+msgid "questionTypeTextSmall"
+msgstr "Textfeld (klein)"
+
+msgid "questionTypeTextBig"
+msgstr "Textfeld (groß)"
+
+msgid "questionTypeMatrixOne"
+msgstr "Matrix (eine Antwort pro Zeile)"
+
+msgid "questionTypeMatrixMany"
+msgstr "Matrix (mehrere Antworten pro Zeile)"
+
+msgid "questionTypeDivider"
+msgstr "Strukturelement: statischer Text"
+
+msgid "questionTypeDividerNewPage"
+msgstr "Strukturelement: statischer Text"
+
+msgid "addAnswer"
+msgstr "Antwort hinzufügen"
+
+msgid "addOption"
+msgstr "Option hinzufügen"
+
+msgid "activePolls"
+msgstr "Aktive Umfragen"
+
+msgid "pollSortHint"
+msgstr "Geben Sie hier eine Nummer für die Sortierung der Fragen ein. Je kleiner die Zahl, desto weiter oben wird die Frage in der Liste angezeigt."

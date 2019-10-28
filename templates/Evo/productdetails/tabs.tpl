@@ -14,29 +14,27 @@
     {$showShippingWeight = true}
 {/if}
 {$dimension = $Artikel->getDimension()}
+{$funcAttr = $Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_ATTRIBUTEANHAENGEN]|default:0}
 {$showAttributesTable = ($Einstellungen.artikeldetails.merkmale_anzeigen === 'Y'
     && !empty($Artikel->oMerkmale_arr) || $showProductWeight || $showShippingWeight
     || $Einstellungen.artikeldetails.artikeldetails_abmessungen_anzeigen === 'Y'
     && (!empty($dimension['length']) || !empty($dimension['width']) || !empty($dimension['height']))
     || isset($Artikel->cMasseinheitName) && isset($Artikel->fMassMenge) && $Artikel->fMassMenge > 0
     && $Artikel->cTeilbar !== 'Y' && ($Artikel->fAbnahmeintervall == 0 || $Artikel->fAbnahmeintervall == 1)
-    || ($Einstellungen.artikeldetails.artikeldetails_attribute_anhaengen === 'Y'
-    || (isset($Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ATTRIBUTEANHAENGEN])
-    && $Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ATTRIBUTEANHAENGEN] == 1)) && !empty($Artikel->Attribute))}
+    || ($Einstellungen.artikeldetails.artikeldetails_attribute_anhaengen === 'Y' || $funcAttr == 1)
+    && !empty($Artikel->Attribute))}
 {$useDescriptionWithMediaGroup = ((($Einstellungen.artikeldetails.mediendatei_anzeigen === 'YA'
     && $Artikel->cMedienDateiAnzeige !== 'tab') || $Artikel->cMedienDateiAnzeige === 'beschreibung')
-    && !empty($Artikel->cMedienTyp_arr))}
+    && !empty($Artikel->getMediaTypes()))}
 {$useDescription = (($Artikel->cBeschreibung|strlen > 0) || $useDescriptionWithMediaGroup || $showAttributesTable)}
 {$useDownloads = (isset($Artikel->oDownload_arr) && $Artikel->oDownload_arr|@count > 0)}
 {$useVotes = $Einstellungen.bewertung.bewertung_anzeigen === 'Y'}
 {$useQuestionOnItem = $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'Y'}
 {$usePriceFlow = ($Einstellungen.preisverlauf.preisverlauf_anzeigen === 'Y' && $bPreisverlauf)}
-{$useAvailabilityNotification = ($verfuegbarkeitsBenachrichtigung == 1 && $Artikel->cLagerBeachten === 'Y')}
+{$useAvailabilityNotification = ($verfuegbarkeitsBenachrichtigung === 1)}
 {$useMediaGroup = ((($Einstellungen.artikeldetails.mediendatei_anzeigen === 'YM'
     && $Artikel->cMedienDateiAnzeige !== 'beschreibung') || $Artikel->cMedienDateiAnzeige === 'tab')
-    && !empty($Artikel->cMedienTyp_arr))}
-{$useTags = ($Einstellungen.artikeldetails.tagging_anzeigen === 'Y' && (count($ProduktTagging) > 0
-    || $Einstellungen.artikeldetails.tagging_freischaltung !== 'N'))}
+    && !empty($Artikel->getMediaTypes()))}
 {$hasVotesHash = isset($smarty.get.ratings_nPage)
     || isset($smarty.get.bewertung_anzeigen)
     || isset($smarty.get.ratings_nItemsPerPage)
@@ -66,14 +64,13 @@
     'availabilityNotification' => (!$useVotes && !$hasVotesHash && !$useDescription && !$useDownloads
         && empty($separatedTabs) && !$useQuestionOnItem && !$usePriceFlow),
     'mediaGroup' => (!$useVotes && !$hasVotesHash && !$useDescription && !$useDownloads && empty($separatedTabs)
-        && !$useQuestionOnItem && !$usePriceFlow && !$useAvailabilityNotification),
-    'tags' => (!$useVotes && !$hasVotesHash && !$useDescription && !$useDownloads && empty($separatedTabs)
-        && !$useQuestionOnItem && !$usePriceFlow && !$useAvailabilityNotification && !$useMediaGroup)
+        && !$useQuestionOnItem && !$usePriceFlow && !$useAvailabilityNotification)
 ]}
 
 {if useDescription || $useDownloads || $useDescriptionWithMediaGroup || $useVotes || $useQuestionOnItem || $usePriceFlow
-    || $useAvailabilityNotification || $useMediaGroup || $useTags || !empty($separatedTabs)}
+    || $useAvailabilityNotification || $useMediaGroup || !empty($separatedTabs)}
     {if $tabanzeige}
+        {opcMountPoint id='opc_before_tabs'}
         <ul class="nav nav-tabs bottom15" role="tablist">
             {if $useDescription}
                 <li role="presentation" {if $setActiveClass.description} class="active"{/if}>
@@ -131,22 +128,15 @@
                 </li>
             {/if}
             {if $useMediaGroup}
-                {foreach $Artikel->cMedienTyp_arr as $cMedienTyp}
-                    {$cMedienTypId = $cMedienTyp|regex_replace:"/[\'\"\/ ]/":""}
+                {foreach $Artikel->getMediaTypes() as $mediaType}
+                    {$cMedienTypId = $mediaType->name|@seofy}
                     <li role="presentation"
-                        {if $setActiveClass.mediaGroup && $cMedienTyp@first} class="active"{/if}>
+                        {if $setActiveClass.mediaGroup && $mediaType@first} class="active"{/if}>
                         <a href="#tab-{$cMedienTypId}" aria-controls="tab-{$cMedienTypId}" role="tab" data-toggle="tab">
-                            {$cMedienTyp}
+                            {$mediaType->name} ({$mediaType->count})
                         </a>
                     </li>
                 {/foreach}
-            {/if}
-            {if $useTags}
-                <li role="presentation" {if $setActiveClass.tags} class="active"{/if}>
-                    <a href="#tab-tags" aria-controls="tab-tags" role="tab" data-toggle="tab">
-                        {lang key='productTags' section='productDetails'}
-                    </a>
-                </li>
             {/if}
         </ul>
     {/if}
@@ -166,19 +156,21 @@
             <div class="tab-content-wrapper">
                 {block name='tab-description'}
                     {block name='tab-description-content'}
+                        {opcMountPoint id='opc_before_desc'}
                         <div class="desc">
                             {$Artikel->cBeschreibung}
                             {if $useDescriptionWithMediaGroup}
                                 {if $Artikel->cBeschreibung|strlen > 0}
                                     <hr>
                                 {/if}
-                                {foreach $Artikel->cMedienTyp_arr as $cMedienTyp}
+                                {foreach $Artikel->getMediaTypes() as $mediaType}
                                     <div class="media">
                                         {include file='productdetails/mediafile.tpl'}
                                     </div>
                                 {/foreach}
                             {/if}
                         </div>
+                        {opcMountPoint id='opc_after_desc'}
                     {/block}
                     {block name='tab-description-attributes'}
                         {if (!empty($Artikel->cBeschreibung) || $useDescriptionWithMediaGroup) && $showAttributesTable}
@@ -244,7 +236,7 @@
             {else}
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">{lang section='productDownloads' key='downloadSection'}</h3>
+                        <h3 class="panel-title">{lang key='Votes'}</h3>
                     </div>
                     <div class="panel-body" id="tab-votes">
             {/if}
@@ -314,16 +306,16 @@
             {/if}
         {/if}
         {if $useMediaGroup}
-            {foreach $Artikel->cMedienTyp_arr as $cMedienTyp}
-                {$cMedienTypId = $cMedienTyp|regex_replace:"/[\'\"\/ ]/":""}
+            {foreach $Artikel->getMediaTypes() as $mediaType}
+                {$cMedienTypId = $mediaType->name|@seofy}
                 {if $tabanzeige}
                     <div role="tabpanel"
-                        class="tab-pane fade{if $setActiveClass.mediaGroup && $cMedienTyp@first} in active{/if}"
+                        class="tab-pane fade{if $setActiveClass.mediaGroup && $mediaType@first} in active{/if}"
                         id="tab-{$cMedienTypId}">
                 {else}
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title">{$cMedienTyp}</h3>
+                            <h3 class="panel-title">{$mediaType->name}</h3>
                         </div>
                         <div class="panel-body" id="tab-{$cMedienTypId}">
                 {/if}
@@ -335,24 +327,6 @@
                     </div>
                 {/if}
             {/foreach}
-        {/if}
-        {if $useTags}
-            {if $tabanzeige}
-                <div role="tabpanel" class="tab-pane fade {if $setActiveClass.tags} in active{/if}" id="tab-tags">
-            {else}
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">{lang key='productTags' section='productDetails'}</h3>
-                    </div>
-                    <div class="panel-body" id="tab-tags">
-            {/if}
-            {include file='productdetails/tags.tpl'}
-            {if $tabanzeige}
-                </div>
-            {else}
-                    </div>
-                </div>
-            {/if}
         {/if}
     </div>
 {/if}

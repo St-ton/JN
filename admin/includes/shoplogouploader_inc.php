@@ -4,58 +4,60 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Shop;
+
 /**
  * Speichert das aktuelle ShopLogo
  *
- * @param array $cFiles_arr
+ * @param array $files
  * @return int
  * 1 = Alles O.K.
  * 2 = Dateiname leer
  * 3 = Dateityp entspricht nicht der Konvention (Nur jpg/gif/png/bmp/ Bilder) oder fehlt
  * 4 = Konnte nicht bewegen
  */
-function saveShopLogo(array $cFiles_arr): int
+function saveShopLogo(array $files): int
 {
     if (!file_exists(PFAD_ROOT . PFAD_SHOPLOGO)) {
         mkdir(PFAD_ROOT . PFAD_SHOPLOGO);
     }
     // Prüfe Dateiname
-    if (strlen($cFiles_arr['shopLogo']['name']) > 0) {
-        // Prüfe Dateityp
-        if ($cFiles_arr['shopLogo']['type'] !== 'image/jpeg'
-            && $cFiles_arr['shopLogo']['type'] !== 'image/pjpeg'
-            && $cFiles_arr['shopLogo']['type'] !== 'image/gif'
-            && $cFiles_arr['shopLogo']['type'] !== 'image/png'
-            && $cFiles_arr['shopLogo']['type'] !== 'image/bmp'
-            && $cFiles_arr['shopLogo']['type'] !== 'image/x-png'
-            && $cFiles_arr['shopLogo']['type'] !== 'image/jpg'
-        ) {
-            // Dateityp entspricht nicht der Konvention (Nur jpg/gif/png/bmp/ Bilder) oder fehlt
-            return 3;
-        }
-        $cUploadDatei = PFAD_ROOT . PFAD_SHOPLOGO . basename($cFiles_arr['shopLogo']['name']);
-        if ($cFiles_arr['shopLogo']['error'] === UPLOAD_ERR_OK
-            && move_uploaded_file($cFiles_arr['shopLogo']['tmp_name'], $cUploadDatei)
-        ) {
-            $option                        = new stdClass();
-            $option->kEinstellungenSektion = CONF_LOGO;
-            $option->cName                 = 'shop_logo';
-            $option->cWert                 = $cFiles_arr['shopLogo']['name'];
-            Shop::Container()->getDB()->update('teinstellungen', 'cName', 'shop_logo', $option);
-            Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
+    if (empty($files['shopLogo']['name'])) {
+        return 2; // Dateiname fehlt
+    }
+    // Prüfe Dateityp
+    $allowedTypes = [
+        'image/jpeg',
+        'image/pjpeg',
+        'image/gif',
+        'image/png',
+        'image/x-png',
+        'image/bmp',
+        'image/jpg',
+        'image/svg+xml'
+    ];
+    if (!in_array($files['shopLogo']['type'], $allowedTypes, true)) {
+        // Dateityp entspricht nicht der Konvention (Nur jpg/gif/png/bmp/svg Bilder) oder fehlt
+        return 3;
+    }
+    $file = PFAD_ROOT . PFAD_SHOPLOGO . basename($files['shopLogo']['name']);
+    if ($files['shopLogo']['error'] === UPLOAD_ERR_OK && move_uploaded_file($files['shopLogo']['tmp_name'], $file)) {
+        $option                        = new stdClass();
+        $option->kEinstellungenSektion = CONF_LOGO;
+        $option->cName                 = 'shop_logo';
+        $option->cWert                 = $files['shopLogo']['name'];
+        Shop::Container()->getDB()->update('teinstellungen', 'cName', 'shop_logo', $option);
+        Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
 
-            return 1; // Alles O.K.
-        }
-
-        return 4;
+        return 1; // Alles O.K.
     }
 
-    return 2; // Dateiname fehlt
+    return 4;
 }
 
 /**
- * @var string $logo
  * @return bool
+ * @var string $logo
  */
 function deleteShopLogo(string $logo): bool
 {
@@ -66,9 +68,11 @@ function deleteShopLogo(string $logo): bool
 
 /**
  * @return bool
+ * @deprecated since 5.0.0
  */
 function loescheAlleShopBilder(): bool
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     if (is_dir(PFAD_ROOT . PFAD_SHOPLOGO) && $dh = opendir(PFAD_ROOT . PFAD_SHOPLOGO)) {
         while (($file = readdir($dh)) !== false) {
             if ($file !== '.' && $file !== '..' && $file !== '.gitkeep') {
@@ -84,37 +88,23 @@ function loescheAlleShopBilder(): bool
 }
 
 /**
- * @param string $cTyp
+ * @param string $type
  * @return string
  */
-function mappeFileTyp(string $cTyp): string
+function mappeFileTyp(string $type): string
 {
-    switch ($cTyp) {
-        case 'image/jpeg':
-            return '.jpg';
-            break;
-        case 'image/pjpeg':
-            return '.jpg';
-            break;
+    switch ($type) {
         case 'image/gif':
             return '.gif';
-            break;
         case 'image/png':
-            return '.png';
-            break;
-        case 'image/bmp':
-            return '.bmp';
-            break;
-        // Adding MIME types that Internet Explorer returns
         case 'image/x-png':
             return '.png';
-            break;
+        case 'image/bmp':
+            return '.bmp';
+        case 'image/pjpeg':
         case 'image/jpg':
-            return '.jpg';
-            break;
-        //default jpg
+        case 'image/jpeg':
         default:
             return '.jpg';
-            break;
     }
 }

@@ -1,29 +1,36 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section='wawisync'}
-{include file='tpl_inc/seite_header.tpl' cTitel=#wawisync# cBeschreibung=#wawisyncDesc# cDokuURL=#wawisyncURL#}
-<div id="content" class="container-fluid">
+{include file='tpl_inc/seite_header.tpl' cTitel=__('wawisync') cBeschreibung=__('wawisyncDesc') cDokuURL=__('wawisyncURL')}
+<div id="content">
     <form action="wawisync.php" method="post">
         {$jtl_token}
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Benutzername/Passwort &auml;ndern</h3>
+        <div class="card">
+            <div class="card-header">
+                <div class="subheading1">{__('username')}/{__('password')} {__('change')}</div>
+                <hr class="mb-n3">
             </div>
-            <div class="panel-body">
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <label for="wawi-user">Benutzer</label>
-                    </span>
-                    <input id="wawi-user" name="wawi-user" class="form-control" type="text" value="{$wawiuser}" />
+            <div class="card-body">
+                <div class="form-group form-row align-items-center">
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="wawi-user">{__('user')}:</label>
+                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                        <input id="wawi-user" name="wawi-user" class="form-control" type="text" value="{$wawiuser}" />
+                    </div>
                 </div>
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <label for="wawi-pass">Passwort</label>
-                    </span>
-                    <input id="wawi-pass" name="wawi-pass" class="form-control" type="password" value="{$wawipass}" />
+                <div class="form-group form-row align-items-center">
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="wawi-pass">{__('password')}:</label>
+                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                        <input id="wawi-pass" name="wawi-pass" class="form-control" type="password" value="{$wawipass}" />
+                    </div>
                 </div>
             </div>
-            <div class="panel-footer">
-                <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Speichern</button>
+            <div class="card-footer save-wrapper">
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        <button type="submit" class="btn btn-primary btn-block">
+                            {__('saveWithIcon')}
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </form>

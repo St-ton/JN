@@ -43,12 +43,12 @@ class Zend_Validate_Date extends Zend_Validate_Abstract
     /**
      * Validation failure message key for when the value does not appear to be a valid date
      */
-    const INVALID        = 'dateInvalid';
+    const INVALID = 'dateInvalid';
 
     /**
      * Validation failure message key for when the value does not fit the given dateformat or locale
      */
-    const FALSEFORMAT    = 'dateFalseFormat';
+    const FALSEFORMAT = 'dateFalseFormat';
 
     /**
      * Validation failure message template definitions
@@ -121,7 +121,7 @@ class Zend_Validate_Date extends Zend_Validate_Abstract
             $locale = new Zend_Locale($locale);
         }
 
-        $this->_locale = (string) $locale;
+        $this->_locale = (string)$locale;
         return $this;
     }
 
@@ -159,7 +159,7 @@ class Zend_Validate_Date extends Zend_Validate_Abstract
      */
     public function isValid($value)
     {
-        $valueString = (string) $value;
+        $valueString = (string)$value;
 
         $this->_setValue($valueString);
 

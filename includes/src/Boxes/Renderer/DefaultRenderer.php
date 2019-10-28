@@ -4,19 +4,21 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Renderer;
+namespace JTL\Boxes\Renderer;
 
-use Boxes\Items\BoxInterface;
+use Exception;
+use JTL\Boxes\Items\BoxInterface;
+use JTL\Smarty\JTLSmarty;
+use SmartyException;
 
 /**
- * Class BoxRenderer
- *
- * @package Boxes
+ * Class DefaultRenderer
+ * @package JTL\Boxes\Renderer
  */
 class DefaultRenderer implements RendererInterface
 {
     /**
-     * @var \JTLSmarty
+     * @var JTLSmarty
      */
     protected $smarty;
 
@@ -37,7 +39,7 @@ class DefaultRenderer implements RendererInterface
     /**
      * @inheritdoc
      */
-    public function setBox(BoxInterface $box)
+    public function setBox(BoxInterface $box): void
     {
         $this->box = $box;
     }
@@ -53,16 +55,16 @@ class DefaultRenderer implements RendererInterface
     /**
      * @inheritdoc
      */
-    public function render(int $pageType = 0, int $pageID = 0): string
+    public function render(int $pageType = \PAGE_UNBEKANNT, int $pageID = 0): string
     {
         $this->smarty->assign('oBox', $this->box);
         try {
             $html = $this->box->getTemplateFile() !== '' && $this->box->isBoxVisible($pageType, $pageID)
                 ? $this->smarty->fetch($this->box->getTemplateFile())
                 : '';
-        } catch (\SmartyException $e) {
+        } catch (SmartyException $e) {
             $html = $e->getMessage();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $html = $e->getMessage();
         }
         $this->smarty->clearAssign('oBox');

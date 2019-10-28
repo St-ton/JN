@@ -3,202 +3,190 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\Alert\Alert;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Form;
+use JTL\Helpers\GeneralObject;
+use JTL\Helpers\Request;
+use JTL\Language\LanguageHelper;
+use JTL\Shop;
+use function Functional\map;
+use function Functional\reindex;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('SETTINGS_CONTACTFORM_VIEW', true, true);
-/** @global JTLSmarty $smarty */
-$cHinweis = '';
-$cTab     = 'config';
-$step     = 'uebersicht';
-if (isset($_GET['del']) && (int)$_GET['del'] > 0 && FormHelper::validateToken()) {
-    Shop::Container()->getDB()->delete('tkontaktbetreff', 'kKontaktBetreff', (int)$_GET['del']);
-    Shop::Container()->getDB()->delete('tkontaktbetreffsprache', 'kKontaktBetreff', (int)$_GET['del']);
+/** @global \JTL\Smarty\JTLSmarty $smarty */
+$tab         = 'config';
+$step        = 'uebersicht';
+$alertHelper = Shop::Container()->getAlertService();
+$db          = Shop::Container()->getDB();
+$languages   = LanguageHelper::getAllLanguages();
+if (Request::getInt('del') > 0 && Form::validateToken()) {
+    $db->delete('tkontaktbetreff', 'kKontaktBetreff', Request::getInt('del'));
+    $db->delete('tkontaktbetreffsprache', 'kKontaktBetreff', Request::getInt('del'));
 
-    $cHinweis = 'Der Betreff wurde erfolgreich gelöscht';
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSubjectDelete'), 'successSubjectDelete');
 }
 
-if (isset($_POST['content']) && (int)$_POST['content'] === 1 && FormHelper::validateToken()) {
-    Shop::Container()->getDB()->delete('tspezialcontentsprache', 'nSpezialContent', SC_KONTAKTFORMULAR);
-    $sprachen = Sprache::getAllLanguages();
-    foreach ($sprachen as $sprache) {
+if (Request::postInt('content') === 1 && Form::validateToken()) {
+    $db->delete('tspezialcontentsprache', 'nSpezialContent', SC_KONTAKTFORMULAR);
+    foreach ($languages as $language) {
+        $code                             = $language->getIso();
         $spezialContent1                  = new stdClass();
         $spezialContent2                  = new stdClass();
         $spezialContent3                  = new stdClass();
         $spezialContent1->nSpezialContent = SC_KONTAKTFORMULAR;
         $spezialContent2->nSpezialContent = SC_KONTAKTFORMULAR;
         $spezialContent3->nSpezialContent = SC_KONTAKTFORMULAR;
-        $spezialContent1->cISOSprache     = $sprache->cISO;
-        $spezialContent2->cISOSprache     = $sprache->cISO;
-        $spezialContent3->cISOSprache     = $sprache->cISO;
+        $spezialContent1->cISOSprache     = $code;
+        $spezialContent2->cISOSprache     = $code;
+        $spezialContent3->cISOSprache     = $code;
         $spezialContent1->cTyp            = 'oben';
         $spezialContent2->cTyp            = 'unten';
         $spezialContent3->cTyp            = 'titel';
-        $spezialContent1->cContent        = $_POST['cContentTop_' . $sprache->cISO];
-        $spezialContent2->cContent        = $_POST['cContentBottom_' . $sprache->cISO];
+        $spezialContent1->cContent        = $_POST['cContentTop_' . $code];
+        $spezialContent2->cContent        = $_POST['cContentBottom_' . $code];
         $spezialContent3->cContent        = htmlspecialchars(
-            $_POST['cTitle_' . $sprache->cISO],
+            $_POST['cTitle_' . $code],
             ENT_COMPAT | ENT_HTML401,
             JTL_CHARSET
         );
 
-        Shop::Container()->getDB()->insert('tspezialcontentsprache', $spezialContent1);
-        Shop::Container()->getDB()->insert('tspezialcontentsprache', $spezialContent2);
-        Shop::Container()->getDB()->insert('tspezialcontentsprache', $spezialContent3);
+        $db->insert('tspezialcontentsprache', $spezialContent1);
+        $db->insert('tspezialcontentsprache', $spezialContent2);
+        $db->insert('tspezialcontentsprache', $spezialContent3);
         unset($spezialContent1, $spezialContent2, $spezialContent3);
     }
-    $cHinweis .= 'Inhalt wurde erfolgreich gespeichert.';
-    $cTab = 'content';
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successContentSave'), 'successContentSave');
+    $tab = 'content';
 }
 
-if (isset($_POST['betreff']) && (int)$_POST['betreff'] === 1 && FormHelper::validateToken()) {
+if (Request::postInt('betreff') === 1 && Form::validateToken()) {
     if ($_POST['cName'] && $_POST['cMail']) {
-        $neuerBetreff        = new stdClass();
-        $neuerBetreff->cName = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-        $neuerBetreff->cMail = $_POST['cMail'];
+        $newSubject        = new stdClass();
+        $newSubject->cName = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+        $newSubject->cMail = $_POST['cMail'];
         if (is_array($_POST['cKundengruppen'])) {
-            $neuerBetreff->cKundengruppen = implode(';', $_POST['cKundengruppen']) . ';';
+            $newSubject->cKundengruppen = implode(';', $_POST['cKundengruppen']) . ';';
         }
-        if (is_array($_POST['cKundengruppen']) && in_array(0, $_POST['cKundengruppen'])) {
-            $neuerBetreff->cKundengruppen = 0;
+        if (GeneralObject::hasCount('cKundengruppen', $_POST) && in_array(0, $_POST['cKundengruppen'])) {
+            $newSubject->cKundengruppen = 0;
         }
-        $neuerBetreff->nSort = 0;
-        if ((int)$_POST['nSort'] > 0) {
-            $neuerBetreff->nSort = (int)$_POST['nSort'];
-        }
-
-        $kKontaktBetreff = 0;
-
-        if ((int)$_POST['kKontaktBetreff'] === 0) {
-            //einfuegen
-            $kKontaktBetreff = Shop::Container()->getDB()->insert('tkontaktbetreff', $neuerBetreff);
-            $cHinweis .= 'Betreff wurde erfolgreich hinzugefügt.';
+        $newSubject->nSort = Request::postInt('nSort');
+        $subjectID         = 0;
+        if (Request::postInt('kKontaktBetreff') === 0) {
+            $subjectID = $db->insert('tkontaktbetreff', $newSubject);
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSubjectCreate'), 'successSubjectCreate');
         } else {
-            //updaten
-            $kKontaktBetreff = (int)$_POST['kKontaktBetreff'];
-            Shop::Container()->getDB()->update('tkontaktbetreff', 'kKontaktBetreff', $kKontaktBetreff, $neuerBetreff);
-            $cHinweis .= "Der Betreff <strong>$neuerBetreff->cName</strong> wurde erfolgreich geändert.";
+            $subjectID = Request::postInt('kKontaktBetreff');
+            $db->update('tkontaktbetreff', 'kKontaktBetreff', $subjectID, $newSubject);
+            $alertHelper->addAlert(
+                Alert::TYPE_SUCCESS,
+                sprintf(__('successSubjectSave'), $newSubject->cName),
+                'successSubjectSave'
+            );
         }
-        $sprachen            = Sprache::getAllLanguages();
-        $neuerBetreffSprache = new stdClass();
-        $neuerBetreffSprache->kKontaktBetreff = $kKontaktBetreff;
-        foreach ($sprachen as $sprache) {
-            $neuerBetreffSprache->cISOSprache = $sprache->cISO;
-            $neuerBetreffSprache->cName       = $neuerBetreff->cName;
-            if ($_POST['cName_' . $sprache->cISO]) {
-                $neuerBetreffSprache->cName = htmlspecialchars(
-                    $_POST['cName_' . $sprache->cISO],
+        $localized                  = new stdClass();
+        $localized->kKontaktBetreff = $subjectID;
+        foreach ($languages as $language) {
+            $code                   = $language->getIso();
+            $localized->cISOSprache = $code;
+            $localized->cName       = $newSubject->cName;
+            if ($_POST['cName_' . $code]) {
+                $localized->cName = htmlspecialchars(
+                    $_POST['cName_' . $code],
                     ENT_COMPAT | ENT_HTML401,
                     JTL_CHARSET
                 );
             }
-            Shop::Container()->getDB()->delete(
+            $db->delete(
                 'tkontaktbetreffsprache',
                 ['kKontaktBetreff', 'cISOSprache'],
-                [$kKontaktBetreff, $sprache->cISO]
+                [$subjectID, $code]
             );
-            Shop::Container()->getDB()->insert('tkontaktbetreffsprache', $neuerBetreffSprache);
+            $db->insert('tkontaktbetreffsprache', $localized);
         }
-
-        $smarty->assign('hinweis', $cHinweis);
     } else {
-        $error = 'Der Betreff konnte nicht gespeichert werden';
-        $step  = 'betreff';
-        $smarty->assign('cFehler', $error);
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSubjectSave'), 'errorSubjectSave');
+        $step = 'betreff';
     }
-    $cTab = 'subjects';
+    $tab = 'subjects';
 }
 
-if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
-    $cHinweis .= saveAdminSectionSettings(CONF_KONTAKTFORMULAR, $_POST);
-    $cTab = 'config';
+if (Request::postInt('einstellungen') === 1) {
+    $alertHelper->addAlert(
+        Alert::TYPE_SUCCESS,
+        saveAdminSectionSettings(CONF_KONTAKTFORMULAR, $_POST),
+        'saveSettings'
+    );
+    $tab = 'config';
 }
 
-if (((isset($_GET['kKontaktBetreff']) && (int)$_GET['kKontaktBetreff'] > 0) ||
-        (isset($_GET['neu']) && (int)$_GET['neu'] === 1)) && FormHelper::validateToken()
-) {
+if ((Request::getInt('kKontaktBetreff') > 0 || Request::getInt('neu') === 1) && Form::validateToken()) {
     $step = 'betreff';
 }
 
 if ($step === 'uebersicht') {
-    $Conf = Shop::Container()->getDB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_KONTAKTFORMULAR, '*', 'nSort');
-    $configCount = count($Conf);
-    for ($i = 0; $i < $configCount; $i++) {
-        if ($Conf[$i]->cInputTyp === 'selectbox') {
-            $Conf[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
-                'teinstellungenconfwerte',
-                'kEinstellungenConf',
-                (int)$Conf[$i]->kEinstellungenConf,
-                '*',
-                'nSort'
-            );
-        }
-        $setValue = Shop::Container()->getDB()->select(
-            'teinstellungen',
-            'kEinstellungenSektion',
-            CONF_KONTAKTFORMULAR,
-            'cName',
-            $Conf[$i]->cWertName
-        );
-        $Conf[$i]->gesetzterWert = $setValue->cWert ?? null;
-    }
-    $neuerBetreffs = Shop::Container()->getDB()->query(
+    $subjects = $db->query(
         'SELECT * FROM tkontaktbetreff ORDER BY nSort',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
-    $nCount        = count($neuerBetreffs);
-    for ($i = 0; $i < $nCount; $i++) {
-        $kunden = '';
-        if (!$neuerBetreffs[$i]->cKundengruppen) {
-            $kunden = 'alle';
+    foreach ($subjects as $subject) {
+        $groups = '';
+        if (!$subject->cKundengruppen) {
+            $groups = __('allCustomerGroups');
         } else {
-            $kKundengruppen = explode(';', $neuerBetreffs[$i]->cKundengruppen);
-            foreach ($kKundengruppen as $kKundengruppe) {
-                if (is_numeric($kKundengruppe)) {
-                    $kndgrp = Shop::Container()->getDB()->select('tkundengruppe', 'kKundengruppe', (int)$kKundengruppe);
-                    $kunden .= ' ' . $kndgrp->cName;
+            foreach (explode(';', $subject->cKundengruppen) as $customerGroupID) {
+                if (!is_numeric($customerGroupID)) {
+                    continue;
                 }
+                $kndgrp  = $db->select('tkundengruppe', 'kKundengruppe', (int)$customerGroupID);
+                $groups .= ' ' . $kndgrp->cName;
             }
         }
-        $neuerBetreffs[$i]->Kundengruppen = $kunden;
+        $subject->Kundengruppen = $groups;
     }
-    $SpezialContent = Shop::Container()->getDB()->selectAll(
+    $specialContent = $db->selectAll(
         'tspezialcontentsprache',
         'nSpezialContent',
         SC_KONTAKTFORMULAR,
         '*',
         'cTyp'
     );
-    $Content        = [];
-    $contentCount   = count($SpezialContent);
-    for ($i = 0; $i < $contentCount; $i++) {
-        $Content[$SpezialContent[$i]->cISOSprache . '_' . $SpezialContent[$i]->cTyp] = $SpezialContent[$i]->cContent;
+    $content        = [];
+    foreach ($specialContent as $item) {
+        $content[$item->cISOSprache . '_' . $item->cTyp] = $item->cContent;
     }
-    $smarty->assign('Betreffs', $neuerBetreffs)
-           ->assign('Conf', $Conf)
-           ->assign('Content', $Content);
+    $smarty->assign('Betreffs', $subjects)
+        ->assign('Conf', getAdminSectionSettings(CONF_KONTAKTFORMULAR))
+        ->assign('Content', $content);
 }
 
 if ($step === 'betreff') {
-    $neuerBetreff = null;
-    if (isset($_GET['kKontaktBetreff']) && (int)$_GET['kKontaktBetreff'] > 0) {
-        $neuerBetreff = Shop::Container()->getDB()->select('tkontaktbetreff', 'kKontaktBetreff', (int)$_GET['kKontaktBetreff']);
+    $newSubject = null;
+    if (Request::getInt('kKontaktBetreff') > 0) {
+        $newSubject = $db->select(
+            'tkontaktbetreff',
+            'kKontaktBetreff',
+            Request::getInt('kKontaktBetreff')
+        );
     }
 
-    $kundengruppen = Shop::Container()->getDB()->query(
+    $customerGroups = $db->query(
         'SELECT * FROM tkundengruppe ORDER BY cName',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
-    $smarty->assign('Betreff', $neuerBetreff)
-           ->assign('kundengruppen', $kundengruppen)
-           ->assign('gesetzteKundengruppen', getGesetzteKundengruppen($neuerBetreff))
-           ->assign('Betreffname', ($neuerBetreff !== null) ? getNames($neuerBetreff->kKontaktBetreff) : null);
+    $smarty->assign('Betreff', $newSubject)
+        ->assign('kundengruppen', $customerGroups)
+        ->assign('gesetzteKundengruppen', getGesetzteKundengruppen($newSubject))
+        ->assign('Betreffname', ($newSubject !== null) ? getNames($newSubject->kKontaktBetreff) : null);
 }
 
 $smarty->assign('step', $step)
-       ->assign('sprachen', Sprache::getAllLanguages())
-       ->assign('hinweis', $cHinweis)
-       ->assign('cTab', $cTab)
-       ->display('kontaktformular.tpl');
+    ->assign('cTab', $tab)
+    ->display('kontaktformular.tpl');
 
 /**
  * @param object $link
@@ -212,29 +200,24 @@ function getGesetzteKundengruppen($link)
 
         return $ret;
     }
-    $kdgrp = explode(';', $link->cKundengruppen);
-    foreach ($kdgrp as $kKundengruppe) {
-        $ret[$kKundengruppe] = true;
+    foreach (array_filter(explode(';', $link->cKundengruppen)) as $customerGroupID) {
+        $ret[$customerGroupID] = true;
     }
 
     return $ret;
 }
 
 /**
- * @param int $kKontaktBetreff
+ * @param int $id
  * @return array
  */
-function getNames(int $kKontaktBetreff)
+function getNames(int $id)
 {
-    $namen = [];
-    if (!$kKontaktBetreff) {
-        return $namen;
-    }
-    $zanamen = Shop::Container()->getDB()->selectAll('tkontaktbetreffsprache', 'kKontaktBetreff', $kKontaktBetreff);
-    $nCount  = count($zanamen);
-    for ($i = 0; $i < $nCount; ++$i) {
-        $namen[$zanamen[$i]->cISOSprache] = $zanamen[$i]->cName;
-    }
+    $data = Shop::Container()->getDB()->selectAll('tkontaktbetreffsprache', 'kKontaktBetreff', $id);
 
-    return $namen;
+    return map(reindex($data, function ($e) {
+        return $e->cISOSprache;
+    }), function ($e) {
+        return $e->cName;
+    });
 }

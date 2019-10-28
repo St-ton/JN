@@ -26,6 +26,6 @@
         {
             parent::__construct($colour, $dot_size);
 
-            $this->type      = 'scatter_line';
+            $this->type = 'scatter_line';
         }
     }

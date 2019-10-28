@@ -1,12 +1,12 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Link;
+namespace JTL\Link;
 
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 
 /**
  * Class LinkGroupCollection
@@ -14,7 +14,7 @@ use Tightenco\Collect\Support\Collection;
  * this allows calls like LinkService::getLinkgroups()->Fuss to access a link group by its template name
  * for compatability reasons only
  *
- * @package Link
+ * @package JTL\Link
  */
 final class LinkGroupCollection extends Collection
 {
@@ -37,7 +37,7 @@ final class LinkGroupCollection extends Collection
      * @param string $name
      * @return LinkGroupInterface|null
      */
-    public function getLinkgroupByTemplate(string $name)
+    public function getLinkgroupByTemplate(string $name): ?LinkGroupInterface
     {
         return $this->filter(function (LinkGroupInterface $e) use ($name) {
             return $e->getTemplate() === $name;
@@ -48,7 +48,7 @@ final class LinkGroupCollection extends Collection
      * @param int $id
      * @return LinkGroupInterface|null
      */
-    public function getLinkgroupByID(int $id)
+    public function getLinkgroupByID(int $id): ?LinkGroupInterface
     {
         return $this->filter(function (LinkGroupInterface $e) use ($id) {
             return $e->getID() === $id;

@@ -1,12 +1,12 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section="dbcheck"}
-{include file='tpl_inc/seite_header.tpl' cTitel="Datenbank-Manager" cBeschreibung="<kbd>Tabellen und Views ({$tables|@count})</kbd>" cDokuURL=#dbcheckURL#}
+{config_load file="$lang.conf" section='dbcheck'}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('dbManager') cBeschreibung="<kbd>{__('tableViews')}({$tables|@count})</kbd>" cDokuURL=__('dbcheckURL')}
 
 {function table_scope_header table=null}
-    <h2>Tabelle: {$table}
+    <h2>{__('table')}: {$table}
         <div class="btn-group btn-group-xs" role="group">
-            <a href="dbmanager.php?table={$table}&token={$smarty.session.jtl_token}" class="btn btn-default"><span class="glyphicon glyphicon-equalizer"></span> Struktur</a>
-            <a href="dbmanager.php?select={$table}&token={$smarty.session.jtl_token}" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> Anzeigen</a>
+            <a href="dbmanager.php?table={$table}&token={$smarty.session.jtl_token}" class="btn btn-default"><span class="glyphicon glyphicon-equalizer"></span> {__('structure')}</a>
+            <a href="dbmanager.php?select={$table}&token={$smarty.session.jtl_token}" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> {__('show')}</a>
         </div>
     </h2>
 {/function}
@@ -20,13 +20,13 @@
 
 {function filter_row headers=[] col=null op=null val=null remove=true}
     <div class="fieldset-row" data-action="add-row">
-        <select name="filter[where][col][]" class="form-control input-xs">
-            <option value="">(beliebig)</option>
+        <select name="filter[where][col][]" class="custom-select input-xs">
+            <option value="">({__('any')})</option>
             {foreach $headers as $h}
                 <option value="{$h}"{if $col == $h} selected="selected"{/if}>{$h}</option>
             {/foreach}
         </select>
-        <select name="filter[where][op][]" class="form-control input-xs">
+        <select name="filter[where][op][]" class="custom-select input-xs">
             {filter_operator selected=$op}
         </select>
         <input type="text" name="filter[where][val][]" class="form-control input-xs" value="{$val|escape:'html'}">
@@ -36,7 +36,7 @@
     </div>
 {/function}
 
-{capture "filter_row_tpl" assign="filter_row_tpl_data"}
+{capture 'filter_row_tpl' assign='filter_row_tpl_data'}
     {filter_row headers=array_keys($columns)}
 {/capture}
 
@@ -47,7 +47,6 @@ var $add_row_tpl = $({$filter_row_tpl_data|strip|json_encode});
 $(function() {
     var new_content = '<form action="dbmanager.php?command" method="POST">';
     new_content += '{$jtl_token}';
-    console.log('new content: ', new_content);
     $search = $('#db-search');
 
     $('table.table-sticky-header').stickyTableHeaders({
@@ -379,12 +378,12 @@ $(function() {
 */
 </script>
 
-<div id="content" class="container-fluid">
+<div id="content">
     <div class="row">
 
         <div class="col-md-2">
             <div class="form-group">
-                <input id="db-search" class="form-control" type="search" placeholder="Tabelle suchen">
+                <input id="db-search" class="form-control" type="search" placeholder="{__('searchTable')}">
             </div>
             <nav class="db-sidebar hidden-print hidden-xs hidden-sm">
                 <ul class="nav db-sidenav">
@@ -397,17 +396,17 @@ $(function() {
 
         <div class="col-md-10">
             <ol class="simple-menu">
-                <li><a href="dbmanager.php">Übersicht</a></li>
-                <li><a href="dbmanager.php?command"><span class="glyphicon glyphicon-flash"></span> SQL Kommando</a></li>
-                <li><a href="dbcheck.php">Konsistenz</a></li>
+                <li><a href="dbmanager.php">{__('overview')}</a></li>
+                <li><a href="dbmanager.php?command"><span class="glyphicon glyphicon-flash"></span> {__('sqlCommand')}</a></li>
+                <li><a href="dbcheck.php">{__('consistency')}</a></li>
             </ol>
         
             {if $sub === 'command'}
-                <h2>SQL Kommando</h2>
+                <h2>{__('sqlCommand')}</h2>
 
                 <p class="text-muted">
                     <i class="fa fa-keyboard-o" aria-hidden="true"></i>
-                    Code-Vervollständigung via <span class="label label-default">STRG+Leertaste</span> ausführen
+                    {__('codeCompletion')}
                 </p>
                 
                 {if isset($error)}
@@ -422,14 +421,14 @@ $(function() {
                         <textarea name="query" id="query" class="codemirror sql" data-hint='{$jsTypo|json_encode}'>{if isset($info) && isset($info.statement)}{$info.statement}{/if}</textarea>
                     </div>
                     <div class="form-group">
-                        <button type="submit" class="btn btn-primary"><i class="fa fa-share"></i> Ausführen</button>
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-share"></i> {__('execute')}</button>
                     </div>
                 </form>
                 
                 <!-- ###################################################### -->
                 {if isset($result) && !isset($result[0])}
                     <div class="alert alert-xs alert-success">
-                        <p>Keine Datens&auml;tze</p>
+                        <p>{__('noData')}</p>
                     </div>
                 {elseif isset($result[0])}
                     {$headers = array_keys($result[0])}
@@ -461,12 +460,12 @@ $(function() {
                         <table class="table table-striped table-condensed table-bordered table-hover table-sticky-header">
                             <thead>
                             <tr>
-                                <th>Tabelle</th>
-                                <th class="text-center">Aktion</th>
-                                <th class="text-center">Typ</th>
-                                <th class="text-center">Kollation</th>
-                                <th class="text-right">Datensätze</th>
-                                <th class="text-right">Auto-Inkrement</th>
+                                <th>{__('table')}</th>
+                                <th class="text-center">{__('action')}</th>
+                                <th class="text-center">{__('type')}</th>
+                                <th class="text-center">{__('collation')}</th>
+                                <th class="text-right">{__('dataEntries')}</th>
+                                <th class="text-right">{__('autoIncrement')}</th>
                             </tr>
                             </thead>
                             {foreach $tables as $table}
@@ -474,8 +473,8 @@ $(function() {
                                     <td><a href="dbmanager.php?select={$table@key}&token={$smarty.session.jtl_token}">{$table@key}</a></td>
                                     <td class="text-center">
                                         <div class="btn-group btn-group-xs" role="group">
-                                            <a href="dbmanager.php?table={$table@key}&token={$smarty.session.jtl_token}" class="btn btn-default"><span class="glyphicon glyphicon-equalizer"></span> Struktur</a>
-                                            <a href="dbmanager.php?select={$table@key}&token={$smarty.session.jtl_token}" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> Anzeigen</a>
+                                            <a href="dbmanager.php?table={$table@key}&token={$smarty.session.jtl_token}" class="btn btn-default"><span class="glyphicon glyphicon-equalizer"></span> {__('structure')}</a>
+                                            <a href="dbmanager.php?select={$table@key}&token={$smarty.session.jtl_token}" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> {__('show')}</a>
                                         </div>
                                     </td>
                                     <td class="text-center">{$table->Engine}</td>
@@ -491,13 +490,13 @@ $(function() {
                 {table_scope_header table=$selectedTable}
                 <div class="row">
                     <div class="col-md-6">
-                        <h3>Struktur</h3>
+                        <h3>{__('structure')}</h3>
                         <table class="table table-striped table-condensed table-bordered table-hover table-sticky-header">
                             <thead>
                             <tr>
-                                <th>Spalte</th>
-                                <th>Typ</th>
-                                <th>Kollation</th>
+                                <th>{__('column')}</th>
+                                <th>{__('type')}</th>
+                                <th>{__('collation')}</th>
                             </tr>
                             </thead>
                             {foreach $columns as $column}
@@ -510,13 +509,13 @@ $(function() {
                         </table>
                     </div>
                     <div class="col-md-6">
-                        <h3>Indizes</h3>
+                        <h3>{__('indices')}</h3>
                         <table class="table table-striped table-condensed table-bordered table-hover table-sticky-header">
                             <thead>
                             <tr>
-                                <th>Typ</th>
-                                <th>Spalten</th>
-                                <th>Name</th>
+                                <th>{__('type')}</th>
+                                <th>{__('column')}</th>
+                                <th>{__('name')}</th>
                             </tr>
                             </thead>
                             {foreach $indexes as $index}
@@ -546,7 +545,7 @@ $(function() {
 
                         <fieldset>
                             <legend>
-                                <a href="#filter-where">Suche</a>
+                                <a href="#filter-where">{__('search')}</a>
                             </legend>
                             
                             <div class="fieldset-body">
@@ -561,16 +560,16 @@ $(function() {
                         </fieldset>
                         
                         <fieldset>
-                            <legend>Anzahl</legend>
+                            <legend>{__('count')}</legend>
                             <div class="fieldset-body">
-                                <input type="number" id="filter-limit" name="filter[limit]" class="form-control input-xs" placeholder="Anzahl" value="{$filter.limit}" size="3">
+                                <input type="number" id="filter-limit" name="filter[limit]" class="form-control input-xs" placeholder="{__('count')}" value="{$filter.limit}" size="3">
                             </div>
                         </fieldset>
 
                         <fieldset>
-                            <legend>Aktion</legend>
+                            <legend>{__('action')}</legend>
                             <div class="fieldset-body">
-                                <button type="submit" class="btn btn-xs btn-primary">Daten anzeigen</button>
+                                <button type="submit" class="btn btn-sm btn-primary">{__('showData')}</button>
                             </div>
                         </fieldset>
                     </form>
@@ -582,9 +581,9 @@ $(function() {
                     </div>
                     <div class="query-sub">
                         <span class="text-muted" title="Millisekunden"><i class="fa fa-clock-o" aria-hidden="true"></i> &nbsp;{"`$info.time*1000`"|number_format:2} ms</span>
-                        <span class="text-muted"><i class="fa fa-database" aria-hidden="true"></i> &nbsp;{$count|number_format:0} Datens&auml;tze</span>
+                        <span class="text-muted"><i class="fa fa-database" aria-hidden="true"></i> &nbsp;{$count|number_format:0} {__('dataEntries')}</span>
                         <a href="dbmanager.php?command&query={$info.statement|urlencode}">
-                            <i class="fa fa-pencil" aria-hidden="true"></i> Bearbeiten
+                            <i class="fa fa-pencil" aria-hidden="true"></i> {__('edit')}
                         </a>
                     </div>
                 </div>
@@ -632,7 +631,7 @@ $(function() {
                     </div>
                 {else}
                     <div class="alert alert-xs alert-success">
-                        <p>Keine Datens&auml;tze</p>
+                        <p>{__('noData')}</p>
                     </div>
                 {/if}
 
@@ -649,5 +648,4 @@ $(function() {
         </div>
     </div>
 </div>
-
 {include file='tpl_inc/footer.tpl'}

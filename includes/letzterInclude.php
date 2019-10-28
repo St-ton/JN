@@ -4,147 +4,206 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-$smarty        = Shop::Smarty();
-$oTemplate     = Template::getInstance();
-$tplDir        = PFAD_TEMPLATES . $oTemplate->getDir() . '/';
-$shopLogo      = Shop::getLogo();
-$shopURL       = Shop::getURL();
-$cart          = $_SESSION['Warenkorb'] ?? new Warenkorb();
-$Einstellungen = Shopsetting::getInstance()->getAll();
-$linkHelper    = Shop::Container()->getLinkService();
-$themeDir      = empty($Einstellungen['template']['theme']['theme_default'])
-    ? 'evo'
-    : $Einstellungen['template']['theme']['theme_default'];
-$cShopName     = empty($Einstellungen['global']['global_shopname'])
-    ? 'JTL-Shop'
-    : $Einstellungen['global']['global_shopname'];
-$cMinify_arr = $oTemplate->getMinifyArray();
-$cCSS_arr    = $cMinify_arr["{$themeDir}.css"] ?? [];
-$cJS_arr     = $cMinify_arr['jtl3.js'] ?? [];
-executeHook(HOOK_LETZTERINCLUDE_CSS_JS, [
-    'cCSS_arr'          => &$cCSS_arr,
-    'cJS_arr'           => &$cJS_arr,
-    'cPluginCss_arr'    => &$cMinify_arr['plugin_css'],
-    'cPluginJsHead_arr' => &$cMinify_arr['plugin_js_head'],
-    'cPluginJsBody_arr' => &$cMinify_arr['plugin_js_body']
-]);
-$kKundengruppe = (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0)
-    ? $_SESSION['Kunde']->kKundengruppe
-    : Session::CustomerGroup()->getID();
-$cKundenherkunft = (isset($_SESSION['Kunde']->cLand) && strlen($_SESSION['Kunde']->cLand) > 0)
-    ? $_SESSION['Kunde']->cLand
-    : '';
-$warensumme[0]         = Preise::getLocalizedPriceString($cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true));
-$warensumme[1]         = Preise::getLocalizedPriceString($cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], false));
-$gesamtsumme[0]        = Preise::getLocalizedPriceString($cart->gibGesamtsummeWaren(true, true));
-$gesamtsumme[1]        = Preise::getLocalizedPriceString($cart->gibGesamtsummeWaren(false, true));
-$oVersandartKostenfrei = VersandartHelper::getFreeShippingMinimum($kKundengruppe, $cKundenherkunft);
-$oGlobaleMetaAngaben   = $oGlobaleMetaAngabenAssoc_arr[Shop::getLanguageID()] ?? null;
-$pagetType             = Shop::getPageType();
+use JTL\Alert\Alert;
+use JTL\Cart\Cart;
+use JTL\Catalog\Category\Kategorie;
+use JTL\Catalog\Category\KategorieListe;
+use JTL\Catalog\Navigation;
+use JTL\Catalog\NavigationEntry;
+use JTL\Catalog\Product\Artikel;
+use JTL\Catalog\Product\Preise;
+use JTL\Catalog\Wishlist\Wishlist;
+use JTL\DB\ReturnType;
+use JTL\ExtensionPoint;
+use JTL\Filter\Metadata;
+use JTL\Filter\SearchResults;
+use JTL\Firma;
+use JTL\Helpers\Category;
+use JTL\Helpers\Form;
+use JTL\Helpers\Manufacturer;
+use JTL\Helpers\Request;
+use JTL\Helpers\ShippingMethod;
+use JTL\Helpers\Text;
+use JTL\Campaign;
+use JTL\Link\Link;
+use JTL\Session\Frontend;
+use JTL\Shop;
+use JTL\Shopsetting;
+use JTL\Template;
+use JTL\Visitor;
 
-if (is_object($oGlobaleMetaAngaben)) {
+$smarty     = Shop::Smarty();
+$template   = Template::getInstance();
+$tplDir     = PFAD_TEMPLATES . $template->getDir() . '/';
+$shopURL    = Shop::getURL();
+$cart       = $_SESSION['Warenkorb'] ?? new Cart();
+$conf       = Shopsetting::getInstance()->getAll();
+$linkHelper = Shop::Container()->getLinkService();
+$link       = $linkHelper->getLinkByID(Shop::$kLink ?? 0);
+$themeDir   = empty($conf['template']['theme']['theme_default'])
+    ? 'evo'
+    : $conf['template']['theme']['theme_default'];
+$minify     = $template->getMinifyArray();
+$css        = $minify["{$themeDir}.css"] ?? [];
+$js         = $minify['jtl3.js'] ?? [];
+executeHook(HOOK_LETZTERINCLUDE_CSS_JS, [
+    'cCSS_arr'          => &$css,
+    'cJS_arr'           => &$js,
+    'cPluginCss_arr'    => &$minify['plugin_css'],
+    'cPluginJsHead_arr' => &$minify['plugin_js_head'],
+    'cPluginJsBody_arr' => &$minify['plugin_js_body']
+]);
+$device = new Mobile_Detect;
+
+$expandedCategories = $expandedCategories ?? new KategorieListe();
+$debugbar           = Shop::Container()->getDebugBar();
+$debugbarRenderer   = $debugbar->getJavascriptRenderer();
+$customerGroupID    = ($id = Frontend::getCustomer()->kKundengruppe) > 0
+    ? $id
+    : Frontend::getCustomerGroup()->getID();
+$globalMetaData     = $globalMetaData[Shop::getLanguageID()] ?? null;
+$pageType           = Shop::getPageType();
+$specialPageTypes   = [
+    PAGE_REGISTRIERUNG,
+    PAGE_WARENKORB,
+    PAGE_PASSWORTVERGESSEN,
+    PAGE_NEWSLETTER,
+    PAGE_KONTAKT,
+    PAGE_MEINKONTO,
+    PAGE_LOGIN
+];
+if ($link !== null) {
+    $cMetaTitle       = $link->getMetaTitle();
+    $cMetaDescription = $link->getMetaDescription();
+    $cMetaKeywords    = $link->getMetaKeyword();
+}
+if (is_object($globalMetaData)) {
     if (empty($cMetaTitle)) {
-        $cMetaTitle = $oGlobaleMetaAngaben->Title;
+        $cMetaTitle = $globalMetaData->Title;
     }
     if (empty($cMetaDescription)) {
-        $cMetaDescription = $oGlobaleMetaAngaben->Meta_Description;
+        $cMetaDescription = $globalMetaData->Meta_Description;
     }
     if (empty($cMetaKeywords)) {
-        $cMetaKeywords = $oGlobaleMetaAngaben->Meta_Keywords;
+        $cMetaKeywords = $globalMetaData->Meta_Keywords;
+    }
+    $cMetaTitle       = Metadata::prepareMeta(
+        $cMetaTitle,
+        null,
+        (int)$conf['metaangaben']['global_meta_maxlaenge_title']
+    );
+    $cMetaDescription = Metadata::prepareMeta(
+        $cMetaDescription,
+        null,
+        (int)$conf['metaangaben']['global_meta_maxlaenge_description']
+    );
+    if (empty($cMetaKeywords) && $link !== null && !empty($link->getContent())) {
+        $cMetaKeywords = Metadata::getTopMetaKeywords($link->getContent());
     }
 }
-// Kategorielisten aufbauen
 if (!isset($AktuelleKategorie)) {
-    $AktuelleKategorie = null;
+    $AktuelleKategorie = new Kategorie(Request::verifyGPCDataInt('kategorie'));
 }
+$expandedCategories->getOpenCategories($AktuelleKategorie);
 if (!isset($NaviFilter)) {
     $NaviFilter = Shop::run();
 }
-$linkHelper->activate($pagetType);
-
-$smarty->assign('linkgroups', $linkHelper->getLinkGroups())
+$linkHelper->activate($pageType);
+$origin = (isset($_SESSION['Kunde']->cLand) && mb_strlen($_SESSION['Kunde']->cLand) > 0)
+    ? $_SESSION['Kunde']->cLand
+    : '';
+$smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
        ->assign('NaviFilter', $NaviFilter)
-       ->assign('manufacturers', HerstellerHelper::getInstance()->getManufacturers())
-       ->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
-       ->assign('oUnterKategorien_arr', KategorieHelper::getSubcategoryList($AktuelleKategorie->kKategorie ?? -1))
-       ->assign('cPluginJsHead_arr', $cMinify_arr['plugin_js_head'])
-       ->assign('cPluginJsBody_arr', $cMinify_arr['plugin_js_body'])
-       ->assign('cCSS_arr', $cCSS_arr)
-       ->assign('cJS_arr', $cJS_arr)
-       ->assign('nTemplateVersion', $oTemplate->getVersion())
+       ->assign('manufacturers', Manufacturer::getInstance()->getManufacturers())
+       ->assign('cPluginCss_arr', $minify['plugin_css'])
+       ->assign('oUnterKategorien_arr', Category::getSubcategoryList($AktuelleKategorie->kKategorie ?? -1))
+       ->assign('cPluginJsHead_arr', $minify['plugin_js_head'])
+       ->assign('cPluginJsBody_arr', $minify['plugin_js_body'])
+       ->assign('cCSS_arr', $css)
+       ->assign('cJS_arr', $js)
+       ->assign('nTemplateVersion', $template->getVersion())
        ->assign('currentTemplateDir', $tplDir)
        ->assign('currentTemplateDirFull', $shopURL . '/' . $tplDir)
        ->assign('currentTemplateDirFullPath', PFAD_ROOT . $tplDir)
        ->assign('currentThemeDir', $tplDir . 'themes/' . $themeDir . '/')
        ->assign('currentThemeDirFull', $shopURL . '/' . $tplDir . 'themes/' . $themeDir . '/')
+       ->assign('opcDir', PFAD_ROOT . PFAD_ADMIN . 'opc/')
        ->assign('session_name', session_name())
        ->assign('session_id', session_id())
        ->assign('lang', Shop::getLanguageCode())
        ->assign('ShopURL', $shopURL)
        ->assign('imageBaseURL', Shop::getImageBaseURL())
        ->assign('ShopURLSSL', Shop::getURL(true))
-       ->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant())
-       ->assign('cShopName', $cShopName)
+       ->assign('NettoPreise', Frontend::getCustomerGroup()->getIsMerchant())
+       ->assign('cShopName', $conf['global']['global_shopname'])
        ->assign('KaufabwicklungsURL', $linkHelper->getStaticRoute('bestellvorgang.php'))
-       ->assign('WarenkorbArtikelanzahl', $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]))
        ->assign('WarenkorbArtikelPositionenanzahl', $cart->gibAnzahlPositionenExt([C_WARENKORBPOS_TYP_ARTIKEL]))
-       ->assign('WarenkorbWarensumme', $warensumme)
-       ->assign('WarenkorbGesamtsumme', $gesamtsumme)
+       ->assign('WarenkorbWarensumme', [
+           0 => Preise::getLocalizedPriceString($cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)),
+           1 => Preise::getLocalizedPriceString($cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL]))
+       ])
+       ->assign('WarenkorbGesamtsumme', [
+           0 => Preise::getLocalizedPriceString($cart->gibGesamtsummeWaren(true)),
+           1 => Preise::getLocalizedPriceString($cart->gibGesamtsummeWaren())
+       ])
        ->assign('WarenkorbGesamtgewicht', $cart->getWeight())
        ->assign('Warenkorbtext', lang_warenkorb_warenkorbEnthaeltXArtikel($cart))
        ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
-       ->assign('WarenkorbVersandkostenfreiHinweis', VersandartHelper::getShippingFreeString($oVersandartKostenfrei,
-           $cart->gibGesamtsummeWarenExt(
-               [C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON],
-               true
-           )))
+       ->assign(
+           'WarenkorbVersandkostenfreiHinweis',
+           ShippingMethod::getShippingFreeString(
+               ShippingMethod::getFreeShippingMinimum($customerGroupID, $origin),
+               $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true, true, $origin)
+           )
+       )
        ->assign('meta_title', $cMetaTitle ?? '')
        ->assign('meta_description', $cMetaDescription ?? '')
        ->assign('meta_keywords', $cMetaKeywords ?? '')
-       ->assign('meta_publisher', $Einstellungen['metaangaben']['global_meta_publisher'])
-       ->assign('meta_copyright', $Einstellungen['metaangaben']['global_meta_copyright'])
-       ->assign('meta_language', StringHandler::convertISO2ISO639($_SESSION['cISOSprache']))
+       ->assign('meta_publisher', $conf['metaangaben']['global_meta_publisher'])
+       ->assign('meta_copyright', $conf['metaangaben']['global_meta_copyright'])
+       ->assign('meta_language', Text::convertISO2ISO639($_SESSION['cISOSprache']))
        ->assign('oSpezialseiten_arr', $linkHelper->getSpecialPages())
        ->assign('bNoIndex', $NaviFilter->getMetaData()->checkNoIndex())
-       ->assign('bAjaxRequest', RequestHelper::isAjaxRequest())
-       ->assign('jtl_token', FormHelper::getTokenInput())
-       ->assign('ShopLogoURL', $shopLogo)
-       ->assign('ShopLogoURL_abs', $shopLogo === '' ? '' : ($shopURL . $shopLogo))
-       ->assign('nSeitenTyp', $pagetType)
+       ->assign('bAjaxRequest', Request::isAjaxRequest())
+       ->assign('jtl_token', Form::getTokenInput())
+       ->assign('ShopLogoURL', Shop::getLogo(true))
+       ->assign('nSeitenTyp', $pageType)
        ->assign('bExclusive', isset($_GET['exclusive_content']))
        ->assign('bAdminWartungsmodus', isset($bAdminWartungsmodus) && $bAdminWartungsmodus)
        ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
        ->assign('Steuerpositionen', $cart->gibSteuerpositionen())
        ->assign('FavourableShipping', $cart->getFavourableShipping())
-       ->assign('Einstellungen', $Einstellungen)
-       ->assign('deletedPositions', Warenkorb::$deletedPositions)
-       ->assign('updatedPositions', Warenkorb::$updatedPositions)
+       ->assign('Einstellungen', $conf)
+       ->assign('isFluidTemplate', isset($conf['template']['theme']['pagelayout'])
+           && $conf['template']['theme']['pagelayout'] === 'fluid')
+       ->assign('deletedPositions', Cart::$deletedPositions)
+       ->assign('updatedPositions', Cart::$updatedPositions)
        ->assign('cCanonicalURL', $cCanonicalURL ?? null)
        ->assign('Firma', new Firma())
        ->assign('AktuelleKategorie', $AktuelleKategorie)
        ->assign('showLoginCaptcha', isset($_SESSION['showLoginCaptcha']) && $_SESSION['showLoginCaptcha'])
        ->assign('PFAD_SLIDER', $shopURL . '/' . PFAD_BILDER_SLIDER)
-       ->assign('Suchergebnisse', $oSuchergebnisse ?? new \Filter\SearchResults())
+       ->assign('Suchergebnisse', $oSuchergebnisse ?? new SearchResults())
+       ->assign('cSessionID', session_id())
        ->assign('opc', Shop::Container()->getOPC())
        ->assign('opcPageService', Shop::Container()->getOPCPageService())
-       ->assign('shopFaviconURL', Shop::getFaviconURL());
+       ->assign('shopFaviconURL', Shop::getFaviconURL())
+       ->assign('wishlists', Wishlist::getWishlists())
+       ->assign('robotsContent', $smarty->get_template_vars('robotsContent'))
+       ->assign('device', $device);
 
-$nav = new \JTL\Navigation(Shop::Lang(), Shop::Container()->getLinkService());
+$nav = new Navigation(Shop::Lang(), Shop::Container()->getLinkService());
 $nav->setPageType(Shop::getPageType());
 $nav->setProductFilter($NaviFilter);
-if (isset($AufgeklappteKategorien) && $AufgeklappteKategorien instanceof KategorieListe) {
-    $nav->setCategoryList($AufgeklappteKategorien);
-} elseif (isset($expandedCategories) && $expandedCategories instanceof KategorieListe) {
-    $nav->setCategoryList($expandedCategories);
-}
+$nav->setCategoryList($expandedCategories);
 if (isset($AktuellerArtikel) && $AktuellerArtikel instanceof Artikel) {
     $nav->setProduct($AktuellerArtikel);
 }
-if (isset($link) && $link instanceof \Link\Link) {
+if (isset($link) && $link instanceof Link) {
     $nav->setLink($link);
 }
 if (isset($breadCrumbName, $breadCrumbURL)) {
-    $breadCrumbEntry = new \JTL\NavigationEntry();
+    $breadCrumbEntry = new NavigationEntry();
     $breadCrumbEntry->setURL($breadCrumbURL);
     $breadCrumbEntry->setName($breadCrumbName);
     $breadCrumbEntry->setURLFull($breadCrumbURL);
@@ -154,23 +213,47 @@ if (isset($breadCrumbName, $breadCrumbURL)) {
 require_once PFAD_ROOT . PFAD_INCLUDES . 'besucher.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 Visitor::generateData();
-Kampagne::checkCampaignParameters();
-Sprache::generateLanguageAndCurrencyLinks();
-$oExtension = (new ExtensionPoint($pagetType, Shop::getParameters(), Shop::getLanguageID(), $kKundengruppe))->load();
+Campaign::checkCampaignParameters();
+Shop::Lang()->generateLanguageAndCurrencyLinks();
+$ep = new ExtensionPoint($pageType, Shop::getParameters(), Shop::getLanguageID(), $customerGroupID);
+$ep->load();
 executeHook(HOOK_LETZTERINCLUDE_INC);
 $boxes       = Shop::Container()->getBoxService();
-$boxesToShow = $boxes->render($boxes->buildList($pagetType));
-/* @global Artikel $AktuellerArtikel */
+$boxesToShow = $boxes->render($boxes->buildList($pageType), $pageType);
+/* @global null|Artikel $AktuellerArtikel */
 if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0) {
-    // Letzten angesehenden Artikel hinzufügen
     $boxes->addRecentlyViewed($AktuellerArtikel->kArtikel);
 }
-$visitorCount = $Einstellungen['global']['global_zaehler_anzeigen'] === 'Y'
-    ? (int)Shop::Container()->getDB()->query('SELECT nZaehler FROM tbesucherzaehler', \DB\ReturnType::SINGLE_OBJECT)->nZaehler
+$visitorCount = $conf['global']['global_zaehler_anzeigen'] === 'Y'
+    ? (int)Shop::Container()->getDB()->query(
+        'SELECT nZaehler FROM tbesucherzaehler',
+        ReturnType::SINGLE_OBJECT
+    )->nZaehler
     : 0;
+$debugbar->getTimer()->stopMeasure('init');
+
+// backwards compatibility, create error and note messages for previously used globals $cFehler, $cHinweis, $hinweis
+// since 5.0.0: the new AlertService should be used instead
+$alertHelper = Shop::Container()->getAlertService();
+if (isset($cFehler)) {
+    $alertHelper->addAlert(Alert::TYPE_ERROR, $cFehler, 'miscFehler');
+    trigger_error('global $cFehler is deprecated.', \E_USER_DEPRECATED);
+}
+if (isset($cHinweis)) {
+    $alertHelper->addAlert(Alert::TYPE_NOTE, $cHinweis, 'miscCHinweis');
+    trigger_error('global $cHinweis is deprecated.', \E_USER_DEPRECATED);
+}
+if (isset($hinweis)) {
+    $alertHelper->addAlert(Alert::TYPE_NOTE, $hinweis, 'miscHinweis');
+    trigger_error('global $hinweis is deprecated.', \E_USER_DEPRECATED);
+}
+
 $smarty->assign('bCookieErlaubt', isset($_COOKIE['JTLSHOP']))
        ->assign('Brotnavi', $nav->createNavigation())
-       ->assign('nIsSSL', RequestHelper::checkSSL())
+       ->assign('nIsSSL', Request::checkSSL())
        ->assign('boxes', $boxesToShow)
        ->assign('nZeitGebraucht', isset($nStartzeit) ? (microtime(true) - $nStartzeit) : 0)
-       ->assign('Besucherzaehler', $visitorCount);
+       ->assign('Besucherzaehler', $visitorCount)
+       ->assign('alertList', Shop::Container()->getAlertService())
+       ->assign('dbgBarHead', $debugbarRenderer->renderHead())
+       ->assign('dbgBarBody', $debugbarRenderer->render());

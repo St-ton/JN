@@ -4,13 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\SortingOptions;
+namespace JTL\Filter\SortingOptions;
 
-use Filter\ProductFilter;
+use JTL\Filter\ProductFilter;
+use JTL\Shop;
 
 /**
  * Class ProductNumber
- * @package Filter\SortingOptions
+ * @package JTL\Filter\SortingOptions
  */
 class ProductNumber extends AbstractSortingOption
 {
@@ -22,7 +23,7 @@ class ProductNumber extends AbstractSortingOption
     {
         parent::__construct($productFilter);
         $this->setOrderBy('tartikel.cArtNr, tartikel.cName');
-        $this->setName(\Shop::Lang()->get('sortProductno'));
+        $this->setName(Shop::Lang()->get('sortProductno'));
         $this->setPriority($this->getConfig('artikeluebersicht')['suche_sortierprio_artikelnummer']);
         $this->setValue(\SEARCH_SORT_PRODUCTNO);
     }

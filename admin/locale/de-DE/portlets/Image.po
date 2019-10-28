@@ -1,0 +1,24 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Image"
+msgstr "Bild"
+
+msgid "shape"
+msgstr "Form"
+
+msgid "shapeNormal"
+msgstr "normal"
+
+msgid "shapeRoundedCorners"
+msgstr "abgerundete Ecken"
+
+msgid "shapeCircle"
+msgstr "Kreis"
+
+msgid "shapeThumbnail"
+msgstr "Als Vorschaubild"
+
+msgid "imageResponsive"
+msgstr "Responsives Bild?"

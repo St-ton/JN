@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Cache;
+namespace JTL\Cache;
 
 /**
  * Interface JTLCacheInterface
@@ -34,14 +34,16 @@ interface JTLCacheInterface
     /**
      * load shop cache config from db
      *
+     * @param array $config
      * @return array
      */
-    public function getJtlCacheConfig(): array;
+    public function getJtlCacheConfig(array $config): array;
 
     /**
+     * @param array $config
      * @return JTLCacheInterface
      */
-    public function setJtlCacheConfig(): JTLCacheInterface;
+    public function setJtlCacheConfig(array $config): JTLCacheInterface;
 
     /**
      * @return JTLCacheInterface
@@ -153,7 +155,7 @@ interface JTLCacheInterface
      * @param int $lifetime
      * @return JTLCacheInterface
      */
-    public function setCacheLifetime($lifetime): JTLCacheInterface;
+    public function setCacheLifetime(int $lifetime): JTLCacheInterface;
 
     /**
      * set custom file cache directory
@@ -161,7 +163,7 @@ interface JTLCacheInterface
      * @param string $dir
      * @return JTLCacheInterface
      */
-    public function setCacheDir($dir): JTLCacheInterface;
+    public function setCacheDir(string $dir): JTLCacheInterface;
 
     /**
      * get the currently activated cache method
@@ -255,12 +257,12 @@ interface JTLCacheInterface
     /**
      * generate basic cache id with popular variables
      *
-     * @param bool $hash
-     * @param bool $customerID
-     * @param bool $customerGroup
-     * @param bool $languageID
-     * @param bool $currencyID
-     * @param bool $sslStatus
+     * @param bool     $hash
+     * @param bool|int $customerID
+     * @param bool|int $customerGroup
+     * @param bool|int $languageID
+     * @param bool|int $currencyID
+     * @param bool     $sslStatus
      * @return string
      */
     public function getBaseID(
@@ -275,12 +277,12 @@ interface JTLCacheInterface
     /**
      * simple benchmark for different caching methods
      *
-     * @param string $methods
-     * @param string $testData
-     * @param int    $runCount
-     * @param int    $repeat
-     * @param bool   $echo
-     * @param bool   $format
+     * @param string|array $methods
+     * @param string       $testData
+     * @param int          $runCount
+     * @param int          $repeat
+     * @param bool         $echo
+     * @param bool         $format
      * @return array
      */
     public function benchmark(
@@ -301,5 +303,5 @@ interface JTLCacheInterface
      * @param string $error
      * @return JTLCacheInterface
      */
-    public function setError(string $error): JTLCacheInterface;
+    public function setError(string $error);
 }

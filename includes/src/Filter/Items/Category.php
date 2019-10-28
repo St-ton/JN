@@ -4,19 +4,23 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\Items;
+namespace JTL\Filter\Items;
 
-use DB\ReturnType;
-use Filter\Join;
-use Filter\Option;
-use Filter\ProductFilter;
-use Filter\States\BaseCategory;
-use Filter\StateSQL;
-use Filter\Type;
+use JTL\Catalog\Category\Kategorie;
+use JTL\DB\ReturnType;
+use JTL\Filter\Join;
+use JTL\Filter\Option;
+use JTL\Filter\ProductFilter;
+use JTL\Filter\States\BaseCategory;
+use JTL\Filter\StateSQL;
+use JTL\Filter\Type;
+use JTL\Helpers\Category as CategoryHelper;
+use JTL\Language\LanguageHelper;
+use JTL\Shop;
 
 /**
  * Class Category
- * @package Filter\Items
+ * @package JTL\Filter\Items
  */
 class Category extends BaseCategory
 {
@@ -32,7 +36,7 @@ class Category extends BaseCategory
              ->setUrlParam('kf')
              ->setUrlParamSEO(\SEP_KAT)
              ->setVisibility($this->getConfig('navigationsfilter')['allgemein_kategoriefilter_benutzen'])
-             ->setFrontendName(\Shop::Lang()->get('allCategories'));
+             ->setFrontendName(Shop::Lang()->get('allCategories'));
     }
 
     /**
@@ -104,7 +108,7 @@ class Category extends BaseCategory
         // Kategoriefilter anzeige
         if ($categoryFilterType === 'HF' && !$this->productFilter->hasCategory()) {
             //@todo: $this instead of $naviFilter->KategorieFilter?
-            $kKatFilter = $this->productFilter->hasCategoryFilter()
+            $categoryIDFilter = $this->productFilter->hasCategoryFilter()
                 ? ''
                 : ' AND tkategorieartikelgesamt.kOberKategorie = 0';
 
@@ -120,7 +124,7 @@ class Category extends BaseCategory
                     ON tkategorie.lft BETWEEN oberkategorie.lft 
                     AND oberkategorie.rght
                 ) tkategorieartikelgesamt')
-                ->setOn('tartikel.kArtikel = tkategorieartikelgesamt.kArtikel ' . $kKatFilter)
+                ->setOn('tartikel.kArtikel = tkategorieartikelgesamt.kArtikel ' . $categoryIDFilter)
                 ->setOrigin(__CLASS__));
             $sql->addJoin((new Join())
                 ->setComment('join2 from ' . __METHOD__)
@@ -145,8 +149,8 @@ class Category extends BaseCategory
                 ->setOn('tkategorie.kKategorie = tkategorieartikel.kKategorie')
                 ->setOrigin(__CLASS__));
         }
-        if (!\Shop::has('checkCategoryVisibility')) {
-            \Shop::set(
+        if (!Shop::has('checkCategoryVisibility')) {
+            Shop::set(
                 'checkCategoryVisibility',
                 $this->productFilter->getDB()->query(
                     'SELECT kKategorie FROM tkategoriesichtbarkeit',
@@ -154,7 +158,7 @@ class Category extends BaseCategory
                 ) > 0
             );
         }
-        if (\Shop::get('checkCategoryVisibility')) {
+        if (Shop::get('checkCategoryVisibility')) {
             $sql->addJoin((new Join())
                 ->setComment('join5 from ' . __METHOD__)
                 ->setType('LEFT JOIN')
@@ -164,10 +168,8 @@ class Category extends BaseCategory
 
             $sql->addCondition('tkategoriesichtbarkeit.kKategorie IS NULL');
         }
-        $cSQLKategorieSprache        = new \stdClass();
-        $cSQLKategorieSprache->cJOIN = '';
-        $select                      = ['tkategorie.kKategorie', 'tkategorie.nSort'];
-        if (!\Sprache::isDefaultLanguageActive()) {
+        $select = ['tkategorie.kKategorie', 'tkategorie.nSort'];
+        if (!LanguageHelper::isDefaultLanguageActive()) {
             $select[] = "IF(tkategoriesprache.cName = '', tkategorie.cName, tkategoriesprache.cName) AS cName";
             $sql->addJoin((new Join())
                 ->setComment('join5 from ' . __METHOD__)
@@ -192,24 +194,24 @@ class Category extends BaseCategory
             return $this->options;
         }
         $categories       = $this->productFilter->getDB()->executeQuery(
-            "SELECT tseo.cSeo, ssMerkmal.kKategorie, ssMerkmal.cName, 
+            'SELECT tseo.cSeo, ssMerkmal.kKategorie, ssMerkmal.cName, 
                 ssMerkmal.nSort, COUNT(*) AS nAnzahl
-                FROM (" . $baseQuery . " ) AS ssMerkmal
+                FROM (' . $baseQuery . " ) AS ssMerkmal
                     LEFT JOIN tseo ON tseo.kKey = ssMerkmal.kKategorie
                         AND tseo.cKey = 'kKategorie'
-                        AND tseo.kSprache = " . $this->getLanguageID() . "
+                        AND tseo.kSprache = " . $this->getLanguageID() . '
                     GROUP BY ssMerkmal.kKategorie
-                    ORDER BY ssMerkmal.nSort, ssMerkmal.cName",
+                    ORDER BY ssMerkmal.nSort, ssMerkmal.cName',
             ReturnType::ARRAY_OF_OBJECTS
         );
         $langID           = $this->getLanguageID();
         $customerGroupID  = $this->getCustomerGroupID();
         $additionalFilter = new self($this->productFilter);
-        $helper           = \KategorieHelper::getInstance($langID, $customerGroupID);
+        $helper           = CategoryHelper::getInstance($langID, $customerGroupID);
         foreach ($categories as $category) {
             $category->kKategorie = (int)$category->kKategorie;
             if ($categoryFilterType === 'KP') { // category path
-                $category->cName = $helper->getPath(new \Kategorie($category->kKategorie, $langID, $customerGroupID));
+                $category->cName = $helper->getPath(new Kategorie($category->kKategorie, $langID, $customerGroupID));
             }
             $options[] = (new Option())
                 ->setParam($this->getUrlParam())
@@ -231,7 +233,7 @@ class Category extends BaseCategory
             });
         }
         $this->options = $options;
-        $this->productFilter->getCache()->set($cacheID, $options, [CACHING_GROUP_FILTER]);
+        $this->productFilter->getCache()->set($cacheID, $options, [\CACHING_GROUP_FILTER]);
 
         return $options;
     }

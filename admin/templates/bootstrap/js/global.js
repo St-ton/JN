@@ -44,10 +44,6 @@ function get_list_callback(type, id) {
             return (id == 0) ? 'getCategoryList' :
                 'getCategoryListFromString';
 
-        case 'tag':
-            return (id == 0) ? 'getTagList' :
-                'getTagListFromString';
-
         case 'attribute':
             return (id == 0) ? 'getAttributeList' :
                 'getAttributeListFromString';
@@ -69,18 +65,6 @@ function show_simple_search(type) {
     browser.center().fadeIn(850);
     browser.find('select').empty();
     browser.find('input').val('').focus();
-}
-
-/**
- *
- */
-function banners_datepicker() {
-    var v = $('#vDatum'),
-        b = $('#bDatum');
-    if (v && b && v.length > 0 && b.length > 0) {
-        v.datepicker();
-        b.datepicker();
-    }
 }
 
 /**
@@ -308,7 +292,7 @@ function createNotify(options, settings) {
     options = $.extend({}, {
         message: '...',
         title: 'Notification',
-        icon: 'fa fa-info-circle'
+        icon: 'fal fa-info-circle'
     }, options);
 
     settings = $.extend({}, {
@@ -317,8 +301,8 @@ function createNotify(options, settings) {
         allow_dismiss: false,
         placement: {from: 'bottom', align: 'center'},
         animate: {enter: 'animated fadeInDown', exit: 'animated fadeOutUp'},
-        template: '<div data-notify="container" class="col-xs-11 col-sm-4 alert alert-{0} alert-custom" role="alert">' +
-        '  <button type="button" aria-hidden="true" class="close" data-notify="dismiss"><i class="fa fa-times alert-{0}"></i></button>' +
+        template: '<div data-notify="container" class="col-xs-11 col-sm-4 alert alert-{0} alert-custom alert-dismissible" role="alert">' +
+        '  <button type="button" aria-hidden="true" class="close" data-notify="dismiss"><i class="fal fa-times alert-{0}"></i></button>' +
         '  <div>' +
         '    <div style="float:left;margin-right:10px">' +
         '      <i data-notify="icon"></i>' +
@@ -384,7 +368,7 @@ function reloadFavs() {
 }
 
 function switchCouponTooltipVisibility() {
-    $('#cWertTyp').change(function() {
+    $('#cWertTyp').on('change', function() {
         if($(this).val() === 'prozent') {
             $('#fWertTooltip').parent().hide();
         } else {
@@ -394,12 +378,18 @@ function switchCouponTooltipVisibility() {
 }
 
 function tristateInit() {
-    $("input[type=checkbox].tristate").click(tristate(this));
+    $("input[type=checkbox].tristate").on('click', tristate(this));
 }
 
 function tristate(cb) {
     if (cb.readOnly) cb.checked=cb.readOnly=false;
     else if (!cb.checked) cb.readOnly=cb.indeterminate=true;
+}
+
+function checkSingleSettingCard() {
+    if ($('#settings .card').length === 1) {
+        $('#settings .card').addClass('single');
+    }
 }
 
 /**
@@ -409,7 +399,7 @@ $(document).ready(function () {
     switchCouponTooltipVisibility();
     $('.collapse').removeClass('in');
 
-    $('.accordion-toggle').click(function () {
+    $('.accordion-toggle').on('click', function () {
         var self = this;
         $(self).find('i').toggleClass('fa-minus fa-plus');
         $('.accordion-toggle').each(function () {
@@ -419,7 +409,6 @@ $(document).ready(function () {
         });
     });
 
-    banners_datepicker();
     $('.help').each(function () {
         var id = $(this).attr('ref'),
             tooltip = $('<div></div>').text($(this).attr('title')).addClass('tooltip').attr('id', 'help' + id),
@@ -455,7 +444,7 @@ $(document).ready(function () {
 
     });
 
-    $('#fav-add').click(function() {
+    $('#fav-add').on('click', function() {
         var title = $('.content-header h1').text();
         var url = window.location.href;
         ioCall('addFav', [title, url], function() {
@@ -471,7 +460,7 @@ $(document).ready(function () {
     $('button.blue, input[type=submit].blue').addClass('btn btn-primary');
     $('button.orange, input[type=submit].orange').addClass('btn btn-default');
 
-    $(window).scroll(function () {
+    $(window).on('scroll', function () {
         if ($(this).scrollTop() > 100) {
             $('#scroll-top').fadeIn();
         } else {
@@ -479,7 +468,7 @@ $(document).ready(function () {
         }
     });
     //Click event to scroll to top
-    $('#scroll-top').click(function () {
+    $('#scroll-top').on('click', function () {
         $('html, body').animate({scrollTop: 0}, 800);
         return false;
     });
@@ -491,7 +480,7 @@ $(document).ready(function () {
         $('body a[href="' + location.hash + '"]').tab('show');
     }
     //Checkboxen de-/aktivieren die über der Einstellung liegen und in der gleichen Klasse sind
-    $(".Boxen").click(function () {
+    $(".Boxen").on('click', function () {
         var checkbox = $(this).parent().parent().find("input:not(.Boxen)");
         var activitem = $(this).prop("checked");
         $(checkbox).each(function (id, item) {
@@ -516,15 +505,42 @@ $(document).ready(function () {
     });
 
     // Massenerstellung von Kupons de-/aktivieren
-    $("#couponCreation").change(function () {
+    $("#couponCreation").on('change', function () {
         massCreationCoupons();
     });
 
+    /*
+     * alert actions
+     */
+    $('.alert .close').on('click', function (){
+        $(this).closest('.alert').fadeOut(1000);
+    });
+
+    $('.alert').each(function(){
+        if ($(this).data('fade-out') > 0) {
+            $(this).fadeOut($(this).data('fade-out'));
+        }
+    });
 
     $("input[type=checkbox].tristate").prop("indeterminate", true).prop("readonly", true);
-    $("input[type=checkbox].tristate").change(function(e){
+    $("input[type=checkbox].tristate").on('change', function(e){
         tristate(e.target);
     });
+
+    checkSingleSettingCard();
+    onChangeFormSubmit();
+});
+
+$(window).on('load', () => {
+    $('#page-wrapper').removeClass('hidden disable-transitions');
+    $('html').addClass('ready');
+    $('body > .spinner').remove();
+
+    document.dispatchEvent(new CustomEvent('ready', {
+        detail: {
+            jquery : $
+        }
+    }))
 });
 
 function showBackdrop() {
@@ -683,7 +699,7 @@ function ioManagedCall(adminPath, funcname, params, callback)
  *      returns a HTML string
  * @param onSelect
  */
-function enableTypeahead(selector, funcName, display, suggestion, onSelect)
+function enableTypeahead(selector, funcName, display, suggestion, onSelect, spinnerElm)
 {
     var pendingRequest = null;
 
@@ -710,11 +726,47 @@ function enableTypeahead(selector, funcName, display, suggestion, onSelect)
                 }
             }
         )
-        .bind('typeahead:select', onSelect)
+        .on('typeahead:select', onSelect)
+        .on('typeahead:asyncrequest', e => {
+            $(spinnerElm).show();
+        })
+        .on('typeahead:asynccancel typeahead:asyncreceive', () => {
+            $(spinnerElm).hide();
+        })
     ;
 }
 
 function selectAllItems(elm, enable)
 {
     $(elm).closest('form').find('input[type=checkbox]').prop('checked', enable);
+}
+
+function openElFinder(callback, type)
+{
+    window.elfinder = {getFileCallback: callback};
+
+    window.open(
+        'elfinder.php?token=' + JTL_TOKEN + '&mediafilesType=' + type,
+        'elfinderWindow',
+        'status=0,toolbar=0,location=0,menubar=0,directories=0,resizable=1,scrollbars=0,width=800,height=600'
+    );
+}
+
+function sprintf(format)
+{
+    for( var i=1; i < arguments.length; i++ ) {
+        format = format.replace( /%s/, arguments[i] );
+    }
+    return format;
+}
+
+function onChangeFormSubmit()
+{
+    $('.on-change-submit').on('change', function () {
+        $(this).closest('form').submit();
+    });
+}
+
+function closeTooltips() {
+    $('.tooltip[role="tooltip"]').remove();
 }

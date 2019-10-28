@@ -1,20 +1,21 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Link;
+namespace JTL\Link;
 
-use Cache\JTLCacheInterface;
-use DB\DbInterface;
-use DB\ReturnType;
+use Illuminate\Support\Collection;
+use JTL\Cache\JTLCacheInterface;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use JTL\Session\Frontend;
 use function Functional\group;
-use Tightenco\Collect\Support\Collection;
 
 /**
  * Class LinkGroupList
- * @package Filter
+ * @package JTL\Link
  */
 final class LinkGroupList implements LinkGroupListInterface
 {
@@ -99,7 +100,8 @@ final class LinkGroupList implements LinkGroupListInterface
 
             $this->cache->set('linkgroups', $this->linkGroups, [\CACHING_GROUP_CORE]);
         }
-        $this->applyVisibilityFilter(\Session::CustomerGroup()->getID(), \Session::Customer()->getID());
+        $this->applyVisibilityFilter(Frontend::getCustomerGroup()->getID(), Frontend::getCustomer()->getID());
+        \executeHook(\HOOK_LINKGROUPS_LOADED, ['list' => $this]);
 
         return $this;
     }
@@ -110,7 +112,7 @@ final class LinkGroupList implements LinkGroupListInterface
     private function loadUnassignedGroups(): LinkGroupInterface
     {
         $unassigned = $this->db->query(
-            "SELECT tlink.*,tlinksprache.cISOSprache, 
+            "SELECT tlink.*, tlinksprache.cISOSprache, 
                 tlink.cName AS displayName, 
                 tlinksprache.cName AS localizedName, 
                 tlinksprache.cTitle AS localizedTitle, 
@@ -179,13 +181,13 @@ final class LinkGroupList implements LinkGroupListInterface
     {
         $groups         = [];
         $groupLanguages = $this->db->query(
-            'SELECT tlinkgruppesprache.*, tlinkgruppe.cTemplatename AS template, tsprache.kSprache 
-                FROM tlinkgruppe
-                JOIN tlinkgruppesprache
-                    ON tlinkgruppe.kLinkgruppe = tlinkgruppesprache.kLinkgruppe
-                JOIN tsprache 
-                    ON tsprache.cISO = tlinkgruppesprache.cISOSprache
-                WHERE tlinkgruppe.kLinkgruppe > 0 AND tlinkgruppesprache.kLinkgruppe > 0',
+            'SELECT loc.*, g.cTemplatename AS template, g.cName AS groupName, IFNULL(tsprache.kSprache, 0) AS kSprache 
+                FROM tlinkgruppe AS g
+                LEFT JOIN tlinkgruppesprache AS loc
+                    ON g.kLinkgruppe = loc.kLinkgruppe
+                LEFT JOIN tsprache 
+                    ON tsprache.cISO = loc.cISOSprache
+                WHERE g.kLinkgruppe > 0 AND loc.kLinkgruppe > 0',
             ReturnType::ARRAY_OF_OBJECTS
         );
         $grouped        = group($groupLanguages, function ($e) {
@@ -207,7 +209,7 @@ final class LinkGroupList implements LinkGroupListInterface
     private function loadSpecialPages(): LinkGroupInterface
     {
         $specialPages = $this->db->query(
-            "SELECT tlink.*,tlinksprache.cISOSprache, 
+            "SELECT tlink.*, tlinksprache.cISOSprache, 
                 tlink.cName AS displayName, 
                 tlinksprache.cName AS localizedName, 
                 tlinksprache.cTitle AS localizedTitle, 
@@ -239,11 +241,10 @@ final class LinkGroupList implements LinkGroupListInterface
                     GROUP BY tlink.kLink, tseo.kSprache",
             ReturnType::ARRAY_OF_OBJECTS
         );
-
-        $grouped = group($specialPages, function ($e) {
+        $grouped      = group($specialPages, function ($e) {
             return $e->kLink;
         });
-        $lg      = new LinkGroup($this->db);
+        $lg           = new LinkGroup($this->db);
         $lg->setID(998);
         $lg->setNames(['specialpages']);
         $lg->setTemplate('specialpages');
@@ -281,22 +282,14 @@ final class LinkGroupList implements LinkGroupListInterface
     {
         $staticRoutes = $this->db->query(
             "SELECT tspezialseite.kSpezialseite, tspezialseite.cName AS baseName, tspezialseite.cDateiname, 
-                tspezialseite.nLinkart, tlink.kLink, 
-                tlink.cName AS displayName,
-                tlinksprache.cName AS localizedName,
-                tlinksprache.cTitle AS localizedTitle,
-                tlinksprache.cContent AS content,
-                tlinksprache.cMetaDescription AS metaDescription,
-                tlinksprache.cMetaKeywords AS metaKeywords,
-                tlinksprache.cMetaTitle AS metaTitle,
-                tlink.cKundengruppen, 
-                tseo.cSeo AS localizedUrl, 
-                tsprache.cISO AS cISOSprache, tsprache.kSprache AS languageID, 
-                tlink.kVaterLink, tspezialseite.kPlugin, 
-                tlink.cName, tlink.cNoFollow, tlink.cSichtbarNachLogin, tlink.cDruckButton, 
-                tlink.nSort, tlink.bIsActive, tlink.bIsFluid, tlink.bSSL,
-                GROUP_CONCAT(tlinkgroupassociations.linkGroupID) AS linkGroups,
-                2 AS pluginState
+                tspezialseite.nLinkart, tlink.kLink, tlink.cName AS displayName, tlink.reference,
+                tlinksprache.cName AS localizedName, tlinksprache.cTitle AS localizedTitle,
+                tlinksprache.cContent AS content, tlinksprache.cMetaDescription AS metaDescription,
+                tlinksprache.cMetaKeywords AS metaKeywords, tlinksprache.cMetaTitle AS metaTitle,
+                tlink.cKundengruppen,  tseo.cSeo AS localizedUrl,  tsprache.cISO AS cISOSprache, 
+                tsprache.kSprache AS languageID, tlink.kVaterLink, tspezialseite.kPlugin, tlink.cName, tlink.cNoFollow, 
+                tlink.cSichtbarNachLogin, tlink.cDruckButton, tlink.nSort, tlink.bIsActive, tlink.bIsFluid, tlink.bSSL,
+                GROUP_CONCAT(tlinkgroupassociations.linkGroupID) AS linkGroups, 2 AS pluginState
             FROM tspezialseite
                 LEFT JOIN tlink 
                     ON tlink.nLinkart = tspezialseite.nLinkart
@@ -344,7 +337,7 @@ final class LinkGroupList implements LinkGroupListInterface
     /**
      * @inheritdoc
      */
-    public function setLinkGroups(Collection $linkGroups)
+    public function setLinkGroups(Collection $linkGroups): void
     {
         $this->linkGroups = $linkGroups;
     }
@@ -360,7 +353,7 @@ final class LinkGroupList implements LinkGroupListInterface
     /**
      * @inheritdoc
      */
-    public function setVisibleLinkGroups(LinkGroupCollection $linkGroups)
+    public function setVisibleLinkGroups(LinkGroupCollection $linkGroups): void
     {
         $this->visibleLinkGroups = $linkGroups;
     }
@@ -390,7 +383,7 @@ final class LinkGroupList implements LinkGroupListInterface
     /**
      * @inheritdoc
      */
-    public function getLinkgroupByTemplate(string $name, $filtered = true)
+    public function getLinkgroupByTemplate(string $name, $filtered = true): ?LinkGroupInterface
     {
         $source = $filtered ? $this->visibleLinkGroups : $this->linkGroups;
 
@@ -400,7 +393,7 @@ final class LinkGroupList implements LinkGroupListInterface
     /**
      * @inheritdoc
      */
-    public function getLinkgroupByID(int $id, $filtered = true)
+    public function getLinkgroupByID(int $id, $filtered = true): ?LinkGroupInterface
     {
         $source = $filtered ? $this->visibleLinkGroups : $this->linkGroups;
 

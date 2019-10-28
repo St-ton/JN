@@ -4,65 +4,73 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
 
-use DB\ReturnType;
+use JTL\Catalog\Product\ArtikelListe;
+use JTL\DB\ReturnType;
+use JTL\Helpers\SearchSpecial;
+use JTL\Session\Frontend;
+use JTL\Shop;
+use function Functional\map;
 
 /**
  * Class NewProducts
- * @package Boxes
+ * @package JTL\Boxes\Items
  */
 final class NewProducts extends AbstractBox
 {
     /**
-     * Cart constructor.
+     * NewProducts constructor.
      * @param array $config
      */
     public function __construct(array $config)
     {
         parent::__construct($config);
         $this->setShow(false);
-        $customerGroupID = \Session::CustomerGroup()->getID();
-        if ($customerGroupID && \Session::CustomerGroup()->mayViewCategories()) {
+        $customerGroupID = Frontend::getCustomerGroup()->getID();
+        if ($customerGroupID && Frontend::getCustomerGroup()->mayViewCategories()) {
             $cacheTags      = [\CACHING_GROUP_BOX, \CACHING_GROUP_ARTICLE];
             $cached         = true;
-            $stockFilterSQL = \Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
+            $stockFilterSQL = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $parentSQL      = ' AND tartikel.kVaterArtikel = 0';
-            $limit          = $config['boxen']['box_neuimsortiment_anzahl_anzeige'];
+            $limit          = $config['boxen']['box_neuimsortiment_anzahl_basis'];
             $days           = $config['boxen']['box_neuimsortiment_alter_tage'] > 0
                 ? (int)$config['boxen']['box_neuimsortiment_alter_tage']
                 : 30;
             $cacheID        = 'bx_nw_' . $customerGroupID .
                 '_' . $days . '_' .
                 $limit . \md5($stockFilterSQL . $parentSQL);
-            if (($productIDs = \Shop::Container()->getCache()->get($cacheID)) === false) {
+            if (($productIDs = Shop::Container()->getCache()->get($cacheID)) === false) {
                 $cached     = false;
-                $productIDs = \Shop::Container()->getDB()->query(
-                    "SELECT tartikel.kArtikel
+                $productIDs = Shop::Container()->getDB()->query(
+                    'SELECT tartikel.kArtikel
                         FROM tartikel
                         LEFT JOIN tartikelsichtbarkeit 
-                            ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
-                            AND tartikelsichtbarkeit.kKundengruppe = $customerGroupID
+                            ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                            AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . "
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                            AND tartikel.cNeu = 'Y'
-                            $stockFilterSQL
-                            $parentSQL
+                            AND tartikel.cNeu = 'Y' " . $stockFilterSQL . $parentSQL . "
                             AND cNeu = 'Y' 
-                            AND DATE_SUB(NOW(),INTERVAL $days DAY) < dErstellt
-                        ORDER BY RAND() LIMIT " . $limit,
+                            AND DATE_SUB(NOW(), INTERVAL " . $days . ' DAY) < dErstellt
+                        LIMIT ' . $limit,
                     ReturnType::ARRAY_OF_OBJECTS
                 );
-                $productIDs = \array_map(function ($e) {
-                    return (int)$e->kArtikel;
-                }, $productIDs);
-                \Shop::Container()->getCache()->set($cacheID, $productIDs, $cacheTags);
+                Shop::Container()->getCache()->set($cacheID, $productIDs, $cacheTags);
             }
-            if (\count($productIDs) > 0) {
+            \shuffle($productIDs);
+            $res = map(
+                \array_slice($productIDs, 0, $config['boxen']['box_neuimsortiment_anzahl_anzeige']),
+                function ($productID) {
+                    return (int)$productID->kArtikel;
+                }
+            );
+
+            if (\count($res) > 0) {
                 $this->setShow(true);
-                $products = new \ArtikelListe();
-                $products->getArtikelByKeys($productIDs, 0, \count($productIDs));
+                $products = new ArtikelListe();
+                $products->getArtikelByKeys($res, 0, \count($res));
                 $this->setProducts($products);
-                $this->setURL(\SearchSpecialHelper::buildURL(\SEARCHSPECIALS_NEWPRODUCTS));
+                $this->setURL(SearchSpecial::buildURL(\SEARCHSPECIALS_NEWPRODUCTS));
                 \executeHook(\HOOK_BOXEN_INC_NEUIMSORTIMENT, [
                     'box'        => &$this,
                     'cache_tags' => &$cacheTags,

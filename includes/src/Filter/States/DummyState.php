@@ -4,14 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\States;
+namespace JTL\Filter\States;
 
-use Filter\AbstractFilter;
-use Filter\FilterInterface;
-use Filter\ProductFilter;
+use JTL\Filter\AbstractFilter;
+use JTL\Filter\FilterInterface;
+use JTL\Filter\ProductFilter;
 
 /**
  * Class DummyState
+ * @package JTL\Filter\States
  */
 class DummyState extends AbstractFilter
 {

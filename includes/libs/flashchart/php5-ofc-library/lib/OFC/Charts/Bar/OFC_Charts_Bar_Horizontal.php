@@ -24,7 +24,7 @@ class OFC_Charts_Bar_Horizontal_Value
 {
     public function OFC_Charts_Bar_Horizontal_Value($left, $right)
     {
-        $this->left = $left;
+        $this->left  = $left;
         $this->right = $right;
     }
 }
@@ -33,12 +33,12 @@ class OFC_Charts_Bar_Horizontal
 {
     public function OFC_Charts_Bar_Horizontal()
     {
-        $this->type      = "hbar";
-        $this->colour    = "#9933CC";
-        $this->text      = "Page views";
+        $this->type   = 'hbar';
+        $this->colour = '#9933CC';
+        $this->text   = 'Page views';
         ;
         $this->{'font-size'} = 10;
-        $this->values    = array();
+        $this->values        = array();
     }
 
     public function append_value($v)

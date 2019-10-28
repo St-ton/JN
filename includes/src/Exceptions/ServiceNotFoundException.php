@@ -4,13 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Exceptions;
+namespace JTL\Exceptions;
 
 use Psr\Container\NotFoundExceptionInterface;
 
 /**
  * Class ServiceNotFoundException
- * @package Exceptions
+ * @package JTL\Exceptions
  */
 class ServiceNotFoundException extends \Exception implements NotFoundExceptionInterface
 {
@@ -26,6 +26,6 @@ class ServiceNotFoundException extends \Exception implements NotFoundExceptionIn
     public function __construct($interface)
     {
         $this->interface = $interface;
-        parent::__construct("The Service '$interface', could not be found.");
+        parent::__construct('The Service "' . $interface . '" could not be found.');
     }
 }

@@ -3,193 +3,205 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\Alert\Alert;
+use JTL\Boxes\Admin\BoxAdmin;
+use JTL\Customer\CustomerGroup;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\ImageMap;
+use JTL\Pagination\Pagination;
+use JTL\Shop;
+
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('DISPLAY_BANNER_VIEW', true, true);
-/** @global JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'banner_inc.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
-$cFehler  = '';
-$cHinweis = '';
-$cAction  = (isset($_REQUEST['action']) && FormHelper::validateToken()) ? $_REQUEST['action'] : 'view';
-
-if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && FormHelper::validateToken()) {
-    $cPlausi_arr = [];
-    $oBanner     = new ImageMap();
-    $kImageMap   = (isset($_POST['kImageMap']) ? (int)$_POST['kImageMap'] : null);
-    $cName       = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-    if (strlen($cName) === 0) {
-        $cPlausi_arr['cName'] = 1;
+$action      = (isset($_REQUEST['action']) && Form::validateToken()) ? $_REQUEST['action'] : 'view';
+$alertHelper = Shop::Container()->getAlertService();
+$db          = Shop::Container()->getDB();
+if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && Form::validateToken()) {
+    $checks     = [];
+    $imageMap   = new ImageMap($db);
+    $imageMapID = Request::postInt('kImageMap', null);
+    $name       = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+    if (mb_strlen($name) === 0) {
+        $checks['cName'] = 1;
     }
-    $cBannerPath = (isset($_POST['cPath']) && $_POST['cPath'] !== '' ? $_POST['cPath'] : null);
+    $bannerPath = Request::postVar('cPath', '') !== '' ? $_POST['cPath'] : null;
     if (isset($_FILES['oFile'])
         && $_FILES['oFile']['error'] === UPLOAD_ERR_OK
         && move_uploaded_file($_FILES['oFile']['tmp_name'], PFAD_ROOT . PFAD_BILDER_BANNER . $_FILES['oFile']['name'])
     ) {
-        $cBannerPath = $_FILES['oFile']['name'];
+        $bannerPath = $_FILES['oFile']['name'];
     }
-    if ($cBannerPath === null) {
-        $cPlausi_arr['oFile'] = 1;
+    if ($bannerPath === null) {
+        $checks['oFile'] = 1;
     }
-    $vDatum = null;
-    $bDatum = null;
-    if (isset($_POST['vDatum']) && $_POST['vDatum'] !== '') {
+    $dateFrom  = null;
+    $dateUntil = null;
+    if (Request::postVar('vDatum') !== '') {
         try {
-            $vDatum = new DateTime($_POST['vDatum']);
-            $vDatum = $vDatum->format('Y-m-d H:i:s');
+            $dateFrom = new DateTime($_POST['vDatum']);
+            $dateFrom = $dateFrom->format('Y-m-d H:i:s');
         } catch (Exception $e) {
-            $cPlausi_arr['vDatum'] = 1;
+            $checks['vDatum'] = 1;
         }
     }
-    if (isset($_POST['bDatum']) && $_POST['bDatum'] !== '') {
+    if (Request::postVar('bDatum') !== '') {
         try {
-            $bDatum = new DateTime($_POST['bDatum']);
-            $bDatum = $bDatum->format('Y-m-d H:i:s');
+            $dateUntil = new DateTime($_POST['bDatum']);
+            $dateUntil = $dateUntil->format('Y-m-d H:i:s');
         } catch (Exception $e) {
-            $cPlausi_arr['bDatum'] = 1;
+            $checks['bDatum'] = 1;
         }
     }
-    if ($bDatum !== null && $bDatum < $vDatum) {
-        $cPlausi_arr['bDatum'] = 2;
+    if ($dateUntil !== null && $dateUntil < $dateFrom) {
+        $checks['bDatum'] = 2;
     }
-    if (strlen($cBannerPath) === 0) {
-        $cPlausi_arr['cBannerPath'] = 1;
+    if (mb_strlen($bannerPath) === 0) {
+        $checks['cBannerPath'] = 1;
     }
-    if (count($cPlausi_arr) === 0) {
-        if ($kImageMap === null || $kImageMap === 0) {
-            $kImageMap = $oBanner->save($cName, $cBannerPath, $vDatum, $bDatum);
+    if (count($checks) === 0) {
+        if ($imageMapID === null || $imageMapID === 0) {
+            $imageMapID = $imageMap->save($name, $bannerPath, $dateFrom, $dateUntil);
         } else {
-            $oBanner->update($kImageMap, $cName, $cBannerPath, $vDatum, $bDatum);
+            $imageMap->update($imageMapID, $name, $bannerPath, $dateFrom, $dateUntil);
         }
         // extensionpoint
-        $kSprache      = (int)$_POST['kSprache'];
-        $kKundengruppe = (int)$_POST['kKundengruppe'];
-        $nSeite        = (int)$_POST['nSeitenTyp'];
-        $cKey          = $_POST['cKey'];
-        $cKeyValue     = '';
-        $cValue        = '';
-
-        if ($nSeite === PAGE_ARTIKEL) {
-            $cKey      = 'kArtikel';
-            $cKeyValue = 'article_key';
-            $cValue    = $_POST[$cKeyValue] ?? null;
-        } elseif ($nSeite === PAGE_ARTIKELLISTE) {
-            // data mapping
-            $aFilter_arr = [
-                'kTag'         => 'tag_key',
+        $languageID      = Request::postInt('kSprache');
+        $customerGroupID = Request::postInt('kKundengruppe');
+        $pageType        = Request::postInt('nSeitenTyp');
+        $key             = $_POST['cKey'];
+        $keyValue        = '';
+        $value           = '';
+        if ($pageType === PAGE_ARTIKEL) {
+            $key      = 'kArtikel';
+            $keyValue = 'article_key';
+            $value    = $_POST[$keyValue] ?? null;
+        } elseif ($pageType === PAGE_ARTIKELLISTE) {
+            $filters  = [
                 'kMerkmalWert' => 'attribute_key',
                 'kKategorie'   => 'categories_key',
                 'kHersteller'  => 'manufacturer_key',
                 'cSuche'       => 'keycSuche'
             ];
-            $cKeyValue = $aFilter_arr[$cKey];
-            $cValue    = $_POST[$cKeyValue] ?? null;
-        } elseif ($nSeite === PAGE_EIGENE) {
-            $cKey      = 'kLink';
-            $cKeyValue = 'link_key';
-            $cValue    = $_POST[$cKeyValue] ?? null;
+            $keyValue = $filters[$key];
+            $value    = $_POST[$keyValue] ?? null;
+        } elseif ($pageType === PAGE_EIGENE) {
+            $key      = 'kLink';
+            $keyValue = 'link_key';
+            $value    = $_POST[$keyValue] ?? null;
         }
 
-        Shop::Container()->getDB()->delete('textensionpoint', ['cClass', 'kInitial'], ['ImageMap', $kImageMap]);
-        // save extensionpoint
-        $oExtension                = new stdClass();
-        $oExtension->kSprache      = $kSprache;
-        $oExtension->kKundengruppe = $kKundengruppe;
-        $oExtension->nSeite        = $nSeite;
-        $oExtension->cKey          = $cKey;
-        $oExtension->cValue        = $cValue;
-        $oExtension->cClass        = 'ImageMap';
-        $oExtension->kInitial      = $kImageMap;
-
-        $ins = Shop::Container()->getDB()->insert('textensionpoint', $oExtension);
-        // saved?
-        if ($kImageMap && $ins > 0) {
-            $cAction  = 'view';
-            $cHinweis = 'Banner wurde erfolgreich gespeichert.';
+        if (!empty($keyValue) && empty($value)) {
+            $alertHelper->addAlert(
+                Alert::TYPE_ERROR,
+                sprintf(__('errorKeyMissing'), $key),
+                'errorKeyMissing'
+            );
         } else {
-            $cFehler = 'Banner konnte nicht angelegt werden.';
+            $db->delete('textensionpoint', ['cClass', 'kInitial'], ['ImageMap', $imageMapID]);
+            $ext                = new stdClass();
+            $ext->kSprache      = $languageID;
+            $ext->kKundengruppe = $customerGroupID;
+            $ext->nSeite        = $pageType;
+            $ext->cKey          = $key;
+            $ext->cValue        = $value;
+            $ext->cClass        = 'ImageMap';
+            $ext->kInitial      = $imageMapID;
+
+            $ins = $db->insert('textensionpoint', $ext);
+
+            if ($imageMapID && $ins > 0) {
+                $action = 'view';
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSave'), 'successSave');
+            } else {
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSave'), 'errorSave');
+            }
         }
     } else {
-        $cFehler = 'Bitte füllen Sie alle Pflichtfelder die mit einem * marktiert sind aus';
-        $smarty->assign('cPlausi_arr', $cPlausi_arr)
-               ->assign('cName', $_POST['cName'] ?? null)
-               ->assign('vDatum', $_POST['vDatum'] ?? null)
-               ->assign('bDatum', $_POST['bDatum'] ?? null)
-               ->assign('kSprache', $_POST['kSprache'] ?? null)
-               ->assign('kKundengruppe', $_POST['kKundengruppe'] ?? null)
-               ->assign('nSeitenTyp', $_POST['nSeitenTyp'] ?? null)
-               ->assign('cKey', $_POST['cKey'] ?? null)
-               ->assign('categories_key', $_POST['categories_key'] ?? null)
-               ->assign('attribute_key', $_POST['attribute_key'] ?? null)
-               ->assign('tag_key', $_POST['tag_key'] ?? null)
-               ->assign('manufacturer_key', $_POST['manufacturer_key'] ?? null)
-               ->assign('keycSuche', $_POST['keycSuche'] ?? null);
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
+
+        if (($checks['vDatum'] ?? 0) === 1) {
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorDate'), 'errorDate');
+        }
+        if (($checks['bDatum'] ?? 0) === 1) {
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorDate'), 'errorDate');
+        } elseif (($checks['bDatum'] ?? 0) === 2) {
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorDateActiveToGreater'), 'errorDateActiveToGreater');
+        }
+        if (($checks['oFile'] ?? 0) === 1) {
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorImageSizeTooLarge'), 'errorImageSizeTooLarge');
+        }
+
+        $smarty->assign('cName', $_POST['cName'] ?? null)
+            ->assign('vDatum', $_POST['vDatum'] ?? null)
+            ->assign('bDatum', $_POST['bDatum'] ?? null)
+            ->assign('kSprache', $_POST['kSprache'] ?? null)
+            ->assign('kKundengruppe', $_POST['kKundengruppe'] ?? null)
+            ->assign('nSeitenTyp', $_POST['nSeitenTyp'] ?? null)
+            ->assign('cKey', $_POST['cKey'] ?? null)
+            ->assign('categories_key', $_POST['categories_key'] ?? null)
+            ->assign('attribute_key', $_POST['attribute_key'] ?? null)
+            ->assign('tag_key', $_POST['tag_key'] ?? null)
+            ->assign('manufacturer_key', $_POST['manufacturer_key'] ?? null)
+            ->assign('keycSuche', $_POST['keycSuche'] ?? null);
     }
 }
-switch ($cAction) {
+switch ($action) {
     case 'area':
-        $id      = (int)$_POST['id'];
-        $oBanner = holeBanner($id, false); //do not fill with complete article object to avoid utf8 errors on json_encode
-        if (!is_object($oBanner)) {
-            $cFehler = 'Banner wurde nicht gefunden';
-            $cAction = 'view';
+        $imageMap = holeBanner(Request::postInt('id'), false);
+        if (!is_object($imageMap)) {
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errrorBannerNotFound'), 'errrorBannerNotFound');
+            $action = 'view';
             break;
         }
 
-        $smarty->assign('oBanner', $oBanner)
-               ->assign('cBannerLocation', Shop::getURL() . '/' . PFAD_BILDER_BANNER);
+        $smarty->assign('banner', $imageMap);
         break;
 
     case 'edit':
-        $id = isset($_POST['id'])
-            ? (int)$_POST['id']
-            : (int)$_POST['kImageMap'];
-        $oBanner       = holeBanner($id);
-        $oExtension    = holeExtension($id);
-        $oSprache      = Sprache::getInstance(false);
-        $oSprachen_arr = $oSprache->gibInstallierteSprachen();
-        $nMaxFileSize  = getMaxFileSize(ini_get('upload_max_filesize'));
+        $id       = (int)($_POST['id'] ?? $_POST['kImageMap']);
+        $imageMap = holeBanner($id);
 
-        $smarty->assign('oExtension', $oExtension)
-               ->assign('cBannerFile_arr', holeBannerDateien())
-               ->assign('oSprachen_arr', $oSprachen_arr)
-               ->assign('oKundengruppe_arr', Kundengruppe::getGroups())
-               ->assign('nMaxFileSize', $nMaxFileSize)
-               ->assign('oBanner', $oBanner);
+        $smarty->assign('oExtension', holeExtension($id))
+            ->assign('bannerFiles', holeBannerDateien())
+            ->assign('customerGroups', CustomerGroup::getGroups())
+            ->assign('nMaxFileSize', getMaxFileSize(ini_get('upload_max_filesize')))
+            ->assign('banner', $imageMap);
 
-        if (!is_object($oBanner)) {
-            $cFehler = 'Banner wurde nicht gefunden.';
-            $cAction = 'view';
+        if (!is_object($imageMap)) {
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errrorBannerNotFound'), 'errrorBannerNotFound');
+            $action = 'view';
         }
         break;
 
     case 'new':
-        $oSprache      = Sprache::getInstance(false);
-        $oSprachen_arr = $oSprache->gibInstallierteSprachen();
-        $nMaxFileSize  = getMaxFileSize(ini_get('upload_max_filesize'));
-        $smarty->assign('oBanner', $oBanner ?? null)
-               ->assign('oSprachen_arr', $oSprachen_arr)
-               ->assign('oKundengruppe_arr', Kundengruppe::getGroups())
-               ->assign('cBannerLocation', PFAD_BILDER_BANNER)
-               ->assign('nMaxFileSize', $nMaxFileSize)
-               ->assign('cBannerFile_arr', holeBannerDateien());
+        $smarty->assign('banner', $imageMap ?? null)
+            ->assign('customerGroups', CustomerGroup::getGroups())
+            ->assign('nMaxFileSize', getMaxFileSize(ini_get('upload_max_filesize')))
+            ->assign('bannerFiles', holeBannerDateien());
         break;
 
     case 'delete':
-        $id  = (int)$_POST['id'];
-        $bOk = entferneBanner($id);
-        if ($bOk) {
-            $cHinweis = 'Erfolgreich entfernt.';
+        if (entferneBanner(Request::postInt('id'))) {
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successDeleted'), 'successDeleted');
         } else {
-            $cFehler = 'Banner konnte nicht entfernt werden.';
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorDeleted'), 'errorDeleted');
         }
         break;
 
     default:
         break;
 }
+$pagination = (new Pagination('banners'))
+    ->setRange(4)
+    ->setItemArray(holeAlleBanner())
+    ->assemble();
 
-$smarty->assign('cFehler', $cFehler)
-       ->assign('cHinweis', $cHinweis)
-       ->assign('cAction', $cAction)
-       ->assign('oBanner_arr', holeAlleBanner())
-       ->display('banner.tpl');
+$smarty->assign('action', $action)
+    ->assign('validPageTypes', (new BoxAdmin($db))->getMappedValidPageTypes())
+    ->assign('pagination', $pagination)
+    ->assign('banners', $pagination->getPageItems())
+    ->display('banner.tpl');

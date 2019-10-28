@@ -4,19 +4,21 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Network;
+namespace JTL\Network;
 
+use JTL\Helpers\Request;
+use JTL\Nice;
 use JTLShop\SemVer\Version;
 
 /**
  * Class JTLApi
- * @package Network
+ * @package JTL\Network
  */
 final class JTLApi
 {
-    const URI = 'https://api.jtl-software.de/shop';
+    public const URI = 'https://api.jtl-software.de/shop';
 
-    const URI_VERSION = 'https://api.jtl-shop.de';
+    public const URI_VERSION = 'https://api.jtl-shop.de';
 
     /**
      * @var array
@@ -24,32 +26,26 @@ final class JTLApi
     private $session;
 
     /**
-     * @var \Nice
+     * @var Nice
      */
     private $nice;
 
     /**
-     * @var \Shop
-     */
-    private $shop;
-
-    /**
      * JTLApi constructor.
+     *
      * @param array $session
-     * @param \Nice $nice
-     * @param \Shop $shop
+     * @param Nice  $nice
      */
-    public function __construct(array &$session, \Nice $nice, \Shop $shop)
+    public function __construct(array &$session, Nice $nice)
     {
-        $this->session = $session;
+        $this->session = &$session;
         $this->nice    = $nice;
-        $this->shop    = $shop;
     }
 
     /**
-     * @return \stdClass
+     * @return \stdClass|null
      */
-    public function getSubscription(): \stdClass
+    public function getSubscription(): ?\stdClass
     {
         if (!isset($this->session['rs']['subscription'])) {
             $uri          = self::URI . '/check/subscription';
@@ -67,13 +63,12 @@ final class JTLApi
     }
 
     /**
-     * @return \stdClass
+     * @return array|null
      */
-    public function getAvailableVersions(): \stdClass
+    public function getAvailableVersions()
     {
         if (!isset($this->session['rs']['versions'])) {
-            $uri = self::URI_VERSION . '/versions';
-            $this->session['rs']['versions'] = $this->call($uri);
+            $this->session['rs']['versions'] = $this->call(self::URI_VERSION . '/versions');
         }
 
         return $this->session['rs']['versions'];
@@ -84,7 +79,7 @@ final class JTLApi
      */
     public function getLatestVersion(): Version
     {
-        $shopVersion       = $this->shop->_getVersion();
+        $shopVersion       = \APPLICATION_VERSION;
         $parsedShopVersion = Version::parse($shopVersion);
         $oVersions         = $this->getAvailableVersions();
 
@@ -108,14 +103,9 @@ final class JTLApi
      */
     public function hasNewerVersion(): bool
     {
-        if (\APPLICATION_BUILD_SHA === '#DEV#') {
-            return false;
-        }
-
-        $shopVersion = $this->shop->_getVersion();
-        $oVersion    = $this->getLatestVersion();
-
-        return $oVersion->greaterThan(Version::parse($shopVersion));
+        return \APPLICATION_BUILD_SHA === '#DEV#'
+            ? false
+            : $this->getLatestVersion()->greaterThan(Version::parse(\APPLICATION_VERSION));
     }
 
     /**
@@ -125,7 +115,7 @@ final class JTLApi
      */
     private function call($uri, $data = null)
     {
-        $content = \RequestHelper::http_get_contents($uri, 10, $data);
+        $content = Request::http_get_contents($uri, 10, $data);
 
         return empty($content) ? null : \json_decode($content);
     }

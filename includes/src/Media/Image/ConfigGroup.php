@@ -97,12 +97,12 @@ class ConfigGroup extends AbstractImage
     public static function getPathByID($id, int $number = null): ?string
     {
         return Shop::Container()->getDB()->queryPrepared(
-                'SELECT cBildpfad AS path 
+            'SELECT cBildpfad AS path 
                     FROM tkonfiggruppe 
                     WHERE kKonfiggruppe = :cid LIMIT 1',
-                ['cid' => $id],
-                ReturnType::SINGLE_OBJECT
-            )->path ?? null;
+            ['cid' => $id],
+            ReturnType::SINGLE_OBJECT
+        )->path ?? null;
     }
 
     /**

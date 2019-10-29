@@ -25,7 +25,7 @@ class Migration_20191029125000 extends Migration implements IMigration
      */
     public function up()
     {
-        $tables = $this->execute("SHOW TABLES LIKE 'tkuponkunde_backup'");
+        $tables = $this->fetchAll("SHOW TABLES LIKE 'tkuponkunde_backup'");
 
         if (count($tables) > 0) {
             $backupData = $this->fetchOne(

@@ -368,10 +368,10 @@
                                             {row class="align-items-center"}
                                                 {col}
                                                     <span class="nav-offcanvas-title">{lang key='menuName'}</span>
-                                                    <a href="#" class="nav-offcanvas-title d-none" data-menu-back>
+                                                    {link href="#" class="nav-offcanvas-title d-none" data=["menu-back"=>""]}
                                                         <span class="fas fa-chevron-left mr-2"></span>
                                                         <span>{lang key='back'}</span>
-                                                    </a>
+                                                    {/link}
                                                 {/col}
                                                 {col class="col-auto ml-auto"}
                                                     <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#mainNavigation" aria-controls="mainNavigation" aria-expanded="false" aria-label="Toggle navigation">

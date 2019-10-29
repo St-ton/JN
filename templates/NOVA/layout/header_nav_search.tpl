@@ -19,7 +19,7 @@
             text='<i class="fas fa-search"></i>'
             right=true
             no-caret=true
-            router-aria=['label'=>'findProduct']}
+            router-aria=['label'=>{lang key='findProduct'}]}
             <div class="dropdown-body">
                 {form action='index.php' method='get'}
                     {input name="qs" type="text" class="ac_input w-100" placeholder="{lang key='search'}" autocomplete="off" aria=["label"=>"{lang key='search'}"]}

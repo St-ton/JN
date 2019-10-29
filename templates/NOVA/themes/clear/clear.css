@@ -25503,6 +25503,9 @@ header .navbar {
 header .navbar-brand img {
   width: 5.625rem;
 }
+header .navbar-toggler {
+  color: #525252;
+}
 header .nav-right .dropdown-menu {
   margin-top: -0.03125rem;
 }

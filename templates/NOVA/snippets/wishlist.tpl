@@ -438,7 +438,7 @@
                                                 {/col}
                                                 {col cols=12}
                                                     {block name='snippets-wishlist-form-basket-name'}
-                                                        {link href=$wlPosition->Artikel->cURL class="productbox-title"}
+                                                        {link href=$wlPosition->Artikel->cURL class="productbox-title text-clamp-2"}
                                                             {$wlPosition->cArtikelName}
                                                         {/link}
                                                     {/block}

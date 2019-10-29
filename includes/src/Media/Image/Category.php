@@ -9,7 +9,6 @@ namespace JTL\Media\Image;
 use Generator;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
-use JTL\Language\LanguageHelper;
 use JTL\Media\Image;
 use JTL\Media\MediaImageRequest;
 use JTL\Shop;

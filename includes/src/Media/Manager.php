@@ -15,6 +15,7 @@ use JTL\IO\IOError;
 use JTL\Media\Image\Category;
 use JTL\Media\Image\Characteristic;
 use JTL\Media\Image\CharacteristicValue;
+use JTL\Media\Image\ConfigGroup;
 use JTL\Media\Image\Manufacturer;
 use JTL\Media\Image\News;
 use JTL\Media\Image\NewsCategory;
@@ -78,6 +79,11 @@ class Manager
                 'name'  => __('newscategory'),
                 'type'  => Image::TYPE_NEWSCATEGORY,
                 'stats' => NewsCategory::getStats($filesize)
+            ],
+            Image::TYPE_CONFIGGROUP => (object)[
+                'name'  => __('configgroup'),
+                'type'  => Image::TYPE_CONFIGGROUP,
+                'stats' => ConfigGroup::getStats($filesize)
             ]
         ];
     }
@@ -166,7 +172,7 @@ class Manager
      * @param bool   $isAjax
      * @return array
      */
-    public function clearImageCache(string $type, bool $isAjax = false)
+    public function clearImageCache(string $type, bool $isAjax = false): array
     {
         Shop::Container()->getGetText()->loadAdminLocale('pages/bilderverwaltung');
         if ($type !== null && \preg_match('/[a-z]*/', $type)) {

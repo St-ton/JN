@@ -2,7 +2,7 @@
 /**
  * Change kSprache column to store an IETF language tag
  *
- * @author Danny Raufeisen
+ * @author dr
  */
 
 use JTL\Update\IMigration;
@@ -13,7 +13,7 @@ use JTL\Update\Migration;
  */
 class Migration_20190319103100 extends Migration implements IMigration
 {
-    protected $author      = 'Danny Raufeisen';
+    protected $author      = 'dr';
     protected $description = 'Change kSprache column to store an IETF language tag';
 
     public function up()

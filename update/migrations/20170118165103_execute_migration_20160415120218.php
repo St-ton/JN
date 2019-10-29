@@ -2,7 +2,7 @@
 /**
  * execute migration 20160415120218
  *
- * @author Mirko Schmidt
+ * @author msc
  * @created Wed, 18 Jan 2017 16:51:03 +0100
  */
 

@@ -8,7 +8,6 @@ namespace JTL\Plugin\Admin\Installation;
 
 use InvalidArgumentException;
 use JTL\XMLParser;
-use stdClass;
 use ZipArchive;
 
 /**
@@ -19,11 +18,16 @@ class Extractor
 {
     private const UNZIP_PATH = \PFAD_ROOT . \PFAD_DBES_TMP;
 
-    private const OLD_PLUGINS_DIR = \PFAD_ROOT . \PFAD_PLUGIN;
+    private const LEGACY_PLUGINS_DIR = \PFAD_ROOT . \PFAD_PLUGIN;
 
-    private const NEW_PLUGINS_DIR = \PFAD_ROOT . \PLUGIN_DIR;
+    private const PLUGINS_DIR = \PFAD_ROOT . \PLUGIN_DIR;
 
     private const GIT_REGEX = '/(.*)((-master)|(-[a-zA-Z0-9]{40}))\/(.*)/';
+
+    /**
+     * @var InstallationResponse
+     */
+    private $response;
 
     /**
      * @var XMLParser
@@ -36,32 +40,27 @@ class Extractor
      */
     public function __construct(XMLParser $parser)
     {
-        $this->parser = $parser;
+        $this->parser   = $parser;
+        $this->response = new InstallationResponse();
     }
 
     /**
      * @param string $zipFile
-     * @return stdClass
+     * @return InstallationResponse
      */
-    public function extractPlugin($zipFile): stdClass
+    public function extractPlugin(string $zipFile): InstallationResponse
     {
-        $response                 = new stdClass();
-        $response->status         = 'OK';
-        $response->error          = null;
-        $response->files_unpacked = [];
-        $response->files_failed   = [];
-        $response->messages       = [];
+        $this->unzip($zipFile);
 
-        return $this->unzip($zipFile, $response);
+        return $this->response;
     }
 
     /**
-     * @param string   $dirName
-     * @param stdClass $response
-     * @return stdClass
+     * @param string $dirName
+     * @return bool
      * @throws InvalidArgumentException
      */
-    private function moveToPluginsDir(string $dirName, stdClass $response): stdClass
+    private function moveToPluginsDir(string $dirName): bool
     {
         $target = null;
         $info   = self::UNZIP_PATH . $dirName . \PLUGIN_INFO_FILE;
@@ -70,51 +69,50 @@ class Extractor
         }
         $parsed = $this->parser->parse($info);
         if (isset($parsed['jtlshopplugin']) && \is_array($parsed['jtlshopplugin'])) {
-            $target = self::NEW_PLUGINS_DIR . $dirName;
+            $target = self::PLUGINS_DIR . $dirName;
         } elseif (isset($parsed['jtlshop3plugin']) && \is_array($parsed['jtlshop3plugin'])) {
-            $target = self::OLD_PLUGINS_DIR . $dirName;
+            $target = self::LEGACY_PLUGINS_DIR . $dirName;
         }
         if ($target === null) {
             throw new InvalidArgumentException('Cannot find plugin definition in ' . $info);
         }
         if (\rename(self::UNZIP_PATH . $dirName, $target)) {
-            $response->path = $target;
-        } else {
-            $response->status     = 'FAILED';
-            $response->messages[] = 'Cannot move to ' . $target;
-        }
+            $this->response->setPath($target);
 
-        return $response;
+            return true;
+        }
+        $this->response->setStatus(InstallationResponse::STATUS_FAILED);
+        $this->response->addMessage('Cannot move to ' . $target);
+
+        return false;
     }
 
     /**
-     * @param string   $zipFile
-     * @param stdClass $response
-     * @return stdClass
+     * @param string $zipFile
+     * @return bool
      */
-    private function unzip(string $zipFile, stdClass $response): stdClass
+    private function unzip(string $zipFile): bool
     {
-        $dirName            = '';
-        $zip                = new ZipArchive();
-        $response->dir_name = null;
+        $dirName = '';
+        $zip     = new ZipArchive();
         if (!$zip->open($zipFile) || $zip->numFiles === 0) {
-            $response->status     = 'FAILED';
-            $response->messages[] = 'Cannot open archive';
+            $this->response->setStatus(InstallationResponse::STATUS_FAILED);
+            $this->response->addMessage('Cannot open archive');
         } else {
             for ($i = 0; $i < $zip->numFiles; $i++) {
                 if ($i === 0) {
                     $dirName = $zip->getNameIndex($i);
                     if (\mb_strpos($dirName, '.') !== false) {
-                        $response->status     = 'FAILED';
-                        $response->messages[] = 'Invalid archive';
+                        $this->response->setStatus(InstallationResponse::STATUS_FAILED);
+                        $this->response->addMessage('Invalid archive');
 
-                        return $response;
+                        return false;
                     }
                     \preg_match(self::GIT_REGEX, $dirName, $hits);
                     if (\count($hits) >= 3) {
                         $dirName = \str_replace($hits[2], '', $dirName);
                     }
-                    $response->dir_name = $dirName;
+                    $this->response->setDirName($dirName);
                 }
                 $filename = $zip->getNameIndex($i);
                 \preg_match(self::GIT_REGEX, $filename, $hits);
@@ -123,20 +121,22 @@ class Extractor
                     $filename = $zip->getNameIndex($i);
                 }
                 if ($zip->extractTo(self::UNZIP_PATH, $filename)) {
-                    $response->files_unpacked[] = $filename;
+                    $this->response->addFileUnpacked($filename);
                 } else {
-                    $response->files_failed = $filename;
+                    $this->response->addFileFailed($filename);
                 }
             }
             $zip->close();
-            $response->path = self::UNZIP_PATH . $dirName;
+            $this->response->setPath(self::UNZIP_PATH . $dirName);
             try {
-                $response = $this->moveToPluginsDir($dirName, $response);
+                $this->moveToPluginsDir($dirName);
             } catch (InvalidArgumentException $e) {
-                $response->messages[] = $e->getMessage();
+                $this->response->addMessage($e->getMessage());
+
+                return false;
             }
         }
 
-        return $response;
+        return true;
     }
 }

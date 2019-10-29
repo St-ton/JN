@@ -19,6 +19,8 @@ use JTL\Plugin\LegacyPluginLoader;
 use JTL\Plugin\PluginLoader;
 use JTL\Shop;
 use JTL\XMLParser;
+use stdClass;
+use function Functional\map;
 
 /**
  * Class Listing
@@ -93,16 +95,22 @@ final class Listing
                 ReturnType::ARRAY_OF_OBJECTS
             );
         }
+        $data         = map(
+            $all,
+            function (stdClass $e) {
+                $e->kPlugin    = (int)$e->kPlugin;
+                $e->bExtension = (int)$e->bExtension;
+
+                return $e;
+            }
+        );
         $legacyLoader = new LegacyPluginLoader($this->db, $this->cache);
         $pluginLoader = new PluginLoader($this->db, $this->cache);
-        foreach ($all as $data) {
-            $item     = new ListingItem();
-            $pluginID = (int)$data->kPlugin;
-            if ((int)$data->bExtension === 1) {
-                $plugin = $pluginLoader->init($pluginID, true);
-            } else {
-                $plugin = $legacyLoader->init($pluginID, true);
-            }
+        foreach ($data as $dataItem) {
+            $item           = new ListingItem();
+            $plugin         = (int)$dataItem->bExtension === 1
+                ? $pluginLoader->init($dataItem->kPlugin, true)
+                : $legacyLoader->init($dataItem->kPlugin, true);
             $currentVersion = $plugin->getCurrentVersion();
             if ($currentVersion->greaterThan($plugin->getMeta()->getSemVer())) {
                 $plugin->getMeta()->setUpdateAvailable($currentVersion);
@@ -239,7 +247,7 @@ final class Listing
      */
     private function sort(): void
     {
-        $this->items->sortBy(function (ListingItem $item) {
+        $this->items = $this->items->sortBy(function (ListingItem $item) {
             return \mb_convert_case($item->getName(), \MB_CASE_LOWER);
         });
     }

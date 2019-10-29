@@ -2,7 +2,7 @@
 /**
  * Alter table tkuponbestellung
  *
- * @author Mirko Schmidt
+ * @author msc
  * @created Thue, 16 Jan 2017 11:28:00 +0100
  */
 

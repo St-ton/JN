@@ -8,8 +8,10 @@
 
 namespace JTL\Plugin\Payment;
 
+use InvalidArgumentException;
 use JTL\Cart\Cart;
 use JTL\Checkout\Bestellung;
+use JTL\Plugin\Helper as PluginHelper;
 use PaymentMethod;
 
 /**
@@ -28,8 +30,15 @@ use PaymentMethod;
  */
 class LegacyMethod
 {
-    /** @var Method */
+    /**
+     * @var Method
+     */
     private $methodInstance;
+
+    /**
+     * @var array
+     */
+    private $dynamics = [];
 
     /**
      * @param string $moduleID
@@ -38,6 +47,13 @@ class LegacyMethod
     public function __construct($moduleID, $nAgainCheckout = 0)
     {
         $this->methodInstance = new Method($moduleID, $nAgainCheckout);
+
+        foreach (\array_keys($this->dynamics) as $dynProperty) {
+            if (\property_exists($this->methodInstance, $dynProperty)) {
+                $this->methodInstance->$dynProperty = $this->dynamics[$dynProperty];
+                unset($this->dynamics[$dynProperty]);
+            }
+        }
     }
 
     /**
@@ -45,9 +61,11 @@ class LegacyMethod
      */
     public function __get($name)
     {
-        return \property_exists($this->methodInstance, $name)
-            ? $this->methodInstance->$name
-            : null;
+        if ($this->methodInstance === null || !\property_exists($this->methodInstance, $name)) {
+            return $this->dynamics[$name] ?? null;
+        }
+
+        return $this->methodInstance->$name ?? null;
     }
 
     /**
@@ -55,7 +73,9 @@ class LegacyMethod
      */
     public function __set($name, $value)
     {
-        if (\property_exists($this->methodInstance, $name)) {
+        if ($this->methodInstance === null || !\property_exists($this->methodInstance, $name)) {
+            $this->dynamics[$name] = $value;
+        } else {
             $this->methodInstance->$name = $value;
         }
     }
@@ -65,9 +85,11 @@ class LegacyMethod
      */
     public function __isset($name)
     {
-        return \property_exists($this->methodInstance, $name)
-            ? isset($this->methodInstance->$name)
-            : false;
+        if ($this->methodInstance === null || !\property_exists($this->methodInstance, $name)) {
+            return isset($this->dynamics[$name]);
+        }
+
+        return isset($this->methodInstance->$name);
     }
 
     /**
@@ -342,35 +364,35 @@ class LegacyMethod
 
     /**
      *
-     * @param string $cKey
-     * @param string $cValue
+     * @param string $key
+     * @param mixed  $value
      * @return static
      */
-    public function addCache($cKey, $cValue)
+    public function addCache($key, $value)
     {
-        $this->methodInstance->addCache($cKey, $cValue);
+        $this->methodInstance->addCache($key, \json_encode($value));
 
         return $this;
     }
 
     /**
-     * @param string|null $cKey
+     * @param string|null $key
      * @return static
      */
-    public function unsetCache($cKey = null)
+    public function unsetCache($key = null)
     {
-        $this->methodInstance->unsetCache($cKey);
+        $this->methodInstance->unsetCache($key);
 
         return $this;
     }
 
     /**
-     * @param null|string $cKey
-     * @return null
+     * @param null|string $key
+     * @return mixed
      */
-    public function getCache($cKey = null)
+    public function getCache($key = null)
     {
-        return $this->methodInstance->getCache($cKey);
+        return \json_decode($this->methodInstance->getCache($key), false);
     }
 
     /**
@@ -429,10 +451,42 @@ class LegacyMethod
 
     /**
      * @param string $moduleID
+     * @param int    $nAgainCheckout
      * @return PaymentMethod|MethodInterface|null
      */
-    public static function create($moduleID)
+    public static function create($moduleID, $nAgainCheckout = 0)
     {
-        return Method::create($moduleID);
+        global $plugin;
+        global $oPlugin;
+        $tmpPlugin     = $plugin;
+        $paymentMethod = null;
+        $pluginID      = PluginHelper::getIDByModuleID($moduleID);
+        if ($pluginID > 0 && \SAFE_MODE === false) {
+            $loader = PluginHelper::getLoaderByPluginID($pluginID);
+            try {
+                $plugin = $loader->init($pluginID);
+            } catch (InvalidArgumentException $e) {
+                $plugin = null;
+            }
+            $oPlugin = $plugin;
+            if ($plugin !== null) {
+                $pluginPaymentMethod = $plugin->getPaymentMethods()->getMethodByID($moduleID);
+                if ($pluginPaymentMethod === null) {
+                    return $paymentMethod;
+                }
+                $classFile = $pluginPaymentMethod->getClassFilePath();
+                if (\file_exists($classFile)) {
+                    require_once $classFile;
+                    $className               = $pluginPaymentMethod->getClassName();
+                    $paymentMethod           = new $className($moduleID, $nAgainCheckout);
+                    $paymentMethod->cModulId = $moduleID;
+                }
+            }
+        } elseif ($moduleID === 'za_null_jtl') {
+            $paymentMethod = new FallbackMethod('za_null_jtl');
+        }
+        $plugin = $tmpPlugin;
+
+        return $paymentMethod;
     }
 }

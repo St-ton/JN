@@ -2,7 +2,7 @@
 /**
  * Remove global attribute filter box option
  *
- * @author Felix Moche
+ * @author fm
  * @created Thu, 08 Feb 2018 16:21:00 +0100
  */
 

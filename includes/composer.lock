@@ -1092,12 +1092,12 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/jtl-software/jtl-shop/tools/scc.git",
-                "reference": "a6ad68727d138d0b62b5862eb5adcb925b882a4f"
+                "reference": "c5f791c5c28ff420d2bf33c8634240ddf5790475"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/jtl-software%2Fjtl-shop%2Ftools%2Fscc/repository/archive.zip?sha=a6ad68727d138d0b62b5862eb5adcb925b882a4f",
-                "reference": "a6ad68727d138d0b62b5862eb5adcb925b882a4f",
+                "url": "https://gitlab.com/api/v4/projects/jtl-software%2Fjtl-shop%2Ftools%2Fscc/repository/archive.zip?sha=c5f791c5c28ff420d2bf33c8634240ddf5790475",
+                "reference": "c5f791c5c28ff420d2bf33c8634240ddf5790475",
                 "shasum": ""
             },
             "require": {
@@ -1125,7 +1125,7 @@
             "keywords": [
                 "jtl-shop"
             ],
-            "time": "2019-10-14T13:07:16+00:00"
+            "time": "2019-10-21T10:40:23+00:00"
         },
         {
             "name": "jtlshop/sccbs3",
@@ -1133,12 +1133,12 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/jtl-software/jtl-shop/tools/sccbs3.git",
-                "reference": "616488897900783e11af94820ba26dc50b36126d"
+                "reference": "7753502b87781b4d1566a0d79cd7660ed7f1e00b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/jtl-software%2Fjtl-shop%2Ftools%2Fsccbs3/repository/archive.zip?sha=616488897900783e11af94820ba26dc50b36126d",
-                "reference": "616488897900783e11af94820ba26dc50b36126d",
+                "url": "https://gitlab.com/api/v4/projects/jtl-software%2Fjtl-shop%2Ftools%2Fsccbs3/repository/archive.zip?sha=7753502b87781b4d1566a0d79cd7660ed7f1e00b",
+                "reference": "7753502b87781b4d1566a0d79cd7660ed7f1e00b",
                 "shasum": ""
             },
             "require": {
@@ -1166,7 +1166,7 @@
             "keywords": [
                 "jtl-shop"
             ],
-            "time": "2019-04-09T12:52:01+00:00"
+            "time": "2019-10-21T10:54:43+00:00"
         },
         {
             "name": "jtlshop/semver",
@@ -1923,16 +1923,16 @@
         },
         {
             "name": "nesbot/carbon",
-            "version": "2.25.2",
+            "version": "2.25.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/briannesbitt/Carbon.git",
-                "reference": "443fe5f1498147e0fbc792142b5dc43e2e8a533f"
+                "reference": "d07636581795383e2fea2d711212d30f941f2039"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/443fe5f1498147e0fbc792142b5dc43e2e8a533f",
-                "reference": "443fe5f1498147e0fbc792142b5dc43e2e8a533f",
+                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/d07636581795383e2fea2d711212d30f941f2039",
+                "reference": "d07636581795383e2fea2d711212d30f941f2039",
                 "shasum": ""
             },
             "require": {
@@ -1986,7 +1986,7 @@
                 "datetime",
                 "time"
             ],
-            "time": "2019-10-14T14:18:59+00:00"
+            "time": "2019-10-20T11:05:44+00:00"
         },
         {
             "name": "paragonie/random_compat",
@@ -2534,16 +2534,16 @@
         },
         {
             "name": "squizlabs/php_codesniffer",
-            "version": "3.5.0",
+            "version": "3.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/squizlabs/PHP_CodeSniffer.git",
-                "reference": "0afebf16a2e7f1e434920fa976253576151effe9"
+                "reference": "82cd0f854ceca17731d6d019c7098e3755c45060"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/0afebf16a2e7f1e434920fa976253576151effe9",
-                "reference": "0afebf16a2e7f1e434920fa976253576151effe9",
+                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/82cd0f854ceca17731d6d019c7098e3755c45060",
+                "reference": "82cd0f854ceca17731d6d019c7098e3755c45060",
                 "shasum": ""
             },
             "require": {
@@ -2581,7 +2581,7 @@
                 "phpcs",
                 "standards"
             ],
-            "time": "2019-09-26T23:12:26+00:00"
+            "time": "2019-10-16T21:14:26+00:00"
         },
         {
             "name": "studio-42/elfinder",

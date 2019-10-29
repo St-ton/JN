@@ -26,6 +26,7 @@ ifndef('IMAGE_COMPATIBILITY_LEVEL', 1);
 ifndef('KEEP_SYNC_FILES', false);
 ifndef('PROFILE_PLUGINS', false);
 ifndef('PROFILE_SHOP', false);
+ifndef('PLUGIN_DEV_MODE', false);
 /**
  * Lieferschwellen-Option: Gleichbleibende Bruttopreise (SHOP-2633)
  * @since 5.0.0

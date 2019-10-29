@@ -6,12 +6,12 @@ use JTL\Update\Migration;
 /**
  * Change List Portlet class name
  *
- * @author Danny Raufeisen
+ * @author dr
  */
 
 class Migration_20190130123800 extends Migration implements IMigration
 {
-    protected $author      = 'Danny Raufeisen';
+    protected $author      = 'dr';
     protected $description = 'Change List Portlet class name';
 
     public function up()

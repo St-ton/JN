@@ -2,7 +2,7 @@
 /**
  * Create index for tartikel.kStueckliste
  *
- * @author Falk Prüfer
+ * @author fp
  * @created Tue, 16 May 2017 15:30:34 +0200
  */
 

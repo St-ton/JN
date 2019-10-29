@@ -2,7 +2,7 @@
 /**
  * add setting "review reminder bound to newsletter"
  *
- * @author Clemens Rudolph
+ * @author cr
  * @created Wed, 30 Jan 2019 13:08:22 +0100
  */
 
@@ -14,7 +14,7 @@ use JTL\Update\Migration;
  */
 class Migration_20190130130822 extends Migration implements IMigration
 {
-    protected $author      = 'Clemens Rudolph';
+    protected $author      = 'cr';
     protected $description = 'add setting "review reminder bound to newsletter"';
 
     public function up()

@@ -2,7 +2,7 @@
 /**
  *
  *
- * @author Michael Hillmann
+ * @author mh
  * @created Wed, 20 Mar 2019 14:04:05 +0100
  */
 

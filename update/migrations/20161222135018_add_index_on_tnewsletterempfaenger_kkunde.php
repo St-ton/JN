@@ -2,7 +2,7 @@
 /**
  * Add index on tnewsletterempfaenger.kKunde
  *
- * @author Falk Prüfer
+ * @author fp
  * @created Thu, 22 Dec 2016 13:50:18 +0100
  */
 

@@ -45,18 +45,13 @@
                             && isset($activeParent->kKategorie))
                             && $activeParent->kKategorie == $category->getID())} active{/if}">
                             {link href="{$category->getURL()}" title=$category->getName() class="nav-link dropdown-toggle" target="_self"}
-                                <span class="text-truncate">{$category->getName()}</span>
+                                {$category->getName()}
                             {/link}
                             <div class="dropdown-menu">
                                 {block name='snippets-categories-mega-category-child-header'}
                                     <div class="dropdown-header border-bottom border-primary border-w-5 d-lg-none">
                                         {row class='align-items-center font-size-base'}
-                                            {col}
-                                                <a href="#" class="font-size-base" data-nav-back>
-                                                    <span class="fas fa-chevron-left mr-4"></span>
-                                                    <span class="text-truncate">{$category->getName()}</span>
-                                                </a>
-                                            {/col}
+                                            {col}<a href="#" class="font-size-base" data-nav-back><span class="fas fa-chevron-left mr-4"></span>{$category->getName()}</a>{/col}
                                             {col class='col-auto'}<a href="{$category->getURL()}"><span class="far fa-arrow-alt-circle-right ml-auto"></span></a>{/col}
                                         {/row}
                                     </div>
@@ -92,7 +87,7 @@
                     {block name='snippets-categories-mega-category-no-child'}
                         {navitem href=$category->getURL() title=$category->getName()
                             class="nav-scrollbar-item {if $category->getID() === $activeId}active{/if}"}
-                            <span class="text-truncate">{$category->getShortName()}</span>
+                            {$category->getShortName()}
                             <span class="badge text-gray-dark product-count">{$category->getProductCount()}</span>
                         {/navitem}
                     {/block}

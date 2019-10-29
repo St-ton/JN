@@ -298,8 +298,6 @@ class Iframe
             this.setSelected(this.draggedElm);
 
             if(this.dragNewPortletCls) {
-                let portletCls = this.dragNewPortletCls;
-
                 this.newPortletDropTarget = this.draggedElm;
                 this.setSelected();
                 this.io.createPortlet(this.dragNewPortletCls)
@@ -329,25 +327,27 @@ class Iframe
         this.page.updateFlipcards();
     }
 
-    onNewPortletCreated(data)
+    onNewPortletCreated(html)
     {
-        let newElement = this.createPortletElm(data);
-
-        this.newPortletDropTarget.replaceWith(newElement);
-
-        let newArea = newElement.parent();
-
+        let newPortlet = this.createPortletElm(html);
+        this.newPortletDropTarget.replaceWith(newPortlet);
+        let newArea = newPortlet.parent();
         this.pagetree.updateArea(newArea);
-        this.setSelected(newElement);
+        this.setSelected(newPortlet);
         this.updateDropTargets();
         this.gui.setUnsaved(true, true);
         this.page.updateFlipcards();
         this.loadMissingPortletPreviewStyles();
     }
 
-    createPortletElm(previewHtml)
+    createPortletElm(html)
     {
-        return this.jq(previewHtml);
+        let container = document.createElement('div');
+        container.innerHTML = html;
+
+        if (container.firstElementChild) {
+            return this.jq(container.firstElementChild);
+        }
     }
 
     setDragged(elm)
@@ -468,12 +468,9 @@ class Iframe
 
     replaceSelectedPortletHtml(html)
     {
-        var newPortlet = this.jq(html);
-
+        let newPortlet = this.createPortletElm(html);
         this.selectedElm.replaceWith(newPortlet);
-
-        var area = newPortlet.parent();
-
+        let area = newPortlet.parent();
         this.pagetree.updateArea(area);
         this.setSelected(newPortlet);
         this.updateDropTargets();
@@ -486,7 +483,7 @@ class Iframe
             let data = this.page.portletToJSON(this.selectedElm);
             this.io.getPortletPreviewHtml(data)
                 .then(html => {
-                    let copiedElm = this.jq(html);
+                    let copiedElm = this.createPortletElm(html);
                     this.opc.emit('clone-portlet', copiedElm);
                     copiedElm.insertAfter(this.selectedElm);
                     let area = copiedElm.parent();

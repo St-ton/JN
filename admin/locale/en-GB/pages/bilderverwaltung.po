@@ -71,5 +71,8 @@ msgstr "Generating images…"
 msgid "newscategory"
 msgstr "News category"
 
+msgid "configgroup"
+msgstr "Config group"
+
 msgid "cleanup"
 msgstr "Clean up"

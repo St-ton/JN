@@ -15,7 +15,6 @@ use JTL\DB\ReturnType;
 use JTL\Mapper\PluginValidation;
 use JTL\Plugin\Admin\Validation\ValidatorInterface;
 use JTL\Plugin\InstallCode;
-use JTL\Plugin\LegacyPlugin;
 use JTL\Plugin\LegacyPluginLoader;
 use JTL\Plugin\PluginLoader;
 use JTL\Shop;
@@ -248,7 +247,7 @@ final class Listing
      */
     private function sort(): void
     {
-        $this->items->sortBy(function (ListingItem $item) {
+        $this->items = $this->items->sortBy(function (ListingItem $item) {
             return \mb_convert_case($item->getName(), \MB_CASE_LOWER);
         });
     }

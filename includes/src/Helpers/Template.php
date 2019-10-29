@@ -336,10 +336,15 @@ class Template
             $parentConfig = $this->getData($xml->Parent, $isAdmin);
             if ($parentConfig !== false) {
                 $template->cVersion     = !empty($template->cVersion) ? $template->cVersion : $parentConfig->cVersion;
-                $template->cShopVersion = !empty($template->cShopVersion) ? $template->cShopVersion : $parentConfig->cShopVersion;
+                $template->cShopVersion = !empty($template->cShopVersion)
+                    ? $template->cShopVersion
+                    : $parentConfig->cShopVersion;
             }
         } else {
             $template->checksums = $this->getChecksums((string)$dir);
+        }
+        if (empty($template->cVersion)) {
+            $template->cVersion = $template->cShopVersion;
         }
 
         $templates = Shop::Container()->getDB()->query(

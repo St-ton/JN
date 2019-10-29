@@ -52,7 +52,7 @@
                                     {container}
                                         {row class="lg-row-lg nav"}
                                             {col lg=4 xl=3 class="my-lg-4 nav-item dropdown d-lg-none"}
-                                                {link href=$category->getURL() class="nav-link font-size-base"}
+                                                {link href=$category->getURL() class="nav-link font-size-base" rel="nofollow"}
                                                     <span class="text-truncate font-weight-bold d-block pr-3 pr-lg-0">{lang key='menuShow' printf=$category->getName()}</span>
                                                 {/link}
                                             {/col}
@@ -119,7 +119,7 @@
                                 {row class="lg-row-lg nav"}
                                     {col lg=4 xl=3 class="my-lg-4 nav-item dropdown d-lg-none"}
                                         {block name='snippets-categories-mega-manufacturers-header'}
-                                            {link href=$manufacturerOverview->getURL() class="nav-link font-size-base"}
+                                            {link href=$manufacturerOverview->getURL() class="nav-link font-size-base" rel="nofollow"}
                                                 <span class="text-truncate font-weight-bold d-block pr-3 pr-lg-0">
                                                     {if $manufacturerOverview !== null && !empty($manufacturerOverview->getName())}
                                                         {$manufacturerOverview->getName()}
@@ -194,9 +194,7 @@
                                         {row class="lg-row-lg nav"}
                                             {col lg=4 xl=3 class="my-lg-4 nav-item dropdown d-lg-none"}
                                                 {block name='layout-header-top-bar-user-settings-currency-header'}
-                                                    {link href="#" class="font-size-base"}
-                                                        {lang key='currency'}
-                                                    {/link}
+                                                    <span class="font-size-base font-weight-bold ">{lang key='currency'}</span>
                                                 {/block}
                                             {/col}
                                             {foreach $smarty.session.Waehrungen as $currency}
@@ -230,9 +228,7 @@
                                     {row class="lg-row-lg nav"}
                                         {col lg=4 xl=3 class="my-lg-4 nav-item dropdown d-lg-none"}
                                         {block name='layout-header-top-bar-user-settings-language-header'}
-                                            {link href="#" class="font-size-base"}
-                                                {lang key='selectLanguage'}
-                                            {/link}
+                                            <span class="font-size-base font-weight-bold">{lang key='selectLanguage'}</span>
                                         {/block}
                                         {/col}
                                         {foreach $smarty.session.Sprachen as $language}

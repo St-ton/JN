@@ -14,7 +14,7 @@
             <div class="dropdown-menu">
                 {nav}
                     {block name='snippets-categories-mega-recursive-child-header'}
-                        {navitem class="dropdown d-lg-none" href=$mainCategory->getURL()}
+                        {navitem class="dropdown d-lg-none" href=$mainCategory->getURL() nofollow=true}
                             <span class="text-truncate font-weight-bold d-block pr-3 pr-lg-0">
                                 {lang key='menuShow' printf=$mainCategory->getName()}
                             </span>

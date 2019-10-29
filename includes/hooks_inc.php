@@ -1928,3 +1928,12 @@ define('HOOK_LINKGROUP_MAPPED', 302);
  * @param \JTL\Link\LinkGroupList list
  */
 define('HOOK_LINKGROUPS_LOADED', 303);
+
+/**
+ * @since 5.0.0
+ * @file includes/src/Cart/Cart.php
+ * @param int productID
+ * @param \JTL\Cart\CartItem[] positionItems
+ * @param float qty
+ */
+define('HOOK_WARENKORB_ERSTELLE_SPEZIAL_POS', 310);

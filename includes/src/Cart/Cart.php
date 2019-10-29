@@ -631,6 +631,7 @@ class Cart
      * @param string|bool  $unique
      * @param int          $configItemID
      * @param int          $productID
+     * @param string       $responsibility
      * @return $this
      */
     public function erstelleSpezialPos(
@@ -644,20 +645,22 @@ class Cart
         string $message = '',
         $unique = false,
         int $configItemID = 0,
-        int $productID = 0
+        int $productID = 0,
+        string $responsibility = 'core'
     ): self {
         if ($delSamePosType) {
             $this->loescheSpezialPos($typ);
         }
-        $cartItem                = new CartItem();
-        $cartItem->nAnzahl       = $qty;
-        $cartItem->nAnzahlEinzel = $qty;
-        $cartItem->kArtikel      = 0;
-        $cartItem->kSteuerklasse = $taxClassID;
-        $cartItem->fPreis        = $price;
-        $cartItem->cUnique       = $unique;
-        $cartItem->kKonfigitem   = $configItemID;
-        $cartItem->kArtikel      = $productID;
+        $cartItem                  = new CartItem();
+        $cartItem->nAnzahl         = $qty;
+        $cartItem->nAnzahlEinzel   = $qty;
+        $cartItem->kArtikel        = 0;
+        $cartItem->kSteuerklasse   = $taxClassID;
+        $cartItem->fPreis          = $price;
+        $cartItem->cUnique         = $unique;
+        $cartItem->cResponsibility = $responsibility;
+        $cartItem->kKonfigitem     = $configItemID;
+        $cartItem->kArtikel        = $productID;
         //fixes #4967
         if (\is_object($_SESSION['Kundengruppe']) && Frontend::getCustomerGroup()->isMerchant()) {
             if ($grossPrice) {
@@ -758,6 +761,12 @@ class Cart
             }
         }
         $this->sortShippingPosition();
+
+        \executeHook(\HOOK_WARENKORB_ERSTELLE_SPEZIAL_POS, [
+            'productID'     => $productID,
+            'positionItems' => &$this->PositionenArr,
+            'qty'           => (float)$qty,
+        ]);
 
         return $this;
     }

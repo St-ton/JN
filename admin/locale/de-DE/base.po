@@ -1064,6 +1064,9 @@ msgstr "Mobil"
 msgid "version"
 msgstr "Version"
 
+msgid "shopversion"
+msgstr "Shopversion"
+
 msgid "create"
 msgstr "Erstellen"
 

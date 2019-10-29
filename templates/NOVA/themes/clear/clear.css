@@ -24210,10 +24210,6 @@ table caption {
   display: inline-block;
 }
 
-.fas, .fab, .fa, .far {
-  vertical-align: middle;
-}
-
 /* wishlist */
 input.form-control[name=wishlist-url] {
   background: #f5f7fa;

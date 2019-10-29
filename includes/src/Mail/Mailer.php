@@ -269,7 +269,7 @@ class Mailer
      */
     private function sendViaPHPMailer(MailInterface $mail): bool
     {
-        $phpmailer = new PHPMailer();
+        $phpmailer             = new PHPMailer();
         $phpmailer->AllowEmpty = true;
         $phpmailer->setLanguage($mail->getLanguage()->getIso639());
         $phpmailer->CharSet = \JTL_CHARSET;

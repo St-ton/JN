@@ -167,6 +167,20 @@
         {block name='snippets-categories-mega-top-links-hr'}
             <li class="d-lg-none"><hr></li>
         {/block}
+        {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y'}
+            {navitem href="{get_static_route id='wunschliste.php'}"}
+                {lang key='wishlist'}
+                {badge id="badge-wl-count" variant="primary" class="text-gray-darker product-count"}
+                    {if !empty($smarty.session.Wunschliste->CWunschlistePos_arr|count)}{$smarty.session.Wunschliste->CWunschlistePos_arr|count}{else}0{/if}
+                {/badge}
+            {/navitem}
+        {/if}
+        {navitem href="{get_static_route id='vergleichsliste.php'}"}
+            {lang key='compare'}
+            {badge id="comparelist-badge" variant="primary" class="text-gray-darker product-count"}
+                {if !empty($smarty.session.Vergleichsliste->oArtikel_arr)}{$smarty.session.Vergleichsliste->oArtikel_arr|count}{else}0{/if}
+            {/badge}
+        {/navitem}
         {block name='snippets-categories-mega-top-links'}
             {foreach $linkgroups->getLinkGroupByTemplate('Kopf')->getLinks() as $Link}
                 {navitem active=$Link->getIsActive() href=$Link->getURL() title=$Link->getTitle()}

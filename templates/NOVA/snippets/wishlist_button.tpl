@@ -19,7 +19,7 @@
             {button name="Wunschliste"
                 type="submit"
                 variant="link"
-                class="{$classes|default:''} mr-3 pr-3 p-0 d-none d-md-block d-lg-inline-block  border-lg-right wishlist action-tip-animation-b {if $isOnWishList}on-list{/if}"
+                class="{$classes|default:''} mr-3 pr-3 p-0 d-block d-lg-inline-block  border-lg-right wishlist action-tip-animation-b {if $isOnWishList}on-list{/if}"
                 aria=["label" => {lang key='addToWishlist' section='productDetails'}]
                 data=["wl-pos" => $wishlistPos, "product-id-wl" => $Artikel->kArtikel]}
                 <span class="d-flex align-items-baseline">

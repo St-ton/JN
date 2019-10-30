@@ -5,7 +5,7 @@
 {block name='layout-header-shop-nav-compare'}
     <li id="shop-nav-compare"
         title="{lang key='compare'}"
-        class="nav-item dropdown{if $nSeitenTyp === $smarty.const.PAGE_VERGLEICHSLISTE} active{/if} {if empty($smarty.session.Vergleichsliste->oArtikel_arr)}d-none{else}d-none d-md-flex{/if}">
+        class="nav-item dropdown{if $nSeitenTyp === $smarty.const.PAGE_VERGLEICHSLISTE} active{/if} {if empty($smarty.session.Vergleichsliste->oArtikel_arr)}d-none{/if}">
         {block name='layout-header-shop-nav-compare-link'}
             {link class='nav-link' data=['toggle'=>'dropdown'] aria=['haspopup'=>true, 'expanded'=>false]}
                 <span class="fas fa-tasks position-relative">

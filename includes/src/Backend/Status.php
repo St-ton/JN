@@ -6,6 +6,7 @@
 
 namespace JTL\Backend;
 
+use Exception;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Checkout\ZahlungsLog;
 use JTL\DB\ReturnType;
@@ -13,6 +14,10 @@ use JTL\Helpers\Template as TemplateHelper;
 use JTL\Media\Image;
 use JTL\Media\Image\Product;
 use JTL\Media\Image\StatsItem;
+use JTL\Plugin\Helper;
+use JTL\Plugin\LegacyPluginLoader;
+use JTL\Plugin\Plugin;
+use JTL\Plugin\PluginLoader;
 use JTL\Plugin\State;
 use JTL\Profiler;
 use JTL\Shop;
@@ -392,38 +397,31 @@ class Status
      */
     protected function hasNewPluginVersions(): bool
     {
-        $newVersions = false;
-        $data        = Shop::Container()->getDB()->query(
-            'SELECT `cVerzeichnis`, `nVersion` 
+        if (\SAFE_MODE === true) {
+            return false;
+        }
+
+        $data = Shop::Container()->getDB()->query(
+            'SELECT `kPlugin`, `nVersion`, `bExtension`
                 FROM `tplugin`',
             ReturnType::ARRAY_OF_OBJECTS
         );
         if (!\is_array($data) || 1 > \count($data)) {
             return false; // there are no plugins installed
         }
-        $pluginsDB = [];
+
         foreach ($data as $item) {
-            $pluginsDB[$item->cVerzeichnis] = $item->nVersion;
-        }
-        // check against plugins, found in file-system
-        foreach ($pluginsDB as $dir => $version) {
-            $info = \PFAD_ROOT . \PFAD_PLUGIN . $dir . '/' . \PLUGIN_INFO_FILE;
-            $xml  = null;
-            if (\file_exists($info)) {
-                $xml = \simplexml_load_file($info);
-                // read all pluginversions from 'info.xml'
-                $pluginXmlVersions = [0];
-                foreach ($xml->Install->Version as $item) {
-                    $pluginXmlVersions[] = (int)$item['nr'];
-                }
-                // check for the highest and set marker, if it's different from installed db-version
-                if (\max($pluginXmlVersions) !== (int)$version) {
-                    $newVersions = true;
-                }
+            try {
+                $plugin = Helper::getLoader((int)$item->bExtension === 1)->init((int)$item->kPlugin);
+            } catch (Exception $e) {
+                continue;
+            }
+            if ($plugin->getCurrentVersion()->greaterThan($item->nVersion)) {
+                return true;
             }
         }
 
-        return $newVersions;
+        return false;
     }
 
     /**

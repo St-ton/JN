@@ -27,44 +27,26 @@
                         {block name="productlist-item-list-images"}
                             <div class="productbox-images">
                                 <div class="clearfix list-gallery carousel carousel-btn-arrows">
-                                    {if $device->isMobile()}
-                                        {block name="productlist-item-list-image-mobile"}
-                                            {strip}
-                                                {$image = $Artikel->Bilder[0]}
-                                                {link href=$Artikel->cURLFull}
-                                                    {image alt=$alt fluid=true webp=true lazy=true
-                                                        src="{$image->cURLKlein}"
-                                                        srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                                         {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                                         {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
-                                                        sizes="auto"
-                                                        class='w-100'
-                                                    }
-                                                {/link}
-                                            {/strip}
-                                        {/block}
-                                    {else}
-                                        {block name="productlist-item-list-image-desktop"}
-                                            <div class="list-gallery carousel carousel-arrows-inside carousel-btn-arrows">
-                                                {foreach $Artikel->Bilder as $image}
-                                                    {strip}
-                                                        <div>
-                                                            {image fluid=true
-                                                                webp=true
-                                                                lazy=true
-                                                                alt=$image->cAltAttribut|escape:'html'
-                                                                src=$Artikel->Bilder[0]->cURLKlein
-                                                                srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                                {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                                {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
-                                                                sizes="auto"
-                                                                class='w-100'}
-                                                        </div>
-                                                    {/strip}
-                                                {/foreach}
-                                            </div>
-                                        {/block}
-                                    {/if}
+                                    {block name="productlist-item-list-image-desktop"}
+                                        <div class="list-gallery carousel carousel-arrows-inside carousel-btn-arrows">
+                                            {foreach $Artikel->Bilder as $image}
+                                                {strip}
+                                                    <div>
+                                                        {image fluid=true
+                                                            webp=true
+                                                            lazy=true
+                                                            alt=$image->cAltAttribut|escape:'html'
+                                                            src=$Artikel->Bilder[0]->cURLKlein
+                                                            srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                            {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                            {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                                            sizes="auto"
+                                                            class='w-100'}
+                                                    </div>
+                                                {/strip}
+                                            {/foreach}
+                                        </div>
+                                    {/block}
                                 </div>
                                 {block name='productlist-item-list-include-productlist-actions'}
                                     <div class="productbox-quick-actions productbox-onhover">

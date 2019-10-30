@@ -318,6 +318,7 @@ class Template
         $template->cAuthor      = \trim((string)$xml->Author);
         $template->cURL         = \trim((string)$xml->URL);
         $template->cVersion     = \trim((string)$xml->Version);
+        $template->cShopVersion = \trim((string)$xml->ShopVersion);
         $template->cPreview     = \trim((string)$xml->Preview);
         $template->cDokuURL     = \trim((string)$xml->DokuURL);
         $template->bChild       = !empty($xml->Parent);
@@ -333,11 +334,17 @@ class Template
         }
         if (!empty($xml->Parent)) {
             $parentConfig = $this->getData($xml->Parent, $isAdmin);
-            if ($parentConfig !== false && empty($template->cVersion)) {
-                $template->cVersion = $parentConfig->cVersion;
+            if ($parentConfig !== false) {
+                $template->cVersion     = !empty($template->cVersion) ? $template->cVersion : $parentConfig->cVersion;
+                $template->cShopVersion = !empty($template->cShopVersion)
+                    ? $template->cShopVersion
+                    : $parentConfig->cShopVersion;
             }
         } else {
             $template->checksums = $this->getChecksums((string)$dir);
+        }
+        if (empty($template->cVersion)) {
+            $template->cVersion = $template->cShopVersion;
         }
 
         $templates = Shop::Container()->getDB()->query(

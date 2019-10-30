@@ -569,7 +569,8 @@ class AccountController
                     '',
                     $item->cUnique,
                     $item->kKonfigitem,
-                    $item->kArtikel
+                    $item->kArtikel,
+                    $item->cResponsibility
                 );
             } else {
                 CartHelper::addProductIDToCart(

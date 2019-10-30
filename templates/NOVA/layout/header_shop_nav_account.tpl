@@ -5,6 +5,7 @@
 {block name='layout-header-shop-nav-account'}
     {navitemdropdown tag="li"
         aria=['expanded' => 'false']
+        router-aria=['label' => {lang key='myAccount'}]
         no-caret=true
         right=true
         text='<span class="fas fa-user"></span>'}

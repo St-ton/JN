@@ -175,7 +175,11 @@
             {navitem href="{get_static_route id='wunschliste.php'}"}
                 {lang key='wishlist'}
                 {badge id="badge-wl-count" variant="primary" class="text-gray-darker product-count"}
-                    {if !empty($smarty.session.Wunschliste->CWunschlistePos_arr|count)}{$smarty.session.Wunschliste->CWunschlistePos_arr|count}{else}0{/if}
+                    {if isset($smarty.session.Wunschliste) && !empty($smarty.session.Wunschliste->CWunschlistePos_arr|count)}
+                        {$smarty.session.Wunschliste->CWunschlistePos_arr|count}
+                    {else}
+                        0
+                    {/if}
                 {/badge}
             {/navitem}
         {/if}

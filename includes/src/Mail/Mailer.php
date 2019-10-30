@@ -11,6 +11,7 @@ use JTL\Mail\Hydrator\HydratorInterface;
 use JTL\Mail\Mail\MailInterface;
 use JTL\Mail\Renderer\RendererInterface;
 use JTL\Mail\Validator\ValidatorInterface;
+use JTL\Shop;
 use JTL\Shopsetting;
 use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
@@ -268,7 +269,8 @@ class Mailer
      */
     private function sendViaPHPMailer(MailInterface $mail): bool
     {
-        $phpmailer = new PHPMailer();
+        $phpmailer             = new PHPMailer();
+        $phpmailer->AllowEmpty = true;
         $phpmailer->setLanguage($mail->getLanguage()->getIso639());
         $phpmailer->CharSet = \JTL_CHARSET;
         $phpmailer->Timeout = \SOCKET_TIMEOUT;
@@ -288,6 +290,9 @@ class Mailer
         } else {
             $phpmailer->isHTML(false);
             $phpmailer->Body = $mail->getBodyText();
+        }
+        if (\mb_strlen($phpmailer->Body) === 0) {
+            Shop::Container()->getLogService()->warn('Empty body for mail ' . $phpmailer->Subject);
         }
         $this->addAttachments($phpmailer, $mail);
         $sent = $phpmailer->send();

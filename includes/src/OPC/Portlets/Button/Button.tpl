@@ -30,13 +30,13 @@
             style=$instance->getStyleString()
     }
         {if $instance->getProperty('use-icon') === true && $instance->getProperty('icon-align') === 'left'}
-            {$portlet->getFontAwesomeSvg($instance->getProperty('icon'))}
+            {$portlet->getFontAwesomeIcon($instance->getProperty('icon'))}
         {/if}
 
         {$instance->getProperty('label')}
 
         {if $instance->getProperty('use-icon') === true && $instance->getProperty('icon-align') === 'right'}
-            {$portlet->getFontAwesomeSvg($instance->getProperty('icon'))}
+            {$portlet->getFontAwesomeIcon($instance->getProperty('icon'))}
         {/if}
     {/button}
 </div>

@@ -1,7 +1,19 @@
-.opc-Button {
-  svg {
-    fill: currentColor;
-    height: 1.25em;
-    margin-top: -2px;
-  }
+$faFontDirPath: "../../../../../templates/NOVA/themes/base/fontawesome/webfonts";
+
+@font-face {
+  font-family: FontAwesome5FreeBrands;
+  font-style: normal;
+  font-weight: normal;
+  src: url('#{$faFontDirPath}/fa-brands-400.eot') format('embedded-opentype'),
+    url('#{$faFontDirPath}/fa-brands-400.woff2') format('woff2'),
+    url('#{$faFontDirPath}/fa-brands-400.woff') format('woff'),
+    url('#{$faFontDirPath}/fa-brands-400.ttf') format('truetype'),
+    url('#{$faFontDirPath}/fa-brands-400.svg#fontawesome') format('svg');
+}
+
+.opc-Icon {
+  font-family: FontAwesome5FreeBrands, sans-serif;
+  font-size: 1.25em;
+  line-height: 1;
+  vertical-align: middle;
 }

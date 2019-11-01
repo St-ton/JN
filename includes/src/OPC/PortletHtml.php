@@ -256,8 +256,12 @@ trait PortletHtml
      * @param string $faCode
      * @return string
      */
-    final public function getFontAwesomeSvg(string $faCode): string
+    final public function getFontAwesomeIcon(string $faCode): string
     {
+        /** @var array $faTable */
+        include \PFAD_ROOT . \PFAD_TEMPLATES . 'NOVA/themes/base/fontawesome/metadata/icons.php';
+        return '<span class="opc-Icon">&#x' . $faTable[$faCode] . ';</span>';
+
         $res = \preg_match('/fa([brs]) fa-(.+)/', $faCode, $matches);
 
         if ($res !== 1) {

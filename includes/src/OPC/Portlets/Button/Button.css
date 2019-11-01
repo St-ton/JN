@@ -1,7 +1,14 @@
-.opc-Button svg {
-  fill: currentColor;
-  height: 1.25em;
-  margin-top: -2px;
+@font-face {
+  font-family: FontAwesome5FreeBrands;
+  font-style: normal;
+  font-weight: normal;
+  src: url("../../../../../templates/NOVA/themes/base/fontawesome/webfonts/fa-brands-400.eot") format("embedded-opentype"), url("../../../../../templates/NOVA/themes/base/fontawesome/webfonts/fa-brands-400.woff2") format("woff2"), url("../../../../../templates/NOVA/themes/base/fontawesome/webfonts/fa-brands-400.woff") format("woff"), url("../../../../../templates/NOVA/themes/base/fontawesome/webfonts/fa-brands-400.ttf") format("truetype"), url("../../../../../templates/NOVA/themes/base/fontawesome/webfonts/fa-brands-400.svg#fontawesome") format("svg");
+}
+.opc-Icon {
+  font-family: FontAwesome5FreeBrands, sans-serif;
+  font-size: 1.25em;
+  line-height: 1;
+  vertical-align: middle;
 }
 
 /*# sourceMappingURL=Button.css.map */

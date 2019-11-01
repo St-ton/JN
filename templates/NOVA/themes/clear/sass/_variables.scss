@@ -1,7 +1,6 @@
 $image-path:                        'images';
 
 // colors
-$fa-font-path:                      "../base/fontawesome/webfonts" !default;
 $gray-lighter:                      #f5f7fa;
 $gray-light:                        #9b9b9b;
 $gray:                              #707070;
@@ -83,7 +82,8 @@ $container-max-widths: (
 // font
 
 $line-height-base:                  1.5;
-
+$nova-theme-path:                   "..";
+$fa-font-path:                      "../base/fontawesome/webfonts" !default;
 $font-family-sans-serif:            'Open Sans', sans-serif;
 $font-accent:                       Montserrat, sans-serif;
 

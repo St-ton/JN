@@ -44,42 +44,37 @@
                         || ((isset($activeParent)
                             && isset($activeParent->kKategorie))
                             && $activeParent->kKategorie == $category->getID())} active{/if}">
-                            {link href="{$category->getURL()}" title=$category->getName() class="nav-link dropdown-toggle" target="_self"}
-                                {$category->getName()}
+                            {link href=$category->getURL() title=$category->getName() class="nav-link dropdown-toggle" target="_self"}
+                                <span class="text-truncate">{$category->getName()}</span>
                             {/link}
                             <div class="dropdown-menu">
-                                {block name='snippets-categories-mega-category-child-header'}
-                                    <div class="dropdown-header border-bottom border-primary border-w-5 d-lg-none">
-                                        {row class='align-items-center font-size-base'}
-                                            {col}<a href="#" class="font-size-base" data-nav-back><span class="fas fa-chevron-left mr-4"></span> {$category->getName()}</a>{/col}
-                                            {col class='col-auto'}<a href="{$category->getURL()}"><span class="far fa-arrow-alt-circle-right ml-auto"></span></a>{/col}
-                                        {/row}
-                                    </div>
-                                {/block}
-                                {block name='snippets-categories-mega-category-child-body'}
-                                    <div class="dropdown-body p-0 py-lg-4">
-                                        {container}
-                                            {row class='lg-row-lg nav'}
-                                                {block name='snippets-categories-mega-sub-categories'}
-                                                    {if $category->hasChildren()}
-                                                        {if !empty($category->getChildren())}
-                                                            {assign var=sub_categories value=$category->getChildren()}
-                                                        {else}
-                                                            {get_category_array categoryId=$category->getID() assign='sub_categories'}
-                                                        {/if}
-                                                        {foreach $sub_categories as $sub}
-                                                            {col lg=4 xl=3 class="my-lg-4 nav-item {if $sub->hasChildren()}dropdown{/if}"}
-                                                                {block name='snippets-categories-mega-category-child-body-include-categories-mega-recursive'}
-                                                                    {include file='snippets/categories_mega_recursive.tpl' mainCategory=$sub firstChild=true}
-                                                                {/block}
-                                                            {/col}
-                                                        {/foreach}
+                                <div class="dropdown-body p-0 py-lg-4">
+                                    {container}
+                                        {row class="lg-row-lg nav"}
+                                            {col lg=4 xl=3 class="my-lg-4 nav-item dropdown d-lg-none"}
+                                                {link href=$category->getURL() class="nav-link font-size-base" rel="nofollow"}
+                                                    <span class="text-truncate font-weight-bold d-block pr-3 pr-lg-0">{lang key='menuShow' printf=$category->getName()}</span>
+                                                {/link}
+                                            {/col}
+                                            {block name='snippets-categories-mega-sub-categories'}
+                                                {if $category->hasChildren()}
+                                                    {if !empty($category->getChildren())}
+                                                        {assign var=sub_categories value=$category->getChildren()}
+                                                    {else}
+                                                        {get_category_array categoryId=$category->getID() assign='sub_categories'}
                                                     {/if}
-                                                {/block}
-                                            {/row}
-                                        {/container}
-                                    </div>
-                                {/block}
+                                                    {foreach $sub_categories as $sub}
+                                                        {col lg=4 xl=3 class="my-lg-4 nav-item {if $sub->hasChildren()}dropdown{/if}"}
+                                                            {block name='snippets-categories-mega-category-child-body-include-categories-mega-recursive'}
+                                                                {include file='snippets/categories_mega_recursive.tpl' mainCategory=$sub firstChild=true}
+                                                            {/block}
+                                                        {/col}
+                                                    {/foreach}
+                                                {/if}
+                                            {/block}
+                                        {/row}
+                                    {/container}
+                                </div>
                             </div>
                         </li>
                     {/block}
@@ -87,7 +82,7 @@
                     {block name='snippets-categories-mega-category-no-child'}
                         {navitem href=$category->getURL() title=$category->getName()
                             class="nav-scrollbar-item {if $category->getID() === $activeId}active{/if}"}
-                            {$category->getShortName()}
+                            <span class="text-truncate">{$category->getShortName()}</span>
                             <span class="badge text-gray-dark product-count">{$category->getProductCount()}</span>
                         {/navitem}
                     {/block}
@@ -109,47 +104,56 @@
             {if $manufacturerOverview !== null}
             {block name='snippets-categories-mega-manufacturers-inner'}
                 <li class="nav-item nav-scrollbar-item dropdown dropdown-full">
-                    {link href='#' title={lang key='manufacturers'} class="nav-link dropdown-toggle" target="_self"}
-                        {if $manufacturerOverview !== null && !empty($manufacturerOverview->getName())}{$manufacturerOverview->getName()}{else}{lang key='manufacturers'}{/if}
+                    {link href=$manufacturerOverview->getURL() title={lang key='manufacturers'} class="nav-link dropdown-toggle" target="_self"}
+                        <span class="text-truncate">
+                            {if $manufacturerOverview !== null && !empty($manufacturerOverview->getName())}
+                                {$manufacturerOverview->getName()}
+                            {else}
+                                {lang key='manufacturers'}
+                            {/if}
+                        </span>
                     {/link}
                     <div class="dropdown-menu">
-                        {block name='snippets-categories-mega-manufacturers-header'}
-                            <div class="dropdown-header border-bottom border-primary border-w-5 d-lg-none">
-                                {row class='align-items-center font-size-base'}
-                                    {col}<a href="#" class="font-size-base" data-nav-back><span class="fas fa-chevron-left mr-4"></span> {lang key='manufacturers'}</a>{/col}
-                                    {col class='col-auto'}<a href="{$manufacturerOverview->getURL()}"><span class="far fa-arrow-alt-circle-right ml-auto"></span></a>{/col}
-                                {/row}
-                            </div>
-                        {/block}
-                        {block name='snippets-categories-mega-manufacturers-body'}
-                            <div class="dropdown-body p-0 py-lg-4">
-                                {container}
-                                    {row class='lg-row-lg nav'}
-                                        {foreach $manufacturers as $mft}
-                                            {col lg=4 xl=3 class='my-lg-4 nav-item'}
-                                                {block name='snippets-categories-mega-manufacturers-link'}
-                                                    {link href=$mft->cURLFull title=$mft->cSeo class='submenu-headline submenu-headline-toplevel nav-link '}
-                                                        {if $Einstellungen.template.megamenu.show_category_images !== 'N'
-                                                            && (!$device->isMobile() || $device->isTablet())
-                                                            && !empty($mft->getImage(\JTL\Media\Image::SIZE_XS))}
-                                                            {image fluid=true lazy=true webp=true
-                                                                src=$mft->getImage(\JTL\Media\Image::SIZE_XS)
-                                                                srcset="{$mft->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_hersteller_mini_breite}w,
+                        <div class="dropdown-body p-0 py-lg-4">
+                            {container}
+                                {row class="lg-row-lg nav"}
+                                    {col lg=4 xl=3 class="my-lg-4 nav-item dropdown d-lg-none"}
+                                        {block name='snippets-categories-mega-manufacturers-header'}
+                                            {link href=$manufacturerOverview->getURL() class="nav-link font-size-base" rel="nofollow"}
+                                                <span class="text-truncate font-weight-bold d-block pr-3 pr-lg-0">
+                                                    {if $manufacturerOverview !== null && !empty($manufacturerOverview->getName())}
+                                                        {$manufacturerOverview->getName()}
+                                                    {else}
+                                                        {lang key='manufacturers'}
+                                                    {/if}
+                                                </span>
+                                            {/link}
+                                        {/block}
+                                    {/col}
+                                    {foreach $manufacturers as $mft}
+                                        {col lg=4 xl=3 class='my-lg-4 nav-item'}
+                                            {block name='snippets-categories-mega-manufacturers-link'}
+                                                {link href=$mft->cURLFull title=$mft->cSeo class='submenu-headline submenu-headline-toplevel nav-link '}
+                                                    {if $Einstellungen.template.megamenu.show_category_images !== 'N'
+                                                        && (!$device->isMobile() || $device->isTablet())
+                                                        && !empty($mft->getImage(\JTL\Media\Image::SIZE_XS))}
+                                                        {image fluid=true lazy=true webp=true
+                                                            src=$mft->getImage(\JTL\Media\Image::SIZE_XS)
+                                                            srcset="{$mft->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_hersteller_mini_breite}w,
                                                                     {$mft->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_hersteller_klein_breite}w,
                                                                     {$mft->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_hersteller_normal_breite}w"
-                                                                sizes="80px"
-                                                                alt=$mft->getName()|escape:'html'
-                                                                class="d-none d-md-block mb-3"}
-                                                        {/if}
-                                                            {$mft->getName()}
-                                                    {/link}
-                                                {/block}
-                                            {/col}
-                                        {/foreach}
-                                    {/row}
-                                {/container}
-                            </div>
-                        {/block}
+                                                            sizes="80px"
+                                                            alt=$mft->getName()|escape:'html'
+                                                            class="d-none d-md-block mb-3"}
+                                                    {/if}
+                                                    {$mft->getName()}
+                                                {/link}
+                                            {/block}
+                                        {/col}
+                                    {/foreach}
+                                {/row}
+                            {/container}
+                        </div>
                     </div>
                 </li>
             {/block}
@@ -183,22 +187,30 @@
                                 {lang key='currency'}
                             {/link}
                         {/block}
-                        <div class="dropdown-menu">
-                            {block name='layout-header-top-bar-user-settings-currency-header'}
-                                <div class="dropdown-header border-bottom border-primary border-w-5 d-lg-none">
-                                    <a href="#" class="font-size-base" data-nav-back><span class="fas fa-chevron-left mr-4"></span> {lang key='currency'}</a>
-                                </div>
-                            {/block}
-                            {block name='layout-header-top-bar-user-settings-currency-body'}
+                        {block name='layout-header-top-bar-user-settings-currency-body'}
+                            <div class="dropdown-menu">
                                 <div class="dropdown-body p-0 py-lg-4">
-                                    {foreach $smarty.session.Waehrungen as $currency}
-                                        {dropdownitem href=$currency->getURLFull() rel="nofollow" active=($smarty.session.Waehrung->getName() === $currency->getName())}
-                                            {$currency->getName()}
-                                        {/dropdownitem}
-                                    {/foreach}
+                                    {container}
+                                        {row class="lg-row-lg nav"}
+                                            {col lg=4 xl=3 class="my-lg-4 nav-item dropdown d-lg-none"}
+                                                {block name='layout-header-top-bar-user-settings-currency-header'}
+                                                    <span class="font-size-base font-weight-bold ">{lang key='currency'}</span>
+                                                {/block}
+                                            {/col}
+                                            {foreach $smarty.session.Waehrungen as $currency}
+                                                {col lg=4 xl=3 class='my-lg-4 nav-item'}
+                                                    {block name='layout-header-top-bar-user-settings-currency-header-items'}
+                                                        {dropdownitem href=$currency->getURLFull() rel="nofollow" active=($smarty.session.Waehrung->getName() === $currency->getName())}
+                                                            {$currency->getName()}
+                                                        {/dropdownitem}
+                                                    {/block}
+                                                {/col}
+                                            {/foreach}
+                                        {/row}
+                                    {/container}
                                 </div>
-                            {/block}
-                        </div>
+                            </div>
+                        {/block}
                     </li>
                 {/if}
             {/block}
@@ -210,22 +222,28 @@
                                 {lang key='selectLanguage'}
                             {/link}
                         {/block}
-                        <div class="dropdown-menu">
-                            {block name='layout-header-top-bar-user-settings-language-header'}
-                                <div class="dropdown-header border-bottom border-primary border-w-5 d-lg-none">
-                                    <a href="#" class="font-size-base" data-nav-back><span class="fas fa-chevron-left mr-4"></span> {lang key='selectLanguage'}</a>
-                                </div>
-                            {/block}
-                            {block name='layout-header-top-bar-user-settings-language-body'}
-                                <div class="dropdown-body p-0 py-lg-4">
-                                    {foreach $smarty.session.Sprachen as $language}
-                                        {dropdownitem href=$language->cURL rel="nofollow" active=($language->kSprache == $smarty.session.kSprache)}
-                                            {$language->iso639|upper}
-                                        {/dropdownitem}
-                                    {/foreach}
-                                </div>
-                            {/block}
-                        </div>
+                        {block name='layout-header-top-bar-user-settings-language-body'}
+                            <div class="dropdown-menu">
+                                {container}
+                                    {row class="lg-row-lg nav"}
+                                        {col lg=4 xl=3 class="my-lg-4 nav-item dropdown d-lg-none"}
+                                        {block name='layout-header-top-bar-user-settings-language-header'}
+                                            <span class="font-size-base font-weight-bold">{lang key='selectLanguage'}</span>
+                                        {/block}
+                                        {/col}
+                                        {foreach $smarty.session.Sprachen as $language}
+                                            {col lg=4 xl=3 class='my-lg-4 nav-item'}
+                                                {block name='layout-header-top-bar-user-settings-language-header-items'}
+                                                    {dropdownitem href=$language->cURL rel="nofollow" active=($language->kSprache == $smarty.session.kSprache)}
+                                                        {$language->iso639|upper}
+                                                    {/dropdownitem}
+                                                {/block}
+                                            {/col}
+                                        {/foreach}
+                                    {/row}
+                                {/container}
+                            </div>
+                        {/block}
                     </li>
                 {/if}
             {/block}

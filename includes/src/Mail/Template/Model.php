@@ -570,6 +570,14 @@ final class Model
     }
 
     /**
+     * @param int $languageID
+     */
+    public function removeAttachments(int $languageID): void
+    {
+        $this->attachments[$languageID] = null;
+    }
+
+    /**
      * @param string|array|null $attachments
      * @param int               $languageID
      */

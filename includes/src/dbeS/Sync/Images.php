@@ -167,7 +167,7 @@ final class Images extends AbstractSync
     private function handleConfigGroupImages(array $images): void
     {
         foreach ($images as $image) {
-            if (empty($image->cBildPfad) || empty($image->kKonfiggruppe)) {
+            if (empty($image->cPfad) || empty($image->kKonfiggruppe)) {
                 continue;
             }
             $item                = new stdClass();
@@ -182,9 +182,8 @@ final class Images extends AbstractSync
                 );
                 continue;
             }
-            $item->cBildPfad = $item->kKonfiggruppe . '.' . $extension;
-            $item->cBildPfad = $this->getNewFilename($item->cBildPfad);
-            \copy($original, \PFAD_ROOT . \STORAGE_CONFIGGROUPS . $image->cPfad);
+            $item->cBildPfad = $this->getNewFilename($item->kKonfiggruppe . '.' . $extension);
+            \copy($original, \PFAD_ROOT . \STORAGE_CONFIGGROUPS . $item->cBildPfad);
             if ($this->createThumbnail(
                 $original,
                 \PFAD_KONFIGURATOR_KLEIN . $item->cBildPfad,

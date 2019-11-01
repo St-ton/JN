@@ -217,17 +217,28 @@ final class Link extends AbstractLink
      */
     public function __construct(DbInterface $db)
     {
-        $this->db                = $db;
-        $this->childLinks        = new Collection();
-        $this->currentLanguageID = Shop::getLanguageID();
+        $this->db         = $db;
+        $this->childLinks = new Collection();
+        $this->initLanguageID();
     }
 
     /**
      *
      */
-    public function __wakeup()
+    public function __wakeup(): void
+    {
+        $this->initLanguageID();
+    }
+
+    /**
+     *
+     */
+    private function initLanguageID(): void
     {
         $this->currentLanguageID = Shop::getLanguageID();
+        if ($this->currentLanguageID === 0) {
+            $this->currentLanguageID = $_SESSION['kSprache'] ?? 1;
+        }
     }
 
     /**

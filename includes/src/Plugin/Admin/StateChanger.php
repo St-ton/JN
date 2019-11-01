@@ -15,7 +15,6 @@ use JTL\Plugin\Admin\Validation\PluginValidator;
 use JTL\Plugin\Admin\Validation\ValidatorInterface;
 use JTL\Plugin\Helper;
 use JTL\Plugin\InstallCode;
-use JTL\Plugin\LegacyPlugin;
 use JTL\Plugin\LegacyPluginLoader;
 use JTL\Plugin\PluginInterface;
 use JTL\Plugin\PluginLoader;

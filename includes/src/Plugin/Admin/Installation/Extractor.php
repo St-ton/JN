@@ -8,7 +8,6 @@ namespace JTL\Plugin\Admin\Installation;
 
 use InvalidArgumentException;
 use JTL\XMLParser;
-use stdClass;
 use ZipArchive;
 
 /**

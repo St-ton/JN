@@ -3,8 +3,7 @@
     <Name>NOVA</Name>
     <Author>JTL-Software-GmbH</Author>
     <URL>https://www.jtl-software.de</URL>
-    <Version>0.8</Version>
-    <ShopVersion>500</ShopVersion>
+    <ShopVersion>5.0.0</ShopVersion>
     <Preview>preview.png</Preview>
     <Description>JTL-Shop Responsive-Template</Description>
     <Settings>
@@ -21,6 +20,7 @@
         <Section Name="Theme" Key="theme">
             <Setting Description="Theme" Key="theme_default" Type="select" Value="clear" Editable="false">
                 <Option Value="clear">clear - Handgemacht mit <![CDATA[&hearts;]]> von JTL</Option>
+                <!--<Option Value="dark">dark - Themeprototyp</Option>-->
             </Setting>
             <Setting Description="Button Hover-Animation anzeigen" Key="button_animated" Type="select" Value="N">
                 <Option Value="Y">Ja</Option>
@@ -137,6 +137,10 @@
         <CSS Name="clear.css">
             <File Path="themes/clear/clear.css"/>
             <File Path="themes/clear/custom.css"/>
+        </CSS>
+        <CSS Name="dark.css">
+            <File Path="themes/dark/dark.css"/>
+            <File Path="themes/dark/custom.css"/>
         </CSS>
         <JS Name="jtl3.js">
             <File Path="js/lazysizes.min.js"/>

@@ -14,7 +14,7 @@
                                     {if !$oPosition->istKonfigKind()}
                                         {if $oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL}
                                             <tr>
-                                                <td class="item-image">
+                                                <td>
                                                     {formrow}
                                                         {block name='basket-cart-dropdown-cart-item-item-image'}
                                                             {col class="col-auto"}
@@ -56,14 +56,20 @@
                                             </tr>
                                         {else}
                                             <tr>
-                                                <td></td>
                                                 {block name='basket-cart-dropdown-cart-item-no-item-count'}
-                                                    <td class="item-name" colspan="2">
-                                                        {$oPosition->nAnzahl|replace_delim}&nbsp;&times;&nbsp;{$oPosition->cName|trans|escape:'htmlall'}
+                                                    <td>
+                                                        {formrow}
+                                                            {col class="col-auto"}
+                                                                {$oPosition->nAnzahl|replace_delim}x
+                                                            {/col}
+                                                            {col}
+                                                                {$oPosition->cName|trans|escape:'htmlall'}
+                                                            {/col}
+                                                        {/formrow}
                                                     </td>
                                                 {/block}
                                                 {block name='basket-cart-dropdown-cart-item-noitem-price'}
-                                                    <td class="item-price">
+                                                    <td class="text-right text-nowrap">
                                                         {$oPosition->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
                                                     </td>
                                                 {/block}

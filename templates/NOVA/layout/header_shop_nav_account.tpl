@@ -81,7 +81,7 @@
                     {lang key='myWishlists'}
                 {/dropdownitem}
                 {dropdowndivider}
-                {dropdownitem href="{get_static_route id='jtl.php' secure=true}?logout=1" rel="nofollow" title="{lang key='logOut'}"}
+                {dropdownitem href="{get_static_route id='jtl.php' secure=true}?logout=1" rel="nofollow" title="{lang key='logOut'}" class="mb-2"}
                     {lang key='logOut'}
                 {/dropdownitem}
             {/block}

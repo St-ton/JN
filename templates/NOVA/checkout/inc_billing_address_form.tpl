@@ -540,14 +540,14 @@
                         {block name='checkout-inc-billing-address-form-birthday'}
                             {col cols=12}
                                 {if isset($cPost_var['geburtstag'])}
-                                    {assign var=inputVal_birthday value=$cPost_var['geburtstag']}
+                                    {assign var=inputVal_birthday value=$cPost_var['geburtstag']|date_format:"%Y-%m-%d"}
                                 {elseif isset($Kunde->dGeburtstag_formatted)}
-                                    {assign var=inputVal_birthday value=$Kunde->dGeburtstag_formatted}
+                                    {assign var=inputVal_birthday value=$Kunde->dGeburtstag_formatted|date_format:"%Y-%m-%d"}
                                 {/if}
                                 {include file='snippets/form_group_simple.tpl'
                                     options=[
                                         'date', 'birthday', 'geburtstag',
-                                        {$inputVal_birthday|default:null|date_format:"%Y-%m-%d"}, {lang key='birthday' section='account data'},
+                                        {$inputVal_birthday|default:null}, {lang key='birthday' section='account data'},
                                         $Einstellungen.kunden.kundenregistrierung_abfragen_geburtstag, null, 'billing bday'
                                     ]
                                 }

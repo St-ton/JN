@@ -6947,7 +6947,7 @@ mark,
   background-color: #fcf8e3;
 }
 
-.list-unstyled {
+.list-unstyled, .list-icons {
   padding-left: 0;
   list-style: none;
 }
@@ -23335,6 +23335,18 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
   border-style: solid;
   border-color: #ebebeb;
   padding: 1.5rem 1rem;
+}
+
+.list-icons > li {
+  padding-left: 2em;
+}
+.list-icons [class*=fa-] {
+  text-align: center;
+  width: 1.25em;
+  margin-left: -2em;
+  margin-top: 0.15em;
+  float: left;
+  line-height: inherit;
 }
 
 :root {

@@ -590,7 +590,7 @@ class IOMethods
                 $smarty->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
                        ->assign('Warensumme', $cart->gibGesamtsummeWaren())
                        ->assign('Steuerpositionen', $cart->gibSteuerpositionen())
-                       ->assign('Einstellungen', Shop::getSettings([\CONF_GLOBAL]))
+                       ->assign('Einstellungen', Shopsetting::getInstance()->getAll())
                        ->assign('WarenkorbArtikelPositionenanzahl', $qty)
                        ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
                        ->assign('WarenkorbGesamtgewicht', $cart->getWeight())

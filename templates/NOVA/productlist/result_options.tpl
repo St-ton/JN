@@ -22,9 +22,11 @@
                             <span class="fas fa-filter{if $NaviFilter->getFilterCount() > 0} text-primary{/if}"></span> {lang key='filter'}
                         {/button}
                     {/block}
-                    {block name='productlist-result-options-filter-include-layout-options'}
-                        {include file='productlist/layout_options.tpl'}
-                    {/block}
+                    {if !$device->isMobile()}
+                        {block name='productlist-result-options-filter-include-layout-options'}
+                            {include file='productlist/layout_options.tpl'}
+                        {/block}
+                    {/if}
                 {/col}
             {/block}
             {/row}

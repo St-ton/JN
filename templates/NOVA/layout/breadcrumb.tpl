@@ -9,20 +9,20 @@
         {row class="breadcrumb-wrapper no-gutters align-items-center"}
             {col cols="auto"}
                 {breadcrumb id="breadcrumb" itemprop="breadcrumb" itemscope=true itemtype="http://schema.org/BreadcrumbList" class="p-0 py-2 mb-0"}
-                    {block name='layout-breadcrumb-xs-back'}
+                    {block name='layout-breadcrumb-sm-back'}
                         {$parent = $Brotnavi[$Brotnavi|count -2|max:0]}
-                        {breadcrumbitem class="breadcrumb-back"
+                        {breadcrumbitem class="d-flex d-md-none breadcrumb-arrow"
                             href=$parent->getURLFull()
                             title=$parent->getName()|escape:'html'
                         }
-                            <span class="fas fa-long-arrow-alt-left mr-2"></span><span itemprop="name">{$parent->getName()}</span>
+                            <span itemprop="name">{$parent->getName()}</span>
                         {/breadcrumbitem}
                     {/block}
                     {block name='layout-breadcrumb-items'}
                         {foreach $Brotnavi as $oItem}
                             {if $oItem@first}
                                 {block name='layout-breadcrumb-first-item'}
-                                    {breadcrumbitem class="first d-none d-sm-flex"
+                                    {breadcrumbitem class="first d-none d-md-flex"
                                         router-tag-itemprop="url"
                                         href=$oItem->getURLFull()
                                         title=$oItem->getName()|escape:'html'
@@ -37,7 +37,7 @@
                                 {/block}
                             {elseif $oItem@last}
                                 {block name='layout-breadcrumb-last-item'}
-                                    {breadcrumbitem class="last d-none d-sm-flex"
+                                    {breadcrumbitem class="last d-none d-md-flex"
                                         router-tag-itemprop="url"
                                         href="{if $oItem->getHasChild() === true}{$oItem->getURLFull()}{/if}"
                                         title=$oItem->getName()|escape:'html'
@@ -59,7 +59,7 @@
                             {else}
                                 {block name='layout-breadcrumb-item'}
                                     {breadcrumbitem router-tag-itemprop="url"
-                                        class="d-none d-sm-flex"
+                                        class="d-none d-md-flex"
                                         href=$oItem->getURLFull()
                                         title=$oItem->getName()|escape:'html'
                                         itemprop="itemListElement"
@@ -76,7 +76,7 @@
                     {/block}
                 {/breadcrumb}
             {/col}
-            {col}
+            {col class='d-md-block d-none'}
             {if !empty($NavigationBlaettern)}
                 {block name='layout-header-product-pagination'}
                     {if isset($NavigationBlaettern->naechsterArtikel->kArtikel)}

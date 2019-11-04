@@ -39,7 +39,7 @@
                     {/if}
                     {block name='productlist-item-slider-caption-short-desc'}
                         {link href=$Artikel->cURLFull}
-                            <span itemprop="name">{$Artikel->cKurzbezeichnung}</span>
+                            <span itemprop="name" class="text-clamp-2">{$Artikel->cKurzbezeichnung}</span>
                         {/link}
                     {/block}
                 </div>

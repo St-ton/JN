@@ -331,8 +331,6 @@
                                         {if isset($ShopLogoURL)}
                                             {image src=$ShopLogoURL
                                             alt=$Einstellungen.global.global_shopname
-                                            fluid=true
-                                            width=160
                                             height=53}
                                         {else}
                                             <span class="h1">{$Einstellungen.global.global_shopname}</span>

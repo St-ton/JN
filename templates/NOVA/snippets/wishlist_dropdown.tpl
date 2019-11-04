@@ -40,9 +40,9 @@
             {row}
                 {col class='col-lg-auto ml-auto'}
                     {block name='snippets-wishlist-dropdown-new-wl-link'}
-                        {link class='btn btn-primary btn-block' href="{get_static_route id='wunschliste.php'}?newWL=1"}
+                        {button variant="primary" type="link" block=true size="sm" href="{get_static_route id='wunschliste.php'}?newWL=1"}
                             {lang key='addNew' section='wishlist'}
-                        {/link}
+                        {/button}
                     {/block}
                 {/col}
             {/row}

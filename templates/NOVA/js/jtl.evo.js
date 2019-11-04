@@ -96,7 +96,7 @@
                 //dots: true,
                 arrows: true,
                 lazyLoad: 'ondemand',
-                slidesToShow: 5,
+                slidesToShow: 7,
                 slidesToScroll: 1,
                 responsive:     [
                     {
@@ -108,26 +108,17 @@
                     {
                         breakpoint: 992, // sm
                         settings: {
-                            slidesToShow:2
+                            slidesToShow:3
                         }
                     },
                     {
                         breakpoint: 1300,
                         settings: {
-                            slidesToShow:3
+                            slidesToShow:5
                         }
                     }
                 ]
             };
-            evoSliderOptions.slidesToShow = 2;
-            // initialize "pushed-success"-slider for detailed customization
-            $('#pushed-success .evo-slider:not(.slick-initialized)').slick(evoSliderOptions);
-
-            if ($('#content').hasClass('col-lg-9')) {
-                evoSliderOptions.slidesToShow = 4;
-            } else {
-                evoSliderOptions.slidesToShow = 5;
-            }
             $('.evo-slider:not(.slick-initialized)').slick(evoSliderOptions);
 
             // product list image slider

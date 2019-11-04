@@ -104,6 +104,7 @@ function pruefeUnregistriertBestellen($post): int
     ));
 
     $Kunde->getCustomerAttributes()->assign($customerAttributes);
+    Frontend::set('customerAttributes', $customerAttributes);
     if (isset($post['shipping_address'])) {
         if ((int)$post['shipping_address'] === 0) {
             $post['kLieferadresse'] = 0;
@@ -607,7 +608,9 @@ function gibStepUnregistriertBestellen(): void
         ->assign('oKundenfeld_arr', new CustomerFields(Shop::getLanguageID()))
         ->assign('nAnzeigeOrt', CHECKBOX_ORT_REGISTRIERUNG)
         ->assign('code_registrieren', false)
-        ->assign('customerAttributes', $Kunde !== null ? $Kunde->getCustomerAttributes() : getKundenattribute($_POST));
+        ->assign('customerAttributes', $Kunde !== null
+            ? $Kunde->getCustomerAttributes()->assign(Frontend::get('customerAttributes'))
+            : getKundenattribute($_POST));
 
     executeHook(HOOK_BESTELLVORGANG_PAGE_STEPUNREGISTRIERTBESTELLEN);
 }

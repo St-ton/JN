@@ -101,7 +101,7 @@ function bestellungInDB($cleared = 0, $orderNo = '')
     $order->cBestellNr = empty($orderNo) ? baueBestellnummer() : $orderNo;
     $cartItems         = [];
     if (Frontend::getCustomer()->getID() <= 0) {
-        $customerAttributes      = $customer->getCustomerAttributes();
+        $customerAttributes      = $customer->getCustomerAttributes()->assign(Frontend::get('customerAttributes'));
         $customer->kKundengruppe = Frontend::getCustomerGroup()->getID();
         $customer->kSprache      = Shop::getLanguageID();
         $customer->cAbgeholt     = 'N';
@@ -119,7 +119,9 @@ function bestellungInDB($cleared = 0, $orderNo = '')
 
         $customer->kKunde = $cart->kKunde;
         $customer->cLand  = $customer->pruefeLandISO($customer->cLand);
+        $customerAttributes->setCustomerID($customer->kKunde);
         $customerAttributes->save();
+        Frontend::set('customerAttributes', null);
 
         if (!empty($customer->cPasswort)) {
             $customer->cPasswortKlartext = $cPasswortKlartext;
@@ -447,6 +449,9 @@ function unhtmlSession(): void
     $sessionCustomer = Frontend::getCustomer();
     if ($sessionCustomer->kKunde > 0) {
         $customer->kKunde = $sessionCustomer->kKunde;
+        $customer->getCustomerAttributes()->load($customer->getID());
+    } else {
+        $customer->getCustomerAttributes()->assign(Frontend::get('customerAttributes'));
     }
     $customer->kKundengruppe = Frontend::getCustomerGroup()->getID();
     if ($sessionCustomer->kKundengruppe > 0) {
@@ -500,7 +505,6 @@ function unhtmlSession(): void
     $customer->cUSTID        = Text::unhtmlentities($sessionCustomer->cUSTID);
     $customer->dGeburtstag   = Text::unhtmlentities($sessionCustomer->dGeburtstag);
     $customer->cBundesland   = Text::unhtmlentities($sessionCustomer->cBundesland);
-    $customer->getCustomerAttributes()->load($customer->getID());
 
     $_SESSION['Kunde'] = $customer;
 

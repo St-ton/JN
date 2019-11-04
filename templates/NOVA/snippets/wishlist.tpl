@@ -393,7 +393,7 @@
                             {foreach $wishlistItems as $wlPosition}
                                 {col cols=12 sm=6 md=4 xl=3 class="mb-7"}
                                     <div id="result-wrapper_buy_form_{$wlPosition->kWunschlistePos}" data-wrapper="true" class="productbox productbox-column productbox-hover">
-                                        <div class="productbox-inner">
+                                        <div class="productbox-inner pos-abs">
                                             {row}
                                                 {col cols=12}
                                                 <div class="productbox-image">
@@ -438,7 +438,7 @@
                                                 {/col}
                                                 {col cols=12}
                                                     {block name='snippets-wishlist-form-basket-name'}
-                                                        {link href=$wlPosition->Artikel->cURL class="productbox-title"}
+                                                        {link href=$wlPosition->Artikel->cURL class="productbox-title text-clamp-2"}
                                                             {$wlPosition->cArtikelName}
                                                         {/link}
                                                     {/block}

@@ -3700,7 +3700,7 @@ class Artikel
             $data->cBeschreibung = $data->cBeschreibung_spr;
         }
         if (\trim($data->cKurzBeschreibung_spr)) {
-            $data->cBeschreibung = $data->cKurzBeschreibung_spr;
+            $data->cKurzBeschreibung = $data->cKurzBeschreibung_spr;
         }
 
         return $data;

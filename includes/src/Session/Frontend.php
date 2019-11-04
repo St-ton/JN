@@ -145,6 +145,10 @@ class Frontend extends AbstractSession
             ReturnType::SINGLE_OBJECT
         );
         if (isset($data->kKunde) && $data->kKunde > 0) {
+            Shop::setLanguage(
+                $_SESSION['kSprache'] ?? $_SESSION['Kunde']->kSprache ?? 0,
+                $_SESSION['cISOSprache'] ?? null
+            );
             $this->setCustomer(new Customer($_SESSION['Kunde']->kKunde));
             $_SESSION['kundendaten_aktualisiert'] = 1;
         }
@@ -429,8 +433,8 @@ class Frontend extends AbstractSession
         $_SESSION['Kunde']         = $customer;
         $_SESSION['Kundengruppe']  = new CustomerGroup((int)$customer->kKundengruppe);
         $_SESSION['Kundengruppe']->setMayViewCategories(1)
-                                     ->setMayViewPrices(1)
-                                     ->initAttributes();
+            ->setMayViewPrices(1)
+            ->initAttributes();
         self::getCart()->setzePositionsPreise();
         Tax::setTaxRates();
         self::setSpecialLinks();

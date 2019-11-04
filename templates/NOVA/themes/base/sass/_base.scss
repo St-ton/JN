@@ -799,10 +799,6 @@ table caption {
   display: inline-block;
 }
 
-.fas, .fab, .fa, .far {
-  vertical-align: middle;
-}
-
 /* wishlist */
 input.form-control[name="wishlist-url"] {
   background: $gray-lighter;
@@ -1092,3 +1088,10 @@ body {
 }
 
 .sticky-sidebar { position: sticky; top: rem(160px); z-index: $zindex-sticky -1; }
+
+.text-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}

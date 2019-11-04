@@ -5,6 +5,7 @@
  */
 
 use JTL\Cart\CartItem;
+use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\EigenschaftWert;
 use JTL\Catalog\Wishlist\Wishlist;
@@ -1057,7 +1058,9 @@ function fakeBestellung()
     $order->dErstellt        = 'NOW()';
     $order->Zahlungsart      = $_SESSION['Zahlungsart'];
     $order->Positionen       = [];
-    $order->Waehrung         = $_SESSION['Waehrung']; // @todo - check if this matches the new Currency class
+    $order->Waehrung         = ($_SESSION['Waehrung'] instanceof Currency)
+        ? $_SESSION['Waehrung']
+        : new Currency($order->kWaehrung);
     $order->kWaehrung        = Frontend::getCurrency()->getID();
     $order->fWaehrungsFaktor = Frontend::getCurrency()->getConversionFactor();
 

@@ -81,7 +81,7 @@
                                         {if !empty($Artikel->cBarcode)}
                                             <li>
                                                 <span class="font-weight-bold">{lang key='ean'}:</span>
-                                                <span itemprop="{if $Artikel->cBarcode|count_characters === 8}gtin8{else}gtin13{/if}">{$Artikel->cBarcode}</span>
+                                                <span itemprop="{if $Artikel->cBarcode|count_characters === 8}gtin8{else}gtin{/if}">{$Artikel->cBarcode}</span>
                                             </li>
                                         {/if}
                                         {if !empty($Artikel->cISBN)
@@ -159,12 +159,11 @@
                             {opcMountPoint id='opc_after_short_desc'}
                             {/block}
 
-                            <div class="product-offer mb-5" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+                            <div class="product-offer mb-5"{if !($Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N')} itemprop="offers" itemscope itemtype="http://schema.org/Offer"{/if}>
                                 {block name='productdetails-details-info-hidden'}
-                                    <link itemprop="businessFunction" href="http://purl.org/goodrelations/v1#Sell" />
-
-                                    {if !($Artikel->nIstVater)}
-                                        <link itemprop="url" href="{$Artikel->cURLFull}" />
+                                    {if !($Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N')}
+                                        <meta itemprop="url" content="{$Artikel->cURLFull}">
+                                        <link itemprop="businessFunction" href="http://purl.org/goodrelations/v1#Sell" />
                                     {/if}
                                     {input type="hidden" name="inWarenkorb" value="1"}
                                     {if $Artikel->kArtikelVariKombi > 0}

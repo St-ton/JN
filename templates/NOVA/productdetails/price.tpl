@@ -53,6 +53,7 @@
                             <meta itemprop="validFrom" content="{$Artikel->dSonderpreisStart_en}">
                             <meta itemprop="validThrough" content="{$Artikel->dSonderpreisEnde_en}">
                         {/if}
+                        <meta itemprop="priceValidUntil" content="{"+30 days"|strtotime|date_format:"Y-m-d"}">
                     {/block}
                 </div>
                 {if $tplscope === 'detail'}

@@ -21,7 +21,10 @@ if (file_exists(__DIR__ . '/config.JTL-Shop.ini.php')) {
     require_once __DIR__ . '/config.JTL-Shop.ini.php';
 }
 
-function handleFatal(string $message)
+/**
+ * @param string $message
+ */
+function handleFatal(string $message): void
 {
     header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
     header('Cache-Control: post-check=0, pre-check=0', false);
@@ -61,7 +64,7 @@ if (!function_exists('Shop')) {
     /**
      * @return Shop
      */
-    function Shop()
+    function Shop(): Shop
     {
         return Shop::getInstance();
     }

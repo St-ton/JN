@@ -9,20 +9,28 @@ if (file_exists(__DIR__ . '/config.JTL-Shop.ini.php')) {
     require_once __DIR__ . '/config.JTL-Shop.ini.php';
 }
 
+function handleFatal($message)
+{
+    header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+    header('Cache-Control: post-check=0, pre-check=0', false);
+    header('Pragma: no-cache', true, 500);
+    die($message);
+}
+
 if (defined('PFAD_ROOT')) {
     require_once PFAD_ROOT . 'includes/defines.php';
 } else {
-    die('Die Konfigurationsdatei des Shops konnte nicht geladen werden! ' .
+    handleFatal('Die Konfigurationsdatei des Shops konnte nicht geladen werden! ' .
         'Bei einer Neuinstallation bitte <a href="install/index.php">hier</a> klicken.');
 }
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'error_handler.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
 // existiert Konfiguration?
-defined('DB_HOST') || die('Kein MySql-Datenbank Host angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
-defined('DB_NAME') || die('Kein MySql Datenbanknamen angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
-defined('DB_USER') || die('Kein MySql-Datenbank Benutzer angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
-defined('DB_PASS') || die('Kein MySql-Datenbank Passwort angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
+defined('DB_HOST') || handleFatal('Kein MySql-Datenbank Host angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
+defined('DB_NAME') || handleFatal('Kein MySql Datenbanknamen angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
+defined('DB_USER') || handleFatal('Kein MySql-Datenbank Benutzer angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
+defined('DB_PASS') || handleFatal('Kein MySql-Datenbank Passwort angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
 
 $shop = Shop::getInstance();
 
@@ -53,7 +61,7 @@ Profiler::start();
 try {
     $GLOBALS['DB'] = new NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 } catch (Exception $exc) {
-    die($exc->getMessage());
+    handleFatal($exc->getMessage());
 }
 $GLOBALS['bSeo'] = true; //seo module is always available, keep global for compatibility reasons
 require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';

@@ -65,7 +65,6 @@
                                         {input
                                             type="password"
                                             name="pass2"
-                                            maxlength="20"
                                             id="password2"
                                             placeholder="{lang key='passwordRepeat' section='account data'}"
                                             required=true

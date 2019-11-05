@@ -53,15 +53,15 @@
                         </div>
                     {/block}
                     {block name='page-index-news'}
-                        {row itemprop="about" itemscope=true itemtype="http://schema.org/Blog" class="carousel carousel-arrows-inside news-slider mx-0"}
+                        <div itemprop="about" itemscope=true itemtype="http://schema.org/Blog" class="carousel news-slider">
                             {foreach $oNews_arr as $newsItem}
-                                {col}
+                                <div>
                                     {block name='page-index-include-preview'}
                                         {include file='blog/preview.tpl'}
                                     {/block}
-                                {/col}
+                                </div>
                             {/foreach}
-                        {/row}
+                        </div>
                     {/block}
                 {/container}
             </section>

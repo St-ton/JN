@@ -45,11 +45,7 @@
                 <Option Value="Y">Aktiv</Option>
                 <Option Value="N">Inaktiv</Option>
             </Setting>
-            <Setting Description="Hauptkategorie Infobereich" Key="show_maincategory_info" Type="select" Value="Y">
-                <Option Value="Y">Aktiv</Option>
-                <Option Value="N">Inaktiv</Option>
-            </Setting>
-            <Setting Description="Kategoriebilder" Key="show_category_images" Type="select" Value="Y">
+            <Setting Description="Kategorie Bilder (Nur für erste Unterkategorie)" Key="show_category_images" Type="select" Value="N">
                 <Option Value="Y">Aktiv</Option>
                 <Option Value="N">Inaktiv</Option>
             </Setting>
@@ -62,6 +58,10 @@
                 <Option Value="N">Inaktiv</Option>
             </Setting>
             <Setting Description="Hersteller-Dropdown" Key="show_manufacturers" Type="select" Value="N">
+                <Option Value="Y">Aktiv</Option>
+                <Option Value="N">Inaktiv</Option>
+            </Setting>
+            <Setting Description="Hersteller Bilder" Key="show_manufacturer_images" Type="select" Value="N">
                 <Option Value="Y">Aktiv</Option>
                 <Option Value="N">Inaktiv</Option>
             </Setting>

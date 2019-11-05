@@ -6947,7 +6947,7 @@ mark,
   background-color: #fcf8e3;
 }
 
-.list-unstyled {
+.list-unstyled, .list-icons {
   padding-left: 0;
   list-style: none;
 }
@@ -23337,6 +23337,18 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
   padding: 1.5rem 1rem;
 }
 
+.list-icons > li {
+  padding-left: 2em;
+}
+.list-icons [class*=fa-] {
+  text-align: center;
+  width: 1.25em;
+  margin-left: -2em;
+  margin-top: 0.15em;
+  float: left;
+  line-height: inherit;
+}
+
 :root {
   --vh: 1vh;
 }
@@ -24196,7 +24208,7 @@ table caption {
 }
 
 .cart-summary {
-  z-index: 1010;
+  z-index: 999;
 }
 
 #cart-form .total,
@@ -24228,7 +24240,7 @@ input.form-control[name=wishlist-url] {
   position: sticky;
   left: 0;
   background: #fff;
-  z-index: 1000;
+  z-index: 996;
 }
 .comparelist .table {
   width: 98%;
@@ -24239,10 +24251,10 @@ input.form-control[name=wishlist-url] {
   z-index: 999;
 }
 .comparelist .table thead th:first-child {
-  z-index: 1001;
+  z-index: 997;
 }
 .comparelist .table thead th:not(:first-child) {
-  z-index: 1002;
+  z-index: 998;
 }
 .comparelist .table tbody td:first-child {
   background-color: #f5f7fa;

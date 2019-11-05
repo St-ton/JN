@@ -169,8 +169,6 @@
             <File Path="js/bs4-input-spinner.js"/>
             <File Path="js/nouislider.min.js"/>
             <File Path="js/password/password.min.js"/>
-            <File Path="js/photoswipe/photoswipe.min.js"/>
-            <File Path="js/photoswipe/photoswipe-ui-default.min.js"/>
         </JS>
     </Minify>
     <Boxes>

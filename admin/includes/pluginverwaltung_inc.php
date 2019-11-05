@@ -3951,14 +3951,12 @@ function logikSQLDatei($cSQLDatei, $nVersion, $oPlugin)
                 $cSQL = removeNumerousWhitespaces($cSQL);
                 // SQL legt eine neue Tabelle an => fülle tplugincustomtabelle
                 if (strpos(strtolower($cSQL), 'create table') !== false) {
-                    //when using "create table if not exists" statement, the table name is at index 5, otherwise at 2
-                    $tableNameAtIndex = (strpos(strtolower($cSQL), 'create table if not exists') !== false) ? 5 : 2;
-                    $cSQLTMP_arr      = explode(' ', $cSQL);
-                    $cTabelle         = str_replace(["'", "`"], '', $cSQLTMP_arr[$tableNameAtIndex]);
-                    preg_match("/xplugin[_]{1}" . $oPlugin->cPluginID . "[_]{1}[a-zA-Z0-9_]+/", $cTabelle, $cTreffer_arr);
-                    if (!isset($cTreffer_arr[0]) || strlen($cTreffer_arr[0]) !== strlen($cTabelle)) {
+                    if (preg_match("/create table( if not exists)? ([`']?)(xplugin_" . $oPlugin->cPluginID . "_[a-zA-Z0-9_]+)\\2/i", $cSQL, $matches) === 0) {
                         return 5;// Versuch eine nicht Plugintabelle anzulegen
                     }
+
+                    $cTabelle = $matches[3];
+
                     // Prüfen, ob nicht bereits vorhanden => Wenn nein, anlegen
                     $oPluginCustomTabelleTMP = Shop::DB()->select('tplugincustomtabelle', 'cTabelle', $cTabelle);
                     if (!isset($oPluginCustomTabelleTMP->kPluginCustomTabelle) || !$oPluginCustomTabelleTMP->kPluginCustomTabelle) {
@@ -3969,13 +3967,7 @@ function logikSQLDatei($cSQLDatei, $nVersion, $oPlugin)
                         Shop::DB()->insert('tplugincustomtabelle', $oPluginCustomTabelle);
                     }
                 } elseif (strpos(strtolower($cSQL), 'drop table') !== false) {
-                    // SQL versucht eine Tabelle zu löschen => prüfen ob es sich um eine Plugintabelle handelt
-                    //when using "drop table if exists" statement, the table name is at index 5, otherwise at 2
-                    $tableNameAtIndex = (strpos(strtolower($cSQL), 'drop table if exists') !== false) ? 4 : 2;
-                    $cSQLTMP_arr      = explode(' ', removeNumerousWhitespaces($cSQL));
-                    $cTabelle         = str_replace(["'", "`"], '', $cSQLTMP_arr[$tableNameAtIndex]);
-                    preg_match("/xplugin[_]{1}" . $oPlugin->cPluginID . "[_]{1}[a-zA-Z0-9]+/", $cTabelle, $cTreffer_arr);
-                    if (strlen($cTreffer_arr[0]) !== strlen($cTabelle)) {
+                    if (preg_match("/drop table( if exists)? ([`']?)(xplugin_" . $oPlugin->cPluginID . "_[a-zA-Z0-9_]+)\\2/i", $cSQL, $matches) === 0) {
                         return 4;// Versuch eine nicht Plugintabelle zu löschen
                     }
                 }
@@ -3986,10 +3978,10 @@ function logikSQLDatei($cSQLDatei, $nVersion, $oPlugin)
                 if ($nErrno) {
                     Jtllog::writeLog(
                         'SQL Fehler beim Installieren des Plugins (' . $oPlugin->cName . '): ' .
-                        str_replace("'", '', Shop::DB()->getErrorMessage()), 
-                        JTLLOG_LEVEL_ERROR, 
-                        false, 
-                        'kPlugin', 
+                        str_replace("'", '', Shop::DB()->getErrorMessage()),
+                        JTLLOG_LEVEL_ERROR,
+                        false,
+                        'kPlugin',
                         $oPlugin->kPlugin
                     );
 

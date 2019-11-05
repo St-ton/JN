@@ -11,7 +11,7 @@
                 {foreach $Artikel->oKonfig_arr as $oGruppe}
                     {if $oGruppe->getItemCount() > 0}
                         {$configLocalization = $oGruppe->getSprache()}
-                        {$configImagePath = $oGruppe->getImage()}
+                        {$configImagePath = $oGruppe->getImage(\JTL\Media\Image::SIZE_XS)}
                         {$kKonfiggruppe = $oGruppe->getKonfiggruppe()}
                         <div class="cfg-group mb-4" data-id="{$kKonfiggruppe}">
                             <div class="hr-sect mt-5 mb-0">
@@ -50,9 +50,14 @@
                                         {/if}
                                         {if !empty($configImagePath)}
                                             {col cols=12 lg="{if $configLocalization->hatBeschreibung()}4{else}12{/if}" order=0 order-lg=1}
-                                                {image id="img{$kKonfiggruppe}" fluid=true fluid-grow=true lazy=true
+                                                {image fluid=true lazy=true webp=true
                                                     src=$configImagePath
+                                                    srcset="{$oGruppe->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_konfiggruppe_mini_breite}w,
+                                                            {$oGruppe->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_konfiggruppe_klein_breite}w,
+                                                            {$oGruppe->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_konfiggruppe_normal_breite}w,
+                                                            {$oGruppe->getImage(\JTL\Media\Image::SIZE_LG)} {$Einstellungen.bilder.bilder_konfiggruppe_gross_breite}w"
                                                     alt=$configLocalization->getName()
+                                                    sizes="auto"
                                                 }
                                             {/col}
                                         {/if}

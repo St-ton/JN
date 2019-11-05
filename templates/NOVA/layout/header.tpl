@@ -49,7 +49,7 @@
         {/block}
 
         {block name='layout-header-head-resources'}
-            {*{include file='layout/header_inline_css.tpl'}*}
+            {include file='layout/header_inline_css.tpl'}
             {* css *}
             {if !isset($Einstellungen.template.general.use_minify) || $Einstellungen.template.general.use_minify === 'N'}
                 {foreach $cCSS_arr as $cCSS}
@@ -233,7 +233,7 @@
             {$templateDir = $parentTemplateDir}
         {/if}
 
-        <script defer src="{$ShopURL}/{$templateDir}js/jquery-3.4.1.min.js"></script>
+        <script src="{$ShopURL}/{$templateDir}js/jquery-3.4.1.min.js"></script>
 
         {if !isset($Einstellungen.template.general.use_minify) || $Einstellungen.template.general.use_minify === 'N'}
             {if isset($cPluginJsHead_arr)}

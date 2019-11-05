@@ -21,7 +21,14 @@
                                 {else}
                                     {assign var=alt value=$product->cName}
                                 {/if}
-                                {include file='snippets/image.tpl' src=$product->Bilder[0]->cURLNormal alt=$alt}
+                            {image fluid=true webp=true lazy=true
+                                alt=$alt
+                                src=$product->Bilder[0]->cURLKlein
+                                srcset="{$product->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                    {$product->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                    {$product->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                sizes="auto"
+                            }
                             {/link}
                         {/col}
                         {col cols=8}

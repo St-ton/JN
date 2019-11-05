@@ -17,7 +17,7 @@
     
     {if isset($nWarenkorb2PersMerge) && $nWarenkorb2PersMerge === 1}
         <script type="text/javascript">
-            $(function() {
+            $(window).on('load', function() {
                 eModal.confirm({ldelim}
                         message: '{lang key="basket2PersMerge" section="login"}',
                         label1: '{lang key="no" section="global"}',

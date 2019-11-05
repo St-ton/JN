@@ -9,6 +9,9 @@ if (file_exists(__DIR__ . '/config.JTL-Shop.ini.php')) {
     require_once __DIR__ . '/config.JTL-Shop.ini.php';
 }
 
+/**
+ * @param string $message
+ */
 function handleFatal($message)
 {
     header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');

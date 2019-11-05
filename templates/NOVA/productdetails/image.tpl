@@ -31,28 +31,24 @@
                 {/block}
             {/if}
                 <div id="gallery_wrapper" class="clearfix">
-                    <div id="gallery" class="product-images carousel carousel-showcase mb-4">
+                    <div id="gallery" class="product-images carousel mb-4">
                         {block name='productdetails-image-images'}
                             {foreach $Artikel->Bilder as $image}
                                 {strip}
                                     <div>
-                                        <div class="productbox-image-wrapper">
-                                            <div class="productbox-image-wrapper-inner">
-                                                {image alt=$image->cAltAttribut|escape:'html'
-                                                    class="product-image"
-                                                    fluid=true
-                                                    lazy=true
-                                                    webp=true
-                                                    src="{$Artikel->Bilder[0]->cURLNormal}"
-                                                    srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                        {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                        {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
-                                                        {$image->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
-                                                    sizes="auto"
-                                                    data=["list"=>"{$image->galleryJSON|escape:"html"}"]
-                                                }
-                                            </div>
-                                        </div>
+                                        {image alt=$image->cAltAttribut|escape:'html'
+                                            class="product-image"
+                                            fluid=true
+                                            lazy=true
+                                            webp=true
+                                            src="{$Artikel->Bilder[0]->cURLNormal}"
+                                            srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
+                                                {$image->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
+                                            sizes="auto"
+                                            data=["list"=>"{$image->galleryJSON|escape:"html"}"]
+                                        }
                                     </div>
                                 {/strip}
                             {/foreach}
@@ -70,17 +66,13 @@
                             {foreach $Artikel->Bilder as $image}
                                 {strip}
                                     <div>
-                                        <div class="productbox-image-wrapper">
-                                            <div class="productbox-image-wrapper-inner">
-                                                {image alt=$image->cAltAttribut|escape:'html'
-                                                    class="product-image"
-                                                    fluid=true
-                                                    lazy=true
-                                                    webp=true
-                                                    src="{$image->cURLKlein}"
-                                                }
-                                            </div>
-                                        </div>
+                                        {image alt=$image->cAltAttribut|escape:'html'
+                                            class="product-image"
+                                            fluid=true
+                                            lazy=true
+                                            webp=true
+                                            src="{$image->cURLKlein}"
+                                        }
                                     </div>
                                 {/strip}
                             {/foreach}

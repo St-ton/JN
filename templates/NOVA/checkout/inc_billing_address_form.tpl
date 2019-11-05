@@ -600,8 +600,7 @@
                                                 placeholder=$oKundenfeld->getLabel()
                                                 aria=["label"=>$oKundenfeld->getLabel()]
                                                 required=$oKundenfeld->isRequired()
-                                                data-toggle="floatLabel"
-                                                data-value="no-js"
+                                                data=["toggle"=>"floatLabel", "value"=>"no-js"]
                                                 readonly=(!$isKundenattributEditable)
                                             }
                                         {else}

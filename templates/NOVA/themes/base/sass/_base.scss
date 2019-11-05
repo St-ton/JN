@@ -783,7 +783,7 @@ table caption {
 }
 
 .cart-summary {
-  z-index: $zindex-sticky - 10;
+  z-index: $zindex-dropdown - 1;
 }
 
 #cart-form .total,

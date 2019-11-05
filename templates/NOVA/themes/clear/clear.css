@@ -24208,7 +24208,7 @@ table caption {
 }
 
 .cart-summary {
-  z-index: 1010;
+  z-index: 999;
 }
 
 #cart-form .total,

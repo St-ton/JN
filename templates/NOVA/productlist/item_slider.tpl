@@ -37,13 +37,13 @@
                     <div class="productbox-title">
                         {block name='productlist-item-slider-caption-short-desc'}
                             {link href=$Artikel->cURLFull}
-                                <span itemprop="name" class="text-clamp-2">
+                                <span class="text-clamp-2">
                                     {if isset($showPartsList) && $showPartsList === true && isset($Artikel->fAnzahl_stueckliste)}
                                         {block name='productlist-item-slider-caption-bundle'}
                                             {$Artikel->fAnzahl_stueckliste}x
                                         {/block}
                                     {/if}
-                                    {$Artikel->cKurzbezeichnung}
+                                    <span itemprop="name">{$Artikel->cKurzbezeichnung}</span>
                                 </span>
                             {/link}
                         {/block}

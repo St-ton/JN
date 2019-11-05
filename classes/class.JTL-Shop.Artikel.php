@@ -4187,12 +4187,8 @@ class Artikel
         }
         //datum umformatieren
         $this->dErstellt_de = date_format(date_create($this->dErstellt), 'd.m.Y');
-        // Sonderzeichen im Artikelnamen nach HTML Entities codieren
-        if (isset($conf['global']['global_artikelname_htmlentities']) &&
-            $conf['global']['global_artikelname_htmlentities'] === 'Y'
-        ) {
-            $this->cName = StringHandler::htmlentities($this->cName);
-        }
+        // Sonderzeichen im Artikelnamen nach HTML Entities codieren, bestehende Entities aber unberührt lassen
+        $this->cName = StringHandler::htmlentitiesOnce($this->cName);
         //Artikel kann in WK gelegt werden?
         if ($this->nErscheinendesProdukt && $conf['global']['global_erscheinende_kaeuflich'] !== 'Y') {
             $this->inWarenkorbLegbar = INWKNICHTLEGBAR_NICHTVORBESTELLBAR;
@@ -6363,10 +6359,7 @@ class Artikel
             );
         }
         if (!empty($this->cName)) {
-            $title = (!isset($conf['global']['global_artikelname_htmlentities']) ||
-                $conf['global']['global_artikelname_htmlentities'] === 'N')
-                ? StringHandler::htmlentities($this->cName)
-                : $this->cName;
+            $title = $this->cName;
         }
         $cTitle = str_replace('"', '', $title) . $cGlobalMetaTitle;
 

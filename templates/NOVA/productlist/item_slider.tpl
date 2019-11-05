@@ -16,15 +16,14 @@
                         <div class="productbox-image-wrapper">
                             <div class="productbox-image-wrapper-inner">
                             {block name='productlist-item-slider-image'}
-                                {image fluid=true webp=true lazy=true
+                                {image fluid-grow=true webp=true lazy=true
                                     alt=$Artikel->cName
                                     src=$Artikel->Bilder[0]->cURLKlein
                                     srcset="{$Artikel->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
                                         {$Artikel->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
                                         {$Artikel->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
-                                    sizes="200px"
-                                class="product-image"
-                                }
+                                    sizes="auto"
+                                    class="product-image"}
                             {/block}
                             </div>
                         </div>
@@ -36,16 +35,16 @@
             {block name='productlist-item-slider-caption'}
                 <div class="text-center">
                     <div class="productbox-title">
-                        {if isset($showPartsList) && $showPartsList === true && isset($Artikel->fAnzahl_stueckliste)}
-                            {block name='productlist-item-slider-caption-bundle'}
-                                <span class="article-bundle-info">
-                                    <span class="bundle-amount">{$Artikel->fAnzahl_stueckliste}</span> <span class="bundle-times">x</span>
-                                </span>
-                            {/block}
-                        {/if}
                         {block name='productlist-item-slider-caption-short-desc'}
                             {link href=$Artikel->cURLFull}
-                                <span itemprop="name" class="text-clamp-2">{$Artikel->cKurzbezeichnung}</span>
+                                <span itemprop="name" class="text-clamp-2">
+                                    {if isset($showPartsList) && $showPartsList === true && isset($Artikel->fAnzahl_stueckliste)}
+                                        {block name='productlist-item-slider-caption-bundle'}
+                                            {$Artikel->fAnzahl_stueckliste}x
+                                        {/block}
+                                    {/if}
+                                    {$Artikel->cKurzbezeichnung}
+                                </span>
                             {/link}
                         {/block}
                     </div>

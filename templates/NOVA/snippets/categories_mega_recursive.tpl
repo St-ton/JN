@@ -4,7 +4,7 @@
  *}
 {block name='snippets-categories-mega-recursive'}
     {block name='snippets-categories-mega-recursive-main-link'}
-        {link href=$mainCategory->getURL() class="d-block {if $firstChild}submenu-headline submenu-headline-toplevel{/if} nav-link {if $mainCategory->hasChildren()}dropdown-toggle{/if}" aria=["expanded"=>"false"]}
+        {link href=$mainCategory->getURL() class="d-lg-block {if $firstChild}submenu-headline submenu-headline-toplevel{/if} nav-link {if $mainCategory->hasChildren()}dropdown-toggle{/if}" aria=["expanded"=>"false"]}
             {if $firstChild
                 && $Einstellungen.template.megamenu.show_category_images !== 'N'
                 && (!$device->isMobile() || $device->isTablet())

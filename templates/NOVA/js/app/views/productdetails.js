@@ -1,12 +1,15 @@
 
-import { onMobile } from './../helpers.js'
+import { isMobile } from './../helpers.js'
 
-const productImages		= '.product-detail .product-image'
-const imageModal		= '#productImagesModal'
+const productImages		 = '#gallery img'
+const productImagesModal = '#gallery_preview img'
+const imageModal		 = '#productImagesModal'
 
-const $document			= $(document)
-const $productImages	= $(productImages)
+const $document			 = $(document)
+const $productImages	 = $(productImages)
 
-$document.on('click', productImages, onMobile(() => {
-	$(imageModal).modal('show')
-}))
+$document.on('click', productImages, function () {
+    if (isMobile) {
+        $(imageModal).modal('show');
+    }
+});

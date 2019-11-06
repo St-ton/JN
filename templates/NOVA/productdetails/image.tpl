@@ -4,12 +4,12 @@
  *}
 {block name='productdetails-image'}
     <div id="image_wrapper" class="gallery-with-action text-right mb-6" role="group">
-        {row}
+        {row class="h-100"}
         {block name='productdetails-image-button'}
-            {col cols=12}
-                <button id="image_fullscreen_close" type="button" class="btn btn-link float-right font-size-2.5x" aria-label="close">
+            {col cols=12 class="mb-4 product-detail-image-topbar"}
+                {button id="image_fullscreen_close" variant="link" aria=["label"=>"close"]}
                     <span aria-hidden="true"><i class="fa fa-times"></i></span>
-                </button>
+                {/button}
             {/col}
         {/block}
         {block name='productdetails-image-main'}
@@ -31,7 +31,7 @@
                 {/block}
             {/if}
                 <div id="gallery_wrapper" class="clearfix">
-                    <div id="gallery" class="product-images carousel mb-4">
+                    <div id="gallery" class="product-images carousel">
                         {block name='productdetails-image-images'}
                             {foreach $Artikel->Bilder as $image}
                                 {strip}
@@ -47,7 +47,7 @@
                                                 {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
                                                 {$image->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
                                             sizes="auto"
-                                            data=["list"=>"{$image->galleryJSON|escape:"html"}"]
+                                            data=["list"=>"{$image->galleryJSON|escape:"html"}", "index"=>$image@index]
                                         }
                                     </div>
                                 {/strip}
@@ -58,9 +58,9 @@
             {/col}
         {/block}
         {block name='productdetails-image-preview'}
-            {col cols=12 align-self='end'}
+            {col cols=12 align-self='end' class='product-detail-image-preview-bar'}
             {if $Artikel->Bilder|@count > 1}
-                <div id="gallery_preview_wrapper">
+                <div id="gallery_preview_wrapper" class="mx-auto mt-4">
                     <div id="gallery_preview" class="product-thumbnails carousel carousel-thumbnails mb-5 mb-lg-0 d-none d-lg-flex mx-0">
                         {block name='productdetails-image-preview-images'}
                             {foreach $Artikel->Bilder as $image}

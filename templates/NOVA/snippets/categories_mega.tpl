@@ -12,10 +12,6 @@
     {block name='snippets-categories-mega-categories'}
     {if $Einstellungen.template.megamenu.show_categories !== 'N'
         && ($Einstellungen.global.global_sichtbarkeit != 3 || \JTL\Session\Frontend::getCustomer()->getID() > 0)}
-        {assign var=show_subcategories value=false}
-        {if $Einstellungen.template.megamenu.show_subcategories !== 'N'}
-            {assign var=show_subcategories value=true}
-        {/if}
         {get_category_array categoryId=0 assign='categories'}
         {if !empty($categories)}
             {if !isset($activeId)}
@@ -45,7 +41,7 @@
                             && isset($activeParent->kKategorie))
                             && $activeParent->kKategorie == $category->getID())} active{/if}">
                             {link href=$category->getURL() title=$category->getName() class="nav-link dropdown-toggle" target="_self"}
-                                <span class="text-truncate">{$category->getName()}</span>
+                                <span class="text-truncate d-block pr-3 pr-lg-0">{$category->getName()}</span>
                             {/link}
                             <div class="dropdown-menu">
                                 <div class="dropdown-body p-0 py-lg-4">
@@ -82,7 +78,7 @@
                     {block name='snippets-categories-mega-category-no-child'}
                         {navitem href=$category->getURL() title=$category->getName()
                             class="nav-scrollbar-item {if $category->getID() === $activeId}active{/if}"}
-                            <span class="text-truncate">{$category->getShortName()}</span>
+                            <span class="text-truncate d-block pr-3 pr-lg-0">{$category->getShortName()}</span>
                             <span class="badge text-gray-dark product-count">{$category->getProductCount()}</span>
                         {/navitem}
                     {/block}
@@ -134,7 +130,7 @@
                                         {col lg=4 xl=3 class='my-lg-4 nav-item'}
                                             {block name='snippets-categories-mega-manufacturers-link'}
                                                 {link href=$mft->cURLFull title=$mft->cSeo class='submenu-headline submenu-headline-toplevel nav-link '}
-                                                    {if $Einstellungen.template.megamenu.show_category_images !== 'N'
+                                                    {if $Einstellungen.template.megamenu.show_manufacturer_images !== 'N'
                                                         && (!$device->isMobile() || $device->isTablet())
                                                         && !empty($mft->getImage(\JTL\Media\Image::SIZE_XS))}
                                                         {image fluid=true lazy=true webp=true

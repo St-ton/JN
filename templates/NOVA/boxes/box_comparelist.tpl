@@ -20,7 +20,7 @@
                 {/block}
                 {block name='boxes-box-comparelist-title'}
                     <div class="productlist-filter-headline align-items-center d-none d-md-flex">
-                        <i class='fa fa-tasks mr-2'></i>
+                        <i class='fas fa-list mr-2'></i>
                         <span>{lang key='compare'}</span>
                     </div>
                 {/block}

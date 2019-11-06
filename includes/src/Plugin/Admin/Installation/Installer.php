@@ -435,38 +435,21 @@ final class Installer
         if (\count($lines) === 0) {
             return InstallCode::SQL_INVALID_FILE_CONTENT;
         }
-        $sqlRegEx = '/xplugin[_]{1}' . $plugin->cPluginID . '[_]{1}[a-zA-Z0-9_]+/';
         foreach ($lines as $sql) {
             $sql = Text::removeNumerousWhitespaces($sql);
             if (\mb_stripos($sql, 'create table') !== false) {
-                // when using "create table if not exists" statement, the table name is at index 5, otherwise at 2
-                $index = (\mb_stripos($sql, /** @lang text */'create table if not exists') !== false) ? 5 : 2;
-                $tmp   = \explode(' ', $sql);
-                $table = \str_replace(["'", '`'], '', $tmp[$index]);
-                \preg_match($sqlRegEx, $table, $hits);
-                if (!isset($hits[0]) || \mb_strlen($hits[0]) !== \mb_strlen($table)) {
-                    return InstallCode::SQL_WRONG_TABLE_NAME_CREATE;
+                $table = $this->getTableName($sql);
+                if ($table === false) {
+                    return InstallCode::SQL_ERROR;
                 }
                 $exists = $this->db->select('tplugincustomtabelle', 'cTabelle', $table);
-                if (!isset($exists->kPluginCustomTabelle) || !$exists->kPluginCustomTabelle) {
+                if ($exists === null) {
                     $customTable           = new stdClass();
                     $customTable->kPlugin  = $plugin->kPlugin;
                     $customTable->cTabelle = $table;
-
                     $this->db->insert('tplugincustomtabelle', $customTable);
                 }
-            } elseif (\mb_stripos($sql, 'drop table') !== false) {
-                // SQL versucht eine Tabelle zu löschen => prüfen ob es sich um eine Plugintabelle handelt
-                // when using "drop table if exists" statement, the table name is at index 5, otherwise at 2
-                $index = (\mb_stripos($sql, /** @lang text */'drop table if exists') !== false) ? 4 : 2;
-                $tmp   = \explode(' ', Text::removeNumerousWhitespaces($sql));
-                $table = \str_replace(["'", '`'], '', $tmp[$index]);
-                \preg_match($sqlRegEx, $table, $hits);
-                if (\mb_strlen($hits[0]) !== \mb_strlen($table)) {
-                    return InstallCode::SQL_WRONG_TABLE_NAME_DELETE;
-                }
             }
-
             $this->db->query($sql, ReturnType::DEFAULT);
             $errNo = $this->db->getErrorCode();
             if ($errNo) {
@@ -482,6 +465,21 @@ final class Installer
 
         return InstallCode::OK;
     }
+
+    /**
+     * extract table name from sql
+     *
+     * @param string $sql
+     * @param string $action
+     * @return string|bool
+     */
+    private function getTableName(string $sql, string $action = 'create table( if not exists)')
+    {
+        \preg_match("/" . $action . "? ([`']?)([a-z0-9_]+)\\2/i", $sql, $matches);
+
+        return \end($matches);
+    }
+
 
     /**
      * Wenn ein Update erfolgreich mit neuer kPlugin in der Datenbank ist

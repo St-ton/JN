@@ -141,8 +141,10 @@
                             }
                             alert.show().removeClass('hidden');
                         }).on('fileuploaded', function(event, data, previewId, index) {
-                            var response = data.response;
+                            var response = data.response,
+                                alert = $('#plugin-upload-error');
                             if (response.status === 'OK') {
+                                alert.hide();
                                 var wasActiveVerfuegbar = $('#verfuegbar').hasClass('active'),
                                     wasActiveFehlerhaft = $('#fehlerhaft').hasClass('active');
                                 $('#verfuegbar').replaceWith(response.html.available);
@@ -156,7 +158,12 @@
                                     $('#verfuegbar').addClass('active show');
                                 }
                             } else {
-                                $('#plugin-upload-error').show().removeClass('hidden');
+                                if (response.error !== null && response.error.length > 0) {
+                                    alert.html(defaultError + ': ' + response.error);
+                                } else {
+                                    alert.html(defaultError);
+                                }
+                                alert.show().removeClass('hidden');
                             }
                             var fi = $('#plugin-install-upload');
                             fi.fileinput('reset');

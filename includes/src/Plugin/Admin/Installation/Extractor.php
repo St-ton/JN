@@ -67,9 +67,9 @@ class Extractor
      */
     public function extractPlugin(string $zipFile): InstallationResponse
     {
-        \set_error_handler([$this, 'handlExtractionErrors']);
+//        \set_error_handler([$this, 'handlExtractionErrors']);
         $this->unzip($zipFile);
-        \restore_error_handler();
+//        \restore_error_handler();
 
         return $this->response;
     }
@@ -107,20 +107,25 @@ class Extractor
             throw new InvalidArgumentException('Cannot find plugin definition in ' . $info);
         }
         $this->manager->mountFilesystem('plgn', Shop::Container()->get(\JTL\Filesystem\Filesystem::class));
-        $ok = $this->manager->createDir('plgn://' . $base . $dirName);
+        $ok = @$this->manager->createDir('plgn://' . $base . $dirName);
+        if ($ok === false) {
+            $this->handlExtractionErrors(0, 'Cannot create ' . $base . $dirName);
+
+            return false;
+        }
         foreach ($this->manager->listContents('root://' . \PFAD_DBES_TMP . $dirName, true) as $item) {
             $source = $item['path'];
             $target = $base . \str_replace(\PFAD_DBES_TMP, '', $source);
             if ($item['type'] === 'dir') {
                 $ok = $ok && ($this->manager->has('plgn://' . $target)
-                        || $this->manager->createDir('plgn://' . $target));
+                        || @$this->manager->createDir('plgn://' . $target));
             } else {
                 try {
                     $ok = $ok && $this->manager->move('root://' . $source, 'plgn://' . $target);
                 } catch (FileExistsException $e) {
                     $ok = $ok
                         && $this->manager->delete('plgn://' . $target)
-                        && $this->manager->move('root://' . $source, 'plgn://' . $target);
+                        && @$this->manager->move('root://' . $source, 'plgn://' . $target);
                 }
             }
         }

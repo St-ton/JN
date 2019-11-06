@@ -600,6 +600,15 @@ function gibStepUnregistriertBestellen(): void
         ReturnType::ARRAY_OF_OBJECTS
     );
     $customerGroupID = Frontend::getCustomerGroup()->getID();
+    if ($Kunde !== null) {
+        $customerAttributes = $Kunde->getCustomerAttributes();
+
+        if ($Kunde->getID() === 0) {
+            $customerAttributes->assign(Frontend::get('customerAttributes') ?? new CustomerAttributes());
+        }
+    } else {
+        $customerAttributes = getKundenattribute($_POST);
+    }
     Shop::Smarty()->assign('untertitel', Shop::Lang()->get('fillUnregForm', 'checkout'))
         ->assign('herkunfte', $origins)
         ->assign('Kunde', $Kunde ?? null)
@@ -608,9 +617,7 @@ function gibStepUnregistriertBestellen(): void
         ->assign('oKundenfeld_arr', new CustomerFields(Shop::getLanguageID()))
         ->assign('nAnzeigeOrt', CHECKBOX_ORT_REGISTRIERUNG)
         ->assign('code_registrieren', false)
-        ->assign('customerAttributes', $Kunde !== null
-            ? $Kunde->getCustomerAttributes()->assign(Frontend::get('customerAttributes'))
-            : getKundenattribute($_POST));
+        ->assign('customerAttributes', $customerAttributes);
 
     executeHook(HOOK_BESTELLVORGANG_PAGE_STEPUNREGISTRIERTBESTELLEN);
 }

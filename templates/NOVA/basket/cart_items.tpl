@@ -237,7 +237,7 @@
                                 {col cols=$cols xl=2 class="ml-auto text-nowrap mb-3 mb-xl-0"}
                                 {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
                                     {if !$oPosition->istKonfigVater()}
-                                        <span class="mr-3 d-inline-flex d-xl-none">{lang key="pricePerUnit" section="productDetails"}:</span>{$oPosition->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
+                                        <span class="mr-3 d-inline-flex d-xl-none font-weight-bold">{lang key="pricePerUnit" section="productDetails"}:</span>{$oPosition->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
                                     {/if}
                                 {/if}
                                 {/col}
@@ -278,6 +278,7 @@
                     {/block}
                     {block name='basket-cart-items-order-items-price-net'}
                         {col cols=$cols xl=2 class="price-col ml-auto text-nowrap text-accent text-xl-right"}
+                            <span class="mr-3 d-inline-flex d-xl-none font-weight-bold">{lang key="price"}:</span>
                             <span class="price_overall text-accent">
                                 {if $oPosition->istKonfigVater()}
                                     {$oPosition->cKonfigpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}

@@ -768,7 +768,7 @@ table caption {
 }
 
 .cart-summary {
-  z-index: $zindex-sticky - 10;
+  z-index: $zindex-dropdown - 1;
 }
 
 #cart-form .total,
@@ -799,17 +799,17 @@ input.form-control[name="wishlist-url"] {
       position: sticky;
       left: 0;
       background: #fff;
-      z-index: $zindex-dropdown;
+      z-index: $zindex-dropdown - 4;
     }
   }
   .table {
     width: 98%;
     thead th {
       &:first-child {
-        z-index: $zindex-dropdown + 1;
+        z-index: $zindex-dropdown - 3;
       }
       &:not(:first-child) {
-        z-index: $zindex-dropdown + 2;
+        z-index: $zindex-dropdown - 2;
       }
       background: #fff;
       vertical-align: top;

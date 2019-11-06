@@ -104,15 +104,6 @@ class Filesystem extends \League\Flysystem\Filesystem
         if (!$this->createDir($location)) {
             throw new Exception(\sprintf('Could not create directory "%s"', $location));
         }
-
-        // Check available disk space
-        // Extracted archive + overwritten files + 10MB buffer
-//        if ($disk_free_size = @\disk_free_space($location)) {
-//            $required_size = $archive_size * 2 + 1024 * 1024 * 10;
-//            if ($disk_free_size && $required_size > $disk_free_size) {
-//                throw new Exception('Not enough disk space available');
-//            }
-//        }
         // Create required directories
         foreach ($directories as $dir) {
             $dir = Path::combine($location, $dir);
@@ -175,7 +166,6 @@ class Filesystem extends \League\Flysystem\Filesystem
                     $manager->copy('root://' . $path, 'zip://' . $path);
                 }
             } catch (FileNotFoundException $e) {
-                echo '<br>########skipped ' . $file->getPathname();
             }
             if (\is_callable($callback)) {
                 $callback($count, $index);

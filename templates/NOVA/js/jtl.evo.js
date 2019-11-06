@@ -635,6 +635,26 @@
                     $.evo.checkout();
                 }, null, true);
             });
+
+            $('#country').on('change', function (e) {
+                var val = $(this).find(':selected').val();
+
+                $.evo.io().call('checkDeliveryCountry', [val], {}, function (error, data) {
+                    var $shippingSwitch = $('#checkout_register_shipping_address');
+
+                    if (data.response) {
+                        $shippingSwitch.removeAttr('disabled');
+                        $shippingSwitch.parent().removeClass('d-none');
+                    } else {
+                        $shippingSwitch.attr('disabled', true);
+                        $shippingSwitch.parent().addClass('d-none');
+                        if ($shippingSwitch.prop('checked')) {
+                            $shippingSwitch.prop('checked', false);
+                            $('#select_shipping_address').collapse('show');
+                        }
+                    }
+                });
+            });
         },
 
         loadContent: function(url, callback, error, animation, wrapper) {

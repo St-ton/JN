@@ -80,6 +80,11 @@ final class Export
     private $gzip;
 
     /**
+     * @var int
+     */
+    private $itemLimit;
+
+    /**
      * Export constructor.
      * @param DbInterface             $db
      * @param LoggerInterface         $logger
@@ -94,6 +99,7 @@ final class Export
         SchemaRendererInterface $schemaRenderer,
         array $config
     ) {
+        $this->itemLimit      = \SITEMAP_ITEMS_LIMIT;
         $this->db             = $db;
         $this->logger         = $logger;
         $this->renderer       = $renderer;
@@ -130,7 +136,6 @@ final class Export
         $markup     = '';
         $this->setSessionData($customerGroupIDs);
         $this->deleteFiles();
-
         \executeHook(\HOOK_SITEMAP_EXPORT_GENERATE, [
             'factories' => &$factories,
             'instance'  => $this
@@ -142,7 +147,7 @@ final class Export
                 if ($item === null) {
                     break;
                 }
-                if ($itemCount > \SITEMAP_ITEMS_LIMIT) {
+                if ($itemCount > $this->itemLimit) {
                     $itemCount = 1;
                     $this->buildFile($fileNumber, $markup);
                     ++$fileNumber;
@@ -281,10 +286,8 @@ final class Export
         if ($timeTotal <= 0 || \count($urlCounts) === 0) {
             return false;
         }
-        $totalCount = 0;
-        foreach ($urlCounts as $count) {
-            $totalCount += $count;
-        }
+        $totalCount = \array_sum($urlCounts);
+
         $report                     = new stdClass();
         $report->nTotalURL          = $totalCount;
         $report->fVerarbeitungszeit = \number_format($timeTotal, 2);
@@ -419,5 +422,24 @@ final class Export
     public function setBaseImageURL(string $baseImageURL): void
     {
         $this->baseImageURL = $baseImageURL;
+    }
+
+    /**
+     * @return int
+     */
+    public function getItemLimit(): int
+    {
+        return $this->itemLimit;
+    }
+
+    /**
+     * @param int $itemLimit
+     * @return Export
+     */
+    public function setItemLimit(int $itemLimit): Export
+    {
+        $this->itemLimit = $itemLimit;
+
+        return $this;
     }
 }

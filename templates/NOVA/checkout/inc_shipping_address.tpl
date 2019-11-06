@@ -4,14 +4,16 @@
  *}
 {block name='checkout-inc-shipping-address'}
     {assign var=fehlendeAngabenShipping value=$fehlendeAngaben.shippingAddress|default:null}
+    {assign var=showShippingAddress value=(isset($Lieferadresse) || !empty($kLieferadresse) || isset($forceDeliveryAddress))}
     {row}
         {col cols=12}
             {block name='checkout-inc-shipping-address-checkbox-equals'}
                 <div class="form-group checkbox control-toggle">
                     {input type="hidden" name="shipping_address" value="1"}
                     {checkbox id="checkout_register_shipping_address"
-                    name="shipping_address" value="0" checked=(!isset($Lieferadresse) && empty($kLieferadresse))
-                    data=["toggle"=>"collapse", "target"=>"#select_shipping_address"]}
+                        name="shipping_address" value="0" checked=!$showShippingAddress
+                        data=["toggle"=>"collapse", "target"=>"#select_shipping_address"]
+                        class="{if isset($forceDeliveryAddress)}d-none{/if}"}
                     {lang key='shippingAdressEqualBillingAdress' section='account data'}
                     {/checkbox}
                 </div>
@@ -19,7 +21,7 @@
         {/col}
         {col cols=12}
             {block name='checkout-inc-shipping-address-shipping-address'}
-            <div id="select_shipping_address" class="collapse collapse-non-validate{if isset($Lieferadresse) || !empty($kLieferadresse)} show{/if}" aria-expanded="{if isset($Lieferadresse) || !empty($kLieferadresse)}true{else}false{/if}">
+            <div id="select_shipping_address" class="collapse collapse-non-validate{if $showShippingAddress} show{/if}" aria-expanded="{if $showShippingAddress}true{else}false{/if}">
                 {block name='checkout-inc-shipping-address-shipping-address-body'}
                     {if !empty($smarty.session.Kunde->kKunde) && isset($Lieferadressen) && $Lieferadressen|count > 0}
                         {row}

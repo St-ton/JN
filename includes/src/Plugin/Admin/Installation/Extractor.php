@@ -121,10 +121,10 @@ class Extractor
                         || @$this->manager->createDir('plgn://' . $target));
             } else {
                 try {
-                    $ok = $ok && $this->manager->move('root://' . $source, 'plgn://' . $target);
+                    $ok = $ok && @$this->manager->move('root://' . $source, 'plgn://' . $target);
                 } catch (FileExistsException $e) {
                     $ok = $ok
-                        && $this->manager->delete('plgn://' . $target)
+                        && @$this->manager->delete('plgn://' . $target)
                         && @$this->manager->move('root://' . $source, 'plgn://' . $target);
                 }
             }
@@ -135,8 +135,7 @@ class Extractor
 
             return true;
         }
-        $this->response->setStatus(InstallationResponse::STATUS_FAILED);
-        $this->response->addMessage('Cannot move to ' . $base . $dirName);
+        $this->handlExtractionErrors(0, 'Cannot move to ' . $base . $dirName);
 
         return false;
     }
@@ -150,8 +149,7 @@ class Extractor
         $dirName = '';
         $zip     = new ZipArchive();
         if (!$zip->open($zipFile) || $zip->numFiles === 0) {
-            $this->response->setStatus(InstallationResponse::STATUS_FAILED);
-            $this->response->addMessage('Cannot open archive');
+            $this->handlExtractionErrors(0, 'Cannot open archive');
 
             return false;
         }
@@ -159,8 +157,7 @@ class Extractor
             if ($i === 0) {
                 $dirName = $zip->getNameIndex($i);
                 if (\mb_strpos($dirName, '.') !== false) {
-                    $this->response->setStatus(InstallationResponse::STATUS_FAILED);
-                    $this->response->addMessage('Invalid archive');
+                    $this->handlExtractionErrors(0, 'Invalid archive');
 
                     return false;
                 }

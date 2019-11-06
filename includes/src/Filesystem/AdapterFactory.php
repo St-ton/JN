@@ -6,7 +6,6 @@
 
 namespace JTL\Filesystem;
 
-use JTL\Shop;
 use League\Flysystem\Adapter\Ftp;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\AdapterInterface;
@@ -98,13 +97,14 @@ class AdapterFactory
     public function getSftpConfig(): array
     {
         return [
-            'host'       => $this->config['sftp_hostname'],
-            'port'       => $this->config['sftp_port'],
-            'username'   => $this->config['sftp_user'],
-            'password'   => $this->config['sftp_pass'],
-            'privateKey' => $this->config['sftp_privkey'],
-            'root'       => \rtrim($this->config['sftp_path'], '/') . '/',
-            'timeout'    => $this->config['fs_timeout'],
+            'host'          => $this->config['sftp_hostname'],
+            'port'          => $this->config['sftp_port'],
+            'username'      => $this->config['sftp_user'],
+            'password'      => $this->config['sftp_pass'],
+            'privateKey'    => $this->config['sftp_privkey'],
+            'root'          => \rtrim($this->config['sftp_path'], '/') . '/',
+            'timeout'       => $this->config['fs_timeout'],
+            'directoryPerm' => 0755
         ];
     }
 }

@@ -18,6 +18,11 @@ abstract class AbstractSchemaRenderer implements SchemaRendererInterface
     protected $config;
 
     /**
+     * @var string
+     */
+    protected $xmlHeader = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+
+    /**
      * @return array
      */
     public function getConfig(): array
@@ -31,5 +36,21 @@ abstract class AbstractSchemaRenderer implements SchemaRendererInterface
     public function setConfig(array $config): void
     {
         $this->config = $config;
+    }
+
+    /**
+     * @return string
+     */
+    public function getXmlHeader(): string
+    {
+        return $this->xmlHeader;
+    }
+
+    /**
+     * @param string $xmlHeader
+     */
+    public function setXmlHeader(string $xmlHeader): void
+    {
+        $this->xmlHeader = $xmlHeader;
     }
 }

@@ -122,7 +122,7 @@
 
                 var options = {
                     lazyLoad: 'ondemand',
-                    infinite: false,
+                    infinite: true,
                     dots:     false,
                     arrows:   false,
                     asNavFor: '#gallery_preview',

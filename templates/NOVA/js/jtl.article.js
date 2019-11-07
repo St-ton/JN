@@ -118,6 +118,7 @@
                 var maxHeight= Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
                 var w = Math.min(maxWidth,  main_img_w);
                 var otherElemHeight = 0;
+                var previewSlidesToShow = 5;
 
                 var options = {
                     lazyLoad: 'ondemand',
@@ -137,7 +138,7 @@
 
                 var options_preview = {
                     lazyLoad:       'progressive',
-                    slidesToShow:   5,
+                    slidesToShow:   previewSlidesToShow,
                     slidesToScroll: 1,
                     asNavFor:       '#gallery',
                     dots:           false,
@@ -147,12 +148,14 @@
 
                 if (current != undefined && current > 0) {
                     options['initialSlide'] = current;
-                    options_preview['initialSlide'] = current;
+                    if ($('#gallery_preview img').length > previewSlidesToShow) {
+                        options_preview['initialSlide'] = current;
+                    }
                 }
 
                 if (fullscreen) {
                     // options['adaptiveHeight'] = true;
-                    options_preview['slidesToShow'] = 6;
+                    options_preview['slidesToShow'] = previewSlidesToShow + 1;
                     options_preview['responsive'] =  [
                         {
                             breakpoint: 768,

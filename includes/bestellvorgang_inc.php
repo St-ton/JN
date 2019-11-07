@@ -374,8 +374,10 @@ function pruefeRechnungsadresseStep($get): void
             unset($_SESSION['checkout.fehlendeAngaben']);
         }
         if (isset($_SESSION['checkout.cPost_arr'])) {
-            $Kunde = getKundendaten($_SESSION['checkout.cPost_arr'], 0, 0);
-            $Kunde->getCustomerAttributes()->assign(getKundenattribute($_SESSION['checkout.cPost_arr']));
+            $Kunde              = getKundendaten($_SESSION['checkout.cPost_arr'], 0, 0);
+            $customerAttributes = getKundenattribute($_SESSION['checkout.cPost_arr']);
+            $Kunde->getCustomerAttributes()->assign($customerAttributes);
+            Frontend::set('customerAttributes', $customerAttributes);
             Shop::Smarty()->assign('Kunde', $Kunde)
                 ->assign('cPost_var', $_SESSION['checkout.cPost_arr']);
 

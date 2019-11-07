@@ -113,12 +113,13 @@
              * product slider and zoom (details)
              */
             function slickinit(fullscreen, current) {
-                var main_img_w  = $('#gallery_wrapper').width();
-                var maxWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-                var maxHeight= Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-                var w = Math.min(maxWidth,  main_img_w);
-                var otherElemHeight = 0;
-                var previewSlidesToShow = 5;
+                var main_img_w            = $('#gallery_wrapper').width();
+                var maxWidth              = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+                var maxHeight             = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+                var w                     = Math.min(maxWidth,  main_img_w);
+                var otherElemHeight       = 0;
+                var previewSlidesToShow   = 5;
+                var $galleryPreviewImages = $('#gallery_preview img');
 
                 var options = {
                     lazyLoad: 'ondemand',
@@ -148,7 +149,8 @@
 
                 if (current != undefined && current > 0) {
                     options['initialSlide'] = current;
-                    if ($('#gallery_preview img').length > previewSlidesToShow) {
+                    if ((!fullscreen && $galleryPreviewImages.length > previewSlidesToShow)
+                        || (fullscreen && $galleryPreviewImages.length > previewSlidesToShow + 1)) {
                         options_preview['initialSlide'] = current;
                     }
                 }

@@ -56,17 +56,15 @@ final class Product extends AbstractFactory
                     AND tseo.kSprache IN (" . \implode(',', $languageIDs) . ')
                 LEFT JOIN tartikelsichtbarkeit 
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = :kGrpID
+                    AND tartikelsichtbarkeit.kKundengruppe = :cgid
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL' . $andWhere . '
                 ORDER BY tartikel.kArtikel',
-            ['kGrpID' => $defaultCustomerGroupID],
+            ['cgid' => $defaultCustomerGroupID],
             ReturnType::QUERYSINGLE
         );
 
         while (($product = $res->fetch(PDO::FETCH_OBJ)) !== false) {
-            $product->langID   = (int)$product->langID;
-            $product->kArtikel = (int)$product->kArtikel;
-            $item              = new Item($this->config, $this->baseURL, $this->baseImageURL);
+            $item = new Item($this->config, $this->baseURL, $this->baseImageURL);
             $item->generateData($product, $languages);
             yield $item;
         }

@@ -82,7 +82,7 @@ final class Export
     /**
      * @var int
      */
-    private $itemLimit;
+    private $itemLimit = \SITEMAP_ITEMS_LIMIT;
 
     /**
      * Export constructor.
@@ -99,7 +99,6 @@ final class Export
         SchemaRendererInterface $schemaRenderer,
         array $config
     ) {
-        $this->itemLimit      = \SITEMAP_ITEMS_LIMIT;
         $this->db             = $db;
         $this->logger         = $logger;
         $this->renderer       = $renderer;

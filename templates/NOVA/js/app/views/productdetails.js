@@ -9,7 +9,13 @@ const $document			 = $(document)
 const $productImages	 = $(productImages)
 
 $document.on('click', productImages, function () {
-    if (isMobile) {
+    if (isMobile()) {
         $(imageModal).modal('show');
+        $(imageModal).on('shown.bs.modal', () => {
+            $(imageModal + ' img[data-index="' + $(this).data('index') + '"]')[0].scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+        });
     }
 });

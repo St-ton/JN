@@ -65,7 +65,7 @@
                             {/if}
 
                             {block name='blog-details-comments-link'}
-                                {link class="no-deco" href="#comments" title="{lang key='readComments' section='news'}"}
+                                {link class="no-deco text-nowrap" href="#comments" title="{lang key='readComments' section='news'}"}
                                     /
                                     <span class="fas fa-comments"></span>
                                     <span class="sr-only">
@@ -181,7 +181,7 @@
                                                 </div>
                                             {/block}
                                         {/col}
-                                        {col cols="6" class="ml-auto ml-auto"}
+                                        {col cols="12" md=6 class="ml-auto"}
                                             {block name='blog-details-include-pagination'}
                                                 {include file='snippets/pagination.tpl' oPagination=$oPagiComments cThisUrl=$articleURL cParam_arr=$cParam_arr}
                                             {/block}

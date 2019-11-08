@@ -144,6 +144,7 @@ function kundeSpeichern(array $post)
                 Campaign::setCampaignAction(KAMPAGNE_DEF_ANMELDUNG, $knd->kKunde, 1.0); // Anmeldung
             }
             // Insert Kundenattribute
+            $customerAttributes->setCustomerID((int)$knd->kKunde);
             $customerAttributes->save();
             if ($conf['global']['global_kundenkonto_aktiv'] !== 'A') {
                 $_SESSION['Kunde'] = new Customer($knd->kKunde);

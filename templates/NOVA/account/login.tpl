@@ -80,10 +80,10 @@
                                 {/formgroup}
                             {/block}
                             {block name='account-login-form-submit-register'}
-                               {link class="register" href="{get_static_route id='registrieren.php'}"}<span class="fa fa-pencil"></span> {lang key='newHere'} {lang key='registerNow'}{/link}
+                               {link class="register mb-2 d-block d-md-inline-block" href="{get_static_route id='registrieren.php'}"}<span class="fa fa-pencil"></span> {lang key='newHere'} {lang key='registerNow'}{/link}
                             {/block}
                             {block name='account-login-form-submit-resetpw'}
-                               {link class="resetpw ml-3" href="{get_static_route id='pass.php'}"}<span class="fa fa-question-circle"></span> {lang key='forgotPassword'}{/link}
+                               {link class="resetpw ml-0 ml-md-3" href="{get_static_route id='pass.php'}"}<span class="fa fa-question-circle"></span> {lang key='forgotPassword'}{/link}
                             {/block}
                         {/block}
                     </fieldset>

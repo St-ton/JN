@@ -105,7 +105,12 @@
                                                                 data-ref="{$Variationswert->oVariationsKombi->kArtikel}"
                                                            {/if}>
                                                         {block name='productdetails-variation-radio-include-variation-value'}
-                                                            {include file="productdetails/variation_value.tpl"}{if $Variationswert->notExists}<span class='badge badge-danger badge-not-available'> {lang key='notAvailableInSelection'}</span>{elseif !$Variationswert->inStock}<span class='badge badge-danger badge-not-available'>{lang key='ampelRot'}</span>{/if}
+                                                            {include file="productdetails/variation_value.tpl"}
+                                                            {if $Variationswert->notExists}
+                                                                {badge class='badge-not-available' variant='danger'}{lang key='notAvailableInSelection'}{/badge}
+                                                            {elseif !$Variationswert->inStock}
+                                                                {badge class='badge-not-available' variant='danger'}{lang key='ampelRot'}{/badge}
+                                                            {/if}
                                                         {/block}
                                                     </label>
                                                 </div>

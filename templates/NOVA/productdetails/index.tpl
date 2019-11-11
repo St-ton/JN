@@ -35,10 +35,6 @@
         {/if}
     {/block}
 
-    {block name='productdetails-include-photoswipemodal'}
-            {include file='productdetails/photoswipemodal.tpl'}
-    {/block}
-
     {block name='productdetails-include-footer'}
         {if !isset($bAjaxRequest) || !$bAjaxRequest}
             {include file='layout/footer.tpl'}

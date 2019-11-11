@@ -23,32 +23,45 @@
              */
 
             $('.evo-box-slider:not(.slick-initialized)').slick({
-                //dots: true,
-                arrows: true,
-                lazyLoad: 'ondemand',
-                slidesToShow: 1
-            });
-
-            $('.evo-slider-half:not(.slick-initialized)').slick({
-                //dots: true,
-                arrows: true,
-                lazyLoad: 'ondemand',
-                slidesToShow: 3,
+                arrows:         false,
+                lazyLoad:       'ondemand',
+                slidesToShow:   2,
+                slidesToScroll: 2,
+                mobileFirst:    true,
                 responsive: [
                     {
                         breakpoint: 992, // md
                         settings: {
+                            arrows: true,
+                        }
+                    },
+                    {
+                        breakpoint: 1200, // lg
+                        settings: {
                             slidesToShow: 1,
-                            centerMode: true,
-                            centerPadding: '60px',
+                            slidesToScroll: 1,
+                            arrows: true,
+                        }
+                    }
+                ]
+            });
+
+            $('.evo-slider-half:not(.slick-initialized)').slick({
+                //dots: true,
+                arrows:       true,
+                lazyLoad:     'ondemand',
+                slidesToShow: 3,
+                responsive:   [
+                    {
+                        breakpoint: 992, // md
+                        settings: {
+                            slidesToShow: 1,
                         }
                     },
                     {
                         breakpoint: 1200, // lg
                         settings: {
                             slidesToShow: 2,
-                            centerMode: true,
-                            centerPadding: '60px',
                         }
                     }
                 ]
@@ -93,41 +106,38 @@
              * responsive slider (content)
              */
             var evoSliderOptions = {
-                //dots: true,
-                arrows: true,
-                lazyLoad: 'ondemand',
-                slidesToShow: 5,
-                slidesToScroll: 1,
+                rows:           0,
+                arrows:         false,
+                lazyLoad:       'ondemand',
+                slidesToShow:   2,
+                slidesToScroll: 2,
+                mobileFirst:    true,
                 responsive:     [
                     {
                         breakpoint: 768, // xs
                         settings: {
-                            slidesToShow: 1
+                            slidesToShow: 3,
+                            slidesToScroll: 1
                         }
                     },
                     {
                         breakpoint: 992, // sm
                         settings: {
-                            slidesToShow:2
+                            slidesToShow:5,
+                            arrows: true,
+                            slidesToScroll: 1
                         }
                     },
                     {
                         breakpoint: 1300,
                         settings: {
-                            slidesToShow:3
+                            slidesToShow:7,
+                            arrows: true,
+                            slidesToScroll: 1
                         }
                     }
                 ]
             };
-            evoSliderOptions.slidesToShow = 2;
-            // initialize "pushed-success"-slider for detailed customization
-            $('#pushed-success .evo-slider:not(.slick-initialized)').slick(evoSliderOptions);
-
-            if ($('#content').hasClass('col-lg-9')) {
-                evoSliderOptions.slidesToShow = 4;
-            } else {
-                evoSliderOptions.slidesToShow = 5;
-            }
             $('.evo-slider:not(.slick-initialized)').slick(evoSliderOptions);
 
             // product list image slider
@@ -138,28 +148,32 @@
                 arrows:   true
             });
             var optionsNewsSlider = {
-                slidesToShow:   4,
+                rows:           0,
+                slidesToShow:   1,
                 slidesToScroll: 1,
-                arrows:         true,
+                arrows:         false,
                 infinite:       false,
-                lazyLoad: 'ondemand',
+                lazyLoad:       'ondemand',
+                mobileFirst:    true,
                 responsive:     [
                     {
                         breakpoint: 768, // xs
                         settings: {
-                            slidesToShow: 1
+                            slidesToShow: 2
                         }
                     },
                     {
                         breakpoint: 992, // sm
                         settings: {
-                            slidesToShow:2
+                            slidesToShow:3,
+                            arrows: true
                         }
                     },
                     {
                         breakpoint: 1300,
                         settings: {
-                            slidesToShow:3
+                            slidesToShow:4,
+                            arrows: true
                         }
                     }
                 ]
@@ -620,6 +634,26 @@
                 $.evo.loadContent(url, function() {
                     $.evo.checkout();
                 }, null, true);
+            });
+
+            $('#country').on('change', function (e) {
+                var val = $(this).find(':selected').val();
+
+                $.evo.io().call('checkDeliveryCountry', [val], {}, function (error, data) {
+                    var $shippingSwitch = $('#checkout_register_shipping_address');
+
+                    if (data.response) {
+                        $shippingSwitch.removeAttr('disabled');
+                        $shippingSwitch.parent().removeClass('d-none');
+                    } else {
+                        $shippingSwitch.attr('disabled', true);
+                        $shippingSwitch.parent().addClass('d-none');
+                        if ($shippingSwitch.prop('checked')) {
+                            $shippingSwitch.prop('checked', false);
+                            $('#select_shipping_address').collapse('show');
+                        }
+                    }
+                });
             });
         },
 

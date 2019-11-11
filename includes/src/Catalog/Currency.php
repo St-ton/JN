@@ -109,6 +109,25 @@ class Currency
     }
 
     /**
+     * @param string $iso
+     * @return static
+     */
+    public static function fromISO(string $iso): self
+    {
+        $data     = Shop::Container()->getDB()->select('twaehrung', 'cISO', $iso);
+        $instance = new static();
+
+        if ($data !== null) {
+            $data->kWaehrung = (int)$data->kWaehrung;
+            $instance->extract($data);
+        } else {
+            $instance->getDefault();
+        }
+
+        return $instance;
+    }
+
+    /**
      * @return int|null
      */
     public function getID(): ?int

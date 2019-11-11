@@ -1948,16 +1948,24 @@ final class Shop
             return null;
         }
 
-        $oldID = \session_id();
-        \session_write_close();
-        \session_id($_COOKIE['eSIdAdm']);
-        \session_start();
-        $adminToken = $_SESSION['jtl_token'];
-        \session_write_close();
-        \session_id($oldID);
-        \session_start();
+        if (isset($_COOKIE['eSIdAdm'])) {
+            if (\session_name() !== 'eSIdAdm') {
+                $oldID = \session_id();
+                \session_write_close();
+                \session_id($_COOKIE['eSIdAdm']);
+                \session_start();
+                $adminToken = $_SESSION['jtl_token'];
+                \session_write_close();
+                \session_id($oldID);
+                new Session\Frontend();
+            } else {
+                $adminToken = $_SESSION['jtl_token'];
+            }
 
-        return $adminToken;
+            return $adminToken;
+        }
+
+        return null;
     }
 
     /**

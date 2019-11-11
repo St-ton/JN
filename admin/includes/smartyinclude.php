@@ -151,9 +151,15 @@ if (!$hasPendingUpdates) {
                                 && Request::verifyGPCDataInt('s') === (int)$urlParts['query']['s']
                             )
                         ) {
-                            $currentToplevel    = $mainGroup->key;
-                            $currentSecondLevel = $linkGruppe->key;
-                            $currentThirdLevel  = $link->key;
+                            if (!((Request::verifyGPDataString('group') === ''
+                                    && isset($urlParts['fragment']))
+                                || (Request::verifyGPDataString('group') !== ''
+                                    && strpos($link->cURL, Request::verifyGPDataString('group')) === false)
+                            )) {
+                                $currentToplevel    = $mainGroup->key;
+                                $currentSecondLevel = $linkGruppe->key;
+                                $currentThirdLevel  = $link->key;
+                            }
                         }
 
                         $linkGruppe->oLink_arr[] = $link;

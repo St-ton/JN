@@ -81,7 +81,7 @@
                                         {if !empty($Artikel->cBarcode)}
                                             <li>
                                                 <span class="font-weight-bold">{lang key='ean'}:</span>
-                                                <span itemprop="{if $Artikel->cBarcode|count_characters === 8}gtin8{else}gtin{/if}">{$Artikel->cBarcode}</span>
+                                                <span itemprop="{if $Artikel->cBarcode|count_characters === 8}gtin8{else}gtin13{/if}">{$Artikel->cBarcode}</span>
                                             </li>
                                         {/if}
                                         {if !empty($Artikel->cISBN)

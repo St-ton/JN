@@ -21,7 +21,7 @@ $adminMenu = [
                     'rights' => 'MODULE_NEWSLETTER_VIEW',
                     'section' => CONF_NEWSLETTER,
                 ],
-                __('News')                    => (object)[
+                __('Blog posts')                    => (object)[
                     'link'   => 'news.php',
                     'rights' => 'CONTENT_NEWS_SYSTEM_VIEW',
                     'section' => CONF_NEWS,
@@ -54,7 +54,7 @@ $adminMenu = [
                     'link'   => 'kampagne.php#globalestats',
                     'rights' => 'STATS_CAMPAIGN_VIEW',
                 ],
-                __('Saved baskets')          => (object)[
+                __('Baskets')          => (object)[
                     'link'   => 'warenkorbpers.php',
                     'rights' => 'MODULE_SAVED_BASKETS_VIEW',
                 ],
@@ -70,11 +70,11 @@ $adminMenu = [
                     'link'   => 'statistik.php?s=2',
                     'rights' => 'STATS_VISITOR_LOCATION_VIEW',
                 ],
-                __('Queries')         => (object)[
+                __('Search queries')         => (object)[
                     'link'   => 'livesuche.php',
                     'rights' => 'MODULE_LIVESEARCH_VIEW',
                 ],
-                __('Search queries')    => (object)[
+                __('Search query activation')    => (object)[
                     'link'   => 'freischalten.php#livesearch',
                     'rights' => 'UNLOCK_CENTRAL_VIEW',
                 ],
@@ -116,6 +116,11 @@ $adminMenu = [
                     'rights' => 'SETTINGS_ARTICLEDETAILS_VIEW',
                     'section' => CONF_ARTIKELDETAILS,
                 ],
+                __('Question on item')     => (object)[
+                    'link'   => 'einstellungen.php?kSektion=' . CONF_ARTIKELDETAILS . '#configgroup_5_product_question',
+                    'rights' => 'SETTINGS_ARTICLEDETAILS_VIEW',
+                    'section' => CONF_ARTIKELDETAILS,
+                ],
                 __('Wish list')               => (object)[
                     'link'   => 'wunschliste.php',
                     'rights' => 'MODULE_WISHLIST_VIEW',
@@ -136,7 +141,7 @@ $adminMenu = [
                     'section' => CONF_KUNDEN,
                 ],
             ],
-            __('Default views')         => [
+            __('Default elements')         => [
                 __('Shop logo')     => (object)[
                     'link'   => 'shoplogouploader.php',
                     'rights' => 'ORDER_AGB_WRB_VIEW',
@@ -151,7 +156,7 @@ $adminMenu = [
                     'rights' => 'MODULE_PRICECHART_VIEW',
                     'section' => CONF_PREISVERLAUF,
                 ],
-                __('Item overlays') => (object)[
+                __('Item sticker') => (object)[
                     'link'   => 'suchspecialoverlay.php',
                     'rights' => 'ORDER_AGB_WRB_VIEW',
                 ],
@@ -178,7 +183,7 @@ $adminMenu = [
                     'rights' => 'SETTINGS_BASKET_VIEW',
                     'section' => CONF_KAUFABWICKLUNG,
                 ],
-                __('Customer reviews') => (object)[
+                __('Item reviews') => (object)[
                     'link'   => 'bewertung.php',
                     'rights' => 'MODULE_VOTESYSTEM_VIEW',
                     'section' => CONF_BEWERTUNG,
@@ -193,11 +198,11 @@ $adminMenu = [
                     'link'   => 'agbwrb.php',
                     'rights' => 'ORDER_AGB_WRB_VIEW',
                 ],
-                __('Pages')               => (object)[
+                __('Own pages')               => (object)[
                     'link'   => 'links.php',
                     'rights' => 'CONTENT_PAGE_VIEW',
                 ],
-                __('Custom form fields')       => (object)[
+                __('Customer fields')       => (object)[
                     'link'   => 'kundenfeld.php',
                     'rights' => 'ORDER_CUSTOMERFIELDS_VIEW',
                     'section' => CONF_KUNDENFELD,
@@ -264,7 +269,7 @@ $adminMenu = [
                 'rights' => 'UNLOCK_CENTRAL_VIEW',
             ],
             __('Import') => [
-                __('Newsletter recipient') => (object)[
+                __('Newsletter recipients') => (object)[
                     'link'   => 'newsletterimport.php',
                     'rights' => 'IMPORT_NEWSLETTER_RECEIVER_VIEW',
                 ],

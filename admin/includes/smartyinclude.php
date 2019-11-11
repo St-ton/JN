@@ -97,13 +97,13 @@ if (!$hasPendingUpdates) {
                 $thirdKey = 0;
 
                 if (is_object($secondEntry)) {
-                    if (!$oAccount->permission($secondEntry->rights)) {
+                    if (!$oAccount->permission($secondEntry->permissions)) {
                         continue;
                     }
                     $linkGruppe->oLink_arr = (object)[
                         'cLinkname' => $secondName,
                         'cURL'      => $secondEntry->link,
-                        'cRecht'    => $secondEntry->rights,
+                        'cRecht'    => $secondEntry->permissions,
                     ];
                     if ($linkGruppe->oLink_arr->cURL === $curScriptFileName) {
                         $currentToplevel    = $mainGroup->key;
@@ -122,7 +122,7 @@ if (!$hasPendingUpdates) {
                             $link = (object)[
                                 'cLinkname' => $thirdName,
                                 'cURL'      => $thirdEntry->link,
-                                'cRecht'    => $thirdEntry->rights,
+                                'cRecht'    => $thirdEntry->permissions,
                                 'key'       => "$rootKey.$secondKey.$thirdKey",
                             ];
                         } else {

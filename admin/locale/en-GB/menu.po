@@ -240,7 +240,7 @@ msgid "Start pages"
 msgstr "Start pages"
 
 msgid "Coupon statistics"
-msgstr "Coupon reports"
+msgstr "Coupons"
 
 # Top Menu
 msgid "Import / Export"

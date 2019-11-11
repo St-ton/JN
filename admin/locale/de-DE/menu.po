@@ -253,7 +253,7 @@ msgid "Start pages"
 msgstr "Einstiegsseiten"
 
 msgid "Coupon statistics"
-msgstr "Coupon-Statistiken"
+msgstr "Coupons"
 
 # Top Menu
 msgid "Import / Export"

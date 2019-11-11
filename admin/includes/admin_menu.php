@@ -122,14 +122,14 @@ $adminMenu = [
                     'permissions' => 'SETTINGS_ARTICLEDETAILS_VIEW',
                     'section' => CONF_ARTIKELDETAILS,
                 ],
-                __('Wish list')               => (object)[
-                    'link'   => 'wunschliste.php',
-                    'permissions' => 'MODULE_WISHLIST_VIEW',
-                ],
                 __('Comparison list')         => (object)[
                     'link'   => 'vergleichsliste.php',
                     'permissions' => 'MODULE_COMPARELIST_VIEW',
                     'section' => CONF_VERGLEICHSLISTE,
+                ],
+                __('Wish list')               => (object)[
+                    'link'   => 'wunschliste.php',
+                    'permissions' => 'MODULE_WISHLIST_VIEW',
                 ],
                 __('Contact form')             => (object)[
                     'link'   => 'kontaktformular.php',
@@ -303,7 +303,7 @@ $adminMenu = [
                     'permissions' => 'EXPORT_SCHEDULE_VIEW',
                 ],
             ],
-            __('Payment') => [
+            __('Payments') => [
                 __('Method of payment') => (object)[
                     'link'   => 'zahlungsarten.php',
                     'permissions' => 'ORDER_PAYMENT_VIEW',

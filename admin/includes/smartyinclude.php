@@ -44,7 +44,7 @@ if (!$hasPendingUpdates) {
             WHERE cPluginID = 'jtl_search'",
         ReturnType::SINGLE_OBJECT
     );
-    $curScriptFileName = basename($_SERVER['PHP_SELF']);
+    $curScriptFileNameWithReuqest = basename($_SERVER['REQUEST_URI']);
     foreach ($adminMenu as $rootName => $rootEntry) {
         $mainGroup = (object)[
             'cName'           => $rootName,
@@ -105,7 +105,7 @@ if (!$hasPendingUpdates) {
                         'cURL'      => $secondEntry->link,
                         'cRecht'    => $secondEntry->permissions,
                     ];
-                    if ($linkGruppe->oLink_arr->cURL === $curScriptFileName) {
+                    if ($linkGruppe->oLink_arr->cURL === $curScriptFileNameWithReuqest) {
                         $currentToplevel    = $mainGroup->key;
                         $currentSecondLevel = $linkGruppe->key;
                     }
@@ -140,26 +140,10 @@ if (!$hasPendingUpdates) {
                             mb_parse_str($urlParts['query'], $urlParts['query']);
                         }
 
-                        if ($link->cURL === $curScriptFileName
-                            || ($curScriptFileName === 'einstellungen.php'
-                                && $urlParts['basename'] === 'einstellungen.php'
-                                && Request::verifyGPCDataInt('kSektion') === (int)$urlParts['query']['kSektion']
-                            )
-                            || ($curScriptFileName === 'statistik.php'
-                                && $urlParts['basename'] === 'statistik.php'
-                                && isset($urlParts['query']['s'])
-                                && Request::verifyGPCDataInt('s') === (int)$urlParts['query']['s']
-                            )
-                        ) {
-                            if (!((Request::verifyGPDataString('group') === ''
-                                    && isset($urlParts['fragment']))
-                                || (Request::verifyGPDataString('group') !== ''
-                                    && strpos($link->cURL, Request::verifyGPDataString('group')) === false)
-                            )) {
-                                $currentToplevel    = $mainGroup->key;
-                                $currentSecondLevel = $linkGruppe->key;
-                                $currentThirdLevel  = $link->key;
-                            }
+                        if (explode('#', $link->cURL)[0] === $curScriptFileNameWithReuqest) {
+                            $currentToplevel    = $mainGroup->key;
+                            $currentSecondLevel = $linkGruppe->key;
+                            $currentThirdLevel  = $link->key;
                         }
 
                         $linkGruppe->oLink_arr[] = $link;

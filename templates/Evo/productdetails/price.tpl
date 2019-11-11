@@ -22,7 +22,7 @@
         {/block}
         <strong class="price text-nowrap{if isset($Artikel->Preise->Sonderpreis_aktiv) && $Artikel->Preise->Sonderpreis_aktiv} special-price{/if}">
             {block name='price-range'}
-                <span{if $Artikel->Preise->oPriceRange->isRange()} itemprop="priceSpecification" itemscope itemtype="http://schema.org/UnitPriceSpecification"{/if}>
+                <span{if $Artikel->Preise->oPriceRange->isRange() && $tplscope !== 'box'} itemprop="priceSpecification" itemscope itemtype="http://schema.org/UnitPriceSpecification"{/if}>
                 {if $tplscope !== 'detail' && $Artikel->Preise->oPriceRange->isRange()}
                     {if $Artikel->Preise->oPriceRange->rangeWidth() <= $Einstellungen.artikeluebersicht.articleoverview_pricerange_width}
                         {$Artikel->Preise->oPriceRange->getLocalized($NettoPreise)}
@@ -32,7 +32,7 @@
                 {else}
                     {if $Artikel->Preise->oPriceRange->isRange() && ($Artikel->nVariationsAufpreisVorhanden == 1 || $Artikel->bHasKonfig) && $Artikel->kVaterArtikel == 0}{$Artikel->Preise->oPriceRange->getMinLocalized($NettoPreise)}{else}{$Artikel->Preise->cVKLocalized[$NettoPreise]}{/if}
                 {/if}
-                {if $Artikel->Preise->oPriceRange->isRange()}
+                {if $Artikel->Preise->oPriceRange->isRange() && $tplscope !== 'box'}
                     <meta itemprop="priceCurrency" content="{$smarty.session.Waehrung->getName()}">
                     <meta itemprop="minPrice" content="{$Artikel->Preise->oPriceRange->minBruttoPrice}">
                     <meta itemprop="maxPrice" content="{$Artikel->Preise->oPriceRange->maxBruttoPrice}">
@@ -40,11 +40,14 @@
                 </span>{if $tplscope !== 'detail'} <span class="footnote-reference">*</span>{/if}
             {/block}
             {block name='price-snippets'}
-                <meta itemprop="price" content="{if $Artikel->Preise->oPriceRange->isRange()}{$Artikel->Preise->oPriceRange->minBruttoPrice}{else}{$Artikel->Preise->fVKBrutto}{/if}">
-                <meta itemprop="priceCurrency" content="{$smarty.session.Waehrung->getName()}">
-                {if $Artikel->Preise->Sonderpreis_aktiv && $Artikel->dSonderpreisStart_en !== null && $Artikel->dSonderpreisEnde_en !== null}
-                    <meta itemprop="validFrom" content="{$Artikel->dSonderpreisStart_en}">
-                    <meta itemprop="validThrough" content="{$Artikel->dSonderpreisEnde_en}">
+                {if $tplscope !== 'box'}
+                    <meta itemprop="price" content="{if $Artikel->Preise->oPriceRange->isRange()}{$Artikel->Preise->oPriceRange->minBruttoPrice}{else}{$Artikel->Preise->fVKBrutto}{/if}">
+                    <meta itemprop="priceCurrency" content="{$smarty.session.Waehrung->getName()}">
+                    {if $Artikel->Preise->Sonderpreis_aktiv && $Artikel->dSonderpreisStart_en !== null && $Artikel->dSonderpreisEnde_en !== null}
+                        <meta itemprop="validFrom" content="{$Artikel->dSonderpreisStart_en}">
+                        <meta itemprop="validThrough" content="{$Artikel->dSonderpreisEnde_en}">
+                    {/if}
+                    <meta itemprop="priceValidUntil" content="{"+30 days"|strtotime|date_format:"Y-m-d"}">
                 {/if}
             {/block}
         </strong>

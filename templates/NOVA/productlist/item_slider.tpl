@@ -27,8 +27,10 @@
                             {/block}
                             </div>
                         </div>
-                        <meta itemprop="image" content="{$Artikel->Bilder[0]->cURLNormal}">
-                        <meta itemprop="url" content="{$Artikel->cURLFull}">
+                        {if $tplscope !== 'box'}
+                            <meta itemprop="image" content="{$Artikel->Bilder[0]->cURLNormal}">
+                            <meta itemprop="url" content="{$Artikel->cURLFull}">
+                        {/if}
                     {/link}
                 </div>
             {/block}
@@ -43,7 +45,7 @@
                                             {$Artikel->fAnzahl_stueckliste}x
                                         {/block}
                                     {/if}
-                                    <span itemprop="name">{$Artikel->cKurzbezeichnung}</span>
+                                    <span {if $tplscope !== 'box'}itemprop="name"{/if}>{$Artikel->cKurzbezeichnung}</span>
                                 </span>
                             {/link}
                         {/block}

@@ -385,9 +385,14 @@ final class Shop
     private $registry = [];
 
     /**
-     * @var bool
+     * @var null|bool
      */
     private static $logged;
+
+    /**
+     * @var null|bool
+     */
+    private static $adminToken;
 
     /**
      * @var array
@@ -1916,24 +1921,32 @@ final class Shop
         if (\is_bool(self::$logged)) {
             return self::$logged;
         }
-        $result   = false;
+
+        $result     = false;
+        $adminToken = null;
+
         $isLogged = function () {
             return self::Container()->getAdminAccount()->logged();
         };
+
         if (isset($_COOKIE['eSIdAdm'])) {
             if (\session_name() !== 'eSIdAdm') {
                 $oldID = \session_id();
                 \session_write_close();
                 \session_id($_COOKIE['eSIdAdm']);
-                $result = $isLogged();
+                $result     = $isLogged();
+                $adminToken = $_SESSION['jtl_token'];
                 \session_write_close();
                 \session_id($oldID);
                 new Session\Frontend();
             } else {
-                $result = $isLogged();
+                $result     = $isLogged();
+                $adminToken = $_SESSION['jtl_token'];
             }
         }
-        self::$logged = $result;
+
+        self::$logged     = $result;
+        self::$adminToken = $adminToken;
 
         return $result;
     }
@@ -1944,25 +1957,8 @@ final class Shop
      */
     public static function getAdminSessionToken(): ?string
     {
-        if (!self::isAdmin()) {
-            return null;
-        }
-
-        if (isset($_COOKIE['eSIdAdm'])) {
-            if (\session_name() !== 'eSIdAdm') {
-                $oldID = \session_id();
-                \session_write_close();
-                \session_id($_COOKIE['eSIdAdm']);
-                \session_start();
-                $adminToken = $_SESSION['jtl_token'];
-                \session_write_close();
-                \session_id($oldID);
-                new Session\Frontend();
-            } else {
-                $adminToken = $_SESSION['jtl_token'];
-            }
-
-            return $adminToken;
+        if (self::isAdmin()) {
+            return self::$adminToken;
         }
 
         return null;

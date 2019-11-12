@@ -260,28 +260,10 @@ trait PortletHtml
     {
         /** @var array $faTable */
         include \PFAD_ROOT . \PFAD_TEMPLATES . 'NOVA/themes/base/fontawesome/metadata/icons.php';
-        return '<span class="opc-Icon">&#x' . $faTable[$faCode] . ';</span>';
 
-        $res = \preg_match('/fa([brs]) fa-(.+)/', $faCode, $matches);
+        $faGlyphHex = $faTable[$faCode];
+        $faClass    = \substr($faCode, 0, 3);
 
-        if ($res !== 1) {
-            return '';
-        }
-
-        if ($matches[1] === 'b') {
-            $subdir = 'brands/';
-        } elseif ($matches[1] === 'r') {
-            $subdir = 'regular/';
-        } elseif ($matches[1] === 's') {
-            $subdir = 'solid/';
-        }
-
-        $path = \PFAD_ROOT . \PFAD_TEMPLATES . 'NOVA/themes/base/fontawesome/svgs/' . $subdir . $matches[2] . '.svg';
-
-        if (!\file_exists($path)) {
-            return '';
-        }
-
-        return \file_get_contents($path);
+        return '<span class="opc-Icon opc-Icon-' . $faClass . '">&#x' . $faGlyphHex . ';</span>';
     }
 }

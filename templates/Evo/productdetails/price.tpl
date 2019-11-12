@@ -46,8 +46,8 @@
                     {if $Artikel->Preise->Sonderpreis_aktiv && $Artikel->dSonderpreisStart_en !== null && $Artikel->dSonderpreisEnde_en !== null}
                         <meta itemprop="validFrom" content="{$Artikel->dSonderpreisStart_en}">
                         <meta itemprop="validThrough" content="{$Artikel->dSonderpreisEnde_en}">
+                        <meta itemprop="priceValidUntil" content="{$Artikel->dSonderpreisEnde_en}">
                     {/if}
-                    <meta itemprop="priceValidUntil" content="{"+30 days"|strtotime|date_format:"Y-m-d"}">
                 {/if}
             {/block}
         </strong>

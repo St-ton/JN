@@ -8,7 +8,7 @@ namespace JTL\Backend;
 
 use Exception;
 use JTL\Filesystem\Filesystem;
-use JTL\Filesystem\LocalFilesystem;
+use JTL\Shop;
 use JTLShop\SemVer\Version;
 use stdClass;
 use Symfony\Component\Finder\Finder;
@@ -112,7 +112,7 @@ class FileCheck
     public function deleteOrphanedFiles(array &$orphanedFiles, string $backupFile): int
     {
         $count  = 0;
-        $fs     = new Filesystem(new LocalFilesystem(['root' => \PFAD_ROOT]));
+        $fs     = Shop::Container()->get(Filesystem::class);
         $finder = new Finder();
         $finder->append(map($orphanedFiles, function (stdClass $e) {
             return \PFAD_ROOT . $e->name;

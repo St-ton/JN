@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -22,31 +22,25 @@ class DatabaseCommand extends Command
     /**
      * @inheritDoc
      */
-    protected function configure()
+    protected function configure(): void
     {
-        $this
-            ->setName('backup:db')
+        $this->setName('backup:db')
             ->setAliases(['database:backup'])
             ->setDescription('Backup shop database')
             ->addOption('compress', 'c', InputOption::VALUE_NONE, 'Enable (gzip) compression');
     }
 
     /**
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     * @return int|void|null
-     * @throws \Exception
+     * @inheritDoc
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $io       = $this->getIO();
         $compress = $this->getOption('compress');
         $updater  = new Updater(Shop::Container()->getDB());
-
         try {
             $file = $updater->createSqlDumpFile($compress);
             $updater->createSqlDump($file, $compress);
-
             $io->success("SQL-Dump '{$file}' created.");
         } catch (\Exception $e) {
             $io->error($e->getMessage());

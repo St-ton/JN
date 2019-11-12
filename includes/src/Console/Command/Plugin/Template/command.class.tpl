@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * {$commandName}
  *
@@ -21,7 +21,7 @@ class {$commandName} extends Command
             ->setDescription('Test description')
             ->addArgument('arg1', InputArgument::REQUIRED, 'Argument one');
     }
-    
+
     /**
     * @param InputInterface $input
     * @param OutputInterface $output

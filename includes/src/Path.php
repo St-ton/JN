@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -21,26 +21,16 @@ class Path
     public static function combine(): string
     {
         $paths = \func_get_args();
-
         if (!\is_array($paths) || \count($paths) === 0) {
-            throw new InvalidArgumentException('empty or invalid paths');
+            throw new InvalidArgumentException('Empty or invalid paths');
         }
 
-        foreach ($paths as $i => $path) {
-            $paths[$i] = static::clean($path);
-        }
-
-        $path = \implode(\DIRECTORY_SEPARATOR, $paths);
-
-        $path = static::clean($path);
-
-        return $path;
+        return static::clean(\implode(\DIRECTORY_SEPARATOR, \array_map('self::clean', $paths)));
     }
 
     /**
      * @param string $path
      * @param bool   $real
-     *
      * @return string
      */
     public static function getDirectoryName(string $path, bool $real = true): string
@@ -50,8 +40,7 @@ class Path
 
     /**
      * @param string $path
-     *
-     * @return mixed|string
+     * @return string
      */
     public static function getFileName(string $path): string
     {
@@ -65,7 +54,7 @@ class Path
      *
      * @return string
      */
-    public static function getFileNameWithoutExtension($path): string
+    public static function getFileNameWithoutExtension(string $path): string
     {
         return \pathinfo($path, \PATHINFO_FILENAME);
     }
@@ -96,7 +85,7 @@ class Path
      * @param string $path
      * @return string
      */
-    public static function addTrailingSlash($path): string
+    public static function addTrailingSlash(string $path): string
     {
         return static::removeTrailingSlash($path) . \DIRECTORY_SEPARATOR;
     }
@@ -107,7 +96,7 @@ class Path
      * @param string $path
      * @return string
      */
-    public static function removeTrailingSlash($path): string
+    public static function removeTrailingSlash(string $path): string
     {
         return \rtrim($path, '/\\');
     }
@@ -119,7 +108,7 @@ class Path
      * @param bool   $trailingSlash
      * @return bool|string
      */
-    public static function clean($path, $trailingSlash = false)
+    public static function clean(string $path, bool $trailingSlash = false)
     {
         $parts    = [];
         $path     = \strtr($path, '\\', '/');

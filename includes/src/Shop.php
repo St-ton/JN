@@ -27,6 +27,9 @@ use JTL\DB\Services\GcServiceInterface;
 use JTL\Debug\JTLDebugBar;
 use JTL\Events\Dispatcher;
 use JTL\Events\Event;
+use JTL\Filesystem\AdapterFactory;
+use JTL\Filesystem\Factory;
+use JTL\Filesystem\Filesystem;
 use JTL\Filter\Config;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\ProductFilter;
@@ -385,9 +388,14 @@ final class Shop
     private $registry = [];
 
     /**
-     * @var bool
+     * @var null|bool
      */
     private static $logged;
+
+    /**
+     * @var null|bool
+     */
+    private static $adminToken;
 
     /**
      * @var array
@@ -1916,24 +1924,32 @@ final class Shop
         if (\is_bool(self::$logged)) {
             return self::$logged;
         }
-        $result   = false;
+
+        $result     = false;
+        $adminToken = null;
+
         $isLogged = function () {
             return self::Container()->getAdminAccount()->logged();
         };
+
         if (isset($_COOKIE['eSIdAdm'])) {
             if (\session_name() !== 'eSIdAdm') {
                 $oldID = \session_id();
                 \session_write_close();
                 \session_id($_COOKIE['eSIdAdm']);
-                $result = $isLogged();
+                $result     = $isLogged();
+                $adminToken = $_SESSION['jtl_token'];
                 \session_write_close();
                 \session_id($oldID);
                 new Session\Frontend();
             } else {
-                $result = $isLogged();
+                $result     = $isLogged();
+                $adminToken = $_SESSION['jtl_token'];
             }
         }
-        self::$logged = $result;
+
+        self::$logged     = $result;
+        self::$adminToken = $adminToken;
 
         return $result;
     }
@@ -1944,20 +1960,11 @@ final class Shop
      */
     public static function getAdminSessionToken(): ?string
     {
-        if (!self::isAdmin()) {
-            return null;
+        if (self::isAdmin()) {
+            return self::$adminToken;
         }
 
-        $oldID = \session_id();
-        \session_write_close();
-        \session_id($_COOKIE['eSIdAdm']);
-        \session_start();
-        $adminToken = $_SESSION['jtl_token'];
-        \session_write_close();
-        \session_id($oldID);
-        \session_start();
-
-        return $adminToken;
+        return null;
     }
 
     /**
@@ -2104,6 +2111,12 @@ final class Shop
                 new AdminLoginStatusToLogLevel(),
                 $container->getGetText()
             );
+        });
+
+        $container->singleton(Filesystem::class, function (Container $container) {
+            $factory = new AdapterFactory(self::getConfig([\CONF_FS])['fs']);
+
+            return new Filesystem($factory->getAdapter());
         });
 
         $container->bind(Mailer::class, function (Container $container) {

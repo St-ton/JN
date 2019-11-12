@@ -393,6 +393,7 @@ $adminMenu = [
                     'link'   => 'profiler.php',
                     'permissions' => 'PROFILER_VIEW',
                 ],
+
             ],
             __('System') => [
                 __('Cache')                  => (object)[
@@ -402,6 +403,10 @@ $adminMenu = [
                 __('Cron')           => (object)[
                     'link'   => 'cron.php',
                     'permissions' => 'EXPORT_SCHEDULE_VIEW',
+                ],
+                __('Filesystem')           => (object)[
+                    'link'   => 'filesystem.php',
+                    'permissions' => 'SETTINGS_GLOBAL_VIEW',
                 ],
                 __('Update')               => (object)[
                     'link'   => 'dbupdater.php',

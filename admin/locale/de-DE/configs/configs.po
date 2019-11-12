@@ -3020,6 +3020,42 @@ msgstr "Verschlüsselt (SSL)"
 msgid "ftp_path_name"
 msgstr "Pfad zum Shop"
 
+msgid "sftp_hostname_name"
+msgstr "Hostname"
+
+msgid "sftp_port_name"
+msgstr "Port"
+
+msgid "sftp_user_name"
+msgstr "Benutzername"
+
+msgid "sftp_pass_name"
+msgstr "Passwort"
+
+msgid "sftp_privkey_name"
+msgstr "Private key-Pfad"
+
+msgid "sftp_path_name"
+msgstr "Pfad zum Shop"
+
+msgid "fs_timeout_name"
+msgstr "Timeout (Sekunden)"
+
+msgid "fs_adapter_name"
+msgstr "Adapter"
+
+msgid "fs_adapter_value(local)"
+msgstr "Lokal"
+
+msgid "fs_adapter_value(ftp)"
+msgstr "FTP"
+
+msgid "fs_adapter_value(sftp)"
+msgstr "SFTP"
+
+msgid "methodTest"
+msgstr "Testen"
+
 msgid "cron_type_name"
 msgstr "Pseudo-Cron-Methode"
 

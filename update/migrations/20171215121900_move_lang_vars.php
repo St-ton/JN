@@ -11,7 +11,7 @@ use JTL\Update\Migration;
  */
 class Migration_20171215121900 extends Migration implements IMigration
 {
-    protected $author      = 'Franz Gotthardt';
+    protected $author      = 'fg';
     protected $description = 'Move language variables "invalidHash" und "invalidCustomer" to account data';
 
     public function up()

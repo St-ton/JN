@@ -216,7 +216,7 @@
                                 {/col}
                                 {if !$isBrandFree}
                                     {col class="col-auto ml-auto" id="system-credits"}
-                                        Powered by {link href="https://jtl-url.de/jtlshop" title="JTL-Shop" target="_blank" rel="noopener nofollow"}JTL-Shop{/link}
+                                        Powered by {link href="https://jtl-url.de/jtlshop" class="text-white text-decoration-underline" title="JTL-Shop" target="_blank" rel="noopener nofollow"}JTL-Shop{/link}
                                     {/col}
                                 {/if}
                             {/row}

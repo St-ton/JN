@@ -1,8 +1,6 @@
 /* global */
 
 import './globals.js'
-import './slider.js'
-import './gallery.js'
 
 /* plugins */
 

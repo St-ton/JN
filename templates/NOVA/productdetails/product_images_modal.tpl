@@ -15,7 +15,19 @@
                 {foreach $images as $image}
                     <div class="productbox-image-wrapper">
                         <div class="productbox-image-wrapper-inner">
-                            <img class="product-image img-fluid" src="{$image->cURLNormal}" width="1006" height="711" alt="">
+                            {image alt=$image->cAltAttribut|escape:'html'
+                                class="product-image"
+                                fluid=true
+                                lazy=true
+                                webp=true
+                                src="{$Artikel->Bilder[0]->cURLNormal}"
+                                srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                    {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                    {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
+                                                    {$image->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
+                                sizes="auto"
+                                data=["list"=>"{$image->galleryJSON|escape:"html"}", "index"=>$image@index]
+                            }
                         </div>
                     </div>
                 {/foreach}

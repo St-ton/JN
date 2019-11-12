@@ -16,7 +16,7 @@
                 {assign var=kEigenschaftWert value=$Variationswert->kEigenschaftWert}
                 {if $Einstellungen.artikeldetails.artikel_variationspreisanzeige == 1}
                     {if isset($Artikel->oVariationDetailPreis_arr[$kEigenschaftWert]->Preise->cAufpreisLocalized[$NettoPreise])}
-                        <span class="ml-auto mx-1">
+                        <span class="ml-auto mx-1 text-nowrap">
                             {$Artikel->oVariationDetailPreis_arr[$kEigenschaftWert]->Preise->cAufpreisLocalized[$NettoPreise]}
                             {if !empty($Artikel->oVariationDetailPreis_arr[$kEigenschaftWert]->Preise->PreisecPreisVPEWertInklAufpreis[$NettoPreise])}
                                 &nbsp;({$Artikel->oVariationDetailPreis_arr[$kEigenschaftWert]->Preise->PreisecPreisVPEWertInklAufpreis[$NettoPreise]})
@@ -24,7 +24,7 @@
                         </span>
                     {/if}
                 {elseif $Einstellungen.artikeldetails.artikel_variationspreisanzeige == 2}
-                    <span class="ml-auto mx-1">
+                    <span class="ml-auto mx-1 text-nowrap">
                         {$Artikel->oVariationDetailPreis_arr[$kEigenschaftWert]->Preise->cVKLocalized[$NettoPreise]}
                         {if !empty($Artikel->oVariationDetailPreis_arr[$kEigenschaftWert]->Preise->PreisecPreisVPEWertInklAufpreis[$NettoPreise])}
                             &nbsp;({$Artikel->oVariationDetailPreis_arr[$kEigenschaftWert]->Preise->PreisecPreisVPEWertInklAufpreis[$NettoPreise]})
@@ -38,11 +38,11 @@
     {if ($Artikel->kVaterArtikel == 0 && $Artikel->nIstVater == 0) && isset($Variationswert->fAufpreisNetto)}
         {block name='productdetails-variation-value-varkombi-single-2-free'}
             {if $Einstellungen.artikeldetails.artikel_variationspreisanzeige == 1 && $Variationswert->fAufpreisNetto!=0}
-                <span class="ml-auto mx-1">
+                <span class="ml-auto mx-1 text-nowrap">
                     {$Variationswert->cAufpreisLocalized[$NettoPreise]}
                 </span>
             {elseif $Einstellungen.artikeldetails.artikel_variationspreisanzeige == 2 && $Variationswert->fAufpreisNetto!=0}
-                <span class="ml-auto mx-1">
+                <span class="ml-auto mx-1 text-nowrap">
                     {$Variationswert->cPreisInklAufpreis[$NettoPreise]}
                 </span>
             {/if}
@@ -52,13 +52,13 @@
     {if ($Artikel->kVaterArtikel > 0 || $Artikel->nIstVater == 1) && $Artikel->nVariationOhneFreifeldAnzahl > 1 && isset($Variationswert->fAufpreisNetto)}
         {block name='productdetails-variation-value-varkombi-2-free'}
             {if $Einstellungen.artikeldetails.artikel_variationspreisanzeige == 1 && $Variationswert->fAufpreisNetto!=0}
-                <span class="ml-auto mx-1">{$Variationswert->cAufpreisLocalized[$NettoPreise]}
+                <span class="ml-auto mx-1 text-nowrap">{$Variationswert->cAufpreisLocalized[$NettoPreise]}
                 {if !empty($Variationswert->cPreisVPEWertAufpreis[$NettoPreise]) && $Artikel->nVariationOhneFreifeldAnzahl == 1}
                     &nbsp;({$Variationswert->cPreisVPEWertAufpreis[$NettoPreise]})
                 {/if}
                 </span>
             {elseif $Einstellungen.artikeldetails.artikel_variationspreisanzeige == 2 && $Variationswert->fAufpreisNetto!=0}
-                <span class="ml-auto mx-1">{$Variationswert->cPreisInklAufpreis[$NettoPreise]}
+                <span class="ml-auto mx-1 text-nowrap">{$Variationswert->cPreisInklAufpreis[$NettoPreise]}
                 {if !empty($Variationswert->cPreisVPEWertInklAufpreis[$NettoPreise]) && $Artikel->nVariationOhneFreifeldAnzahl == 1}
                     &nbsp;({$Variationswert->cPreisVPEWertInklAufpreis[$NettoPreise]})
                 {/if}

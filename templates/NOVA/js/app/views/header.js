@@ -6,9 +6,11 @@ import {
     isDesktop, lockScreen, unlockScreen, backdrop
 } from './../helpers.js'
 
+import './../plugins/navscrollbar.js'
+
 /* vars */
 
-const header					= 'header'
+const header					= '#evo-nav-wrapper'
 const search					= '#search'
 const mainNavigation			= '#mainNavigation'
 const navRightDropdowns			= `${header} .nav-right .dropdown`

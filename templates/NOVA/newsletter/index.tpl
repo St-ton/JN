@@ -68,7 +68,7 @@
                                                         {button type="submit" variant="primary" block=true}
                                                             <span>{lang key='newsletterSendSubscribe' section='newsletter'}</span>
                                                         {/button}
-                                                        <p class="info small">
+                                                        <p class="info small mt-1">
                                                             {lang key='unsubscribeAnytime' section='newsletter'}
                                                         </p>
                                                     {/col}

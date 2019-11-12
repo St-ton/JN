@@ -691,7 +691,7 @@ function gibStepZahlung()
         ShippingMethod::getShippingClasses(Frontend::getCart()),
         $customerGroupID
     );
-    $packagings = ShippingMethod::getPossiblePackagings($customerGroupID);
+    $packagings      = ShippingMethod::getPossiblePackagings($customerGroupID);
     if (!empty($packagings) && $cart->posTypEnthalten(C_WARENKORBPOS_TYP_VERPACKUNG)) {
         foreach ($cart->PositionenArr as $item) {
             if ($item->nPosTyp === C_WARENKORBPOS_TYP_VERPACKUNG) {

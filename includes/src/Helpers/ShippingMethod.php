@@ -281,6 +281,7 @@ class ShippingMethod
                 ],
                 ReturnType::ARRAY_OF_OBJECTS
             );
+
             $shippingMethod->valid = some($paymentMethods, function ($pmm) {
                 return PaymentMethod::shippingMethodWithValidPaymentMethod($pmm);
             });

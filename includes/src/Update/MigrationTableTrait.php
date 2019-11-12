@@ -7,6 +7,7 @@
 namespace JTL\Update;
 
 use Exception;
+use JTL\Helpers\GeneralObject;
 use JTL\Shop;
 use stdClass;
 
@@ -239,28 +240,18 @@ trait MigrationTableTrait
             || $additionalProperties->cConf !== 'N')
             ? 'Y'
             : 'N';
-        $inputType         = $cConf === 'N'
-            ? ''
-            : $inputType;
-        $cModulId          = (!\is_object($additionalProperties) || !isset($additionalProperties->cModulId))
-            ? '_DBNULL_'
-            : $additionalProperties->cModulId;
-        $cBeschreibung     = (!\is_object($additionalProperties) || !isset($additionalProperties->cBeschreibung))
-            ? ''
-            : $additionalProperties->cBeschreibung;
-        $nStandardAnzeigen = (!\is_object($additionalProperties) || !isset($additionalProperties->nStandardAnzeigen))
-            ? 1
-            : $additionalProperties->nStandardAnzeigen;
-        $nModul            = (!\is_object($additionalProperties) || !isset($additionalProperties->nModul))
-            ? 0
-            : $additionalProperties->nModul;
+        $inputType         = $cConf === 'N' ? '' : $inputType;
+        $cModulId          = $additionalProperties->cModulId ?? '_DBNULL_';
+        $cBeschreibung     = $additionalProperties->cBeschreibung ?? '';
+        $nStandardAnzeigen = $additionalProperties->nStandardAnzeigen ?? 1;
+        $nModul            = $additionalProperties->nModul ?? 0;
 
         $einstellungen                        = new stdClass();
         $einstellungen->kEinstellungenSektion = $configSection;
         $einstellungen->cName                 = $configName;
         $einstellungen->cWert                 = $configValue;
         $einstellungen->cModulId              = $cModulId;
-        Shop::Container()->getDB()->insertRow('teinstellungen', $einstellungen);
+        $this->getDB()->insertRow('teinstellungen', $einstellungen);
         unset($einstellungen);
 
         $einstellungenConf                        = new stdClass();
@@ -275,12 +266,12 @@ trait MigrationTableTrait
         $einstellungenConf->nStandardAnzeigen     = $nStandardAnzeigen;
         $einstellungenConf->nModul                = $nModul;
         $einstellungenConf->cConf                 = $cConf;
-        Shop::Container()->getDB()->insertRow('teinstellungenconf', $einstellungenConf);
+        $this->getDB()->insert('teinstellungenconf', $einstellungenConf);
         unset($einstellungenConf);
 
-        if (\is_object($additionalProperties) &&
-            isset($additionalProperties->inputOptions) &&
-            \is_array($additionalProperties->inputOptions)
+        if (\is_object($additionalProperties)
+            && isset($additionalProperties->inputOptions)
+            && \is_array($additionalProperties->inputOptions)
         ) {
             $sortIndex              = 1;
             $einstellungenConfWerte = new stdClass();
@@ -289,7 +280,7 @@ trait MigrationTableTrait
                 $einstellungenConfWerte->cName              = $optionValue;
                 $einstellungenConfWerte->cWert              = $optionKey;
                 $einstellungenConfWerte->nSort              = $sortIndex;
-                Shop::Container()->getDB()->insertRow('teinstellungenconfwerte', $einstellungenConfWerte);
+                $this->getDB()->insertRow('teinstellungenconfwerte', $einstellungenConfWerte);
                 $sortIndex++;
             }
             unset($einstellungenConfWerte);

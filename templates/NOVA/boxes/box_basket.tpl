@@ -14,7 +14,7 @@
                 {/block}
                 {block name='boxes-box-basket-link'}
                     {link href="{get_static_route id='warenkorb.php'}" class="basket" id="basket_drag_area"}
-                        <span id="basket_text">{$Warenkorbtext}</span><br>
+                        <span id="basket_text" class="d-block">{$Warenkorbtext}</span>
                         <span class="basket_link"><i class="fas fa-shopping-cart"></i> {lang key='gotoBasket'}</span>
                     {/link}
                 {/block}

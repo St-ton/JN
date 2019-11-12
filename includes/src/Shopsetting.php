@@ -67,7 +67,7 @@ final class Shopsetting implements ArrayAccess
         \CONF_CHECKBOX            => 'checkbox',
         \CONF_AUSWAHLASSISTENT    => 'auswahlassistent',
         \CONF_CRON                => 'cron',
-        \CONF_FTP                 => 'ftp',
+        \CONF_FS                  => 'fs',
         \CONF_CACHING             => 'caching'
     ];
 

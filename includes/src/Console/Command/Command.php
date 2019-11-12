@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -21,7 +21,7 @@ class Command extends BaseCommand
     /**
      * Command constructor.
      *
-     * @param null $name
+     * @param string|null $name
      */
     public function __construct($name = null)
     {
@@ -39,25 +39,25 @@ class Command extends BaseCommand
     /**
      * @return ConsoleIO
      */
-    public function getIO()
+    public function getIO(): ConsoleIO
     {
         return $this->getApp()->getIO();
     }
 
     /**
-     * @param $name
+     * @param string $name
      * @return InputArgument
      */
-    public function getArgumentDefinition($name)
+    public function getArgumentDefinition($name): InputArgument
     {
         return $this->getDefinition()->getArgument($name);
     }
 
     /**
-     * @param $name
+     * @param string $name
      * @return bool
      */
-    public function hasMissingOption($name)
+    public function hasMissingOption($name): bool
     {
         $option = $this->getDefinition()->getOption($name);
         $value  = \trim($this->getIO()->getInput()->getOption($name));
@@ -66,43 +66,29 @@ class Command extends BaseCommand
     }
 
     /**
-     * @param $name
+     * @param string $name
      * @return InputOption
      */
-    public function getOptionDefinition($name)
+    public function getOptionDefinition($name): InputOption
     {
         return $this->getDefinition()->getOption($name);
     }
 
     /**
-     * @param $name
-     *
+     * @param string $name
      * @return string|array
      */
     public function getOption($name)
     {
         $value = $this->getIO()->getInput()->getOption($name);
 
-        if (\is_string($value)) {
-            $value = \trim($value);
-        }
-
-        /*
-        $option = $this->getOptionDefinition($name);
-        if ($option->isValueRequired() && $option->acceptValue()) {
-            if (empty($value)) {
-                throw new \RuntimeException("Missing option '--{$name}' value");
-            }
-        }
-        */
-
-        return $value;
+        return \is_string($value) ? \trim($value) : $value;
     }
 
     /**
      * @return array
      */
-    public function getOptions()
+    public function getOptions(): array
     {
         return $this->getIO()->getInput()->getOptions();
     }
@@ -111,7 +97,7 @@ class Command extends BaseCommand
      * @param $name
      * @return bool
      */
-    public function hasOption($name)
+    public function hasOption($name): bool
     {
         return $this->getIO()->getInput()->hasOption($name);
     }

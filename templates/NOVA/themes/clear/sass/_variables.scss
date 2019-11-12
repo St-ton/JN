@@ -11,13 +11,13 @@ $sand:                              #ebebeb;
 $cool-white:                        #f8f8f8;
 $primary:                           #F8BF00;
 $secondary:                         $gray-darker;
-$success:                           #088319;
-$bg-success:                        #CDE1D6;
+$success:                           #098B1B;
+$bg-success:                        #cee8d1;
 $info:                              #525252;
 $bg-info:                           #F5F7FA;
-$warning:                           #F39932;
+$warning:                           #f39932;
 $bg-warning:                        #F9F2DC;
-$danger:                            #B90000;
+$danger:                            #b90000;
 $bg-danger:                         #E8CCD2;
 
 $white:                             #ffffff;
@@ -148,9 +148,6 @@ $link-decoration:                   underline;
 $link-hover-color:                  $primary;
 $link-hover-decoration:             none;
 
-//$breadcrumb-divider:                "/";
-$breadcrumb-active-color:           $gray-dark;
-
 $border-radius:                     .125rem !default;
 $border-radius-lg:                  $border-radius;
 $border-radius-sm:                  $border-radius;
@@ -250,11 +247,16 @@ $pagination-focus-box-shadow:       none;
 $pagination-disabled-color:         $gray-lighter;
 $pagination-disabled-bg:            transparent;
 
-// breadcrumbs
+/* breadcrumbs */
+
+$breadcrumb-padding-y:              map-get($spacers, 2);
+$breadcrumb-padding-x:              0;
 
 $breadcrumb-bg:                     transparent;
-$breadcrumb-divider-color:          $gray-dark;
-$breadcrumb-active-color:           $gray-dark;
+$breadcrumb-divider-color:          $gray;
+$breadcrumb-active-color:           $gray-darker;
+
+$breadcrumb-border-radius:           0;
 
 $tap-target-size:                   44px;
 $tap-target-size-sm:                36px;
@@ -376,8 +378,3 @@ $dropdown-link-active-color	: $dropdown-link-hover-color;
 $dropdown-link-active-bg	: $dropdown-link-hover-bg;
 
 $dropdown-padding-y         : 0;
-
-/* photoswipe */
-$pswp__background-color		: rgba($gray-darker, .5);
-$pswp__assets-path			: '../../js/photoswipe/css/default-skin/';
-

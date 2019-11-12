@@ -1,3 +1,6 @@
+
+import './globals.js'
+
 export let isMobile = () => window.innerWidth < globals.breakpoints.lg
 export let isDesktop = () => !isMobile()
 export let hasTouch = () => 'ontouchstart' in window

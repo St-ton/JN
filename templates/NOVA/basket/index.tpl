@@ -42,7 +42,7 @@
                                     {if $Einstellungen.kaufabwicklung.warenkorb_versandermittlung_anzeigen === 'Y'}
                                         {block name='basket-index-form-shipping-calc'}
                                             {opcMountPoint id='opc_before_shipping_calculator'}
-                                            {form id="basket-shipping-estimate-form" method="post" action="{get_static_route id='warenkorb.php'}"}
+                                            {form id="basket-shipping-estimate-form" method="post" action="{get_static_route id='warenkorb.php'}#basket-shipping-estimate-form"}
                                                 {block name='basket-index-include-shipping-calculator'}
                                                     {include file='snippets/shipping_calculator.tpl' checkout=true}
                                                 {/block}

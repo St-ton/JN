@@ -11,6 +11,7 @@ use JTL\DB\ReturnType;
 use JTL\Helpers\Tax;
 use JTL\Session\Frontend;
 use JTL\Shop;
+use stdClass;
 
 /**
  * Class Preise
@@ -577,8 +578,10 @@ class Preise
     ): string {
         if ($currency === null || \is_numeric($currency) || \is_bool($currency)) {
             $currency = Frontend::getCurrency();
-        } elseif (\is_object($currency) && \get_class($currency) === 'stdClass') {
+        } elseif (\is_object($currency) && ($currency instanceof stdClass)) {
             $currency = new Currency((int)$currency->kWaehrung);
+        } elseif (\is_string($currency)) {
+            $currency = Currency::fromISO($currency);
         }
         $localized    = \number_format(
             $price * $currency->getConversionFactor(),

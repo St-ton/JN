@@ -44,7 +44,7 @@
                     {elseif $oNavigationsinfo->getCharacteristicValue() !== null}
                         {$navData = $oNavigationsinfo->getCharacteristicValue()}
                     {/if}
-                    {if $navData|default:null !== null}
+                    {if $navData->getImage(\JTL\Media\Image::SIZE_XS)|default:null !== null}}
                         {image fluid-grow=true lazy=true webp=true
                             src=$navData->getImage(\JTL\Media\Image::SIZE_XS)
                             srcset="{$navData->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_kategorien_mini_breite}w,
@@ -93,12 +93,12 @@
     {block name='productlist-header-subcategories'}
         {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'N' && $oUnterKategorien_arr|@count > 0}
             {opcMountPoint id='opc_before_subcategories'}
-            {row class="row-eq-height content-cats-small clearfix d-none d-md-flex"}
+            {row class="row-eq-height content-cats-small clearfix"}
                 {foreach $oUnterKategorien_arr as $subCategory}
-                    {col cols=6 md=4 lg=3}
+                    {col cols=12 md=4 lg=3}
                         {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'Y'}
                             {block name='productlist-header-subcategories-image'}
-                                {link href=$subCategory->getURL()}
+                                {link href=$subCategory->getURL() class='d-none d-md-block'}
                                     {image fluid-grow=true lazy=true webp=true
                                         src=$subCategory->getImage()
                                         alt=$subCategory->getName()
@@ -109,7 +109,7 @@
                         {/if}
                         {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'B'}
                             {block name='productlist-header-subcategories-link'}
-                                <div class="caption text-center mb-2">
+                                <div class="caption text-md-center mb-2">
                                     {link href=$subCategory->getURL()}
                                         {$subCategory->getName()}
                                     {/link}
@@ -118,14 +118,14 @@
                         {/if}
                         {if $Einstellungen.navigationsfilter.unterkategorien_beschreibung_anzeigen === 'Y' && !empty($subCategory->getDescription())}
                             {block name='productlist-header-subcategories-description'}
-                                <p class="item_desc small text-muted">{$subCategory->getDescription()|strip_tags|truncate:68}</p>
+                                <p class="item_desc small text-muted d-none d-md-block">{$subCategory->getDescription()|strip_tags|truncate:68}</p>
                             {/block}
                         {/if}
                         {if $Einstellungen.navigationsfilter.unterkategorien_lvl2_anzeigen === 'Y'}
                             {if $subCategory->hasChildren()}
                                 {block name='productlist-header-subcategories-list'}
-                                    <hr class="my-3">
-                                    <ul class="list-unstyled small subsub">
+                                    <hr class="my-3 d-none d-md-block">
+                                    <ul class="list-unstyled small subsub d-none d-md-block">
                                         {foreach $subCategory->getChildren() as $subChild}
                                             <li>
                                                 {link href=$subChild->getURL() title=$subChild->getName()}{$subChild->getName()}{/link}

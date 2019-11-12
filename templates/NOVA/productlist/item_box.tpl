@@ -27,27 +27,46 @@
                                     {/block}
                                 {/if}
                                 <div class="productbox-images">
-                                    <div class="list-gallery carousel carousel-arrows-inside carousel-btn-arrows">
-                                        {block name="productlist-item-list-image"}
-                                            {foreach $Artikel->Bilder as $image}
-                                                {strip}
-                                                    <div>
-                                                        {link href=$Artikel->cURLFull}
-                                                            {image alt=$alt fluid=true webp=true lazy=true
-                                                                src="{$image->cURLKlein}"
-                                                                srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                                         {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                                         {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
-                                                                sizes="auto"
-                                                                data=["id"  => $imgcounter]
-                                                                class='w-100'
-                                                            }
-                                                        {/link}
-                                                    </div>
-                                                {/strip}
-                                            {/foreach}
+                                    {if $device->isMobile()}
+                                        {block name="productlist-item-list-image-mobile"}
+                                            {strip}
+                                                {$image = $Artikel->Bilder[0]}
+                                                    {link href=$Artikel->cURLFull}
+                                                        {image alt=$alt fluid=true webp=true lazy=true
+                                                            src="{$image->cURLKlein}"
+                                                            srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                                     {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                                     {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                                            sizes="auto"
+                                                            data=["id"  => $imgcounter]
+                                                            class='w-100'
+                                                        }
+                                                    {/link}
+                                            {/strip}
                                         {/block}
-                                    </div>
+                                    {else}
+                                        <div class="list-gallery carousel carousel-arrows-inside carousel-btn-arrows">
+                                            {block name="productlist-item-list-image-desktop"}
+                                                {foreach $Artikel->Bilder as $image}
+                                                    {strip}
+                                                        <div>
+                                                            {link href=$Artikel->cURLFull}
+                                                                {image alt=$alt fluid=true webp=true lazy=true
+                                                                    src="{$image->cURLKlein}"
+                                                                    srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                                             {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                                             {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                                                    sizes="auto"
+                                                                    data=["id"  => $imgcounter]
+                                                                    class='w-100'
+                                                                }
+                                                            {/link}
+                                                        </div>
+                                                    {/strip}
+                                                {/foreach}
+                                            {/block}
+                                        </div>
+                                    {/if}
                                     {if !empty($Artikel->Bilder[0]->cURLNormal)}
                                         <meta itemprop="image" content="{$Artikel->Bilder[0]->cURLNormal}">
                                     {/if}
@@ -81,7 +100,7 @@
                         <div class="caption mt-2 text-left">
                             {block name='productlist-item-box-caption-short-desc'}
                                 <div class="productbox-title" itemprop="name">
-                                    {link href=$Artikel->cURLFull class="text-truncate-fade"}
+                                    {link href=$Artikel->cURLFull class="text-clamp-2"}
                                         {$Artikel->cKurzbezeichnung}
                                     {/link}
                                 </div>

@@ -9,11 +9,11 @@ namespace JTL\Update;
 use DateTime;
 use Exception;
 use JTL\DB\ReturnType;
-use JTL\Filesystem\Filesystem;
-use JTL\Filesystem\LocalFilesystem;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
+use League\Flysystem\Adapter\Local;
+use League\Flysystem\Filesystem;
 
 /**
  * Class MigrationHelper
@@ -245,9 +245,9 @@ class MigrationHelper
         );
         $relPath       = 'update/migrations';
         $migrationPath = $relPath . '/' . $filePath . '.php';
-        $fileSystem    = new Filesystem(new LocalFilesystem(['root' => \PFAD_ROOT]));
+        $fileSystem    = new Filesystem(new Local(\PFAD_ROOT));
 
-        if (!$fileSystem->exists($relPath)) {
+        if (!$fileSystem->has($relPath)) {
             throw new Exception('Migrations path doesn\'t exist!');
         }
 

@@ -2,7 +2,7 @@
 /**
  * Create unique index for tkundenattribut
  *
- * @author FP
+ * @author fp
  * @created Wed, 15 May 2019 16:05:10 +0200
  */
 
@@ -25,7 +25,7 @@ use JTL\Update\Migration;
  */
 class Migration_20190515160510 extends Migration implements IMigration
 {
-    protected $author = 'FP';
+    protected $author = 'fp';
     protected $description = 'Create unique index for tkundenattribut';
 
     public function up()

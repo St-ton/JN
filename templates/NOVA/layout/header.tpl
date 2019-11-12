@@ -49,7 +49,7 @@
         {/block}
 
         {block name='layout-header-head-resources'}
-            {*{include file='layout/header_inline_css.tpl'}*}
+            {*include file='layout/header_inline_css.tpl'*}
             {* css *}
             {if !isset($Einstellungen.template.general.use_minify) || $Einstellungen.template.general.use_minify === 'N'}
                 {foreach $cCSS_arr as $cCSS}
@@ -331,8 +331,6 @@
                                         {if isset($ShopLogoURL)}
                                             {image src=$ShopLogoURL
                                             alt=$Einstellungen.global.global_shopname
-                                            fluid=true
-                                            width=160
                                             height=53}
                                         {else}
                                             <span class="h1">{$Einstellungen.global.global_shopname}</span>

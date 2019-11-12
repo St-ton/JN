@@ -5,10 +5,10 @@
 {block name='layout-header-shop-nav-compare'}
     <li id="shop-nav-compare"
         title="{lang key='compare'}"
-        class="nav-item dropdown {if $nSeitenTyp === $smarty.const.PAGE_VERGLEICHSLISTE} active{/if} {if empty($smarty.session.Vergleichsliste->oArtikel_arr)}d-none{/if}">
+        class="nav-item dropdown{if $nSeitenTyp === $smarty.const.PAGE_VERGLEICHSLISTE} active{/if} {if empty($smarty.session.Vergleichsliste->oArtikel_arr)}d-none{/if}">
         {block name='layout-header-shop-nav-compare-link'}
             {link class='nav-link' data=['toggle'=>'dropdown'] aria=['haspopup'=>true, 'expanded'=>false, 'label'=>{lang key='compare'}]}
-                <span class="fas fa-tasks position-relative">
+                <span class="fas fa-list position-relative">
                     <span id="comparelist-badge" class="fa-sup"
                           title="{if !empty($smarty.session.Vergleichsliste->oArtikel_arr)}{$smarty.session.Vergleichsliste->oArtikel_arr|count}{/if}">
                         {if !empty($smarty.session.Vergleichsliste->oArtikel_arr)}{$smarty.session.Vergleichsliste->oArtikel_arr|count}{/if}

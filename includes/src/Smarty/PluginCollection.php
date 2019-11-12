@@ -191,7 +191,7 @@ class PluginCollection
         if ($content === null || empty(\trim($content))) {
             return '';
         }
-        $content = \preg_replace('/^<script(.*?)>/', '', $content);
+        $content = \preg_replace('/^<script(.*?)>/', '', \trim($content));
         $content = \preg_replace('/<\/script>$/', '', $content);
 
         return '<script defer src="data:text/javascript;base64,' . \base64_encode($content) . '"></script>';

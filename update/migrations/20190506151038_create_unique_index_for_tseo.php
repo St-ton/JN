@@ -2,7 +2,7 @@
 /**
  * Create unique index for tseo
  *
- * @author FP
+ * @author fp
  * @created Mon, 06 May 2019 15:10:38 +0200
  */
 
@@ -25,7 +25,7 @@ use JTL\Update\Migration;
  */
 class Migration_20190506151038 extends Migration implements IMigration
 {
-    protected $author      = 'FP';
+    protected $author      = 'fp';
     protected $description = 'Create unique index for tseo';
 
     public function up()

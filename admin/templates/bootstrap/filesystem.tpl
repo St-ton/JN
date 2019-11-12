@@ -1,10 +1,10 @@
 {include file='tpl_inc/header.tpl'}
 
-{include file='tpl_inc/seite_header.tpl' cTitel=__('ftp') cBeschreibung=__('ftpDesc') cDokuURL=__('ftpUrl')}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('fs') cBeschreibung=__('fsDesc') cDokuURL=__('fsUrl')}
 
 <div id="content">
     <div id="settings">
-        <form method="post" action="ftp.php">
+        <form method="post" action="filesystem.php">
             {$jtl_token}
             {assign var=open value=false}
             {foreach name=conf from=$oConfig_arr item=cnf}
@@ -91,7 +91,7 @@
                     <div class="row">
                         <div class="ml-auto col-sm-6 col-xl-auto">
                             <button name="test" type="submit" value="1" class="btn btn-default">
-                                <i class="fal fa-play-circle"></i> {__('ftpTest')}
+                                <i class="fal fa-play-circle"></i> {__('methodTest')}
                             </button>
                         </div>
                         <div class="col-sm-6 col-xl-auto">

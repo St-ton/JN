@@ -10,6 +10,7 @@ use JTL\Cart\CartHelper;
 use JTL\Cart\CartItem;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Category\KategorieListe;
+use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Customer\Customer;
@@ -507,7 +508,7 @@ class Bestellung
         $this->cBestellwertLocalized = Preise::getLocalizedPriceString($sum->wert ?? 0, $htmlCurrency);
         $this->Status                = \lang_bestellstatus((int)$this->cStatus);
         if ($this->kWaehrung > 0) {
-            $this->Waehrung = $db->select('twaehrung', 'kWaehrung', (int)$this->kWaehrung);
+            $this->Waehrung = new Currency((int)$this->kWaehrung);
             if ($this->fWaehrungsFaktor !== null && $this->fWaehrungsFaktor != 1 && isset($this->Waehrung->fFaktor)) {
                 $this->Waehrung->fFaktor = $this->fWaehrungsFaktor;
             }
@@ -583,8 +584,10 @@ class Bestellung
                 if ($initProduct) {
                     $item->Artikel = (new Artikel())->fuelleArtikel($item->kArtikel, $defaultOptions);
                 }
-                $this->oDownload_arr = Download::getDownloads(['kBestellung' => $this->kBestellung], $languageID);
-                $this->oUpload_arr   = Upload::gibBestellungUploads($this->kBestellung);
+                if ($this->kBestellung > 0) {
+                    $this->oDownload_arr = Download::getDownloads(['kBestellung' => $this->kBestellung], $languageID);
+                    $this->oUpload_arr   = Upload::gibBestellungUploads($this->kBestellung);
+                }
                 if ($item->kWarenkorbPos > 0) {
                     $item->WarenkorbPosEigenschaftArr = $db->selectAll(
                         'twarenkorbposeigenschaft',

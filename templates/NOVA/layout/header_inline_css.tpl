@@ -2,7 +2,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
-{block name='layout-header-inline-js'}
+{block name='layout-header-inline-css'}
     {strip}
         <style>
             {literal}

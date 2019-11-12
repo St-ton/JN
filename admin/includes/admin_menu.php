@@ -15,21 +15,21 @@ $adminMenu = [
                 'link'   => 'shoptemplate.php',
                 'rights' => 'DISPLAY_TEMPLATE_VIEW',
             ],
-            __('Images')   => [
-                __('Settings')      => (object)[
-                    'link'   => 'bilder.php',
-                    'rights' => 'SETTINGS_IMAGES_VIEW',
+            __('Images')            => [
+                __('Settings')             => (object)[
+                    'link'    => 'bilder.php',
+                    'rights'  => 'SETTINGS_IMAGES_VIEW',
                     'section' => CONF_BILDER,
                 ],
-                __('Watermark')     => (object)[
+                __('Watermark')            => (object)[
                     'link'   => 'branding.php',
                     'rights' => 'DISPLAY_BRANDING_VIEW',
                 ],
-                __('Shop logo')     => (object)[
+                __('Shop logo')            => (object)[
                     'link'   => 'shoplogouploader.php',
                     'rights' => 'ORDER_AGB_WRB_VIEW',
                 ],
-                __('Item overlays') => (object)[
+                __('Item overlays')        => (object)[
                     'link'   => 'suchspecialoverlay.php',
                     'rights' => 'ORDER_AGB_WRB_VIEW',
                 ],
@@ -45,23 +45,23 @@ $adminMenu = [
         'items' => [
             __('Item')    => [
                 __('Selection wizard') => (object)[
-                    'link'   => 'auswahlassistent.php',
-                    'rights' => 'EXTENSION_SELECTIONWIZARD_VIEW',
+                    'link'    => 'auswahlassistent.php',
+                    'rights'  => 'EXTENSION_SELECTIONWIZARD_VIEW',
                     'section' => CONF_AUSWAHLASSISTENT,
                 ],
                 __('Item details')     => (object)[
-                    'link'   => 'einstellungen.php?kSektion=' . CONF_ARTIKELDETAILS,
-                    'rights' => 'SETTINGS_ARTICLEDETAILS_VIEW',
+                    'link'    => 'einstellungen.php?kSektion=' . CONF_ARTIKELDETAILS,
+                    'rights'  => 'SETTINGS_ARTICLEDETAILS_VIEW',
                     'section' => CONF_ARTIKELDETAILS,
                 ],
                 __('Customer reviews') => (object)[
-                    'link'   => 'bewertung.php',
-                    'rights' => 'MODULE_VOTESYSTEM_VIEW',
+                    'link'    => 'bewertung.php',
+                    'rights'  => 'MODULE_VOTESYSTEM_VIEW',
                     'section' => CONF_BEWERTUNG,
                 ],
                 __('Price history')    => (object)[
-                    'link'   => 'preisverlauf.php',
-                    'rights' => 'MODULE_PRICECHART_VIEW',
+                    'link'    => 'preisverlauf.php',
+                    'rights'  => 'MODULE_PRICECHART_VIEW',
                     'section' => CONF_PREISVERLAUF,
                 ],
                 __('Warehouse')        => (object)[
@@ -75,8 +75,8 @@ $adminMenu = [
                     'rights' => 'CONTENT_PAGE_VIEW',
                 ],
                 __('Front page')              => (object)[
-                    'link'   => 'einstellungen.php?kSektion=' . CONF_STARTSEITE,
-                    'rights' => 'SETTINGS_STARTPAGE_VIEW',
+                    'link'    => 'einstellungen.php?kSektion=' . CONF_STARTSEITE,
+                    'rights'  => 'SETTINGS_STARTPAGE_VIEW',
                     'section' => CONF_STARTSEITE,
                 ],
                 __('GTC/cancellation policy') => (object)[
@@ -88,13 +88,13 @@ $adminMenu = [
                     'rights' => 'CONTENT_PAGE_VIEW',
                 ],
                 __('News')                    => (object)[
-                    'link'   => 'news.php',
-                    'rights' => 'CONTENT_NEWS_SYSTEM_VIEW',
+                    'link'    => 'news.php',
+                    'rights'  => 'CONTENT_NEWS_SYSTEM_VIEW',
                     'section' => CONF_NEWS,
                 ],
                 __('Box settings')            => (object)[
-                    'link'   => 'einstellungen.php?kSektion=' . CONF_BOXEN,
-                    'rights' => 'SETTINGS_BOXES_VIEW',
+                    'link'    => 'einstellungen.php?kSektion=' . CONF_BOXEN,
+                    'rights'  => 'SETTINGS_BOXES_VIEW',
                     'section' => CONF_BOXEN,
                 ],
                 __('Boxes')                   => (object)[
@@ -115,18 +115,18 @@ $adminMenu = [
             ],
             __('Forms')   => [
                 __('Form settings')            => (object)[
-                    'link'   => 'einstellungen.php?kSektion=' . CONF_KUNDEN,
-                    'rights' => 'SETTINGS_CUSTOMERFORM_VIEW',
+                    'link'    => 'einstellungen.php?kSektion=' . CONF_KUNDEN,
+                    'rights'  => 'SETTINGS_CUSTOMERFORM_VIEW',
                     'section' => CONF_KUNDEN,
                 ],
                 __('Contact form')             => (object)[
-                    'link'   => 'kontaktformular.php',
-                    'rights' => 'SETTINGS_CONTACTFORM_VIEW',
+                    'link'    => 'kontaktformular.php',
+                    'rights'  => 'SETTINGS_CONTACTFORM_VIEW',
                     'section' => CONF_KONTAKTFORMULAR,
                 ],
                 __('Custom form fields')       => (object)[
-                    'link'   => 'kundenfeld.php',
-                    'rights' => 'ORDER_CUSTOMERFIELDS_VIEW',
+                    'link'    => 'kundenfeld.php',
+                    'rights'  => 'ORDER_CUSTOMERFIELDS_VIEW',
                     'section' => CONF_KUNDENFELD,
                 ],
                 __('Check box administration') => (object)[
@@ -136,8 +136,8 @@ $adminMenu = [
             ],
             __('E-Mails') => [
                 __('Settings')   => (object)[
-                    'link'   => 'einstellungen.php?kSektion=' . CONF_EMAILS,
-                    'rights' => 'SETTINGS_EMAILS_VIEW',
+                    'link'    => 'einstellungen.php?kSektion=' . CONF_EMAILS,
+                    'rights'  => 'SETTINGS_EMAILS_VIEW',
                     'section' => CONF_EMAILS,
                 ],
                 __('Templates')  => (object)[
@@ -149,8 +149,8 @@ $adminMenu = [
                     'rights' => 'EMAIL_REPORTS_VIEW',
                 ],
                 __('Blacklist')  => (object)[
-                    'link'   => 'emailblacklist.php',
-                    'rights' => 'SETTINGS_EMAIL_BLACKLIST_VIEW',
+                    'link'    => 'emailblacklist.php',
+                    'rights'  => 'SETTINGS_EMAIL_BLACKLIST_VIEW',
                     'section' => CONF_EMAILBLACKLIST,
                 ],
                 __('E-mail log') => (object)[
@@ -163,10 +163,10 @@ $adminMenu = [
     __('Purchases')      => (object)[
         'icon'  => 'purchase',
         'items' => [
-            __('Shopping cart') => [
+            __('Shopping cart')     => [
                 __('Shopping cart settings') => (object)[
-                    'link'   => 'einstellungen.php?kSektion=' . CONF_KAUFABWICKLUNG,
-                    'rights' => 'SETTINGS_BASKET_VIEW',
+                    'link'    => 'einstellungen.php?kSektion=' . CONF_KAUFABWICKLUNG,
+                    'rights'  => 'SETTINGS_BASKET_VIEW',
                     'section' => CONF_KAUFABWICKLUNG,
                 ],
                 __('Saved baskets')          => (object)[
@@ -178,7 +178,7 @@ $adminMenu = [
                 'link'   => 'zahlungsarten.php',
                 'rights' => 'ORDER_PAYMENT_VIEW',
             ],
-            __('Delivery')      => [
+            __('Delivery')          => [
                 __('Shipping methods')     => (object)[
                     'link'   => 'versandarten.php',
                     'rights' => 'ORDER_SHIPMENT_VIEW',
@@ -195,20 +195,20 @@ $adminMenu = [
         'items' => [
             __('Customer loyalty') => [
                 __('Surveys')                 => (object)[
-                    'link'   => 'umfrage.php',
-                    'rights' => 'EXTENSION_VOTE_VIEW',
+                    'link'    => 'umfrage.php',
+                    'rights'  => 'EXTENSION_VOTE_VIEW',
                     'section' => CONF_UMFRAGE,
                 ],
                 __('Customers win customers') => (object)[
-                    'link'   => 'kundenwerbenkunden.php',
-                    'rights' => 'MODULE_CAC_VIEW',
+                    'link'    => 'kundenwerbenkunden.php',
+                    'rights'  => 'MODULE_CAC_VIEW',
                     'section' => CONF_KUNDENWERBENKUNDEN,
                 ],
                 __('Coupons')                 => (object)[
                     'link'   => 'kupons.php',
                     'rights' => 'ORDER_COUPON_VIEW',
                 ],
-                __('Free gift')              => (object)[
+                __('Free gift')               => (object)[
                     'link'   => 'gratisgeschenk.php',
                     'rights' => 'MODULE_GIFT_VIEW',
                 ],
@@ -217,13 +217,13 @@ $adminMenu = [
                     'rights' => 'MODULE_WISHLIST_VIEW',
                 ],
                 __('Comparison list')         => (object)[
-                    'link'   => 'vergleichsliste.php',
-                    'rights' => 'MODULE_COMPARELIST_VIEW',
+                    'link'    => 'vergleichsliste.php',
+                    'rights'  => 'MODULE_COMPARELIST_VIEW',
                     'section' => CONF_VERGLEICHSLISTE,
                 ],
                 __('Newsletter')              => (object)[
-                    'link'   => 'newsletter.php',
-                    'rights' => 'MODULE_NEWSLETTER_VIEW',
+                    'link'    => 'newsletter.php',
+                    'rights'  => 'MODULE_NEWSLETTER_VIEW',
                     'section' => CONF_NEWSLETTER,
                 ],
             ],
@@ -296,13 +296,13 @@ $adminMenu = [
                     'rights' => 'EXPORT_FORMATS_VIEW',
                 ],
                 __('Sitemap export') => (object)[
-                    'link'   => 'sitemapexport.php',
-                    'rights' => 'EXPORT_SITEMAP_VIEW',
+                    'link'    => 'sitemapexport.php',
+                    'rights'  => 'EXPORT_SITEMAP_VIEW',
                     'section' => CONF_SITEMAP,
                 ],
                 __('RSS feed')       => (object)[
-                    'link'   => 'rss.php',
-                    'rights' => 'EXPORT_RSSFEED_VIEW',
+                    'link'    => 'rss.php',
+                    'rights'  => 'EXPORT_RSSFEED_VIEW',
                     'section' => CONF_RSS,
                 ],
             ],
@@ -311,13 +311,13 @@ $adminMenu = [
     __('Administration') => (object)[
         'icon'  => 'administration',
         'items' => [
-             __('Settings')    => [
+            __('Settings')    => [
                 __('Global settings')               => (object)[
-                    'link'   => 'einstellungen.php?kSektion=' . CONF_GLOBAL,
-                    'rights' => 'SETTINGS_GLOBAL_VIEW',
+                    'link'    => 'einstellungen.php?kSektion=' . CONF_GLOBAL,
+                    'rights'  => 'SETTINGS_GLOBAL_VIEW',
                     'section' => CONF_GLOBAL,
                 ],
-                __('Language administration') => (object)[
+                __('Language administration')       => (object)[
                     'link'   => 'sprache.php',
                     'rights' => 'LANGUAGE_VIEW',
                 ],
@@ -330,13 +330,13 @@ $adminMenu = [
                     'rights' => 'WAWI_SYNC_VIEW',
                 ],
                 __('Global meta data')              => (object)[
-                    'link'   => 'globalemetaangaben.php',
-                    'rights' => 'SETTINGS_GLOBAL_META_VIEW',
+                    'link'    => 'globalemetaangaben.php',
+                    'rights'  => 'SETTINGS_GLOBAL_META_VIEW',
                     'section' => CONF_METAANGABEN,
                 ],
                 __('Special items')                 => (object)[
-                    'link'   => 'suchspecials.php',
-                    'rights' => 'SETTINGS_SPECIALPRODUCTS_VIEW',
+                    'link'    => 'suchspecials.php',
+                    'rights'  => 'SETTINGS_SPECIALPRODUCTS_VIEW',
                     'section' => CONF_SUCHSPECIAL,
                 ],
                 __('Sitemap structure')             => (object)[
@@ -351,50 +351,54 @@ $adminMenu = [
                     'link'   => 'cache.php',
                     'rights' => 'OBJECTCACHE_VIEW',
                 ],
-             ],
-             __('Maintenance') => [
-                __('Order history')        => (object)[
+                __('Filesystem')                    => (object)[
+                    'link'   => 'filesystem.php',
+                    'rights' => 'SETTINGS_GLOBAL_VIEW',
+                ],
+            ],
+            __('Maintenance') => [
+                __('Order history')     => (object)[
                     'link'   => 'bestellungen.php',
                     'rights' => 'ORDER_VIEW',
                 ],
-                __('Activation centre')    => (object)[
+                __('Activation centre') => (object)[
                     'link'   => 'freischalten.php',
                     'rights' => 'UNLOCK_CENTRAL_VIEW',
                 ],
-                __('System log')           => (object)[
+                __('System log')        => (object)[
                     'link'   => 'systemlog.php',
                     'rights' => 'SYSTEMLOG_VIEW',
                 ],
-                __('Status')               => (object)[
+                __('Status')            => (object)[
                     'link'   => 'status.php',
                     'rights' => 'FILECHECK_VIEW|DBCHECK_VIEW|PERMISSIONCHECK_VIEW',
                 ],
-                __('Update')               => (object)[
+                __('Update')            => (object)[
                     'link'   => 'dbupdater.php',
                     'rights' => 'SHOP_UPDATE_VIEW',
                 ],
-                __('Re-directions')        => (object)[
+                __('Re-directions')     => (object)[
                     'link'   => 'redirect.php',
                     'rights' => 'REDIRECT_VIEW',
                 ],
-                __('Reset shop')           => (object)[
+                __('Reset shop')        => (object)[
                     'link'   => 'shopzuruecksetzen.php',
                     'rights' => 'RESET_SHOP_VIEW',
                 ],
-                __('Cron')           => (object)[
+                __('Cron')              => (object)[
                     'link'   => 'cron.php',
                     'rights' => 'EXPORT_SCHEDULE_VIEW',
                 ],
-             ],
-             __('Search')      => [
+            ],
+            __('Search')      => [
                 __('Search settings') => (object)[
-                    'link'   => 'sucheinstellungen.php',
-                    'rights' => 'SETTINGS_ARTICLEOVERVIEW_VIEW',
+                    'link'    => 'sucheinstellungen.php',
+                    'rights'  => 'SETTINGS_ARTICLEOVERVIEW_VIEW',
                     'section' => CONF_ARTIKELUEBERSICHT,
                 ],
                 __('Filter')          => (object)[
-                    'link'   => 'navigationsfilter.php',
-                    'rights' => 'SETTINGS_NAVIGATION_FILTER_VIEW',
+                    'link'    => 'navigationsfilter.php',
+                    'rights'  => 'SETTINGS_NAVIGATION_FILTER_VIEW',
                     'section' => CONF_NAVIGATIONSFILTER,
                 ],
                 __('Queries')         => (object)[
@@ -402,16 +406,16 @@ $adminMenu = [
                     'rights' => 'MODULE_LIVESEARCH_VIEW',
                 ],
                 __('JTL Search')      => 'DYNAMIC_JTL_SEARCH',
-             ],
+            ],
         ]
     ],
     __('Plugins')        => (object)[
         'icon'  => 'plugins',
         'items' => [
-    //        __('Plug-in marketplace') => (object)[
-    //            'link' => 'marktplatz.php',
-    //            'rights' => 'PLUGIN_ADMIN_VIEW',
-    //        ],
+            //        __('Plug-in marketplace') => (object)[
+            //            'link' => 'marktplatz.php',
+            //            'rights' => 'PLUGIN_ADMIN_VIEW',
+            //        ],
             __('Plug-in administration') => (object)[
                 'link'   => 'pluginverwaltung.php',
                 'rights' => 'PLUGIN_ADMIN_VIEW',
@@ -420,7 +424,7 @@ $adminMenu = [
                 'link'   => 'profiler.php',
                 'rights' => 'PROFILER_VIEW',
             ],
-            __('My Plugins')  => 'DYNAMIC_PLUGINS',
+            __('My Plugins')             => 'DYNAMIC_PLUGINS',
         ],
     ]
 ];

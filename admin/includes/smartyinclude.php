@@ -38,13 +38,13 @@ $currentThirdLevel  = 0;
 $mainGroups         = [];
 $rootKey            = 0;
 if (!$hasPendingUpdates) {
-    $jtlSearch         = $db->query(
+    $jtlSearch                    = $db->query(
         "SELECT kPlugin, cName
             FROM tplugin
             WHERE cPluginID = 'jtl_search'",
         ReturnType::SINGLE_OBJECT
     );
-    $curScriptFileNameWithReuqest = basename($_SERVER['REQUEST_URI']);
+    $curScriptFileNameWithRequest = basename($_SERVER['REQUEST_URI']);
     foreach ($adminMenu as $rootName => $rootEntry) {
         $mainGroup = (object)[
             'cName'           => $rootName,
@@ -110,7 +110,7 @@ if (!$hasPendingUpdates) {
                         'cURL'      => $secondEntry->link,
                         'cRecht'    => $secondEntry->permissions,
                     ];
-                    if ($linkGruppe->oLink_arr->cURL === $curScriptFileNameWithReuqest) {
+                    if ($linkGruppe->oLink_arr->cURL === $curScriptFileNameWithRequest) {
                         $currentToplevel    = $mainGroup->key;
                         $currentSecondLevel = $linkGruppe->key;
                     }
@@ -145,7 +145,7 @@ if (!$hasPendingUpdates) {
                             mb_parse_str($urlParts['query'], $urlParts['query']);
                         }
 
-                        if (explode('#', $link->cURL)[0] === $curScriptFileNameWithReuqest) {
+                        if (explode('#', $link->cURL)[0] === $curScriptFileNameWithRequest) {
                             $currentToplevel    = $mainGroup->key;
                             $currentSecondLevel = $linkGruppe->key;
                             $currentThirdLevel  = $link->key;

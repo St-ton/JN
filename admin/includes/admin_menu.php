@@ -261,7 +261,6 @@ $adminMenu = [
             __('My Plugins')  => 'DYNAMIC_PLUGINS',
         ],
     ],
-
     __('Administration') => (object)[
         'icon'  => 'administration',
         'items' => [

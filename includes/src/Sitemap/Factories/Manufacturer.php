@@ -38,9 +38,7 @@ final class Manufacturer extends AbstractFactory
             ReturnType::QUERYSINGLE
         );
         while (($mf = $res->fetch(PDO::FETCH_OBJ)) !== false) {
-            $mf->kHersteller = (int)$mf->kHersteller;
-            $mf->langID      = (int)$mf->langID;
-            $item            = new Item($this->config, $this->baseURL, $this->baseImageURL);
+            $item = new Item($this->config, $this->baseURL, $this->baseImageURL);
             $item->generateData($mf, $languages);
             yield $item;
         }

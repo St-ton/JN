@@ -41,8 +41,8 @@ final class Category extends AbstractItem
     public function generateData($data, array $languages): void
     {
         $this->setData($data);
-        $this->setPrimaryKeyID($data->kKategorie);
-        $this->setLanguageData($languages, $data->langID);
+        $this->setPrimaryKeyID((int)$data->kKategorie);
+        $this->setLanguageData($languages, (int)$data->langID);
         $this->generateImage();
         $this->generateLocation();
         $this->setChangeFreq(\FREQ_WEEKLY);

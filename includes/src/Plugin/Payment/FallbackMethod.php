@@ -8,6 +8,8 @@
 
 namespace JTL\Plugin\Payment;
 
+use JTL\Cart\Cart;
+
 /**
  * Class FallbackMethod
  * @package JTL\Plugin\Payment
@@ -29,18 +31,27 @@ class FallbackMethod extends Method
     /**
      * @inheritDoc
      */
-    public function isSelectable(): bool
+    public function isValidIntern(array $args_arr = []): bool
     {
-        // this payment-method is always selectable
+        // this payment-method is always valid
         return true;
     }
 
     /**
      * @inheritDoc
      */
-    public function isValidIntern(array $args_arr = []): bool
+    public function isValid(object $customer, Cart $cart): bool
     {
         // this payment-method is always valid
+        return true;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function isSelectable(): bool
+    {
+        // this payment-method is always selectable
         return true;
     }
 

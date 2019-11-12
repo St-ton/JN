@@ -691,7 +691,7 @@ function gibStepZahlung()
         ShippingMethod::getShippingClasses(Frontend::getCart()),
         $customerGroupID
     );
-    $packagings      = ShippingMethod::getPossiblePackagings($customerGroupID);
+    $packagings = ShippingMethod::getPossiblePackagings($customerGroupID);
     if (!empty($packagings) && $cart->posTypEnthalten(C_WARENKORBPOS_TYP_VERPACKUNG)) {
         foreach ($cart->PositionenArr as $item) {
             if ($item->nPosTyp === C_WARENKORBPOS_TYP_VERPACKUNG) {
@@ -710,20 +710,33 @@ function gibStepZahlung()
         if (!is_array($paymentMethods) || count($paymentMethods) === 0) {
             Shop::Container()->getLogService()->error(
                 'Es konnte keine Zahlungsart für folgende Daten gefunden werden: Versandart: ' .
-                $_SESSION['Versandart']->kVersandart .
-                ', Kundengruppe: ' . $customerGroupID
+                $shippingMethod . ', Kundengruppe: ' . $customerGroupID
             );
+            $paymentMethod  = null;
+            $paymentMethods = [];
+        } else {
+            $paymentMethod = gibAktiveZahlungsart($paymentMethods);
         }
 
-        $packaging     = gibAktiveVerpackung($packagings);
-        $paymentMethod = gibAktiveZahlungsart($paymentMethods);
+        $packaging = gibAktiveVerpackung($packagings);
         if (!isset($_SESSION['Versandart']) && !empty($shippingMethod)) {
             // dieser Workaround verhindert die Anzeige der Standardzahlungsarten wenn ein Zahlungsplugin aktiv ist
             $_SESSION['Versandart'] = (object)[
                 'kVersandart' => $shippingMethod,
             ];
         }
-        $smarty->assign('Zahlungsarten', $paymentMethods)
+        $selectablePayments = \array_filter(
+            $paymentMethods,
+            function ($method) {
+                $paymentMethod = LegacyMethod::create($method->cModulId);
+                if ($paymentMethod !== null) {
+                    return $paymentMethod->isSelectable();
+                }
+
+                return true;
+            }
+        );
+        $smarty->assign('Zahlungsarten', $selectablePayments)
                ->assign('Versandarten', $shippingMethods)
                ->assign('Verpackungsarten', $packagings)
                ->assign('AktiveVersandart', $shippingMethod)
@@ -1658,13 +1671,16 @@ function zahlungsartGueltig($paymentMethod): bool
         if ($plugin === null || $plugin->getState() !== State::ACTIVATED) {
             return false;
         }
-        global $oPlugin;
-        $oPlugin = $plugin;
-        $method  = LegacyMethod::create($moduleID);
-        if ($method === null || $method->isSelectable() === false) {
+        if (!PluginHelper::licenseCheck($plugin, ['cModulId' => $moduleID])) {
             return false;
         }
-        if (!$method->isValidIntern()) {
+        global $oPlugin;
+        $oPlugin = $plugin;
+    }
+
+    $method = LegacyMethod::create($moduleID);
+    if ($method !== null) {
+        if (!$method->isValid(Frontend::getCustomer(), Frontend::getCart())) {
             Shop::Container()->getLogService()->withName('cModulId')->debug(
                 'Die Zahlungsartprüfung (' . $moduleID . ') wurde nicht erfolgreich validiert (isValidIntern).',
                 [$moduleID]
@@ -1672,23 +1688,8 @@ function zahlungsartGueltig($paymentMethod): bool
 
             return false;
         }
-        if (!PluginHelper::licenseCheck($plugin, ['cModulId' => $moduleID])) {
-            return false;
-        }
 
-        return $method->isValid(Frontend::getCustomer(), Frontend::getCart());
-    }
-    $method = LegacyMethod::create($moduleID);
-    if ($method && $method->isSelectable() === false) {
-        return false;
-    }
-    if ($method && !$method->isValidIntern()) {
-        Shop::Container()->getLogService()->withName('cModulId')->debug(
-            'Die Zahlungsartprüfung (' . $moduleID . ') wurde nicht erfolgreich validiert (isValidIntern).',
-            [$moduleID]
-        );
-
-        return false;
+        return true;
     }
 
     return Helper::shippingMethodWithValidPaymentMethod($paymentMethod);

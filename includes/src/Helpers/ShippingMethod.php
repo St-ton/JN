@@ -281,18 +281,16 @@ class ShippingMethod
                 ],
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            $valid          = some($paymentMethods, function ($pmm) {
+            $shippingMethod->valid = some($paymentMethods, function ($pmm) {
                 return PaymentMethod::shippingMethodWithValidPaymentMethod($pmm);
             });
-            if (!$valid) {
-                unset($shippingMethod);
-            }
         }
         // auf anzeige filtern
         $possibleMethods = \array_filter(
             \array_merge($methods),
             function ($p) use ($minSum) {
-                return $p->cAnzeigen === 'immer' || ($p->cAnzeigen === 'guenstigste' && $p->fEndpreis <= $minSum);
+                return $p->valid
+                    && ($p->cAnzeigen === 'immer' || ($p->cAnzeigen === 'guenstigste' && $p->fEndpreis <= $minSum));
             }
         );
         // evtl. Versandkupon anwenden

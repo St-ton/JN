@@ -24,7 +24,7 @@ final class Product extends AbstractItem
         if ($this->config['sitemap']['sitemap_googleimage_anzeigen'] !== 'Y') {
             return;
         }
-        if (($number = ProductImage::getPrimaryNumber(Image::TYPE_PRODUCT, $this->data->kArtikel)) !== null) {
+        if (($number = ProductImage::getPrimaryNumber(Image::TYPE_PRODUCT, (int)$this->data->kArtikel)) !== null) {
             $googleImage = ProductImage::getThumb(
                 Image::TYPE_PRODUCT,
                 $this->data->kArtikel,

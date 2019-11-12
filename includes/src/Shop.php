@@ -27,6 +27,9 @@ use JTL\DB\Services\GcServiceInterface;
 use JTL\Debug\JTLDebugBar;
 use JTL\Events\Dispatcher;
 use JTL\Events\Event;
+use JTL\Filesystem\AdapterFactory;
+use JTL\Filesystem\Factory;
+use JTL\Filesystem\Filesystem;
 use JTL\Filter\Config;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\ProductFilter;
@@ -2108,6 +2111,12 @@ final class Shop
                 new AdminLoginStatusToLogLevel(),
                 $container->getGetText()
             );
+        });
+
+        $container->singleton(Filesystem::class, function (Container $container) {
+            $factory = new AdapterFactory(self::getConfig([\CONF_FS])['fs']);
+
+            return new Filesystem($factory->getAdapter());
         });
 
         $container->bind(Mailer::class, function (Container $container) {

@@ -514,7 +514,6 @@ final class Installer
         $this->db->update('texportformat', 'kPlugin', $pluginID, $upd);
         $this->db->update('topcportlet', 'kPlugin', $pluginID, $upd);
         $this->db->update('topcblueprint', 'kPlugin', $pluginID, $upd);
-
         $this->updateLangVars($oldPluginID, $pluginID);
         $this->updateConfig($oldPluginID, $pluginID);
         $this->db->update(

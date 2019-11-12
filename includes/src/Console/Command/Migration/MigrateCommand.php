@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -24,17 +24,14 @@ class MigrateCommand extends Command
     /**
      * @inheritDoc
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('migrate')
             ->setDescription('Run the database migrations');
     }
 
     /**
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     * @return int|null|void
-     * @throws Exception
+     * @inheritDoc
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {

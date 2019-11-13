@@ -277,16 +277,28 @@
                                         {else}
                                             {col cols=12}
                                                 {block name='productlist-item-list-basket-details-quantity'}
-                                                    {input type="{if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}text{else}number{/if}" min="0"
-                                                        step="{if $Artikel->fAbnahmeintervall > 0}{$Artikel->fAbnahmeintervall}{/if}"
-                                                        size="2"
-                                                        id="quantity{$Artikel->kArtikel}"
-                                                        class="quantity"
-                                                        name="anzahl"
-                                                        autocomplete="off"
-                                                        aria=["label"=>{lang key='quantity'}]
-                                                        data=["decimals"=>{getDecimalLength quantity=$Artikel->fAbnahmeintervall}]
-                                                        value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}"}
+                                                    {inputgroup class="form-counter"}
+                                                        {inputgroupprepend}
+                                                            {button variant="" data=["count-down"=>""]}
+                                                                <span class="fas fa-minus"></span>
+                                                            {/button}
+                                                        {/inputgroupprepend}
+                                                        {input type="{if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}text{else}number{/if}" min="0"
+                                                            step="{if $Artikel->fAbnahmeintervall > 0}{$Artikel->fAbnahmeintervall}{/if}"
+                                                            size="2"
+                                                            id="quantity{$Artikel->kArtikel}"
+                                                            class="quantity"
+                                                            name="anzahl"
+                                                            autocomplete="off"
+                                                            aria=["label"=>{lang key='quantity'}]
+                                                            data=["decimals"=>{getDecimalLength quantity=$Artikel->fAbnahmeintervall}]
+                                                            value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}"}
+                                                        {inputgroupappend}
+                                                            {button variant="" data=["count-up"=>""]}
+                                                                <span class="fas fa-plus"></span>
+                                                            {/button}
+                                                        {/inputgroupappend}
+                                                    {/inputgroup}
                                                 {/block}
                                             {/col}
                                             {col cols=12}

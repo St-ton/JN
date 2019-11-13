@@ -922,7 +922,7 @@ input.form-control[name="wishlist-url"] {
 
 .label-slide .form-group{
   position:relative;
-  input:not([type="checkbox"]):not([type="radio"]), select, textarea {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="number"]), select, textarea {
     width:100%;
     outline:none;
     padding:10px 15px;

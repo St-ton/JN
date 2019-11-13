@@ -398,6 +398,11 @@ final class Shop
     private static $adminToken;
 
     /**
+     * @var null|string
+     */
+    private static $adminLangTag;
+
+    /**
      * @var array
      */
     private static $url = [];
@@ -1937,19 +1942,22 @@ final class Shop
                 $oldID = \session_id();
                 \session_write_close();
                 \session_id($_COOKIE['eSIdAdm']);
-                $result     = $isLogged();
-                $adminToken = $_SESSION['jtl_token'];
+                $result       = $isLogged();
+                $adminToken   = $_SESSION['jtl_token'];
+                $adminLangTag = $_SESSION['AdminAccount']->language;
                 \session_write_close();
                 \session_id($oldID);
                 new Session\Frontend();
             } else {
-                $result     = $isLogged();
-                $adminToken = $_SESSION['jtl_token'];
+                $result       = $isLogged();
+                $adminToken   = $_SESSION['jtl_token'];
+                $adminLangTag = $_SESSION['AdminAccount']->language;
             }
         }
 
-        self::$logged     = $result;
-        self::$adminToken = $adminToken;
+        self::$logged       = $result;
+        self::$adminToken   = $adminToken;
+        self::$adminLangTag = $adminLangTag;
 
         return $result;
     }
@@ -1962,6 +1970,19 @@ final class Shop
     {
         if (self::isAdmin()) {
             return self::$adminToken;
+        }
+
+        return null;
+    }
+
+    /**
+     * @return string|null
+     * @throws Exception
+     */
+    public static function getCurAdminLangTag(): ?string
+    {
+        if (self::isAdmin()) {
+            return self::$adminLangTag;
         }
 
         return null;

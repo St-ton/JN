@@ -83,7 +83,7 @@ class PluginLoader extends AbstractLoader
         $paths   = $this->loadPaths($obj->cVerzeichnis);
         $plugin  = new Plugin();
         $getText = Shop::Container()->getGetText();
-        $getText->setLanguage($_SESSION['AdminAccount']->language ?? $getText->getDefaultLanguage());
+        $getText->setLanguage();
         $plugin->setID($id);
         $plugin->setIsExtension(true);
         $plugin->setPaths($paths);

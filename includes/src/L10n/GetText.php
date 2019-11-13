@@ -37,8 +37,9 @@ class GetText
      */
     public function __construct()
     {
-        $this->setLanguage($_SESSION['AdminAccount']->language ?? $this->getDefaultLanguage())
-             ->loadAdminLocale();
+        $this
+            ->setLanguage()
+            ->loadAdminLocale();
     }
 
     /**
@@ -148,19 +149,26 @@ class GetText
     }
 
     /**
-     * @param string $langTag
+     * @param null|string $langTag
      * @return GetText
      */
-    public function setLanguage(string $langTag): self
+    public function setLanguage($langTag = null): self
     {
+        $langTag = $langTag
+            ?? $_SESSION['AdminAccount']->language
+            ?? $this->langTag
+            ?? $this->getDefaultLanguage();
+
         if ($this->langTag !== $langTag) {
+            $oldLangTag         = $this->langTag;
             $oldTranslations    = $this->translations;
+            $this->langTag      = $langTag;
             $this->translations = [];
             $this->translator   = new Translator();
             $this->translator->register();
 
             foreach ($oldTranslations as $path => $t) {
-                $newPath = \str_replace('/' . $this->langTag . '/', '/' . $langTag . '/', $path);
+                $newPath = \str_replace('/' . $oldLangTag . '/', '/' . $langTag . '/', $path);
 
                 if (\file_exists($newPath)) {
                     $this->translator->loadTranslations($this->getMoTranslations($newPath));
@@ -168,7 +176,6 @@ class GetText
             }
         }
 
-        $this->langTag = $langTag;
 
         return $this;
     }
@@ -208,17 +215,27 @@ class GetText
      * @param string $dir
      * @param string $domain
      * @return GetText
+     * @throws \Exception
      */
     public function addLocale(string $dir, string $domain): self
     {
         $path = $this->getMoPath($dir, $domain);
 
+        return $this->addMoFile($path);
+    }
+
+    /**
+     * @param string $path
+     * @return GetText
+     */
+    public function addMoFile(string $path): self
+    {
         if (\array_key_exists($path, $this->translations)) {
             return $this;
         }
 
         if (\file_exists($path)) {
-            $this->translator->loadTranslations($this->getTranslations($dir, $domain));
+            $this->translator->loadTranslations($this->getMoTranslations($path));
         }
 
         return $this;

@@ -11,7 +11,6 @@ const Data = {
 
 const proxy = function(fn, ...args) {
 	return function() {
-        console.log('proxy fnc call');
 		fn.call(this, ...args)
 	}
 }

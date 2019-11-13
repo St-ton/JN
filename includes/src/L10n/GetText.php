@@ -28,11 +28,6 @@ class GetText
     private $translator;
 
     /**
-     * @var array locale-path => true
-     */
-    private $loadedPoFiles = [];
-
-    /**
      * @var Translations[]
      */
     private $translations = [];
@@ -200,13 +195,12 @@ class GetText
     {
         $path = $this->getMoPath($dir, $domain);
 
-        if (\array_key_exists($path, $this->loadedPoFiles)) {
+        if (\array_key_exists($path, $this->translations)) {
             return $this;
         }
 
         if (\file_exists($path)) {
             $this->translator->loadTranslations($this->getTranslations($dir, $domain));
-            $this->loadedPoFiles[$path] = true;
         }
 
         return $this;

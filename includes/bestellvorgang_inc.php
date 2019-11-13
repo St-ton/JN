@@ -263,6 +263,9 @@ function plausiGuthaben($post): void
     if ((isset($_SESSION['Bestellung']->GuthabenNutzen) && (int)$_SESSION['Bestellung']->GuthabenNutzen === 1)
         || (isset($post['guthabenVerrechnen']) && (int)$post['guthabenVerrechnen'] === 1)
     ) {
+        if (!isset($_SESSION['Bestellung'])) {
+            $_SESSION['Bestellung'] = new stdClass();
+        }
         $_SESSION['Bestellung']->GuthabenNutzen   = 1;
         $_SESSION['Bestellung']->fGuthabenGenutzt = min(
             Frontend::getCustomer()->fGuthaben,
@@ -1314,7 +1317,7 @@ function zahlungsartKorrekt(int $paymentMethodID): int
  */
 function getPaymentSurchageDiscount($paymentMethod)
 {
-    if ($paymentMethod->fAufpreis == 0) {
+    if (!isset($paymentMethod->fAufpreis) || $paymentMethod->fAufpreis == 0) {
         return;
     }
     $cart = Frontend::getCart();

@@ -122,6 +122,15 @@ class GetText
     {
         $path = $this->getMoPath($dir, $domain);
 
+        return $this->getMoTranslations($path);
+    }
+
+    /**
+     * @param string $path
+     * @return Translations
+     */
+    public function getMoTranslations(string $path): Translations
+    {
         if (!isset($this->translations[$path])) {
             $this->translations[$path] = Translations::fromMoFile($path);
         }
@@ -145,9 +154,18 @@ class GetText
     public function setLanguage(string $langTag): self
     {
         if ($this->langTag !== $langTag) {
+            $oldTranslations    = $this->translations;
             $this->translations = [];
             $this->translator   = new Translator();
             $this->translator->register();
+
+            foreach ($oldTranslations as $path => $t) {
+                $newPath = \str_replace('/' . $this->langTag . '/', '/' . $langTag . '/', $path);
+
+                if (\file_exists($newPath)) {
+                    $this->translator->loadTranslations($this->getMoTranslations($newPath));
+                }
+            }
         }
 
         $this->langTag = $langTag;

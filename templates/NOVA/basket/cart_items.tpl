@@ -257,16 +257,26 @@
                                     </div>
                                 {else}
                                     <div class="qty-wrapper dropdown max-w-sm">
-                                        {inputgroup id="quantity-grp{$oPosition@index}" class="choose_quantity"}
-                                        {input type="{if $oPosition->Artikel->cTeilbar === 'Y' && $oPosition->Artikel->fAbnahmeintervall == 0}text{else}number{/if}"
-                                            min="{if $oPosition->Artikel->fMindestbestellmenge}{$oPosition->Artikel->fMindestbestellmenge}{else}0{/if}"
-                                            required=($oPosition->Artikel->fAbnahmeintervall > 0)
-                                            step="{if $oPosition->Artikel->fAbnahmeintervall > 0}{$oPosition->Artikel->fAbnahmeintervall}{/if}"
-                                            id="quantity[{$oPosition@index}]" class="quantity" name="anzahl[{$oPosition@index}]"
-                                            aria=["label"=>"{lang key='quantity'}"]
-                                            value=$oPosition->nAnzahl
-                                            data=["decimals"=>{getDecimalLength quantity=$oPosition->Artikel->fAbnahmeintervall}]
-                                        }
+                                        {inputgroup id="quantity-grp{$oPosition@index}" class="form-counter choose_quantity"}
+                                            {inputgroupprepend}
+                                                {button variant="" class="btn-decrement" data=["count-down"=>""]}
+                                                    <span class="fas fa-minus"></span>
+                                                {/button}
+                                            {/inputgroupprepend}
+                                            {input type="{if $oPosition->Artikel->cTeilbar === 'Y' && $oPosition->Artikel->fAbnahmeintervall == 0}text{else}number{/if}"
+                                                min="{if $oPosition->Artikel->fMindestbestellmenge}{$oPosition->Artikel->fMindestbestellmenge}{else}0{/if}"
+                                                required=($oPosition->Artikel->fAbnahmeintervall > 0)
+                                                step="{if $oPosition->Artikel->fAbnahmeintervall > 0}{$oPosition->Artikel->fAbnahmeintervall}{/if}"
+                                                id="quantity[{$oPosition@index}]" class="quantity" name="anzahl[{$oPosition@index}]"
+                                                aria=["label"=>"{lang key='quantity'}"]
+                                                value=$oPosition->nAnzahl
+                                                data=["decimals"=>{getDecimalLength quantity=$oPosition->Artikel->fAbnahmeintervall}]
+                                            }
+                                            {inputgroupappend}
+                                                {button variant="" class="btn-increment" data=["count-up"=>""]}
+                                                    <span class="fas fa-plus"></span>
+                                                {/button}
+                                            {/inputgroupappend}
                                         {/inputgroup}
                                     </div>
                                 {/if}

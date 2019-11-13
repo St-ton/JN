@@ -2,6 +2,10 @@
 
 import './globals.js'
 
+/* snippets */
+
+import './snippets/form-counter.js'
+
 /* plugins */
 
 import './plugins/navscrollbar.js'

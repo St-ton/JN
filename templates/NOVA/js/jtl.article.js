@@ -1109,6 +1109,7 @@
                     }
 
                     $spinner.stop();
+                    window.initNumberInput();
                 }, function () {
                     $.evo.error('Error loading ' + url);
                     $spinner.stop();
@@ -1137,8 +1138,8 @@
                         $.evo.extended().autoheight();
                     }
                     $spinner.stop();
-
-                    $.evo.initInputSpinner(wrapper + " input[type='number']");
+                    window.initNumberInput();
+                    // $.evo.initInputSpinner(wrapper + " input[type='number']");
                     $(wrapper + ' .list-gallery:not(.slick-initialized)').slick({
                         lazyLoad: 'ondemand',
                         infinite: false,

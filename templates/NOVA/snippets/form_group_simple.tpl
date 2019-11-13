@@ -115,7 +115,7 @@
                     name=$inputName
                     value="{if isset($inputValue)}{$inputValue}{/if}"
                     id=$inputId
-                    placeholder="{if isset($placeholder)}{$placeholder}{else}{$label}{/if}"
+                    placeholder="{if isset($placeholder)}{$placeholder}{else} {/if}"
                     required=$isRequired
                     autocomplete="{if !empty($autocomplete)}{$autocomplete}{/if}"
                 }

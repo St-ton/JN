@@ -920,57 +920,6 @@ input.form-control[name="wishlist-url"] {
   100% {transform: scale(1);}
 }
 
-.label-slide .form-group{
-  position:relative;
-  input:not([type="checkbox"]):not([type="radio"]), select, textarea {
-    width:100%;
-    outline:none;
-    padding:10px 15px;
-    &:focus{
-      & + label{
-        top: -10px;
-        background: #fff;
-        padding: 3px 6px;
-        left: 10px;
-        color: $gray-dark;
-        font-size: 12px;
-      }
-    }
-    &:not([value=""]):not(:focus), &[type="date"], &[type="datetime-local"], &[type="color"], &[type="file"]{
-      & + label{
-        top: -10px;
-        background: #fff;
-        padding: 3px 6px 0 6px;
-        left: 10px;
-        color: $gray-dark;
-        font-size: 12px;
-      }
-    }
-    & + label {
-      position: absolute;
-      top: 12px;
-      z-index: 5;
-      left: 10px;
-      font-size: 14px;
-      color: $gray-light;
-      pointer-events: none;
-      transition: 0.4s all;
-    }
-    &::-webkit-input-placeholder {
-      color:transparent;
-    }
-    &:-moz-placeholder { /* Firefox 18- */
-      color:transparent;
-    }
-    &::-moz-placeholder {  /* Firefox 19+ */
-      color:transparent;
-    }
-    &:-ms-input-placeholder {
-      color:transparent;
-    }
-  }
-}
-
 input.typeahead {
   &::-webkit-input-placeholder {
     color:$gray-light !important;

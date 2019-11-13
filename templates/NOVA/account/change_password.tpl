@@ -24,7 +24,7 @@
                             <div class="form-group d-flex flex-column" role="group">
                                 {input type="password"
                                        class="form-control"
-                                       placeholder="{lang key='newPassword' section='login'}"
+                                       placeholder=" "
                                        id="newPassword"
                                        value=""
                                        required=true

@@ -244,7 +244,7 @@
                             value="{if isset($Lieferadresse->cPLZ)}{$Lieferadresse->cPLZ}{/if}"
                             id="{$prefix}-{$name}-postcode"
                             class="postcode_input"
-                            placeholder="{lang key='plz' section='account data'}"
+                            placeholder=" "
                             data-toggle="postcode"
                             data-city="#{$prefix}-{$name}-city"
                             data-country="#{$prefix}-{$name}-country"
@@ -266,7 +266,7 @@
             {col cols=12 md=8}
                 {block name='checkout-customer-shipping-address-city'}
                     {formgroup
-                        class="{if !empty($fehlendeAngaben.ort)} has-error{/if}"
+                        class="{if !empty($fehlendeAngaben.ort)} has-error{/if} exclude-from-label-slide"
                         label=""
                         label-for="{$prefix}-{$name}-city"
                     }

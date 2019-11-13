@@ -26,7 +26,7 @@
                         <dd class="form-group text-left">
                             {if $Variation->cTyp === 'SELECTBOX'}
                                 {block name='productdetails-variation-select-outer'}
-                                {select class='custom-select' title="{lang key='pleaseChooseVariation' section='productDetails'}" name="eigenschaftwert[{$Variation->kEigenschaft}]" required=!$showMatrix}
+                                {select class='custom-select selectpicker' title="{lang key='pleaseChooseVariation' section='productDetails'}" name="eigenschaftwert[{$Variation->kEigenschaft}]" required=!$showMatrix}
                                     <option selected="selected" disabled value="">{lang key='selectChoose'}</option>
                                     {foreach name=Variationswerte from=$Variation->Werte key=y item=Variationswert}
                                         {assign var=bSelected value=false}
@@ -45,6 +45,8 @@
                                                     {include file='productdetails/variation_value.tpl' assign='cVariationsWert'}
                                                 {/block}
                                                 <option value="{$Variationswert->kEigenschaftWert}" class="variation"
+                                                        data-content="<span data-value='{$Variationswert->kEigenschaftWert}'>{$cVariationsWert|trim}
+                                                    {if $Variationswert->notExists} ({lang key='notAvailableInSelection'}){elseif !$Variationswert->inStock} ({lang key='ampelRot'}){/if}</span>"
                                                         data-type="option"
                                                         data-original="{$Variationswert->cName}"
                                                         data-key="{$Variationswert->kEigenschaft}"

@@ -92,5 +92,30 @@
         {block name='productdetails-image-include-product-images-modal'}
             {include file='productdetails/product_images_modal.tpl' images=$Artikel->Bilder}
         {/block}
+
+        {block name='productdetails-image-variation-preview'}
+            {if !$device->isMobile() && isset($Artikel->Variationen) && $Artikel->Variationen|@count > 0}
+                {assign var=VariationsSource value='Variationen'}
+                {if isset($ohneFreifeld) && $ohneFreifeld}
+                    {assign var=VariationsSource value='VariationenOhneFreifeld'}
+                {/if}
+                {foreach name=Variationen from=$Artikel->$VariationsSource key=i item=Variation}
+                    {foreach name=Variationswerte from=$Variation->Werte key=y item=Variationswert}
+                        {if $Variationswert->getImage() !== null}
+                            {image fluid=true webp=true lazy=true
+                                class="variation-image-preview d-none fade vt{$Variationswert->kEigenschaftWert}"
+                                src=$Variationswert->getImage(\JTL\Media\Image::SIZE_XS)
+                                srcset="{$Variationswert->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_variationen_mini_breite}w,
+                                    {$Variationswert->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_variationen_klein_breite}w,
+                                    {$Variationswert->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_variationen_breite}w,
+                                    {$Variationswert->getImage(\JTL\Media\Image::SIZE_LG)} {$Einstellungen.bilder.bilder_variationen_gross_breite}w,"
+                                sizes="50vw"
+                                alt=$Variationswert->cName|escape:'quotes'
+                            }
+                        {/if}
+                    {/foreach}
+                {/foreach}
+            {/if}
+        {/block}
     </div>
 {/block}

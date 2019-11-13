@@ -8931,7 +8931,7 @@ input[type=button].btn-block {
 }
 
 .fade {
-  transition: opacity 0.15s linear;
+  transition: opacity 0.35s linear;
 }
 @media (prefers-reduced-motion: reduce) {
   .fade {
@@ -24832,6 +24832,14 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   #image_wrapper.fullscreen #gallery_preview_wrapper {
     width: 80%;
   }
+}
+#image_wrapper .variation-image-preview {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 98%;
+  height: auto;
+  background: #ffffff;
 }
 
 /* header */

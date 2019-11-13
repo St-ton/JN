@@ -735,27 +735,8 @@
             }
         },
 
-        // initInputSpinner: function(target) {
-        //     var config = {
-        //         decrementButton: "<i class='fas fa-minus'></i>", // button text
-        //         incrementButton: "<i class='fas fa-plus'></i>", // ..
-        //         groupClass: "input-group", // css class of the input-group (sizing with input-group-sm, input-group-lg)
-        //         buttonsClass: "btn-outline-secondary form-control",
-        //         buttonsWidth: "42px",
-        //         textAlign: "center",
-        //         autoDelay: 500, // ms holding before auto value change
-        //         autoInterval: 100, // speed of auto value change
-        //         boostThreshold: 10, // boost after these steps
-        //         boostMultiplier: "auto", // you can also set a constant number as multiplier
-        //         locale: null // the locale for number rendering; if null, the browsers language is used
-        //     }
-        //     $(target).InputSpinner(config);
-        // },
-
         addInactivityCheck: function() {
             var timeoutID;
-
-            // this.initInputSpinner("input[type='number']");
 
             function setup() {
                 $('#cart-form .form-counter input').on('change',resetTimer);

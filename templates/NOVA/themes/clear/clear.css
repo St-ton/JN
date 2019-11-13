@@ -23472,9 +23472,6 @@ input.form-control[name=wishlist-url] {
 .cfg-group .config-item .badge-circle {
   display: none;
 }
-.cfg-group .config-item .nmbr-cfg-group {
-  display: none;
-}
 .cfg-group .cfg-swatch ~ .custom-control-label::before,
 .cfg-group .cfg-swatch ~ .custom-control-label::after {
   display: none;
@@ -23500,9 +23497,6 @@ input.form-control[name=wishlist-url] {
   position: absolute;
   top: -20px;
   right: -22px;
-}
-.cfg-group .cfg-swatch:checked ~ .custom-control-label .config-item .nmbr-cfg-group {
-  display: flex;
 }
 .cfg-group .drpdwn_qnt {
   display: none;

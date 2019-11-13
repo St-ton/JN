@@ -166,7 +166,6 @@
             <File Path="js/parallax.min.js"/>
             <File Path="js/Chart.min.js" DependsOnSettingGroup="CONF_PREISVERLAUF" DependsOnSetting="preisverlauf.preisverlauf_anzeigen" DependsOnSettingValue="Y"/>
             <File Path="js/jqcloud.js"/>
-            <!--<File Path="js/bs4-input-spinner.js"/>-->
             <File Path="js/nouislider.min.js"/>
             <File Path="js/password/password.min.js"/>
         </JS>

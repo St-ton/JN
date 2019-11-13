@@ -55,10 +55,9 @@ class GetText
     }
 
     /**
-     * @param string $inLanguage
      * @return array
      */
-    public function getAdminLanguages(string $inLanguage): array
+    public function getAdminLanguages(): array
     {
         $languages  = [];
         $localeDirs = \array_diff(

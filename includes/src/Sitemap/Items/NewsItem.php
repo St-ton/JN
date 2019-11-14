@@ -42,8 +42,8 @@ final class NewsItem extends AbstractItem
     public function generateData($data, array $languages): void
     {
         $this->setData($data);
-        $this->setPrimaryKeyID($data->kNews);
-        $this->setLanguageData($languages, $data->langID);
+        $this->setPrimaryKeyID((int)$data->kNews);
+        $this->setLanguageData($languages, (int)$data->langID);
         $this->generateImage();
         $this->setLocation($this->baseURL . $data->cSeo);
         $this->setChangeFreq(\FREQ_DAILY);

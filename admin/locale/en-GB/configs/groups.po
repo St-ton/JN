@@ -236,5 +236,11 @@ msgstr "Recipient address for goods return"
 msgid "ftp_header"
 msgstr "FTP connection"
 
+msgid "sftp_header"
+msgstr "SFTP connection"
+
+msgid "fs_general_header"
+msgstr "General"
+
 msgid "configgroup_110_manufacturer_filter"
 msgstr "Manufacturer filter"

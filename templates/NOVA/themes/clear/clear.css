@@ -21650,6 +21650,7 @@ aside .last-seen-link {
 }
 .form-counter .form-control::-webkit-inner-spin-button, .form-counter .form-control::-webkit-outer-spin-button {
   appearance: none;
+  -webkit-appearance: none;
   margin: 0;
 }
 .form-counter .input-group-text {
@@ -21659,7 +21660,7 @@ aside .last-seen-link {
   font-weight: 600;
 }
 .form-counter .btn:hover {
-  background-color: #9b9b9b;
+  background-color: #f5f7fa;
 }
 
 .custom-control-label-image {
@@ -23243,85 +23244,6 @@ aside .badge-light {
   border: 0;
 }
 
-.nmbr-cfg-group {
-  display: flex;
-  z-index: 1;
-  font-family: Montserrat, sans-serif;
-  font-weight: 600;
-}
-.nmbr-cfg-group .btn:hover {
-  background-color: #f5f7fa;
-}
-.nmbr-cfg-group input {
-  border-radius: 0;
-}
-.nmbr-cfg-group .btn-decrement:focus, .nmbr-cfg-group .btn-increment:focus {
-  color: #525252;
-  background-color: #fff;
-  border-color: #ffe079;
-  outline: 0;
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), none;
-}
-.nmbr-cfg-group .btn-decrement::placeholder, .nmbr-cfg-group .btn-increment::placeholder {
-  color: #707070;
-  opacity: 1;
-}
-.nmbr-cfg-group .btn-decrement:disabled, .nmbr-cfg-group .btn-decrement[readonly], .nmbr-cfg-group .btn-increment:disabled, .nmbr-cfg-group .btn-increment[readonly] {
-  background-color: #e9ecef;
-  opacity: 1;
-}
-.nmbr-cfg-group .btn-decrement {
-  border-right: 0;
-  border-radius: 0.125rem 0 0 0.125rem;
-}
-.nmbr-cfg-group .btn-increment {
-  border-left: 0;
-  border-radius: 0 0.125rem 0.125rem 0;
-}
-.nmbr-cfg-group input.form-control {
-  border-right: 0;
-  border-left: 0;
-  font-weight: 600;
-}
-.nmbr-cfg-group .input-group-text {
-  border-right: 0;
-  z-index: 2;
-}
-
-.choose_quantity,
-.quantity-wrapper,
-.input-group {
-  flex-wrap: nowrap;
-}
-.choose_quantity .nmbr-cfg-group,
-.quantity-wrapper .nmbr-cfg-group,
-.input-group .nmbr-cfg-group {
-  display: flex;
-  position: relative;
-  flex: 1 1 auto;
-  width: auto;
-  margin-bottom: 0;
-}
-.choose_quantity .nmbr-cfg-group input.quantity,
-.quantity-wrapper .nmbr-cfg-group input.quantity,
-.input-group .nmbr-cfg-group input.quantity {
-  display: flex;
-  position: relative;
-  /*flex: 1 1 auto;
-  width: 1%;*/
-  flex: 1 1 auto;
-  width: 1%;
-  margin-bottom: 0;
-  border-right: 0;
-}
-.choose_quantity .nmbr-cfg-group .unit,
-.quantity-wrapper .nmbr-cfg-group .unit,
-.input-group .nmbr-cfg-group .unit {
-  background: #fff;
-  border-left: 0;
-  margin-left: -1px;
-}
-
 .input-group-append > .btn.ml-3 {
   border-radius: 0.125rem;
 }
@@ -23567,9 +23489,6 @@ input.form-control[name=wishlist-url] {
 .cfg-group .config-item .badge-circle {
   display: none;
 }
-.cfg-group .config-item .nmbr-cfg-group {
-  display: none;
-}
 .cfg-group .cfg-swatch ~ .custom-control-label::before,
 .cfg-group .cfg-swatch ~ .custom-control-label::after {
   display: none;
@@ -23595,9 +23514,6 @@ input.form-control[name=wishlist-url] {
   position: absolute;
   top: -20px;
   right: -22px;
-}
-.cfg-group .cfg-swatch:checked ~ .custom-control-label .config-item .nmbr-cfg-group {
-  display: flex;
 }
 .cfg-group .drpdwn_qnt {
   display: none;
@@ -23648,12 +23564,12 @@ input.form-control[name=wishlist-url] {
 .label-slide .form-group {
   position: relative;
 }
-.label-slide .form-group input:not([type=checkbox]):not([type=radio]), .label-slide .form-group select, .label-slide .form-group textarea {
+.label-slide .form-group input:not([type=checkbox]):not([type=radio]):not([type=number]), .label-slide .form-group select, .label-slide .form-group textarea {
   width: 100%;
   outline: none;
   padding: 10px 15px;
 }
-.label-slide .form-group input:not([type=checkbox]):not([type=radio]):focus + label, .label-slide .form-group select:focus + label, .label-slide .form-group textarea:focus + label {
+.label-slide .form-group input:not([type=checkbox]):not([type=radio]):not([type=number]):focus + label, .label-slide .form-group select:focus + label, .label-slide .form-group textarea:focus + label {
   top: -10px;
   background: #fff;
   padding: 3px 6px;
@@ -23661,7 +23577,7 @@ input.form-control[name=wishlist-url] {
   color: #525252;
   font-size: 12px;
 }
-.label-slide .form-group input:not([type=checkbox]):not([type=radio]):not([value=""]):not(:focus) + label, .label-slide .form-group input:not([type=checkbox]):not([type=radio])[type=date] + label, .label-slide .form-group input:not([type=checkbox]):not([type=radio])[type=datetime-local] + label, .label-slide .form-group input:not([type=checkbox]):not([type=radio])[type=color] + label, .label-slide .form-group input:not([type=checkbox]):not([type=radio])[type=file] + label, .label-slide .form-group select:not([value=""]):not(:focus) + label, .label-slide .form-group select[type=date] + label, .label-slide .form-group select[type=datetime-local] + label, .label-slide .form-group select[type=color] + label, .label-slide .form-group select[type=file] + label, .label-slide .form-group textarea:not([value=""]):not(:focus) + label, .label-slide .form-group textarea[type=date] + label, .label-slide .form-group textarea[type=datetime-local] + label, .label-slide .form-group textarea[type=color] + label, .label-slide .form-group textarea[type=file] + label {
+.label-slide .form-group input:not([type=checkbox]):not([type=radio]):not([type=number]):not([value=""]):not(:focus) + label, .label-slide .form-group input:not([type=checkbox]):not([type=radio]):not([type=number])[type=date] + label, .label-slide .form-group input:not([type=checkbox]):not([type=radio]):not([type=number])[type=datetime-local] + label, .label-slide .form-group input:not([type=checkbox]):not([type=radio]):not([type=number])[type=color] + label, .label-slide .form-group input:not([type=checkbox]):not([type=radio]):not([type=number])[type=file] + label, .label-slide .form-group select:not([value=""]):not(:focus) + label, .label-slide .form-group select[type=date] + label, .label-slide .form-group select[type=datetime-local] + label, .label-slide .form-group select[type=color] + label, .label-slide .form-group select[type=file] + label, .label-slide .form-group textarea:not([value=""]):not(:focus) + label, .label-slide .form-group textarea[type=date] + label, .label-slide .form-group textarea[type=datetime-local] + label, .label-slide .form-group textarea[type=color] + label, .label-slide .form-group textarea[type=file] + label {
   top: -10px;
   background: #fff;
   padding: 3px 6px 0 6px;
@@ -23669,7 +23585,7 @@ input.form-control[name=wishlist-url] {
   color: #525252;
   font-size: 12px;
 }
-.label-slide .form-group input:not([type=checkbox]):not([type=radio]) + label, .label-slide .form-group select + label, .label-slide .form-group textarea + label {
+.label-slide .form-group input:not([type=checkbox]):not([type=radio]):not([type=number]) + label, .label-slide .form-group select + label, .label-slide .form-group textarea + label {
   position: absolute;
   top: 12px;
   z-index: 5;
@@ -23679,18 +23595,18 @@ input.form-control[name=wishlist-url] {
   pointer-events: none;
   transition: 0.4s all;
 }
-.label-slide .form-group input:not([type=checkbox]):not([type=radio])::-webkit-input-placeholder, .label-slide .form-group select::-webkit-input-placeholder, .label-slide .form-group textarea::-webkit-input-placeholder {
+.label-slide .form-group input:not([type=checkbox]):not([type=radio]):not([type=number])::-webkit-input-placeholder, .label-slide .form-group select::-webkit-input-placeholder, .label-slide .form-group textarea::-webkit-input-placeholder {
   color: transparent;
 }
-.label-slide .form-group input:not([type=checkbox]):not([type=radio]):-moz-placeholder, .label-slide .form-group select:-moz-placeholder, .label-slide .form-group textarea:-moz-placeholder {
+.label-slide .form-group input:not([type=checkbox]):not([type=radio]):not([type=number]):-moz-placeholder, .label-slide .form-group select:-moz-placeholder, .label-slide .form-group textarea:-moz-placeholder {
   /* Firefox 18- */
   color: transparent;
 }
-.label-slide .form-group input:not([type=checkbox]):not([type=radio])::-moz-placeholder, .label-slide .form-group select::-moz-placeholder, .label-slide .form-group textarea::-moz-placeholder {
+.label-slide .form-group input:not([type=checkbox]):not([type=radio]):not([type=number])::-moz-placeholder, .label-slide .form-group select::-moz-placeholder, .label-slide .form-group textarea::-moz-placeholder {
   /* Firefox 19+ */
   color: transparent;
 }
-.label-slide .form-group input:not([type=checkbox]):not([type=radio]):-ms-input-placeholder, .label-slide .form-group select:-ms-input-placeholder, .label-slide .form-group textarea:-ms-input-placeholder {
+.label-slide .form-group input:not([type=checkbox]):not([type=radio]):not([type=number]):-ms-input-placeholder, .label-slide .form-group select:-ms-input-placeholder, .label-slide .form-group textarea:-ms-input-placeholder {
   color: transparent;
 }
 

@@ -72,12 +72,34 @@ final class Export
     /**
      * @var array
      */
-    private $blockedURLs;
+    private $blockedURLs = [
+        'navi.php',
+        'suche.php',
+        'jtl.php',
+        'pass.php',
+        'registrieren.php',
+        'warenkorb.php',
+    ];
 
     /**
      * @var bool
      */
     private $gzip;
+
+    /**
+     * @var int
+     */
+    private $itemLimit = \SITEMAP_ITEMS_LIMIT;
+
+    /**
+     * @var string
+     */
+    private $fileName = 'sitemap_';
+
+    /**
+     * @var string|null
+     */
+    private $indexFileName = 'sitemap_index.xml';
 
     /**
      * Export constructor.
@@ -102,14 +124,6 @@ final class Export
         $this->baseImageURL   = Shop::getImageBaseURL();
         $this->baseURL        = Shop::getURL() . '/';
         $this->gzip           = \function_exists('gzopen');
-        $this->blockedURLs    = [
-            'navi.php',
-            'suche.php',
-            'jtl.php',
-            'pass.php',
-            'registrieren.php',
-            'warenkorb.php',
-        ];
         \executeHook(\HOOK_SITEMAP_EXPORT_INIT, ['instance' => $this]);
         $this->schemaRenderer->setConfig($config);
         $this->renderer->setConfig($config);
@@ -130,7 +144,6 @@ final class Export
         $markup     = '';
         $this->setSessionData($customerGroupIDs);
         $this->deleteFiles();
-
         \executeHook(\HOOK_SITEMAP_EXPORT_GENERATE, [
             'factories' => &$factories,
             'instance'  => $this
@@ -142,7 +155,7 @@ final class Export
                 if ($item === null) {
                     break;
                 }
-                if ($itemCount > \SITEMAP_ITEMS_LIMIT) {
+                if ($itemCount > $this->itemLimit) {
                     $itemCount = 1;
                     $this->buildFile($fileNumber, $markup);
                     ++$fileNumber;
@@ -161,6 +174,7 @@ final class Export
         $this->writeIndexFile($fileNumber);
         $timeTotal = \microtime(true) - $timeStart;
         \executeHook(\HOOK_SITEMAP_EXPORT_GENERATED, [
+            'instance'       => $this,
             'nAnzahlURL_arr' => $urlCounts,
             'totalTime'      => $timeTotal
         ]);
@@ -189,15 +203,22 @@ final class Export
      */
     private function writeIndexFile(int $fileNumber): void
     {
-        $indexFile = self::EXPORT_DIR . 'sitemap_index.xml';
-        if (\is_writable($indexFile) || !\is_file($indexFile)) {
-            $handle       = \fopen($indexFile, 'wb+');
-            $extension    = $this->gzip ? '.xml.gz' : '.xml';
-            $sitemapFiles = [];
-            for ($i = 0; $i <= $fileNumber; ++$i) {
-                $sitemapFiles[] = $this->baseURL . \PFAD_EXPORT . 'sitemap_' . $i . $extension;
-            }
-            \fwrite($handle, $this->schemaRenderer->buildIndex($sitemapFiles));
+        if ($this->indexFileName === null) {
+            return;
+        }
+        $indexFile = self::EXPORT_DIR . $this->indexFileName;
+        if (!\is_writable($indexFile) && \is_file($indexFile)) {
+            return;
+        }
+        $extension    = $this->gzip ? '.xml.gz' : '.xml';
+        $sitemapFiles = [];
+        for ($i = 0; $i <= $fileNumber; ++$i) {
+            $sitemapFiles[] = $this->baseURL . \PFAD_EXPORT . 'sitemap_' . $i . $extension;
+        }
+        $content = $this->schemaRenderer->buildIndex($sitemapFiles);
+        if (\mb_strlen($content) > 0) {
+            $handle = \fopen($indexFile, 'wb+');
+            \fwrite($handle, $content);
             \fclose($handle);
         }
     }
@@ -210,7 +231,7 @@ final class Export
         if ($this->config['sitemap']['sitemap_google_ping'] !== 'Y') {
             return;
         }
-        $indexURL = \urlencode($this->baseURL . 'sitemap_index.xml');
+        $indexURL = \urlencode($this->baseURL . $this->indexFileName);
         foreach ([self::SITEMAP_URL_GOOGLE, self::SITEMAP_URL_BING] as $url) {
             $status = Request::http_get_status($url . $indexURL);
             if ($status !== 200) {
@@ -240,7 +261,7 @@ final class Export
         if (empty($data)) {
             return false;
         }
-        $fileName = self::EXPORT_DIR . 'sitemap_' . $fileNumber . '.xml';
+        $fileName = self::EXPORT_DIR . $this->fileName . $fileNumber . '.xml';
         $handle   = $this->gzip
             ? \gzopen($fileName . '.gz', 'w9')
             : \fopen($fileName, 'wb+');
@@ -262,7 +283,7 @@ final class Export
             return false;
         }
         while (($file = \readdir($dh)) !== false) {
-            if ($file === 'sitemap_index.xml' || \mb_strpos($file, 'sitemap_') !== false) {
+            if ($file === $this->indexFileName || \mb_strpos($file, $this->fileName) !== false) {
                 \unlink(self::EXPORT_DIR . $file);
             }
         }
@@ -281,10 +302,8 @@ final class Export
         if ($timeTotal <= 0 || \count($urlCounts) === 0) {
             return false;
         }
-        $totalCount = 0;
-        foreach ($urlCounts as $count) {
-            $totalCount += $count;
-        }
+        $totalCount = \array_sum($urlCounts);
+
         $report                     = new stdClass();
         $report->nTotalURL          = $totalCount;
         $report->fVerarbeitungszeit = \number_format($timeTotal, 2);
@@ -419,5 +438,53 @@ final class Export
     public function setBaseImageURL(string $baseImageURL): void
     {
         $this->baseImageURL = $baseImageURL;
+    }
+
+    /**
+     * @return int
+     */
+    public function getItemLimit(): int
+    {
+        return $this->itemLimit;
+    }
+
+    /**
+     * @param int $itemLimit
+     */
+    public function setItemLimit(int $itemLimit): void
+    {
+        $this->itemLimit = $itemLimit;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFileName(): string
+    {
+        return $this->fileName;
+    }
+
+    /**
+     * @param string $fileName
+     */
+    public function setFileName(string $fileName): void
+    {
+        $this->fileName = $fileName;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getIndexFileName(): ?string
+    {
+        return $this->indexFileName;
+    }
+
+    /**
+     * @param string|null $indexFileName
+     */
+    public function setIndexFileName(?string $indexFileName): void
+    {
+        $this->indexFileName = $indexFileName;
     }
 }

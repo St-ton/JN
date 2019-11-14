@@ -2,7 +2,7 @@
 /**
  * Lang var for price change during checkout.
  *
- * @author FP
+ * @author fp
  * @created Fri, 24 May 2019 12:23:22 +0200
  */
 
@@ -14,7 +14,7 @@ use JTL\Update\Migration;
  */
 class Migration_20190524122322 extends Migration implements IMigration
 {
-    protected $author = 'FP';
+    protected $author = 'fp';
     protected $description = 'Create lang var for price change during checkout.';
 
     public function up()

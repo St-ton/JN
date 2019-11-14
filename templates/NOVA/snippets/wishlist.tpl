@@ -483,26 +483,36 @@
                                                                     <div class="form-row productbox-actions">
                                                                         {col cols=12}
                                                                             {block name='snippets-wishlist-form-basket-quantity'}
-                                                                                {input readonly=($isCurrenctCustomer !== true)
-                                                                                    type="{if $wlPosition->Artikel->cTeilbar === 'Y' && $wlPosition->Artikel->fAbnahmeintervall == 0}text{else}number{/if}"
-                                                                                    min="{if $wlPosition->Artikel->fMindestbestellmenge}{$wlPosition->Artikel->fMindestbestellmenge}{else}0{/if}"
-                                                                                    required=($wlPosition->Artikel->fAbnahmeintervall > 0)
-                                                                                    step="{if $wlPosition->Artikel->fAbnahmeintervall > 0}{$wlPosition->Artikel->fAbnahmeintervall}{/if}"
-                                                                                    class="quantity wunschliste_anzahl" name="Anzahl_{$wlPosition->kWunschlistePos}"
-                                                                                    aria=["label"=>"{lang key='quantity'}"]
-                                                                                    value="{$wlPosition->fAnzahl}"
-                                                                                    data=["decimals"=>"{if $wlPosition->Artikel->fAbnahmeintervall > 0}2{else}0{/if}"]
-                                                                                }
-                                                                            {/block}
-                                                                            {if $wlPosition->Artikel->cEinheit}
-                                                                                {block name='snippets-wishlist-form-basket-unit'}
+                                                                                {inputgroup class="form-counter"}
+                                                                                    {inputgroupprepend}
+                                                                                        {button variant="" data=["count-down"=>""]}
+                                                                                            <span class="fas fa-minus"></span>
+                                                                                        {/button}
+                                                                                    {/inputgroupprepend}
+                                                                                    {input readonly=($isCurrenctCustomer !== true)
+                                                                                        type="{if $wlPosition->Artikel->cTeilbar === 'Y' && $wlPosition->Artikel->fAbnahmeintervall == 0}text{else}number{/if}"
+                                                                                        min="{if $wlPosition->Artikel->fMindestbestellmenge}{$wlPosition->Artikel->fMindestbestellmenge}{else}0{/if}"
+                                                                                        required=($wlPosition->Artikel->fAbnahmeintervall > 0)
+                                                                                        step="{if $wlPosition->Artikel->fAbnahmeintervall > 0}{$wlPosition->Artikel->fAbnahmeintervall}{/if}"
+                                                                                        class="quantity wunschliste_anzahl" name="Anzahl_{$wlPosition->kWunschlistePos}"
+                                                                                        aria=["label"=>"{lang key='quantity'}"]
+                                                                                        value="{$wlPosition->fAnzahl}"
+                                                                                        data=["decimals"=>"{if $wlPosition->Artikel->fAbnahmeintervall > 0}2{else}0{/if}"]
+                                                                                    }
                                                                                     {inputgroupappend}
-                                                                                        {inputgrouptext class="unit form-control"}
-                                                                                            {$wlPosition->Artikel->cEinheit}
-                                                                                        {/inputgrouptext}
+                                                                                        {if $wlPosition->Artikel->cEinheit}
+                                                                                            {block name='snippets-wishlist-form-basket-unit'}
+                                                                                                {inputgrouptext class="unit form-control"}
+                                                                                                    {$wlPosition->Artikel->cEinheit}
+                                                                                                {/inputgrouptext}
+                                                                                            {/block}
+                                                                                        {/if}
+                                                                                        {button variant="" data=["count-up"=>""]}
+                                                                                            <span class="fas fa-plus"></span>
+                                                                                        {/button}
                                                                                     {/inputgroupappend}
-                                                                                {/block}
-                                                                            {/if}
+                                                                                {/inputgroup}
+                                                                            {/block}
                                                                         {/col}
                                                                         {col cols=12}
                                                                             {if $wlPosition->Artikel->bHasKonfig}

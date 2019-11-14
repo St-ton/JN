@@ -150,17 +150,29 @@
                                                                     {if $oItem->getMin() == $oItem->getMax()}
                                                                         {lang key='quantity'}: {$oItem->getInitial()}
                                                                     {else}
-                                                                        {input
-                                                                            type="{if $oItem->getArtikel()->cTeilbar === 'Y' && $oItem->getArtikel()->fAbnahmeintervall == 0}text{else}number{/if}"
-                                                                            min="{$oItem->getMin()}"
-                                                                            max="{$oItem->getMax()}"
-                                                                            step="{if $oItem->getArtikel()->fAbnahmeintervall > 0}{$oItem->getArtikel()->fAbnahmeintervall}{/if}"
-                                                                            id="quantity{$oItem->getKonfigitem()}"
-                                                                            class="quantity"
-                                                                            name="item_quantity[{$kKonfigitem}]"
-                                                                            autocomplete="off"
-                                                                            value="{if !empty($nKonfigitemAnzahl_arr[$kKonfigitem])}{$nKonfigitemAnzahl_arr[$kKonfigitem]}{else}{if $oItem->getArtikel()->fAbnahmeintervall > 0}{if $oItem->getArtikel()->fMindestbestellmenge > $oItem->getArtikel()->fAbnahmeintervall}{$oItem->getArtikel()->fMindestbestellmenge}{else}{$oItem->getArtikel()->fAbnahmeintervall}{/if}{else}1{/if}{/if}"
-                                                                        }
+                                                                        {inputgroup class="form-counter"}
+                                                                            {inputgroupprepend}
+                                                                                {button variant="" data=["count-down"=>""]}
+                                                                                    <span class="fas fa-minus"></span>
+                                                                                {/button}
+                                                                            {/inputgroupprepend}
+                                                                            {input
+                                                                                type="{if $oItem->getArtikel()->cTeilbar === 'Y' && $oItem->getArtikel()->fAbnahmeintervall == 0}text{else}number{/if}"
+                                                                                min="{$oItem->getMin()}"
+                                                                                max="{$oItem->getMax()}"
+                                                                                step="{if $oItem->getArtikel()->fAbnahmeintervall > 0}{$oItem->getArtikel()->fAbnahmeintervall}{/if}"
+                                                                                id="quantity{$oItem->getKonfigitem()}"
+                                                                                class="quantity"
+                                                                                name="item_quantity[{$kKonfigitem}]"
+                                                                                autocomplete="off"
+                                                                                value="{if !empty($nKonfigitemAnzahl_arr[$kKonfigitem])}{$nKonfigitemAnzahl_arr[$kKonfigitem]}{else}{if $oItem->getArtikel()->fAbnahmeintervall > 0}{if $oItem->getArtikel()->fMindestbestellmenge > $oItem->getArtikel()->fAbnahmeintervall}{$oItem->getArtikel()->fMindestbestellmenge}{else}{$oItem->getArtikel()->fAbnahmeintervall}{/if}{else}1{/if}{/if}"
+                                                                            }
+                                                                            {inputgroupappend}
+                                                                                {button variant="" data=["count-up"=>""]}
+                                                                                    <span class="fas fa-plus"></span>
+                                                                                {/button}
+                                                                            {/inputgroupappend}
+                                                                        {/inputgroup}
                                                                     {/if}
                                                                 </div>
                                                             {/radio}
@@ -226,17 +238,30 @@
                                                                     {if $oItem->getMin() == $oItem->getMax()}
                                                                         {lang key='quantity'}: {$oItem->getInitial()}
                                                                     {else}
-                                                                        {input
-                                                                            type="{if $oItem->getArtikel()->cTeilbar === 'Y' && $oItem->getArtikel()->fAbnahmeintervall == 0}text{else}number{/if}"
-                                                                            min="{$oItem->getMin()}"
-                                                                            max="{$oItem->getMax()}"
-                                                                            step="{if $oItem->getArtikel()->fAbnahmeintervall > 0}{$oItem->getArtikel()->fAbnahmeintervall}{/if}"
-                                                                            id="quantity{$oItem->getKonfigitem()}"
-                                                                            class="quantity"
-                                                                            name="item_quantity[{$kKonfigitem}]"
-                                                                            autocomplete="off"
-                                                                            value="{if !empty($nKonfigitemAnzahl_arr[$kKonfigitem])}{$nKonfigitemAnzahl_arr[$kKonfigitem]}{else}{if $oItem->getArtikel()->fAbnahmeintervall > 0}{if $oItem->getArtikel()->fMindestbestellmenge > $oItem->getArtikel()->fAbnahmeintervall}{$oItem->getArtikel()->fMindestbestellmenge}{else}{$oItem->getArtikel()->fAbnahmeintervall}{/if}{else}1{/if}{/if}"
-                                                                        }
+                                                                        {inputgroup class="form-counter"}
+                                                                            {inputgroupprepend}
+                                                                                {button variant="" data=["count-down"=>""]  disabled=empty($bSelectable)}
+                                                                                    <span class="fas fa-minus"></span>
+                                                                                {/button}
+                                                                            {/inputgroupprepend}
+                                                                            {input
+                                                                                type="{if $oItem->getArtikel()->cTeilbar === 'Y' && $oItem->getArtikel()->fAbnahmeintervall == 0}text{else}number{/if}"
+                                                                                min="{$oItem->getMin()}"
+                                                                                max="{$oItem->getMax()}"
+                                                                                step="{if $oItem->getArtikel()->fAbnahmeintervall > 0}{$oItem->getArtikel()->fAbnahmeintervall}{/if}"
+                                                                                id="quantity{$oItem->getKonfigitem()}"
+                                                                                class="quantity"
+                                                                                name="item_quantity[{$kKonfigitem}]"
+                                                                                autocomplete="off"
+                                                                                value="{if !empty($nKonfigitemAnzahl_arr[$kKonfigitem])}{$nKonfigitemAnzahl_arr[$kKonfigitem]}{else}{if $oItem->getArtikel()->fAbnahmeintervall > 0}{if $oItem->getArtikel()->fMindestbestellmenge > $oItem->getArtikel()->fAbnahmeintervall}{$oItem->getArtikel()->fMindestbestellmenge}{else}{$oItem->getArtikel()->fAbnahmeintervall}{/if}{else}1{/if}{/if}"
+                                                                                disabled=empty($bSelectable)
+                                                                            }
+                                                                            {inputgroupappend}
+                                                                                {button variant="" data=["count-up"=>""] disabled=empty($bSelectable)}
+                                                                                    <span class="fas fa-plus"></span>
+                                                                                {/button}
+                                                                            {/inputgroupappend}
+                                                                        {/inputgroup}
                                                                     {/if}
                                                                 </div>
                                                             {/checkbox}
@@ -327,17 +352,29 @@
                                                                     {if $oItem->getMin() == $oItem->getMax()}
                                                                         {lang key='quantity'}: {$oItem->getInitial()}
                                                                     {else}
-                                                                        {input
-                                                                            type="{if $oItem->getArtikel()->cTeilbar === 'Y' && $oItem->getArtikel()->fAbnahmeintervall == 0}text{else}number{/if}"
-                                                                            min="{$oItem->getMin()}"
-                                                                            max="{$oItem->getMax()}"
-                                                                            step="{if $oItem->getArtikel()->fAbnahmeintervall > 0}{$oItem->getArtikel()->fAbnahmeintervall}{/if}"
-                                                                            id="quantity{$oItem->getKonfigitem()}"
-                                                                            class="quantity"
-                                                                            name="item_quantity[{$oItem->getKonfigitem()}]"
-                                                                            autocomplete="off"
-                                                                            value="{if !empty($nKonfigitemAnzahl_arr[$oItem->getKonfigitem()])}{$nKonfigitemAnzahl_arr[$oItem->getKonfigitem()]}{else}{if $oItem->getArtikel()->fAbnahmeintervall > 0}{if $oItem->getArtikel()->fMindestbestellmenge > $oItem->getArtikel()->fAbnahmeintervall}{$oItem->getArtikel()->fMindestbestellmenge}{else}{$oItem->getArtikel()->fAbnahmeintervall}{/if}{else}1{/if}{/if}"
-                                                                        }
+                                                                        {inputgroup class="form-counter"}
+                                                                            {inputgroupprepend}
+                                                                                {button variant="" data=["count-down"=>""]}
+                                                                                    <span class="fas fa-minus"></span>
+                                                                                {/button}
+                                                                            {/inputgroupprepend}
+                                                                            {input
+                                                                                type="{if $oItem->getArtikel()->cTeilbar === 'Y' && $oItem->getArtikel()->fAbnahmeintervall == 0}text{else}number{/if}"
+                                                                                min="{$oItem->getMin()}"
+                                                                                max="{$oItem->getMax()}"
+                                                                                step="{if $oItem->getArtikel()->fAbnahmeintervall > 0}{$oItem->getArtikel()->fAbnahmeintervall}{/if}"
+                                                                                id="quantity{$oItem->getKonfigitem()}"
+                                                                                class="quantity"
+                                                                                name="item_quantity[{$oItem->getKonfigitem()}]"
+                                                                                autocomplete="off"
+                                                                                value="{if !empty($nKonfigitemAnzahl_arr[$oItem->getKonfigitem()])}{$nKonfigitemAnzahl_arr[$oItem->getKonfigitem()]}{else}{if $oItem->getArtikel()->fAbnahmeintervall > 0}{if $oItem->getArtikel()->fMindestbestellmenge > $oItem->getArtikel()->fAbnahmeintervall}{$oItem->getArtikel()->fMindestbestellmenge}{else}{$oItem->getArtikel()->fAbnahmeintervall}{/if}{else}1{/if}{/if}"
+                                                                            }
+                                                                            {inputgroupappend}
+                                                                                {button variant="" data=["count-up"=>""]}
+                                                                                    <span class="fas fa-plus"></span>
+                                                                                {/button}
+                                                                            {/inputgroupappend}
+                                                                        {/inputgroup}
                                                                     {/if}
                                                                 {/col}
                                                             {/row}

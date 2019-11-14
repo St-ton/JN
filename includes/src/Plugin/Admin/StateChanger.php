@@ -19,6 +19,7 @@ use JTL\Plugin\LegacyPluginLoader;
 use JTL\Plugin\PluginInterface;
 use JTL\Plugin\PluginLoader;
 use JTL\Plugin\State;
+use stdClass;
 
 /**
  * Class StateChanger
@@ -106,9 +107,7 @@ class StateChanger
             $p->enabled();
         }
 
-        return $affectedRow > 0
-            ? InstallCode::OK
-            : InstallCode::NO_PLUGIN_FOUND;
+        return $affectedRow > 0 ? InstallCode::OK : InstallCode::NO_PLUGIN_FOUND;
     }
 
     /**
@@ -129,8 +128,8 @@ class StateChanger
             $p->disabled();
         }
         $this->db->update('tplugin', 'kPlugin', $pluginID, (object)['nStatus' => State::DISABLED]);
-        $this->db->update('tadminwidgets', 'kPlugin', $pluginID, (object)['bActive' => 0]);
         $this->db->update('tlink', 'kPlugin', $pluginID, (object)['bIsActive' => 0]);
+        $this->db->update('tadminwidgets', 'kPlugin', $pluginID, (object)['bActive' => 0]);
         $this->db->update('topcportlet', 'kPlugin', $pluginID, (object)['bActive' => 0]);
         $this->db->update('topcblueprint', 'kPlugin', $pluginID, (object)['bActive' => 0]);
         $this->cache->flushTags([\CACHING_GROUP_PLUGIN . '_' . $pluginID]);
@@ -145,8 +144,9 @@ class StateChanger
      * @throws \Exception
      * @return int
      * @former reloadPlugin()
+     * @throws \Exception
      */
-    public function reload(PluginInterface $plugin, $forceReload = false): int
+    public function reload(PluginInterface $plugin, bool $forceReload = false): int
     {
         $info = $plugin->getPaths()->getBasePath() . \PLUGIN_INFO_FILE;
         if (!\file_exists($info)) {

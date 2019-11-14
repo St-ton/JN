@@ -1268,6 +1268,7 @@ define('HOOK_PAGE_NOT_FOUND_PRE_INCLUDE', 164);
  * after the creating of the sitemap
  *
  * @file sitemapexport.php
+ * @param JTL\Sitemap\Export instance
  * @param nAnzahlURL_arr
  * @param fTotalZeit
  */

@@ -42,8 +42,8 @@ final class NewsCategory extends AbstractItem
     public function generateData($data, array $languages): void
     {
         $this->setData($data);
-        $this->setPrimaryKeyID($data->kNewsKategorie);
-        $this->setLanguageData($languages, $data->langID);
+        $this->setPrimaryKeyID((int)$data->kNewsKategorie);
+        $this->setLanguageData($languages, (int)$data->langID);
         $this->generateImage();
         $this->generateLocation();
         $this->setChangeFreq(\FREQ_DAILY);

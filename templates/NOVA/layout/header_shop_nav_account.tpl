@@ -12,20 +12,21 @@
         {if empty($smarty.session.Kunde->kKunde)}
             {block name='layout-header-shop-nav-account-logged-out'}
                 <div class="dropdown-body lg-min-w-lg">
-                    {form action="{get_static_route id='jtl.php' secure=true}" method="post" class="evo-validate"}
+                    {form action="{get_static_route id='jtl.php' secure=true}" method="post" class="evo-validate label-slide"}
                         {block name='layout-header-shop-nav-account-form-content'}
                             <fieldset id="quick-login">
                                 {block name='layout-header-nav-account-form-email'}
-                                    {formgroup}
+                                    {formgroup label-for="email_quick" label={lang key='emailadress'}}
                                         {input type="email" name="email" id="email_quick" size="sm"
-                                               placeholder="{lang key='emailadress'}" required=true
+                                               placeholder=" " required=true
                                                autocomplete="quick-login username"}
+
                                     {/formgroup}
                                 {/block}
                                 {block name='layout-header-nav-account-form-password'}
-                                    {formgroup class="mb-5"}
+                                    {formgroup label-for="password_quick" label={lang key='password'} class="mb-5"}
                                         {input type="password" name="passwort" id="password_quick" size="sm"
-                                               required=true placeholder="{lang key='password'}"
+                                               required=true placeholder=" "
                                                autocomplete="quick-login current-password"}
                                     {/formgroup}
                                 {/block}

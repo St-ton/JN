@@ -55,10 +55,10 @@
                                 {/select}
                             {/formgroup}
                             {formgroup label-for="headline" label="{lang key='headline' section='product rating'}"}
-                                {input type="text" name="cTitel" value=$oBewertung->cTitel|default:'' id="headline" required=true}
+                                {input type="text" name="cTitel" placeholder=" " value=$oBewertung->cTitel|default:'' id="headline" required=true}
                             {/formgroup}
                             {formgroup label-for="comment" label="{lang key='comment' section='product rating'}"}
-                                {textarea name="cText" cols="80" rows="8" id="comment" required=true}{$oBewertung->cText|default:""}{/textarea}
+                                {textarea name="cText" cols="80" rows="8" id="comment" required=true placeholder=" "}{$oBewertung->cText|default:""}{/textarea}
                             {/formgroup}
                         {/block}
                         {block name='productdetails-review-form-form-submit'}

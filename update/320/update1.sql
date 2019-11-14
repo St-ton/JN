@@ -392,9 +392,6 @@ INSERT INTO `teinstellungenconfwerte` (`kEinstellungenConf`,`cName`,`cWert`,`nSo
 INSERT INTO `teinstellungenconfwerte` (`kEinstellungenConf`,`cName`,`cWert`,`nSort`) VALUES (1547,'Google reCaptcha','7',7);
 INSERT INTO `teinstellungen` (`kEinstellungenSektion`,`cName`,`cWert`) VALUES (1,'anti_spam_method','7');
 INSERT INTO `tspezialseite` (`kPlugin`, `cName`, `nLinkart`, `nSort`) VALUES ('0', 'WRB-Formular', '31', '31');
-DELETE FROM tzahlungsart WHERE kZahlungsart=7;
-DELETE FROM tzahlungsartsprache WHERE kZahlungsart=7;
-DELETE FROM tversandartzahlungsart WHERE kZahlungsart=7;
 ALTER TABLE `tartikelpict` CHANGE COLUMN `kMainArtikelBild` `kMainArtikelBild` INT(10) UNSIGNED NOT NULL DEFAULT 0;
 INSERT INTO `tsprachwerte` (`kSprachISO`, `kSprachsektion`, `cName`, `cWert`, `cStandard`, `bSystem`) VALUES ('1', '5', 'checkOrderDetails', 'Bitte überprüfen Sie Ihre Eingaben. Sie können einzelne Angaben durch Klicken auf den jeweiligen Bestellschritt korrigieren.', 'Bitte überprüfen Sie Ihre Eingaben. Sie können einzelne Angaben durch Klicken auf den jeweiligen Bestellschritt korrigieren.', '1');
 INSERT INTO `tsprachwerte` (`kSprachISO`, `kSprachsektion`, `cName`, `cWert`, `cStandard`, `bSystem`) VALUES ('2', '5', 'checkOrderDetails', 'Please check your inputs again. You can correct your data at any time by simply going back to the previous steps.', 'Please check your inputs again. You can correct your data at any time by simply going back to the previous steps.', '1');

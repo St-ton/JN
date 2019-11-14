@@ -24774,6 +24774,9 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   height: auto;
   background: #ffffff;
 }
+#image_wrapper .variation-image-preview:not(.show) {
+  z-index: -5;
+}
 
 /* header */
 .sticky-header header {

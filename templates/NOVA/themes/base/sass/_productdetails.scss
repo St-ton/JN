@@ -94,5 +94,8 @@
 		width: 98%;
 		height: auto;
 		background: $white;
+		&:not(.show) {
+			z-index: -5;
+		}
 	}
 }

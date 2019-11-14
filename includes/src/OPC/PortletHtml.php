@@ -50,7 +50,7 @@ trait PortletHtml
      */
     public function getButtonHtml(): string
     {
-        return \file_get_contents($this->getDefaultIconSvgUrl()) . '<span>' . $this->getTitle() . '</span>';
+        return \file_get_contents($this->getDefaultIconSvgPath()) . '<span>' . $this->getTitle() . '</span>';
     }
 
     /**
@@ -232,16 +232,15 @@ trait PortletHtml
     /**
      * @return string
      */
-    final protected function getDefaultIconSvgUrl(): string
+    final protected function getDefaultIconSvgPath(): string
     {
         $path = $this->getBasePath() . 'icon.svg';
-        $url  = $this->getBaseUrl() . 'icon.svg';
 
         if (\file_exists($path) === false) {
-            return Shop::getURL() . '/' . \PFAD_INCLUDES . 'src/OPC/Portlets/GenericPortlet/generic.icon.svg';
+            $path = \PFAD_ROOT . \PFAD_INCLUDES . 'src/OPC/Portlets/GenericPortlet/generic.icon.svg';
         }
 
-        return $url;
+        return $path;
     }
 
     /**

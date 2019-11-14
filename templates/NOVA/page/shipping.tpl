@@ -10,7 +10,7 @@
                 {block name='page-shipping-form'}
                     {form method="post"
                           action="{if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}{else}index.php{/if}{if $bExclusive}?exclusive_content=1{/if}"
-                          class="evo-validate" id="shipping-calculator-form"}
+                          class="evo-validate label-slide" id="shipping-calculator-form"}
                         {input type="hidden" name="s" value=$Link->getID()}
                         {block name='page-shipping-include-shipping-calculator'}
                             {include file='snippets/shipping_calculator.tpl' checkout=false}

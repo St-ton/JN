@@ -1,28 +1,32 @@
 
 // floating labels
-.float-label { position: absolute; cursor: text; top: 0; font-size: $input-font-size * .86; margin: 0; padding: 0 rem(5px); transform: translateY(-50%); transition: $transition-base; left: $input-padding-x; z-index: 1; line-height: 1.3; pointer-events: none; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; max-width: calc(100% - (2 * #{$input-padding-x}));
-	&:after { content: " "; display: block; position: absolute; background: $white; height: rem(2px); top: 45%; left: -3em; right: -3em; z-index: -1; }
-}
+.label-slide {
 
-.form-float-label { position: relative;
+.form-group:not(.exclude-from-label-slide):not(.checkbox) {
+	position: relative;
+
+	label { position: absolute; cursor: text; top: 0; font-size: $input-font-size * .86; margin: 0; padding: 0 rem(5px); transform: translateY(-50%); transition: $transition-base; left: $input-padding-x; z-index: 1; line-height: 1.3; pointer-events: none; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; max-width: calc(100% - (2 * #{$input-padding-x}));
+		&:after { content: " "; display: block; position: absolute; background: $white; height: rem(2px); top: 45%; left: -3em; right: -3em; z-index: -1; }
+	}
+
 	.form-control {
 		&::placeholder { transition: $transition-base; }
 
 		&:placeholder-shown {
 			&:not(:focus) {
 				&::placeholder { opacity: 0; }
-				& ~ .float-label { top: calc((#{$input-line-height * 1em} + #{$input-btn-padding-y * 2} + #{$input-height-border}) / 2); font-size: $input-font-size; color: $input-placeholder-color;
+				& ~ label { top: calc((#{$input-line-height * 1em} + #{$input-btn-padding-y * 2} + #{$input-height-border}) / 2); font-size: $input-font-size; color: $input-placeholder-color;
 					&:after { display: none; }
 				}
-				&.form-control-sm ~ .float-label { top: calc((#{$input-line-height-sm * 1em} + #{$input-btn-padding-y-sm * 2} + #{$input-height-border}) / 2); font-size: $input-font-size-sm; }
-				&.form-control-lg ~ .float-label { top: calc((#{$input-line-height-lg * 1em} + #{$input-btn-padding-y-lg * 2} + #{$input-height-border}) / 2); font-size: $input-font-size-lg; }
+				&.form-control-sm ~ label { top: calc((#{$input-line-height-sm * 1em} + #{$input-btn-padding-y-sm * 2} + #{$input-height-border}) / 2); font-size: $input-font-size-sm; }
+				&.form-control-lg ~ label { top: calc((#{$input-line-height-lg * 1em} + #{$input-btn-padding-y-lg * 2} + #{$input-height-border}) / 2); font-size: $input-font-size-lg; }
 			}
 		}
 	}
 }
 
 @each $state, $data in $form-validation-states {
-	.form-float-label {
+	.form-group {
 		~ .#{$state}-feedback,
 		~ .#{$state}-tooltip {
 			display: block;
@@ -30,9 +34,7 @@
 	}
 }
 
-.form-control-sm ~ .float-label { font-size: $input-font-size-sm * .8; left: $input-padding-x-sm; max-width: calc(100% - (2 * #{$input-padding-x-sm})); }
-.form-control-lg ~ .float-label { font-size: $input-font-size-lg * .8; left: $input-padding-x-lg; max-width: calc(100% - (2 * #{$input-padding-x-lg})); }
-
+}
 // form counter
 .form-counter { border: $input-border-width solid $input-border-color; border-radius: $input-border-radius;
 	.form-control { border: 0; text-align: center; font-family: $font-accent; font-weight: $font-weight-semibold;
@@ -76,6 +78,26 @@ input[type='radio'], input[type='checkbox'] {
 
 .custom-select {
 	-webkit-appearance: none;
+}
+
+.bootstrap-select.custom-select {
+	button.dropdown-toggle {
+		height: inherit;
+
+		&:hover, &:focus {
+			background: $white;
+			outline: 0;
+			box-shadow: none;
+		}
+		&:focus {
+			border-color: $primary;
+		}
+	}
+	&.show button.dropdown-toggle {
+		background: $white;
+		border-color: $primary;
+		outline: 0;
+	}
 }
 
 legend {

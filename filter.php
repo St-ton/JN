@@ -10,6 +10,9 @@ use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Product\ArtikelListe;
 use JTL\Catalog\Product\Bestseller;
 use JTL\Extensions\SelectionWizard\Wizard;
+use JTL\Filter\Metadata;
+use JTL\Filter\Pagination\ItemFactory;
+use JTL\Filter\Pagination\Pagination;
 use JTL\Filter\ProductFilter;
 use JTL\Helpers\Category;
 use JTL\Helpers\Product;
@@ -78,8 +81,8 @@ if ($conf['navigationsfilter']['allgemein_weiterleitung'] === 'Y' && $oSuchergeb
         http_response_code(301);
         $product = $oSuchergebnisse->getProducts()->pop();
         $url     = empty($product->cURL)
-            ? (JTL\Shop::getURL() . '/?a=' . $product->kArtikel)
-            : (JTL\Shop::getURL() . '/' . $product->cURL);
+            ? (Shop::getURL() . '/?a=' . $product->kArtikel)
+            : (Shop::getURL() . '/' . $product->cURL);
         header('Location: ' . $url);
         exit;
     }
@@ -163,7 +166,7 @@ Wizard::startIfRequired(
     [],
     $NaviFilter
 );
-$pagination = new JTL\Filter\Pagination\Pagination($NaviFilter, new JTL\Filter\Pagination\ItemFactory());
+$pagination = new Pagination($NaviFilter, new ItemFactory());
 $pagination->create($pages);
 
 $priceRanges = $NaviFilter->getPriceRangeFilter()->getOptions();
@@ -185,7 +188,7 @@ $smarty->assign('NaviFilter', $NaviFilter)
 
 executeHook(HOOK_FILTER_PAGE);
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
-$globalMetaData = JTL\Filter\Metadata::getGlobalMetaData();
+$globalMetaData = Metadata::getGlobalMetaData();
 $smarty->assign(
     'meta_title',
     $oNavigationsinfo->generateMetaTitle(

@@ -8,7 +8,7 @@
             {input type="text"
                 name="email"
                 id="login_email"
-                placeholder="{lang key='email' section='account data'}"
+                placeholder=" "
                 required=true
                 autocomplete="email"
                 value=""
@@ -20,7 +20,7 @@
             {input type="password"
                 name="passwort"
                 id="login_password"
-                placeholder="{lang key='password' section='account data'}"
+                placeholder=" "
                 required=true
                 autocomplete="current-password"
                 value=""

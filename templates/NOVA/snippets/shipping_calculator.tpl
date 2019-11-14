@@ -22,12 +22,12 @@
                         {/block}
                         {block name='snippets-shipping-calculator-submit'}
                             {col cols=12 md=3}
-                                {inputgroup class='mb-3' label-for="plz" label="{lang key='plz' section='forgot password'}"}
+                                {formgroup class='mb-3' label-for="plz" label="{lang key='plz' section='forgot password'}"}
                                     {input type="text" name="plz" size="8" maxlength="8"
-                                        value="{if isset($smarty.session.Kunde->cPLZ)}{$smarty.session.Kunde->cPLZ}{elseif isset($VersandPLZ)}{$VersandPLZ}{/if}" id="plz" placeholder="{lang key='plz' section='forgot password'}"
+                                        value="{if isset($smarty.session.Kunde->cPLZ)}{$smarty.session.Kunde->cPLZ}{elseif isset($VersandPLZ)}{$VersandPLZ}{/if}" id="plz" placeholder=" "
                                         aria=["label"=>"{lang key='plz' section='account data'}"]
                                     }
-                                {/inputgroup}
+                                {/formgroup}
                             {/col}
                             {col cols=12 md=4}
                                 {button block=true name='versandrechnerBTN' type='submit' variant='outline-primary'}

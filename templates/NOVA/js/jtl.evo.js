@@ -836,7 +836,9 @@
             // this.addSliderTouchSupport();
             this.productTabsPriceFlow();
             this.generateSlickSlider();
-            $('.nav-pills, .nav-tabs').tabdrop();
+            setTimeout(() => {
+                $('.nav-pills, .nav-tabs').tabdrop();
+            }, 200);
             //this.addTabsTouchSupport();
             //this.autoheight();
             this.tooltips();

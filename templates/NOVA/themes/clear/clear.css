@@ -8931,7 +8931,7 @@ input[type=button].btn-block {
 }
 
 .fade {
-  transition: opacity 0.15s linear;
+  transition: opacity 0.35s linear;
 }
 @media (prefers-reduced-motion: reduce) {
   .fade {
@@ -21720,6 +21720,23 @@ input[type=radio]:checked + label, input[type=checkbox]:checked + label {
   -webkit-appearance: none;
 }
 
+.bootstrap-select.custom-select button.dropdown-toggle, .bootstrap-select.custom-select button[data-toggle=collapse]:not(.navbar-toggler) {
+  height: inherit;
+}
+.bootstrap-select.custom-select button.dropdown-toggle:hover, .bootstrap-select.custom-select button[data-toggle=collapse]:hover:not(.navbar-toggler), .bootstrap-select.custom-select button.dropdown-toggle:focus, .bootstrap-select.custom-select button[data-toggle=collapse]:focus:not(.navbar-toggler) {
+  background: #ffffff;
+  outline: 0;
+  box-shadow: none;
+}
+.bootstrap-select.custom-select button.dropdown-toggle:focus, .bootstrap-select.custom-select button[data-toggle=collapse]:focus:not(.navbar-toggler) {
+  border-color: #F8BF00;
+}
+.bootstrap-select.custom-select.show button.dropdown-toggle, .bootstrap-select.custom-select.show button[data-toggle=collapse]:not(.navbar-toggler) {
+  background: #ffffff;
+  border-color: #F8BF00;
+  outline: 0;
+}
+
 legend {
   font-size: 1rem;
   font-weight: bolder;
@@ -24748,6 +24765,17 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   #image_wrapper.fullscreen #gallery_preview_wrapper {
     width: 80%;
   }
+}
+#image_wrapper .variation-image-preview {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 98%;
+  height: auto;
+  background: #ffffff;
+}
+#image_wrapper .variation-image-preview:not(.show) {
+  z-index: -5;
 }
 
 /* header */

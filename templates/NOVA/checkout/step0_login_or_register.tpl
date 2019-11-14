@@ -50,7 +50,7 @@
                     {/block}
                     {block name='checkout-step0-login-or-register-form-submit'}
                         {row class='mt-5'}
-                            {col cols=12 md=4 xl=3 class='ml-md-auto'}
+                            {col cols=12 md=5 xl=4 class='ml-md-auto'}
                                 {input type="hidden" name="checkout" value="1"}
                                 {input type="hidden" name="form" value="1"}
                                 {input type="hidden" name="editRechnungsadresse" value="0"}

@@ -392,7 +392,7 @@
                                         name="ustid"
                                         value="{if isset($cPost_var['ustid'])}{$cPost_var['ustid']}{elseif isset($Kunde->cUSTID)}{$Kunde->cUSTID}{/if}"
                                         id="ustid"
-                                        placeholder="{lang key='ustid' section='account data'}"
+                                        placeholder=" "
                                         required=($Einstellungen.kunden.kundenregistrierung_abfragen_ustid === 'Y')
                                     }
                                     {if isset($fehlendeAngaben.ustid)}

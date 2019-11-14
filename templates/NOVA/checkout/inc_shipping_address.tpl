@@ -32,7 +32,7 @@
                             {/col}
                             {col md=8}
                                 {block name='checkout-inc-shipping-address-fieldset-address'}
-                                    {listgroup class="form-group" tag="ul"}
+                                    {listgroup class="form-group exclude-from-label-slide" tag="ul"}
                                     {foreach $Lieferadressen as $adresse}
                                         {if $adresse->kLieferadresse > 0}
                                             {block name='checkout-inc-shipping-address-address'}

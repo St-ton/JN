@@ -42,7 +42,9 @@ $obj              = new stdClass();
 $obj->tkunde      = $_SESSION['Kunde'];
 $obj->tbestellung = $order;
 $moduleID         = $order->Zahlungsart->cModulId;
-Shop::Smarty()->assign('Bestellung', $order);
+Shop::Smarty()->assign('Bestellung', $order)
+    ->assign('oPlugin', null)
+    ->assign('plugin', null);
 if (Request::verifyGPCDataInt('zusatzschritt') === 1) {
     $hasAdditionalInformation = false;
     switch ($moduleID) {
@@ -124,7 +126,8 @@ if ($pluginID > 0) {
             }
         }
 
-        Shop::Smarty()->assign('oPlugin', $plugin);
+        Shop::Smarty()->assign('oPlugin', $plugin)
+            ->assign('plugin', $plugin);
     }
 } elseif ($moduleID === 'za_lastschrift_jtl') {
     $customerAccountData = gibKundenKontodaten(Frontend::getCustomer()->getID());

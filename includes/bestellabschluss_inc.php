@@ -1019,7 +1019,8 @@ function setzeSmartyWeiterleitung(Bestellung $order): void
             $paymentMethod           = new $className($moduleID);
             $paymentMethod->cModulId = $moduleID;
             $paymentMethod->preparePaymentProcess($order);
-            Shop::Smarty()->assign('oPlugin', $plugin);
+            Shop::Smarty()->assign('oPlugin', $plugin)
+                ->assign('plugin', $plugin);
         }
     } elseif ($moduleID === 'za_kreditkarte_jtl' || $moduleID === 'za_lastschrift_jtl') {
         Shop::Smarty()->assign('abschlussseite', 1);

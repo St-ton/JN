@@ -94,6 +94,8 @@ if (isset($_GET['i'])) {
     setzeSmartyWeiterleitung($bestellung);
 }
 $smarty->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
+       ->assign('oPlugin', null)
+       ->assign('plugin', null)
        ->assign('Bestellung', $bestellung)
        ->assign('Link', $link)
        ->assign('Kunde', $_SESSION['Kunde'] ?? null)
@@ -106,7 +108,9 @@ $kPlugin = isset($bestellung->Zahlungsart->cModulId)
     : 0;
 if ($kPlugin > 0) {
     $loader = Helper::getLoaderByPluginID($kPlugin, $db);
-    $smarty->assign('oPlugin', $loader->init($kPlugin));
+    $plugin = $loader->init($kPlugin);
+    $smarty->assign('oPlugin', $plugin)
+           ->assign('plugin', $plugin);
 }
 if (empty($_SESSION['Zahlungsart']->nWaehrendBestellung) || isset($_GET['i'])) {
     $session->cleanUp();

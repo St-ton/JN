@@ -98,7 +98,7 @@
                         {/if}
                         <div class="card">
                             <div class="card-header">
-                                <span class="subheading1">
+                                <span class="subheading1" id="{$cnf->cWertName}">
                                     {$cnf->cName}
                                     {if !empty($cnf->cSektionsPfad)}
                                         <span class="path float-right">

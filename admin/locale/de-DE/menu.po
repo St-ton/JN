@@ -48,7 +48,7 @@ msgstr "Wasserzeichen"
 msgid "Shop logo"
 msgstr "Shop-Logo"
 
-msgid "Item overlays"
+msgid "Item sticker"
 msgstr "Artikel-Overlays"
 
 # Top Menu
@@ -66,14 +66,14 @@ msgstr "Auswahlassistent"
 msgid "Item details"
 msgstr "Artikeldetails"
 
-msgid "Customer reviews"
-msgstr "Kundenbewertungen"
+msgid "Item reviews"
+msgstr "Artikelbewertungen"
 
 msgid "Price history"
 msgstr "Preisverlauf"
 
-msgid "Warehouse"
-msgstr "Warenlager"
+msgid "Warehouse settings"
+msgstr "Warenlager-Einstellungen"
 
 # Top Menu
 msgid "Pages"
@@ -91,16 +91,16 @@ msgid "GTC/cancellation policy"
 msgstr "AGB / Widerrufsbelehrung"
 
 msgid "Own pages"
-msgstr "Eigene Seiten"
+msgstr "Seiten"
 
-msgid "News"
+msgid "Blog posts"
 msgstr "News"
 
-msgid "Box settings"
-msgstr "Boxeneinstellungen"
+msgid "Recommendation settings"
+msgstr "Empfehlungen-Einstellungen"
 
-msgid "Boxes"
-msgstr "Boxen"
+msgid "Footer / Boxes"
+msgstr "Footer / Boxen"
 
 msgid "Language administration"
 msgstr "Sprachverwaltung"
@@ -116,17 +116,17 @@ msgid "Forms"
 msgstr "Formulare"
 
 # Menu Items
-msgid "Form settings"
-msgstr "Formulareinstellungen"
+msgid "Registration"
+msgstr "Registrierung"
 
 msgid "Contact form"
 msgstr "Kontaktformular"
 
-msgid "Custom form fields"
-msgstr "Eigene Formularfelder"
+msgid "Customer fields"
+msgstr "Kunden Formularfelder"
 
-msgid "Check box administration"
-msgstr "Checkboxenverwaltung"
+msgid "Checkboxes"
+msgstr "Checkboxen"
 
 # Mid Menu
 msgid "E-mails"
@@ -157,11 +157,11 @@ msgid "Shopping cart"
 msgstr "Warenkorb"
 
 # Menu Items
-msgid "Shopping cart settings"
-msgstr "Warenkorbeinstellungen"
+msgid "Checkout"
+msgstr "Checkout"
 
-msgid "Saved baskets"
-msgstr "Gespeicherte Warenkörbe"
+msgid "Baskets"
+msgstr "Warenkörbe"
 
 msgid "Free gift"
 msgstr "Gratisgeschenk"
@@ -253,7 +253,7 @@ msgid "Start pages"
 msgstr "Einstiegsseiten"
 
 msgid "Coupon statistics"
-msgstr "Coupon-Statistiken"
+msgstr "Coupons"
 
 # Top Menu
 msgid "Import / Export"
@@ -267,8 +267,8 @@ msgstr "Import"
 msgid "Customer data import"
 msgstr "Kundenimport"
 
-msgid "Import newsletter recipient"
-msgstr "Newsletter-Empfänger importieren"
+msgid "Newsletter recipients"
+msgstr "Newsletter-Empfänger"
 
 msgid "Zip code import"
 msgstr "PLZ-Import"
@@ -278,10 +278,10 @@ msgid "Export"
 msgstr "Export"
 
 # Menu Items
-msgid "Task scheduler"
-msgstr "Aufgabenplaner"
+msgid "Export manager"
+msgstr "Exportmanager"
 
-msgid "Export formats"
+msgid "Custom formats"
 msgstr "Exportformate"
 
 msgid "Sitemap export"
@@ -299,8 +299,8 @@ msgid "Settings"
 msgstr "Einstellungen"
 
 # Menu Items
-msgid "Global settings"
-msgstr "Globale Einstellungen"
+msgid "System"
+msgstr "System"
 
 msgid "Back end user"
 msgstr "Backend-Benutzer"
@@ -363,11 +363,14 @@ msgstr "Suche"
 msgid "Search settings"
 msgstr "Sucheinstellungen"
 
-msgid "Filter"
+msgid "Item overview"
 msgstr "Filter"
 
-msgid "Queries"
+msgid "Search queries"
 msgstr "Suchanfragen"
+
+msgid "Search query activation"
+msgstr "Suchanfragen freischalten"
 
 msgid "Cron"
 msgstr "Cron"
@@ -508,3 +511,30 @@ msgstr "Der Algorithmus zur Passwortspeicherung hat sich geändert.<br/>Bitte er
 
 msgid "My Plugins"
 msgstr "Meine Plugins"
+
+msgid "Actions"
+msgstr "Aktionen"
+
+msgid "Landing pages"
+msgstr "Landingpages"
+
+msgid "Default views"
+msgstr "Standard Ansichten"
+
+msgid "Default elements"
+msgstr "Standard Elemente"
+
+msgid "Question on item"
+msgstr "Frage zum Produkt"
+
+msgid "Custom content"
+msgstr "Eigene Inhalte"
+
+msgid "E-Mail server"
+msgstr "Email-Server"
+
+msgid "Access"
+msgstr "Zugriff"
+
+msgid "Troubleshooting"
+msgstr "Fehlerbehebung"

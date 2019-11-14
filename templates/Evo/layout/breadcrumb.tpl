@@ -17,7 +17,6 @@
                                         <span class="fa fa-home"></span>
                                         <span itemprop="name" class="hidden">{$oItem->getName()|escape:'html'}</span>
                                     </a>
-                                    <meta itemprop="url" content="{$oItem->getURLFull()}" />
                                     <meta itemprop="position" content="{$oItem@iteration}" />
                                 </li>
                             {/block}
@@ -28,7 +27,6 @@
                                         <a itemprop="item" href="{$oItem->getURLFull()}" title="{$oItem->getName()|escape:'html'}">
                                             <span itemprop="name">{$oItem->getName()}</span>
                                         </a>
-                                        <meta itemprop="url" content="{$oItem->getURLFull()}" />
                                         <meta itemprop="position" content="{$oItem@iteration}" />
                                     </li>
                                 {elseif !empty($Suchergebnisse->getSearchTermWrite())}
@@ -43,7 +41,6 @@
                                     <a itemprop="item" href="{$oItem->getURLFull()}" title="{$oItem->getName()|escape:'html'}">
                                         <span itemprop="name">{$oItem->getName()}</span>
                                     </a>
-                                    <meta itemprop="url" content="{$oItem->getURLFull()}" />
                                     <meta itemprop="position" content="{$oItem@iteration}" />
                                 </li>
                             {/block}

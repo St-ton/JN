@@ -1930,8 +1930,9 @@ final class Shop
             return self::$logged;
         }
 
-        $result     = false;
-        $adminToken = null;
+        $result       = false;
+        $adminToken   = null;
+        $adminLangTag = null;
 
         $isLogged = function () {
             return self::Container()->getAdminAccount()->logged();

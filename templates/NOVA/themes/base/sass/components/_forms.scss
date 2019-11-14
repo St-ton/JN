@@ -37,11 +37,15 @@
 .form-counter { border: $input-border-width solid $input-border-color; border-radius: $input-border-radius;
 	.form-control { border: 0; text-align: center; font-family: $font-accent; font-weight: $font-weight-semibold;
 		&::-webkit-inner-spin-button,
-		&::-webkit-outer-spin-button { appearance: none; margin: 0; }
+		&::-webkit-outer-spin-button {
+			appearance: none;
+			-webkit-appearance: none;
+			margin: 0;
+		}
 	}
 	.input-group-text { border: 0; background: none; font-family: $font-accent; font-weight: $font-weight-semibold; }
 
-	.btn:hover { background-color: $gray-light; }
+	.btn:hover { background-color: $gray-lighter; }
 }
 
 // labels with images

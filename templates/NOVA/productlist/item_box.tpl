@@ -88,7 +88,7 @@
                             {/if}
 
                             {block name='productlist-item-box-include-productlist-actions'}
-                                <div class="productbox-quick-actions productbox-onhover">
+                                <div class="productbox-quick-actions productbox-onhover d-none d-md-flex">
                                     {include file='productlist/productlist_actions.tpl'}
                                 </div>
                             {/block}

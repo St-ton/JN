@@ -93,7 +93,7 @@ $adminMenu = [
             ],
         ]
     ],
-    __('Styling')      => (object)[
+    __('Presentation')      => (object)[
         'icon'  => 'styling',
         'items' => [
             __('OnPage Composer')  => (object)[

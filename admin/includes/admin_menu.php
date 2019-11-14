@@ -243,7 +243,7 @@ $adminMenu = [
             ]
         ]
     ],
-    __('Extensions') => (object)[
+    __('Plugins') => (object)[
         'icon'  => 'plugins',
         'items' => [
             __('Plug-in administration') => (object)[

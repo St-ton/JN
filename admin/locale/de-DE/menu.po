@@ -281,7 +281,7 @@ msgstr "Export"
 msgid "Export manager"
 msgstr "Exportmanager"
 
-msgid "Export formats"
+msgid "Custom formats"
 msgstr "Exportformate"
 
 msgid "Sitemap export"

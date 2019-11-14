@@ -18,28 +18,30 @@ use JTL\Plugin\PluginInterface;
 class GetText
 {
     /**
-     * @var null|string
+     * @var string
      */
     private $langTag;
 
     /**
-     * @var null|Translator
-     */
-    private $translator;
-
-    /**
      * @var Translations[]
      */
-    private $translations = [];
+    private $translations;
+
+    /**
+     * @var Translator
+     */
+    private $translator;
 
     /**
      * GetText constructor.
      */
     public function __construct()
     {
-        $this
-            ->setLanguage()
-            ->loadAdminLocale();
+        $this->langTag      = $this->getDefaultLanguage();
+        $this->translations = [];
+        $this->translator   = new Translator();
+        $this->translator->register();
+        $this->setLanguage()->loadAdminLocale('base');
     }
 
     /**
@@ -51,21 +53,11 @@ class GetText
     }
 
     /**
-     * @return array
+     * @return string
      */
-    public function getAdminLanguages(): array
+    public function getLanguage(): string
     {
-        $languages  = [];
-        $localeDirs = \array_diff(
-            \scandir(\PFAD_ROOT . \PFAD_ADMIN . 'locale/', \SCANDIR_SORT_ASCENDING),
-            ['..','.']
-        );
-
-        foreach ($localeDirs as $dir) {
-            $languages[$dir] = \Locale::getDisplayLanguage($dir, $dir);
-        }
-
-        return $languages;
+        return $this->langTag;
     }
 
     /**
@@ -115,88 +107,56 @@ class GetText
     }
 
     /**
-     * @param string $dir
-     * @param string $domain
-     * @return Translations
-     */
-    public function getTranslations(string $dir, string $domain): Translations
-    {
-        $path = $this->getMoPath($dir, $domain);
-
-        return $this->getMoTranslations($path);
-    }
-
-    /**
      * @param string $path
-     * @return Translations
-     */
-    public function getMoTranslations(string $path): Translations
-    {
-        if (!isset($this->translations[$path])) {
-            $this->translations[$path] = Translations::fromMoFile($path);
-        }
-
-        return $this->translations[$path];
-    }
-
-    /**
-     * @param string $domain
-     * @return Translations
-     */
-    public function getAdminTranslations(string $domain): Translations
-    {
-        return $this->getTranslations($this->getAdminDir(), $domain);
-    }
-
-    /**
-     * @param null|string $langTag
      * @return GetText
      */
-    public function setLanguage(?string $langTag = null): self
+    public function loadLocaleFile(string $path): self
     {
-        $langTag = $langTag
-            ?? $_SESSION['AdminAccount']->language
-            ?? $this->langTag
-            ?? $this->getDefaultLanguage();
+        if (!array_key_exists($path, $this->translations)) {
+            $this->translations[$path] = null;
 
-        if ($this->langTag !== $langTag) {
-            $oldLangTag         = $this->langTag;
-            $oldTranslations    = $this->translations;
-            $this->langTag      = $langTag;
-            $this->translations = [];
-            $this->translator   = new Translator();
-            $this->translator->register();
-
-            foreach ($oldTranslations as $path => $t) {
-                $newPath = \str_replace('/' . $oldLangTag . '/', '/' . $langTag . '/', $path);
-
-                if (\file_exists($newPath)) {
-                    $this->translator->loadTranslations($this->getMoTranslations($newPath));
-                }
+            if (\file_exists($path)) {
+                $this->translations[$path] = Translations::fromMoFile($path);
+                $this->translator->loadTranslations($this->translations[$path]);
             }
         }
-
 
         return $this;
     }
 
     /**
+     * @param string $dir
      * @param string $domain
      * @return GetText
      */
-    public function loadAdminLocale(string $domain = 'base'): self
+    public function loadTranslations(string $dir, string $domain): self
     {
-        return $this->addLocale($this->getAdminDir(), $domain);
+        $path = $this->getMoPath($dir, $domain);
+
+        return $this->loadLocaleFile($path);
     }
 
     /**
-     * @param string          $domain
+     * @param string $domain
+     * @return GetText
+     */
+    public function loadAdminLocale(string $domain): self
+    {
+        $path = $this->getAdminMoPath($domain);
+
+        return $this->loadLocaleFile($path);
+    }
+
+    /**
+     * @param string $domain
      * @param PluginInterface $plugin
      * @return GetText
      */
     public function loadPluginLocale(string $domain, PluginInterface $plugin): self
     {
-        return $this->addLocale($this->getPluginDir($plugin), $domain);
+        $path = $this->getPluginMoPath($domain, $plugin);
+
+        return $this->loadLocaleFile($path);
     }
 
     /**
@@ -208,58 +168,80 @@ class GetText
     {
         $dir = \PFAD_ROOT . \PLUGIN_DIR . $item->getDir() . '/';
 
-        return $this->addLocale($dir, $domain);
+        return $this->loadTranslations($dir, $domain);
     }
 
     /**
      * @param string $dir
      * @param string $domain
-     * @return GetText
-     * @throws \Exception
+     * @return Translations
      */
-    public function addLocale(string $dir, string $domain): self
+    public function getTranslations(string $dir, string $domain): Translations
     {
         $path = $this->getMoPath($dir, $domain);
+        $this->loadLocaleFile($path);
 
-        return $this->addMoFile($path);
-    }
-
-    /**
-     * @param string $path
-     * @return GetText
-     */
-    public function addMoFile(string $path): self
-    {
-        if (\array_key_exists($path, $this->translations)) {
-            return $this;
-        }
-
-        if (\file_exists($path)) {
-            $this->translator->loadTranslations($this->getMoTranslations($path));
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param string $string
-     * @return string
-     */
-    public function translate(string $string): string
-    {
-        return $this->translator->gettext($string);
+        return $this->translations[$path];
     }
 
     /**
      * @param string $domain
-     * @return $this
+     * @return Translations
      */
-    public function changeCurrentDomain(string $domain): self
+    public function getAdminTranslations(string $domain): Translations
     {
-        $this->translator->defaultDomain($domain);
+        $path = $this->getAdminMoPath($domain);
+        $this->loadLocaleFile($path);
+
+        return $this->translations[$path];
+    }
+
+    /**
+     * @param string|null $langTag
+     * @return GetText
+     */
+    public function setLanguage(?string $langTag = null): self
+    {
+        $langTag = $langTag
+            ?? $_SESSION['AdminAccount']->language
+            ?? $this->langTag;
+
+        if ($this->langTag !== $langTag) {
+            $oldLangTag         = $this->langTag;
+            $oldTranslations    = $this->translations;
+            $this->langTag      = $langTag;
+            $this->translations = [];
+            $this->translator   = new Translator();
+            $this->translator->register();
+
+            if (!empty($oldLangTag)) {
+                foreach ($oldTranslations as $path => $trans) {
+                    $newPath = \str_replace('/' . $oldLangTag . '/', '/' . $langTag . '/', $path);
+                    $this->loadLocaleFile($newPath);
+                }
+            }
+        }
 
         return $this;
     }
+
+    /**
+     * @return array
+     */
+    public function getAdminLanguages(): array
+    {
+        $languages  = [];
+        $localeDirs = \scandir(\PFAD_ROOT . \PFAD_ADMIN . 'locale/', \SCANDIR_SORT_ASCENDING);
+
+        foreach ($localeDirs as $dir) {
+            if ($dir !== '.' && $dir !== '..') {
+                $languages[$dir] = \Locale::getDisplayLanguage($dir, $dir);
+            }
+        }
+
+        return $languages;
+    }
+
     /**
      * @param bool $withGroups
      * @param bool $withSections

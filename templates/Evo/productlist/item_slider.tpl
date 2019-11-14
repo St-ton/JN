@@ -24,10 +24,10 @@
                     <span class="bundle-amount">{$Artikel->fAnzahl_stueckliste}</span> <span class="bundle-times">x</span>
                 </span>
             {/if}
-            <a href="{$Artikel->cURLFull}" itemprop="url"><span itemprop="name">{$Artikel->cKurzbezeichnung}</span></a>
+            <a href="{$Artikel->cURLFull}" itemprop="url"><span {if $tplscope !== 'box'}itemprop="name"{/if}>{$Artikel->cKurzbezeichnung}</span></a>
         </h4>
         {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->fDurchschnittsBewertung > 0}<small>{include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}</small>{/if}
-        <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+        <div {if $tplscope !== 'box'}itemprop="offers" itemscope itemtype="http://schema.org/Offer"{/if}>
             {include file='productdetails/price.tpl' Artikel=$Artikel tplscope=$tplscope}
         </div>
     </div>

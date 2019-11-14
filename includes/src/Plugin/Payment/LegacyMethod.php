@@ -12,6 +12,7 @@ use InvalidArgumentException;
 use JTL\Cart\Cart;
 use JTL\Checkout\Bestellung;
 use JTL\Plugin\Helper as PluginHelper;
+use JTL\Session\Frontend;
 use PaymentMethod;
 
 /**
@@ -323,6 +324,13 @@ class LegacyMethod
      */
     public function isValid($customer, $cart)
     {
+        if (!\is_object($customer)) {
+            $customer = Frontend::getCustomer();
+        }
+        if (!($cart instanceof Cart)) {
+            $cart = Frontend::getCart();
+        }
+
         return $this->methodInstance->isValid($customer, $cart);
     }
 

@@ -1,21 +1,21 @@
 <script type="text/javascript">
-function ackCheck(kPlugin, hash)
-{
-    var bCheck = confirm('{__('surePluginUpdate')}');
-    var href = '';
+    function ackCheck(kPlugin, hash)
+    {
+        var bCheck = confirm('{__('surePluginUpdate')}');
+        var href = '';
 
-    if (bCheck) {
-        href += 'pluginverwaltung.php?pluginverwaltung_uebersicht=1&updaten=1&token={$smarty.session.jtl_token}&kPlugin=' + kPlugin;
-        if (hash && hash.length > 0) {
-            href += '#' + hash;
+        if (bCheck) {
+            href += 'pluginverwaltung.php?pluginverwaltung_uebersicht=1&updaten=1&token={$smarty.session.jtl_token}&kPlugin=' + kPlugin;
+            if (hash && hash.length > 0) {
+                href += '#' + hash;
+            }
+            window.location.href = href;
         }
-        window.location.href = href;
     }
-}
 
-{if isset($bReload) && $bReload}
+    {if isset($bReload) && $bReload}
     window.location.href = window.location.href + "?h={$hinweis64}";
-{/if}
+    {/if}
 </script>
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('pluginverwaltung') cBeschreibung=__('pluginverwaltungDesc') cDokuURL=__('pluginverwaltungURL')}
@@ -118,18 +118,33 @@ function ackCheck(kPlugin, hash)
                         <hr>
                     </form>
                     <script>
-                        var x = $('#plugin-install-upload').fileinput({ldelim}
-                            uploadUrl: '{$shopURL}/{$PFAD_ADMIN}pluginverwaltung.php',
+                        var uploadURL = '{$shopURL}/{$PFAD_ADMIN}pluginverwaltung.php',
+                            lang = '{$language|mb_substr:0:2}',
+                            defaultError = '{__('errorPluginUpload')}';
+                        {literal}
+                        $('#plugin-install-upload').fileinput({
+                            uploadUrl: uploadURL,
                             allowedFileExtensions : ['zip'],
                             overwriteInitial: false,
                             showPreview: false,
                             cancelClass: 'btn btn-outline-primary',
-                            language: '{$language|mb_substr:0:2}',
+                            language: lang,
                             maxFileSize: 100000,
                             maxFilesNum: 1
-                        {rdelim}).on('fileuploaded', function(event, data, previewId, index) {ldelim}
-                            var response = data.response;
-                            if (response.status === 'OK') {ldelim}
+                        }).on('fileuploaderror', function(event, data, msg) {
+                            var response = data.response,
+                                alert = $('#plugin-upload-error');
+                            if (response.error.length > 0) {
+                                alert.html(defaultError + ': ' + response.error);
+                            } else {
+                                alert.html(defaultError);
+                            }
+                            alert.show().removeClass('hidden');
+                        }).on('fileuploaded', function(event, data, previewId, index) {
+                            var response = data.response,
+                                alert = $('#plugin-upload-error');
+                            if (response.status === 'OK') {
+                                alert.hide();
                                 var wasActiveVerfuegbar = $('#verfuegbar').hasClass('active'),
                                     wasActiveFehlerhaft = $('#fehlerhaft').hasClass('active');
                                 $('#verfuegbar').replaceWith(response.html.available);
@@ -137,23 +152,29 @@ function ackCheck(kPlugin, hash)
                                 $('a[href="#fehlerhaft"]').find('.badge').html(response.html.erroneous_count);
                                 $('a[href="#verfuegbar"]').find('.badge').html(response.html.available_count);
                                 $('#plugin-upload-success').show().removeClass('hidden');
-                                if (wasActiveFehlerhaft) {ldelim}
+                                if (wasActiveFehlerhaft) {
                                     $('#fehlerhaft').addClass('active show');
-                                {rdelim} else if (wasActiveVerfuegbar) {ldelim}
+                                } else if (wasActiveVerfuegbar) {
                                     $('#verfuegbar').addClass('active show');
-                                {rdelim}
-                            {rdelim} else {ldelim}
-                                $('#plugin-upload-error').show().removeClass('hidden');
-                            {rdelim}
+                                }
+                            } else {
+                                if (response.error !== null && response.error.length > 0) {
+                                    alert.html(defaultError + ': ' + response.error);
+                                } else {
+                                    alert.html(defaultError);
+                                }
+                                alert.show().removeClass('hidden');
+                            }
                             var fi = $('#plugin-install-upload');
                             fi.fileinput('reset');
                             fi.fileinput('clear');
                             fi.fileinput('refresh');
                             fi.fileinput('enable');
-                        {rdelim});
+                        });
+                        {/literal}
                     </script>
                     <div id="plugin-upload-success" class="alert alert-info hidden">{__('successPluginUpload')}</div>
-                    <div id="plugin-upload-error" class="alert alert-danger hidden">{__('errorPluginUpload')}</div>
+                    <div id="plugin-upload-error" class="alert alert-danger hidden"></div>
                 </div>
             </div>
         </div>

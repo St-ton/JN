@@ -330,7 +330,7 @@
                                         value="{if isset($cPost_var['plz'])}{$cPost_var['plz']}{elseif isset($Kunde->cPLZ)}{$Kunde->cPLZ}{/if}"
                                         id="postcode"
                                         class="postcode_input"
-                                        placeholder="{lang key='plz' section='account data'}"
+                                        placeholder=" "
                                         required=true
                                         autocomplete="billing postal-code"
                                     }
@@ -349,7 +349,7 @@
                         {col cols=12 md=8}
                             {block name='checkout-inc-billing-address-form-city'}
                                 {formgroup
-                                    class="{if isset($fehlendeAngaben.ort)} has-error{/if}"
+                                    class="{if isset($fehlendeAngaben.ort)} has-error{/if} exclude-from-label-slide"
                                     label-for="city"
                                     label=''
                                 }
@@ -392,7 +392,7 @@
                                         name="ustid"
                                         value="{if isset($cPost_var['ustid'])}{$cPost_var['ustid']}{elseif isset($Kunde->cUSTID)}{$Kunde->cUSTID}{/if}"
                                         id="ustid"
-                                        placeholder="{lang key='ustid' section='account data'}"
+                                        placeholder=" "
                                         required=($Einstellungen.kunden.kundenregistrierung_abfragen_ustid === 'Y')
                                     }
                                     {if isset($fehlendeAngaben.ustid)}
@@ -587,23 +587,11 @@
                                         {assign var="cKundenattributWert" value=''}
                                         {assign var="isKundenattributEditable" value=true}
                                     {/if}
-                                    {formgroup class="{if isset($fehlendeAngaben.custom[$kKundenfeld])} has-error{/if}"
+                                    {formgroup class="{if isset($fehlendeAngaben.custom[$kKundenfeld])} has-error{/if} {if $oKundenfeld->getType() === \JTL\Customer\CustomerField::TYPE_NUMBER}exclude-from-label-slide{/if}"
                                         label-for="custom_{$kKundenfeld}"
                                         label="{$oKundenfeld->getLabel()}{if !$oKundenfeld->isRequired()}<span class='optional'> - {lang key='optional'}</span>{/if}"
                                     }
-                                        {if $oKundenfeld->getType() !== \JTL\Customer\CustomerField::TYPE_SELECT}
-                                            {input
-                                                type="{if $oKundenfeld->getType() === \JTL\Customer\CustomerField::TYPE_NUMBER}number{elseif $oKundenfeld->getType() === \JTL\Customer\CustomerField::TYPE_DATE}date{else}text{/if}"
-                                                name="custom_{$kKundenfeld}"
-                                                id="custom_{$kKundenfeld}"
-                                                value="{$cKundenattributWert}"
-                                                placeholder=$oKundenfeld->getLabel()
-                                                aria=["label"=>$oKundenfeld->getLabel()]
-                                                required=$oKundenfeld->isRequired()
-                                                data=["toggle"=>"floatLabel", "value"=>"no-js"]
-                                                readonly=(!$isKundenattributEditable)
-                                            }
-                                        {else}
+                                        {if $oKundenfeld->getType() === \JTL\Customer\CustomerField::TYPE_SELECT}
                                             {select
                                                 name="custom_{$kKundenfeld}"
                                                 disabled=!$isKundenattributEditable
@@ -616,6 +604,41 @@
                                                     <option value="{$oKundenfeldWert}" {if ($oKundenfeldWert == $cKundenattributWert)}selected{/if}>{$oKundenfeldWert}</option>
                                                 {/foreach}
                                             {/select}
+                                        {elseif $oKundenfeld->getType() === \JTL\Customer\CustomerField::TYPE_NUMBER}
+                                            {inputgroup class="form-counter"}
+                                                {inputgroupprepend}
+                                                    {button variant="" data=["count-down"=>""]}
+                                                        <span class="fas fa-minus"></span>
+                                                    {/button}
+                                                {/inputgroupprepend}
+                                                {input
+                                                    type="number"
+                                                    name="custom_{$kKundenfeld}"
+                                                    id="custom_{$kKundenfeld}"
+                                                    value="{$cKundenattributWert}"
+                                                    placeholder=$oKundenfeld->getLabel()
+                                                    aria=["label"=>$oKundenfeld->getLabel()]
+                                                    required=$oKundenfeld->isRequired()
+                                                    readonly=(!$isKundenattributEditable)
+                                                }
+                                                {inputgroupappend}
+                                                    {button variant="" data=["count-up"=>""]}
+                                                        <span class="fas fa-plus"></span>
+                                                    {/button}
+                                                {/inputgroupappend}
+                                            {/inputgroup}
+                                        {else}
+                                            {input
+                                                type="{if $oKundenfeld->getType() === \JTL\Customer\CustomerField::TYPE_DATE}date{else}text{/if}"
+                                                name="custom_{$kKundenfeld}"
+                                                id="custom_{$kKundenfeld}"
+                                                value="{$cKundenattributWert}"
+                                                placeholder=$oKundenfeld->getLabel()
+                                                aria=["label"=>$oKundenfeld->getLabel()]
+                                                required=$oKundenfeld->isRequired()
+                                                data=["toggle"=>"floatLabel", "value"=>"no-js"]
+                                                readonly=(!$isKundenattributEditable)
+                                            }
                                         {/if}
                                         {if isset($fehlendeAngaben.custom[$kKundenfeld])}
                                             <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>

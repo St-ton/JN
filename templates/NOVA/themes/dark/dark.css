@@ -8931,7 +8931,7 @@ input[type=button].btn-block {
 }
 
 .fade {
-  transition: opacity 0.15s linear;
+  transition: opacity 0.35s linear;
 }
 @media (prefers-reduced-motion: reduce) {
   .fade {
@@ -21560,7 +21560,10 @@ aside .last-seen-link {
   bottom: 0;
 }
 
-.float-label {
+.label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) {
+  position: relative;
+}
+.label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) label {
   position: absolute;
   cursor: text;
   top: 0;
@@ -21578,7 +21581,7 @@ aside .last-seen-link {
   overflow: hidden;
   max-width: calc(100% - (2 * 0.9375rem));
 }
-.float-label:after {
+.label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) label:after {
   content: " ";
   display: block;
   position: absolute;
@@ -21589,53 +21592,35 @@ aside .last-seen-link {
   right: -3em;
   z-index: -1;
 }
-
-.form-float-label {
-  position: relative;
-}
-.form-float-label .form-control::placeholder {
+.label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) .form-control::placeholder {
   transition: all 0.2s ease-in-out;
 }
-.form-float-label .form-control:placeholder-shown:not(:focus)::placeholder {
+.label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) .form-control:placeholder-shown:not(:focus)::placeholder {
   opacity: 0;
 }
-.form-float-label .form-control:placeholder-shown:not(:focus) ~ .float-label {
+.label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) .form-control:placeholder-shown:not(:focus) ~ label {
   top: calc((1.5em + 1.25rem + 2px) / 2);
   font-size: 0.875rem;
   color: #ebebeb;
 }
-.form-float-label .form-control:placeholder-shown:not(:focus) ~ .float-label:after {
+.label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) .form-control:placeholder-shown:not(:focus) ~ label:after {
   display: none;
 }
-.form-float-label .form-control:placeholder-shown:not(:focus).form-control-sm ~ .float-label {
+.label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) .form-control:placeholder-shown:not(:focus).form-control-sm ~ label {
   top: calc((1.5em + 0.75rem + 2px) / 2);
   font-size: 0.875rem;
 }
-.form-float-label .form-control:placeholder-shown:not(:focus).form-control-lg ~ .float-label {
+.label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) .form-control:placeholder-shown:not(:focus).form-control-lg ~ label {
   top: calc((1.5em + 1rem + 2px) / 2);
   font-size: 1rem;
 }
-
-.form-float-label ~ .valid-feedback,
-.form-float-label ~ .valid-tooltip {
+.label-slide .form-group ~ .valid-feedback,
+.label-slide .form-group ~ .valid-tooltip {
   display: block;
 }
-
-.form-float-label ~ .invalid-feedback,
-.form-float-label ~ .invalid-tooltip {
+.label-slide .form-group ~ .invalid-feedback,
+.label-slide .form-group ~ .invalid-tooltip {
   display: block;
-}
-
-.form-control-sm ~ .float-label {
-  font-size: 0.7rem;
-  left: 0.5rem;
-  max-width: calc(100% - (2 * 0.5rem));
-}
-
-.form-control-lg ~ .float-label {
-  font-size: 0.8rem;
-  left: 1rem;
-  max-width: calc(100% - (2 * 1rem));
 }
 
 .form-counter {
@@ -21650,6 +21635,7 @@ aside .last-seen-link {
 }
 .form-counter .form-control::-webkit-inner-spin-button, .form-counter .form-control::-webkit-outer-spin-button {
   appearance: none;
+  -webkit-appearance: none;
   margin: 0;
 }
 .form-counter .input-group-text {
@@ -21659,7 +21645,7 @@ aside .last-seen-link {
   font-weight: 600;
 }
 .form-counter .btn:hover {
-  background-color: #707070;
+  background-color: #525252;
 }
 
 .custom-control-label-image {
@@ -21717,6 +21703,23 @@ input[type=radio]:checked + label, input[type=checkbox]:checked + label {
 
 .custom-select {
   -webkit-appearance: none;
+}
+
+.bootstrap-select.custom-select button.dropdown-toggle, .bootstrap-select.custom-select button[data-toggle=collapse]:not(.navbar-toggler) {
+  height: inherit;
+}
+.bootstrap-select.custom-select button.dropdown-toggle:hover, .bootstrap-select.custom-select button[data-toggle=collapse]:hover:not(.navbar-toggler), .bootstrap-select.custom-select button.dropdown-toggle:focus, .bootstrap-select.custom-select button[data-toggle=collapse]:focus:not(.navbar-toggler) {
+  background: #343434;
+  outline: 0;
+  box-shadow: none;
+}
+.bootstrap-select.custom-select button.dropdown-toggle:focus, .bootstrap-select.custom-select button[data-toggle=collapse]:focus:not(.navbar-toggler) {
+  border-color: #0ef83c;
+}
+.bootstrap-select.custom-select.show button.dropdown-toggle, .bootstrap-select.custom-select.show button[data-toggle=collapse]:not(.navbar-toggler) {
+  background: #343434;
+  border-color: #0ef83c;
+  outline: 0;
 }
 
 legend {
@@ -23226,85 +23229,6 @@ aside .badge-light {
   border: 0;
 }
 
-.nmbr-cfg-group {
-  display: flex;
-  z-index: 1;
-  font-family: Montserrat, sans-serif;
-  font-weight: 600;
-}
-.nmbr-cfg-group .btn:hover {
-  background-color: #525252;
-}
-.nmbr-cfg-group input {
-  border-radius: 0;
-}
-.nmbr-cfg-group .btn-decrement:focus, .nmbr-cfg-group .btn-increment:focus {
-  color: #9b9b9b;
-  background-color: #343434;
-  border-color: #8afca0;
-  outline: 0;
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.075), none;
-}
-.nmbr-cfg-group .btn-decrement::placeholder, .nmbr-cfg-group .btn-increment::placeholder {
-  color: #ebebeb;
-  opacity: 1;
-}
-.nmbr-cfg-group .btn-decrement:disabled, .nmbr-cfg-group .btn-decrement[readonly], .nmbr-cfg-group .btn-increment:disabled, .nmbr-cfg-group .btn-increment[readonly] {
-  background-color: #e9ecef;
-  opacity: 1;
-}
-.nmbr-cfg-group .btn-decrement {
-  border-right: 0;
-  border-radius: 0.125rem 0 0 0.125rem;
-}
-.nmbr-cfg-group .btn-increment {
-  border-left: 0;
-  border-radius: 0 0.125rem 0.125rem 0;
-}
-.nmbr-cfg-group input.form-control {
-  border-right: 0;
-  border-left: 0;
-  font-weight: 600;
-}
-.nmbr-cfg-group .input-group-text {
-  border-right: 0;
-  z-index: 2;
-}
-
-.choose_quantity,
-.quantity-wrapper,
-.input-group {
-  flex-wrap: nowrap;
-}
-.choose_quantity .nmbr-cfg-group,
-.quantity-wrapper .nmbr-cfg-group,
-.input-group .nmbr-cfg-group {
-  display: flex;
-  position: relative;
-  flex: 1 1 auto;
-  width: auto;
-  margin-bottom: 0;
-}
-.choose_quantity .nmbr-cfg-group input.quantity,
-.quantity-wrapper .nmbr-cfg-group input.quantity,
-.input-group .nmbr-cfg-group input.quantity {
-  display: flex;
-  position: relative;
-  /*flex: 1 1 auto;
-  width: 1%;*/
-  flex: 1 1 auto;
-  width: 1%;
-  margin-bottom: 0;
-  border-right: 0;
-}
-.choose_quantity .nmbr-cfg-group .unit,
-.quantity-wrapper .nmbr-cfg-group .unit,
-.input-group .nmbr-cfg-group .unit {
-  background: #343434;
-  border-left: 0;
-  margin-left: -1px;
-}
-
 .input-group-append > .btn.ml-3 {
   border-radius: 0.125rem;
 }
@@ -23550,9 +23474,6 @@ input.form-control[name=wishlist-url] {
 .cfg-group .config-item .badge-circle {
   display: none;
 }
-.cfg-group .config-item .nmbr-cfg-group {
-  display: none;
-}
 .cfg-group .cfg-swatch ~ .custom-control-label::before,
 .cfg-group .cfg-swatch ~ .custom-control-label::after {
   display: none;
@@ -23578,9 +23499,6 @@ input.form-control[name=wishlist-url] {
   position: absolute;
   top: -20px;
   right: -22px;
-}
-.cfg-group .cfg-swatch:checked ~ .custom-control-label .config-item .nmbr-cfg-group {
-  display: flex;
 }
 .cfg-group .drpdwn_qnt {
   display: none;
@@ -23628,55 +23546,6 @@ input.form-control[name=wishlist-url] {
     transform: scale(1);
   }
 }
-.label-slide .form-group {
-  position: relative;
-}
-.label-slide .form-group input:not([type=checkbox]):not([type=radio]), .label-slide .form-group select, .label-slide .form-group textarea {
-  width: 100%;
-  outline: none;
-  padding: 10px 15px;
-}
-.label-slide .form-group input:not([type=checkbox]):not([type=radio]):focus + label, .label-slide .form-group select:focus + label, .label-slide .form-group textarea:focus + label {
-  top: -10px;
-  background: #fff;
-  padding: 3px 6px;
-  left: 10px;
-  color: #9b9b9b;
-  font-size: 12px;
-}
-.label-slide .form-group input:not([type=checkbox]):not([type=radio]):not([value=""]):not(:focus) + label, .label-slide .form-group input:not([type=checkbox]):not([type=radio])[type=date] + label, .label-slide .form-group input:not([type=checkbox]):not([type=radio])[type=datetime-local] + label, .label-slide .form-group input:not([type=checkbox]):not([type=radio])[type=color] + label, .label-slide .form-group input:not([type=checkbox]):not([type=radio])[type=file] + label, .label-slide .form-group select:not([value=""]):not(:focus) + label, .label-slide .form-group select[type=date] + label, .label-slide .form-group select[type=datetime-local] + label, .label-slide .form-group select[type=color] + label, .label-slide .form-group select[type=file] + label, .label-slide .form-group textarea:not([value=""]):not(:focus) + label, .label-slide .form-group textarea[type=date] + label, .label-slide .form-group textarea[type=datetime-local] + label, .label-slide .form-group textarea[type=color] + label, .label-slide .form-group textarea[type=file] + label {
-  top: -10px;
-  background: #fff;
-  padding: 3px 6px 0 6px;
-  left: 10px;
-  color: #9b9b9b;
-  font-size: 12px;
-}
-.label-slide .form-group input:not([type=checkbox]):not([type=radio]) + label, .label-slide .form-group select + label, .label-slide .form-group textarea + label {
-  position: absolute;
-  top: 12px;
-  z-index: 5;
-  left: 10px;
-  font-size: 14px;
-  color: #707070;
-  pointer-events: none;
-  transition: 0.4s all;
-}
-.label-slide .form-group input:not([type=checkbox]):not([type=radio])::-webkit-input-placeholder, .label-slide .form-group select::-webkit-input-placeholder, .label-slide .form-group textarea::-webkit-input-placeholder {
-  color: transparent;
-}
-.label-slide .form-group input:not([type=checkbox]):not([type=radio]):-moz-placeholder, .label-slide .form-group select:-moz-placeholder, .label-slide .form-group textarea:-moz-placeholder {
-  /* Firefox 18- */
-  color: transparent;
-}
-.label-slide .form-group input:not([type=checkbox]):not([type=radio])::-moz-placeholder, .label-slide .form-group select::-moz-placeholder, .label-slide .form-group textarea::-moz-placeholder {
-  /* Firefox 19+ */
-  color: transparent;
-}
-.label-slide .form-group input:not([type=checkbox]):not([type=radio]):-ms-input-placeholder, .label-slide .form-group select:-ms-input-placeholder, .label-slide .form-group textarea:-ms-input-placeholder {
-  color: transparent;
-}
-
 input.typeahead::-webkit-input-placeholder {
   color: #707070 !important;
 }
@@ -24832,6 +24701,17 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   #image_wrapper.fullscreen #gallery_preview_wrapper {
     width: 80%;
   }
+}
+#image_wrapper .variation-image-preview {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 98%;
+  height: auto;
+  background: #343434;
+}
+#image_wrapper .variation-image-preview:not(.show) {
+  z-index: -5;
 }
 
 /* header */

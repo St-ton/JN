@@ -423,6 +423,10 @@ class Method implements MethodInterface
      */
     public function isValid(object $customer, Cart $cart): bool
     {
+        if (!$this->isValidIntern([$customer, $cart])) {
+            return false;
+        }
+
         if ($this->getSetting('min_bestellungen') > 0) {
             if (isset($customer->kKunde) && $customer->kKunde > 0) {
                 $res   = Shop::Container()->getDB()->executeQueryPrepared(
@@ -482,10 +486,6 @@ class Method implements MethodInterface
             return false;
         }
 
-        if (!$this->isValidIntern([$customer, $cart])) {
-            return false;
-        }
-
         return true;
     }
 
@@ -504,7 +504,7 @@ class Method implements MethodInterface
     public function isSelectable(): bool
     {
         // Overwrite
-        return true;
+        return $this->isValid(Frontend::getCustomer(), Frontend::getCart());
     }
 
     /**

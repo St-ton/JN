@@ -37,7 +37,7 @@
                                 {col cols=12 md=6}
                                     <div class="form-group d-flex flex-column {if isset($fehlendeAngaben.pass_zu_kurz) || isset($fehlendeAngaben.pass_ungleich)} has-error{/if}" role="group">
                                         {input type="password"
-                                            placeholder="{lang key='password' section='account data'}"
+                                            placeholder=" "
                                             id="password"
                                             required=true
                                             value=""
@@ -66,7 +66,7 @@
                                             type="password"
                                             name="pass2"
                                             id="password2"
-                                            placeholder="{lang key='passwordRepeat' section='account data'}"
+                                            placeholder=" "
                                             required=true
                                             data=["must-equal-to"=>"#create_account_data input[name='pass']",
                                                 "custom-message"=>"{lang key='passwordsMustBeEqual' section='account data'}"]

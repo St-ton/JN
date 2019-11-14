@@ -24,10 +24,11 @@
                             && $Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung_stdansicht == 1))
             )}
                 {assign var=style value='list'}
-                {assign var=grid value='12'}
+                {assign var=grid value='6'}
+                {assign var=gridmd value='12'}
             {else}
                 {assign var=style value='gallery'}
-                {assign var=grid value='12'}
+                {assign var=grid value='6'}
                 {assign var=gridsm value='6'}
                 {assign var=gridmd value='4'}
                 {assign var=gridxl value='3'}

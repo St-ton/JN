@@ -35,7 +35,7 @@
                             {link class="last-seen-link" href=$product->cURLFull}
                                 {$product->cKurzbezeichnung}
                             {/link}
-                            {include file='productdetails/price.tpl' Artikel=$product tplscope='gallery'}
+                            {include file='productdetails/price.tpl' Artikel=$product tplscope='box'}
                         {/col}
                     {/row}
                     {if !$product@last}

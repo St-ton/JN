@@ -7,7 +7,12 @@
 namespace JTL\Plugin\Admin\Installation;
 
 use InvalidArgumentException;
+use JTL\Shop;
 use JTL\XMLParser;
+use League\Flysystem\Adapter\Local;
+use League\Flysystem\FileExistsException;
+use League\Flysystem\Filesystem;
+use League\Flysystem\MountManager;
 use ZipArchive;
 
 /**
@@ -16,7 +21,7 @@ use ZipArchive;
  */
 class Extractor
 {
-    private const UNZIP_PATH = \PFAD_ROOT . \PFAD_DBES_TMP;
+    private const UNZIP_DIR = \PFAD_ROOT . \PFAD_DBES_TMP;
 
     private const LEGACY_PLUGINS_DIR = \PFAD_ROOT . \PFAD_PLUGIN;
 
@@ -35,13 +40,25 @@ class Extractor
     private $parser;
 
     /**
+     * @var Filesystem
+     */
+    private $rootSystem;
+
+    /**
+     * @var MountManager
+     */
+    private $manager;
+
+    /**
      * Extractor constructor.
      * @param XMLParser $parser
      */
     public function __construct(XMLParser $parser)
     {
-        $this->parser   = $parser;
-        $this->response = new InstallationResponse();
+        $this->parser     = $parser;
+        $this->response   = new InstallationResponse();
+        $this->rootSystem = new Filesystem(new Local(\PFAD_ROOT));
+        $this->manager    = new MountManager(['root' => $this->rootSystem]);
     }
 
     /**
@@ -50,9 +67,24 @@ class Extractor
      */
     public function extractPlugin(string $zipFile): InstallationResponse
     {
+//        \set_error_handler([$this, 'handlExtractionErrors']);
         $this->unzip($zipFile);
+//        \restore_error_handler();
 
         return $this->response;
+    }
+
+    /**
+     * @param int $errno
+     * @param string $errstr
+     * @return bool
+     */
+    public function handlExtractionErrors($errno, $errstr): bool
+    {
+        $this->response->setStatus(InstallationResponse::STATUS_FAILED);
+        $this->response->setError($errstr);
+
+        return true;
     }
 
     /**
@@ -62,27 +94,48 @@ class Extractor
      */
     private function moveToPluginsDir(string $dirName): bool
     {
-        $target = null;
-        $info   = self::UNZIP_PATH . $dirName . \PLUGIN_INFO_FILE;
+        $info = self::UNZIP_DIR . $dirName . \PLUGIN_INFO_FILE;
         if (!\file_exists($info)) {
             throw new InvalidArgumentException('info.xml does not exist: ' . $info);
         }
         $parsed = $this->parser->parse($info);
         if (isset($parsed['jtlshopplugin']) && \is_array($parsed['jtlshopplugin'])) {
-            $target = self::PLUGINS_DIR . $dirName;
+            $base = \PLUGIN_DIR;
         } elseif (isset($parsed['jtlshop3plugin']) && \is_array($parsed['jtlshop3plugin'])) {
-            $target = self::LEGACY_PLUGINS_DIR . $dirName;
-        }
-        if ($target === null) {
+            $base = \PFAD_PLUGIN;
+        } else {
             throw new InvalidArgumentException('Cannot find plugin definition in ' . $info);
         }
-        if (\rename(self::UNZIP_PATH . $dirName, $target)) {
-            $this->response->setPath($target);
+        $this->manager->mountFilesystem('plgn', Shop::Container()->get(\JTL\Filesystem\Filesystem::class));
+        $ok = @$this->manager->createDir('plgn://' . $base . $dirName);
+        if ($ok === false) {
+            $this->handlExtractionErrors(0, 'Cannot create ' . $base . $dirName);
+
+            return false;
+        }
+        foreach ($this->manager->listContents('root://' . \PFAD_DBES_TMP . $dirName, true) as $item) {
+            $source = $item['path'];
+            $target = $base . \str_replace(\PFAD_DBES_TMP, '', $source);
+            if ($item['type'] === 'dir') {
+                $ok = $ok && ($this->manager->has('plgn://' . $target)
+                        || @$this->manager->createDir('plgn://' . $target));
+            } else {
+                try {
+                    $ok = $ok && @$this->manager->move('root://' . $source, 'plgn://' . $target);
+                } catch (FileExistsException $e) {
+                    $ok = $ok
+                        && @$this->manager->delete('plgn://' . $target)
+                        && @$this->manager->move('root://' . $source, 'plgn://' . $target);
+                }
+            }
+        }
+        $this->rootSystem->deleteDir(\PFAD_DBES_TMP . $dirName);
+        if ($ok === true) {
+            $this->response->setPath($base . $dirName);
 
             return true;
         }
-        $this->response->setStatus(InstallationResponse::STATUS_FAILED);
-        $this->response->addMessage('Cannot move to ' . $target);
+        $this->handlExtractionErrors(0, 'Cannot move to ' . $base . $dirName);
 
         return false;
     }
@@ -96,45 +149,44 @@ class Extractor
         $dirName = '';
         $zip     = new ZipArchive();
         if (!$zip->open($zipFile) || $zip->numFiles === 0) {
-            $this->response->setStatus(InstallationResponse::STATUS_FAILED);
-            $this->response->addMessage('Cannot open archive');
-        } else {
-            for ($i = 0; $i < $zip->numFiles; $i++) {
-                if ($i === 0) {
-                    $dirName = $zip->getNameIndex($i);
-                    if (\mb_strpos($dirName, '.') !== false) {
-                        $this->response->setStatus(InstallationResponse::STATUS_FAILED);
-                        $this->response->addMessage('Invalid archive');
+            $this->handlExtractionErrors(0, 'Cannot open archive');
 
-                        return false;
-                    }
-                    \preg_match(self::GIT_REGEX, $dirName, $hits);
-                    if (\count($hits) >= 3) {
-                        $dirName = \str_replace($hits[2], '', $dirName);
-                    }
-                    $this->response->setDirName($dirName);
+            return false;
+        }
+        for ($i = 0; $i < $zip->numFiles; $i++) {
+            if ($i === 0) {
+                $dirName = $zip->getNameIndex($i);
+                if (\mb_strpos($dirName, '.') !== false) {
+                    $this->handlExtractionErrors(0, 'Invalid archive');
+
+                    return false;
                 }
-                $filename = $zip->getNameIndex($i);
-                \preg_match(self::GIT_REGEX, $filename, $hits);
+                \preg_match(self::GIT_REGEX, $dirName, $hits);
                 if (\count($hits) >= 3) {
-                    $zip->renameIndex($i, \str_replace($hits[2], '', $filename));
-                    $filename = $zip->getNameIndex($i);
+                    $dirName = \str_replace($hits[2], '', $dirName);
                 }
-                if ($zip->extractTo(self::UNZIP_PATH, $filename)) {
-                    $this->response->addFileUnpacked($filename);
-                } else {
-                    $this->response->addFileFailed($filename);
-                }
+                $this->response->setDirName($dirName);
             }
-            $zip->close();
-            $this->response->setPath(self::UNZIP_PATH . $dirName);
-            try {
-                $this->moveToPluginsDir($dirName);
-            } catch (InvalidArgumentException $e) {
-                $this->response->addMessage($e->getMessage());
+            $filename = $zip->getNameIndex($i);
+            \preg_match(self::GIT_REGEX, $filename, $hits);
+            if (\count($hits) >= 3) {
+                $zip->renameIndex($i, \str_replace($hits[2], '', $filename));
+                $filename = $zip->getNameIndex($i);
+            }
+            if ($zip->extractTo(self::UNZIP_DIR, $filename)) {
+                $this->response->addFileUnpacked($filename);
+            } else {
+                $this->response->addFileFailed($filename);
+            }
+        }
+        $zip->close();
+        $this->response->setPath(self::UNZIP_DIR . $dirName);
+        try {
+            $this->moveToPluginsDir($dirName);
+        } catch (InvalidArgumentException $e) {
+            $this->response->addMessage($e->getMessage());
 
-                return false;
-            }
+            return false;
         }
 
         return true;

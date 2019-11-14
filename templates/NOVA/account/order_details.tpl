@@ -165,7 +165,7 @@
                                             value=""
                                             id="postcode"
                                             class="postcode_input"
-                                            placeholder="{lang key='plz' section='account data'}"
+                                            placeholder=" "
                                             required=true
                                             autocomplete="billing postal-code"
                                         }

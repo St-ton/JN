@@ -27,6 +27,9 @@ use JTL\DB\Services\GcServiceInterface;
 use JTL\Debug\JTLDebugBar;
 use JTL\Events\Dispatcher;
 use JTL\Events\Event;
+use JTL\Filesystem\AdapterFactory;
+use JTL\Filesystem\Factory;
+use JTL\Filesystem\Filesystem;
 use JTL\Filter\Config;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\ProductFilter;
@@ -393,6 +396,11 @@ final class Shop
      * @var null|bool
      */
     private static $adminToken;
+
+    /**
+     * @var null|string
+     */
+    private static $adminLangTag;
 
     /**
      * @var array
@@ -1922,8 +1930,9 @@ final class Shop
             return self::$logged;
         }
 
-        $result     = false;
-        $adminToken = null;
+        $result       = false;
+        $adminToken   = null;
+        $adminLangTag = null;
 
         $isLogged = function () {
             return self::Container()->getAdminAccount()->logged();
@@ -1934,19 +1943,22 @@ final class Shop
                 $oldID = \session_id();
                 \session_write_close();
                 \session_id($_COOKIE['eSIdAdm']);
-                $result     = $isLogged();
-                $adminToken = $_SESSION['jtl_token'];
+                $result       = $isLogged();
+                $adminToken   = $_SESSION['jtl_token'];
+                $adminLangTag = $_SESSION['AdminAccount']->language;
                 \session_write_close();
                 \session_id($oldID);
                 new Session\Frontend();
             } else {
-                $result     = $isLogged();
-                $adminToken = $_SESSION['jtl_token'];
+                $result       = $isLogged();
+                $adminToken   = $_SESSION['jtl_token'];
+                $adminLangTag = $_SESSION['AdminAccount']->language;
             }
         }
 
-        self::$logged     = $result;
-        self::$adminToken = $adminToken;
+        self::$logged       = $result;
+        self::$adminToken   = $adminToken;
+        self::$adminLangTag = $adminLangTag;
 
         return $result;
     }
@@ -1959,6 +1971,19 @@ final class Shop
     {
         if (self::isAdmin()) {
             return self::$adminToken;
+        }
+
+        return null;
+    }
+
+    /**
+     * @return string|null
+     * @throws Exception
+     */
+    public static function getCurAdminLangTag(): ?string
+    {
+        if (self::isAdmin()) {
+            return self::$adminLangTag;
         }
 
         return null;
@@ -2108,6 +2133,12 @@ final class Shop
                 new AdminLoginStatusToLogLevel(),
                 $container->getGetText()
             );
+        });
+
+        $container->singleton(Filesystem::class, function (Container $container) {
+            $factory = new AdapterFactory(self::getConfig([\CONF_FS])['fs']);
+
+            return new Filesystem($factory->getAdapter());
         });
 
         $container->bind(Mailer::class, function (Container $container) {

@@ -222,7 +222,7 @@
                                                             label="{lang key='message' section='contact'}"
                                                             label-for="message"
                                                         }
-                                                            {textarea name="nachricht" rows="10" id="message" required=true}{if isset($Vorgaben->cNachricht)}{$Vorgaben->cNachricht}{/if}{/textarea}
+                                                            {textarea name="nachricht" rows="10" id="message" required=true placeholder=" "}{if isset($Vorgaben->cNachricht)}{$Vorgaben->cNachricht}{/if}{/textarea}
                                                             {if !empty($fehlendeAngaben.nachricht)}
                                                                 <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
                                                                     {lang key='fillOut'}

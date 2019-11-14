@@ -32,8 +32,8 @@ final class Manufacturer extends AbstractItem
     public function generateData($data, array $languages): void
     {
         $this->setData($data);
-        $this->setPrimaryKeyID($data->kHersteller);
-        $this->setLanguageData($languages, $data->langID);
+        $this->setPrimaryKeyID((int)$data->kHersteller);
+        $this->setLanguageData($languages, (int)$data->langID);
         $this->generateImage();
         $this->setLocation($this->baseURL . $data->cSeo);
         $this->setChangeFreq(\FREQ_WEEKLY);

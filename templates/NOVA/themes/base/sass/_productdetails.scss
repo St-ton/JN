@@ -87,4 +87,15 @@
 			}
 		}
 	}
+	.variation-image-preview {
+		position: absolute;
+		top: 0;
+		right: 0;
+		width: 98%;
+		height: auto;
+		background: $white;
+		&:not(.show) {
+			z-index: -5;
+		}
+	}
 }

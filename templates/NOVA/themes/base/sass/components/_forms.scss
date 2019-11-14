@@ -80,6 +80,26 @@ input[type='radio'], input[type='checkbox'] {
 	-webkit-appearance: none;
 }
 
+.bootstrap-select.custom-select {
+	button.dropdown-toggle {
+		height: inherit;
+
+		&:hover, &:focus {
+			background: $white;
+			outline: 0;
+			box-shadow: none;
+		}
+		&:focus {
+			border-color: $primary;
+		}
+	}
+	&.show button.dropdown-toggle {
+		background: $white;
+		border-color: $primary;
+		outline: 0;
+	}
+}
+
 legend {
 	font-size: 1rem;
 	font-weight: bolder;

@@ -721,7 +721,7 @@ function benutzerverwaltungFinalize($step, JTLSmarty $smarty, array &$messages)
             $smarty->assign('oAdminGroup_arr', getAdminGroups())
                 ->assign(
                     'languages',
-                    Shop::Container()->getGetText()->getAdminLanguages($_SESSION['AdminAccount']->language)
+                    Shop::Container()->getGetText()->getAdminLanguages()
                 );
             break;
         case 'account_view':

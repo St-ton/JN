@@ -28,7 +28,9 @@
                             {col cols=12 sm=6 class="mb-3 mb-sm-0"}
                                 {inputgroup id="quantity-grp" class="form-counter choose_quantity"}
                                     {inputgroupprepend}
-                                        {button variant="" data=["count-down"=>""]}
+                                        {button variant=""
+                                            data=["count-down"=>""]
+                                            aria=["label"=>{lang key='decreaseQuantity' section='aria'}]}
                                             <span class="fas fa-minus"></span>
                                         {/button}
                                     {/inputgroupprepend}
@@ -47,7 +49,9 @@
                                                 {$Artikel->cEinheit}
                                             {/inputgrouptext}
                                         {/if}
-                                        {button variant="" data=["count-up"=>""]}
+                                        {button variant=""
+                                            data=["count-up"=>""]
+                                            aria=["label"=>{lang key='increaseQuantity' section='aria'}]}
                                             <span class="fas fa-plus"></span>
                                         {/button}
                                     {/inputgroupappend}

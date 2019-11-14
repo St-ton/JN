@@ -259,7 +259,9 @@
                                     <div class="qty-wrapper dropdown max-w-sm">
                                         {inputgroup id="quantity-grp{$oPosition@index}" class="form-counter choose_quantity"}
                                             {inputgroupprepend}
-                                                {button variant="" class="btn-decrement" data=["count-down"=>""]}
+                                                {button variant="" class="btn-decrement"
+                                                    data=["count-down"=>""]
+                                                    aria=["label"=>{lang key='decreaseQuantity' section='aria'}]}
                                                     <span class="fas fa-minus"></span>
                                                 {/button}
                                             {/inputgroupprepend}
@@ -273,7 +275,9 @@
                                                 data=["decimals"=>{getDecimalLength quantity=$oPosition->Artikel->fAbnahmeintervall}]
                                             }
                                             {inputgroupappend}
-                                                {button variant="" class="btn-increment" data=["count-up"=>""]}
+                                                {button variant="" class="btn-increment"
+                                                    data=["count-up"=>""]
+                                                    aria=["label"=>{lang key='increaseQuantity' section='aria'}]}
                                                     <span class="fas fa-plus"></span>
                                                 {/button}
                                             {/inputgroupappend}

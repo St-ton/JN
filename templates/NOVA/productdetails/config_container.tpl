@@ -157,7 +157,9 @@
                                                                     {else}
                                                                         {inputgroup class="form-counter"}
                                                                             {inputgroupprepend}
-                                                                                {button variant="" data=["count-down"=>""]}
+                                                                                {button variant=""
+                                                                                    data=["count-down"=>""]
+                                                                                    aria=["label"=>{lang key='decreaseQuantity' section='aria'}]}
                                                                                     <span class="fas fa-minus"></span>
                                                                                 {/button}
                                                                             {/inputgroupprepend}
@@ -173,7 +175,9 @@
                                                                                 value="{if !empty($nKonfigitemAnzahl_arr[$kKonfigitem])}{$nKonfigitemAnzahl_arr[$kKonfigitem]}{else}{if $oItem->getArtikel()->fAbnahmeintervall > 0}{if $oItem->getArtikel()->fMindestbestellmenge > $oItem->getArtikel()->fAbnahmeintervall}{$oItem->getArtikel()->fMindestbestellmenge}{else}{$oItem->getArtikel()->fAbnahmeintervall}{/if}{else}1{/if}{/if}"
                                                                             }
                                                                             {inputgroupappend}
-                                                                                {button variant="" data=["count-up"=>""]}
+                                                                                {button variant=""
+                                                                                    data=["count-up"=>""]
+                                                                                    aria=["label"=>{lang key='increaseQuantity' section='aria'}]}
                                                                                     <span class="fas fa-plus"></span>
                                                                                 {/button}
                                                                             {/inputgroupappend}

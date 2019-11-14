@@ -28,11 +28,6 @@ class GetText
     private $translator;
 
     /**
-     * @var array locale-path => true
-     */
-    private $loadedPoFiles = [];
-
-    /**
      * @var Translations[]
      */
     private $translations = [];
@@ -42,8 +37,9 @@ class GetText
      */
     public function __construct()
     {
-        $this->setLanguage($_SESSION['AdminAccount']->language ?? $this->getDefaultLanguage())
-             ->loadAdminLocale();
+        $this
+            ->setLanguage()
+            ->loadAdminLocale();
     }
 
     /**
@@ -55,10 +51,9 @@ class GetText
     }
 
     /**
-     * @param string $inLanguage
      * @return array
      */
-    public function getAdminLanguages(string $inLanguage): array
+    public function getAdminLanguages(): array
     {
         $languages  = [];
         $localeDirs = \array_diff(
@@ -128,6 +123,15 @@ class GetText
     {
         $path = $this->getMoPath($dir, $domain);
 
+        return $this->getMoTranslations($path);
+    }
+
+    /**
+     * @param string $path
+     * @return Translations
+     */
+    public function getMoTranslations(string $path): Translations
+    {
         if (!isset($this->translations[$path])) {
             $this->translations[$path] = Translations::fromMoFile($path);
         }
@@ -145,18 +149,33 @@ class GetText
     }
 
     /**
-     * @param string $langTag
+     * @param null|string $langTag
      * @return GetText
      */
-    public function setLanguage(string $langTag): self
+    public function setLanguage(?string $langTag = null): self
     {
+        $langTag = $langTag
+            ?? $_SESSION['AdminAccount']->language
+            ?? $this->langTag
+            ?? $this->getDefaultLanguage();
+
         if ($this->langTag !== $langTag) {
+            $oldLangTag         = $this->langTag;
+            $oldTranslations    = $this->translations;
+            $this->langTag      = $langTag;
             $this->translations = [];
             $this->translator   = new Translator();
             $this->translator->register();
+
+            foreach ($oldTranslations as $path => $t) {
+                $newPath = \str_replace('/' . $oldLangTag . '/', '/' . $langTag . '/', $path);
+
+                if (\file_exists($newPath)) {
+                    $this->translator->loadTranslations($this->getMoTranslations($newPath));
+                }
+            }
         }
 
-        $this->langTag = $langTag;
 
         return $this;
     }
@@ -196,18 +215,27 @@ class GetText
      * @param string $dir
      * @param string $domain
      * @return GetText
+     * @throws \Exception
      */
     public function addLocale(string $dir, string $domain): self
     {
         $path = $this->getMoPath($dir, $domain);
 
-        if (\array_key_exists($path, $this->loadedPoFiles)) {
+        return $this->addMoFile($path);
+    }
+
+    /**
+     * @param string $path
+     * @return GetText
+     */
+    public function addMoFile(string $path): self
+    {
+        if (\array_key_exists($path, $this->translations)) {
             return $this;
         }
 
         if (\file_exists($path)) {
-            $this->translator->loadTranslations($this->getTranslations($dir, $domain));
-            $this->loadedPoFiles[$path] = true;
+            $this->translator->loadTranslations($this->getMoTranslations($path));
         }
 
         return $this;

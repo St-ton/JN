@@ -591,19 +591,7 @@
                                         label-for="custom_{$kKundenfeld}"
                                         label="{$oKundenfeld->getLabel()}{if !$oKundenfeld->isRequired()}<span class='optional'> - {lang key='optional'}</span>{/if}"
                                     }
-                                        {if $oKundenfeld->getType() !== \JTL\Customer\CustomerField::TYPE_SELECT}
-                                            {input
-                                                type="{if $oKundenfeld->getType() === \JTL\Customer\CustomerField::TYPE_NUMBER}number{elseif $oKundenfeld->getType() === \JTL\Customer\CustomerField::TYPE_DATE}date{else}text{/if}"
-                                                name="custom_{$kKundenfeld}"
-                                                id="custom_{$kKundenfeld}"
-                                                value="{$cKundenattributWert}"
-                                                placeholder=$oKundenfeld->getLabel()
-                                                aria=["label"=>$oKundenfeld->getLabel()]
-                                                required=$oKundenfeld->isRequired()
-                                                data=["toggle"=>"floatLabel", "value"=>"no-js"]
-                                                readonly=(!$isKundenattributEditable)
-                                            }
-                                        {else}
+                                        {if $oKundenfeld->getType() === \JTL\Customer\CustomerField::TYPE_SELECT}
                                             {select
                                                 name="custom_{$kKundenfeld}"
                                                 disabled=!$isKundenattributEditable
@@ -616,6 +604,41 @@
                                                     <option value="{$oKundenfeldWert}" {if ($oKundenfeldWert == $cKundenattributWert)}selected{/if}>{$oKundenfeldWert}</option>
                                                 {/foreach}
                                             {/select}
+                                        {elseif $oKundenfeld->getType() === \JTL\Customer\CustomerField::TYPE_NUMBER}
+                                            {inputgroup class="form-counter"}
+                                                {inputgroupprepend}
+                                                    {button variant="" data=["count-down"=>""]}
+                                                        <span class="fas fa-minus"></span>
+                                                    {/button}
+                                                {/inputgroupprepend}
+                                                {input
+                                                    type="number"
+                                                    name="custom_{$kKundenfeld}"
+                                                    id="custom_{$kKundenfeld}"
+                                                    value="{$cKundenattributWert}"
+                                                    placeholder=$oKundenfeld->getLabel()
+                                                    aria=["label"=>$oKundenfeld->getLabel()]
+                                                    required=$oKundenfeld->isRequired()
+                                                    readonly=(!$isKundenattributEditable)
+                                                }
+                                                {inputgroupappend}
+                                                    {button variant="" data=["count-up"=>""]}
+                                                        <span class="fas fa-plus"></span>
+                                                    {/button}
+                                                {/inputgroupappend}
+                                            {/inputgroup}
+                                        {else}
+                                            {input
+                                                type="{if $oKundenfeld->getType() === \JTL\Customer\CustomerField::TYPE_DATE}date{else}text{/if}"
+                                                name="custom_{$kKundenfeld}"
+                                                id="custom_{$kKundenfeld}"
+                                                value="{$cKundenattributWert}"
+                                                placeholder=$oKundenfeld->getLabel()
+                                                aria=["label"=>$oKundenfeld->getLabel()]
+                                                required=$oKundenfeld->isRequired()
+                                                data=["toggle"=>"floatLabel", "value"=>"no-js"]
+                                                readonly=(!$isKundenattributEditable)
+                                            }
                                         {/if}
                                         {if isset($fehlendeAngaben.custom[$kKundenfeld])}
                                             <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>

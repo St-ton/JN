@@ -21635,6 +21635,7 @@ aside .last-seen-link {
 }
 .form-counter .form-control::-webkit-inner-spin-button, .form-counter .form-control::-webkit-outer-spin-button {
   appearance: none;
+  -webkit-appearance: none;
   margin: 0;
 }
 .form-counter .input-group-text {
@@ -21644,7 +21645,7 @@ aside .last-seen-link {
   font-weight: 600;
 }
 .form-counter .btn:hover {
-  background-color: #9b9b9b;
+  background-color: #f5f7fa;
 }
 
 .custom-control-label-image {
@@ -23211,85 +23212,6 @@ aside .badge-light {
   border: 0;
 }
 
-.nmbr-cfg-group {
-  display: flex;
-  z-index: 1;
-  font-family: Montserrat, sans-serif;
-  font-weight: 600;
-}
-.nmbr-cfg-group .btn:hover {
-  background-color: #f5f7fa;
-}
-.nmbr-cfg-group input {
-  border-radius: 0;
-}
-.nmbr-cfg-group .btn-decrement:focus, .nmbr-cfg-group .btn-increment:focus {
-  color: #525252;
-  background-color: #fff;
-  border-color: #ffe079;
-  outline: 0;
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), none;
-}
-.nmbr-cfg-group .btn-decrement::placeholder, .nmbr-cfg-group .btn-increment::placeholder {
-  color: #707070;
-  opacity: 1;
-}
-.nmbr-cfg-group .btn-decrement:disabled, .nmbr-cfg-group .btn-decrement[readonly], .nmbr-cfg-group .btn-increment:disabled, .nmbr-cfg-group .btn-increment[readonly] {
-  background-color: #e9ecef;
-  opacity: 1;
-}
-.nmbr-cfg-group .btn-decrement {
-  border-right: 0;
-  border-radius: 0.125rem 0 0 0.125rem;
-}
-.nmbr-cfg-group .btn-increment {
-  border-left: 0;
-  border-radius: 0 0.125rem 0.125rem 0;
-}
-.nmbr-cfg-group input.form-control {
-  border-right: 0;
-  border-left: 0;
-  font-weight: 600;
-}
-.nmbr-cfg-group .input-group-text {
-  border-right: 0;
-  z-index: 2;
-}
-
-.choose_quantity,
-.quantity-wrapper,
-.input-group {
-  flex-wrap: nowrap;
-}
-.choose_quantity .nmbr-cfg-group,
-.quantity-wrapper .nmbr-cfg-group,
-.input-group .nmbr-cfg-group {
-  display: flex;
-  position: relative;
-  flex: 1 1 auto;
-  width: auto;
-  margin-bottom: 0;
-}
-.choose_quantity .nmbr-cfg-group input.quantity,
-.quantity-wrapper .nmbr-cfg-group input.quantity,
-.input-group .nmbr-cfg-group input.quantity {
-  display: flex;
-  position: relative;
-  /*flex: 1 1 auto;
-  width: 1%;*/
-  flex: 1 1 auto;
-  width: 1%;
-  margin-bottom: 0;
-  border-right: 0;
-}
-.choose_quantity .nmbr-cfg-group .unit,
-.quantity-wrapper .nmbr-cfg-group .unit,
-.input-group .nmbr-cfg-group .unit {
-  background: #fff;
-  border-left: 0;
-  margin-left: -1px;
-}
-
 .input-group-append > .btn.ml-3 {
   border-radius: 0.125rem;
 }
@@ -23535,9 +23457,6 @@ input.form-control[name=wishlist-url] {
 .cfg-group .config-item .badge-circle {
   display: none;
 }
-.cfg-group .config-item .nmbr-cfg-group {
-  display: none;
-}
 .cfg-group .cfg-swatch ~ .custom-control-label::before,
 .cfg-group .cfg-swatch ~ .custom-control-label::after {
   display: none;
@@ -23563,9 +23482,6 @@ input.form-control[name=wishlist-url] {
   position: absolute;
   top: -20px;
   right: -22px;
-}
-.cfg-group .cfg-swatch:checked ~ .custom-control-label .config-item .nmbr-cfg-group {
-  display: flex;
 }
 .cfg-group .drpdwn_qnt {
   display: none;

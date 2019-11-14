@@ -1109,6 +1109,8 @@
                     }
 
                     $spinner.stop();
+
+                    window.initNumberInput();
                 }, function () {
                     $.evo.error('Error loading ' + url);
                     $spinner.stop();
@@ -1138,7 +1140,8 @@
                     }
                     $spinner.stop();
 
-                    $.evo.initInputSpinner(wrapper + " input[type='number']");
+                    window.initNumberInput();
+
                     $(wrapper + ' .list-gallery:not(.slick-initialized)').slick({
                         lazyLoad: 'ondemand',
                         infinite: false,

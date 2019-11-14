@@ -26,7 +26,12 @@
                     {block name='productdetails-basket-form-inline'}
                         {row class="align-items-center"}
                             {col cols=12 sm=6 class="mb-3 mb-sm-0"}
-                                {inputgroup id="quantity-grp" class="choose_quantity"}
+                                {inputgroup id="quantity-grp" class="form-counter choose_quantity"}
+                                    {inputgroupprepend}
+                                        {button variant="" data=["count-down"=>""]}
+                                            <span class="fas fa-minus"></span>
+                                        {/button}
+                                    {/inputgroupprepend}
                                     {input type="{if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}text{else}number{/if}"
                                         min="{if $Artikel->fMindestbestellmenge}{$Artikel->fMindestbestellmenge}{else}0{/if}"
                                         required=($Artikel->fAbnahmeintervall > 0)
@@ -36,13 +41,16 @@
                                         value="{if $Artikel->fAbnahmeintervall > 0 || $Artikel->fMindestbestellmenge > 1}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}"
                                         data=["decimals"=>{getDecimalLength quantity=$Artikel->fAbnahmeintervall}]
                                     }
-                                    {if $Artikel->cEinheit}
-                                        {inputgroupappend}
+                                    {inputgroupappend}
+                                        {if $Artikel->cEinheit}
                                             {inputgrouptext class="unit form-control"}
                                                 {$Artikel->cEinheit}
                                             {/inputgrouptext}
-                                        {/inputgroupappend}
-                                    {/if}
+                                        {/if}
+                                        {button variant="" data=["count-up"=>""]}
+                                            <span class="fas fa-plus"></span>
+                                        {/button}
+                                    {/inputgroupappend}
                                 {/inputgroup}
                             {/col}
                             {col cols=12 sm=6}

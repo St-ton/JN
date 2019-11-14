@@ -152,7 +152,7 @@ class GetText
      * @param null|string $langTag
      * @return GetText
      */
-    public function setLanguage($langTag = null): self
+    public function setLanguage(?string $langTag = null): self
     {
         $langTag = $langTag
             ?? $_SESSION['AdminAccount']->language

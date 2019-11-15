@@ -23,13 +23,14 @@ const updateCount = function(increase = false) {
 	try {
 		input[stepDirection]()
 	} catch(e) {
-		let step = input.step > 0 ? input.step : 1;
-		let newValue = increase ? parseInt(input.value) + step : parseInt(input.value) - step;
+		let step = input.step > 0 ? parseFloat(input.step) : 1;
 
-		if(newValue > parseInt(input.max)) return
-		if(newValue < parseInt(input.min)) return
+		let newValue = increase ? parseFloat(input.value) + step : parseFloat(input.value) - step;
 
-		input.value = newValue
+		if(newValue > parseFloat(input.max)) return
+		if(newValue < parseFloat(input.min)) return
+
+		input.value = (newValue).toFixed($input.data('decimals'));
 	}
 }
 

@@ -101,7 +101,7 @@ class AdminAccount
     {
         if (!isset($_SESSION['AdminAccount'])) {
             $adminAccount              = new stdClass();
-            $adminAccount->language    = $this->getText->getDefaultLanguage();
+            $adminAccount->language    = $this->getText->getLanguage();
             $adminAccount->kAdminlogin = null;
             $adminAccount->oGroup      = null;
             $adminAccount->cLogin      = null;

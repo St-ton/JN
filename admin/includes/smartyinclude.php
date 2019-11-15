@@ -174,7 +174,7 @@ if (empty($template->version)) {
 } else {
     $adminTplVersion = $template->version;
 }
-$langTag = $_SESSION['AdminAccount']->language ?? Shop::Container()->getGetText()->getDefaultLanguage();
+$langTag = $_SESSION['AdminAccount']->language ?? Shop::Container()->getGetText()->getLanguage();
 $smarty->assign('URL_SHOP', $shopURL)
     ->assign('jtl_token', Form::getTokenInput())
     ->assign('shopURL', $shopURL)

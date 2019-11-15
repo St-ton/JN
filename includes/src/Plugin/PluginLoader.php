@@ -37,7 +37,7 @@ class PluginLoader extends AbstractLoader
         }
         $getText       = Shop::Container()->getGetText();
         $languageCode  = Shop::Lang()->getIsoFromLangID($languageID)->cISO;
-        $languageTag   = $_SESSION['AdminAccount']->language ?? $getText->getDefaultLanguage();
+        $languageTag   = $_SESSION['AdminAccount']->language ?? $getText->getLanguage();
         $this->cacheID = \CACHING_GROUP_PLUGIN . '_' . $id . '_' . $languageID . '_' . $languageTag;
         if ($invalidateCache === true) {
             $this->cache->flush('hook_list');

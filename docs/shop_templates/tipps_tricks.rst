@@ -1,179 +1,86 @@
 Tipps und Tricks
 ================
 
-.. contents::
-    Inhalt
+.. |br| raw:: html
 
-Die Anleitungen auf dieser Seite beschäftigen sich mit dem Template EVO des JTL-Shop 4.
+    <br />
 
-Bei diesen Tipps & Tricks wird davon ausgegangen, dass ein :doc:`eigenes Child-Template </shop_templates/eigenes_template>` angelegt wurde.
-Dies stellt sicher, dass das EVO-Template weiterhin updatefähig bleibt.
-
-***********************
-LESS-Variablen anpassen
-***********************
-
-Um schnell und einfach das Aussehen Ihres JTL-Shops zu beeinflussen, bietet es sich an, die LESS-Variablen des EVO-Templates zu überschreiben.
-Diese Variablen sind verantwortlich für Farbwerte, Schriftarten, Abstände und Rahmen.
-
-Wie Sie mit LESS-Files in Ihrem Child-Template arbeiten, finden Sie in im Bereich: :ref:`Arbeiten mit LESS <arbeiten-mit-less>`.
-Dort steht auch beschrieben, wie Sie Variablen des EVO-Templates mit Ihrem Child-Template überschreiben können.
-
-Die Datei, welche alle Variablen enthält, finden Sie im Ordner ``<Shop-Root>/templates/Evo/themes/bootstrap/less/variables.less``
-
-*******************************************
-Die wichtigsten LESS-Variablen im Überblick
-*******************************************
-
-Farben
-------
-
-.. code-block:: less
-
-    @brand-primary:         #428bca;
-    @brand-success:         #5cb85c;
-    @brand-info:            #5bc0de;
-    @brand-warning:         #f0ad4e;
-    @brand-danger:          #d9534f;
-
-    @body-bg:               #fff;
-    @text-color:            @gray-dark;
-
-    @link-color:            @brand-primary;
-    @link-hover-color:      darken(@link-color, 15%);
-
-| **@brand-primary:** Hauptfarbe: diese Farbe wird an den meisten Stellen verwendet, z.B. für Buttons.
-  Tragen Sie hier die dominante Farbe Ihres Corporate Designs ein.
-| **@brand-success:** Erfolgsmeldung: diese Farbe ist die Hintergrundfarbe der Boxen von Erfolgsmeldungen im Shop. Standard: Hellgrün.
-| **@brand-info:** Infomeldung: diese Farbe ist die Hintergrundfarbe der Boxen von Informationsmeldungen im Shop. Standard: Hellblau.
-| **@brand-warning:** Warnmeldung: diese Farbe ist die Hintergrundfarbe der Boxen von Warnmeldungen im Shop. Standard: Orange.
-| **@brand-danger:** Fehlermeldung: diese Farbe ist die Hintergrundfarbe der Boxen von Fehlermeldungen im Shop. Standard: Rot.
-|
-| **@body-bg:** Hintergrundfarbe des gesamten Shops.
-| **@text-color:** Schriftfarbe des Fließtextes
-|
-| **@link-color:** Farbe der Links
-| **@link-hover-color:** Hover-Farbe der Links
-
-----------------------------------------------------------------------------------------------------
-
-Schrift
--------
-
-.. code-block:: less
-
-    @font-family-sans-serif:  "Helvetica Neue", Helvetica, Arial, sans-serif;
-    @font-family-serif:       Georgia, "Times New Roman", Times, serif;
-    @font-family-monospace:   Menlo, Monaco, Consolas, "Courier New", monospace;
-    @font-family-base:        @font-family-sans-serif;
-    @font-size-base:          14px;
-
-| **@font-family-sans-serif:** Hauptschrift-Familien für serifenlose Schrift.
-| **@font-family-serif:** Hauptschrift-Familien für Serifenschrift.
-| **@font-family-monospace:** Hauptschrift-Familien für Monospace-Schrift. Wird verwendet für ``<code>``, ``<kdb>`` und ``<pre>`` .
-| **@font-family-base:** Definiert, welche Variable als Hauptschriftart verwendet wird.
-| **@font-size-base:** Standardschriftgröße für Fliestext, Links etc.
-|
-
-.. code-block:: less
-
-    @headings-font-family:    inherit;
-    @headings-font-weight:    500;
-    @headings-line-height:    1.1;
-    @headings-color:          inherit;
-
-| **@headings-font-family:** Schriftfamilie für Überschriften.
-| **@headings-font-weight:** Schriftschnitt für Überschriften.
-| **@headings-line-height:** Zeilenhöhe der Überschriften.
-| **@headings-color:** Schriftfarbe für Überschriften.
-|
+Bei diesen Tipps & Tricks wird davon ausgegangen, dass
+ein :doc:`eigenes Child-Template </shop_templates/eigenes_template>` angelegt wurde. |br|
+Dies stellt unter anderem sicher, dass das entsprechende (Parent-)Template weiterhin updatefähig bleibt.
 
 .. note::
 
-    Schriftgrößen für Überschriften werden automatisch berechnet. Wenn Sie diese Berechnungen anpassen möchten, müssen Sie die weiteren Variablen für ``@font-size-h1``-h6 bearbeiten.
+    Die JTL-Templates des Shops basieren auf leicht unterschiedlichen Technologien zur Seitendarstellung: |br|
+    Das **EVO-Template** nutzt als CSS-Spracherweiterung **LESS**, |br|
+    Das **NOVA-Template** nutzt hierfür **Sass** (SCSS).
 
-----------------------------------------------------------------------------------------------------
+Beide Technologien sind Erweiterungen der herkömmlichen CSS-Syntax und schaffen hauptsächlich die Möglichkeit, CSS
+ähnlich komfortabel zu schreiben wie Programm-Code. |br|
+Diese Technologien setzen einen Pre-Prozessor voraus, um die jeweilige Style-Sprache in CSS zu übersetzen.
+Je nach Template und Shop-Version gibt es hierfür unterschiedliche Werkzeuge
+(siehe Abschnitt ":doc:`Theme editieren <theme_edit>`").
 
-Buttons
--------
+LESS und SCSS
+-------------
 
-.. code-block:: less
+Mithilfe von LESS und SCSS können Sie verschiedene Werte für Farben, Schriften, Abstände und Rahmen
+als *Variablen* definieren, die dann in allen oder auch nur einigen Templates benutzt werden können. |br|
+Um nun schnell und einfach das Aussehen von JTL-Shop zu verändern, bietet es sich an, diese LESS- oder
+SCSS-Variablen des Templates in einem Child-Template zu überschreiben.
 
-    @btn-font-weight:                normal;
+Wie Sie mit LESS-Dateien in Ihrem Child-Template arbeiten, finden Sie im
+Bereich: :ref:`Arbeiten mit LESS <arbeiten-mit-less>`. |br|
+In diesem Abschnitt wird ebenso beschrieben, wie Sie die Variablen des Templates mit Ihrem Child-Template überschreiben
+können.
 
-    @btn-default-color:              #333;
-    @btn-default-bg:                 #fff;
-    @btn-default-border:             #ccc;
+Theme-Variablen
+---------------
 
-    @btn-primary-color:              #fff;
-    @btn-primary-bg:                 @brand-primary;
-    @btn-primary-border:             darken(@btn-primary-bg, 5%);
+Diese Variablen sind, soweit möglich, in einigen wenigen Dateien zusammengefasst.
 
-| **@btn-font-weight:** Schriftschnitt für Buttons
-|
-| **@btn-default-color:** Schriftfarbe der Buttons
-| **@btn-default-bg:** Hintergrundfarbe der Buttons
-| **@btn-default-border:** Rahmenfarbe der Buttons
-|
-| **@btn-primary-color:** Schriftfarbe für primäre Buttons
-| **@btn-primary-bg:** Hintergrundfarbe der primären Buttons
-| **@btn-primary-border:** Rahmenfarbe der primären Buttons
-|
+Im *EVO-Template* liegen sie im Ordner ``<Shop-Root>/templates/Evo/themes/bootstrap/less/variables.less``. |br|
+Im *NOVA-Template* liegen sie im Ordner ``<Shop-Root>templates/NOVA/themes/clear/sass/_variables.scss``.
 
-----------------------------------------------------------------------------------------------------
+.. hint::
 
-Navigation
-----------
+    Es gibt noch viele weitere Variablen in der ``variables.less`` bzw. ``_variables.scss``.
+    Sehen Sie sich diese Datei(en) an und probieren Sie es aus, einige Werte zu ändern. |br|
 
-.. code-block:: less
+Merkmale abfragen
+-----------------
 
-    @navbar-default-color:             #777;
-    @navbar-default-bg:                #f8f8f8;
-    @navbar-default-border:            darken(@navbar-default-bg, 6.5%);
+Merkmale dienen, auf der Artikeldetailseite, der Auflistung bestimmter Artikeleigenschaften wie z. B. der Farbe des
+Produktes. |br|
+Merkmale werden in `JTL-Wawi <https://guide.jtl-software.de/jtl-wawi/artikel/merkmale-anlegen/>`_, pro
+Sprache, definiert.
 
-    @navbar-default-link-color:                #777;
-    @navbar-default-link-hover-color:          #333;
-    @navbar-default-link-hover-bg:             transparent;
-    @navbar-default-link-active-color:         #555;
-    @navbar-default-link-active-bg:            darken(@navbar-default-bg, 6.5%);
-    @navbar-default-link-disabled-color:       #ccc;
-    @navbar-default-link-disabled-bg:          transparent;
-
-| **@navbar-default-color:** Schriftfarbe der Standard-Navigation
-| **@navbar-default-bg:** Hintergrundfarbe der Standard-Navigation
-| **@navbar-default-border:** Rahmenfarbe der Standard-Navigation
-|
-| **@navbar-default-link-color:** Linkfarbe der Standard-Navigation
-| **@navbar-default-link-hover-color:** Link-Hoverfarbe der Standard-Navigation
-| **@navbar-default-link-hover-bg:** Hintergrundfarbe der Links der Standard-Navigation
-| **@navbar-default-link-active-color:** Aktive Linkfarbe der Standard-Navigation
-| **@navbar-default-link-active-bg:** Aktive Hintergrundfarbe der Links der Standard-Navigation
-|
-
-.. note::
-
-    Es gibt noch viele weitere Variablen, aber mit dieser Übersicht können Sie schon ein individuelles Theme erstellen. Probieren Sie ruhig weitere Variablen aus!
-
-*************************
-Artikelattribute abfragen
-*************************
-
-Artikelattribute dienen in den Artikeldetails der Auflistung bestimmter Artikeleigenschaften wie z.B. Füllmenge. Artikelattribute werden in `JTL-Wawi pro Sprache definiert <http://guide.jtl-software.de/jtl/Betrieb:Artikel-/Kategoriepflege>`_.
-Siehe auch `JTL-Demoshop <https://demo.jtl-shop.de/Frei-definierte-Attribute>`_.
-
-Standardmäßig werden Artikelattribute im Shop in den Artikeldetails unter dem Beschreibungstext aufgelistet, sofern Artikelattribute vorhanden sind.
-
-**Template-Code** (In artikel_inc.tpl):
+**Template-Code** |br|
+im EVO-Template: ``templates/Evo/productdetails/attributes.tpl`` :
 
 .. code-block:: smarty
 
-    {if $Artikel->Attribute|@count > 0}
-      <div class="attributes">
-        {foreach name=Attribute from=$Artikel->Attribute item=Attribut}
-          <p><b>{$Attribut->cName}:</b> {$Attribut->cWert}</p>
+    {block name='productdetails-attributes-shop-attributes'}
+        {foreach $Artikel->Attribute as $Attribut}
+            <div class="list-group-item attr-custom">
+                <div class="list-group-item-heading">{$Attribut->cName}: </div>
+                <div class="list-group-item-text attr-value">{$Attribut->cWert}</div>
+            </div>
         {/foreach}
-      </div>
-    {/if}
+    {/block}
+
+im NOVA-Template: ``templates/NOVA/productdetails/attributes.tpl`` :
+
+.. code-block:: smarty
+
+    {block name='productdetails-attributes-shop-attributes'}
+        {foreach $Artikel->Attribute as $Attribut}
+            <tr class="attr-custom">
+                <td class="h6">{$Attribut->cName}: </td>
+                <td class="attr-value">{$Attribut->cWert}</td>
+            </tr>
+        {/foreach}
+    {/block}
 
 Der Zugriff ist auch über ein assoziatives Array möglich:
 
@@ -182,56 +89,98 @@ Der Zugriff ist auch über ein assoziatives Array möglich:
     {assign var="attrname" value="Name des Funktionsattributes hier eintragen"}
     {$Artikel->AttributeAssoc.$attrname}
 
-******************
 Funktionsattribute
-******************
+------------------
 
-In JTL-Wawi lassen sich in den Artikeldetails im Reiter Sonstiges/Sonderpreise Funktionsattribute zu dem Artikel hinterlegen. Anders als Artikelattribute (siehe vorheriger Abschnitt) werden Funktionsattribute nicht mehrsprachig definiert.
-Funktionsattribute an einem Artikel lösen ein bestimmtes Ereignis aus oder steuern gewisse Funktionen im Shop oder Template.
-Siehe auch `Beispielartikel mit Funktionsattributen im JTL-Demoshop <https://demo.jtl-shop.de/Frei-definierte-Attribute>`_.
+In JTL-Wawi können Sie in den Artikeldetails im Reiter "Attribute/Merkmale" sogenannte Funktionsattribute im
+Artikel hinterlegen. |br|
+Anders als Artikelattribute (siehe vorheriger Abschnitt "Merkmale") werden Funktionsattribute nicht mehrsprachig
+definiert, da sie Funktionalitäten und Aktionen im Shop auslösen bzw. das Template steuern können. |br|
+(Siehe auch: `Beispielartikel mit Funktionsattributen im JTL-Demoshop <https://demo.jtl-shop.de/Frei-definierte-Attribute>`_)
 
-Funktionsattribute am Artikel stehen templateseitig in den Artikeldetails als Variable zur Verfügung und können auf solchen Seiten abgefragt werden.
-Standardmäßig unterstützt der Shop die folgenden Funktionsattribute: `Funktionsattribute für JTL-Shop <https://demo.jtl-shop.de/Frei-definierte-Attribute>`_.
+Funktionsattribute am Artikel stehen templateseitig in den Artikeldetails als Variable zur Verfügung und können
+artikelbezogen im Frontend abgefragt werden.
 
-Funktionsattribute können im Template per ``{$Artikel->FunktionsAttribute.FUNKTIONSATTRIBUTNAME}`` ausgelesen werden (**FUNKTIONSATTRIBUTNAME** durch den von Ihnen gewählten Funktionsattributnamen in JTL-Wawi ersetzen).
+Funktionsattribute können im Template per ``{$Artikel->FunktionsAttribute.funktionsattributname}`` ausgelesen
+werden. |br|
+("*funktionsattributname*" reflektiert hier den Namen des Funktionsattributes, wie es in JTL-Wawi definiert wurde)
 
-Natürlich können auch eigene Funktionsattribute in JTL-Wawi angelegt, und im Shop-Template abgefragt werden.
+Natürlich können Sie auch eigene Funktionsattribute in JTL-Wawi anlegen und diese im Shop-Template nutzen.
 
-.. note::
+.. attention::
 
-    **Wichtig:** Funktionsattributnamen müssen lowercase (nur Kleinbuchstaben) ausgeschrieben werden, auch wenn der Name in JTL-Wawi Großbuchstaben enthält.
+    Schreiben Sie Funktionsattributnamen auch dann in Kleinbuchstaben, wenn deren Namen in
+    JTL-Wawi Großbuchstaben enthalten.
 
 **Beispiel:**
-Wir möchten ein Funktionsattribut ``body_class`` abfragen und abhängig davon eine besondere CSS-Klasse für das body-Element setzen:
 
-**Template-Code** (für header.tpl):
+Sie möchten ein Funktionsattribut ``highlightclass`` neu erstellen und abfragen sowie abhängig davon den Hintergrund
+der Kurzbeschreibung auf der Artikeldetailseite in Gelb erscheinen lassen, quasi "highlighted".
+
+Wir gehen hier wieder von einem eigenen Child-Template aus (siehe ":ref:`label-eigenes-template`"). |br|
+Definieren Sie die CSS-Klasse in einer eigenen ``custom.css`` Datei. |br|
+Geladen wird diese CSS-Klasse via ``template.xml``, Tag ``<Minify><CSS Name="clear.css">...</CSS>`` für das jeweilige
+Theme. In NOVA ist es das Theme "clear". |br|
+
+.. code-block:: css
+
+    /* custom.css */
+    .highlightclass {
+        background-color: yellow;
+    }
+
+Das neue Funktionsattribut soll den Name ``highlightclass`` tragen und muss natürlich noch in JTL-Wawi
+angelegt werden. |br|
+Rufen Sie dazu in JTL-Wawi die Artikelstammdaten des Zielartikels auf und wechseln Sie in den Reiter
+"Attribute/Merkmale". Diese zweigeteilte Maske beinhaltet im oberen Bereich "Artikelattribute" die Attribute,
+die wir anreichern wollen. |br|
+Klicken Sie rechts auf :guilabel:`Attribute verwalten` und wählen Sie in der folgenden Maske unter "Attribut
+anlegen" den Unterpunkt "neues Funktionsattribut" aus. Vergeben Sie einen Namen und legen Sie den Onlineshop
+fest, an den dieses Attribut gesendet werden soll.
+
+Ändern Sie nun in der Template-Datei ``templates/NOVA/productdetails/details.tpl`` den folgenden Code-Block so ab, |br|
+dass Sie den Wert des Funktionsattributes einfügen können, wenn er gesetzt ist:
 
 .. code-block:: smarty
+    :emphasize-lines: 4
 
-    <body{if $Artikel->FunktionsAttribute.body_class} class="{$Artikel->FunktionsAttribute.body_class}"{/if} id="page_type_{$nSeitenTyp}">
+    /* productdetails/details.tpl */
+    {block name='productdetails-details-info-description'}
+        {include file='snippets/opc_mount_point.tpl' id='opc_before_short_desc'}
+        <div class="{if !empty($Artikel->FunktionsAttribute.highlightclass)}{$Artikel->FunktionsAttribute.highlightclass} {/if}shortdesc mb-2 d-none d-md-block" itemprop="description">
+            {$Artikel->cKurzBeschreibung}
+        </div>
+    {/block}
 
-**Sonderfall Sonderzeichen im Funktionsattributnamen:**
-Bei Sonderzeichen im Namen des Funktionsattributs kann wie folgt darauf zugegriffen werden:
+**Sonderfall: "Sonderzeichen im Funktionsattributnamen"** |br|
+Bei Sonderzeichen im Namen des Funktionsattributes können Sie wie folgt darauf zugegreifen:
 
 .. code-block:: smarty
 
     {assign var="fktattrname" value="größe"}
     {$Artikel->FunktionsAttribute.$fktattrname}
 
-***************************
 Kategorieattribute abfragen
-***************************
+---------------------------
 
-In JTL-Wawi lassen sich in den Kategoriedetails Kategorieattribute definieren, welche beim Synchronisieren zum Shop übertragen werden.
-Beginnend mit Shop-Version 4.05 werden Kategorie-Funktionsattribute (``categoryFunctionAttributes``) als key/value pair zur Aufnahme der
-Funktionsattribute und ``categoryAttributes`` als array of objects mit den lokalisierten Kategorieattributen unterschieden.
-Funktionsattribute dienen der Steuerung von Aktionen oder der Ansicht im Shop, während Kategorieattributen lokalisierte Werte - passend
-zur eingestellten Sprache - enthalten können.
+Ähnlich den Funktionsattributen eines Artikels lassen sich in der JTL-Wawi, in den Kategoriedetails, auch
+Kategorieattribute definieren. Diese werden beim Synchronisieren zum Onlineshop übertragen und können dort
+Steuerungsaufgaben übernehmen können.
+
+Beginnend mit Shop-Version 4.0 werden Kategorie-Funktionsattribute und Kategorieattribute unterschieden. |br|
+Kategorie-Funktionsattribute (``categoryFunctionAttributes``) sind key/value-Paare die zur Aufnahme der
+Funktionsattribute dienen, während Kategorieattribute in Form von "*array of objects*" lokalisierte Kategorieattribute
+aufnehmen. |br|
+Funktionsattribute dienen der Steuerung von Aktionen im Onlineshop selbst nur im Template, während
+Kategorieattribute lokalisierte Werte - passend zur eingestellten Shop-Sprache - enthalten können. |br|
+
 Diese Kategorieattribute können im Template wie folgt abgefragt werden:
 
-**PHP-Code für Funktionsattribut** (Einbindung als Plugin oder Einbindung in :ref:`php/functions.php <eigene-smarty-funktionen-integrieren>`):
+**PHP-Code für Funktionsattribut** |br|
+(Einbindung in Plugins oder in die :ref:`php/functions.php <eigene-smarty-funktionen-integrieren>` des Templates):
 
 .. code-block:: php
+    :emphasize-lines: 4
 
     $Kategorien = new KategorieListe();
     $Kategorien->getAllCategoriesOnLevel( 0 );
@@ -239,9 +188,11 @@ Diese Kategorieattribute können im Template wie folgt abgefragt werden:
       $funktionsWert = $Kategorie->categoryFunctionAttributes['meinkategoriefunktionsattribut'];
     }
 
-**PHP-Code für lokalisiertes Attribut** (Einbindung als Plugin oder Einbindung in :ref:`php/functions.php <eigene-smarty-funktionen-integrieren>`):
+**PHP-Code für lokalisiertes Attribut** |br|
+(Einbindung als Plugin oder in die :ref:`php/functions.php <eigene-smarty-funktionen-integrieren>` des Templates):
 
 .. code-block:: php
+    :emphasize-lines: 4
 
     $Kategorien = new KategorieListe();
     $Kategorien->getAllCategoriesOnLevel( 0 );
@@ -249,7 +200,10 @@ Diese Kategorieattribute können im Template wie folgt abgefragt werden:
       $attributWert = $Kategorie->categoryFunctionAttributes['meinkategorieattribut']->cWert;
     }
 
-**Template-Code** zur Steuerung mittels Kategorie-Funktionsattributen in Kategorieansicht (am besten mit der :doc:`Smarty Debug-Konsole  </shop_templates/debug>` nach dem eigenen Kategorieattribut suchen):
+**Template-Code** |br|
+zur Steuerung mittels Kategorie-Funktionsattributen in der Kategorieansicht
+(am besten mit der :doc:`Smarty Debug-Konsole </shop_programming_tips/debug>` nach dem eigenen Kategorieattribut
+suchen):
 
 .. code-block:: smarty
 
@@ -259,41 +213,47 @@ Diese Kategorieattribute können im Template wie folgt abgefragt werden:
         <span>MacheDas</span>
     {/if}
 
-**Template-Code** zur Ausgabe eines lokalisierten Kategorieattributs in Kategorieansicht (am besten mit der :doc:`Smarty Debug-Konsole  </shop_templates/debug>` nach dem eigenen Kategorieattribut suchen):
+**Template-Code** |br|
+zur Ausgabe eines lokalisierten Kategorieattributs in Kategorieansicht
+(am besten mit der :doc:`Smarty Debug-Konsole </shop_programming_tips/debug>` nach dem eigenen Kategorieattribut
+suchen):
 
 .. code-block:: smarty
 
     <span>{$oNavigationsinfo->oKategorie->KategorieAttribute.meinkategorieattribut->cWert}</span>
 
-********************************************************
-Eigene Sprachvariablen anlegen und ins Template einfügen
-********************************************************
+Eigene Sprachvariablen verwenden
+--------------------------------
 
-In der Sprachverwaltung im JTL-Shop-Admin-Backend ( Admin -> Sprachverwaltung ) lassen sich im Hinzufügen-Reiter eigene Sprachvariablen hinzufügen. Per Smarty-Funktion ``{lang}`` und den Parametern ``key`` und ``section`` können Sie diese Variablen im Template verwenden.
+Um eigene Sprachvariablen zu erstellen, öffnen Sie im Backend von JTL-Shop die "*Sprachverwaltung*"
+(Einstellungen -> Sprachverwaltung) und klicken Sie auf die Schaltfläche :guilabel:`Variable hinzufügen` . |br|
+Per Smarty-Funktion ``{lang}`` und den Parametern ``key`` und ``section`` können Sie diese Variablen im Template
+verwenden.
 
-Beispiel:
-Wir fügen über die Sprachverwaltung folgende Sprachvariable hinzu:
+**Beispiel:**
 
-* Sektion: custom
-* Variable: "safetyBoxTitle"
-* Wert Deutsch: "SSL-Verschlüsselung"
-* Wert Englisch: "SSL-Encryption"
+Fügen Sie über die *Sprachverwaltung* folgende Sprachvariable hinzu:
 
-**Template-Code**:
+    :Sprachsektion:  custom
+    :Variable:       "safetyBoxTitle"
+    :Wert Deutsch:   "SSL-Verschlüsselung"
+    :Wert Englisch:  "SSL-Encryption"
+
+Template-Code:
 
 .. code-block:: smarty
 
     {lang key="safetyBoxTitle" section="custom"}
 
-**PHP-Code** (z.B. für Plugins):
+PHP-Code (z. B. in Plugins, wobei hier im Beispiel der Plugin-Kontext gegeben ist; zu erkennen am ``$this->``):
 
 .. code-block:: php
 
-    echo $GLOBALS['oSprache']->gibWert('safetyBoxTitle', 'custom');
+    $langVar = $this->getLocalization()->getTranslation('safetyBoxTitle');
 
 **Sprachvariable als Smarty-Variable speichern und abfragen:**
 
-**Template-Code**:
+Template-Code:
 
 .. code-block:: smarty
 
@@ -307,210 +267,30 @@ Wir fügen über die Sprachverwaltung folgende Sprachvariable hinzu:
     {if $testVariableSafetyBoxTitle eq "SSL-Verschlüsselung"}<span class="de">{$testVariableSafetyBoxTitle}</span>{else}<span>{$testVariableSafetyBoxTitle}</span>{/if}
 
 
-**********************************************************
-Eigene Artikellisten erzeugen und ins Template integrieren
-**********************************************************
-
-Ab JTL-Shop3.10 ist es möglich, eigene Artikel-Arrays über eine Smarty-Funktion ``{get_product_list}`` zu erzeugen.
-Der Funktion können die folgenden Parameter übergeben werden:
-
-+-------------------------+----------+-----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Parametername           | Typ      | Pflichtattribut | Beschreibung                                                                                                                                            |
-+=========================+==========+=================+=========================================================================================================================================================+
-| nLimit                  | Numeric  | Ja              | Maximale Anzahl Artikel, welche geholt werden sollen                                                                                                    |
-+-------------------------+----------+-----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------+
-| cAssign                 | String   | Ja              | Name der Smarty-Variable, in welchem das Array mit Artikeln gespeichert wird                                                                            |
-+-------------------------+----------+-----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------+
-| kKategorie              | Numeric  | -               | Primärschlüssel einer Kategorie, siehe Datenbank tkategorie.kKategorie                                                                                  |
-+-------------------------+----------+-----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------+
-| kHersteller             | Numeric  | -               | Primärschlüssel eines Herstellers, siehe Datenbank thersteller.kHersteller                                                                              |
-+-------------------------+----------+-----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------+
-| kArtikel                | Numeric  | -               | Primärschlüssel eines Artikels, siehe Datenbank tartikel.kArtikel                                                                                       |
-+-------------------------+----------+-----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------+
-| kSuchanfrage            | String   | -               | Primärschlüssel einer Suchanfrage, siehe Datenbank tsuchcache.kSuchCache                                                                                |
-+-------------------------+----------+-----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------+
-| kMerkmalWert            | String   | -               | Primärschlüssel eines Merkmalwerts, siehe Datenbank tmerkmalwert.kMerkmalwert                                                                           |
-+-------------------------+----------+-----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------+
-| kSuchspecial            | Numeric  | -               | Filterung nach Suchspecials, siehe Tabelle unten Suchspecialschlüssel                                                                                   |
-+-------------------------+----------+-----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------+
-| kKategorieFilter        | Numeric  | -               | Zusätzlicher Filter nach einer Kategorie in Kombination mit einem Hauptfilter z.B. kHersteller.                                                         |
-+-------------------------+----------+-----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------+
-| kHerstellerFilter       | Numeric  | -               | Zusätzlicher Filter nach einem Hersteller in Kombination mit einem Hauptfilter z.B. kKategorie. Primärschlüssel siehe Datenbank thersteller.kHersteller |
-+-------------------------+----------+-----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------+
-| nBewertungSterneFilter  | Numeric  | -               | Zusätzlicher Filter nach Mindest-Durschnittsbewertung in Kombination mit einem Hauptfilter z.B. kKategorie.                                             |
-+-------------------------+----------+-----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------+
-| cPreisspannenFilter     | String   | -               | Zusätzlicher Filter nach Preisspanne in Kombination mit einem Hauptfilter z.B. kKategorie. Schreibweise für von 20€ bis 40.99€: "20_40.99"              |
-+-------------------------+----------+-----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------+
-| nSortierung             | Numeric  | -               | gibt an nach welchem Artikelattribut sortiert werden soll. Details siehe Tabelle unten Sortierungsschlüssel                                             |
-+-------------------------+----------+-----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------+
-| cMerkmalFilter          | String   | -               | Primärschlüssel der Merkmalwerte durch Semikolon getrennt z.B. "100;101". Primärschlüsselangabe siehe Datenbank tmerkmalwert.kMerkmalwert               |
-+-------------------------+----------+-----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------+
-| cSuchFilter             | String   | -               | Primärschlüssel der Suchfilter durch Semikolon getrennt z.B. "200;201". Primärschlüsselangabe siehe Datenbank tsuchcache.kSuchCache                     |
-+-------------------------+----------+-----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------+
-| cSuche                  | String   | -               | Suchbegriff z.B. "zwiebel ananas baguette"                                                                                                              |
-+-------------------------+----------+-----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------+
-
-**Beispieleinbindung in Template-Code**
-Den folgenden Code binden wir im Template in die Datei /tpl_inc/seite_startseite.tpl ein:
-
-.. code-block:: smarty
-
-    <h2>Unsere Verkaufsschlager aus dem Bereich Gemüse</h2>
-    {get_product_list kKategorie=21 nLimit=3 nSortierung=11 cAssign="myProducts"}
-    {if $myProducts}
-      <ul>
-      {foreach name=custom from=$myProducts item=oCustomArtikel}
-        <li>{$oCustomArtikel->cName}</li>
-      {/foreach}
-      </ul>
-    {/if}
-
-**Sortierungsschlüssel**
-
-+----------------------+----------+--------------------------+
-| Name                 | Wert     | Konstante                |
-+======================+==========+==========================+
-| Standard             | 100      | SEARCH_SORT_STANDARD     |
-+----------------------+----------+--------------------------+
-| Name A-Z             | 1        | SEARCH_SORT_NAME_ASC     |
-+----------------------+----------+--------------------------+
-| Name Z-A             | 2        | SEARCH_SORT_NAME_DESC    |
-+----------------------+----------+--------------------------+
-| Preis 1..9           | 3        | SEARCH_SORT_PRICE_ASC    |
-+----------------------+----------+--------------------------+
-| Preis 9..1           | 4        | SEARCH_SORT_PRICE_DESC   |
-+----------------------+----------+--------------------------+
-| EAN                  | 5        | SEARCH_SORT_EAN          |
-+----------------------+----------+--------------------------+
-| neuste zuerst        | 6        | SEARCH_SORT_NEWEST_FIRST |
-+----------------------+----------+--------------------------+
-| Artikelnummer        | 7        | SEARCH_SORT_PRODUCTNO    |
-+----------------------+----------+--------------------------+
-| Verfügbarkeit        | 8        | SEARCH_SORT_AVAILABILITY |
-+----------------------+----------+--------------------------+
-| Gewicht              | 9        | SEARCH_SORT_WEIGHT       |
-+----------------------+----------+--------------------------+
-| Erscheinungsdatum    | 10       | SEARCH_SORT_DATEOFISSUE  |
-+----------------------+----------+--------------------------+
-| Bestseller           | 11       | SEARCH_SORT_BESTSELLER   |
-+----------------------+----------+--------------------------+
-| Bewertungen          | 12       | SEARCH_SORT_RATING       |
-+----------------------+----------+--------------------------+
-
-**Suchspecialschlüssel**
-
-+-----------------------+----------+---------------------------------+
-| Name                  | Wert     | Konstante                       |
-+=======================+==========+=================================+
-| Bestseller            | 1        | SEARCHSPECIALS_BESTSELLER       |
-+-----------------------+----------+---------------------------------+
-| Sonderangebote        | 2        | SEARCHSPECIALS_SPECIALOFFERS    |
-+-----------------------+----------+---------------------------------+
-| Neu im Sortiment      | 3        | SEARCHSPECIALS_NEWPRODUCTS      |
-+-----------------------+----------+---------------------------------+
-| Top Angebote          | 4        | SEARCHSPECIALS_TOPOFFERS        |
-+-----------------------+----------+---------------------------------+
-| In Kürze verfügbar    | 5        | SEARCHSPECIALS_UPCOMINGPRODUCTS |
-+-----------------------+----------+---------------------------------+
-| Top bewertet          | 6        | SEARCHSPECIALS_TOPREVIEWS       |
-+-----------------------+----------+---------------------------------+
-| Ausverkauft           | 7        | SEARCHSPECIALS_OUTOFSTOCK       |
-+-----------------------+----------+---------------------------------+
-| Auf Lager             | 8        | SEARCHSPECIALS_ONSTOCK          |
-+-----------------------+----------+---------------------------------+
-| Vorbestellung möglich | 9        | SEARCHSPECIALS_PREORDER         |
-+-----------------------+----------+---------------------------------+
-
-***********************************************************
-Eigene Kategorielisten erzeugen und im Template integrieren
-***********************************************************
-
-Ab JTL-Shop3.10 ist es möglich, eigene Kategorie-Arrays über eine Smarty-Funktion ``{get_category_list}`` zu erzeugen.
-Der Funktion können die folgenden Parameter übergeben werden:
-
-+-----------------+----------+------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Parametername   | Typ      | Pflichtattribut  | Beschreibung                                                                                                                                             |
-+=================+==========+==================+==========================================================================================================================================================+
-| nLimit          | Numeric  | Ja               | Maximale Anzahl Kategorien, welche geholt werden sollen                                                                                                  |
-+-----------------+----------+------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------+
-| cAssign         | String   | Ja               | Name der Smarty-Variable, in welchem das Array mit Kategorien gespeichert wird                                                                           |
-+-----------------+----------+------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------+
-| cKatAttrib      | String   | -                | Kategorieattribut, welches die gewünschten Kategorien selektiert. Es wird nur der Name berücksichtigt, Kategorieattribut-Wert wird nicht berücksichtigt. |
-+-----------------+----------+------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------+
-
-Beispiel:
-Wir versehen in JTL-Wawi mehrere Kategorien mit dem Kategorieattribut "frontpage". Als Wert kann ein beliebiger Wert z.B. 1 eingetragen werden (wird nicht beachtet).
-
-Als nächstes kopieren wir die Datei ``/templates/Evo/page/index.tpl in das Child-Template`` ``/templates/Mein-Shop-Template/page/index.tpl``
-
-Im Template ``/templates/Mein-Shop-Template/page/index.tpl`` fügen wir dann den folgenden Code ein:
-
-.. code-block:: php
-
-    {get_category_list cKatAttrib='frontpage' cAssign='oCategory_arr'}
-
-    {if $oCategory_arr}
-       <ul>
-       {foreach name=Kategorieliste from=$oCategory_arr item=oCategory nLimit=2}
-          <li>
-             <a href="{$oCategory->cURL}">
-             <img src="{$oCategory->cBildURL}" alt="" /><br />
-             {$oCategory->cName}
-             </a>
-          </li>
-       {/foreach}
-       </ul>
-    {/if}
-
-
-**********************************************************
-Artikelabhängig eigene Artikeldetails in details.tpl laden
-**********************************************************
-
-Ab JTL-Shop3.12 können Sie in JTL-Wawi ein Funktionsattribut "tpl_artikeldetails" nutzen und als Wert eine Ersatz-Datei für details.tpl z.B. "details_minimal.tpl" eingeben.
-Legen Sie dazu zunächst eine Kopie der Datei ``/productdetails/details.tpl`` in Ihrem Child-Template an und nehmen Sie in der Datei ``/productdetails/details.tpl`` dann die gewünschten Änderungen vor (z.B. Lagerampel ausblenden, Artikelkurzbeschreibung über den Preis etc.).
-Im Anschluß fügen Sie den Artikeln, für welche dieses Template geladen werden soll, ein Funktionsatttribut in JTL-Wawi hinzu: Name: "tpl_artikeldetails", Wert: "details.tpl".
-
-Bei Variationskombinationen müssen Sie auch jedem Kindartikel das jeweilige Funktionsattribut zuweisen.
-
-Beispiel im Demoshop: `https://demo.jtl-shop.de/SAT-Komplettanlage <https://demo.jtl-shop.de/SAT-Komplettanlage>`_
-
-**************************************
-Google Webfont für Grafikpreise nutzen
-**************************************
-
-Wählen Sie unter `http://www.google.com/webfonts <http://www.google.com/webfonts>`_ die gewünschte Webfont aus.
-Im nachfolgenden Beispiel nehmen wir die Schriftart "Open Sans"
-
-Fügen Sie folgende CSS-Regel in Ihrem Child-Template die ``/themes/css/theme.css`` oder, falls Sie mit LESS arbeiten, in die ``/themes/meinTheme/less/theme.less`` ein:
-
-.. code-block:: smarty
-
-    @import url("//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,700italic,400,300,700"); /* Diese CSS-Regel muss am Anfang der theme.css stehen */
-
-    /* für alle Container mit Klasse .price neue Schriftart setzen */
-    .price {
-        font-family: 'Open Sans';
-        color: red;
-    }
-
 .. _eigene-smarty-funktionen-integrieren:
 
-************************************
-Eigene Smarty-Funktionen integrieren
-************************************
+Erstellen eigener Smarty-Funktionen
+-----------------------------------
 
-Um in Ihrem Template eigene Smarty-Funktionen nutzen zu können, legen sie im Verzeichnis ``/php`` eine Datei `` functions.php`` an.
+Um in Ihrem Template eigene Smarty-Funktionen nutzen zu können, legen Sie im Verzeichnis ``[templatename]/php/`` eine
+Datei ``functions.php`` an. |br|
 Diese Datei wird automatisch beim Start geladen und ermöglicht das Registrieren von Smarty-Plugins.
 
-.. note::
+.. attention::
 
-    Die so erstellte ``functions.php`` ersetzt das Original aus dem Vatertemplate vollständig! Es muss deshalb Sorge getragen werden, dass **alle** geerbten Funktionen ebenfalls implementiert werden!
+    Die so erstellte ``functions.php`` ersetzt das Original aus dem Vatertemplate vollständig! Stellen Sie deshalb sicher,
+    dass **alle** geerbten Funktionen ebenfalls implementiert werden!
 
-Um die geerbte Funktionalität sicherzustellen, können Sie einfach eine komplette Kopie der Datei aus dem Vatertemplate erstellen und dann dort Ihre Änderungen vornehmen.
-Das ist jedoch nicht sehr sinnvoll, da dann bei jedem Shop-Update alle Änderungen nachgezogen werden müßten. Besser ist es das Original einfach per ``include`` in das eigene Script einzubinden.
+Theoretisch könnten Sie einfach eine komplette Kopie der Datei aus dem Parent-Template erstellen und dort Ihre
+Änderungen vornehmen. Das ist jedoch nicht sehr sinnvoll, da dann bei jedem Update des Onlineshops alle Änderungen
+nachgezogen werden müssten. |br|
+Besser ist es, das Original einfach per ``include`` in das eigene Script einzubinden.
+
+Um die Update-Fähigkeiten Ihres Parent-Templates weiterhin zu gewährleisten, erstellen Sie eine
+leere ``functions.php`` und fügen dort den folgenden Code ein:
 
 .. code-block:: php
+   :emphasize-lines: 8
 
     <?php
     /**
@@ -521,7 +301,9 @@ Das ist jedoch nicht sehr sinnvoll, da dann bei jedem Shop-Update alle Änderung
 
     include realpath(__DIR__ . '/../../Evo/php/functions.php');
 
-Danach können Sie Ihre eigenen Smarty-Funktionen implementieren und in Smarty registrieren. Im nachfolgenden Beispiel wird eine Funktion zur Berechnung der Kreiszahl PI eingebunden.
+Danach können Sie Ihre eigenen Smarty-Funktionen implementieren und in Smarty registrieren.
+
+Im nachfolgenden Beispiel wird eine Funktion zur Berechnung der Kreiszahl PI eingebunden.
 
 .. code-block:: php
 
@@ -542,14 +324,18 @@ Danach können Sie Ihre eigenen Smarty-Funktionen implementieren und in Smarty r
         return $iterator * 4;
     }
 
-Die Funktion ``getPI``  kann dann im Template z.B. mit ``{getPi(12)}`` verwendet werden.
+Die Funktion ``getPI``  kann dann im Template z. B. mit ``{getPi(12)}`` verwendet werden.
 
-Überschreiben von bestehenden Funktionen
-----------------------------------------
+Überschreiben bestehender Funktionen
+------------------------------------
 
-Das überschreiben von Funktionalitäten ist ebenfalls möglich. Hierzu muss lediglich die Registrierung der originalen Funktion zuerst mit ``$smarty->unregisterPlugin`` aufgehoben werden.
-Danach kann die eigene Funktion registriert werden. Im nachfolgenden Beispiel wird die Funktion ``trans`` des Evo-Templates dahingehend erweitert, dass bei nichtvorhandener Übersetzung der
-Text *-no translation-* ausgegeben wird.
+Das Überschreiben von Funktionalitäten ist ebenfalls möglich. |br|
+Hierzu muss lediglich die Registrierung der originalen Funktion zuerst mit ``$smarty->unregisterPlugin`` aufgehoben
+werden. |br|
+Danach kann die eigene Funktion registriert werden.
+
+Im nachfolgenden Beispiel wird die Funktion ``trans`` des EVO-Templates dahingehend erweitert, dass bei
+nicht vorhandener Übersetzung der Text "*-no translation-*" ausgegeben wird.
 
 .. code-block:: php
 
@@ -569,8 +355,127 @@ Text *-no translation-* ausgegeben wird.
         $trans = get_translation($mixed, $to);
 
         if (!isset($trans)) {
-            $trans = 'no translation';
+            $trans = '-no translation-';
         }
 
         return $trans;
     }
+
+Unabhängige Artikellisten erzeugen
+----------------------------------
+
+Ab JTL-Shop Version 3.10, bis einschließlich 5.0, ist es möglich, eigene Artikel-Arrays über eine
+Smarty-Funktion ``{get_product_list}`` zu erzeugen. |br|
+Dies kann beispielsweise dazu genutzt werden, um auf bestimmte Artikel(-gruppen) abseits von Cross-Selling gesondert
+aufmerksam zu machen.
+
+Der Funktion können die folgenden Parameter übergeben werden:
+
++----------------------------+---------+-----------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Parametername              | Typ     | Pflichtattribut | Beschreibung                                                                                                                                                     |
++============================+=========+=================+==================================================================================================================================================================+
+| ``nLimit``                 | Numeric | Ja              | Maximale Anzahl Artikel, welche geholt werden sollen                                                                                                             |
++----------------------------+---------+-----------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``cAssign``                | String  | Ja              | Name der Smarty-Variable, in welcher das Array mit Artikeln gespeichert wird                                                                                     |
++----------------------------+---------+-----------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``kKategorie``             | Numeric | --              | Primärschlüssel einer Kategorie, siehe Datenbank ``tkategorie.kKategorie``                                                                                       |
++----------------------------+---------+-----------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``kHersteller``            | Numeric | --              | Primärschlüssel eines Herstellers, siehe Datenbank ``thersteller.kHersteller``                                                                                   |
++----------------------------+---------+-----------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``kArtikel``               | Numeric | --              | Primärschlüssel eines Artikels, siehe Datenbank ``tartikel.kArtikel``                                                                                            |
++----------------------------+---------+-----------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``kSuchanfrage``           | String  | --              | Primärschlüssel einer Suchanfrage, siehe Datenbank ``tsuchcache.kSuchCache``                                                                                     |
++----------------------------+---------+-----------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``kMerkmalWert``           | String  | --              | Primärschlüssel eines Merkmalwerts, siehe Datenbank ``tmerkmalwert.kMerkmalwert``                                                                                |
++----------------------------+---------+-----------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``kSuchspecial``           | Numeric | --              | Filterung nach *Suchspecials*, siehe Tabelle unten "*Suchspecialschlüssel*"                                                                                      |
++----------------------------+---------+-----------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``kKategorieFilter``       | Numeric | --              | Zusätzlicher Filter nach einer Kategorie in Kombination mit einem Hauptfilter z. B. ``kHersteller.``                                                             |
++----------------------------+---------+-----------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``kHerstellerFilter``      | Numeric | --              | Zusätzlicher Filter nach einem Hersteller in Kombination mit einem Hauptfilter z. B. ``kKategorie``. Primärschlüssel siehe Datenbank ``thersteller.kHersteller`` |
++----------------------------+---------+-----------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``nBewertungSterneFilter`` | Numeric | --              | Zusätzlicher Filter nach Mindest-Durschnittsbewertung in Kombination mit einem Hauptfilter, z. B. kKategorie.                                                    |
++----------------------------+---------+-----------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``cPreisspannenFilter``    | String  | --              | Zusätzlicher Filter nach Preisspanne in Kombination mit einem Hauptfilter, z. B. ``kKategorie``. Schreibweise für "von 20 € bis 40,99 €": "20_40.99"             |
++----------------------------+---------+-----------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``nSortierung``            | Numeric | --              | Gibt an, nach welchem Artikelattribut sortiert werden soll. Details siehe Tabelle unten "*Sortierungsschlüssel*"                                                 |
++----------------------------+---------+-----------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``cMerkmalFilter``         | String  | --              | Primärschlüssel der Merkmalwerte durch Semikolon getrennt, z. B. "100;101". Primärschlüsselangabe siehe Datenbank ``tmerkmalwert.kMerkmalwert``                  |
++----------------------------+---------+-----------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``cSuchFilter``            | String  | --              | Primärschlüssel der Suchfilter durch Semikolon getrennt, z. B. "200;201". Primärschlüsselangabe siehe Datenbank ``tsuchcache.kSuchCache``                        |
++----------------------------+---------+-----------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``cSuche``                 | String  | --              | Suchbegriff, z. B. "zwiebel ananas baguette"                                                                                                                     |
++----------------------------+---------+-----------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+**Beispiel**
+
+Binden Sie den folgenden Code im Template ein:
+
+.. code-block:: smarty
+
+    <h2>Unsere Verkaufschlager aus dem Bereich Gemüse</h2>
+    {get_product_list kKategorie=9 nLimit=3 nSortierung=11 cAssign="myProducts"}
+    {if $myProducts}
+      <ul>
+      {foreach name=custom from=$myProducts item=oCustomArtikel}
+        <li><a href="{$oCustomArtikel->cURLFull}">{$oCustomArtikel->cName}</a></li>
+      {/foreach}
+      </ul>
+    {/if}
+
+
+**Sortierungsschlüssel**
+
++-------------------------+------+--------------------------+
+| Name                    | Wert | Konstante                |
++=========================+======+==========================+
+| Standard                | 100  | SEARCH_SORT_STANDARD     |
++-------------------------+------+--------------------------+
+| Artikelname von A bis Z | 1    | SEARCH_SORT_NAME_ASC     |
++-------------------------+------+--------------------------+
+| Artikelname von Z bis A | 2    | SEARCH_SORT_NAME_DESC    |
++-------------------------+------+--------------------------+
+| Preis aufsteigend       | 3    | SEARCH_SORT_PRICE_ASC    |
++-------------------------+------+--------------------------+
+| Preis absteigend        | 4    | SEARCH_SORT_PRICE_DESC   |
++-------------------------+------+--------------------------+
+| EAN                     | 5    | SEARCH_SORT_EAN          |
++-------------------------+------+--------------------------+
+| neuste zuerst           | 6    | SEARCH_SORT_NEWEST_FIRST |
++-------------------------+------+--------------------------+
+| Artikelnummer           | 7    | SEARCH_SORT_PRODUCTNO    |
++-------------------------+------+--------------------------+
+| Verfügbarkeit           | 8    | SEARCH_SORT_AVAILABILITY |
++-------------------------+------+--------------------------+
+| Gewicht                 | 9    | SEARCH_SORT_WEIGHT       |
++-------------------------+------+--------------------------+
+| Erscheinungsdatum       | 10   | SEARCH_SORT_DATEOFISSUE  |
++-------------------------+------+--------------------------+
+| Bestseller              | 11   | SEARCH_SORT_BESTSELLER   |
++-------------------------+------+--------------------------+
+| Bewertungen             | 12   | SEARCH_SORT_RATING       |
++-------------------------+------+--------------------------+
+
+**Suchspecialschlüssel**
+
++-----------------------+----------+---------------------------------+
+| Name                  | Wert     | Konstante                       |
++=======================+==========+=================================+
+| Bestseller            | 1        | SEARCHSPECIALS_BESTSELLER       |
++-----------------------+----------+---------------------------------+
+| Sonderangebote        | 2        | SEARCHSPECIALS_SPECIALOFFERS    |
++-----------------------+----------+---------------------------------+
+| Neu im Sortiment      | 3        | SEARCHSPECIALS_NEWPRODUCTS      |
++-----------------------+----------+---------------------------------+
+| Top-Angebote          | 4        | SEARCHSPECIALS_TOPOFFERS        |
++-----------------------+----------+---------------------------------+
+| In Kürze verfügbar    | 5        | SEARCHSPECIALS_UPCOMINGPRODUCTS |
++-----------------------+----------+---------------------------------+
+| Top bewertet          | 6        | SEARCHSPECIALS_TOPREVIEWS       |
++-----------------------+----------+---------------------------------+
+| Ausverkauft           | 7        | SEARCHSPECIALS_OUTOFSTOCK       |
++-----------------------+----------+---------------------------------+
+| Auf Lager             | 8        | SEARCHSPECIALS_ONSTOCK          |
++-----------------------+----------+---------------------------------+
+| Vorbestellung möglich | 9        | SEARCHSPECIALS_PREORDER         |
++-----------------------+----------+---------------------------------+

@@ -1,36 +1,39 @@
-JTL-Shop nutzt die Templateengine Smarty 3 (http://www.smarty.org). Im Frontend kommen HTML5, Bootstrap 3 (http://getbootstrap.com/) sowie jQuery (https://jquery.com/) + diverse jQuery-Plugins zum Einsatz.
+JTL-Shop nutzt die Template-Engine `Smarty <https://www.smarty.net/>`_.
+Im Frontend kommen HTML5, `Bootstrap <http://getbootstrap.com/>`_ sowie `jQuery <https://jquery.com/>`_
+und diverse jQuery-Plugins zum Einsatz.
 
-Es stehen verschiedene Möglichkeiten für individuelle Templateanpassungen zur Verfügung, auf die in dieser Dokumentation eingegangen wird.
+Es stehen verschiedene Möglichkeiten für individuelle Templateanpassungen zur Verfügung, auf die in dieser
+Dokumentation näher eingegangen werden soll. |br|
+Zur zusätzlichen Unterstützung bei Templateanpassungen existiert auch das
+JTL-Plugin ":doc:`JTL Debug </shop_programming_tips/debug>`".
 
-:doc:`/shop_templates/evo`
-  Hier finden Sie Informationen über das neue JTL-Shop-Template Evo.
+:doc:`/shop_templates/jtl_templates`
+    Allgemeine Informationen über die aktuellen JTL-Shop-Templates
 
 :doc:`/shop_templates/structure`
-  Hier finden Sie Informationen zur Ordner- und Dateistruktur sowie zum Aufbau der template.xml.
-
-:doc:`/shop_templates/template_settings`
-  Die einzelnen Einstellungen des Evo-Templates genauer erklärt.
+    Informationen zur Ordner- und Dateistruktur des Templates, sowie zum Aufbau der ``template.xml``
 
 :doc:`/shop_templates/eigenes_template`
-  Child-Templates sind der bevorzugte Weg zum eigenen Template.
+    Child-Templates, "Der bevorzugte Weg zum eigenen Template"
+
+:doc:`/shop_templates/template_settings`
+    Die einzelnen Einstellungen des Templates genauer erklärt
 
 :doc:`/shop_templates/eigenes_theme`
-  Das individuelle Design des Shops wird über Stylesheets (CSS) in Themes definiert.
+    Eigene individuelle Designs erstellen, per Stylesheets (CSS, LESS und SCSS)
 
-:doc:`/shop_templates/blocks_list`
-  Eine Liste mit allen Blocks im EVO-Template, zum Überschreiben oder Erweitern in einem Child-Template.
-
-:doc:`/shop_templates/tipps_tricks`
-  Template How-To's und Best Practises. Tipps und Tricks für Ihr Template.
-
-:doc:`/shop_templates/livestyler`
-  Wenn Sie nur die Farben und Abstände im Evo-Template ändern wollen, ist der Evo-LiveStyler das richtige Werkzeug für Sie.
-
-:doc:`/shop_templates/debug`
-  Nutzen Sie das, in JTL-Shop integrierte, Plugin JTL Debug, um Template- und Shop-Informationen zu untersuchen.
-
-:doc:`/shop_templates/short_checkout`
-  Welche Änderungen gibt es im Zusammenhang mit dem verkürzten Checkout ab Version 4.06.
+:doc:`/shop_templates/theme_edit`
+    Einfache Anpassungen von Farben und Abstände mittels Theme-Anpassungen |br|
+    Hier werden die verschiedenen Methoden erklärt.
 
 :doc:`/shop_templates/overlays`
-  Wie können Overlays (z.B. für "Bestseller") angelegt werden.
+    Artikel-Overlays (wie z.B. "Bestseller") selbst erstellen
+
+:doc:`/shop_templates/short_checkout`
+    Änderungen im Zusammenhang mit dem "*verkürzten Checkout*" ab Version 4.06
+
+:doc:`/shop_templates/jquery_update`
+    Hinweise zur neuen jQuery-Version 3.x ab Shop Version 5.0
+
+:doc:`/shop_templates/tipps_tricks`
+    Template How-To's und Best Practices

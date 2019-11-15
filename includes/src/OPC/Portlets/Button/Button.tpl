@@ -15,6 +15,7 @@
 {/if}
 
 <div {if $isPreview}data-portlet="{$instance->getDataAttribute()}"{/if}
+        class="opc-Button"
         {if $instance->getProperty('align') !== 'block'}
             style="text-align: {$instance->getProperty('align')}"
         {/if}>
@@ -29,13 +30,13 @@
             style=$instance->getStyleString()
     }
         {if $instance->getProperty('use-icon') === true && $instance->getProperty('icon-align') === 'left'}
-            <i class="{$instance->getProperty('icon')}" style="top:2px;"></i>
+            {$portlet->getFontAwesomeIcon($instance->getProperty('icon'))}
         {/if}
 
         {$instance->getProperty('label')}
 
         {if $instance->getProperty('use-icon') === true && $instance->getProperty('icon-align') === 'right'}
-            <i class="{$instance->getProperty('icon')}" style="top:2px;"></i>
+            {$portlet->getFontAwesomeIcon($instance->getProperty('icon'))}
         {/if}
     {/button}
 </div>

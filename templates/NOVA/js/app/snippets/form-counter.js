@@ -23,7 +23,8 @@ const updateCount = function(increase = false) {
 	try {
 		input[stepDirection]()
 	} catch(e) {
-		let newValue = increase ? parseInt(input.value) + parseInt(input.step) : parseInt(input.value) - parseInt(input.step)
+		let step = input.step > 0 ? input.step : 1;
+		let newValue = increase ? parseInt(input.value) + step : parseInt(input.value) - step;
 
 		if(newValue > parseInt(input.max)) return
 		if(newValue < parseInt(input.min)) return

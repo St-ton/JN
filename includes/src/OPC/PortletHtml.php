@@ -250,4 +250,19 @@ trait PortletHtml
     {
         return Shop::getURL() . '/' . \BILD_KEIN_KATEGORIEBILD_VORHANDEN;
     }
+
+    /**
+     * @param string $faCode
+     * @return string
+     */
+    final public function getFontAwesomeIcon(string $faCode): string
+    {
+        /** @var array $faTable */
+        include \PFAD_ROOT . \PFAD_TEMPLATES . 'NOVA/themes/base/fontawesome/metadata/icons.php';
+
+        $faGlyphHex = $faTable[$faCode];
+        $faClass    = \substr($faCode, 0, 3);
+
+        return '<span class="opc-Icon opc-Icon-' . $faClass . '">&#x' . $faGlyphHex . ';</span>';
+    }
 }

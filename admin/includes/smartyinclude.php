@@ -38,13 +38,13 @@ $currentThirdLevel  = 0;
 $mainGroups         = [];
 $rootKey            = 0;
 if (!$hasPendingUpdates) {
-    $jtlSearch         = $db->query(
+    $jtlSearch                    = $db->query(
         "SELECT kPlugin, cName
             FROM tplugin
             WHERE cPluginID = 'jtl_search'",
         ReturnType::SINGLE_OBJECT
     );
-    $curScriptFileName = basename($_SERVER['PHP_SELF']);
+    $curScriptFileNameWithRequest = basename($_SERVER['REQUEST_URI']);
     foreach ($adminMenu as $rootName => $rootEntry) {
         $mainGroup = (object)[
             'cName'           => $rootName,
@@ -93,19 +93,24 @@ if (!$hasPendingUpdates) {
 
                     $linkGruppe->oLink_arr[] = $link;
                 }
+                if (Request::verifyGPCDataInt('kPlugin') === $pluginID) {
+                    $currentToplevel    = $mainGroup->key;
+                    $currentSecondLevel = $linkGruppe->key;
+                    $currentThirdLevel  = $link->key;
+                }
             } else {
                 $thirdKey = 0;
 
                 if (is_object($secondEntry)) {
-                    if (!$oAccount->permission($secondEntry->rights)) {
+                    if (!$oAccount->permission($secondEntry->permissions)) {
                         continue;
                     }
                     $linkGruppe->oLink_arr = (object)[
                         'cLinkname' => $secondName,
                         'cURL'      => $secondEntry->link,
-                        'cRecht'    => $secondEntry->rights,
+                        'cRecht'    => $secondEntry->permissions,
                     ];
-                    if ($linkGruppe->oLink_arr->cURL === $curScriptFileName) {
+                    if ($linkGruppe->oLink_arr->cURL === $curScriptFileNameWithRequest) {
                         $currentToplevel    = $mainGroup->key;
                         $currentSecondLevel = $linkGruppe->key;
                     }
@@ -122,7 +127,7 @@ if (!$hasPendingUpdates) {
                             $link = (object)[
                                 'cLinkname' => $thirdName,
                                 'cURL'      => $thirdEntry->link,
-                                'cRecht'    => $thirdEntry->rights,
+                                'cRecht'    => $thirdEntry->permissions,
                                 'key'       => "$rootKey.$secondKey.$thirdKey",
                             ];
                         } else {
@@ -140,17 +145,7 @@ if (!$hasPendingUpdates) {
                             mb_parse_str($urlParts['query'], $urlParts['query']);
                         }
 
-                        if ($link->cURL === $curScriptFileName
-                            || ($curScriptFileName === 'einstellungen.php'
-                                && $urlParts['basename'] === 'einstellungen.php'
-                                && Request::verifyGPCDataInt('kSektion') === (int)$urlParts['query']['kSektion']
-                            )
-                            || ($curScriptFileName === 'statistik.php'
-                                && $urlParts['basename'] === 'statistik.php'
-                                && isset($urlParts['query']['s'])
-                                && Request::verifyGPCDataInt('s') === (int)$urlParts['query']['s']
-                            )
-                        ) {
+                        if (explode('#', $link->cURL)[0] === $curScriptFileNameWithRequest) {
                             $currentToplevel    = $mainGroup->key;
                             $currentSecondLevel = $linkGruppe->key;
                             $currentThirdLevel  = $link->key;

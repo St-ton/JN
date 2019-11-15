@@ -165,8 +165,12 @@
                                 slidesToShow: 3
                             }
                         }
-
                     ];
+
+                    otherElemHeight = $('#image_wrapper .product-detail-image-topbar').outerHeight() +
+                        parseInt($('#image_wrapper .product-detail-image-topbar').css('marginBottom')) +
+                        230;
+                    $('#gallery picture *').removeAttr('sizes');
                 }
 
                 $('#gallery img').css('max-width', w);
@@ -174,6 +178,10 @@
 
                 $('#gallery').slick(options);
                 $('#gallery_preview').slick(options_preview);
+
+                if (fullscreen) {
+                     lazySizes.autoSizer.checkElems();
+                }
 
                 setTimeout(() => {
                     $('#gallery_preview').slick('slickGoTo', current);

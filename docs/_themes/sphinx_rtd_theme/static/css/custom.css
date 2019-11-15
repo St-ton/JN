@@ -1,0 +1,10 @@
+/* custom.css */
+.strike {
+    text-decoration: line-through;
+}
+.xsmall {
+    font-size: x-small;
+}
+.underline {
+    text-decoration: underline;
+}

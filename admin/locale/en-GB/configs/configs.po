@@ -222,7 +222,7 @@ msgid "wartungsmodus_aktiviert_name"
 msgstr "Enable maintenance mode"
 
 msgid "wartungsmodus_aktiviert_desc"
-msgstr "Here you can activate the maintenance mode of JTL-Shop. JTL-Shop contents are not displayed in maintenance mode. In this mode, you can easily perform maintenance work such as updates or backups."
+msgstr "Here you can activate the maintenance mode of JTL-Shop. JTL-Shop contents are not displayed in maintenance mode. In this mode, you can easily perform maintenance work such as updates or backups. The maintenance information text can be changed in the language administration by adjusting the variable \"maintenanceModeActive\"."
 
 msgid "global_versandermittlung_anzeigen_name"
 msgstr "Show shipping cost determination"

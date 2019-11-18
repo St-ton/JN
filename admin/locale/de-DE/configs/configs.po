@@ -222,7 +222,7 @@ msgid "wartungsmodus_aktiviert_name"
 msgstr "Wartungsmodus aktivieren"
 
 msgid "wartungsmodus_aktiviert_desc"
-msgstr "Hier aktivieren Sie den Wartungsmodus von JTL-Shop. Im Wartungsmodus werden keine Inhalte von JTL-Shop angezeigt. So können Sie zum Beispiel ohne Probleme Wartungsarbeiten wie Updates durchführen oder Backups einspielen. Der für Ihre Besucher anzuzeigende Wartungsmodus-Infotext wird über eine Sprachvariable „maintenanceModeActive“ gesteuert. Wechseln Sie in die Sprachverwaltung, um die Belegung der Sprachvariable zu ändern."
+msgstr "Der Besucher des Onlineshops sieht einen Infotext zur laufenden Wartung. Dieser Text wird über die Sprachvariable „maintenanceModeActive“ gesteuert. Wechseln Sie in die Sprachverwaltung, um den Text für diese Sprachvariable zu ändern."
 
 msgid "global_versandermittlung_anzeigen_name"
 msgstr "Versandkostenermittlung anzeigen"

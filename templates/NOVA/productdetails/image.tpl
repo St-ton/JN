@@ -46,8 +46,7 @@
                                                 {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
                                                 {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
                                                 {$image->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
-                                            sizes="auto"
-                                            data=["list"=>"{$image->galleryJSON|escape:"html"}", "index"=>$image@index]
+                                            data=["list"=>"{$image->galleryJSON|escape:"html"}", "index"=>$image@index, "sizes"=>"auto"]
                                         }
                                     </div>
                                 {/strip}

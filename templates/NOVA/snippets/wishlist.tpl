@@ -485,7 +485,9 @@
                                                                             {block name='snippets-wishlist-form-basket-quantity'}
                                                                                 {inputgroup class="form-counter"}
                                                                                     {inputgroupprepend}
-                                                                                        {button variant="" data=["count-down"=>""]}
+                                                                                        {button variant=""
+                                                                                            data=["count-down"=>""]
+                                                                                            aria=["label"=>{lang key='decreaseQuantity' section='aria'}]}
                                                                                             <span class="fas fa-minus"></span>
                                                                                         {/button}
                                                                                     {/inputgroupprepend}
@@ -507,7 +509,9 @@
                                                                                                 {/inputgrouptext}
                                                                                             {/block}
                                                                                         {/if}
-                                                                                        {button variant="" data=["count-up"=>""]}
+                                                                                        {button variant=""
+                                                                                            data=["count-up"=>""]
+                                                                                            aria=["label"=>{lang key='decreaseQuantity' section='aria'}]}
                                                                                             <span class="fas fa-plus"></span>
                                                                                         {/button}
                                                                                     {/inputgroupappend}

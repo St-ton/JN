@@ -10,7 +10,6 @@
                 {block name='layout-header-top-bar-user-settings-currency'}
                     {if isset($smarty.session.Waehrungen) && $smarty.session.Waehrungen|@count > 1}
                         {navitemdropdown
-                            id="currency-dropdown"
                             class="currency-dropdown"
                             right=true
                             text=$smarty.session.Waehrung->getName()
@@ -26,7 +25,6 @@
                 {block name='layout-header-top-bar-user-settings-language'}
                     {if isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
                         {navitemdropdown
-                            id="language-dropdown"
                             class="language-dropdown"
                             right=true
                             text="

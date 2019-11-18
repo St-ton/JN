@@ -279,7 +279,9 @@
                                                 {block name='productlist-item-list-basket-details-quantity'}
                                                     {inputgroup class="form-counter"}
                                                         {inputgroupprepend}
-                                                            {button variant="" data=["count-down"=>""]}
+                                                            {button variant=""
+                                                                data=["count-down"=>""]
+                                                                aria=["label"=>{lang key='decreaseQuantity' section='aria'}]}
                                                                 <span class="fas fa-minus"></span>
                                                             {/button}
                                                         {/inputgroupprepend}
@@ -294,7 +296,9 @@
                                                             data=["decimals"=>{getDecimalLength quantity=$Artikel->fAbnahmeintervall}]
                                                             value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}"}
                                                         {inputgroupappend}
-                                                            {button variant="" data=["count-up"=>""]}
+                                                            {button variant=""
+                                                                data=["count-up"=>""]
+                                                                aria=["label"=>{lang key='increaseQuantity' section='aria'}]}
                                                                 <span class="fas fa-plus"></span>
                                                             {/button}
                                                         {/inputgroupappend}

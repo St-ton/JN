@@ -32,7 +32,8 @@
                     {col cols=12 md=8}
                         {formrow id="create_account_data" class="collapse collapse-non-validate {if empty($checkout)
                         || $smarty.session.Warenkorb->hasDigitalProducts()
-                        || $Einstellungen.kaufabwicklung.bestellvorgang_unregistriert === 'N'}show{else}hidden{/if}" aria-expanded="true"}
+                        || $Einstellungen.kaufabwicklung.bestellvorgang_unregistriert === 'N'
+                        || !empty($fehlendeAngaben)}show{else}hidden{/if}" aria-expanded="true"}
                             {block name='register-form-customer-account-password-first'}
                                 {col cols=12 md=6}
                                     <div class="form-group d-flex flex-column {if isset($fehlendeAngaben.pass_zu_kurz) || isset($fehlendeAngaben.pass_ungleich)} has-error{/if}" role="group">
@@ -49,6 +50,11 @@
                                         <label for="pass" class="col-form-label pt-0">
                                             {lang key='password' section='account data'}
                                         </label>
+                                        {if isset($fehlendeAngaben.pass_zu_kurz)}
+                                            <div class="form-error-msg text-danger"><i class="fa fa-exclamation-triangle"></i>
+                                                {lang key='passwordTooShort' section='login' printf=$Einstellungen.kunden.kundenregistrierung_passwortlaenge}
+                                            </div>
+                                        {/if}
                                     </div>
                                     {block name='account-change-password-include-password-check'}
                                         {include file='snippets/password_check.tpl' id='#password'}

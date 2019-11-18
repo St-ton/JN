@@ -821,14 +821,6 @@ class Metadata implements MetadataInterface
                             $extendedView->nAnzahlArtikel = (int)$conf['artikeluebersicht_anzahl_darstellung2'];
                         }
                         break;
-                    case \ERWDARSTELLUNG_ANSICHT_MOSAIK:
-                        $extendedView->nDarstellung = \ERWDARSTELLUNG_ANSICHT_MOSAIK;
-                        if (isset($_SESSION['ArtikelProSeite'])) {
-                            $extendedView->nAnzahlArtikel = $_SESSION['ArtikelProSeite'];
-                        } elseif ((int)$conf['artikeluebersicht_anzahl_darstellung3'] > 0) {
-                            $extendedView->nAnzahlArtikel = (int)$conf['artikeluebersicht_anzahl_darstellung3'];
-                        }
-                        break;
                     default: // when given invalid option from wawi attribute
                         $viewType = \ERWDARSTELLUNG_ANSICHT_LISTE;
                         if (isset($conf['artikeluebersicht_erw_darstellung_stdansicht'])
@@ -865,12 +857,6 @@ class Metadata implements MetadataInterface
                         $extendedView->nAnzahlArtikel = (int)$conf['artikeluebersicht_anzahl_darstellung1'];
                     }
                     break;
-                case \ERWDARSTELLUNG_ANSICHT_MOSAIK:
-                    $extendedView->nAnzahlArtikel = \ERWDARSTELLUNG_ANSICHT_ANZAHL_STD;
-                    if ((int)$conf['artikeluebersicht_anzahl_darstellung3'] > 0) {
-                        $extendedView->nAnzahlArtikel = (int)$conf['artikeluebersicht_anzahl_darstellung3'];
-                    }
-                    break;
                 case \ERWDARSTELLUNG_ANSICHT_GALERIE:
                 default:
                     $extendedView->nAnzahlArtikel = \ERWDARSTELLUNG_ANSICHT_ANZAHL_STD;
@@ -889,7 +875,6 @@ class Metadata implements MetadataInterface
 
         $extendedView->cURL_arr[\ERWDARSTELLUNG_ANSICHT_LISTE]   = $naviURL . \ERWDARSTELLUNG_ANSICHT_LISTE;
         $extendedView->cURL_arr[\ERWDARSTELLUNG_ANSICHT_GALERIE] = $naviURL . \ERWDARSTELLUNG_ANSICHT_GALERIE;
-        $extendedView->cURL_arr[\ERWDARSTELLUNG_ANSICHT_MOSAIK]  = $naviURL . \ERWDARSTELLUNG_ANSICHT_MOSAIK;
 
         return $extendedView;
     }

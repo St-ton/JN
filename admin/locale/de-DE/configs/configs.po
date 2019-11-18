@@ -684,7 +684,7 @@ msgid "artikeluebersicht_erw_darstellung_stdansicht_name"
 msgstr "Standard-Darstellung für Artikelübersicht"
 
 msgid "artikeluebersicht_erw_darstellung_stdansicht_desc"
-msgstr "Hier legen Sie fest, welche Ansichtsoption der Artikelübersicht Ihren Kunden standardmäßig angezeigt wird. Mit dem Standard-EVO-Template von JTL-Shop können Sie nur die Optionen Galerie und Liste verwenden."
+msgstr "Hier legen Sie fest, welche Ansichtsoption der Artikelübersicht Ihren Kunden standardmäßig angezeigt wird."
 
 msgid "artikeluebersicht_anzahl_darstellung1_name"
 msgstr "Artikelanzahl in Listendarstellung"
@@ -709,12 +709,6 @@ msgstr "Artikel-Auswahloptionen pro Seite in Galerieansicht"
 
 msgid "products_per_page_gallery_desc"
 msgstr "Hier legen Sie fest, wie viele Auswahloptionen für Artikel pro Seite zur Verfügung stehen sollen. Setzen Sie den Wert -1 für alle."
-
-msgid "artikeluebersicht_anzahl_darstellung3_name"
-msgstr "Artikelanzahl in Mosaikdarstellung"
-
-msgid "artikeluebersicht_anzahl_darstellung3_desc"
-msgstr "Hier legen Sie fest, wie viele Artikel jeweils in der Mosaikdarstellung angezeigt werden."
 
 msgid "artikeldetails_xselling_standard_anzeigen_name"
 msgstr "Standard-Cross-Selling anzeigen"

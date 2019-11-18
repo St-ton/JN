@@ -35,6 +35,24 @@ class Migration_20191115154100 extends Migration implements IMigration
             ],
             true
         );
+        $this->setConfig(
+            'artikeluebersicht_erw_darstellung_stdansicht',
+            '2',
+            \CONF_ARTIKELUEBERSICHT,
+            'Standard-Darstellung für Artikelübersicht',
+            'selectbox',
+            835,
+            (object)[
+                'cBeschreibung' => 'Hier legen Sie fest, welche Ansichtsoption der Artikelübersicht Ihren Kunden ' .
+                    'standardmäßig angezeigt wird.',
+                'inputOptions'  => [
+                    '1' => 'Liste',
+                    '2' => 'Galerie'
+                ],
+            ],
+            true
+        );
+        $this->removeConfig('artikeluebersicht_anzahl_darstellung3');
     }
 
     /**
@@ -54,6 +72,37 @@ class Migration_20191115154100 extends Migration implements IMigration
                 'cBeschreibung' => 'Mit Komma getrennt, -1 für alle',
             ],
             true
+        );
+        $this->setConfig(
+            'artikeluebersicht_erw_darstellung_stdansicht',
+            '2',
+            \CONF_ARTIKELUEBERSICHT,
+            'Standard-Darstellung für Artikelübersicht',
+            'selectbox',
+            835,
+            (object)[
+                'cBeschreibung' => 'Hier legen Sie fest, welche Ansichtsoption der Artikelübersicht Ihren Kunden ' .
+                    'standardmäßig angezeigt wird. Mit dem Standard-EVO-Template von JTL-Shop können Sie nur die ' .
+                    'Optionen Galerie und Liste verwenden.',
+                'inputOptions'  => [
+                    '1' => 'Liste',
+                    '2' => 'Galerie',
+                    '3' => 'Mosaik'
+                ],
+            ],
+            true
+        );
+        $this->setConfig(
+            'artikeluebersicht_anzahl_darstellung3',
+            '40',
+            \CONF_ARTIKELUEBERSICHT,
+            'Artikelanzahl in Mosaikdarstellung',
+            'number',
+            860,
+            (object)[
+                'cBeschreibung' => 'Hier legen Sie fest, wie viele Artikel jeweils in der Mosaikdarstellung ' .
+                    'angezeigt werden.',
+            ]
         );
     }
 }

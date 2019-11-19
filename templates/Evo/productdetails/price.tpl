@@ -29,7 +29,9 @@
             {block name="price-snippets"}
                 <meta itemprop="price" content="{$Artikel->Preise->fVKBrutto}">
                 <meta itemprop="priceCurrency" content="{$smarty.session.Waehrung->cName}">
-                <meta itemprop="priceValidUntil" content="{if $Artikel->Preise->Sonderpreis_aktiv && !empty($Artikel->dSonderpreisEnde_en) && $Artikel->dSonderpreisEnde_en !== '0000-00-00'}{$Artikel->dSonderpreisEnde_en}{else}{"+30 days"|strtotime|date_format:"Y-m-d"}{/if}">
+                {if $Artikel->Preise->Sonderpreis_aktiv && !empty($Artikel->dSonderpreisEnde_en) && $Artikel->dSonderpreisEnde_en !== '0000-00-00'}
+                    <meta itemprop="priceValidUntil" content="{$Artikel->dSonderpreisEnde_en}">
+                {/if}
             {/block}
             <div class="price-note">
                 {if $Artikel->cEinheit && ($Artikel->fMindestbestellmenge > 1 || $Artikel->fAbnahmeintervall > 1)}

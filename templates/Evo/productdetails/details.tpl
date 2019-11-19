@@ -87,14 +87,6 @@
                                 <p class="text-muted">{lang key='ean'}: <span itemprop="{if $Artikel->cBarcode|count_characters === 8}gtin8{else}gtin13{/if}">{$Artikel->cBarcode}</span></p>
                             </div>
                         {/if}
-                        {if !empty($Artikel->cISBN)
-                        && ($Einstellungen.artikeldetails.isbn_display === 'D'
-                        || $Einstellungen.artikeldetails.isbn_display === 'DL')}
-                            <div class="col-xs-8">
-                                <p class="text-muted">{lang key='isbn'}: <span>{$Artikel->cISBN}</span></p>
-                                <p class="text-muted">{lang key='isbn'}: <span itemprop="gtin13">{$Artikel->cISBN}</span></p>
-                            </div>
-                        {/if}
                         {if ($Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0)}
                             {block name="productdetails-info-rating-wrapper"}
                             <div class="rating-wrapper col-xs-4 text-right" itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating">

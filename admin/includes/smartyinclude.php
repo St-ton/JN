@@ -92,11 +92,11 @@ if (!$hasPendingUpdates) {
                     ];
 
                     $linkGruppe->oLink_arr[] = $link;
-                }
-                if (Request::verifyGPCDataInt('kPlugin') === $pluginID) {
-                    $currentToplevel    = $mainGroup->key;
-                    $currentSecondLevel = $linkGruppe->key;
-                    $currentThirdLevel  = $link->key;
+                    if (Request::verifyGPCDataInt('kPlugin') === $pluginID) {
+                        $currentToplevel    = $mainGroup->key;
+                        $currentSecondLevel = $linkGruppe->key;
+                        $currentThirdLevel  = $link->key;
+                    }
                 }
             } else {
                 $thirdKey = 0;

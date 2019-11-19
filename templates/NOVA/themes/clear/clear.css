@@ -10513,7 +10513,7 @@ input[type=button].btn-block {
   border-color: transparent;
 }
 .page-item.disabled .page-link, .page-item.disabled .page-text {
-  color: #f5f7fa;
+  color: #9b9b9b;
   pointer-events: none;
   cursor: auto;
   background-color: transparent;

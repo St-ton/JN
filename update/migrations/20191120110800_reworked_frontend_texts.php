@@ -450,7 +450,7 @@ class Migration_20191120110800 extends Migration implements IMigration
         $this->setLocalization('ger', 'wishlist', 'setAsStandardWishlist', 'Lassen Sie neue Artikel standardmäßig auf den aktuell gewählten Wunschzettel setzen.');
         $this->setLocalization('ger', 'wishlist', 'wlDelete', 'Wunschzettel löschen');
 
-        $this->setLocalization('eng', '﻿global', 'aaSelectBTN', 'Select');
+        $this->setLocalization('eng', 'global', 'aaSelectBTN', 'Select');
         $this->setLocalization('eng', 'global', 'accountCreated', 'Your customer account has been created.');
         $this->setLocalization('eng', 'global', 'accountDeleteFailure', 'You customer account cannot be delete. There is still an open order.');
         $this->setLocalization('eng', 'global', 'accountInactive', 'Your customer account has been deactivated.');

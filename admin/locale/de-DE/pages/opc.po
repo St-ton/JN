@@ -67,7 +67,7 @@ msgid "Styles"
 msgstr "Stile"
 
 msgid "Animation"
-msgstr "Animation"
+msgstr "Animation" 
 
 # Styles tab
 
@@ -88,6 +88,15 @@ msgstr "Schriftgröße"
 
 msgid "Default color"
 msgstr "Standardfarbe"
+
+msgid "Border style"
+msgstr "Rahmenstil"
+
+msgid "Border colour"
+msgstr "Rahmenfarbe"
+
+msgid "Border radius"
+msgstr "Rahmenabrundung"
 
 # Animations tab
 
@@ -345,15 +354,6 @@ msgstr "Rahmen"
 
 msgid "padding"
 msgstr "Innenabstand"
-
-msgid "Border style"
-msgstr "Rahmenstil"
-
-msgid "Border color"
-msgstr "Rahmenfarbe"
-
-msgid "Border radius"
-msgstr "Rahmenabrundung"
 
 msgid "noAction"
 msgstr "Keine Aktion"

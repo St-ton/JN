@@ -87,7 +87,16 @@ msgid "Font size"
 msgstr "Font size"
 
 msgid "Default color"
-msgstr "Default color"
+msgstr "Default colour"
+
+msgid "Border style"
+msgstr "Border style"
+
+msgid "Border colour"
+msgstr "Border colour"
+
+msgid "Border radius"
+msgstr "Border radius"
 
 # Animations tab
 
@@ -209,7 +218,7 @@ msgid "imageSelect"
 msgstr "Select image"
 
 msgid "alternativeText"
-msgstr "Alternativ text"
+msgstr "Alternative text"
 
 msgid "imageAdd"
 msgstr "Add image"

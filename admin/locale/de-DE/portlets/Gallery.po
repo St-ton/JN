@@ -5,8 +5,5 @@ msgstr ""
 msgid "Gallery"
 msgstr "Galerie"
 
-msgid "heightPreviewImages"
-msgstr "Höhe der Vorschaubilder"
-
 msgid "imageList"
-msgstr "Bilder-Liste"
+msgstr "Gallerie-Bilder"

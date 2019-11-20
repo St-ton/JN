@@ -10486,7 +10486,7 @@ input[type=button].btn-block {
 }
 .page-link:hover, .page-text:hover {
   z-index: 2;
-  color: #9b9b9b;
+  color: #0ef83c;
   text-decoration: none;
   background-color: transparent;
   border-color: #dee2e6;
@@ -21867,14 +21867,6 @@ label {
 
 .page-link, .page-text {
   text-decoration: none;
-}
-.page-link:hover, .page-text:hover {
-  font-weight: 700;
-}
-@media (min-width: 768px) {
-  .page-link:hover, .page-text:hover {
-    font-weight: 700;
-  }
 }
 
 .pagination {

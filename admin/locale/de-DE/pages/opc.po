@@ -46,8 +46,11 @@ msgstr "Aktuelle Version"
 msgid "Please wait..."
 msgstr "Bitte warten…"
 
-msgid "Edit Portlet"
-msgstr "Portlet bearbeiten"
+msgid "editPortletPrefix"
+msgstr " "
+
+msgid "editPortletPostfix"
+msgstr " bearbeiten"
 
 msgid "Save this Portlet as a blueprint"
 msgstr "Portlet als Vorlage speichern"
@@ -82,6 +85,9 @@ msgstr "Hintergrundfarbe"
 
 msgid "Font size"
 msgstr "Schriftgröße"
+
+msgid "Default color"
+msgstr "Standardfarbe"
 
 # Animations tab
 

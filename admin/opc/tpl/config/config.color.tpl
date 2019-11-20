@@ -4,8 +4,9 @@
 <div class="form-group no-pb">
     <label for="config-{$propid}">{$propdesc.label}</label>
     <div class="input-group" id="config-{$propid}-group">
-        <input type="text" class="form-control colorpicker-input" name="{$propname}" value="{$propval}" {if $required}required{/if}
-               id="config-{$propid}" autocomplete="off" placeholder="Standardfarbe">
+        <input type="text" class="form-control colorpicker-input" name="{$propname}" value="{$propval}"
+               {if $required}required{/if} id="config-{$propid}" autocomplete="off"
+               placeholder="{__('Default color')}">
         <span class="input-group-append">
             <span class="input-group-text colorpicker-input-addon"><i></i></span>
         </span>

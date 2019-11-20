@@ -572,7 +572,11 @@ function gibStepAccountwahl(): void
 {
     // Einstellung global_kundenkonto_aktiv ist auf 'A'
     // und Kunde wurde nach der Registrierung zurück zur Accountwahl geleitet
-    if (isset($_REQUEST['reg']) && (int)$_REQUEST['reg'] === 1) {
+    if (isset($_REQUEST['reg'])
+        && (int)$_REQUEST['reg'] === 1
+        && Shop::getSettingValue(CONF_GLOBAL, 'global_kundenkonto_aktiv') === 'A'
+        && empty(Shop::Smarty()->getTemplateVars('fehlendeAngaben'))
+    ) {
         Shop::Container()->getAlertService()->addAlert(
             Alert::TYPE_NOTE,
             Shop::Lang()->get('accountCreated') . '. ' . Shop::Lang()->get('activateAccountDesc'),

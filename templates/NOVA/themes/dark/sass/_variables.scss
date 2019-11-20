@@ -245,14 +245,14 @@ $pagination-bg:                     transparent;
 $pagination-color:                  $link-color;
 
 $pagination-hover-bg:               transparent;
-$pagination-hover-color:            $pagination-color;
+$pagination-hover-color:            $primary;
 
 $pagination-active-bg:              transparent;
-$pagination-active-color:           $pagination-hover-color;
+$pagination-active-color:           $pagination-color;
 
 $pagination-focus-box-shadow:       none;
 
-$pagination-disabled-color:         $gray-lighter;
+$pagination-disabled-color:         $gray-light;
 $pagination-disabled-bg:            transparent;
 
 // breadcrumbs

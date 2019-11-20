@@ -10486,7 +10486,7 @@ input[type=button].btn-block {
 }
 .page-link:hover, .page-text:hover {
   z-index: 2;
-  color: #525252;
+  color: #F8BF00;
   text-decoration: none;
   background-color: transparent;
   border-color: #dee2e6;
@@ -10513,7 +10513,7 @@ input[type=button].btn-block {
   border-color: transparent;
 }
 .page-item.disabled .page-link, .page-item.disabled .page-text {
-  color: #f5f7fa;
+  color: #9b9b9b;
   pointer-events: none;
   cursor: auto;
   background-color: transparent;
@@ -21867,14 +21867,6 @@ label {
 
 .page-link, .page-text {
   text-decoration: none;
-}
-.page-link:hover, .page-text:hover {
-  font-weight: 700;
-}
-@media (min-width: 768px) {
-  .page-link:hover, .page-text:hover {
-    font-weight: 700;
-  }
 }
 
 .pagination {

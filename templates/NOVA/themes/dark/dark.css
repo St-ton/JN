@@ -10486,7 +10486,7 @@ input[type=button].btn-block {
 }
 .page-link:hover, .page-text:hover {
   z-index: 2;
-  color: #9b9b9b;
+  color: #0ef83c;
   text-decoration: none;
   background-color: transparent;
   border-color: #dee2e6;
@@ -10513,7 +10513,7 @@ input[type=button].btn-block {
   border-color: transparent;
 }
 .page-item.disabled .page-link, .page-item.disabled .page-text {
-  color: #525252;
+  color: #707070;
   pointer-events: none;
   cursor: auto;
   background-color: transparent;
@@ -21868,14 +21868,6 @@ label {
 .page-link, .page-text {
   text-decoration: none;
 }
-.page-link:hover, .page-text:hover {
-  font-weight: 700;
-}
-@media (min-width: 768px) {
-  .page-link:hover, .page-text:hover {
-    font-weight: 700;
-  }
-}
 
 .pagination {
   justify-content: space-between;
@@ -24696,6 +24688,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 #image_wrapper.fullscreen #gallery_preview_wrapper {
   width: 100%;
   padding: 1rem;
+  max-width: 1200px;
 }
 @media (min-width: 768px) {
   #image_wrapper.fullscreen #gallery_preview_wrapper {

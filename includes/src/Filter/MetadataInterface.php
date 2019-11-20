@@ -114,7 +114,7 @@ interface MetadataInterface
      * @param string $imageURL
      * @return MetadataInterface
      */
-    public function setImageURL(string $imageURL): MetadataInterface;
+    public function setImageURL(?string $imageURL): MetadataInterface;
 
     /**
      * @return bool

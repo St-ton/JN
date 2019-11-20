@@ -156,7 +156,7 @@
                         {/block}
                         {block name='header-branding-content'}
                         <div class="row">
-                            <div class="col-xs-4" id="logo" itemprop="publisher" itemscope itemtype="http://schema.org/Organization" itemid="">
+                            <div class="col-xs-4" id="logo" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
                                 {block name='logo'}
                                 <span itemprop="name" class="hidden">{$meta_publisher}</span>
                                 <meta itemprop="url" content="{$ShopURL}">

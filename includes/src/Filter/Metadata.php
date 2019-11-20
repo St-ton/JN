@@ -265,7 +265,7 @@ class Metadata implements MetadataInterface
     /**
      * @inheritdoc
      */
-    public function setImageURL(string $imageURL): MetadataInterface
+    public function setImageURL(?string $imageURL): MetadataInterface
     {
         $this->imageURL = $imageURL;
 

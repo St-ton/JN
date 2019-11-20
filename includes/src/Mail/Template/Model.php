@@ -746,7 +746,7 @@ final class Model
             ? null
             : map(
                 $data,
-                function ($e) {
+                static function ($e) {
                     $e->kSprache      = (int)$e->kSprache;
                     $e->kPlugin       = (int)$e->kPlugin;
                     $e->kEmailvorlage = (int)$e->id;

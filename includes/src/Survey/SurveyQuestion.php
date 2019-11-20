@@ -142,7 +142,7 @@ class SurveyQuestion
                 $answer->setName($question->answerName);
                 $this->answerOptions->push($answer);
             }
-            $this->answerOptions = $this->answerOptions->unique()->sortBy(function (AnswerOption $e) {
+            $this->answerOptions = $this->answerOptions->unique()->sortBy(static function (AnswerOption $e) {
                 return $e->getSort();
             });
         }
@@ -155,7 +155,7 @@ class SurveyQuestion
                 $matrix->setName($question->matrixName);
                 $this->matrixOptions->push($matrix);
             }
-            $this->matrixOptions = $this->matrixOptions->unique()->sortBy(function (MatrixOption $e) {
+            $this->matrixOptions = $this->matrixOptions->unique()->sortBy(static function (MatrixOption $e) {
                 return $e->getSort();
             });
         }
@@ -186,7 +186,7 @@ class SurveyQuestion
             ['id' => $id],
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $question = map($question, function (stdClass $e) {
+        $question = map($question, static function (stdClass $e) {
             return $e->kUmfragefrage;
         });
         $this->mapGroup($question);

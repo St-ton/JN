@@ -265,7 +265,7 @@ class Item extends AbstractItem
                 WHERE tnewskategorienews.kNews = :nid',
             ['nid' => $this->id],
             ReturnType::ARRAY_OF_OBJECTS
-        ), function ($e) {
+        ), static function ($e) {
             return (int)$e->kNewsKategorie;
         });
     }
@@ -310,7 +310,7 @@ class Item extends AbstractItem
                 }
             }
 
-            \usort($images, function ($a, $b) {
+            \usort($images, static function ($a, $b) {
                 return \strcmp($a->cName, $b->cName);
             });
         }

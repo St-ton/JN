@@ -47,7 +47,8 @@ final class Dispatcher
      * Register an event listener with the dispatcher.
      *
      * @param string|array $eventNames
-     * @param callable $listener
+     * @param callable     $listener
+     * @param int          $priority
      */
     public function listen($eventNames, callable $listener, int $priority = 5): void
     {

@@ -467,7 +467,7 @@ if ($step === 'uebersicht') {
         foreach ($countries as $country) {
             $method->countries->push($countryHelper->getCountry($country));
         }
-        $method->countries               = $method->countries->sortBy(function (Country $country) {
+        $method->countries               = $method->countries->sortBy(static function (Country $country) {
             return $country->getName();
         });
         $method->cKundengruppenName_arr  = [];

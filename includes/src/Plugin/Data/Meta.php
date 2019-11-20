@@ -314,7 +314,7 @@ class Meta
     }
 
     /**
-     * @param bool|Version $updateAvailable
+     * @return bool|Version
      */
     public function getUpdateAvailable()
     {

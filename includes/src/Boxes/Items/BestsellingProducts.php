@@ -61,7 +61,7 @@ final class BestsellingProducts extends AbstractBox
             \shuffle($productIDs);
             $res = map(
                 \array_slice($productIDs, 0, $this->config['boxen']['box_bestseller_anzahl_anzeige']),
-                function ($productID) {
+                static function ($productID) {
                     return (int)$productID->kArtikel;
                 }
             );

@@ -141,7 +141,7 @@ class Controller
             }
         }
         $paginated = $this->getPaginatedQuestions($questions);
-        $spliced   = $paginated->first(function ($e) use ($currentPage) {
+        $spliced   = $paginated->first(static function ($e) use ($currentPage) {
             return $e->page === $currentPage;
         })->questions;
         $survey->setQuestions($spliced);
@@ -160,7 +160,7 @@ class Controller
     private function getSliceIndices(Collection $questions): array
     {
         $indices = [0];
-        $questions->each(function (SurveyQuestion $question, $i) use (&$indices) {
+        $questions->each(static function (SurveyQuestion $question, $i) use (&$indices) {
             if ($question->getType() === QuestionType::TEXT_PAGE_CHANGE) {
                 $indices[] = $i + 1;
             }

@@ -85,7 +85,7 @@ class ShippingMethod
 
         return \array_filter(
             $this->shippingMethods,
-            function ($s) use ($freeFromX) {
+            static function ($s) use ($freeFromX) {
                 return $s->fVersandkostenfreiAbX !== '0.00'
                     && (float)$s->fVersandkostenfreiAbX > 0
                     && (float)$s->fVersandkostenfreiAbX <= $freeFromX;
@@ -138,7 +138,7 @@ class ShippingMethod
      */
     public static function normalerArtikelversand($country): bool
     {
-        return some(Frontend::getCart()->PositionenArr, function ($item) use ($country) {
+        return some(Frontend::getCart()->PositionenArr, static function ($item) use ($country) {
             return (int)$item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL
                 && !self::gibArtikelabhaengigeVersandkosten($country, $item->Artikel, $item->nAnzahl);
         });
@@ -282,14 +282,14 @@ class ShippingMethod
                 ReturnType::ARRAY_OF_OBJECTS
             );
 
-            $shippingMethod->valid = some($paymentMethods, function ($pmm) {
+            $shippingMethod->valid = some($paymentMethods, static function ($pmm) {
                 return PaymentMethod::shippingMethodWithValidPaymentMethod($pmm);
             });
         }
         // auf anzeige filtern
         $possibleMethods = \array_filter(
             \array_merge($methods),
-            function ($p) use ($minSum) {
+            static function ($p) use ($minSum) {
                 return $p->valid
                     && ($p->cAnzeigen === 'immer' || ($p->cAnzeigen === 'guenstigste' && $p->fEndpreis <= $minSum));
             }
@@ -899,7 +899,7 @@ class ShippingMethod
         if (!\is_array($items)) {
             return $shippingItems;
         }
-        $items = \array_filter($items, function ($item) {
+        $items = \array_filter($items, static function ($item) {
             return (int)$item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL && \is_object($item->Artikel);
         });
         foreach ($items as $item) {
@@ -1329,7 +1329,7 @@ class ShippingMethod
                 \array_filter(\explode(' ', $shippingMethod->cLaender))
             )->toArray();
             // re-concatinate isos with "," for the final output
-            $resultString = \implode(', ', \array_map(function (Country $e) {
+            $resultString = \implode(', ', \array_map(static function (Country $e) {
                 return $e->getName();
             }, $countries));
 
@@ -1432,7 +1432,7 @@ class ShippingMethod
                 ReturnType::ARRAY_OF_OBJECTS
             );
             $countries        = $countryHelper->getFilteredCountryList(
-                map($countryISOFilter, function ($country) {
+                map($countryISOFilter, static function ($country) {
                     return $country->cISO;
                 })
             )->toArray();

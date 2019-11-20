@@ -48,7 +48,7 @@ class ValidationResult implements ValidationResultInterface
      */
     public function isValid(): bool
     {
-        return none($this->ruleResults, function (RuleResultInterface $item) {
+        return none($this->ruleResults, static function (RuleResultInterface $item) {
             return !$item->isValid();
         });
     }

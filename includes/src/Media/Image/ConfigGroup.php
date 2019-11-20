@@ -59,7 +59,7 @@ class ConfigGroup extends AbstractImage
                 AND tsprache.cShopStandard = \'Y\'',
             ['cid' => $req->getID()],
             ReturnType::COLLECTION
-        )->map(function ($item) {
+        )->map(static function ($item) {
             return self::getCustomName($item);
         })->toArray();
     }

@@ -171,10 +171,10 @@ if ((($emailTemplateID > 0 && $continue === true)
 
 if ($step === 'uebersicht') {
     $templates = $controller->getAllTemplates();
-    $smarty->assign('mailTemplates', filter($templates, function (Model $e) {
+    $smarty->assign('mailTemplates', filter($templates, static function (Model $e) {
         return $e->getPluginID() === 0;
     }))
-        ->assign('pluginMailTemplates', filter($templates, function (Model $e) {
+        ->assign('pluginMailTemplates', filter($templates, static function (Model $e) {
             return $e->getPluginID() > 0;
         }));
 }

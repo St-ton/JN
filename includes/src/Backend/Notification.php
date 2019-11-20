@@ -76,7 +76,7 @@ class Notification implements IteratorAggregate, Countable
      */
     public function getIterator(): ArrayIterator
     {
-        \usort($this->array, function (NotificationEntry $a, NotificationEntry $b) {
+        \usort($this->array, static function (NotificationEntry $a, NotificationEntry $b) {
             return $b->getType() <=> $a->getType();
         });
 

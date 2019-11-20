@@ -82,7 +82,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
                 $revisionData[$lang->cISO] = $lang;
             }
             $links = Shop::Container()->getLinkService()->getAllLinkGroups()->filter(
-                function (LinkGroupInterface $e) {
+                static function (LinkGroupInterface $e) {
                     return $e->isSpecial() === false;
                 }
             );
@@ -208,10 +208,10 @@ if ($pageID === PAGE_ARTIKELLISTE) { //map category name
     );
 }
 
-$filterMapping = reindex($filterMapping, function ($e) {
+$filterMapping = reindex($filterMapping, static function ($e) {
     return $e->id;
 });
-$filterMapping = map($filterMapping, function ($e) {
+$filterMapping = map($filterMapping, static function ($e) {
     return $e->name;
 });
 $smarty->assign('filterMapping', $filterMapping)

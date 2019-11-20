@@ -205,7 +205,7 @@ class MenuItem
     }
 
     /**
-     * @param string $imageURL
+     * @param string|null $imageURL
      */
     public function setImageURL(?string $imageURL): void
     {

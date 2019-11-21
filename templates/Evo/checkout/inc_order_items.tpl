@@ -248,7 +248,8 @@
                                                                id="quantity{$oPosition@index}"
                                                                class="form-control quantity form-control text-right"
                                                                size="3"
-                                                               min="0"
+                                                               min="{if $oPosition->Artikel->fMindestbestellmenge}{$oPosition->Artikel->fMindestbestellmenge}{else}0{/if}"
+                                                               max="{$oPosition->Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE]|default:''}"
                                                                 {if $oPosition->Artikel->fAbnahmeintervall > 0}
                                                                     step="{$oPosition->Artikel->fAbnahmeintervall}"
                                                                 {/if}

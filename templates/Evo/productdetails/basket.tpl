@@ -21,7 +21,8 @@
                 <div class="form-inline">
                     <div id="quantity-grp" class="choose_quantity input-group">
                         <input type="{if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}text{else}number{/if}"
-                               min="0"
+                               min="{if $Artikel->fMindestbestellmenge}{$Artikel->fMindestbestellmenge}{else}0{/if}"
+                               max="{$Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE]|default:''}"
                                {if $Artikel->fAbnahmeintervall > 0}
                                    step="{$Artikel->fAbnahmeintervall}"
                                 {/if}

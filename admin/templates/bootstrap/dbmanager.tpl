@@ -386,7 +386,7 @@ $(function() {
                 <input id="db-search" class="form-control" type="search" placeholder="{__('searchTable')}">
             </div>
             <nav class="db-sidebar hidden-print hidden-xs hidden-sm">
-                <ul class="nav db-sidenav">
+                <ul class="nav flex-column db-sidenav">
                     {foreach $tables as $table}
                         <li><a href="dbmanager.php?select={$table@key}&token={$smarty.session.jtl_token}">{$table@key}</a></li>
                     {/foreach}

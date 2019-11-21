@@ -644,15 +644,16 @@ Vergeben Sie stets eindeutige Boxennamen, damit sich diese nicht mit anderen Plu
         </Box>
     </Boxes>
 
-+--------------------+--------------------------------------+
-| Elementname        | Beschreibung                         |
-+====================+======================================+
-| ``<Name>``         | Name des Boxentyps                   |
-+--------------------+--------------------------------------+
-| ``<Available>``    | Seite in der Die Box verfügbar ist   |
-+--------------------+--------------------------------------+
-| ``<TemplateFile>`` | Templatedatei mit dem Inhalt der Box |
-+--------------------+--------------------------------------+
++--------------------+------------------------------------------------------------------+
+| Elementname        | Beschreibung                                                     |
++====================+==================================================================+
+| ``<Name>``         | Name des Boxentyps                                               |
++--------------------+------------------------------------------------------------------+
+| ``<Available>``    | Seitentyp, in dem die Box angezeigt wird |br|                    |
+|                    | (z. B.: 0= jede Seite, 1= Artikeldetails, 2= Artikelliste, usw.) |
++--------------------+------------------------------------------------------------------+
+| ``<TemplateFile>`` | Templatedatei mit dem Inhalt der Box                             |
++--------------------+------------------------------------------------------------------+
 
 
 .. _label_infoxml_widgets:

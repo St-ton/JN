@@ -7,7 +7,7 @@
     {foreach $Artikel->Bilder as $image}
         {strip}
             <a href="{$image->cURLGross}" title="{$image->cAltAttribut|escape:'html'}">
-                <img src="{$image->cURLNormal}" alt="{$image->cAltAttribut|escape:'html'}" data-list='{$image->galleryJSON|replace:"'":"&apos;"}' />
+                <img src="{$image->cURLNormal}" alt="{$image->cAltAttribut|escape:'html'}" data-list='{$image->galleryJSON|replace:"'":"&apos;"}' itemprop="image"/>
             </a>
         {/strip}
     {/foreach}

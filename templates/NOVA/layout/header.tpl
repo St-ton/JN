@@ -323,7 +323,7 @@
                             {/block}
 
                             {block name='layout-header-logo'}
-                                <div id="logo" itemprop="publisher" itemscope itemtype="http://schema.org/Organization" itemid="">
+                                <div id="logo" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
                                     <span itemprop="name" class="d-none">{$meta_publisher}</span>
                                     <meta itemprop="url" content="{$ShopURL}">
                                     <meta itemprop="logo" content="{$ShopLogoURL}">

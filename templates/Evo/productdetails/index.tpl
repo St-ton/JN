@@ -24,7 +24,7 @@
             {include file='productlist/item_box.tpl'}
         {/if}
     {else}
-        <div id="result-wrapper" itemprop="mainEntity" itemscope  itemtype="http://schema.org/Product" itemid="{$ShopURL}/{$Artikel->cSeo}">
+        <div id="result-wrapper" itemprop="mainEntity" itemscope  itemtype="http://schema.org/Product">
             <meta itemprop="url" content="{$ShopURL}/{$Artikel->cSeo}">
         {include file="snippets/extension.tpl"}
         {if isset($Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELDETAILS_TPL]) && $currentTemplateDirFullPath|cat:'productdetails/'|cat:$Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELDETAILS_TPL]|file_exists}

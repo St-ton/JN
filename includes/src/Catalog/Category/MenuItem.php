@@ -205,9 +205,9 @@ class MenuItem
     }
 
     /**
-     * @param string $imageURL
+     * @param string|null $imageURL
      */
-    public function setImageURL(string $imageURL): void
+    public function setImageURL(?string $imageURL): void
     {
         $this->imageURL  = Shop::getImageBaseURL();
         $this->imageURL .= empty($imageURL)

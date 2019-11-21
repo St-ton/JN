@@ -267,6 +267,7 @@
                                             {/inputgroupprepend}
                                             {input type="{if $oPosition->Artikel->cTeilbar === 'Y' && $oPosition->Artikel->fAbnahmeintervall == 0}text{else}number{/if}"
                                                 min="{if $oPosition->Artikel->fMindestbestellmenge}{$oPosition->Artikel->fMindestbestellmenge}{else}0{/if}"
+                                                max=$oPosition->Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE]|default:''
                                                 required=($oPosition->Artikel->fAbnahmeintervall > 0)
                                                 step="{if $oPosition->Artikel->fAbnahmeintervall > 0}{$oPosition->Artikel->fAbnahmeintervall}{/if}"
                                                 id="quantity[{$oPosition@index}]" class="quantity" name="anzahl[{$oPosition@index}]"

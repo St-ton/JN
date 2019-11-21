@@ -150,7 +150,8 @@
                                                 name="Anzahl_{$wlPosition->kWunschlistePos}"
                                                 class="wunschliste_anzahl form-control" type="text"
                                                 size="1"
-                                                min="0"
+                                                min="{if $wlPosition->Artikel->fMindestbestellmenge}{$wlPosition->Artikel->fMindestbestellmenge}{else}0{/if}"
+                                                max="{$wlPosition->Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE]|default:''}"
                                                 {if $wlPosition->Artikel->fAbnahmeintervall > 0}
                                                     step="{$wlPosition->Artikel->fAbnahmeintervall}"
                                                 {/if}

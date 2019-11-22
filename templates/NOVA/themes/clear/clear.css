@@ -23669,6 +23669,10 @@ body {
   -webkit-box-orient: vertical;
 }
 
+.bg-typeahead-fix {
+  background-color: #ffffff !important;
+}
+
 /* utilities */
 .rounded-top-left {
   border-top-left-radius: 0.125rem !important;

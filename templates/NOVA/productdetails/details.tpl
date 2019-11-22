@@ -200,7 +200,11 @@
                                                 {/col}
                                                 {col class="col-auto ml-auto"}
                                                     {if $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'P'}
-                                                        <button type="button" id="z{$Artikel->kArtikel}" class="btn btn-link popup-dep question p-0" title="{lang key='productQuestion' section='productDetails'}">
+                                                        <button type="button" id="z{$Artikel->kArtikel}"
+                                                                class="btn btn-link question p-0"
+                                                                title="{lang key='productQuestion' section='productDetails'}"
+                                                                data-toggle="modal"
+                                                                data-target="#question-popup-{$Artikel->kArtikel}">
                                                             <span class="fa fa-question-circle"></span>
                                                             <span class="hidden-xs hidden-sm">{lang key='productQuestion' section='productDetails'}</span>
                                                         </button>

@@ -20,13 +20,20 @@
                 {/if}
             {/block}
             {block name='snippets-author-modal'}
+                {if $oAuthor->cAvatarImgSrcFull !== null}
+                    {$title = "<img alt='{$oAuthor->cName}' src='{$oAuthor->cAvatarImgSrcFull}' height='80' class='rounded-circle' /><span itemprop='name' class='ml-3'>{$oAuthor->cName}</span>"}
+                {else}
+                    {$title = '<span itemprop="name" class="ml-3">'|cat:$oAuthor->cName|cat:'</span>'}
+                {/if}
                 {modal
                     id="author-{$oAuthor->kContentAuthor}"
-                    title="<img alt='{$oAuthor->cName}' src='{$oAuthor->cAvatarImgSrcFull}' height='80' class='rounded-circle' /><span itemprop='name' class='ml-3'>{$oAuthor->cName}</span>"
+                    title=$title
                     footer="{if !empty($oAuthor->cGplusProfile)}<a itemprop='url' href='{$oAuthor->cGplusProfile}?rel=author' title='{$oAuthor->cName}'>Google+</a>{/if}"}
                     {block name='snippets-author-modal-content'}
                         {if !empty($oAuthor->cVitaShort)}
-                            <meta itemprop="image" content="{$oAuthor->cAvatarImgSrcFull}">
+                            {if $oAuthor->cAvatarImgSrcFull !== null}
+                                <meta itemprop="image" content="{$oAuthor->cAvatarImgSrcFull}">
+                            {/if}
                             <div itemprop="description">
                                 {$oAuthor->cVitaShort}
                             </div>

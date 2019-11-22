@@ -21632,6 +21632,7 @@ aside .last-seen-link {
   text-align: center;
   font-family: Montserrat, sans-serif;
   font-weight: 600;
+  -moz-appearance: textfield;
 }
 .form-counter .form-control::-webkit-inner-spin-button, .form-counter .form-control::-webkit-outer-spin-button {
   appearance: none;
@@ -23666,6 +23667,10 @@ body {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+}
+
+.bg-typeahead-fix {
+  background-color: #ffffff !important;
 }
 
 /* utilities */

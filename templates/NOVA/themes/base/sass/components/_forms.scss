@@ -44,6 +44,7 @@
 			-webkit-appearance: none;
 			margin: 0;
 		}
+        -moz-appearance:textfield;
 	}
 	.input-group-text { border: 0; background: none; font-family: $font-accent; font-weight: $font-weight-semibold; }
 

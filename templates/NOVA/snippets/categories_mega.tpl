@@ -97,10 +97,9 @@
         {get_manufacturers assign='manufacturers'}
         {if !empty($manufacturers)}
             {assign var=manufacturerOverview value=\JTL\Shop::Container()->getLinkService()->getSpecialPage(LINKTYP_HERSTELLER)}
-            {if $manufacturerOverview !== null}
             {block name='snippets-categories-mega-manufacturers-inner'}
                 <li class="nav-item nav-scrollbar-item dropdown dropdown-full">
-                    {link href=$manufacturerOverview->getURL() title={lang key='manufacturers'} class="nav-link dropdown-toggle" target="_self"}
+                    {link href="{if $manufacturerOverview !== null}{$manufacturerOverview->getURL()}{else}#{/if}" title={lang key='manufacturers'} class="nav-link dropdown-toggle" target="_self"}
                         <span class="text-truncate">
                             {if $manufacturerOverview !== null && !empty($manufacturerOverview->getName())}
                                 {$manufacturerOverview->getName()}
@@ -115,7 +114,7 @@
                                 {row class="lg-row-lg nav"}
                                     {col lg=4 xl=3 class="my-lg-4 nav-item dropdown d-lg-none"}
                                         {block name='snippets-categories-mega-manufacturers-header'}
-                                            {link href=$manufacturerOverview->getURL() class="nav-link font-size-base" rel="nofollow"}
+                                            {link href="{if $manufacturerOverview !== null}{$manufacturerOverview->getURL()}{else}#{/if}" class="nav-link font-size-base" rel="nofollow"}
                                                 <span class="text-truncate font-weight-bold d-block pr-3 pr-lg-0">
                                                     {if $manufacturerOverview !== null && !empty($manufacturerOverview->getName())}
                                                         {$manufacturerOverview->getName()}
@@ -153,7 +152,6 @@
                     </div>
                 </li>
             {/block}
-            {/if}
         {/if}
     {/if}
     {/block} {* /megamenu-manufacturers*}

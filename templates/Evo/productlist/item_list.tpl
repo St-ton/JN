@@ -243,9 +243,14 @@
                                             {else}
                                                 <div class="quantity-wrapper form-group top7">
                                                     <div class="input-group input-group-sm">
-                                                        <input type="{if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}text{else}number{/if}" min="0"
-                                                               {if $Artikel->fAbnahmeintervall > 0}step="{$Artikel->fAbnahmeintervall}"{/if} size="2"
-                                                               id="quantity{$Artikel->kArtikel}" class="quantity form-control text-right" name="anzahl"
+                                                        <input type="{if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}text{else}number{/if}"
+                                                               min="{if $Artikel->fMindestbestellmenge}{$Artikel->fMindestbestellmenge}{else}0{/if}"
+                                                               max="{$Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE]|default:''}"
+                                                               {if $Artikel->fAbnahmeintervall > 0}step="{$Artikel->fAbnahmeintervall}"{/if}
+                                                               size="2"
+                                                               id="quantity{$Artikel->kArtikel}"
+                                                               class="quantity form-control text-right"
+                                                               name="anzahl"
                                                                autocomplete="off"
                                                                value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}">
 

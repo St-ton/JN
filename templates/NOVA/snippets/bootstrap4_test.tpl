@@ -1168,9 +1168,25 @@
     </div>
     <hr>
 
-    <div class="btn-group btn-group-lg" role="group" aria-label="...">...</div>
-    <div class="btn-group" role="group" aria-label="...">...</div>
-    <div class="btn-group btn-group-sm" role="group" aria-label="...">...</div>
+    <div class="bd-example">
+        <div class="btn-group btn-group-lg" role="group" aria-label="Large button group">
+            <button type="button" class="btn btn-secondary">Left</button>
+            <button type="button" class="btn btn-secondary">Middle</button>
+            <button type="button" class="btn btn-secondary">Right</button>
+        </div>
+        <br>
+        <div class="btn-group" role="group" aria-label="Default button group">
+            <button type="button" class="btn btn-secondary">Left</button>
+            <button type="button" class="btn btn-secondary">Middle</button>
+            <button type="button" class="btn btn-secondary">Right</button>
+        </div>
+        <br>
+        <div class="btn-group btn-group-sm" role="group" aria-label="Small button group">
+            <button type="button" class="btn btn-secondary">Left</button>
+            <button type="button" class="btn btn-secondary">Middle</button>
+            <button type="button" class="btn btn-secondary">Right</button>
+        </div>
+    </div>
     <hr>
 
     <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
@@ -1191,7 +1207,7 @@
     <h1 class="my-7">------------------------- Cards -----------------------</h1>
 
     <div class="card" style="width: 18rem;">
-        <img class="card-img-top" src="..." alt="Card image cap">
+        <img class="card-img-top" src="gfx/keinBild.gif" alt="Card image cap">
         <div class="card-body">
             <h5 class="card-title">Card title</h5>
             <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
@@ -1219,7 +1235,7 @@
     <hr>
 
     <div class="card" style="width: 18rem;">
-        <img class="card-img-top" src="..." alt="Card image cap">
+        <img class="card-img-top" src="gfx/keinBild.gif" alt="Card image cap">
         <div class="card-body">
             <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
         </div>
@@ -1248,7 +1264,7 @@
     <hr>
 
     <div class="card" style="width: 18rem;">
-        <img class="card-img-top" src="..." alt="Card image cap">
+        <img class="card-img-top" src="gfx/keinBild.gif" alt="Card image cap">
         <div class="card-body">
             <h5 class="card-title">Card title</h5>
             <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
@@ -1433,7 +1449,7 @@
     <hr>
 
     <div class="card mb-3">
-        <img class="card-img-top" src="..." alt="Card image cap">
+        <img class="card-img-top" src="gfx/keinBild.gif" alt="Card image cap">
         <div class="card-body">
             <h5 class="card-title">Card title</h5>
             <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
@@ -1446,7 +1462,7 @@
             <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
             <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
         </div>
-        <img class="card-img-bottom" src="..." alt="Card image cap">
+        <img class="card-img-bottom" src="gfx/keinBild.gif" alt="Card image cap">
     </div>
     <hr>
 
@@ -1578,7 +1594,7 @@
 
     <div class="card-group">
         <div class="card">
-            <img class="card-img-top" src="..." alt="Card image cap">
+            <img class="card-img-top" src="gfx/keinBild.gif" alt="Card image cap">
             <div class="card-body">
                 <h5 class="card-title">Card title</h5>
                 <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
@@ -1586,7 +1602,7 @@
             </div>
         </div>
         <div class="card">
-            <img class="card-img-top" src="..." alt="Card image cap">
+            <img class="card-img-top" src="gfx/keinBild.gif" alt="Card image cap">
             <div class="card-body">
                 <h5 class="card-title">Card title</h5>
                 <p class="card-text">This card has supporting text below as a natural lead-in to additional content.</p>
@@ -1594,7 +1610,7 @@
             </div>
         </div>
         <div class="card">
-            <img class="card-img-top" src="..." alt="Card image cap">
+            <img class="card-img-top" src="gfx/keinBild.gif" alt="Card image cap">
             <div class="card-body">
                 <h5 class="card-title">Card title</h5>
                 <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This card has even longer content than the first to show that equal height action.</p>
@@ -1606,7 +1622,7 @@
 
     <div class="card-group">
         <div class="card">
-            <img class="card-img-top" src="..." alt="Card image cap">
+            <img class="card-img-top" src="gfx/keinBild.gif" alt="Card image cap">
             <div class="card-body">
                 <h5 class="card-title">Card title</h5>
                 <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
@@ -1616,7 +1632,7 @@
             </div>
         </div>
         <div class="card">
-            <img class="card-img-top" src="..." alt="Card image cap">
+            <img class="card-img-top" src="gfx/keinBild.gif" alt="Card image cap">
             <div class="card-body">
                 <h5 class="card-title">Card title</h5>
                 <p class="card-text">This card has supporting text below as a natural lead-in to additional content.</p>
@@ -1626,7 +1642,7 @@
             </div>
         </div>
         <div class="card">
-            <img class="card-img-top" src="..." alt="Card image cap">
+            <img class="card-img-top" src="gfx/keinBild.gif" alt="Card image cap">
             <div class="card-body">
                 <h5 class="card-title">Card title</h5>
                 <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This card has even longer content than the first to show that equal height action.</p>
@@ -1640,7 +1656,7 @@
 
     <div class="card-deck">
         <div class="card">
-            <img class="card-img-top" src="..." alt="Card image cap">
+            <img class="card-img-top" src="gfx/keinBild.gif" alt="Card image cap">
             <div class="card-body">
                 <h5 class="card-title">Card title</h5>
                 <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
@@ -1648,7 +1664,7 @@
             </div>
         </div>
         <div class="card">
-            <img class="card-img-top" src="..." alt="Card image cap">
+            <img class="card-img-top" src="gfx/keinBild.gif" alt="Card image cap">
             <div class="card-body">
                 <h5 class="card-title">Card title</h5>
                 <p class="card-text">This card has supporting text below as a natural lead-in to additional content.</p>
@@ -1656,7 +1672,7 @@
             </div>
         </div>
         <div class="card">
-            <img class="card-img-top" src="..." alt="Card image cap">
+            <img class="card-img-top" src="gfx/keinBild.gif" alt="Card image cap">
             <div class="card-body">
                 <h5 class="card-title">Card title</h5>
                 <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This card has even longer content than the first to show that equal height action.</p>
@@ -1668,7 +1684,7 @@
 
     <div class="card-deck">
         <div class="card">
-            <img class="card-img-top" src="..." alt="Card image cap">
+            <img class="card-img-top" src="gfx/keinBild.gif" alt="Card image cap">
             <div class="card-body">
                 <h5 class="card-title">Card title</h5>
                 <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
@@ -1678,7 +1694,7 @@
             </div>
         </div>
         <div class="card">
-            <img class="card-img-top" src="..." alt="Card image cap">
+            <img class="card-img-top" src="gfx/keinBild.gif" alt="Card image cap">
             <div class="card-body">
                 <h5 class="card-title">Card title</h5>
                 <p class="card-text">This card has supporting text below as a natural lead-in to additional content.</p>
@@ -1688,7 +1704,7 @@
             </div>
         </div>
         <div class="card">
-            <img class="card-img-top" src="..." alt="Card image cap">
+            <img class="card-img-top" src="gfx/keinBild.gif" alt="Card image cap">
             <div class="card-body">
                 <h5 class="card-title">Card title</h5>
                 <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This card has even longer content than the first to show that equal height action.</p>
@@ -1702,7 +1718,7 @@
 
     <div class="card-columns">
         <div class="card">
-            <img class="card-img-top" src="..." alt="Card image cap">
+            <img class="card-img-top" src="gfx/keinBild.gif" alt="Card image cap">
             <div class="card-body">
                 <h5 class="card-title">Card title that wraps to a new line</h5>
                 <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
@@ -1719,7 +1735,7 @@
             </blockquote>
         </div>
         <div class="card">
-            <img class="card-img-top" src="..." alt="Card image cap">
+            <img class="card-img-top" src="gfx/keinBild.gif" alt="Card image cap">
             <div class="card-body">
                 <h5 class="card-title">Card title</h5>
                 <p class="card-text">This card has supporting text below as a natural lead-in to additional content.</p>
@@ -1744,7 +1760,7 @@
             </div>
         </div>
         <div class="card">
-            <img class="card-img" src="..." alt="Card image">
+            <img class="card-img" src="gfx/keinBild.gif" alt="Card image">
         </div>
         <div class="card p-3 text-right">
             <blockquote class="blockquote mb-0">
@@ -1771,13 +1787,13 @@
     <div id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel">
         <div class="carousel-inner">
             <div class="carousel-item active">
-                <img class="d-block w-100" src="..." alt="First slide">
+                <img class="d-block w-100" src="gfx/keinBild.gif" alt="First slide">
             </div>
             <div class="carousel-item">
-                <img class="d-block w-100" src="..." alt="Second slide">
+                <img class="d-block w-100" src="gfx/keinBild.gif" alt="Second slide">
             </div>
             <div class="carousel-item">
-                <img class="d-block w-100" src="..." alt="Third slide">
+                <img class="d-block w-100" src="gfx/keinBild.gif" alt="Third slide">
             </div>
         </div>
     </div>
@@ -1786,13 +1802,13 @@
     <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
         <div class="carousel-inner">
             <div class="carousel-item active">
-                <img class="d-block w-100" src="..." alt="First slide">
+                <img class="d-block w-100" src="gfx/keinBild.gif" alt="First slide">
             </div>
             <div class="carousel-item">
-                <img class="d-block w-100" src="..." alt="Second slide">
+                <img class="d-block w-100" src="gfx/keinBild.gif" alt="Second slide">
             </div>
             <div class="carousel-item">
-                <img class="d-block w-100" src="..." alt="Third slide">
+                <img class="d-block w-100" src="gfx/keinBild.gif" alt="Third slide">
             </div>
         </div>
         <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
@@ -1814,13 +1830,13 @@
         </ol>
         <div class="carousel-inner">
             <div class="carousel-item active">
-                <img class="d-block w-100" src="..." alt="First slide">
+                <img class="d-block w-100" src="gfx/keinBild.gif" alt="First slide">
             </div>
             <div class="carousel-item">
-                <img class="d-block w-100" src="..." alt="Second slide">
+                <img class="d-block w-100" src="gfx/keinBild.gif" alt="Second slide">
             </div>
             <div class="carousel-item">
-                <img class="d-block w-100" src="..." alt="Third slide">
+                <img class="d-block w-100" src="gfx/keinBild.gif" alt="Third slide">
             </div>
         </div>
         <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
@@ -1835,7 +1851,7 @@
     <hr>
 
     <div class="carousel-item">
-        <img src="..." alt="...">
+        <img src="gfx/keinBild.gif" alt="...">
         <div class="carousel-caption d-none d-md-block">
             <h5>...</h5>
             <p>...</p>

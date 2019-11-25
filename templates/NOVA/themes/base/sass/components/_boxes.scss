@@ -81,7 +81,8 @@ aside {
   }
 }
 
-.box-categories .dropdown {
+.box-categories .dropdown,
+.box-linkgroup .dropdown {
    .collapse {
       background: $gray-lighter;
    }

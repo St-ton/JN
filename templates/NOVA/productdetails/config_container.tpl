@@ -49,7 +49,7 @@
                                             {/col}
                                         {/if}
                                         {if !empty($configImagePath)}
-                                            {col cols=12 lg="{if $configLocalization->hatBeschreibung()}4{else}12{/if}" order=0 order-lg=1}
+                                            {col cols=12 lg=4 offset-lg="{if $configLocalization->hatBeschreibung()}0{else}4{/if}" order=0 order-lg=1}
                                                 {image fluid=true lazy=true webp=true
                                                     src=$configImagePath
                                                     srcset="{$oGruppe->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_konfiggruppe_mini_breite}w,

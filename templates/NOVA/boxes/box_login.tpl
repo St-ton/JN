@@ -20,12 +20,13 @@
                             {input type="hidden" name="login" value="1"}
                             {include file='snippets/form_group_simple.tpl'
                                 options=[
-                                    'email', 'email-box-login', 'email', null,{lang key='emailadress'}, true
+                                    'email', 'email-box-login', 'email', null,{lang key='emailadress'}, true, null, "email"
                                 ]
                             }
                             {include file='snippets/form_group_simple.tpl'
                                 options=[
-                                    'password', 'password-box-login', 'passwort', null,{lang key='password' section='account data'}, true
+                                    'password', 'password-box-login', 'passwort', null,
+                                    {lang key='password' section='account data'}, true, null, "current-password"
                                 ]
                             }
                         {/block}

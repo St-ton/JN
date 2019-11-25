@@ -21219,7 +21219,7 @@ aside .last-seen-link {
   transition: opacity 0.2s;
   margin: 0 -1rem;
 }
-.carousel:not(.slick-initialized) {
+.carousel.slick-smooth-loading:not(.slick-initialized) {
   opacity: 0;
   max-height: 12.5rem;
 }

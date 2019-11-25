@@ -7,8 +7,8 @@
 
 @import '../../../../../templates/NOVA/themes/base/bootstrap/scss/variables';
 
-$theme-colors	: map-remove($theme-colors, 'light', 'dark');
-$colors			: map-remove($colors, 'blue', 'indigo', 'purple', 'pink', 'red', 'orange', 'yellow', 'green', 'teal', 'cyan', 'gray', 'gray-dark');
+//$theme-colors	: map-remove($theme-colors, 'light', 'dark');
+//$colors			: map-remove($colors, 'blue', 'indigo', 'purple', 'pink', 'red', 'orange', 'yellow', 'green', 'teal', 'cyan', 'gray', 'gray-dark');
 
 //@import '../../../../../templates/NOVA/themes/base/bootstrap/scss/';
 @import '../../../../../templates/NOVA/themes/base/bootstrap/scss/root';

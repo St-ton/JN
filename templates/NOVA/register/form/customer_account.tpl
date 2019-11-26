@@ -43,7 +43,7 @@
                                             value=""
                                             name="pass"
                                             aria-autocomplete="none"
-                                            autocomplete="off"
+                                            autocomplete="new-password"
                                             disabled=($unregForm === 1)
                                         }
                                         <label for="pass" class="col-form-label pt-0">
@@ -75,7 +75,7 @@
                                             required=true
                                             data=["must-equal-to"=>"#create_account_data input[name='pass']",
                                                 "custom-message"=>"{lang key='passwordsMustBeEqual' section='account data'}"]
-                                            autocomplete="off"
+                                            autocomplete="new-password"
                                             aria-autocomplete="none"
                                             disabled=($unregForm === 1)
                                             value=""

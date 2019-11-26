@@ -26,20 +26,3 @@ body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; 
 	opacity: 0.5;
 	z-index: -1;
 }
-
-@each $color, $value in $theme-colors {
-	.alert-#{$color} {
-		color: 			  color-yiq($value);
-		background-color: $value;
-		border-color: 	  $value;
-	}
-
-	hr {
-		border-top-color: darken($value, 5%);
-	}
-
-	.alert-link {
-		color: color-yiq($value);
-	}
-}
-

@@ -12594,19 +12594,19 @@ ul li:last-child, ol li:last-child {
   border-left-color: #435a6b;
 }
 
-::-webkit-scrollbar {
+#page-wrapper ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
   background-color: transparent;
 }
 
-::-webkit-scrollbar-track {
+#page-wrapper ::-webkit-scrollbar-track {
   border-radius: 0;
   background: #f5f7fa;
   border: 1px solid #f5f7fa;
 }
 
-::-webkit-scrollbar-thumb {
+#page-wrapper ::-webkit-scrollbar-thumb {
   border-radius: 4px;
   background: #435a6b;
   border: 0;

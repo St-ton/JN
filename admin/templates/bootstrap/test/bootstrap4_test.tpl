@@ -723,7 +723,7 @@
 </div>
 <hr>
 
-<<div class="bd-example">
+<div class="bd-example">
 
     <div class="table-responsive-sm">
         <table class="table">

@@ -170,7 +170,7 @@ class Slide
      */
     private function setAbsoluteImagePaths(): self
     {
-        $basePath                = Shop::getImageBaseURL() . \PFAD_MEDIAFILES;
+        $basePath                = Shop::getImageBaseURL();
         $this->absoluteImage     = $basePath . \str_replace($basePath, '', $this->image);
         $this->absoluteThumbnail = $basePath . \str_replace($basePath, '', $this->thumbnail);
 

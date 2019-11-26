@@ -37,6 +37,8 @@ $gray-700:                          $gray-dark;
 $yiq-text-dark:                     $gray-darker;
 $yiq-text-light:                    $gray-lighter;
 
+$bg-typeahead-fix:                  $white !important;
+
 $theme-colors				: ();
 $theme-colors: map-merge((
         'gray'			: $gray,

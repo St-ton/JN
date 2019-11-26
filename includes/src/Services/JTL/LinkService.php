@@ -61,6 +61,12 @@ final class LinkService implements LinkServiceInterface
         return self::$instance ?? new self(Shop::Container()->getDB(), Shop::Container()->getCache());
     }
 
+    public function reset(): void
+    {
+        $this->linkGroupList = new LinkGroupList($this->db, Shop::Container()->getCache());
+        $this->initLinkGroups();
+    }
+
     /**
      * @inheritdoc
      */

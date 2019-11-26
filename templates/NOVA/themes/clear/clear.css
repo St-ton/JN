@@ -20514,7 +20514,8 @@ aside .last-seen-link {
   display: block;
 }
 
-.box-categories .dropdown .collapse {
+.box-categories .dropdown .collapse,
+.box-linkgroup .dropdown .collapse {
   background: #f5f7fa;
 }
 

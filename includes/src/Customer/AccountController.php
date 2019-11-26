@@ -408,6 +408,7 @@ class AccountController
         }
         $this->checkCoupons($coupons);
         $this->updateCustomerLanguage($customer->kSprache);
+        Shop::Container()->getLinkService()->reset();
     }
 
     /**

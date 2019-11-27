@@ -86,7 +86,7 @@ function checkNewsletterSend() {ldelim}
                                                 {/foreach}
                                             {elseif isset($cPostVar_arr.kKundengruppe)}
                                                 {foreach $cPostVar_arr.kKundengruppe as $kKundengruppe}
-                                                    {if $customerGroup->getID() ==) (int)$kKundengruppe}selected{/if}
+                                                    {if $customerGroup->getID() === (int)$kKundengruppe}selected{/if}
                                                 {/foreach}
                                             {/if}
                                             >{$customerGroup->getName()}</option>

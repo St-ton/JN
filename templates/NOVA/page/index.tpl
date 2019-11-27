@@ -53,7 +53,7 @@
                         </div>
                     {/block}
                     {block name='page-index-news'}
-                        <div itemprop="about" itemscope=true itemtype="http://schema.org/Blog" class="carousel news-slider">
+                        <div itemprop="about" itemscope=true itemtype="http://schema.org/Blog" class="slick-smooth-loading carousel news-slider">
                             {foreach $oNews_arr as $newsItem}
                                 <div>
                                     {block name='page-index-include-preview'}

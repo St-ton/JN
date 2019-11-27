@@ -31,7 +31,7 @@
                 {/block}
             {/if}
                 <div id="gallery_wrapper" class="clearfix">
-                    <div id="gallery" class="product-images carousel">
+                    <div id="gallery" class="product-images slick-smooth-loading carousel">
                         {block name='productdetails-image-images'}
                             {foreach $Artikel->Bilder as $image}
                                 {strip}
@@ -60,7 +60,7 @@
             {col cols=12 align-self='end' class='product-detail-image-preview-bar'}
             {if $Artikel->Bilder|@count > 1}
                 <div id="gallery_preview_wrapper" class="mx-auto mt-4">
-                    <div id="gallery_preview" class="product-thumbnails carousel carousel-thumbnails mb-5 mb-lg-0 d-none d-lg-flex mx-0">
+                    <div id="gallery_preview" class="product-thumbnails slick-smooth-loading carousel carousel-thumbnails mb-5 mb-lg-0 d-none d-lg-flex mx-0">
                         {block name='productdetails-image-preview-images'}
                             {foreach $Artikel->Bilder as $image}
                                 {strip}

@@ -77,6 +77,7 @@ $adminMenu = [
                 __('Search query activation') => (object)[
                     'link'   => 'freischalten.php#livesearch',
                     'permissions' => 'UNLOCK_CENTRAL_VIEW',
+                    'excludeFromAccessView' => true,
                 ],
                 __('Start pages')       => (object)[
                     'link'   => 'statistik.php?s=5',
@@ -98,7 +99,7 @@ $adminMenu = [
         'items' => [
             __('OnPage Composer')  => (object)[
                 'link'   => 'opc-controlcenter.php',
-                'permissions' => 'CONTENT_PAGE_VIEW',
+                'permissions' => 'OPC_VIEW',
             ],
             __('Default views')    => [
                 __('Front page')              => (object)[
@@ -120,6 +121,7 @@ $adminMenu = [
                     'link'   => 'einstellungen.php?kSektion=' . CONF_ARTIKELDETAILS .
                         '&group=configgroup_5_product_question#configgroup_5_product_question',
                     'permissions' => 'SETTINGS_ARTICLEDETAILS_VIEW',
+                    'excludeFromAccessView' => true,
                     'section' => CONF_ARTIKELDETAILS,
                 ],
                 __('Comparison list')         => (object)[
@@ -145,7 +147,7 @@ $adminMenu = [
             __('Default elements') => [
                 __('Shop logo')               => (object)[
                     'link'   => 'shoplogouploader.php',
-                    'permissions' => 'ORDER_AGB_WRB_VIEW',
+                    'permissions' => 'DISPLAY_OWN_LOGO_VIEW',
                 ],
                 __('Search settings')         => (object)[
                     'link'   => 'sucheinstellungen.php',
@@ -159,7 +161,7 @@ $adminMenu = [
                 ],
                 __('Item sticker')            => (object)[
                     'link'   => 'suchspecialoverlay.php',
-                    'permissions' => 'ORDER_AGB_WRB_VIEW',
+                    'permissions' => 'DISPLAY_ARTICLEOVERLAYS_VIEW',
                 ],
                 __('Footer / Boxes')          => (object)[
                     'link'   => 'boxen.php',
@@ -402,11 +404,11 @@ $adminMenu = [
                 ],
                 __('Cron')       => (object)[
                     'link'   => 'cron.php',
-                    'permissions' => 'EXPORT_SCHEDULE_VIEW',
+                    'permissions' => 'CRON_VIEW',
                 ],
                 __('Filesystem') => (object)[
                     'link'   => 'filesystem.php',
-                    'permissions' => 'SETTINGS_GLOBAL_VIEW',
+                    'permissions' => 'FILESYSTEM_VIEW',
                 ],
                 __('Update')     => (object)[
                     'link'   => 'dbupdater.php',

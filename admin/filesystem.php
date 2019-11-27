@@ -8,6 +8,7 @@
 
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->redirectOnFailure();
+$oAccount->permission('FILESYSTEM_VIEW', true, true);
 
 use JTL\Alert\Alert;
 use JTL\Filesystem\AdapterFactory;

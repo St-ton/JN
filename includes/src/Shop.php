@@ -1519,7 +1519,7 @@ final class Shop
             self::setPageType(\PAGE_ARTIKELLISTE);
         } elseif (!self::$kLink) {
             //check path
-            $path        = self::getRequestUri();
+            $path        = \rawurldecode(self::getRequestUri());
             $requestFile = '/' . \ltrim($path, '/');
             if ($requestFile === '/index.php') {
                 // special case: /index.php shall be redirected to Shop-URL

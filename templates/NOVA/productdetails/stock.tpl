@@ -52,6 +52,12 @@
                         <div class="estimated-delivery">
                             {if !isset($shippingTime)}{lang key='shippingTime'}:{/if}
                             <span class="a{$Artikel->Lageranzeige->nStatus}">{$Artikel->cEstimatedDelivery}</span>
+                            <span class="fa fa-info-circle"
+                                  data-toggle="popover"
+                                  data-placement="top"
+                                  data-trigger="click"
+                                  data-content="{lang key='shippingInformation' section='productDetails' printf={$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}}">
+                            </span>
                         </div>
                     </li>
                 {/if}

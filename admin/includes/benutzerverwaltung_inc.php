@@ -15,6 +15,7 @@ use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use function Functional\group;
 use function Functional\map;
+use function Functional\reindex;
 
 /**
  * @param int $adminID
@@ -75,6 +76,54 @@ function getAdminDefPermissions(): array
     }
 
     return $groups;
+}
+
+/**
+ * @return array
+ */
+function getAdminPermissions(): array
+{
+    global $adminMenu;
+
+    $perms              = reindex(Shop::Container()->getDB()->selectAll('tadminrecht', [], []), function ($e) {
+        return $e->cRecht;
+    });
+    $permissionsOrdered = [];
+
+    foreach ($adminMenu as $rootName => $rootEntry) {
+        $permMainTMP = [];
+        foreach ($rootEntry->items as $secondName => $secondEntry) {
+            if ($secondEntry === 'DYNAMIC_PLUGINS' || !empty($secondEntry->excludeFromAccessView)) {
+                continue;
+            }
+            if (is_object($secondEntry)) {
+                $permMainTMP[] = (object)[
+                    'name'       => $secondName,
+                    'permission' => [$perms[$secondEntry->permissions]]
+                ];
+                unset($perms[$secondEntry->permissions]);
+            } else {
+                $permSecondTMP = [];
+                foreach ($secondEntry as $thirdName => $thirdEntry) {
+                    if (!empty($thirdEntry->excludeFromAccessView)) {
+                        continue;
+                    }
+                    $permSecondTMP[] = $perms[$thirdEntry->permissions];
+                    unset($perms[$thirdEntry->permissions]);
+                }
+                $permMainTMP[] = (object)[
+                    'name'       => $secondName,
+                    'permission' => $permSecondTMP
+                ];
+            }
+        }
+        $permissionsOrdered[] = (object)[
+            'name'     => $rootName,
+            'children' => $permMainTMP
+        ];
+    }
+
+    return $permissionsOrdered;
 }
 
 /**
@@ -715,7 +764,7 @@ function benutzerverwaltungFinalize($step, JTLSmarty $smarty, array &$messages)
         $messages['error'] = $_SESSION['benutzerverwaltung.error'];
         unset($_SESSION['benutzerverwaltung.error']);
     }
-
+    getAdminPermissions();
     switch ($step) {
         case 'account_edit':
             $smarty->assign('oAdminGroup_arr', getAdminGroups())

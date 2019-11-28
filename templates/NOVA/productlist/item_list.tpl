@@ -26,9 +26,9 @@
                         {/if}
                         {block name="productlist-item-list-images"}
                             <div class="productbox-images">
-                                <div class="clearfix list-gallery carousel carousel-btn-arrows">
+                                <div class="clearfix list-gallery slick-smooth-loading carousel carousel-btn-arrows">
                                     {block name="productlist-item-list-image-desktop"}
-                                        <div class="list-gallery carousel carousel-arrows-inside carousel-btn-arrows">
+                                        <div class="list-gallery slick-smooth-loading carousel carousel-arrows-inside carousel-btn-arrows">
                                             {foreach $Artikel->Bilder as $image}
                                                 {strip}
                                                     <div>
@@ -287,6 +287,8 @@
                                                         {/inputgroupprepend}
                                                         {input type="{if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}text{else}number{/if}" min="0"
                                                             step="{if $Artikel->fAbnahmeintervall > 0}{$Artikel->fAbnahmeintervall}{/if}"
+                                                            min="{if $Artikel->fMindestbestellmenge}{$Artikel->fMindestbestellmenge}{else}0{/if}"
+                                                            max=$Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE]|default:''
                                                             size="2"
                                                             id="quantity{$Artikel->kArtikel}"
                                                             class="quantity"

@@ -818,7 +818,7 @@
             this.productTabsPriceFlow();
             this.generateSlickSlider();
             setTimeout(() => {
-                $('.nav-pills, .nav-tabs').tabdrop();
+                $('.nav-tabs').tabdrop();
             }, 200);
             //this.addTabsTouchSupport();
             //this.autoheight();

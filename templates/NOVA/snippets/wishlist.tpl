@@ -415,7 +415,7 @@
                                                         {/block}
                                                     {/if}
                                                     {block name='snippets-wishlist-form-basket-image'}
-                                                        <div class="list-gallery carousel carousel-arrows-inside productbox-images">
+                                                        <div class="list-gallery slick-smooth-loading carousel carousel-arrows-inside productbox-images">
                                                             {foreach $wlPosition->Artikel->Bilder as $image}
                                                                 {strip}
                                                                     <div>
@@ -494,6 +494,7 @@
                                                                                     {input readonly=($isCurrenctCustomer !== true)
                                                                                         type="{if $wlPosition->Artikel->cTeilbar === 'Y' && $wlPosition->Artikel->fAbnahmeintervall == 0}text{else}number{/if}"
                                                                                         min="{if $wlPosition->Artikel->fMindestbestellmenge}{$wlPosition->Artikel->fMindestbestellmenge}{else}0{/if}"
+                                                                                        max=$wlPosition->Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE]|default:''
                                                                                         required=($wlPosition->Artikel->fAbnahmeintervall > 0)
                                                                                         step="{if $wlPosition->Artikel->fAbnahmeintervall > 0}{$wlPosition->Artikel->fAbnahmeintervall}{/if}"
                                                                                         class="quantity wunschliste_anzahl" name="Anzahl_{$wlPosition->kWunschlistePos}"

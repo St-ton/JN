@@ -188,10 +188,10 @@
                             <div class="modal-dialog modal-lg" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
+                                        <h2 class="modal-title">Screenshot {$screenShot@iteration}</h2>
                                         <button type="button" class="close" data-dismiss="modal">
                                             <i class="fal fa-times"></i>
                                         </button>
-                                        <h2 class="modal-title">Screenshot {$screenShot@iteration}</h2>
                                     </div>
                                     <div class="modal-body">
                                         <img class="img-responsive" src="{$screenShot->preview}" />

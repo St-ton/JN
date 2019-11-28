@@ -3,6 +3,9 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='productdetails-question-on-item'}
+    {if isset($fehlendeAngaben_fragezumprodukt)}
+        {$fehlendeAngaben = $fehlendeAngaben_fragezumprodukt}
+    {/if}
     {if isset($position) && $position === 'popup'}
         {if count($Artikelhinweise) > 0}
             {block name='productdetails-question-on-item-alert'}
@@ -95,7 +98,7 @@
                                 options=[
                                     'email', 'question_email', 'email',
                                     {$Anfrage->cMail|default:null}, {lang key='email' section='account data'},
-                                    true, $fehlendeAngaben_fragezumprodukt.email|default:null, 'email'
+                                    true, null, 'email'
                                 ]
                             }
                         {/col}
@@ -108,7 +111,7 @@
                                         options=[
                                             'tel', 'tel', 'tel',
                                             {$Anfrage->cTel|default:null}, {lang key='tel' section='account data'},
-                                            $Einstellungen.artikeldetails.produktfrage_abfragen_tel, $fehlendeAngaben_fragezumprodukt.tel|default:null, 'home tel'
+                                            $Einstellungen.artikeldetails.produktfrage_abfragen_tel, null, 'home tel'
                                         ]
                                     }
                                 {/col}
@@ -120,7 +123,7 @@
                                         options=[
                                             'tel', 'mobile', 'mobil',
                                             {$Anfrage->cMobil|default:null}, {lang key='mobile' section='account data'},
-                                            $Einstellungen.artikeldetails.produktfrage_abfragen_mobil, $fehlendeAngaben_fragezumprodukt.mobil|default:null, 'mobile tel'
+                                            $Einstellungen.artikeldetails.produktfrage_abfragen_mobil, null, 'mobile tel'
                                         ]
                                     }
                                 {/col}
@@ -135,7 +138,7 @@
                                     options=[
                                         'tel', 'fax', 'fax',
                                         {$Anfrage->cMobil|default:null}, {lang key='fax' section='account data'},
-                                        $Einstellungen.artikeldetails.produktfrage_abfragen_fax, $fehlendeAngaben_fragezumprodukt.fax|default:null, 'fax tel'
+                                        $Einstellungen.artikeldetails.produktfrage_abfragen_fax, null, 'fax tel'
                                     ]
                                 }
                             {/col}

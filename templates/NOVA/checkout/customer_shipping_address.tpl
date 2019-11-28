@@ -274,7 +274,7 @@
                             name="{$prefix}[{$name}][ort]"
                             value="{if isset($Lieferadresse->cOrt)}{$Lieferadresse->cOrt}{/if}"
                             id="{$prefix}-{$name}-city"
-                            class="city_input typeahead bg-white"
+                            class="city_input typeahead bg-typeahead-fix"
                             placeholder="{lang key='city' section='account data'}"
                             required=true
                             autocomplete="shipping address-level2"

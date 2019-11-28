@@ -83,32 +83,32 @@ try {
     handleFatal($exc->getMessage());
 }
 require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
-if (PHP_SAPI !== 'cli') {
-    $cache = Shop::Container()->getCache();
-    $cache->setJtlCacheConfig($db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING));
-    $config = Shop::getSettings([CONF_GLOBAL])['global'];
-    $lang   = LanguageHelper::getInstance($db, $cache);
-    if ($config['kaufabwicklung_ssl_nutzen'] === 'P'
-        && (!isset($_SERVER['HTTPS'])
-            || (mb_convert_case($_SERVER['HTTPS'], MB_CASE_LOWER) !== 'on' && (int)$_SERVER['HTTPS'] !== 1))
-    ) {
-        $https = ((isset($_SERVER['HTTP_X_FORWARDED_HOST']) && $_SERVER['HTTP_X_FORWARDED_HOST'] === 'ssl.webpack.de')
-            || (isset($_SERVER['SCRIPT_URI']) && preg_match('/^ssl-id/', $_SERVER['SCRIPT_URI']))
-            || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
-            || (isset($_SERVER['HTTP_X_FORWARDED_HOST']) && preg_match('/^ssl/', $_SERVER['HTTP_X_FORWARDED_HOST']))
-        );
-        if (!$https) {
-            $lang = '';
-            if (!LanguageHelper::isDefaultLanguageActive(true)) {
-                $lang = mb_strpos($_SERVER['REQUEST_URI'], '?')
-                    ? '&lang=' . $_SESSION['cISOSprache']
-                    : '?lang=' . $_SESSION['cISOSprache'];
-            }
-            header('Location: https://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'] . $lang, true, 301);
-            exit();
+$cache = Shop::Container()->getCache();
+$cache->setJtlCacheConfig($db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING));
+$config = Shop::getSettings([CONF_GLOBAL])['global'];
+$lang   = LanguageHelper::getInstance($db, $cache);
+if (PHP_SAPI !== 'cli'
+    && $config['kaufabwicklung_ssl_nutzen'] === 'P'
+    && (!isset($_SERVER['HTTPS'])
+        || (mb_convert_case($_SERVER['HTTPS'], MB_CASE_LOWER) !== 'on' && (int)$_SERVER['HTTPS'] !== 1))
+) {
+    $https = ((isset($_SERVER['HTTP_X_FORWARDED_HOST']) && $_SERVER['HTTP_X_FORWARDED_HOST'] === 'ssl.webpack.de')
+        || (isset($_SERVER['SCRIPT_URI']) && preg_match('/^ssl-id/', $_SERVER['SCRIPT_URI']))
+        || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
+        || (isset($_SERVER['HTTP_X_FORWARDED_HOST']) && preg_match('/^ssl/', $_SERVER['HTTP_X_FORWARDED_HOST']))
+    );
+    if (!$https) {
+        $lang = '';
+        if (!LanguageHelper::isDefaultLanguageActive(true)) {
+            $lang = mb_strpos($_SERVER['REQUEST_URI'], '?')
+                ? '&lang=' . $_SESSION['cISOSprache']
+                : '?lang=' . $_SESSION['cISOSprache'];
         }
+        header('Location: https://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'] . $lang, true, 301);
+        exit();
     }
 }
+
 if (!JTL_INCLUDE_ONLY_DB) {
     $debugbar = Shop::Container()->getDebugBar();
 

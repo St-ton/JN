@@ -16,7 +16,7 @@ set_error_handler(function($code, $description, $file = null, $line = null, $con
     }
 });
 
-\define('JTL_INCLUDE_ONLY_DB', true);
+\define('CLI_BATCHRUN', true);
 require_once __DIR__.'/includes/globalinclude.php';
 if (file_exists(__DIR__.'/install/vendor/autoload.php')) {
     require_once __DIR__.'/install/vendor/autoload.php';

@@ -54,10 +54,10 @@
                         <div class="modal-dialog modal-lg">
                             <div class="modal-content">
                                 <div class="modal-header">
+                                    <h2 class="modal-title">{__('licensePlugin')}</h2>
                                     <button type="button" class="close" data-dismiss="modal">
                                         <i class="fal fa-times"></i>
                                     </button>
-                                    <h2 class="modal-title">{__('licensePlugin')}</h2>
                                 </div>
                                 <div class="modal-body">
                                     {* license.md content goes here via js *}

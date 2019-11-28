@@ -1,6 +1,8 @@
 
 .carousel { transition: opacity $transition-base-duration; margin: 0 $grid-gutter-width / -2;
-	&:not(.slick-initialized) { opacity: 0; max-height: rem(200px); }
+	&.slick-smooth-loading {
+		&:not(.slick-initialized) { opacity: 0; max-height: rem(200px); }
+	}
 	&:hover {
 		.slick-arrow { opacity: 1; }
 	}

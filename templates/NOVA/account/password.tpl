@@ -67,13 +67,13 @@
                                         {include file='snippets/form_group_simple.tpl'
                                             options=[
                                                 "password", "pw_new", "pw_new", null,
-                                                {lang key='password' section='account data'}, true
+                                                {lang key='password' section='account data'}, true, null, "new-password"
                                             ]
                                         }
                                         {include file='snippets/form_group_simple.tpl'
                                             options=[
                                                 "password", "pw_new_confirm", "pw_new_confirm", null,
-                                                {lang key='passwordRepeat' section='account data'}, true
+                                                {lang key='passwordRepeat' section='account data'}, true, null, "new-password"
                                             ]
                                         }
                                         {block name='account-password-form-confirm-submit'}

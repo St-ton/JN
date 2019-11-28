@@ -104,7 +104,7 @@
         {block name='blog-overview-category'}
             {if $noarchiv === 1}
                 {block name='blog-overview-alert-no-archive'}
-                    {alert variant="info"}{lang key='noNewsArchiv' section='news'}.{/alert}
+                    {alert variant="info"}{lang key='noNewsArchiv' section='news'}{/alert}
                 {/block}
             {elseif !empty($newsItems)}
                 <div id="newsContent" itemprop="mainEntity" itemscope itemtype="https://schema.org/Blog">

@@ -18,3 +18,14 @@
 .table-border-medium {
 	th, td { border-width: 0 0 $table-border-width 0; border-style: solid; border-color: $gray-medium; padding: 1.5rem 1rem; }
 }
+
+.table-dark {
+	&.table-striped {
+		tbody tr:nth-of-type(odd) {
+			background-color: $table-dark-accent-bg;
+		}
+		tbody tr:nth-of-type(even) {
+			background-color: $table-dark-bg;
+		}
+	}
+}

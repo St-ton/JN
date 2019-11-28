@@ -20514,7 +20514,8 @@ aside .last-seen-link {
   display: block;
 }
 
-.box-categories .dropdown .collapse {
+.box-categories .dropdown .collapse,
+.box-linkgroup .dropdown .collapse {
   background: #f5f7fa;
 }
 
@@ -21174,7 +21175,6 @@ aside .last-seen-link {
 }
 
 .card-header {
-  background-color: #f5f7fa;
   border-bottom: 0;
 }
 
@@ -21220,7 +21220,7 @@ aside .last-seen-link {
   transition: opacity 0.2s;
   margin: 0 -1rem;
 }
-.carousel:not(.slick-initialized) {
+.carousel.slick-smooth-loading:not(.slick-initialized) {
   opacity: 0;
   max-height: 12.5rem;
 }
@@ -22612,6 +22612,13 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
   border-style: solid;
   border-color: #ebebeb;
   padding: 1.5rem 1rem;
+}
+
+.table-dark.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+.table-dark.table-striped tbody tr:nth-of-type(even) {
+  background-color: #343a40;
 }
 
 .list-icons > li {

@@ -111,7 +111,7 @@ class Path
     public static function clean(string $path, bool $trailingSlash = false)
     {
         $parts    = [];
-        $path     = \strtr($path, '\\', '/');
+        $path     = \str_replace('\\', '/', $path);
         $prefix   = '';
         $absolute = false;
 
@@ -120,7 +120,7 @@ class Path
             $path   = \substr($path, \strlen($prefix));
         }
 
-        if (\substr($path, 0, 1) === '/') {
+        if (\strpos($path, '/') === 0) {
             $absolute = true;
             $path     = \substr($path, 1);
         }

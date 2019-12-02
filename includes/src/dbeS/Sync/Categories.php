@@ -39,7 +39,7 @@ final class Categories extends AbstractSync
                 $categoryIDs[] = $this->handleInserts($xml);
             }
         }
-        $this->cache->flushTags(map($categoryIDs, function ($categoryID) {
+        $this->cache->flushTags(map($categoryIDs, static function ($categoryID) {
             return \CACHING_GROUP_CATEGORY . '_' . $categoryID;
         }));
         $lastJob = new LastJob($this->db, $this->logger);

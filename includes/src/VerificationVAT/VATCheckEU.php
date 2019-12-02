@@ -7,6 +7,7 @@
 namespace JTL\VerificationVAT;
 
 use JTL\Shop;
+use SoapClient;
 
 /**
  * Class VATCheckEU
@@ -72,7 +73,7 @@ class VATCheckEU extends AbstractVATCheck
         }
         // asking the remote service if the VAT-office is reachable
         if ($this->downTimes->isDown($countryCode) === false) {
-            $soap   = new \SoapClient($this->viesWSDL);
+            $soap   = new SoapClient($this->viesWSDL);
             $result = null;
             try {
                 $result = $soap->checkVat(['countryCode' => $countryCode, 'vatNumber' => $vatNumber]);

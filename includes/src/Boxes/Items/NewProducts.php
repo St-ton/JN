@@ -60,7 +60,7 @@ final class NewProducts extends AbstractBox
             \shuffle($productIDs);
             $res = map(
                 \array_slice($productIDs, 0, $config['boxen']['box_neuimsortiment_anzahl_anzeige']),
-                function ($productID) {
+                static function ($productID) {
                     return (int)$productID->kArtikel;
                 }
             );

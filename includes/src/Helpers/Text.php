@@ -267,7 +267,7 @@ class Text
         // replace numeric entities
         $input = \preg_replace_callback(
             '~&#x([0-9a-fA-F]+);~i',
-            function ($x) {
+            static function ($x) {
                 return \chr(\hexdec($x[1]));
             },
             $input
@@ -275,7 +275,7 @@ class Text
 
         return self::htmlentitydecode(\preg_replace_callback(
             '~&#([0-9]+);~',
-            function ($x) {
+            static function ($x) {
                 return \chr($x[1]);
             },
             $input
@@ -550,9 +550,9 @@ class Text
     public static function parseSSKint($ssk): array
     {
         return \is_string($ssk)
-            ? \array_map(function ($e) {
+            ? \array_map(static function ($e) {
                 return (int)\trim($e);
-            }, \array_filter(\explode(';', $ssk), function ($e) {
+            }, \array_filter(\explode(';', $ssk), static function ($e) {
                 return $e !== '' && $e !== null;
             }))
             : [];

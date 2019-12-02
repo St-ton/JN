@@ -86,6 +86,11 @@
                             <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=$configItem->cBeschreibung cID=$configItem->kEinstellungenConf}</div>
                         {/if}
                     </div>
+                {elseif $showNonConf|default:false}
+                    <div class="subheading1 mt-6">
+                        {$configItem->cName}
+                    </div>
+                    <hr class="mb-3">
                 {/if}
             {/foreach}
         </div>

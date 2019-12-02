@@ -59,7 +59,11 @@ class Application extends BaseApplication
     public function __construct()
     {
         $this->devMode     = !empty(\APPLICATION_BUILD_SHA) && \APPLICATION_BUILD_SHA === '#DEV#' ?? false;
-        $this->isInstalled = \defined('DB_HOST') && Shop::Container()->getDB()->isConnected();
+        $this->isInstalled = \defined('BLOWFISH_KEY');
+        if ($this->isInstalled) {
+            $cache = Shop::Container()->getCache();
+            $cache->setJtlCacheConfig(Shop::Container()->getDB()->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING));
+        }
 
         parent::__construct('JTL-Shop', \APPLICATION_VERSION . ' - ' . ($this->devMode ? 'develop' : 'production'));
     }

@@ -7,7 +7,6 @@
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 
 require_once __DIR__ . '/includes/admininclude.php';
-$oAccount->redirectOnFailure();
 $oAccount->permission('FILESYSTEM_VIEW', true, true);
 
 use JTL\Alert\Alert;

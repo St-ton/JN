@@ -110,7 +110,7 @@ class History
                 ORDER BY dErstellt DESC',
             ['dlid' => $downloadID],
             ReturnType::COLLECTION
-        )->pluck('id')->transform(function ($e) {
+        )->pluck('id')->transform(static function ($e) {
             return (int)$e;
         })->mapInto(self::class)->toArray();
     }

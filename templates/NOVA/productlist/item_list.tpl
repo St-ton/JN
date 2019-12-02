@@ -26,9 +26,9 @@
                         {/if}
                         {block name="productlist-item-list-images"}
                             <div class="productbox-images">
-                                <div class="clearfix list-gallery carousel carousel-btn-arrows">
+                                <div class="clearfix list-gallery slick-smooth-loading carousel carousel-btn-arrows">
                                     {block name="productlist-item-list-image-desktop"}
-                                        <div class="list-gallery carousel carousel-arrows-inside carousel-btn-arrows">
+                                        <div class="list-gallery slick-smooth-loading carousel carousel-arrows-inside carousel-btn-arrows">
                                             {foreach $Artikel->Bilder as $image}
                                                 {strip}
                                                     <div>
@@ -264,8 +264,12 @@
                             {/block}
                             {block name='productlist-item-list-basket-details'}
                                 <div class="form-row productbox-onhover productbox-actions mt-5">
-                                    {if ($Artikel->inWarenkorbLegbar === 1 || ($Artikel->nErscheinendesProdukt === 1 && $Einstellungen.global.global_erscheinende_kaeuflich === 'Y'))
-                                    && (($Artikel->nIstVater === 0 && $Artikel->Variationen|@count === 0) || $hasOnlyListableVariations === 1) && !$Artikel->bHasKonfig}
+                                    {if ($Artikel->inWarenkorbLegbar === 1
+                                            || ($Artikel->nErscheinendesProdukt === 1 && $Einstellungen.global.global_erscheinende_kaeuflich === 'Y'))
+                                        && (($Artikel->nIstVater === 0 && $Artikel->Variationen|@count === 0)
+                                            || $hasOnlyListableVariations === 1)
+                                        && !$Artikel->bHasKonfig
+                                        && $Einstellungen.template.productlist.buy_productlist === 'Y'}
                                         {if $Artikel->nIstVater && $Artikel->kVaterArtikel == 0}
                                             {col cols=12}
                                                 {block name='productlist-item-list-basket-details-variations'}
@@ -279,12 +283,16 @@
                                                 {block name='productlist-item-list-basket-details-quantity'}
                                                     {inputgroup class="form-counter"}
                                                         {inputgroupprepend}
-                                                            {button variant="" data=["count-down"=>""]}
+                                                            {button variant=""
+                                                                data=["count-down"=>""]
+                                                                aria=["label"=>{lang key='decreaseQuantity' section='aria'}]}
                                                                 <span class="fas fa-minus"></span>
                                                             {/button}
                                                         {/inputgroupprepend}
                                                         {input type="{if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}text{else}number{/if}" min="0"
                                                             step="{if $Artikel->fAbnahmeintervall > 0}{$Artikel->fAbnahmeintervall}{/if}"
+                                                            min="{if $Artikel->fMindestbestellmenge}{$Artikel->fMindestbestellmenge}{else}0{/if}"
+                                                            max=$Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE]|default:''
                                                             size="2"
                                                             id="quantity{$Artikel->kArtikel}"
                                                             class="quantity"
@@ -294,7 +302,9 @@
                                                             data=["decimals"=>{getDecimalLength quantity=$Artikel->fAbnahmeintervall}]
                                                             value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}"}
                                                         {inputgroupappend}
-                                                            {button variant="" data=["count-up"=>""]}
+                                                            {button variant=""
+                                                                data=["count-up"=>""]
+                                                                aria=["label"=>{lang key='increaseQuantity' section='aria'}]}
                                                                 <span class="fas fa-plus"></span>
                                                             {/button}
                                                         {/inputgroupappend}

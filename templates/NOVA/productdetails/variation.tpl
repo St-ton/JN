@@ -27,7 +27,6 @@
                             {if $Variation->cTyp === 'SELECTBOX'}
                                 {block name='productdetails-variation-select-outer'}
                                 {select class='custom-select selectpicker' title="{lang key='pleaseChooseVariation' section='productDetails'}" name="eigenschaftwert[{$Variation->kEigenschaft}]" required=!$showMatrix}
-                                    <option selected="selected" disabled value="">{lang key='selectChoose'}</option>
                                     {foreach name=Variationswerte from=$Variation->Werte key=y item=Variationswert}
                                         {assign var=bSelected value=false}
                                         {if isset($oVariationKombi_arr[$Variationswert->kEigenschaft])}
@@ -46,7 +45,8 @@
                                                 {/block}
                                                 <option value="{$Variationswert->kEigenschaftWert}" class="variation"
                                                         data-content="<span data-value='{$Variationswert->kEigenschaftWert}'>{$cVariationsWert|trim}
-                                                    {if $Variationswert->notExists} ({lang key='notAvailableInSelection'}){elseif !$Variationswert->inStock} ({lang key='ampelRot'}){/if}</span>"
+                                                    {if $Variationswert->notExists} <span class='badge badge-danger badge-not-available'>{lang key='notAvailableInSelection'}</span>
+                                                    {elseif !$Variationswert->inStock}<span class='badge badge-danger badge-not-available'>{lang key='ampelRot'}</span>{/if}</span>"
                                                         data-type="option"
                                                         data-original="{$Variationswert->cName}"
                                                         data-key="{$Variationswert->kEigenschaft}"
@@ -60,7 +60,6 @@
                                                         {/if}
                                                         {if $bSelected} selected="selected"{/if}>
                                                     {$cVariationsWert|trim}
-                                                    {if $Variationswert->notExists} ({lang key='notAvailableInSelection'}){elseif !$Variationswert->inStock} ({lang key='ampelRot'}){/if}
                                                 </option>
                                             {/block}
                                         {/if}
@@ -125,6 +124,8 @@
                                     {formrow class="swatches {$Variation->cTyp|lower}"}
                                         {foreach name=Variationswerte from=$Variation->Werte key=y item=Variationswert}
                                             {assign var=bSelected value=false}
+                                            {assign var=hasImage value=!empty($Variationswert->getImage(\JTL\Media\Image::SIZE_XS))
+                                                && $Variationswert->getImage(\JTL\Media\Image::SIZE_XS)|strpos:$smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN === false}
                                             {if isset($oVariationKombi_arr[$Variationswert->kEigenschaft])}
                                                 {assign var=bSelected value=in_array($Variationswert->kEigenschaftWert, $oVariationKombi_arr[$Variationswert->kEigenschaft])}
                                             {/if}
@@ -138,7 +139,7 @@
                                             {else}
                                                 {block name='productdetails-variation-swatch-inner'}
                                                 {col class='col-auto'}
-                                                    <label class="variation swatches swatches-image {if $bSelected}active{/if} {if $Variationswert->notExists}swatches-not-in-stock{elseif !$Variationswert->inStock}swatches-sold-out{/if}"
+                                                    <label class="variation swatches {if $hasImage}swatches-image{else}swatches-text{/if} {if $bSelected}active{/if} {if $Variationswert->notExists}swatches-not-in-stock{elseif !$Variationswert->inStock}swatches-sold-out{/if}"
                                                             data-type="swatch"
                                                             data-original="{$Variationswert->cName}"
                                                             data-key="{$Variationswert->kEigenschaft}"
@@ -171,8 +172,7 @@
                                                                {if $smarty.foreach.Variationswerte.index === 0 && !$showMatrix} required{/if}
                                                                />
                                                         <span class="label-variation">
-                                                            {if !empty($Variationswert->getImage(\JTL\Media\Image::SIZE_XS))
-                                                                && $Variationswert->getImage(\JTL\Media\Image::SIZE_XS)|strpos:$smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN === false}
+                                                            {if $hasImage}
                                                                 {image fluid=true webp=true lazy=true
                                                                     src=$Variationswert->getImage(\JTL\Media\Image::SIZE_XS)
                                                                     srcset="{$Variationswert->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_variationen_mini_breite}w,

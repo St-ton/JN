@@ -88,7 +88,7 @@ class MigrationHelper
         if (\preg_match(static::MIGRATION_FILE_NAME_PATTERN, \basename($fileName), $matches)) {
             return \preg_replace_callback(
                 '/(^|_)([a-z])/',
-                function ($m) {
+                static function ($m) {
                     return (\mb_strlen($m[1]) ? ' ' : '') . \mb_convert_case($m[2], \MB_CASE_UPPER);
                 },
                 $matches[2]
@@ -233,7 +233,7 @@ class MigrationHelper
     {
         $datetime      = new DateTime('NOW');
         $timestamp     = $datetime->format('YmdHis');
-        $asFilePath    = function ($text) {
+        $asFilePath    = static function ($text) {
             $text = \preg_replace('/\W/', '_', $text);
             $text = \preg_replace('/_+/', '_', $text);
 

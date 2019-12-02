@@ -39,6 +39,11 @@ interface LinkServiceInterface
     public function initLinkGroups(): void;
 
     /**
+     *
+     */
+    public function reset(): void;
+
+    /**
      * @param int $id
      * @return LinkInterface|null
      */

@@ -149,7 +149,7 @@ class Tax
             \header('Location: ' . $redirURL);
             exit;
         }
-        $zones = map($taxZones, function ($e) {
+        $zones = map($taxZones, static function ($e) {
             return (int)$e->kSteuerzone;
         });
         $qry   = \count($zones) > 0

@@ -3,10 +3,10 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
+                <h2>{__('plz_ort_import_select')}</h2>
                 <button type="button" class="close" data-dismiss="modal">
                     <i class="fal fa-times"></i>
                 </button>
-                <h2>{__('plz_ort_import_select')}</h2>
             </div>
             <div class="modal-body">
                 {if isset($oLand_arr) && count($oLand_arr) > 0}

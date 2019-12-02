@@ -49,7 +49,7 @@
         {/block}
 
         {block name='layout-header-head-resources'}
-            {*include file='layout/header_inline_css.tpl'*}
+            {include file='layout/header_inline_css.tpl'}
             {* css *}
             {if !isset($Einstellungen.template.general.use_minify) || $Einstellungen.template.general.use_minify === 'N'}
                 {foreach $cCSS_arr as $cCSS}
@@ -233,7 +233,7 @@
             {$templateDir = $parentTemplateDir}
         {/if}
 
-        <script defer src="{$ShopURL}/{$templateDir}js/jquery-3.4.1.min.js"></script>
+        <script src="{$ShopURL}/{$templateDir}js/jquery-3.4.1.min.js"></script>
 
         {if !isset($Einstellungen.template.general.use_minify) || $Einstellungen.template.general.use_minify === 'N'}
             {if isset($cPluginJsHead_arr)}
@@ -323,7 +323,7 @@
                             {/block}
 
                             {block name='layout-header-logo'}
-                                <div id="logo" itemprop="publisher" itemscope itemtype="http://schema.org/Organization" itemid="">
+                                <div id="logo" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
                                     <span itemprop="name" class="d-none">{$meta_publisher}</span>
                                     <meta itemprop="url" content="{$ShopURL}">
                                     <meta itemprop="logo" content="{$ShopLogoURL}">

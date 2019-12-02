@@ -642,7 +642,7 @@ class SearchResults implements SearchResultsInterface
                 /** @var FilterInterface $filter */
                 $currentValues = $filter->getActiveValues();
                 $act           = \is_array($currentValues)
-                    ? map($currentValues, function (FilterInterface $e) {
+                    ? map($currentValues, static function (FilterInterface $e) {
                         return $e->getValue();
                     })
                     : [$currentValues->getValue()];
@@ -657,7 +657,7 @@ class SearchResults implements SearchResultsInterface
      */
     private function updateOptions(FilterInterface $filter, $values): void
     {
-        invoke(filter($filter->getOptions(), function (Option $e) use ($values) {
+        invoke(filter($filter->getOptions(), static function (Option $e) use ($values) {
             return \in_array($e->getValue(), $values, true);
         }), 'setIsActive', [true]);
     }
@@ -670,7 +670,7 @@ class SearchResults implements SearchResultsInterface
      */
     private function getActiveFiltersByClassName($filters, $class, $activeValues): array
     {
-        return filter($filters, function (FilterInterface $f) use ($class, $activeValues) {
+        return filter($filters, static function (FilterInterface $f) use ($class, $activeValues) {
             return $f->getClassName() === $class && $f->getActiveValues() === $activeValues;
         });
     }
@@ -707,7 +707,7 @@ class SearchResults implements SearchResultsInterface
 
         $customFilterOptions = map(
             $productFilter->getCustomFilters(),
-            function (FilterInterface $e) {
+            static function (FilterInterface $e) {
                 if (\count($e->getOptions()) === 0) {
                     $e->hide();
                 }
@@ -717,7 +717,7 @@ class SearchResults implements SearchResultsInterface
         );
         $json                = AbstractBox::getJSONString(
             \array_map(
-                function ($e) {
+                static function ($e) {
                     $e->cURL = Text::htmlentitydecode($e->cURL);
 
                     return $e;
@@ -780,7 +780,7 @@ class SearchResults implements SearchResultsInterface
                     && $af->getVisibility() !== Visibility::SHOW_NEVER
                     && \array_reduce(
                         $options,
-                        function ($carry, $option) {
+                        static function ($carry, $option) {
                             /** @var Option $option */
                             return $carry && $option->isActive();
                         },
@@ -790,7 +790,7 @@ class SearchResults implements SearchResultsInterface
                     $af->hide();
                 }
             }
-            if (every($characteristicFilterOptions, function (Option $item) {
+            if (every($characteristicFilterOptions, static function (Option $item) {
                 return $item->getVisibility() === Visibility::SHOW_NEVER;
             })) {
                 // hide the whole attribute filter collection if every filter consists of only active options

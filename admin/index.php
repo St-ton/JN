@@ -15,7 +15,6 @@ use JTL\Shop;
 use JTL\Template;
 use JTL\Update\Updater;
 use JTLShop\SemVer\Version;
-use Systemcheck\Platform\Filesystem;
 
 require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Smarty\JTLSmarty     $smarty */

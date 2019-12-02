@@ -10486,7 +10486,7 @@ input[type=button].btn-block {
 }
 .page-link:hover, .page-text:hover {
   z-index: 2;
-  color: #9b9b9b;
+  color: #0ef83c;
   text-decoration: none;
   background-color: transparent;
   border-color: #dee2e6;
@@ -10513,7 +10513,7 @@ input[type=button].btn-block {
   border-color: transparent;
 }
 .page-item.disabled .page-link, .page-item.disabled .page-text {
-  color: #525252;
+  color: #707070;
   pointer-events: none;
   cursor: auto;
   background-color: transparent;
@@ -21560,7 +21560,10 @@ aside .last-seen-link {
   bottom: 0;
 }
 
-.float-label {
+.label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) {
+  position: relative;
+}
+.label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) label {
   position: absolute;
   cursor: text;
   top: 0;
@@ -21578,7 +21581,7 @@ aside .last-seen-link {
   overflow: hidden;
   max-width: calc(100% - (2 * 0.9375rem));
 }
-.float-label:after {
+.label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) label:after {
   content: " ";
   display: block;
   position: absolute;
@@ -21589,53 +21592,35 @@ aside .last-seen-link {
   right: -3em;
   z-index: -1;
 }
-
-.form-float-label {
-  position: relative;
-}
-.form-float-label .form-control::placeholder {
+.label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) .form-control::placeholder {
   transition: all 0.2s ease-in-out;
 }
-.form-float-label .form-control:placeholder-shown:not(:focus)::placeholder {
+.label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) .form-control:placeholder-shown:not(:focus)::placeholder {
   opacity: 0;
 }
-.form-float-label .form-control:placeholder-shown:not(:focus) ~ .float-label {
+.label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) .form-control:placeholder-shown:not(:focus) ~ label {
   top: calc((1.5em + 1.25rem + 2px) / 2);
   font-size: 0.875rem;
   color: #ebebeb;
 }
-.form-float-label .form-control:placeholder-shown:not(:focus) ~ .float-label:after {
+.label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) .form-control:placeholder-shown:not(:focus) ~ label:after {
   display: none;
 }
-.form-float-label .form-control:placeholder-shown:not(:focus).form-control-sm ~ .float-label {
+.label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) .form-control:placeholder-shown:not(:focus).form-control-sm ~ label {
   top: calc((1.5em + 0.75rem + 2px) / 2);
   font-size: 0.875rem;
 }
-.form-float-label .form-control:placeholder-shown:not(:focus).form-control-lg ~ .float-label {
+.label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) .form-control:placeholder-shown:not(:focus).form-control-lg ~ label {
   top: calc((1.5em + 1rem + 2px) / 2);
   font-size: 1rem;
 }
-
-.form-float-label ~ .valid-feedback,
-.form-float-label ~ .valid-tooltip {
+.label-slide .form-group ~ .valid-feedback,
+.label-slide .form-group ~ .valid-tooltip {
   display: block;
 }
-
-.form-float-label ~ .invalid-feedback,
-.form-float-label ~ .invalid-tooltip {
+.label-slide .form-group ~ .invalid-feedback,
+.label-slide .form-group ~ .invalid-tooltip {
   display: block;
-}
-
-.form-control-sm ~ .float-label {
-  font-size: 0.7rem;
-  left: 0.5rem;
-  max-width: calc(100% - (2 * 0.5rem));
-}
-
-.form-control-lg ~ .float-label {
-  font-size: 0.8rem;
-  left: 1rem;
-  max-width: calc(100% - (2 * 1rem));
 }
 
 .form-counter {
@@ -21882,14 +21867,6 @@ label {
 
 .page-link, .page-text {
   text-decoration: none;
-}
-.page-link:hover, .page-text:hover {
-  font-weight: 700;
-}
-@media (min-width: 768px) {
-  .page-link:hover, .page-text:hover {
-    font-weight: 700;
-  }
 }
 
 .pagination {
@@ -23561,55 +23538,6 @@ input.form-control[name=wishlist-url] {
     transform: scale(1);
   }
 }
-.label-slide .form-group {
-  position: relative;
-}
-.label-slide .form-group input:not([type=checkbox]):not([type=radio]):not([type=number]), .label-slide .form-group select, .label-slide .form-group textarea {
-  width: 100%;
-  outline: none;
-  padding: 10px 15px;
-}
-.label-slide .form-group input:not([type=checkbox]):not([type=radio]):not([type=number]):focus + label, .label-slide .form-group select:focus + label, .label-slide .form-group textarea:focus + label {
-  top: -10px;
-  background: #fff;
-  padding: 3px 6px;
-  left: 10px;
-  color: #9b9b9b;
-  font-size: 12px;
-}
-.label-slide .form-group input:not([type=checkbox]):not([type=radio]):not([type=number]):not([value=""]):not(:focus) + label, .label-slide .form-group input:not([type=checkbox]):not([type=radio]):not([type=number])[type=date] + label, .label-slide .form-group input:not([type=checkbox]):not([type=radio]):not([type=number])[type=datetime-local] + label, .label-slide .form-group input:not([type=checkbox]):not([type=radio]):not([type=number])[type=color] + label, .label-slide .form-group input:not([type=checkbox]):not([type=radio]):not([type=number])[type=file] + label, .label-slide .form-group select:not([value=""]):not(:focus) + label, .label-slide .form-group select[type=date] + label, .label-slide .form-group select[type=datetime-local] + label, .label-slide .form-group select[type=color] + label, .label-slide .form-group select[type=file] + label, .label-slide .form-group textarea:not([value=""]):not(:focus) + label, .label-slide .form-group textarea[type=date] + label, .label-slide .form-group textarea[type=datetime-local] + label, .label-slide .form-group textarea[type=color] + label, .label-slide .form-group textarea[type=file] + label {
-  top: -10px;
-  background: #fff;
-  padding: 3px 6px 0 6px;
-  left: 10px;
-  color: #9b9b9b;
-  font-size: 12px;
-}
-.label-slide .form-group input:not([type=checkbox]):not([type=radio]):not([type=number]) + label, .label-slide .form-group select + label, .label-slide .form-group textarea + label {
-  position: absolute;
-  top: 12px;
-  z-index: 5;
-  left: 10px;
-  font-size: 14px;
-  color: #707070;
-  pointer-events: none;
-  transition: 0.4s all;
-}
-.label-slide .form-group input:not([type=checkbox]):not([type=radio]):not([type=number])::-webkit-input-placeholder, .label-slide .form-group select::-webkit-input-placeholder, .label-slide .form-group textarea::-webkit-input-placeholder {
-  color: transparent;
-}
-.label-slide .form-group input:not([type=checkbox]):not([type=radio]):not([type=number]):-moz-placeholder, .label-slide .form-group select:-moz-placeholder, .label-slide .form-group textarea:-moz-placeholder {
-  /* Firefox 18- */
-  color: transparent;
-}
-.label-slide .form-group input:not([type=checkbox]):not([type=radio]):not([type=number])::-moz-placeholder, .label-slide .form-group select::-moz-placeholder, .label-slide .form-group textarea::-moz-placeholder {
-  /* Firefox 19+ */
-  color: transparent;
-}
-.label-slide .form-group input:not([type=checkbox]):not([type=radio]):not([type=number]):-ms-input-placeholder, .label-slide .form-group select:-ms-input-placeholder, .label-slide .form-group textarea:-ms-input-placeholder {
-  color: transparent;
-}
-
 input.typeahead::-webkit-input-placeholder {
   color: #707070 !important;
 }
@@ -24760,6 +24688,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 #image_wrapper.fullscreen #gallery_preview_wrapper {
   width: 100%;
   padding: 1rem;
+  max-width: 1200px;
 }
 @media (min-width: 768px) {
   #image_wrapper.fullscreen #gallery_preview_wrapper {

@@ -340,7 +340,7 @@ class Pagination
             $nSortFac         = $this->sortDir === 0 ? +1 : -1;
             $cSortBy          = $this->sortBySQL;
             if (\is_array($this->items)) {
-                \usort($this->items, function ($a, $b) use ($cSortBy, $nSortFac) {
+                \usort($this->items, static function ($a, $b) use ($cSortBy, $nSortFac) {
                     $valueA = \is_string($a->$cSortBy) ? \mb_convert_case($a->$cSortBy, \MB_CASE_LOWER) : $a->$cSortBy;
                     $valueB = \is_string($b->$cSortBy) ? \mb_convert_case($b->$cSortBy, \MB_CASE_LOWER) : $b->$cSortBy;
 

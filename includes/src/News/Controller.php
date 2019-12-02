@@ -284,7 +284,7 @@ class Controller
             ' GROUP BY node.kNewsKategorie
                 ORDER BY node.lft, node.nSort ASC',
             ReturnType::ARRAY_OF_OBJECTS
-        ), function ($e) {
+        ), static function ($e) {
             return (int)$e->id;
         });
         $itemList->createItems($ids);
@@ -303,7 +303,7 @@ class Controller
             return false;
         }
         $checks    = self::checkComment($data, $id, $this->config);
-        $checkedOK = every($checks, function ($e) {
+        $checkedOK = every($checks, static function ($e) {
             return $e === 0;
         });
 
@@ -578,7 +578,7 @@ class Controller
                 $newsItemID,
                 'kNewsKategorie'
             ), 'kNewsKategorie'),
-            function ($e) {
+            static function ($e) {
                 return (int)$e;
             }
         );

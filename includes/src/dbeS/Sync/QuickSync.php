@@ -112,7 +112,7 @@ final class QuickSync extends AbstractSync
         }
         $clearTags = \array_unique($clearTags);
         $this->handlePriceRange($clearTags);
-        $this->cache->flushTags(map($clearTags, function ($e) {
+        $this->cache->flushTags(map($clearTags, static function ($e) {
             return \CACHING_GROUP_ARTICLE . '_' . $e;
         }));
     }

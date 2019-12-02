@@ -165,8 +165,12 @@
                                 slidesToShow: 3
                             }
                         }
-
                     ];
+
+                    otherElemHeight = $('#image_wrapper .product-detail-image-topbar').outerHeight() +
+                        parseInt($('#image_wrapper .product-detail-image-topbar').css('marginBottom')) +
+                        230;
+                    $('#gallery picture *').removeAttr('sizes');
                 }
 
                 $('#gallery img').css('max-width', w);
@@ -174,6 +178,10 @@
 
                 $('#gallery').slick(options);
                 $('#gallery_preview').slick(options_preview);
+
+                if (fullscreen) {
+                     lazySizes.autoSizer.checkElems();
+                }
 
                 setTimeout(() => {
                     $('#gallery_preview').slick('slickGoTo', current);
@@ -254,6 +262,13 @@
 
         registerSimpleVariations: function($wrapper) {
             var that = this;
+
+            $('.variations select', $wrapper).selectpicker({
+                iconBase: 'fa',
+                tickIcon: 'fa-check',
+                hideDisabled: true,
+                showTick: true
+            });
 
             $('.simple-variations input[type="radio"]', $wrapper)
                 .on('change', function() {
@@ -1000,6 +1015,7 @@
         },
 
         variationRefreshAll: function($wrapper) {
+            $('.variations select', $wrapper).selectpicker('refresh');
         },
 
         getConfigGroupQuantity: function (groupId) {
@@ -1202,6 +1218,7 @@
 
             $('.variation[data-value] input:checked', $wrapper).prop('checked', false);
             $('.variations select option', $wrapper).prop('selected', false);
+            $('.variations select', $wrapper).selectpicker('refresh');
         },
 
         variationDisableAll: function(wrapper) {
@@ -1309,6 +1326,8 @@
                     $item.data('content', $wrapper.html())
                         .attr('data-content', $wrapper.html());
 
+                    $item.closest('select')
+                        .selectpicker('refresh');
                     break;
                 case 'radio':
                     $item.find('.badge-not-available')

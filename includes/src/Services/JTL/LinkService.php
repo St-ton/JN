@@ -61,6 +61,12 @@ final class LinkService implements LinkServiceInterface
         return self::$instance ?? new self(Shop::Container()->getDB(), Shop::Container()->getCache());
     }
 
+    public function reset(): void
+    {
+        $this->linkGroupList = new LinkGroupList($this->db, Shop::Container()->getCache());
+        $this->initLinkGroups();
+    }
+
     /**
      * @inheritdoc
      */
@@ -100,7 +106,7 @@ final class LinkService implements LinkServiceInterface
     {
         foreach ($this->linkGroupList->getLinkGroups() as $linkGroup) {
             /** @var LinkGroupInterface $linkGroup */
-            $first = first($linkGroup->getLinks(), function (LinkInterface $link) use ($id) {
+            $first = first($linkGroup->getLinks(), static function (LinkInterface $link) use ($id) {
                 return $link->getID() === $id;
             });
             if ($first !== null) {
@@ -118,7 +124,7 @@ final class LinkService implements LinkServiceInterface
     {
         foreach ($this->linkGroupList->getLinkGroups() as $linkGroup) {
             /** @var LinkGroupInterface $linkGroup */
-            $first = first($linkGroup->getLinks(), function (LinkInterface $link) use ($id) {
+            $first = first($linkGroup->getLinks(), static function (LinkInterface $link) use ($id) {
                 return $link->getID() === $id;
             });
             if ($first !== null) {
@@ -215,7 +221,7 @@ final class LinkService implements LinkServiceInterface
         $lg = $this->getLinkGroupByName('specialpages');
 
         return $lg !== null
-            ? $lg->getLinks()->first(function (LinkInterface $l) use ($nLinkart) {
+            ? $lg->getLinks()->first(static function (LinkInterface $l) use ($nLinkart) {
                 return $l->getLinkType() === $nLinkart;
             })
             : null;
@@ -263,7 +269,7 @@ final class LinkService implements LinkServiceInterface
         $idx = null;
         $lg  = $this->getLinkGroupByName('staticroutes');
         if ($lg !== null) {
-            $filterd = $lg->getLinks()->first(function (LinkInterface $link) use ($id) {
+            $filterd = $lg->getLinks()->first(static function (LinkInterface $link) use ($id) {
                 return $link->getFileName() === $id;
             });
             if ($filterd !== null) {
@@ -293,9 +299,9 @@ final class LinkService implements LinkServiceInterface
             return new Collection();
         }
 
-        return $lg->getLinks()->groupBy(function (LinkInterface $link) {
+        return $lg->getLinks()->groupBy(static function (LinkInterface $link) {
             return $link->getLinkType();
-        })->map(function (Collection $group) {
+        })->map(static function (Collection $group) {
             return $group->first();
         });
     }
@@ -380,7 +386,7 @@ final class LinkService implements LinkServiceInterface
         $meta->cKeywords = '';
         foreach ($this->linkGroupList->getLinkGroups() as $linkGroup) {
             /** @var LinkGroupInterface $linkGroup */
-            $first = $linkGroup->getLinks()->first(function (LinkInterface $link) use ($type) {
+            $first = $linkGroup->getLinks()->first(static function (LinkInterface $link) use ($type) {
                 return $link->getLinkType() === $type;
             });
             if ($first !== null) {
@@ -430,9 +436,9 @@ final class LinkService implements LinkServiceInterface
                         if ($linkID === Shop::$kLink) {
                             $link->setIsActive(true);
                             $parent = $this->getRootLink($linkID);
-                            $linkGroup->getLinks()->filter(function (LinkInterface $l) use ($parent) {
+                            $linkGroup->getLinks()->filter(static function (LinkInterface $l) use ($parent) {
                                 return $l->getID() === $parent;
-                            })->map(function (LinkInterface $l) {
+                            })->map(static function (LinkInterface $l) {
                                 $l->setIsActive(true);
 
                                 return $l;

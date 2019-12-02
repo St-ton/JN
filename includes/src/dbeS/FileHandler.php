@@ -116,7 +116,7 @@ class FileHandler
             }
             $archive->close();
 
-            return \array_filter(\array_map(function ($e) {
+            return \array_filter(\array_map(static function ($e) {
                 return \file_exists($e)
                     ? $e
                     : null;

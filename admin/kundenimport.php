@@ -87,26 +87,6 @@ $smarty->assign('kundengruppen', Shop::Container()->getDB()->query(
        ->assign('step', $step ?? null)
        ->display('kundenimport.tpl');
 
-
-/**
- * @param int $length
- * @param int $myseed
- * @return string
- */
-function generatePW($length = 8, $myseed = 1)
-{
-    $dummy = array_merge(range('0', '9'), range('a', 'z'), range('A', 'Z'));
-    mt_srand((double)microtime() * 1000000 * $myseed);
-    for ($i = 1; $i <= (count($dummy) * 2); $i++) {
-        $swap         = mt_rand(0, count($dummy) - 1);
-        $tmp          = $dummy[$swap];
-        $dummy[$swap] = $dummy[0];
-        $dummy[0]     = $tmp;
-    }
-
-    return mb_substr(implode('', $dummy), 0, $length);
-}
-
 /**
  * @param array $data
  * @param array $format

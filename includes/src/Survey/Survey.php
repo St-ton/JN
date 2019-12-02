@@ -203,7 +203,7 @@ class Survey
                 ['sid' => $this->getID()],
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            $questions = group($questions, function (stdClass $e) {
+            $questions = group($questions, static function (stdClass $e) {
                 return $e->kUmfrageFrage;
             });
             foreach ($questions as $questionID => $questionData) {
@@ -457,7 +457,7 @@ class Survey
      */
     public function getQuestionByID(int $id): ?SurveyQuestion
     {
-        return $this->questions->first(function (SurveyQuestion $q) use ($id) {
+        return $this->questions->first(static function (SurveyQuestion $q) use ($id) {
             return $q->getID() === $id;
         });
     }

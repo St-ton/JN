@@ -23,10 +23,6 @@ class Extractor
 {
     private const UNZIP_DIR = \PFAD_ROOT . \PFAD_DBES_TMP;
 
-    private const LEGACY_PLUGINS_DIR = \PFAD_ROOT . \PFAD_PLUGIN;
-
-    private const PLUGINS_DIR = \PFAD_ROOT . \PLUGIN_DIR;
-
     private const GIT_REGEX = '/(.*)((-master)|(-[a-zA-Z0-9]{40}))\/(.*)/';
 
     /**

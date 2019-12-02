@@ -100,7 +100,7 @@ final class LinkList implements LinkListInterface
                 ORDER BY tlink.nSort, tlink.cName',
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $links         = map(group($linkLanguages, function ($e) {
+        $links         = map(group($linkLanguages, static function ($e) {
             return (int)$e->kLink;
         }), function ($e, $linkID) use ($loadData) {
             $referenced = $loadData[$linkID]->linkID;

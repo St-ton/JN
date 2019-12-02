@@ -13,7 +13,6 @@ use ArrayIterator;
 use Countable;
 use IteratorAggregate;
 use JTL\DB\ReturnType;
-use JTL\Session\Frontend;
 use JTL\Shop;
 use Traversable;
 
@@ -23,10 +22,14 @@ use Traversable;
  */
 class CustomerAttributes implements ArrayAccess, IteratorAggregate, Countable
 {
-    /** @var CustomerAttribute[] */
+    /**
+     * @var CustomerAttribute[]
+     */
     private $attributes = [];
 
-    /** @var int */
+    /**
+     * @var int
+     */
     private $customerID = 0;
 
     /**

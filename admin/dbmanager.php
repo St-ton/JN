@@ -42,7 +42,7 @@ $jsTypo = (object)['tables' => []];
 foreach ($tables as $table => $info) {
     $columns                = DBManager::getColumns($table);
     $columns                = array_map(
-        function ($n) {
+        static function ($n) {
             return null;
         },
         $columns
@@ -138,7 +138,7 @@ switch (true) {
             $queryParams,
             ReturnType::ARRAY_OF_ASSOC_ARRAYS,
             false,
-            function ($o) use (&$info) {
+            static function ($o) use (&$info) {
                 $info = $o;
             }
         );

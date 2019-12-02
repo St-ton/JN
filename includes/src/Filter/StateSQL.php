@@ -137,7 +137,7 @@ class StateSQL implements StateSQLInterface
     {
         $checked = [];
 
-        return reduce_left($this->joins, function (JoinInterface $value, $d, $c, $reduction) use (&$checked) {
+        return reduce_left($this->joins, static function (JoinInterface $value, $d, $c, $reduction) use (&$checked) {
             $key = $value->getTable();
             if (!\in_array($key, $checked, true)) {
                 $checked[]   = $key;

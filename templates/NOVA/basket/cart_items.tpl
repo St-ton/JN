@@ -259,12 +259,15 @@
                                     <div class="qty-wrapper dropdown max-w-sm">
                                         {inputgroup id="quantity-grp{$oPosition@index}" class="form-counter choose_quantity"}
                                             {inputgroupprepend}
-                                                {button variant="" class="btn-decrement" data=["count-down"=>""]}
+                                                {button variant="" class="btn-decrement"
+                                                    data=["count-down"=>""]
+                                                    aria=["label"=>{lang key='decreaseQuantity' section='aria'}]}
                                                     <span class="fas fa-minus"></span>
                                                 {/button}
                                             {/inputgroupprepend}
                                             {input type="{if $oPosition->Artikel->cTeilbar === 'Y' && $oPosition->Artikel->fAbnahmeintervall == 0}text{else}number{/if}"
                                                 min="{if $oPosition->Artikel->fMindestbestellmenge}{$oPosition->Artikel->fMindestbestellmenge}{else}0{/if}"
+                                                max=$oPosition->Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE]|default:''
                                                 required=($oPosition->Artikel->fAbnahmeintervall > 0)
                                                 step="{if $oPosition->Artikel->fAbnahmeintervall > 0}{$oPosition->Artikel->fAbnahmeintervall}{/if}"
                                                 id="quantity[{$oPosition@index}]" class="quantity" name="anzahl[{$oPosition@index}]"
@@ -273,7 +276,9 @@
                                                 data=["decimals"=>{getDecimalLength quantity=$oPosition->Artikel->fAbnahmeintervall}]
                                             }
                                             {inputgroupappend}
-                                                {button variant="" class="btn-increment" data=["count-up"=>""]}
+                                                {button variant="" class="btn-increment"
+                                                    data=["count-up"=>""]
+                                                    aria=["label"=>{lang key='increaseQuantity' section='aria'}]}
                                                     <span class="fas fa-plus"></span>
                                                 {/button}
                                             {/inputgroupappend}

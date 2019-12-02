@@ -65,7 +65,7 @@ class AlertService implements AlertServiceInterface
      */
     public function getAlert(string $key): ?Alert
     {
-        return $this->getAlertList()->filter(function (Alert $alert) use ($key) {
+        return $this->getAlertList()->filter(static function (Alert $alert) use ($key) {
             return $alert->getKey() === $key;
         })->pop();
     }
@@ -93,7 +93,7 @@ class AlertService implements AlertServiceInterface
      */
     public function alertTypeExists(string $type): bool
     {
-        return \count($this->getAlertList()->filter(function (Alert $alert) use ($type) {
+        return \count($this->getAlertList()->filter(static function (Alert $alert) use ($type) {
             return $alert->getType() === $type;
         })) > 0;
     }
@@ -103,7 +103,7 @@ class AlertService implements AlertServiceInterface
      */
     public function removeAlertByKey(string $key): void
     {
-        $key = $this->getAlertList()->search(function (Alert $alert) use ($key) {
+        $key = $this->getAlertList()->search(static function (Alert $alert) use ($key) {
             return $alert->getKey() === $key;
         });
         if ($key !== false) {

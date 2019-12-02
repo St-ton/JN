@@ -9,6 +9,7 @@ use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
+use JTL\Plugin\Admin\InputType;
 use JTL\Plugin\Admin\Installation\MigrationManager;
 use JTL\Plugin\Data\Config;
 use JTL\Plugin\Helper;
@@ -53,6 +54,9 @@ if ($step === 'plugin_uebersicht' && $pluginID > 0) {
                 )
                 : [];
             foreach ($plgnConf as $current) {
+                if ($current->cInputTyp === InputType::NONE) {
+                    continue;
+                }
                 $db->delete(
                     'tplugineinstellungen',
                     ['kPlugin', 'cName'],

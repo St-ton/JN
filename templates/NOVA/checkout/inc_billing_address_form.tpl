@@ -607,7 +607,9 @@
                                         {elseif $oKundenfeld->getType() === \JTL\Customer\CustomerField::TYPE_NUMBER}
                                             {inputgroup class="form-counter"}
                                                 {inputgroupprepend}
-                                                    {button variant="" data=["count-down"=>""]}
+                                                    {button variant=""
+                                                        data=["count-down"=>""]
+                                                        aria=["label"=>{lang key='decreaseQuantity' section='aria'}]}
                                                         <span class="fas fa-minus"></span>
                                                     {/button}
                                                 {/inputgroupprepend}
@@ -622,7 +624,9 @@
                                                     readonly=(!$isKundenattributEditable)
                                                 }
                                                 {inputgroupappend}
-                                                    {button variant="" data=["count-up"=>""]}
+                                                    {button variant=""
+                                                        data=["count-up"=>""]
+                                                        aria=["label"=>{lang key='increaseQuantity' section='aria'}]}
                                                         <span class="fas fa-plus"></span>
                                                     {/button}
                                                 {/inputgroupappend}

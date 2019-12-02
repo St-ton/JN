@@ -129,6 +129,7 @@ $btn-font-weight:                   $font-weight-semibold;
 $transition-base-duration	: .2s;
 $transition-base-timing 	: ease-in-out;
 $transition-base			: all $transition-base-duration $transition-base-timing;
+$transition-fade           : opacity .35s linear;
 
 // styles
 

@@ -21564,6 +21564,7 @@ aside .last-seen-link {
   position: relative;
 }
 .label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) label {
+  background: #ffffff;
   position: absolute;
   cursor: text;
   top: 0;
@@ -21816,6 +21817,10 @@ label {
     z-index: 1030;
   }
 }
+.modal-dialog {
+  margin-top: 1.75rem;
+}
+
 .newsbox {
   display: flex;
   flex-direction: column;

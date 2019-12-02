@@ -388,11 +388,6 @@ ul.partlist-items {
 .form-control {
   -webkit-box-shadow: none;
   box-shadow: none;
-
-  @include form-control-focus();
-  @include media-breakpoint-down(md) {
-    height: calc(2.7rem + 2px);
-  }
 }
 
 .filter-item,

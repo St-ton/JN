@@ -1519,7 +1519,7 @@ final class Shop
             self::setPageType(\PAGE_ARTIKELLISTE);
         } elseif (!self::$kLink) {
             //check path
-            $path        = \rawurldecode(self::getRequestUri());
+            $path        = self::getRequestUri();
             $requestFile = '/' . \ltrim($path, '/');
             if ($requestFile === '/index.php') {
                 // special case: /index.php shall be redirected to Shop-URL
@@ -1903,9 +1903,10 @@ final class Shop
     }
 
     /**
+     * @param bool $decoded - true to decode %-sequences in the URI, false to leave them unchanged
      * @return string
      */
-    public static function getRequestUri(): string
+    public static function getRequestUri(bool $decoded = false): string
     {
         $uri         = $_SERVER['HTTP_X_REWRITE_URL'] ?? $_SERVER['REQUEST_URI'];
         $shopURLdata = \parse_url(self::getURL());
@@ -1915,9 +1916,15 @@ final class Shop
             $shopURLdata['path'] = '/';
         }
 
-        return isset($baseURLdata['path'])
+        $uri = isset($baseURLdata['path'])
             ? \mb_substr($baseURLdata['path'], \mb_strlen($shopURLdata['path']))
             : '';
+
+        if ($decoded) {
+            $uri = \rawurldecode($uri);
+        }
+
+        return $uri;
     }
 
     /**

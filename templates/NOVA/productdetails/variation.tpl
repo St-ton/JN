@@ -44,7 +44,7 @@
                                                     {include file='productdetails/variation_value.tpl' assign='cVariationsWert'}
                                                 {/block}
                                                 <option value="{$Variationswert->kEigenschaftWert}" class="variation"
-                                                        data-content="<span data-value='{$Variationswert->kEigenschaftWert}'>{$cVariationsWert|trim}
+                                                        data-content="<span data-value='{$Variationswert->kEigenschaftWert}'>{$cVariationsWert|trim|escape:'html'}
                                                     {if $Variationswert->notExists} <span class='badge badge-danger badge-not-available'>{lang key='notAvailableInSelection'}</span>
                                                     {elseif !$Variationswert->inStock}<span class='badge badge-danger badge-not-available'>{lang key='ampelRot'}</span>{/if}</span>"
                                                         data-type="option"
@@ -59,7 +59,7 @@
                                                             data-ref="{$Variationswert->oVariationsKombi->kArtikel}"
                                                         {/if}
                                                         {if $bSelected} selected="selected"{/if}>
-                                                    {$cVariationsWert|trim}
+                                                    {$cVariationsWert|trim|escape:'html'}
                                                 </option>
                                             {/block}
                                         {/if}

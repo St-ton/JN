@@ -30,6 +30,7 @@ class Migration_20191127142400 extends Migration implements IMigration
 
         $this->execute("DELETE FROM `tadminrecht` WHERE `cRecht`='MODULE_PRODUCTTAGS_VIEW';");
         $this->execute("DELETE FROM `tadminrecht` WHERE `cRecht`='RMA_VIEW';");
+        $this->execute("DELETE FROM `tadminrecht` WHERE `cRecht`='SETTINGS_BOXES_VIEW';");
     }
 
     /**
@@ -44,5 +45,6 @@ class Migration_20191127142400 extends Migration implements IMigration
 
         $this->execute("INSERT INTO `tadminrecht` (`cRecht`, `cBeschreibung`, `kAdminrechtemodul`) VALUES ('MODULE_PRODUCTTAGS_VIEW', 'Produkttags', '6');");
         $this->execute("INSERT INTO `tadminrecht` (`cRecht`, `cBeschreibung`, `kAdminrechtemodul`) VALUES ('RMA_VIEW', 'Warenrücksendung', '8');");
+        $this->execute("INSERT INTO `tadminrecht` (`cRecht`, `cBeschreibung`, `kAdminrechtemodul`) VALUES ('SETTINGS_BOXES_VIEW', 'Boxen', '2');");
     }
 }

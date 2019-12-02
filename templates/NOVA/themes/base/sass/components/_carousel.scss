@@ -20,14 +20,14 @@
 	@at-root .slick-dotted & { margin-top: map-get($spacers, 6) / -2; }
 }
 
-.slick-prev { left: -$spacer; transform: translate(-100%, -50%);
+.slick-prev { left: $spacer; transform: translate(-100%, -50%);
 	&::after { @include fas('f053'); }
-	@include media-breakpoint-down(lg) { left: $spacer; transform: translate(50%, -50%); }
+	@include media-breakpoint-down(lg) { transform: translate(50%, -50%); }
 }
 
-.slick-next { right: -$spacer; transform: translate(100%, -50%);
+.slick-next { right: $spacer; transform: translate(100%, -50%);
 	&::after { @include fas('f054'); }
-	@include media-breakpoint-down(lg) { right: $spacer; transform: translate(-50%, -50%); }
+	@include media-breakpoint-down(lg) { transform: translate(-50%, -50%); }
 }
 
 .slick-dots { flex: 0 0 100%; display: flex; justify-content: center; align-items: center; font-size: 0; line-height: 0; padding: 0; height: $spacer; width: 100%; margin: map-get($spacers, 5) 0 0;
@@ -48,8 +48,8 @@
 }
 
 .carousel-arrows-inside {
-	.slick-prev { left: $spacer; transform: translate(50%, -50%); }
-	.slick-next { right: $spacer; transform: translate(-50%, -50%); }
+	.slick-prev { transform: translate(50%, -50%); }
+	.slick-next { transform: translate(-50%, -50%); }
 
 	&.carousel-no-gutters {
 		.slick-prev { transform: translate(0, -50%); }

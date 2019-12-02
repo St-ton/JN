@@ -43,6 +43,14 @@ a { transition: color $transition-base-duration $transition-base-timing; }
   width: max-content;
 }
 
+:focus {
+  outline: $primary auto 1px;
+}
+
+image:focus {
+  outline: none;
+}
+
 .evo-slider {
   padding-bottom: $spacer;
   //border-bottom: 1px solid $gray-light;

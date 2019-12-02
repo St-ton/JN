@@ -7736,7 +7736,7 @@ pre code {
 .form-control:focus {
   color: #525252;
   background-color: #fff;
-  border-color: #ffe079;
+  border-color: #F8BF00;
   outline: 0;
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), none;
 }
@@ -9449,7 +9449,7 @@ input[type=button].btn-block {
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), none;
 }
 .custom-control-input:focus:not(:checked) ~ .custom-control-label::before {
-  border-color: #ffe079;
+  border-color: #F8BF00;
 }
 .custom-control-input:not(:disabled):active ~ .custom-control-label::before {
   color: #ffffff;
@@ -9573,7 +9573,7 @@ input[type=button].btn-block {
   appearance: none;
 }
 .custom-select:focus {
-  border-color: #ffe079;
+  border-color: #F8BF00;
   outline: 0;
   box-shadow: none, 0 0 0 0.2rem rgba(248, 191, 0, 0.25);
 }
@@ -9627,7 +9627,7 @@ input[type=button].btn-block {
   opacity: 0;
 }
 .custom-file-input:focus ~ .custom-file-label {
-  border-color: #ffe079;
+  border-color: #F8BF00;
   box-shadow: none;
 }
 .custom-file-input:disabled ~ .custom-file-label {
@@ -21269,7 +21269,7 @@ aside .last-seen-link {
 }
 
 .slick-prev {
-  left: -1rem;
+  left: 1rem;
   transform: translate(-100%, -50%);
 }
 .slick-prev::after {
@@ -21279,13 +21279,12 @@ aside .last-seen-link {
 }
 @media (max-width: 1299.98px) {
   .slick-prev {
-    left: 1rem;
     transform: translate(50%, -50%);
   }
 }
 
 .slick-next {
-  right: -1rem;
+  right: 1rem;
   transform: translate(100%, -50%);
 }
 .slick-next::after {
@@ -21295,7 +21294,6 @@ aside .last-seen-link {
 }
 @media (max-width: 1299.98px) {
   .slick-next {
-    right: 1rem;
     transform: translate(-50%, -50%);
   }
 }
@@ -21343,11 +21341,9 @@ aside .last-seen-link {
 }
 
 .carousel-arrows-inside .slick-prev {
-  left: 1rem;
   transform: translate(50%, -50%);
 }
 .carousel-arrows-inside .slick-next {
-  right: 1rem;
   transform: translate(-50%, -50%);
 }
 .carousel-arrows-inside.carousel-no-gutters .slick-prev {
@@ -22768,6 +22764,14 @@ button.bg-info:focus {
 
 .w-maxcon {
   width: max-content;
+}
+
+:focus {
+  outline: #F8BF00 auto 1px;
+}
+
+image:focus {
+  outline: none;
 }
 
 .evo-slider {

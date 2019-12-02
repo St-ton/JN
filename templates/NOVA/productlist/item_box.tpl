@@ -45,7 +45,7 @@
                                             {/strip}
                                         {/block}
                                     {else}
-                                        <div class="list-gallery carousel carousel-arrows-inside carousel-btn-arrows">
+                                        <div class="list-gallery slick-smooth-loading carousel carousel-arrows-inside carousel-btn-arrows">
                                             {block name="productlist-item-list-image-desktop"}
                                                 {foreach $Artikel->Bilder as $image}
                                                     {strip}

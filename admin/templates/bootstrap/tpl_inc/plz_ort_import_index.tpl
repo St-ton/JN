@@ -35,10 +35,10 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header alert-warning">
+                <h2><i class="fal fa-exclamation-triangle"></i> {__('plz_ort_import')}</h2>
                 <button type="button" class="close" data-dismiss="modal">
                     <i class="fal fa-times"></i>
                 </button>
-                <h2><i class="fal fa-exclamation-triangle"></i> {__('plz_ort_import')}</h2>
             </div>
             <div class="modal-body">
                 {__('plz_ort_import_tmp_exists')}
@@ -60,10 +60,10 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
+                <h2><i class="fa fa-question-circle"></i> {__('plz_ort_import')}</h2>
                 <button type="button" class="close" data-dismiss="modal">
                     <i class="fal fa-times"></i>
                 </button>
-                <h2><i class="fa fa-question-circle"></i> {__('plz_ort_import')}</h2>
             </div>
             <div class="modal-body">
                 {{__('plz_ort_import_help')}|sprintf:{$smarty.const.PLZIMPORT_URL}}

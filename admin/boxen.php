@@ -29,7 +29,13 @@ $linkID      = Request::verifyGPCDataInt('linkID');
 $boxID       = Request::verifyGPCDataInt('item');
 $alertHelper = Shop::Container()->getAlertService();
 
-if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::validateToken()) {
+if (Request::postInt('einstellungen') > 0) {
+    $alertHelper->addAlert(
+        Alert::TYPE_SUCCESS,
+        saveAdminSectionSettings(CONF_BOXEN, $_POST),
+        'saveSettings'
+    );
+} elseif (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::validateToken()) {
     switch ($_REQUEST['action']) {
         case 'delete-invisible':
             if (!empty($_POST['kInvisibleBox']) && count($_POST['kInvisibleBox']) > 0) {
@@ -227,4 +233,5 @@ $smarty->assign('filterMapping', $filterMapping)
     ->assign('oBoxenContainer', $boxContainer)
     ->assign('nPage', $pageID)
     ->assign('invisibleBoxes', $boxAdmin->getInvisibleBoxes())
+    ->assign('oConfig_arr', getAdminSectionSettings(CONF_BOXEN))
     ->display('boxen.tpl');

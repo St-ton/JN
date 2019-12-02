@@ -23,10 +23,10 @@ class Migration_20191127142400 extends Migration implements IMigration
      */
     public function up()
     {
-        $this->execute("INSERT INTO `tadminrecht` (`cRecht`, `cBeschreibung`, `kAdminrechtemodul`) VALUES ('OPC_VIEW', 'OPC', '10');");
-        $this->execute("INSERT INTO `tadminrecht` (`cRecht`, `cBeschreibung`, `kAdminrechtemodul`) VALUES ('FILESYSTEM_VIEW', 'Filesystem', '10');");
-        $this->execute("INSERT INTO `tadminrecht` (`cRecht`, `cBeschreibung`, `kAdminrechtemodul`) VALUES ('CRON_VIEW', 'Cron', '10');");
-        $this->execute("INSERT INTO `tadminrecht` (`cRecht`, `cBeschreibung`, `kAdminrechtemodul`) VALUES ('DIAGNOSTIC_VIEW', 'System diagnostics', '10');");
+        $this->execute("INSERT INTO `tadminrecht` (`cRecht`, `cBeschreibung`, `kAdminrechtemodul`) VALUES ('OPC_VIEW', 'OPC', '3');");
+        $this->execute("INSERT INTO `tadminrecht` (`cRecht`, `cBeschreibung`, `kAdminrechtemodul`) VALUES ('FILESYSTEM_VIEW', 'Filesystem', '2');");
+        $this->execute("INSERT INTO `tadminrecht` (`cRecht`, `cBeschreibung`, `kAdminrechtemodul`) VALUES ('CRON_VIEW', 'Cron', '2');");
+        $this->execute("INSERT INTO `tadminrecht` (`cRecht`, `cBeschreibung`, `kAdminrechtemodul`) VALUES ('DIAGNOSTIC_VIEW', 'System diagnostics', '2');");
 
         $this->execute("DELETE FROM `tadminrecht` WHERE `cRecht`='MODULE_PRODUCTTAGS_VIEW';");
         $this->execute("DELETE FROM `tadminrecht` WHERE `cRecht`='RMA_VIEW';");

@@ -60,29 +60,6 @@ function getAdminGroups(): array
  */
 function getAdminDefPermissions(): array
 {
-    $groups = Shop::Container()->getDB()->selectAll('tadminrechtemodul', [], [], '*', 'nSort ASC');
-    $perms  = group(Shop::Container()->getDB()->selectAll('tadminrecht', [], []), function ($e) {
-        return $e->kAdminrechtemodul;
-    });
-    foreach ($groups as $group) {
-        $group->kAdminrechtemodul = (int)$group->kAdminrechtemodul;
-        $group->nSort             = (int)$group->nSort;
-        $group->cName             = __($group->cName);
-        $group->oPermission_arr   = map($perms[$group->kAdminrechtemodul] ?? [], function ($permission) {
-            $permission->cBeschreibung = __('permission_' . $permission->cRecht);
-
-            return $permission;
-        });
-    }
-
-    return $groups;
-}
-
-/**
- * @return array
- */
-function getAdminPermissions(): array
-{
     global $adminMenu;
 
     $perms              = reindex(Shop::Container()->getDB()->selectAll('tadminrecht', [], []), function ($e) {
@@ -788,8 +765,7 @@ function benutzerverwaltungFinalize($step, JTLSmarty $smarty, array &$messages)
                 ->assign('oAdminGroup_arr', getAdminGroups());
             break;
         case 'group_edit':
-            $smarty->assign('oAdminDefPermission_arr', getAdminDefPermissions());
-            $smarty->assign('permissions', getAdminPermissions());
+            $smarty->assign('permissions', getAdminDefPermissions());
             break;
         case 'index_redirect':
             benutzerverwaltungRedirect('account_view', $messages);

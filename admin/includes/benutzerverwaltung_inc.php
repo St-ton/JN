@@ -97,9 +97,10 @@ function getAdminPermissions(): array
                 continue;
             }
             if (is_object($secondEntry)) {
-                $permMainTMP[] = (object)[
+                $perms[$secondEntry->permissions]->name = $secondName;
+                $permMainTMP[]                          = (object)[
                     'name'       => $secondName,
-                    'permission' => [$perms[$secondEntry->permissions]]
+                    'permissions' => [$perms[$secondEntry->permissions]]
                 ];
                 unset($perms[$secondEntry->permissions]);
             } else {
@@ -108,18 +109,28 @@ function getAdminPermissions(): array
                     if (!empty($thirdEntry->excludeFromAccessView)) {
                         continue;
                     }
-                    $permSecondTMP[] = $perms[$thirdEntry->permissions];
+                    $perms[$thirdEntry->permissions]->name = $thirdName;
+                    $permSecondTMP[]                       = $perms[$thirdEntry->permissions];
                     unset($perms[$thirdEntry->permissions]);
                 }
                 $permMainTMP[] = (object)[
                     'name'       => $secondName,
-                    'permission' => $permSecondTMP
+                    'permissions' => $permSecondTMP
                 ];
             }
         }
         $permissionsOrdered[] = (object)[
             'name'     => $rootName,
             'children' => $permMainTMP
+        ];
+    }
+    if (!empty($perms)) {
+        $permissionsOrdered[] = (object)[
+            'name'     => __('noMenuItem'),
+            'children' => [(object)[
+                'name'       => '',
+                'permissions' => $perms
+            ]]
         ];
     }
 
@@ -764,7 +775,6 @@ function benutzerverwaltungFinalize($step, JTLSmarty $smarty, array &$messages)
         $messages['error'] = $_SESSION['benutzerverwaltung.error'];
         unset($_SESSION['benutzerverwaltung.error']);
     }
-    getAdminPermissions();
     switch ($step) {
         case 'account_edit':
             $smarty->assign('oAdminGroup_arr', getAdminGroups())
@@ -779,6 +789,7 @@ function benutzerverwaltungFinalize($step, JTLSmarty $smarty, array &$messages)
             break;
         case 'group_edit':
             $smarty->assign('oAdminDefPermission_arr', getAdminDefPermissions());
+            $smarty->assign('permissions', getAdminPermissions());
             break;
         case 'index_redirect':
             benutzerverwaltungRedirect('account_view', $messages);

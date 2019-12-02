@@ -371,7 +371,7 @@ $adminMenu = [
             __('Troubleshooting') => [
                 __('System diagnostics')               => (object)[
                     'link'   => 'status.php',
-                    'permissions' => 'FILECHECK_VIEW|DBCHECK_VIEW|PERMISSIONCHECK_VIEW',
+                    'permissions' => 'DIAGNOSTIC_VIEW',
                 ],
                 __('Log')           => (object)[
                     'link'   => 'systemlog.php',

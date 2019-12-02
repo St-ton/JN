@@ -465,3 +465,6 @@ msgstr "Campaigns"
 # description of admin group (tadminlogingruppe)
 msgid "Voller Zugriff auf den Administrationsbereich."
 msgstr "Full access to administration area"
+
+msgid "noMenuItem"
+msgstr "No menu item"

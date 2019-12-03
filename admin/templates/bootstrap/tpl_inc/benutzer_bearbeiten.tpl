@@ -30,6 +30,21 @@ $(document).ready(function() {
             $('[id$=TwoFAwrapper]').slideUp();
         }
     });
+
+    // avatar upload usability
+    $('#useAvatar').on('change', function() {
+        var useUploadDetails   = $('#useUploadDetails');
+        if($(this).val() === 'N') {
+            useUploadDetails.addClass('d-none');
+        } else {
+            useUploadDetails.removeClass('d-none')()
+        }
+    });
+    $('#selectVitaLang').on('change', function () {
+        var iso = $('#selectVitaLang option:selected').val();
+        $('.iso_wrapper').hide();
+        $('#isoVita_' + iso).show();
+    });
 });
 {/literal}
 </script>
@@ -353,52 +368,25 @@ $(document).ready(function() {
                 <input type="hidden" name="kAdminlogingruppe" value="1" />
             {/if}
 
-            <script type="text/javascript">
-                {literal}
-                $(document).ready(function() {
-                    $('#useAvatar').on('change', function() {
-                        var useUploadDetails   = $('#useUploadDetails');
-                        if($(this).val() === 'N') {
-                            useUploadDetails.addClass('d-none');
-                        } else {
-                            useUploadDetails.removeClass('d-none')()
-                        }
-                    });
-                });
-                {/literal}
-            </script>
-            <script type="text/javascript">
-                {literal}
-                $(document).ready(function() {
-                    $('#selectVitaLang').change(function () {
-                        var iso = $('#selectVitaLang option:selected').val();
-                        $('.iso_wrapper').hide();
-                        $('#isoVita_' + iso).show();
-
-                        return false;
-                    });
-                });
-                {/literal}
-            </script>
             <div class="card">
                 <div class="card-header">
-                    <div class="subheading1">Pers&ouml;nliche Angaben</div>
+                    <div class="subheading1">{__('personalInformation')}</div>
                     <hr class="mb-n3">
                 </div>
                 <div class="card-body">
                     <div class="item">
                         <div class="form-group form-row align-items-center">
-                            <label class="col col-sm-4 col-form-label text-sm-right" for="useAvatar">{__('Benutzerbild')}:</label>
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="useAvatar">{__('avatar')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <select class="form-control custom-select" id="useAvatar" name="extAttribs[useAvatar]">
-                                    <option value="N">Nein</option>
-                                    <option value="U"{if $attribValues.useAvatar->cAttribValue == 'U'} selected="selected"{/if}>Bild hochladen</option>
+                                    <option value="N">{__('no')}</option>
+                                    <option value="U"{if $attribValues.useAvatar->cAttribValue == 'U'} selected="selected"{/if}>{__('yes')}</option>
                                 </select>
                             </div>
                         </div>
                         <div id="useUploadDetails" class="item {if $attribValues.useAvatar->cAttribValue === 'N'}d-none{/if}">
                             <div class="form-group form-row align-items-center">
-                                <label class="col col-sm-4 col-form-label text-sm-right" for="useAvatarUpload">Bild:</label>
+                                <label class="col col-sm-4 col-form-label text-sm-right" for="useAvatarUpload">{__('Image')}:</label>
                                 <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                     <input id="useAvatarUpload" class="form-control-upload" name="extAttribs[useAvatarUpload]" type="file" maxlength="2097152" accept="image/*" />
                                 </div>
@@ -410,15 +398,15 @@ $(document).ready(function() {
                                 {/if}
                             </span>
                             {if isset($cError_arr.useAvatarUpload)}
-                                <span class="input-group-addon error" title="Bitte ein Bild angeben"><i class="fa fa-exclamation-triangle"></i></span>
+                                <span class="input-group-addon error"><i class="fa fa-exclamation-triangle"></i></span>
                             {/if}
                         </div>
                     </div>
                     <div class="item">
-                        <label for="useVita">Vita</label>
+                        <label for="useVita">{__('resume')}</label>
                         <select class="form-control custom-select" id="selectVitaLang">
                             {foreach $sprachen as $language}
-                                <option value="{$language->cISO}"{if $language->cShopStandard === 'Y'} selected="selected"{/if}>{$language->cNameDeutsch} {if $language->cShopStandard === 'Y'}(Standard){/if}</option>
+                                <option value="{$language->cISO}"{if $language->cShopStandard === 'Y'} selected="selected"{/if}>{$language->cNameDeutsch} {if $language->cShopStandard === 'Y'}({__('standard')}{/if}</option>
                             {/foreach}
                         </select>
                         <div class="mt-3">

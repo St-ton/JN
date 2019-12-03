@@ -71,7 +71,7 @@ msgstr "Animation"
 
 # Styles tab
 
-msgid "Font color"
+msgid "Font colour"
 msgstr "Schriftfarbe"
 
 msgid "Visibility"
@@ -80,13 +80,13 @@ msgstr "Sichtbarkeit"
 msgid "hide"
 msgstr "ausblenden"
 
-msgid "Background color"
+msgid "Background colour"
 msgstr "Hintergrundfarbe"
 
 msgid "Font size"
 msgstr "Schriftgröße"
 
-msgid "Default color"
+msgid "Default colour"
 msgstr "Standardfarbe"
 
 msgid "Border style"

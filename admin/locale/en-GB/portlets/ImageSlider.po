@@ -36,10 +36,10 @@ msgid "pauseOnHover"
 msgstr "Pause on \"hover\"?"
 
 msgid "pauseOnHoverPause"
-msgstr "pause"
+msgstr "Pause"
 
 msgid "pauseOnHoverContinue"
-msgstr "continue"
+msgstr "Continue"
 
 msgid "pointNavigation"
 msgstr "Dot navigation?"

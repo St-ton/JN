@@ -6,7 +6,7 @@
     <div class="input-group" id="config-{$propid}-group">
         <input type="text" class="form-control colorpicker-input" name="{$propname}" value="{$propval}"
                {if $required}required{/if} id="config-{$propid}" autocomplete="off"
-               placeholder="{__('Default color')}">
+               placeholder="{__('Default colour')}">
         <span class="input-group-append">
             <span class="input-group-text colorpicker-input-addon"><i></i></span>
         </span>

@@ -114,7 +114,7 @@
                 <div class="col-auto border-left border-dark-gray">
                     <div class="dropdown avatar">
                         <button class="btn btn-link text-decoration-none dropdown-toggle p-0" data-toggle="dropdown">
-                            <img src="{gravatarImage email=$account->cMail}" class="img-circle">
+                            <img src="{getAvatar account=$account}" class="img-circle">
                         </button>
                         <div class="dropdown-menu dropdown-menu-right">
                             <a class="dropdown-item link-shop" href="{$URL_SHOP}" title="Zum Shop">

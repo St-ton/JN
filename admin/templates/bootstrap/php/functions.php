@@ -32,7 +32,7 @@ $smarty->registerPlugin(
        ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getExtensionCategory', [$plugins, 'getExtensionCategory'])
        ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'formatVersion', [$plugins, 'formatVersion'])
        ->registerPlugin(Smarty::PLUGIN_MODIFIER, 'formatByteSize', [Text::class, 'formatSize'])
-       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'gravatarImage', [$plugins, 'gravatarImage'])
+       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getAvatar', [$plugins, 'getAvatar'])
        ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getRevisions', [$plugins, 'getRevisions'])
        ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'captchaMarkup', [$plugins, 'captchaMarkup'])
        ->registerPlugin(Smarty::PLUGIN_MODIFIER, 'permission', [$plugins, 'permission']);

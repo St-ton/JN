@@ -155,6 +155,8 @@ function benutzerverwaltungSaveAttributes(stdClass $account, array $extAttribs, 
 {
     if (is_array($extAttribs)) {
         $result = true;
+        \JTL\BackendAccount::validateAccount($account, $extAttribs, $messages);
+
         executeHook(HOOK_BACKEND_ACCOUNT_EDIT, [
             'oAccount' => $account,
             'type'     => 'VALIDATE',
@@ -472,6 +474,8 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
         $account    = new stdClass();
         $extAttribs = [];
     }
+
+    $smarty->assign('attribValues', $extAttribs);
 
     $extContent = '';
     executeHook(HOOK_BACKEND_ACCOUNT_PREPARE_EDIT, [

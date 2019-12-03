@@ -218,27 +218,11 @@ class Plugins
      * @source https://gravatar.com/site/implement/images/php/
      * @return string
      */
-    public function gravatarImage(array $params): string
+    public function getAvatar(array $params): string
     {
-        $email = $params['email'] ?? null;
-        if ($email === null) {
-            $email = \JTLSUPPORT_EMAIL;
-        } else {
-            unset($params['email']);
-        }
-
-        $params = \array_merge(['email' => null, 's' => 80, 'd' => 'mm', 'r' => 'g'], $params);
-
-        $url  = 'https://www.gravatar.com/avatar/';
-        $url .= \md5(\mb_convert_case(\trim($email), \MB_CASE_LOWER));
-        $url .= '?' . \http_build_query($params, '', '&');
-
-        \executeHook(\HOOK_BACKEND_FUNCTIONS_GRAVATAR, [
-            'url'          => &$url,
-            'AdminAccount' => &$_SESSION['AdminAccount']
-        ]);
-
-        return $url;
+        return isset($params['account']->attributes['useAvatarUpload']) ?
+            $params['account']->attributes['useAvatarUpload']->cAttribValue
+            : 'templates/bootstrap/gfx/avatar-default.svg';
     }
 
     /**

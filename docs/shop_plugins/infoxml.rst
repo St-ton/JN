@@ -655,6 +655,28 @@ Vergeben Sie stets eindeutige Boxennamen, damit sich diese nicht mit anderen Plu
 | ``<TemplateFile>`` | Templatedatei mit dem Inhalt der Box                             |
 +--------------------+------------------------------------------------------------------+
 
+Soll beispielsweise eine Box auf der Artikeldetailseite und in der Artikelliste des EVO-Templates angezeigt werden,
+würden Sie diese Box in der ``info.xml`` zweimal definieren - für jeden dieser Seitentypen:
+
+.. code-block:: xml
+   :emphasize-lines: 4,9
+
+    <Boxes>
+        <Box>
+            <Name>MyBox 1</Name>
+            <Available>1</Available>
+            <TemplateFile>box_1.tpl</TemplateFile>
+        </Box>
+        <Box>
+            <Name>MyBox 1</Name>
+            <Available>2</Available>
+            <TemplateFile>box_1.tpl</TemplateFile>
+        </Box>
+    </Boxes>
+
+``Available`` gibt dabei den Seitentyp an, auf dem die Box dargestellt werden soll. Die entsprechenden Seitentypen
+finden Sie in der ``includes/defines_inc.php``.
+
 
 .. _label_infoxml_widgets:
 

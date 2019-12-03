@@ -186,10 +186,7 @@
                 $('#gallery img').css('max-height', maxHeight-otherElemHeight);
 
                 $('#gallery').slick('slickSetOption','initialSlide', current, true);
-
-                setTimeout(() => {
-                    $('#gallery_preview').slick('slickGoTo', current);
-                }, 0);
+                $('#gallery_preview').slick('slickGoTo', current, true);
             }
 
             function addClickListener() {

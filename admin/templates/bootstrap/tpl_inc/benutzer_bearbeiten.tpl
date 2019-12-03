@@ -37,7 +37,7 @@ $(document).ready(function() {
         if($(this).val() === 'N') {
             useUploadDetails.addClass('d-none');
         } else {
-            useUploadDetails.removeClass('d-none')()
+            useUploadDetails.removeClass('d-none');
         }
     });
     $('#selectVitaLang').on('change', function () {
@@ -48,7 +48,44 @@ $(document).ready(function() {
 });
 {/literal}
 </script>
-
+<script>
+    $(function () {
+        var $el = $('#useAvatarUpload');
+        $el.fileinput({
+            uploadAsync:           false,
+            showPreview:           true,
+            showUpload:            false,
+            showRemove:            false,
+            showDrag:              false,
+            browseClass:           'btn btn-default',
+            cancelClass:           'btn btn-outline-primary',
+            cancelIcon:            '<i class="fas fa-exclamation"></i>',
+            fileActionSettings:    {
+                showZoom:   false,
+                showDrag:   false,
+                showRemove: false,
+            },
+            theme:                 'fas',
+            language:              '{$language|mb_substr:0:2}',
+            allowedFileExtensions: ['jpg', 'jpeg', 'jpe', 'gif', 'png', 'bmp'],
+            browseOnZoneClick:     true,
+            maxFileSize:           1000,
+            initialPreview:        [
+                {if isset($attribValues.useAvatar) && $attribValues.useAvatar->cAttribValue === 'U'}
+                '<img src="{$shopURL}/{$attribValues.useAvatarUpload->cAttribValue}" class="preview-image"/>',
+                {/if}
+            ],
+            initialPreviewConfig:  [
+                {if isset($attribValues.useAvatar) && $attribValues.useAvatar->cAttribValue === 'U'}
+                {
+                    caption: '{__('preview')}',
+                    width:   '120px'
+                }
+                {/if}
+            ]
+        });
+    });
+</script>
 {literal}
 <style>
     /* CONSIDER: styles ar mandatory for the QR-code! */
@@ -380,33 +417,27 @@ $(document).ready(function() {
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <select class="form-control custom-select" id="useAvatar" name="extAttribs[useAvatar]">
                                     <option value="N">{__('no')}</option>
-                                    <option value="U"{if $attribValues.useAvatar->cAttribValue == 'U'} selected="selected"{/if}>{__('yes')}</option>
+                                    <option value="U"{if isset($attribValues.useAvatar) && $attribValues.useAvatar->cAttribValue == 'U'} selected="selected"{/if}>{__('yes')}</option>
                                 </select>
                             </div>
                         </div>
-                        <div id="useUploadDetails" class="item {if $attribValues.useAvatar->cAttribValue === 'N'}d-none{/if}">
+                        <div id="useUploadDetails" class="item {if !isset($attribValues.useAvatar) || $attribValues.useAvatar->cAttribValue === 'N'}d-none{/if}">
                             <div class="form-group form-row align-items-center">
                                 <label class="col col-sm-4 col-form-label text-sm-right" for="useAvatarUpload">{__('Image')}:</label>
                                 <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                    <input id="useAvatarUpload" class="form-control-upload" name="extAttribs[useAvatarUpload]" type="file" maxlength="2097152" accept="image/*" />
+                                    <input class="form-control-upload" id="useAvatarUpload" name="extAttribs[useAvatarUpload]" type="file" maxlength="2097152" accept="image/*"/>
                                 </div>
                             </div>
-                            <span class="input-group-wrap dropdown avatar">
-                                <input type="hidden" name="extAttribs[useAvatarUpload]" value="{$attribValues.useAvatarUpload->cAttribValue}" />
-                                {if isset($uploadImage)}
-                                    <img alt="{$oAccount->cMail}" src="{$uploadImage}" title="{if !empty($attribValues.useAvatarUpload->cAttribValue)}{$attribValues.useAvatarUpload->cAttribValue}{else}{$oAccount->cMail}{/if}" class="img-circle" />
-                                {/if}
-                            </span>
                             {if isset($cError_arr.useAvatarUpload)}
                                 <span class="input-group-addon error"><i class="fa fa-exclamation-triangle"></i></span>
                             {/if}
                         </div>
                     </div>
                     <div class="item">
-                        <label for="useVita">{__('resume')}</label>
+                        <label for="useVita">{__('resume')}:</label>
                         <select class="form-control custom-select" id="selectVitaLang">
                             {foreach $sprachen as $language}
-                                <option value="{$language->cISO}"{if $language->cShopStandard === 'Y'} selected="selected"{/if}>{$language->cNameDeutsch} {if $language->cShopStandard === 'Y'}({__('standard')}{/if}</option>
+                                <option value="{$language->cISO}"{if $language->cShopStandard === 'Y'} selected="selected"{/if}>{$language->getLocalizedName()} {if $language->cShopStandard === 'Y'}({__('standard')}){/if}</option>
                             {/foreach}
                         </select>
                         <div class="mt-3">
@@ -414,7 +445,15 @@ $(document).ready(function() {
                                 {assign var="cISO" value=$language->cISO}
                                 {assign var="useVita_ISO" value="useVita_"|cat:$cISO}
                                 <div id="isoVita_{$cISO}" class="iso_wrapper{if $language->cShopStandard != 'Y'} hidden-soft{/if}">
-                                    <textarea class="form-control ckeditor" id="useVita_{$cISO}" name="extAttribs[useVita_{$cISO}]" rows="10" cols="40">{if !empty($attribValues.$useVita_ISO->cAttribText)}{$attribValues.$useVita_ISO->cAttribText}{else}{$attribValues.$useVita_ISO->cAttribValue}{/if}</textarea>
+                                    <textarea class="form-control ckeditor" id="useVita_{$cISO}" name="extAttribs[useVita_{$cISO}]" rows="10" cols="40">
+                                        {if isset($attribValues.$useVita_ISO)}
+                                            {if !empty($attribValues.$useVita_ISO->cAttribText)}
+                                                {$attribValues.$useVita_ISO->cAttribText}
+                                            {else}
+                                                {$attribValues.$useVita_ISO->cAttribValue}
+                                            {/if}
+                                        {/if}
+                                    </textarea>
                                 </div>
                             {/foreach}
                         </div>

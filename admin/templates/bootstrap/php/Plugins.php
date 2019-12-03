@@ -206,16 +206,7 @@ class Plugins
     }
 
     /**
-     * Get either a Gravatar URL or complete image tag for a specified email address.
-     *
-     * @param array     $params
-     *
-     * array['email'] - The email address
-     * array['s']     - Size in pixels, defaults to 80px [ 1 - 2048 ]
-     * array['d']     - Default imageset to use [ 404 | mm | identicon | monsterid | wavatar ]
-     * array['r']     - Maximum rating (inclusive) [ g | pg | r | x ]
-     *
-     * @source https://gravatar.com/site/implement/images/php/
+     * @param array $params
      * @return string
      */
     public function getAvatar(array $params): string

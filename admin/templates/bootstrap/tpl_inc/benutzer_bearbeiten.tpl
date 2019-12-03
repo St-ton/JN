@@ -428,6 +428,7 @@ $(document).ready(function() {
                                     <input class="form-control-upload" id="useAvatarUpload" name="extAttribs[useAvatarUpload]" type="file" maxlength="2097152" accept="image/*"/>
                                 </div>
                             </div>
+                            <input type="hidden" name="extAttribs[useAvatarUpload]" value="{if isset($attribValues.useAvatarUpload)}{$attribValues.useAvatarUpload->cAttribValue}{/if}" />
                             {if isset($cError_arr.useAvatarUpload)}
                                 <span class="input-group-addon error"><i class="fa fa-exclamation-triangle"></i></span>
                             {/if}

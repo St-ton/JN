@@ -321,7 +321,7 @@ if ($step === 'einstellen') {
         && Form::validateToken()
     ) {
         $incomingIDs = $_POST['kEingang_arr'];
-        array_walk($incomingIDs, function (&$i) {
+        array_walk($incomingIDs, static function (&$i) {
             $i = (int)$i;
         });
         $db->query(

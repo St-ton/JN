@@ -15,6 +15,7 @@ use JTL\Media\MediaImageRequest;
 use JTL\Shop;
 use stdClass;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
 use function Functional\every;
 use function Functional\filter;
 use function Functional\map;
@@ -262,7 +263,7 @@ abstract class AbstractImage implements IMedia
      */
     public static function getUncachedImageCount(): int
     {
-        return \count(select(static::getAllImages(), function (MediaImageRequest $e) {
+        return \count(select(static::getAllImages(), static function (MediaImageRequest $e) {
             return !static::isCached($e) && ($file = $e->getRaw()) !== null && \file_exists($file);
         }));
     }
@@ -323,10 +324,10 @@ abstract class AbstractImage implements IMedia
         $baseDir     = \realpath(\PFAD_ROOT . MediaImageRequest::getCachePath(static::getType()));
         $ids         = \is_array($id) ? $id : [$id];
         $directories = filter(
-            map($ids, function ($e) use ($baseDir) {
+            map($ids, static function ($e) use ($baseDir) {
                 return $e === null ? $baseDir : \realpath($baseDir . '/' . $e);
             }),
-            function ($e) use ($baseDir) {
+            static function ($e) use ($baseDir) {
                 return $e !== false && \strpos($e, $baseDir) === 0;
             }
         );
@@ -334,11 +335,11 @@ abstract class AbstractImage implements IMedia
             $finder = new Finder();
             $finder->ignoreUnreadableDirs()->in($directories);
             foreach ($finder->files() as $file) {
-                /** @var \Symfony\Component\Finder\SplFileInfo $file */
+                /** @var SplFileInfo $file */
                 \unlink($file->getRealPath());
             }
             foreach (\array_reverse(\iterator_to_array($finder->directories(), true)) as $directory) {
-                /** @var \Symfony\Component\Finder\SplFileInfo $directory */
+                /** @var SplFileInfo $directory */
                 \rmdir($directory->getRealPath());
             }
             foreach ($directories as $directory) {
@@ -372,7 +373,7 @@ abstract class AbstractImage implements IMedia
      */
     protected static function isCached(MediaImageRequest $req): bool
     {
-        return every(Image::getAllSizes(), function ($e) use ($req) {
+        return every(Image::getAllSizes(), static function ($e) use ($req) {
             return \file_exists($req->getThumb($e, true));
         });
     }

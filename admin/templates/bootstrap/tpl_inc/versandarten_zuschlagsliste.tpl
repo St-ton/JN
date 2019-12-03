@@ -99,10 +99,10 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
+                <div class="subheading1">{__('addZip')} - <span id="add-zip-modal-title"></span></div>
                 <button type="button" class="close" data-dismiss="modal">
                     <i class="fa fa-times"></i>
                 </button>
-                <div class="subheading1">{__('addZip')} - <span id="add-zip-modal-title"></span></div>
             </div>
             <div class="modal-body">
                 <hr class="mb-3">
@@ -153,10 +153,10 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
+                <div id="new-surcharge-modal-title" class="subheading1">{__('createList')}</div>
                 <button type="button" class="close" data-dismiss="modal">
                     <i class="fa fa-times"></i>
                 </button>
-                <div id="new-surcharge-modal-title" class="subheading1">{__('createList')}</div>
             </div>
             <div class="modal-body">
                 <hr class="mb-3">

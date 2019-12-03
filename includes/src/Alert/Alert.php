@@ -142,9 +142,6 @@ class Alert
         switch ($this->getType()) {
             case self::TYPE_DANGER:
             case self::TYPE_ERROR:
-                $this->setDismissable(true)
-                     ->setIcon(self::ICON_WARNING);
-                break;
             case self::TYPE_WARNING:
                 $this->setDismissable(true)
                      ->setIcon(self::ICON_WARNING);

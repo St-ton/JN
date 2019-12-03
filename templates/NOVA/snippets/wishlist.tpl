@@ -415,7 +415,7 @@
                                                         {/block}
                                                     {/if}
                                                     {block name='snippets-wishlist-form-basket-image'}
-                                                        <div class="list-gallery carousel carousel-arrows-inside productbox-images">
+                                                        <div class="list-gallery slick-smooth-loading carousel carousel-arrows-inside productbox-images">
                                                             {foreach $wlPosition->Artikel->Bilder as $image}
                                                                 {strip}
                                                                     <div>

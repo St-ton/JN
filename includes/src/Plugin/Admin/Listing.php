@@ -97,7 +97,7 @@ final class Listing
         }
         $data         = map(
             $all,
-            function (stdClass $e) {
+            static function (stdClass $e) {
                 $e->kPlugin    = (int)$e->kPlugin;
                 $e->bExtension = (int)$e->bExtension;
 
@@ -131,7 +131,7 @@ final class Listing
      */
     public function getAll(Collection $installed): Collection
     {
-        $installedItems = $installed->map(function (ListingItem $item) {
+        $installedItems = $installed->map(static function (ListingItem $item) {
             return $item->getPath();
         });
         $parser         = new XMLParser();
@@ -150,17 +150,17 @@ final class Listing
      */
     public function checkLegacyToModernUpdates(Collection $installed, Collection $all): void
     {
-        $legacyItems = $installed->filter(function (ListingItem $e) {
+        $legacyItems = $installed->filter(static function (ListingItem $e) {
             return $e->isLegacy() === true;
         });
-        $items       = $all->filter(function (ListingItem $e) {
+        $items       = $all->filter(static function (ListingItem $e) {
             return $e->isLegacy() === false;
         });
         foreach ($legacyItems as $legacyItem) {
             /** @var ListingItem $legacyItem */
             /** @var ListingItem $hit */
             $pid = $legacyItem->getPluginID();
-            $hit = $items->filter(function (ListingItem $e) use ($pid) {
+            $hit = $items->filter(static function (ListingItem $e) use ($pid) {
                 return $e->getPluginID() === $pid;
             })->first();
             if ($hit === null) {
@@ -220,7 +220,7 @@ final class Listing
                 $item->setAuthor(__($item->getAuthor()));
                 $item->setName(__($item->getName()));
             }
-            if (!$modern && $this->items->contains(function (ListingItem $e) use ($dir) {
+            if (!$modern && $this->items->contains(static function (ListingItem $e) use ($dir) {
                     return $e->isLegacy() === false && $e->getDir() === $dir;
             })) {
                 // do not add legacy plugins to list when there is a modern variant for it
@@ -247,7 +247,7 @@ final class Listing
      */
     private function sort(): void
     {
-        $this->items = $this->items->sortBy(function (ListingItem $item) {
+        $this->items = $this->items->sortBy(static function (ListingItem $item) {
             return \mb_convert_case($item->getName(), \MB_CASE_LOWER);
         });
     }

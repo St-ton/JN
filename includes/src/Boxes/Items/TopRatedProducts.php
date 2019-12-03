@@ -50,7 +50,7 @@ final class TopRatedProducts extends AbstractBox
             \shuffle($topRated);
             $res            = map(
                 \array_slice($topRated, 0, $config['boxen']['boxen_topbewertet_anzahl']),
-                function ($productID) {
+                static function ($productID) {
                     return (int)$productID->kArtikel;
                 }
             );

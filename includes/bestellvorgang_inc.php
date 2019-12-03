@@ -2143,14 +2143,14 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
             }
         }
     }
-    $enDate = \DateTime::createFromFormat('Y-m-d', $data['geburtstag']);
-    if (isset($data['geburtstag'])
-        && ($errCode = Text::checkDate(
+    if (isset($data['geburtstag'])) {
+        $enDate = \DateTime::createFromFormat('Y-m-d', $data['geburtstag']);
+        if (($errCode = Text::checkDate(
             $enDate === false ? $data['geburtstag'] : $enDate->format('d.m.Y'),
             $conf['kunden']['kundenregistrierung_abfragen_geburtstag'] === 'Y'
-        )) > 0
-    ) {
-        $ret['geburtstag'] = $errCode;
+        )) > 0) {
+            $ret['geburtstag'] = $errCode;
+        }
     }
     if ($kundenaccount === 1) {
         if ($checkpass) {

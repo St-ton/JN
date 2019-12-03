@@ -7,8 +7,6 @@
 namespace JTL\Update;
 
 use Exception;
-use JTL\Helpers\GeneralObject;
-use JTL\Shop;
 use stdClass;
 
 /**
@@ -251,7 +249,7 @@ trait MigrationTableTrait
         $einstellungen->cName                 = $configName;
         $einstellungen->cWert                 = $configValue;
         $einstellungen->cModulId              = $cModulId;
-        $this->getDB()->insertRow('teinstellungen', $einstellungen);
+        $this->getDB()->insert('teinstellungen', $einstellungen);
         unset($einstellungen);
 
         $einstellungenConf                        = new stdClass();
@@ -280,7 +278,7 @@ trait MigrationTableTrait
                 $einstellungenConfWerte->cName              = $optionValue;
                 $einstellungenConfWerte->cWert              = $optionKey;
                 $einstellungenConfWerte->nSort              = $sortIndex;
-                $this->getDB()->insertRow('teinstellungenconfwerte', $einstellungenConfWerte);
+                $this->getDB()->insert('teinstellungenconfwerte', $einstellungenConfWerte);
                 $sortIndex++;
             }
             unset($einstellungenConfWerte);

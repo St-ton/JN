@@ -25,7 +25,7 @@ final class Category extends AbstractFactory
      */
     public function getCollection(array $languages, array $customerGroups): Generator
     {
-        $languageIDs    = map($languages, function ($e) {
+        $languageIDs    = map($languages, static function ($e) {
             return (int)$e->kSprache;
         });
         $customerGroup  = first($customerGroups);

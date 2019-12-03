@@ -62,7 +62,7 @@ class ProductFilterSQL implements ProductFilterSQLInterface
                 $this->productFilter->getFilterConfig()->getCustomerGroupID());
         // remove duplicate joins
         $checked = [];
-        $joins   = reduce_left($joins, function (JoinInterface $value, $i, $c, $reduction) use (&$checked) {
+        $joins   = reduce_left($joins, static function (JoinInterface $value, $i, $c, $reduction) use (&$checked) {
             $key = $value->getTable();
             if (!\in_array($key, $checked, true)) {
                 $checked[]   = $key;
@@ -100,7 +100,7 @@ class ProductFilterSQL implements ProductFilterSQLInterface
         ]);
         // merge Query-Conditions
         $filterQueryIndices = [];
-        $filterQueries      = \array_filter($conditions, function ($f) {
+        $filterQueries      = \array_filter($conditions, static function ($f) {
             return \is_object($f) && \get_class($f) === Query::class;
         });
         foreach ($filterQueries as $idx => $condition) {
@@ -126,7 +126,7 @@ class ProductFilterSQL implements ProductFilterSQLInterface
             }
         }
         // build sql string
-        $cond = \implode(' AND ', \array_map(function ($a) {
+        $cond = \implode(' AND ', \array_map(static function ($a) {
             if (\is_string($a) || (\is_object($a) && \get_class($a) === Query::class)) {
                 return $a;
             }

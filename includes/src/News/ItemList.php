@@ -80,7 +80,7 @@ final class ItemList implements ItemListInterface
                 ORDER BY FIELD(tnews.kNews, ' . $itemList . ')',
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $items         = map(group($itemLanguages, function ($e) {
+        $items         = map(group($itemLanguages, static function ($e) {
             return (int)$e->kNews;
         }), function ($e, $newsID) {
             $l = new Item($this->db);

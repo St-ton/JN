@@ -59,8 +59,8 @@ class FilesCommand extends Command
             ->in(\PFAD_ROOT);
 
         $io->progress(
-            function ($mycb) use ($filesystem, $archive, $finder) {
-                    $filesystem->zip($finder, $archive, function ($count, $index) use (&$mycb) {
+            static function ($mycb) use ($filesystem, $archive, $finder) {
+                    $filesystem->zip($finder, $archive, static function ($count, $index) use (&$mycb) {
                         $mycb($count, $index);
                     });
             },

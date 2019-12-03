@@ -124,7 +124,7 @@ class Filter
         $this->whereSQL = \implode(
             ' AND ',
             \array_filter(
-                \array_map(function (FilterField $oField) {
+                \array_map(static function (FilterField $oField) {
                     return $oField->getWhereClause();
                 }, $this->fields)
             )

@@ -113,11 +113,11 @@ if (!isset($sitemapDownloadsPerYear) || count($sitemapDownloadsPerYear) === 0) {
     ];
 }
 if ($yearDownloads === 0) {
-    $yearDownloads = $sitemapDownloadsPerYear[0]->year;
+    $yearDownloads = (int)$sitemapDownloadsPerYear[0]->year;
 }
 $downloadPagination = (new Pagination('SitemapDownload'))
-    ->setItemCount(array_reduce($sitemapDownloadsPerYear, function ($carry, $item) use ($yearDownloads) {
-        return (int)$item->year === (int)$yearDownloads ? (int)$item->count : $carry;
+    ->setItemCount(array_reduce($sitemapDownloadsPerYear, static function ($carry, $item) use ($yearDownloads) {
+        return (int)$item->year === $yearDownloads ? (int)$item->count : $carry;
     }, 0))
     ->assemble();
 $sitemapDownloads   = Shop::Container()->getDB()->query(
@@ -148,11 +148,11 @@ if (!isset($reportYears) || count($reportYears) === 0) {
     ];
 }
 if ($yearReports === 0) {
-    $yearReports = $reportYears[0]->year;
+    $yearReports = (int)$reportYears[0]->year;
 }
 $pagination     = (new Pagination('SitemapReport'))
-    ->setItemCount(array_reduce($reportYears, function ($carry, $item) use ($yearReports) {
-        return (int)$item->year === (int)$yearReports ? (int)$item->count : $carry;
+    ->setItemCount(array_reduce($reportYears, static function ($carry, $item) use ($yearReports) {
+        return (int)$item->year === $yearReports ? (int)$item->count : $carry;
     }, 0))
     ->assemble();
 $sitemapReports = Shop::Container()->getDB()->query(

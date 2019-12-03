@@ -134,7 +134,7 @@ class Question
                 ORDER BY nSort',
             ['gid' => $groupID],
             ReturnType::COLLECTION
-        )->map(function ($e) use ($activeOnly) {
+        )->map(static function ($e) use ($activeOnly) {
             return new self((int)$e->id, $activeOnly);
         })->all();
     }

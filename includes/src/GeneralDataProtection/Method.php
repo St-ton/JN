@@ -6,7 +6,11 @@
 
 namespace JTL\GeneralDataProtection;
 
+use DateInterval;
+use DateTime;
+use Exception;
 use JTL\Shop;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class Method
@@ -15,9 +19,9 @@ use JTL\Shop;
 class Method
 {
     /**
-     * object-wide date at the point of instanciating
+     * object wide date at the point of instanciating
      *
-     * @var object DateTime
+     * @var DateTime
      */
     protected $now;
 
@@ -48,29 +52,29 @@ class Method
     /**
      * main shop logger
      *
-     * @var \Monolog\Logger
+     * @var LoggerInterface
      */
     protected $logger;
 
     /**
      * Method constructor.
-     * @param \DateTime $now
-     * @param int       $interval
+     * @param DateTime $now
+     * @param int      $interval
      */
-    public function __construct(\DateTime $now, int $interval)
+    public function __construct(DateTime $now, int $interval)
     {
         try {
             $this->logger = Shop::Container()->getLogService();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger = null;
         }
         $this->now      = clone $now;
         $this->interval = $interval;
         try {
             $this->dateLimit = $this->now->sub(
-                new \DateInterval('P' . $this->interval . 'D')
+                new DateInterval('P' . $this->interval . 'D')
             )->format('Y-m-d H:i:s');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             ($this->logger === null) ?: $this->logger->log(
                 \JTLLOG_LEVEL_WARNING,
                 'Wrong Interval given: ' . $this->interval

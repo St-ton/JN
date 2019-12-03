@@ -77,7 +77,7 @@ if (Request::postInt('unreg_form') === 1 && $conf['kaufabwicklung']['bestellvorg
 }
 if (isset($_GET['editLieferadresse'])) {
     // Shipping address and customer address are now on same site
-    $_GET['editRechnungsadresse'] = $_GET['editLieferadresse'];
+    $_GET['editRechnungsadresse'] = Request::getInt($_GET['editLieferadresse']);
 }
 if (Request::postInt('unreg_form', -1) === 0) {
     $_POST['checkout'] = 1;
@@ -155,14 +155,14 @@ pruefeZahlungStep();
 // autom. step ermitteln
 pruefeBestaetigungStep();
 // sondersteps Rechnungsadresse aendern
-pruefeRechnungsadresseStep($_GET);
+pruefeRechnungsadresseStep(StringHandler::filterXSS($_GET));
 // sondersteps Lieferadresse aendern
-pruefeLieferadresseStep($_GET);
+pruefeLieferadresseStep(StringHandler::filterXSS($_GET));
 // sondersteps Versandart aendern
-pruefeVersandartStep($_GET);
+pruefeVersandartStep(StringHandler::filterXSS($_GET));
 // sondersteps Zahlungsart aendern
-pruefeZahlungsartStep($_GET);
-pruefeZahlungsartwahlStep($_POST);
+pruefeZahlungsartStep(StringHandler::filterXSS($_GET));
+pruefeZahlungsartwahlStep(StringHandler::filterXSS($_POST));
 
 if ($step === 'accountwahl') {
     gibStepAccountwahl();
@@ -192,7 +192,7 @@ if ($step === 'Bestaetigung') {
     pruefeGuthabenNutzen();
     // Eventuellen Zahlungsarten Aufpreis/Rabatt neusetzen
     getPaymentSurchageDiscount($_SESSION['Zahlungsart']);
-    gibStepBestaetigung($_GET);
+    gibStepBestaetigung(StringHandler::filterXSS($_GET));
     $cart->cEstimatedDelivery = $cart->getEstimatedDeliveryTime();
     Cart::refreshChecksum($cart);
 }

@@ -114,7 +114,7 @@ class FileCheck
         $count  = 0;
         $fs     = Shop::Container()->get(Filesystem::class);
         $finder = new Finder();
-        $finder->append(map($orphanedFiles, function (stdClass $e) {
+        $finder->append(map($orphanedFiles, static function (stdClass $e) {
             return \PFAD_ROOT . $e->name;
         }));
         try {

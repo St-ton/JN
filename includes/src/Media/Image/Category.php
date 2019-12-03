@@ -56,7 +56,7 @@ class Category extends AbstractImage
                 WHERE pic.kKategorie = :cid',
             ['cid' => $req->getID()],
             ReturnType::COLLECTION
-        )->map(function ($item) {
+        )->map(static function ($item) {
             return self::getCustomName($item);
         })->toArray();
     }

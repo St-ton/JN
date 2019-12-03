@@ -88,7 +88,7 @@ class Form
     {
         return (int)none(
             $fehlendeAngaben,
-            function ($e) {
+            static function ($e) {
                 return $e > 0;
             }
         );

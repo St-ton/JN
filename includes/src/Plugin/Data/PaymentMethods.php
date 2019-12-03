@@ -81,7 +81,7 @@ class PaymentMethods
      */
     public function getMethodsAssoc(): array
     {
-        return reindex($this->methods, function (PaymentMethod $e) {
+        return reindex($this->methods, static function (PaymentMethod $e) {
             return $e->getModuleID();
         });
     }
@@ -100,7 +100,7 @@ class PaymentMethods
      */
     public function getMethodByID(string $id): ?PaymentMethod
     {
-        return first($this->methods, function (PaymentMethod $method) use ($id) {
+        return first($this->methods, static function (PaymentMethod $method) use ($id) {
             return $method->getModuleID() === $id;
         });
     }

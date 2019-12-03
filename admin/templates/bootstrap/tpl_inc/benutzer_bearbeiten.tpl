@@ -78,7 +78,7 @@ $(document).ready(function() {
 
 {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=__('benutzerDesc')}
 <div id="content">
-    <form class="navbar-form" action="benutzerverwaltung.php" method="post">
+    <form class="navbar-form" action="benutzerverwaltung.php" method="post" enctype="multipart/form-data">
         {$jtl_token}
         <div id="settings" class="settings">
             <div class="card">
@@ -356,26 +356,12 @@ $(document).ready(function() {
             <script type="text/javascript">
                 {literal}
                 $(document).ready(function() {
-                    var useAvatar = $('#useAvatar');
-                    if (useAvatar.val() === 'U') {
-                        useAvatar[0].form.enctype = 'multipart/form-data';
-                    }
-                    useAvatar.bind('change', function() {
-                        var useGravatarDetails = $('#useGravatarDetails');
+                    $('#useAvatar').on('change', function() {
                         var useUploadDetails   = $('#useUploadDetails');
-                        switch ($(this).val()) {
-                            case 'G':
-                                useGravatarDetails.css('display', 'table-cell');
-                                useUploadDetails.hide();
-                                break;
-                            case 'U':
-                                this.form.enctype = 'multipart/form-data';
-                                useUploadDetails.css('display', 'table-cell');
-                                useGravatarDetails.hide();
-                                break;
-                            default:
-                                useGravatarDetails.hide();
-                                useUploadDetails.hide();
+                        if($(this).val() === 'N') {
+                            useUploadDetails.addClass('d-none');
+                        } else {
+                            useUploadDetails.removeClass('d-none')()
                         }
                     });
                 });
@@ -410,7 +396,7 @@ $(document).ready(function() {
                                 </select>
                             </div>
                         </div>
-                        <div id="useUploadDetails" class="item">
+                        <div id="useUploadDetails" class="item {if $attribValues.useAvatar->cAttribValue === 'N'}d-none{/if}">
                             <div class="form-group form-row align-items-center">
                                 <label class="col col-sm-4 col-form-label text-sm-right" for="useAvatarUpload">Bild:</label>
                                 <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">

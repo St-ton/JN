@@ -155,7 +155,7 @@ function benutzerverwaltungSaveAttributes(stdClass $account, array $extAttribs, 
 {
     if (is_array($extAttribs)) {
         $result = true;
-        \JTL\BackendAccount::validateAccount($account, $extAttribs, $messages);
+        validateAccount($extAttribs, $messages);
 
         executeHook(HOOK_BACKEND_ACCOUNT_EDIT, [
             'oAccount' => $account,
@@ -212,6 +212,85 @@ function benutzerverwaltungSaveAttributes(stdClass $account, array $extAttribs, 
     }
 
     return true;
+}
+
+/**
+ * @param array $attribs
+ * @param array $messages
+ * @return array|bool
+ */
+function validateAccount(array &$attribs, array &$messages)
+{
+    $result = true;
+
+    if (!$attribs['useAvatar']) {
+        $attribs['useAvatar'] = 'N';
+    }
+
+    if ($attribs['useAvatar'] === 'U') {
+        if (isset($_FILES['extAttribs']) && !empty($_FILES['extAttribs']['name']['useAvatarUpload'])) {
+            $attribs['useAvatarUpload'] = uploadAvatarImage($_FILES['extAttribs'], 'useAvatarUpload');
+
+            if ($attribs['useAvatarUpload'] === false) {
+                $messages['error'] .= 'Fehler beim Bilupload!';
+
+                $result = ['useAvatarUpload' => 1];
+            }
+        } elseif (empty($attribs['useAvatarUpload'])) {
+            $messages['error'] .= 'Bitte geben Sie ein Bild an!';
+
+            $result = ['useAvatarUpload' => 1];
+        }
+    } elseif (!empty($attribs['useAvatarUpload'])) {
+        if (\is_file(\PFAD_ROOT . $attribs['useAvatarUpload'])) {
+            \unlink(\PFAD_ROOT . $attribs['useAvatarUpload']);
+        }
+        $attribs['useAvatarUpload'] = '';
+    }
+
+    foreach (LanguageHelper::getAllLanguages() as $language) {
+        $useVita_ISO = 'useVita_' . $language->cISO;
+        if (!empty($attribs[$useVita_ISO])) {
+            $shortText = StringHandler::filterXSS($attribs[$useVita_ISO]);
+            $longtText = $attribs[$useVita_ISO];
+
+            if (\mb_strlen($shortText) > 255) {
+                $shortText = \mb_substr($shortText, 0, 250) . '...';
+            }
+
+            $attribs[$useVita_ISO] = [$shortText, $longtText];
+        }
+    }
+
+    return $result;
+}
+
+/**
+ * @param array $tmpFile
+ * @param string $attribName
+ * @return bool|string
+ */
+function uploadAvatarImage(array $tmpFile, string $attribName)
+{
+    $imgType = \array_search($tmpFile['type'][$attribName], [
+        \IMAGETYPE_JPEG => \image_type_to_mime_type(\IMAGETYPE_JPEG),
+        \IMAGETYPE_PNG  => \image_type_to_mime_type(\IMAGETYPE_PNG),
+        \IMAGETYPE_BMP  => \image_type_to_mime_type(\IMAGETYPE_BMP),
+        \IMAGETYPE_GIF  => \image_type_to_mime_type(\IMAGETYPE_GIF),
+    ], true);
+
+    if ($imgType !== false) {
+        $imagePath = \PFAD_MEDIA_IMAGE . 'avatare/';
+        $imageName = \pathinfo($tmpFile['name'][$attribName], \PATHINFO_FILENAME)
+            . \image_type_to_extension($imgType);
+        if (\is_dir(\PFAD_ROOT . $imagePath) || \mkdir(\PFAD_ROOT . $imagePath, 0755)) {
+            if (\move_uploaded_file($tmpFile['tmp_name'][$attribName], \PFAD_ROOT . $imagePath . $imageName)) {
+                return '/' . $imagePath . $imageName;
+            }
+        }
+    }
+
+    return false;
 }
 
 /**

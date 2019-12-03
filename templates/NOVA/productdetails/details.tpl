@@ -129,16 +129,15 @@
                                         || $Einstellungen.artikeldetails.adr_hazard_display === 'DL')}
                                             {block name='productdetails-details-hazard-info'}
                                                 <li>
-                                                    <div class="title text-muted">{lang key='adrHazardSign'}:
-                                                        <table class="adr-table">
-                                                            <tr>
-                                                                <td>{$Artikel->cGefahrnr}</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>{$Artikel->cUNNummer}</td>
-                                                            </tr>
-                                                        </table>
-                                                    </div>
+                                                    <span class="font-weight-bold">{lang key='adrHazardSign'}:</span>
+                                                    <table class="adr-table">
+                                                        <tr>
+                                                            <td>{$Artikel->cGefahrnr}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>{$Artikel->cUNNummer}</td>
+                                                        </tr>
+                                                    </table>
                                                 </li>
                                             {/block}
                                         {/if}

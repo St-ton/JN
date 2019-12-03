@@ -27,7 +27,7 @@ final class Page extends AbstractFactory
     public function getCollection(array $languages, array $customerGroups): Generator
     {
         $customerGroup = first($customerGroups);
-        $languageCodes = map($languages, function ($e) {
+        $languageCodes = map($languages, static function ($e) {
             return "'" . $e->cISO . "'";
         });
         $res           = $this->db->queryPrepared(
@@ -56,7 +56,7 @@ final class Page extends AbstractFactory
             ['cGrpID' => $customerGroup],
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $linkIDs       = map($res, function ($e) {
+        $linkIDs       = map($res, static function ($e) {
             return $e->id;
         });
         $linkList      = new LinkList($this->db);

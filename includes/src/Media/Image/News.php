@@ -58,7 +58,7 @@ class News extends AbstractImage
                 WHERE a.kNews = :nid',
             ['nid' => $req->getID()],
             ReturnType::COLLECTION
-        )->each(function ($item, $key) use ($req) {
+        )->each(static function ($item, $key) use ($req) {
             if ($key === 0 && !empty($item->path)) {
                 $req->setSourcePath(\str_replace(\PFAD_NEWSBILDER, '', $item->path));
             }

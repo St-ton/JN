@@ -173,7 +173,7 @@ abstract class AbstractLoader implements LoaderInterface
      */
     protected function loadHooks(int $id): array
     {
-        return \array_map(function ($data) {
+        return \array_map(static function ($data) {
             $hook = new Hook();
             $hook->setPriority((int)$data->nPriority);
             $hook->setFile($data->cDateiname);
@@ -250,7 +250,7 @@ abstract class AbstractLoader implements LoaderInterface
     protected function loadAdminMenu(PluginInterface $plugin): AdminMenu
     {
         $i     = -1;
-        $menus = \array_map(function ($menu) use (&$i) {
+        $menus = \array_map(static function ($menu) use (&$i) {
             $menu->name             = $menu->cName;
             $menu->cName            = __($menu->cName);
             $menu->displayName      = $menu->cName;

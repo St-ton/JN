@@ -65,7 +65,7 @@ class IOResponse implements JsonSerializable
 
         $filtered = $arguments;
 
-        \array_walk($filtered, function (&$value, $key) {
+        \array_walk($filtered, static function (&$value, $key) {
             switch (\gettype($value)) {
                 case 'array':
                 case 'object':

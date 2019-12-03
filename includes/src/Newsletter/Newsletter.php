@@ -357,11 +357,11 @@ class Newsletter
         if (!\is_array($keys) || \count($keys) === 0) {
             return $res;
         }
-        $res = \array_filter($keys, function ($e) {
+        $res = \array_filter($keys, static function ($e) {
             return \mb_strlen($e) > 0;
         });
         if ($asProductNo) {
-            $res = \array_map(function ($e) {
+            $res = \array_map(static function ($e) {
                 return "'" . $e . "'";
             }, $res);
             if (\count($res) > 0) {
@@ -372,7 +372,7 @@ class Newsletter
                     AND kEigenschaftKombi = 0',
                     ReturnType::ARRAY_OF_OBJECTS
                 );
-                $res       = \array_map(function ($e) {
+                $res       = \array_map(static function ($e) {
                     return $e->kArtikel;
                 }, $artNoData);
             }

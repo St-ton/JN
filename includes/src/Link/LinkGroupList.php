@@ -140,7 +140,7 @@ final class LinkGroupList implements LinkGroupListInterface
             ReturnType::ARRAY_OF_OBJECTS
         );
 
-        $grouped = group($unassigned, function ($e) {
+        $grouped = group($unassigned, static function ($e) {
             return $e->kLink;
         });
         $lg      = new LinkGroup($this->db);
@@ -190,7 +190,7 @@ final class LinkGroupList implements LinkGroupListInterface
                 WHERE g.kLinkgruppe > 0 AND loc.kLinkgruppe > 0',
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $grouped        = group($groupLanguages, function ($e) {
+        $grouped        = group($groupLanguages, static function ($e) {
             return $e->kLinkgruppe;
         });
         foreach ($grouped as $linkGroupID => $localizedLinkgroup) {
@@ -241,7 +241,7 @@ final class LinkGroupList implements LinkGroupListInterface
                     GROUP BY tlink.kLink, tseo.kSprache",
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $grouped      = group($specialPages, function ($e) {
+        $grouped      = group($specialPages, static function ($e) {
             return $e->kLink;
         });
         $lg           = new LinkGroup($this->db);
@@ -308,7 +308,7 @@ final class LinkGroupList implements LinkGroupListInterface
                 GROUP BY tlink.kLink, tsprache.kSprache",
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $grouped      = group($staticRoutes, function ($e) {
+        $grouped      = group($staticRoutes, static function ($e) {
             return $e->kLink;
         });
         $lg           = new LinkGroup($this->db);
@@ -365,13 +365,13 @@ final class LinkGroupList implements LinkGroupListInterface
     {
         foreach ($this->linkGroups as $linkGroup) {
             /** @var LinkGroupInterface $linkGroup */
-            $linkGroup->getLinks()->map(function (LinkInterface $l) use ($customerID, $customerGroupID) {
+            $linkGroup->getLinks()->map(static function (LinkInterface $l) use ($customerID, $customerGroupID) {
                 $l->checkVisibility($customerGroupID, $customerID);
 
                 return $l;
             });
             $filtered = clone $linkGroup;
-            $filtered->filterLinks(function (LinkInterface $l) {
+            $filtered->filterLinks(static function (LinkInterface $l) {
                 return $l->isVisible();
             });
             $this->visibleLinkGroups->push($filtered);

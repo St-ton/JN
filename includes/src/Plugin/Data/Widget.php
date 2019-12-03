@@ -74,7 +74,7 @@ class Widget
      */
     public function getWidgetsAssoc(): array
     {
-        return reindex($this->widgets, function ($e) {
+        return reindex($this->widgets, static function ($e) {
             return $e->kWidget;
         });
     }

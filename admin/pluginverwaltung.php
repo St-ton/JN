@@ -69,24 +69,24 @@ if (!empty($_FILES['file_data'])) {
 }
 $pluginsInstalled   = $listing->getInstalled();
 $pluginsAll         = $listing->getAll($pluginsInstalled);
-$pluginsDisabled    = $pluginsInstalled->filter(function (ListingItem $e) {
+$pluginsDisabled    = $pluginsInstalled->filter(static function (ListingItem $e) {
     return $e->getState() === State::DISABLED;
 });
-$pluginsProblematic = $pluginsInstalled->filter(function (ListingItem $e) {
+$pluginsProblematic = $pluginsInstalled->filter(static function (ListingItem $e) {
     return \in_array(
         $e->getState(),
         [State::ERRONEOUS, State::UPDATE_FAILED, State::LICENSE_KEY_MISSING, State::LICENSE_KEY_INVALID],
         true
     );
 });
-$pluginsInstalled   = $pluginsInstalled->filter(function (ListingItem $e) {
+$pluginsInstalled   = $pluginsInstalled->filter(static function (ListingItem $e) {
     return $e->getState() === State::ACTIVATED;
 });
 $listing->checkLegacyToModernUpdates($pluginsInstalled, $pluginsAll);
-$pluginsAvailable = $pluginsAll->filter(function (ListingItem $item) {
+$pluginsAvailable = $pluginsAll->filter(static function (ListingItem $item) {
     return $item->isAvailable() === true && $item->isInstalled() === false;
 });
-$pluginsErroneous = $pluginsAll->filter(function (ListingItem $item) {
+$pluginsErroneous = $pluginsAll->filter(static function (ListingItem $item) {
     return $item->isHasError() === true && $item->isInstalled() === false;
 });
 if ($pluginUploaded === true) {
@@ -235,7 +235,7 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
     } elseif (Request::verifyGPCDataInt('updaten') === 1) {
         // Updaten
         $pluginID  = Request::verifyGPCDataInt('kPlugin');
-        $toInstall = $pluginsInstalled->first(function ($e) use ($pluginID) {
+        $toInstall = $pluginsInstalled->first(static function ($e) use ($pluginID) {
             /** @var ListingItem $e */
             return $e->getID() === $pluginID;
         });
@@ -303,7 +303,7 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                     WHERE tpluginsprachvariable.kPlugin = ' . $pluginID,
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            $original = group($original, function ($e) {
+            $original = group($original, static function ($e) {
                 return (int)$e->kPluginSprachvariable;
             });
             foreach (Shop::Lang()->gibInstallierteSprachen() as $lang) {
@@ -329,7 +329,7 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                     $match                             = first(
                         select(
                             $original[$kPluginSprachvariable],
-                            function ($e) use ($customLang) {
+                            static function ($e) use ($customLang) {
                                 return $e->cISO === $customLang->cISO;
                             }
                         )

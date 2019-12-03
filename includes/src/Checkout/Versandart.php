@@ -357,7 +357,7 @@ class Versandart
                 ORDER BY kVersandzuschlag DESC',
             ['kVersandart' => $this->kVersandart],
             ReturnType::COLLECTION
-        )->map(function ($surcharge) {
+        )->map(static function ($surcharge) {
             return new ShippingSurcharge($surcharge->kVersandzuschlag);
         }));
 
@@ -370,7 +370,7 @@ class Versandart
      */
     public function getShippingSurchargesForCountry(string $ISO): Collection
     {
-        return $this->getShippingSurcharges()->filter(function (ShippingSurcharge $surcharge) use ($ISO) {
+        return $this->getShippingSurcharges()->filter(static function (ShippingSurcharge $surcharge) use ($ISO) {
             return $surcharge->getISO() === $ISO;
         });
     }
@@ -382,7 +382,7 @@ class Versandart
      */
     public function getShippingSurchargeForZip(string $zip, string $ISO): ?ShippingSurcharge
     {
-        return $this->getShippingSurchargesForCountry($ISO)->filter(function (ShippingSurcharge $surcharge) use ($zip) {
+        return $this->getShippingSurchargesForCountry($ISO)->filter(static function (ShippingSurcharge $surcharge) use ($zip) {
             return $surcharge->hasZIPCode($zip);
         })->pop();
     }

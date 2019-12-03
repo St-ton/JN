@@ -202,7 +202,7 @@ class ProductFilterURL
             }
         }
         if (empty($seoFilterParams) && $languageID !== Shop::getLanguageID()) {
-            $language = first(Frontend::getLanguages(), function ($l) use ($languageID) {
+            $language = first(Frontend::getLanguages(), static function ($l) use ($languageID) {
                 return $l->kSprache === $languageID;
             });
             if ($language !== null) {
@@ -352,7 +352,7 @@ class ProductFilterURL
 
         foreach (\array_filter(
             $this->productFilter->getAvailableFilters(),
-            function ($f) {
+            static function ($f) {
                 /** @var FilterInterface $f */
                 return $f->isInitialized() && $f->isCustom();
             }

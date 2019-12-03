@@ -20,9 +20,9 @@ class LinkTypeToPageType
     {
         switch ($type) {
             case \LINKTYP_EIGENER_CONTENT:
+            case \LINKTYP_IMPRESSUM:
+            case \LINKTYP_BATTERIEGESETZ_HINWEISE:
                 return \PAGE_EIGENE;
-            case \LINKTYP_EXTERNE_URL:
-                return \PAGE_UNBEKANNT;
             case \LINKTYP_STARTSEITE:
                 return \PAGE_STARTSEITE;
             case \LINKTYP_VERSAND:
@@ -58,18 +58,14 @@ class LinkTypeToPageType
             case \LINKTYP_GRATISGESCHENK:
                 return \PAGE_GRATISGESCHENK;
             case \LINKTYP_WRB:
+            case \LINKTYP_WRB_FORMULAR:
                 return \PAGE_WRB;
             case \LINKTYP_PLUGIN:
                 return \PAGE_PLUGIN;
             case \LINKTYP_AUSWAHLASSISTENT:
                 return \PAGE_AUSWAHLASSISTENT;
-            case \LINKTYP_IMPRESSUM:
-            case \LINKTYP_BATTERIEGESETZ_HINWEISE:
-                return \PAGE_EIGENE;
             case \LINKTYP_404:
                 return \PAGE_404;
-            case \LINKTYP_WRB_FORMULAR:
-                return \PAGE_WRB;
             case \LINKTYP_BESTELLVORGANG:
                 return \PAGE_BESTELLVORGANG;
             case \LINKTYP_BESTELLABSCHLUSS:
@@ -78,6 +74,7 @@ class LinkTypeToPageType
                 return \PAGE_WUNSCHLISTE;
             case \LINKTYP_VERGLEICHSLISTE:
                 return \PAGE_VERGLEICHSLISTE;
+            case \LINKTYP_EXTERNE_URL:
             default:
                 return \PAGE_UNBEKANNT;
         }

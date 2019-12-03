@@ -160,7 +160,7 @@ final class Shopsetting implements ArrayAccess
         if ($section === \CONF_TEMPLATE) {
             $settings = Shop::Container()->getCache()->get(
                 $cacheID,
-                function ($cache, $id, &$content, &$tags) {
+                static function ($cache, $id, &$content, &$tags) {
                     $content = Template::getInstance()->getConfig();
                     $tags    = [\CACHING_GROUP_TEMPLATE, \CACHING_GROUP_OPTION];
 

@@ -560,7 +560,7 @@ class Profiler
         }
         if (\defined('FILTER_SQL_QUERIES') && \FILTER_SQL_QUERIES === true) {
             $hashes           = [];
-            self::$sqlProfile = \array_filter(self::$sqlProfile, function ($e) use (&$hashes) {
+            self::$sqlProfile = \array_filter(self::$sqlProfile, static function ($e) use (&$hashes) {
                 if (!\in_array($e->hash, $hashes, true)) {
                     $hashes[] = $e->hash;
 
@@ -569,7 +569,7 @@ class Profiler
 
                 return false;
             });
-            \uasort(self::$sqlProfile, function ($a, $b) {
+            \uasort(self::$sqlProfile, static function ($a, $b) {
                 return $b->time <=> $a->time;
             });
         }

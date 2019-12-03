@@ -22,17 +22,3 @@ if (Request::postInt('einstellungen') === 1) {
 }
 $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_PREISVERLAUF))
     ->display('preisverlauf.tpl');
-
-/**
- * @param string $colorCode
- * @return string
- */
-function checkeFarbCode($colorCode)
-{
-    if (preg_match('/#[A-Fa-f0-9]{6}/', $colorCode) == 1) {
-        return $colorCode;
-    }
-    Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, __('errorColorCode'), 'errorColorCode');
-
-    return '#000000';
-}

@@ -82,7 +82,7 @@ final class LinkAdmin
         $ls  = new LinkService($this->db, $this->cache);
         $lgl = new LinkGroupList($this->db, $this->cache);
         $lgl->loadAll();
-        $linkGroups = $lgl->getLinkGroups()->filter(function (LinkGroupInterface $e) {
+        $linkGroups = $lgl->getLinkGroups()->filter(static function (LinkGroupInterface $e) {
             return $e->isSpecial() === false || $e->getTemplate() === 'unassigned';
         });
         foreach ($linkGroups as $linkGroup) {
@@ -263,7 +263,7 @@ final class LinkAdmin
         );
 
         return $names === true
-            ? map($links, function ($l) {
+            ? map($links, static function ($l) {
                 return $l->cName;
             })
             : $links;
@@ -600,7 +600,7 @@ final class LinkAdmin
                 }
             }
         }
-        \usort($sort, function ($a, $b) {
+        \usort($sort, static function ($a, $b) {
             return $a <=> $b;
         });
 
@@ -636,7 +636,7 @@ final class LinkAdmin
             return new Collection();
         }
 
-        return $group->getLinks()->filter(function (Link $link) {
+        return $group->getLinks()->filter(static function (Link $link) {
             return $link->hasDuplicateSpecialLink();
         });
     }
@@ -651,7 +651,7 @@ final class LinkAdmin
                 FROM tspezialseite
                 ORDER BY nSort',
             ReturnType::COLLECTION
-        )->map(function ($link) {
+        )->map(static function ($link) {
             $link->kSpezialseite = (int)$link->kSpezialseite;
             $link->kPlugin       = (int)$link->kPlugin;
             $link->nLinkart      = (int)$link->nLinkart;

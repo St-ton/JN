@@ -482,7 +482,7 @@ class NiceDB implements DbInterface
             }
         }
         if (\is_array($keyname) && \is_array($keyvalue)) {
-            $keynamePrepared = \array_map(function ($_v) {
+            $keynamePrepared = \array_map(static function ($_v) {
                 return '`' . $_v . '`=?';
             }, $keyname);
             $where           = ' WHERE ' . \implode(' AND ', $keynamePrepared);
@@ -923,7 +923,7 @@ class NiceDB implements DbInterface
         $start   = \microtime(true);
         $assigns = [];
         if (\is_array($keyname) && \is_array($keyvalue)) {
-            $keyname = \array_map(function ($_v) {
+            $keyname = \array_map(static function ($_v) {
                 return '`' . $_v . '`=?';
             }, $keyname);
             $where   = \implode(' AND ', $keyname);

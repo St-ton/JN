@@ -59,7 +59,7 @@ class CharacteristicValue extends AbstractImage
                     AND tsprache.cShopStandard = \'Y\'',
             ['cid' => $req->getID()],
             ReturnType::COLLECTION
-        )->each(function ($item, $key) use ($req) {
+        )->each(static function ($item, $key) use ($req) {
             if ($key === 0 && !empty($item->path)) {
                 $req->setSourcePath($item->path);
             }

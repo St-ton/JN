@@ -112,7 +112,7 @@ class GetText
      */
     public function loadLocaleFile(string $path): self
     {
-        if (!array_key_exists($path, $this->translations)) {
+        if (!\array_key_exists($path, $this->translations)) {
             $this->translations[$path] = null;
 
             if (\file_exists($path)) {

@@ -376,7 +376,7 @@ final class Controller
                     AND parent.kNewsKategorie = :cid',
             ['cid' => $categoryID],
             ReturnType::ARRAY_OF_OBJECTS
-        ), function ($e) {
+        ), static function ($e) {
             return (int)$e->id;
         });
     }
@@ -628,12 +628,12 @@ final class Controller
         $ids      = map($this->db->query(
             'SELECT kNews FROM tnews',
             ReturnType::ARRAY_OF_OBJECTS
-        ), function ($e) {
+        ), static function ($e) {
             return (int)$e->kNews;
         });
         $itemList->createItems($ids);
 
-        return $itemList->getItems()->sortByDesc(function (Item $e) {
+        return $itemList->getItems()->sortByDesc(static function (Item $e) {
             return $e->getDateCreated();
         });
     }
@@ -653,7 +653,7 @@ final class Controller
                     ON tnews.kNews = t.kNews
                 WHERE tnewskommentar.nAktiv = 0',
             ReturnType::ARRAY_OF_OBJECTS
-        ), function ($e) {
+        ), static function ($e) {
             return (int)$e->id;
         });
         $itemList->createItems($ids);
@@ -677,7 +677,7 @@ final class Controller
             ' GROUP BY node.kNewsKategorie
                 ORDER BY node.lft, node.nSort ASC',
             ReturnType::ARRAY_OF_OBJECTS
-        ), function ($e) {
+        ), static function ($e) {
             return (int)$e->id;
         });
         $itemList->createItems($ids);
@@ -737,7 +737,7 @@ final class Controller
 
             $images[] = $image;
         }
-        \usort($images, function ($a, $b) {
+        \usort($images, static function ($a, $b) {
             return \strcmp($a->cName, $b->cName);
         });
 
@@ -882,7 +882,7 @@ final class Controller
 
             \closedir($handle);
         }
-        \usort($images, function ($a, $b) {
+        \usort($images, static function ($a, $b) {
             return \strcmp($a, $b);
         });
 

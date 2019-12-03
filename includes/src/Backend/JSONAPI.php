@@ -260,7 +260,7 @@ class JSONAPI
             $tableRows[$table] = $rows;
         }
 
-        return \collect($columns)->every(function ($e) use ($rows) {
+        return \collect($columns)->every(static function ($e) use ($rows) {
             return \in_array($e, $rows, true);
         });
     }

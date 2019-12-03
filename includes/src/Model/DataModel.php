@@ -106,7 +106,7 @@ abstract class DataModel implements DataModelInterface, Iterator
      */
     public function __sleep()
     {
-        return select(\array_keys(\get_object_vars($this)), function ($e) {
+        return select(\array_keys(\get_object_vars($this)), static function ($e) {
             return $e !== 'getters' && $e !== 'db' && $e !== 'setters';
         });
     }
@@ -341,7 +341,7 @@ abstract class DataModel implements DataModelInterface, Iterator
         $instance = static::newInstance($db);
 
         return \collect($db->selectAll($instance->getTableName(), $key, $value))
-            ->map(function ($value) use ($db) {
+            ->map(static function ($value) use ($db) {
                 $i = new static($db);
                 $i->fill($value);
                 $i->setWasLoaded(true);
@@ -421,7 +421,7 @@ abstract class DataModel implements DataModelInterface, Iterator
             'string|date|time|year|datetime|timestamp|char|varchar|tinytext|text|mediumtext|enum',
         ];
 
-        return \array_reduce($typeMap, function ($carry, $item) use ($type) {
+        return \array_reduce($typeMap, static function ($carry, $item) use ($type) {
             if (!isset($carry) && \preg_match("/{$item}/", $type)) {
                 $carry = \explode('|', $item, 2)[0];
             }
@@ -832,7 +832,7 @@ abstract class DataModel implements DataModelInterface, Iterator
         if ($iterated) {
             foreach ($this as $member => $value) {
                 if (\is_a($value, Collection::class)) {
-                    $value = $value->map(function (DataModelInterface $e) {
+                    $value = $value->map(static function (DataModelInterface $e) {
                         return $e->rawArray(true);
                     })->toArray();
                 } elseif ($value instanceof DataModelInterface) {

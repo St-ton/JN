@@ -900,13 +900,13 @@ class BaseSearchQuery extends AbstractFilter
         $fullText = 'Y'
     ): int {
         if ($searchCache->kSuchCache > 0) {
-            $productCols = \array_map(function ($item) {
+            $productCols = \array_map(static function ($item) {
                 $items = \explode('.', $item, 2);
 
                 return 'tartikel.' . $items[1];
             }, $searchCols);
 
-            $langCols = \array_filter($searchCols, function ($item) {
+            $langCols = \array_filter($searchCols, static function ($item) {
                 return \preg_match('/tartikelsprache\.(.*)/', $item) ? true : false;
             });
 
@@ -1061,7 +1061,7 @@ class BaseSearchQuery extends AbstractFilter
             $searchRows[] = self::getPrioritizedRows($searchRows, $config);
         }
 
-        return filter($searchRows, function ($r) {
+        return filter($searchRows, static function ($r) {
             return $r !== '';
         });
     }

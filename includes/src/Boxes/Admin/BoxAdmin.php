@@ -105,7 +105,7 @@ final class BoxAdmin
                 WHERE kBox = :bid OR kContainer = :bid',
             ['bid' => $id],
             ReturnType::ARRAY_OF_OBJECTS
-        ), function ($e) {
+        ), static function ($e) {
             return (int)$e->kBox;
         });
 
@@ -547,10 +547,10 @@ final class BoxAdmin
      */
     public function getInvisibleBoxes(): array
     {
-        $unavailabe = filter(Template::getInstance()->getBoxLayoutXML(), function ($e) {
+        $unavailabe = filter(Template::getInstance()->getBoxLayoutXML(), static function ($e) {
             return $e === false;
         });
-        $mapped     = map($unavailabe, function ($e, $key) {
+        $mapped     = map($unavailabe, static function ($e, $key) {
             return "'" . $key . "'";
         });
 
@@ -570,7 +570,7 @@ final class BoxAdmin
      */
     public function getMappedValidPageTypes(): array
     {
-        return map($this->getValidPageTypes(), function ($pageID) {
+        return map($this->getValidPageTypes(), static function ($pageID) {
             return [
                 'pageID'   => $pageID,
                 'pageName' => (new PageTypeToPageNiceName())->mapPageTypeToPageNiceName($pageID)

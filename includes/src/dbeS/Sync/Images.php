@@ -90,7 +90,7 @@ final class Images extends AbstractSync
                     'SELECT * FROM tbranding',
                     ReturnType::ARRAY_OF_OBJECTS
                 ),
-                function ($e) {
+                static function ($e) {
                     return $e->cBildKategorie;
                 }
             ),

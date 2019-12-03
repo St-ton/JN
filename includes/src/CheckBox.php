@@ -266,7 +266,7 @@ class CheckBox
             ReturnType::COLLECTION
         )
             ->pluck('id')
-            ->map(function ($e) {
+            ->map(static function ($e) {
                 return (int)$e;
             })
             ->mapInto(self::class)
@@ -411,7 +411,7 @@ class CheckBox
             ReturnType::COLLECTION
         )
             ->pluck('id')
-            ->map(function ($e) {
+            ->map(static function ($e) {
                 return (int)$e;
             })
             ->mapInto(self::class)->all();
@@ -502,7 +502,7 @@ class CheckBox
                 FROM tcheckboxfunktion
                 ORDER BY cName',
             ReturnType::COLLECTION
-        )->each(function ($e) {
+        )->each(static function ($e) {
             $e->kCheckBoxFunktion = (int)$e->kCheckBoxFunktion;
             $e->cName             = __($e->cName);
         })->all();

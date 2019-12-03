@@ -286,7 +286,7 @@ class Status
         $stats = Shop::Container()->getDB()->stats();
         $info  = Shop::Container()->getDB()->info();
         $lines = \explode('  ', $stats);
-        $lines = \array_map(function ($v) {
+        $lines = \array_map(static function ($v) {
             [$key, $value] = \explode(':', $v, 2);
 
             return ['key' => \trim($key), 'value' => \trim($value)];
@@ -472,7 +472,7 @@ class Status
             ReturnType::ARRAY_OF_OBJECTS
         );
 
-        return some($hashes, function ($hash) use ($passwordService) {
+        return some($hashes, static function ($hash) use ($passwordService) {
             return $passwordService->needsRehash($hash->cEmergencyCode);
         });
     }

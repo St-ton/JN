@@ -271,7 +271,7 @@ if ($action !== '' && Form::validateToken()) {
                         );
                         $files[]            = $newFile;
                     }
-                    usort($files, function ($a, $b) {
+                    usort($files, static function ($a, $b) {
                         return $a->nBild <=> $b->nBild;
                     });
                     $smarty->assign('cDatei_arr', $files);
@@ -333,7 +333,7 @@ if ($step === 'loesch_linkgruppe' && $linkGroupID > 0) {
             );
             $files[]            = $newFile;
         }
-        usort($files, function ($a, $b) {
+        usort($files, static function ($a, $b) {
             return $a->nBild <=> $b->nBild;
         });
         $smarty->assign('cDatei_arr', $files);
@@ -343,7 +343,7 @@ if ($clearCache === true) {
     $linkAdmin->clearCache();
 }
 if ($step === 'uebersicht') {
-    foreach ($linkAdmin->getDuplicateSpecialLinks()->groupBy(function (LinkInterface $l) {
+    foreach ($linkAdmin->getDuplicateSpecialLinks()->groupBy(static function (LinkInterface $l) {
         return $l->getLinkType();
     }) as $specialLinks) {
         /** @var Collection $specialLinks */
@@ -351,7 +351,7 @@ if ($step === 'uebersicht') {
             Alert::TYPE_ERROR,
             sprintf(
                 __('hasDuplicateSpecialLink'),
-                ' ' . $specialLinks->map(function (LinkInterface $l) {
+                ' ' . $specialLinks->map(static function (LinkInterface $l) {
                     return $l->getName();
                 })->implode('/')
             ),

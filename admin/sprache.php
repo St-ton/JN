@@ -128,7 +128,7 @@ if (isset($_REQUEST['action']) && Form::validateToken()) {
                     __('errorVarExistsForLang'),
                     implode(
                         ', ',
-                        array_map(function ($oWertDB) {
+                        array_map(static function ($oWertDB) {
                             return $oWertDB->cSpracheName;
                         }, $data)
                     )
@@ -240,7 +240,7 @@ if ($step === 'newvar') {
             FROM tsprachwerte AS sw
                 JOIN tsprachsektion AS ss
                     ON ss.kSprachsektion = sw.kSprachsektion
-            WHERE sw.kSprachISO = ' . (int)$langIsoID . '
+            WHERE sw.kSprachISO = ' . $langIsoID . '
                 ' . ($filterSQL !== '' ? 'AND ' . $filterSQL : ''),
         ReturnType::ARRAY_OF_OBJECTS
     );

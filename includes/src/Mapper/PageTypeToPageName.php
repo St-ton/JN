@@ -67,7 +67,6 @@ class PageTypeToPageName
             case \PAGE_VERGLEICHSLISTE:
                 return 'VERGLEICHSLISTE';
             case \PAGE_ARTIKEL:
-                return 'Artikel';
             case \PAGE_ARTIKELLISTE:
                 return 'Artikel';
             default:

@@ -13,16 +13,12 @@ msgid "Search item"
 msgstr "Search terms"
 
 # Top Menu
-msgid "Presentation"
-msgstr "View"
+msgid "Appearance"
+msgstr "Appearance"
 
 # Mid Menu
-msgid "Template"
+msgid "Templates"
 msgstr "Templates"
-
-# Menu Item
-msgid "Template settings"
-msgstr "Template settings"
 
 # Mid Menu
 msgid "Images"
@@ -38,8 +34,8 @@ msgstr "Watermark"
 msgid "Shop logo"
 msgstr "Shop logo"
 
-msgid "Item sticker"
-msgstr "Item sticker"
+msgid "Item badges"
+msgstr "Item badges"
 
 # Top Menu
 msgid "Contents"
@@ -50,17 +46,17 @@ msgid "Item"
 msgstr "Items"
 
 # Menu Items
-msgid "Item details"
-msgstr "Item details"
+msgid "Item detail page"
+msgstr "Item detail page"
 
-msgid "Item reviews"
-msgstr "Item reviews"
+msgid "Reviews"
+msgstr "Reviews"
 
 msgid "Price history"
 msgstr "Price history"
 
-msgid "Warehouse settings"
-msgstr "Warehouse settings"
+msgid "Warehouse display"
+msgstr "Warehouse display"
 
 # Top Menu
 msgid "Pages"
@@ -71,14 +67,11 @@ msgid "OnPage Composer"
 msgstr "OnPage Composer"
 
 # Menu Items
-msgid "Front page"
-msgstr "Homepage"
+msgid "Home page"
+msgstr "Home page"
 
-msgid "GTC/cancellation policy"
-msgstr "Terms/Withdrawal"
-
-msgid "Own pages"
-msgstr "Pages"
+msgid "Terms / Withdrawal"
+msgstr "Terms / Withdrawal"
 
 msgid "Blog posts"
 msgstr "Blog posts"
@@ -86,11 +79,8 @@ msgstr "Blog posts"
 msgid "Footer / Boxes"
 msgstr "Footer / Boxes"
 
-msgid "Recommendation settings"
-msgstr "Recommendation settings"
-
-msgid "Language administration"
-msgstr "Language administration"
+msgid "Languages"
+msgstr "Languages"
 
 # Just incase you want to add a translation for partners:
 #   msgid "IT-Recht Kanzlei"
@@ -109,22 +99,19 @@ msgstr "Registration"
 msgid "Contact form"
 msgstr "Contact form"
 
-msgid "Customer fields"
-msgstr "Customer fields"
+msgid "Extended customer data"
+msgstr "Extended customer data"
 
-msgid "Checkboxes"
-msgstr "Checkboxes"
+msgid "Check boxes"
+msgstr "Check boxes"
 
 # Mid Menu
-msgid "E-mails"
+msgid "Email"
 msgstr "Emails"
 
 # Menu Items
 msgid "Email settings"
 msgstr "Email settings"
-
-msgid "Templates"
-msgstr "Templates"
 
 msgid "Reports"
 msgstr "Reports"
@@ -132,8 +119,8 @@ msgstr "Reports"
 msgid "Blacklist"
 msgstr "Blacklist"
 
-msgid "E-mail log"
-msgstr "Email-Log"
+msgid "Log"
+msgstr "Log"
 
 # Top Menu
 msgid "Purchases"
@@ -150,8 +137,8 @@ msgstr "Checkout"
 msgid "Baskets"
 msgstr "Baskets"
 
-msgid "Free gift"
-msgstr "Free gift"
+msgid "Free gifts"
+msgstr "Free gifts"
 
 # Just incase you want to add a translation for partners:
 #   msgid "Trusted Shops"
@@ -161,7 +148,7 @@ msgid "Payments"
 msgstr "Payments"
 
 # Menu Items
-msgid "Method of payment"
+msgid "Payment methods"
 msgstr "Payment methods"
 
 # Just incase you want to add a translation for partners:
@@ -171,7 +158,7 @@ msgstr "Payment methods"
 #   msgid "Skrill"
 #   msgstr "Skrill"
 # Mid Menu
-msgid "Delivery"
+msgid "Shipments"
 msgstr "Shipments"
 
 # Menu Items
@@ -190,8 +177,8 @@ msgstr "Customer loyalty"
 msgid "Surveys"
 msgstr "Surveys"
 
-msgid "Customers win customers"
-msgstr "Customer referral programme"
+msgid "Recommendations"
+msgstr "Recommendations"
 
 msgid "Coupons"
 msgstr "Coupons"
@@ -210,10 +197,10 @@ msgid "Publicity"
 msgstr "Advertisement"
 
 # Menu Items
-msgid "Banner"
+msgid "Banners"
 msgstr "Banners"
 
-msgid "Slider"
+msgid "Sliders"
 msgstr "Sliders"
 
 msgid "Campaigns"
@@ -221,23 +208,23 @@ msgstr "Campaigns"
 
 # Mid Menu
 msgid "Statistics"
-msgstr "Reports"
+msgstr "Statistics"
 
 # Menu Items
-msgid "Sales revenues"
-msgstr "Sales revenues"
+msgid "Sales"
+msgstr "Sales"
 
 msgid "Visitors"
 msgstr "Visitors"
 
-msgid "Customer origin"
-msgstr "Origins of shop visitors"
+msgid "Referrer pages"
+msgstr "Referrer pages"
 
 msgid "Search engines"
 msgstr "Search engines"
 
-msgid "Start pages"
-msgstr "Start pages"
+msgid "Entry pages"
+msgstr "Entry pages"
 
 msgid "Coupon statistics"
 msgstr "Coupons"
@@ -251,14 +238,14 @@ msgid "Import"
 msgstr "Import"
 
 # Menu Items
-msgid "Customer data import"
-msgstr "Customer data import"
+msgid "Customers"
+msgstr "Customers"
 
-msgid "Newsletter recipients"
-msgstr "Newsletter recipients"
+msgid "Newsletters"
+msgstr "Newsletters"
 
-msgid "Zip code import"
-msgstr "Postal code import"
+msgid "Postal codes"
+msgstr "Postal codes"
 
 # Mid Menu
 msgid "Export"
@@ -268,11 +255,11 @@ msgstr "Export"
 msgid "Export manager"
 msgstr "Export manager"
 
-msgid "Custom formats"
-msgstr "Custom formats"
+msgid "Other formats"
+msgstr "Other formats"
 
-msgid "Sitemap export"
-msgstr "Sitemap export"
+msgid "Site map"
+msgstr "Site map"
 
 msgid "RSS feed"
 msgstr "RSS feed"
@@ -289,20 +276,17 @@ msgstr "Settings"
 msgid "System"
 msgstr "System"
 
-msgid "Back end user"
-msgstr "Back end user"
+msgid "Users"
+msgstr "Users"
 
-msgid "Synchronisation with JTL-Wawi"
-msgstr "Synchronisation with JTL-Wawi"
+msgid "JTL-Wawi synchronisation"
+msgstr "JTL-Wawi synchronisation"
 
-msgid "Global meta data"
-msgstr "Global meta data"
+msgid "Meta data"
+msgstr "Meta data"
 
-msgid "Special items"
-msgstr "Special items"
-
-msgid "Sitemap structure"
-msgstr "Sitemap structure"
+msgid "SEO path"
+msgstr "SEO path"
 
 msgid "Number formats"
 msgstr "Number formats"
@@ -318,14 +302,11 @@ msgid "Maintenance"
 msgstr "Maintenance"
 
 # Menu Items
-msgid "Order history"
-msgstr "Order history"
+msgid "Orders"
+msgstr "Orders"
 
-msgid "Activation centre"
-msgstr "Activation centre"
-
-msgid "System log"
-msgstr "System log"
+msgid "Approvals"
+msgstr "Approvals"
 
 msgid "Status"
 msgstr "Status"
@@ -333,22 +314,18 @@ msgstr "Status"
 msgid "Update"
 msgstr "Update"
 
-msgid "Image administration"
-msgstr "Image administration"
+msgid "Item images"
+msgstr "Item images"
 
-msgid "Re-directions"
+msgid "Forwarding"
 msgstr "Forwarding"
 
-msgid "Reset shop"
-msgstr "Reset shop"
+msgid "Reset"
+msgstr "Reset"
 
 # Mid Menu
 msgid "Search"
 msgstr "Search"
-
-# Menu Items
-msgid "Search settings"
-msgstr "Search settings"
 
 msgid "Item overview"
 msgstr "Item overview"
@@ -360,7 +337,7 @@ msgid "Search query activation"
 msgstr "Search query activation"
 
 # Top Menu
-msgid "Plugins"
+msgid "Plug-ins"
 msgstr "Plug-ins"
 
 # Mid Menu
@@ -371,8 +348,8 @@ msgstr "Overview"
 msgid "Plug-in marketplace"
 msgstr "Plug-in marketplace"
 
-msgid "Plug-in administration"
-msgstr "Plug-in administration"
+msgid "Plug-in manager"
+msgstr "Plug-in manager"
 
 msgid "Plug-in profiler"
 msgstr "Plug-in profiler"
@@ -488,11 +465,11 @@ msgstr "User management"
 msgid "The algorithm for saving passwords has changed. <br/>Please generate a new emergency code for the 2 factor authentication."
 msgstr "The algorithm for changing the password has changed.<br/>Please generate new emergency codes for the two-factor authentication."
 
-msgid "My Plugins"
-msgstr "My Plugins"
+msgid "Installed plug-ins"
+msgstr "Installed plug-ins"
 
-msgid "Actions"
-msgstr "Actions"
+msgid "Promotions"
+msgstr "Promotions"
 
 msgid "Landing pages"
 msgstr "Landing pages"
@@ -506,14 +483,17 @@ msgstr "Default elements"
 msgid "Question on item"
 msgstr "Question on item"
 
-msgid "Custom content"
-msgstr "Custom content"
+msgid "Custom contents"
+msgstr "Custom contents"
 
-msgid "E-Mail server"
-msgstr "E-Mail server"
+msgid "Server"
+msgstr "Server"
 
-msgid "Access"
-msgstr "Access"
+msgid "Accounts"
+msgstr "Accounts"
 
 msgid "Troubleshooting"
 msgstr "Troubleshooting"
+
+msgid "System diagnostics"
+msgstr "System diagnostics"

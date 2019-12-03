@@ -208,7 +208,7 @@ class Frontend extends AbstractSession
         if (!isset($_SESSION['jtl_token'])) {
             $_SESSION['jtl_token'] = Shop::Container()->getCryptoService()->randomString(32);
         }
-        \array_map(function ($lang) {
+        \array_map(static function ($lang) {
             $lang->kSprache = (int)$lang->kSprache;
 
             return $lang;
@@ -659,7 +659,7 @@ class Frontend extends AbstractSession
                 $_SESSION['oKategorie_arr']     = [];
                 $_SESSION['oKategorie_arr_new'] = [];
             }
-            $lang = first(LanguageHelper::getAllLanguages(), function ($l) use ($langISO) {
+            $lang = first(LanguageHelper::getAllLanguages(), static function ($l) use ($langISO) {
                 return $l->cISO === $langISO;
             });
             if ($lang === null) {
@@ -683,7 +683,7 @@ class Frontend extends AbstractSession
         $currencyCode = Request::verifyGPDataString('curr');
         if ($currencyCode) {
             $cart     = self::getCart();
-            $currency = first(self::getCurrencies(), function (Currency $c) use ($currencyCode) {
+            $currency = first(self::getCurrencies(), static function (Currency $c) use ($currencyCode) {
                 return $c->getCode() === $currencyCode;
             });
             if ($currency !== null) {

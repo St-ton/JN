@@ -232,12 +232,12 @@ function validateAccount(array &$attribs, array &$messages)
             $attribs['useAvatarUpload'] = uploadAvatarImage($_FILES['extAttribs'], 'useAvatarUpload');
 
             if ($attribs['useAvatarUpload'] === false) {
-                $messages['error'] .= 'Fehler beim Bilupload!';
+                $messages['error'] .= __('errorImageUpload');
 
                 $result = ['useAvatarUpload' => 1];
             }
         } elseif (empty($attribs['useAvatarUpload'])) {
-            $messages['error'] .= 'Bitte geben Sie ein Bild an!';
+            $messages['error'] .= __('errorImageMissing');
 
             $result = ['useAvatarUpload' => 1];
         }

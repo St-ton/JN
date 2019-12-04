@@ -474,3 +474,9 @@ msgstr "Personal information"
 
 msgid "avatar"
 msgstr "Avatar"
+
+msgid "errorImageMissing"
+msgstr "Please upload an image."
+
+msgid "errorImageUpload"
+msgstr "An error occured while uploading the image."

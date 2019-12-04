@@ -7,11 +7,11 @@
         <div itemprop="author" itemscope itemtype="https://schema.org/Person">
             {block name='snippets-author-title'}
                 {link
+                    class="author-modal"
                     itemprop="name"
                     href="#"
                     title=$oAuthor->cName
-                    data=["toggle"=>"modal",
-                        "target"=>"#author-{$oAuthor->kContentAuthor}"]
+                    data=["target"=>"#author-{$oAuthor->kContentAuthor}"]
                 }
                     {$oAuthor->cName}
                 {/link}&nbsp;&ndash;&nbsp;
@@ -25,10 +25,7 @@
                 {else}
                     {$title = '<span itemprop="name" class="ml-3">'|cat:$oAuthor->cName|cat:'</span>'}
                 {/if}
-                {modal
-                    id="author-{$oAuthor->kContentAuthor}"
-                    title=$title
-                    footer="{if !empty($oAuthor->cGplusProfile)}<a itemprop='url' href='{$oAuthor->cGplusProfile}?rel=author' title='{$oAuthor->cName}'>Google+</a>{/if}"}
+                <div id="author-{$oAuthor->kContentAuthor}" title="{$title}" class="d-none">
                     {block name='snippets-author-modal-content'}
                         {if !empty($oAuthor->cVitaShort)}
                             {if $oAuthor->cAvatarImgSrcFull !== null}
@@ -39,7 +36,7 @@
                             </div>
                         {/if}
                     {/block}
-                {/modal}
+                </div>
             {/block}
         </div>
     {/block}

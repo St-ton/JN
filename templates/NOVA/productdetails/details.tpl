@@ -108,8 +108,12 @@
                                                 {block name='productdetails-details-product-info-manufacturer'}
                                                     <li itemprop="brand" itemscope="true" itemtype="http://schema.org/Organization">
                                                         <span class="font-weight-bold">{lang key='manufacturers'}:</span>
-                                                        <a href="{$Artikel->cHerstellerSeo}"{if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'B'} data-toggle="tooltip" data-placement="left" title="{$Artikel->cHersteller}"{/if} itemprop="url">
-                                                            {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'Y' && (!empty($Artikel->cBildpfad_thersteller) || $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'B') && isset($Artikel->cHerstellerBildKlein)}
+                                                        {$Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen|@var_dump}
+                                                        {$Artikel->cHerstellerBildURLKlein|@var_dump}
+                                                        <a href="{$Artikel->cHerstellerSeo}"{if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'B'} data-toggle="tooltip" data-placement="left" title="{$Artikel->cHersteller}"{/if} itemprop="url">
+                                                            {if ($Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'B'
+                                                                || $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'BT')
+                                                                && !empty($Artikel->cHerstellerBildURLKlein)}
                                                                 {image lazy=true webp=true
                                                                     src=$Artikel->cHerstellerBildURLKlein
                                                                     alt=$Artikel->cHersteller

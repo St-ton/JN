@@ -608,17 +608,23 @@ Ein minimalistisches Plugin, für Shop 5 und das NOVA-Template, könnte dann so 
 **komplettes Beispiel:**
 
 .. code-block:: console
-   :emphasize-lines: 3,4
+   :emphasize-lines: 7,8
 
-    plugins/[PluginID]/
-    ├── frontend
-    │   └── template
-    │       └── layout
-    │           └── header.tpl
-    └── info.xml
+   plugins/[PluginID]/
+   ├── adminmenu
+   │   ├── widget
+   │   ├── templates
+   │   └── ...
+   ├── frontend
+   │   └── template
+   │       └── layout
+   │           └── header.tpl
+   └── info.xml
 
 Beim Anlegen der Struktur im Plugin-Verzeichnis ``frontend/`` ist darauf zu achten, daß die Templatestruktur genau
-nachgebildet wird.
+nachgebildet wird. |br|
+Das Verzeichnis ``adminmenu/`` ist hier nur zur Veranschaulichung des Unterschiedes der Verzeichnisnamen
+``adminmenu/templates`` und ``frontend/template`` aufgelistet. Es muß für dieses Beispiel nicht angelegt werden.
 
 Die hier verwendete ``info.xml`` konfiguriert nur den Rumpf eines Plugins:
 

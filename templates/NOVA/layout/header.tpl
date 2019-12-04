@@ -233,7 +233,7 @@
             {$templateDir = $parentTemplateDir}
         {/if}
 
-        <script async src="{$ShopURL}/{$templateDir}js/jquery-3.4.1.min.js"></script>
+        <script src="{$ShopURL}/{$templateDir}js/jquery-3.4.1.min.js"></script>
 
         {if !isset($Einstellungen.template.general.use_minify) || $Einstellungen.template.general.use_minify === 'N'}
             {if isset($cPluginJsHead_arr)}

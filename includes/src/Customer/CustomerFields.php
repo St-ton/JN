@@ -64,7 +64,7 @@ class CustomerFields implements ArrayAccess, IteratorAggregate, Countable
                     ORDER BY nSort',
                 ['langID' => $langID],
                 ReturnType::COLLECTION
-            )->mapInto(CustomerField::class)->keyBy(function (CustomerField $field) {
+            )->mapInto(CustomerField::class)->keyBy(static function (CustomerField $field) {
                 return $field->getID();
             })->toArray();
         }
@@ -85,9 +85,9 @@ class CustomerFields implements ArrayAccess, IteratorAggregate, Countable
      */
     public function getNonEditableFields(): array
     {
-        return map(select($this->getFields(), function (CustomerField $e) {
+        return map(select($this->getFields(), static function (CustomerField $e) {
             return !$e->isEditable();
-        }), function (CustomerField $e) {
+        }), static function (CustomerField $e) {
             return $e->getID();
         });
     }

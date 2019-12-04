@@ -103,7 +103,8 @@ class Manager
     }
 
     /**
-     * @param int $index
+     * @param string $type
+     * @param int    $index
      * @return stdClass
      */
     public function cleanupStorage(string $type, int $index): stdClass

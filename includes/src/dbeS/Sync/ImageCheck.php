@@ -65,11 +65,11 @@ final class ImageCheck extends AbstractSync
                 }
             }
         }
-        $missing = \array_filter($object->items, function ($item) use ($found) {
+        $missing = \array_filter($object->items, static function ($item) use ($found) {
             return !\in_array($item->id, $found, true);
         });
 
-        $ids = \array_map(function ($item) {
+        $ids = \array_map(static function ($item) {
             return $item->id;
         }, $missing);
 

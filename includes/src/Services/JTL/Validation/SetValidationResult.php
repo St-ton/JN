@@ -86,7 +86,7 @@ class SetValidationResult implements SetValidationResultInterface
      */
     public function isValid(): bool
     {
-        return none($this->fieldResults, function (ValidationResultInterface $fieldResult) {
+        return none($this->fieldResults, static function (ValidationResultInterface $fieldResult) {
             return !$fieldResult->isValid();
         });
     }

@@ -107,7 +107,7 @@ class Cart
      */
     public function __sleep()
     {
-        return select(\array_keys(\get_object_vars($this)), function ($e) {
+        return select(\array_keys(\get_object_vars($this)), static function ($e) {
             return $e !== 'config';
         });
     }
@@ -484,7 +484,7 @@ class Cart
                             $oVariationWert  = \current(
                                 \array_filter(
                                     $variation->Werte,
-                                    function ($item) use ($propertyValueID) {
+                                    static function ($item) use ($propertyValueID) {
                                         return $item->kEigenschaftWert === $propertyValueID
                                             && !empty($item->cPfadNormal);
                                     }
@@ -1309,7 +1309,7 @@ class Cart
      */
     public function posTypEnthalten(int $type): bool
     {
-        return some($this->PositionenArr, function ($e) use ($type) {
+        return some($this->PositionenArr, static function ($e) use ($type) {
             return (int)$e->nPosTyp === $type;
         });
     }

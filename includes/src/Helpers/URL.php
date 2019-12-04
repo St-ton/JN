@@ -125,7 +125,7 @@ class URL
             // case normalization
             $this->path = \preg_replace_callback(
                 '/(%([0-9abcdef][0-9abcdef]))/x',
-                function ($x) {
+                static function ($x) {
                     return '%' . \mb_convert_case($x[2], \MB_CASE_UPPER);
                 },
                 $this->path
@@ -198,11 +198,11 @@ class URL
         $unreserved[] = \dechex(\mb_ord('~'));
 
         return \preg_replace_callback(\array_map(
-            function ($str) {
+            static function ($str) {
                 return '/%' . \mb_convert_case($str, \MB_CASE_UPPER) . '/x';
             },
             $unreserved
-        ), function ($matches) {
+        ), static function ($matches) {
             return \chr(\hexdec($matches[0]));
         }, $string);
     }

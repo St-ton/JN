@@ -32,7 +32,7 @@ class MailTemplates
      */
     public function load(array $data): self
     {
-        $grouped   = group($data, function ($e) {
+        $grouped   = group($data, static function ($e) {
             return $e->kEmailvorlage;
         });
         $templates = [];
@@ -61,7 +61,7 @@ class MailTemplates
             $templates[] = $first;
         }
         $this->templates      = $templates;
-        $this->templatesAssoc = reindex($templates, function ($item) {
+        $this->templatesAssoc = reindex($templates, static function ($item) {
             return $item->cModulId;
         });
 

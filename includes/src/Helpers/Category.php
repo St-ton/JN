@@ -244,7 +244,7 @@ class Category
                 GROUP BY node.kKategorie
                 ORDER BY node.lft',
             ReturnType::COLLECTION
-        )->each(function ($item) {
+        )->each(static function ($item) {
             $item->kKategorie       = (int)$item->kKategorie;
             $item->kOberKategorie   = (int)$item->kOberKategorie;
             $item->cnt              = (int)$item->cnt;
@@ -276,7 +276,7 @@ class Category
                 ORDER BY tkategorieattribut.kKategorie, tkategorieattribut.bIstFunktionsAttribut DESC, 
                 tkategorieattribut.nSort',
             ReturnType::COLLECTION
-        )->each(function ($e) {
+        )->each(static function ($e) {
             $e->kKategorie            = (int)$e->kKategorie;
             $e->bIstFunktionsAttribut = (bool)$e->bIstFunktionsAttribut;
             $e->nSort                 = (int)$e->nSort;

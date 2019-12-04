@@ -58,7 +58,7 @@ if ($errorMsg === '') {
 }
 
 if (count($dbErrors) > 0) {
-    $engineErrors = array_filter($dbErrors, function ($item) {
+    $engineErrors = array_filter($dbErrors, static function ($item) {
         return $item->isEngineError;
     });
     if (count($engineErrors) > 5) {

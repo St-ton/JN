@@ -358,7 +358,7 @@ class Search extends AbstractFilter
         $searchFilter = $this->productFilter->getSearchFilter();
         if (\is_array($searchFilter)) {
             $count       = \count($searchFilter);
-            $searchCache = \array_map(function ($f) {
+            $searchCache = \array_map(static function ($f) {
                 /** @var Search $f */
                 return $f->getValue();
             }, $searchFilter);
@@ -503,7 +503,7 @@ class Search extends AbstractFilter
             ? ($searchFilters[0]->nAnzahl - $searchFilters[$count - 1]->nAnzahl) / 9
             : 0;
         $activeValues     = \array_map(
-            function ($f) {
+            static function ($f) {
                 // @todo: create method for this logic
                 /** @var Search $f */
                 return $f->getValue();

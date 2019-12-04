@@ -191,7 +191,7 @@ if ($step === 'kampagne_uebersicht') {
             'SELECT kKampagne, kKampagneDef, kKey ' . $select . '
                 FROM tkampagnevorgang
                 ' . $where . '
-                    AND kKampagne = ' . (int)$campaignID . '
+                    AND kKampagne = ' . $campaignID . '
                     AND kKampagneDef = ' . (int)$definition->kKampagneDef,
             ReturnType::ARRAY_OF_OBJECTS
         );

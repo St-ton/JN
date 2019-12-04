@@ -7,11 +7,10 @@
 namespace JTL\Filesystem;
 
 use Exception;
-use Generator;
 use JTL\Path;
-use JTL\Shop;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\AdapterInterface;
+use League\Flysystem\FileExistsException;
 use League\Flysystem\FileNotFoundException;
 use League\Flysystem\FilesystemInterface;
 use League\Flysystem\MountManager;
@@ -44,16 +43,6 @@ class Filesystem extends \League\Flysystem\Filesystem
         $this->addPlugin(new ListFiles());
         $this->addPlugin(new ListPaths());
         $this->addPlugin(new GetWithMetadata());
-    }
-
-    /**
-     * Get the Adapter.
-     *
-     * @return AdapterInterface adapter
-     */
-    public function getAdapter(): AdapterInterface
-    {
-        return $this->adapter;
     }
 
     /**
@@ -143,7 +132,7 @@ class Filesystem extends \League\Flysystem\Filesystem
      * @param string        $archive
      * @param callable|null $callback
      * @return bool
-     * @throws \League\Flysystem\FileExistsException
+     * @throws FileExistsException
      */
     public function zip(Finder $finder, string $archive, callable $callback = null): bool
     {
@@ -180,7 +169,7 @@ class Filesystem extends \League\Flysystem\Filesystem
      * @param string $source
      * @param string $archive
      * @return bool
-     * @throws \League\Flysystem\FileExistsException
+     * @throws FileExistsException
      */
     public function zipDir(string $source, string $archive): bool
     {

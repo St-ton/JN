@@ -9,8 +9,6 @@ namespace JTL\Cron\Job;
 use JTL\Cron\Job;
 use JTL\Cron\JobInterface;
 use JTL\Cron\QueueEntry;
-use JTL\Media\Image;
-use JTL\Media\Image\Product;
 use JTL\Media\IMedia;
 use JTL\Media\Media;
 

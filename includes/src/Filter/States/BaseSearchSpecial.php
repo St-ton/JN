@@ -194,11 +194,6 @@ class BaseSearchSpecial extends AbstractFilter
                         ->setComment('special offers JOIN from ' . __METHOD__)
                         ->setOrigin(__CLASS__);
 
-            case \SEARCHSPECIALS_NEWPRODUCTS:
-            case \SEARCHSPECIALS_TOPOFFERS:
-            case \SEARCHSPECIALS_UPCOMINGPRODUCTS:
-                return [];
-
             case \SEARCHSPECIALS_TOPREVIEWS:
                 return $this->productFilter->hasRatingFilter()
                     ? []
@@ -209,6 +204,9 @@ class BaseSearchSpecial extends AbstractFilter
                         ->setComment('top reviews JOIN from ' . __METHOD__)
                         ->setOrigin(__CLASS__);
 
+            case \SEARCHSPECIALS_NEWPRODUCTS:
+            case \SEARCHSPECIALS_TOPOFFERS:
+            case \SEARCHSPECIALS_UPCOMINGPRODUCTS:
             default:
                 return [];
         }

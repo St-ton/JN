@@ -131,7 +131,7 @@ final class LinkGroup implements LinkGroupInterface
                 ORDER BY tlink.nSort, tlink.cName',
             ['lgid' => $this->id],
             ReturnType::ARRAY_OF_ASSOC_ARRAYS
-        )), function ($e) {
+        )), static function ($e) {
             return (int)$e;
         }));
         \executeHook(\HOOK_LINKGROUP_MAPPED, ['group' => $this]);

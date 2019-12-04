@@ -113,8 +113,6 @@ class Bewertung
     private function getOrderSQL(int $option): string
     {
         switch ($option) {
-            case 2:
-                return ' dDatum DESC';
             case 3:
                 return ' dDatum ASC';
             case 4:
@@ -125,6 +123,7 @@ class Bewertung
                 return ' nHilfreich DESC';
             case 7:
                 return ' nHilfreich ASC';
+            case 2:
             default:
                 return ' dDatum DESC';
         }

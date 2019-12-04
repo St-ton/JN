@@ -308,9 +308,9 @@ final class Installer
         $tags        = empty($baseNode['Install'][0]['FlushTags'])
             ? []
             : \explode(',', $baseNode['Install'][0]['FlushTags']);
-        $tagsToFlush = map(select($tags, function ($e) {
+        $tagsToFlush = map(select($tags, static function ($e) {
             return \defined(\trim($e));
-        }), function ($e) {
+        }), static function ($e) {
             return \constant(\trim($e));
         });
         if (\count($tagsToFlush) > 0) {
@@ -475,7 +475,7 @@ final class Installer
      */
     private function getTableName(string $sql, string $action = 'create table( if not exists)')
     {
-        \preg_match("/" . $action . "? ([`']?)([a-z0-9_]+)\\2/i", $sql, $matches);
+        \preg_match('/' . $action . "? ([`']?)([a-z0-9_]+)\\2/i", $sql, $matches);
 
         return \end($matches);
     }

@@ -40,7 +40,7 @@ class Migration_20191202111100 extends Migration implements IMigration
               `nSort` int(10) unsigned NOT NULL,
               PRIMARY KEY (`kAdminrechtemodul`)
             )
-            ENGINE = MyISAM
+            ENGINE = InnoDB
             DEFAULT CHARSET = utf8
             COLLATE = utf8_unicode_ci
         ');

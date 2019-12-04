@@ -211,9 +211,16 @@ class Plugins
      */
     public function getAvatar(array $params): string
     {
-        return isset($params['account']->attributes['useAvatarUpload']) ?
+        $url = isset($params['account']->attributes['useAvatarUpload']) ?
             $params['account']->attributes['useAvatarUpload']->cAttribValue
             : 'templates/bootstrap/gfx/avatar-default.svg';
+
+        \executeHook(\HOOK_BACKEND_FUNCTIONS_GRAVATAR, [
+            'url'          => &$url,
+            'AdminAccount' => &$_SESSION['AdminAccount']
+        ]);
+
+        return $url;
     }
 
     /**

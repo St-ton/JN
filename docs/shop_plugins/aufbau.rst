@@ -596,6 +596,67 @@ Weiterhin gehören zur Struktur des Verzeichnisses ``frontend/`` die zusätzlich
 
 Weitere Informationen finden Sie im ``info.xml``-Abschnitt ":ref:`label_aufbau_fontend_res`".
 
+Template-Blöcke
+---------------
+
+Auch Template-Blöcke des Frontends lassen sich durch Plugins manipulieren. |br|
+Hierfür sind keine Einträge in der ``info.xml`` nötig. Lediglich die Layoutstruktur des Templates muss im Plugin
+nachgebildet werden.
+
+Ein minimalistisches Plugin, für Shop 5 und das NOVA-Template, könnte dann so aussehen:
+
+**komplettes Beispiel:**
+
+.. code-block:: console
+   :emphasize-lines: 3,4
+
+    plugins/[PluginID]/
+    ├── frontend
+    │   └── template
+    │       └── layout
+    │           └── header.tpl
+    └── info.xml
+
+Beim Anlegen der Struktur im Plugin-Verzeichnis ``frontend/`` ist darauf zu achten, daß die Templatestruktur genau
+nachgebildet wird.
+
+Die hier verwendete ``info.xml`` konfiguriert nur den Rumpf eines Plugins:
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <jtlshopplugin>
+        <Name>[PluginName]</Name>
+        <Description>Blendet einen deutlichen Hinweis auf jeder Seite ein, dass es sich um einen Testshop handelt</Description>
+        <Author>JTL</Author>
+        <URL>https://www.jtl-software.de</URL>
+        <PluginID>[PluginID]</PluginID>
+        <XMLVersion>100</XMLVersion>
+        <ShopVersion>500</ShopVersion>
+        <CreateDate>2019-12-03</CreateDate>
+        <Version>1.0.0</Version>
+        <Install>
+            <FlushTags>CACHING_GROUP_CATEGORY, CACHING_GROUP_ARTICLE</FlushTags>
+        </Install>
+    </jtlshopplugin>
+
+Die Datei ``header.tpl`` enthält alles, was im Frontend ausgegeben werden soll:
+
+.. code-block:: smarty
+   :emphasize-lines: 2
+
+    extends file="{$parent_template_path}/layout/header.tpl"}
+    {block name='layout-header-content-all-starttags' prepend}
+        <script>
+            console.log('Diese Ausgabe erscheint in der Javascript-console und wurde erzeugt vom plugin: [PluginID]');
+        </script>
+        <div id="testing-purpose-alert" class="alert alert-warning text-center">
+            Dieser Shop dient ausschlie&szlig;lich Demonstrations- und Testzwecken.
+            Es k&ouml;nnen keine realen Bestellungen ausgef&uuml;hrt werden.
+        </div>
+    {/block}
+
+Weiter Erläuterungen zur Manipulation von Blöcken finden Sie im Abschnitt ":ref:`label_eigenestemplate_tpldateien`".
 
 .. _label_aufbau_boxen:
 

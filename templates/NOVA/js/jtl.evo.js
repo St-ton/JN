@@ -143,12 +143,12 @@
             $('.evo-slider:not(.slick-initialized)').slick(evoSliderOptions);
 
             // product list image slider
-            $('.product-list .list-gallery:not(.slick-initialized)').slick({
+            /*$('.product-list .list-gallery:not(.slick-initialized)').slick({
                 lazyLoad: 'ondemand',
                 infinite: false,
                 dots:     false,
                 arrows:   true
-            });
+            });*/
             var optionsNewsSlider = {
                 rows:           0,
                 slidesToShow:   1,

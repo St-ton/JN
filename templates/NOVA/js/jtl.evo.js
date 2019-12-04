@@ -26,6 +26,7 @@
                 arrows:         false,
                 lazyLoad:       'ondemand',
                 slidesToShow:   2,
+                swipeToSlide:   true,
                 slidesToScroll: 2,
                 mobileFirst:    true,
                 responsive: [
@@ -50,6 +51,7 @@
                 //dots: true,
                 arrows:       true,
                 lazyLoad:     'ondemand',
+                swipeToSlide:   true,
                 slidesToShow: 3,
                 responsive:   [
                     {
@@ -200,34 +202,6 @@
             });
         },
 
-        addSliderTouchSupport: function () {
-            $('.carousel').each(function () {
-                if ($(this).find('.item').length > 1) {
-                    $(this).find('.carousel-control').css('display', 'block');
-                    $(this).swiperight(function () {
-                        $(this).carousel('prev');
-                    }).swipeleft(function () {
-                        $(this).carousel('next');
-                    });
-                } else {
-                    $(this).find('.carousel-control').css('display', 'none');
-                }
-            });
-        },
-
-        addTabsTouchSupport: function () {
-            $(".tab-content").swiperight(function() {
-                var $tab = $('#product-tabs .active').parent().prev();
-                if ($tab.length > 0)
-                    $tab.find('a').tab('show');
-            });
-            $(".tab-content").swipeleft(function() {
-                var $tab = $('#product-tabs .active').parent().next();
-                if ($tab.length > 0)
-                    $tab.find('a').tab('show');
-            });
-        },
-
         scrollStuff: function() {
             var breakpoint = 0,
                 pos,
@@ -309,69 +283,8 @@
             }
         },
 
-        autoheight: function() {
-            $('.row-eq-height').each(function(i, e) {
-                $(e).children('[class*="col-"]').children().responsiveEqualHeightGrid();
-            });
-            $('.row-eq-height.gallery > [class*="col-"], #product-list .product-wrapper').each(function(i, e) {
-                $(e).height($('div', $(e)).outerHeight());
-            });
-        },
-
         tooltips: function() {
             $('[data-toggle="tooltip"]').tooltip();
-        },
-
-        imagebox: function(wrapper) {
-            var $wrapper = (typeof wrapper === 'undefined' || wrapper.length === 0) ? $('#result-wrapper') : $(wrapper),
-                // square   = $('.image-box', $wrapper).first().height() + 'px',
-                padding  = $(window).height() / 2;
-
-            /*$('.image-box', $wrapper).each(function(i, item) {
-                var box = $(this),
-                    img = box.find('img'),
-                    src = img.data('src');
-
-                // img.css('max-height', square);
-                // box.css('max-height', square);
-
-                if (src && src.length > 0) {
-                    //if (src === 'gfx/keinBild.gif') {
-                    //    box.removeClass('loading')
-                    //        .addClass('none');
-                    //    box.parent().find('.overlay-img').remove();
-                    //} else {
-                        $(img).lazy(padding, function() {
-                            $(this).load(function() {
-                                // img.css('max-height', square);
-                                // box.css('line-height', square)
-                                //     .css('max-height', square)
-                                    box.removeClass('loading')
-                                    .addClass('loaded');
-                            }).error(function() {
-                                box.removeClass('loading')
-                                    .addClass('error');
-                            });
-                        });
-                    //}
-                }
-            });*/
-            /*$('img.lazy', 'body').each(function(i, item) {
-                var img = $(this),
-                    src = img.data('src');
-
-                if (src && src.length > 0) {
-                    $(img).lazy(padding, function() {
-                        $(this).on('load', function() {
-                            img.removeClass('loading')
-                                .addClass('loaded');
-                        }).on('error', function() {
-                            img.removeClass('loading')
-                                .addClass('error');
-                        });
-                    });
-                }
-            });*/
         },
 
         bootlint: function() {
@@ -403,28 +316,6 @@
                     $.evo.generateSlickSlider();
                 }
             );
-        },
-
-        renderCaptcha: function(parameters) {
-            if (typeof parameters !== 'undefined') {
-                this.options.captcha =
-                    $.extend({}, this.options.captcha, parameters);
-            }
-
-            if (typeof grecaptcha === 'undefined' && !this.options.captcha.loaded) {
-                this.options.captcha.loaded = true;
-                var lang                    = document.documentElement.lang;
-                $.getScript("https://www.google.com/recaptcha/api.js?render=explicit&onload=g_recaptcha_callback&hl=" + lang);
-            } else {
-                $('.g-recaptcha').each(function(index, item) {
-                    parameters = $.extend({}, $(item).data(), parameters);
-                    try {
-                        grecaptcha.render(item, parameters);
-                    }
-                    catch(e) { }
-                });
-            }
-            $('.g-recaptcha-response').attr('required', true);
         },
 
         popupDep: function() {
@@ -519,56 +410,6 @@
                     if (that.smoothScrollToAnchor(elem.getAttribute('href'), supportHistory)) {
                         e.preventDefault();
                     }
-                }
-            });
-        },
-
-        smoothScroll2: function() {
-            // Select all links with hashes
-            $('a[href*="#"]')
-            // Remove links that don't actually link to anything
-                .not('[data-toggle="collapse"]')
-                .not('[href="#"]')
-                .not('[href="#0"]')
-                .on('click', function(event) {
-                    // On-page links
-                    if (
-                        location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '')
-                        &&
-                        location.hostname == this.hostname
-                    ) {
-                        // Figure out element to scroll to
-                        var target = $(this.hash);
-                        target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
-                        // Does a scroll target exist?
-                        if (target.length) {
-                            // Only prevent default if animation is actually gonna happen
-                            event.preventDefault();
-                            $('html, body').animate({
-                                scrollTop: target.offset().top
-                            }, 800, function() {
-                                // Callback after animation
-                                // Must change focus!
-                                var $target = $(target);
-                                $target.focus();
-                                if ($target.is(":focus")) { // Checking if the target was focused
-                                    return false;
-                                } else {
-                                    $target.attr('tabindex','-1'); // Adding tabindex for elements not focusable
-                                    $target.focus(); // Set focus again
-                                }
-                            });
-                        }
-                    }
-                });
-        },
-
-        preventDropdownToggle: function() {
-            $('a.dropdown-toggle').on('click', function(e){
-                var elem = e.target;
-                if (elem.getAttribute('aria-expanded') == 'true' && elem.getAttribute('href') != '#') {
-                    window.location.href = elem.getAttribute('href');
-                    e.preventDefault();
                 }
             });
         },
@@ -814,21 +655,14 @@
         },
 
         register: function() {
-            // this.addSliderTouchSupport();
             this.productTabsPriceFlow();
             this.generateSlickSlider();
             setTimeout(() => {
                 $('.nav-tabs').tabdrop();
             }, 200);
-            //this.addTabsTouchSupport();
-            //this.autoheight();
             this.tooltips();
-            this.imagebox();
-            // this.renderCaptcha();
             this.popupDep();
             this.popover();
-            // this.preventDropdownToggle();
-            // this.smoothScroll2();
             this.addCartBtnAnimation();
             this.checkout();
             this.addInactivityCheck();

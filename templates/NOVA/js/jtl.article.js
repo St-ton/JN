@@ -126,6 +126,7 @@
                     lazyLoad: 'ondemand',
                     infinite: true,
                     dots:     false,
+                    swipeToSlide:   true,
                     arrows:   false,
                     asNavFor: '#gallery_preview',
                     responsive:     [
@@ -144,6 +145,7 @@
                     slidesToScroll: 1,
                     asNavFor:       '#gallery',
                     dots:           false,
+                    swipeToSlide:   true,
                     arrows:         true,
                     focusOnSelect:  true
                 };

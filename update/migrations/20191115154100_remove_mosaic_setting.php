@@ -36,6 +36,32 @@ class Migration_20191115154100 extends Migration implements IMigration
             true
         );
         $this->setConfig(
+            'artikeluebersicht_anzahl_darstellung1',
+            '10',
+            \CONF_ARTIKELUEBERSICHT,
+            'Anzahl Artikel in Listendarstellung',
+            'number',
+            840,
+            (object)[
+                'cBeschreibung' => 'Wieviele Artikel sollen in der Listendarstellung auf einmal in der ' .
+                    'Artikelansicht angezeigt werden?',
+            ],
+            true
+        );
+        $this->setConfig(
+            'artikeluebersicht_anzahl_darstellung2',
+            '20',
+            \CONF_ARTIKELUEBERSICHT,
+            'Anzahl Artikel in Galeriedarstellung',
+            'number',
+            850,
+            (object)[
+                'cBeschreibung' => 'Wieviele Artikel sollen in der Galeriedarstellung auf einmal in der ' .
+                    'Artikelansicht angezeigt werden?',
+            ],
+            true
+        );
+        $this->setConfig(
             'artikeluebersicht_erw_darstellung_stdansicht',
             '2',
             \CONF_ARTIKELUEBERSICHT,

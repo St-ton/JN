@@ -5352,8 +5352,8 @@ class Artikel
         if ($taxRate <= 0) {
             return '';
         }
-        $mwst2   = \number_format((float)$taxRate, 2, ',', '.');
-        $mwst1   = \number_format((float)$taxRate, 1, ',', '.');
+        $mwst2 = \number_format((float)$taxRate, 2, ',', '.');
+        $mwst1 = \number_format((float)$taxRate, 1, ',', '.');
         if ($mwst2[\mb_strlen($mwst2) - 1] !== '0') {
             return $mwst2;
         }

@@ -1101,7 +1101,7 @@ function plausiIban($iban)
 
     return mb_substr($iban, 2, 2) === '00'
         ? substr_replace($iban, sprintf('%02d', 98 - $rest), 2, 2)
-        :  $rest === 1;
+        : $rest === 1;
 }
 
 /**

@@ -1099,8 +1099,11 @@ class Wishlist
         $this->dErstellt_DE = $record->dErstellt_DE ?? \DateTime::createFromFormat('Y-m-d H:i:s', $record->dErstellt)
                 ->format('d.m.Y H:i');
         if ($this->kKunde > 0) {
-            $this->oKunde = new Customer($this->kKunde);
-            unset($this->oKunde->cPasswort, $this->oKunde->fRabatt, $this->oKunde->fGuthaben, $this->oKunde->cUSTID);
+            $this->oKunde            = new Customer($this->kKunde);
+            $this->oKunde->cPasswort = null;
+            $this->oKunde->fRabatt   = null;
+            $this->oKunde->fGuthaben = null;
+            $this->oKunde->cUSTID    = null;
         }
         $db             = Shop::Container()->getDB();
         $langID         = Shop::getLanguageID();

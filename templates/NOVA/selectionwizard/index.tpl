@@ -7,7 +7,7 @@
         {opcMountPoint id='opc_before_selection_wizard'}
         {block name='selectionwizard-index-script'}
             {inline_script}<script>
-                var nSelection_arr = [{$AWA->getSelections()|implode:','}];
+                var nSelection_arr = [{implode(',', $AWA->getSelections())}];
 
                 function setSelectionWizardAnswerJS(kMerkmalWert)
                 {

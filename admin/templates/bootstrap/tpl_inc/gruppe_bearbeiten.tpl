@@ -37,27 +37,37 @@
                 <hr class="mb-3">
             </div>
             <div class="card-body row">
-                {foreach $oAdminDefPermission_arr as $oGroup}
-                    <div id="settings-{$oGroup@iteration}" class=" col-md-4">
+                {foreach $permissions as $mainGroup}
+                    <div id="settings-{$mainGroup@iteration}" class="col-md-4">
                         <div class="card">
                             <div class="card-header">
-                                <div class="subheading1">{$oGroup->cName}</div>
+                                <div class="subheading1">{$mainGroup->name}</div>
                                 <hr class="mb-n3">
                             </div>
-                            <div class="perm_list card-body">
-                                {foreach $oGroup->oPermission_arr as $oPerm}
-                                    <div class="custom-control custom-checkbox">
-                                        <input class="custom-control-input" type="checkbox" name="perm[]" value="{$oPerm->cRecht}" id="{$oPerm->cRecht}" {if isset($cAdminGroupPermission_arr) && is_array($cAdminGroupPermission_arr)}{if $oPerm->cRecht|in_array:$cAdminGroupPermission_arr}checked="checked"{/if}{/if} />
-                                        <label class="custom-control-label" for="{$oPerm->cRecht}" class="perm">
-                                            {if $oPerm->cBeschreibung|strlen > 0}{$oPerm->cBeschreibung}{if isset($bDebug) && $bDebug} - {$oPerm->cRecht}{/if}{else}{$oPerm->cRecht}{/if}
-                                        </label>
+                            <div class="card-body">
+                                {foreach $mainGroup->children as $group}
+                                    <div class="mb-3">
+                                        {if $group->name !== ''}<div class="subheading2">{$group->name}</div>{/if}
+                                        {foreach $group->permissions as $permission}
+                                            <div class="custom-control custom-checkbox">
+                                                <input class="custom-control-input" type="checkbox" name="perm[]" value="{$permission->cRecht}" id="{$permission->cRecht}" {if isset($cAdminGroupPermission_arr) && is_array($cAdminGroupPermission_arr)}{if $permission->cRecht|in_array:$cAdminGroupPermission_arr}checked="checked"{/if}{/if} />
+                                                <label class="custom-control-label" for="{$permission->cRecht}" class="perm">
+                                                    {if isset($bDebug) && $bDebug} - {$permission->cRecht}{/if}
+                                                    {if isset($permission->name)}
+                                                        {$permission->name}
+                                                    {else}
+                                                        {__("permission_{$permission->cRecht}")}
+                                                    {/if}
+                                                </label>
+                                            </div>
+                                        {/foreach}
                                     </div>
                                 {/foreach}
                             </div>
                             <div class="card-footer">
                                 <div class="custom-control custom-checkbox">
-                                    <input class="custom-control-input" type="checkbox" onclick="checkToggle('#settings-{$oGroup@iteration}');" id="cbtoggle-{$oGroup@iteration}" />
-                                    <label class="custom-control-label" for="cbtoggle-{$oGroup@iteration}">{__('globalSelectAll')}</label>
+                                    <input class="custom-control-input" type="checkbox" onclick="checkToggle('#settings-{$mainGroup@iteration}');" id="cbtoggle-{$mainGroup@iteration}" />
+                                    <label class="custom-control-label" for="cbtoggle-{$mainGroup@iteration}">{__('globalSelectAll')}</label>
                                 </div>
                             </div>
                         </div>

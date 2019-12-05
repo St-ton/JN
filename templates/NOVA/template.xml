@@ -101,15 +101,6 @@
                 <Option Value="12"><![CDATA[max. 12]]></Option>
                 <Option Value="-1"><![CDATA[keine Beschr&auml;nkung]]></Option>
             </Setting>
-            <Setting Description="Overlays in Listenansichten" Key="ribbon_type" Type="select" Value="c" Editable="false">
-                <Option Value="c">Band (Ribbon)</Option>
-            </Setting>
-            <Setting Description="Position des Overlays" Key="ribbon_position" Type="select" Value="top-left">
-                <Option Value="top-left">oben links</Option>
-                <Option Value="top-right">oben rechts</Option>
-                <Option Value="bottom-left">unten links</Option>
-                <Option Value="bottom-right">unten rechts</Option>
-            </Setting>
         </Section>
         <Section Name="Seitenleiste Einstellungen" Key="sidebar_settings">
             <Setting Description="Preisspanne immer anzeigen (empfohlen)" Key="always_show_price_range" Type="select" Value="Y">

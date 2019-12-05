@@ -22821,6 +22821,24 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   text-decoration: none;
 }
 
+.list-gallery img.first {
+  opacity: 1;
+  transition: opacity 0.35s linear;
+}
+.list-gallery img.second {
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: opacity 0.35s linear;
+}
+.list-gallery:hover img.first {
+  opacity: 0;
+}
+.list-gallery:hover img.second {
+  opacity: 1;
+}
+
 /* productdetails */
 .product-detail .product-actions {
   position: absolute;

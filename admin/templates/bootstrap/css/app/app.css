@@ -13194,6 +13194,9 @@ body {
 #modal-setup-assistant .step.active ~ .step {
   cursor: auto;
 }
+#modal-setup-assistant .modal-body {
+  border: 0;
+}
 #modal-setup-assistant .img-setup-guide {
   float: left;
   margin-left: -12.1875rem;
@@ -13202,7 +13205,7 @@ body {
 @media (min-width: 992px) {
   #modal-setup-assistant .modal-content {
     min-height: 43.75rem;
-    background: #ffffff url("images/setup-assistant-bg.svg") no-repeat left top/auto 43.75rem;
+    background: #ffffff url("../images/setup-assistant-bg.svg") no-repeat left top/auto 43.75rem;
   }
 }
 #modal-setup-assistant .setup-slide:not(.active) {
@@ -13235,17 +13238,17 @@ body {
 #modal-setup-assistant[data-setup-current="0"] .setup-steps, #modal-setup-assistant[data-setup-current="0"] .modal-footer {
   display: none;
 }
-#modal-setup-assistant[data-setup-current="5"]:not(.installed) [data-setup-next] {
+#modal-setup-assistant[data-setup-current="4"]:not(.installed) [data-setup-next] {
   display: none;
 }
-#modal-setup-assistant[data-setup-current="6"] [data-setup-prev], #modal-setup-assistant[data-setup-current="6"] [data-setup-next],
-#modal-setup-assistant[data-setup-current="6"] [data-setup-submit], #modal-setup-assistant[data-setup-current="6"] .setup-steps {
+#modal-setup-assistant[data-setup-current="5"] [data-setup-prev], #modal-setup-assistant[data-setup-current="5"] [data-setup-next],
+#modal-setup-assistant[data-setup-current="5"] [data-setup-submit], #modal-setup-assistant[data-setup-current="5"] .setup-steps {
   display: none;
 }
-#modal-setup-assistant:not([data-setup-current="5"]) [data-setup-submit], #modal-setup-assistant.installed [data-setup-submit] {
+#modal-setup-assistant:not([data-setup-current="4"]) [data-setup-submit], #modal-setup-assistant.installed [data-setup-submit] {
   display: none;
 }
-#modal-setup-assistant:not([data-setup-current="6"]) [data-setup-close] {
+#modal-setup-assistant:not([data-setup-current="5"]) [data-setup-close] {
   display: none;
 }
 

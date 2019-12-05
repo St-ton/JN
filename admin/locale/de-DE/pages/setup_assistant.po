@@ -1,0 +1,171 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "setupAssistant"
+msgstr "Einrichtungsassistent"
+
+msgid "setupAssistantDesc"
+msgstr " "
+
+msgid "setupAssistantURL"
+msgstr " "
+
+msgid "launchSetup"
+msgstr "Einstellen"
+
+msgid "welcome"
+msgstr "Herzlich Wilkommen"
+
+msgid "welcomeDesc"
+msgstr "In diesem Assistenten führen wir Sie durch die wichtigsten Schritte, die für die Einrichtung von JTL-Shop notwendig sind."
+
+msgid "beginSetup"
+msgstr "Starten"
+
+msgid "stepOne"
+msgstr "Schritt 1 - Globale Einstellungen"
+
+msgid "stepOneDesc"
+msgstr "Hier legen Sie die wichtigsten Grundeinstellungen für Ihren Onlineshop fest. Alle Einstellungen können hinterher im Backend von JTL-Shop geändert werden."
+
+msgid "stepTwo"
+msgstr "Schritt 2 - Rechtstexte"
+
+msgid "stepTwoDesc"
+msgstr "Hier können Sie direkt passende Plugins von JTL-Partnern wählen, die Ihnen dabei helfen, rechtssichere Texte wie AGB, Widerrufsbelehrung usw. in Ihren Onlineshop einzupflegen."
+
+msgid "stepThree"
+msgstr "Schritt 3 - Zahlungsarten"
+
+msgid "stepThreeDesc"
+msgstr "Hier legen Sie fest, welche Zahlungsarten Sie in Ihrem JTL-Shop anbieten möchten. Außerdem können Sie direkt die Plugins für einige der beliebtesten Zahlungsanbieter zur Installation auswählen."
+
+msgid "stepFour"
+msgstr "Schritt 4 - Übersicht & Bestätigung"
+
+msgid "stepFourDesc"
+msgstr "Hier sehen Sie einen Überblick über die getroffenen Einstellungen. Sie können jeden einzelnen Punkt noch einmal bearbeiten. Klicken Sie anschließend auf „Bestätigen“"
+
+msgid "legalTexts"
+msgstr "Rechtstexte"
+
+msgid "vatSettings"
+msgstr "Steuereinstellung"
+
+msgid "smallEntrepreneur"
+msgstr "Kleinunternehmerregelung"
+
+msgid "vatSmallEntrepreneur"
+msgstr "Kleinunternehmerregelung nach §19 UStG anwenden"
+
+msgid "vatSmallEntrepreneurTitle"
+msgstr "Wenn Sie diese Option aktivieren, wird in Ihrem Onlineshop keine Umsatzsteuer ausgewiesen."
+
+msgid "customerGroupDesc"
+msgstr "Das Angebot dieses Shops richtet sich an"
+
+msgid "customerGroupDescTitle"
+msgstr "Falls Sie Ihren Onlineshop nur an gewerbliche Kunden / Unternehmer richten, werden Nettopreise (ohne Umsatzsteuer) angezeigt. Für Onlineshops, die sich auch an Endverbraucher wenden, werden Bruttopreise angezeigt."
+
+msgid "customerGroupB2B"
+msgstr "Unternehmer / gewerbliche Kunden (B2B)"
+
+msgid "customerGroupB2C"
+msgstr "Endverbraucher / private Kunden (B2C)"
+
+msgid "vatIDCompany"
+msgstr "USt-IdNr. der Firma"
+
+msgid "vatIDCompanyTitle"
+msgstr "Falls Sie für mehrere Länder Umsatzsteuer-Identifikationsnummern haben, geben Sie hier die USt-IdNr. für das Land ein, in dem sich der Hauptsitz Ihres Unternehmens befindet."
+
+msgid "shopSettings"
+msgstr "Online-Shop Einstellungen"
+
+msgid "shopName"
+msgstr "Name des Online-Shops"
+
+msgid "shopNameDesc"
+msgstr "Name des Online-Shops"
+
+msgid "masterEmail"
+msgstr "Master-E-Mail Adresse"
+
+msgid "masterEmailDesc"
+msgstr "Master-E-Mail Adresse"
+
+msgid "secureDefaultSettings"
+msgstr "Sichere Voreinstellungen"
+
+msgid "secureDefaultSettingsDesc"
+msgstr "Sichere Voreinstellungen"
+
+msgid "weRecommend"
+msgstr "Wir empfehlen"
+
+msgid "weRecommendLegalDesc"
+msgstr "Um die Plugins verwenden zu können, müssen Sie mit dem jeweiligen Partner einen separaten Vertrag abschließen. Klicken Sie auf 'Mehr erfahren' für weitere Informationen zu den einzelnen Plugins."
+
+msgid "weRecommendPaymentDesc"
+msgstr "Um die Plugins verwenden zu können, müssen Sie mit dem jeweiligen Zahlungsanbieter einen Vertrag abschließen. Klicken Sie auf 'Mehr erfahren' für weitere Informationen zu den einzelnen Plugins."
+
+msgid "getToKnowMore"
+msgstr "Mehr erfahren"
+
+msgid "paymentPluginInstalled"
+msgstr "Das Plugin wurde erfolgreich installiert. Sie müssen es nun noch unter Kaufabwicklung > Zahlungen > Zahlungsarten einrichten."
+
+msgid "finalize"
+msgstr "Beenden"
+
+msgid "thankYouText"
+msgstr "Vielen Dank!"
+
+msgid "thankYouTextDesc"
+msgstr "Sie haben nun die wichtigsten Einstellungen für JTL-Shop getroffen."
+
+msgid "thankYouTextPluginsInstalled"
+msgstr "Folgende Plugins wurden erfolgreich installiert, müssen aber noch unter <span class=\"text-primary font-weight-bold\">Kaufabwicklung > Zahlungen > Zahlungsarten</span> eingerichtet werden."
+
+msgid "installedPlugins"
+msgstr "Installierte Plugins"
+
+msgid "finalizeHelpNotice"
+msgstr "Sie brauchen Hilfe bei der weiteren Einrichtung von JTL-Shop? Folgen Sie einfach einem der Links in unseren JTL-Guide!"
+
+msgid "recommendationAppearance"
+msgstr "Optik"
+
+msgid "recommendationAppearanceDesc"
+msgstr "Sie können das Aussehen des JTL-Shops anpassen, so dass es genau zu Ihrem Unternehmen passt."
+
+msgid "recommendationFormsAndTexts"
+msgstr "Formular und Texte"
+
+msgid "recommendationFormsAndTextsDesc"
+msgstr "Die meisten Texte und Formulare, die in JTL-Shop angezeigt werden, können Sie individuell an Ihren Onlineshop anpassen."
+
+msgid "recommendationSystem"
+msgstr "Systemverwaltung"
+
+msgid "recommendationSystemDesc"
+msgstr "Passwörter ändern, Weiterleitungen schalten, Produktdarstellung auf den Artikeldetailsseiten und vieles mehr."
+
+msgid "recommendationExtendShop"
+msgstr "Shop erweitern"
+
+msgid "recommendationExtendShopDesc"
+msgstr "Mit Plugins und Modulen können Sie die Funktionalitäten von JTL-Shop um sinnvolle Optionen ergänzen."
+
+msgid "recommendationMarketingSeo"
+msgstr "Shop Marketing / SEO"
+
+msgid "recommendationMarketingSeoDesc"
+msgstr "JTL-Shop bietet Ihnen verschiedene Möglichkeiten, mit den Inhalten Ihres Onlineshops Marketing zu betreiben."
+
+msgid "recommendationJTLSearch"
+msgstr "JTL-Search"
+
+msgid "recommendationJTLSearchDesc"
+msgstr "JTL-Search ist ein kostenpflichtiges Zusatzmodul und ermöglicht Ihren Kunden eine fehlertolerante Suche und After-Search Navigation."

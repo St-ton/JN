@@ -407,6 +407,10 @@ $adminMenu = [
                     'link'   => 'shopzuruecksetzen.php',
                     'permissions' => 'RESET_SHOP_VIEW',
                 ],
+                __('Einrichten') => (object)[
+                    'link'   => 'setup_assistant.php',
+                    'permissions' => 'RESET_SHOP_VIEW',
+                ],
             ],
         ]
     ],

@@ -10,7 +10,6 @@ const Data = {
 	next					: `${dataPrefix}-next`,
 	submit					: `${dataPrefix}-submit`,
 	legalToggler			: `${dataPrefix}-legal-toggle`,
-	legalPlugins			: `${dataPrefix}-legal-plugins`,
 	summaryPlaceholder		: `${dataPrefix}-summary-placeholder`,
 	summaryId				: `${dataPrefix}-summary-id`,
 	summaryText				: `${dataPrefix}-summary-text`
@@ -23,7 +22,6 @@ const $slides				= $(`${modal} [${Data.slides}]`)
 const $prev					= $(`${modal} [${Data.prev}]`)
 const $next					= $(`${modal} [${Data.next}]`)
 const $submit				= $(`${modal} [${Data.submit}]`)
-const $legalplugins			= $(`${modal} [${Data.legalPlugins}]`)
 const $summaryPlaceholder	= $(`${modal} [${Data.summaryPlaceholder}]`)
 const $summaryId			= $(`${modal} [${Data.summaryId}]`)
 const $summaryText			= $(`${modal} [${Data.summaryText}]`)
@@ -114,16 +112,6 @@ $(document).on('click', `${modal} [${Data.next}]`, () => {
 	showSlide((current < last) ? current + 1 : last)
 })
 
-$(document).on('change', `${modal} [${Data.legalToggler}]`, function() {
-	let usePlugin = $(this).val() > 0
-
-	if(usePlugin) {
-		$legalplugins.removeClass('disabled')
-	} else {
-		$legalplugins.addClass('disabled')
-	}
-})
-
 $form.on('submit', (e) => {
 	e.preventDefault()
 
@@ -148,12 +136,8 @@ $form.on('submit', (e) => {
 		}, 1500)
 
 		setTimeout(() => {
-			$currentSlide.find(`[${Data.step}="4"]`).html(checkmark)
-		}, 2000)
-
-		setTimeout(() => {
 			resolve()
-		}, 3000)
+		}, 2500)
 	});
 
 	callback.then(() => {

@@ -263,9 +263,6 @@ function generateSitemapXML()
                 case ERWDARSTELLUNG_ANSICHT_GALERIE:
                     $nArtikelProSeite = (int)$conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2'];
                     break;
-                case ERWDARSTELLUNG_ANSICHT_MOSAIK:
-                    $nArtikelProSeite = (int)$conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung3'];
-                    break;
             }
         }
     }

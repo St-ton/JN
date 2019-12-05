@@ -57,7 +57,7 @@
                                         {/foreach}
                                     </span>
                                 </td>
-                                <td class="text-center plugin-version">{(string)$plugin->getVersion()}{if $plugin->isUpdateAvailable()} <span class="label text-success update-info">{(string)$plugin->getCurrentVersion()}</span>{/if}</td>
+                                <td class="text-center plugin-version">{(string)$plugin->getVersion()}{if $plugin->isUpdateAvailable()} <span class="label text-success update-info">{(string)$plugin->isUpdateAvailable()}</span>{/if}</td>
                                 <td class="text-center plugin-install-date">{$plugin->getDateInstalled()->format('d.m.Y H:i')}</td>
                                 <td class="plugin-folder">{$plugin->getPath()}</td>
                                 <td class="text-center plugin-lang-vars">

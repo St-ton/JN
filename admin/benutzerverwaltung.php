@@ -12,11 +12,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('ACCOUNT_VIEW', true, true);
 
 /** @global \JTL\Smarty\JTLSmarty $smarty */
-$action   = 'account_view';
-$messages = [
-    'notice' => '',
-    'error'  => ''
-];
+$action = 'account_view';
 
 if (isset($_REQUEST['action']) && Form::validateToken()) {
     $action = Text::filterXSS($_REQUEST['action']);

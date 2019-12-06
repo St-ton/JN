@@ -80,7 +80,6 @@
                                 <div class="col-xl-6">
                                     <div class="form-group-lg">
                                         <span class="form-title">{__('vatIDCompany')}:<span class="fal fa-info-circle text-muted ml-4" data-toggle="tooltip" title="{__('vatIDCompanyTitle')}"></span></span>
-
                                         <input type="text" class="form-control rounded-pill" id="ustid" placeholder="" data-setup-summary-id="ustid">
                                     </div>
                                 </div>

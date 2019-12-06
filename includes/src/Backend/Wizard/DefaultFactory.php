@@ -7,8 +7,7 @@
 namespace JTL\Backend\Wizard;
 
 use Illuminate\Support\Collection;
-use JTL\Backend\Wizard\Steps\ShopConfig;
-use JTL\Backend\Wizard\Steps\TaxConfig;
+use JTL\Backend\Wizard\Steps\GlobalSettings;
 use JTL\DB\DbInterface;
 
 /**
@@ -29,8 +28,7 @@ final class DefaultFactory
     public function __construct(DbInterface $db)
     {
         $this->steps = new Collection();
-        $this->steps->push(new ShopConfig($db));
-        $this->steps->push(new TaxConfig($db));
+        $this->steps->push(new GlobalSettings($db));
     }
 
     /**

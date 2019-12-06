@@ -52,11 +52,11 @@ class CleanupLogs extends Method implements MethodInterface
      */
     private function cleanupEmailHistory()
     {
-        Shop::Container()->getDB()->queryPrepared(
+        $this->db->queryPrepared(
             'DELETE FROM temailhistory
-            WHERE dSent <= :pDateLimit
-            ORDER BY dSent ASC
-            LIMIT :pLimit',
+                WHERE dSent <= :pDateLimit
+                ORDER BY dSent ASC
+                LIMIT :pLimit',
             [
                 'pDateLimit' => $this->dateLimit,
                 'pLimit'     => $this->workLimit
@@ -71,11 +71,11 @@ class CleanupLogs extends Method implements MethodInterface
      */
     private function cleanupContactHistory(): void
     {
-        Shop::Container()->getDB()->queryPrepared(
+        $this->db->queryPrepared(
             'DELETE FROM tkontakthistory
-            WHERE dErstellt <= :pDateLimit
-            ORDER BY dErstellt ASC
-            LIMIT :pLimit',
+                WHERE dErstellt <= :pDateLimit
+                ORDER BY dErstellt ASC
+                LIMIT :pLimit',
             [
                 'pDateLimit' => $this->dateLimit,
                 'pLimit'     => $this->workLimit
@@ -166,13 +166,12 @@ class CleanupLogs extends Method implements MethodInterface
      */
     private function cleanupLogs(): void
     {
-        Shop::Container()->getDB()->queryPrepared(
+        $this->db->queryPrepared(
             "DELETE FROM tjtllog
-            WHERE
-                (cLog LIKE '%@%' OR cLog LIKE '%kKunde%')
-                AND dErstellt <= :pDateLimit
-            ORDER BY dErstellt ASC
-            LIMIT :pLimit",
+                WHERE (cLog LIKE '%@%' OR cLog LIKE '%kKunde%')
+                    AND dErstellt <= :pDateLimit
+                ORDER BY dErstellt ASC
+                LIMIT :pLimit",
             [
                 'pDateLimit' => $this->dateLimit,
                 'pLimit'     => $this->workLimit
@@ -187,13 +186,12 @@ class CleanupLogs extends Method implements MethodInterface
      */
     private function cleanupPaymentConfirmations(): void
     {
-        Shop::Container()->getDB()->queryPrepared(
+        $this->db->queryPrepared(
             "DELETE FROM tzahlungseingang
-            WHERE
-                cAbgeholt != 'Y'
-                AND dZeit <= :pDateLimit
-            ORDER BY dZeit ASC
-            LIMIT :pLimit",
+                WHERE cAbgeholt != 'Y'
+                    AND dZeit <= :pDateLimit
+                ORDER BY dZeit ASC
+                LIMIT :pLimit",
             [
                 'pDateLimit' => $this->dateLimit,
                 'pLimit'     => $this->workLimit
@@ -210,12 +208,11 @@ class CleanupLogs extends Method implements MethodInterface
      */
     private function cleanupCustomerDataHistory(): void
     {
-        Shop::Container()->getDB()->queryPrepared(
+        $this->db->queryPrepared(
             'DELETE FROM tkundendatenhistory
-            WHERE
-                dErstellt < MAKEDATE(YEAR(:pNow) - 1, 1)
-            ORDER BY dErstellt ASC
-            LIMIT :pLimit',
+                WHERE dErstellt < MAKEDATE(YEAR(:pNow) - 1, 1)
+                ORDER BY dErstellt ASC
+                LIMIT :pLimit',
             [
                 'pNow'   => $this->now->format('Y-m-d H:i:s'),
                 'pLimit' => $this->workLimit

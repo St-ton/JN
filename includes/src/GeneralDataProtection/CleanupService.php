@@ -96,7 +96,6 @@ class CleanupService extends Method implements MethodInterface
      */
     public function execute(): void
     {
-        $db = Shop::Container()->getDB();
         foreach ($this->definition as $table => $tableData) {
             $dateField  = $tableData['cDate'];
             $subTables  = $tableData['cSubTable'];
@@ -114,7 +113,7 @@ class CleanupService extends Method implements MethodInterface
                 if ($tableData['cDateType'] === 'TIMESTAMP') {
                     $dateCol = 'FROM_UNIXTIME(' . $dateCol . ')';
                 }
-                $db->query(
+                $this->db->query(
                     'DELETE ' . $from . '
                         FROM ' . $table . $join . "
                         WHERE DATE_SUB('" . $cObjectNow . "', INTERVAL " . $cInterval . ' DAY) >= ' . $dateCol,
@@ -125,7 +124,7 @@ class CleanupService extends Method implements MethodInterface
                 if ($tableData['cDateType'] === 'TIMESTAMP') {
                     $dateCol = 'FROM_UNIXTIME(' . $dateCol . ')';
                 }
-                $db->query(
+                $this->db->query(
                     'DELETE FROM ' . $table . "
                         WHERE DATE_SUB('" . $cObjectNow . "', INTERVAL " . $cInterval . ' DAY) >= ' . $dateCol,
                     ReturnType::DEFAULT

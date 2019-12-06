@@ -35,7 +35,7 @@ class CleanupGuestAccountsWithoutOrders extends Method implements MethodInterfac
      */
     private function cleanupCustomers(): void
     {
-        $guestAccounts = Shop::Container()->getDB()->queryPrepared(
+        $guestAccounts = $this->db->queryPrepared(
             "SELECT kKunde
                 FROM tkunde
                 WHERE nRegistriert = 0

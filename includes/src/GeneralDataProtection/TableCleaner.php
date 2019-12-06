@@ -6,6 +6,7 @@
 
 namespace JTL\GeneralDataProtection;
 
+use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Shop;
 
@@ -29,6 +30,11 @@ class TableCleaner
      * @var object Monolog\Logger
      */
     private $logger;
+
+    /**
+     * @var DbInterface
+     */
+    private $db;
 
     /**
      * anonymize methods
@@ -58,7 +64,7 @@ class TableCleaner
         } catch (\Exception $e) {
             $this->logger = null;
         }
-        // sets the time which has to be used by all sub-processes
+        $this->db  = Shop::Container()->getDB();
         $this->now = new \DateTime();
     }
 
@@ -67,15 +73,15 @@ class TableCleaner
      */
     public function execute(): void
     {
-        $timeStart   = \microtime(true); // runtime-measurement
-        $methodCount = \count($this->methods);
-        // iterate over the indexed array (configurable order!)
-        for ($i = 0; $i < $methodCount; $i++) {
-            $methodName = __NAMESPACE__ . '\\' . $this->methods[$i]['name'];
-            (new $methodName($this->now, $this->methods[$i]['intervalDays']))->execute();
+        $timeStart = \microtime(true);
+        foreach ($this->methods as $method) {
+            $methodName = __NAMESPACE__ . '\\' . $method['name'];
+            /** @var MethodInterface $instance */
+            $instance = new $methodName($this->now, $method['intervalDays'], $this->db);
+            $instance->execute();
             ($this->logger === null) ?: $this->logger->log(
                 \JTLLOG_LEVEL_NOTICE,
-                'Anonymize method executed: ' . $this->methods[$i]['name']
+                'Anonymize method executed: ' . $method['name']
             );
         }
         ($this->logger === null) ?: $this->logger->log(
@@ -90,9 +96,9 @@ class TableCleaner
     public function __destruct()
     {
         // removes journal-entries at the end of next year after their creation
-        Shop::Container()->getDB()->queryPrepared(
+        $this->db->queryPrepared(
             'DELETE FROM tanondatajournal
-            WHERE dEventTime <= LAST_DAY(DATE_ADD(:pNow - INTERVAL 2 YEAR, INTERVAL 12 - MONTH(:pNow) MONTH))',
+                WHERE dEventTime <= LAST_DAY(DATE_ADD(:pNow - INTERVAL 2 YEAR, INTERVAL 12 - MONTH(:pNow) MONTH))',
             ['pNow' => $this->now->format('Y-m-d H:i:s')],
             ReturnType::DEFAULT
         );

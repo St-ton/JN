@@ -13,7 +13,7 @@
 class cache_redis implements ICachingMethod
 {
     use JTLCacheTrait;
-    
+
     /**
      * @var cache_redis
      */
@@ -107,7 +107,7 @@ class cache_redis implements ICachingMethod
             $exp = $expiration === null ? $this->options['lifetime'] : $expiration;
             // the journal and negative expiration values should not cause an expiration
             if ($cacheID !== $this->journalID && $exp > -1) {
-                $this->_redis->setTimeout($cacheID, $exp);
+                $this->_redis->expire($cacheID, $exp);
             }
 
             return $res;
@@ -128,7 +128,7 @@ class cache_redis implements ICachingMethod
         try {
             $res = $this->_redis->mset($idContent);
             foreach (array_keys($idContent) as $_cacheID) {
-                $this->_redis->setTimeout($_cacheID, (($expiration === null)
+                $this->_redis->expire($_cacheID, (($expiration === null)
                     ? $this->options['lifetime']
                     : $expiration)
                 );
@@ -195,7 +195,7 @@ class cache_redis implements ICachingMethod
     public function flush($cacheID)
     {
         try {
-            return $this->_redis->delete($cacheID);
+            return $this->_redis->del($cacheID);
         } catch (RedisException $e) {
             echo 'Redis exception: ' . $e->getMessage();
 

@@ -232,29 +232,42 @@
         },
 
         productTabsPriceFlow: function() {
+            var dateFormat = 'DD.MM.YYYY';
+            if ($('html').attr('lang') !== 'de') {
+                dateFormat = 'MM/DD/YYYY';
+            }
             var chartOptions = {
                 responsive:       true,
-                    scaleBeginAtZero: false,
-                    tooltips: {
+                scaleBeginAtZero: false,
+                aspectRatio:3,
+                tooltips: {
                     callbacks: {
                         label: function (tooltipItem, data) {
-                            var label = data.datasets[tooltipItem.datasetIndex].label || '';
-                            if (label) {
-                                label += ': ';
-                            }
+                            var label = window.chartDataTooltip;
                             label += Math.round(tooltipItem.yLabel * 100) / 100;
-                            label += window.chartDataCurrency;
+                            label += ' '+window.chartDataCurrency;
                             return label;
                         }
                     }
+                },
+                scales: {
+                    xAxes: [{
+                        type: 'time',
+                        time: {
+                            parser: 'DD.MM.YYYY',
+                            // round: 'day'
+                            tooltipFormat: dateFormat
+                        },
+                        display: false
+                    }],
                 }
             };
             if ($('#tab-link-tb-prcFlw').length) {
                 // using tabs
-                $('#tab-tb-prcFlw').on('shown.bs.tab', function () {
+                $('#tab-link-tb-prcFlw').on('shown.bs.tab', function () {
                     if (typeof window.priceHistoryChart !== 'undefined' && window.priceHistoryChart === null) {
                         window.priceHistoryChart = new Chart(window.ctx, {
-                            type: 'bar',
+                            type: 'line',
                             data: window.chartData,
                             options: chartOptions
                         });
@@ -263,7 +276,7 @@
                 $('#tab-content-product-tabs').on('afterChange', function (event, slick) {
                     if (typeof window.priceHistoryChart !== 'undefined' && window.priceHistoryChart === null) {
                         window.priceHistoryChart = new Chart(window.ctx, {
-                            type: 'bar',
+                            type: 'line',
                             data: window.chartData,
                             options: chartOptions
                         });
@@ -274,7 +287,7 @@
                 $('#tab-priceFlow').on('shown.bs.collapse', function () {
                     if (typeof window.priceHistoryChart !== 'undefined' && window.priceHistoryChart === null) {
                         window.priceHistoryChart = new Chart(window.ctx, {
-                            type: 'bar',
+                            type: 'line',
                             data: window.chartData,
                             options: chartOptions
                         });

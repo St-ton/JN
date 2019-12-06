@@ -160,7 +160,7 @@
             <File Path="js/jtl.article.js"/>
             <File Path="js/jtl.basket.js"/>
             <File Path="js/parallax.min.js"/>
-            <File Path="js/Chart.min.js" DependsOnSettingGroup="CONF_PREISVERLAUF" DependsOnSetting="preisverlauf.preisverlauf_anzeigen" DependsOnSettingValue="Y"/>
+            <File Path="js/Chart.bundle.min.js" DependsOnSettingGroup="CONF_PREISVERLAUF" DependsOnSetting="preisverlauf.preisverlauf_anzeigen" DependsOnSettingValue="Y"/>
             <File Path="js/jqcloud.js"/>
             <File Path="js/nouislider.min.js"/>
             <File Path="js/password/password.min.js"/>

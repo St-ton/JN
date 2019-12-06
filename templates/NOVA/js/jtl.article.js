@@ -815,7 +815,7 @@
                             case 1: // forwarding
                                 window.location.href = response.cLocation;
                                 break;
-                            case 2: // added to comparelist
+                            case 2: // added to wishlist
                                 that.updateWishlist(response);
                                 break;
                         }
@@ -854,7 +854,7 @@
                             case 1: // forwarding
                                 window.location.href = response.cLocation;
                                 break;
-                            case 2: // removed from comparelist
+                            case 2: // removed from wishlist
                                 that.updateWishlist(response);
                                 break;
                         }

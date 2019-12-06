@@ -207,7 +207,7 @@ class AdminAccountManager
      * @param int $adminID
      * @return array
      */
-    public function benutzerverwaltungGetAttributes(int $adminID): array
+    public function getAttributes(int $adminID): array
     {
         $extAttribs = $this->db->selectAll(
             'tadminloginattribut',
@@ -226,7 +226,7 @@ class AdminAccountManager
      * @param array $errorMap
      * @return bool
      */
-    public function benutzerverwaltungSaveAttributes(stdClass $account, array $extAttribs, array &$errorMap): bool
+    public function saveAttributes(stdClass $account, array $extAttribs, array &$errorMap): bool
     {
         if (\is_array($extAttribs)) {
             $result = true;
@@ -370,7 +370,7 @@ class AdminAccountManager
      * @param stdClass $oAccount
      * @return bool
      */
-    public function benutzerverwaltungDeleteAttributes(stdClass $oAccount): bool
+    public function deleteAttributes(stdClass $oAccount): bool
     {
         return $this->db->delete(
             'tadminloginattribut',
@@ -382,7 +382,7 @@ class AdminAccountManager
     /**
      * @return string
      */
-    public function benutzerverwaltungActionAccountLock(): string
+    public function actionAccountLock(): string
     {
         $adminID = Request::postInt('id');
         $account = $this->db->select('tadminlogin', 'kAdminlogin', $adminID);
@@ -417,7 +417,7 @@ class AdminAccountManager
     /**
      * @return string
      */
-    public function benutzerverwaltungActionAccountUnLock(): string
+    public function actionAccountUnLock(): string
     {
         $adminID = Request::postInt('id');
         $account = $this->db->select('tadminlogin', 'kAdminlogin', $adminID);
@@ -445,7 +445,7 @@ class AdminAccountManager
      * @return string
      * @throws Exception
      */
-    public function benutzerverwaltungActionAccountEdit(): string
+    public function actionAccountEdit(): string
     {
         $_SESSION['AdminAccount']->TwoFA_valid = true;
 
@@ -556,7 +556,7 @@ class AdminAccountManager
                 $_SESSION['AdminAccount']->language = $tmpAcc->language;
 
                 if ($this->db->update('tadminlogin', 'kAdminlogin', $tmpAcc->kAdminlogin, $tmpAcc) >= 0
-                    && $this->benutzerverwaltungSaveAttributes($tmpAcc, $tmpAttribs, $errors)
+                    && $this->saveAttributes($tmpAcc, $tmpAttribs, $errors)
                 ) {
                     $result = true;
                     executeHook(HOOK_BACKEND_ACCOUNT_EDIT, [
@@ -587,7 +587,7 @@ class AdminAccountManager
                 $tmpAcc->cPass = Shop::Container()->getPasswordService()->hash($tmpAcc->cPass);
 
                 if (($tmpAcc->kAdminlogin = $this->db->insert('tadminlogin', $tmpAcc))
-                    && $this->benutzerverwaltungSaveAttributes($tmpAcc, $tmpAttribs, $errors)
+                    && $this->saveAttributes($tmpAcc, $tmpAttribs, $errors)
                 ) {
                     $result = true;
                     executeHook(HOOK_BACKEND_ACCOUNT_EDIT, [
@@ -623,7 +623,7 @@ class AdminAccountManager
             }
         } elseif ($adminID > 0) {
             $account    = $this->getAdminLogin($adminID);
-            $extAttribs = $this->benutzerverwaltungGetAttributes($adminID);
+            $extAttribs = $this->getAttributes($adminID);
         } else {
             $account    = new stdClass();
             $extAttribs = [];
@@ -655,7 +655,7 @@ class AdminAccountManager
     /**
      * @return string
      */
-    public function benutzerverwaltungActionAccountDelete(): string
+    public function actionAccountDelete(): string
     {
         $adminID    = Request::postInt('id');
         $groupCount = (int)$this->db->query(
@@ -673,7 +673,7 @@ class AdminAccountManager
         } elseif (\is_object($account)) {
             if ((int)$account->kAdminlogingruppe === ADMINGROUP && $groupCount <= 1) {
                 $this->addError(__('errorAtLeastOneAdmin'));
-            } elseif ($this->benutzerverwaltungDeleteAttributes($account) &&
+            } elseif ($this->deleteAttributes($account) &&
                 $this->db->delete('tadminlogin', 'kAdminlogin', $adminID)) {
                 $result = true;
                 executeHook(HOOK_BACKEND_ACCOUNT_EDIT, [
@@ -699,7 +699,7 @@ class AdminAccountManager
     /**
      * @return string
      */
-    public function benutzerverwaltungActionGroupEdit(): string
+    public function actionGroupEdit(): string
     {
         $debug   = isset($_POST['debug']);
         $groupID = Request::postInt('id', null);
@@ -789,7 +789,7 @@ class AdminAccountManager
     /**
      * @return string
      */
-    public function benutzerverwaltungActionGroupDelete(): string
+    public function actionGroupDelete(): string
     {
         $groupID = Request::postInt('id');
         $data    = $this->db->query(
@@ -818,7 +818,7 @@ class AdminAccountManager
     /**
      *
      */
-    public function benutzerverwaltungActionQuickChangeLanguage(): void
+    public function actionQuickChangeLanguage(): void
     {
         $language = Request::verifyGPDataString('language');
         $referer  = Request::verifyGPDataString('referer');
@@ -857,7 +857,7 @@ class AdminAccountManager
      * @param $step
      * @throws \SmartyException
      */
-    public function benutzerverwaltungFinalize($step): void
+    public function finalize($step): void
     {
         if (isset($_SESSION['benutzerverwaltung.notice'])) {
             $this->messages['notice'] = $_SESSION['benutzerverwaltung.notice'];

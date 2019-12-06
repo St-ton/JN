@@ -22,26 +22,26 @@ if (isset($_REQUEST['action']) && Form::validateToken()) {
 
 switch ($action) {
     case 'account_lock':
-        $action = $adminAccountManager->benutzerverwaltungActionAccountLock();
+        $action = $adminAccountManager->actionAccountLock();
         break;
     case 'account_unlock':
-        $action = $adminAccountManager->benutzerverwaltungActionAccountUnLock();
+        $action = $adminAccountManager->actionAccountUnLock();
         break;
     case 'account_edit':
-        $action = $adminAccountManager->benutzerverwaltungActionAccountEdit();
+        $action = $adminAccountManager->actionAccountEdit();
         break;
     case 'account_delete':
-        $action = $adminAccountManager->benutzerverwaltungActionAccountDelete();
+        $action = $adminAccountManager->actionAccountDelete();
         break;
     case 'group_edit':
-        $action = $adminAccountManager->benutzerverwaltungActionGroupEdit();
+        $action = $adminAccountManager->actionGroupEdit();
         break;
     case 'group_delete':
-        $action = $adminAccountManager->benutzerverwaltungActionGroupDelete();
+        $action = $adminAccountManager->actionGroupDelete();
         break;
     case 'quick_change_language':
-        $adminAccountManager->benutzerverwaltungActionQuickChangeLanguage();
+        $adminAccountManager->actionQuickChangeLanguage();
         break;
 }
 
-$adminAccountManager->benutzerverwaltungFinalize($action);
+$adminAccountManager->finalize($action);

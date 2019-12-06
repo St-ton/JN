@@ -6,6 +6,41 @@
 class bar_base
 {
     /**
+     * @var string
+     */
+    public $text;
+
+    /**
+     * @var array
+     */
+    public $values;
+
+    /**
+     * @var string
+     */
+    public $colour;
+
+    /**
+     * @var string
+     */
+    public $tip;
+
+    /**
+     * @var float
+     */
+    public $alpha;
+
+    /**
+     * @var string
+     */
+    public $axis;
+
+    /**
+     * @var string
+     */
+    public $type;
+
+    /**
      * bar_base constructor.
      */
     public function __construct()
@@ -49,7 +84,7 @@ class bar_base
     {
         $this->values[] = $v;
     }
-    
+
     /**
      * @param string $colour - a HEX colour, e.g. '#ff0000' red
      */
@@ -75,7 +110,7 @@ class bar_base
     {
         $this->alpha = $alpha;
     }
-    
+
     /**
      * @param string $tip - the tip to show. May contain various magic variables.
      */
@@ -83,7 +118,7 @@ class bar_base
     {
         $this->tip = $tip;
     }
-    
+
     /**
      *@param line_on_show $on_show - line_on_show object
      */

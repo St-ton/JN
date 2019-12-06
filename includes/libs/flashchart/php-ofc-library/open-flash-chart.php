@@ -5,9 +5,6 @@
 //
 // -- Marcus Engene
 //
-if (!function_exists('json_encode')) {
-    include_once 'JSON.php';
-}
 
 include_once 'json_format.php';
 
@@ -66,7 +63,7 @@ class open_flash_chart
      */
     public function __construct()
     {
-        $this->elements = array();
+        $this->elements = [];
     }
 
     /**
@@ -195,12 +192,7 @@ class open_flash_chart
      */
     public function toString()
     {
-        if (function_exists('json_encode')) {
-            return json_encode($this);
-        }
-        $json = new Services_JSON();
-
-        return $json->encode($this);
+        return json_encode($this);
     }
 
     /**

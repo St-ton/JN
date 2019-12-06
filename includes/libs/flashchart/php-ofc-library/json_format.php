@@ -7,19 +7,6 @@ function json_format($json)
     $new_json     = '';
     $indent_level = 0;
     $in_string    = false;
-
-/*
- commented out by monk.e.boy 22nd May '08
- because my web server is PHP4, and
- json_* are PHP5 functions...
-
-    $json_obj = json_decode($json);
-
-    if($json_obj === false)
-        return false;
-
-    $json = json_encode($json_obj);
-*/
     $len = strlen($json);
 
     for ($c = 0; $c < $len; $c++) {

@@ -36,7 +36,7 @@ class line
     public function __construct()
     {
         $this->type   = 'line';
-        $this->values = array();
+        $this->values = [];
     }
 
     /**

@@ -78,6 +78,10 @@ class pie_value
  */
 class base_pie_animation
 {
+    /**
+     * @var string
+     */
+    public $type;
 }
 
 /**
@@ -100,6 +104,11 @@ class pie_fade extends base_pie_animation
 class pie_bounce extends base_pie_animation
 {
     /**
+     * @var int
+     */
+    public $distance;
+
+    /**
      * @param int $distance - distance to bounce in pixels
      */
     public function __construct($distance)
@@ -114,6 +123,41 @@ class pie_bounce extends base_pie_animation
  */
 class pie
 {
+    /**
+     * @var string
+     */
+    public $text;
+
+    /**
+     * @var array
+     */
+    public $values;
+
+    /**
+     * @var string
+     */
+    public $colour;
+
+    /**
+     * @var string
+     */
+    public $tip;
+
+    /**
+     * @var float
+     */
+    public $alpha;
+
+    /**
+     * @var string
+     */
+    public $axis;
+
+    /**
+     * @var string
+     */
+    public $type;
+
     /**
      * pie constructor.
      */
@@ -209,7 +253,7 @@ class pie
     public function add_animation($animation)
     {
         if (!isset($this->animate)) {
-            $this->animate = array();
+            $this->animate = [];
         }
 
         $this->animate[] = $animation;

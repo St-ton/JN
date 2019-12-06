@@ -234,14 +234,17 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
         $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN, CACHING_GROUP_BOX]);
     } elseif (Request::verifyGPCDataInt('updaten') === 1) {
         // Updaten
+        $res       = InstallCode::INVALID_PLUGIN_ID;
         $pluginID  = Request::verifyGPCDataInt('kPlugin');
-        $toInstall = $pluginsInstalled->first(static function ($e) use ($pluginID) {
+        $updatable = $pluginsInstalled->concat($pluginsDisabled)
+            ->concat($pluginsErroneous)
+            ->concat($pluginsProblematic);
+        $toInstall = $updatable->first(static function ($e) use ($pluginID) {
             /** @var ListingItem $e */
             return $e->getID() === $pluginID;
         });
         /** @var ListingItem $toInstall */
-        $res = $updater->updateFromListingItem($toInstall);
-        if ($res === InstallCode::OK) {
+        if ($toInstall !== null && ($res = $updater->updateFromListingItem($toInstall)) === InstallCode::OK) {
             $notice .= __('successPluginUpdate');
             $reload  = true;
             $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN]);

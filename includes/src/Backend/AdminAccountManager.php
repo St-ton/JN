@@ -9,6 +9,7 @@ namespace JTL\Backend;
 use DateTime;
 use Exception;
 use JTL\Alert\Alert;
+use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -26,6 +27,16 @@ use stdClass;
 class AdminAccountManager
 {
     /**
+     * @var DbInterface
+     */
+    private $db;
+
+    /**
+     * @var JTLSmarty
+     */
+    private $smarty;
+
+    /**
      * @var array
      */
     private $messages = [
@@ -34,12 +45,24 @@ class AdminAccountManager
     ];
 
     /**
+     * AdminAccountManager constructor.
+     *
+     * @param JTLSmarty $smarty
+     * @param DbInterface $db
+     */
+    public function __construct(JTLSmarty $smarty, DbInterface $db)
+    {
+        $this->smarty = $smarty;
+        $this->db     = $db;
+    }
+
+    /**
      * @param int $adminID
      * @return null|stdClass
      */
     public function getAdminLogin(int $adminID): ?stdClass
     {
-        return Shop::Container()->getDB()->select('tadminlogin', 'kAdminlogin', $adminID);
+        return $this->db->select('tadminlogin', 'kAdminlogin', $adminID);
     }
 
     /**
@@ -47,7 +70,7 @@ class AdminAccountManager
      */
     public function getAdminList(): array
     {
-        return Shop::Container()->getDB()->query(
+        return $this->db->query(
             'SELECT * FROM tadminlogin
                 LEFT JOIN tadminlogingruppe
                     ON tadminlogin.kAdminlogingruppe = tadminlogingruppe.kAdminlogingruppe
@@ -61,7 +84,7 @@ class AdminAccountManager
      */
     public function getAdminGroups(): array
     {
-        return Shop::Container()->getDB()->query(
+        return $this->db->query(
             'SELECT tadminlogingruppe.*, COUNT(tadminlogin.kAdminlogingruppe) AS nCount
                 FROM tadminlogingruppe
                 LEFT JOIN tadminlogin
@@ -78,7 +101,7 @@ class AdminAccountManager
     {
         global $adminMenu;
 
-        $perms              = reindex(Shop::Container()->getDB()->selectAll('tadminrecht', [], []), function ($e) {
+        $perms              = reindex($this->db->selectAll('tadminrecht', [], []), function ($e) {
             return $e->cRecht;
         });
         $permissionsOrdered = [];
@@ -136,7 +159,7 @@ class AdminAccountManager
      */
     public function getAdminGroup(int $groupID): ?stdClass
     {
-        return Shop::Container()->getDB()->select('tadminlogingruppe', 'kAdminlogingruppe', $groupID);
+        return $this->db->select('tadminlogingruppe', 'kAdminlogingruppe', $groupID);
     }
 
     /**
@@ -146,7 +169,7 @@ class AdminAccountManager
     public function getAdminGroupPermissions(int $groupID): array
     {
         $permissions = [];
-        $data        = Shop::Container()->getDB()->selectAll('tadminrechtegruppe', 'kAdminlogingruppe', $groupID);
+        $data        = $this->db->selectAll('tadminrechtegruppe', 'kAdminlogingruppe', $groupID);
         foreach ($data as $oPermission) {
             $permissions[] = $oPermission->cRecht;
         }
@@ -161,7 +184,7 @@ class AdminAccountManager
      */
     public function getInfoInUse($row, $value): bool
     {
-        return \is_object(Shop::Container()->getDB()->select('tadminlogin', $row, $value));
+        return \is_object($this->db->select('tadminlogin', $row, $value));
     }
 
     /**
@@ -172,7 +195,7 @@ class AdminAccountManager
         $_SESSION['AdminAccount']->language = $languageTag;
         $_SESSION['Sprachen']               = LanguageHelper::getInstance()->gibInstallierteSprachen();
 
-        Shop::Container()->getDB()->update(
+        $this->db->update(
             'tadminlogin',
             'kAdminlogin',
             $_SESSION['AdminAccount']->kAdminlogin,
@@ -186,7 +209,7 @@ class AdminAccountManager
      */
     public function benutzerverwaltungGetAttributes(int $adminID): array
     {
-        $extAttribs = Shop::Container()->getDB()->selectAll(
+        $extAttribs = $this->db->selectAll(
             'tadminloginattribut',
             'kAdminlogin',
             $adminID,
@@ -203,7 +226,7 @@ class AdminAccountManager
      * @param array $errorMap
      * @return bool
      */
-    public function benutzerverwaltungSaveAttributes(stdClass $account, array $extAttribs, array &$errorMap)
+    public function benutzerverwaltungSaveAttributes(stdClass $account, array $extAttribs, array &$errorMap): bool
     {
         if (\is_array($extAttribs)) {
             $result = true;
@@ -224,7 +247,6 @@ class AdminAccountManager
             }
 
             $handledKeys = [];
-            $db          = Shop::Container()->getDB();
             foreach ($extAttribs as $key => $value) {
                 $key      = Text::filterXSS($key);
                 $longText = null;
@@ -236,7 +258,7 @@ class AdminAccountManager
                 } else {
                     $shortText = Text::filterXSS($value);
                 }
-                if ($db->queryPrepared(
+                if ($this->db->queryPrepared(
                     'INSERT INTO tadminloginattribut (kAdminlogin, cName, cAttribValue, cAttribText)
                         VALUES (:loginID, :loginName, :attribVal, :attribText)
                         ON DUPLICATE KEY UPDATE
@@ -255,7 +277,7 @@ class AdminAccountManager
                 $handledKeys[] = $key;
             }
             // nicht (mehr) vorhandene Attribute löschen
-            $db->query(
+            $this->db->query(
                 'DELETE FROM tadminloginattribut
                 WHERE kAdminlogin = ' . (int)$account->kAdminlogin . "
                     AND cName NOT IN ('" . implode("', '", $handledKeys) . "')",
@@ -268,10 +290,9 @@ class AdminAccountManager
 
     /**
      * @param array $attribs
-     * @param array $messages
      * @return array|bool
      */
-    public function validateAccount(array &$attribs, array &$messages)
+    public function validateAccount(array &$attribs)
     {
         $result = true;
 
@@ -351,7 +372,7 @@ class AdminAccountManager
      */
     public function benutzerverwaltungDeleteAttributes(stdClass $oAccount): bool
     {
-        return Shop::Container()->getDB()->delete(
+        return $this->db->delete(
             'tadminloginattribut',
             'kAdminlogin',
             (int)$oAccount->kAdminlogin
@@ -364,7 +385,7 @@ class AdminAccountManager
     public function benutzerverwaltungActionAccountLock(): string
     {
         $adminID = Request::postInt('id');
-        $account = Shop::Container()->getDB()->select('tadminlogin', 'kAdminlogin', $adminID);
+        $account = $this->db->select('tadminlogin', 'kAdminlogin', $adminID);
         if (!empty($account->kAdminlogin)
             && (int)$account->kAdminlogin === (int)$_SESSION['AdminAccount']->kAdminlogin
         ) {
@@ -374,7 +395,7 @@ class AdminAccountManager
                 $this->addError(__('errorLockAdmin'));
             } else {
                 $result = true;
-                Shop::Container()->getDB()->update('tadminlogin', 'kAdminlogin', $adminID, (object)['bAktiv' => 0]);
+                $this->db->update('tadminlogin', 'kAdminlogin', $adminID, (object)['bAktiv' => 0]);
                 executeHook(HOOK_BACKEND_ACCOUNT_EDIT, [
                     'oAccount' => $account,
                     'type'     => 'LOCK',
@@ -394,49 +415,45 @@ class AdminAccountManager
     }
 
     /**
-     * @param array $messages
      * @return string
      */
-    public function benutzerverwaltungActionAccountUnLock(array &$messages): string
+    public function benutzerverwaltungActionAccountUnLock(): string
     {
         $adminID = Request::postInt('id');
-        $account = Shop::Container()->getDB()->select('tadminlogin', 'kAdminlogin', $adminID);
+        $account = $this->db->select('tadminlogin', 'kAdminlogin', $adminID);
         if (\is_object($account)) {
             $result = true;
-            Shop::Container()->getDB()->update('tadminlogin', 'kAdminlogin', $adminID, (object)['bAktiv' => 1]);
+            $this->db->update('tadminlogin', 'kAdminlogin', $adminID, (object)['bAktiv' => 1]);
             executeHook(HOOK_BACKEND_ACCOUNT_EDIT, [
                 'oAccount' => $account,
                 'type'     => 'UNLOCK',
                 'attribs'  => null,
-                'messages' => &$messages,
+                'messages' => &$this->messages,
                 'result'   => &$result
             ]);
             if ($result === true) {
-                $messages['notice'] .= __('successUnlocked');
+                $this->addNotice(__('successUnlocked'));
             }
         } else {
-            $messages['error'] .= __('errorUserNotFound');
+            $this->addError(__('errorUserNotFound'));
         }
 
         return 'index_redirect';
     }
 
     /**
-     * @param JTLSmarty $smarty
-     * @param array $messages
      * @return string
      * @throws Exception
      */
-    public function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages): string
+    public function benutzerverwaltungActionAccountEdit(): string
     {
         $_SESSION['AdminAccount']->TwoFA_valid = true;
 
-        $db          = Shop::Container()->getDB();
         $adminID     = Request::postInt('id', null);
         $qrCode      = '';
         $knownSecret = '';
         if ($adminID !== null) {
-            $twoFA = new TwoFA($db);
+            $twoFA = new TwoFA($this->db);
             $twoFA->setUserByID($_POST['id']);
 
             if ($twoFA->is2FAauthSecretExist() === true) {
@@ -444,7 +461,7 @@ class AdminAccountManager
                 $knownSecret = $twoFA->getSecret();
             }
         }
-        $smarty->assign('QRcodeString', $qrCode)
+        $this->smarty->assign('QRcodeString', $qrCode)
             ->assign('cKnownSecret', $knownSecret);
 
         if (isset($_POST['save'])) {
@@ -497,7 +514,7 @@ class AdminAccountManager
             }
             if ($tmpAcc->kAdminlogin > 0) {
                 $oldAcc     = $this->getAdminLogin($tmpAcc->kAdminlogin);
-                $groupCount = (int)$db->query(
+                $groupCount = (int)$this->db->query(
                     'SELECT COUNT(*) AS nCount
                         FROM tadminlogin
                         WHERE kAdminlogingruppe = 1',
@@ -512,10 +529,10 @@ class AdminAccountManager
                 }
             }
             if (count($errors) > 0) {
-                $smarty->assign('cError_arr', $errors);
-                $messages['error'] .= __('errorFillRequired');
-                if (isset($errors['bMinAdmin']) && (int)$errors['bMinAdmin'] === 1) {
-                    $messages['error'] .= __('errorAtLeastOneAdmin');
+                $this->smarty->assign('cError_arr', $errors);
+                $this->addError(__('errorFillRequired'));
+                if (isset($errors['bMinAdmin']) && $errors['bMinAdmin'] === 1) {
+                    $this->addError(__('errorAtLeastOneAdmin'));
                 }
             } elseif ($tmpAcc->kAdminlogin > 0) {
                 if (!$validUntil) {
@@ -538,26 +555,26 @@ class AdminAccountManager
 
                 $_SESSION['AdminAccount']->language = $tmpAcc->language;
 
-                if ($db->update('tadminlogin', 'kAdminlogin', $tmpAcc->kAdminlogin, $tmpAcc) >= 0
-                    && $this->benutzerverwaltungSaveAttributes($tmpAcc, $tmpAttribs, $messages, $errors)
+                if ($this->db->update('tadminlogin', 'kAdminlogin', $tmpAcc->kAdminlogin, $tmpAcc) >= 0
+                    && $this->benutzerverwaltungSaveAttributes($tmpAcc, $tmpAttribs, $errors)
                 ) {
                     $result = true;
                     executeHook(HOOK_BACKEND_ACCOUNT_EDIT, [
                         'oAccount' => $tmpAcc,
                         'type'     => 'SAVE',
                         'attribs'  => &$tmpAttribs,
-                        'messages' => &$messages,
-                        'result'   => &$result,
+                        'messages' => &$this->messages,
+                        'result'   => &$result
                     ]);
                     if ($result === true) {
-                        $messages['notice'] .= __('successUserSave');
+                        $this->addNotice(__('successUserSave'));
 
                         return 'index_redirect';
                     }
-                    $smarty->assign('cError_arr', array_merge($errors, (array)$result));
+                    $this->smarty->assign('cError_arr', array_merge($errors, (array)$result));
                 } else {
-                    $messages['error'] .= __('errorUserSave');
-                    $smarty->assign('cError_arr', $errors);
+                    $this->addError(__('errorUserSave'));
+                    $this->smarty->assign('cError_arr', $errors);
                 }
             } else {
                 unset($tmpAcc->kAdminlogin);
@@ -569,26 +586,26 @@ class AdminAccountManager
                 }
                 $tmpAcc->cPass = Shop::Container()->getPasswordService()->hash($tmpAcc->cPass);
 
-                if (($tmpAcc->kAdminlogin = $db->insert('tadminlogin', $tmpAcc))
-                    && $this->benutzerverwaltungSaveAttributes($tmpAcc, $tmpAttribs, $messages, $errors)
+                if (($tmpAcc->kAdminlogin = $this->db->insert('tadminlogin', $tmpAcc))
+                    && $this->benutzerverwaltungSaveAttributes($tmpAcc, $tmpAttribs, $errors)
                 ) {
                     $result = true;
                     executeHook(HOOK_BACKEND_ACCOUNT_EDIT, [
                         'oAccount' => $tmpAcc,
                         'type'     => 'SAVE',
                         'attribs'  => &$tmpAttribs,
-                        'messages' => &$messages,
-                        'result'   => &$result,
+                        'messages' => &$this->messages,
+                        'result'   => &$result
                     ]);
                     if ($result === true) {
-                        $messages['notice'] .= __('successUserAdd');
+                        $this->addNotice(__('successUserAdd'));
 
                         return 'index_redirect';
                     }
-                    $smarty->assign('cError_arr', array_merge($errors, (array)$result));
+                    $this->smarty->assign('cError_arr', array_merge($errors, (array)$result));
                 } else {
-                    $messages['error'] .= __('errorUserAdd');
-                    $smarty->assign('cError_arr', $errors);
+                    $this->addError(__('errorUserAdd'));
+                    $this->smarty->assign('cError_arr', $errors);
                 }
             }
 
@@ -612,23 +629,23 @@ class AdminAccountManager
             $extAttribs = [];
         }
 
-        $smarty->assign('attribValues', $extAttribs);
+        $this->smarty->assign('attribValues', $extAttribs);
 
         $extContent = '';
         executeHook(HOOK_BACKEND_ACCOUNT_PREPARE_EDIT, [
             'oAccount' => $account,
-            'smarty'   => $smarty,
+            'smarty'   => $this->smarty,
             'attribs'  => $extAttribs,
             'content'  => &$extContent
         ]);
 
-        $groupCount = (int)$db->query(
+        $groupCount = (int)$this->db->query(
             'SELECT COUNT(*) AS nCount
                 FROM tadminlogin
                 WHERE kAdminlogingruppe = 1',
             ReturnType::SINGLE_OBJECT
         )->nCount;
-        $smarty->assign('oAccount', $account)
+        $this->smarty->assign('oAccount', $account)
             ->assign('nAdminCount', $groupCount)
             ->assign('extContent', $extContent);
 
@@ -636,58 +653,54 @@ class AdminAccountManager
     }
 
     /**
-     * @param array $messages
      * @return string
      */
-    public function benutzerverwaltungActionAccountDelete(array &$messages): string
+    public function benutzerverwaltungActionAccountDelete(): string
     {
         $adminID    = Request::postInt('id');
-        $groupCount = (int)Shop::Container()->getDB()->query(
+        $groupCount = (int)$this->db->query(
             'SELECT COUNT(*) AS nCount
                 FROM tadminlogin
                 WHERE kAdminlogingruppe = 1',
             ReturnType::SINGLE_OBJECT
         )->nCount;
-        $account    = Shop::Container()->getDB()->select('tadminlogin', 'kAdminlogin', $adminID);
+        $account    = $this->db->select('tadminlogin', 'kAdminlogin', $adminID);
 
         if (isset($account->kAdminlogin)
             && (int)$account->kAdminlogin === (int)$_SESSION['AdminAccount']->kAdminlogin
         ) {
-            $messages['error'] .= __('errorSelfDelete');
+            $this->addError(__('errorSelfDelete'));
         } elseif (\is_object($account)) {
             if ((int)$account->kAdminlogingruppe === ADMINGROUP && $groupCount <= 1) {
-                $messages['error'] .= __('errorAtLeastOneAdmin');
+                $this->addError(__('errorAtLeastOneAdmin'));
             } elseif ($this->benutzerverwaltungDeleteAttributes($account) &&
-                Shop::Container()->getDB()->delete('tadminlogin', 'kAdminlogin', $adminID)) {
+                $this->db->delete('tadminlogin', 'kAdminlogin', $adminID)) {
                 $result = true;
                 executeHook(HOOK_BACKEND_ACCOUNT_EDIT, [
                     'oAccount' => $account,
                     'type'     => 'DELETE',
                     'attribs'  => null,
-                    'messages' => &$messages,
-                    'result'   => &$result,
+                    'messages' => &$this->messages,
+                    'result'   => &$result
                 ]);
                 if ($result === true) {
-                    $messages['notice'] .= __('successUserDelete');
+                    $this->addNotice(__('successUserDelete'));
                 }
             } else {
-                $messages['error'] .= __('errorUserDelete');
+                $this->addError(__('errorUserDelete'));
             }
         } else {
-            $messages['error'] .= __('errorUserNotFound');
+            $this->addError(__('errorUserNotFound'));
         }
 
         return 'index_redirect';
     }
 
     /**
-     * @param JTLSmarty $smarty
-     * @param array     $messages
      * @return string
      */
-    public function benutzerverwaltungActionGroupEdit(JTLSmarty $smarty, array &$messages): string
+    public function benutzerverwaltungActionGroupEdit(): string
     {
-        $db      = Shop::Container()->getDB();
         $debug   = isset($_POST['debug']);
         $groupID = Request::postInt('id', null);
         if (isset($_POST['save'])) {
@@ -716,24 +729,24 @@ class AdminAccountManager
                 $errors['cPerm'] = 1;
             }
             if (count($errors) > 0) {
-                $smarty->assign('cError_arr', $errors)
+                $this->smarty->assign('cError_arr', $errors)
                     ->assign('oAdminGroup', $adminGroup)
                     ->assign('cAdminGroupPermission_arr', $groupPermissions);
 
                 if (isset($errors['cPerm'])) {
-                    $messages['error'] .= __('errorAtLeastOneRight');
+                    $this->addError(__('errorAtLeastOneRight'));
                 } else {
-                    $messages['error'] .= __('errorFillRequired');
+                    $this->addError(__('errorFillRequired'));
                 }
             } else {
                 if ($adminGroup->kAdminlogingruppe > 0) {
-                    $db->update(
+                    $this->db->update(
                         'tadminlogingruppe',
                         'kAdminlogingruppe',
                         (int)$adminGroup->kAdminlogingruppe,
                         $adminGroup
                     );
-                    $db->delete(
+                    $this->db->delete(
                         'tadminrechtegruppe',
                         'kAdminlogingruppe',
                         (int)$adminGroup->kAdminlogingruppe
@@ -742,22 +755,22 @@ class AdminAccountManager
                     $permission->kAdminlogingruppe = (int)$adminGroup->kAdminlogingruppe;
                     foreach ($groupPermissions as $oAdminGroupPermission) {
                         $permission->cRecht = $oAdminGroupPermission;
-                        $db->insert('tadminrechtegruppe', $permission);
+                        $this->db->insert('tadminrechtegruppe', $permission);
                     }
-                    $messages['notice'] .= __('successGroupEdit');
+                    $this->addNotice(__('successGroupEdit'));
 
                     return 'group_redirect';
                 }
                 unset($adminGroup->kAdminlogingruppe);
-                $groupID = $db->insert('tadminlogingruppe', $adminGroup);
-                $db->delete('tadminrechtegruppe', 'kAdminlogingruppe', $groupID);
+                $groupID = $this->db->insert('tadminlogingruppe', $adminGroup);
+                $this->db->delete('tadminrechtegruppe', 'kAdminlogingruppe', $groupID);
                 $permission                    = new stdClass();
                 $permission->kAdminlogingruppe = $groupID;
                 foreach ($groupPermissions as $oAdminGroupPermission) {
                     $permission->cRecht = $oAdminGroupPermission;
-                    $db->insert('tadminrechtegruppe', $permission);
+                    $this->db->insert('tadminrechtegruppe', $permission);
                 }
-                $messages['notice'] .= __('successGroupCreate');
+                $this->addNotice(__('successGroupCreate'));
 
                 return 'group_redirect';
             }
@@ -765,7 +778,7 @@ class AdminAccountManager
             if ((int)$groupID === 1) {
                 header('location: benutzerverwaltung.php?action=group_view&token=' . $_SESSION['jtl_token']);
             }
-            $smarty->assign('bDebug', $debug)
+            $this->smarty->assign('bDebug', $debug)
                 ->assign('oAdminGroup', $this->getAdminGroup($groupID))
                 ->assign('cAdminGroupPermission_arr', $this->getAdminGroupPermissions($groupID));
         }
@@ -774,30 +787,29 @@ class AdminAccountManager
     }
 
     /**
-     * @param array $messages
      * @return string
      */
-    public function benutzerverwaltungActionGroupDelete(array &$messages): string
+    public function benutzerverwaltungActionGroupDelete(): string
     {
         $groupID = Request::postInt('id');
-        $data    = Shop::Container()->getDB()->query(
+        $data    = $this->db->query(
             'SELECT COUNT(*) AS member_count
                 FROM tadminlogin
                 WHERE kAdminlogingruppe = ' . $groupID,
             ReturnType::SINGLE_OBJECT
         );
         if ((int)$data->member_count !== 0) {
-            $messages['error'] .= __('errorGroupDeleteCustomer');
+            $$this->addError(__('errorGroupDeleteCustomer'));
 
             return 'group_redirect';
         }
 
         if ($groupID !== ADMINGROUP) {
-            Shop::Container()->getDB()->delete('tadminlogingruppe', 'kAdminlogingruppe', $groupID);
-            Shop::Container()->getDB()->delete('tadminrechtegruppe', 'kAdminlogingruppe', $groupID);
-            $messages['notice'] .= __('successGroupDelete');
+            $this->db->delete('tadminlogingruppe', 'kAdminlogingruppe', $groupID);
+            $this->db->delete('tadminrechtegruppe', 'kAdminlogingruppe', $groupID);
+            $this->addNotice(__('successGroupDelete'));
         } else {
-            $messages['error'] .= __('errorGroupDelete');
+            $this->addError(__('errorGroupDelete'));
         }
 
         return 'group_redirect';
@@ -815,18 +827,17 @@ class AdminAccountManager
     }
 
     /**
-     * @param string     $tab
-     * @param array|null $messages
+     * @param string $tab
      */
-    public function benutzerverwaltungRedirect($tab = '', array &$messages = null)
+    public function benutzerverwaltungRedirect($tab = ''): void
     {
-        if (isset($messages['notice']) && !empty($messages['notice'])) {
-            $_SESSION['benutzerverwaltung.notice'] = $messages['notice'];
+        if ($this->getNotice() !== '') {
+            $_SESSION['benutzerverwaltung.notice'] = $this->getNotice();
         } else {
             unset($_SESSION['benutzerverwaltung.notice']);
         }
-        if (isset($messages['error']) && !empty($messages['error'])) {
-            $_SESSION['benutzerverwaltung.error'] = $messages['error'];
+        if ($this->getError() !== '') {
+            $_SESSION['benutzerverwaltung.error'] = $this->getError();
         } else {
             unset($_SESSION['benutzerverwaltung.error']);
         }
@@ -844,47 +855,45 @@ class AdminAccountManager
 
     /**
      * @param $step
-     * @param JTLSmarty $smarty
-     * @param array $messages
      * @throws \SmartyException
      */
-    public function benutzerverwaltungFinalize($step, JTLSmarty $smarty, array &$messages): void
+    public function benutzerverwaltungFinalize($step): void
     {
         if (isset($_SESSION['benutzerverwaltung.notice'])) {
-            $messages['notice'] = $_SESSION['benutzerverwaltung.notice'];
+            $this->messages['notice'] = $_SESSION['benutzerverwaltung.notice'];
             unset($_SESSION['benutzerverwaltung.notice']);
         }
         if (isset($_SESSION['benutzerverwaltung.error'])) {
-            $messages['error'] = $_SESSION['benutzerverwaltung.error'];
+            $this->messages['error'] = $_SESSION['benutzerverwaltung.error'];
             unset($_SESSION['benutzerverwaltung.error']);
         }
         switch ($step) {
             case 'account_edit':
-                $smarty->assign('oAdminGroup_arr', $this->getAdminGroups())
+                $this->smarty->assign('oAdminGroup_arr', $this->getAdminGroups())
                     ->assign(
                         'languages',
                         Shop::Container()->getGetText()->getAdminLanguages()
                     );
                 break;
             case 'account_view':
-                $smarty->assign('oAdminList_arr', $this->getAdminList())
+                $this->smarty->assign('oAdminList_arr', $this->getAdminList())
                     ->assign('oAdminGroup_arr', $this->getAdminGroups());
                 break;
             case 'group_edit':
-                $smarty->assign('permissions', $this->getAdminDefPermissions());
+                $this->smarty->assign('permissions', $this->getAdminDefPermissions());
                 break;
             case 'index_redirect':
-                $this->benutzerverwaltungRedirect('account_view', $messages);
+                $this->benutzerverwaltungRedirect('account_view');
                 break;
             case 'group_redirect':
-                $this->benutzerverwaltungRedirect('group_view', $messages);
+                $this->benutzerverwaltungRedirect('group_view');
                 break;
         }
 
-        Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $messages['notice'], 'userManagementNote');
-        Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, $messages['error'], 'userManagementError');
+        Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $this->getNotice(), 'userManagementNote');
+        Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, $this->getError(), 'userManagementError');
 
-        $smarty->assign('action', $step)
+        $this->smarty->assign('action', $step)
             ->assign('cTab', Text::filterXSS(Request::verifyGPDataString('tab')))
             ->display('benutzer.tpl');
     }
@@ -903,5 +912,21 @@ class AdminAccountManager
     public function addNotice(string $notice): void
     {
         $this->messages['notice'] .= $notice;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNotice(): string
+    {
+        return $this->messages['notice'];
+    }
+
+    /**
+     * @return string
+     */
+    public function getError(): string
+    {
+        return $this->messages['error'];
     }
 }

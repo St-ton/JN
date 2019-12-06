@@ -110,7 +110,7 @@
                                 <input type="radio" id="nLink3" name="nLinkart" checked="checked" disabled="disabled" />
                                 <label for="nLink3">{__('linkToSpecalPage')}:</label>
                                 <select class="custom-select" id="specialLinkType" name="nSpezialseite" disabled="disabled">
-                                    <option selected="selected">{__('plugin')}</option>
+                                    <option selected="selected" value="0">{__('plugin')}</option>
                                 </select>
                             </p>
                         {else}

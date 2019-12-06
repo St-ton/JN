@@ -19,7 +19,12 @@ copyright = u'2010-2019, JTL-Software GmbH'
 version = ''
 release = ''
 exclude_patterns = []
-html_theme = 'shop_rtd_theme'
+html_theme = 'sphinx_rtd_theme'
+html_theme_options = {
+    'navigation_depth': 3,
+    'style_external_links' : True,
+    'sticky_navigation' : False
+}
 html_theme_path = ["_themes"]
 language = 'de'
 
@@ -36,5 +41,7 @@ man_pages = [
 sys.path.append(os.path.abspath('_exts'))
 lexers['php'] = PhpLexer(startinline=True)
 lexers['php-annotations'] = PhpLexer(startinline=True)
+def setup(app):
+    app.add_stylesheet('css/custom.css')
 #primary_domain = 'php'
         #'sphinxcontrib.phpdomain'

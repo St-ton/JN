@@ -44,7 +44,7 @@ if (Form::validateToken()) {
         // run elFinder
         $connector = new elFinderConnector(new elFinder([
             'bind'  => [
-                'rm rename' => function ($cmd, &$result, $args, $elfinder, $volume) use ($mediafilesSubdir) {
+                'rm rename' => static function ($cmd, &$result, $args, $elfinder, $volume) {
                     $sizes = ['xs', 'sm', 'md', 'lg', 'xl'];
 
                     foreach ($result['removed'] as $filename) {

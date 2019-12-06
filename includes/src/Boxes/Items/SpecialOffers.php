@@ -64,7 +64,7 @@ final class SpecialOffers extends AbstractBox
             \shuffle($productIDs);
             $res = map(
                 \array_slice($productIDs, 0, $config['boxen']['box_sonderangebote_anzahl_anzeige']),
-                function ($productID) {
+                static function ($productID) {
                     return (int)$productID->kArtikel;
                 }
             );

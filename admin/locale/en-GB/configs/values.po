@@ -473,9 +473,6 @@ msgstr "List"
 msgid "artikeluebersicht_erw_darstellung_stdansicht_value(2)"
 msgstr "Gallery"
 
-msgid "artikeluebersicht_erw_darstellung_stdansicht_value(3)"
-msgstr "Mosaic"
-
 msgid "artikeldetails_xselling_standard_anzeigen_value(Y)"
 msgstr "Yes"
 

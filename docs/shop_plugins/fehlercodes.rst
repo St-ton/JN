@@ -1,20 +1,20 @@
 Fehlercodes
 ===========
 
-Die folgende Tabelle bietet einen Überblick über die bei der Plugin-Installation möglichen Fehlercodes.
+Die folgende Tabelle bietet einen Überblick über die, bei der Plugin-Installation möglichen, Fehlercodes.
 
 +------------+---------------------------------------------------------------------------------------------+
 | Fehlercode | Beschreibung                                                                                |
 +============+=============================================================================================+
 | 1          | Alles O.K.                                                                                  |
 +------------+---------------------------------------------------------------------------------------------+
-| 2          | $cVerzeichnis wurde nicht übergeben                                                         |
+| 2          | ``$cVerzeichnis`` wurde nicht übergeben                                                     |
 +------------+---------------------------------------------------------------------------------------------+
-| 3          | info.xml existiert nicht                                                                    |
+| 3          | ``info.xml`` existiert nicht                                                                |
 +------------+---------------------------------------------------------------------------------------------+
 | 4          | Plugin wurde schon installiert                                                              |
 +------------+---------------------------------------------------------------------------------------------+
-| 5          | Kein Plugin in der DB anhand von kPlugin gefunden                                           |
+| 5          | Kein Plugin in der DB, anhand von ``kPlugin``, gefunden                                     |
 +------------+---------------------------------------------------------------------------------------------+
 | 6          | Der Pluginname entspricht nicht den Konventionen                                            |
 +------------+---------------------------------------------------------------------------------------------+
@@ -32,25 +32,25 @@ Die folgende Tabelle bietet einen Überblick über die bei der Plugin-Installati
 +------------+---------------------------------------------------------------------------------------------+
 | 13         | Keine Hooks vorhanden                                                                       |
 +------------+---------------------------------------------------------------------------------------------+
-| 14         | Die Hook Werte enstprechen nicht den Konventionen                                           |
+| 14         | Die Hook Werte entsprechen nicht den Konventionen                                           |
 +------------+---------------------------------------------------------------------------------------------+
-| 15         | CustomLink Name entspricht nicht den Konventionen                                           |
+| 15         | *CustomLink* Name entspricht nicht den Konventionen                                         |
 +------------+---------------------------------------------------------------------------------------------+
-| 16         | CustomLink Dateiname entspricht nicht den Konventionen                                      |
+| 16         | *CustomLink* Dateiname entspricht nicht den Konventionen                                    |
 +------------+---------------------------------------------------------------------------------------------+
-| 17         | CustomLink Datei existiert nicht                                                            |
+| 17         | *CustomLink* Datei existiert nicht                                                          |
 +------------+---------------------------------------------------------------------------------------------+
-| 18         | EinstellungsLink Name entspricht nicht den Konventionen                                     |
+| 18         | *EinstellungsLink* Name entspricht nicht den Konventionen                                   |
 +------------+---------------------------------------------------------------------------------------------+
 | 19         | Einstellungen fehlen                                                                        |
 +------------+---------------------------------------------------------------------------------------------+
-| 20         | Einstellungen type entspricht nicht den Konventionen                                        |
+| 20         | Einstellungen ``type`` entspricht nicht den Konventionen                                    |
 +------------+---------------------------------------------------------------------------------------------+
-| 21         | Einstellungen initialValue entspricht nicht der Konventionen                                |
+| 21         | Einstellungen ``initialValue`` entspricht nicht der Konventionen                            |
 +------------+---------------------------------------------------------------------------------------------+
-| 22         | Einstellungen sort entspricht nicht den Konventionen                                        |
+| 22         | Einstellungen ``sort`` entspricht nicht den Konventionen                                    |
 +------------+---------------------------------------------------------------------------------------------+
-| 23         | Einstellungen Name entspricht nicht den Konventionen                                        |
+| 23         | Einstellungen ``Name`` entspricht nicht den Konventionen                                    |
 +------------+---------------------------------------------------------------------------------------------+
 | 24         | Keine SelectboxOptionen vorhanden                                                           |
 +------------+---------------------------------------------------------------------------------------------+
@@ -58,11 +58,11 @@ Die folgende Tabelle bietet einen Überblick über die bei der Plugin-Installati
 +------------+---------------------------------------------------------------------------------------------+
 | 26         | Keine Sprachvariablen vorhanden                                                             |
 +------------+---------------------------------------------------------------------------------------------+
-| 27         | Variable Name entspricht nicht den Konventionen                                             |
+| 27         | Variable ``Name`` entspricht nicht den Konventionen                                         |
 +------------+---------------------------------------------------------------------------------------------+
 | 28         | Keine lokalisierte Sprachvariable vorhanden                                                 |
 +------------+---------------------------------------------------------------------------------------------+
-| 29         | Die ISO der lokaliseriten Sprachvariable entspricht nicht den Konventionen                  |
+| 29         | Die ISO der lokalisierten Sprachvariable entspricht nicht den Konventionen                  |
 +------------+---------------------------------------------------------------------------------------------+
 | 30         | Der Name der lokalisierten Sprachvariable entspricht nicht den Konventionen                 |
 +------------+---------------------------------------------------------------------------------------------+
@@ -70,9 +70,9 @@ Die folgende Tabelle bietet einen Überblick über die bei der Plugin-Installati
 +------------+---------------------------------------------------------------------------------------------+
 | 32         | Version existiert nicht im Versionsordner                                                   |
 +------------+---------------------------------------------------------------------------------------------+
-| 33         | Einstellungen conf entspricht nicht den Konventionen                                        |
+| 33         | Einstellungen ``conf`` entspricht nicht den Konventionen                                    |
 +------------+---------------------------------------------------------------------------------------------+
-| 34         | Einstellungen ValueName entspricht nicht den Konventionen                                   |
+| 34         | Einstellungen ``ValueName`` entspricht nicht den Konventionen                               |
 +------------+---------------------------------------------------------------------------------------------+
 | 35         | XML Version entspricht nicht den Konventionen                                               |
 +------------+---------------------------------------------------------------------------------------------+
@@ -80,15 +80,15 @@ Die folgende Tabelle bietet einen Überblick über die bei der Plugin-Installati
 +------------+---------------------------------------------------------------------------------------------+
 | 37         | Shop Version ist zu niedrig                                                                 |
 +------------+---------------------------------------------------------------------------------------------+
-| 38         | Keine Frontendlinks vorhanden, obwohl der Node angelegt wurde                               |
+| 38         | Keine *Frontendlinks* vorhanden, obwohl der Node angelegt wurde                             |
 +------------+---------------------------------------------------------------------------------------------+
 | 39         | Link Filename entspricht nicht den Konventionen                                             |
 +------------+---------------------------------------------------------------------------------------------+
-| 40         | LinkName entspricht nicht den Konventionen                                                  |
+| 40         | ``LinkName`` entspricht nicht den Konventionen                                              |
 +------------+---------------------------------------------------------------------------------------------+
-| 41         | Angabe ob erst Sichtbar nach Login entspricht nicht den Konventionen                        |
+| 41         | Angabe ob "erst Sichtbar nach Login" entspricht nicht den Konventionen                      |
 +------------+---------------------------------------------------------------------------------------------+
-| 42         | Angabe ob ein Druckbutton gezeigt werden soll entspricht nicht den Konventionen             |
+| 42         | Angabe ob ein "Druckbutton gezeigt" werden soll entspricht nicht den Konventionen           |
 +------------+---------------------------------------------------------------------------------------------+
 | 43         | Die ISO der Linksprache entspricht nicht den Konventionen                                   |
 +------------+---------------------------------------------------------------------------------------------+
@@ -108,15 +108,15 @@ Die folgende Tabelle bietet einen Überblick über die bei der Plugin-Installati
 +------------+---------------------------------------------------------------------------------------------+
 | 51         | Mail Adresse in den Zahlungsmethoden entspricht nicht den Konventionen                      |
 +------------+---------------------------------------------------------------------------------------------+
-| 52         | TSCode in den Zahlungsmethoden entspricht nicht den Konventionen                            |
+| 52         | ``TSCode`` in den Zahlungsmethoden entspricht nicht den Konventionen                        |
 +------------+---------------------------------------------------------------------------------------------+
-| 53         | PreOrder in den Zahlungsmethoden entspricht nicht den Konventionen                          |
+| 53         | ``PreOrder`` in den Zahlungsmethoden entspricht nicht den Konventionen                      |
 +------------+---------------------------------------------------------------------------------------------+
-| 54         | ClassFile in den Zalungsmethoden entspricht nicht den Konventionen                          |
+| 54         | ``ClassFile`` in den Zahlungsmethoden entspricht nicht den Konventionen                     |
 +------------+---------------------------------------------------------------------------------------------+
 | 55         | Die Datei für die Klasse Zahlungsmethode existiert nicht                                    |
 +------------+---------------------------------------------------------------------------------------------+
-| 56         | TemplateFile in den Zahlungsmethoden entspricht nicht den Konventionen                      |
+| 56         | ``TemplateFile`` in den Zahlungsmethoden entspricht nicht den Konventionen                  |
 +------------+---------------------------------------------------------------------------------------------+
 | 57         | Die Datei für das Template der Zahlungsmethode existiert nicht                              |
 +------------+---------------------------------------------------------------------------------------------+
@@ -126,21 +126,21 @@ Die folgende Tabelle bietet einen Überblick über die bei der Plugin-Installati
 +------------+---------------------------------------------------------------------------------------------+
 | 60         | Der Name der Sprache in den Zahlungsmethoden entspricht nicht den Konventionen              |
 +------------+---------------------------------------------------------------------------------------------+
-| 61         | Der ChargeName in den Zahlungsmethoden Sprache entspricht nicht den Konventionen            |
+| 61         | Der ``ChargeName`` in den Zahlungsmethoden Sprache entspricht nicht den Konventionen        |
 +------------+---------------------------------------------------------------------------------------------+
-| 62         | Die Sprache der InfoText in den Zahlungsmethoden entspricht nicht den Konventionen          |
+| 62         | Die Sprache der ``InfoText`` in den Zahlungsmethoden entspricht nicht den Konventionen      |
 +------------+---------------------------------------------------------------------------------------------+
-| 63         | Die Einstellungen type der Zahlungsmethode entspricht nicht den Konventionen                |
+| 63         | Die Einstellungen ``type`` der Zahlungsmethode entspricht nicht den Konventionen            |
 +------------+---------------------------------------------------------------------------------------------+
-| 64         | Die Einstellungen initalValue der Zahlungsmethode entspricht nicht den Konventionen         |
+| 64         | Die Einstellungen ``initalValue`` der Zahlungsmethode entspricht nicht den Konventionen     |
 +------------+---------------------------------------------------------------------------------------------+
-| 65         | Die Einstellungen sort der Zahlungsmethode entspricht nicht den Konventionen                |
+| 65         | Die Einstellungen ``sort`` der Zahlungsmethode entspricht nicht den Konventionen            |
 +------------+---------------------------------------------------------------------------------------------+
-| 66         | Die Einstellungen conf der Zahlungsmethode entspricht nicht den Konventionen                |
+| 66         | Die Einstellungen ``conf`` der Zahlungsmethode entspricht nicht den Konventionen            |
 +------------+---------------------------------------------------------------------------------------------+
-| 67         | Die Einstellungen Name der Zahlungsmethode entspricht nicht den Konventionen                |
+| 67         | Die Einstellungen ``Name`` der Zahlungsmethode entspricht nicht den Konventionen            |
 +------------+---------------------------------------------------------------------------------------------+
-| 68         | Die Einstellungen ValueName der Zahlungsmethode entspricht nicht den Konventionen           |
+| 68         | Die Einstellungen ``ValueName`` der Zahlungsmethode entspricht nicht den Konventionen       |
 +------------+---------------------------------------------------------------------------------------------+
 | 69         | Keine Selectbox Optionen vorhanden                                                          |
 +------------+---------------------------------------------------------------------------------------------+
@@ -148,13 +148,13 @@ Die folgende Tabelle bietet einen Überblick über die bei der Plugin-Installati
 +------------+---------------------------------------------------------------------------------------------+
 | 71         | Die Sortierung in den Zahlungsmethoden entspricht nicht den Konventionen                    |
 +------------+---------------------------------------------------------------------------------------------+
-| 72         | Soap in den Zahlungsmethoden entspricht nicht den Konventionen                              |
+| 72         | *Soap* in den Zahlungsmethoden entspricht nicht den Konventionen                            |
 +------------+---------------------------------------------------------------------------------------------+
-| 73         | Curl in den Zahlungsmethoden entspricht nicht den Konventionen                              |
+| 73         | *Curl* in den Zahlungsmethoden entspricht nicht den Konventionen                            |
 +------------+---------------------------------------------------------------------------------------------+
-| 74         | Sockets in den Zahlungsmethoden entspricht nicht den Konventionen                           |
+| 74         | *Sockets* in den Zahlungsmethoden entspricht nicht den Konventionen                         |
 +------------+---------------------------------------------------------------------------------------------+
-| 75         | ClassName in den Zahlungsmethoden entspricht nicht den Konventionen                         |
+| 75         | ``ClassName`` in den Zahlungsmethoden entspricht nicht den Konventionen                     |
 +------------+---------------------------------------------------------------------------------------------+
 | 76         | Der Templatename entspricht nicht den Konventionen                                          |
 +------------+---------------------------------------------------------------------------------------------+
@@ -178,29 +178,29 @@ Die folgende Tabelle bietet einen Überblick über die bei der Plugin-Installati
 +------------+---------------------------------------------------------------------------------------------+
 | 86         | Lizenzklasse existiert nicht                                                                |
 +------------+---------------------------------------------------------------------------------------------+
-| 87         | Name der Lizenzklasse entspricht nicht der konvention                                       |
+| 87         | Name der Lizenzklasse entspricht nicht der Konvention                                       |
 +------------+---------------------------------------------------------------------------------------------+
 | 88         | Lizenklasse ist nicht definiert                                                             |
 +------------+---------------------------------------------------------------------------------------------+
-| 89         | Methode checkLicence in der Lizenzklasse ist nicht definiert                                |
+| 89         | Methode ``checkLicence`` in der Lizenzklasse ist nicht definiert                            |
 +------------+---------------------------------------------------------------------------------------------+
-| 90         | PluginID bereits in der Datenbank vorhanden                                                 |
+| 90         | *PluginID* bereits in der Datenbank vorhanden                                               |
 +------------+---------------------------------------------------------------------------------------------+
 | 91         | Keine Emailtemplates vorhanden, obwohl der Node angelegt wurde                              |
 +------------+---------------------------------------------------------------------------------------------+
-| 92         | Template Name entspricht nicht der Konvention                                               |
+| 92         | Template ``Name`` entspricht nicht der Konvention                                           |
 +------------+---------------------------------------------------------------------------------------------+
-| 93         | Template Type entspricht nicht der Konvention                                               |
+| 93         | Template ``Type`` entspricht nicht der Konvention                                           |
 +------------+---------------------------------------------------------------------------------------------+
-| 94         | Template ModulId entspricht nicht der Konvention                                            |
+| 94         | Template ``ModulId`` entspricht nicht der Konvention                                        |
 +------------+---------------------------------------------------------------------------------------------+
-| 95         | Template Active entspricht nicht der Konvention                                             |
+| 95         | Template ``Active`` entspricht nicht der Konvention                                         |
 +------------+---------------------------------------------------------------------------------------------+
-| 96         | Template AKZ entspricht nicht der Konvention                                                |
+| 96         | Template ``AKZ`` entspricht nicht der Konvention                                            |
 +------------+---------------------------------------------------------------------------------------------+
-| 97         | Template AGB entspricht nicht der Konvention                                                |
+| 97         | Template ``AGB`` entspricht nicht der Konvention                                            |
 +------------+---------------------------------------------------------------------------------------------+
-| 98         | Template WRB entspricht nicht der Konvention                                                |
+| 98         | Template ``WRB`` entspricht nicht der Konvention                                            |
 +------------+---------------------------------------------------------------------------------------------+
 | 99         | Die ISO der Emailtemplate Sprache entspricht nicht der Konvention                           |
 +------------+---------------------------------------------------------------------------------------------+
@@ -208,45 +208,45 @@ Die folgende Tabelle bietet einen Überblick über die bei der Plugin-Installati
 +------------+---------------------------------------------------------------------------------------------+
 | 101        | Keine Templatesprachen vorhanden                                                            |
 +------------+---------------------------------------------------------------------------------------------+
-| 102        | CheckBoxFunction Name entspricht nicht der Konvention                                       |
+| 102        | *CheckBoxFunction* Name entspricht nicht der Konvention                                     |
 +------------+---------------------------------------------------------------------------------------------+
-| 103        | CheckBoxFunction ID entspricht nicht der Konvention                                         |
+| 103        | *CheckBoxFunction* ID entspricht nicht der Konvention                                       |
 +------------+---------------------------------------------------------------------------------------------+
-| 104        | Frontend Link Attribut NoFollow entspricht nicht der Konvention                             |
+| 104        | Frontend Link Attribut ``NoFollow`` entspricht nicht der Konvention                         |
 +------------+---------------------------------------------------------------------------------------------+
 | 105        | Keine Widgets vorhanden                                                                     |
 +------------+---------------------------------------------------------------------------------------------+
-| 106        | Widget Title entspricht nicht der Konvention                                                |
+| 106        | Widget ``Title`` entspricht nicht der Konvention                                            |
 +------------+---------------------------------------------------------------------------------------------+
-| 107        | Widget Class entspricht nicht der Konvention                                                |
+| 107        | Widget ``Class`` entspricht nicht der Konvention                                            |
 +------------+---------------------------------------------------------------------------------------------+
 | 108        | Die Datei für die Klasse des AdminWidgets existiert nicht                                   |
 +------------+---------------------------------------------------------------------------------------------+
 | 109        | Container im Widget entspricht nicht der Konvention                                         |
 +------------+---------------------------------------------------------------------------------------------+
-| 110        | Pos im Widget entspricht nicht der Konvention                                               |
+| 110        | ``Pos`` im Widget entspricht nicht der Konvention                                           |
 +------------+---------------------------------------------------------------------------------------------+
-| 111        | Expanded im Widget entspricht nicht der Konvention                                          |
+| 111        | ``Expanded`` im Widget entspricht nicht der Konvention                                      |
 +------------+---------------------------------------------------------------------------------------------+
-| 112        | Active im Widget entspricht nicht der Konvention                                            |
+| 112        | ``Active`` im Widget entspricht nicht der Konvention                                        |
 +------------+---------------------------------------------------------------------------------------------+
-| 113        | AdditionalTemplateFile in den Zahlungsmethoden entspricht nicht der Konvention              |
+| 113        | ``AdditionalTemplateFile`` in den Zahlungsmethoden entspricht nicht der Konvention          |
 +------------+---------------------------------------------------------------------------------------------+
 | 114        | Die Datei für das Zusatzschritt-Template der Zahlungsmethode existiert nicht                |
 +------------+---------------------------------------------------------------------------------------------+
 | 115        | Keine Formate vorhanden                                                                     |
 +------------+---------------------------------------------------------------------------------------------+
-| 116        | Format Name entspricht nicht der Konvention                                                 |
+| 116        | Format ``Name`` entspricht nicht der Konvention                                             |
 +------------+---------------------------------------------------------------------------------------------+
-| 117        | Format Filename entspricht nicht der Konvention                                             |
+| 117        | Format ``Filename`` entspricht nicht der Konvention                                         |
 +------------+---------------------------------------------------------------------------------------------+
-| 118        | Format Content entspricht nicht der Konvention                                              |
+| 118        | Format ``Content`` entspricht nicht der Konvention                                          |
 +------------+---------------------------------------------------------------------------------------------+
-| 119        | Format Encoding entspricht nicht der Konvention                                             |
+| 119        | Format ``Encoding`` entspricht nicht der Konvention                                         |
 +------------+---------------------------------------------------------------------------------------------+
-| 120        | Format ShippingCostsDeliveryCountry entspricht nicht der Konvention                         |
+| 120        | Format ``ShippingCostsDeliveryCountry`` entspricht nicht der Konvention                     |
 +------------+---------------------------------------------------------------------------------------------+
-| 121        | Format ContentFile entspricht nicht der Konvention                                          |
+| 121        | Format ``ContentFile`` entspricht nicht der Konvention                                      |
 +------------+---------------------------------------------------------------------------------------------+
 | 122        | Kein Template vorhanden                                                                     |
 +------------+---------------------------------------------------------------------------------------------+
@@ -256,19 +256,19 @@ Die folgende Tabelle bietet einen Überblick über die bei der Plugin-Installati
 +------------+---------------------------------------------------------------------------------------------+
 | 125        | Uninstall-Datei existiert nicht                                                             |
 +------------+---------------------------------------------------------------------------------------------+
-| 127        | Plugin benötigt Ioncube-Extension, diese ist aber nicht installiert                         |
+| 127        | Plugin benötigt *Ioncube*-Extension, diese ist aber nicht installiert                       |
 +------------+---------------------------------------------------------------------------------------------+
-| 128        | OptionsSource-Datei wurde nicht angegeben                                                   |
+| 128        | *OptionsSource*-Datei wurde nicht angegeben                                                 |
 +------------+---------------------------------------------------------------------------------------------+
-| 129        | OptionsSource-Datei existiert nicht                                                         |
+| 129        | *OptionsSource*-Datei existiert nicht                                                       |
 +------------+---------------------------------------------------------------------------------------------+
 | 152        | Main Plugindaten nicht korrekt                                                              |
 +------------+---------------------------------------------------------------------------------------------+
 | 153        | Ein Hook konnte nicht in die Datenbank gespeichert werden                                   |
 +------------+---------------------------------------------------------------------------------------------+
-| 154        | Ein Adminmenü Customlink konnte nicht in die Datenbank gespeichert werden                   |
+| 154        | Ein Adminmenü *Customlink* konnte nicht in die Datenbank gespeichert werden                 |
 +------------+---------------------------------------------------------------------------------------------+
-| 155        | Ein Adminmenü Settingslink konnte nicht in die Datenbank gespeichert werden                 |
+| 155        | Ein Adminmenü *Settingslink* konnte nicht in die Datenbank gespeichert werden               |
 +------------+---------------------------------------------------------------------------------------------+
 | 156        | Eine Einstellung konnte nicht in die Datenbank geschrieben werden                           |
 +------------+---------------------------------------------------------------------------------------------+

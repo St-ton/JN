@@ -16,11 +16,8 @@
 	}
 }
 
-.page-link { text-decoration: none;
-	&:hover { font-weight: $font-weight-bold; }
-	@include media-breakpoint-up(md) {
-		@include hover { font-weight: $font-weight-bold; }
-	}
+.page-link {
+	text-decoration: none;
 }
 
 .pagination { justify-content: space-between; align-items: center;

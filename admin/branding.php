@@ -160,16 +160,14 @@ function loescheBrandingBild(int $brandingID)
 function mappeFileTyp(string $ype)
 {
     switch ($ype) {
-        case 'image/jpeg':
-            return '.jpg';
-        case 'image/pjpeg':
-            return '.jpg';
         case 'image/gif':
             return '.gif';
         case 'image/png':
             return '.png';
         case 'image/bmp':
             return '.bmp';
+        case 'image/jpeg':
+        case 'image/pjpeg':
         default:
             return '.jpg';
     }

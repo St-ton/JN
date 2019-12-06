@@ -212,16 +212,10 @@ class CustomerFields
 
             if ($oldType !== $customerField->cTyp) {
                 // cTyp has been changed
-                switch ($oldType) {
-                    case 'auswahl':
-                        // cTyp changed from "auswahl" to something else - delete values for the customer field
-                        Shop::Container()->getDB()->delete('tkundenfeldwert', 'kKundenfeld', $key);
-                        break;
-                    default:
-                        // actually nothing to do...
-                        break;
+                if ($oldType === 'auswahl') {
+                    // cTyp changed from "auswahl" to something else - delete values for the customer field
+                    Shop::Container()->getDB()->delete('tkundenfeldwert', 'kKundenfeld', $key);
                 }
-
                 switch ($customerField->cTyp) {
                     case 'zahl':
                         // all customer values will be changed to numbers if possible

@@ -12,7 +12,7 @@ use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
-$oAccount->redirectOnFailure();
+$oAccount->permission('CRON_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 $admin    = Shop::Container()->get(Controller::class);
 $deleted  = 0;

@@ -6,6 +6,7 @@
 
 namespace JTL\Services\JTL\Validation\Rules;
 
+use Eloquent\Pathogen\AbsolutePathInterface;
 use Eloquent\Pathogen\Exception\InvalidPathStateException;
 use Eloquent\Pathogen\Path;
 use Eloquent\Pathogen\RelativePath;
@@ -23,7 +24,7 @@ use JTL\Services\JTL\Validation\RuleResult;
 class InPath implements RuleInterface
 {
     /**
-     * @var \Eloquent\Pathogen\AbsolutePathInterface
+     * @var AbsolutePathInterface
      */
     protected $parentPath;
 

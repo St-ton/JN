@@ -61,19 +61,19 @@
                     {col cols=12 md=8 md-offset=2}
                         {block name='account-password-form-password-reset-confirm'}
                             <div class="h3">{block name='account-password-password-reset-confirm-title'}{lang key='customerInformation' section='global'}{/block}</div>
-                            {form id="passwort_vergessen" action="{get_static_route id='pass.php'}{if $bExclusive === true}?exclusive_content=1{/if}" method="post" class="evo-validate"}
+                            {form id="passwort_vergessen" action="{get_static_route id='pass.php'}{if $bExclusive === true}?exclusive_content=1{/if}" method="post" class="evo-validate label-slide"}
                                 {block name='account-password-form-password-reset-confirm-content'}
                                     <fieldset>
                                         {include file='snippets/form_group_simple.tpl'
                                             options=[
                                                 "password", "pw_new", "pw_new", null,
-                                                {lang key='password' section='account data'}, true
+                                                {lang key='password' section='account data'}, true, null, "new-password"
                                             ]
                                         }
                                         {include file='snippets/form_group_simple.tpl'
                                             options=[
                                                 "password", "pw_new_confirm", "pw_new_confirm", null,
-                                                {lang key='passwordRepeat' section='account data'}, true
+                                                {lang key='passwordRepeat' section='account data'}, true, null, "new-password"
                                             ]
                                         }
                                         {block name='account-password-form-confirm-submit'}

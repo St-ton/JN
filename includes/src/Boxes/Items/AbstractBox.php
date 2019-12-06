@@ -825,7 +825,7 @@ abstract class AbstractBox implements BoxInterface
         $tags                       = [];
         $tags['options']['speed']   = $nSpeed;
         $tags['options']['opacity'] = $nOpacity;
-        $gibTagFarbe                = function () {
+        $gibTagFarbe                = static function () {
             $cColor = '';
             $cCodes = ['00', '33', '66', '99', 'CC', 'FF'];
             for ($i = 0; $i < 3; $i++) {

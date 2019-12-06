@@ -38,7 +38,7 @@ class Migration_20191029125000 extends Migration implements IMigration
                             WHERE tkuponkunde_backup.cMail != \'\'
                             GROUP BY tkuponkunde_backup.cMail, tkuponkunde_backup.kKupon) back
                     LEFT JOIN tkuponkunde ON tkuponkunde.kKupon = back.kKupon
-                             AND tkuponkunde.cMail = back.cMail'
+                             AND CONVERT(tkuponkunde.cMail USING utf8) = CONVERT(back.cMail USING utf8)'
             );
 
             if ((int)$backupData->cntBack === 0) {

@@ -65,7 +65,7 @@ class CountryService implements CountryServiceInterface
             $this->getCountryList()->push($countryTMP);
         }
 
-        $this->countryList = $this->getCountryList()->sortBy(function (Country $country) {
+        $this->countryList = $this->getCountryList()->sortBy(static function (Country $country) {
             return $country->getName();
         });
 
@@ -86,7 +86,7 @@ class CountryService implements CountryServiceInterface
      */
     public function getCountry(string $ISO): ?Country
     {
-        return $this->getCountryList()->filter(function (Country $country) use ($ISO) {
+        return $this->getCountryList()->filter(static function (Country $country) use ($ISO) {
             return $country->getISO() === \strtoupper($ISO);
         })->pop();
     }
@@ -103,7 +103,7 @@ class CountryService implements CountryServiceInterface
         }
         $filterItems = \array_map('\strtoupper', $ISOToFilter);
 
-        return $this->getCountryList()->filter(function (Country $country) use ($filterItems) {
+        return $this->getCountryList()->filter(static function (Country $country) use ($filterItems) {
             return \in_array($country->getISO(), $filterItems, true);
         });
     }
@@ -115,7 +115,7 @@ class CountryService implements CountryServiceInterface
     public function getIsoByCountryName(string $countryName): ?string
     {
         $countryName  = \strtolower($countryName);
-        $countryMatch = $this->getCountryList()->filter(function (Country $country) use ($countryName) {
+        $countryMatch = $this->getCountryList()->filter(static function (Country $country) use ($countryName) {
             if (\strtolower($country->getNameDE()) === $countryName
                 || \strtolower($country->getNameEN()) === $countryName
             ) {
@@ -172,7 +172,7 @@ class CountryService implements CountryServiceInterface
                 'sort'                   => $this->getContinentSort($continent)
             ];
         }
-        \usort($continents, function ($a, $b) {
+        \usort($continents, static function ($a, $b) {
             return $a->sort > $b->sort;
         });
 

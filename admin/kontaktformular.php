@@ -215,9 +215,9 @@ function getNames(int $id)
 {
     $data = Shop::Container()->getDB()->selectAll('tkontaktbetreffsprache', 'kKontaktBetreff', $id);
 
-    return map(reindex($data, function ($e) {
+    return map(reindex($data, static function ($e) {
         return $e->cISOSprache;
-    }), function ($e) {
+    }), static function ($e) {
         return $e->cName;
     });
 }

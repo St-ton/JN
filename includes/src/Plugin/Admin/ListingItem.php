@@ -128,7 +128,7 @@ class ListingItem
     /**
      * @var string|null
      */
-    private $updateFromDir = null;
+    private $updateFromDir;
 
     /**
      * @var DateTime|null
@@ -398,7 +398,7 @@ class ListingItem
     }
 
     /**
-     * @param string $id
+     * @param string $pluginID
      */
     public function setPluginID(string $pluginID): void
     {
@@ -406,7 +406,7 @@ class ListingItem
     }
 
     /**
-     * @return string
+     * @return int
      */
     public function getID(): int
     {

@@ -43,14 +43,14 @@
                             {include file='snippets/form_group_simple.tpl'
                                 options=[
                                     'email', 'email', 'email', null,
-                                    {lang key='emailadress'}, true
+                                    {lang key='emailadress'}, true, null, "email"
                                 ]
                             }
 
                             {include file='snippets/form_group_simple.tpl'
                                 options=[
                                     'password', 'password', 'passwort', null,
-                                    {lang key='password' section='account data'}, true
+                                    {lang key='password' section='account data'}, true, null, "current-password"
                                 ]
                             }
 

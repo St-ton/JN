@@ -1,124 +1,114 @@
 Allgemein
 =========
 
-Das Pluginsystem im JTL-Shop ermöglicht es, alle Arten von Zusatzfunktionalitäten im Shop hinzuzufügen ohne den Shopcode zu modifizieren. Dadurch, dass der Originalcode des Shops nicht verändert wird, bleibt er zu jeder Zeit updatefähig.
-Plugins werden im Shop vom Shopbetreiber installiert. Eine Installation besteht aus dem Hochladen des Plugins in das für Plugins vorgesehene Verzeichnis ``<Shop-Root>/includes/plugins/`` und anschliessender Installation über die Pluginverwaltung im Adminbereich des Shops.
-In der Pluginverwaltung können installierte Plugins auch temporär deaktiviert bzw. permanent deinstalliert werden. Die Funktionen der Pluginverwaltung können im laufenden Shopbetrieb genutzt werden. Weiter können Plugins optional durch eine Lizenz geschützt und erst mit gültigem Lizenzkey aktiviert werden.
+.. |br| raw:: html
 
-Es gibt viele Aufgaben von Plugins im JTL-Shop:
+    <br />
 
-* Plugins, die im Shopfrontend sichtbare oder unsichtbare Funktionen ausführen (Frontend-Links)
-* Plugins, die nur im Shopadmin (Shopbackend) spezielle Funktionen zur Verfügung stellen wie z.B. Auswertungen, Statistiken (Custom-Links)
-* neue Zahlungsmethoden Zahlungsarten als Plugin
-* neue Boxen für das Frontend bereitstellen (Boxenverwaltung)
-* Plugins, die neue Emailvorlagen in den Shop integrieren
+Das Pluginsystem im JTL-Shop ermöglicht es, verschiedene Arten von Zusatzfunktionalitäten hinzuzufügen,
+ohne den Shop-Core-Code zu modifizieren. Dadurch bleibt der Shop jederzeit updatefähig.
 
-Ein Plugin kann eine dieser Aufgaben oder eine Kombination davon erfüllen.
-Das Pluginsystem arbeitet mit Hilfe von :doc:`Hooks </shop_plugins/hooks>`, die im Shopcode an verschiedenen Stellen hinterlegt sind. Ein Plugin kann einen oder mehrere Hooks nutzen, um eigenen Code dort auszuführen.
-Sind mehrere Plugins installiert, die dieselben Hooks nutzen, so wird der Code jedes Plugins an dieser Stelle ausgeführt in der zeitlichen Reihenfolge wie die Plugins installiert wurden.
+Plugins werden vom Shopbetreiber/Admin installiert. |br|
+Die Installation besteht aus dem Hochladen des Plugins in das für Plugins vorgesehene Verzeichnis
+``<Shop-Root>/includes/plugins/`` (bei Shop Versionen 4+), bzw. das Verzeichnis ``<Shop-Root>/plugins/``
+(bei Shop Versionen 5+) und anschließender Installation über die Pluginverwaltung im Adminbereich des Shops.
+In der Pluginverwaltung können installierte Plugins außerdem *temporär deaktiviert* bzw. *permanent deinstalliert* werden.
+Die Funktionen der Pluginverwaltung können im laufenden Shopbetrieb genutzt werden. |br|
+Weiterhin können Plugins optional durch eine Lizenzprüfung geschützt werden.
 
-Plugins sind versioniert, wodurch sie updatefähig bleiben.
-Pluginupdates können das Plugin um neue Funktionalität und/oder Fehlerbehebungen bereichern. Ein Update eines Plugins wird vom Shopbetreiber selbst durchgeführt, die Prozedur ist analog zur Installation.
-Die Pluginverwaltung erkennt automatisch nach dem Upload der neuen Plugindaten im Pluginverzeichnis des Shops, dass eine neue Version des Plugins vorhanden ist und bietet einen Updatebutton an.
-Nach dem Klicken des Updatebuttons wird das Plugin auf die neue Version automatisch aktualisiert. Das aktualisierte Plugin ist nach dem Update direkt aktiviert.
+Es gibt viele Arten von Plugins, die verschiedenste Aufgaben im JTL-Shop wahrnehmen können:
 
-Plugins können eine Mindest-Version des Shops voraussetzen.
-Da das Shopsystem bei einem Update um neue Funktionen bereichert werden kann, können Plugins z.B. diese neuen Funktionen erweitern oder darauf zugreifen – dies würde in einer älteren Shopversion nicht funktionieren und ggf. zu Fehlern führen.
+* Plugins, die im Shopfrontend sichtbare oder unsichtbare Funktionen ausführen ("*Frontend-Links*")
+* Plugins, die nur im Shop-Backend spezielle Funktionen zur Verfügung stellen, wie z.B. Auswertungen und
+  Statistiken ("*Custom-Links*")
+* neue Zahlungsmethoden bereitstellen als "Zahlungsarten-Plugin"
+* neue Boxen für das Frontend bereitstellen ("Boxenverwaltung")
+* Plugins, die neue E-Mail-Vorlagen in den Shop integrieren
+* und vieles mehr
 
-Das Herzstück jedes Plugins ist eine XML Datei, die das Plugin beschreibt.
-Diese XML Datei muss auch eine Mindest XML Strukturversion angeben, damit die vom Plugin beschriebene Funktionalität auch tatsächlich vom Shop interpretiert werden kann.
-Durch die Plugin XML Version bleibt somit das Pluginsystem selbst erweiterbar. So wurde z.B. in JTL-Shop 3.04 diese XML-Struktur um selbstdefinierte Emailvorlagen erweitert, die ein Plugin über die XML Version automatisch erstellen und versenden kann.
+Ein Plugin kann *eine* dieser Aufgaben oder *eine Kombination* davon erfüllen.
 
-Ein JTL-Shop kann mehrsprachig betrieben werden.
-Eine im Pluginsystem integrierte Sprachvariablenverwaltung ermöglicht es Plugins, Daten in beliebig vielen Sprachen lokalisiert auszuliefern.
+Das Pluginsystem arbeitet mit Hilfe von :doc:`Hooks </shop_plugins/hooks>`, die im Shop-Code an verschiedenen Stellen
+hinterlegt sind. |br|
+Ein Plugin kann einen oder mehrere Hooks nutzen, um eigenen Code an diesen Stellen auszuführen.
+
+.. hint::
+
+    Sind mehrere Plugins installiert, die dieselben Hooks nutzen, so wird der Code *jedes* Plugins an dieser Stelle
+    ausgeführt, in der zeitlichen Reihenfolge, wie die Plugins installiert wurden.
+
+Plugins sind *versioniert*, wodurch sie updatefähig bleiben. |br|
+Plugin-updates können das Plugin um neue Funktionalität und/oder Fehlerbehebungen bereichern.
+
+Die Pluginverwaltung erkennt automatisch, nach dem Upload der neuen Plugindaten, im Pluginverzeichnis des Shops,
+dass eine neue Version des Plugins vorhanden ist und bietet einen Update-Button an. |br|
+Ein Update eines Plugins wird vom Shopbetreiber selbst durchgeführt, die Prozedur ist analog zur Installation. |br|
+Nach dem Klicken des Update-Buttons wird das Plugin automatisch  auf die neue Version aktualisiert. Das aktualisierte
+Plugin ist nach dem Update direkt aktiviert.
+
+Plugins können eine Mindestversion des Shops voraussetzen. |br|
+Da das Shopsystem bei einem Shop-Update um neue Funktionen bereichert werden kann, können Plugins z.B. diese neuen
+Funktionen erweitern oder darauf zugreifen. Dies würde in einer älteren Shopversion nicht funktionieren und ggf. zu
+Fehlern führen.
+
+Das Herzstück jedes Plugins ist die XML Datei ``info.xml``, die das Plugin beschreibt. |br|
+Diese XML-Datei muss auch eine Mindest-XML-Strukturversion angeben, damit die vom Plugin beschriebene Funktionalität
+auch tatsächlich vom Shop interpretiert werden kann. Durch die Plugin-XML-Version bleibt somit das Pluginsystem selbst
+erweiterbar. |br|
+So wurde z.B. in JTL-Shop 3.04 diese XML-Struktur um selbst definierte Emailvorlagen erweitert, die ein Plugin über die
+XML-Version automatisch erstellen und versenden kann.
+
+Ein JTL-Shop kann mehrsprachig betrieben werden. |br|
+Eine im Pluginsystem integrierte Sprachvariablenverwaltung ermöglicht es Plugins, Daten in beliebig vielen Sprachen
+lokalisiert auszuliefern. |br|
 Die Pluginverwaltung ermöglicht dem Shopbetreiber zudem, alle Sprachvariablen für die eigenen Anforderungen anzupassen.
-Sprachvariablen können weiterhin vom Shopbetreiber auch jederzeit in den Installationszustand zurückgesetzt werden.
-Sobald ein Plugin mehr Sprachen mitliefert als im Shopsystem vorhanden sind, werden auch nur diese vom Shopsystem installiert.
-Liefert ein Plugin andererseits Sprachvariablen in weniger Sprachen aus, als der Shop aktuell aktiviert hat, so werden die Sprachvariablen der sonstigen Sprachen mit der Standardsprache ausgefüllt.
+Sprachvariablen können weiterhin vom Shopbetreiber auch jederzeit in den Installationszustand zurückgesetzt werden. |br|
+Sobald ein Plugin mehr Sprachen mitliefert als im Shopsystem vorhanden sind, werden auch nur diese vom Shopsystem
+installiert.  Liefert ein Plugin andererseits Sprachvariablen in weniger Sprachen aus, als der Shop aktuell aktiviert
+hat, so werden die Sprachvariablen der sonstigen Sprachen mit der Standardsprache ausgefüllt.
 
-Pluginverwaltung im Admin-Backend
----------------------------------
+Pluginverwaltung im Shop-Backend
+--------------------------------
 
-Die Pluginverwaltung ist der zentrale Punkt im Shop Backend, wo Plugins installiert, deaktiviert, deinstalliert, aktualisiert oder bearbeitet werden können.
-Damit Plugins nicht Ihre vom Shopbetreiber konfigurierten Einstellungen verlieren, sollte man Plugins bei Nichtgebrauch lieber deaktivieren anstat sie komplett zu deinstallieren.
-Deinstallierte Plugins verlieren nicht nur alle eigenen Einstellungen, alle Sprachvariablen und sogar Datenbanktabellen des Plugins werden dabei gelöscht!
-Deaktivierte Plugins werden vom Shopsystem garnicht geladen und verbrauchen daher keine Serverressourcen.
+Die Pluginverwaltung ist der zentrale Punkt im Shop-Backend, wo Plugins installiert/deinstalliert,
+aktiviert/deaktiviert, aktualisiert oder konfiguriert werden können.
 
+Bei einer Plugin-Deinstallation werden Plugin-Einstellungen und eventuell zusätzlich durch das Plugin geschriebene
+Tabellen gelöscht. Anders bei der Plugin-Deaktivierung: Hier bleiben Plugin-Einstellungen und -Tabellen erhalten,
+das Plugin wird jedoch nicht weiter ausgeführt.
 
-Admin-Links
------------
+.. important::
 
-Jedes Plugin in JTL-Shop erhält nach der Installation einen eigenen Menüpunkt unter Plugins -> Pluginname.
-Den Inhalt hinter diesem Link kann das Plugin selbst bestimmen.
-Jedes Plugin kann beliebig viele Customlinks (Links, die eigenen Code ausführen und eigenen Inhalt produzieren) und Settinglinks (Links, die Einstellungen zum Plugin enthalten) definieren.
-Eigene Einstellungen kann ein Plugin zwar auch selbst über einen Customlink abfragen und abspeichern, jedoch bieten Settinglinks eine sehr einfache, schnelle und sichere Methode, Einstellungen zu hinterlegen und abzufragen.
-Insbesondere wird der Zugriff auf diese Einstellungen im eigenen Plugin Code stark vereinfacht, das Look&Feel von Einstellungen im Shop bleibt erhalten und man spart enorm viel Code, da benötigte Einstellungen über Settinglinks einfach in der XML Datei des Plugins hinterlegt werden - kein weiterer Code ist dabei notwendig!
+    Deinstallierte Plugins verlieren nicht nur alle eigenen Einstellungen und alle Sprachvariablen, es werden auch
+    alle Datenbanktabellen des Plugins gelöscht! |br|
+    Deaktivierte Plugins werden vom Shopsystem nicht geladen und verbrauchen keine Systemressourcen.
 
-Plugin-Entwickler haben über die XML-Tags ``CSS`` und ``JS`` die Möglichkeit, schon bei der Installation eigene Ressourcen in den DOM einfügen zu lassen,
-um so das spätere Hinzufügen via ``pq()`` überflüssig zu machen.
+Plugin-Installation
+"""""""""""""""""""
 
-.. code-block:: xml
+Die Installation von Plugins besteht aus zwei Schritten und kann im laufenden Betrieb des Shops vorgenommen werden:
 
-    <CSS>
-        <file>
-            <name>foo.css</name>
-            <priority>4</priority>
-        </file>
-        <file>
-            <name>bar.css</name>
-            <priority>9</priority>
-        </file>
-    </CSS>
-    <JS>
-        <file>
-            <name>foo.js</name>
-            <priority>8</priority>
-            <position>body</position>
-        </file>
-        <file>
-            <name>bar.js</name>
-        </file>
-    </JS>
+1. Upload des Plugins |br|
+   **ab Shop Version 4.x** in das Verzeichnis ``includes/plugins/``, |br|
+   **ab Shop Version 5.x** in das Verzeichnis ``plugins/`` |br|
+   (Der Upload erfolgt in "ausgepackter" Form. Dateiarchive, wie z.B. ``*.zip`` oder ``*.tgz``,
+   werden *nicht unterstützt*.)
+2. Auslösen der Installation im Backend, über den Menüpunkt "*Pluginverwaltung*", im Reiter "*Vorhanden*". |br|
+   Die Installation läuft vollautomatisch ab.
 
-Alle hier angebenen Dateien müssen im Unterordner *frontend/css/* bzw. *frontend/js/* liegen. JavaScript-Dateien lassen sich dabei über das Attribut
-Position wahlweise in den Header oder Body einfügen und können über priority (0 = höchste, 5 = Standard) in der Reihenfolge modifiziert werden.
+Plugin-Konfiguration
+""""""""""""""""""""
 
-Diese Dateien werden bei entsprechend aktivierter Theme-Funktion auch minifiziert.
+Jedes Plugin, in JTL-Shop, erhält nach der Installation einen eigenen Eintrag in der Pluginverwaltung. |br|
+Den Inhalt hinter diesem Eintrag kann das Plugin selbst bestimmen.
 
-Im Theme müssen dazu die Smarty-Variablen ``$cPluginJsHeadd_arr``, ``$cPluginCss_arr`` und ``$cPluginJsBody_arr`` geprüft bzw. ausgegeben werden.
+Jedes Plugin kann beliebig viele *Custom Links* (Links, die eigenen Code ausführen und eigenen Inhalt produzieren) und
+*Setting Links* (Links, die Einstellungen zum Plugin enthalten) definieren.
 
-.. code-block:: html+smarty
-
-    {*bei aktiviertem minify, header.tpl*}
-    {if isset($cPluginCss_arr) && $cPluginCss_arr|@count > 0}
-        <link type="text/css" href="{$PFAD_MINIFY}/g=plugin_css" rel="stylesheet" media="screen" />
-    {/if}
-    {if isset($cPluginJsHead_arr) && $cPluginJsHead_arr|@count > 0}
-        <script type="text/javascript" src="{$PFAD_MINIFY}/g=plugin_js_head"></script>
-    {/if}
-    {*footer.tpl:*}
-    {if isset($cPluginJsHead_arr) && $cPluginJsHead_arr|@count > 0}
-        <script type="text/javascript" src="{$PFAD_MINIFY}/g=plugin_js_body"></script>
-    {/if}
-    {*ohne minify, header.tpl*}
-    {foreach from=$cJS_arr item="cJS"}
-        <script type="text/javascript" src="{$cJS}"></script>
-    {/foreach}
-    {if isset($cPluginJsHead_arr)}
-        {foreach from=$cPluginJsHead_arr item="cJS"}
-            <script type="text/javascript" src="{$cJS}"></script>
-        {/foreach}
-    {/if}
-
-    {*footer.tpl:*}
-    {if isset($cPluginJsHead_arr)}
-        {foreach from=$cPluginJsBody_arr item="cJS"}
-            <script type="text/javascript" src="{$cJS}"></script>
-        {/foreach}
-    {/if}
-
-Custom-Dateien
---------------
-
-Falls zu einer über diese Methode eingebundenen CSS-Datei ein _custom-Pendant im selben Ordner existiert, wird diese **zusätzlich** nach ihr eingebunden.
-Dem Beispiel oben folgend wäre dies ``foo_custom.css`` bzw. ``bar_custom.css``. Für JavaScript-Dateien wird dieses Vorgehen nicht untertützt.
+Eigene Einstellungen kann ein Plugin zwar auch selbst über einen *Custom Link* abfragen und abspeichern,
+jedoch bieten *Setting Links* eine Methode die sehr viel schneller und sicherer ist, um Einstellungen zu hinterlegen und
+abzufragen. |br|
+Insbesondere wird der Zugriff auf diese Einstellungen im eigenen Plugin-Code stark vereinfacht, das Look&Feel
+von Einstellungen im Shop bleibt erhalten und man spart viel Programmcode, da benötigte Einstellungen
+über *Setting Links* einfach in der XML Datei des Plugins hinterlegt werden können - kein weiterer Code ist
+hierbei notwendig!

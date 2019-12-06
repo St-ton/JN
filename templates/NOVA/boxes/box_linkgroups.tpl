@@ -26,11 +26,13 @@
                 visible=false
                 id="crd-cllps-{$oBox->getID()}"
                 aria=["labelledby"=>"crd-hdr-{$oBox->getID()}"]}
-                    {nav vertical=true}
-                    {block name='boxes-box-linkgroups-include-linkgroups-recursive'}
-                        {include file='snippets/linkgroup_recursive.tpl' linkgroupIdentifier=$oBox->getLinkGroupTemplate() dropdownSupport=true  tplscope='box'}
-                    {/block}
-                    {/nav}
+                    <div class="nav-panel">
+                        {nav vertical=true}
+                            {block name='boxes-box-linkgroups-include-linkgroups-recursive'}
+                                {include file='snippets/linkgroup_recursive.tpl' linkgroupIdentifier=$oBox->getLinkGroupTemplate() dropdownSupport=true  tplscope='box'}
+                            {/block}
+                        {/nav}
+                    </div>
             {/collapse}
         {/block}
     {/card}

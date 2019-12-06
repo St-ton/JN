@@ -213,7 +213,7 @@ class SearchSpecial extends AbstractFilter
                     break;
             }
         }
-        $conditions = \array_map(function ($e) {
+        $conditions = \array_map(static function ($e) {
             return '(' . $e . ')';
         }, $conditions);
 

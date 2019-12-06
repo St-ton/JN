@@ -14,7 +14,9 @@ create_tpl_diff()
     VERSION_REGEX="v?([0-9]{1,})\\.([0-9]{1,})\\.([0-9]{1,})(-(alpha|beta|rc)(\\.([0-9]{1,}))?)?";
 
     if [[ ${DIFF_END_TAG} =~ ${VERSION_REGEX} ]]; then
-        if [[ "${DIFF_PATH}" == "templates/Evo" ]]; then
+        if [[ "${DIFF_PATH}" == "templates/NOVA" ]]; then
+            TPL_TYPE="nova";
+        elif [[ "${DIFF_PATH}" == "templates/Evo" ]]; then
             TPL_TYPE="evo";
         else
             TPL_TYPE="mail";

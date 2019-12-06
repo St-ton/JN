@@ -408,6 +408,7 @@ class AccountController
         }
         $this->checkCoupons($coupons);
         $this->updateCustomerLanguage($customer->kSprache);
+        Shop::Container()->getLinkService()->reset();
     }
 
     /**
@@ -1063,7 +1064,7 @@ class AccountController
         );
         $currencies = [];
         foreach ($orders as $order) {
-            $order->bDownload   = some($downloads, function ($dl) use ($order) {
+            $order->bDownload   = some($downloads, static function ($dl) use ($order) {
                 return $dl->kBestellung === $order->kBestellung;
             });
             $order->kBestellung = (int)$order->kBestellung;

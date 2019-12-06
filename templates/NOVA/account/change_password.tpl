@@ -18,17 +18,18 @@
                             {include file='snippets/form_group_simple.tpl'
                                 options=[
                                     'password', 'currentPassword', 'altesPasswort', null,
-                                    {lang key='currentPassword' section='login'}, true
+                                    {lang key='currentPassword' section='login'}, true, null, "current-password"
                                 ]
                             }
                             <div class="form-group d-flex flex-column" role="group">
                                 {input type="password"
                                        class="form-control"
-                                       placeholder="{lang key='newPassword' section='login'}"
+                                       placeholder=" "
                                        id="newPassword"
                                        value=""
                                        required=true
-                                       name="neuesPasswort1"}
+                                       name="neuesPasswort1"
+                                       autocomplete="new-password"}
                                 <label for="newPassword" class="col-form-label pt-0">
                                     {lang key='newPassword' section='login'}
                                 </label>
@@ -39,7 +40,7 @@
                             {include file='snippets/form_group_simple.tpl'
                                 options=[
                                     'password', 'newPasswordRpt', 'neuesPasswort2', null,
-                                    {lang key='newPasswordRpt' section='login'}, true
+                                    {lang key='newPasswordRpt' section='login'}, true, null, "new-password"
                                 ]
                             }
                             {block name='account-change-password-form-submit'}

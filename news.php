@@ -88,8 +88,8 @@ switch ($controller->getPageType($params)) {
         $overview       = $controller->displayOverview($pagination, 0, $id, $customerGroupID);
         $cCanonicalURL  = $overview->getURL();
         $breadCrumbURL  = $cCanonicalURL;
-        $breadCrumbName = $overview->getName();
         $cMetaTitle     = $overview->getMetaTitle();
+        $breadCrumbName = !empty($overview->getName()) ? $overview->getName() : $cMetaTitle;
         $smarty->assign('robotsContent', 'noindex, follow');
         break;
     case ViewType::NEWS_DISABLED:

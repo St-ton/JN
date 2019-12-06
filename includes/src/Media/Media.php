@@ -120,7 +120,7 @@ class Media
      */
     public function isValidRequest(string $requestUri): bool
     {
-        return some($this->types, function (IMedia $e) use ($requestUri) {
+        return some($this->types, static function (IMedia $e) use ($requestUri) {
             return $e->isValid($requestUri);
         });
     }
@@ -132,7 +132,7 @@ class Media
      */
     public function handleRequest(string $requestUri)
     {
-        return first($this->types, function (IMedia $type) use ($requestUri) {
+        return first($this->types, static function (IMedia $type) use ($requestUri) {
             return $type->isValid($requestUri);
         })->handle($requestUri);
     }

@@ -692,9 +692,9 @@ class Method implements MethodInterface
                     return null;
                 }
                 $className = $pluginPaymentMethod->getClassName();
-                if (class_exists($className)) {
+                if (\class_exists($className)) {
                     $paymentMethod = new $className($moduleID, $nAgainCheckout);
-                    if (!is_a($paymentMethod, MethodInterface::class)) {
+                    if (!\is_a($paymentMethod, MethodInterface::class)) {
                         unset($paymentMethod);
                         $paymentMethod = null;
                     }

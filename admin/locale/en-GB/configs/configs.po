@@ -222,7 +222,7 @@ msgid "wartungsmodus_aktiviert_name"
 msgstr "Enable maintenance mode"
 
 msgid "wartungsmodus_aktiviert_desc"
-msgstr "Here you can activate the maintenance mode of JTL-Shop. JTL-Shop contents are not displayed in maintenance mode. In this mode, you can easily perform maintenance work such as updates or backups."
+msgstr "The visitor sees a message saying that the online shop is undergoing maintenance. The text of this message is managed via the language variable \"maintenanceModeActive\". Go to the Language administration to edit the info message text."
 
 msgid "global_versandermittlung_anzeigen_name"
 msgstr "Show shipping cost determination"
@@ -684,7 +684,7 @@ msgid "artikeluebersicht_erw_darstellung_stdansicht_name"
 msgstr "Default design option for item overview"
 
 msgid "artikeluebersicht_erw_darstellung_stdansicht_desc"
-msgstr "Specify the default display option that your customers will be shown. With the JTL-Shop default template EVO, you can only use the options \"Gallery\" and \"List\"."
+msgstr "Specify the default display option that your customers will be shown."
 
 msgid "artikeluebersicht_anzahl_darstellung1_name"
 msgstr "Number of items in list view"
@@ -709,12 +709,6 @@ msgstr "Item selection options per page in gallery view"
 
 msgid "products_per_page_gallery_desc"
 msgstr "Specify how many item selection options are available per page. Set this value to -1 to display all."
-
-msgid "artikeluebersicht_anzahl_darstellung3_name"
-msgstr "Number of items in mosaic view"
-
-msgid "artikeluebersicht_anzahl_darstellung3_desc"
-msgstr "Specify how many items are to be displayed in the mosaic view."
 
 msgid "artikeldetails_xselling_standard_anzeigen_name"
 msgstr "Show default cross-selling"

@@ -1,19 +1,22 @@
 Templates
 =========
 
+.. |br| raw:: html
+
+    <br />
+
 .. toctree::
     :hidden:
 
-    evo
+    jtl_templates
     structure
-    template_settings
     eigenes_template
+    template_settings
     eigenes_theme
-    blocks_list
-    tipps_tricks
-    livestyler
-    debug
-    short_checkout
+    theme_edit
     overlays
+    short_checkout
+    jquery_update
+    tipps_tricks
 
 .. include:: /shop_templates/map.rst.inc

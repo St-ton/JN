@@ -132,7 +132,7 @@ class Order extends CartHelper
         $info->total[self::NET]   = $order->fGesamtsummeNetto;
         $info->total[self::GROSS] = $order->fGesamtsumme;
 
-        $formatter = function ($prop) use ($decimals) {
+        $formatter = static function ($prop) use ($decimals) {
             return [
                 self::NET   => \number_format($prop[self::NET], $decimals, '.', ''),
                 self::GROSS => \number_format($prop[self::GROSS], $decimals, '.', ''),

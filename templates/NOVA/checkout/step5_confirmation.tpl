@@ -24,7 +24,10 @@
                                         <span class="h3 mb-0">{lang section="account data" key='billingAndDeliveryAddress'}</span>
                                     {/col}
                                     {col class='col-auto'}
-                                        {link class="text-decoration-none" href="{get_static_route id='bestellvorgang.php'}?editRechnungsadresse=1"}
+                                        {link class="text-decoration-none"
+                                            href="{get_static_route id='bestellvorgang.php'}?editRechnungsadresse=1"
+                                            aria=['label'=>{lang key='change'}]
+                                        }
                                             <span class="mr-1 d-none text-decoration-underline d-md-inline-block">{lang key='change'}</span>
                                             <span class="fa fa-pencil-alt"></span>
                                         {/link}
@@ -63,7 +66,10 @@
                                         <span class="h3 mb-0">{lang section="account data" key='shippingAndPaymentOptions'}</span>
                                     {/col}
                                     {col class='col-auto'}
-                                        {link class="text-decoration-none" href="{get_static_route id='bestellvorgang.php'}?editVersandart=1"}
+                                        {link class="text-decoration-none"
+                                            href="{get_static_route id='bestellvorgang.php'}?editVersandart=1"
+                                            aria=['label'=>{lang key='change'}]
+                                        }
                                             <span class="mr-1 d-none text-decoration-underline d-md-inline-block">{lang key='change'}</span>
                                             <span class="fa fa-pencil-alt"></span>
                                         {/link}

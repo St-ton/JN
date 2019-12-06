@@ -142,7 +142,7 @@ class Statusmail
         $conf                         = new stdClass();
         $conf->cIntervallMoeglich_arr = $this->getPossibleIntervals();
         $conf->cInhaltMoeglich_arr    = $this->getPossibleContentTypes();
-        $conf->nIntervall_arr         = map($data, function ($e) {
+        $conf->nIntervall_arr         = map($data, static function ($e) {
             return (int)$e->nInterval;
         });
         $conf->nInhalt_arr            = Text::parseSSKint($first->cInhalt ?? '');
@@ -692,7 +692,7 @@ class Statusmail
                 ],
                 ReturnType::ARRAY_OF_OBJECTS
             ),
-            function ($e) {
+            static function ($e) {
                 $e->kLog   = (int)$e->kLog;
                 $e->nLevel = (int)$e->nLevel;
                 $e->kKey   = (int)$e->kKey;

@@ -6,6 +6,7 @@
 
 namespace JTL\OPC;
 
+use Exception;
 use JTL\Backend\AdminIO;
 use JTL\Helpers\Request;
 use JTL\IO\IOResponse;
@@ -90,7 +91,7 @@ class PageService
         $adminAccount = $io->getAccount();
 
         if ($adminAccount === null) {
-            throw new \Exception('Admin account was not set on AdminIO.');
+            throw new Exception('Admin account was not set on AdminIO.');
         }
 
         $this->adminName = $adminAccount->account()->cLogin;
@@ -102,12 +103,11 @@ class PageService
     }
 
     /**
-     * @param $params
-     * @param $smarty
+     * @param array $params
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
-    public function renderMountPoint($params)
+    public function renderMountPoint(array $params): string
     {
         $id     = $params['id'];
         $title  = $params['title'] ?? $id;
@@ -122,8 +122,8 @@ class PageService
 
         Shop::fire('shop.OPC.PageService.renderMountPoint', [
             'output' => &$output,
-            'id' => $id,
-            'title' => $title,
+            'id'     => $id,
+            'title'  => $title,
         ]);
 
         return $output;
@@ -263,7 +263,7 @@ class PageService
     public function createCurrentPageId(int $langId = 0): string
     {
         if ($langId === 0) {
-            $langId = \Shop::getLanguage();
+            $langId = \Shop::getLanguageID();
         }
 
         $params    = Shop::getParameters();
@@ -330,7 +330,7 @@ class PageService
             $drafts         = $this->pageDB->getDrafts($id);
             $publicDraft    = $this->getPublicPage($id);
             $publicDraftKey = $publicDraft === null ? 0 : $publicDraft->getKey();
-            \usort($drafts, function ($a, $b) use ($publicDraftKey) {
+            \usort($drafts, static function ($a, $b) use ($publicDraftKey) {
                 /**
                  * @var Page $a
                  * @var Page $b

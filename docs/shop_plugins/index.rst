@@ -1,11 +1,16 @@
 Plugins
 =======
 
+.. |br| raw:: html
+
+    <br />
+
 .. toctree::
     :hidden:
 
     allgemein
     aufbau
+    infoxml
     bootstrapping
     variablen
     hooks
@@ -13,8 +18,11 @@ Plugins
     container
     cache
     mailing
+    portlets
     fehlercodes
+    profiling
     sicherheit
+    payment_plugins
     short_checkout
     hinweise
 

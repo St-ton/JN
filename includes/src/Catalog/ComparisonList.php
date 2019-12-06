@@ -121,7 +121,7 @@ class ComparisonList
      */
     public function productExists(int $productID): bool
     {
-        return some($this->oArtikel_arr, function ($e) use ($productID) {
+        return some($this->oArtikel_arr, static function ($e) use ($productID) {
             return (int)$e->kArtikel === $productID;
         });
     }
@@ -163,7 +163,7 @@ class ComparisonList
             }
         }
         if (\count($attributes) > 0) {
-            \uasort($attributes, function (Merkmal $a, Merkmal $b) {
+            \uasort($attributes, static function (Merkmal $a, Merkmal $b) {
                 return $a->nSort > $b->nSort;
             });
         }
@@ -180,7 +180,7 @@ class ComparisonList
      */
     public function containsAttribute(array $attributes, int $id): bool
     {
-        return some($attributes, function ($e) use ($id) {
+        return some($attributes, static function ($e) use ($id) {
             return (int)$e->kMerkmal === $id;
         });
     }
@@ -194,7 +194,7 @@ class ComparisonList
      */
     public function containsVariation(array $variations, string $name): bool
     {
-        return some($variations, function ($e) use ($name) {
+        return some($variations, static function ($e) use ($name) {
             return $e->cName === $name;
         });
     }
@@ -275,11 +275,11 @@ class ComparisonList
                 $prioRows[$row] = $this->getMappedRowNames($row, $conf);
             }
         }
-        $prioRows = sort($prioRows, function (array $left, array $right) {
+        $prioRows = sort($prioRows, static function (array $left, array $right) {
             return $left['priority'] < $right['priority'];
         });
 
-        return $keysOnly ? map($prioRows, function (array $row) {
+        return $keysOnly ? map($prioRows, static function (array $row) {
             return $row['key'];
         }) : $prioRows;
     }

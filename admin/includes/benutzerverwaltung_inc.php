@@ -15,6 +15,7 @@ use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use function Functional\group;
 use function Functional\map;
+use function Functional\reindex;
 
 /**
  * @param int $adminID
@@ -59,22 +60,58 @@ function getAdminGroups(): array
  */
 function getAdminDefPermissions(): array
 {
-    $groups = Shop::Container()->getDB()->selectAll('tadminrechtemodul', [], [], '*', 'nSort ASC');
-    $perms  = group(Shop::Container()->getDB()->selectAll('tadminrecht', [], []), function ($e) {
-        return $e->kAdminrechtemodul;
-    });
-    foreach ($groups as $group) {
-        $group->kAdminrechtemodul = (int)$group->kAdminrechtemodul;
-        $group->nSort             = (int)$group->nSort;
-        $group->cName             = __($group->cName);
-        $group->oPermission_arr   = map($perms[$group->kAdminrechtemodul] ?? [], function ($permission) {
-            $permission->cBeschreibung = __('permission_' . $permission->cRecht);
+    global $adminMenu;
 
-            return $permission;
-        });
+    $perms              = reindex(Shop::Container()->getDB()->selectAll('tadminrecht', [], []), function ($e) {
+        return $e->cRecht;
+    });
+    $permissionsOrdered = [];
+
+    foreach ($adminMenu as $rootName => $rootEntry) {
+        $permMainTMP = [];
+        foreach ($rootEntry->items as $secondName => $secondEntry) {
+            if ($secondEntry === 'DYNAMIC_PLUGINS' || !empty($secondEntry->excludeFromAccessView)) {
+                continue;
+            }
+            if (is_object($secondEntry)) {
+                $perms[$secondEntry->permissions]->name = $secondName;
+                $permMainTMP[]                          = (object)[
+                    'name'       => $secondName,
+                    'permissions' => [$perms[$secondEntry->permissions]]
+                ];
+                unset($perms[$secondEntry->permissions]);
+            } else {
+                $permSecondTMP = [];
+                foreach ($secondEntry as $thirdName => $thirdEntry) {
+                    if (!empty($thirdEntry->excludeFromAccessView)) {
+                        continue;
+                    }
+                    $perms[$thirdEntry->permissions]->name = $thirdName;
+                    $permSecondTMP[]                       = $perms[$thirdEntry->permissions];
+                    unset($perms[$thirdEntry->permissions]);
+                }
+                $permMainTMP[] = (object)[
+                    'name'       => $secondName,
+                    'permissions' => $permSecondTMP
+                ];
+            }
+        }
+        $permissionsOrdered[] = (object)[
+            'name'     => $rootName,
+            'children' => $permMainTMP
+        ];
+    }
+    if (!empty($perms)) {
+        $permissionsOrdered[] = (object)[
+            'name'     => __('noMenuItem'),
+            'children' => [(object)[
+                'name'       => '',
+                'permissions' => $perms
+            ]]
+        ];
     }
 
-    return $groups;
+    return $permissionsOrdered;
 }
 
 /**
@@ -715,7 +752,6 @@ function benutzerverwaltungFinalize($step, JTLSmarty $smarty, array &$messages)
         $messages['error'] = $_SESSION['benutzerverwaltung.error'];
         unset($_SESSION['benutzerverwaltung.error']);
     }
-
     switch ($step) {
         case 'account_edit':
             $smarty->assign('oAdminGroup_arr', getAdminGroups())
@@ -729,7 +765,7 @@ function benutzerverwaltungFinalize($step, JTLSmarty $smarty, array &$messages)
                 ->assign('oAdminGroup_arr', getAdminGroups());
             break;
         case 'group_edit':
-            $smarty->assign('oAdminDefPermission_arr', getAdminDefPermissions());
+            $smarty->assign('permissions', getAdminDefPermissions());
             break;
         case 'index_redirect':
             benutzerverwaltungRedirect('account_view', $messages);

@@ -47,7 +47,7 @@ class DB
             $withInactive ? [] : 'bActive',
             $withInactive ? [] : 1,
             'kBlueprint'
-        ), function ($e) {
+        ), static function ($e) {
             return (int)$e->kBlueprint;
         });
     }

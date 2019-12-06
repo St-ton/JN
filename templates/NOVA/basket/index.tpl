@@ -42,7 +42,7 @@
                                     {if $Einstellungen.kaufabwicklung.warenkorb_versandermittlung_anzeigen === 'Y'}
                                         {block name='basket-index-form-shipping-calc'}
                                             {opcMountPoint id='opc_before_shipping_calculator'}
-                                            {form id="basket-shipping-estimate-form" method="post" action="{get_static_route id='warenkorb.php'}#basket-shipping-estimate-form"}
+                                            {form id="basket-shipping-estimate-form" method="post" class="label-slide" action="{get_static_route id='warenkorb.php'}#basket-shipping-estimate-form"}
                                                 {block name='basket-index-include-shipping-calculator'}
                                                     {include file='snippets/shipping_calculator.tpl' checkout=true}
                                                 {/block}
@@ -152,13 +152,11 @@
                                         {collapse id="coupon-form"}
                                             {cardbody}
                                             {block name='basket-index-coupon-form'}
-                                                {form class="form-inline evo-validate" id="basket-coupon-form" method="post" action="{get_static_route id='warenkorb.php'}"}
-                                                    {formgroup class="mw-100{if !empty($invalidCouponCode)} has-error{/if}"}
-                                                    {inputgroup}
-                                                        {input aria=["label"=>"{lang key='couponCode' section='account data'}"] type="text" name="Kuponcode" id="couponCode" maxlength="32" placeholder="{lang key='couponCode' section='account data'}" required=true}
-                                                        {button type="submit" value=1 variant="outline-primary"}{lang key='useCoupon' section='checkout'}{/button}
-                                                    {/inputgroup}
+                                                {form class="label-slide evo-validate" id="basket-coupon-form" method="post" action="{get_static_route id='warenkorb.php'}"}
+                                                    {formgroup label-for="couponCode" label={lang key='couponCode' section='account data'} class="mw-100{if !empty($invalidCouponCode)} has-error{/if}"}
+                                                        {input aria=["label"=>"{lang key='couponCode' section='account data'}"] type="text" name="Kuponcode" id="couponCode" maxlength="32" placeholder=" " required=true}
                                                     {/formgroup}
+                                                    {button type="submit" value=1 variant="outline-primary" block=true}{lang key='useCoupon' section='checkout'}{/button}
                                                 {/form}
                                             {/block}
                                             {/cardbody}

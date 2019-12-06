@@ -82,9 +82,21 @@
 		#gallery_preview_wrapper {
 			width: 100%;
 			padding: map_get($spacers, 3);
+			max-width: 1200px;
 			@include media-breakpoint-up(md) {
 				width: 80%;
 			}
+		}
+	}
+	.variation-image-preview {
+		position: absolute;
+		top: 0;
+		right: 0;
+		width: 98%;
+		height: auto;
+		background: $white;
+		&:not(.show) {
+			z-index: -5;
 		}
 	}
 }

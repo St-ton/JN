@@ -102,7 +102,7 @@ function bestellungInDB($cleared = 0, $orderNo = '')
     $order->cBestellNr = empty($orderNo) ? baueBestellnummer() : $orderNo;
     $cartItems         = [];
     if (Frontend::getCustomer()->getID() <= 0) {
-        $customerAttributes      = $customer->getCustomerAttributes()->assign(Frontend::get('customerAttributes'));
+        $customerAttributes      = $customer->getCustomerAttributes();
         $customer->kKundengruppe = Frontend::getCustomerGroup()->getID();
         $customer->kSprache      = Shop::getLanguageID();
         $customer->cAbgeholt     = 'N';
@@ -117,7 +117,9 @@ function bestellungInDB($cleared = 0, $orderNo = '')
             $customer->cPasswort    = md5($customer->cPasswort);
         }
         $cart->kKunde = $customer->insertInDB();
-
+        if (Frontend::get('customerAttributes') !== null) {
+            $customerAttributes->assign(Frontend::get('customerAttributes'));
+        }
         $customer->kKunde = $cart->kKunde;
         $customer->cLand  = $customer->pruefeLandISO($customer->cLand);
         $customerAttributes->setCustomerID($customer->kKunde);
@@ -446,13 +448,14 @@ function speicherKundenKontodaten($paymentInfo): void
  */
 function unhtmlSession(): void
 {
-    $customer        = new Customer();
-    $sessionCustomer = Frontend::getCustomer();
+    $customer           = new Customer();
+    $sessionCustomer    = Frontend::getCustomer();
+    $customerAttributes = Frontend::get('customerAttributes');
     if ($sessionCustomer->kKunde > 0) {
         $customer->kKunde = $sessionCustomer->kKunde;
         $customer->getCustomerAttributes()->load($customer->getID());
-    } else {
-        $customer->getCustomerAttributes()->assign(Frontend::get('customerAttributes'));
+    } elseif ($customerAttributes !== null) {
+        $customer->getCustomerAttributes()->assign($customerAttributes);
     }
     $customer->kKundengruppe = Frontend::getCustomerGroup()->getID();
     if ($sessionCustomer->kKundengruppe > 0) {

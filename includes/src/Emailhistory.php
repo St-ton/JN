@@ -190,7 +190,7 @@ class Emailhistory
     public function deletePack(array $ids)
     {
         if (\count($ids) > 0) {
-            $ids = \array_map(function ($i) {
+            $ids = \array_map(static function ($i) {
                 return (int)$i;
             }, $ids);
 

@@ -273,7 +273,7 @@ switch ($action) {
         break;
     case 'flush_template_cache':
         // delete all template cachefiles
-        $callback     = function (array $pParameters) {
+        $callback     = static function (array $pParameters) {
             if (!$pParameters['isdir']) {
                 if (@unlink($pParameters['path'] . $pParameters['filename'])) {
                     $pParameters['count']++;
@@ -406,7 +406,7 @@ $tplcacheStats           = new stdClass();
 $tplcacheStats->frontend = [];
 $tplcacheStats->backend  = [];
 
-$callback = function (array $pParameters) {
+$callback = static function (array $pParameters) {
     if (!$pParameters['isdir']) {
         $fileObj           = new stdClass();
         $fileObj->filename = $pParameters['filename'];

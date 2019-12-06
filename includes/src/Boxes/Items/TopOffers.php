@@ -57,7 +57,7 @@ final class TopOffers extends AbstractBox
             \shuffle($productIDs);
             $res = map(
                 \array_slice($productIDs, 0, $config['boxen']['box_topangebot_anzahl_anzeige']),
-                function ($productID) {
+                static function ($productID) {
                     return (int)$productID->kArtikel;
                 }
             );

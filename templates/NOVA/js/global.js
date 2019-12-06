@@ -513,10 +513,6 @@ $(document).ready(function () {
     addCopyToClipboardListener();
     initWow();
     setClickableRow();
-
-    $('.label-slide input').on('change', function() {
-        $(this).attr('value', $(this).val());
-    });
 });
 
 function setClickableRow ()

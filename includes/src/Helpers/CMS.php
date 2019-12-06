@@ -59,7 +59,7 @@ class CMS
                     $url      = \SEARCHSPECIALS_NEWPRODUCTS;
                     break;
             }
-            $productIDs = map($products, function ($e) {
+            $productIDs = map($products, static function ($e) {
                 return (int)$e->kArtikel;
             });
             if (\count($productIDs) > 0) {
@@ -118,7 +118,7 @@ class CMS
                 ReturnType::ARRAY_OF_OBJECTS
             );
             $items   = new News\ItemList(Shop::Container()->getDB());
-            $items->createItems(map($newsIDs, function ($e) {
+            $items->createItems(map($newsIDs, static function ($e) {
                 return (int)$e->kNews;
             }));
             $items     = $items->getItems();
@@ -173,7 +173,7 @@ class CMS
         $obj->sort   = (int)$conf['startseite_topangebote_sortnr'];
         $boxes[]     = $obj;
 
-        \usort($boxes, function ($a, $b) {
+        \usort($boxes, static function ($a, $b) {
             return $a->sort <=> $b->sort;
         });
 

@@ -231,17 +231,26 @@
                             {/if}
                             <div class="hidden-xs basket-details">
                                 {block name='basket-details'}
-                                    {if ($Artikel->inWarenkorbLegbar === 1 || ($Artikel->nErscheinendesProdukt === 1 && $Einstellungen.global.global_erscheinende_kaeuflich === 'Y'))
-                                        && (($Artikel->nIstVater === 0 && $Artikel->Variationen|@count === 0) || $hasOnlyListableVariations === 1) && !$Artikel->bHasKonfig}
+                                    {if ($Artikel->inWarenkorbLegbar === 1
+                                            || ($Artikel->nErscheinendesProdukt === 1 && $Einstellungen.global.global_erscheinende_kaeuflich === 'Y'))
+                                        && (($Artikel->nIstVater === 0 && $Artikel->Variationen|@count === 0)
+                                            || $hasOnlyListableVariations === 1)
+                                        && !$Artikel->bHasKonfig
+                                        && $Einstellungen.template.productlist.buy_productlist === 'Y'}
                                         <div class="quantity-wrapper form-group top7">
                                             {if $Artikel->nIstVater && $Artikel->kVaterArtikel == 0}
                                                 <p class="alert alert-info choose-variations">{lang key='chooseVariations' section='messages'}</p>
                                             {else}
                                                 <div class="quantity-wrapper form-group top7">
                                                     <div class="input-group input-group-sm">
-                                                        <input type="{if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}text{else}number{/if}" min="0"
-                                                               {if $Artikel->fAbnahmeintervall > 0}step="{$Artikel->fAbnahmeintervall}"{/if} size="2"
-                                                               id="quantity{$Artikel->kArtikel}" class="quantity form-control text-right" name="anzahl"
+                                                        <input type="{if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}text{else}number{/if}"
+                                                               min="{if $Artikel->fMindestbestellmenge}{$Artikel->fMindestbestellmenge}{else}0{/if}"
+                                                               max="{$Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE]|default:''}"
+                                                               {if $Artikel->fAbnahmeintervall > 0}step="{$Artikel->fAbnahmeintervall}"{/if}
+                                                               size="2"
+                                                               id="quantity{$Artikel->kArtikel}"
+                                                               class="quantity form-control text-right"
+                                                               name="anzahl"
                                                                autocomplete="off"
                                                                value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}">
 

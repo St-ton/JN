@@ -246,7 +246,7 @@ class Characteristic extends BaseCharacteristic
     {
         return \array_reduce(
             $this->productFilter->getCharacteristicFilter(),
-            function ($a, $b) use ($characteristicValueID) {
+            static function ($a, $b) use ($characteristicValueID) {
                 /** @var Characteristic $b */
                 return $a || $b->getValue() === $characteristicValueID;
             },
@@ -405,7 +405,7 @@ class Characteristic extends BaseCharacteristic
             if (\count($catAttributeFilters) > 0) {
                 $state->addCondition('tmerkmal.cName IN (' . \implode(',', map(
                     $catAttributeFilters,
-                    function ($e) {
+                    static function ($e) {
                             return '"' . $e . '"';
                     }
                 )) . ')');
@@ -456,7 +456,7 @@ class Characteristic extends BaseCharacteristic
         );
         $currentValue     = $this->productFilter->getCharacteristicValue()->getValue();
         $additionalFilter = new self($this->productFilter);
-        $filterCollection = group($qryRes, function ($e) {
+        $filterCollection = group($qryRes, static function ($e) {
             return $e->kMerkmal;
         });
         foreach ($filterCollection as $characteristicID => $characteristicValues) {
@@ -467,7 +467,7 @@ class Characteristic extends BaseCharacteristic
             $characteristic->cName                = $first->cName;
             $characteristic->cMMBildPfad          = $first->cMMBildPfad;
             $characteristic->cTyp                 = $first->cTyp;
-            $characteristic->characteristicValues = map($characteristicValues, function ($e) {
+            $characteristic->characteristicValues = map($characteristicValues, static function ($e) {
                 $av               = new stdClass();
                 $av->kMerkmal     = (int)$e->kMerkmal;
                 $av->kMerkmalWert = (int)$e->kMerkmalWert;
@@ -583,7 +583,7 @@ class Characteristic extends BaseCharacteristic
      */
     protected function isNumeric(Option $option): bool
     {
-        return every($option->getOptions(), function (Option $item) {
+        return every($option->getOptions(), static function (Option $item) {
             return \is_numeric($item->getValue());
         });
     }
@@ -594,7 +594,7 @@ class Characteristic extends BaseCharacteristic
     protected function sortNumeric(Option $option): void
     {
         $options = $option->getOptions();
-        \usort($options, function (Option $a, Option $b) {
+        \usort($options, static function (Option $a, Option $b) {
             return $a->getValue() <=> $b->getValue();
         });
         $option->setOptions($options);
@@ -606,7 +606,7 @@ class Characteristic extends BaseCharacteristic
     protected function sortByCountDesc(Option $option): void
     {
         $options = $option->getOptions();
-        \usort($options, function (Option $a, Option $b) {
+        \usort($options, static function (Option $a, Option $b) {
             return -($a->getCount() <=> $b->getCount());
         });
         $option->setOptions($options);
@@ -634,7 +634,7 @@ class Characteristic extends BaseCharacteristic
         if (\count($characteristicValues) === 0) {
             return [];
         }
-        $characteristicValueIDs = \implode(',', \array_map(function ($row) {
+        $characteristicValueIDs = \implode(',', \array_map(static function ($row) {
             return (int)$row->kMerkmalWert;
         }, $characteristicValues));
         $queryResult            = $this->productFilter->getDB()->query(

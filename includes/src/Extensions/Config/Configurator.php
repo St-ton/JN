@@ -270,7 +270,7 @@ class Configurator
      */
     public static function hasUnavailableGroup(array $confGroups): bool
     {
-        return some($confGroups, function (Group $group) {
+        return some($confGroups, static function (Group $group) {
             return !$group->minItemsInStock();
         });
     }

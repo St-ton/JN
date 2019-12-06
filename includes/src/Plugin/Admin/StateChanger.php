@@ -19,7 +19,6 @@ use JTL\Plugin\LegacyPluginLoader;
 use JTL\Plugin\PluginInterface;
 use JTL\Plugin\PluginLoader;
 use JTL\Plugin\State;
-use stdClass;
 
 /**
  * Class StateChanger

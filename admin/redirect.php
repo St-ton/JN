@@ -129,7 +129,7 @@ $list = Redirect::getRedirects(
 handleCsvExportAction(
     'redirects',
     'redirects.csv',
-    function () use ($filter, $pagination, $redirectCount) {
+    static function () use ($filter, $pagination, $redirectCount) {
         $db    = Shop::Container()->getDB();
         $where = $filter->getWhereSQL();
         $order = $pagination->getOrderSQL();

@@ -21,7 +21,7 @@
             {include file='productlist/item_box.tpl'}
         {/if}
     {else}
-        <div id="result-wrapper" itemprop="mainEntity" itemscope itemtype="http://schema.org/Product" itemid="{$Artikel->cURLFull}">
+        <div id="result-wrapper" itemprop="mainEntity" itemscope itemtype="http://schema.org/Product">
             <meta itemprop="url" content="{$ShopURL}/{$Artikel->cSeo}">
             {include file='snippets/extension.tpl'}
             {include file='productdetails/details.tpl'}

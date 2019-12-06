@@ -44,7 +44,7 @@ $themeDir   = empty($conf['template']['theme']['theme_default'])
     ? 'evo'
     : $conf['template']['theme']['theme_default'];
 $minify     = $template->getMinifyArray();
-$css        = $minify["{$themeDir}.css"] ?? [];
+$css        = $minify[$themeDir . '.css'] ?? [];
 $js         = $minify['jtl3.js'] ?? [];
 executeHook(HOOK_LETZTERINCLUDE_CSS_JS, [
     'cCSS_arr'          => &$css,

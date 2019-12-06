@@ -89,8 +89,8 @@ ifndef('SMARTY_DIR', PFAD_ROOT . PFAD_SMARTY);
  */
 ifndef('PFAD_XAJAX', PFAD_INCLUDES_LIBS . 'xajax_0.5_standard/');
 ifndef('PFAD_FLASHCHART', PFAD_INCLUDES_LIBS . 'flashchart/');
-ifndef('PFAD_PHPQUERY', PFAD_INCLUDES_LIBS . 'phpQuery/');
-ifndef('PFAD_PCLZIP', PFAD_INCLUDES . 'vendor/pclzip/pclzip/');
+ifndef('PFAD_PHPQUERY', PFAD_INCLUDES . 'vendor/jtlshop/phpquery/src/');  // DEPRECATED
+ifndef('PFAD_PCLZIP', PFAD_INCLUDES . 'vendor/pclzip/pclzip/');  // DEPRECATED
 ifndef('PFAD_PHPMAILER', PFAD_INCLUDES . 'vendor/phpmailer/phpmailer/');
 ifndef('PFAD_GRAPHCLASS', PFAD_INCLUDES_LIBS . 'graph-2005-08-28/');
 ifndef('PFAD_BLOWFISH', PFAD_INCLUDES_LIBS . 'xtea/');

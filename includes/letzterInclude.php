@@ -53,8 +53,7 @@ executeHook(HOOK_LETZTERINCLUDE_CSS_JS, [
     'cPluginJsHead_arr' => &$minify['plugin_js_head'],
     'cPluginJsBody_arr' => &$minify['plugin_js_body']
 ]);
-$device = new Mobile_Detect;
-
+$device             = new Mobile_Detect();
 $expandedCategories = $expandedCategories ?? new KategorieListe();
 $debugbar           = Shop::Container()->getDebugBar();
 $debugbarRenderer   = $debugbar->getJavascriptRenderer();

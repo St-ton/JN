@@ -227,7 +227,7 @@ function getJSON($stats, $interval, $type)
             // x achse daten
             $xLabels = [];
             foreach ($stats as $oStat) {
-                if (mb_strlen($oStat->$colX) > 0) {
+                if (isset($oStat->$colX)) {
                     $xLabels[] = (string)$oStat->$colX;
                 } else {
                     $colX      = 'cName';

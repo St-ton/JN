@@ -96,6 +96,7 @@ class CleanupService extends Method implements MethodInterface
      */
     public function execute(): void
     {
+        $db = Shop::Container()->getDB();
         foreach ($this->definition as $table => $tableData) {
             $dateField  = $tableData['cDate'];
             $subTables  = $tableData['cSubTable'];
@@ -105,27 +106,28 @@ class CleanupService extends Method implements MethodInterface
                 $from = $table;
                 $join = '';
                 foreach ($subTables as $cSubTable => $cKey) {
-                    $from .= ", {$cSubTable}";
-                    $join .= " LEFT JOIN {$cSubTable} ON {$cSubTable}.{$cKey} = {$table}.{$cKey}";
+                    $from .= ', ' . $cSubTable;
+                    $join .= ' LEFT JOIN ' . $cSubTable .
+                        ' ON ' . $cSubTable . '.' . $cKey . ' = ' . $table . '.' . $cKey;
                 }
-                $dateCol = "{$table}.{$dateField}";
+                $dateCol = $table . '.' . $dateField;
                 if ($tableData['cDateType'] === 'TIMESTAMP') {
-                    $dateCol = "FROM_UNIXTIME({$dateCol})";
+                    $dateCol = 'FROM_UNIXTIME(' . $dateCol . ')';
                 }
-                Shop::Container()->getDB()->query(
-                    "DELETE {$from}
-                        FROM {$table} {$join}
-                        WHERE DATE_SUB('{$cObjectNow}', INTERVAL {$cInterval} DAY) >= {$dateCol}",
+                $db->query(
+                    'DELETE ' . $from . '
+                        FROM ' . $table . $join . "
+                        WHERE DATE_SUB('" . $cObjectNow . "', INTERVAL " . $cInterval . ' DAY) >= ' . $dateCol,
                     ReturnType::DEFAULT
                 );
             } else {
                 $dateCol = $dateField;
                 if ($tableData['cDateType'] === 'TIMESTAMP') {
-                    $dateCol = "FROM_UNIXTIME({$dateCol})";
+                    $dateCol = 'FROM_UNIXTIME(' . $dateCol . ')';
                 }
-                Shop::Container()->getDB()->query(
-                    "DELETE FROM {$table}
-                        WHERE DATE_SUB('{$cObjectNow}', INTERVAL {$cInterval} DAY) >= {$dateCol}",
+                $db->query(
+                    'DELETE FROM ' . $table . "
+                        WHERE DATE_SUB('" . $cObjectNow . "', INTERVAL " . $cInterval . ' DAY) >= ' . $dateCol,
                     ReturnType::DEFAULT
                 );
             }

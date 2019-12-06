@@ -37,14 +37,14 @@ class TableCleaner
      * @var array
      */
     private $methods = [
-        ['szName' => 'AnonymizeIps', 'intervalDays' => 7],
-        ['szName' => 'AnonymizeDeletedCustomer', 'intervalDays' => 7],
-        ['szName' => 'CleanupOldGuestAccounts', 'intervalDays' => 365],
-        ['szName' => 'CleanupCustomerRelicts', 'intervalDays' => 0],
-        ['szName' => 'CleanupGuestAccountsWithoutOrders', 'intervalDays' => 0],
-        ['szName' => 'CleanupNewsletterRecipients', 'intervalDays' => 30],
-        ['szName' => 'CleanupLogs', 'intervalDays' => 90],
-        ['szName' => 'CleanupService', 'intervalDays' => 0] // multiple own intervals
+        ['name' => 'AnonymizeIps', 'intervalDays' => 7],
+        ['name' => 'AnonymizeDeletedCustomer', 'intervalDays' => 7],
+        ['name' => 'CleanupOldGuestAccounts', 'intervalDays' => 365],
+        ['name' => 'CleanupCustomerRelicts', 'intervalDays' => 0],
+        ['name' => 'CleanupGuestAccountsWithoutOrders', 'intervalDays' => 0],
+        ['name' => 'CleanupNewsletterRecipients', 'intervalDays' => 30],
+        ['name' => 'CleanupLogs', 'intervalDays' => 90],
+        ['name' => 'CleanupService', 'intervalDays' => 0] // multiple own intervals
     ];
 
     /**
@@ -71,11 +71,11 @@ class TableCleaner
         $methodCount = \count($this->methods);
         // iterate over the indexed array (configurable order!)
         for ($i = 0; $i < $methodCount; $i++) {
-            $methodName = __NAMESPACE__ . '\\' . $this->methods[$i]['szName'];
+            $methodName = __NAMESPACE__ . '\\' . $this->methods[$i]['name'];
             (new $methodName($this->now, $this->methods[$i]['intervalDays']))->execute();
             ($this->logger === null) ?: $this->logger->log(
                 \JTLLOG_LEVEL_NOTICE,
-                'Anonymize method executed: ' . $this->methods[$i]['szName']
+                'Anonymize method executed: ' . $this->methods[$i]['name']
             );
         }
         ($this->logger === null) ?: $this->logger->log(

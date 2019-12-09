@@ -208,9 +208,9 @@ interface MethodInterface
 
     /**
      * @param null|string $cKey
-     * @return string|null
+     * @return mixed|null
      */
-    public function getCache(?string $cKey = null): ?string;
+    public function getCache(?string $cKey = null);
 
     /**
      * @param int $orderID

@@ -19,6 +19,7 @@ use JTL\Helpers\Request;
  */
 function baueBlaetterNavi(int $currentPage, int $count, int $perPage)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated - use the pagination class instead.', E_USER_DEPRECATED);
     $nav         = new stdClass();
     $nav->nAktiv = 0;
 
@@ -94,6 +95,7 @@ function baueBlaetterNavi(int $currentPage, int $count, int $perPage)
  */
 function baueBlaetterNaviGetterSetter(int $count, int $perPage)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated - use the pagination class instead.', E_USER_DEPRECATED);
     $conf = new stdClass();
     if ($count <= 0 || $perPage <= 0) {
         return false;

@@ -684,7 +684,7 @@ msgid "artikeluebersicht_erw_darstellung_stdansicht_name"
 msgstr "Default design option for item overview"
 
 msgid "artikeluebersicht_erw_darstellung_stdansicht_desc"
-msgstr "Specify the default display option that your customers will be shown. With the JTL-Shop default template EVO, you can only use the options \"Gallery\" and \"List\"."
+msgstr "Specify the default display option that your customers will be shown."
 
 msgid "artikeluebersicht_anzahl_darstellung1_name"
 msgstr "Number of items in list view"
@@ -709,12 +709,6 @@ msgstr "Item selection options per page in gallery view"
 
 msgid "products_per_page_gallery_desc"
 msgstr "Specify how many item selection options are available per page. Set this value to -1 to display all."
-
-msgid "artikeluebersicht_anzahl_darstellung3_name"
-msgstr "Number of items in mosaic view"
-
-msgid "artikeluebersicht_anzahl_darstellung3_desc"
-msgstr "Specify how many items are to be displayed in the mosaic view."
 
 msgid "artikeldetails_xselling_standard_anzeigen_name"
 msgstr "Show default cross-selling"

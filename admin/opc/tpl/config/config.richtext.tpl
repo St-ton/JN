@@ -4,9 +4,18 @@
         {$propval|htmlspecialchars}
     </textarea>
     <script>
+        var adminLang = '{Shop::Container()->getGetText()->getLanguage()}'.toLowerCase();
+
+        if(!CKEDITOR.lang.languages.hasOwnProperty(adminLang)) {
+            adminLang = adminLang.split('-')[0]
+        }
+
         CKEDITOR.replace(
             'textarea-{$propname}',
-            { baseFloatZIndex: 9000 }
+            {
+                baseFloatZIndex: 9000,
+                language: adminLang,
+            },
         );
 
         opc.setConfigSaveCallback(function() {

@@ -53,9 +53,6 @@ switch ($sectionID) {
     case 7:
         $oAccount->permission('SETTINGS_BASKET_VIEW', true, true);
         break;
-    case 8:
-        $oAccount->permission('SETTINGS_BOXES_VIEW', true, true);
-        break;
     case 9:
         $oAccount->permission('SETTINGS_IMAGES_VIEW', true, true);
         break;

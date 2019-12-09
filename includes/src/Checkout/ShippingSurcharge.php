@@ -6,10 +6,10 @@
 
 namespace JTL\Checkout;
 
-use JTL\Shop;
+use JTL\Catalog\Product\Preise;
 use JTL\DB\ReturnType;
 use JTL\MagicCompatibilityTrait;
-use JTL\Catalog\Product\Preise;
+use JTL\Shop;
 
 /**
  * Class Surcharge

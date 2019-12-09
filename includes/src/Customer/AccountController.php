@@ -8,6 +8,7 @@ namespace JTL\Customer;
 
 use Exception;
 use JTL\Alert\Alert;
+use JTL\Campaign;
 use JTL\Cart\CartHelper;
 use JTL\Cart\PersistentCart;
 use JTL\Cart\PersistentCartItem;
@@ -30,7 +31,6 @@ use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
-use JTL\Campaign;
 use JTL\Language\LanguageHelper;
 use JTL\Pagination\Pagination;
 use JTL\Services\JTL\AlertServiceInterface;

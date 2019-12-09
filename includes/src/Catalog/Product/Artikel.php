@@ -3507,17 +3507,18 @@ class Artikel
                 : new DateTime($this->dSonderpreisEnde_en);
             $return    = ($startDate > $today || $endDate < $today);
         }
-        if ($return === true) {
-            $this->cacheHit = true;
-            $this->addVariationChildren($customerGroupID);
-            \executeHook(\HOOK_ARTIKEL_CLASS_FUELLEARTIKEL, [
-                'oArtikel'  => &$this,
-                'cacheTags' => [],
-                'cached'    => true
-            ]);
-
-            return $this;
+        if ($return !== true) {
+            return null;
         }
+        $this->cacheHit = true;
+        $this->addVariationChildren($customerGroupID);
+        \executeHook(\HOOK_ARTIKEL_CLASS_FUELLEARTIKEL, [
+            'oArtikel'  => &$this,
+            'cacheTags' => [],
+            'cached'    => true
+        ]);
+
+        return $this;
     }
 
     /**

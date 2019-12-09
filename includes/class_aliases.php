@@ -197,3 +197,4 @@ class_alias(\JTL\Media\Image::class, 'Image', true);
 class_alias(\JTL\Media\IMedia::class, 'IMedia', true);
 class_alias(\JTL\Media\MediaImageRequest::class, 'MediaImageRequest', true);
 class_alias(\JTL\phpQuery\phpQuery::class, 'phpQuery', true);
+class_alias(\JTL\xtea\XTEA::class, 'XTEA', true);

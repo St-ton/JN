@@ -13,8 +13,6 @@ use JTL\IO\IOResponse;
 use JTL\Language\LanguageHelper;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
-use function Functional\group;
-use function Functional\map;
 use function Functional\reindex;
 
 /**
@@ -62,7 +60,7 @@ function getAdminDefPermissions(): array
 {
     global $adminMenu;
 
-    $perms              = reindex(Shop::Container()->getDB()->selectAll('tadminrecht', [], []), function ($e) {
+    $perms              = reindex(Shop::Container()->getDB()->selectAll('tadminrecht', [], []), static function ($e) {
         return $e->cRecht;
     });
     $permissionsOrdered = [];

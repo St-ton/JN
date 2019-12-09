@@ -1,6 +1,5 @@
 {config_load file="$lang.conf" section='statistics'}
 {include file='tpl_inc/header.tpl'}
-{include file='tpl_inc/statistik_jsoninc.tpl'}
 
 <script type="text/javascript">
     function changeStatType(elem) {ldelim}

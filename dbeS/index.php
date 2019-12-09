@@ -91,7 +91,6 @@ error_reporting(SYNC_LOG_LEVEL);
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
-require_once PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
 
 if (!function_exists('Shop')) {
     /**

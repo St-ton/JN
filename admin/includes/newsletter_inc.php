@@ -391,11 +391,11 @@ function gibAHKKeys($keyName, $productNo = false)
     if (!is_array($keys) || count($keys) === 0) {
         return $res;
     }
-    $res = array_filter($keys, function ($e) {
+    $res = array_filter($keys, static function ($e) {
         return mb_strlen($e) > 0;
     });
     if ($productNo) {
-        $res = array_map(function ($e) {
+        $res = array_map(static function ($e) {
             return "'" . $e . "'";
         }, $res);
         if (count($res) > 0) {
@@ -406,8 +406,8 @@ function gibAHKKeys($keyName, $productNo = false)
                     AND kEigenschaftKombi = 0',
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            $res       = array_map(function ($e) {
-                return $e->kArtikel;
+            $res       = array_map(static function ($e) {
+                return (int)$e->kArtikel;
             }, $artNoData);
         }
     } else {

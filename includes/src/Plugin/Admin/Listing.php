@@ -83,8 +83,7 @@ final class Listing
      */
     public function getInstalled(): Collection
     {
-        $items  = new Collection();
-        $mapper = new PluginValidation();
+        $items = new Collection();
         try {
             $all = $this->db->selectAll('tplugin', [], [], 'kPlugin, bExtension', 'cName, cAutor, nPrio');
         } catch (InvalidArgumentException $e) {

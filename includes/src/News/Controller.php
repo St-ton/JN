@@ -193,8 +193,6 @@ class Controller
                     ? CMS::getHomeNews($conf)
                     : []);
         }
-
-
     }
 
     /**

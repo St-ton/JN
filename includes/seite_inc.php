@@ -109,7 +109,9 @@ function gibNews($Einstellungen)
     ) {
         return $oNews_arr;
     }
-    $cacheID = 'news_' . md5(json_encode($Einstellungen['news']) . '_' . (int)$_SESSION['kSprache']);
+    $cacheID = 'news_' . md5(json_encode($Einstellungen['news'])
+            . '_' . (int)$_SESSION['kSprache']
+            . '_' . (int)$_SESSION['Kundengruppe']->kKundengruppe);
 
     if (($oNews_arr = Shop::Cache()->get($cacheID)) === false) {
         if ((int)$Einstellungen['news']['news_anzahl_content'] > 0) {

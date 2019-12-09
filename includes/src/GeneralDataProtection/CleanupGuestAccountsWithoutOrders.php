@@ -8,7 +8,6 @@ namespace JTL\GeneralDataProtection;
 
 use JTL\Customer\Customer;
 use JTL\DB\ReturnType;
-use JTL\Shop;
 
 /**
  * Class CleanupGuestAccountsWithoutOrders

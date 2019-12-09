@@ -6,19 +6,19 @@ msgid "Image"
 msgstr "Image"
 
 msgid "shape"
-msgstr "Form"
+msgstr "Shape"
 
 msgid "shapeNormal"
 msgstr "normal"
 
 msgid "shapeRoundedCorners"
-msgstr "abgerundete Ecken"
+msgstr "rounded corners"
 
 msgid "shapeCircle"
-msgstr "Kreis"
+msgstr "circle"
 
 msgid "shapeThumbnail"
-msgstr "Als Thumbnail"
+msgstr "thumbnail"
 
 msgid "imageResponsive"
-msgstr "Responsives Bild?"
+msgstr "Responsive image?"

@@ -6,7 +6,7 @@ msgid "Video"
 msgstr "Video"
 
 msgid "embedResponsive"
-msgstr "responsive einbetten?"
+msgstr "Video responsive einbetten"
 
 msgid "source"
 msgstr "Quelle"
@@ -15,41 +15,44 @@ msgid "localVideo"
 msgstr "Lokales Video"
 
 msgid "youtubeNote"
-msgstr "In ihren Datenschutzerklärungen sollten sie darauf hinweisen, dass YouTube-Videos im „erweiterten Datenschutzmodus“ in ihren Seiten eingebettet sind. Die Nutzer sollten erfahren, dass der Aufruf der Seiten zu einer Verbindungsaufnahme mit YouTube und dem DoubleClick-Netzwerk führt. Man sollte ihnen auch nicht verschweigen, dass schon ein Klick auf das Video weitere Datenverarbeitungsvorgänge auslösen kann, auf die der Website-Betreiber keinen Einfluss mehr hat."
+msgstr "Weisen Sie in Ihrer Datenschutzerklärung auf folgende Punkte hin:<br>- YouTube-Videos werden im "
+"„erweiterten Datenschutzmodus“ in Ihre Seiten eingebettet.<br>- Der Aufruf der Seiten führt zur "
+"Verbindungsaufnahme mit YouTube und DoubleClick.<br>- Schon ein Klick auf das Video kann weitere "
+"Datenverarbeitungsvorgänge auslösen, auf die der Website-Betreiber keinen Einfluss mehr hat."
 
 msgid "videoID"
-msgstr "Video ID"
+msgstr "Video-ID"
 
 msgid "videoIDHelpYoutube"
-msgstr "Bitte nur die ID des Videos eingeben. Bsp.: xITQHgJ3RRo"
+msgstr "Die Video-ID finden Sie in der YouTube-URL als letzten Teil nach der Zeichenfolge „?v=“: "
+"https://www.youtube.com/watch?v=[Video-ID]."
 
 msgid "showControls"
-msgstr "Steuerelemente anzeigen?"
+msgstr "Steuerelemente anzeigen"
 
 msgid "showSimilarVideos"
-msgstr "Ähnliche Videos anzeigen?"
+msgstr "Ähnliche Videos anzeigen"
 
 msgid "playlist"
-msgstr "Playlist"
+msgstr "Video-IDs für Playlist"
 
 msgid "playlistHelp"
-msgstr "Geben Sie die Video-IDs durch Komma getrennt ein. Bsp.: xITQHgJ3RRo,sNYv0JgrUlw"
+msgstr "Geben Sie die Video-IDs durch Kommas getrennt ein, z. B. xITQHgJ3RRo,sNYv0JgrUlw."
 
 msgid "videoIDHelpVimeo"
-msgstr "Bitte nur die ID des Videos eingeben. Bsp.: 141374353"
+msgstr "Die Video-ID finden Sie in der Vimeo-URL als letzten Teil nach dem „/“: https://vimeo.com/[Video-ID]."
 
 msgid "repeatVideo"
-msgstr "Video nach Ablauf wiederholen?"
+msgstr "Video nach dem Abspielen wiederholen"
 
 msgid "showImage"
-msgstr "Bild anzeigen?"
+msgstr "Bild anzeigen"
 
 msgid "showTitle"
-msgstr "Titel anzeigen?"
+msgstr "Titel anzeigen"
 
 msgid "showAuthorInformation"
-msgstr "Verfasserangabe anzeigen?"
+msgstr "Kanalinformationen anzeigen"
 
 msgid "videoURL"
-msgstr "Video URL"
-
+msgstr "Video-URL"

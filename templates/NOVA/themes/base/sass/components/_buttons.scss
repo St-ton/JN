@@ -4,7 +4,7 @@
 .btn-primary { overflow: hidden; position: relative; color: $yiq-text-dark;
   @include hover { background-color: lighten($primary, 8%); border-color: lighten($primary, 8%); color: $yiq-text-dark; }
 
-  &:focus, &.focus { background-color: $primary; border-color: $primary; }
+  //&:focus, &.focus { background-color: $primary; border-color: $primary; }
 
   &.disabled, &:disabled { background-color: $gray-medium; color: $gray; border-color: $gray-medium; }
 
@@ -16,7 +16,7 @@
 .btn-outline-primary { border-color: $primary; background-color: transparent; color: $yiq-text-dark; position: relative; overflow: hidden;
   @include hover { background-color: lighten($primary, 45%); color: $yiq-text-dark; }
 
-  &:focus, &.focus { border-color: $primary; background-color: transparent; color: $yiq-text-dark; }
+  //&:focus, &.focus { border-color: $primary; background-color: transparent; color: $yiq-text-dark; }
 
   &.disabled, &:disabled { background-color: transparent; color: $gray-medium; border-color: $gray-medium; }
 
@@ -34,7 +34,7 @@
 .btn-outline-secondary { border-color: $secondary; background-color: transparent; color: $yiq-text-dark;
   @include hover { border-color: $secondary; background-color: $gray-medium; color: $yiq-text-dark; }
 
-  &:focus, &.focus { border-color: $secondary; background-color: transparent; color: $yiq-text-dark; }
+  //&:focus, &.focus { border-color: $secondary; background-color: transparent; color: $yiq-text-dark; }
 
   &.disabled, &:disabled { background-color: transparent; color: $gray-medium; border-color: $gray-medium; }
 

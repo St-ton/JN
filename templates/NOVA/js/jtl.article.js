@@ -1177,7 +1177,6 @@
                 }, false, wrapper);
             } else {
                 $.evo.extended().loadContent(url + (url.indexOf('?') >= 0 ? '&' : '?') + 'isListStyle=' + listStyle, function (content) {
-                    $.evo.extended().imagebox(wrapper);
                     $.evo.article().register(wrapper);
 
                     $('[data-toggle="basket-add"]', $(wrapper)).on('submit', function(event) {

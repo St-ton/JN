@@ -43,7 +43,12 @@ a { transition: color $transition-base-duration $transition-base-timing; }
   width: max-content;
 }
 
-:focus {
+:focus, .focus {
+  box-shadow: 0;
+  outline: $primary auto 1px;
+}
+button:focus {
+  box-shadow: 0;
   outline: $primary auto 1px;
 }
 

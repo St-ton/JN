@@ -120,16 +120,17 @@ $headings-color:                    $gray-darker;
 $btn-box-shadow:                    none;
 $btn-active-box-shadow:             none;
 $btn-focus-box-shadow:              none;
+$btn-focus-width:                   0;
 $btn-decoration:                    none;
 $btn-hover-decoration:              none;
 $btn-font-weight:                   $font-weight-semibold;
 
 // transition
 
-$transition-base-duration	: .2s;
-$transition-base-timing 	: ease-in-out;
-$transition-base			: all $transition-base-duration $transition-base-timing;
-$transition-fade           : opacity .35s linear;
+$transition-base-duration:          .2s;
+$transition-base-timing:            ease-in-out;
+$transition-base:                   all $transition-base-duration $transition-base-timing;
+$transition-fade:                   opacity .35s linear;
 
 // styles
 

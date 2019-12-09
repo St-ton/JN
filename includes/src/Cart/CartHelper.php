@@ -274,14 +274,14 @@ class CartHelper
         $imageBaseURL       = Shop::getImageBaseURL();
         $image              = (object)[
             'isVariation'  => true,
-            'cPfadMini'    => $variation->cPfadMini,
-            'cPfadKlein'   => $variation->cPfadKlein,
-            'cPfadNormal'  => $variation->cPfadNormal,
-            'cPfadGross'   => $variation->cPfadGross,
-            'cURLMini'     => $imageBaseURL . $variation->cPfadMini,
-            'cURLKlein'    => $imageBaseURL . $variation->cPfadKlein,
-            'cURLNormal'   => $imageBaseURL . $variation->cPfadNormal,
-            'cURLGross'    => $imageBaseURL . $variation->cPfadGross,
+            'cPfadMini'    => $variation->getImage(\JTL\Media\Image::SIZE_XS),
+            'cPfadKlein'   => $variation->getImage(\JTL\Media\Image::SIZE_SM),
+            'cPfadNormal'  => $variation->getImage(\JTL\Media\Image::SIZE_MD),
+            'cPfadGross'   => $variation->getImage(\JTL\Media\Image::SIZE_LG),
+            'cURLMini'     => $variation->getImage(\JTL\Media\Image::SIZE_XS),
+            'cURLKlein'    => $variation->getImage(\JTL\Media\Image::SIZE_SM),
+            'cURLNormal'   => $variation->getImage(\JTL\Media\Image::SIZE_MD),
+            'cURLGross'    => $variation->getImage(\JTL\Media\Image::SIZE_LG),
             'nNr'          => \count($item->variationPicturesArr) + 1,
             'cAltAttribut' => \str_replace(['"', "'"], '', $item->Artikel->cName . ' - ' . $variation->cName),
         ];

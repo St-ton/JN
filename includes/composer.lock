@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4cb67ed0b736ea8687760137f10af4bc",
+    "content-hash": "59578257785f9fe00e870f2457be5cf5",
     "packages": [
         {
             "name": "chamilo/pclzip",
@@ -371,16 +371,16 @@
         },
         {
             "name": "guzzlehttp/guzzle",
-            "version": "6.4.1",
+            "version": "6.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/guzzle.git",
-                "reference": "0895c932405407fd3a7368b6910c09a24d26db11"
+                "reference": "dbc2bc3a293ed6b1ae08a3651e2bfd213d19b6a5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/0895c932405407fd3a7368b6910c09a24d26db11",
-                "reference": "0895c932405407fd3a7368b6910c09a24d26db11",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/dbc2bc3a293ed6b1ae08a3651e2bfd213d19b6a5",
+                "reference": "dbc2bc3a293ed6b1ae08a3651e2bfd213d19b6a5",
                 "shasum": ""
             },
             "require": {
@@ -395,12 +395,13 @@
                 "psr/log": "^1.1"
             },
             "suggest": {
+                "ext-intl": "Required for Internationalized Domain Name (IDN) support",
                 "psr/log": "Required for using the Log middleware"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "6.3-dev"
+                    "dev-master": "6.5-dev"
                 }
             },
             "autoload": {
@@ -433,7 +434,7 @@
                 "rest",
                 "web service"
             ],
-            "time": "2019-10-23T15:58:00+00:00"
+            "time": "2019-12-07T18:20:45+00:00"
         },
         {
             "name": "guzzlehttp/promises",
@@ -1050,12 +1051,12 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/jtl-software/jtl-shop/tools/phpquery.git",
-                "reference": "c7cbfea3c6ba9f45be3e705b6ad673418516eac9"
+                "reference": "1cfe9cc60f7a4ecafef542f04e6d1e99535661ee"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/jtl-software%2Fjtl-shop%2Ftools%2Fphpquery/repository/archive.zip?sha=c7cbfea3c6ba9f45be3e705b6ad673418516eac9",
-                "reference": "c7cbfea3c6ba9f45be3e705b6ad673418516eac9",
+                "url": "https://gitlab.com/api/v4/projects/jtl-software%2Fjtl-shop%2Ftools%2Fphpquery/repository/archive.zip?sha=1cfe9cc60f7a4ecafef542f04e6d1e99535661ee",
+                "reference": "1cfe9cc60f7a4ecafef542f04e6d1e99535661ee",
                 "shasum": ""
             },
             "require": {
@@ -1086,7 +1087,7 @@
             "keywords": [
                 "jtl-shop"
             ],
-            "time": "2019-12-05T15:44:37+00:00"
+            "time": "2019-12-05T16:06:49+00:00"
         },
         {
             "name": "jtlshop/qrcodegenerator",
@@ -1309,17 +1310,57 @@
             "time": "2019-11-18T11:58:20+00:00"
         },
         {
-            "name": "league/flysystem",
-            "version": "1.0.57",
+            "name": "jtlshop/xtea",
+            "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/thephpleague/flysystem.git",
-                "reference": "0e9db7f0b96b9f12dcf6f65bc34b72b1a30ea55a"
+                "url": "https://gitlab.com/jtl-software/jtl-shop/tools/xtea.git",
+                "reference": "7f535da66a4195a61490aa4b375d110251c08f19"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/0e9db7f0b96b9f12dcf6f65bc34b72b1a30ea55a",
-                "reference": "0e9db7f0b96b9f12dcf6f65bc34b72b1a30ea55a",
+                "url": "https://gitlab.com/api/v4/projects/jtl-software%2Fjtl-shop%2Ftools%2Fxtea/repository/archive.zip?sha=7f535da66a4195a61490aa4b375d110251c08f19",
+                "reference": "7f535da66a4195a61490aa4b375d110251c08f19",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "JTL\\xtea\\": "src"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Felix Moche",
+                    "email": "felix.moche@jtl-software.com",
+                    "homepage": "https://www.jtl-software.de/"
+                }
+            ],
+            "description": "PHP 7.4 ready XTEA",
+            "homepage": "https://www.jtl-software.de/",
+            "keywords": [
+                "jtl-shop"
+            ],
+            "time": "2019-12-09T11:34:24+00:00"
+        },
+        {
+            "name": "league/flysystem",
+            "version": "1.0.61",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thephpleague/flysystem.git",
+                "reference": "4fb13c01784a6c9f165a351e996871488ca2d8c9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/4fb13c01784a6c9f165a351e996871488ca2d8c9",
+                "reference": "4fb13c01784a6c9f165a351e996871488ca2d8c9",
                 "shasum": ""
             },
             "require": {
@@ -1390,7 +1431,7 @@
                 "sftp",
                 "storage"
             ],
-            "time": "2019-10-16T21:01:05+00:00"
+            "time": "2019-12-08T21:46:50+00:00"
         },
         {
             "name": "league/flysystem-sftp",
@@ -2899,16 +2940,16 @@
         },
         {
             "name": "studio-42/elfinder",
-            "version": "2.1.50",
+            "version": "2.1.51",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Studio-42/elFinder.git",
-                "reference": "ae1a24001af2727ef7ef4e8f32c7dc1b49709062"
+                "reference": "783709d6b97cafba586b0aa61e48b271407821fb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Studio-42/elFinder/zipball/ae1a24001af2727ef7ef4e8f32c7dc1b49709062",
-                "reference": "ae1a24001af2727ef7ef4e8f32c7dc1b49709062",
+                "url": "https://api.github.com/repos/Studio-42/elFinder/zipball/783709d6b97cafba586b0aa61e48b271407821fb",
+                "reference": "783709d6b97cafba586b0aa61e48b271407821fb",
                 "shasum": ""
             },
             "require": {
@@ -2953,7 +2994,7 @@
             ],
             "description": "File manager for web",
             "homepage": "http://elfinder.org",
-            "time": "2019-08-20T14:15:16+00:00"
+            "time": "2019-12-08T03:03:51+00:00"
         },
         {
             "name": "symfony/console",
@@ -4586,16 +4627,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "7.5.17",
+            "version": "7.5.18",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "4c92a15296e58191a4cd74cff3b34fc8e374174a"
+                "reference": "fcf6c4bfafaadc07785528b06385cce88935474d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/4c92a15296e58191a4cd74cff3b34fc8e374174a",
-                "reference": "4c92a15296e58191a4cd74cff3b34fc8e374174a",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/fcf6c4bfafaadc07785528b06385cce88935474d",
+                "reference": "fcf6c4bfafaadc07785528b06385cce88935474d",
                 "shasum": ""
             },
             "require": {
@@ -4666,7 +4707,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2019-10-28T10:37:36+00:00"
+            "time": "2019-12-06T05:14:37+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
@@ -5563,6 +5604,7 @@
         "jtlshop/sccbs3": 20,
         "jtlshop/scc": 20,
         "jtlshop/phpquery": 20,
+        "jtlshop/xtea": 20,
         "phpgangsta/googleauthenticator": 20,
         "jtlshop/qrcodegenerator": 20,
         "erusev/parsedown": 10,

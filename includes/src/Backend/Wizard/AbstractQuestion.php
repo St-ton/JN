@@ -50,6 +50,11 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     /**
      * @var string
      */
+    protected $summaryText;
+
+    /**
+     * @var string
+     */
     protected $label;
 
     /**
@@ -226,6 +231,22 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     public function setSubheadingDescription(string $subheadingDescription): void
     {
         $this->subheadingDescription = $subheadingDescription;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getSummaryText(): ?string
+    {
+        return $this->summaryText;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setSummaryText(string $summaryText): void
+    {
+        $this->summaryText = $summaryText;
     }
 
    /**

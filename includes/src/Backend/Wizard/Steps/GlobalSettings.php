@@ -59,6 +59,7 @@ final class GlobalSettings extends AbstractStep
         $question->setValue(true);
         $question->setLabel(__('secureDefaultSettings'));
         $question->setDescription(__('secureDefaultSettingsDesc'));
+        $question->setSummaryText(__('secureDefaultSettings'));
         $question->setType(QuestionType::BOOL);
         $question->setIsFullWidth(true);
         $question->setOnSave(function (QuestionInterface $question) {
@@ -96,6 +97,7 @@ final class GlobalSettings extends AbstractStep
         $question->setText(__('smallEntrepreneur'));
         $question->setDescription(__('vatSmallEntrepreneurTitle'));
         $question->setLabel(__('vatSmallEntrepreneur'));
+        $question->setSummaryText(__('vatSettings'));
         $question->setType(QuestionType::BOOL);
         $question->setIsRequired(false);
         $question->setOnSave(function (QuestionInterface $question) {
@@ -138,6 +140,7 @@ final class GlobalSettings extends AbstractStep
         $question->setID(6);
         $question->setText(__('customerGroupDesc'));
         $question->setDescription(__('customerGroupDescTitle'));
+        $question->setSummaryText(__('customerGroup'));
         $question->setType(QuestionType::MULTI_BOOL);
         $question->setIsFullWidth(true);
         $option = new SelectOption();

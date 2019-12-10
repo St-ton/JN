@@ -103,6 +103,16 @@ interface QuestionInterface
     /**
      * @return null|string
      */
+    public function getSummaryText(): ?string;
+
+    /**
+     * @param string $summaryText
+     */
+    public function setSummaryText(string $summaryText): void;
+
+    /**
+     * @return null|string
+     */
     public function getLabel(): ?string;
 
     /**

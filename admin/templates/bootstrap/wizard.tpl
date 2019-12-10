@@ -75,106 +75,36 @@
                             <div class="table-responsive">
                                 <table class="table table-borderless table-sm">
                                     <tbody>
-                                    <tr>
-                                        <td>
-                                            <a href="#" class="btn btn-link btn-sm mt-n1 text-primary" data-setup-step="1">
-                                                <span class="icon-hover">
-                                                    <span class="fal fa-edit"></span>
-                                                    <span class="fas fa-edit"></span>
-                                                </span>
-                                            </a>
-                                        </td>
-                                        <td>
-                                            <span class="form-title mb-0">{__('shopName')}</span>
-                                        </td>
-                                        <td>
-                                            <span data-setup-summary-placeholder="shop-name">-</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td>
-                                            <span class="form-title mb-0">{__('masterEmail')}</span>
-                                        </td>
-                                        <td>
-                                            <span data-setup-summary-placeholder="master-email">-</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td>
-                                            <span class="form-title mb-0">{__('secureDefaultSettings')}</span>
-                                        </td>
-                                        <td>
-                                            <span data-setup-summary-placeholder="secure-default-settings">-</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td>
-                                            <span class="form-title mb-0">{__('customerGroup')}</span>
-                                        </td>
-                                        <td>
-                                            <span data-setup-summary-placeholder="kundengruppe">-</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td>
-                                            <span class="form-title mb-0">{__('vatIDCompany')}</span>
-                                        </td>
-                                        <td>
-                                            <span data-setup-summary-placeholder="ustid">-</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td>
-                                            <span class="form-title mb-0">{__('vatSettings')}</span>
-                                        </td>
-                                        <td>
-                                            <span data-setup-summary-placeholder="steuer">-</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="2" class="pb-3"></td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <a href="#" class="btn btn-link btn-sm mt-n1 text-primary" data-setup-step="2">
-                                                <span class="icon-hover">
-                                                    <span class="fal fa-edit"></span>
-                                                    <span class="fas fa-edit"></span>
-                                                </span>
-                                            </a>
-                                        </td>
-                                        <td>
-                                            <span class="form-title mb-0">{__('legalTexts')}</span>
-                                        </td>
-                                        <td>
-                                            <span data-setup-summary-placeholder="rechtstexteplugins">-</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="2" class="pb-3"></td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <a href="#" class="btn btn-link btn-sm mt-n1 text-primary" data-setup-step="3">
-                                                <span class="icon-hover">
-                                                    <span class="fal fa-edit"></span>
-                                                    <span class="fas fa-edit"></span>
-                                                </span>
-                                            </a>
-                                        </td>
-                                        <td>
-                                            <span class="form-title mb-0">{__('paymentMethods')}</span>
-                                        </td>
-                                        <td>
-                                            <span data-setup-summary-placeholder="zahlungsartplugins">-</span>
-                                            <span class="fal fa-exclamation-triangle text-warning" data-toggle="tooltip" title="{__('paymentPluginInstalled')}"></span>
-                                        </td>
-                                    </tr>
+                                    {foreach $steps as $step}
+                                        {foreach $step->getQuestions() as $question}
+                                            <tr>
+                                                {if $question@first}
+                                                    <td>
+                                                        <a href="#" class="btn btn-link btn-sm mt-n1 text-primary" data-setup-step="{$step->getID()}">
+                                                            <span class="icon-hover">
+                                                                <span class="fal fa-edit"></span>
+                                                                <span class="fas fa-edit"></span>
+                                                            </span>
+                                                        </a>
+                                                    </td>
+                                                {else}
+                                                    <td></td>
+                                                {/if}
+                                                <td>
+                                                    <span class="form-title mb-0">
+                                                        {if $question->getSummaryText() !== null}
+                                                            {$question->getSummaryText()}
+                                                        {else}
+                                                            {$question->getText()}
+                                                        {/if}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span data-setup-summary-placeholder="question-{$question->getID()}">-</span>
+                                                </td>
+                                            </tr>
+                                        {/foreach}
+                                    {/foreach}
                                     </tbody>
                                 </table>
                             </div>

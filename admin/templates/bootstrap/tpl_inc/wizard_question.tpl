@@ -11,7 +11,7 @@
                    class="form-control rounded-pill"
                    id="question-{$question->getID()}"
                    placeholder=""
-                   data-setup-summary-id="shop-name"
+                   data-setup-summary-id="question-{$question->getID()}"
                    name="question-{$question->getID()}"
                    value="{if $question->getValue() !== null}{$question->getValue()}{/if}"
             >
@@ -31,7 +31,7 @@
                    id="question-{$question->getID()}"
                    name="question-{$question->getID()}"
                    data-setup-summary-id="question-{$question->getID()}"
-                   data-setup-summary-text="{$question->getText()}"
+                   data-setup-summary-text="{if $question->getText() !== null}{$question->getText()}{else}{$question->getSummaryText()}{/if}"
                     {if $question->getValue() === true} checked{/if}
             >
             <label class="custom-control-label" for="question-{$question->getID()}">
@@ -55,7 +55,7 @@
                            class="custom-control-input"
                            id="question-{$question->getID()}-{$option@index}"
                            name="question-{$question->getID()}[]"
-                           data-setup-summary-id="question-{$question->getID()}-{$option@index}"
+                           data-setup-summary-id="question-{$question->getID()}"
                            data-setup-summary-text="{$option->getName()}"
                            value="{$option->getValue()}"
                             {if $option->isSelected($question->getValue())} checked{/if}
@@ -75,14 +75,14 @@
                             <div class="custom-control custom-checkbox">
                                 <input type="checkbox"
                                        class="custom-control-input"
-                                       id="question-{$question->getID()}"
+                                       id="question-{$question->getID()}-{$option@index}"
                                        name="question-{$question->getID()}[]"
                                        data-setup-summary-id="question-{$question->getID()}"
-                                       data-setup-summary-text="{$question->getText()}"
+                                       data-setup-summary-text="{$option->getValue()}"
                                        value="{$option->getValue()}"
                                         {if $option->isSelected($question->getValue())} checked{/if}
                                 >
-                                <label class="custom-control-label" for="rechtstext-paypal-1-1">
+                                <label class="custom-control-label" for="question-{$question->getID()}-{$option@index}">
                                     <img src="{$option->getLogoPath()}" width="108" height="42" alt="{$option->getName()}">
                                 </label>
                             </div>

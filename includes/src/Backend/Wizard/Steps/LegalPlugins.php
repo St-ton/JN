@@ -33,6 +33,7 @@ final class LegalPlugins extends AbstractStep
         $question->setID(7);
         $question->setSubheading(__('weRecommend') . ':');
         $question->setSubheadingDescription(__('weRecommendLegalDesc'));
+        $question->setSummaryText(__('legalTexts'));
         $question->setType(QuestionType::PLUGIN);
         $question->setIsFullWidth(true);
         $option = new SelectOption();

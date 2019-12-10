@@ -116,4 +116,13 @@ final class SelectOption
     {
         $this->description = $description;
     }
+
+    /**
+     * @param $val
+     * @return bool
+     */
+    public function isSelected($val): bool
+    {
+        return  $val === $this->getValue() || (\is_array($val) && \in_array($this->getValue(), $val, true));
+    }
 }

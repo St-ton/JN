@@ -15,9 +15,5 @@ $factory    = new DefaultFactory(Shop::Container()->getDB());
 $controller = new Controller($factory);
 $controller->answerQuestions($_POST);
 
-//foreach ($controller->getSteps() as $step) {
-//    Shop::dbg($step->getQuestions());
-//}
-//die();
 $smarty->assign('steps', $controller->getSteps())
     ->display('wizard.tpl');

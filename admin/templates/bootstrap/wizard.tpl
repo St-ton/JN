@@ -11,7 +11,7 @@
 </button>
 <div class="modal fade" id="modal-setup-assistant" tabindex="-1" role="dialog" aria-labelledby="modal-setup-assistantTitle" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
-        <form action="setup.php">
+        <form method="post">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">

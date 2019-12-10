@@ -8,6 +8,7 @@ namespace JTL\Backend\Wizard;
 
 use JsonSerializable;
 use JTL\DB\DbInterface;
+use JTL\Shop;
 use JTL\Update\MigrationTableTrait;
 use JTL\Update\MigrationTrait;
 use stdClass;
@@ -104,7 +105,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
      */
     public function answerFromPost(array $post)
     {
-        $data = $post['question'][$this->getID()] ?? null;
+        $data = $post['question-' . $this->getID()] ?? null;
         if ($this->getType() === QuestionType::BOOL) {
             $value = $data === 'on';
         } else {

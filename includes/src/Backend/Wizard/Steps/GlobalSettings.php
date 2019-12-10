@@ -47,9 +47,9 @@ final class GlobalSettings extends AbstractStep
         $question->setText(__('masterEmail'));
         $question->setDescription(__('masterEmailDesc'));
         $question->setType(QuestionType::EMAIL);
-        $question->setValue(Shop::getSettingValue(\CONF_EMAILS, 'email_master_absender_name'));
+        $question->setValue(Shop::getSettingValue(\CONF_EMAILS, 'email_master_absender'));
         $question->setOnSave(function (QuestionInterface $question) {
-            $question->updateConfig('email_master_absender_name', $question->getValue());
+            $question->updateConfig('email_master_absender', $question->getValue());
         });
         $this->addQuestion($question);
 

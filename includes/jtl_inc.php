@@ -504,6 +504,7 @@ function fuehreLoginAus($userLogin, $passLogin)
                                     );
                                 }
                             } else {
+                                $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
                                 Shop::Smarty()->assign('cKuponfehler', $Kuponfehler['ungueltig']);
                             }
                         }

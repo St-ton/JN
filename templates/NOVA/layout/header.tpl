@@ -55,7 +55,7 @@
                 {$templateDir = $parentTemplateDir}
             {/if}
             <style id="criticalCSS">
-                {include file=("{$currentThemeDir}{$Einstellungen.template.theme.theme_default}_crit.min.css")}
+                {file_get_contents("{$currentThemeDir}{$Einstellungen.template.theme.theme_default}_crit.min.css")}
             </style>
             {* css *}
             {if !isset($Einstellungen.template.general.use_minify) || $Einstellungen.template.general.use_minify === 'N'}

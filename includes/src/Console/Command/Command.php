@@ -60,7 +60,7 @@ class Command extends BaseCommand
     public function hasMissingOption($name): bool
     {
         $option = $this->getDefinition()->getOption($name);
-        $value  = \trim($this->getIO()->getInput()->getOption($name));
+        $value  = \trim($this->getIO()->getInput()->getOption($name) ?? '');
 
         return $option->isValueRequired() && $option->acceptValue() && empty($value);
     }

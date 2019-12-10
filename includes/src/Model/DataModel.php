@@ -366,7 +366,7 @@ abstract class DataModel implements DataModelInterface, Iterator
     protected static function cast($value, $type)
     {
         $result = null;
-        switch (self::getType(\strtolower($type))) {
+        switch (self::getType($type)) {
             case 'bool':
                 $result = (bool)$value;
                 break;
@@ -420,9 +420,10 @@ abstract class DataModel implements DataModelInterface, Iterator
             'yesno',
             'string|date|time|year|datetime|timestamp|char|varchar|tinytext|text|mediumtext|enum',
         ];
+        $type    = \strtolower($type);
 
         return \array_reduce($typeMap, static function ($carry, $item) use ($type) {
-            if (!isset($carry) && \preg_match("/{$item}/", $type)) {
+            if (!isset($carry) && \preg_match('/' . $item . '/', $type)) {
                 $carry = \explode('|', $item, 2)[0];
             }
 
@@ -707,9 +708,7 @@ abstract class DataModel implements DataModelInterface, Iterator
      */
     private static function isChildModel(string $type): bool
     {
-        $type = \strtolower($type);
-
-        return \strpos($type, 'japi\\models\\') !== false || \strpos($type, 'jtl\\') !== false;
+        return \class_exists($type) && \is_subclass_of($type, self::class);
     }
 
     /**

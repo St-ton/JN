@@ -18,6 +18,7 @@ use JTL\Console\Command\Migration\MigrateCommand;
 use JTL\Console\Command\Migration\StatusCommand;
 use JTL\Console\Command\Plugin\CreateCommandCommand;
 use JTL\Console\Command\Plugin\CreateMigrationCommand;
+use JTL\Console\Command\Model\CreateCommand as CreateModelCommand;
 use JTL\Plugin\Admin\Listing;
 use JTL\Plugin\Admin\ListingItem;
 use JTL\Plugin\Admin\Validation\LegacyPluginValidator;
@@ -153,6 +154,7 @@ class Application extends BaseApplication
             $cmds[] = new DeleteTemplateCacheCommand();
             $cmds[] = new DeleteFileCacheCommand();
             $cmds[] = new DbesTmpCommand();
+            $cmds[] = new CreateModelCommand();
 
             if ($this->devMode) {
                 $cmds[] = new CreateCommand();

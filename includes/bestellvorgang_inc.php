@@ -792,7 +792,8 @@ function gibStepZahlung()
  */
 function gibStepZahlungZusatzschritt($post): void
 {
-    $paymentMethod = gibZahlungsart((int)$post['Zahlungsart']);
+    $paymentID     = $post['Zahlungsart'] ?? $_SESSION['Zahlungsart']->kZahlungsart;
+    $paymentMethod = gibZahlungsart((int)$paymentID);
     $smarty        = Shop::Smarty();
     // Wenn Zahlungsart = Lastschrift ist => versuche Kundenkontodaten zu holen
     $customerAccountData = gibKundenKontodaten(Frontend::getCustomer()->getID());

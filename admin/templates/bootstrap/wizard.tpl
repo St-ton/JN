@@ -23,10 +23,11 @@
                     <span class="h1 mt-3">{__('setupAssistant')}</span>
 
                     <div class="setup-steps steps">
-                        <div class="step" data-setup-step="1">1</div>
-                        <div class="step" data-setup-step="2">2</div>
-                        <div class="step" data-setup-step="3">3</div>
-                        <div class="step" data-setup-step="4">4</div>
+                        {foreach $steps as $step}
+                            {$stepID = $step@index + 1}
+                            <div class="step" data-setup-step="{$stepID}">{$stepID}</div>
+                        {/foreach}
+                        <div class="step" data-setup-step="{$stepID + 1}">{$stepID + 1}</div>
                     </div>
 
                     <div class="setup-slide row align-items-center mt-lg-7" data-setup-slide="0">
@@ -39,147 +40,28 @@
                             <img class="img-fluid" src="{$templateBaseURL}img/setup-assistant-roboter.svg" width="416" height="216" alt="{__('setupAssistant')}">
                         </div>
                     </div>
-
-                    <div class="setup-slide row" data-setup-slide="1">
-                        <div class="col-lg-4 mb-5 mb-lg-0">
-                            <span class="setup-subheadline">{__('stepOne')}</span>
-                            <p class="text-muted">{__('stepOneDesc')}</p>
-                        </div>
-                        <div class="col-lg-6 ml-lg-auto col-xl-7 mt-lg-n5">
-                            <div class="row">
-                                <div class="col-12">
-                                    <span class="subheading1 form-title">{__('shopSettings')}</span>
-                                </div>
-                                <div class="col-xl-6">
-                                    <div class="form-group-lg mb-4">
-                                        <span class="form-title">{__('shopName')}:<span class="fal fa-info-circle text-muted ml-4" data-toggle="tooltip" title="{__('shopNameDesc')}"></span></span>
-                                        <input type="text" class="form-control rounded-pill" id="shop-name" placeholder="" data-setup-summary-id="shop-name">
-                                    </div>
-                                </div>
-                                <div class="col-xl-6">
-                                    <div class="form-group-lg mb-4">
-                                        <span class="form-title">{__('masterEmail')}:<span class="fal fa-info-circle text-muted ml-4" data-toggle="tooltip" title="{__('masterEmailDesc')}"></span></span>
-                                        <input type="text" class="form-control rounded-pill" id="master-email" placeholder="" data-setup-summary-id="master-email">
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" id="secure-default-settings" data-setup-summary-id="secure-default-settings" data-setup-summary-text="{__('secureDefaultSettings')}">
-                                        <label class="custom-control-label" for="secure-default-settings">
-                                            {__('secureDefaultSettings')}
-                                            <span class="fal fa-info-circle text-muted ml-4" data-toggle="tooltip" title="{__('secureDefaultSettingsDesc')}"></span>
-                                        </label>
-                                    </div>
-                                </div>
+                    {foreach $steps as $step}
+                        <div class="setup-slide row" data-setup-slide="{$step->getID()}">
+                            <div class="col-lg-4 mb-5 mb-lg-0">
+                                <span class="setup-subheadline">{$step->getTitle()}</span>
+                                <p class="text-muted">{$step->getDescription()}</p>
                             </div>
-
-                            <div class="row">
-                                <div class="col-12">
-                                    <span class="subheading1 form-title mt-5">{__('vatSettings')}</span>
-                                </div>
-                                <div class="col-xl-6">
-                                    <div class="form-group-lg">
-                                        <span class="form-title">{__('vatIDCompany')}:<span class="fal fa-info-circle text-muted ml-4" data-toggle="tooltip" title="{__('vatIDCompanyTitle')}"></span></span>
-                                        <input type="text" class="form-control rounded-pill" id="ustid" placeholder="" data-setup-summary-id="ustid">
-                                    </div>
-                                </div>
-                                <div class="col-xl-6">
-                                    <div class="form-group-lg">
-                                        <span class="form-title">{__('smallEntrepreneur')}:<span class="fal fa-info-circle text-muted ml-4" data-toggle="tooltip" title="{__('vatSmallEntrepreneurTitle')}"></span></span>
-                                        <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" id="steuereinstellung" data-setup-summary-id="steuer" data-setup-summary-text="{__('vatSmallEntrepreneur')}">
-                                            <label class="custom-control-label" for="steuereinstellung">{__('vatSmallEntrepreneur')}</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="form-group-lg">
-                                        <span class="form-title">{__('customerGroupDesc')}:<span class="fal fa-info-circle text-muted ml-4" data-toggle="tooltip" title="{__('customerGroupDescTitle')}"></span></span>
-
-                                        <div class="custom-control custom-radio">
-                                            <input type="radio" class="custom-control-input" id="kundengruppe-b2b" name="kundengruppe" value="b2b" data-setup-summary-id="kundengruppe" data-setup-summary-text="{__('customerGroupB2B')}">
-                                            <label class="custom-control-label" for="kundengruppe-b2b">{__('customerGroupB2B')}</label>
-                                        </div>
-
-                                        <div class="custom-control custom-radio">
-                                            <input type="radio" class="custom-control-input" id="kundengruppe-b2c" name="kundengruppe" value="b2c" data-setup-summary-id="kundengruppe" data-setup-summary-text="{__('customerGroupB2C')}">
-                                            <label class="custom-control-label" for="kundengruppe-b2c">{__('customerGroupB2C')}</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="setup-slide row" data-setup-slide="2">
-                        <div class="col-lg-4 mb-5 mb-lg-0">
-                            <span class="setup-subheadline">{__('stepTwo')}</span>
-                            <p class="text-muted">{__('stepTwoDesc')}</p>
-                        </div>
-                        <div class="col-lg-6 ml-lg-auto col-xl-7 mt-lg-n5">
-                            <span class="form-title">
-                                {__('weRecommend')}:
-                                <span class="fal fa-info-circle text-muted ml-4" data-toggle="tooltip" title="{__('weRecommendLegalDesc')}"></span>
-                            </span>
-
-                            <div class="form-group-list">
-                                {for $i=1 to 7}
-                                <div class="form-group-list-item">
-                                    <div class="form-row">
-                                        <div class="col-xl-3">
-                                            <div class="custom-control custom-checkbox">
-                                                <input type="checkbox" class="custom-control-input" id="rechtstext-klarna1" data-setup-summary-id="rechtstexteplugins" data-setup-summary-text="Klarna 1">
-                                                <label class="custom-control-label" for="rechtstext-klarna1">
-                                                    <img src="placeholder/klarna-logo.png" width="108" height="42" alt="Klarna">
-                                                </label>
+                            <div class="col-lg-6 ml-lg-auto col-xl-7 mt-lg-n5">
+                                <div class="row">
+                                    {foreach $step->getQuestions() as $question}
+                                        {if $question->getSubheading() !== null}
+                                            <div class="col-12 {if !$question@first}mt-5{/if}">
+                                                <span class="subheading1 form-title">{$question->getSubheading()}</span>
                                             </div>
-                                        </div>
-                                        <div class="col-xl">
-                                            <p class="text-muted">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt</p>
-                                            <a href="#">{__('getToKnowMore')}</a>
-                                        </div>
-                                    </div>
+                                        {/if}
+                                        {include file='tpl_inc/wizard_question.tpl' question=$question}
+                                    {/foreach}
                                 </div>
-                                {/for}
                             </div>
                         </div>
-                    </div>
+                    {/foreach}
 
-                    <div class="setup-slide row" data-setup-slide="3">
-                        <div class="col-lg-4 mb-5 mb-lg-0">
-                            <span class="setup-subheadline">{__('stepThree')}</span>
-                            <p class="text-muted">{__('stepThreeDesc')}</p>
-                        </div>
-                        <div class="col-lg-6 ml-lg-auto col-xl-7 mt-lg-n5">
-                            <span class="form-title">
-                                {__('weRecommend')}:
-                                <span class="fal fa-info-circle text-muted ml-4" data-toggle="tooltip" title="{__('weRecommendPaymentDesc')}"></span>
-                            </span>
-
-                            <div class="form-group-list">
-                                {for $i=1 to 7}
-                                <div class="form-group-list-item">
-                                    <div class="form-row">
-                                        <div class="col-xl-3">
-                                            <div class="custom-control custom-checkbox">
-                                                <input type="checkbox" class="custom-control-input" id="rechtstext-paypal-1-1" data-setup-summary-id="zahlungsartplugins" data-setup-summary-text="Paypal 1">
-                                                <label class="custom-control-label" for="rechtstext-paypal-1-1">
-                                                    <img src="placeholder/klarna-logo.png" width="108" height="42" alt="Paypal">
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div class="col-xl">
-                                            <p class="text-muted">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt</p>
-                                            <a href="#">{__('getToKnowMore')}</a>
-                                        </div>
-                                    </div>
-                                </div>
-                                {/for}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="setup-slide row" data-setup-slide="4">
+                    <div class="setup-slide row" data-setup-slide="{$stepID + 1}">
                         <div class="col-lg-4 mb-5 mb-lg-0">
                             <span class="setup-subheadline">{__('stepFour')}</span>
                             <p class="text-muted">{__('stepFourDesc')}</p>

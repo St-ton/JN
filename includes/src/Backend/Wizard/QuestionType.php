@@ -19,4 +19,6 @@ class QuestionType
     public const EMAIL = 2;
 
     public const SELECT = 3;
+
+    public const MULTI_BOOL = 4;
 }

@@ -8,6 +8,8 @@ namespace JTL\Backend\Wizard;
 
 use Illuminate\Support\Collection;
 use JTL\Backend\Wizard\Steps\GlobalSettings;
+use JTL\Backend\Wizard\Steps\LegalPlugins;
+use JTL\Backend\Wizard\Steps\PaymentPlugins;
 use JTL\DB\DbInterface;
 
 /**
@@ -29,6 +31,8 @@ final class DefaultFactory
     {
         $this->steps = new Collection();
         $this->steps->push(new GlobalSettings($db));
+        $this->steps->push(new LegalPlugins($db));
+        $this->steps->push(new PaymentPlugins($db));
     }
 
     /**

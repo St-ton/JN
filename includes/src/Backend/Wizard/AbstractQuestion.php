@@ -37,6 +37,16 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     protected $description;
 
     /**
+     * @var string
+     */
+    protected $subheading;
+
+    /**
+     * @var string
+     */
+    protected $label;
+
+    /**
      * @var int
      */
     protected $type;
@@ -70,6 +80,10 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
      * @var bool
      */
     protected $required = true;
+    /**
+     * @var bool
+     */
+    protected $fullWidth = false;
 
     /**
      * AbstractQuestion constructor.
@@ -147,7 +161,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     /**
      * @inheritDoc
      */
-    public function getText(): string
+    public function getText(): ?string
     {
         return $this->text;
     }
@@ -163,7 +177,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     /**
      * @inheritDoc
      */
-    public function getDescription(): string
+    public function getDescription(): ?string
     {
         return $this->description;
     }
@@ -174,6 +188,38 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     public function setDescription(string $description): void
     {
         $this->description = $description;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getSubheading(): ?string
+    {
+        return $this->subheading;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setSubheading(string $subheading): void
+    {
+        $this->subheading = $subheading;
+    }
+
+   /**
+     * @inheritDoc
+     */
+    public function getLabel(): ?string
+    {
+        return $this->label;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setLabel(string $label): void
+    {
+        $this->label = $label;
     }
 
     /**
@@ -294,6 +340,22 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     public function setIsRequired(bool $required): void
     {
         $this->required = $required;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function isFullWidth(): bool
+    {
+        return $this->fullWidth;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setIsFullWidth(bool $fullWidth): void
+    {
+        $this->fullWidth = $fullWidth;
     }
 
     /**

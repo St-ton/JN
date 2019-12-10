@@ -27,6 +27,11 @@ abstract class AbstractStep implements StepInterface
     protected $title = '';
 
     /**
+     * @var string
+     */
+    protected $description = '';
+
+    /**
      * @var int
      */
     protected $id = 0;
@@ -60,6 +65,22 @@ abstract class AbstractStep implements StepInterface
     public function setTitle(string $title): void
     {
         $this->title = $title;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setDescription(string $description): void
+    {
+        $this->description = $description;
     }
 
     /**

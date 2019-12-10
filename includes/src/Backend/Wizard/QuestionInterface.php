@@ -61,9 +61,9 @@ interface QuestionInterface
     public function setID(int $id): void;
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getText(): string;
+    public function getText(): ?string;
 
     /**
      * @param string $text
@@ -71,14 +71,34 @@ interface QuestionInterface
     public function setText(string $text): void;
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getDescription(): string;
+    public function getDescription(): ?string;
 
     /**
      * @param string $description
      */
     public function setDescription(string $description): void;
+
+    /**
+     * @return null|string
+     */
+    public function getSubheading(): ?string;
+
+    /**
+     * @param string $subheading
+     */
+    public function setSubheading(string $subheading): void;
+
+    /**
+     * @return null|string
+     */
+    public function getLabel(): ?string;
+
+    /**
+     * @param string $label
+     */
+    public function setLabel(string $label): void;
 
     /**
      * @return int
@@ -154,6 +174,16 @@ interface QuestionInterface
      * @param bool $required
      */
     public function setIsRequired(bool $required): void;
+
+    /**
+     * @return bool
+     */
+    public function isFullWidth(): bool;
+
+    /**
+     * @param bool $fullWidth
+     */
+    public function setIsFullWidth(bool $fullWidth): void;
 
     /**
      * @return stdClass

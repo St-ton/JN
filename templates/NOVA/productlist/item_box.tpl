@@ -39,7 +39,7 @@
                                                                  {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
                                                         sizes="auto"
                                                         data=["id"  => $imgcounter]
-                                                        class="w-100{if !$device->isMobile() && !empty($Artikel->Bilder[1])} first{/if}"
+                                                        class="{if !$device->isMobile() && !empty($Artikel->Bilder[1])} first{/if}"
                                                     }
                                                     {if !$device->isMobile() && !empty($Artikel->Bilder[1])}
                                                         {$image = $Artikel->Bilder[1]}
@@ -50,7 +50,7 @@
                                                                              {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
                                                             sizes="auto"
                                                             data=["id"  => $imgcounter|cat:"_2nd"]
-                                                            class='w-100 second'
+                                                            class='second'
                                                         }
                                                     {/if}
                                                 {/strip}

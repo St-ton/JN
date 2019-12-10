@@ -10,7 +10,6 @@
 /* progress */
 /* options */
 /* dropdowns */
-/* photoswipe */
 /*!
  * Font Awesome Free 5.5.0 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
@@ -22813,6 +22812,14 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   text-decoration: none;
 }
 
+.list-gallery {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+.list-gallery img {
+  max-height: 300px;
+}
 .list-gallery img.first {
   opacity: 1;
   transition: opacity 0.35s linear;
@@ -22821,7 +22828,8 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   opacity: 0;
   position: absolute;
   top: 0;
-  left: 0;
+  left: 50%;
+  transform: translateX(-50%);
   transition: opacity 0.35s linear;
 }
 .list-gallery:hover img.first {

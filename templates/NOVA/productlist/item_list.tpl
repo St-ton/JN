@@ -37,7 +37,7 @@
                                                         {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
                                                         {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
                                                     sizes="auto"
-                                                    class="w-100{if !$device->isMobile() && !empty($Artikel->Bilder[1])} first{/if}"
+                                                    class="{if !$device->isMobile() && !empty($Artikel->Bilder[1])}first{/if}"
                                                 }
                                                 {if !$device->isMobile() && !empty($Artikel->Bilder[1])}
                                                     {$image = $Artikel->Bilder[1]}
@@ -47,7 +47,7 @@
                                                             {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
                                                             {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
                                                         sizes="auto"
-                                                        class='w-100 second'
+                                                        class="second"
                                                     }
                                                 {/if}
                                             {/strip}

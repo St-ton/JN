@@ -539,11 +539,14 @@ class Wunschliste
 
                                         // Prüfe ob die Eigenschaft vorhanden ist
                                         if (empty($oEigenschaftWertVorhanden->kEigenschaftKombi)) {
-                                            $cArtikel_arr[] = $CWunschlistePos->cArtikelName;
-                                            $hinweis .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
-                                            // Positionen und Eigenschaften der Wunschliste welche nicht mehr Gültig sind in der Session durchgehen, löschen und unsetten
-                                            $this->delWunschlistePosSess($CWunschlistePos->kArtikel);
-                                            break;
+                                            $item = Shop::DB()->select('teigenschaft', 'kEigenschaft', (int)$CWunschlistePosEigenschaft->kEigenschaft);
+                                            if (!$item || $item->cTyp !== 'FREIFELD') {
+                                                $cArtikel_arr[] = $CWunschlistePos->cArtikelName;
+                                                $hinweis       .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
+                                                // Positionen und Eigenschaften der Wunschliste welche nicht mehr Gültig sind in der Session durchgehen, löschen und unsetten
+                                                $this->delWunschlistePosSess($CWunschlistePos->kArtikel);
+                                                break;
+                                            }
                                         }
                                     }
                                 } else {
@@ -573,12 +576,14 @@ class Wunschliste
                                             }
                                             // Prüfe ob die Eigenschaft vorhanden ist
                                             if (empty($oEigenschaftWertVorhanden->kEigenschaftWert) && empty($oEigenschaftWertVorhanden->cFreifeldWert)) {
-                                                $cArtikel_arr[] = $CWunschlistePos->cArtikelName;
-                                                $hinweis .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
-
-                                                // Positionen und Eigenschaften der Wunschliste welche nicht mehr Gültig sind in der Session durchgehen, löschen und unsetten
-                                                $this->delWunschlistePosSess($CWunschlistePos->kArtikel);
-                                                break;
+                                                $item = Shop::DB()->select('teigenschaft', 'kEigenschaft', (int)$CWunschlistePosEigenschaft->kEigenschaft);
+                                                if (!$item || $item->cTyp !== 'FREIFELD') {
+                                                    $cArtikel_arr[] = $CWunschlistePos->cArtikelName;
+                                                    $hinweis       .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
+                                                    // Positionen und Eigenschaften der Wunschliste welche nicht mehr Gültig sind in der Session durchgehen, löschen und unsetten
+                                                    $this->delWunschlistePosSess($CWunschlistePos->kArtikel);
+                                                    break;
+                                                }
                                             }
                                         }
                                     } else {

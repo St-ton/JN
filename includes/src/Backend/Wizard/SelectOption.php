@@ -23,6 +23,21 @@ final class SelectOption
     private $name;
 
     /**
+     * @var string
+     */
+    private $logoPath;
+
+    /**
+     * @var string
+     */
+    private $link;
+
+    /**
+     * @var string
+     */
+    private $description;
+
+    /**
      * @return string
      */
     public function getValue(): string
@@ -52,5 +67,53 @@ final class SelectOption
     public function setName(string $name): void
     {
         $this->name = $name;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getLogoPath(): ?string
+    {
+        return $this->logoPath;
+    }
+
+    /**
+     * @param string $logoPath
+     */
+    public function setLogoPath(string $logoPath): void
+    {
+        $this->logoPath = $logoPath;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getLink(): ?string
+    {
+        return $this->link;
+    }
+
+    /**
+     * @param string $link
+     */
+    public function setLink(string $link): void
+    {
+        $this->link = $link;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param string $description
+     */
+    public function setDescription(string $description): void
+    {
+        $this->description = $description;
     }
 }

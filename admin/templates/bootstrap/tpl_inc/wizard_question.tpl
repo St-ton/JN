@@ -63,5 +63,32 @@
                 </div>
             {/foreach}
         </div>
+    {elseif $question->getType() === JTL\Backend\Wizard\QuestionType::PLUGIN}
+        <div class="form-group-list">
+            {foreach $question->getOptions() as $option}
+                <div class="form-group-list-item">
+                    <div class="form-row">
+                        <div class="col-xl-3">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox"
+                                       class="custom-control-input"
+                                       id="question-{$question->getID()}"
+                                       data-setup-summary-id="question-{$question->getID()}"
+                                       data-setup-summary-text="{$question->getText()}"
+                                        {if $question->getValue() === true} checked{/if}
+                                >
+                                <label class="custom-control-label" for="rechtstext-paypal-1-1">
+                                    <img src="{$option->getLogoPath()}" width="108" height="42" alt="{$option->getName()}">
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-xl">
+                            <p class="text-muted">{$option->getDescription()}</p>
+                            <a href="{$option->getLink()}">{__('getToKnowMore')}</a>
+                        </div>
+                    </div>
+                </div>
+            {/foreach}
+        </div>
     {/if}
 </div>

@@ -51,7 +51,12 @@
                                     {foreach $step->getQuestions() as $question}
                                         {if $question->getSubheading() !== null}
                                             <div class="col-12 {if !$question@first}mt-5{/if}">
-                                                <span class="subheading1 form-title">{$question->getSubheading()}</span>
+                                                <span class="subheading1 form-title">
+                                                    {$question->getSubheading()}
+                                                    {if $question->getSubheadingDescription() !== null}
+                                                        <span class="fal fa-info-circle text-muted ml-4" data-toggle="tooltip" title="{$question->getSubheadingDescription()}"></span>
+                                                    {/if}
+                                                </span>
                                             </div>
                                         {/if}
                                         {include file='tpl_inc/wizard_question.tpl' question=$question}

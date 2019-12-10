@@ -93,6 +93,16 @@ interface QuestionInterface
     /**
      * @return null|string
      */
+    public function getSubheadingDescription(): ?string;
+
+    /**
+     * @param string $subheadingDescription
+     */
+    public function setSubheadingDescription(string $subheadingDescription): void;
+
+    /**
+     * @return null|string
+     */
     public function getLabel(): ?string;
 
     /**

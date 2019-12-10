@@ -21,4 +21,6 @@ class QuestionType
     public const SELECT = 3;
 
     public const MULTI_BOOL = 4;
+
+    public const PLUGIN = 5;
 }

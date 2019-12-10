@@ -14,7 +14,7 @@ use JTL\Shop;
  */
 
 require_once __DIR__ . '/includes/admininclude.php';
-$oAccount->redirectOnFailure();
+$oAccount->permission('DIAGNOSTIC_VIEW', true, true);
 
 $smarty->assign('status', Status::getInstance())
        ->assign('sub', Shop::Container()->get(JTLApi::class)->getSubscription())

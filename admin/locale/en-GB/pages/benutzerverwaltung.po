@@ -213,188 +213,11 @@ msgstr "Plug-ins"
 msgid "Statistik"
 msgstr "Reports"
 
-msgid "permission_ORDER_VIEW"
-msgstr "Order history"
-
-msgid "permission_BOXES_VIEW"
-msgstr "Box administration"
-
-msgid "permission_CHECKBOXES_VIEW"
-msgstr "Check box administration"
-
-msgid "permission_EMAIL_REPORTS_VIEW"
-msgstr "Email reports"
-
-msgid "permission_UNLOCK_CENTRAL_VIEW"
-msgstr "Approvals"
-
-msgid "permission_RESET_SHOP_VIEW"
-msgstr "Reset shop"
-
-msgid "permission_SHOP_UPDATE_VIEW"
-msgstr "Shop update"
-
-msgid "permission_LANGUAGE_VIEW"
-msgstr "Language administration"
-
-msgid "permission_SETTINGS_ARTICLEDETAILS_VIEW"
-msgstr "Item details"
-
-msgid "permission_SETTINGS_ARTICLEOVERVIEW_VIEW"
-msgstr "Item overview/Search"
-
-msgid "permission_SETTINGS_SPECIALPRODUCTS_VIEW"
-msgstr "Special items"
-
-msgid "permission_SETTINGS_IMAGES_VIEW"
-msgstr "Images"
-
-msgid "permission_SETTINGS_BOXES_VIEW"
-msgstr "Boxes"
-
-msgid "permission_SETTINGS_EMAIL_BLACKLIST_VIEW"
-msgstr "Email blacklist"
-
-msgid "permission_SETTINGS_EMAILS_VIEW"
-msgstr "Emails"
-
-msgid "permission_SETTINGS_GLOBAL_VIEW"
-msgstr "Global settings"
-
-msgid "permission_SETTINGS_GLOBAL_META_VIEW"
-msgstr "Global meta data"
-
-msgid "permission_SETTINGS_CONTACTFORM_VIEW"
-msgstr "Contact form"
-
 msgid "permission_SETTINGS_META_KEYWORD_BLACKLIST_VIEW"
 msgstr "Blacklist for meta keywords"
 
-msgid "permission_SETTINGS_NAVIGATION_FILTER_VIEW"
-msgstr "Navigation filter"
-
-msgid "permission_SETTINGS_SITEMAP_VIEW"
-msgstr "Sitemap structure"
-
-msgid "permission_SETTINGS_STARTPAGE_VIEW"
-msgstr "Start page"
-
-msgid "permission_SETTINGS_BASKET_VIEW"
-msgstr "Basket/Checkout"
-
-msgid "permission_DISPLAY_ARTICLEOVERLAYS_VIEW"
-msgstr "Item overlays"
-
-msgid "permission_DISPLAY_OWN_LOGO_VIEW"
-msgstr "Custom logo"
-
-msgid "permission_DISPLAY_TEMPLATE_VIEW"
-msgstr "Template"
-
-msgid "permission_DISPLAY_BRANDING_VIEW"
-msgstr "Watermark/Branding"
-
-msgid "permission_CONTENT_PAGE_VIEW"
-msgstr "CMS (custom page)"
-
-msgid "permission_CONTENT_EMAIL_TEMPLATE_VIEW"
-msgstr "Email templates"
-
-msgid "permission_CONTENT_NEWS_SYSTEM_VIEW"
-msgstr "News and blog system"
-
-msgid "permission_ORDER_AGB_WRB_VIEW"
-msgstr "Terms/Withdrawal"
-
-msgid "permission_ORDER_COUPON_VIEW"
-msgstr "Coupon"
-
-msgid "permission_ORDER_CUSTOMERFIELDS_VIEW"
-msgstr "User-def. customer fields"
-
-msgid "permission_ORDER_SHIPMENT_VIEW"
-msgstr "Shipping methods"
-
-msgid "permission_ORDER_PAYMENT_VIEW"
-msgstr "Payment methods"
-
-msgid "permission_ORDER_PACKAGE_VIEW"
-msgstr "Additional packaging"
-
-msgid "permission_MODULE_VOTESYSTEM_VIEW"
-msgstr "Review system"
-
-msgid "permission_MODULE_SAVED_BASKETS_VIEW"
-msgstr "Saved baskets"
-
-msgid "permission_MODULE_GIFT_VIEW"
-msgstr "Free gift"
-
-msgid "permission_MODULE_CAC_VIEW"
-msgstr "Customer referral programme"
-
-msgid "permission_MODULE_LIVESEARCH_VIEW"
-msgstr "Live search"
-
-msgid "permission_MODULE_NEWSLETTER_VIEW"
-msgstr "Newsletter"
-
-msgid "permission_MODULE_PRICECHART_VIEW"
-msgstr "Price history"
-
-msgid "permission_MODULE_PRODUCTTAGS_VIEW"
-msgstr "Item tags"
-
-msgid "permission_MODULE_COMPARELIST_VIEW"
-msgstr "Comparison list"
-
-msgid "permission_MODULE_WISHLIST_VIEW"
-msgstr "Wish list"
-
-msgid "permission_EXPORT_SCHEDULE_VIEW"
-msgstr "Task scheduler for exports"
-
-msgid "permission_EXPORT_FORMATS_VIEW"
-msgstr "Export formats"
-
-msgid "permission_IMPORT_NEWSLETTER_RECEIVER_VIEW"
-msgstr "Import of newsletter recipients"
-
-msgid "permission_IMPORT_CUSTOMER_VIEW"
-msgstr "Customer import"
-
-msgid "permission_EXPORT_RSSFEED_VIEW"
-msgstr "RSS feed"
-
 msgid "permission_EXPORT_SHOPINFO_VIEW"
 msgstr "Export file shopinfo.xml (elm@ar)"
-
-msgid "permission_EXPORT_SITEMAP_VIEW"
-msgstr "Sitemap for search engines"
-
-msgid "permission_EXTENSION_VOTE_VIEW"
-msgstr "Survey system"
-
-msgid "permission_PLUGIN_ADMIN_VIEW"
-msgstr "Plug-in administration"
-
-msgid "permission_SETTINGS_CUSTOMERFORM_VIEW"
-msgstr "Customers/Forms"
-
-msgid "permission_STATS_VISITOR_VIEW"
-msgstr "Visitors"
-
-msgid "permission_STATS_VISITOR_LOCATION_VIEW"
-msgstr "Origins of shop visitors"
-
-msgid "permission_STATS_CRAWLER_VIEW"
-msgstr "Search engines"
-
-msgid "permission_STATS_EXCHANGE_VIEW"
-msgstr "Sales revenues"
-
-msgid "permission_ACCOUNT_VIEW"
-msgstr "User management"
 
 msgid "permission_DASHBOARD_VIEW"
 msgstr "Dashboard"
@@ -405,63 +228,15 @@ msgstr "Searching the settings"
 msgid "permission_FILECHECK_VIEW"
 msgstr "Shop file check"
 
-msgid "permission_EXTENSION_SELECTIONWIZARD_VIEW"
-msgstr "Selection Wizard"
-
-msgid "permission_SYSTEMLOG_VIEW"
-msgstr "System log"
-
-msgid "permission_SETTINGS_SEPARATOR_VIEW"
-msgstr "Number formats"
-
-msgid "permission_RMA_VIEW"
-msgstr "Goods returns"
-
-msgid "permission_STATS_COUPON_VIEW"
-msgstr "Coupons"
-
 msgid "permission_DBCHECK_VIEW"
 msgstr "Database check"
-
-msgid "permission_DISPLAY_BANNER_VIEW"
-msgstr "Banners"
-
-msgid "permission_REDIRECT_VIEW"
-msgstr "Forwarding"
-
-msgid "permission_EMAILHISTORY_VIEW"
-msgstr "Email history"
-
-msgid "permission_SLIDER_VIEW"
-msgstr "Sliders"
-
-msgid "permission_WAREHOUSE_VIEW"
-msgstr "Warehouses"
 
 msgid "permission_PERMISSIONCHECK_VIEW"
 msgstr "Directory check"
 
-msgid "permission_OBJECTCACHE_VIEW"
-msgstr "Object cache"
-
-msgid "permission_PROFILER_VIEW"
-msgstr "Plug-in profiler"
-
-msgid "permission_WAWI_SYNC_VIEW"
-msgstr "Synchronisation with JTL-Wawi"
-
-msgid "permission_DISPLAY_IMAGES_VIEW"
-msgstr "Image administration"
-
-msgid "permission_STATS_LANDINGPAGES_VIEW"
-msgstr "Start pages"
-
-msgid "permission_PLZ_ORT_IMPORT_VIEW"
-msgstr "Postal code import"
-
-msgid "permission_STATS_CAMPAIGN_VIEW"
-msgstr "Campaigns"
-
 # description of admin group (tadminlogingruppe)
 msgid "Voller Zugriff auf den Administrationsbereich."
 msgstr "Full access to administration area"
+
+msgid "noMenuItem"
+msgstr "No menu item"

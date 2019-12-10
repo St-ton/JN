@@ -48,7 +48,7 @@ msgid "useKenBurnsEffect"
 msgstr "Ken-Burns-Effekt nutzen?"
 
 msgid "overridesOtherSettings"
-msgstr "overrides other settings"
+msgstr "Überschreibt andere Einstellungen"
 
 msgid "showNavigationArrows"
 msgstr "Navipfeile anzeigen?"

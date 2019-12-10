@@ -9,19 +9,19 @@ msgid "defaultText"
 msgstr "Hey there!"
 
 msgid "openInNewTab"
-msgstr "In neuem Tab öffnen"
+msgstr "Open in new tab"
 
 msgid "linkTitle"
-msgstr "Linktitel"
+msgstr "Link title"
 
 msgid "alignment"
-msgstr "Ausrichtung"
+msgstr "Alignment"
 
 msgid "useFullWidth"
-msgstr "gesamte Breite nutzen"
+msgstr "Use full width"
 
 msgid "iconForButton"
-msgstr "Button mit Icon versehen"
+msgstr "Add icon to button"
 
 msgid "iconAlignment"
-msgstr "Iconausrichtung"
+msgstr "Icon alignment"

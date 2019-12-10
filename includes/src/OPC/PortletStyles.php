@@ -60,14 +60,14 @@ trait PortletStyles
 //                'width'      => 25,
 //            ],
             'background-color' => [
-                'label'   => __('Background color'),
+                'label'   => __('Background colour'),
                 'type'    => InputType::COLOR,
                 'default' => '',
                 'width'   => 34,
             ],
             'color'            => [
                 'type'    => InputType::COLOR,
-                'label'   => __('Font color'),
+                'label'   => __('Font colour'),
                 'default' => '',
                 'width'   => 34,
             ],

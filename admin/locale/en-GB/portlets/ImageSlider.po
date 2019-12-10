@@ -15,43 +15,43 @@ msgid "themeStandard"
 msgstr "Standard"
 
 msgid "themeBar"
-msgstr "Balken"
+msgstr "Bar"
 
 msgid "themeBright"
-msgstr "Hell"
+msgstr "Bright"
 
 msgid "themeDark"
-msgstr "Dunkel"
+msgstr "Dark"
 
 msgid "sliderAnimationSpeed"
-msgstr "Slidergeschwindigkeit"
+msgstr "Animation speed"
 
 msgid "pause"
 msgstr "Pause"
 
 msgid "autoStart"
-msgstr "Autostart?"
+msgstr "Start automatically?"
 
 msgid "pauseOnHover"
-msgstr "Pause bei \"hover\"?"
+msgstr "Pause on \"hover\"?"
 
 msgid "pauseOnHoverPause"
-msgstr "anhalten"
+msgstr "Pause"
 
 msgid "pauseOnHoverContinue"
-msgstr "weitermachen"
+msgstr "Continue"
 
 msgid "pointNavigation"
-msgstr "Punktnavigation?"
+msgstr "Dot navigation?"
 
 msgid "useKenBurnsEffect"
-msgstr "Ken-Burns-Effekt nutzen??"
+msgstr "Use Ken Burns' effect?"
 
 msgid "overridesOtherSettings"
 msgstr "overrides other settings"
 
 msgid "showNavigationArrows"
-msgstr "Navipfeile anzeigen?"
+msgstr "Show navigation arrows?"
 
 msgid "randomEffects"
-msgstr "zufällige Effekte?"
+msgstr "Random effects?"

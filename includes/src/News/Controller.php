@@ -9,11 +9,11 @@ namespace JTL\News;
 use Illuminate\Support\Collection;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Helpers\CMS;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Helpers\URL;
-use JTL\Helpers\CMS;
 use JTL\Pagination\Pagination;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -176,21 +176,23 @@ class Controller
                 $pagination->getItemsPerPage()
             );
         }
-        $conf = Shop::getConfig([\CONF_NEWS]);
-
-        $this->smarty->assign('oNewsKommentar_arr', $comments)
-                     ->assign('comments', $comments)
-                     ->assign('oPagiComments', $pagination)
-                     ->assign('oNewsKategorie_arr', $newsCategories)
-                     ->assign('oNewsArchiv', $newsItem)
-                     ->assign('newsItem', $newsItem)
-                     ->assign('meta_title', $newsItem->getMetaTitle())
-                     ->assign('meta_description', $newsItem->getMetaDescription())
-                     ->assign('userCanComment', Frontend::getCustomer()->getID() > 0)
-                     ->assign('meta_keywords', $newsItem->getMetaKeyword())
-                     ->assign('oNews_arr', $conf['news']['news_benutzen'] === 'Y'
-                        ? CMS::getHomeNews($conf)
-                        : []);
+        if (!$newsItem->isVisible()) {
+            $this->smarty->assign('cNewsErr', true)
+                ->assign('newsItem', $newsItem);
+        } else {
+            $conf = Shop::getConfig([\CONF_NEWS]);
+            $this->smarty->assign('oNewsKommentar_arr', $comments)
+                ->assign('comments', $comments)
+                ->assign('cNewsErr', false)
+                ->assign('oPagiComments', $pagination)
+                ->assign('oNewsKategorie_arr', $newsCategories)
+                ->assign('oNewsArchiv', $newsItem)
+                ->assign('newsItem', $newsItem)
+                ->assign('userCanComment', Frontend::getCustomer()->getID() > 0)
+                ->assign('oNews_arr', $conf['news']['news_benutzen'] === 'Y'
+                    ? CMS::getHomeNews($conf)
+                    : []);
+        }
     }
 
     /**
@@ -228,21 +230,6 @@ class Controller
                 $pagination->getItemsPerPage()
             );
         }
-        $metaTitle       = $category->getMetaTitle();
-        $metaDescription = $category->getMetaDescription();
-        $metaKeywords    = $category->getMetaKeyword();
-
-        $metaTitle       = $metaTitle === ''
-            ? Shop::Lang()->get('news', 'news') . ' ' .
-            Shop::Lang()->get('from') . ' ' .
-            $this->config['global']['global_shopname']
-            : $metaTitle;
-        $metaDescription = $metaDescription === ''
-            ? Shop::Lang()->get('newsMetaDesc', 'news')
-            : $metaDescription;
-        $metaKeywords    = $metaKeywords === ''
-            ? $category->buildMetaKeywords()
-            : $metaKeywords;
         $this->smarty->assign('oNewsUebersicht_arr', $items)
                      ->assign('newsItems', $items)
                      ->assign('noarchiv', 0)
@@ -251,10 +238,7 @@ class Controller
                      ->assign('cDatum', $_SESSION['NewsNaviFilter']->cDatum)
                      ->assign('oNewsCat', $category)
                      ->assign('oPagination', $pagination)
-                     ->assign('kNewsKategorie', $_SESSION['NewsNaviFilter']->nNewsKat)
-                     ->assign('meta_title', $metaTitle)
-                     ->assign('meta_description', $metaDescription)
-                     ->assign('meta_keywords', $metaKeywords);
+                     ->assign('kNewsKategorie', $_SESSION['NewsNaviFilter']->nNewsKat);
         if ($items->count() === 0) {
             $this->smarty->assign('noarchiv', 1);
             $_SESSION['NewsNaviFilter']->nNewsKat = -1;

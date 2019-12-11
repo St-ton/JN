@@ -82,16 +82,17 @@ class CMS
      */
     public static function getHomeNews(array $conf): Collection
     {
-        $sql   = '';
         $items = new Collection();
         if (!isset($conf['news']['news_anzahl_content']) || (int)$conf['news']['news_anzahl_content'] === 0) {
             return $items;
         }
+        $limit   = '';
+        $cgID    = Frontend::getCustomerGroup()->getID();
         $langID  = Shop::getLanguageID();
-        $cacheID = 'news_' . \md5(\json_encode($conf['news']) . '_' . $langID);
+        $cacheID = 'news_' . \md5(\json_encode($conf['news']) . '_' . $langID . '_' . $cgID);
         if (($items = Shop::Container()->getCache()->get($cacheID)) === false) {
             if ((int)$conf['news']['news_anzahl_content'] > 0) {
-                $sql = ' LIMIT ' . (int)$conf['news']['news_anzahl_content'];
+                $limit = ' LIMIT ' . (int)$conf['news']['news_anzahl_content'];
             }
             $newsIDs = Shop::Container()->getDB()->query(
                 "SELECT tnews.kNews
@@ -111,10 +112,10 @@ class CMS
                         AND tnews.nAktiv = 1
                         AND tnews.dGueltigVon <= NOW()
                         AND (tnews.cKundengruppe LIKE '%;-1;%' 
-                            OR FIND_IN_SET('" . Frontend::getCustomerGroup()->getID() . "', 
+                            OR FIND_IN_SET('" . $cgID . "', 
                             REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                     GROUP BY tnews.kNews
-                    ORDER BY tnews.dGueltigVon DESC" . $sql,
+                    ORDER BY tnews.dGueltigVon DESC" . $limit,
                 ReturnType::ARRAY_OF_OBJECTS
             );
             $items   = new News\ItemList(Shop::Container()->getDB());

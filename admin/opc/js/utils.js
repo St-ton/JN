@@ -80,17 +80,17 @@ function installJqueryFixes()
     // to ensure CKEditor text inputs are focused inside bootstrap modals
 
     $.fn.modal.Constructor.prototype._enforceFocus = function() {
-        this.$element = $(this._element);
+        let $element = $(this._element);
         $(document)
             .off('focusin.bs.modal')
-            .on('focusin.bs.modal', $.proxy((function(e) {
-                if (this.$element[0] !== e.target
-                    && !this.$element.has(e.target).length
+            .on('focusin.bs.modal', function(e) {
+                if ($element[0] !== e.target
+                    && !$element.has(e.target).length
                     && !$(e.target).closest('.cke_dialog, .cke').length
                 ) {
-                    this.$element.trigger('focus');
+                    $element.trigger('focus');
                 }
-            }), this));
+            });
     };
 
     // Fix from: https://stackoverflow.com/questions/11127227/jquery-serialize-input-with-arrays/35689636

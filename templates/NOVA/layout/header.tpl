@@ -279,7 +279,7 @@
 
     {has_boxes position='left' assign='hasLeftPanel'}
     {block name='layout-header-body-tag'}
-        <body class="{if $Einstellungen.template.theme.button_animated === 'Y'}btn-animated{/if}"
+        <div class="{if $Einstellungen.template.theme.button_animated === 'Y'}btn-animated{/if}"
               data-page="{$nSeitenTyp}"
               {if isset($Link) && !empty($Link->getIdentifier())} id="{$Link->getIdentifier()}"{/if}>
     {/block}
@@ -299,23 +299,20 @@
         {/if}
 
         {block name='layout-header-header'}
+            {block name='layout-header-branding-top-bar'}
+                {if !$device->isMobile()}
+                    <div id="header-top-bar" class="pb-2 d-none {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex{/if}">
+                        {include file='layout/header_top_bar.tpl'}
+                    </div>
+                {/if}
+            {/block}
             {assign var=isSticky value=$Einstellungen.template.theme.static_header === 'Y'}
-            <header class="d-print-none{if $isSticky} sticky-top{/if}{if $Einstellungen.template.theme.static_header === 'Y'} fixed-navbar{/if}" id="evo-nav-wrapper">
+            <header class="d-print-none{if $isSticky} sticky-top fixed-navbar{/if}" id="evo-nav-wrapper">
 
                 {block name='layout-header-container-inner'}
                     <div class="container-fluid container-fluid-xl">
-                    {block name='layout-header-branding-top-bar'}
-                        {if !$device->isMobile()}
-                            {row class="mb-2 d-none {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex{/if}"}
-                                {col class='col-auto ml-auto'}
-                                    {include file='layout/header_top_bar.tpl'}
-                                {/col}
-                            {/row}
-                        {/if}
-                    {/block}
-
                     {block name='layout-header-category-nav'}
-                        {navbar  toggleable=true fill=true type="expand-lg " class="justify-content-start {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}align-items-center{else}align-items-lg-end{/if} px-0 pb-lg-0"}
+                        {navbar toggleable=true fill=true type="expand-lg" class="justify-content-start {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}align-items-center{else}align-items-lg-end{/if} px-0 pb-lg-0"}
                             {block name='layout-header-navbar-toggle'}
                                 <button class="navbar-toggler mr-3 collapsed {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}d-none{/if}" type="button" data-toggle="collapse" data-target="#mainNavigation" aria-controls="mainNavigation" aria-expanded="false" aria-label="Toggle navigation">
                                     <span class="navbar-toggler-icon"></span>

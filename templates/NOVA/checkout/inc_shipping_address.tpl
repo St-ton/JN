@@ -103,7 +103,7 @@
             {inline_script}<script>
                 $(window).on('load', function () {
                     $('#checkout_register_shipping_address').prop('checked', false);
-                    $('#select_shipping_address').addClass('in');
+                    $('#select_shipping_address').addClass('show').removeClass('hidden');
                     $.evo.extended().smoothScrollToAnchor('#checkout_register_shipping_address');
                 });
             </script>{/inline_script}

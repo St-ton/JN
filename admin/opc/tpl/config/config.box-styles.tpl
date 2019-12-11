@@ -99,7 +99,7 @@
             propid="{$propname}-border-color"
             propval=$propval['border-color']
             propdesc=[
-                'label'   => __('Border color')
+                'label'   => __('Border colour')
             ]
         }
         <div class='form-group'>

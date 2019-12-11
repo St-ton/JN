@@ -28,7 +28,7 @@ class Flipcard extends Portlet
                     'v' => __('vertical'),
                     'h' => __('horizontal'),
                 ],
-                'default' => 'flipcard-v',
+                'default' => 'v',
             ],
         ];
     }

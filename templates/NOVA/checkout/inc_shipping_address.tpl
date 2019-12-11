@@ -32,32 +32,34 @@
                             {/col}
                             {col md=8}
                                 {block name='checkout-inc-shipping-address-fieldset-address'}
-                                    {listgroup class="form-group exclude-from-label-slide" tag="ul"}
-                                    {foreach $Lieferadressen as $adresse}
-                                        {if $adresse->kLieferadresse > 0}
-                                            {block name='checkout-inc-shipping-address-address'}
-                                                {listgroupitem tag="li"}
-                                                    <label class="btn-block no-caret text-wrap" for="delivery{$adresse->kLieferadresse}" data-toggle="collapse" data-target="#register_shipping_address.show">
-                                                        {radio name="kLieferadresse" value=$adresse->kLieferadresse id="delivery{$adresse->kLieferadresse}" checked=($kLieferadresse == $adresse->kLieferadresse)}
-                                                            <span class="control-label label-default">{if $adresse->cFirma}{$adresse->cFirma},{/if} {$adresse->cVorname} {$adresse->cNachname}
-                                                                , {$adresse->cStrasse} {$adresse->cHausnummer}, {$adresse->cPLZ} {$adresse->cOrt}
-                                                                , {$adresse->angezeigtesLand}</span>
-                                                        {/radio}
-                                                    </label>
-                                                {/listgroupitem}
-                                            {/block}
-                                        {/if}
-                                    {/foreach}
-                                    {block name='checkout-inc-shipping-address-new-address'}
-                                        {listgroupitem tag="li"}
-                                            <label class="btn-block" for="delivery_new" data-toggle="collapse" data-target="#register_shipping_address:not(.show)">
-                                                {radio name="kLieferadresse" value="-1" id="delivery_new" checked=($kLieferadresse == -1) required=true aria-required=true}
-                                                    <span class="control-label label-default">{lang key='createNewShippingAdress' section='account data'}</span>
-                                                {/radio}
-                                            </label>
-                                        {/listgroupitem}
-                                    {/block}
-                                    {/listgroup}
+                                    <fieldset>
+                                        {listgroup class="form-group exclude-from-label-slide" tag="ul"}
+                                        {foreach $Lieferadressen as $adresse}
+                                            {if $adresse->kLieferadresse > 0}
+                                                {block name='checkout-inc-shipping-address-address'}
+                                                    {listgroupitem tag="li"}
+                                                        <label class="btn-block no-caret text-wrap" for="delivery{$adresse->kLieferadresse}" data-toggle="collapse" data-target="#register_shipping_address.show">
+                                                            {radio name="kLieferadresse" value=$adresse->kLieferadresse id="delivery{$adresse->kLieferadresse}" checked=($kLieferadresse == $adresse->kLieferadresse)}
+                                                                <span class="control-label label-default">{if $adresse->cFirma}{$adresse->cFirma},{/if} {$adresse->cVorname} {$adresse->cNachname}
+                                                                    , {$adresse->cStrasse} {$adresse->cHausnummer}, {$adresse->cPLZ} {$adresse->cOrt}
+                                                                    , {$adresse->angezeigtesLand}</span>
+                                                            {/radio}
+                                                        </label>
+                                                    {/listgroupitem}
+                                                {/block}
+                                            {/if}
+                                        {/foreach}
+                                        {block name='checkout-inc-shipping-address-new-address'}
+                                            {listgroupitem tag="li"}
+                                                <label class="btn-block" for="delivery_new" data-toggle="collapse" data-target="#register_shipping_address:not(.show)">
+                                                    {radio name="kLieferadresse" value="-1" id="delivery_new" checked=($kLieferadresse == -1) required=true aria-required=true}
+                                                        <span class="control-label label-default">{lang key='createNewShippingAdress' section='account data'}</span>
+                                                    {/radio}
+                                                </label>
+                                            {/listgroupitem}
+                                        {/block}
+                                        {/listgroup}
+                                    </fieldset>
                                 {/block}
                                 {block name='checkout-inc-shipping-address-fieldset-register'}
                                     <fieldset id="register_shipping_address" class="collapse collapse-non-validate mt-5 {if $kLieferadresse == -1}} show{/if}" aria-expanded="{if $kLieferadresse == -1}}true{else}false{/if}">
@@ -101,7 +103,7 @@
             {inline_script}<script>
                 $(window).on('load', function () {
                     $('#checkout_register_shipping_address').prop('checked', false);
-                    $('#select_shipping_address').addClass('in');
+                    $('#select_shipping_address').addClass('show').removeClass('hidden');
                     $.evo.extended().smoothScrollToAnchor('#checkout_register_shipping_address');
                 });
             </script>{/inline_script}

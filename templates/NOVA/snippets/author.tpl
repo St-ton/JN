@@ -23,7 +23,7 @@
                 {if $oAuthor->cAvatarImgSrcFull !== null}
                     {$title = "<img alt='{$oAuthor->cName}' src='{$oAuthor->cAvatarImgSrcFull}' height='80' class='rounded-circle' /><span itemprop='name' class='ml-3'>{$oAuthor->cName}</span>"}
                 {else}
-                    {$title = '<span itemprop="name" class="ml-3">'|cat:$oAuthor->cName|cat:'</span>'}
+                    {$title = "<span itemprop='name' class='ml-3'>"|cat:$oAuthor->cName|cat:'</span>'}
                 {/if}
                 <div id="author-{$oAuthor->kContentAuthor}" title="{$title}" class="d-none">
                     {block name='snippets-author-modal-content'}

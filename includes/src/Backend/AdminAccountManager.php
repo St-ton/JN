@@ -283,6 +283,11 @@ class AdminAccountManager
                     AND cName NOT IN ('" . implode("', '", $handledKeys) . "')",
                 ReturnType::DEFAULT
             );
+
+            $adminAccount = Shop::Container()->getAdminAccount();
+            if ($account->kAdminlogin === $adminAccount->account()->kAdminlogin) {
+                $adminAccount->refreshAttributes();
+            }
         }
 
         return true;

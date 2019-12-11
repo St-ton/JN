@@ -342,6 +342,17 @@ class AdminAccount
     }
 
     /**
+     * @return void
+     */
+    public function refreshAttributes(): void
+    {
+        $account = $this->account();
+        if ($account !== false) {
+            $account->attributes = $this->getAttributes($account->kAdminlogin);
+        }
+    }
+
+    /**
      * @return $this
      */
     public function logout(): self

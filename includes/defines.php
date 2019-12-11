@@ -87,14 +87,10 @@ ifndef('SMARTY_DIR', PFAD_ROOT . PFAD_SMARTY);
 /**
  * @deprecated since Shop 5
  */
-ifndef('PFAD_XAJAX', PFAD_INCLUDES_LIBS . 'xajax_0.5_standard/');
-ifndef('PFAD_FLASHCHART', PFAD_INCLUDES_LIBS . 'flashchart/');
-ifndef('PFAD_PHPQUERY', PFAD_INCLUDES_LIBS . 'phpQuery/');
+ifndef('PFAD_PHPQUERY', PFAD_INCLUDES . 'vendor/jtlshop/phpquery/src/');
 ifndef('PFAD_PCLZIP', PFAD_INCLUDES . 'vendor/pclzip/pclzip/');
 ifndef('PFAD_PHPMAILER', PFAD_INCLUDES . 'vendor/phpmailer/phpmailer/');
-ifndef('PFAD_GRAPHCLASS', PFAD_INCLUDES_LIBS . 'graph-2005-08-28/');
-ifndef('PFAD_BLOWFISH', PFAD_INCLUDES_LIBS . 'xtea/');
-ifndef('PFAD_FLASHPLAYER', PFAD_INCLUDES_LIBS . 'flashplayer/'); // DEPRECATED in Shop 5
+ifndef('PFAD_BLOWFISH', PFAD_INCLUDES_LIBS . 'vendor/jtlshop/xtea/');
 ifndef('PFAD_CLASSES_CORE', PFAD_CLASSES . 'core/');  // DEPRECATED
 ifndef('PFAD_OBJECT_CACHING', 'caching/');
 ifndef('PFAD_GFX', 'gfx/');
@@ -152,7 +148,6 @@ ifndef('PFAD_WIDGETS', 'widgets/');
 ifndef('PFAD_PORTLETS', 'portlets/');
 ifndef('PFAD_INSTALL', 'install/');
 ifndef('PFAD_SHOPMD5', 'shopmd5files/');
-ifndef('PFAD_NUSOAP', 'nusoap/');
 ifndef('PFAD_UPLOADS', PFAD_ROOT . 'uploads/');
 ifndef('PFAD_DOWNLOADS_REL', 'downloads/');
 ifndef('PFAD_DOWNLOADS_PREVIEW_REL', PFAD_DOWNLOADS_REL . 'vorschau/');
@@ -161,6 +156,7 @@ ifndef('PFAD_DOWNLOADS_PREVIEW', PFAD_ROOT . PFAD_DOWNLOADS_PREVIEW_REL);
 ifndef('PFAD_UPLOAD_CALLBACK', PFAD_INCLUDES_EXT . 'uploads_cb.php');
 ifndef('PFAD_IMAGEMAP', PFAD_BILDER . 'banner/');
 ifndef('PFAD_EMAILTEMPLATES', 'templates_mail/');
+ifndef('PFAD_MEDIA_VIDEO', 'media/video/');
 ifndef('PFAD_MEDIA_IMAGE', 'media/image/');
 ifndef('PFAD_MEDIA_IMAGE_STORAGE', PFAD_MEDIA_IMAGE . 'storage/');
 ifndef('STORAGE_VARIATIONS', PFAD_MEDIA_IMAGE_STORAGE . 'variations/');

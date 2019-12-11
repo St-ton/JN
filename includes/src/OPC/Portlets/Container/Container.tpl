@@ -10,31 +10,29 @@
 {if $instance->getProperty('background-flag') === 'image' && !empty($instance->getProperty('src'))}
     {$name = basename($instance->getProperty('src'))}
     {$class = "{$class} parallax-window"}
-    {$v = $instance->getImageAttributes("{Shop::getURL()}/{$smarty.const.PFAD_MEDIAFILES}Bilder/.xs/{$name}")}
+    {$imgAttribs = $instance->getImageAttributes()}
     {if $isPreview}
-        {$style = "{$style} background-image:url('{Shop::getURL()}/{$smarty.const.PFAD_MEDIAFILES}Bilder/.xs/{$name}');"}
+        {$style = "{$style} background-image:url('{$imgAttribs.src}');"}
         {$style = "{$style} background-size:cover;"}
     {else}
         {$data = $data|array_merge:[
             'parallax'  => 'scroll',
             'z-index'   => '1',
-            'image-src' => "{Shop::getURL()}/{$smarty.const.PFAD_MEDIAFILES}Bilder/.lg/{$name}"
+            'image-src' => $imgAttribs.src
         ]}
     {/if}
-{/if}
-
-{if $instance->getProperty('background-flag') === 'video'}
+{elseif $instance->getProperty('background-flag') === 'video'}
     {$style          = "{$style} overflow:hidden;"}
-    {$name           = basename($instance->getProperty('video-poster'))}
-    {$videoPosterUrl = "{Shop::getURL()}/{$smarty.const.PFAD_MEDIAFILES}Bilder/.xs/{$name}"}
+    {$imgAttribs     = $instance->getImageAttributes($instance->getProperty('video-poster'))}
+    {$videoPosterUrl = $imgAttribs.src}
     {$name           = basename($instance->getProperty('video-src'))}
-    {$videoSrcUrl    = "{Shop::getURL()}/{$smarty.const.PFAD_MEDIAFILES}Videos/{$name}"}
+    {$videoSrcUrl    = "{Shop::getURL()}/{\PFAD_MEDIA_VIDEO}{$name}"}
 {/if}
 
 {container style=$style class=$class data=$data fluid=$fluid}
     {if $instance->getProperty('background-flag') === 'video' && !empty($instance->getProperty('video-src'))}
         <video autoplay loop muted poster="{$videoPosterUrl}"
-               style="display: inherit; width: 100%; position: absolute; opacity: 0.7;">
+               style="display: inherit; width: 100%; position: absolute; left: 0; top: 0; opacity: 0.7;">
             {if !$isPreview}
                 <source src="{$videoSrcUrl}" type="video/mp4">
             {/if}

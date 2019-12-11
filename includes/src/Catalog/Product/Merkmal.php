@@ -165,19 +165,17 @@ class Merkmal
                                     LEFT JOIN tmerkmalwertsprache AS fremdSprache 
                                         ON fremdSprache.kMerkmalWert = tmw.kMerkmalWert
                                         AND fremdSprache.kSprache = ' . $languageID;
-                $orderSQL     = 'ORDER BY tmw.nSort, COALESCE(fremdSprache.cWert, standardSprache.cWert)';
+                $orderSQL     = ' ORDER BY tmw.nSort, COALESCE(fremdSprache.cWert, standardSprache.cWert)';
             } else {
                 $joinValueSQL = 'INNER JOIN tmerkmalwertsprache AS standardSprache
                                         ON standardSprache.kMerkmalWert = tmw.kMerkmalWert
                                         AND standardSprache.kSprache = ' . $languageID;
-                $orderSQL     = 'ORDER BY tmw.nSort, standardSprache.cWert';
+                $orderSQL     = ' ORDER BY tmw.nSort, standardSprache.cWert';
             }
             $tmpAttributes          = Shop::Container()->getDB()->query(
-                "SELECT tmw.kMerkmalWert
-                    FROM tmerkmalwert tmw
-                    {$joinValueSQL}
-                    WHERE kMerkmal = {$this->kMerkmal}
-                    {$orderSQL}",
+                'SELECT tmw.kMerkmalWert
+                    FROM tmerkmalwert tmw ' .  $joinValueSQL . '
+                    WHERE kMerkmal = ' . $this->kMerkmal . $orderSQL,
                 ReturnType::ARRAY_OF_OBJECTS
             );
             $this->oMerkmalWert_arr = [];

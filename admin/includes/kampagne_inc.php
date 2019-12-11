@@ -27,7 +27,7 @@ function holeAlleKampagnenDefinitionen()
                 ORDER BY kKampagneDef',
             ReturnType::ARRAY_OF_OBJECTS
         ),
-        function ($e) {
+        static function ($e) {
             return (int)$e->kKampagneDef;
         }
     );

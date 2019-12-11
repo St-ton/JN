@@ -4,6 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\phpQuery\phpQuery;
 use Systemcheck\Environment;
 use Systemcheck\Platform\Hosting;
 
@@ -21,7 +22,6 @@ if (isset($_GET['phpinfo'])) {
     phpinfo();
     $content = ob_get_contents();
     ob_end_clean();
-    require_once PFAD_ROOT . PFAD_PHPQUERY . 'phpquery.class.php';
 
     $doc     = phpQuery::newDocumentHTML($content, JTL_CHARSET);
     $phpInfo = pq('body', $doc)->html();

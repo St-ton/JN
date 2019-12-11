@@ -1987,7 +1987,7 @@ pre#debug b {
   padding: 0;
 }
 .dropdown.avatar img {
-  max-height: 34px;
+  height: 34px;
   margin: 8px;
   border-radius: 50%;
 }

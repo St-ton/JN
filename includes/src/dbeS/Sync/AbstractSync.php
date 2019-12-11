@@ -637,14 +637,13 @@ abstract class AbstractSync
     protected function buildAttributes(&$arr, $excludes = []): array
     {
         $attributes = [];
-        if (\is_array($arr)) {
-            $keys     = \array_keys($arr);
-            $keyCount = \count($keys);
-            for ($i = 0; $i < $keyCount; $i++) {
-                if (!\in_array($keys[$i], $excludes, true) && $keys[$i]{0} === 'k') {
-                    $attributes[$keys[$i]] = $arr[$keys[$i]];
-                    unset($arr[$keys[$i]]);
-                }
+        if (!\is_array($arr)) {
+            return $attributes;
+        }
+        foreach (\array_keys($arr) as $key) {
+            if (!\in_array($key, $excludes, true) && $key[0] === 'k') {
+                $attributes[$key] = $arr[$key];
+                unset($arr[$key]);
             }
         }
 

@@ -11,6 +11,7 @@ use JTL\Plugin\Admin\Updater;
 use JTL\Plugin\Admin\Validation\LegacyPluginValidator;
 use JTL\Plugin\Admin\Validation\PluginValidator;
 use JTL\Plugin\Helper;
+use JTL\Plugin\LegacyPlugin;
 use JTL\Shop;
 use JTL\XMLParser;
 
@@ -100,8 +101,8 @@ function installierePluginVorbereitung($dir, $oldPlugin = 0)
 /**
  * Laedt das Plugin neu, d.h. liest die XML Struktur neu ein, fuehrt neue SQLs aus.
  *
- * @param \JTL\Plugin\LegacyPlugin $plugin
- * @param bool                     $forceReload
+ * @param LegacyPlugin $plugin
+ * @param bool         $forceReload
  * @return int
  * @throws Exception
  * @deprecated since 5.0.0

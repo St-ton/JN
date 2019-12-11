@@ -168,10 +168,9 @@ class MerkmalWert
                             AND tmerkmalwertsprache.kSprache = ' . $languageID;
         }
         $data = Shop::Container()->getDB()->query(
-            "SELECT tmerkmalwert.*, {$selectSQL}
-                FROM tmerkmalwert
-                {$joinSQL}
-                WHERE tmerkmalwert.kMerkmalWert = {$id}",
+            'SELECT tmerkmalwert.*, ' . $selectSQL . '
+                FROM tmerkmalwert ' .  $joinSQL . '
+                WHERE tmerkmalwert.kMerkmalWert = ' . $id,
             ReturnType::SINGLE_OBJECT
         );
         if (isset($data->kMerkmalWert) && $data->kMerkmalWert > 0) {

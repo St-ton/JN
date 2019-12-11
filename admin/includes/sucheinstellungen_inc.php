@@ -43,7 +43,7 @@ function createSearchIndex($index, $create)
     }
 
     if ($create === 'Y') {
-        $searchRows = array_map(function ($item) {
+        $searchRows = array_map(static function ($item) {
             $items = explode('.', $item, 2);
 
             return $items[1];

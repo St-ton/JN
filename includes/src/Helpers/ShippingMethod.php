@@ -462,7 +462,7 @@ class ShippingMethod
                 && $tmpProduct->kVaterArtikel === 0
                 && \count($tmpProduct->Variationen) > 0
             ) { // Normale Variation
-                if ($product['cInputData']{0} === '_') {
+                if (\mb_strpos($product['cInputData'], '_') === 0) {
                     // 1D
                     [$property0, $propertyValue0] = \explode(':', \mb_substr($product['cInputData'], 1));
 
@@ -509,7 +509,7 @@ class ShippingMethod
                 }
             } elseif ($tmpProduct->nIstVater > 0) { // Variationskombination (Vater)
                 $child = new Artikel();
-                if ($product['cInputData']{0} === '_') {
+                if (\mb_strpos($product['cInputData'], '_') === 0) {
                     // 1D
                     $cVariation0                  = \mb_substr($product['cInputData'], 1);
                     [$property0, $propertyValue0] = \explode(':', $cVariation0);

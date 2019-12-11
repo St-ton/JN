@@ -7,10 +7,10 @@
 namespace JTL\OPC;
 
 use Exception;
-use JTL\Shop;
 use JTL\Backend\Revision;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Shop;
 use stdClass;
 
 /**

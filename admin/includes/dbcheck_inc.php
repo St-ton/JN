@@ -6,11 +6,14 @@
 
 use JTL\Backend\DirManager;
 use JTL\DB\ReturnType;
+use JTL\Exceptions\CircularReferenceException;
+use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Helpers\Text;
 use JTL\Session\Backend;
 use JTL\Shop;
 use JTL\Template;
 use JTL\Update\DBMigrationHelper;
+use JTLShop\SemVer\Parser;
 
 /**
  * @param bool $extended
@@ -160,7 +163,7 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
  */
 function getDBFileStruct()
 {
-    $version    = \JTLShop\SemVer\Parser::parse(APPLICATION_VERSION);
+    $version    = Parser::parse(APPLICATION_VERSION);
     $versionStr = $version->getMajor().'-'.$version->getMinor().'-'.$version->getPatch();
 
     if ($version->hasPreRelease()) {
@@ -184,6 +187,11 @@ function getDBFileStruct()
     return $oDBFileStruct;
 }
 
+/**
+ * @param string $msg
+ * @param bool   $engineError
+ * @return object
+ */
 function createDBStructError(string $msg, bool $engineError = false): object
 {
     return (object)[
@@ -423,8 +431,8 @@ function doEngineUpdateScript(string $fileName, array $shopTables)
  * @param int $step
  * @param array $exclude
  * @return stdClass
- * @throws \JTL\Exceptions\CircularReferenceException
- * @throws \JTL\Exceptions\ServiceNotFoundException
+ * @throws CircularReferenceException
+ * @throws ServiceNotFoundException
  */
 function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', int $step = 1, array $exclude = [])
 {
@@ -569,7 +577,7 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', in
                     sprintf(__('errorEmptyCache'), $e->getMessage())
                 );
             }
-            $callback    = function (array $pParameters) {
+            $callback    = static function (array $pParameters) {
                 if (!$pParameters['isdir']) {
                     @unlink($pParameters['path'] . $pParameters['filename']);
                 } else {

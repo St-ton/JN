@@ -12,7 +12,6 @@ use InvalidArgumentException;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
-use JTL\Mapper\PluginValidation;
 use JTL\Plugin\Admin\Validation\ValidatorInterface;
 use JTL\Plugin\InstallCode;
 use JTL\Plugin\LegacyPluginLoader;
@@ -83,8 +82,7 @@ final class Listing
      */
     public function getInstalled(): Collection
     {
-        $items  = new Collection();
-        $mapper = new PluginValidation();
+        $items = new Collection();
         try {
             $all = $this->db->selectAll('tplugin', [], [], 'kPlugin, bExtension', 'cName, cAutor, nPrio');
         } catch (InvalidArgumentException $e) {

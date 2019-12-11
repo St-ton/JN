@@ -24,18 +24,8 @@ if (Form::validateToken()) {
     $isCKEditor       = Request::verifyGPDataString('ckeditor') === '1';
     $CKEditorFuncNum  = Request::verifyGPDataString('CKEditorFuncNum');
 
-    switch ($mediafilesType) {
-        case 'video':
-            $mediafilesSubdir = 'Videos';
-            break;
-        case 'music':
-            $mediafilesSubdir = 'Musik';
-            break;
-        case 'misc':
-            $mediafilesSubdir = 'Sonstiges';
-            break;
-        default:
-            break;
+    if ($mediafilesType === 'video') {
+        $mediafilesSubdir = PFAD_MEDIA_VIDEO;
     }
 
     if (!empty($elfinderCommand)) {

@@ -9,6 +9,7 @@ namespace JTL\GeneralDataProtection;
 use DateInterval;
 use DateTime;
 use Exception;
+use JTL\DB\DbInterface;
 use JTL\Shop;
 use Psr\Log\LoggerInterface;
 
@@ -57,17 +58,24 @@ class Method
     protected $logger;
 
     /**
-     * Method constructor.
-     * @param DateTime $now
-     * @param int      $interval
+     * @var DbInterface
      */
-    public function __construct(DateTime $now, int $interval)
+    protected $db;
+
+    /**
+     * Method constructor.
+     * @param DateTime    $now
+     * @param int         $interval
+     * @param DbInterface $db
+     */
+    public function __construct(DateTime $now, int $interval, DbInterface $db)
     {
         try {
             $this->logger = Shop::Container()->getLogService();
         } catch (Exception $e) {
             $this->logger = null;
         }
+        $this->db       = $db;
         $this->now      = clone $now;
         $this->interval = $interval;
         try {

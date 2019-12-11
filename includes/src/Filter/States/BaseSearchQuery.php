@@ -859,7 +859,7 @@ class BaseSearchQuery extends AbstractFilter
         $searchArray    = [];
         $parts          = \explode(' ', $query);
         $query_stripped = \stripslashes($query);
-        if ($query_stripped{0} !== '"' || $query_stripped{\mb_strlen($query_stripped) - 1} !== '"') {
+        if ($query_stripped[0] !== '"' || $query_stripped[\mb_strlen($query_stripped) - 1] !== '"') {
             foreach ($parts as $i => $searchString) {
                 if (\mb_strpos($searchString, '+') !== false) {
                     $searchPart = \explode('+', $searchString);

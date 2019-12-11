@@ -114,7 +114,6 @@ class NewsCategory extends AbstractImage
         );
         foreach (new RecursiveIteratorIterator($rdi, RecursiveIteratorIterator::CHILD_FIRST) as $fileinfo) {
             /** @var SplFileInfo $fileinfo */
-            $name = $fileinfo->getFilename();
             if ($fileinfo->isFile() && \in_array($fileinfo->getExtension(), self::$imageExtensions, true)) {
                 $path = \str_replace($base, '', $fileinfo->getPathname());
                 yield MediaImageRequest::create([

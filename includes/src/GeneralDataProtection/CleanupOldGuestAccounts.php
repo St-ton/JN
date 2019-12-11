@@ -7,7 +7,6 @@
 namespace JTL\GeneralDataProtection;
 
 use JTL\DB\ReturnType;
-use JTL\Shop;
 
 /**
  * Class CleanupOldGuestAccounts
@@ -35,14 +34,13 @@ class CleanupOldGuestAccounts extends Method implements MethodInterface
      */
     private function cleanupCustomers(): void
     {
-        Shop::Container()->getDB()->queryPrepared(
+        $this->db->queryPrepared(
             "DELETE FROM tkunde
-            WHERE
-                nRegistriert = 0
-                AND cAbgeholt = 'Y'
-                AND dErstellt <= :pDateLimit
-            ORDER BY dErstellt ASC
-            LIMIT :pLimit",
+                WHERE nRegistriert = 0
+                    AND cAbgeholt = 'Y'
+                    AND dErstellt <= :pDateLimit
+                ORDER BY dErstellt ASC
+                LIMIT :pLimit",
             [
                 'pDateLimit' => $this->dateLimit,
                 'pLimit'     => $this->workLimit

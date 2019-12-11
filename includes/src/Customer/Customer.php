@@ -740,14 +740,14 @@ class Customer
                 return false;
             }
             foreach ($members1 as $member) {
-                if (!isset($customer2->{$member})) {
+                if (!isset($customer2->$member)) {
                     return false;
                 }
-                $value1 = $customer1->{$member};
+                $value1 = $customer1->$member;
                 $value2 = null;
                 foreach ($members2 as $member2) {
                     if ($member == $member2) {
-                        $value2 = $customer2->{$member};
+                        $value2 = $customer2->$member;
                     }
                 }
                 if ($value1 != $value2) {

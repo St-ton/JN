@@ -672,7 +672,7 @@ function injectSubject($object, $subject)
             $keys2 = array_keys(get_object_vars($object->$obj));
             if (is_array($keys2)) {
                 foreach ($keys2 as $member) {
-                    if ($member{0} !== 'k'
+                    if ($member[0] !== 'k'
                         && !is_array($object->$obj->$member)
                         && !is_object($object->$obj->$member)
                     ) {

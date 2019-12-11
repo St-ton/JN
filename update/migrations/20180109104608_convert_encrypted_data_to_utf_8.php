@@ -49,6 +49,9 @@ class Migration_20180109104608 extends Migration implements IMigration
 
             foreach ($dataSet as $dataObj) {
                 foreach ($propNames as $propName) {
+                    if ($dataObj->$propName === null) {
+                        continue;
+                    }
                     $dataObj->$propName = $cryptoService->decryptXTEA($dataObj->$propName);
                     if (!Text::is_utf8($dataObj->$propName)) {
                         $dataObj->$propName = Text::convertUTF8($dataObj->$propName);
@@ -73,6 +76,9 @@ class Migration_20180109104608 extends Migration implements IMigration
 
             foreach ($dataSet as $dataObj) {
                 foreach ($propNames as $propName) {
+                    if ($dataObj->$propName === null) {
+                        continue;
+                    }
                     $dataObj->$propName = $cryptoService->decryptXTEA($dataObj->$propName);
                     if (Text::is_utf8($dataObj->$propName)) {
                         $dataObj->$propName = Text::convertISO($dataObj->$propName);

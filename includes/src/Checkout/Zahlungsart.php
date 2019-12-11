@@ -511,33 +511,29 @@ class Zahlungsart extends MainModel
     public function load($id, $data = null, $option = null): self
     {
         $id = (int)$id;
-        if ($id > 0) {
-            if ($option['iso'] !== null) {
-                $iso = $option['iso'];
-            } elseif (isset($_SESSION['cISOSprache'])) {
-                $iso = $_SESSION['cISOSprache'];
-            } else {
-                $language = LanguageHelper::getDefaultLanguage();
-                $iso      = $language->cISO;
-            }
-
-            $data = Shop::Container()->getDB()->queryPrepared(
-                'SELECT *
-                    FROM tzahlungsart AS z
-                    LEFT JOIN tzahlungsartsprache AS s 
-                        ON s.kZahlungsart = z.kZahlungsart
-                        AND s.cISOSprache = :iso
-                    WHERE z.kZahlungsart = :pmID
-                    LIMIT 1',
-                [
-                    'iso'  => $iso,
-                    'pmID' => $id
-                ],
-                ReturnType::SINGLE_OBJECT
-            );
-            if ($data !== false) {
-                $this->loadObject($data);
-            }
+        if ($id <= 0) {
+            return $this;
+        }
+        $iso = $option['iso'] ?? $_SESSION['cISOSprache'] ?? null;
+        if ($option !== null) {
+            $iso = LanguageHelper::getDefaultLanguage()->cISO;
+        }
+        $data = Shop::Container()->getDB()->queryPrepared(
+            'SELECT *
+                FROM tzahlungsart AS z
+                LEFT JOIN tzahlungsartsprache AS s 
+                    ON s.kZahlungsart = z.kZahlungsart
+                    AND s.cISOSprache = :iso
+                WHERE z.kZahlungsart = :pmID
+                LIMIT 1',
+            [
+                'iso'  => $iso,
+                'pmID' => $id
+            ],
+            ReturnType::SINGLE_OBJECT
+        );
+        if ($data !== false) {
+            $this->loadObject($data);
         }
 
         return $this;

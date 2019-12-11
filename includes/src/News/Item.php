@@ -8,11 +8,14 @@ namespace JTL\News;
 
 use DateTime;
 use InvalidArgumentException;
+use JTL\ContentAuthor;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
+use JTL\Language\LanguageHelper;
 use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;
+use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
 use function Functional\map;
@@ -248,8 +251,32 @@ class Item extends AbstractItem
         if (($preview = $this->getPreviewImage()) !== '') {
             $this->generateAllImageSizes(true, 1, \str_replace(\PFAD_NEWSBILDER, '', $preview));
         }
+        $this->setContentAuthor();
 
         return $this;
+    }
+
+    private function setContentAuthor(): void
+    {
+        $author = ContentAuthor::getInstance()->getAuthor('NEWS', $this->getID(), true);
+
+        if (!isset($author->kAdminlogin) || $author->kAdminlogin <= 0) {
+            return;
+        }
+        if ($author->extAttribs['useAvatar']->cAttribValue === 'U') {
+            $author->cAvatarImgSrc     = $author->extAttribs['useAvatarUpload']->cAttribValue;
+            $author->cAvatarImgSrcFull = Shop::getImageBaseURL() .
+                \ltrim($author->extAttribs['useAvatarUpload']->cAttribValue, '/');
+        }
+        unset($author->extAttribs['useAvatarUpload']);
+
+        $author->cVitaShort = $author->extAttribs['useVita_' . $_SESSION['cISOSprache']]->cAttribValue;
+        $author->cVitaLong  = $author->extAttribs['useVita_' . $_SESSION['cISOSprache']]->cAttribText;
+        foreach (LanguageHelper::getAllLanguages() as $language) {
+            unset($author->extAttribs['useVita_' . $language->cISO]);
+        }
+
+        $this->setAuthor($author);
     }
 
     /**
@@ -609,7 +636,7 @@ class Item extends AbstractItem
     {
         $idx = $idx ?? Shop::getLanguageID();
 
-        return $this->metaTitles[$idx] ?? '';
+        return $this->isVisible ? ($this->metaTitles[$idx] ?? '') : '';
     }
 
     /**
@@ -635,7 +662,7 @@ class Item extends AbstractItem
     {
         $idx = $idx ?? Shop::getLanguageID();
 
-        return $this->metaKeywords[$idx] ?? '';
+        return $this->isVisible ? ($this->metaKeywords[$idx] ?? '') : '';
     }
 
     /**
@@ -669,7 +696,7 @@ class Item extends AbstractItem
     {
         $idx = $idx ?? Shop::getLanguageID();
 
-        return $this->metaDescriptions[$idx] ?? '';
+        return $this->isVisible ? ($this->metaDescriptions[$idx] ?? '') : '';
     }
 
     /**
@@ -703,7 +730,7 @@ class Item extends AbstractItem
     {
         $idx = $idx ?? Shop::getLanguageID();
 
-        return $this->previews[$idx] ?? '';
+        return $this->isVisible ? ($this->previews[$idx] ?? '') : '';
     }
 
     /**
@@ -737,7 +764,7 @@ class Item extends AbstractItem
     {
         $idx = $idx ?? Shop::getLanguageID();
 
-        return $this->previewImages[$idx] ?? '';
+        return $this->isVisible ? ($this->previewImages[$idx] ?? '') : '';
     }
 
     /**

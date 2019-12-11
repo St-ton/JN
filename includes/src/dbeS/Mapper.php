@@ -694,11 +694,11 @@ final class Mapper
     {
         $mapped = new stdClass();
         foreach ($oXmlTree->Attributes() as $key => $val) {
-            $mapped->{$key} = (string)$val;
+            $mapped->$key = (string)$val;
         }
         foreach (self::getTableMapping($toMap) as $mapping) {
-            if (isset($oXmlTree->{$mapping})) {
-                $mapped->{$mapping} = (string)$oXmlTree->{$mapping};
+            if (isset($oXmlTree->$mapping)) {
+                $mapped->$mapping = (string)($oXmlTree->$mapping);
             }
         }
 

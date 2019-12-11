@@ -8,12 +8,12 @@ namespace JTL\Cron\Job;
 
 use DateInterval;
 use DateTime;
+use JTL\Campaign;
 use JTL\Cron\Job;
 use JTL\Cron\JobInterface;
 use JTL\Cron\QueueEntry;
 use JTL\Customer\Customer;
 use JTL\DB\ReturnType;
-use JTL\Campaign;
 use JTL\Shop;
 use stdClass;
 

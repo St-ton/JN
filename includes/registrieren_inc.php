@@ -86,8 +86,8 @@ function kundeSpeichern(array $post)
 
         if ($edit && $_SESSION['Kunde']->kKunde > 0) {
             $knd->cAbgeholt = 'N';
-            unset($knd->cPasswort);
             $knd->updateInDB();
+            $knd->cPasswort = null;
             // Kundendatenhistory
             DataHistory::saveHistory($_SESSION['Kunde'], $knd, DataHistory::QUELLE_BESTELLUNG);
 

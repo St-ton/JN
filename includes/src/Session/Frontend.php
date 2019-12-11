@@ -6,10 +6,11 @@
 
 namespace JTL\Session;
 
+use JTL\Campaign;
 use JTL\Cart\Cart;
 use JTL\Cart\PersistentCart;
-use JTL\Catalog\Currency;
 use JTL\Catalog\ComparisonList;
+use JTL\Catalog\Currency;
 use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Checkout\Lieferadresse;
 use JTL\Customer\Customer;
@@ -20,7 +21,6 @@ use JTL\Helpers\Manufacturer;
 use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
-use JTL\Campaign;
 use JTL\Language\LanguageHelper;
 use JTL\Language\LanguageModel;
 use JTL\Link\LinkGroupCollection;

@@ -14,6 +14,7 @@ use JTL\Plugin\State;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
+use JTL\Widgets\AbstractWidget;
 
 /**
  * @param bool $bActive
@@ -107,7 +108,7 @@ function getWidgets(bool $bActive = true)
             }
 
             if (class_exists($className)) {
-                /** @var \JTL\Widgets\AbstractWidget $instance */
+                /** @var AbstractWidget $instance */
                 $instance         = new $className($smarty, $db, $widget->plugin);
                 $widget->cContent = $instance->getContent();
                 $widget->hasBody  = $instance->hasBody;

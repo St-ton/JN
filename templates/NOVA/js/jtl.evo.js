@@ -660,6 +660,18 @@
             });
         },
 
+        initEModals: function () {
+            $('.author-modal').on('click', function (e) {
+                e.preventDefault();
+                let modalID = $(this).data('target');
+                eModal.alert({
+                    title: $(modalID).attr('title'),
+                    message: $(modalID).html(),
+                    buttons: false
+                });
+            });
+        },
+
         /**
          * $.evo.extended() is deprecated, please use $.evo instead
          */
@@ -682,6 +694,7 @@
             this.setCompareListHeight();
             this.fixStickyElements();
             this.setWishlistVisibilitySwitches();
+            this.initEModals();
         }
     };
 

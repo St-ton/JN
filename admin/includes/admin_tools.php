@@ -9,11 +9,14 @@ use JTL\Backend\Notification;
 use JTL\Campaign;
 use JTL\Catalog\Currency;
 use JTL\DB\ReturnType;
+use JTL\Filter\SearchResults;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\IO\IOError;
 use JTL\IO\IOResponse;
+use JTL\Session\Frontend;
 use JTL\Shop;
+use JTL\Shopsetting;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
 use JTL\XMLParser;
@@ -579,7 +582,7 @@ function getCsvDelimiter(string $filename)
 }
 
 /**
- * @return \JTL\Smarty\JTLSmarty
+ * @return JTLSmarty
  */
 function getFrontendSmarty()
 {
@@ -587,13 +590,12 @@ function getFrontendSmarty()
 
     if ($frontendSmarty === null) {
         $frontendSmarty = new JTLSmarty();
-        $frontendSmarty
-            ->assign('imageBaseURL', \Shop::getImageBaseURL())
-            ->assign('NettoPreise', \JTL\Session\Frontend::getCustomerGroup()->getIsMerchant())
-            ->assign('ShopURL', \Shop::getURL())
-            ->assign('Suchergebnisse', new \JTL\Filter\SearchResults())
-            ->assign('NaviFilter', \Shop::getProductFilter())
-            ->assign('Einstellungen', \Shopsetting::getInstance()->getAll());
+        $frontendSmarty->assign('imageBaseURL', \Shop::getImageBaseURL())
+            ->assign('NettoPreise', Frontend::getCustomerGroup()->getIsMerchant())
+            ->assign('ShopURL', Shop::getURL())
+            ->assign('Suchergebnisse', new SearchResults())
+            ->assign('NaviFilter', Shop::getProductFilter())
+            ->assign('Einstellungen', Shopsetting::getInstance()->getAll());
     }
 
     return $frontendSmarty;

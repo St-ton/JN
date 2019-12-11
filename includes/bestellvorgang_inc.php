@@ -1082,13 +1082,13 @@ function plausiIban($iban)
     }
     $iban  = str_replace(' ', '', $iban);
     $iban1 = mb_substr($iban, 4)
-        . (string)(mb_ord($iban{0}) - 55)
-        . (string)(mb_ord($iban{1}) - 55)
+        . (string)(mb_ord($iban[0]) - 55)
+        . (string)(mb_ord($iban[1]) - 55)
         . mb_substr($iban, 2, 2);
     $len   = mb_strlen($iban1);
     for ($i = 0; $i < $len; $i++) {
-        if (mb_ord($iban1{$i}) > 64 && mb_ord($iban1{$i}) < 91) {
-            $iban1 = mb_substr($iban1, 0, $i) . (string)(mb_ord($iban1{$i}) - 55) . mb_substr($iban1, $i + 1);
+        if (mb_ord($iban1[$i]) > 64 && mb_ord($iban1[$i]) < 91) {
+            $iban1 = mb_substr($iban1, 0, $i) . (string)(mb_ord($iban1[$i]) - 55) . mb_substr($iban1, $i + 1);
         }
     }
 
@@ -1099,13 +1099,9 @@ function plausiIban($iban)
         $rest = (int)$part % 97;
     }
 
-    $pz = sprintf('%02d', 98 - $rest);
-
-    if (mb_substr($iban, 2, 2) == '00') {
-        return substr_replace($iban, $pz, 2, 2);
-    }
-
-    return $rest == 1;
+    return mb_substr($iban, 2, 2) === '00'
+        ? substr_replace($iban, sprintf('%02d', 98 - $rest), 2, 2)
+        : $rest === 1;
 }
 
 /**
@@ -1803,7 +1799,7 @@ function versandartKorrekt(int $shippingMethodID, $formValues = 0)
     $cart                   = Frontend::getCart();
     $packagingIDs           = GeneralObject::hasCount('kVerpackung', $_POST)
         ? $_POST['kVerpackung']
-        : $formValues['kVerpackung'];
+        : ($formValues['kVerpackung'] ?? []);
     $cartTotal              = $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true);
     $_SESSION['Verpackung'] = [];
     if (GeneralObject::hasCount($packagingIDs)) {

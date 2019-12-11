@@ -532,7 +532,7 @@ function createShippingSurchargeZIP(array $data): object
     }
 
     $zipMatchSurcharge = $shippingMethod->getShippingSurchargesForCountry($surcharge->getISO())
-        ->filter(function (ShippingSurcharge $surchargeTMP) use ($ZuschlagPLZ) {
+        ->filter(static function (ShippingSurcharge $surchargeTMP) use ($ZuschlagPLZ) {
             return ($surchargeTMP->hasZIPCode($ZuschlagPLZ->cPLZ)
                 || $surchargeTMP->hasZIPCode($ZuschlagPLZ->cPLZAb)
                 || $surchargeTMP->hasZIPCode($ZuschlagPLZ->cPLZBis)
@@ -583,7 +583,7 @@ function getShippingTypes(int $shippingTypeID = null)
         . ' ORDER BY cName',
         ['shippingTypeID' => $shippingTypeID],
         ReturnType::COLLECTION
-    )->each(function ($e) {
+    )->each(static function ($e) {
         $e->kVersandberechnung = (int)$e->kVersandberechnung;
         $e->cName              = __('shippingType_' . $e->cModulId);
     });

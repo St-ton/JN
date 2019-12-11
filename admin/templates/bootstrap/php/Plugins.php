@@ -147,11 +147,11 @@ class Plugins
     public function SmartyConvertDate(array $params, $smarty)
     {
         if (isset($params['date']) && \mb_strlen($params['date']) > 0) {
-            $oDateTime = new DateTime($params['date']);
+            $dateTime = new DateTime($params['date']);
             if (isset($params['format']) && \mb_strlen($params['format']) > 1) {
-                $cDate = $oDateTime->format($params['format']);
+                $cDate = $dateTime->format($params['format']);
             } else {
-                $cDate = $oDateTime->format('d.m.Y H:i:s');
+                $cDate = $dateTime->format('d.m.Y H:i:s');
             }
 
             if (isset($params['assign'])) {

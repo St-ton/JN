@@ -44,7 +44,7 @@ $themeDir   = empty($conf['template']['theme']['theme_default'])
     ? 'evo'
     : $conf['template']['theme']['theme_default'];
 $minify     = $template->getMinifyArray();
-$css        = $minify["{$themeDir}.css"] ?? [];
+$css        = $minify[$themeDir . '.css'] ?? [];
 $js         = $minify['jtl3.js'] ?? [];
 executeHook(HOOK_LETZTERINCLUDE_CSS_JS, [
     'cCSS_arr'          => &$css,
@@ -53,8 +53,7 @@ executeHook(HOOK_LETZTERINCLUDE_CSS_JS, [
     'cPluginJsHead_arr' => &$minify['plugin_js_head'],
     'cPluginJsBody_arr' => &$minify['plugin_js_body']
 ]);
-$device = new Mobile_Detect;
-
+$device             = new Mobile_Detect();
 $expandedCategories = $expandedCategories ?? new KategorieListe();
 $debugbar           = Shop::Container()->getDebugBar();
 $debugbarRenderer   = $debugbar->getJavascriptRenderer();

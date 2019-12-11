@@ -7,7 +7,6 @@
 namespace JTL\GeneralDataProtection;
 
 use JTL\DB\ReturnType;
-use JTL\Shop;
 
 /**
  * Class CleanupService
@@ -105,27 +104,28 @@ class CleanupService extends Method implements MethodInterface
                 $from = $table;
                 $join = '';
                 foreach ($subTables as $cSubTable => $cKey) {
-                    $from .= ", {$cSubTable}";
-                    $join .= " LEFT JOIN {$cSubTable} ON {$cSubTable}.{$cKey} = {$table}.{$cKey}";
+                    $from .= ', ' . $cSubTable;
+                    $join .= ' LEFT JOIN ' . $cSubTable .
+                        ' ON ' . $cSubTable . '.' . $cKey . ' = ' . $table . '.' . $cKey;
                 }
-                $dateCol = "{$table}.{$dateField}";
+                $dateCol = $table . '.' . $dateField;
                 if ($tableData['cDateType'] === 'TIMESTAMP') {
-                    $dateCol = "FROM_UNIXTIME({$dateCol})";
+                    $dateCol = 'FROM_UNIXTIME(' . $dateCol . ')';
                 }
-                Shop::Container()->getDB()->query(
-                    "DELETE {$from}
-                        FROM {$table} {$join}
-                        WHERE DATE_SUB('{$cObjectNow}', INTERVAL {$cInterval} DAY) >= {$dateCol}",
+                $this->db->query(
+                    'DELETE ' . $from . '
+                        FROM ' . $table . $join . "
+                        WHERE DATE_SUB('" . $cObjectNow . "', INTERVAL " . $cInterval . ' DAY) >= ' . $dateCol,
                     ReturnType::DEFAULT
                 );
             } else {
                 $dateCol = $dateField;
                 if ($tableData['cDateType'] === 'TIMESTAMP') {
-                    $dateCol = "FROM_UNIXTIME({$dateCol})";
+                    $dateCol = 'FROM_UNIXTIME(' . $dateCol . ')';
                 }
-                Shop::Container()->getDB()->query(
-                    "DELETE FROM {$table}
-                        WHERE DATE_SUB('{$cObjectNow}', INTERVAL {$cInterval} DAY) >= {$dateCol}",
+                $this->db->query(
+                    'DELETE FROM ' . $table . "
+                        WHERE DATE_SUB('" . $cObjectNow . "', INTERVAL " . $cInterval . ' DAY) >= ' . $dateCol,
                     ReturnType::DEFAULT
                 );
             }

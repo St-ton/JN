@@ -476,7 +476,7 @@ function plzimportActionLoadAvailableDownloads(): array
 
         if (preg_match_all(PLZIMPORT_REGEX, $cContent, $hits, PREG_PATTERN_ORDER)) {
             $quotedHits = array_map(
-                function ($hit) {
+                static function ($hit) {
                     return trim(Shop::Container()->getDB()->getPDO()->quote($hit), "'");
                 },
                 $hits[2]

@@ -6,6 +6,8 @@
 
 namespace JTL\Services\JTL;
 
+use JTL\xtea\XTEA;
+
 /**
  * Class CryptoService
  *
@@ -52,7 +54,7 @@ class CryptoService implements CryptoServiceInterface
     public function encryptXTEA(string $text): string
     {
         return \mb_strlen($text) > 0
-            ? (new \XTEA(\BLOWFISH_KEY))->encrypt($text)
+            ? (new XTEA(\BLOWFISH_KEY))->encrypt($text)
             : $text;
     }
 
@@ -63,7 +65,7 @@ class CryptoService implements CryptoServiceInterface
     public function decryptXTEA(string $text): string
     {
         return \mb_strlen($text) > 0
-            ? (new \XTEA(\BLOWFISH_KEY))->decrypt($text)
+            ? (new XTEA(\BLOWFISH_KEY))->decrypt($text)
             : $text;
     }
 }

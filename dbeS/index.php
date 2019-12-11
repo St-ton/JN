@@ -46,7 +46,7 @@ function translateError($error)
 function handleError($output)
 {
     $error = error_get_last();
-    if ($error['type'] === 1) {
+    if ($error !== null && $error['type'] === 1) {
         $error  = translateError($error['message']) . "\n";
         $error .= 'Datei: ' . $error['file'] ?? '';
         Shop::Container()->getLogService()->error($error);
@@ -91,7 +91,6 @@ error_reporting(SYNC_LOG_LEVEL);
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
-require_once PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
 
 if (!function_exists('Shop')) {
     /**

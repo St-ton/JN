@@ -9,6 +9,7 @@ namespace JTL\Catalog\Wishlist;
 use Exception;
 use Illuminate\Support\Collection;
 use JTL\Alert\Alert;
+use JTL\Campaign;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Customer\Customer;
@@ -16,7 +17,6 @@ use JTL\DB\ReturnType;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
-use JTL\Campaign;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Session\Frontend;
@@ -1099,8 +1099,11 @@ class Wishlist
         $this->dErstellt_DE = $record->dErstellt_DE ?? \DateTime::createFromFormat('Y-m-d H:i:s', $record->dErstellt)
                 ->format('d.m.Y H:i');
         if ($this->kKunde > 0) {
-            $this->oKunde = new Customer($this->kKunde);
-            unset($this->oKunde->cPasswort, $this->oKunde->fRabatt, $this->oKunde->fGuthaben, $this->oKunde->cUSTID);
+            $this->oKunde            = new Customer($this->kKunde);
+            $this->oKunde->cPasswort = null;
+            $this->oKunde->fRabatt   = null;
+            $this->oKunde->fGuthaben = null;
+            $this->oKunde->cUSTID    = null;
         }
         $db             = Shop::Container()->getDB();
         $langID         = Shop::getLanguageID();

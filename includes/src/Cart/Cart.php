@@ -107,7 +107,7 @@ class Cart
      */
     public function __sleep()
     {
-        return select(\array_keys(\get_object_vars($this)), function ($e) {
+        return select(\array_keys(\get_object_vars($this)), static function ($e) {
             return $e !== 'config';
         });
     }
@@ -484,7 +484,7 @@ class Cart
                             $oVariationWert  = \current(
                                 \array_filter(
                                     $variation->Werte,
-                                    function ($item) use ($propertyValueID) {
+                                    static function ($item) use ($propertyValueID) {
                                         return $item->kEigenschaftWert === $propertyValueID
                                             && !empty($item->cPfadNormal);
                                     }
@@ -624,7 +624,7 @@ class Cart
      * @param string       $qty
      * @param string       $price
      * @param int          $taxClassID
-     * @param int          $typ
+     * @param int          $type
      * @param bool         $delSamePosType
      * @param bool         $grossPrice
      * @param string       $message
@@ -639,7 +639,7 @@ class Cart
         $qty,
         $price,
         $taxClassID,
-        int $typ,
+        int $type,
         bool $delSamePosType = true,
         bool $grossPrice = true,
         string $message = '',
@@ -649,7 +649,7 @@ class Cart
         string $responsibility = 'core'
     ): self {
         if ($delSamePosType) {
-            $this->loescheSpezialPos($typ);
+            $this->loescheSpezialPos($type);
         }
         $cartItem                  = new CartItem();
         $cartItem->nAnzahl         = $qty;
@@ -678,7 +678,7 @@ class Cart
         }
 
         $cartItem->fPreisEinzelNetto = $cartItem->fPreis;
-        if ($typ === \C_WARENKORBPOS_TYP_KUPON && isset($name->cName)) {
+        if ($type === \C_WARENKORBPOS_TYP_KUPON && isset($name->cName)) {
             $cartItem->cName = \is_array($name->cName)
                 ? $name->cName
                 : [Shop::getLanguageCode() => $name->cName];
@@ -691,7 +691,7 @@ class Cart
                 ? $name
                 : [Shop::getLanguageCode() => $name];
         }
-        $cartItem->nPosTyp  = $typ;
+        $cartItem->nPosTyp  = $type;
         $cartItem->cHinweis = $message;
         $nOffset            = \array_push($this->PositionenArr, $cartItem);
         $cartItem           = $this->PositionenArr[$nOffset - 1];
@@ -1309,7 +1309,7 @@ class Cart
      */
     public function posTypEnthalten(int $type): bool
     {
-        return some($this->PositionenArr, function ($e) use ($type) {
+        return some($this->PositionenArr, static function ($e) use ($type) {
             return (int)$e->nPosTyp === $type;
         });
     }

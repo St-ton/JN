@@ -17,6 +17,7 @@ use JTL\Helpers\Category;
 use JTL\Helpers\Text;
 use JTL\MagicCompatibilityTrait;
 use JTL\Shop;
+use stdClass;
 use function Functional\group;
 use function Functional\map;
 use function Functional\reduce_left;
@@ -285,20 +286,20 @@ class Metadata implements MetadataInterface
      */
     public static function getGlobalMetaData(): array
     {
-        return Shop::Container()->getCache()->get('jtl_glob_meta', function ($cache, $id, &$content, &$tags) {
+        return Shop::Container()->getCache()->get('jtl_glob_meta', static function ($cache, $id, &$content, &$tags) {
             $globalTmp = Shop::Container()->getDB()->query(
                 'SELECT cName, kSprache, cWertName 
                     FROM tglobalemetaangaben ORDER BY kSprache',
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            $content   = map(group($globalTmp, function ($g) {
-                return $g->kSprache;
-            }), function ($item) {
-                return reduce_left($item, function ($value, $index, $collection, $reduction) {
+            $content   = map(group($globalTmp, static function ($g) {
+                return (int)$g->kSprache;
+            }), static function ($item) {
+                return reduce_left($item, static function ($value, $index, $collection, $reduction) {
                     $reduction->{$value->cName} = $value->cWertName;
 
                     return $reduction;
-                }, new \stdClass());
+                }, new stdClass());
             });
             $tags      = [\CACHING_GROUP_CORE];
 
@@ -311,14 +312,14 @@ class Metadata implements MetadataInterface
      */
     public static function getExcludes(): array
     {
-        return Shop::Container()->getCache()->get('jtl_glob_excl', function ($cache, $id, &$content, &$tags) {
+        return Shop::Container()->getCache()->get('jtl_glob_excl', static function ($cache, $id, &$content, &$tags) {
             $keyWords = Shop::Container()->getDB()->query(
                 'SELECT * 
                     FROM texcludekeywords 
                     ORDER BY cISOSprache',
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            $content  = reindex($keyWords, function ($e) {
+            $content  = reindex($keyWords, static function ($e) {
                 return $e->cISOSprache;
             });
             $tags     = [\CACHING_GROUP_OPTION];
@@ -333,7 +334,7 @@ class Metadata implements MetadataInterface
     public static function getFilteredString($cString, array $excludedKeywords): string
     {
         return \str_replace(\array_map(
-            function ($k) {
+            static function ($k) {
                 return ' ' . $k . ' ';
             },
             $excludedKeywords
@@ -439,7 +440,7 @@ class Metadata implements MetadataInterface
                 $helper = Category::getInstance();
                 $sub    = $helper->getCategoryById($category->kKategorie);
                 if ($sub !== null && $sub->hasChildren()) {
-                    $catNames       = map($sub->getChildren(), function (MenuItem $e) {
+                    $catNames       = map($sub->getChildren(), static function (MenuItem $e) {
                         return \strip_tags($e->getName());
                     });
                     $catDescription = \implode(', ', \array_filter($catNames));
@@ -533,7 +534,7 @@ class Metadata implements MetadataInterface
                 $helper = Category::getInstance();
                 $sub    = $helper->getCategoryById($category->kKategorie);
                 if ($sub !== null && $sub->hasChildren()) {
-                    $catNames     = map($sub->getChildren(), function (MenuItem $e) {
+                    $catNames     = map($sub->getChildren(), static function (MenuItem $e) {
                         return \strip_tags($e->getName());
                     });
                     $keywordsMeta = \implode(' ', \array_filter($catNames));
@@ -570,14 +571,14 @@ class Metadata implements MetadataInterface
         // minimum word length
         $minimumWordLength = (int)Shop::getSettingValue(\CONF_METAANGABEN, 'global_meta_keywords_laenge');
 
-        $wordsArray = \array_filter($wordsArray, function ($value) use ($minimumWordLength) {
+        $wordsArray = \array_filter($wordsArray, static function ($value) use ($minimumWordLength) {
             return \strlen($value) >= $minimumWordLength;
         });
         // filter keywords from global keywords blacklist
         $excludes     = self::getExcludes();
         $excludeWords = \explode(' ', $excludes[Shop::getLanguageCode()]->cKeywords ?? '');
         $wordsArray   = \array_udiff($wordsArray, $excludeWords, 'strcasecmp');
-        $keywords     = array();
+        $keywords     = [];
         // count word occurrences
         while (($c_word = \array_shift($wordsArray)) !== null) {
             if (\array_key_exists($c_word, $keywords)) {
@@ -681,10 +682,10 @@ class Metadata implements MetadataInterface
         // Suchbegrifffilter
         $parts = $parts->merge(
             \collect($this->productFilter->getSearchFilter())
-            ->map(function (FilterInterface $filter) {
+            ->map(static function (FilterInterface $filter) {
                 return $filter->getName();
             })
-            ->reject(function ($name) {
+            ->reject(static function ($name) {
                 return $name === null;
             })
         );
@@ -722,10 +723,10 @@ class Metadata implements MetadataInterface
         // MerkmalWertfilter
         $parts = $parts->merge(
             \collect($this->productFilter->getCharacteristicFilter())
-            ->map(function (FilterInterface $filter) {
+            ->map(static function (FilterInterface $filter) {
                 return $filter->getName();
             })
-            ->reject(function ($name) {
+            ->reject(static function ($name) {
                 return $name === null;
             })
         );
@@ -821,14 +822,6 @@ class Metadata implements MetadataInterface
                             $extendedView->nAnzahlArtikel = (int)$conf['artikeluebersicht_anzahl_darstellung2'];
                         }
                         break;
-                    case \ERWDARSTELLUNG_ANSICHT_MOSAIK:
-                        $extendedView->nDarstellung = \ERWDARSTELLUNG_ANSICHT_MOSAIK;
-                        if (isset($_SESSION['ArtikelProSeite'])) {
-                            $extendedView->nAnzahlArtikel = $_SESSION['ArtikelProSeite'];
-                        } elseif ((int)$conf['artikeluebersicht_anzahl_darstellung3'] > 0) {
-                            $extendedView->nAnzahlArtikel = (int)$conf['artikeluebersicht_anzahl_darstellung3'];
-                        }
-                        break;
                     default: // when given invalid option from wawi attribute
                         $viewType = \ERWDARSTELLUNG_ANSICHT_LISTE;
                         if (isset($conf['artikeluebersicht_erw_darstellung_stdansicht'])
@@ -865,12 +858,6 @@ class Metadata implements MetadataInterface
                         $extendedView->nAnzahlArtikel = (int)$conf['artikeluebersicht_anzahl_darstellung1'];
                     }
                     break;
-                case \ERWDARSTELLUNG_ANSICHT_MOSAIK:
-                    $extendedView->nAnzahlArtikel = \ERWDARSTELLUNG_ANSICHT_ANZAHL_STD;
-                    if ((int)$conf['artikeluebersicht_anzahl_darstellung3'] > 0) {
-                        $extendedView->nAnzahlArtikel = (int)$conf['artikeluebersicht_anzahl_darstellung3'];
-                    }
-                    break;
                 case \ERWDARSTELLUNG_ANSICHT_GALERIE:
                 default:
                     $extendedView->nAnzahlArtikel = \ERWDARSTELLUNG_ANSICHT_ANZAHL_STD;
@@ -889,7 +876,6 @@ class Metadata implements MetadataInterface
 
         $extendedView->cURL_arr[\ERWDARSTELLUNG_ANSICHT_LISTE]   = $naviURL . \ERWDARSTELLUNG_ANSICHT_LISTE;
         $extendedView->cURL_arr[\ERWDARSTELLUNG_ANSICHT_GALERIE] = $naviURL . \ERWDARSTELLUNG_ANSICHT_GALERIE;
-        $extendedView->cURL_arr[\ERWDARSTELLUNG_ANSICHT_MOSAIK]  = $naviURL . \ERWDARSTELLUNG_ANSICHT_MOSAIK;
 
         return $extendedView;
     }

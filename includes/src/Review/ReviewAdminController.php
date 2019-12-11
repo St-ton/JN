@@ -181,7 +181,7 @@ final class ReviewAdminController extends BaseController
         }
         $activePagination   = $this->getActivePagination();
         $inactivePagination = $this->getInactivePagination();
-        $sanitize           = function ($e) {
+        $sanitize           = static function ($e) {
             $e->kBewertung      = (int)$e->kBewertung;
             $e->kArtikel        = (int)$e->kArtikel;
             $e->kKunde          = (int)$e->kKunde;
@@ -316,7 +316,7 @@ final class ReviewAdminController extends BaseController
             $model->delete();
             $cacheTags[] = $model->getProductID();
         }
-        $this->cache->flushTags(map($cacheTags, function ($e) {
+        $this->cache->flushTags(map($cacheTags, static function ($e) {
             return \CACHING_GROUP_ARTICLE . '_' . $e;
         }));
 
@@ -342,7 +342,7 @@ final class ReviewAdminController extends BaseController
             $this->addReward($model);
             $cacheTags[] = $model->getProductID();
         }
-        $this->cache->flushTags(map($cacheTags, function ($e) {
+        $this->cache->flushTags(map($cacheTags, static function ($e) {
             return \CACHING_GROUP_ARTICLE . '_' . $e;
         }));
 

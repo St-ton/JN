@@ -1068,7 +1068,7 @@ class Artikel
      */
     public function __sleep()
     {
-        return select(\array_keys(\get_object_vars($this)), function ($e) {
+        return select(\array_keys(\get_object_vars($this)), static function ($e) {
             return $e !== 'conf';
         });
     }
@@ -1577,7 +1577,7 @@ class Artikel
         foreach ($this->oMerkmale_arr as $item) {
             $name = \preg_replace('/[^öäüÖÄÜßa-zA-Z0-9\.\-_]/u', '', $item->cName);
             if (\mb_strlen($item->cName) > 0) {
-                $values                         = \array_filter(\array_map(function ($e) {
+                $values                         = \array_filter(\array_map(static function ($e) {
                     return $e->cWert ?? null;
                 }, $item->oMerkmalWert_arr));
                 $this->cMerkmalAssoc_arr[$name] = \implode(', ', $values);
@@ -2198,7 +2198,7 @@ class Artikel
                         GROUP BY pref.kEigenschaftWert',
                     ReturnType::ARRAY_OF_OBJECTS
                 );
-                $combinations    = \array_reduce($allCombinations, function ($cArry, $item) {
+                $combinations    = \array_reduce($allCombinations, static function ($cArry, $item) {
                     return (empty($cArry) ? '' : $cArry . ', ') . $item->combine;
                 }, '');
                 $variations      = empty($combinations) ? [] : Shop::Container()->getDB()->query(
@@ -2858,13 +2858,13 @@ class Artikel
         if (\is_string($properties)) {
             $properties = [$properties => \SORT_ASC];
         }
-        \uasort($array, function ($a, $b) use ($properties) {
+        \uasort($array, static function ($a, $b) use ($properties) {
             foreach ($properties as $k => $v) {
                 if (\is_int($k)) {
                     $k = $v;
                     $v = \SORT_ASC;
                 }
-                $collapse = function ($node, $props) {
+                $collapse = static function ($node, $props) {
                     if (\is_array($props)) {
                         foreach ($props as $prop) {
                             $node = $node->$prop ?? null;
@@ -3971,7 +3971,7 @@ class Artikel
         $productID       = $productID > 0 ? $productID : (int)$this->kArtikel;
         $customerGroupID = $customerGroupID > 0 ? $customerGroupID : Frontend::getCustomerGroup()->getID();
 
-        return \array_map(function ($e) {
+        return \array_map(static function ($e) {
             return (int)$e->kKategorie;
         }, Shop::Container()->getDB()->queryPrepared(
             'SELECT tkategorieartikel.kKategorie
@@ -4047,7 +4047,7 @@ class Artikel
                 (int)$this->kVaterArtikel,
                 'fLagerbestand, cLagerBeachten, cLagerKleinerNull'
             );
-            $bLieferbar   = \array_reduce($variChildren, function ($carry, $item) {
+            $bLieferbar   = \array_reduce($variChildren, static function ($carry, $item) {
                 return $carry
                     || $item->fLagerbestand > 0
                     || $item->cLagerBeachten === 'N'
@@ -5015,7 +5015,7 @@ class Artikel
     {
         return reduce_left(select(Frontend::getCart()->PositionenArr ?? [], function ($item) {
             return $item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL && (int)$item->Artikel->kArtikel === $this->kArtikel;
-        }), function ($value, $index, $collection, $reduction) {
+        }), static function ($value, $index, $collection, $reduction) {
             return $reduction + $value->nAnzahl;
         }, 0.0);
     }
@@ -5472,13 +5472,13 @@ class Artikel
         if (empty($shippingFreeCountries)) {
             return $asString ? '' : [];
         }
-        $codes   = \array_filter(map(\explode(',', $shippingFreeCountries), function ($e) {
+        $codes   = \array_filter(map(\explode(',', $shippingFreeCountries), static function ($e) {
             return \trim($e);
         }));
         $cacheID = 'jtl_ola_' . \md5($shippingFreeCountries);
         if (($countries = Shop::Container()->getCache()->get($cacheID)) === false) {
             $countries = Shop::Container()->getCountryService()->getFilteredCountryList($codes)->map(
-                function (Country $country) {
+                static function (Country $country) {
                     return $country->getName();
                 }
             )->toArray();

@@ -51,7 +51,7 @@ export default {
                 step5:          'Database',
                 step6:          'Admin user',
                 step7:          'Scheme',
-                step8:          'Conclusion'
+                step8:          'Summary'
             }
         };
         this.$i18n.add('en', messages.en);

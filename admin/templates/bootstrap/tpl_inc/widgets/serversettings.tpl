@@ -67,21 +67,6 @@
                     {/if}
                 </td>
             </tr>
-
-            {* only show this, if something went wrong *}
-            {if isset($SOAPCheck) }
-            <tr>
-                <td>{__('soapExtension')}</td>
-                <td>{__('no')}</td>
-                <td class="text-right">
-                    {if $SOAPCheck}
-                        {$smarty.capture.testpassed}
-                    {else}
-                        {$smarty.capture.testfailed}
-                    {/if}
-                </td>
-            </tr>
-            {/if}
         </tbody>
     </table>
 </div>

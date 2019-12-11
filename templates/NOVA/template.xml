@@ -67,6 +67,10 @@
             </Setting>
         </Section>
         <Section Name="Listen- und Gallerieansicht" Key="productlist">
+            <Setting Description="aus der Liste heraus einkaufen? (&lt;small&gt;zeigt den Warenkorb-Button in den Artikellisten an&lt;/small&gt;)" Key="buy_productlist" Type="select" Value="Y">
+                <Option Value="Y">Ja</Option>
+                <Option Value="N">Nein</Option>
+            </Setting>
             <Setting Description="Hovereffekt für Zusatzinfos (&lt;small&gt;zeigt Details zum Artikel in einer Hover-Box oder per Tap auf Touchdisplays&lt;/small&gt;)" Key="hover_productlist" Type="select" Value="N">
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
@@ -144,7 +148,7 @@
         </CSS>
         <JS Name="jtl3.js">
             <File Path="js/lazysizes.min.js"/>
-            <File Path="js/jquery.backstretch.min.js"/>
+            <!--<File Path="js/jquery.backstretch.min.js"/>-->
             <!--<File Path="js/jquery.lazy.js"/>-->
             <File Path="js/bootstrap-toolkit.js"/>
             <File Path="js/popper.min.js"/>

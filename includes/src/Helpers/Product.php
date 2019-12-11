@@ -193,7 +193,7 @@ class Product
         $cGroupBy = $group ? 'GROUP BY teigenschaftkombiwert.kEigenschaftWert ' : '';
 
         return \array_map(
-            function ($e) {
+            static function ($e) {
                 $e->kEigenschaft      = (int)$e->kEigenschaft;
                 $e->kEigenschaftKombi = (int)$e->kEigenschaftKombi;
                 $e->kEigenschaftWert  = (int)$e->kEigenschaftWert;
@@ -636,7 +636,7 @@ class Product
     public static function addVariationPictures(Artikel $product, $variationPicturesArr): void
     {
         if (\is_array($variationPicturesArr) && \count($variationPicturesArr) > 0) {
-            $product->Bilder = \array_filter($product->Bilder, function ($item) {
+            $product->Bilder = \array_filter($product->Bilder, static function ($item) {
                 return !(isset($item->isVariation) && $item->isVariation);
             });
             if (\count($variationPicturesArr) === 1) {
@@ -916,7 +916,7 @@ class Product
                 ReturnType::ARRAY_OF_OBJECTS
             );
             if (\count($xsell) > 0) {
-                $xsellgruppen   = group($xsell, function ($e) {
+                $xsellgruppen   = group($xsell, static function ($e) {
                     return $e->kXSellGruppe;
                 });
                 $defaultOptions = Artikel::getDefaultOptions();

@@ -83,10 +83,12 @@ try {
     handleFatal($exc->getMessage());
 }
 require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
-$cache = Shop::Container()->getCache();
-$cache->setJtlCacheConfig($db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING));
-$config = Shop::getSettings([CONF_GLOBAL])['global'];
-$lang   = LanguageHelper::getInstance($db, $cache);
+if (!defined('CLI_BATCHRUN')) {
+    $cache = Shop::Container()->getCache();
+    $cache->setJtlCacheConfig($db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING));
+    $config = Shop::getSettings([CONF_GLOBAL])['global'];
+    $lang   = LanguageHelper::getInstance($db, $cache);
+}
 if (PHP_SAPI !== 'cli'
     && $config['kaufabwicklung_ssl_nutzen'] === 'P'
     && (!isset($_SERVER['HTTPS'])
@@ -108,8 +110,7 @@ if (PHP_SAPI !== 'cli'
         exit();
     }
 }
-
-if (!JTL_INCLUDE_ONLY_DB) {
+if (!JTL_INCLUDE_ONLY_DB && !defined('CLI_BATCHRUN')) {
     $debugbar = Shop::Container()->getDebugBar();
 
     require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';

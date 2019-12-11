@@ -24,18 +24,8 @@ if (Form::validateToken()) {
     $isCKEditor       = Request::verifyGPDataString('ckeditor') === '1';
     $CKEditorFuncNum  = Request::verifyGPDataString('CKEditorFuncNum');
 
-    switch ($mediafilesType) {
-        case 'video':
-            $mediafilesSubdir = 'Videos';
-            break;
-        case 'music':
-            $mediafilesSubdir = 'Musik';
-            break;
-        case 'misc':
-            $mediafilesSubdir = 'Sonstiges';
-            break;
-        default:
-            break;
+    if ($mediafilesType === 'video') {
+        $mediafilesSubdir = PFAD_MEDIA_VIDEO;
     }
 
     if (!empty($elfinderCommand)) {
@@ -44,7 +34,7 @@ if (Form::validateToken()) {
         // run elFinder
         $connector = new elFinderConnector(new elFinder([
             'bind'  => [
-                'rm rename' => function ($cmd, &$result, $args, $elfinder, $volume) use ($mediafilesSubdir) {
+                'rm rename' => static function ($cmd, &$result, $args, $elfinder, $volume) {
                     $sizes = ['xs', 'sm', 'md', 'lg', 'xl'];
 
                     foreach ($result['removed'] as $filename) {

@@ -69,7 +69,7 @@ final class CommentList implements ItemListInterface
             ['nid' => $this->newsID],
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $items = map(group($data, function ($e) {
+        $items = map(group($data, static function ($e) {
             return (int)$e->kNewsKommentar;
         }), function ($e, $commentID) {
             $l = new Comment($this->db);
@@ -100,7 +100,7 @@ final class CommentList implements ItemListInterface
             ['nid' => $this->newsID],
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $items        = map(group($data, function ($e) {
+        $items        = map(group($data, static function ($e) {
             return (int)$e->kNewsKommentar;
         }), function ($e, $commentID) {
             $l = new Comment($this->db);
@@ -122,7 +122,7 @@ final class CommentList implements ItemListInterface
      */
     public function filter(bool $active): Collection
     {
-        return $this->items->filter(function (Comment $e) use ($active) {
+        return $this->items->filter(static function (Comment $e) use ($active) {
             return $e->isActive() === $active;
         });
     }

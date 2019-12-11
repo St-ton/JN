@@ -30,7 +30,7 @@
                             </thead>
                             <tbody>
                             <tr v-for="conf in programs" :key="conf.name">
-                                <td>{{ conf.name }}</td>
+                                <td>{{ $t(conf.name) }}</td>
                                 <td>{{ conf.requiredState }}</td>
                                 <td>
                                 <span class="hidden-xs">
@@ -141,7 +141,10 @@ export default {
                 networkError:               'Netzwerkfehler:',
                 ok:                         'Alles OK.',
                 headerMsg:                  'Serverkonfiguration',
-                leadMsg:                    'Prüft, ob die Serverkonfiguration korrekt ist'
+                leadMsg:                    'Prüft, ob die Serverkonfiguration korrekt ist',
+                Betriebssystem:             'Betriebssystem',
+                'PHP-Version':              'PHP-Version',
+                'PHP-SAPI':                 'PHP-SAPI'
             },
             en: {
                 systemRequirements:         'System requirements',
@@ -164,7 +167,10 @@ export default {
                 networkError:               'Network error:',
                 ok:                         'Everything OK.',
                 headerMsg:                  'Server configuration',
-                leadMsg:                    'Checks your server configuration'
+                leadMsg:                    'Checks your server configuration',
+                Betriebssystem:             'Operating system',
+                'PHP-Version':              'PHP version',
+                'PHP-SAPI':                 'PHP SAPI'
             }
         };
         this.$i18n.add('en', messages.en);

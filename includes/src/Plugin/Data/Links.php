@@ -36,7 +36,7 @@ class Links
      */
     public function load($data): self
     {
-        $data        = map($data, function ($e) {
+        $data        = map($data, static function ($e) {
             return (int)$e->kLink;
         });
         $links       = new LinkList(Shop::Container()->getDB());

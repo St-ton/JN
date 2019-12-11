@@ -490,10 +490,11 @@ class PortletInstance implements \JsonSerializable
             ];
         }
         $this->generateAllImageSizes(true, 1, \rawurldecode(\basename($src)));
-        foreach ($this->getImages() as $size => $i) {
+        foreach ($this->getImages()[1] as $size => $url) {
+            $url   = \str_replace(' ', '%20', $url);
             $width = self::$dirSizes[$size] ?? null;
             if ($width !== null) {
-                $srcset .= $i . ' ' . $width . 'w,';
+                $srcset .= $url . ' ' . $width . 'w,';
             }
         }
         $srcset = \mb_substr($srcset, 0, -1); // remove trailing comma
@@ -537,7 +538,7 @@ class PortletInstance implements \JsonSerializable
         return [
             'srcset'   => $srcset,
             'srcsizes' => $srcsizes,
-            'src'      => $this->getImage(),
+            'src'      => \str_replace(' ', '%20', $this->getImage()),
             'alt'      => $alt,
             'title'    => $title,
         ];

@@ -13,6 +13,7 @@ use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
 use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;
+use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
 use function Functional\map;
@@ -265,7 +266,7 @@ class Item extends AbstractItem
                 WHERE tnewskategorienews.kNews = :nid',
             ['nid' => $this->id],
             ReturnType::ARRAY_OF_OBJECTS
-        ), function ($e) {
+        ), static function ($e) {
             return (int)$e->kNewsKategorie;
         });
     }
@@ -310,7 +311,7 @@ class Item extends AbstractItem
                 }
             }
 
-            \usort($images, function ($a, $b) {
+            \usort($images, static function ($a, $b) {
                 return \strcmp($a->cName, $b->cName);
             });
         }
@@ -609,7 +610,7 @@ class Item extends AbstractItem
     {
         $idx = $idx ?? Shop::getLanguageID();
 
-        return $this->metaTitles[$idx] ?? '';
+        return $this->isVisible ? ($this->metaTitles[$idx] ?? '') : '';
     }
 
     /**
@@ -635,7 +636,7 @@ class Item extends AbstractItem
     {
         $idx = $idx ?? Shop::getLanguageID();
 
-        return $this->metaKeywords[$idx] ?? '';
+        return $this->isVisible ? ($this->metaKeywords[$idx] ?? '') : '';
     }
 
     /**
@@ -669,7 +670,7 @@ class Item extends AbstractItem
     {
         $idx = $idx ?? Shop::getLanguageID();
 
-        return $this->metaDescriptions[$idx] ?? '';
+        return $this->isVisible ? ($this->metaDescriptions[$idx] ?? '') : '';
     }
 
     /**
@@ -703,7 +704,7 @@ class Item extends AbstractItem
     {
         $idx = $idx ?? Shop::getLanguageID();
 
-        return $this->previews[$idx] ?? '';
+        return $this->isVisible ? ($this->previews[$idx] ?? '') : '';
     }
 
     /**
@@ -737,7 +738,7 @@ class Item extends AbstractItem
     {
         $idx = $idx ?? Shop::getLanguageID();
 
-        return $this->previewImages[$idx] ?? '';
+        return $this->isVisible ? ($this->previewImages[$idx] ?? '') : '';
     }
 
     /**

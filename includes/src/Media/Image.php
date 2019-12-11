@@ -311,7 +311,7 @@ class Image
             $item->path         = \PFAD_ROOT . \PFAD_BRANDINGBILDER . $item->path;
         }
 
-        return reindex($data, function ($e) {
+        return reindex($data, static function ($e) {
             return $e->type;
         });
     }
@@ -410,11 +410,11 @@ class Image
         $maxHeight    = $containerDim->getHeight();
         if ($maxWidth > 0 && $maxHeight > 0) {
             if ($settings['scale'] === true || $img->getWidth() > $maxWidth || $img->getHeight() > $maxHeight) {
-                $img->resize($maxWidth, $maxHeight, function (Constraint $constraint) {
+                $img->resize($maxWidth, $maxHeight, static function (Constraint $constraint) {
                     $constraint->aspectRatio();
                 });
             }
-            if ($settings['container'] === true && $req->getType() !== Image::TYPE_OPC) {
+            if ($settings['container'] === true && $req->getType() !== self::TYPE_OPC) {
                 $background = $req->getExt() === 'png' ? 'rgba(0,0,0,0)' : $settings['background'];
                 $img->resizeCanvas($maxWidth, $maxHeight, 'center', false, $background);
             }
@@ -439,7 +439,7 @@ class Image
             $brandHeight = \round(($brandWidth / $watermark->getWidth()) * $watermark->getHeight());
             $newWidth    = \min($watermark->getWidth(), $brandWidth);
             $newHeight   = \min($watermark->getHeight(), $brandHeight);
-            $watermark->resize($newWidth, $newHeight, function (Constraint $constraint) {
+            $watermark->resize($newWidth, $newHeight, static function (Constraint $constraint) {
                 $constraint->aspectRatio();
             });
             $watermark->opacity($branding->transparency);

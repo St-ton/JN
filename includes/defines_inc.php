@@ -329,7 +329,6 @@ define('SHOPLOGO_NAME', 'jtlshoplogo');
 // Erweiterte Artikelübersicht Darstellung
 define('ERWDARSTELLUNG_ANSICHT_LISTE', 1); // Standard
 define('ERWDARSTELLUNG_ANSICHT_GALERIE', 2);
-define('ERWDARSTELLUNG_ANSICHT_MOSAIK', 3);
 define('ERWDARSTELLUNG_ANSICHT_ANZAHL_STD', 25); // Standard
 // LastJobs
 define('LASTJOBS_INTERVALL', 12); // Intervall in Stunden

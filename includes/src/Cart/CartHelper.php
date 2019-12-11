@@ -175,7 +175,7 @@ class CartHelper
             $info->discount[self::GROSS] +
             $info->surcharge[self::GROSS];
 
-        $formatter = function ($prop) use ($decimals) {
+        $formatter = static function ($prop) use ($decimals) {
             return [
                 self::NET   => \number_format($prop[self::NET], $decimals, '.', ''),
                 self::GROSS => \number_format($prop[self::GROSS], $decimals, '.', ''),
@@ -1237,7 +1237,7 @@ class CartHelper
                 $_SESSION['variBoxAnzahl_arr'][$key] = $variKombi;
                 $attributes[$key]                    = new stdClass();
                 $attributes[$key]->kArtikel          = $productID;
-                $attributes[$key]->oEigenschaft_arr  = \array_map(function ($a) use ($properties) {
+                $attributes[$key]->oEigenschaft_arr  = \array_map(static function ($a) use ($properties) {
                     return (object)[
                         'kEigenschaft'     => $a,
                         'kEigenschaftWert' => $properties[$a],
@@ -1838,10 +1838,10 @@ class CartHelper
             return $xSelling;
         }
         $productIDs = map(
-            filter($cartItems, function ($p) {
+            filter($cartItems, static function ($p) {
                 return isset($p->Artikel->kArtikel);
             }),
-            function ($p) {
+            static function ($p) {
                 return (int)$p->Artikel->kArtikel;
             }
         );

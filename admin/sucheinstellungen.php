@@ -63,7 +63,7 @@ if (Request::getVar('action') === 'createIndex') {
     }
 
     if (Request::getVar('create') === 'Y') {
-        $searchCols = array_map(function ($item) {
+        $searchCols = array_map(static function ($item) {
             return explode('.', $item, 2)[1];
         }, JTL\Filter\States\BaseSearchQuery::getSearchRows());
 

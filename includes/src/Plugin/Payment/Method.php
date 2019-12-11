@@ -551,7 +551,7 @@ class Method implements MethodInterface
     /**
      * @inheritDoc
      */
-    public function getCache(?string $cKey = null): ?string
+    public function getCache(?string $cKey = null)
     {
         if ($cKey === null) {
             return $_SESSION[$this->moduleID] ?? null;
@@ -692,9 +692,9 @@ class Method implements MethodInterface
                     return null;
                 }
                 $className = $pluginPaymentMethod->getClassName();
-                if (class_exists($className)) {
+                if (\class_exists($className)) {
                     $paymentMethod = new $className($moduleID, $nAgainCheckout);
-                    if (!is_a($paymentMethod, MethodInterface::class)) {
+                    if (!\is_a($paymentMethod, MethodInterface::class)) {
                         unset($paymentMethod);
                         $paymentMethod = null;
                     }

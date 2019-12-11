@@ -871,7 +871,7 @@ final class Shop
                     ORDER BY nPrio ASC',
                 ['state' => State::ACTIVATED],
                 ReturnType::ARRAY_OF_OBJECTS
-            ) ?: [], function ($e) {
+            ) ?: [], static function ($e) {
                 $e->kPlugin    = (int)$e->kPlugin;
                 $e->bBootstrap = (int)$e->bBootstrap;
                 $e->bExtension = (int)$e->bExtension;
@@ -1326,7 +1326,7 @@ final class Shop
                 } elseif ($results === 0) {
                     self::$bHerstellerFilterNotFound = true;
                 } else {
-                    self::$kHerstellerFilter = \array_map(function ($e) {
+                    self::$kHerstellerFilter = \array_map(static function ($e) {
                         return (int)$e->kKey;
                     }, $oSeo);
                 }
@@ -1519,7 +1519,7 @@ final class Shop
             self::setPageType(\PAGE_ARTIKELLISTE);
         } elseif (!self::$kLink) {
             //check path
-            $path        = self::getRequestUri();
+            $path        = self::getRequestUri(true);
             $requestFile = '/' . \ltrim($path, '/');
             if ($requestFile === '/index.php') {
                 // special case: /index.php shall be redirected to Shop-URL
@@ -1903,9 +1903,10 @@ final class Shop
     }
 
     /**
+     * @param bool $decoded - true to decode %-sequences in the URI, false to leave them unchanged
      * @return string
      */
-    public static function getRequestUri(): string
+    public static function getRequestUri(bool $decoded = false): string
     {
         $uri         = $_SERVER['HTTP_X_REWRITE_URL'] ?? $_SERVER['REQUEST_URI'];
         $shopURLdata = \parse_url(self::getURL());
@@ -1915,9 +1916,15 @@ final class Shop
             $shopURLdata['path'] = '/';
         }
 
-        return isset($baseURLdata['path'])
+        $uri = isset($baseURLdata['path'])
             ? \mb_substr($baseURLdata['path'], \mb_strlen($shopURLdata['path']))
             : '';
+
+        if ($decoded) {
+            $uri = \rawurldecode($uri);
+        }
+
+        return $uri;
     }
 
     /**
@@ -1934,7 +1941,7 @@ final class Shop
         $adminToken   = null;
         $adminLangTag = null;
 
-        $isLogged = function () {
+        $isLogged = static function () {
             return self::Container()->getAdminAccount()->logged();
         };
 
@@ -2029,7 +2036,7 @@ final class Shop
         $container         = new Services\Container();
         static::$container = $container;
 
-        $container->singleton(DbInterface::class, function () {
+        $container->singleton(DbInterface::class, static function () {
             return new NiceDB(\DB_HOST, \DB_USER, \DB_PASS, \DB_NAME);
         });
 
@@ -2047,11 +2054,11 @@ final class Shop
 
         $container->singleton(CountryServiceInterface::class, CountryService::class);
 
-        $container->singleton(JTLDebugBar::class, function (Container $container) {
+        $container->singleton(JTLDebugBar::class, static function (Container $container) {
             return new JTLDebugBar($container->getDB()->getPDO(), Shopsetting::getInstance()->getAll());
         });
 
-        $container->singleton('BackendAuthLogger', function (Container $container) {
+        $container->singleton('BackendAuthLogger', static function (Container $container) {
             $loggingConf = self::getConfig([\CONF_GLOBAL])['global']['admin_login_logger_mode'] ?? [];
             $handlers    = [];
             foreach ($loggingConf as $value) {
@@ -2067,7 +2074,7 @@ final class Shop
             return new Logger('auth', $handlers, [new PsrLogMessageProcessor()]);
         });
 
-        $container->singleton(LoggerInterface::class, function (Container $container) {
+        $container->singleton(LoggerInterface::class, static function (Container $container) {
             $handler = (new NiceDBHandler($container->getDB(), self::getConfigValue(\CONF_GLOBAL, 'systemlog_flag')))
                 ->setFormatter(new LineFormatter('%message%', null, true, true));
 
@@ -2076,14 +2083,14 @@ final class Shop
 
         $container->alias(LoggerInterface::class, 'Logger');
 
-        $container->singleton(ValidationServiceInterface::class, function () {
+        $container->singleton(ValidationServiceInterface::class, static function () {
             $vs = new ValidationService($_GET, $_POST, $_COOKIE);
             $vs->setRuleSet('identity', (new RuleSet())->integer()->gt(0));
 
             return $vs;
         });
 
-        $container->bind(JTLApi::class, function (Container $container) {
+        $container->bind(JTLApi::class, static function () {
             // return new JTLApi($_SESSION, $container->make(Nice::class));
             return new JTLApi($_SESSION, Nice::getInstance());
         });
@@ -2100,11 +2107,11 @@ final class Shop
 
         $container->singleton(Locker::class);
 
-        $container->bind(BoxFactoryInterface::class, function () {
+        $container->bind(BoxFactoryInterface::class, static function () {
             return new BoxFactory(Shopsetting::getInstance()->getAll());
         });
 
-        $container->singleton(BoxServiceInterface::class, function (Container $container) {
+        $container->singleton(BoxServiceInterface::class, static function (Container $container) {
             $smarty = self::Smarty();
 
             return new BoxService(
@@ -2117,7 +2124,7 @@ final class Shop
             );
         });
 
-        $container->singleton(CaptchaServiceInterface::class, function () {
+        $container->singleton(CaptchaServiceInterface::class, static function () {
             return new CaptchaService(new SimpleCaptchaService(
                 !(Frontend::get('bAnti_spam_already_checked', false) || Frontend::getCustomer()->isLoggedIn())
             ));
@@ -2125,7 +2132,7 @@ final class Shop
 
         $container->singleton(GetText::class);
 
-        $container->singleton(AdminAccount::class, function (Container $container) {
+        $container->singleton(AdminAccount::class, static function (Container $container) {
             return new AdminAccount(
                 $container->getDB(),
                 $container->getBackendLogService(),
@@ -2135,13 +2142,13 @@ final class Shop
             );
         });
 
-        $container->singleton(Filesystem::class, function (Container $container) {
+        $container->singleton(Filesystem::class, static function () {
             $factory = new AdapterFactory(self::getConfig([\CONF_FS])['fs']);
 
             return new Filesystem($factory->getAdapter());
         });
 
-        $container->bind(Mailer::class, function (Container $container) {
+        $container->bind(Mailer::class, static function (Container $container) {
             $db        = $container->getDB();
             $settings  = Shopsetting::getInstance();
             $smarty    = new SmartyRenderer(new MailSmarty($db));

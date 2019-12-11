@@ -26,9 +26,9 @@
                         {/if}
                         {block name="productlist-item-list-images"}
                             <div class="productbox-images">
-                                <div class="clearfix list-gallery carousel carousel-btn-arrows">
+                                <div class="clearfix list-gallery slick-smooth-loading carousel carousel-btn-arrows">
                                     {block name="productlist-item-list-image-desktop"}
-                                        <div class="list-gallery carousel carousel-arrows-inside carousel-btn-arrows">
+                                        <div class="list-gallery slick-smooth-loading carousel carousel-arrows-inside carousel-btn-arrows">
                                             {foreach $Artikel->Bilder as $image}
                                                 {strip}
                                                     <div>
@@ -264,8 +264,12 @@
                             {/block}
                             {block name='productlist-item-list-basket-details'}
                                 <div class="form-row productbox-onhover productbox-actions mt-5">
-                                    {if ($Artikel->inWarenkorbLegbar === 1 || ($Artikel->nErscheinendesProdukt === 1 && $Einstellungen.global.global_erscheinende_kaeuflich === 'Y'))
-                                    && (($Artikel->nIstVater === 0 && $Artikel->Variationen|@count === 0) || $hasOnlyListableVariations === 1) && !$Artikel->bHasKonfig}
+                                    {if ($Artikel->inWarenkorbLegbar === 1
+                                            || ($Artikel->nErscheinendesProdukt === 1 && $Einstellungen.global.global_erscheinende_kaeuflich === 'Y'))
+                                        && (($Artikel->nIstVater === 0 && $Artikel->Variationen|@count === 0)
+                                            || $hasOnlyListableVariations === 1)
+                                        && !$Artikel->bHasKonfig
+                                        && $Einstellungen.template.productlist.buy_productlist === 'Y'}
                                         {if $Artikel->nIstVater && $Artikel->kVaterArtikel == 0}
                                             {col cols=12}
                                                 {block name='productlist-item-list-basket-details-variations'}

@@ -195,11 +195,11 @@ class Template
             ['state' => State::ACTIVATED],
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $grouped    = group($resourcesc, function ($e) {
+        $grouped    = group($resourcesc, static function ($e) {
             return $e->type;
         });
         if (isset($grouped['js'])) {
-            $grouped['js'] = group($grouped['js'], function ($e) {
+            $grouped['js'] = group($grouped['js'], static function ($e) {
                 return $e->position;
             });
         }

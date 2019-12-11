@@ -268,7 +268,7 @@ class AdminAccountManager
                         'loginID'    => $account->kAdminlogin,
                         'loginName'  => $key,
                         'attribVal'  => $shortText,
-                        'attribText' => $longText ?? 'NULL'
+                        'attribText' => $longText ?? null
                     ],
                     ReturnType::DEFAULT
                 ) === 0) {
@@ -354,7 +354,7 @@ class AdminAccountManager
 
         if ($imgType !== false) {
             $imagePath = \PFAD_MEDIA_IMAGE . 'avatare/';
-            $imageName = \pathinfo($tmpFile['name'][$attribName], \PATHINFO_FILENAME)
+            $imageName = time() . '_' .\pathinfo($tmpFile['name'][$attribName], \PATHINFO_FILENAME)
                 . \image_type_to_extension($imgType);
             if (\is_dir(\PFAD_ROOT . $imagePath) || \mkdir(\PFAD_ROOT . $imagePath, 0755)) {
                 if (\move_uploaded_file($tmpFile['tmp_name'][$attribName], \PFAD_ROOT . $imagePath . $imageName)) {

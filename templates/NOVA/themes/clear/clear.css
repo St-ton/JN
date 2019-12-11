@@ -23680,6 +23680,10 @@ body {
   background-color: #ffffff !important;
 }
 
+.cursor-pointer {
+  cursor: pointer;
+}
+
 /* utilities */
 .rounded-top-left {
   border-top-left-radius: 0.125rem !important;

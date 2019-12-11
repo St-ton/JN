@@ -49,14 +49,14 @@
             {block name='productdetails-stock-estimated-delivery'}
                 {if $Artikel->cEstimatedDelivery}
                     <li>
-                        <div class="estimated-delivery">
+                        <div class="estimated-delivery cursor-pointer"
+                             data-toggle="popover"
+                             data-placement="top"
+                             data-content="{lang key='shippingInformation' section='productDetails' printf={$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}}">
                             {if !isset($shippingTime)}{lang key='shippingTime'}:{/if}
-                            <span class="a{$Artikel->Lageranzeige->nStatus}">{$Artikel->cEstimatedDelivery}</span>
-                            <span class="fa fa-info-circle"
-                                  data-toggle="popover"
-                                  data-placement="top"
-                                  data-trigger="click"
-                                  data-content="{lang key='shippingInformation' section='productDetails' printf={$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}}">
+                            <span class="a{$Artikel->Lageranzeige->nStatus} text-nowrap">
+                                {$Artikel->cEstimatedDelivery}
+                                <span class="fa fa-info-circle"></span>
                             </span>
                         </div>
                     </li>

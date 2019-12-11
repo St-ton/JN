@@ -255,7 +255,6 @@
              * <div id="popover-content123" class="popover">content here</div>
              */
             $('[data-toggle="popover"]').popover({
-                trigger: 'hover',
                 html: true,
                 sanitize: false,
                 content: function() {

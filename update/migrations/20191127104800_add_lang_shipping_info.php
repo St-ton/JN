@@ -28,15 +28,15 @@ class Migration_20191127104800 extends Migration implements IMigration
             'ger',
             'productDetails',
             'shippingInformation',
-            'Angegebene Lieferzeiten gelten für den Versand innerhalb Deutschlands. Die Lieferzeiten' .
-            ' für den Versand ins Ausland finden Sie unter unseren <a href=\'%s\'>Versandinformationen</a>'
+            "Die angegebenen Lieferzeiten gelten für den Versand innerhalb Deutschlands. Die Lieferzeiten für den " .
+            "Versand ins Ausland finden Sie in unseren <a href=\'%s\'>Versandinformationen</a>."
         );
         $this->setLocalization(
             'eng',
             'productDetails',
             'shippingInformation',
-            'Angegebene Lieferzeiten gelten für den Versand innerhalb Deutschlands. Die Lieferzeiten' .
-            ' für den Versand ins Ausland finden Sie unter unseren <a href=\'%s\'>Versandinformationen</a>'
+            "The indicated delivery times refer to shipments within Germany. For information on the delivery times " .
+            "for shipments to other countries, please see the  <a href=\'%s\'>Shipping information</a>."
         );
     }
 

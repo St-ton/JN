@@ -551,7 +551,7 @@ class Method implements MethodInterface
     /**
      * @inheritDoc
      */
-    public function getCache(?string $cKey = null): ?string
+    public function getCache(?string $cKey = null)
     {
         if ($cKey === null) {
             return $_SESSION[$this->moduleID] ?? null;

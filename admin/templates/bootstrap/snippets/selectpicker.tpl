@@ -11,6 +11,7 @@
             selectAllText: {/literal}'{__('selectPickerSelectAllText')}'{literal},
             deselectAllText: {/literal}'{__('selectPickerDeselectAllText')}'{literal},
             doneButtonText: {/literal}'{__('close')}'{literal},
+            style: ''
         });
     {/literal}
 </script>

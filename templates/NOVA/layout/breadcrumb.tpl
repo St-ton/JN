@@ -10,13 +10,15 @@
             {col cols="auto"}
                 {breadcrumb id="breadcrumb" itemprop="breadcrumb" itemscope=true itemtype="http://schema.org/BreadcrumbList" class="p-0 py-2 mb-0"}
                     {block name='layout-breadcrumb-sm-back'}
-                        {$parent = $Brotnavi[$Brotnavi|count -2|max:0]}
-                        {breadcrumbitem class="d-flex d-md-none breadcrumb-arrow"
-                            href=$parent->getURLFull()
-                            title=$parent->getName()|escape:'html'
-                        }
-                            <span itemprop="name">{$parent->getName()}</span>
-                        {/breadcrumbitem}
+                        {$parent = $Brotnavi[($Brotnavi|count - 2)|max:0]}
+                        {if $parent !== null}
+                            {breadcrumbitem class="d-flex d-md-none breadcrumb-arrow"
+                                href=$parent->getURLFull()
+                                title=$parent->getName()|escape:'html'
+                            }
+                                <span itemprop="name">{$parent->getName()}</span>
+                            {/breadcrumbitem}
+                        {/if}
                     {/block}
                     {block name='layout-breadcrumb-items'}
                         {foreach $Brotnavi as $oItem}

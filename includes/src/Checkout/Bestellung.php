@@ -453,8 +453,11 @@ class Bestellung
         if ($this->kKunde !== null && $this->kKunde > 0) {
             $customer = new Customer($this->kKunde);
             if ($customer->kKunde !== null && $customer->kKunde > 0) {
-                unset($customer->cPasswort, $customer->fRabatt, $customer->fGuthaben, $customer->cUSTID);
-                $this->oKunde = $customer;
+                $customer->cPasswort = null;
+                $customer->fRabatt   = null;
+                $customer->fGuthaben = null;
+                $customer->cUSTID    = null;
+                $this->oKunde        = $customer;
             }
         }
 
@@ -465,7 +468,7 @@ class Bestellung
         );
         $this->BestellstatusURL = Shop::getURL() . '/status.php?uid=' . $orderState->cUID;
         $sum                    = $db->query(
-            'SELECT sum(((fPreis*fMwSt)/100+fPreis)*nAnzahl) AS wert
+            'SELECT SUM(((fPreis * fMwSt)/100 + fPreis) * nAnzahl) AS wert
                 FROM twarenkorbpos
                 WHERE kWarenkorb = ' . (int)$this->kWarenkorb,
             ReturnType::SINGLE_OBJECT

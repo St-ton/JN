@@ -3507,17 +3507,18 @@ class Artikel
                 : new DateTime($this->dSonderpreisEnde_en);
             $return    = ($startDate > $today || $endDate < $today);
         }
-        if ($return === true) {
-            $this->cacheHit = true;
-            $this->addVariationChildren($customerGroupID);
-            \executeHook(\HOOK_ARTIKEL_CLASS_FUELLEARTIKEL, [
-                'oArtikel'  => &$this,
-                'cacheTags' => [],
-                'cached'    => true
-            ]);
-
-            return $this;
+        if ($return !== true) {
+            return null;
         }
+        $this->cacheHit = true;
+        $this->addVariationChildren($customerGroupID);
+        \executeHook(\HOOK_ARTIKEL_CLASS_FUELLEARTIKEL, [
+            'oArtikel'  => &$this,
+            'cacheTags' => [],
+            'cached'    => true
+        ]);
+
+        return $this;
     }
 
     /**
@@ -4176,6 +4177,7 @@ class Artikel
      */
     private function getStockDisplay(): self
     {
+        $this->Lageranzeige = new stdClass();
         if ($this->cLagerBeachten === 'Y') {
             if ($this->fLagerbestand > 0) {
                 $this->Lageranzeige->cLagerhinweis['genau']          = $this->fLagerbestand . ' ' .
@@ -5348,21 +5350,19 @@ class Artikel
      */
     private function formatTax($taxRate)
     {
-        if ($taxRate >= 0) {
-            $mwst2   = \number_format((float)$taxRate, 2, ',', '.');
-            $mwst1   = \number_format((float)$taxRate, 1, ',', '.');
-            $taxRate = (int)$taxRate;
-            if ($mwst2{\mb_strlen($mwst2) - 1} != '0') {
-                return $mwst2;
-            }
-            if ($mwst1{\mb_strlen($mwst1) - 1} != '0') {
-                return $mwst1;
-            }
-
-            return $taxRate;
+        if ($taxRate <= 0) {
+            return '';
+        }
+        $mwst2 = \number_format((float)$taxRate, 2, ',', '.');
+        $mwst1 = \number_format((float)$taxRate, 1, ',', '.');
+        if ($mwst2[\mb_strlen($mwst2) - 1] !== '0') {
+            return $mwst2;
+        }
+        if ($mwst1[\mb_strlen($mwst1) - 1] !== '0') {
+            return $mwst1;
         }
 
-        return '';
+        return (int)$taxRate;
     }
 
     /**

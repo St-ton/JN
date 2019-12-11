@@ -67,6 +67,6 @@ class FilesCommand extends Command
             'Creating archive [%bar%] %percent:3s%%'
         )
             ->newLine()
-            ->success("Archive '{$archive}' created.");
+            ->success('Archive "' . $archive . '" created.');
     }
 }

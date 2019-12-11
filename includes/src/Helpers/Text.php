@@ -725,15 +725,16 @@ class Text
                         $locSQL = ' AND tartikelsprache.kSprache = ' . Shop::getLanguageID();
                     }
                     $data = Shop::Container()->getDB()->query(
-                        "SELECT {$table}.kArtikel, {$table}.cName, tseo.cSeo
-                            FROM {$table}
+                        'SELECT ' . $table . '.kArtikel, ' . $table . '.cName, tseo.cSeo
+                            FROM ' . $table . "
                             LEFT JOIN tseo
                                 ON tseo.cKey = 'kArtikel'
-                                AND tseo.kKey = {$table}.kArtikel
-                                AND tseo.kSprache = {$languageID}
-                            WHERE {$table}.kArtikel = " . (int)$keyName . $locSQL,
+                                AND tseo.kKey = " . $table . '.kArtikel
+                                AND tseo.kSprache = ' . $languageID . '
+                            WHERE ' . $table . '.kArtikel = ' . (int)$keyName . $locSQL,
                         ReturnType::SINGLE_OBJECT
                     );
+
 
                     if (isset($data->kArtikel) && $data->kArtikel > 0) {
                         $exists      = true;

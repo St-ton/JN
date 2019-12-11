@@ -14,6 +14,7 @@ use JTL\Filter\ProductFilter;
 use JTL\Filter\SearchResults;
 use JTL\Nice;
 use JTL\Shop;
+use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
 
 /**
@@ -235,7 +236,9 @@ class Wizard
      */
     public function fetchForm($smarty): string
     {
-        return $smarty->assign('AWA', $this)->fetch('selectionwizard/form.tpl');
+        return $smarty->assign('AWA', $this)
+            ->assign('Einstellungen', Shopsetting::getInstance()->getAll())
+            ->fetch('selectionwizard/form.tpl');
     }
 
     /**

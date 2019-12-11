@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -44,6 +44,7 @@ switch ($controller->getPageType($params)) {
         $newsItemID = $params['kNews'];
         $newsItem   = new Item($db);
         $newsItem->load($newsItemID);
+        $newsItem->checkVisibility(Frontend::getCustomer()->getGroupID());
 
         $cMetaTitle       = $newsItem->getMetaTitle();
         $cMetaDescription = $newsItem->getMetaDescription();

@@ -7,11 +7,12 @@
 namespace JTL\Cart;
 
 use JTL\Alert\Alert;
+use JTL\Campaign;
+use JTL\Catalog\ComparisonList;
 use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\EigenschaftWert;
 use JTL\Catalog\Product\Preise;
-use JTL\Catalog\ComparisonList;
 use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Checkout\Kupon;
 use JTL\Checkout\Lieferadresse;
@@ -26,7 +27,6 @@ use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
-use JTL\Campaign;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;

@@ -2,7 +2,11 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="configModalTitle">{__('Edit Portlet')}</h5>
+                <h5 class="modal-title" id="configModalTitle">
+                    {__('editPortletPrefix')}
+                    <span id="configPortletName"></span>
+                    {__('editPortletPostfix')}
+                </h5>
                 <button type="button" class="opc-header-btn" data-toggle="tooltip" data-dismiss="modal"
                         data-placement="bottom">
                     <i class="fa fas fa-times"></i>

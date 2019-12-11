@@ -367,7 +367,7 @@ msgstr "Übersicht"
 msgid "Plug-in marketplace"
 msgstr "Plugin-Marktplatz"
 
-msgid "Plug-in managern"
+msgid "Plug-in manager"
 msgstr "Plugin-Manager"
 
 msgid "Plug-in profiler"

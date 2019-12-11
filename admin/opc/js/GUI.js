@@ -29,6 +29,7 @@ class GUI
             'errorAlert',
             'configModal',
             'configModalTitle',
+            'configPortletName',
             'configModalBody',
             'configForm',
             'stdConfigButtons',
@@ -377,7 +378,7 @@ class GUI
             }
 
             this.configModalBody.html(html);
-            this.configModalTitle[0].innerText = portletData.title + ' bearbeiten';
+            this.configPortletName[0].textContent = portletData.title;
             this.configModal.modal('show');
         });
 

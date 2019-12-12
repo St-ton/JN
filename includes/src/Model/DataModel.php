@@ -918,15 +918,39 @@ abstract class DataModel implements DataModelInterface, Iterator
     protected function updateChildModels(): self
     {
         foreach ($this->getChildModels() as $childModel) {
-            if (\is_a($childModel, Collection::class)) {
-                $childModel->each(function (DataModelInterface $model) {
-                    $model->setDB($this->db);
-                    $model->save();
-                });
+            if (!\is_a($childModel, Collection::class)) {
+                continue;
             }
+            $childModel->each(function (DataModelInterface $model) {
+                $class = \get_class($model);
+                foreach ($this->getKeyUpdates($class) as $k => $v) {
+                    $model->$k = $v;
+                }
+                $model->setDB($this->db);
+                $model->save();
+            });
         }
 
         return $this;
+    }
+
+    /**
+     * update foreign key constraints for child models after creating parent model
+     *
+     * @param string $className
+     * @return array
+     */
+    protected function getKeyUpdates(string $className): array
+    {
+        foreach ($this->getAttributes() as $attribute) {
+            if ($attribute->getDataType() === $className && ($key = $attribute->getForeignKey()) !== null) {
+                $foreignKey = $attribute->getForeignKeyChild() ?? $key;
+
+                return [$foreignKey => $this->$key];
+            }
+        }
+
+        return [];
     }
 
     /**

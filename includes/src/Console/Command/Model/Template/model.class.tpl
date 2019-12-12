@@ -54,34 +54,34 @@ final class {$modelName} extends DataModel
         parent::onRegisterHandlers();
 {foreach $tableDesc as $attribute}
     {if $attribute->rawType === 'datetime'}
-        $this->registerGetter({$attribute->name}, function ($value, $default) {
+        $this->registerGetter({$attribute->name}, static function ($value, $default) {
             return ModelHelper::fromStrToDateTime($value, $default);
         });
-        $this->registerSetter({$attribute->name}, function ($value) {
+        $this->registerSetter({$attribute->name}, static function ($value) {
             return ModelHelper::fromDateTimeToStr($value);
         });
     {/if}
     {if $attribute->rawType === 'date'}
-        $this->registerGetter({$attribute->name}, function ($value, $default) {
+        $this->registerGetter({$attribute->name}, static function ($value, $default) {
             return ModelHelper::fromStrToDate($value, $default);
         });
-        $this->registerSetter({$attribute->name}, function ($value) {
+        $this->registerSetter({$attribute->name}, static function ($value) {
             return ModelHelper::fromDateToStr($value);
         });
     {/if}
     {if $attribute->rawType === 'time'}
-        $this->registerGetter({$attribute->name}, function ($value, $default) {
+        $this->registerGetter({$attribute->name}, static function ($value, $default) {
             return ModelHelper::fromStrToTime($value, $default);
         });
-        $this->registerSetter({$attribute->name}, function ($value) {
+        $this->registerSetter({$attribute->name}, static function ($value) {
             return ModelHelper::fromTimeToStr($value);
         });
     {/if}
     {if $attribute->rawType === 'timestamp'}
-        $this->registerGetter({$attribute->name}, function ($value, $default) {
+        $this->registerGetter({$attribute->name}, static function ($value, $default) {
             return ModelHelper::fromStrToTimestamp($value, $default);
         });
-        $this->registerSetter({$attribute->name}, function ($value) {
+        $this->registerSetter({$attribute->name}, static function ($value) {
             return ModelHelper::fromTimestampToStr($value);
         });
     {/if}

@@ -7,8 +7,6 @@
 namespace JTL\Widgets;
 
 use JTL\Helpers\PHPSettings;
-use Systemcheck\Environment;
-use Systemcheck\Tests\Shop5\PhpSoapExtension;
 
 /**
  * Class ServerSettings

@@ -75,7 +75,6 @@ if (!PHPSettings::getInstance()->hasMinLimit(64 * 1024 * 1024)) {
 }
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
-require_once PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
 
 try {
     $db = Shop::Container()->getDB();

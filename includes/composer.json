@@ -28,6 +28,8 @@
         "jtlshop/shop5-systemcheck": "dev-master",
         "jtlshop/sccbs3": "dev-master",
         "jtlshop/scc": "dev-master",
+        "jtlshop/phpquery": "dev-master",
+        "jtlshop/xtea": "dev-master",
         "smarty/smarty": "~3.1",
         "jdorn/sql-formatter": "^1.2",
         "phpmyadmin/sql-parser": "^3.4",
@@ -89,6 +91,14 @@
         {
             "type": "vcs",
             "url": "https://gitlab.com/jtl-software/oauth2/client.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://gitlab.com/jtl-software/jtl-shop/tools/phpquery.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://gitlab.com/jtl-software/jtl-shop/tools/xtea.git"
         }
 
     ],

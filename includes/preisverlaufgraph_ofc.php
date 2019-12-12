@@ -10,7 +10,6 @@ use JTL\Session\Frontend;
 use JTL\Shop;
 
 require_once __DIR__ . '/globalinclude.php';
-require_once PFAD_ROOT . PFAD_FLASHCHART . 'php-ofc-library/open-flash-chart.php';
 
 [$_GET['kArtikel'], $_GET['kKundengruppe'], $_GET['kSteuerklasse'], $_GET['fMwSt']] = explode(';', $_GET['cOption']);
 

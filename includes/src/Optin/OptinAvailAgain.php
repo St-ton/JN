@@ -7,11 +7,11 @@
 namespace JTL\Optin;
 
 use JTL\Alert\Alert;
+use JTL\Campaign;
 use JTL\CheckBox;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
-use JTL\Campaign;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Session\Frontend;

@@ -218,7 +218,7 @@ class IpAnonymizer
         $len                 = \count($ipParts);
         ($len === 4) ? $glue = '.' : $glue = ':';
         for ($i = 0; $i < $len; $i++) {
-            (\hexdec($maskParts[$i]) !== 0) ?: $ipParts{$i} = '*';
+            (\hexdec($maskParts[$i]) !== 0) ?: $ipParts[$i] = '*';
         }
         return \implode($glue, $ipParts);
     }

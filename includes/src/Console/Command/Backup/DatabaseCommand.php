@@ -41,7 +41,7 @@ class DatabaseCommand extends Command
         try {
             $file = $updater->createSqlDumpFile($compress);
             $updater->createSqlDump($file, $compress);
-            $io->success("SQL-Dump '{$file}' created.");
+            $io->success('SQL-Dump "' . $file . '" created.');
         } catch (\Exception $e) {
             $io->error($e->getMessage());
         }

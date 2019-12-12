@@ -270,7 +270,7 @@ class ConsoleIO extends OutputStyle
      */
     public function setStep($current, $limit, $step)
     {
-        $this->setLabel("Step {$current} of {$limit}", $step);
+        $this->setLabel('Step ' . $current . ' of ' . $limit, $step);
 
         return $this;
     }
@@ -283,7 +283,7 @@ class ConsoleIO extends OutputStyle
     public function setLabel($title, $sub = null)
     {
         $this->writeln('');
-        $this->writeln("<comment>{$title}.</comment> " . ($sub !== null ? "<info>{$sub}.</info>" : ''));
+        $this->writeln('<comment>' . $title . '</comment> ' . ($sub !== null ? '<info>' . $sub . '</info>' : ''));
         $this->writeln('');
 
         return $this;

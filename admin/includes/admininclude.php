@@ -34,7 +34,6 @@ require PFAD_ROOT . PFAD_INCLUDES . 'error_handler.php';
 require PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 require PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
 require PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
-require PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admin_tools.php';
 
@@ -79,7 +78,7 @@ if ($loggedIn
 
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'smartyinclude.php';
 
-Shop::Container()->singleton(CaptchaServiceInterface::class, function () {
+Shop::Container()->singleton(CaptchaServiceInterface::class, static function () {
     return new SimpleCaptchaService(true);
 });
 if (!$hasUpdates) {

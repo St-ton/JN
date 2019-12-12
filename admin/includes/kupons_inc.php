@@ -636,7 +636,7 @@ function informCouponCustomers($coupon)
     $productIDs   = [];
     $itemNumbers  = Text::parseSSK($coupon->cArtikel);
     if (count($itemNumbers) > 0) {
-        $itemNumbers = array_map(function ($e) {
+        $itemNumbers = array_map(static function ($e) {
             return '"' . $e . '"';
         }, $itemNumbers);
         $productData = $db->query(
@@ -645,7 +645,7 @@ function informCouponCustomers($coupon)
                 WHERE cArtNr IN (' . implode(',', $itemNumbers) . ')',
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $productIDs  = array_map(function ($e) {
+        $productIDs  = array_map(static function ($e) {
             return (int)$e->kArtikel;
         }, $productData);
     }

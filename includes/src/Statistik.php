@@ -241,22 +241,20 @@ class Statistik
             $dateSQL = $this->baueDatumSQL('dZeit');
 
             return Shop::Container()->getDB()->query(
-                "SELECT *, SUM(t.nCount) AS nCount
+                'SELECT *, SUM(t.nCount) AS nCount
                     FROM
                     (
                         SELECT cEinstiegsseite, COUNT(dZeit) AS nCount
-                        FROM tbesucher
-                        {$dateSQL->cWhere}
+                        FROM tbesucher ' .  $dateSQL->cWhere . '
                             AND kBesucherBot = 0
                         GROUP BY cEinstiegsseite
                         UNION SELECT cEinstiegsseite, COUNT(dZeit) AS nCount
-                        FROM tbesucherarchiv
-                        {$dateSQL->cWhere}
+                        FROM tbesucherarchiv ' . $dateSQL->cWhere . '
                             AND kBesucherBot = 0
                         GROUP BY cEinstiegsseite
                     ) AS t
                     GROUP BY t.cEinstiegsseite
-                    ORDER BY nCount DESC",
+                    ORDER BY nCount DESC',
                 ReturnType::ARRAY_OF_OBJECTS
             );
         }

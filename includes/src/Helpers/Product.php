@@ -8,6 +8,7 @@ namespace JTL\Helpers;
 
 use Illuminate\Support\Collection;
 use JTL\Alert\Alert;
+use JTL\Campaign;
 use JTL\Cart\CartHelper;
 use JTL\Cart\CartItem;
 use JTL\Catalog\Product\Artikel;
@@ -19,7 +20,6 @@ use JTL\DB\ReturnType;
 use JTL\Extensions\Config\Configurator;
 use JTL\Extensions\Config\Group;
 use JTL\Extensions\Config\Item;
-use JTL\Campaign;
 use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;

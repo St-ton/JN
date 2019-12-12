@@ -367,30 +367,22 @@ define('HOOK_TOOLSAJAXSERVER_PAGE_TAUSCHEVARIATIONKOMBI', 45);
 define('HOOK_TOOLSAJAXSERVER_PAGE_ARTIKELDETAIL', 46);
 
 /**
- * Kurz vor der Ansicht der Umfrage
- *
- * @file umfrage.php
+ * @removed in 5.0.0
  */
 define('HOOK_UMFRAGE_PAGE', 47);
 
 /**
- * Kurz vor der Ansicht der Umfrageübersicht
- *
- * @file umfrage.php
+ * @removed in 5.0.0
  */
 define('HOOK_UMFRAGE_PAGE_UEBERSICHT', 48);
 
 /**
- * Kurz vor der Ansicht der Umfragedurchführung
- *
- * @file umfrage.php
+ * @removed in 5.0.0
  */
 define('HOOK_UMFRAGE_PAGE_DURCHFUEHRUNG', 49);
 
 /**
- * Kurz vor dem Speichern einer Umfrage
- *
- * @file umfrage.php
+ * @removed in 5.0.0
  */
 define('HOOK_UMFRAGE_PAGE_UMFRAGEERGEBNIS', 50);
 

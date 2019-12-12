@@ -65,8 +65,6 @@ class PageTypeToPageNiceName
                 return __('pageNewsCategory');
             case \PAGE_NEWSDETAIL:
                 return __('pageNewsDetail');
-            case \PAGE_UMFRAGE:
-                return __('Umfrage');
             case \PAGE_PLUGIN:
                 return __('pagePlugin');
             case \PAGE_404:

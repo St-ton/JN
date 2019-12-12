@@ -514,9 +514,6 @@ function mappeSeitentyp(int $pageType)
         case PAGE_KONTAKT:
             return 'Kontakt';
 
-        case PAGE_UMFRAGE:
-            return 'Umfrage';
-
         case PAGE_NEWS:
             return 'News';
 

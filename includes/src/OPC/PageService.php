@@ -293,9 +293,6 @@ class PageService
         } elseif ($params['kNewsKategorie'] > 0) {
             $pageIdObj->type = 'newscat';
             $pageIdObj->id   = $params['kNewsKategorie'];
-        } elseif ($params['kUmfrage'] > 0) {
-            $pageIdObj->type = 'poll';
-            $pageIdObj->id   = $params['kUmfrage'];
         } elseif (\mb_strlen($params['cSuche']) > 0) {
             $pageIdObj->type = 'search';
             $pageIdObj->id   = $params['cSuche'];

@@ -19,7 +19,6 @@ $kSuchspecial          = Request::verifyGPCDataInt('q');
 $kNews                 = Request::verifyGPCDataInt('n');
 $kNewsMonatsUebersicht = Request::verifyGPCDataInt('nm');
 $kNewsKategorie        = Request::verifyGPCDataInt('nk');
-$kUmfrage              = Request::verifyGPCDataInt('u');
 // filter
 $nBewertungSterneFilter = Request::verifyGPCDataInt('bf');
 $cPreisspannenFilter    = Request::verifyGPDataString('pf');

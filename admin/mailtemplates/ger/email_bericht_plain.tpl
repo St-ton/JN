@@ -67,9 +67,6 @@ Geworbene Kunden, die kauften: {$oMailObjekt->nAnzahlErfolgreichGeworbenerKunden
 Versendete Wunschlisten: {$oMailObjekt->nAnzahlVersendeterWunschlisten}
 {/if}
 
-{if $oMailObjekt->nAnzahlDurchgefuehrteUmfragen !== -1}
-Durchgeführte Umfragen: {$oMailObjekt->nAnzahlDurchgefuehrteUmfragen}
-{/if}
 
 {if $oMailObjekt->nAnzahlNewskommentare !== -1}
 Neue Beitragskommentare: {$oMailObjekt->nAnzahlNewskommentare}

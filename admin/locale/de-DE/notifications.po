@@ -56,12 +56,6 @@ msgstr "Plugin"
 msgid "hasNewPluginVersionsMessage"
 msgstr "Es sind neue Plugin-Versionen verfügbar."
 
-msgid "hasInvalidPollCouponsTitle"
-msgstr "Umfrage"
-
-msgid "hasInvalidPollCouponsMessage"
-msgstr "In einer Umfrage wird ein Coupon verwendet, der inaktiv ist oder nicht mehr existiert."
-
 msgid "hasFullTextIndexErrorTitle"
 msgstr "Volltextsuche"
 

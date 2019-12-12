@@ -8,7 +8,7 @@
     {/block}
 
     {block name='snippets-maintenance-content'}
-        {modal id="maintenance" class="fade show" size="lg" data=['backdrop' => 'static']}
+        {modal id="maintenance" class="fade show" size="lg" data=['backdrop' => 'static', "keyboard" => "false"]}
             {card header="<i class='fa fa-wrench'></i> {lang key='maintainance'}"
                 tag="article"
                 bg-variant="light"

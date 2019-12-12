@@ -17,6 +17,7 @@ use JTL\Language\LanguageHelper;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
+use function Functional\first;
 use function Functional\map;
 use function Functional\some;
 
@@ -157,7 +158,7 @@ class ShippingMethod
      * @param int $shippingMethodID
      * @param int $cgroupID
      * @param int $filterPaymentID
-     * @return array|null
+     * @return array
      */
     public static function getPaymentMethods(int $shippingMethodID, int $cgroupID, int $filterPaymentID = 0): ?array
     {
@@ -170,7 +171,7 @@ class ShippingMethod
             $filterSQL           = ' AND tzahlungsart.kZahlungsart = :paymentID ';
             $params['paymentID'] = $filterPaymentID;
         }
-        $paymentMethods = Shop::Container()->getDB()->queryPrepared(
+        return Shop::Container()->getDB()->queryPrepared(
             'SELECT tversandartzahlungsart.*, tzahlungsart.*
                      FROM tversandartzahlungsart, tzahlungsart
                      WHERE tversandartzahlungsart.kVersandart = :methodID
@@ -184,8 +185,6 @@ class ShippingMethod
             $params,
             ReturnType::ARRAY_OF_OBJECTS
         );
-
-        return \is_array($paymentMethods) ? $paymentMethods : null;
     }
 
     /**
@@ -1513,7 +1512,7 @@ class ShippingMethod
     {
         $customer = Frontend::getCustomer();
 
-        if ($shippingMethods === null || !\is_array($shippingMethods)) {
+        if (!\is_array($shippingMethods)) {
             $country = $_SESSION['Lieferadresse']->cLand ?? $customer->cLand;
             $zip     = $_SESSION['Lieferadresse']->cPLZ ?? $customer->cPLZ;
 
@@ -1543,6 +1542,6 @@ class ShippingMethod
             );
         }
 
-        return count($shippingMethods) > 0 ? array_shift($shippingMethods) : null;
+        return first($shippingMethods);
     }
 }

@@ -20,7 +20,7 @@
                 {/if}
             {/block}
             {block name='snippets-author-modal'}
-                {if $oAuthor->cAvatarImgSrcFull !== null}
+                {if !empty($oAuthor->cAvatarImgSrcFull)}
                     {$title = "<img alt='{$oAuthor->cName}' src='{$oAuthor->cAvatarImgSrcFull}' height='80' class='rounded-circle' /><span itemprop='name' class='ml-3'>{$oAuthor->cName}</span>"}
                 {else}
                     {$title = "<span itemprop='name' class='ml-3'>"|cat:$oAuthor->cName|cat:'</span>'}
@@ -28,7 +28,7 @@
                 <div id="author-{$oAuthor->kContentAuthor}" title="{$title}" class="d-none">
                     {block name='snippets-author-modal-content'}
                         {if !empty($oAuthor->cVitaShort)}
-                            {if $oAuthor->cAvatarImgSrcFull !== null}
+                            {if !empty($oAuthor->cAvatarImgSrcFull)}
                                 <meta itemprop="image" content="{$oAuthor->cAvatarImgSrcFull}">
                             {/if}
                             <div itemprop="description">

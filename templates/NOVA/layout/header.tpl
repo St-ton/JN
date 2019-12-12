@@ -279,7 +279,7 @@
 
     {has_boxes position='left' assign='hasLeftPanel'}
     {block name='layout-header-body-tag'}
-        <div class="{if $Einstellungen.template.theme.button_animated === 'Y'}btn-animated{/if}"
+        <body class="{if $Einstellungen.template.theme.button_animated === 'Y'}btn-animated{/if}"
               data-page="{$nSeitenTyp}"
               {if isset($Link) && !empty($Link->getIdentifier())} id="{$Link->getIdentifier()}"{/if}>
     {/block}
@@ -306,8 +306,7 @@
                     </div>
                 {/if}
             {/block}
-            {assign var=isSticky value=$Einstellungen.template.theme.static_header === 'Y'}
-            <header class="d-print-none{if $isSticky} sticky-top fixed-navbar{/if}" id="evo-nav-wrapper">
+            <header class="d-print-none sticky-top fixed-navbar" id="jtl-nav-wrapper">
 
                 {block name='layout-header-container-inner'}
                     <div class="container-fluid container-fluid-xl">

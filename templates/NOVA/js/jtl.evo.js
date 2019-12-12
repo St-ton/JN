@@ -490,7 +490,7 @@
 
             if (target.length > 0) {
                 // scroll below the static megamenu
-                var nav         = $('#evo-nav-wrapper.sticky-top');
+                var nav         = $('#jtl-nav-wrapper.sticky-top');
                 var fixedOffset = nav.length > 0 ? nav.outerHeight() : 0;
 
                 targetOffset = target.offset().top - fixedOffset - parseInt(target.css('margin-top'));
@@ -776,7 +776,7 @@
 
         fixStickyElements: function() {
             var sticky    = '.cart-summary';
-            var navHeight = $('#evo-nav-wrapper').outerHeight(true);
+            var navHeight = $('#jtl-nav-wrapper').outerHeight(true);
             navHeight = navHeight === undefined ? 0 : parseInt(navHeight + 40);
             $(sticky).css('top', navHeight);
         },

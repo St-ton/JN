@@ -521,3 +521,6 @@ msgstr "Fehlerbehebung"
 
 msgid "System diagnostics"
 msgstr "Diagnose"
+
+msgid "Set up"
+msgstr "Einrichten"

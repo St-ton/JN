@@ -497,3 +497,6 @@ msgstr "Troubleshooting"
 
 msgid "System diagnostics"
 msgstr "System diagnostics"
+
+msgid "Set up"
+msgstr "Set up"

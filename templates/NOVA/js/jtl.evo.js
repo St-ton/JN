@@ -74,6 +74,7 @@
                 arrows:          true,
                 vertical:        true,
                 adaptiveHeight:  true,
+                swipeToSlide:    true,
                 verticalSwiping: true,
                 prevArrow:       '<button class="slick-up" aria-label="Previous" type="button">' +
                     '<i class="fa fa-chevron-up"></i></button>',
@@ -113,6 +114,7 @@
                 lazyLoad:       'ondemand',
                 slidesToShow:   2,
                 slidesToScroll: 2,
+                swipeToSlide:   true,
                 mobileFirst:    true,
                 responsive:     [
                     {
@@ -154,6 +156,7 @@
                 slidesToShow:   1,
                 slidesToScroll: 1,
                 arrows:         false,
+                swipeToSlide:   true,
                 infinite:       false,
                 lazyLoad:       'ondemand',
                 mobileFirst:    true,
@@ -191,6 +194,7 @@
                 slidesToShow:   3,
                 slidesToScroll: 3,
                 infinite: false,
+                swipeToSlide:   true,
                 responsive: [
                     {
                         breakpoint: 480,

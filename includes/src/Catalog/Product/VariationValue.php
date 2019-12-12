@@ -272,16 +272,24 @@ class VariationValue
         }
         $this->generateAllImageSizes(true, 1, $path);
 
-        // compatibility
-        $this->cPfadMini   = $this->getImage(\JTL\Media\Image::SIZE_XS);
-        $this->cPfadKlein  = $this->getImage(\JTL\Media\Image::SIZE_SM);
-        $this->cPfadNormal = $this->getImage(\JTL\Media\Image::SIZE_MD);
-        $this->cPfadGross  = $this->getImage(\JTL\Media\Image::SIZE_LG);
+        $this->cBildPfadMini  = \PFAD_VARIATIONSBILDER_MINI . $path;
+        $this->cBildPfad      = \PFAD_VARIATIONSBILDER_NORMAL . $path;
+        $this->cBildPfadGross = \PFAD_VARIATIONSBILDER_GROSS . $path;
 
-        $this->cPfadMiniFull   = $this->getImage(\JTL\Media\Image::SIZE_XS);
-        $this->cPfadKleinFull  = $this->getImage(\JTL\Media\Image::SIZE_SM);
-        $this->cPfadNormalFull = $this->getImage(\JTL\Media\Image::SIZE_MD);
-        $this->cPfadGrossFull  = $this->getImage(\JTL\Media\Image::SIZE_LG);
+        $this->cBildPfadMiniFull  = $imageBaseURL . \PFAD_VARIATIONSBILDER_MINI . $path;
+        $this->cBildPfadFull      = $imageBaseURL . \PFAD_VARIATIONSBILDER_NORMAL . $path;
+        $this->cBildPfadGrossFull = $imageBaseURL . \PFAD_VARIATIONSBILDER_GROSS . $path;
+
+        // compatibility
+        $this->cPfadMini   = \PFAD_VARIATIONSBILDER_MINI . $path;
+        $this->cPfadKlein  = \PFAD_VARIATIONSBILDER_NORMAL . $path;
+        $this->cPfadNormal = \PFAD_VARIATIONSBILDER_NORMAL . $path;
+        $this->cPfadGross  = \PFAD_VARIATIONSBILDER_GROSS . $path;
+
+        $this->cPfadMiniFull   = $imageBaseURL . \PFAD_VARIATIONSBILDER_MINI . $path;
+        $this->cPfadKleinFull  = $imageBaseURL . \PFAD_VARIATIONSBILDER_NORMAL . $path;
+        $this->cPfadNormalFull = $imageBaseURL . \PFAD_VARIATIONSBILDER_NORMAL . $path;
+        $this->cPfadGrossFull  = $imageBaseURL . \PFAD_VARIATIONSBILDER_GROSS . $path;
 
         return true;
     }

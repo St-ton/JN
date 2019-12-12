@@ -13,6 +13,7 @@ use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\EigenschaftWert;
 use JTL\Catalog\Product\Preise;
+use JTL\Catalog\Product\VariationValue;
 use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Checkout\Kupon;
 use JTL\Checkout\Lieferadresse;
@@ -262,16 +263,14 @@ class CartHelper
     }
 
     /**
-     * @param CartItem $item
-     * @param object   $variation
-     * @return void
+     * @param CartItem       $item
+     * @param VariationValue $variation
      */
-    public static function setVariationPicture(CartItem $item, $variation): void
+    public static function setVariationPicture(CartItem $item, VariationValue $variation): void
     {
         if ($item->variationPicturesArr === null) {
             $item->variationPicturesArr = [];
         }
-        $imageBaseURL       = Shop::getImageBaseURL();
         $image              = (object)[
             'isVariation'  => true,
             'cPfadMini'    => $variation->getImage(\JTL\Media\Image::SIZE_XS),

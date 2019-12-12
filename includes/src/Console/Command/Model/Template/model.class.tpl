@@ -90,9 +90,7 @@ final class {$modelName} extends DataModel
     }
 
     /**
-    * @see IDataModel::getAttributes()
-    *
-    * @return DataAttribute[]
+    * @inheritdoc
     */
     public function getAttributes(): array
     {

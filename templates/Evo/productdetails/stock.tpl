@@ -36,9 +36,15 @@
 
     {if !isset($availability)}
         {if $Artikel->cEstimatedDelivery}
-            <p class="estimated-delivery">
+            <p class="estimated-delivery"
+               data-toggle="popover"
+               data-placement="top"
+               data-content="{lang key='shippingInformation' section='productDetails' printf={$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}}">
                 {if !isset($availability) && !isset($shippingTime)}<strong>{lang key='shippingTime'}: </strong>{/if}
-                <span class="a{$Artikel->Lageranzeige->nStatus}">{$Artikel->cEstimatedDelivery}</span>
+                <span class="a{$Artikel->Lageranzeige->nStatus} text-nowrap">
+                    {$Artikel->cEstimatedDelivery}
+                    <span class="fa fa-info-circle"></span>
+                </span>
             </p>
         {/if}
     {/if}

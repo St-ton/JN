@@ -19623,7 +19623,7 @@ Supports Thumbs: true
 
 .theme-light .nivoSlider {
   position: relative;
-  background: #fff url(../images/slider/light/loading.gif) no-repeat 50% 50%;
+  background: #fff url(../base/images/slider/light/loading.gif) no-repeat 50% 50%;
   margin-bottom: 10px;
   overflow: visible;
 }
@@ -19651,7 +19651,7 @@ Supports Thumbs: true
   display: inline-block;
   width: 10px;
   height: 10px;
-  background: url(../images/slider/light/bullets.png) no-repeat;
+  background: url(../base/images/slider/light/bullets.png) no-repeat;
   text-indent: -9999px;
   border: 0;
   margin: 0 2px;
@@ -19665,7 +19665,7 @@ Supports Thumbs: true
   display: block;
   width: 30px;
   height: 30px;
-  background: url(../images/slider/light/arrows.png) no-repeat;
+  background: url(../base/images/slider/light/arrows.png) no-repeat;
   text-indent: -9999px;
   border: 0;
   top: auto;
@@ -19732,7 +19732,7 @@ Supports Thumbs: true
 */
 .theme-default .nivoSlider {
   position: relative;
-  background: #fff url(../images/slider/default/loading.gif) no-repeat 50% 50%;
+  background: #fff url(../base/images/slider/default/loading.gif) no-repeat 50% 50%;
   margin-bottom: 10px;
   -webkit-box-shadow: 0 1px 5px 0 #4a4a4a;
   -moz-box-shadow: 0 1px 5px 0 #4a4a4a;
@@ -19760,7 +19760,7 @@ Supports Thumbs: true
   display: inline-block;
   width: 22px;
   height: 22px;
-  background: url(../images/slider/default/bullets.png) no-repeat;
+  background: url(../base/images/slider/default/bullets.png) no-repeat;
   text-indent: -9999px;
   border: 0;
   margin: 0 2px;
@@ -19774,7 +19774,7 @@ Supports Thumbs: true
   display: block;
   width: 30px;
   height: 30px;
-  background: url(../images/slider/default/arrows.png) no-repeat;
+  background: url(../base/images/slider/default/arrows.png) no-repeat;
   text-indent: -9999px;
   border: 0;
   opacity: 0;
@@ -19843,7 +19843,7 @@ Supports Thumbs: true
 
 .theme-dark .nivoSlider {
   position: relative;
-  background: #fff url(../images/slider/dark/loading.gif) no-repeat 50% 50%;
+  background: #fff url(../base/images/slider/dark/loading.gif) no-repeat 50% 50%;
   margin-bottom: 10px;
   overflow: visible;
 }
@@ -19871,7 +19871,7 @@ Supports Thumbs: true
   display: inline-block;
   width: 10px;
   height: 10px;
-  background: url(../images/slider/dark/bullets.png) no-repeat 0 2px;
+  background: url(../base/images/slider/dark/bullets.png) no-repeat 0 2px;
   text-indent: -9999px;
   border: 0;
   margin: 0 2px;
@@ -19885,7 +19885,7 @@ Supports Thumbs: true
   display: block;
   width: 30px;
   height: 30px;
-  background: url(../images/slider/dark/arrows.png) no-repeat;
+  background: url(../base/images/slider/dark/arrows.png) no-repeat;
   text-indent: -9999px;
   border: 0;
   top: auto;
@@ -19958,7 +19958,7 @@ Supports Thumbs: false
 
 .theme-bar .nivoSlider {
   position: relative;
-  background: #fff url(../images/slider/bar/loading.gif) no-repeat 50% 50%;
+  background: #fff url(../base/images/slider/bar/loading.gif) no-repeat 50% 50%;
 }
 
 .theme-bar .nivoSlider img {
@@ -20014,7 +20014,7 @@ Supports Thumbs: false
   display: inline-block;
   width: 22px;
   height: 22px;
-  background: url(../images/slider/bar/bullets.png) no-repeat;
+  background: url(../base/images/slider/bar/bullets.png) no-repeat;
   text-indent: -9999px;
   border: 0;
   margin: 5px 2px 0 2px;

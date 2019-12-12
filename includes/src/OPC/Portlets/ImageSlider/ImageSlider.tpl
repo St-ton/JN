@@ -41,7 +41,7 @@
                                 sizes=$imgAttribs.srcsizes
                                 src=$imgAttribs.src
                                 alt=$imgAttribs.alt
-                                title=$imgAttribs.title
+                                title=$slideTitle
                                 data=['desc' => $slide.desc]}
                             {if !empty($slide.link)}
                                 </a>

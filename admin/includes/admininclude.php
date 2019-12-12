@@ -66,6 +66,7 @@ $oAccount   = Shop::Container()->getAdminAccount();
 $loggedIn   = $oAccount->logged();
 $updater    = new Updater($db);
 $hasUpdates = $updater->hasPendingUpdates();
+$conf       = Shop::getSettings([CONF_GLOBAL]);
 Shop::setIsFrontend(false);
 if ($loggedIn
     && $_SERVER['REQUEST_METHOD'] === 'GET'
@@ -73,6 +74,14 @@ if ($loggedIn
     && $updater->hasPendingUpdates()
 ) {
     \header('Location: ' . Shop::getURL(true) . '/' . \PFAD_ADMIN . 'dbupdater.php');
+    exit;
+}
+
+if ($loggedIn
+    && $conf['global']['global_wizard_done'] === 'N'
+    && strpos($_SERVER['SCRIPT_FILENAME'], 'wizard') === false
+) {
+    \header('Location: ' . Shop::getURL(true) . '/' . \PFAD_ADMIN . 'wizard.php');
     exit;
 }
 

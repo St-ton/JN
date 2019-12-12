@@ -55,13 +55,23 @@ final class Controller
      */
     private function finish(): void
     {
+        //TODO: errors?
+        $errors = false;
         foreach ($this->getSteps() as $step) {
             foreach ($step->getQuestions() as $question) {
                 /** @var QuestionInterface $question */
                 $question->save();
             }
         }
-        Shop::Container()->getCache()->flushAll();
+        if (!$errors) {
+            Shop::Container()->getDB()->update(
+                'teinstellungen',
+                'cName',
+                'global_wizard_done',
+                (object)['cWert' => 'Y']
+            );
+            Shop::Container()->getCache()->flushAll();
+        }
     }
 
     /**

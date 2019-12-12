@@ -271,12 +271,13 @@ class CartHelper
         if ($item->variationPicturesArr === null) {
             $item->variationPicturesArr = [];
         }
+        $imageBaseURL       = Shop::getImageBaseURL();
         $image              = (object)[
             'isVariation'  => true,
-            'cPfadMini'    => $variation->getImage(\JTL\Media\Image::SIZE_XS),
-            'cPfadKlein'   => $variation->getImage(\JTL\Media\Image::SIZE_SM),
-            'cPfadNormal'  => $variation->getImage(\JTL\Media\Image::SIZE_MD),
-            'cPfadGross'   => $variation->getImage(\JTL\Media\Image::SIZE_LG),
+            'cPfadMini'    => \str_replace($imageBaseURL, '', $variation->getImage(\JTL\Media\Image::SIZE_XS)),
+            'cPfadKlein'   => \str_replace($imageBaseURL, '', $variation->getImage(\JTL\Media\Image::SIZE_SM)),
+            'cPfadNormal'  => \str_replace($imageBaseURL, '', $variation->getImage(\JTL\Media\Image::SIZE_MD)),
+            'cPfadGross'   => \str_replace($imageBaseURL, '', $variation->getImage(\JTL\Media\Image::SIZE_LG)),
             'cURLMini'     => $variation->getImage(\JTL\Media\Image::SIZE_XS),
             'cURLKlein'    => $variation->getImage(\JTL\Media\Image::SIZE_SM),
             'cURLNormal'   => $variation->getImage(\JTL\Media\Image::SIZE_MD),

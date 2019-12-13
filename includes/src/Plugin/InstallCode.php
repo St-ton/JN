@@ -351,4 +351,6 @@ class InstallCode extends Enum
     public const WRONG_EXT_DIR = 401;
 
     public const INVALID_STORE_ID = 402;
+
+    public const MISSING_PLUGIN_NODE = 403;
 }

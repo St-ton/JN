@@ -446,6 +446,9 @@ class PluginValidation
             case InstallCode::WRONG_EXT_DIR:
                 $return = 'Fehler: Extension in falschem Ordner installiert';
                 break;
+            case InstallCode::MISSING_PLUGIN_NODE:
+                $return = 'Fehler: Der jtlshopplugin-Knoten ist nicht vorhanden.';
+                break;
             default:
                 $return = 'Unbekannter Fehler.';
                 break;

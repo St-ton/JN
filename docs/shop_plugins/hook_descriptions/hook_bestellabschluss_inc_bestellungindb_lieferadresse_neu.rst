@@ -8,4 +8,5 @@ Kurz vor dem Einfügen einer neuen / bisher unbekannten Lieferadresse in die DB,
 Parameter
 """""""""
 
-``--``
+``JTL\Checkout\Lieferadresse`` **deliveryAddress**
+    **deliveryAddress** neue Lieferadresse

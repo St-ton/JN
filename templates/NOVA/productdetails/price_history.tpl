@@ -5,25 +5,26 @@
 {block name='productdetails-price-history'}
     {block name='productdetails-price-history-canvas'}
         <div>
-            <canvas id="priceHistoryChart" width="400" height="150"></canvas>
+            <canvas id="priceHistoryChart"></canvas>
         </div>
     {/block}
     {block name='productdetails-price-history-script'}
         {inline_script}<script>
             var ctx = document.getElementById('priceHistoryChart').getContext('2d'),
                 priceHistoryChart = null,
-                chartDataCurrency = '',
+                chartDataTitle = "{lang key='priceFlow' section='productDetails'}";
                 chartData = {
                 labels:   [],
                 datasets: [
                     {
-                        fillColor:            "rgba(220,220,220,0.2)",
-                        strokeColor:          "rgba(220,220,220,1)",
-                        pointColor:           "rgba(220,220,220,1)",
-                        pointStrokeColor:     "#fff",
-                        pointHighlightFill:   "#fff",
-                        pointHighlightStroke: "rgba(220,220,220,1)",
-                        data:                 []
+                        label:            "{lang section='productDetails' key='PriceFlowTitle' printf=$Einstellungen.preisverlauf.preisverlauf_anzahl_monate} " + "({$smarty.session.Waehrung->getName()})",
+                        backgroundColor:  "rgba(248,191,0,0.2)",
+                        borderColor:      "#F8BF00",
+                        fill:             false,
+                        lineTension:      0,
+                        pointRadius:      5,
+                        pointHoverRadius: 8,
+                        data:             []
                     }
                 ]
             };
@@ -32,6 +33,7 @@
                 chartData.labels.push('{$pv->date}');
                 chartData.datasets[0].data.push('{$pv->fPreis}');
                 chartDataCurrency = '{$pv->currency}';
+                chartDataTooltip = "{lang key='price'}: ";
             {/foreach}
         </script>{/inline_script}
     {/block}

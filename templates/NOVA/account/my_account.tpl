@@ -110,7 +110,7 @@
                                         <tr>
                                             <td class="min-w-sm">
                                                 {lang key='billingAdress' section='account data'}
-                                                <small class="text-muted d-block">{$Kunde->cStrasse}, {$Kunde->cPLZ} {$Kunde->cOrt}, {$Kunde->cLand}</small>
+                                                <small class="text-muted d-block">{$Kunde->cStrasse} {$Kunde->cHausnummer}, {$Kunde->cPLZ} {$Kunde->cOrt}, {$Kunde->cLand}</small>
                                             </td>
                                             <td class="text-right">
                                                 {link href="$cCanonicalURL?editRechnungsadresse=1"

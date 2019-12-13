@@ -382,13 +382,13 @@ function pruefeRechnungsadresseStep($get): void
             $Kunde->getCustomerAttributes()->assign($customerAttributes);
             Frontend::set('customerAttributes', $customerAttributes);
             Shop::Smarty()->assign('Kunde', $Kunde)
-                ->assign('cPost_var', $_SESSION['checkout.cPost_arr']);
+                ->assign('cPost_var', Text::filterXSS($_SESSION['checkout.cPost_arr']));
 
             if (isset($_SESSION['Lieferadresse']) && (int)$_SESSION['checkout.cPost_arr']['shipping_address'] !== 0) {
                 Shop::Smarty()->assign('Lieferadresse', $_SESSION['Lieferadresse']);
             }
 
-            $_POST = array_merge($_POST, $_SESSION['checkout.cPost_arr']);
+            $_POST = Text::filterXSS(array_merge($_POST, $_SESSION['checkout.cPost_arr']));
             unset($_SESSION['checkout.cPost_arr']);
         }
         unset($_SESSION['checkout.register']);

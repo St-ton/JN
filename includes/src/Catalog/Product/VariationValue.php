@@ -270,6 +270,7 @@ class VariationValue
         if (!$path || !\file_exists(\PFAD_ROOT . \PFAD_VARIATIONSBILDER_NORMAL . $path)) {
             return false;
         }
+        $this->generateAllImageSizes(true, 1, $path);
 
         $this->cBildPfadMini  = \PFAD_VARIATIONSBILDER_MINI . $path;
         $this->cBildPfad      = \PFAD_VARIATIONSBILDER_NORMAL . $path;
@@ -278,6 +279,7 @@ class VariationValue
         $this->cBildPfadMiniFull  = $imageBaseURL . \PFAD_VARIATIONSBILDER_MINI . $path;
         $this->cBildPfadFull      = $imageBaseURL . \PFAD_VARIATIONSBILDER_NORMAL . $path;
         $this->cBildPfadGrossFull = $imageBaseURL . \PFAD_VARIATIONSBILDER_GROSS . $path;
+
         // compatibility
         $this->cPfadMini   = \PFAD_VARIATIONSBILDER_MINI . $path;
         $this->cPfadKlein  = \PFAD_VARIATIONSBILDER_NORMAL . $path;
@@ -288,8 +290,6 @@ class VariationValue
         $this->cPfadKleinFull  = $imageBaseURL . \PFAD_VARIATIONSBILDER_NORMAL . $path;
         $this->cPfadNormalFull = $imageBaseURL . \PFAD_VARIATIONSBILDER_NORMAL . $path;
         $this->cPfadGrossFull  = $imageBaseURL . \PFAD_VARIATIONSBILDER_GROSS . $path;
-
-        $this->generateAllImageSizes(true, 1, $path);
 
         return true;
     }

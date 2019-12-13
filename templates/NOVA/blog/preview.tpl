@@ -3,26 +3,24 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='blog-preview'}
-    <div itemprop="blogPost" itemscope=true itemtype="https://schema.org/BlogPosting" class="newsbox h-100 border-bottom border-sm-bottom-0 pb-5">
+    <div itemprop="blogPost" itemscope=true itemtype="https://schema.org/BlogPosting" class="newsbox h-100 border-bottom border-sm-bottom-0 pb-5 position-relative">
         <meta itemprop="mainEntityOfPage" content="{$ShopURL}/{$newsItem->getURL()}">
         {block name='blog-preview-news-header'}
             <div class="newsbox-header">
                 {if !empty($newsItem->getPreviewImage())}
                     {block name='blog-preview-news-image'}
-                        {link href=$newsItem->getURL() title=$newsItem->getTitle()|escape:'quotes'}
-                            <div class="newsbox-image">
-                                {image webp=true lazy=true fluid-grow=true
-                                    src=$newsItem->getImage(\JTL\Media\Image::SIZE_MD)
-                                    srcset="{$newsItem->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_news_mini_breite}w,
-                                        {$newsItem->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_news_klein_breite}w,
-                                        {$newsItem->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_news_normal_breite}w,
-                                        {$newsItem->getImage(\JTL\Media\Image::SIZE_LG)} {$Einstellungen.bilder.bilder_news_gross_breite}w"
-                                    sizes="auto"
-                                    alt="{$newsItem->getTitle()|escape:'quotes'} - {$newsItem->getMetaTitle()|escape:'quotes'}"
-                                }
-                            </div>
-                            <meta itemprop="image" content="{$imageBaseURL}{$newsItem->getPreviewImage()}">
-                        {/link}
+                        <div class="newsbox-image">
+                            {image webp=true lazy=true fluid-grow=true
+                                src=$newsItem->getImage(\JTL\Media\Image::SIZE_MD)
+                                srcset="{$newsItem->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_news_mini_breite}w,
+                                    {$newsItem->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_news_klein_breite}w,
+                                    {$newsItem->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_news_normal_breite}w,
+                                    {$newsItem->getImage(\JTL\Media\Image::SIZE_LG)} {$Einstellungen.bilder.bilder_news_gross_breite}w"
+                                sizes="auto"
+                                alt="{$newsItem->getTitle()|escape:'quotes'} - {$newsItem->getMetaTitle()|escape:'quotes'}"
+                            }
+                        </div>
+                        <meta itemprop="image" content="{$imageBaseURL}{$newsItem->getPreviewImage()}">
                     {/block}
                 {/if}
             </div>
@@ -70,7 +68,7 @@
                     {/col}
                 {/row}
                 {block name='blog-preview-heading'}
-                    {link itemprop="url" href=$newsItem->getURL() class="newsbox-headline"}
+                    {link itemprop="url" href=$newsItem->getURL() title=$newsItem->getTitle()|escape:'quotes' class="newsbox-headline stretched-link"}
                         <span itemprop="headline">{$newsItem->getTitle()}</span>
                     {/link}
                 {/block}
@@ -87,10 +85,8 @@
         {/block}
         {block name='blog-preview-news-footer'}
             <div class="newsbox-footer">
-                {link href=$newsItem->getURL()}
-                    {lang key='moreLink' section='news'}
-                    <i class="fas fa-long-arrow-alt-right ml-2"></i>
-                {/link}
+                {lang key='moreLink' section='news'}
+                <i class="fas fa-long-arrow-alt-right ml-2"></i>
             </div>
         {/block}
     </div>

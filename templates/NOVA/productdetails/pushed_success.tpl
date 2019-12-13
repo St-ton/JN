@@ -36,10 +36,10 @@
                                     {block name='productdetails-pushed-success-product-cell-image'}
                                         {counter assign=imgcounter print=0}
                                         {image lazy=true webp=true
-                                            src=$pushedArtikel->Bilder[0]->cURLMini
-                                            srcset="{$pushedArtikel->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                {$pushedArtikel->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                {$pushedArtikel->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                            src=$pushedArtikel->getImage(\JTL\Media\Image::SIZE_XS)
+                                            srcset="{$pushedArtikel->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                {$pushedArtikel->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                {$pushedArtikel->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
                                             alt="{if isset($pushedArtikel->Bilder[0]->cAltAttribut)}{$pushedArtikel->Bilder[0]->cAltAttribut|strip_tags|truncate:60|escape:'html'}{else}{$pushedArtikel->cName}{/if}"
                                             id="image{$pushedArtikel->kArtikel}_{$imgcounter}"
                                             sizes="auto"

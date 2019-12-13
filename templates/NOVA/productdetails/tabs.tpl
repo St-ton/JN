@@ -89,7 +89,8 @@
                                                     {$Artikel->cBeschreibung}
                                                     {if $useDescriptionWithMediaGroup}
                                                         {foreach $Artikel->getMediaTypes() as $mediaType}
-                                                            <div class="media mt-3">
+                                                            <div class="h3 mt-3">{$mediaType->name}</div>
+                                                            <div class="media">
                                                                 {include file='productdetails/mediafile.tpl'}
                                                             </div>
                                                         {/foreach}

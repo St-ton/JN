@@ -53,7 +53,7 @@ final class {$modelName} extends DataModel
     {
         parent::onRegisterHandlers();
 {foreach $tableDesc as $attribute}
-    {if $attribute->rawType === 'datetime'}
+    {if $attribute->dataType === 'datetime'}
         $this->registerGetter({$attribute->name}, static function ($value, $default) {
             return ModelHelper::fromStrToDateTime($value, $default);
         });
@@ -61,7 +61,7 @@ final class {$modelName} extends DataModel
             return ModelHelper::fromDateTimeToStr($value);
         });
     {/if}
-    {if $attribute->rawType === 'date'}
+    {if $attribute->dataType === 'date'}
         $this->registerGetter({$attribute->name}, static function ($value, $default) {
             return ModelHelper::fromStrToDate($value, $default);
         });
@@ -69,7 +69,7 @@ final class {$modelName} extends DataModel
             return ModelHelper::fromDateToStr($value);
         });
     {/if}
-    {if $attribute->rawType === 'time'}
+    {if $attribute->dataType === 'time'}
         $this->registerGetter({$attribute->name}, static function ($value, $default) {
             return ModelHelper::fromStrToTime($value, $default);
         });
@@ -77,7 +77,7 @@ final class {$modelName} extends DataModel
             return ModelHelper::fromTimeToStr($value);
         });
     {/if}
-    {if $attribute->rawType === 'timestamp'}
+    {if $attribute->dataType === 'timestamp'}
         $this->registerGetter({$attribute->name}, static function ($value, $default) {
             return ModelHelper::fromStrToTimestamp($value, $default);
         });

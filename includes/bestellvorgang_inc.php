@@ -459,7 +459,7 @@ function pruefeZahlungsartwahlStep($cPost_arr)
     global $zahlungsangaben, $hinweis, $step;
     /** @var array('Warenkorb' => Warenkorb) $_SESSION */
 
-    if (!isset($post['zahlungsartwahl']) || (int)$cPost_arr['zahlungsartwahl'] !== 1) {
+    if (!isset($cPost_arr['zahlungsartwahl']) || (int)$cPost_arr['zahlungsartwahl'] !== 1) {
         if (isset($_SESSION['Zahlungsart'])) {
             $zahlungsangaben = zahlungsartKorrekt((int)$_SESSION['Zahlungsart']->kZahlungsart);
         } else {

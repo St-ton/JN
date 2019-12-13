@@ -263,19 +263,21 @@ class Item extends AbstractItem
         if (!isset($author->kAdminlogin) || $author->kAdminlogin <= 0) {
             return;
         }
-        if ($author->extAttribs['useAvatar']->cAttribValue === 'U') {
+        if (isset($author->extAttribs['useAvatar']) && $author->extAttribs['useAvatar']->cAttribValue === 'U') {
             $author->cAvatarImgSrc     = $author->extAttribs['useAvatarUpload']->cAttribValue;
             $author->cAvatarImgSrcFull = Shop::getImageBaseURL() .
                 \ltrim($author->extAttribs['useAvatarUpload']->cAttribValue, '/');
-        }
-        unset($author->extAttribs['useAvatarUpload']);
-
-        $author->cVitaShort = $author->extAttribs['useVita_' . $_SESSION['cISOSprache']]->cAttribValue;
-        $author->cVitaLong  = $author->extAttribs['useVita_' . $_SESSION['cISOSprache']]->cAttribText;
-        foreach (LanguageHelper::getAllLanguages() as $language) {
-            unset($author->extAttribs['useVita_' . $language->cISO]);
+            unset($author->extAttribs['useAvatarUpload']);
         }
 
+        $vitaLang = 'useVita_' . $_SESSION['cISOSprache'];
+        if (isset($author->extAttribs[$vitaLang])) {
+            $author->cVitaShort = $author->extAttribs[$vitaLang]->cAttribValue;
+            $author->cVitaLong  = $author->extAttribs[$vitaLang]->cAttribText;
+            foreach (LanguageHelper::getAllLanguages() as $language) {
+                unset($author->extAttribs['useVita_' . $language->cISO]);
+            }
+        }
         $this->setAuthor($author);
     }
 

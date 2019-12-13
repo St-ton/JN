@@ -10,7 +10,7 @@ import './../plugins/navscrollbar.js'
 
 /* vars */
 
-const header					= '#evo-nav-wrapper'
+const header					= '#jtl-nav-wrapper'
 const search					= '#search'
 const mainNavigation			= '#mainNavigation'
 const navRightDropdowns			= `${header} .nav-right .dropdown`

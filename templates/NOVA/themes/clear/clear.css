@@ -21879,6 +21879,10 @@ body {
   background-color: #ffffff !important;
 }
 
+.cursor-pointer {
+  cursor: pointer;
+}
+
 /* utilities */
 .rounded-top-left {
   border-top-left-radius: 0.125rem !important;
@@ -22946,6 +22950,13 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 
 /* header */
+#header-top-bar {
+  position: relative;
+  background-color: #ffffff;
+  z-index: 1021;
+  flex-direction: row-reverse;
+}
+
 .sticky-header header {
   position: sticky;
   top: 0;

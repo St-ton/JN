@@ -26,10 +26,10 @@
                 {lang key='noShippingcostsTo' section='global'} {lang key='noShippingCostsAtExtended' section='basket' printf=' ::: '}
                 {foreach item=country key=cISO from=$taxdata.countries}
                     <abbr title="{$country}">{$cISO}</abbr>
-                {/foreach}, <a href="{if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}{/if}" rel="nofollow" class="shipment popup">
+                {/foreach}, <a href="{if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}?shipping_calculator=0{/if}" rel="nofollow" class="shipment popup">
                     {lang key='shipping' section='basket'}</a>
             {else}
-                <a href="{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}"
+                <a href="{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}?shipping_calculator=0"
                    rel="nofollow" class="shipment popup"
                    data-toggle="tooltip" data-placement="left"
                    title="{$taxdata.shippingFreeCountries}, {lang key='else' section='global'} {lang key='plus' section='basket'} {lang key='shipping' section='basket'}">
@@ -37,7 +37,7 @@
                 </a>
             {/if}
         {elseif isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}
-            {lang key='plus' section='basket'} <a href="{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}" rel="nofollow" class="shipment popup">
+            {lang key='plus' section='basket'} <a href="{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}?shipping_calculator=0" rel="nofollow" class="shipment popup">
                 {lang key='shipping' section='basket'}
             </a>
         {/if}

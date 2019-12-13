@@ -94,12 +94,12 @@ class ShippingMethod
     }
 
     /**
-     * @param float|int $price
-     * @param int       $cgroupID
-     * @param int       $shippingClassID
+     * @param array $prices
+     * @param int $cgroupID
+     * @param int $shippingClassID
      * @return string
      */
-    public function getFreeShippingCountries($price, int $cgroupID, int $shippingClassID = 0): string
+    public function getFreeShippingCountries(array $prices, int $cgroupID, int $shippingClassID = 0): string
     {
         if (!isset($this->countries[$cgroupID][$shippingClassID])) {
             if (!isset($this->countries[$cgroupID])) {
@@ -121,6 +121,7 @@ class ShippingMethod
         }
         $shippingFreeCountries = [];
         foreach ($this->countries[$cgroupID][$shippingClassID] as $_method) {
+            $price = $_method->eSteuer === 'brutto' ? $prices[0] : $prices[1];
             if ((float)$_method->fVersandkostenfreiAbX >= $price) {
                 continue;
             }

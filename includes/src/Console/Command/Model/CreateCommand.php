@@ -71,7 +71,6 @@ class CreateCommand extends Command
         $io->writeln("<info>Created DataModel:</info> <comment>'{$modelName}'</comment>");
     }
 
-
     /**
      * @param string      $targetDir
      * @param string      $table

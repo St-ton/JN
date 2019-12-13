@@ -153,8 +153,16 @@ function bestellungInDB($cleared = 0, $orderNo = '')
         && !$deliveryAddress->kLieferadresse
     ) {
         $deliveryAddress->kKunde = $cart->kKunde;
-        $cart->kLieferadresse    = $deliveryAddress->insertInDB();
+        executeHook(
+            HOOK_BESTELLABSCHLUSS_INC_BESTELLUNGINDB_LIEFERADRESSE_NEU,
+            ['deliveryAddress' => $deliveryAddress]
+        );
+        $cart->kLieferadresse = $deliveryAddress->insertInDB();
     } elseif (isset($_SESSION['Bestellung']->kLieferadresse) && $_SESSION['Bestellung']->kLieferadresse > 0) {
+        executeHook(
+            HOOK_BESTELLABSCHLUSS_INC_BESTELLUNGINDB_LIEFERADRESSE_ALT,
+            ['deliveryAddressID' => (int)$_SESSION['Bestellung']->kLieferadresse]
+        );
         $cart->kLieferadresse = $_SESSION['Bestellung']->kLieferadresse;
     }
     $conf = Shop::getSettings([CONF_GLOBAL]);
@@ -268,7 +276,7 @@ function bestellungInDB($cleared = 0, $orderNo = '')
     $billingAddress->cWWW          = $customer->cWWW;
     $billingAddress->cMail         = $customer->cMail;
 
-    executeHook(HOOK_BESTELLABSCHLUSS_INC_BESTELLUNGINDB_RECHNUNGSADRESSE);
+    executeHook(HOOK_BESTELLABSCHLUSS_INC_BESTELLUNGINDB_RECHNUNGSADRESSE, ['billingAddress' => $billingAddress]);
 
     $billingAddressID = $billingAddress->insertInDB();
     if (isset($_POST['kommentar'])) {

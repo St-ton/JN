@@ -24724,6 +24724,13 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 
 /* header */
+#header-top-bar {
+  position: relative;
+  background-color: #ffffff;
+  z-index: 1021;
+  flex-direction: row-reverse;
+}
+
 .sticky-header header {
   position: sticky;
   top: 0;

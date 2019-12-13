@@ -17,76 +17,25 @@ class Migration_20191213083300 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'Remove survey';
 
+    /**
+     * @return mixed|void
+     */
     public function up()
     {
-        $this->removeConfig('configgroup_115_poll');
-        $this->removeConfig('umfrage_nutzen');
-        $this->removeConfig('umfrage_einloggen');
-        $this->removeConfig('umfrage_box_anzahl');
-
         $this->execute('DROP TABLE IF EXISTS `tumfrage`');
         $this->execute('DROP TABLE IF EXISTS `tumfragedurchfuehrung`');
         $this->execute('DROP TABLE IF EXISTS `tumfragedurchfuehrungantwort`');
         $this->execute('DROP TABLE IF EXISTS `tumfragefrage`');
         $this->execute('DROP TABLE IF EXISTS `tumfragefrageantwort`');
         $this->execute('DROP TABLE IF EXISTS `tumfragematrixoption`');
-
-        $this->getDB()->delete('tseo', 'cKey', 'kUmfrage');
     }
 
+    /**
+     * @return mixed|void
+     * @throws Exception
+     */
     public function down()
     {
-        $this->setConfig(
-            'configgroup_115_poll',
-            'Umfragesystem Einstellungen',
-            115,
-            'Umfragesystem Einstellungen',
-            null,
-            10,
-            (object)['cConf' => 'N']
-        );
-        $this->setConfig(
-            'umfrage_nutzen',
-            'Y',
-            115,
-            'Umfragesystem benutzen',
-            'selectbox',
-            20,
-            (object)[
-                'cBeschreibung' => 'Wollen Sie das Umfragesystem im Shop nutzen?',
-                'inputOptions'  => [
-                    'Y' => 'Ja',
-                    'N' => 'Nein',
-                ],
-            ]
-        );
-        $this->setConfig(
-            'umfrage_einloggen',
-            'y',
-            30,
-            'Muss man eingeloggt sein',
-            'selectbox',
-            30,
-            (object)[
-                'cBeschreibung' => 'Sollen sich Besucher vorher im Shop einloggen damit sie an einer Umfrage teilnehmen k?nnen?',
-                'inputOptions'  => [
-                    'Y' => 'Ja',
-                    'N' => 'Nein',
-                ],
-            ]
-        );
-        $this->setConfig(
-            'umfrage_box_anzahl',
-            'N',
-            115,
-            'Anzahl Umfragen in der Box',
-            'number',
-            40,
-            (object)[
-                'cBeschreibung' => 'Wieviele Umfragen sollen in der Box angezeigt werden? Greift nur wenn die Option Box eingeschaltet ist.',
-            ]
-        );
-
         $this->execute('
             CREATE TABLE `tumfrage` (
               `kUmfrage`      int(10) unsigned    NOT NULL AUTO_INCREMENT,

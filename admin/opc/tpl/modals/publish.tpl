@@ -1,4 +1,4 @@
-<div class="modal fade" tabindex="-1" id="publishModal">
+<div class="modal fade" tabindex="-1" id="publishModal" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">

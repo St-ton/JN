@@ -211,7 +211,8 @@ class Plugins
      */
     public function getAvatar(array $params): string
     {
-        $url = $params['account']->attributes['useAvatar']->cAttribValue === 'U' ?
+        $url = isset($params['account']->attributes['useAvatar']) &&
+            $params['account']->attributes['useAvatar']->cAttribValue === 'U' ?
             $params['account']->attributes['useAvatarUpload']->cAttribValue
             : 'templates/bootstrap/gfx/avatar-default.svg';
 

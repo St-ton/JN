@@ -32,7 +32,6 @@
                     {/if}
                 {/button}
                 {collapse
-                    class="{if $characteristic->getData('cTyp') !== 'SELECTBOX'}overflow-auto{/if}"
                     id="cllps-box{$oBox->getID()}-{$characteristic->getID()}"
                     visible=$characteristic->isActive()
                 }

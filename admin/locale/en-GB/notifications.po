@@ -118,3 +118,6 @@ msgstr "Special page created multiple times"
 
 msgid "duplicateSpecialLinkDesc"
 msgstr "At least one special page was created several times for the same customer group(s)."
+
+msgid "Safe mode enabled."
+msgstr "Safe mode enabled. Certain functionality will not be available."

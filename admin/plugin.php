@@ -135,13 +135,17 @@ if ($step === 'plugin_uebersicht' && $pluginID > 0) {
                 $content    = $parseDown->text(Text::convertUTF8(file_get_contents($menu->file)));
                 $menu->html = $smarty->assign('content', $content)->fetch($menu->tpl);
             } elseif ($menu->configurable === false) {
-                if ($menu->file !== '' && file_exists($plugin->getPaths()->getAdminPath() . $menu->file)) {
-                    ob_start();
-                    require $plugin->getPaths()->getAdminPath() . $menu->file;
-                    $menu->html = ob_get_clean();
-                } elseif ($plugin->isBootstrap() === true) {
-                    $menu->html = PluginHelper::bootstrap($pluginID, $loader)
-                        ->renderAdminMenuTab($menu->name, $menu->id, $smarty);
+                if (SAFE_MODE) {
+                    $menu->html = __('Safe mode enabled.');
+                } else {
+                    if ($menu->file !== '' && file_exists($plugin->getPaths()->getAdminPath() . $menu->file)) {
+                        ob_start();
+                        require $plugin->getPaths()->getAdminPath() . $menu->file;
+                        $menu->html = ob_get_clean();
+                    } elseif ($plugin->isBootstrap() === true) {
+                        $menu->html = PluginHelper::bootstrap($pluginID, $loader)
+                            ->renderAdminMenuTab($menu->name, $menu->id, $smarty);
+                    }
                 }
             } elseif ($menu->configurable === true) {
                 $smarty->assign('oPluginAdminMenu', $menu);
@@ -150,6 +154,11 @@ if ($step === 'plugin_uebersicht' && $pluginID > 0) {
         }
     }
 }
+
+if (SAFE_MODE) {
+    Shop::Container()->getAlertService()->addAlert(Alert::TYPE_WARNING, __('Safe mode enabled.'), 'warnSafeMode');
+}
+
 $alertHelper->addAlert(Alert::TYPE_NOTE, $notice, 'pluginNotice');
 $alertHelper->addAlert(Alert::TYPE_ERROR, $errorMsg, 'pluginError');
 

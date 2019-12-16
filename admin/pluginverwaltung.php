@@ -391,6 +391,10 @@ $hasAuth = (bool)$db->query(
     ReturnType::AFFECTED_ROWS
 );
 
+if (SAFE_MODE) {
+    Shop::Container()->getAlertService()->addAlert(Alert::TYPE_WARNING, __('Safe mode enabled.'), 'warnSafeMode');
+}
+
 Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, $errorMsg, 'errorPlugin');
 Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $notice, 'noticePlugin');
 

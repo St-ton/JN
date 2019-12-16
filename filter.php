@@ -212,6 +212,13 @@ $smarty->assign(
     )
 );
 executeHook(HOOK_FILTER_ENDE);
-$smarty->display('productlist/index.tpl');
 
+if (Request::isAjaxRequest()) {
+    $smarty->assign('NaviFilters', $NaviFilter)
+        ->assign('show_filters', true)
+        ->assign('itemCount', $oSuchergebnisse->getProductCount())
+        ->display('snippets/filter/mobile.tpl');
+} else {
+    $smarty->display('productlist/index.tpl');
+}
 require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';

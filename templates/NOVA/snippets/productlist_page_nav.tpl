@@ -21,7 +21,7 @@
                             {/if}
                             {if $navid === 'header'}
                                 <div id="improve_search">
-                                    {include file='productlist/result_options.tpl'}
+                                    {include file='productlist/result_options.tpl' itemCount=$Suchergebnisse->getProductCount()}
                                 </div>
                             {/if}
                         {/block}

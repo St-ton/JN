@@ -6,14 +6,13 @@
     {if !isset($itemClass)}
         {assign var=itemClass value=''}
     {/if}
-    
     {if !empty($displayAt) && $displayAt === 'content'}
         {block name='snippets-filter-genericFilterItem-content'}
             {foreach $filter->getOptions() as $filterOption}
                 {assign var=filterIsActive value=$filterOption->isActive() || $NaviFilter->getFilterValue($filter->getClassName()) === $filterOption->getValue()}
                 {dropdownitem class="filter-item py-1 px-0"
                     active=$filterIsActive
-                    href="{if $filterOption->isActive()}{$filter->getUnsetFilterURL($filterOption->getValue())}{else}{$filterOption->getURL()}{/if}"
+                    href="{$filterOption->getURL()}"
                     rel='nofollow'}
                     <div class="align-items-center d-flex">
                         {if $filter->getIcon() !== null}
@@ -48,7 +47,7 @@
                     {block name='snippets-filter-genericFilterItem-nav-main'}
                         {navitem class="filter-item"
                             active=$filterIsActive
-                            href="{if $filterOption->isActive()}{$filter->getUnsetFilterURL($filterOption->getValue())}{else}{$filterOption->getURL()}{/if}"
+                            href="{$filterOption->getURL()}"
                             nofollow=true
                             router-class="px-0"}
                             <div class="align-items-center d-flex">

@@ -157,7 +157,7 @@
                         {* Grundpreis *}
                         {if !empty($Artikel->cLocalizedVPE)}
                             {block name='productdetails-price-list-base-price'}
-                            <div class="base_price text-nowrap" itemprop="priceSpecification" itemscope itemtype="http://schema.org/UnitPriceSpecification">
+                            <div class="base_price" itemprop="priceSpecification" itemscope itemtype="http://schema.org/UnitPriceSpecification">
                                 <meta itemprop="price" content="{if $Artikel->Preise->oPriceRange->isRange()}{($Artikel->Preise->oPriceRange->minBruttoPrice/$Artikel->fVPEWert)|string_format:"%.2f"}{else}{($Artikel->Preise->fVKBrutto/$Artikel->fVPEWert)|string_format:"%.2f"}{/if}">
                                 <meta itemprop="priceCurrency" content="{$smarty.session.Waehrung->getName()}">
                                 <span class="value" itemprop="referenceQuantity" itemscope itemtype="http://schema.org/QuantitativeValue">

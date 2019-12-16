@@ -196,7 +196,7 @@ class Adresse
      * @param string $iso
      * @return string
      */
-    public function pruefeLandISO($iso)
+    public static function pruefeLandISO($iso)
     {
         preg_match('/[a-zA-Z]{2}/', $iso, $matches);
         if (strlen($matches[0]) !== strlen($iso)) {

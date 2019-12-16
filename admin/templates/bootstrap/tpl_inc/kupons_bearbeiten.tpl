@@ -207,7 +207,7 @@
                         <label class="col col-sm-4 col-form-label text-sm-right" for="kSteuerklasse">{__('taxClass')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <select name="kSteuerklasse" id="kSteuerklasse" class="custom-select combo">
-                                {foreach $taxClasss as $taxClass}
+                                {foreach $taxClasses as $taxClass}
                                     <option value="{$taxClass->kSteuerklasse}"{if (int)$oKupon->kSteuerklasse === (int)$taxClass->kSteuerklasse} selected{/if}>
                                         {$taxClass->cName}
                                     </option>

@@ -503,9 +503,14 @@ function pruefeZahlungsartwahlStep($post)
 {
     global $zahlungsangaben, $step;
     if (!isset($post['zahlungsartwahl']) || (int)$post['zahlungsartwahl'] !== 1) {
-        return null;
+        if (isset($_SESSION['Zahlungsart'])) {
+            $zahlungsangaben = zahlungsartKorrekt((int)$_SESSION['Zahlungsart']->kZahlungsart);
+        } else {
+            return null;
+        }
+    } else {
+        $zahlungsangaben = zahlungsartKorrekt($post['Zahlungsart']);
     }
-    $zahlungsangaben = zahlungsartKorrekt($post['Zahlungsart']);
     executeHook(HOOK_BESTELLVORGANG_PAGE_STEPZAHLUNG_PLAUSI);
 
     switch ($zahlungsangaben) {
@@ -787,7 +792,8 @@ function gibStepZahlung()
  */
 function gibStepZahlungZusatzschritt($post): void
 {
-    $paymentMethod = gibZahlungsart((int)$post['Zahlungsart']);
+    $paymentID     = $post['Zahlungsart'] ?? $_SESSION['Zahlungsart']->kZahlungsart;
+    $paymentMethod = gibZahlungsart((int)$paymentID);
     $smarty        = Shop::Smarty();
     // Wenn Zahlungsart = Lastschrift ist => versuche Kundenkontodaten zu holen
     $customerAccountData = gibKundenKontodaten(Frontend::getCustomer()->getID());
@@ -1611,10 +1617,16 @@ function gibAktiveVersandart($shippingMethods)
         if (array_reduce($shippingMethods, function ($carry, $item) use ($active) {
             return (int)$item->kVersandart === $active ? (int)$item->kVersandart : $carry;
         }, 0) !== (int)$_SESSION['AktiveVersandart']) {
-            $_SESSION['AktiveVersandart'] = $shippingMethods[0]->kVersandart;
+            $_SESSION['AktiveVersandart'] = ShippingMethod::getFirstShippingMethod(
+                $shippingMethods,
+                $_SESSION['Zahlungsart']->kZahlungsart ?? 0
+            )->kVersandart ?? 0;
         }
     } else {
-        $_SESSION['AktiveVersandart'] = $shippingMethods[0]->kVersandart ?? 0;
+        $_SESSION['AktiveVersandart'] = ShippingMethod::getFirstShippingMethod(
+            $shippingMethods,
+            $_SESSION['Zahlungsart']->kZahlungsart ?? 0
+        )->kVersandart ?? 0;
     }
 
     return $_SESSION['AktiveVersandart'];

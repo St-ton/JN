@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -174,32 +174,31 @@ class VueInstaller
      */
     private function initNiceDB(array $credentials): bool
     {
-        if (isset($credentials['host'], $credentials['user'], $credentials['pass'], $credentials['name'])) {
-            try {
-                if (!empty($credentials['socket'])) {
-                    \define('DB_SOCKET', $credentials['socket']);
-                }
-                \ifndef('DB_HOST', $credentials['host']);
-                \ifndef('DB_USER', $credentials['user']);
-                \ifndef('DB_PASS', $credentials['pass']);
-                \ifndef('DB_NAME', $credentials['name']);
-                $this->db = new NiceDB(
-                    $credentials['host'],
-                    $credentials['user'],
-                    $credentials['pass'],
-                    $credentials['name']
-                );
-            } catch (Exception $e) {
-                $this->responseMessage[] = $e->getMessage();
-                $this->responseStatus    = false;
-
-                return false;
+        if (!isset($credentials['host'], $credentials['user'], $credentials['pass'], $credentials['name'])) {
+            return false;
+        }
+        try {
+            if (!empty($credentials['socket'])) {
+                \define('DB_SOCKET', $credentials['socket']);
             }
+            \ifndef('DB_HOST', $credentials['host']);
+            \ifndef('DB_USER', $credentials['user']);
+            \ifndef('DB_PASS', $credentials['pass']);
+            \ifndef('DB_NAME', $credentials['name']);
+            $this->db = new NiceDB(
+                $credentials['host'],
+                $credentials['user'],
+                $credentials['pass'],
+                $credentials['name']
+            );
+        } catch (Exception $e) {
+            $this->responseMessage[] = $e->getMessage();
+            $this->responseStatus    = false;
 
-            return true;
+            return false;
         }
 
-        return false;
+        return true;
     }
 
     /**
@@ -253,23 +252,25 @@ class VueInstaller
      */
     private function writeConfigFile(array $credentials, string $blowfishKey): bool
     {
-        if (isset($credentials['host'], $credentials['user'], $credentials['pass'], $credentials['name'])) {
-            $socket = '';
-            if (!empty($credentials['socket'])) {
-                $socket = "\ndefine('DB_SOCKET', '" . $credentials['host'] . "');";
-            }
-            $rootPath = PFAD_ROOT;
-            if (\strpos(PFAD_ROOT, '\\') !== false) {
-                $rootPath = \str_replace('\\', '\\\\', $rootPath);
-            }
-            $config = "<?php
+        if (!isset($credentials['host'], $credentials['user'], $credentials['pass'], $credentials['name'])) {
+            return false;
+        }
+        $socket = '';
+        if (!empty($credentials['socket'])) {
+            $socket = "\ndefine('DB_SOCKET', '" . $credentials['host'] . "');";
+        }
+        $rootPath = PFAD_ROOT;
+        if (\strpos(PFAD_ROOT, '\\') !== false) {
+            $rootPath = \str_replace('\\', '\\\\', $rootPath);
+        }
+        $config = "<?php
 define('PFAD_ROOT', '" . $rootPath . "');
 define('URL_SHOP', '" . \substr(URL_SHOP, 0, \strlen(URL_SHOP) - 1) . "');" .
-                $socket . "
+            $socket . "
 define('DB_HOST','" . $credentials['host'] . "');
-define('DB_NAME','" . $credentials['name'] . "');
-define('DB_USER','" . $credentials['user'] . "');
-define('DB_PASS','" . $credentials['pass'] . "');
+define('DB_NAME','" . \addcslashes($credentials['name'], "'") . "');
+define('DB_USER','" . \addcslashes($credentials['user'], "'") . "');
+define('DB_PASS','" . \addcslashes($credentials['pass'], "'") . "');
 
 define('BLOWFISH_KEY', '" . $blowfishKey . "');
 
@@ -285,14 +286,11 @@ define('ADMIN_LOG_LEVEL', E_ALL);
 define('SMARTY_LOG_LEVEL', E_ALL);
 //excplicitly show/hide errors
 ini_set('display_errors', 0);" . "\n";
-            $file        = \fopen(PFAD_ROOT . \PFAD_INCLUDES . 'config.JTL-Shop.ini.php', 'w');
-            \fwrite($file, $config);
-            \fclose($file);
+        $file        = \fopen(PFAD_ROOT . \PFAD_INCLUDES . 'config.JTL-Shop.ini.php', 'w');
+        \fwrite($file, $config);
+        \fclose($file);
 
-            return true;
-        }
-
-        return false;
+        return true;
     }
 
     /**
@@ -470,7 +468,7 @@ ini_set('display_errors', 0);" . "\n";
         if (\strlen($seed) > 0) {
             // Hat der String Elemente?
             [$strings] = \explode(';', $seed);
-            if (\is_array($strings) && count($strings) > 0) {
+            if (\is_array($strings) && \count($strings) > 0) {
                 foreach ($strings as $string) {
                     $uid .= \md5($string . \md5(PFAD_ROOT . (\time() - \mt_rand())));
                 }
@@ -488,7 +486,7 @@ ini_set('display_errors', 0);" . "\n";
             }
             $uid = $this->cryptPasswort($uid . $salt);
         } else {
-            $uid = $this->cryptPasswort(\md5(\M_PI . $salt . \md5(\time() - \mt_rand())));
+            $uid = $this->cryptPasswort(\md5(\M_PI . $salt . \md5((string)(\time() - \mt_rand()))));
         }
 
         return $length > 0 ? \substr($uid, 0, $length) : $uid;
@@ -501,16 +499,17 @@ ini_set('display_errors', 0);" . "\n";
      */
     private function cryptPasswort(string $pass, $hashPass = null)
     {
-        $salt   = \sha1(\uniqid(\mt_rand(), true));
-        $length = \strlen($salt);
-        $length = \max($length >> 3, ($length >> 2) - \strlen($pass));
-        $salt   = $hashPass
-            ? \substr($hashPass, \min(\strlen($pass), \strlen($hashPass) - $length), $length)
+        $passLen = \strlen($pass);
+        $salt    = \sha1(\uniqid((string)\mt_rand(), true));
+        $length  = \strlen($salt);
+        $length  = \max($length >> 3, ($length >> 2) - $passLen);
+        $salt    = $hashPass
+            ? \substr($hashPass, \min($passLen, \strlen($hashPass) - $length), $length)
             : \strrev(\substr($salt, 0, $length));
-        $hash   = \sha1($pass);
-        $hash   = \sha1(\substr($hash, 0, \strlen($pass)) . $salt . \substr($hash, \strlen($pass)));
-        $hash   = \substr($hash, $length);
-        $hash   = \substr($hash, 0, \strlen($pass)) . $salt . \substr($hash, \strlen($pass));
+        $hash    = \sha1($pass);
+        $hash    = \sha1(\substr($hash, 0, $passLen) . $salt . \substr($hash, $passLen));
+        $hash    = \substr($hash, $length);
+        $hash    = \substr($hash, 0, $passLen) . $salt . \substr($hash, $passLen);
 
         return $hashPass && $hashPass !== $hash ? false : $hash;
     }

@@ -52,8 +52,8 @@ class VersandartHelper
      */
     public function getShippingMethods()
     {
-        return ($this->shippingMethods === null) 
-            ? Shop::DB()->query("SELECT * FROM tversandart", 2) 
+        return ($this->shippingMethods === null)
+            ? Shop::DB()->query("SELECT * FROM tversandart", 2)
             : $this->shippingMethods;
     }
 
@@ -153,6 +153,39 @@ class VersandartHelper
         $result = self::gibArtikelabhaengigeVersandkostenImWK($cLand, $_SESSION['Warenkorb']->PositionenArr);
 
         return !empty($result);
+    }
+
+    /**
+     * @param int $shippingMethodID
+     * @param int $cgroupID
+     * @param int $filterPaymentID
+     * @return array
+     */
+    public static function getPaymentMethods($shippingMethodID, $cgroupID, $filterPaymentID = 0)
+    {
+        $filterSQL = '';
+        $params    = [
+            'methodID' => $shippingMethodID,
+            'cGroupID' => $cgroupID,
+        ];
+        if ($filterPaymentID > 0) {
+            $filterSQL           = ' AND tzahlungsart.kZahlungsart = :paymentID ';
+            $params['paymentID'] = $filterPaymentID;
+        }
+        return Shop::DB()->queryPrepared(
+            'SELECT tversandartzahlungsart.*, tzahlungsart.*
+                     FROM tversandartzahlungsart, tzahlungsart
+                     WHERE tversandartzahlungsart.kVersandart = :methodID
+                         ' . $filterSQL . "
+                         AND tversandartzahlungsart.kZahlungsart = tzahlungsart.kZahlungsart
+                         AND (tzahlungsart.cKundengruppen IS NULL OR tzahlungsart.cKundengruppen = ''
+                            OR FIND_IN_SET(:cGroupID, REPLACE(tzahlungsart.cKundengruppen, ';', ',')) > 0)
+                         AND tzahlungsart.nActive = 1
+                         AND tzahlungsart.nNutzbar = 1
+                     ORDER BY tzahlungsart.nSort",
+            $params,
+            2
+        );
     }
 
     /**
@@ -265,17 +298,7 @@ class VersandartHelper
                 }
             }
             //Abfrage ob die Zahlungsart/en zur Versandart gesetzt ist/sind
-            $zahlungsarten = Shop::DB()->query(
-                "SELECT tversandartzahlungsart.*, tzahlungsart.*
-                     FROM tversandartzahlungsart, tzahlungsart
-                     WHERE tversandartzahlungsart.kVersandart = " . (int)$versandarten[$i]->kVersandart . "
-                         AND tversandartzahlungsart.kZahlungsart = tzahlungsart.kZahlungsart
-                         AND (tzahlungsart.cKundengruppen IS NULL OR tzahlungsart.cKundengruppen=''
-                         OR FIND_IN_SET('{$kKundengruppe}', REPLACE(tzahlungsart.cKundengruppen, ';', ',')) > 0)
-                         AND tzahlungsart.nActive = 1
-                         AND tzahlungsart.nNutzbar = 1
-                     ORDER BY tzahlungsart.nSort", 2
-            );
+            $zahlungsarten   = self::getPaymentMethods((int)$versandarten[$i]->kVersandart, $kKundengruppe);
             $bVersandGueltig = false;
             foreach ($zahlungsarten as $zahlungsart) {
                 if (ZahlungsartHelper::shippingMethodWithValidPaymentMethod($zahlungsart)) {
@@ -900,5 +923,50 @@ class VersandartHelper
         }
 
         return implode('-', $VKarr);
+    }
+
+    /**
+     * @param object[]|null $shippingMethods
+     * @param int           $paymentMethodID
+     * @return object|null
+     */
+    public static function getFirstShippingMethod($shippingMethods = null, $paymentMethodID = 0)
+    {
+        $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
+        if (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0) {
+            $kKundengruppe = $_SESSION['Kunde']->kKundengruppe;
+        }
+
+        if (!is_array($shippingMethods)) {
+            $country = isset($_SESSION['Lieferadresse']->cLand) ? $_SESSION['Lieferadresse']->cLand : $_SESSION['Kunde']->cLand;
+            $zip     = isset($_SESSION['Lieferadresse']->cPLZ) ? $_SESSION['Lieferadresse']->cPLZ : $_SESSION['Kunde']->cPLZ;
+
+            $shippingMethods = self::getPossibleShippingMethods(
+                $country,
+                $zip,
+                self::getShippingClasses($_SESSION['Warenkorb']),
+                $kKundengruppe
+            );
+        }
+        if ($paymentMethodID === 0) {
+            $paymentMethodID = isset($_SESSION['Zahlungsart']->kZahlungsart) ? $_SESSION['Zahlungsart']->kZahlungsart : 0;
+        }
+
+        if ($paymentMethodID > 0) {
+            $shippingMethods = array_filter(
+                $shippingMethods,
+                static function ($method) use ($paymentMethodID, $kKundengruppe) {
+                    $paymentMethods = self::getPaymentMethods(
+                        (int)$method->kVersandart,
+                        $kKundengruppe,
+                        $paymentMethodID
+                    );
+
+                    return count($paymentMethods) > 0;
+                }
+            );
+        }
+
+        return count($shippingMethods) > 0 ? array_shift($shippingMethods) : null;
     }
 }

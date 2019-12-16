@@ -458,62 +458,68 @@ function pruefeZahlungsartwahlStep($cPost_arr)
 {
     global $zahlungsangaben, $hinweis, $step;
     /** @var array('Warenkorb' => Warenkorb) $_SESSION */
-    if (isset($cPost_arr['zahlungsartwahl']) && (int)$cPost_arr['zahlungsartwahl'] === 1) {
+
+    if (!isset($cPost_arr['zahlungsartwahl']) || (int)$cPost_arr['zahlungsartwahl'] !== 1) {
+        if (isset($_SESSION['Zahlungsart'])) {
+            $zahlungsangaben = zahlungsartKorrekt((int)$_SESSION['Zahlungsart']->kZahlungsart);
+        } else {
+            return null;
+        }
+    } else {
         $zahlungsangaben = zahlungsartKorrekt($cPost_arr['Zahlungsart']);
-        $conf            = Shop::getSettings([CONF_TRUSTEDSHOPS]);
-        executeHook(HOOK_BESTELLVORGANG_PAGE_STEPZAHLUNG_PLAUSI);
-        // Trusted Shops
-        if ($zahlungsangaben > 0 &&
-            $_SESSION['Zahlungsart']->nWaehrendBestellung == 0 &&
-            isset($cPost_arr['bTS']) &&
-            (int)$cPost_arr['bTS'] === 1 &&
-            $conf['trustedshops']['trustedshops_nutzen'] === 'Y'
-        ) {
-            $_SESSION['TrustedShops']->cKaeuferschutzProdukt =
-                StringHandler::htmlentities(StringHandler::filterXSS($cPost_arr['cKaeuferschutzProdukt']));
-
-            $fNetto        = $_SESSION['TrustedShops']->oKaeuferschutzProduktIDAssoc_arr[StringHandler::htmlentities(
-                StringHandler::filterXSS($cPost_arr['cKaeuferschutzProdukt'])
-            )];
-            $cLandISO      = isset($_SESSION['Lieferadresse']->cLand) ? $_SESSION['Lieferadresse']->cLand : '';
-            $kSteuerklasse = $_SESSION['Warenkorb']->gibVersandkostenSteuerklasse($cLandISO);
-            $fPreis        = $_SESSION['Kundengruppe']->nNettoPreise
-                ? $fNetto
-                : ($fNetto * ((100 + (float)$_SESSION['Steuersatz'][$kSteuerklasse]) / 100));
-            $cName['ger']  = Shop::Lang()->get('trustedshopsName', 'global');
-            $cName['eng']  = Shop::Lang()->get('trustedshopsName', 'global');
-            $_SESSION['Warenkorb']->erstelleSpezialPos(
-                $cName,
-                1,
-                $fPreis,
-                $kSteuerklasse,
-                C_WARENKORBPOS_TYP_TRUSTEDSHOPS,
-                true,
-                (bool)!$_SESSION['Kundengruppe']->nNettoPreise
-            );
-        }
-
-        switch ($zahlungsangaben) {
-            case 0:
-                $hinweis = Shop::Lang()->get('fillPayment', 'checkout');
-                $step    = 'Zahlung';
-
-                return 0;
-                break;
-            case 1:
-                $step = 'ZahlungZusatzschritt';
-
-                return 1;
-                break;
-            case 2:
-                $step = 'Bestaetigung';
-
-                return 2;
-                break;
-        }
     }
 
-    return null;
+    $conf = Shop::getSettings([CONF_TRUSTEDSHOPS]);
+    executeHook(HOOK_BESTELLVORGANG_PAGE_STEPZAHLUNG_PLAUSI);
+    // Trusted Shops
+    if ($zahlungsangaben > 0 &&
+        $_SESSION['Zahlungsart']->nWaehrendBestellung == 0 &&
+        isset($cPost_arr['bTS']) &&
+        (int)$cPost_arr['bTS'] === 1 &&
+        $conf['trustedshops']['trustedshops_nutzen'] === 'Y'
+    ) {
+        $_SESSION['TrustedShops']->cKaeuferschutzProdukt =
+            StringHandler::htmlentities(StringHandler::filterXSS($cPost_arr['cKaeuferschutzProdukt']));
+
+        $fNetto        = $_SESSION['TrustedShops']->oKaeuferschutzProduktIDAssoc_arr[StringHandler::htmlentities(
+            StringHandler::filterXSS($cPost_arr['cKaeuferschutzProdukt'])
+        )];
+        $cLandISO      = isset($_SESSION['Lieferadresse']->cLand) ? $_SESSION['Lieferadresse']->cLand : '';
+        $kSteuerklasse = $_SESSION['Warenkorb']->gibVersandkostenSteuerklasse($cLandISO);
+        $fPreis        = $_SESSION['Kundengruppe']->nNettoPreise
+            ? $fNetto
+            : ($fNetto * ((100 + (float)$_SESSION['Steuersatz'][$kSteuerklasse]) / 100));
+        $cName['ger']  = Shop::Lang()->get('trustedshopsName', 'global');
+        $cName['eng']  = Shop::Lang()->get('trustedshopsName', 'global');
+        $_SESSION['Warenkorb']->erstelleSpezialPos(
+            $cName,
+            1,
+            $fPreis,
+            $kSteuerklasse,
+            C_WARENKORBPOS_TYP_TRUSTEDSHOPS,
+            true,
+            (bool)!$_SESSION['Kundengruppe']->nNettoPreise
+        );
+    }
+
+    switch ($zahlungsangaben) {
+        case 0:
+            $hinweis = Shop::Lang()->get('fillPayment', 'checkout');
+            $step    = 'Zahlung';
+
+            return 0;
+            break;
+        case 1:
+            $step = 'ZahlungZusatzschritt';
+
+            return 1;
+            break;
+        case 2:
+            $step = 'Bestaetigung';
+
+            return 2;
+            break;
+    }
 }
 
 /**
@@ -773,7 +779,8 @@ function gibStepZahlung()
  */
 function gibStepZahlungZusatzschritt($cPost_arr)
 {
-    $Zahlungsart = gibZahlungsart((int)$cPost_arr['Zahlungsart']);
+    $kZahlungsart = isset($cPost_arr['Zahlungsart']) ? (int)$cPost_arr['Zahlungsart'] : (int)$_SESSION['Zahlungsart']->kZahlungsart;
+    $Zahlungsart  = gibZahlungsart($kZahlungsart);
     // Wenn Zahlungsart = Lastschrift ist => versuche Kundenkontodaten zu holen
     $oKundenKontodaten = gibKundenKontodaten($_SESSION['Kunde']->kKunde);
     if (isset($oKundenKontodaten->kKunde) && $oKundenKontodaten->kKunde > 0) {
@@ -1623,10 +1630,18 @@ function gibAktiveVersandart($oVersandarten_arr)
         if (array_reduce($oVersandarten_arr, function ($carry, $item) use ($active) {
                 return (int)$item->kVersandart === $active ? (int)$item->kVersandart : $carry;
         }, 0) !== (int)$_SESSION['AktiveVersandart']) {
-            $_SESSION['AktiveVersandart'] = $oVersandarten_arr[0]->kVersandart;
+            $firstShippingMethod          = VersandartHelper::getFirstShippingMethod(
+                $oVersandarten_arr,
+                isset($_SESSION['Zahlungsart']->kZahlungsart) ? $_SESSION['Zahlungsart']->kZahlungsart : 0
+            );
+            $_SESSION['AktiveVersandart'] = isset($firstShippingMethod) ? $firstShippingMethod->kVersandart : 0;
         }
     } else {
-        $_SESSION['AktiveVersandart'] = $oVersandarten_arr[0]->kVersandart;
+        $firstShippingMethod          = VersandartHelper::getFirstShippingMethod(
+            $oVersandarten_arr,
+            isset($_SESSION['Zahlungsart']->kZahlungsart) ? $_SESSION['Zahlungsart']->kZahlungsart : 0
+        );
+        $_SESSION['AktiveVersandart'] = isset($firstShippingMethod) ? $firstShippingMethod->kVersandart : 0;
     }
 
     return $_SESSION['AktiveVersandart'];

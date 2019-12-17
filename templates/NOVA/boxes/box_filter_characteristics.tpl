@@ -3,7 +3,8 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='boxes-box-filter-characteristics'}
-    {if $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE && (!$device->isMobile() || $device->isTablet())}
+    {if $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE
+        && !($device->isMobile() || $device->isTablet() || $Einstellungen.template.productlist.filter_placement === 'M')}
         {foreach $oBox->getItems() as $characteristic}
             <div id="sidebox{$oBox->getID()}-{$characteristic->getID()}" class="box box-filter-characteristics{if $characteristic@last} mb-7{/if}">
                 {button

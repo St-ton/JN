@@ -3,7 +3,9 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='boxes-box-filter-pricerange'}
-    {if !empty($oBox->getItems()->getOptions()) && $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE && (!$device->isMobile() || $device->isTablet())}
+    {if !empty($oBox->getItems()->getOptions())
+        && $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE
+        && !($device->isMobile() || $device->isTablet() || $Einstellungen.template.productlist.filter_placement === 'M')}
         {block name='boxes-box-filter-pricerange-content'}
             <div id="sidebox{$oBox->getID()}" class="box box-filter-price">
                 {button

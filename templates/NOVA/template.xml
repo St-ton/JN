@@ -63,6 +63,10 @@
             </Setting>
         </Section>
         <Section Name="Listen- und Gallerieansicht" Key="productlist">
+            <Setting Description="Filter anzeigen in" Key="filter_placement" Type="select" Value="M">
+                <Option Value="S">Seitenleiste</Option>
+                <Option Value="M">Modal</Option>
+            </Setting>
             <Setting Description="aus der Liste heraus einkaufen? (&lt;small&gt;zeigt den Warenkorb-Button in den Artikellisten an&lt;/small&gt;)" Key="buy_productlist" Type="select" Value="Y">
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>

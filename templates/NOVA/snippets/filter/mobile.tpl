@@ -3,7 +3,6 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='snippets-filter-mobile'}
-    <span class="h2 mt-3 border-0 px-3 d-md-none" id="productlist-filter">Filter &amp; Sortierung</span>
     <div class="productlist-filter-wrapper">
         <ul class="productlist-filter-accordion border-md-bottom border-lg-bottom-0">
         {if $show_filters}
@@ -125,18 +124,18 @@
         {/block}
         </ul>
         {block name='productlist-result-options-include-active-filter'}
-            <div class="productlist-applied-filter mb-5 d-md-none">
+            <div class="productlist-applied-filter mb-5">
                 {include file='snippets/filter/active_filter.tpl'}
             </div>
         {/block}
     </div>
     <div class="productlist-filter-footer px-3 mt-auto">
-        <div class="form-row d-lg-none justify-content-end align-items-center">
+        <div class="form-row justify-content-end align-items-center">
             <div class="col">
                 {button block=true
                     variant="outline-primary"
                     class="my-1 no-caret"
-                    data=['toggle'=>'collapse']
+                    data=['toggle'=>'collapse', 'dismiss'=>'modal']
                     href="#collapseFilter"
                     aria=['expanded'=>'true','controls'=>'collapseFilter']}
                 Abbrechen
@@ -159,7 +158,7 @@
     {inline_script}<script>
         {literal}
             window.reloadFilter = function (href) {
-                let $wrapper = $('#collapseFilter'),
+                let $wrapper = $('.js-collapse-filter'),
                     $spinner = $.evo.extended().spinner($wrapper.get(0));
 
                 $wrapper.addClass('loading');
@@ -174,7 +173,7 @@
                     });
             };
 
-            $('#collapseFilter .filter-item, #collapseFilter .js-filter-item').on('click', function(e) {
+            $('.js-collapse-filter .filter-item, .js-collapse-filter .js-filter-item').on('click', function(e) {
                 e.preventDefault();
                 window.reloadFilter($(this).attr('href'));
             });

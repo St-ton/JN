@@ -20,7 +20,7 @@
                                 {opcMountPoint id='opc_before_result_options'}
                             {/if}
                             {if $navid === 'header'}
-                                <div id="improve_search">
+                                <div id="improve_search" class="d-inline-block btn-group mr-2">
                                     {include file='productlist/result_options.tpl' itemCount=$Suchergebnisse->getProductCount()}
                                 </div>
                             {/if}

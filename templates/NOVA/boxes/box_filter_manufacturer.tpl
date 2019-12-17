@@ -3,7 +3,8 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='boxes-box-filter-manufacturer'}
-    {if $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE && (!$device->isMobile() || $device->isTablet())}
+    {if $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE
+        && !($device->isMobile() || $device->isTablet() || $Einstellungen.template.productlist.filter_placement === 'M')}
         <div class="box box-filter-manufacturer" id="sidebox{$oBox->getID()}">
             {button
                 variant="link"

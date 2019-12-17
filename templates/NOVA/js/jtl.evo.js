@@ -675,6 +675,67 @@
             });
         },
 
+        initPriceSlider: function (redirect) {
+            let priceRange      = $('#js-price-range').val(),
+                priceRangeID    = $('#js-price-range-id').val(),
+                priceRangeMin   = 0,
+                priceRangeMax   = $('#js-price-range-max').val(),
+                currentPriceMin = priceRangeMin,
+                currentPriceMax = priceRangeMax,
+                $priceRangeFrom = $("#" + priceRangeID + "-from"),
+                $priceRangeTo = $("#" + priceRangeID + "-to"),
+                $priceSlider = document.getElementById(priceRangeID);
+
+            if (priceRange) {
+                let priceRangeMinMax = priceRange.split('_');
+                currentPriceMin = priceRangeMinMax[0];
+                currentPriceMax = priceRangeMinMax[1];
+                $priceRangeFrom.val(currentPriceMin);
+                $priceRangeTo.val(currentPriceMax);
+            }
+            noUiSlider.create($priceSlider, {
+                start: [parseInt(currentPriceMin), parseInt(currentPriceMax)],
+                connect: true,
+                range: {
+                    'min': parseInt(priceRangeMin),
+                    'max': parseInt(priceRangeMax)
+                },
+                step: 1
+            });
+            $priceSlider.noUiSlider.on('end', function (values, handle) {
+                redirectToNewPriceRange(values[0] + '_' + values[1], redirect);
+            });
+            $priceSlider.noUiSlider.on('slide', function (values, handle) {
+                $priceRangeFrom.val(values[0]);
+                $priceRangeTo.val(values[1]);
+            });
+            $('.price-range-input').change(function () {
+                let prFrom = $priceRangeFrom.val(),
+                    prTo = $priceRangeTo.val();
+                redirectToNewPriceRange(
+                    (prFrom > 0 ? prFrom : priceRangeMin) + '_' + (prTo > 0 ? prTo : priceRangeMax),
+                    redirect
+                );
+            });
+        },
+
+        initFilters: function (href) {
+            let $wrapper = $('.js-collapse-filter'),
+                $spinner = $.evo.extended().spinner($wrapper.get(0))
+                self=this;
+
+            $wrapper.addClass('loading');
+            $.ajax(href, {data: {'isAjax':1}})
+            .done(function(data) {
+                $wrapper.html(data);
+                self.initPriceSlider(false);
+            })
+            .always(function() {
+                $spinner.stop();
+                $wrapper.removeClass('loading');
+            });
+        },
+
         /**
          * $.evo.extended() is deprecated, please use $.evo instead
          */
@@ -698,6 +759,7 @@
             this.fixStickyElements();
             this.setWishlistVisibilitySwitches();
             this.initEModals();
+            this.initPriceSlider($('#js-price-redirect').val() != 1);
         }
     };
 

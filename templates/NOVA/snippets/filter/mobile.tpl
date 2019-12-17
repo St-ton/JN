@@ -158,19 +158,7 @@
     {inline_script}<script>
         {literal}
             window.reloadFilter = function (href) {
-                let $wrapper = $('.js-collapse-filter'),
-                    $spinner = $.evo.extended().spinner($wrapper.get(0));
-
-                $wrapper.addClass('loading');
-                $.ajax(href, {data: {'isAjax':1}})
-                    .done(function(data) {
-                        $wrapper.html(data);
-                        window.initPriceSlider(false);
-                    })
-                    .always(function() {
-                        $spinner.stop();
-                        $wrapper.removeClass('loading');
-                    });
+                $.evo.initFilters(href);
             };
 
             $('.js-collapse-filter .filter-item, .js-collapse-filter .js-filter-item').on('click', function(e) {

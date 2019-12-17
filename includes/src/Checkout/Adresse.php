@@ -209,7 +209,7 @@ class Adresse
      * @param string $iso
      * @return string
      */
-    public function pruefeLandISO(string $iso): string
+    public static function pruefeLandISO(string $iso): string
     {
         \preg_match('/[a-zA-Z]{2}/', $iso, $matches);
         if (\mb_strlen($matches[0]) !== \mb_strlen($iso)) {

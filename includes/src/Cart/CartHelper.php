@@ -28,6 +28,7 @@ use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
+use JTL\Media\Image;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
@@ -274,14 +275,14 @@ class CartHelper
         $imageBaseURL       = Shop::getImageBaseURL();
         $image              = (object)[
             'isVariation'  => true,
-            'cPfadMini'    => \str_replace($imageBaseURL, '', $variation->getImage(\JTL\Media\Image::SIZE_XS)),
-            'cPfadKlein'   => \str_replace($imageBaseURL, '', $variation->getImage(\JTL\Media\Image::SIZE_SM)),
-            'cPfadNormal'  => \str_replace($imageBaseURL, '', $variation->getImage(\JTL\Media\Image::SIZE_MD)),
-            'cPfadGross'   => \str_replace($imageBaseURL, '', $variation->getImage(\JTL\Media\Image::SIZE_LG)),
-            'cURLMini'     => $variation->getImage(\JTL\Media\Image::SIZE_XS),
-            'cURLKlein'    => $variation->getImage(\JTL\Media\Image::SIZE_SM),
-            'cURLNormal'   => $variation->getImage(\JTL\Media\Image::SIZE_MD),
-            'cURLGross'    => $variation->getImage(\JTL\Media\Image::SIZE_LG),
+            'cPfadMini'    => \str_replace($imageBaseURL, '', $variation->getImage(Image::SIZE_XS)),
+            'cPfadKlein'   => \str_replace($imageBaseURL, '', $variation->getImage(Image::SIZE_SM)),
+            'cPfadNormal'  => \str_replace($imageBaseURL, '', $variation->getImage(Image::SIZE_MD)),
+            'cPfadGross'   => \str_replace($imageBaseURL, '', $variation->getImage(Image::SIZE_LG)),
+            'cURLMini'     => $variation->getImage(Image::SIZE_XS),
+            'cURLKlein'    => $variation->getImage(Image::SIZE_SM),
+            'cURLNormal'   => $variation->getImage(Image::SIZE_MD),
+            'cURLGross'    => $variation->getImage(Image::SIZE_LG),
             'nNr'          => \count($item->variationPicturesArr) + 1,
             'cAltAttribut' => \str_replace(['"', "'"], '', $item->Artikel->cName . ' - ' . $variation->cName),
         ];

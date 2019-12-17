@@ -3,7 +3,7 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='productlist-result-options'}
-    {if $device->isMobile() && !$device->isTablet()}
+    {if $device->isMobile() || $device->isTablet()}
         {assign var=contentFilters value=$NaviFilter->getAvailableContentFilters()}
         {assign var=show_filters value=$Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab == 0
         || $NaviFilter->getSearchResults()->getProductCount() >= $Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab

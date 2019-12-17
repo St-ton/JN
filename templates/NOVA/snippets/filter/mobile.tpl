@@ -153,26 +153,30 @@
             </div>
         </div>
     </div>
-
+    <div class="js-helpers">
+        {input id="js-price-redirect" type="hidden" value=1}
+    </div>
     {inline_script}<script>
         {literal}
-            $('#collapseFilter .filter-item, #collapseFilter .js-filter-item').on('click', function(e) {
-                e.preventDefault();
-
-                var $wrapper = $('#collapseFilter'),
+            window.reloadFilter = function (href) {
+                let $wrapper = $('#collapseFilter'),
                     $spinner = $.evo.extended().spinner($wrapper.get(0));
 
                 $wrapper.addClass('loading');
-                console.log($spinner);
-                console.log('blub1');
-                $.ajax($(this).attr('href'), {data: {'isAjax':1, 'quickView':1}})
-                .done(function(data) {
-                    $wrapper.html(data);
-                })
-                .always(function() {
-                    $spinner.stop();
-                    $wrapper.removeClass('loading');
-                });
+                $.ajax(href, {data: {'isAjax':1}})
+                    .done(function(data) {
+                        $wrapper.html(data);
+                        window.initPriceSlider(false);
+                    })
+                    .always(function() {
+                        $spinner.stop();
+                        $wrapper.removeClass('loading');
+                    });
+            };
+
+            $('#collapseFilter .filter-item, #collapseFilter .js-filter-item').on('click', function(e) {
+                e.preventDefault();
+                window.reloadFilter($(this).attr('href'));
             });
         {/literal}
     </script>{/inline_script}

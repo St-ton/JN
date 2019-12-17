@@ -183,6 +183,7 @@ $smarty->assign('NaviFilter', $NaviFilter)
        ->assign('filterPagination', $pagination)
        ->assign('Suchergebnisse', $oSuchergebnisse)
        ->assign('oNavigationsinfo', $oNavigationsinfo)
+       ->assign('priceRange', $NaviFilter->getPriceRangeFilter()->getValue())
        ->assign('nMaxAnzahlArtikel', (int)($oSuchergebnisse->getProductCount() >=
            (int)$conf['artikeluebersicht']['suche_max_treffer']));
 

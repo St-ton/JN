@@ -64,7 +64,7 @@ class HandleExceptions
         }
 
         // report / log
-        dump($e);
+        \dump($e);
     }
 
     /**

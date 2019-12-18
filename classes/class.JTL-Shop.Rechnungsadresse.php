@@ -63,7 +63,7 @@ class Rechnungsadresse extends Adresse
     {
         $obj = Shop::DB()->select('trechnungsadresse', 'kRechnungsadresse', (int)$kRechnungsadresse);
 
-        if (!$obj->kRechnungsadresse) {
+        if (!isset($obj->kRechnungsadresse)) {
             return 0;
         }
 
@@ -71,7 +71,9 @@ class Rechnungsadresse extends Adresse
 
         // Anrede mappen
         $this->cAnredeLocalized = mappeKundenanrede($this->cAnrede, 0, $this->kKunde);
-        $this->angezeigtesLand  = ISO2land($this->cLand);
+        // Workaround for WAWI-39370
+        $this->cLand           = self::checkISOCountryCode($this->cLand);
+        $this->angezeigtesLand = ISO2land($this->cLand);
         if ($this->kRechnungsadresse > 0) {
             $this->decrypt();
         }
@@ -92,7 +94,7 @@ class Rechnungsadresse extends Adresse
         $this->encrypt();
         $obj = $this->toObject();
 
-        $obj->cLand = $this->pruefeLandISO($obj->cLand);
+        $obj->cLand = self::checkISOCountryCode($obj->cLand);
 
         unset($obj->kRechnungsadresse, $obj->angezeigtesLand, $obj->cAnredeLocalized);
 
@@ -115,7 +117,7 @@ class Rechnungsadresse extends Adresse
         $this->encrypt();
         $obj = $this->toObject();
 
-        $obj->cLand = $this->pruefeLandISO($obj->cLand);
+        $obj->cLand = self::checkISOCountryCode($obj->cLand);
 
         unset($obj->angezeigtesLand, $obj->cAnredeLocalized);
 

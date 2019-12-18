@@ -195,13 +195,23 @@ class Adresse
     /**
      * @param string $iso
      * @return string
+     * @deprecated since 4.06.16 - use static checkISOCountryCode instead
      */
     public function pruefeLandISO($iso)
+    {
+        return self::checkISOCountryCode($iso);
+    }
+
+    /**
+     * @param string $iso
+     * @return string
+     */
+    public static function checkISOCountryCode($iso)
     {
         preg_match('/[a-zA-Z]{2}/', $iso, $matches);
         if (strlen($matches[0]) !== strlen($iso)) {
             $o = landISO($iso);
-            if ($o !== 'noISO' && strlen($o) > 0) {
+            if ($o !== 'noISO' && $o !== '') {
                 $iso = $o;
             }
         }

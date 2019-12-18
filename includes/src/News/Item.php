@@ -15,7 +15,6 @@ use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;
-use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
 use function Functional\map;

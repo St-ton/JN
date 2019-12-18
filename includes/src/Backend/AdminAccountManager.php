@@ -101,7 +101,7 @@ class AdminAccountManager
     {
         global $adminMenu;
 
-        $perms              = reindex($this->db->selectAll('tadminrecht', [], []), function ($e) {
+        $perms              = reindex($this->db->selectAll('tadminrecht', [], []), static function ($e) {
             return $e->cRecht;
         });
         $permissionsOrdered = [];
@@ -217,7 +217,7 @@ class AdminAccountManager
             'cName ASC'
         );
 
-        return array_column($extAttribs, null, 'cName');
+        return \array_column($extAttribs, null, 'cName');
     }
 
     /**
@@ -232,7 +232,7 @@ class AdminAccountManager
             $result = true;
             $this->validateAccount($extAttribs);
 
-            executeHook(HOOK_BACKEND_ACCOUNT_EDIT, [
+            \executeHook(HOOK_BACKEND_ACCOUNT_EDIT, [
                 'oAccount' => $account,
                 'type'     => 'VALIDATE',
                 'attribs'  => &$extAttribs,
@@ -241,7 +241,7 @@ class AdminAccountManager
             ]);
 
             if ($result !== true) {
-                $errorMap = array_merge($errorMap, $result);
+                $errorMap = \array_merge($errorMap, $result);
 
                 return false;
             }
@@ -272,7 +272,7 @@ class AdminAccountManager
                     ],
                     ReturnType::DEFAULT
                 ) === 0) {
-                    $this->addError(sprintf(__('errorKeyChange'), $key));
+                    $this->addError(\sprintf(__('errorKeyChange'), $key));
                 }
                 $handledKeys[] = $key;
             }
@@ -280,7 +280,7 @@ class AdminAccountManager
             $this->db->query(
                 'DELETE FROM tadminloginattribut
                 WHERE kAdminlogin = ' . (int)$account->kAdminlogin . "
-                    AND cName NOT IN ('" . implode("', '", $handledKeys) . "')",
+                    AND cName NOT IN ('" . \implode("', '", $handledKeys) . "')",
                 ReturnType::DEFAULT
             );
 
@@ -359,9 +359,11 @@ class AdminAccountManager
 
         if ($imgType !== false) {
             $imagePath = \PFAD_MEDIA_IMAGE . 'avatare/';
-            $imageName = time() . '_' .\pathinfo($tmpFile['name'][$attribName], \PATHINFO_FILENAME)
+            $imageName = \time() . '_' .\pathinfo($tmpFile['name'][$attribName], \PATHINFO_FILENAME)
                 . \image_type_to_extension($imgType);
-            if (\is_dir(\PFAD_ROOT . $imagePath) || \mkdir(\PFAD_ROOT . $imagePath, 0755)) {
+            if (\is_dir(\PFAD_ROOT . $imagePath)
+                || (\mkdir(\PFAD_ROOT . $imagePath, 0755) && \is_dir(\PFAD_ROOT . $imagePath))
+            ) {
                 if (\move_uploaded_file($tmpFile['tmp_name'][$attribName], \PFAD_ROOT . $imagePath . $imageName)) {
                     return '/' . $imagePath . $imageName;
                 }
@@ -401,7 +403,7 @@ class AdminAccountManager
             } else {
                 $result = true;
                 $this->db->update('tadminlogin', 'kAdminlogin', $adminID, (object)['bAktiv' => 0]);
-                executeHook(HOOK_BACKEND_ACCOUNT_EDIT, [
+                \executeHook(HOOK_BACKEND_ACCOUNT_EDIT, [
                     'oAccount' => $account,
                     'type'     => 'LOCK',
                     'attribs'  => null,
@@ -429,7 +431,7 @@ class AdminAccountManager
         if (\is_object($account)) {
             $result = true;
             $this->db->update('tadminlogin', 'kAdminlogin', $adminID, (object)['bAktiv' => 1]);
-            executeHook(HOOK_BACKEND_ACCOUNT_EDIT, [
+            \executeHook(HOOK_BACKEND_ACCOUNT_EDIT, [
                 'oAccount' => $account,
                 'type'     => 'UNLOCK',
                 'attribs'  => null,
@@ -473,16 +475,16 @@ class AdminAccountManager
             $errors              = [];
             $tmpAcc              = new stdClass();
             $tmpAcc->kAdminlogin = Request::postInt('kAdminlogin');
-            $tmpAcc->cName       = htmlspecialchars(trim($_POST['cName']), ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-            $tmpAcc->cMail       = htmlspecialchars(trim($_POST['cMail']), ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+            $tmpAcc->cName       = \htmlspecialchars(\trim($_POST['cName']), ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+            $tmpAcc->cMail       = \htmlspecialchars(\trim($_POST['cMail']), ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
             $tmpAcc->language    = $_POST['language'];
-            $tmpAcc->cLogin      = trim($_POST['cLogin']);
-            $tmpAcc->cPass       = trim($_POST['cPass']);
+            $tmpAcc->cLogin      = \trim($_POST['cLogin']);
+            $tmpAcc->cPass       = \trim($_POST['cPass']);
             $tmpAcc->b2FAauth    = Request::postInt('b2FAauth');
             $tmpAttribs          = $_POST['extAttribs'] ?? [];
 
-            if (0 < mb_strlen($_POST['c2FAsecret'])) {
-                $tmpAcc->c2FAauthSecret = trim($_POST['c2FAsecret']);
+            if (0 < \mb_strlen($_POST['c2FAsecret'])) {
+                $tmpAcc->c2FAauthSecret = \trim($_POST['c2FAsecret']);
             }
 
             $validUntil = Request::postInt('dGueltigBisAktiv') === 1;
@@ -500,21 +502,21 @@ class AdminAccountManager
             if ((bool)$tmpAcc->b2FAauth && !isset($tmpAcc->c2FAauthSecret)) {
                 $errors['c2FAsecret'] = 1;
             }
-            if (mb_strlen($tmpAcc->cName) === 0) {
+            if (\mb_strlen($tmpAcc->cName) === 0) {
                 $errors['cName'] = 1;
             }
-            if (mb_strlen($tmpAcc->cMail) === 0) {
+            if (\mb_strlen($tmpAcc->cMail) === 0) {
                 $errors['cMail'] = 1;
             }
-            if (mb_strlen($tmpAcc->cPass) === 0 && $tmpAcc->kAdminlogin === 0) {
+            if (\mb_strlen($tmpAcc->cPass) === 0 && $tmpAcc->kAdminlogin === 0) {
                 $errors['cPass'] = 1;
             }
-            if (mb_strlen($tmpAcc->cLogin) === 0) {
+            if (\mb_strlen($tmpAcc->cLogin) === 0) {
                 $errors['cLogin'] = 1;
             } elseif ($tmpAcc->kAdminlogin === 0 && $this->getInfoInUse('cLogin', $tmpAcc->cLogin)) {
                 $errors['cLogin'] = 2;
             }
-            if ($validUntil && $tmpAcc->kAdminlogingruppe !== ADMINGROUP && mb_strlen($tmpAcc->dGueltigBis) === 0) {
+            if ($validUntil && $tmpAcc->kAdminlogingruppe !== ADMINGROUP && \mb_strlen($tmpAcc->dGueltigBis) === 0) {
                 $errors['dGueltigBis'] = 1;
             }
             if ($tmpAcc->kAdminlogin > 0) {
@@ -533,7 +535,7 @@ class AdminAccountManager
                     $errors['bMinAdmin'] = 1;
                 }
             }
-            if (count($errors) > 0) {
+            if (\count($errors) > 0) {
                 $this->smarty->assign('cError_arr', $errors);
                 $this->addError(__('errorFillRequired'));
                 if (isset($errors['bMinAdmin']) && $errors['bMinAdmin'] === 1) {
@@ -548,7 +550,7 @@ class AdminAccountManager
                     && $tmpAcc->cLogin !== $_SESSION['AdminAccount']->cLogin) {
                     $_SESSION['AdminAccount']->cLogin = $tmpAcc->cLogin;
                 }
-                if (mb_strlen($tmpAcc->cPass) > 0) {
+                if (\mb_strlen($tmpAcc->cPass) > 0) {
                     $tmpAcc->cPass = Shop::Container()->getPasswordService()->hash($tmpAcc->cPass);
                     // if we change the current admin-user, we have to update his session-credentials too!
                     if ((int)$tmpAcc->kAdminlogin === (int)$_SESSION['AdminAccount']->kAdminlogin) {
@@ -564,7 +566,7 @@ class AdminAccountManager
                     && $this->saveAttributes($tmpAcc, $tmpAttribs, $errors)
                 ) {
                     $result = true;
-                    executeHook(HOOK_BACKEND_ACCOUNT_EDIT, [
+                    \executeHook(\HOOK_BACKEND_ACCOUNT_EDIT, [
                         'oAccount' => $tmpAcc,
                         'type'     => 'SAVE',
                         'attribs'  => &$tmpAttribs,
@@ -576,7 +578,7 @@ class AdminAccountManager
 
                         return 'index_redirect';
                     }
-                    $this->smarty->assign('cError_arr', array_merge($errors, (array)$result));
+                    $this->smarty->assign('cError_arr', \array_merge($errors, (array)$result));
                 } else {
                     $this->addError(__('errorUserSave'));
                     $this->smarty->assign('cError_arr', $errors);
@@ -586,7 +588,7 @@ class AdminAccountManager
                 $tmpAcc->bAktiv        = 1;
                 $tmpAcc->nLoginVersuch = 0;
                 $tmpAcc->dLetzterLogin = '_DBNULL_';
-                if (!isset($tmpAcc->dGueltigBis) || mb_strlen($tmpAcc->dGueltigBis) === 0) {
+                if (!isset($tmpAcc->dGueltigBis) || \mb_strlen($tmpAcc->dGueltigBis) === 0) {
                     $tmpAcc->dGueltigBis = '_DBNULL_';
                 }
                 $tmpAcc->cPass = Shop::Container()->getPasswordService()->hash($tmpAcc->cPass);
@@ -595,7 +597,7 @@ class AdminAccountManager
                     && $this->saveAttributes($tmpAcc, $tmpAttribs, $errors)
                 ) {
                     $result = true;
-                    executeHook(HOOK_BACKEND_ACCOUNT_EDIT, [
+                    \executeHook(\HOOK_BACKEND_ACCOUNT_EDIT, [
                         'oAccount' => $tmpAcc,
                         'type'     => 'SAVE',
                         'attribs'  => &$tmpAttribs,
@@ -607,7 +609,7 @@ class AdminAccountManager
 
                         return 'index_redirect';
                     }
-                    $this->smarty->assign('cError_arr', array_merge($errors, (array)$result));
+                    $this->smarty->assign('cError_arr', \array_merge($errors, (array)$result));
                 } else {
                     $this->addError(__('errorUserAdd'));
                     $this->smarty->assign('cError_arr', $errors);
@@ -637,7 +639,7 @@ class AdminAccountManager
         $this->smarty->assign('attribValues', $extAttribs);
 
         $extContent = '';
-        executeHook(HOOK_BACKEND_ACCOUNT_PREPARE_EDIT, [
+        \executeHook(\HOOK_BACKEND_ACCOUNT_PREPARE_EDIT, [
             'oAccount' => $account,
             'smarty'   => $this->smarty,
             'attribs'  => $extAttribs,
@@ -681,7 +683,7 @@ class AdminAccountManager
             } elseif ($this->deleteAttributes($account) &&
                 $this->db->delete('tadminlogin', 'kAdminlogin', $adminID)) {
                 $result = true;
-                executeHook(HOOK_BACKEND_ACCOUNT_EDIT, [
+                \executeHook(HOOK_BACKEND_ACCOUNT_EDIT, [
                     'oAccount' => $account,
                     'type'     => 'DELETE',
                     'attribs'  => null,
@@ -712,28 +714,28 @@ class AdminAccountManager
             $errors                        = [];
             $adminGroup                    = new stdClass();
             $adminGroup->kAdminlogingruppe = Request::postInt('kAdminlogingruppe');
-            $adminGroup->cGruppe           = htmlspecialchars(
-                trim($_POST['cGruppe']),
+            $adminGroup->cGruppe           = \htmlspecialchars(
+                \trim($_POST['cGruppe']),
                 ENT_COMPAT | ENT_HTML401,
                 JTL_CHARSET
             );
-            $adminGroup->cBeschreibung     = htmlspecialchars(
-                trim($_POST['cBeschreibung']),
+            $adminGroup->cBeschreibung     = \htmlspecialchars(
+                \trim($_POST['cBeschreibung']),
                 ENT_COMPAT | ENT_HTML401,
                 JTL_CHARSET
             );
             $groupPermissions              = $_POST['perm'];
 
-            if (mb_strlen($adminGroup->cGruppe) === 0) {
+            if (\mb_strlen($adminGroup->cGruppe) === 0) {
                 $errors['cGruppe'] = 1;
             }
-            if (mb_strlen($adminGroup->cBeschreibung) === 0) {
+            if (\mb_strlen($adminGroup->cBeschreibung) === 0) {
                 $errors['cBeschreibung'] = 1;
             }
-            if (count($groupPermissions) === 0) {
+            if (\count($groupPermissions) === 0) {
                 $errors['cPerm'] = 1;
             }
-            if (count($errors) > 0) {
+            if (\count($errors) > 0) {
                 $this->smarty->assign('cError_arr', $errors)
                     ->assign('oAdminGroup', $adminGroup)
                     ->assign('cAdminGroupPermission_arr', $groupPermissions);
@@ -781,7 +783,7 @@ class AdminAccountManager
             }
         } elseif ($groupID > 0) {
             if ((int)$groupID === 1) {
-                header('location: benutzerverwaltung.php?action=group_view&token=' . $_SESSION['jtl_token']);
+                \header('location: benutzerverwaltung.php?action=group_view&token=' . $_SESSION['jtl_token']);
             }
             $this->smarty->assign('bDebug', $debug)
                 ->assign('oAdminGroup', $this->getAdminGroup($groupID))
@@ -828,7 +830,7 @@ class AdminAccountManager
         $language = Request::verifyGPDataString('language');
         $referer  = Request::verifyGPDataString('referer');
         $this->changeAdminUserLanguage($language);
-        header('Location: ' . $referer);
+        \header('Location: ' . $referer);
     }
 
     /**
@@ -852,8 +854,8 @@ class AdminAccountManager
             $urlParams = ['tab' => Text::filterXSS($tab)];
         }
 
-        header('Location: benutzerverwaltung.php' . (\is_array($urlParams)
-                ? '?' . http_build_query($urlParams, '', '&')
+        \header('Location: benutzerverwaltung.php' . (\is_array($urlParams)
+                ? '?' . \http_build_query($urlParams, '', '&')
                 : ''));
         exit;
     }

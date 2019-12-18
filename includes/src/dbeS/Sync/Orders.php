@@ -318,7 +318,7 @@ final class Orders extends AbstractSync
         // Hausnummer extrahieren
         $this->extractStreet($deliveryAddress);
         // Workaround for WAWI-39370
-        $deliveryAddress->cLand = Adresse::pruefeLandISO($deliveryAddress->cLand);
+        $deliveryAddress->cLand = Adresse::checkISOCountryCode($deliveryAddress->cLand);
         // lieferadresse ungleich rechungsadresse?
         if ($deliveryAddress->cVorname !== $billingAddress->cVorname
             || $deliveryAddress->cNachname !== $billingAddress->cNachname
@@ -423,7 +423,7 @@ final class Orders extends AbstractSync
         }
         $this->extractStreet($billingAddress);
         // Workaround for WAWI-39370
-        $billingAddress->cLand = Adresse::pruefeLandISO($billingAddress->cLand);
+        $billingAddress->cLand = Adresse::checkISOCountryCode($billingAddress->cLand);
         if (!$billingAddress->cNachname && !$billingAddress->cFirma && !$billingAddress->cStrasse) {
             \syncException(
                 'Error Bestellung Update. Rechnungsadresse enthält keinen Nachnamen, Firma und Strasse! XML:' .

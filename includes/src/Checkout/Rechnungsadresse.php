@@ -74,7 +74,7 @@ class Rechnungsadresse extends Adresse
         $this->kRechnungsadresse = (int)$this->kRechnungsadresse;
         $this->cAnredeLocalized  = Customer::mapSalutation($this->cAnrede, 0, $this->kKunde);
         // Workaround for WAWI-39370
-        $this->cLand           = self::pruefeLandISO($this->cLand);
+        $this->cLand           = self::checkISOCountryCode($this->cLand);
         $this->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($this->cLand);
         if ($this->kRechnungsadresse > 0) {
             $this->decrypt();
@@ -93,7 +93,7 @@ class Rechnungsadresse extends Adresse
         $this->encrypt();
         $obj = $this->toObject();
 
-        $obj->cLand = self::pruefeLandISO($obj->cLand);
+        $obj->cLand = self::checkISOCountryCode($obj->cLand);
 
         unset($obj->kRechnungsadresse, $obj->angezeigtesLand, $obj->cAnredeLocalized);
 
@@ -113,7 +113,7 @@ class Rechnungsadresse extends Adresse
         $this->encrypt();
         $obj = $this->toObject();
 
-        $obj->cLand = self::pruefeLandISO($obj->cLand);
+        $obj->cLand = self::checkISOCountryCode($obj->cLand);
 
         unset($obj->angezeigtesLand, $obj->cAnredeLocalized);
 

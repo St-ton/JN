@@ -820,7 +820,7 @@ class NiceDB implements DbInterface
             if ($type === 0) {
                 $res = $this->pdo->query($stmt);
             } else {
-                $res  = $this->pdo->prepare($stmt);
+                $res = $this->pdo->prepare($stmt);
                 foreach ($params as $k => $v) {
                     $this->_bind($res, $k, $v);
                 }

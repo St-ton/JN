@@ -7,7 +7,7 @@
         && $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE
         && !($device->isMobile() || $device->isTablet() || $Einstellungen.template.productlist.filter_placement === 'M')}
         {block name='boxes-box-filter-pricerange-content'}
-            <div id="sidebox{$oBox->getID()}" class="box box-filter-price">
+            <div id="sidebox{$oBox->getID()}" class="box box-filter-price d-none d-lg-block"">
                 {button
                     variant="link"
                     class="text-decoration-none px-0 text-left dropdown-toggle"

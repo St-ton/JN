@@ -165,7 +165,7 @@ function bearbeite($xml)
             // Hausnummer extrahieren
             extractStreet($Kunde);
             // Workaround for WAWI-39370
-            $Kunde->cLand = Adresse::pruefeLandISO($Kunde->cLand);
+            $Kunde->cLand = Adresse::checkISOCountryCode($Kunde->cLand);
             //DBUpdateInsert('tkunde', [$Kunde], 'kKunde');
 
             $Kunde->updateInDB();
@@ -287,7 +287,7 @@ function bearbeite($xml)
                         // Hausnummer extrahieren
                         extractStreet($Lieferadresse);
                         // Workaround for WAWI-39370
-                        $Lieferadresse->cLand = Adresse::pruefeLandISO($Lieferadresse->cLand);
+                        $Lieferadresse->cLand = Adresse::checkISOCountryCode($Lieferadresse->cLand);
                         //verschlüsseln: Nachname, Firma, Strasse
                         $Lieferadresse->cNachname = verschluesselXTEA(trim($Lieferadresse->cNachname));
                         $Lieferadresse->cFirma    = verschluesselXTEA(trim($Lieferadresse->cFirma));
@@ -301,7 +301,7 @@ function bearbeite($xml)
                         // Hausnummer extrahieren
                         extractStreet($Lieferadresse);
                         // Workaround for WAWI-39370
-                        $Lieferadresse->cLand = Adresse::pruefeLandISO($Lieferadresse->cLand);
+                        $Lieferadresse->cLand = Adresse::checkISOCountryCode($Lieferadresse->cLand);
                         //verschlüsseln: Nachname, Firma, Strasse
                         $Lieferadresse->cNachname = verschluesselXTEA(trim($Lieferadresse->cNachname));
                         $Lieferadresse->cFirma    = verschluesselXTEA(trim($Lieferadresse->cFirma));
@@ -338,7 +338,7 @@ function bearbeite($xml)
                     // Hausnummer extrahieren
                     extractStreet($Lieferadresse);
                     // Workaround for WAWI-39370
-                    $Lieferadresse->cLand = Adresse::pruefeLandISO($Lieferadresse->cLand);
+                    $Lieferadresse->cLand = Adresse::checkISOCountryCode($Lieferadresse->cLand);
                     //verschlüsseln: Nachname, Firma, Strasse
                     $Lieferadresse->cNachname = verschluesselXTEA(trim($Lieferadresse->cNachname));
                     $Lieferadresse->cFirma    = verschluesselXTEA(trim($Lieferadresse->cFirma));
@@ -355,7 +355,7 @@ function bearbeite($xml)
                     // Hausnummer extrahieren
                     extractStreet($Lieferadresse);
                     // Workaround for WAWI-39370
-                    $Lieferadresse->cLand = Adresse::pruefeLandISO($Lieferadresse->cLand);
+                    $Lieferadresse->cLand = Adresse::checkISOCountryCode($Lieferadresse->cLand);
                     //verschlüsseln: Nachname, Firma, Strasse
                     $Lieferadresse->cNachname = verschluesselXTEA(trim($Lieferadresse->cNachname));
                     $Lieferadresse->cFirma    = verschluesselXTEA(trim($Lieferadresse->cFirma));

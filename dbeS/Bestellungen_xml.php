@@ -354,7 +354,7 @@ function bearbeiteUpdate($xml)
     // Hausnummer extrahieren
     extractStreet($oRechnungsadresse);
     // Workaround for WAWI-39370
-    $oRechnungsadresse->cLand = Adresse::pruefeLandISO($oRechnungsadresse->cLand);
+    $oRechnungsadresse->cLand = Adresse::checkISOCountryCode($oRechnungsadresse->cLand);
     //rechnungsadresse gefüllt?
     if (!$oRechnungsadresse->cNachname && !$oRechnungsadresse->cFirma && !$oRechnungsadresse->cStrasse) {
         unhandledError('Error Bestellung Update. Rechnungsadresse enthält keinen Nachnamen, Firma und Strasse! XML:' . print_r($xml, true));
@@ -428,7 +428,7 @@ function bearbeiteUpdate($xml)
     // Hausnummer extrahieren
     extractStreet($oLieferadresse);
     // Workaround for WAWI-39370
-    $oLieferadresse->cLand = Adresse::pruefeLandISO($oLieferadresse->cLand);
+    $oLieferadresse->cLand = Adresse::checkISOCountryCode($oLieferadresse->cLand);
     //lieferadresse ungleich rechungsadresse?
     if ($oLieferadresse->cVorname !== $oRechnungsadresse->cVorname ||
         $oLieferadresse->cNachname !== $oRechnungsadresse->cNachname ||

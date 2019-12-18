@@ -43,7 +43,7 @@
                                     </li>
                                 {/if}
                             {/foreach}
-                        {else}
+                        {elseif $filter->getOptions()|count > 0}
                             <li>
                                 {if $filter->getClassName() === "JTL\Filter\Items\PriceRange"}
                                     {block name='productlist-result-options-filters-price-range'}

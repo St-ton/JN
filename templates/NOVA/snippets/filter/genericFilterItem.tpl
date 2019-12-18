@@ -16,7 +16,7 @@
                 {assign var=filterIsActive value=$filterOption->isActive() || $NaviFilter->getFilterValue($filter->getClassName()) === $filterOption->getValue()}
                 {block name='snippets-filter-genericFilterItem-nav-main'}
                     {link class="filter-item {if $filterIsActive === true}active{/if}"
-                        href="{$filterOption->getURL()}"
+                        href="{if $filterOption->isActive()}{$filter->getUnsetFilterURL($filterOption->getValue())}{else}{$filterOption->getURL()}{/if}"
                         nofollow=true}
                         <div class="align-items-center d-flex">
                             {if $filter->getIcon() !== null}

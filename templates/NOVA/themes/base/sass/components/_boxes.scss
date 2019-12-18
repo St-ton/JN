@@ -88,20 +88,6 @@ aside {
    }
 }
 
-.box-filter-characteristics, .box-filter-manufacturer {
-  .filter-img {
-    width: auto;
-    height: 45px;
-    margin: 0.2rem;
-    border: 3px solid transparent;
-  }
-
-  .active .filter-img {
-    border: 3px solid $primary;
-    border-radius: $border-radius;
-  }
-}
-
 // boxes
 .box_login {
   .register {

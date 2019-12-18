@@ -47,11 +47,9 @@
                         {/block}
                     {else}
                         {block name='boxes-box-filter-characteristics-link'}
-                            {nav vertical=$characteristic->getData('cTyp') !== 'BILD'}
                             {block name='boxes-box-filter-characteristics-include-characteristics-link'}
                                 {include file='snippets/filter/characteristic.tpl' Merkmal=$characteristic}
                             {/block}
-                            {/nav}
                         {/block}
                     {/if}
                 {/block}

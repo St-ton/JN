@@ -29,72 +29,80 @@
                                         {/block}
                                         {block name='productlist-result-options-filters-collapse'}
                                             {collapse id="filter-collapse-{$subFilter->getFrontendName()|@seofy}"
-                                                class="mb-2 col-12"
+                                                class="my-2"
                                                 visible=$subFilter->isActive()}
-                                                {include file='snippets/filter/genericFilterItem.tpl' itemClass='' displayAt='content' filter=$subFilter sub=true}
+                                                {if ($subFilter->getData('cTyp') === 'SELECTBOX') && $subFilter->getOptions()|@count > 0}
+                                                    {dropdown variant="outline-secondary" text="{lang key='selectFilter' section='global'} " toggle-class="btn-block text-left"}
+                                                        {include file='snippets/filter/characteristic.tpl' Merkmal=$subFilter sub=true}
+                                                    {/dropdown}
+                                                {else}
+                                                    {include file='snippets/filter/characteristic.tpl' Merkmal=$subFilter sub=true}
+                                                {/if}
                                             {/collapse}
                                         {/block}
                                     </li>
                                 {/if}
                             {/foreach}
                         {else}
-                            {if $filter->getFrontendName() === "Preisspanne"}
-                                <li>
-                                {block name='productlist-result-options-filters-price-range'}
-                                    {assign var=outerClass value='filter-type-'|cat:$filter->getNiceName()}
-                                    {assign var=innerClass value='dropdown-menu'}
-                                    {assign var=itemClass value=''}
-                                    {link
-                                        class="collapsed"
-                                        data=["toggle"=> "collapse", "target"=>"#filter-collapse-{$filter->getFrontendName()|@seofy}"]}
-                                        {$filter->getFrontendName()}
-                                    {/link}
-                                    {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}"
-                                        class="mb-2 py-3 col-12"
-                                        visible=$filter->isActive()}
-                                        {block name='boxes-box-filter-pricerange-include-price-slider'}
-                                            {include file='snippets/filter/price_slider.tpl' id='price-slider-content'}
-                                        {/block}
-                                    {/collapse}
-                                {/block}
-                                </li>
-                            {elseif $filter->getOptions()|count > 0}
-                                {if $filter->getInputType() === \JTL\Filter\InputType::SELECT}
-                                    <li>
+                            <li>
+                                {if $filter->getClassName() === "JTL\Filter\Items\PriceRange"}
+                                    {block name='productlist-result-options-filters-price-range'}
+                                        {link
+                                            class="collapsed"
+                                            data=["toggle"=> "collapse", "target"=>"#filter-collapse-{$filter->getFrontendName()|@seofy}"]}
+                                            {$filter->getFrontendName()}
+                                        {/link}
+                                        {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}"
+                                            class="my-2 py-2"
+                                            visible=$filter->isActive()}
+                                            {block name='boxes-box-filter-pricerange-include-price-slider'}
+                                                {include file='snippets/filter/price_slider.tpl' id='price-slider-content'}
+                                            {/block}
+                                        {/collapse}
+                                    {/block}
+                                {elseif $filter->getClassName() === "JTL\Filter\Items\Search"}
+                                    {block name='productlist-result-options-filters-price-range'}
+                                        {link
+                                            class="collapsed"
+                                            data=["toggle"=> "collapse", "target"=>"#filter-collapse-{$filter->getFrontendName()|@seofy}"]}
+                                            {$filter->getFrontendName()}
+                                        {/link}
+                                        {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}"
+                                            class="my-2 py-2"
+                                            visible=$filter->isActive()}
+                                            {block name='boxes-box-filter-pricerange-include-price-slider'}
+                                                {include file='snippets/filter/search.tpl'}
+                                            {/block}
+                                        {/collapse}
+                                    {/block}
+                                {elseif $filter->getClassName() === "JTL\Filter\Items\Manufacturer"}
+                                    {block name='productlist-result-options-filters-price-range'}
+                                        {link
+                                            class="collapsed"
+                                            data=["toggle"=> "collapse", "target"=>"#filter-collapse-{$filter->getFrontendName()|@seofy}"]}
+                                            {$filter->getFrontendName()}
+                                        {/link}
+                                        {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}"
+                                            class="my-2 py-2"
+                                            visible=$filter->isActive()}
+                                            {block name='boxes-box-filter-pricerange-include-price-slider'}
+                                                {include file='snippets/filter/manufacturer.tpl'}
+                                            {/block}
+                                        {/collapse}
+                                    {/block}
+                                {elseif $filter->getOptions()|count > 0}
                                     {block name='productlist-result-options-filters-select'}
-                                        {assign var=outerClass value='filter-type-'|cat:$filter->getNiceName()}
-                                        {assign var=innerClass value='dropdown-menu'}
-                                        {assign var=itemClass value=''}
                                         {link data=["toggle"=> "collapse", "target"=>"#filter-collapse-{$filter->getFrontendName()|@seofy}"]}
                                             {$filter->getFrontendName()}
                                         {/link}
                                         {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}"
-                                            class="mb-2 col-12 "
+                                            class="my-2"
                                             visible=$filter->isActive()}
-                                            {include file='snippets/filter/genericFilterItem.tpl' displayAt='content' itemClass=$itemClass filter=$filter}
+                                            {include file='snippets/filter/genericFilterItem.tpl' filter=$filter}
                                         {/collapse}
                                     {/block}
-                                    </li>
-                                {elseif $filter->getInputType() === \JTL\Filter\InputType::BUTTON}
-                                    <li>
-                                    {block name='productlist-result-options-filters-button'}
-                                        {assign var=outerClass value='no-dropdown filter-type-'|cat:$filter->getNiceName()}
-                                        {assign var=innerClass value='no-dropdown'}
-                                        {assign var=itemClass value='btn btn-light'}
-                                        {include file='snippets/filter/genericFilterItem.tpl' class=$innerClass itemClass=$itemClass filter=$filter}
-                                    {/block}
-                                    </li>
-                                {else}
-                                    <li>
-                                    {block name='productlist-result-options-filters-else'}
-                                        {assign var=outerClass value='no-dropdown filter-type-'|cat:$filter->getNiceName()}
-                                        {assign var=innerClass value='no-dropdown'}
-                                        {assign var=itemClass value=''}
-                                        {include file='snippets/filter/genericFilterItem.tpl' class=$innerClass itemClass=$itemClass filter=$filter}
-                                    {/block}
-                                    </li>
                                 {/if}
-                            {/if}
+                            </li>
                         {/if}
                     {/foreach}
                 {/block}
@@ -111,7 +119,7 @@
                         {/foreach}
                     </span>
             {/link}
-            {collapse id="sorting-collapse" class="mb-2 col-12 col-md-4"}
+            {collapse id="sorting-collapse" class="my-2"}
             {foreach $Suchergebnisse->getSortingOptions() as $option}
                 {dropdownitem class="filter-item py-1"
                 active=$option->isActive()

@@ -6,6 +6,9 @@
     {$is_dropdown = ($Merkmal->cTyp === 'SELECTBOX')}
     {$limit = $Einstellungen.template.productlist.filter_max_options}
     {$collapseInit = false}
+    {if $Merkmal->getData('cTyp') === 'BILD'}
+        <ul class="nav">
+    {/if}
     {foreach $Merkmal->getOptions() as $attributeValue}
         {$attributeImageURL = null}
         {if ($Merkmal->getData('cTyp') === 'BILD' || $Merkmal->getData('cTyp') === 'BILD-TEXT')}
@@ -18,7 +21,7 @@
         {if $is_dropdown}
             {block name='snippets-filter-characteristics-dropdown'}
                 {dropdownitem
-                    class="{if $attributeValue->isActive()}active{/if}"
+                    class="{if $attributeValue->isActive()}active{/if} filter-item"
                     href="{if !empty($attributeValue->getURL())}{$attributeValue->getURL()}{else}#{/if}"
                     title="{if $Merkmal->getData('cTyp') === 'BILD'}{$attributeValue->getValue()|escape:'html'}{/if}"
                 }
@@ -47,11 +50,10 @@
             {block name='snippets-filter-characteristics-nav'}
                 {if {$Merkmal->getData('cTyp')} === 'TEXT'}
                     {block name='snippets-filter-characteristics-nav-text'}
-                        {navitem
-                            class="{if $attributeValue->isActive()}active{/if}"
+                        {link
+                            class="{if $attributeValue->isActive()}active{/if} filter-item"
                             href="{if !empty($attributeValue->getURL())}{$attributeValue->getURL()}{else}#{/if}"
                             title="{$attributeValue->getValue()|escape:'html'}"
-                            router-class="px-0"
                         }
                             <div class="align-items-center d-flex">
                                 <i class="far fa-{if $attributeValue->isActive()}check-{/if}square text-muted mr-2"></i>
@@ -65,14 +67,14 @@
                                 <span class="word-break">{$attributeValue->getValue()|escape:'html'}</span>
                                 <span class="badge badge-outline-secondary ml-auto">{$attributeValue->getCount()}</span>
                             </div>
-                        {/navitem}
+                        {/link}
                     {/block}
                 {elseif $Merkmal->getData('cTyp') === 'BILD' && $attributeImageURL !== null}
                     {block name='snippets-filter-characteristics-nav-image'}
                         {link href="{if !empty($attributeValue->getURL())}{$attributeValue->getURL()}{else}#{/if}"
                             title="{$attributeValue->getValue()|escape:'html'}: {$attributeValue->getCount()}"
                             data=["toggle"=>"tooltip", "placement"=>"top", "boundary"=>"window"]
-                            class="{if $attributeValue->isActive()}active{/if}"
+                            class="{if $attributeValue->isActive()}active{/if} filter-item"
                         }
                             {image lazy=true  webp=true
                                 src=$attributeImageURL
@@ -84,10 +86,9 @@
                     {/block}
                 {else}
                     {block name='snippets-filter-characteristics-nav-else'}
-                        {navitem href="{if !empty($attributeValue->getURL())}{$attributeValue->getURL()}{else}#{/if}"
+                        {link href="{if !empty($attributeValue->getURL())}{$attributeValue->getURL()}{else}#{/if}"
                             title="{$attributeValue->getValue()|escape:'html'}: {$attributeValue->getCount()}"
-                            class="{if $attributeValue->isActive()}active{/if}"
-                            router-class="px-0 {if !empty($attributeImageURL)}py-0{/if}"
+                            class="{if $attributeValue->isActive()}active{/if} filter-item"
                         }
                             <div class="align-items-center d-flex">
                                 {if !empty($attributeImageURL)}
@@ -103,7 +104,7 @@
                                 </span>
                                 <span class="badge badge-outline-secondary ml-auto">{$attributeValue->getCount()}</span>
                             </div>
-                        {/navitem}
+                        {/link}
                     {/block}
                 {/if}
             {/block}
@@ -115,11 +116,14 @@
             </div>
             {button variant="link"
                 role="button"
-                class="text-right p-0 d-block"
+                class="text-right p-0 mt-2"
                 data=["toggle"=> "collapse", "target"=>"#box-collps-filter-attribute-{$Merkmal->getValue()}"]
                 block=true}
                 {lang key='showAll'}
             {/button}
         {/block}
+    {/if}
+    {if $Merkmal->getData('cTyp') === 'BILD'}
+        </ul>
     {/if}
 {/block}

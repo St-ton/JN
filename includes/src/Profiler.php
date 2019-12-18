@@ -227,12 +227,12 @@ class Profiler
         $filtered = [];
         foreach (self::$sqlProfile as $queryRun) {
             if (!isset($filtered[$queryRun->hash])) {
-                $obj                        = new stdClass();
-                $obj->runtime               = $queryRun->time;
-                $obj->runcount              = $queryRun->count;
-                $obj->statement             = \trim($queryRun->statement);
-                $obj->tablename             = $queryRun->table;
-                $obj->data                  = isset($queryRun->backtrace)
+                $obj                       = new stdClass();
+                $obj->runtime              = $queryRun->time;
+                $obj->runcount             = $queryRun->count;
+                $obj->statement            = \trim($queryRun->statement);
+                $obj->tablename            = $queryRun->table;
+                $obj->data                 = isset($queryRun->backtrace)
                     ? \serialize(['backtrace' => $queryRun->backtrace])
                     : null;
                 $filtered[$queryRun->hash] = $obj;
@@ -422,7 +422,7 @@ class Profiler
                 '*',
                 'runtime DESC'
             );
-            $data[]         = $profile;
+            $data[]        = $profile;
         }
 
         return $data;

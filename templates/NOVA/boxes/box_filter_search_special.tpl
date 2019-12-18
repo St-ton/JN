@@ -10,7 +10,7 @@
         && (!empty($Suchergebnisse->getSearchSpecialFilterOptions()) || $ssf->isInitialized())
         && !($device->isMobile() || $device->isTablet() || $Einstellungen.template.productlist.filter_placement === 'M')}
         {if $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE}
-            <div class="box box-filter-special d-none d-lg-block"" id="sidebox{$oBox->getID()}">
+            <div class="box box-filter-special d-none d-lg-block" id="sidebox{$oBox->getID()}">
                 {button
                     variant="link"
                     class="text-decoration-none px-0 text-left dropdown-toggle"

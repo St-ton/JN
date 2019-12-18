@@ -675,11 +675,11 @@
             });
         },
 
-        initPriceSlider: function (redirect) {
-            let priceRange      = $('#js-price-range').val(),
-                priceRangeID    = $('#js-price-range-id').val(),
+        initPriceSlider: function ($wrapper, redirect) {
+            let priceRange      = $wrapper.find('[data-id="js-price-range"]').val(),
+                priceRangeID    = $wrapper.find('[data-id="js-price-range-id"]').val(),
                 priceRangeMin   = 0,
-                priceRangeMax   = $('#js-price-range-max').val(),
+                priceRangeMax   = $wrapper.find('[data-id="js-price-range-max"]').val(),
                 currentPriceMin = priceRangeMin,
                 currentPriceMax = priceRangeMax,
                 $priceRangeFrom = $("#" + priceRangeID + "-from"),
@@ -703,7 +703,7 @@
                 step: 1
             });
             $priceSlider.noUiSlider.on('end', function (values, handle) {
-                redirectToNewPriceRange(values[0] + '_' + values[1], redirect);
+                $.evo.redirectToNewPriceRange(values[0] + '_' + values[1], redirect);
             });
             $priceSlider.noUiSlider.on('slide', function (values, handle) {
                 $priceRangeFrom.val(values[0]);
@@ -712,7 +712,7 @@
             $('.price-range-input').change(function () {
                 let prFrom = $priceRangeFrom.val(),
                     prTo = $priceRangeTo.val();
-                redirectToNewPriceRange(
+                $.evo.redirectToNewPriceRange(
                     (prFrom > 0 ? prFrom : priceRangeMin) + '_' + (prTo > 0 ? prTo : priceRangeMax),
                     redirect
                 );
@@ -728,12 +728,43 @@
             $.ajax(href, {data: {'isAjax':1}})
             .done(function(data) {
                 $wrapper.html(data);
-                self.initPriceSlider(false);
+                self.initPriceSlider($wrapper, false);
             })
             .always(function() {
                 $spinner.stop();
                 $wrapper.removeClass('loading');
             });
+        },
+        redirectToNewPriceRange: function (priceRange, redirect) {
+            let redirectURL = $.evo.updateURLParameter(
+                window.location.href,
+                'pf',
+                priceRange
+            );
+            if (redirect) {
+                window.location.href = redirectURL;
+            } else {
+                $.evo.initFilters(redirectURL);
+            }
+        },
+
+        updateURLParameter: function (url, param, paramVal) {
+            let newAdditionalURL = '',
+                tempArray        = url.split('?'),
+                baseURL          = tempArray[0],
+                additionalURL    = tempArray[1],
+                temp             = '';
+            if (additionalURL) {
+                tempArray = additionalURL.split('&');
+                for (let i=0; i<tempArray.length; i++){
+                    if(tempArray[i].split('=')[0] != param){
+                        newAdditionalURL += temp + tempArray[i];
+                        temp = '&';
+                    }
+                }
+            }
+
+            return baseURL + '?' + newAdditionalURL + temp + param + '=' + paramVal;
         },
 
         /**
@@ -759,7 +790,6 @@
             this.fixStickyElements();
             this.setWishlistVisibilitySwitches();
             this.initEModals();
-            this.initPriceSlider($('#js-price-redirect').val() != 1);
         }
     };
 

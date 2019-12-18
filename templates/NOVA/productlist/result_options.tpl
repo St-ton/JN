@@ -58,8 +58,12 @@
 
             {/if}
             {inline_script}<script>
+                let initiallized = false;
                 $('#js-filters').on('click', function() {
-                    $.evo.initFilters(window.location.href);
+                    if (!initiallized) {
+                        $.evo.initFilters(window.location.href);
+                        initiallized = true;
+                    }
                 });
             </script>{/inline_script}
         {/block}

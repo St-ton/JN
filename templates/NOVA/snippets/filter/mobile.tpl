@@ -11,7 +11,6 @@
                     {foreach $NaviFilter->getAvailableContentFilters() as $filter}
                         {if count($filter->getFilterCollection()) > 0}
                             {foreach $filter->getOptions() as $subFilter}
-
                                 {if $subFilter->getVisibility() !== \JTL\Filter\Visibility::SHOW_NEVER
                                 && $subFilter->getVisibility() !== \JTL\Filter\Visibility::SHOW_BOX
                                 && $filter->getOptions()|count > 0
@@ -157,13 +156,9 @@
     </div>
     {inline_script}<script>
         {literal}
-            window.reloadFilter = function (href) {
-                $.evo.initFilters(href);
-            };
-
             $('.js-collapse-filter .filter-item, .js-collapse-filter .js-filter-item').on('click', function(e) {
                 e.preventDefault();
-                window.reloadFilter($(this).attr('href'));
+                $.evo.initFilters($(this).attr('href'));
             });
         {/literal}
     </script>{/inline_script}

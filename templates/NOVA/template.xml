@@ -90,10 +90,6 @@
                 <Option Value="12"><![CDATA[max. 12]]></Option>
                 <Option Value="9999"><![CDATA[keine Beschr&auml;nkung]]></Option>
             </Setting>
-            <Setting Description="Filteroptionen bei Seitenaufruf anzeigen?" Key="initial_display_filter" Type="select" Value="Y">
-                <Option Value="Y">Ja</Option>
-                <Option Value="N">Nein</Option>
-            </Setting>
             <Setting Description="Anzahl der sichtbaren Filteroptionen in Boxen. (&lt;small&gt;weiter Optionen können eingeblendet werden&lt;/small&gt;)" Key="filter_max_options" Type="select" Value="5">
                 <Option Value="3"><![CDATA[max. 3]]></Option>
                 <Option Value="5"><![CDATA[max. 5]]></Option>

@@ -20,7 +20,7 @@
                     {button id="js-filters" variant="outline-secondary"
                         class="text-nowrap"
                         data=["toggle" => "{if !empty($filterPlacement)}{$filterPlacement}{else}modal{/if}", "target" => "#collapseFilter"]
-                        aria=["expanded" => "{if $Einstellungen.template.productlist.initial_display_filter === 'Y'}true{else}false{/if}",
+                        aria=["expanded" => "false",
                             "controls" => "collapseFilter"]
                         role="button"}
                         <span class="fas fa-filter{if $NaviFilter->getFilterCount() > 0} text-primary{/if}"></span> {lang key='filter'}
@@ -38,8 +38,8 @@
         {block name='productlist-result-options-filter-collapsible'}
             {if !empty($filterPlacement) && $filterPlacement === 'collapse' && $show_filters}
                 {collapse id="collapseFilter"
-                    class="productlist-filter js-collapse-filter {if $Einstellungen.template.productlist.initial_display_filter === 'Y'}show{/if}"
-                    aria=["expanded" => "{if $Einstellungen.template.productlist.initial_display_filter === 'Y'}true{else}false{/if}"]}
+                    class="productlist-filter js-collapse-filter"
+                    aria=["expanded" => "false"]}
                 {/collapse}
             {else}
                 <div class="modal" id="collapseFilter">

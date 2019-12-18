@@ -6,9 +6,17 @@
     {if !isset($itemClass)}
         {assign var=itemClass value=''}
     {/if}
+    {$limit = $Einstellungen.template.productlist.filter_max_options}
+    {$collapseInit = false}
     {if !empty($displayAt) && $displayAt === 'content'}
         {block name='snippets-filter-genericFilterItem-content'}
             {foreach $filter->getOptions() as $filterOption}
+                {if $limit != -1 && $filterOption@iteration > $limit && !$collapseInit}
+                {block name='snippets-filter-genericFilterItem-more-top'}
+                <div class="collapse {if $filter->isActive()} show{/if}" id="box-collps-filter{$filter->getNiceName()}" aria-expanded="false">
+                    {$collapseInit = true}
+                    {/block}
+                    {/if}
                 {assign var=filterIsActive value=$filterOption->isActive() || $NaviFilter->getFilterValue($filter->getClassName()) === $filterOption->getValue()}
                 {dropdownitem class="filter-item py-1 px-0"
                     active=$filterIsActive
@@ -30,11 +38,21 @@
                     </div>
                 {/dropdownitem}
             {/foreach}
+            {if $limit != -1 && $filter->getOptions()|count > $limit}
+                {block name='snippets-filter-genericFilterItem-more-bottom'}
+                    </div>
+                    {button variant="link"
+                        role="button"
+                        class="text-right p-0 d-block mt-2"
+                        data=["toggle"=> "collapse", "target"=>"#box-collps-filter{$filter->getNiceName()}"]
+                        block=true}
+                        {lang key='showAll'}
+                    {/button}
+                {/block}
+            {/if}
         {/block}
     {else}
         {block name='snippets-filter-genericFilterItem-nav'}
-            {$limit = $Einstellungen.template.productlist.filter_max_options}
-            {$collapseInit = false}
             {nav vertical=true}
                 {foreach $filter->getOptions() as $filterOption}
                     {if $limit != -1 && $filterOption@iteration > $limit && !$collapseInit}

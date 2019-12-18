@@ -40,14 +40,13 @@
                 {collapse id="collapseFilter"
                     class="productlist-filter js-collapse-filter {if $Einstellungen.template.productlist.initial_display_filter === 'Y'}show{/if}"
                     aria=["expanded" => "{if $Einstellungen.template.productlist.initial_display_filter === 'Y'}true{else}false{/if}"]}
-                    <span class="h2 mt-3 border-0 px-3" id="productlist-filter">Filter &amp; Sortierung</span>
                 {/collapse}
             {else}
                 <div class="modal" id="collapseFilter">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h4 class="modal-title">Filter &amp; Sortierung</h4>
+                                <h5 class="modal-title">{lang key='filterAndSort'}</h5>
                                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                             </div>
                             <div class="modal-body js-collapse-filter">

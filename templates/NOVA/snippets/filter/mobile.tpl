@@ -3,6 +3,9 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='snippets-filter-mobile'}
+    {if $device->isMobile()}
+        <span class="h2 mt-3 border-0 px-3" id="productlist-filter">{lang key='filterAndSort'}</span>
+    {/if}
     <div class="productlist-filter-wrapper">
         <ul class="productlist-filter-accordion border-md-bottom border-lg-bottom-0">
         {if $show_filters}
@@ -26,7 +29,7 @@
                                         {/block}
                                         {block name='productlist-result-options-filters-collapse'}
                                             {collapse id="filter-collapse-{$subFilter->getFrontendName()|@seofy}"
-                                                class="mb-2 col-12 col-md-4 max-h-150-scroll"
+                                                class="mb-2 col-12"
                                                 visible=$subFilter->isActive()}
                                                 {include file='snippets/filter/genericFilterItem.tpl' itemClass='' displayAt='content' filter=$subFilter sub=true}
                                             {/collapse}
@@ -47,7 +50,7 @@
                                         {$filter->getFrontendName()}
                                     {/link}
                                     {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}"
-                                        class="mb-2 py-3 col-12 col-md-4 max-h-150-scroll"
+                                        class="mb-2 py-3 col-12"
                                         visible=$filter->isActive()}
                                         {block name='boxes-box-filter-pricerange-include-price-slider'}
                                             {include file='snippets/filter/price_slider.tpl' id='price-slider-content'}
@@ -66,7 +69,7 @@
                                             {$filter->getFrontendName()}
                                         {/link}
                                         {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}"
-                                            class="mb-2 col-12 col-md-4 max-h-150-scroll"
+                                            class="mb-2 col-12 "
                                             visible=$filter->isActive()}
                                             {include file='snippets/filter/genericFilterItem.tpl' displayAt='content' itemClass=$itemClass filter=$filter}
                                         {/collapse}
@@ -129,27 +132,27 @@
         {/block}
     </div>
     <div class="productlist-filter-footer px-3 mt-auto">
-        <div class="form-row justify-content-end align-items-center">
-            <div class="col">
+        {formrow class="justify-content-end align-items-center"}
+            {col}
                 {button block=true
                     variant="outline-primary"
                     class="my-1 no-caret"
                     data=['toggle'=>'collapse', 'dismiss'=>'modal']
                     href="#collapseFilter"
                     aria=['expanded'=>'true','controls'=>'collapseFilter']}
-                Abbrechen
+                {lang key='filterCancel'}
                 {/button}
-            </div>
-            <div class="col">
+            {/col}
+            {col}
                 {button type="link"
                         block=true
                         variant="primary"
                         class="min-w-sm my-1 text-nowrap"
                         href="{$NaviFilter->getURL()->getCategories()}"}
-                    {$itemCount} Produkte ansehen
+                    {lang key='filterShowItem' printf=$itemCount}
                 {/button}
-            </div>
-        </div>
+            {/col}
+        {/formrow}
     </div>
     <div class="js-helpers">
         {input id="js-price-redirect" type="hidden" value=1}

@@ -32,7 +32,7 @@
             </div>
             {button variant="link"
                 role="button"
-                class="text-right p-0 d-block"
+                class="text-right p-0 mt-2"
                 data=["toggle"=> "collapse", "target"=>"#box-collps-filter{$NaviFilter->searchFilterCompat->getNiceName()}"]
                 block=true}
                 {lang key='showAll'}

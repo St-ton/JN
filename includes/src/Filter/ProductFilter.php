@@ -614,6 +614,7 @@ class ProductFilter
         $this->filters[] = $this->searchSpecialFilter;
         $this->filters[] = $this->priceRangeFilter;
         $this->filters[] = $this->ratingFilter;
+        $this->filters[] = $this->search;
 
         $this->sorting = new Sort($this);
         $this->limits  = new Limit($this);

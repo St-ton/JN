@@ -54,7 +54,7 @@
                                         {/link}
                                         {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}"
                                             class="my-2 py-2"
-                                            visible=$filter->isActive()}
+                                            visible=$Einstellungen.template.sidebar_settings.always_show_price_range === 'Y' || $filter->isActive()}
                                             {block name='boxes-box-filter-pricerange-include-price-slider'}
                                                 {include file='snippets/filter/price_slider.tpl' id='price-slider-content'}
                                             {/block}

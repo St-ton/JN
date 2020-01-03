@@ -21,16 +21,16 @@ class OPC extends Emitter
     init()
     {
         this.io.init()
+            .then(() => this.gui.init(this.iframe, this.previewFrame, this.tutorial, this.error))
             .then(() => {
-                this.gui.init(this.iframe, this.previewFrame, this.tutorial, this.error);
                 this.tutorial.init();
                 this.pagetree.init();
                 this.previewFrame.init();
-                return this.page.lock();
+                return this.page.lock()
+                    .catch(er => this.gui.showError(
+                        'Die Seite wird derzeit bearbeitet und kann von Ihnen nicht bearbeitet werden.'
+                    ));
             })
-            .catch(er => this.gui.showError(
-                'Die Seite wird derzeit bearbeitet und kann von Ihnen nicht bearbeitet werden.'
-            ))
             .then(() => this.page.loadDraft())
             .then(() => this.iframe.init(this.pagetree))
             .then(() => {

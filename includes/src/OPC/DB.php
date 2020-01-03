@@ -261,6 +261,6 @@ class DB
      */
     public function isOPCInstalled(): bool
     {
-        return $this->shopDB->select('tmigration', 'kMigration', 20180507101900) !== null;
+        return $this->shopDB->select('tmigration', 'kMigration', 20191211154600) !== null;
     }
 }

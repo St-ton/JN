@@ -19939,7 +19939,7 @@ label {
 }
 
 .modal-content {
-  padding: 1.5rem 2rem;
+  padding: 1rem 2rem;
 }
 
 .modal-title {
@@ -21822,6 +21822,10 @@ body {
 
 .cursor-pointer {
   cursor: pointer;
+}
+
+.loading {
+  min-height: 140px;
 }
 
 /* utilities */

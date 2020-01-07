@@ -20,8 +20,16 @@
                                 {opcMountPoint id='opc_before_result_options'}
                             {/if}
                             {if $navid === 'header'}
-                                <div id="improve_search" class="d-inline-block btn-group mr-2">
-                                    {include file='productlist/result_options.tpl' itemCount=$Suchergebnisse->getProductCount()}
+                                {$filterPlacement=''}
+                                {if $device->isMobile() && !$device->isTablet()}
+                                    {$filterPlacement="collapse"}
+                                {elseif $device->isTablet() || $Einstellungen.template.productlist.filter_placement === 'M'}
+                                    {$filterPlacement="modal"}
+                                {/if}
+                                <div id="improve_search" class="d-inline-block btn-group mr-2 {if $filterPlacement === ''}d-lg-none{/if}">
+                                    {include file='productlist/result_options.tpl'
+                                        itemCount=$Suchergebnisse->getProductCount()
+                                        filterPlacement=$filterPlacement}
                                 </div>
                             {/if}
                         {/block}

@@ -3,7 +3,7 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='snippets-filter-mobile'}
-    {if $device->isMobile()}
+    {if $device->isMobile() && !$device->isTablet()}
         <span class="h2 mt-3 border-0 px-3" id="productlist-filter">{lang key='filterAndSort'}</span>
     {/if}
     <div class="productlist-filter-wrapper">
@@ -56,6 +56,7 @@
                                             class="my-2 py-2"
                                             visible=$Einstellungen.template.sidebar_settings.always_show_price_range === 'Y' || $filter->isActive()}
                                             {block name='boxes-box-filter-pricerange-include-price-slider'}
+                                                {input data=['id'=>'js-price-range-url'] type="hidden" value="{$NaviFilter->getFilterURL()->getURL()}"}
                                                 {include file='snippets/filter/price_slider.tpl' id='price-slider-content'}
                                             {/block}
                                         {/collapse}

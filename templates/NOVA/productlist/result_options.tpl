@@ -6,13 +6,8 @@
     {assign var=show_filters value=$Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab == 0
     || $NaviFilter->getSearchResults()->getProductCount() >= $Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab
     || $NaviFilter->getFilterCount() > 0}
-    {if $device->isMobile()}
-        {$filterPlacement="collapse"}
-    {elseif $device->isTablet() || $Einstellungen.template.productlist.filter_placement === 'M'}
-        {$filterPlacement="modal"}
-    {/if}
 
-    <div id="result-options" class="{if empty($filterPlacement)}d-lg-none{/if}">
+    <div id="result-options">
         {row}
         {block name='productlist-result-options-filter-link'}
             {col cols=12 md=4 class="filter-collapsible-control order-1 order-md-0 d-flex justify-content-between"}

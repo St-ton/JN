@@ -703,7 +703,7 @@
                 step: 1
             });
             $priceSlider.noUiSlider.on('end', function (values, handle) {
-                $.evo.redirectToNewPriceRange(values[0] + '_' + values[1], redirect);
+                $.evo.redirectToNewPriceRange(values[0] + '_' + values[1], redirect, $wrapper);
             });
             $priceSlider.noUiSlider.on('slide', function (values, handle) {
                 $priceRangeFrom.val(values[0]);
@@ -714,7 +714,8 @@
                     prTo = $priceRangeTo.val();
                 $.evo.redirectToNewPriceRange(
                     (prFrom > 0 ? prFrom : priceRangeMin) + '_' + (prTo > 0 ? prTo : priceRangeMax),
-                    redirect
+                    redirect,
+                    $wrapper
                 );
             });
         },
@@ -735,9 +736,13 @@
                 $wrapper.removeClass('loading');
             });
         },
-        redirectToNewPriceRange: function (priceRange, redirect) {
+        redirectToNewPriceRange: function (priceRange, redirect, $wrapper) {
+            let currentURL  = window.location.href;
+            if (!redirect) {
+                currentURL  = $wrapper.find('[data-id="js-price-range-url"]').val();
+            }
             let redirectURL = $.evo.updateURLParameter(
-                window.location.href,
+                currentURL,
                 'pf',
                 priceRange
             );

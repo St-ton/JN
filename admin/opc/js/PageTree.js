@@ -65,11 +65,14 @@ class PageTree
     renderBaseItem(text, click, cls = '')
     {
         let expander = $('<a href="#" class="item-expander">');
-        let item     = $('<a href="#" class="item-label ' + cls + '">');
-        let li       = $('<li>');
+        let item     = $('<a href="#" class="item-label">');
+        let copybtn  = $('<a href="#" class="item-copybtn">');
+        let head     = $('<div class="item-head">')
+        let li       = $('<li class="' + cls + '">');
 
-        expander.append('<i class="fa fa-fw fa-chevron-right">');
-        expander.append('<i class="fa fa-fw fa-chevron-down">');
+        expander.append('<i class="fas fa-fw fa-chevron-right">');
+        expander.append('<i class="fas fa-fw fa-chevron-down">');
+        copybtn.append('<i class="far fa-fw fa-copy">');
         item.append(' ' + text);
 
         function expand(e) {
@@ -93,7 +96,8 @@ class PageTree
             }
         });
 
-        return li.append(expander).append(item);
+        head.append(expander).append(item).append(copybtn);
+        return li.append(head);
     }
 
     renderArea(area, expanded)

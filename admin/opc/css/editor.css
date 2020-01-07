@@ -441,6 +441,10 @@
   height: 100%;
   overflow-y: auto;
 }
+#pagetree #pageTreeView .item-copybtn {
+  float: right;
+  margin-right: 1em;
+}
 #pagetree #pageTreeView ul {
   list-style: none;
   padding: 0;
@@ -452,15 +456,18 @@
   text-decoration: none;
   color: #435A6B;
 }
-#pagetree #pageTreeView .area-item {
+#pagetree #pageTreeView .area-item > .item-head > .item-label {
   color: #63849d;
   padding: 0 4px;
   margin: 2px;
 }
-#pagetree #pageTreeView .portlet-item {
+#pagetree #pageTreeView .portlet-item > .item-head > .item-label {
   border-radius: 4px;
   padding: 0 4px;
   margin: 2px;
+}
+#pagetree #pageTreeView .portlet-item > .item-head > .item-copybtn {
+  visibility: hidden;
 }
 #pagetree #pageTreeView .item-expander > .fa-chevron-down {
   display: none;
@@ -471,22 +478,23 @@
 #pagetree #pageTreeView li > ul {
   display: none;
 }
-#pagetree #pageTreeView li.expanded > .item-expander > .fa-chevron-down {
+#pagetree #pageTreeView li.expanded > .item-head > .item-expander > .fa-chevron-down {
   display: inline-block;
 }
-#pagetree #pageTreeView li.expanded > .item-expander > .fa-chevron-right {
+#pagetree #pageTreeView li.expanded > .item-head > .item-expander > .fa-chevron-right {
   display: none;
 }
 #pagetree #pageTreeView li.expanded > ul {
   display: block;
 }
-#pagetree #pageTreeView li.leaf > .item-expander {
-  visibility: hidden;
-}
-#pagetree #pageTreeView li.leaf > .area-item {
+#pagetree #pageTreeView li.leaf.area-item > .item-head > .item-label {
   color: #BDBDBD;
 }
-#pagetree #pageTreeView li.selected > .item-label {
+#pagetree #pageTreeView li.leaf > .item-head > .item-expander,
+#pagetree #pageTreeView li.leaf > .item-head > .item-copybtn {
+  visibility: hidden;
+}
+#pagetree #pageTreeView li.selected > .item-head > .item-label {
   background-color: #525252;
   color: #F5F7FA;
 }

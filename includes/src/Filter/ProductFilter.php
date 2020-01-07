@@ -6,7 +6,6 @@
 
 namespace JTL\Filter;
 
-use Detection\MobileDetect;
 use Illuminate\Support\Collection;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Catalog\Category\Kategorie;
@@ -34,6 +33,7 @@ use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\MagicCompatibilityTrait;
 use JTL\Mapper\SortingType;
+use JTL\Template;
 use stdClass;
 use function Functional\first;
 use function Functional\flatten;
@@ -976,11 +976,13 @@ class ProductFilter
         return \array_filter(
             $this->filters,
             static function ($f) {
-                $device = new MobileDetect();
+                $templateSettings = Template::getInstance()->getConfig();
                 /** @var FilterInterface $f */
                 return $f->getVisibility() === Visibility::SHOW_ALWAYS
                     || $f->getVisibility() === Visibility::SHOW_CONTENT
-                    || ($device->isMobile() && !$device->isTablet() && $f->getVisibility() !== Visibility::SHOW_NEVER());
+                    || ($f->getClassName() === PriceRange::class
+                        && isset($templateSettings['sidebar_settings'])
+                        && $templateSettings['sidebar_settings']['always_show_price_range'] ?? 'N' === 'Y');
             }
         );
     }

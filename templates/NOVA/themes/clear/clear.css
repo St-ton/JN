@@ -19714,6 +19714,9 @@ aside .last-seen-link {
 .dropdown-toggle.no-caret::after, .no-caret[data-toggle=collapse]:not(.navbar-toggler)::after {
   display: none;
 }
+.dropdown-toggle:focus, [data-toggle=collapse]:focus:not(.navbar-toggler) {
+  outline: none;
+}
 
 .dropdown-header {
   padding: 0.5rem 1.5rem;

@@ -18704,6 +18704,7 @@ aside .box .nav-link,
 aside .box .nav a,
 aside .box .dropdown-menu .dropdown-item {
   text-decoration: none;
+  white-space: normal;
 }
 aside .box-monthlynews a .value {
   text-decoration: underline;
@@ -21041,7 +21042,13 @@ header, #main-wrapper {
 }
 
 .word-break {
-  word-break: break-all;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  -ms-hyphens: auto;
+  hyphens: auto;
 }
 
 ul.config-items,

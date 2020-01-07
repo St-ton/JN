@@ -121,7 +121,13 @@ header, #main-wrapper { background: #fff; }
 }
 
 .word-break {
-  word-break: break-all;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  -ms-hyphens: auto;
+  hyphens: auto;
 }
 
 ul.config-items,

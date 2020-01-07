@@ -15,15 +15,12 @@
                         {if count($filter->getFilterCollection()) > 0}
                             {foreach $filter->getOptions() as $subFilter}
                                 {if $subFilter->getVisibility() !== \JTL\Filter\Visibility::SHOW_NEVER
-                                && $subFilter->getVisibility() !== \JTL\Filter\Visibility::SHOW_BOX
-                                && $filter->getOptions()|count > 0
-                                }
+                                    && $subFilter->getVisibility() !== \JTL\Filter\Visibility::SHOW_BOX
+                                    && $filter->getOptions()|count > 0}
                                     <li>
                                         {block name='productlist-result-options-filters-button'}
-                                            {link
-                                                class="collapsed"
-                                                data=["toggle"=> "collapse", "target"=>"#filter-collapse-{$subFilter->getFrontendName()|@seofy}"]
-                                            }
+                                            {link class="collapsed"
+                                                data=["toggle"=> "collapse", "target"=>"#filter-collapse-{$subFilter->getFrontendName()|@seofy}"]}
                                                 {$subFilter->getFrontendName()}
                                             {/link}
                                         {/block}
@@ -47,8 +44,7 @@
                             <li>
                                 {if $filter->getClassName() === "JTL\Filter\Items\PriceRange"}
                                     {block name='productlist-result-options-filters-price-range'}
-                                        {link
-                                            class="collapsed"
+                                        {link class="collapsed"
                                             data=["toggle"=> "collapse", "target"=>"#filter-collapse-{$filter->getFrontendName()|@seofy}"]}
                                             {$filter->getFrontendName()}
                                         {/link}
@@ -63,8 +59,7 @@
                                     {/block}
                                 {elseif $filter->getClassName() === "JTL\Filter\Items\Search"}
                                     {block name='productlist-result-options-filters-price-range'}
-                                        {link
-                                            class="collapsed"
+                                        {link class="collapsed"
                                             data=["toggle"=> "collapse", "target"=>"#filter-collapse-{$filter->getFrontendName()|@seofy}"]}
                                             {$filter->getFrontendName()}
                                         {/link}
@@ -78,8 +73,7 @@
                                     {/block}
                                 {elseif $filter->getClassName() === "JTL\Filter\Items\Manufacturer"}
                                     {block name='productlist-result-options-filters-price-range'}
-                                        {link
-                                            class="collapsed"
+                                        {link class="collapsed"
                                             data=["toggle"=> "collapse", "target"=>"#filter-collapse-{$filter->getFrontendName()|@seofy}"]}
                                             {$filter->getFrontendName()}
                                         {/link}
@@ -123,11 +117,10 @@
             {collapse id="sorting-collapse" class="my-2"}
             {foreach $Suchergebnisse->getSortingOptions() as $option}
                 {dropdownitem class="filter-item py-1"
-                active=$option->isActive()
-                href=$option->getURL()
-                rel='nofollow'
-                }
-                {$option->getName()}
+                    active=$option->isActive()
+                    href=$option->getURL()
+                    rel='nofollow'}
+                    {$option->getName()}
                 {/dropdownitem}
             {/foreach}
             {/collapse}
@@ -149,15 +142,15 @@
                     data=['toggle'=>'collapse', 'dismiss'=>'modal']
                     href="#collapseFilter"
                     aria=['expanded'=>'true','controls'=>'collapseFilter']}
-                {lang key='filterCancel'}
+                    {lang key='filterCancel'}
                 {/button}
             {/col}
             {col}
                 {button type="link"
-                        block=true
-                        variant="primary"
-                        class="min-w-sm my-1 text-nowrap"
-                        href="{$NaviFilter->getURL()->getCategories()}"}
+                    block=true
+                    variant="primary"
+                    class="min-w-sm my-1 text-nowrap"
+                    href="{$NaviFilter->getURL()->getCategories()}"}
                     {lang key='filterShowItem' printf=$itemCount}
                 {/button}
             {/col}

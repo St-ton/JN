@@ -736,6 +736,7 @@
                 $wrapper.removeClass('loading');
             });
         },
+
         redirectToNewPriceRange: function (priceRange, redirect, $wrapper) {
             let currentURL  = window.location.href;
             if (!redirect) {

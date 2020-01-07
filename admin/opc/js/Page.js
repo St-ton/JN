@@ -221,11 +221,24 @@ class Page
 
         let areas = this.rootAreas;
 
-        for(var i=0; i<areas.length; i++) {
+        for(let i=0; i<areas.length; i++) {
             let area     = this.jq(areas[i]);
             let areaData = this.areaToJSON(area, withDom);
 
-            result.areas[areaData.id] = areaData;
+            if(areaData.content.length) {
+                result.areas[areaData.id] = areaData;
+            }
+        }
+
+        areas = this.offscreenAreas;
+
+        for(let i=0; i<areas.length; i++) {
+            let area     = this.jq(areas[i]);
+            let areaData = this.areaToJSON(area, withDom);
+
+            if(areaData.content.length) {
+                result.areas[areaData.id] = areaData;
+            }
         }
 
         return result;
@@ -284,7 +297,7 @@ class Page
         var elm             = portlet;
         var widthHeuristics = {xs: null, sm: null, md: null, lg: null};
 
-        while(!elm.is(this.rootAreas)) {
+        while(!elm.is(this.rootAreas) && !elm.is(this.offscreenAreas)) {
             var clsStr = elm.attr('class');
             var cls    = typeof clsStr === 'string' ? clsStr.split(/\s+/) : [];
 

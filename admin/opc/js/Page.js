@@ -4,10 +4,11 @@ class Page
     {
         bindProtoOnHandlers(this);
 
-        this.io           = io;
-        this.shopUrl      = shopUrl;
-        this.key          = key;
-        this.lockTimeout = null;
+        this.io             = io;
+        this.shopUrl        = shopUrl;
+        this.key            = key;
+        this.lockTimeout    = null;
+        this.offscreenAreas = {};
     }
 
     lock()
@@ -161,7 +162,17 @@ class Page
 
         areas.each((i, area) => {
             area = this.jq(area);
-            area.html(preview[area.data('area-id')]);
+            let areaId = area.data('area-id');
+            area.html(preview[areaId]);
+            delete preview[areaId];
+        });
+
+        this.offscreenAreas = this.jq([]);
+
+        Object.entries(preview).forEach(([areaId, areaContent]) => {
+            let area = $('<div class="opc-area opc-rootarea" data-area-id="' + areaId + '">')
+                .html(areaContent);
+            this.offscreenAreas = this.offscreenAreas.add(area);
         });
     }
 

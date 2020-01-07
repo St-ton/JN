@@ -30,7 +30,7 @@ class PageTree
 
     expandTo(portlet)
     {
-        var treeItem = $(portlet[0].treeItem);
+        let treeItem = $(portlet[0].treeItem);
 
         while(treeItem.length > 0) {
             treeItem = treeItem.parent().closest('li');
@@ -40,22 +40,33 @@ class PageTree
 
     render()
     {
-        var rootAreas = this.page.rootAreas;
-        var jq        = rootAreas.constructor;
-        var ul        = $('<ul>');
+        let rootAreas = this.page.rootAreas;
+        let jq        = rootAreas.constructor;
+        let ul        = $('<ul>');
 
         rootAreas.each((i, area) => {
             ul.append(this.renderArea(jq(area)));
         });
 
         this.pageTreeView.empty().append(ul);
+
+        if(this.page.offscreenAreas.length) {
+            ul = $('<ul>');
+
+            this.page.offscreenAreas.each((i, area) => {
+                ul.append(this.renderArea(jq(area)));
+            });
+
+            this.pageTreeView.append('<h4>Offscreen</h4>');
+            this.pageTreeView.append(ul);
+        }
     }
 
     renderBaseItem(text, click, cls = '')
     {
-        var expander = $('<a href="#" class="item-expander">');
-        var item     = $('<a href="#" class="item-label ' + cls + '">');
-        var li       = $('<li>');
+        let expander = $('<a href="#" class="item-expander">');
+        let item     = $('<a href="#" class="item-label ' + cls + '">');
+        let li       = $('<li>');
 
         expander.append('<i class="fa fa-fw fa-chevron-right">');
         expander.append('<i class="fa fa-fw fa-chevron-down">');
@@ -87,11 +98,11 @@ class PageTree
 
     renderArea(area, expanded)
     {
-        var portlets = area.children('[data-portlet]');
-        var jq       = area.constructor;
-        var data     = area.data('area-id');
-        var ul       = $('<ul>');
-        var li       = this.renderBaseItem('' + data + '', null, 'area-item');
+        let portlets = area.children('[data-portlet]');
+        let jq       = area.constructor;
+        let data     = area.data('area-id');
+        let ul       = $('<ul>');
+        let li       = this.renderBaseItem('' + data + '', null, 'area-item');
 
         expanded = expanded || false;
 
@@ -114,12 +125,12 @@ class PageTree
 
     renderPortlet(portlet)
     {
-        var subareas = portlet.find('.opc-area').not(portlet.find('[data-portlet] .opc-area'));
-        var jq       = portlet.constructor;
-        var data     = portlet.data('portlet');
-        var ul       = $('<ul>');
+        let subareas = portlet.find('.opc-area').not(portlet.find('[data-portlet] .opc-area'));
+        let jq       = portlet.constructor;
+        let data     = portlet.data('portlet');
+        let ul       = $('<ul>');
 
-        var li = this.renderBaseItem(data.class, () => {
+        let li = this.renderBaseItem(data.class, () => {
             this.iframe.setSelected(portlet);
         }, 'portlet-item');
 
@@ -140,8 +151,8 @@ class PageTree
 
     updateArea(area)
     {
-        var treeItem = $(area[0].treeItem);
-        var expanded = treeItem.hasClass('expanded');
+        let treeItem = $(area[0].treeItem);
+        let expanded = treeItem.hasClass('expanded');
 
         $(area[0].treeItem).replaceWith(this.renderArea(area, expanded));
     }

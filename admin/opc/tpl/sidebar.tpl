@@ -158,3 +158,5 @@
 <a class="revisionBtn" href="#" data-revision-id="999"
    style="display:none" id="revisionBtnBlueprint"></a>
 {*/blueprint*}
+
+<span style="display: none" id="btnTitleCopyArea">{__('Transfer content to visible area')}</span>

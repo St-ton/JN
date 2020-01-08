@@ -421,3 +421,6 @@ msgstr "Abgelaufen am"
 
 msgid "dropPortletHere"
 msgstr "Portlet hier einfügen"
+
+msgid "Transfer content to visible area"
+msgstr "Inhalt in sichtbaren Bereich übertragen"

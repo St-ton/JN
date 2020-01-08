@@ -105,6 +105,8 @@ class PageTree
             dropdown.append(copybtn).append(dropdownMenu);
             head.append(dropdown);
 
+            copybtn.attr('title', $('#btnTitleCopyArea').text());
+
             copybtn.dropdown().click(() => {
                 dropdownMenu.empty();
 

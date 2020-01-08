@@ -1850,13 +1850,16 @@ class Cart
         }
 
         $maxPrices       = 0;
+        $itemCount       = 0;
         $totalWeight     = 0;
         $shippingClasses = [];
 
         foreach ($this->PositionenArr as $item) {
             $shippingClasses[] = $item->kVersandklasse;
             $totalWeight      += $item->fGesamtgewicht;
-            $maxPrices        += $item->Artikel->Preise->fVKNetto ?? 0;
+            $itemCount        += $item->nAnzahl;
+            $maxPrices        += $item->Artikel->Preise->fVKNetto
+                ? $item->Artikel->Preise->fVKNetto * $item->nAnzahl : 0;
         }
 
         // cheapest shipping except shippings that offer cash payment
@@ -1875,7 +1878,8 @@ class Cart
                         FROM tversandartzahlungsart vaza
                         WHERE kZahlungsart = 6)
                 AND (
-                    va.kVersandberechnung = 1 OR va.kVersandberechnung = 4
+                    va.kVersandberechnung = 1 
+                    OR ( va.kVersandberechnung = 4 AND vas.fBis > 0 AND ' . $itemCount . ' <= vas.fBis)
                     OR ( va.kVersandberechnung = 2 AND vas.fBis > 0 AND ' . $totalWeight . ' <= vas.fBis )
                     OR ( va.kVersandberechnung = 3 AND vas.fBis > 0 AND ' . $maxPrices . ' <= vas.fBis )
                     )
@@ -1889,21 +1893,21 @@ class Cart
             $method->cCountryCode = $countryCode;
 
             if ($method->eSteuer === 'brutto') {
-                $method->cPriceLocalized[0] = Preise::getLocalizedPriceString($method->fPreis);
+                $method->cPriceLocalized[0] = Preise::getLocalizedPriceString($shipping->minPrice);
                 $method->cPriceLocalized[1] = Preise::getLocalizedPriceString(
                     Tax::getNet(
-                        $method->fPreis,
+                        $shipping->minPrice,
                         $_SESSION['Steuersatz'][$this->gibVersandkostenSteuerklasse()]
                     )
                 );
             } else {
                 $method->cPriceLocalized[0] = Preise::getLocalizedPriceString(
                     Tax::getGross(
-                        $method->fPreis,
+                        $shipping->minPrice,
                         $_SESSION['Steuersatz'][$this->gibVersandkostenSteuerklasse()]
                     )
                 );
-                $method->cPriceLocalized[1] = Preise::getLocalizedPriceString($method->fPreis);
+                $method->cPriceLocalized[1] = Preise::getLocalizedPriceString($shipping->minPrice);
             }
             $this->oFavourableShipping = $method;
         }

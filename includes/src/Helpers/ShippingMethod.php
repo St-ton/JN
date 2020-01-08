@@ -404,13 +404,12 @@ class ShippingMethod
             $productID              = (int)$product['kArtikel'];
             $productIDs[$productID] = isset($productIDs[$productID]) ? 1 : 0;
         }
-        $merge          = false;
-        $defaultOptions = Artikel::getDefaultOptions();
+        $merge = false;
         foreach ($productIDs as $productID => $nArtikelAssoc) {
             if ($nArtikelAssoc !== 1) {
                 continue;
             }
-            $tmpProduct = (new Artikel())->fuelleArtikel($productID, $defaultOptions);
+            $tmpProduct = (new Artikel())->fuelleArtikel($productID);
             // Normaler Variationsartikel
             if ($tmpProduct !== null
                 && $tmpProduct->nIstVater === 0

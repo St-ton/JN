@@ -100,6 +100,9 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
         pruefeLieferdaten([
             'kLieferadresse' => Order::getLastOrderRefIDs(Frontend::getCustomer()->getID())->kLieferadresse
         ]);
+        if (isset($_SESSION['Lieferadresse']) && $_SESSION['Lieferadresse']->kLieferadresse > 0) {
+            $_GET['editLieferadresse'] = 1;
+        }
     }
 
     if (!isset($_SESSION['Versandart']) || !is_object($_SESSION['Versandart'])) {

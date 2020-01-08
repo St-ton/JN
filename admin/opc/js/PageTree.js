@@ -1,11 +1,12 @@
 class PageTree
 {
-    constructor(page, iframe)
+    constructor(page, iframe, gui)
     {
         bindProtoOnHandlers(this);
 
         this.page     = page;
         this.iframe   = iframe;
+        this.gui      = gui;
         this.selected = undefined;
     }
 
@@ -54,7 +55,7 @@ class PageTree
             ul = $('<ul>');
 
             this.page.offscreenAreas.each((i, area) => {
-                ul.append(this.renderArea(jq(area)));
+                ul.append(this.renderArea(jq(area), false, true));
             });
 
             this.pageTreeView.append('<h4>Offscreen</h4>');
@@ -62,18 +63,18 @@ class PageTree
         }
     }
 
-    renderBaseItem(text, click, cls = '')
+    renderBaseItem(text, click, cls = '', area = null, offscreenArea = false)
     {
         let expander = $('<a href="#" class="item-expander">');
         let item     = $('<a href="#" class="item-label">');
-        let copybtn  = $('<a href="#" class="item-copybtn">');
-        let head     = $('<div class="item-head">')
+        let head     = $('<div class="item-head">');
         let li       = $('<li class="' + cls + '">');
 
         expander.append('<i class="fas fa-fw fa-chevron-right">');
         expander.append('<i class="fas fa-fw fa-chevron-down">');
-        copybtn.append('<i class="far fa-fw fa-copy">');
         item.append(' ' + text);
+        head.append(expander).append(item);
+        li.append(head);
 
         function expand(e) {
             e.preventDefault();
@@ -96,19 +97,49 @@ class PageTree
             }
         });
 
-        head.append(expander).append(item).append(copybtn);
-        return li.append(head);
+        if(offscreenArea) {
+            let copybtn      = $('<a href="#" class="_item-copybtn" data-toggle="dropdown">');
+            let dropdownMenu = $('<div class="dropdown-menu opc-dropdown-menu" style="width: 250px">');
+            let dropdown     = $('<div class="item-copybtn opc-dropdown">');
+            copybtn.append('<i class="fas fa-fw fa-arrow-right">');
+            dropdown.append(copybtn).append(dropdownMenu);
+            head.append(dropdown);
+
+            copybtn.dropdown().click(() => {
+                dropdownMenu.empty();
+
+                this.page.rootAreas.each((i, targetArea) => {
+                    targetArea = $(targetArea);
+                    let areaId = targetArea.data('area-id');
+                    let btn    = $('<button type="button" class="opc-dropdown-item">' + areaId + "</button>");
+
+                    btn.on('click', () => {
+                        targetArea.html(area.html());
+                        this.iframe.updateDropTargets();
+
+                        this.page.offscreenAreas = this.page.offscreenAreas.filter((i,elm) => (
+                            elm !== area[0]
+                        ));
+
+                        this.render();
+                        this.gui.setUnsaved(true, true);
+                    });
+
+                    dropdownMenu.append(btn);
+                });
+            });
+        }
+
+        return li;
     }
 
-    renderArea(area, expanded)
+    renderArea(area, expanded = false, offscreenArea = false)
     {
         let portlets = area.children('[data-portlet]');
         let jq       = area.constructor;
         let data     = area.data('area-id');
         let ul       = $('<ul>');
-        let li       = this.renderBaseItem('' + data + '', null, 'area-item');
-
-        expanded = expanded || false;
+        let li       = this.renderBaseItem('' + data + '', null, 'area-item', area, offscreenArea);
 
         portlets.each((i, portlet) => {
             portlet = jq(portlet);

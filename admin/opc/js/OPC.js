@@ -14,7 +14,7 @@ class OPC extends Emitter
         this.gui          = new GUI(this.io, this.page);
         this.iframe       = new Iframe(this, this.io, this.gui, this.page, env.shopUrl, env.templateUrl);
         this.tutorial     = new Tutorial(this.gui, this.iframe);
-        this.pagetree     = new PageTree(this.page, this.iframe);
+        this.pagetree     = new PageTree(this.page, this.iframe, this.gui);
         this.previewFrame = new PreviewFrame();
     }
 

@@ -58,7 +58,8 @@ class PageTree
                 ul.append(this.renderArea(jq(area), false, true));
             });
 
-            this.pageTreeView.append('<h4>Offscreen</h4>');
+            let offscreenDivider = $('<div class="offscreenDivider">').html($('#offscreenAreasDivider').text());
+            this.pageTreeView.append(offscreenDivider);
             this.pageTreeView.append(ul);
         }
     }

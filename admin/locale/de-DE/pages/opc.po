@@ -424,3 +424,6 @@ msgstr "Portlet hier einfügen"
 
 msgid "Transfer content to visible area"
 msgstr "Inhalt in sichtbaren Bereich übertragen"
+
+msgid "Unmapped areas"
+msgstr "Nicht abgebildete Bereiche"

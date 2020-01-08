@@ -434,6 +434,12 @@
 #pagetree {
   height: 100%;
 }
+#pagetree .offscreenDivider {
+  font-weight: 600;
+  margin: 1em;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  padding-top: 1em;
+}
 #pagetree #pageTreeView {
   padding: 1em 0;
   background-color: #F5F7FA;

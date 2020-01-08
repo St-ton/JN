@@ -65,7 +65,7 @@ class CookieConfig
         $this->domain   = $defaults['domain'] ?? '';
         $this->secure   = $defaults['secure'] ?? false;
         $this->httpOnly = $defaults['httponly'] ?? false;
-        $this->sameSite = $defaults['samesite'] ?? 'S';
+        $this->sameSite = $defaults['samesite'] ?? '';
     }
 
     /**

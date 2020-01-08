@@ -13,6 +13,7 @@ use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\EigenschaftWert;
 use JTL\Catalog\Product\Preise;
+use JTL\Catalog\Product\VariationValue;
 use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Checkout\Kupon;
 use JTL\Checkout\Lieferadresse;
@@ -27,6 +28,7 @@ use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
+use JTL\Media\Image;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
@@ -262,11 +264,10 @@ class CartHelper
     }
 
     /**
-     * @param CartItem $item
-     * @param object   $variation
-     * @return void
+     * @param CartItem       $item
+     * @param VariationValue $variation
      */
-    public static function setVariationPicture(CartItem $item, $variation): void
+    public static function setVariationPicture(CartItem $item, VariationValue $variation): void
     {
         if ($item->variationPicturesArr === null) {
             $item->variationPicturesArr = [];
@@ -274,14 +275,14 @@ class CartHelper
         $imageBaseURL       = Shop::getImageBaseURL();
         $image              = (object)[
             'isVariation'  => true,
-            'cPfadMini'    => $variation->cPfadMini,
-            'cPfadKlein'   => $variation->cPfadKlein,
-            'cPfadNormal'  => $variation->cPfadNormal,
-            'cPfadGross'   => $variation->cPfadGross,
-            'cURLMini'     => $imageBaseURL . $variation->cPfadMini,
-            'cURLKlein'    => $imageBaseURL . $variation->cPfadKlein,
-            'cURLNormal'   => $imageBaseURL . $variation->cPfadNormal,
-            'cURLGross'    => $imageBaseURL . $variation->cPfadGross,
+            'cPfadMini'    => \str_replace($imageBaseURL, '', $variation->getImage(Image::SIZE_XS)),
+            'cPfadKlein'   => \str_replace($imageBaseURL, '', $variation->getImage(Image::SIZE_SM)),
+            'cPfadNormal'  => \str_replace($imageBaseURL, '', $variation->getImage(Image::SIZE_MD)),
+            'cPfadGross'   => \str_replace($imageBaseURL, '', $variation->getImage(Image::SIZE_LG)),
+            'cURLMini'     => $variation->getImage(Image::SIZE_XS),
+            'cURLKlein'    => $variation->getImage(Image::SIZE_SM),
+            'cURLNormal'   => $variation->getImage(Image::SIZE_MD),
+            'cURLGross'    => $variation->getImage(Image::SIZE_LG),
             'nNr'          => \count($item->variationPicturesArr) + 1,
             'cAltAttribut' => \str_replace(['"', "'"], '', $item->Artikel->cName . ' - ' . $variation->cName),
         ];

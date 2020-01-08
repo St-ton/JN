@@ -15,7 +15,7 @@
                 }
                     {lang key='rangeOfPrices'}
                 {/button}
-                {collapse class="pb-4" id="cllps-box{$oBox->getID()}" visible=true}
+                {collapse class="pb-4" id="cllps-box{$oBox->getID()}" visible=$Einstellungen.template.sidebar_settings.always_show_price_range === 'Y'}
                     {block name='boxes-box-filter-pricerange-include-price-slider'}
                         {include file='snippets/filter/price_slider.tpl' id='price-slider-box'}
                     {/block}

@@ -4,10 +4,10 @@
  *}
 {block name='productlist-item-slider'}
     <div class="productbox productbox-column productbox-mini {if isset($class)} {$class}{/if}">
-        <div class="productbox-inner">
-            {block name='productlist-item-slider-link'}
-                <div class="productbox-image">
-                    {link class="image-wrapper" href=$Artikel->cURLFull}
+        {link class="image-wrapper" href=$Artikel->cURLFull}
+            <div class="productbox-inner">
+                {block name='productlist-item-slider-link'}
+                    <div class="productbox-image">
                         {if isset($Artikel->Bilder[0]->cAltAttribut)}
                             {assign var=alt value=$Artikel->Bilder[0]->cAltAttribut|strip_tags|truncate:60|escape:'html'}
                         {else}
@@ -31,39 +31,37 @@
                             <meta itemprop="image" content="{$Artikel->Bilder[0]->cURLNormal}">
                             <meta itemprop="url" content="{$Artikel->cURLFull}">
                         {/if}
-                    {/link}
-                </div>
-            {/block}
-            {block name='productlist-item-slider-caption'}
-                <div class="text-center">
-                    <div class="productbox-title">
-                        {block name='productlist-item-slider-caption-short-desc'}
-                            {link href=$Artikel->cURLFull}
-                                <span class="text-clamp-2">
-                                    {if isset($showPartsList) && $showPartsList === true && isset($Artikel->fAnzahl_stueckliste)}
-                                        {block name='productlist-item-slider-caption-bundle'}
-                                            {$Artikel->fAnzahl_stueckliste}x
-                                        {/block}
-                                    {/if}
-                                    <span {if $tplscope !== 'box'}itemprop="name"{/if}>{$Artikel->cKurzbezeichnung}</span>
-                                </span>
-                            {/link}
+                    </div>
+                {/block}
+                {block name='productlist-item-slider-caption'}
+                    <div class="text-center">
+                        <div class="productbox-title">
+                            {block name='productlist-item-slider-caption-short-desc'}
+                                    <span class="text-clamp-2">
+                                        {if isset($showPartsList) && $showPartsList === true && isset($Artikel->fAnzahl_stueckliste)}
+                                            {block name='productlist-item-slider-caption-bundle'}
+                                                {$Artikel->fAnzahl_stueckliste}x
+                                            {/block}
+                                        {/if}
+                                        <span {if $tplscope !== 'box'}itemprop="name"{/if}>{$Artikel->cKurzbezeichnung}</span>
+                                    </span>
+                            {/block}
+                        </div>
+                        {if $tplscope === 'box'}
+                            {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->fDurchschnittsBewertung > 0}
+                                {block name='productlist-item-slider-include-rating'}
+                                    <small>{include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}</small>
+                                {/block}
+                            {/if}
+                        {/if}
+                        {block name='productlist-item-slider-include-price'}
+                            <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+                                {include file='productdetails/price.tpl' Artikel=$Artikel tplscope=$tplscope}
+                            </div>
                         {/block}
                     </div>
-                    {if $tplscope === 'box'}
-                        {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->fDurchschnittsBewertung > 0}
-                            {block name='productlist-item-slider-include-rating'}
-                                <small>{include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}</small>
-                            {/block}
-                        {/if}
-                    {/if}
-                    {block name='productlist-item-slider-include-price'}
-                        <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
-                            {include file='productdetails/price.tpl' Artikel=$Artikel tplscope=$tplscope}
-                        </div>
-                    {/block}
-                </div>
-            {/block}
-        </div>
+                {/block}
+            </div>
+        {/link}
     </div>
 {/block}

@@ -6,6 +6,7 @@
 
 namespace JTL\dbeS\Sync;
 
+use JTL\Checkout\Adresse;
 use JTL\Customer\Customer as CustomerClass;
 use JTL\Customer\CustomerAttribute;
 use JTL\Customer\CustomerField;
@@ -439,6 +440,8 @@ final class Customer extends AbstractSync
         }
         // Hausnummer extrahieren
         $this->extractStreet($customer);
+        // Workaround for WAWI-39370
+        $customer->cLand = Adresse::checkISOCountryCode($customer->cLand);
         // $this->upsert('tkunde', [$Kunde], 'kKunde');
         $customer->updateInDB();
         DataHistory::saveHistory($oldCustomer, $customer, DataHistory::QUELLE_DBES);
@@ -536,6 +539,8 @@ final class Customer extends AbstractSync
         $address->cZusatz   = $crypto->encryptXTEA(\trim($address->cZusatz));
         $address->cStrasse  = $crypto->encryptXTEA(\trim($address->cStrasse));
         $address->cAnrede   = $this->mapSalutation($address->cAnrede);
+        // Workaround for WAWI-39370
+        $address->cLand = Adresse::checkISOCountryCode($address->cLand);
 
         return $address;
     }

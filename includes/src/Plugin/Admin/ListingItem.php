@@ -178,13 +178,13 @@ class ListingItem
         if ($node !== null) {
             if ($this->isShop5Compatible) {
                 if (!isset($node['Version'])) {
-                    return $this;
+                    return $this->fail();
                 }
             } elseif (!isset($node['Install'][0]['Version'])) {
-                return $this;
+                return $this->fail();
             }
             if (!isset($node['Name'])) {
-                return $this;
+                return $this->fail();
             }
             $this->name        = $node['Name'] ?? '';
             $this->description = $node['Description'] ?? '';
@@ -192,22 +192,31 @@ class ListingItem
             $this->pluginID    = $node['PluginID'] ?? '';
             $this->icon        = $node['Icon'] ?? null;
             if (isset($node['Install'][0]['Version']) && \is_array($node['Install'][0]['Version'])) {
-                $lastVersion   = \count($node['Install'][0]['Version']) / 2 - 1;
-                $version       = $lastVersion >= 0
-                && isset($node['Install'][0]['Version'][$lastVersion . ' attr']['nr'])
-                    ? (int)$node['Install'][0]['Version'][$lastVersion . ' attr']['nr']
-                    : 0;
-                $this->version = Version::parse($version);
+                $lastVersion = \count($node['Install'][0]['Version']) / 2 - 1;
+                $version     = (int)($node['Install'][0]['Version'][$lastVersion . ' attr']['nr'] ?? 0);
             } else {
-                $this->version = Version::parse($node['Version']);
+                $version = $node['Version'];
             }
+            $this->version = Version::parse($version);
         }
         if ($xml['cFehlercode'] !== InstallCode::OK) {
             $mapper             = new PluginValidation();
             $this->hasError     = true;
             $this->errorCode    = $xml['cFehlercode'];
             $this->errorMessage = $mapper->map($xml['cFehlercode'], $this->getPluginID());
+
+            return $this->fail();
         }
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    private function fail(): self
+    {
+        $this->version = Version::parse('0.0.0');
 
         return $this;
     }

@@ -172,7 +172,7 @@ function addValidationListener() {
                 var $firstError = $(event.target).closest('.form-group.has-error');
                 if ($firstError.length > 0) {
                     $body.data('doScrolling', true);
-                    var $nav        = $('#evo-nav-wrapper.sticky-top'),
+                    var $nav        = $('#jtl-nav-wrapper.sticky-top'),
                         fixedOffset = $nav.length > 0 ? $nav.outerHeight() : 0,
                         vpHeight    = $(window).height(),
                         scrollTop   = $(window).scrollTop();
@@ -312,7 +312,7 @@ $(document).ready(function () {
         var url = e.currentTarget.href;
         url += (url.indexOf('?') === -1) ? '?isAjax=true' : '&isAjax=true';
         eModal.ajax({
-            size: 'lg',
+            size: 'xl',
             url: url,
             title: typeof e.currentTarget.title !== 'undefined' ? e.currentTarget.title : '',
             keyboard: true,

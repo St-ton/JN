@@ -43,6 +43,19 @@ a { transition: color $transition-base-duration $transition-base-timing; }
   width: max-content;
 }
 
+:focus, .focus {
+  box-shadow: 0;
+  outline: $primary auto 1px;
+}
+button:focus {
+  box-shadow: 0;
+  outline: $primary auto 1px;
+}
+
+image:focus {
+  outline: none;
+}
+
 .evo-slider {
   padding-bottom: $spacer;
   //border-bottom: 1px solid $gray-light;
@@ -108,7 +121,13 @@ header, #main-wrapper { background: #fff; }
 }
 
 .word-break {
-  word-break: break-all;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  -ms-hyphens: auto;
+  hyphens: auto;
 }
 
 ul.config-items,
@@ -388,11 +407,6 @@ ul.partlist-items {
 .form-control {
   -webkit-box-shadow: none;
   box-shadow: none;
-
-  @include form-control-focus();
-  @include media-breakpoint-down(md) {
-    height: calc(2.7rem + 2px);
-  }
 }
 
 .filter-item,

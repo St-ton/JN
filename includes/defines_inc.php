@@ -504,3 +504,6 @@ define('PRIO_HIGH', '0.7');
 define('PRIO_NORMAL', '0.5');
 define('PRIO_LOW', '0.3');
 define('PRIO_VERYLOW', '0.0');
+
+define('SPM_PORT', 443);
+define('SPM_TIMEOUT', 30);

@@ -81,7 +81,7 @@ final class LegacyPluginValidator extends AbstractValidator
         $parsedVersion        = null;
         $baseNode             = $xml['jtlshop3plugin'][0] ?? null;
         if ($baseNode === null) {
-            return InstallCode::INVALID_XML_VERSION;
+            return InstallCode::MISSING_PLUGIN_NODE;
         }
         $parsedVersion = Version::parse(\APPLICATION_VERSION);
         if (!isset($baseNode['XMLVersion'])) {
@@ -142,10 +142,10 @@ final class LegacyPluginValidator extends AbstractValidator
     private function getVersion($node, $dir)
     {
         if (!GeneralObject::hasCount('Version', $node)) {
-            return InstallCode::INVALID_XML_VERSION_NUMBER;
+            return InstallCode::INVALID_VERSION_NUMBER;
         }
         if ((int)$node['Version']['0 attr']['nr'] !== 100) {
-            return InstallCode::INVALID_XML_VERSION_NUMBER;
+            return InstallCode::INVALID_VERSION_NUMBER;
         }
         $version = '';
         foreach ($node['Version'] as $i => $Version) {

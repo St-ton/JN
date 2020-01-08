@@ -121,6 +121,7 @@
                     lazyLoad: 'ondemand',
                     infinite: true,
                     dots:     false,
+                    swipeToSlide:   true,
                     arrows:   false,
                     speed: 500,
                     fade: true,
@@ -142,6 +143,7 @@
                     slidesToScroll: 1,
                     asNavFor:       '#gallery',
                     dots:           false,
+                    swipeToSlide:   true,
                     arrows:         true,
                     focusOnSelect:  true,
                     responsive:     [
@@ -799,7 +801,7 @@
                             case 1: // forwarding
                                 window.location.href = response.cLocation;
                                 break;
-                            case 2: // added to comparelist
+                            case 2: // added to wishlist
                                 that.updateWishlist(response);
                                 break;
                         }
@@ -838,7 +840,7 @@
                             case 1: // forwarding
                                 window.location.href = response.cLocation;
                                 break;
-                            case 2: // removed from comparelist
+                            case 2: // removed from wishlist
                                 that.updateWishlist(response);
                                 break;
                         }
@@ -1161,7 +1163,6 @@
                 }, false, wrapper);
             } else {
                 $.evo.extended().loadContent(url + (url.indexOf('?') >= 0 ? '&' : '?') + 'isListStyle=' + listStyle, function (content) {
-                    $.evo.extended().imagebox(wrapper);
                     $.evo.article().register(wrapper);
 
                     $('[data-toggle="basket-add"]', $(wrapper)).on('submit', function(event) {

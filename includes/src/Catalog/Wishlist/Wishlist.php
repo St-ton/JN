@@ -990,24 +990,27 @@ class Wishlist
      */
     public static function getWishListPositionDataByID(int $itemID)
     {
-        if ($itemID > 0) {
-            $item = Shop::Container()->getDB()->select('twunschlistepos', 'kWunschlistePos', $itemID);
-            if (!empty($item->kWunschliste)) {
-                $product = new Artikel();
-                try {
-                    $product->fuelleArtikel($item->kArtikel, Artikel::getDefaultOptions());
-                } catch (Exception $e) {
-                    return false;
-                }
-                if ($product->kArtikel > 0) {
-                    $item->bKonfig = $product->bHasKonfig;
-                }
-
-                return $item;
-            }
+        if ($itemID <= 0) {
+            return false;
+        }
+        $item = Shop::Container()->getDB()->select('twunschlistepos', 'kWunschlistePos', $itemID);
+        if ($item === null) {
+            return false;
+        }
+        $item->kWunschlistePos = (int)$item->kWunschlistePos;
+        $item->kWunschliste    = (int)$item->kWunschliste;
+        $item->kArtikel        = (int)$item->kArtikel;
+        $product               = new Artikel();
+        try {
+            $product->fuelleArtikel($item->kArtikel, Artikel::getDefaultOptions());
+        } catch (Exception $e) {
+            return false;
+        }
+        if ($product->kArtikel > 0) {
+            $item->bKonfig = $product->bHasKonfig;
         }
 
-        return false;
+        return $item;
     }
 
     /**
@@ -1027,10 +1030,16 @@ class Wishlist
                 ReturnType::SINGLE_OBJECT
             );
         }
+        if (isset($wishlist->kWunschliste) && $wishlist->kWunschliste > 0) {
+            $wishlist->kWunschliste = (int)$wishlist->kWunschliste;
+            $wishlist->kKunde       = (int)$wishlist->kKunde;
+            $wishlist->nStandard    = (int)$wishlist->nStandard;
+            $wishlist->nOeffentlich = (int)$wishlist->nOeffentlich;
 
-        return (isset($wishlist->kWunschliste) && $wishlist->kWunschliste > 0)
-            ? $wishlist
-            : false;
+            return $wishlist;
+        }
+
+        return false;
     }
 
     /**

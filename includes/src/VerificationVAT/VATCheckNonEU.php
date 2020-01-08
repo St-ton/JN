@@ -41,7 +41,7 @@ class VATCheckNonEU extends AbstractVATCheck
             'success'   => false,
             'errortype' => 'parse',
             'errorcode' => VATCheckInterface::ERR_PATTERN_MISMATCH,
-            'errorinfo' => '' !== ($szErrorInfo = $VatParser->getErrorInfo()) ? $szErrorInfo : ''
+            'errorinfo' => ($szErrorInfo = $VatParser->getErrorInfo()) !== '' ? $szErrorInfo : ''
         ];
     }
 }

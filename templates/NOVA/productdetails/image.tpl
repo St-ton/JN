@@ -41,7 +41,7 @@
                                             fluid=true
                                             lazy=true
                                             webp=true
-                                            src="{$Artikel->Bilder[0]->cURLNormal}"
+                                            src="{$image->cURLMini}"
                                             srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
                                                 {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
                                                 {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,

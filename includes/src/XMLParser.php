@@ -22,7 +22,7 @@ class XMLParser
     {
         $xml = \file_get_contents($fileName);
 
-        return $this->getArrangedArray($this->unserializeXML($xml));
+        return $this->getArrangedArray($this->unserializeXML($xml)) ?? [];
     }
 
     /**

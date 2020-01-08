@@ -18703,6 +18703,7 @@ aside .box .nav-link,
 aside .box .nav a,
 aside .box .dropdown-menu .dropdown-item {
   text-decoration: none;
+  white-space: normal;
 }
 aside .box-monthlynews a .value {
   text-decoration: underline;
@@ -21040,7 +21041,13 @@ header, #main-wrapper {
 }
 
 .word-break {
-  word-break: break-all;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  -ms-hyphens: auto;
+  hyphens: auto;
 }
 
 ul.config-items,
@@ -21876,6 +21883,10 @@ body {
 
 .bg-typeahead-fix {
   background-color: #343434 !important;
+}
+
+.cursor-pointer {
+  cursor: pointer;
 }
 
 /* utilities */
@@ -22945,6 +22956,13 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 
 /* header */
+#header-top-bar {
+  position: relative;
+  background-color: #343434;
+  z-index: 1021;
+  flex-direction: row-reverse;
+}
+
 .sticky-header header {
   position: sticky;
   top: 0;

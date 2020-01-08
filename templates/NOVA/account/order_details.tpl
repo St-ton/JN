@@ -23,10 +23,10 @@
                             <span class="far fa-calendar mr-2"></span>{$Bestellung->dErstelldatum_de}
                         </span>
                     {/col}
-                    {col cols=6 class='col-lg-auto'}
+                    {col cols=6 lg='auto'}
                         {lang key='yourOrderId' section='checkout'}: {$Bestellung->cBestellNr}
                     {/col}
-                    {col cols=6 class='col-lg-auto text-right text-lg-left'}
+                    {col cols=6 lg='auto' class='text-right text-lg-left'}
                         {lang key='orderStatus' section='login'}: {$Bestellung->Status}
                     {/col}
                 {/row}

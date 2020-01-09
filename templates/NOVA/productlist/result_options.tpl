@@ -17,8 +17,10 @@
                         data=["toggle" => "{if !empty($filterPlacement)}{$filterPlacement}{else}modal{/if}", "target" => "#collapseFilter"]
                         aria=["expanded" => "false",
                             "controls" => "collapseFilter"]
-                        role="button"}
-                        <span class="fas fa-filter{if $NaviFilter->getFilterCount() > 0} text-primary{/if}"></span> {lang key='filter'}
+                        role="button"
+                        block=$filterPlacement === 'collapse'}
+                        <span class="fas fa-filter{if $NaviFilter->getFilterCount() > 0} text-primary{/if}"></span>
+                        {if $filterPlacement === 'collapse'}{lang key='filterAndSort'}{else}{lang key='filter'}{/if}
                     {/button}
                 {/block}
                 {if !empty($filterPlacement) && !$filterPlacement === "collapse"}

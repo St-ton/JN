@@ -8,6 +8,29 @@
     {/if}
     <div class="productlist-filter-wrapper">
         <ul class="productlist-filter-accordion border-md-bottom border-lg-bottom-0">
+        {block name='productlist-result-options-sorting'}
+            <li>
+                {link class="text-decoration-none text-left filter-type-FilterItemSort"
+                data=["toggle"=> "collapse", "target"=>"#sorting-collapse"]}
+                {lang key='sorting' section='productOverview'}
+                    <span class="float-right mx-3 font-italic text-right text-truncate w-40 pr-1">
+                    {foreach $Suchergebnisse->getSortingOptions() as $option}
+                        {if $option->isActive()} {$option->getName()}{/if}
+                    {/foreach}
+                </span>
+                {/link}
+                {collapse id="sorting-collapse" class="my-2"}
+                {foreach $Suchergebnisse->getSortingOptions() as $option}
+                    {dropdownitem class="filter-item py-1"
+                    active=$option->isActive()
+                    href=$option->getURL()
+                    rel='nofollow'}
+                    {$option->getName()}
+                    {/dropdownitem}
+                {/foreach}
+                {/collapse}
+            </li>
+        {/block}
         {if $show_filters}
             {if count($NaviFilter->getAvailableContentFilters()) > 0}
                 {block name='productlist-result-options-filters'}
@@ -103,29 +126,6 @@
                 {/block}
             {/if}
         {/if}
-        {block name='productlist-result-options-sorting'}
-            <li>
-            {link class="text-decoration-none text-left filter-type-FilterItemSort"
-                data=["toggle"=> "collapse", "target"=>"#sorting-collapse"]}
-                {lang key='sorting' section='productOverview'}
-                    <span class="float-right mx-3 font-italic text-right text-truncate w-40 pr-1">
-                        {foreach $Suchergebnisse->getSortingOptions() as $option}
-                            {if $option->isActive()} {$option->getName()}{/if}
-                        {/foreach}
-                    </span>
-            {/link}
-            {collapse id="sorting-collapse" class="my-2"}
-            {foreach $Suchergebnisse->getSortingOptions() as $option}
-                {dropdownitem class="filter-item py-1"
-                    active=$option->isActive()
-                    href=$option->getURL()
-                    rel='nofollow'}
-                    {$option->getName()}
-                {/dropdownitem}
-            {/foreach}
-            {/collapse}
-            </li>
-        {/block}
         </ul>
         {block name='productlist-result-options-include-active-filter'}
             <div class="productlist-applied-filter mb-5">

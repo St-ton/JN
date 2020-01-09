@@ -113,22 +113,25 @@ class PageTree
 
                 this.page.rootAreas.each((i, targetArea) => {
                     targetArea = $(targetArea);
-                    let areaId = targetArea.data('area-id');
-                    let btn    = $('<button type="button" class="opc-dropdown-item">' + areaId + "</button>");
 
-                    btn.on('click', () => {
-                        targetArea.html(area.html());
-                        this.iframe.updateDropTargets();
+                    if(targetArea.find('[data-portlet]').length === 0) {
+                        let areaId = targetArea.data('area-id');
+                        let btn    = $('<button type="button" class="opc-dropdown-item">' + areaId + "</button>");
 
-                        this.page.offscreenAreas = this.page.offscreenAreas.filter((i,elm) => (
-                            elm !== area[0]
-                        ));
+                        btn.on('click', () => {
+                            targetArea.html(area.html());
+                            this.iframe.updateDropTargets();
 
-                        this.render();
-                        this.gui.setUnsaved(true, true);
-                    });
+                            this.page.offscreenAreas = this.page.offscreenAreas.filter((i,elm) => (
+                                elm !== area[0]
+                            ));
 
-                    dropdownMenu.append(btn);
+                            this.render();
+                            this.gui.setUnsaved(true, true);
+                        });
+
+                        dropdownMenu.append(btn);
+                    }
                 });
             });
         }

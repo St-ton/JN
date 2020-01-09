@@ -415,23 +415,33 @@
                                                         {/block}
                                                     {/if}
                                                     {block name='snippets-wishlist-form-basket-image'}
-                                                        <div class="list-gallery slick-smooth-loading carousel carousel-arrows-inside productbox-images">
-                                                            {foreach $wlPosition->Artikel->Bilder as $image}
-                                                                {strip}
-                                                                    <div>
-                                                                        {link href=$wlPosition->Artikel->cURLFull}
-                                                                            {image alt=$wlPosition->Artikel->cName fluid=true webp=true lazy=true
-                                                                                src="{$image->cURLKlein}"
-                                                                                srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                        <div class="list-gallery productbox-images">
+                                                            {assign var=image value=$wlPosition->Artikel->Bilder[0]}
+                                                            {strip}
+                                                                <div>
+                                                                    {link href=$wlPosition->Artikel->cURLFull}
+                                                                        {image alt=$wlPosition->Artikel->cName fluid=true webp=true lazy=true
+                                                                            src="{$image->cURLKlein}"
+                                                                            srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                                             {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                                             {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                                                            sizes="auto"
+                                                                            class="w-100{if !$device->isMobile() && !empty($wlPosition->Artikel->Bilder[1])} first{/if}"
+                                                                        }
+                                                                    {if !$device->isMobile() && !empty($wlPosition->Artikel->Bilder[1])}
+                                                                        {$image = $wlPosition->Artikel->Bilder[1]}
+                                                                        {image alt=$wlPosition->Artikel->cName fluid=true webp=true lazy=true
+                                                                            src="{$image->cURLKlein}"
+                                                                            srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
                                                                                  {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
                                                                                  {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
-                                                                                sizes="auto"
-                                                                                class='w-100'
-                                                                            }
-                                                                        {/link}
-                                                                    </div>
-                                                                {/strip}
-                                                            {/foreach}
+                                                                            sizes="auto"
+                                                                            class='second'
+                                                                        }
+                                                                    {/if}
+                                                                    {/link}
+                                                                </div>
+                                                            {/strip}
                                                         </div>
                                                     {/block}
                                                 </div>
@@ -566,8 +576,22 @@
                                             value="update"
                                             block=true
                                             variant="outline-primary"
-                                            class="btn-white"}
+                                            class="btn-white"
+                                        }
                                             <i class="fa fa-sync"></i> {lang key='wishlistUpdate' section='login'}
+                                        {/button}
+                                    {/if}
+                                {/col}
+                                {col md=4 xl=3}
+                                    {if $isCurrenctCustomer === true}
+                                        {button type="submit"
+                                            title="{lang key='addCurrentProductsToCart' section='wishlist'}"
+                                            name="action"
+                                            value="addAllToCart"
+                                            block=true
+                                            variant="primary"
+                                        }
+                                            <i class="fa fa-shopping-cart"></i> {lang key='addCurrentProductsToCart' section='wishlist'}
                                         {/button}
                                     {/if}
                                 {/col}

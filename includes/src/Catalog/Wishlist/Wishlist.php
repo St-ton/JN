@@ -799,12 +799,12 @@ class Wishlist
         foreach ($items as $item) {
             $id  = (int)$item->kWunschlistePos;
             $idx = 'Kommentar_' . $id;
-            if (!isset($_POST[$idx])) {
-                break;
+            if (isset($_POST[$idx])) {
+                $upd             = new stdClass();
+                $upd->cKommentar = Text::htmlentities(Text::filterXSS($db->escape(\mb_substr($_POST[$idx], 0, 254))));
+                $db->update('twunschlistepos', 'kWunschlistePos', $id, $upd);
             }
-            $upd             = new stdClass();
-            $upd->cKommentar = Text::htmlentities(Text::filterXSS($db->escape(\mb_substr($_POST[$idx], 0, 254))));
-            $db->update('twunschlistepos', 'kWunschlistePos', $id, $upd);
+
             $idx = 'Anzahl_' . $id;
             if (isset($_POST[$idx])) {
                 $quantity = \str_replace(',', '.', $_POST[$idx]);

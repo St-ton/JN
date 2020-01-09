@@ -108,7 +108,7 @@ if ($action !== null && Form::validateToken()) {
                     foreach ($wl->CWunschlistePos_arr as $wishlistPosition) {
                         $attributeValues = Product::isVariChild($wishlistPosition->kArtikel)
                             ? Product::getVarCombiAttributeValues($wishlistPosition->kArtikel)
-                            : Wishlist::getAttributesByID($kWunschliste, $wishlistPosition->kWunschlistePos);
+                            : Wishlist::getAttributesByID($kWunschliste, (int)$wishlistPosition->kWunschlistePos);
                         if (!$wishlistPosition->Artikel->bHasKonfig && empty($wishlistPosition->bKonfig)
                             && isset($wishlistPosition->Artikel->inWarenkorbLegbar)
                             && $wishlistPosition->Artikel->inWarenkorbLegbar > 0

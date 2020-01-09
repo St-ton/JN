@@ -7,7 +7,7 @@
         <label class="col-sm-auto col-form-label" for="{$id}">{__('changeLanguage')}:</label>
         <span class="col-sm-auto">
             <select id="{$id}" name="kSprache" class="custom-select selectBox"{if $onchange} onchange="document.sprache.submit();"{/if}>
-                {foreach $sprachen as $language}
+                {foreach $availableLanguages as $language}
                     <option value="{$language->getId()}" {if $language->getId() === $smarty.session.kSprache}{assign var=currentLanguage value=$language->getLocalizedName()}selected{/if}>{$language->getLocalizedName()}</option>
                 {/foreach}
             </select>

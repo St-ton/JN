@@ -188,8 +188,8 @@
                                     </div>
                                     <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('hintCheckboxName')}</div>
                                 </div>
-                                {if $sprachen|@count > 0}
-                                    {foreach $sprachen as $language}
+                                {if $availableLanguages|@count > 0}
+                                    {foreach $availableLanguages as $language}
                                         {assign var=cISO value=$language->getCode()}
                                         {assign var=kSprache value=$language->getId()}
                                         {assign var=cISOText value="cText_$cISO"}
@@ -202,7 +202,7 @@
                                         </div>
                                     {/foreach}
 
-                                    {foreach $sprachen as $language}
+                                    {foreach $availableLanguages as $language}
                                         {assign var=cISO value=$language->getCode()}
                                         {assign var=kSprache value=$language->getId()}
                                         {assign var=cISOBeschreibung value="cBeschreibung_$cISO"}

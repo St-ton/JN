@@ -140,7 +140,7 @@ build_move_class_files()
 
 build_set_classes_path()
 {
-    sed -i "s/'PFAD_CLASSES', '.*'/'PFAD_CLASSES', '\/classes'/g" ${REPOSITORY_DIR}/includes/defines.php
+    sed -i "s/'PFAD_CLASSES', '.*'/'PFAD_CLASSES', 'classes\/'/g" ${REPOSITORY_DIR}/includes/defines.php
 }
 
 build_add_old_files()

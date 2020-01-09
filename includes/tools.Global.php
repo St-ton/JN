@@ -323,6 +323,7 @@ function pruefeVariationAusverkauft(int $productID = 0, $product = null): array
 
     $soldOut = [];
     if ($product !== null
+        && (int)$product->kArtikel > 0
         && $product->kEigenschaftKombi === 0
         && $product->nIstVater === 0
         && $product->Variationen !== null

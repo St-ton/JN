@@ -34,8 +34,8 @@ class CreateCommand extends Command
      */
     protected function interact(InputInterface $input, OutputInterface $output): void
     {
-        $description = \trim($input->getArgument('description'));
-        $author      = \trim($input->getArgument('author'));
+        $description = \trim($input->getArgument('description') ?? '');
+        $author      = \trim($input->getArgument('author') ?? '');
         if (\strlen($description) < 5) {
             $description = $this->getIO()->ask('Short migration description');
             $input->setArgument('description', $description);
@@ -51,8 +51,8 @@ class CreateCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $description   = \trim($input->getArgument('description'));
-        $author        = \trim($input->getArgument('author'));
+        $description   = \trim($input->getArgument('description') ?? '');
+        $author        = \trim($input->getArgument('author') ?? '');
         $migrationPath = MigrationHelper::create($description, $author);
 
         $output->writeln("<info>Created Migration:</info> <comment>'" . $migrationPath . "'</comment>");

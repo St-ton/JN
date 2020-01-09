@@ -222,7 +222,7 @@ function pruefeLieferdaten($post, &$missingData = null): void
         }
     } elseif ((int)$post['kLieferadresse'] === 0 && isset($_SESSION['Kunde'])) {
         // lieferadresse gleich rechnungsadresse
-        setzeLieferadresseAusRechnungsadresse();
+        setzeLieferadresseAusRechnungsadresse($post);
 
         executeHook(HOOK_BESTELLVORGANG_PAGE_STEPLIEFERADRESSE_RECHNUNGLIEFERADRESSE);
     }
@@ -2659,11 +2659,12 @@ function gibBestellschritt(string $step)
 }
 
 /**
+ * @param array|null $post
  * @return Lieferadresse
  */
-function setzeLieferadresseAusRechnungsadresse(): Lieferadresse
+function setzeLieferadresseAusRechnungsadresse(?array $post = null): Lieferadresse
 {
-    $customer                         = Frontend::getCustomer();
+    $customer                         = $post !== null ? getKundendaten($post, 0) : Frontend::getCustomer();
     $shippingAddress                  = new Lieferadresse();
     $shippingAddress->kKunde          = $customer->kKunde;
     $shippingAddress->cAnrede         = $customer->cAnrede;

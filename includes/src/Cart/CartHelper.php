@@ -28,6 +28,7 @@ use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
+use JTL\Media\Image;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
@@ -274,14 +275,14 @@ class CartHelper
         $imageBaseURL       = Shop::getImageBaseURL();
         $image              = (object)[
             'isVariation'  => true,
-            'cPfadMini'    => \str_replace($imageBaseURL, '', $variation->getImage(\JTL\Media\Image::SIZE_XS)),
-            'cPfadKlein'   => \str_replace($imageBaseURL, '', $variation->getImage(\JTL\Media\Image::SIZE_SM)),
-            'cPfadNormal'  => \str_replace($imageBaseURL, '', $variation->getImage(\JTL\Media\Image::SIZE_MD)),
-            'cPfadGross'   => \str_replace($imageBaseURL, '', $variation->getImage(\JTL\Media\Image::SIZE_LG)),
-            'cURLMini'     => $variation->getImage(\JTL\Media\Image::SIZE_XS),
-            'cURLKlein'    => $variation->getImage(\JTL\Media\Image::SIZE_SM),
-            'cURLNormal'   => $variation->getImage(\JTL\Media\Image::SIZE_MD),
-            'cURLGross'    => $variation->getImage(\JTL\Media\Image::SIZE_LG),
+            'cPfadMini'    => \str_replace($imageBaseURL, '', $variation->getImage(Image::SIZE_XS)),
+            'cPfadKlein'   => \str_replace($imageBaseURL, '', $variation->getImage(Image::SIZE_SM)),
+            'cPfadNormal'  => \str_replace($imageBaseURL, '', $variation->getImage(Image::SIZE_MD)),
+            'cPfadGross'   => \str_replace($imageBaseURL, '', $variation->getImage(Image::SIZE_LG)),
+            'cURLMini'     => $variation->getImage(Image::SIZE_XS),
+            'cURLKlein'    => $variation->getImage(Image::SIZE_SM),
+            'cURLNormal'   => $variation->getImage(Image::SIZE_MD),
+            'cURLGross'    => $variation->getImage(Image::SIZE_LG),
             'nNr'          => \count($item->variationPicturesArr) + 1,
             'cAltAttribut' => \str_replace(['"', "'"], '', $item->Artikel->cName . ' - ' . $variation->cName),
         ];
@@ -1772,12 +1773,15 @@ class CartHelper
             );
         }
         if (isset($productData->kArtikel) && $productData->kArtikel > 0) {
-            $product = (new Artikel())->fuelleArtikel($productData->kArtikel, Artikel::getDefaultOptions());
-            if ($product !== null && $product->kArtikel > 0 && self::addProductIDToCart(
-                $productData->kArtikel,
-                1,
-                Product::getSelectedPropertiesForArticle($productData->kArtikel)
-            )) {
+            $product = (new Artikel())->fuelleArtikel($productData->kArtikel);
+            if ($product !== null
+                && (int)$product->kArtikel > 0
+                && self::addProductIDToCart(
+                    $productData->kArtikel,
+                    1,
+                    Product::getSelectedPropertiesForArticle($productData->kArtikel)
+                )
+            ) {
                 $msg = $productData->cName . ' ' . Shop::Lang()->get('productAddedToCart');
             }
         }
@@ -1863,7 +1867,9 @@ class CartHelper
                 $options                 = Artikel::getDefaultOptions();
                 foreach ($xsellData as $item) {
                     $product = (new Artikel())->fuelleArtikel((int)$item->kXSellArtikel, $options);
-                    if ($product !== null && $product->kArtikel > 0 && $product->aufLagerSichtbarkeit()) {
+                    if ($product !== null
+                        && (int)$product->kArtikel > 0
+                        && $product->aufLagerSichtbarkeit()) {
                         $xSelling->Kauf->Artikel[] = $product;
                     }
                 }
@@ -1909,6 +1915,7 @@ class CartHelper
             foreach ($giftsTmp as $gift) {
                 $product = (new Artikel())->fuelleArtikel((int)$gift->kArtikel, Artikel::getDefaultOptions());
                 if ($product !== null
+                    && (int)$product->kArtikel > 0
                     && ($product->kEigenschaftKombi > 0
                         || !\is_array($product->Variationen)
                         || \count($product->Variationen) === 0)

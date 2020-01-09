@@ -55,14 +55,14 @@ class Lieferadresse extends Adresse
     {
         $obj = Shop::Container()->getDB()->select('tlieferadresse', 'kLieferadresse', $kLieferadresse);
 
-        if ($obj === null) {
+        if ($obj === null || $obj->kLieferadresse < 1) {
             return 0;
         }
-
         $this->fromObject($obj);
-        // Anrede mappen
         $this->cAnredeLocalized = Customer::mapSalutation($this->cAnrede, 0, $this->kKunde);
-        $this->angezeigtesLand  = LanguageHelper::getCountryCodeByCountryName($this->cLand);
+        // Workaround for WAWI-39370
+        $this->cLand           = self::checkISOCountryCode($this->cLand);
+        $this->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($this->cLand);
         if ($this->kLieferadresse > 0) {
             $this->decrypt();
         }
@@ -80,7 +80,7 @@ class Lieferadresse extends Adresse
         $this->encrypt();
         $obj = $this->toObject();
 
-        $obj->cLand = $this->pruefeLandISO($obj->cLand);
+        $obj->cLand = self::checkISOCountryCode($obj->cLand);
 
         unset($obj->kLieferadresse, $obj->angezeigtesLand, $obj->cAnredeLocalized);
 
@@ -100,7 +100,7 @@ class Lieferadresse extends Adresse
         $this->encrypt();
         $obj = $this->toObject();
 
-        $obj->cLand = $this->pruefeLandISO($obj->cLand);
+        $obj->cLand = self::checkISOCountryCode($obj->cLand);
         unset($obj->angezeigtesLand, $obj->cAnredeLocalized);
         $res = Shop::Container()->getDB()->update('tlieferadresse', 'kLieferadresse', $obj->kLieferadresse, $obj);
         $this->decrypt();

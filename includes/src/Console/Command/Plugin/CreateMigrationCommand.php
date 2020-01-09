@@ -35,9 +35,9 @@ class CreateMigrationCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): ?int
     {
-        $pluginDir   = \trim($input->getArgument('plugin-dir'));
-        $description = \trim($input->getArgument('description'));
-        $author      = \trim($input->getArgument('author'));
+        $pluginDir   = \trim($input->getArgument('plugin-dir') ?? '');
+        $description = \trim($input->getArgument('description') ?? '');
+        $author      = \trim($input->getArgument('author') ?? '');
 
         try {
             $migrationPath = MigrationHelper::create($pluginDir, $description, $author);

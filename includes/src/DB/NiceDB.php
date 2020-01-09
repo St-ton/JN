@@ -228,21 +228,31 @@ class NiceDB implements DbInterface
     }
 
     /**
-     * @param string     $type
      * @param string     $stmt
      * @param array|null $assigns
+     * @param array|null $named
      * @param float      $time
      * @return DbInterface
      */
-    private function analyzeQuery(string $type, string $stmt, array $assigns = null, float $time = 0): DbInterface
-    {
+    private function analyzeQuery(
+        string $stmt,
+        array $assigns = null,
+        array $named = null,
+        float $time = 0
+    ): DbInterface {
         if ($this->debug !== true || \mb_strpos($stmt, 'tprofiler') !== false) {
             return $this;
         }
         $backtrace = $this->debugLevel > 2 ? \debug_backtrace() : null;
         $explain   = 'EXPLAIN ' . $stmt;
         try {
-            if ($assigns !== null) {
+            if ($named !== null) {
+                $res = $this->pdo->prepare($explain);
+                foreach ($named as $k => $v) {
+                    $this->_bind($res, $k, $v);
+                }
+                $res->execute();
+            } elseif ($assigns !== null) {
                 $res = $this->pdo->prepare($explain);
                 $res->execute($assigns);
             } else {
@@ -260,7 +270,7 @@ class NiceDB implements DbInterface
         while (($row = $res->fetchObject()) !== false) {
             if (!empty($row->table)) {
                 $tableData            = new \stdClass();
-                $tableData->type      = $type;
+                $tableData->type      = $row->select_type ?? '???';
                 $tableData->table     = $row->table;
                 $tableData->count     = 1;
                 $tableData->time      = $time;
@@ -274,7 +284,7 @@ class NiceDB implements DbInterface
                 Profiler::setSQLProfile($tableData);
             } elseif ($this->debugLevel > 1 && isset($row->Extra)) {
                 $tableData            = new \stdClass();
-                $tableData->type      = $type;
+                $tableData->type      = $row->select_type ?? '???';
                 $tableData->message   = $row->Extra;
                 $tableData->statement = \preg_replace('/\s\s+/', ' ', $stmt);
                 $tableData->backtrace = $backtrace;
@@ -431,12 +441,7 @@ class NiceDB implements DbInterface
         }
         $id = $this->pdo->lastInsertId();
         if (\mb_strpos($tableName, 'tprofiler') !== 0) {
-            $this->analyzeQuery(
-                'insert',
-                $stmt,
-                $assigns,
-                \microtime(true) - $start
-            );
+            $this->analyzeQuery($stmt, $assigns, null, \microtime(true) - $start);
         }
 
         return $id > 0 ? (int)$id : 1;
@@ -511,7 +516,7 @@ class NiceDB implements DbInterface
         } else {
             $ret = $s->rowCount();
         }
-        $this->analyzeQuery('update', $stmt, $assigns, \microtime(true) - $start);
+        $this->analyzeQuery($stmt, $assigns, null, \microtime(true) - $start);
 
         return $ret;
     }
@@ -580,7 +585,7 @@ class NiceDB implements DbInterface
         }
 
         $lastID = $this->pdo->lastInsertId();
-        $this->analyzeQuery('insert', $sql, $assigns, \microtime(true) - $start);
+        $this->analyzeQuery($sql, $assigns, null, \microtime(true) - $start);
 
         return $lastID;
     }
@@ -648,7 +653,7 @@ class NiceDB implements DbInterface
             return null;
         }
         $ret = $s->fetchObject();
-        $this->analyzeQuery('select', $stmt, $assigns, \microtime(true) - $start);
+        $this->analyzeQuery($stmt, $assigns, null, \microtime(true) - $start);
 
         return $ret !== false ? $ret : null;
     }
@@ -815,8 +820,7 @@ class NiceDB implements DbInterface
             if ($type === 0) {
                 $res = $this->pdo->query($stmt);
             } else {
-                $res  = $this->pdo->prepare($stmt);
-                $stmt = $this->readableQuery($stmt, $params);
+                $res = $this->pdo->prepare($stmt);
                 foreach ($params as $k => $v) {
                     $this->_bind($res, $k, $v);
                 }
@@ -825,7 +829,7 @@ class NiceDB implements DbInterface
                 }
             }
         } catch (PDOException $e) {
-            $this->handleException($e, $stmt);
+            $this->handleException($e, $this->readableQuery($stmt, $params));
 
             if ($this->transactionCount > 0) {
                 throw $e;
@@ -844,13 +848,13 @@ class NiceDB implements DbInterface
         }
 
         if (!$res) {
-            $this->logError($stmt);
+            $this->logError($this->readableQuery($stmt, $params));
 
             return 0;
         }
 
         $ret = $this->getQueryResult($return, $res);
-        $this->analyzeQuery('_execute', $stmt, null, \microtime(true) - $start);
+        $this->analyzeQuery($stmt, null, $type === 0 ? null : $params, \microtime(true) - $start);
 
         return $ret;
     }
@@ -954,7 +958,7 @@ class NiceDB implements DbInterface
             return -1;
         }
         $ret = $s->rowCount();
-        $this->analyzeQuery('delete', $stmt, null, \microtime(true) - $start);
+        $this->analyzeQuery($stmt, $assigns, null, \microtime(true) - $start);
 
         return $ret;
     }
@@ -1209,7 +1213,6 @@ class NiceDB implements DbInterface
     {
         $keys   = [];
         $values = [];
-
         foreach ($params as $key => $value) {
             $key    = \is_string($key)
                 ? $this->_bindName($key)

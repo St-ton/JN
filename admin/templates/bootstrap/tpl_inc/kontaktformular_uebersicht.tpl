@@ -135,7 +135,7 @@
                         <hr class="mb-3">
                         <div>
                             <div class="settings">
-                                {foreach $sprachen as $language}
+                                {foreach $availableLanguages as $language}
                                     {assign var=cISO value=$language->getIso()}
                                     {assign var=cISOcat value=$cISO|cat:'_titel'}
                                     <div class="form-group form-row align-items-center">
@@ -147,7 +147,7 @@
                                         </span>
                                     </div>
                                 {/foreach}
-                                {foreach $sprachen as $language}
+                                {foreach $availableLanguages as $language}
                                     {assign var=cISO value=$language->getIso()}
                                     {assign var=cISOcat value=$cISO|cat:'_oben'}
                                     <div class="form-group form-row align-items-center">
@@ -159,7 +159,7 @@
                                         </span>
                                     </div>
                                 {/foreach}
-                                {foreach $sprachen as $language}
+                                {foreach $availableLanguages as $language}
                                     {assign var=cISO value=$language->getIso()}
                                     {assign var=cISOcat value=$cISO|cat:'_unten'}
                                     <div class="form-group form-row align-items-center">

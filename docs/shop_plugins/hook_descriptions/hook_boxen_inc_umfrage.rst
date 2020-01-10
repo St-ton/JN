@@ -1,10 +1,15 @@
+.. |br| raw:: html
+
+      <br />
+
 HOOK_BOXEN_INC_UMFRAGE (95)
 ===========================
 
 Triggerpunkt
 """"""""""""
 
-Vor der Anzeige der Umfrage
+In ``includes/src/Boxes/Items/Poll.php``, |br|
+vor der Anzeige der Umfrage.
 
 Parameter
 """""""""

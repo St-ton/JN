@@ -1,10 +1,15 @@
+.. |br| raw:: html
+
+      <br />
+
 HOOK_UMFRAGE_PAGE_UMFRAGEERGEBNIS (50)
 ======================================
 
 Triggerpunkt
 """"""""""""
 
-Kurz vor dem Speichern einer Umfrage
+In ``umfrage.php``, |br|
+kurz vor dem Speichern einer Umfrage.
 
 Parameter
 """""""""

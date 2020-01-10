@@ -5,6 +5,9 @@
 HOOK_UMFRAGE_PAGE_UMFRAGEERGEBNIS (50)
 ======================================
 
+Dieser Hook wurde entfernt in: Shop 5.0.0-rc.2
+(Grund: https://issues.jtl-software.de/issues/SHOP-3787)
+
 Triggerpunkt
 """"""""""""
 

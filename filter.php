@@ -66,7 +66,10 @@ if ($oSuchergebnisse->getProductCount() === 0) {
         ['showInAlertListTemplate' => false]
     );
 }
-if ($conf['navigationsfilter']['allgemein_weiterleitung'] === 'Y' && $oSuchergebnisse->getVisibleProductCount() === 1) {
+if ($conf['navigationsfilter']['allgemein_weiterleitung'] === 'Y'
+    && $oSuchergebnisse->getVisibleProductCount() === 1
+    && !Request::isAjaxRequest()
+) {
     $hasSubCategories = ($categoryID = $NaviFilter->getCategory()->getValue()) > 0
         ? (new Kategorie(
             $categoryID,
@@ -89,6 +92,7 @@ if ($conf['navigationsfilter']['allgemein_weiterleitung'] === 'Y' && $oSuchergeb
 }
 if ($pages->getCurrentPage() > 0
     && $pages->getTotalPages() > 0
+    && !Request::isAjaxRequest()
     && ($oSuchergebnisse->getVisibleProductCount() === 0 || ($pages->getCurrentPage() > $pages->getTotalPages()))
 ) {
     http_response_code(301);

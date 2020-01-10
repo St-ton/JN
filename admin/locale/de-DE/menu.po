@@ -187,9 +187,6 @@ msgstr "Marketing"
 msgid "Customer loyalty"
 msgstr "Kundenbindung"
 
-msgid "Surveys"
-msgstr "Umfragen"
-
 msgid "Recommendations"
 msgstr "Kundenempfehlungen"
 
@@ -464,9 +461,6 @@ msgstr "Konfiguration"
 
 msgid "You've selected Google reCaptcha as spam protection method, but homepage and or secrect key have not been added."
 msgstr "Sie haben Google reCaptcha als Spamschutz-Methode gewählt, aber Websiteschlüssel und/oder Geheimen Schlüssel nicht angegeben."
-
-msgid "A coupon being used in a survey is not active or does not exist anylonger."
-msgstr "In einer Umfrage wird ein Coupon verwendet, der inaktiv ist oder nicht mehr existiert."
 
 msgid "The full-text index does not exist!"
 msgstr "Der Volltextindex ist nicht vorhanden."

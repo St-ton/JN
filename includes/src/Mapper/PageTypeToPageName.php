@@ -53,8 +53,6 @@ class PageTypeToPageName
                 return 'NEWSKATEGORIE';
             case \PAGE_NEWSDETAIL:
                 return 'NEWSDETAIL';
-            case \PAGE_UMFRAGE:
-                return 'UMFRAGE';
             case \PAGE_PLUGIN:
                 return 'PLUGIN';
             case \PAGE_404:

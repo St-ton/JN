@@ -716,7 +716,6 @@ class Frontend extends AbstractSession
         $kNews                 = Request::verifyGPCDataInt('n');
         $kNewsMonatsUebersicht = Request::verifyGPCDataInt('nm');
         $kNewsKategorie        = Request::verifyGPCDataInt('nk');
-        $surveyID              = Request::verifyGPCDataInt('u');
         $key                   = 'kArtikel';
         $val                   = 0;
         \http_response_code(301);
@@ -753,15 +752,12 @@ class Frontend extends AbstractSession
         } elseif ($kNewsKategorie > 0) {
             $key = 'kNewsKategorie';
             $val = $kNewsKategorie;
-        } elseif ($surveyID > 0) {
-            $key = 'kUmfrage';
-            $val = $surveyID;
         }
         $dbRes = Shop::Container()->getDB()->select(
             'tseo',
             'cKey',
-            'kUmfrage',
             $key,
+            'kKey',
             $val,
             'kSprache',
             Shop::getLanguageID()

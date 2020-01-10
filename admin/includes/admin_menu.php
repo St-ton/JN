@@ -26,11 +26,6 @@ $adminMenu = [
                     'permissions' => 'CONTENT_NEWS_SYSTEM_VIEW',
                     'section' => CONF_NEWS,
                 ],
-                __('Surveys')                 => (object)[
-                    'link'   => 'umfrage.php',
-                    'permissions' => 'EXTENSION_VOTE_VIEW',
-                    'section' => CONF_UMFRAGE,
-                ],
                 __('Coupons')                 => (object)[
                     'link'   => 'kupons.php',
                     'permissions' => 'ORDER_COUPON_VIEW',

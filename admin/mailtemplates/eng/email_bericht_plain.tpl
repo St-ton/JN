@@ -67,10 +67,6 @@ Acquired customers who purchased something: {$oMailObjekt->nAnzahlErfolgreichGew
 Wish lists sent: {$oMailObjekt->nAnzahlVersendeterWunschlisten}
 {/if}
 
-{if $oMailObjekt->nAnzahlDurchgefuehrteUmfragen !== -1}
-Surveys conducted: {$oMailObjekt->nAnzahlDurchgefuehrteUmfragen}
-{/if}
-
 {if $oMailObjekt->nAnzahlNewskommentare !== -1}
 New article comments: {$oMailObjekt->nAnzahlNewskommentare}
 {/if}

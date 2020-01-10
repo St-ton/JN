@@ -218,9 +218,6 @@ msgstr "News system"
 msgid "configgroup_114_sitemap_settings"
 msgstr "Sitemap settings"
 
-msgid "configgroup_115_poll"
-msgstr "Settings for survey system"
-
 msgid "configgroup_116_customer_recruit_customer"
 msgstr "Settings for customer referral programme"
 

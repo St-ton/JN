@@ -60,14 +60,15 @@
         {block name='snippets-filter-manufacturer-more-bottom'}
                 </ul>
             </div>
-            {button
-                variant="link"
-                role="button"
-                class="text-right p-0 mt-2"
-                data=["toggle"=> "collapse", "target"=>"#box-collps-filter{$filter->getNiceName()}"]
-                block=true}
-                {lang key='showAll'}
-            {/button}
+            <div class="w-100">
+                {button
+                    variant="link"
+                    role="button"
+                    class="p-0 ml-auto mt-1"
+                    data=["toggle"=> "collapse", "target"=>"#box-collps-filter{$filter->getNiceName()}"]}
+                    {lang key='showAll'}
+                {/button}
+            </div>
         {/block}
     {/if}
     {if $Einstellungen.navigationsfilter.hersteller_anzeigen_als === 'B'}

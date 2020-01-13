@@ -14,16 +14,18 @@
                                 <td class="w-100">
                                     {formrow class="align-items-center"}
                                         {col class="col-auto"}
-                                            {link href=$product->cURLFull}
-                                                {image lazy=true webp=true
-                                                src=$product->image->cURLMini
-                                                srcset="{$product->image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                        {$product->image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                        {$product->image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
-                                                sizes="45px"
-                                                alt=$product->cName
-                                                class="img-sm"}
-                                            {/link}
+                                            {block name='snippets-comparelist-dropdown-products-image'}
+                                                {link href=$product->cURLFull}
+                                                    {image lazy=true webp=true
+                                                    src=$product->image->cURLMini
+                                                    srcset="{$product->image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                            {$product->image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                            {$product->image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                                    sizes="45px"
+                                                    alt=$product->cName
+                                                    class="img-sm"}
+                                                {/link}
+                                            {/block}
                                         {/col}
                                         {col}
                                             {block name='snippets-comparelist-dropdown-products-title'}

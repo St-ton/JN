@@ -353,6 +353,13 @@
 #opc #opcSidebar a:hover {
   text-decoration: underline;
 }
+#opc #opcSidebar .alert-danger {
+  margin: 1em;
+}
+#opc #opcSidebar .alert-danger a {
+  color: #f00;
+  font-weight: bold;
+}
 #opc #opcSidebar.opc-open {
   left: 0;
 }

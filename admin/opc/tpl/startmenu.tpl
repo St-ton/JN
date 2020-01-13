@@ -1,4 +1,5 @@
 {if \JTL\Shop::isAdmin() && $opc->isEditMode() === false && $opc->isPreviewMode() === false}
+    {$shopHasUpdates    = $opc->shopHasUpdates()}
     {$opcStartUrl       = "{$ShopURL}/admin/opc.php"}
     {$curPageUrl        = $opcPageService->getCurPageUri()}
     {$curPageId         = $opcPageService->createCurrentPageId()}
@@ -234,7 +235,7 @@
         }
     </script>{/inline_script}
     <div id="opc">
-        {if $pageDrafts|count === 0}
+        {if $pageDrafts|count === 0 && $shopHasUpdates === false}
             <nav id="opc-startmenu">
                 <form method="post" action="{$opcStartUrl}">
                     <input type="hidden" name="jtl_token" value="{$adminSessionToken}">
@@ -262,57 +263,63 @@
                         <i class="fa fas fa-times"></i>
                     </button>
                 </header>
-                <div id="opc-sidebar-tools">
-                    <h2 id="opc-sidebar-second-title">{__('allDrafts')}</h2>
-                    <div class="opc-group">
-                        <input type="search" class="opc-filter-control float-left" placeholder="&#xF002; {__('search')}"
-                               oninput="filterOpcDrafts()" id="opc-filter-search">
-                        <div class="opc-filter-control opc-dropdown float-left" id="opc-filter-status">
-                            <button class="opc-dropdown-btn" data-toggle="dropdown">
-                                {__('status')}
+                {if $shopHasUpdates}
+                    <div class="alert alert-danger" id="errorAlert">
+                        {__('dbUpdateNeeded')|sprintf:$ShopURL}
+                    </div>
+                {else}
+                    <div id="opc-sidebar-tools">
+                        <h2 id="opc-sidebar-second-title">{__('allDrafts')}</h2>
+                        <div class="opc-group">
+                            <input type="search" class="opc-filter-control float-left" placeholder="&#xF002; {__('search')}"
+                                   oninput="filterOpcDrafts()" id="opc-filter-search">
+                            <div class="opc-filter-control opc-dropdown float-left" id="opc-filter-status">
+                                <button class="opc-dropdown-btn" data-toggle="dropdown">
+                                    {__('status')}
+                                </button>
+                                <div class="dropdown-menu opc-dropdown-menu">
+                                    <button class="opc-dropdown-item" onclick="orderOpcDraftsBy(0);return false">{__('status')}</button>
+                                    <button class="opc-dropdown-item" onclick="orderOpcDraftsBy(1);return false">{__('name')}</button>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="checkbox" id="check-all-drafts" onchange="checkAllOpcDrafts()">
+                        <label for="check-all-drafts" class="opc-check-all">
+                            {__('selectAll')}
+                        </label>
+                        <div class="opc-dropdown" id="opc-bulk-actions-dropdown">
+                            <button type="button" id="opc-bulk-actions" data-toggle="dropdown" disabled>
+                                <span id="opc-bulk-actions-label">
+                                    {__('actions')}
+                                </span>
+                                <i class="fa fas fa-fw fa-chevron-down"></i>
                             </button>
-                            <div class="dropdown-menu opc-dropdown-menu">
-                                <button class="opc-dropdown-item" onclick="orderOpcDraftsBy(0);return false">{__('status')}</button>
-                                <button class="opc-dropdown-item" onclick="orderOpcDraftsBy(1);return false">{__('name')}</button>
+                            <div class="dropdown-menu opc-dropdown-menu" id="opc-bulk-dropdown">
+                                <a href="#" onclick="duplicateSelectedOpcDrafts();return false" class="opc-dropdown-item">
+                                    {__('duplicate')}
+                                </a>
+                                <a href="#" onclick="deleteSelectedOpcDrafts();return false" class="opc-dropdown-item">
+                                    {__('delete')}
+                                </a>
                             </div>
                         </div>
                     </div>
-                    <input type="checkbox" id="check-all-drafts" onchange="checkAllOpcDrafts()">
-                    <label for="check-all-drafts" class="opc-check-all">
-                        {__('selectAll')}
-                    </label>
-                    <div class="opc-dropdown" id="opc-bulk-actions-dropdown">
-                        <button type="button" id="opc-bulk-actions" data-toggle="dropdown" disabled>
-                            <span id="opc-bulk-actions-label">
-                                {__('actions')}
-                            </span>
-                            <i class="fa fas fa-fw fa-chevron-down"></i>
-                        </button>
-                        <div class="dropdown-menu opc-dropdown-menu" id="opc-bulk-dropdown">
-                            <a href="#" onclick="duplicateSelectedOpcDrafts();return false" class="opc-dropdown-item">
-                                {__('duplicate')}
-                            </a>
-                            <a href="#" onclick="deleteSelectedOpcDrafts();return false" class="opc-dropdown-item">
-                                {__('delete')}
-                            </a>
-                        </div>
+                    <div id="opc-sidebar-content">
+                        <ul id="opc-draft-list">
+                            {include file=$opcDir|cat:'tpl/draftlist.tpl'}
+                        </ul>
                     </div>
-                </div>
-                <div id="opc-sidebar-content">
-                    <ul id="opc-draft-list">
-                        {include file=$opcDir|cat:'tpl/draftlist.tpl'}
-                    </ul>
-                </div>
-                <div id="opc-sidebar-footer">
-                    <form method="post" action="{$opcStartUrl}">
-                        <input type="hidden" name="jtl_token" value="{$adminSessionToken}">
-                        <input type="hidden" name="pageId" value="{$curPageId|htmlentities}">
-                        <input type="hidden" name="pageUrl" value="{$curPageUrl}">
-                        <button type="submit" name="action" value="extend" class="opc-btn-primary opc-full-width">
-                            {__('newDraft')}
-                        </button>
-                    </form>
-                </div>
+                    <div id="opc-sidebar-footer">
+                        <form method="post" action="{$opcStartUrl}">
+                            <input type="hidden" name="jtl_token" value="{$adminSessionToken}">
+                            <input type="hidden" name="pageId" value="{$curPageId|htmlentities}">
+                            <input type="hidden" name="pageUrl" value="{$curPageUrl}">
+                            <button type="submit" name="action" value="extend" class="opc-btn-primary opc-full-width">
+                                {__('newDraft')}
+                            </button>
+                        </form>
+                    </div>
+                {/if}
             </div>
         {/if}
     </div>

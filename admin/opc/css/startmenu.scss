@@ -58,6 +58,15 @@
       }
     }
 
+    .alert-danger {
+      margin: 1em;
+
+      a {
+        color: #f00;
+        font-weight: bold;
+      }
+    }
+
     &.opc-open {
       left: 0;
     }

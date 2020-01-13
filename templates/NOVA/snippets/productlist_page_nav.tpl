@@ -23,7 +23,7 @@
                                 {$filterPlacement=''}
                                 {if $device->isMobile() && !$device->isTablet()}
                                     {$filterPlacement="collapse"}
-                                {elseif $device->isTablet() || $Einstellungen.template.productlist.filter_placement === 'M'}
+                                {elseif $device->isTablet() || $Einstellungen.template.productlist.filter_placement === 'modal'}
                                     {$filterPlacement="modal"}
                                 {/if}
                                 <div id="improve_search" class="{if $filterPlacement !== 'collapse'}d-inline-block btn-group{/if} mr-2 {if $filterPlacement === ''}d-lg-none{/if}">

@@ -5,7 +5,7 @@
 {block name='boxes-box-filter-pricerange'}
     {if !empty($oBox->getItems()->getOptions())
         && $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE
-        && !($device->isMobile() || $device->isTablet() || $Einstellungen.template.productlist.filter_placement === 'M')}
+        && !($device->isMobile() || $Einstellungen.template.productlist.filter_placement === 'modal')}
         {block name='boxes-box-filter-pricerange-content'}
             <div id="sidebox{$oBox->getID()}" class="box box-filter-price d-none d-lg-block js-price-range-box">
                 {button

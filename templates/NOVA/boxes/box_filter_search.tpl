@@ -4,7 +4,7 @@
  *}
 {block name='boxes-box-filter-search'}
     {if $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE
-        && !($device->isMobile() || $device->isTablet() || $Einstellungen.template.productlist.filter_placement === 'M')}
+        && !($device->isMobile() || $Einstellungen.template.productlist.filter_placement === 'modal')}
         <div class="box box-search-category d-none d-lg-block" id="sidebox{$oBox->getID()}">
             {button
                 variant="link"

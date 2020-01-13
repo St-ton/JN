@@ -1,10 +1,18 @@
+.. |br| raw:: html
+
+      <br />
+
 HOOK_BOXEN_INC_UMFRAGE (95)
 ===========================
+
+Dieser Hook wurde entfernt in: Shop 5.0.0-rc.2
+(Grund: https://issues.jtl-software.de/issues/SHOP-3408)
 
 Triggerpunkt
 """"""""""""
 
-Vor der Anzeige der Umfrage
+In ``includes/src/Boxes/Items/Poll.php``, |br|
+vor der Anzeige der Umfrage.
 
 Parameter
 """""""""

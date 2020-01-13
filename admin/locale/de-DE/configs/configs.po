@@ -2738,24 +2738,6 @@ msgstr "Sitemap nach Export an Google und Bing übermitteln"
 msgid "sitemap_google_ping_desc"
 msgstr "Hier legen Sie fest, ob nach dem Export der Dateien sitemap.xml und sitemap_index.xml eine Mitteilung an Google und Bing erfolgt, damit diese die Sitemap erneut einlesen."
 
-msgid "umfrage_nutzen_name"
-msgstr "Umfragesystem benutzen"
-
-msgid "umfrage_nutzen_desc"
-msgstr "Hier legen Sie fest, ob Sie das Umfragesystem in Ihrem JTL-Shop einbinden möchten."
-
-msgid "umfrage_einloggen_name"
-msgstr "Anmeldung erforderlich"
-
-msgid "umfrage_einloggen_desc"
-msgstr "Hier legen Sie fest, ob nur angemeldete Benutzer mit Kundenkonto an Umfragen teilnehmen können."
-
-msgid "umfrage_box_anzahl_name"
-msgstr "Anzahl angezeigter Umfragen"
-
-msgid "umfrage_box_anzahl_desc"
-msgstr "Hier legen Sie fest, wie viele Umfragen in der Box angezeigt werden, wenn Sie diese über die Boxenverwaltung zu einer Seite hinzufügen."
-
 msgid "kwk_nutzen_name"
 msgstr "„Kunden werben Kunden“ aktivieren"
 

@@ -374,7 +374,8 @@
                 {form method="post"
                     action="{get_static_route id='wunschliste.php'}{if $CWunschliste->nStandard != 1}?wl={$CWunschliste->kWunschliste}{/if}"
                     name="Wunschliste"
-                    class="basket_wrapper{if $hasItems === true} mt-6{/if}"}
+                    class="basket_wrapper{if $hasItems === true} mt-6{/if}"
+                    id="wl-items-form"}
                 {block name='snippets-wishlist-form-basket-content'}
                     {block name='snippets-wishlist-form-basket-inputs-hidden'}
                         {input type="hidden" name="wla" value="1"}
@@ -485,7 +486,7 @@
                                                                     readonly=($isCurrenctCustomer !== true)
                                                                     rows="5"
                                                                     name="Kommentar_{$wlPosition->kWunschlistePos}"
-                                                                    class="my-3"
+                                                                    class="my-3 js-update-wl"
                                                                 }{$wlPosition->cKommentar}{/textarea}
                                                             {/block}
                                                             {if !($wlPosition->Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N')}
@@ -496,6 +497,7 @@
                                                                                 {inputgroup class="form-counter"}
                                                                                     {inputgroupprepend}
                                                                                         {button variant=""
+                                                                                            class="btn-decrement"
                                                                                             data=["count-down"=>""]
                                                                                             aria=["label"=>{lang key='decreaseQuantity' section='aria'}]}
                                                                                             <span class="fas fa-minus"></span>
@@ -507,7 +509,8 @@
                                                                                         max=$wlPosition->Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE]|default:''
                                                                                         required=($wlPosition->Artikel->fAbnahmeintervall > 0)
                                                                                         step="{if $wlPosition->Artikel->fAbnahmeintervall > 0}{$wlPosition->Artikel->fAbnahmeintervall}{/if}"
-                                                                                        class="quantity wunschliste_anzahl" name="Anzahl_{$wlPosition->kWunschlistePos}"
+                                                                                        class="quantity wunschliste_anzahl"
+                                                                                        name="Anzahl_{$wlPosition->kWunschlistePos}"
                                                                                         aria=["label"=>"{lang key='quantity'}"]
                                                                                         value="{$wlPosition->fAnzahl}"
                                                                                         data=["decimals"=>"{if $wlPosition->Artikel->fAbnahmeintervall > 0}2{else}0{/if}"]
@@ -521,6 +524,7 @@
                                                                                             {/block}
                                                                                         {/if}
                                                                                         {button variant=""
+                                                                                            class="btn-increment"
                                                                                             data=["count-up"=>""]
                                                                                             aria=["label"=>{lang key='decreaseQuantity' section='aria'}]}
                                                                                             <span class="fas fa-plus"></span>
@@ -568,20 +572,6 @@
                         {block name='snippets-wishlist-form-basket-submit'}
                             <div class="sticky-bottom">
                             {row}
-                                {col md=4 xl=3 class='ml-auto'}
-                                    {if $isCurrenctCustomer === true}
-                                        {button type="submit"
-                                            title="{lang key='wishlistUpdate' section='login'}"
-                                            name="action"
-                                            value="update"
-                                            block=true
-                                            variant="outline-primary"
-                                            class="btn-white"
-                                        }
-                                            <i class="fa fa-sync"></i> {lang key='wishlistUpdate' section='login'}
-                                        {/button}
-                                    {/if}
-                                {/col}
                                 {col md=4 xl=3}
                                     {if $isCurrenctCustomer === true}
                                         {button type="submit"
@@ -591,7 +581,12 @@
                                             block=true
                                             variant="primary"
                                         }
-                                            <i class="fa fa-shopping-cart"></i> {lang key='addCurrentProductsToCart' section='wishlist'}
+                                            <i class="fa fa-shopping-cart"></i>
+                                            {if !empty($wlsearch)}
+                                                {lang key='addCurrentProductsToCart' section='wishlist'}
+                                            {else}
+                                                {lang key='wishlistAddAllToCart' section='login'}
+                                            {/if}
                                         {/button}
                                     {/if}
                                 {/col}
@@ -609,6 +604,13 @@
         {/if}
         {/container}
     {/block}
+
+    {inline_script}<script>
+        $.evo.extended().addInactivityCheck('#wl-items-form');
+        $('.js-update-wl').on('change', function () {
+            $.evo.extended().updateWishlistItem($(this).closest('.productbox-inner'));
+        });
+    </script>{/inline_script}
 
     {block name='snippets-wishlist-include-footer'}
         {include file='layout/footer.tpl'}

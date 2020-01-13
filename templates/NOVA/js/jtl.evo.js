@@ -592,27 +592,28 @@
             }
         },
 
-        addInactivityCheck: function() {
-            var timeoutID;
+        addInactivityCheck: function(wrapper) {
+            var timeoutID,
+                that = this,
+                currentBox;
+
+            setup();
 
             function setup() {
-                $('#cart-form .form-counter input').on('change',resetTimer);
-                $('#cart-form .choose_quantity input').on('change',resetTimer);
-                $('#cart-form .form-counter .btn-decrement, #cart-form .form-counter .btn-increment').on('click',resetTimer);
-                $('#cart-form .form-counter .btn-decrement, #cart-form .form-counter .btn-increment').on('touchstart',resetTimer,{passive: true});
-                $('#cart-form .form-counter .btn-decrement, #cart-form .form-counter .btn-increment').on('keydown',resetTimer);
-            }
-
-            if ($('body').data('page') == 3) {
-                setup();
+                $(wrapper + ' .form-counter input').on('change',resetTimer);
+                $(wrapper + ' .choose_quantity input').on('change',resetTimer);
+                $(wrapper + ' .form-counter .btn-decrement, ' + wrapper + ' .form-counter .btn-increment').on('click',resetTimer);
+                $(wrapper + ' .form-counter .btn-decrement, ' + wrapper + ' .form-counter .btn-increment').on('touchstart',resetTimer,{passive: true});
+                $(wrapper + ' .form-counter .btn-decrement, ' + wrapper + ' .form-counter .btn-increment').on('keydown',resetTimer);
             }
 
             function startTimer() {
-                // wait 2 seconds before calling goInactive
+                // wait 0.5 seconds before calling goInactive
                 timeoutID = window.setTimeout(goInactive, 500);
             }
 
             function resetTimer(e) {
+                currentBox = $(e.target).closest('.productbox-inner');
                 if (timeoutID == undefined) {
                     startTimer();
                 }
@@ -622,9 +623,32 @@
             }
 
             function goInactive() {
-                // do something
-                $('#cart-form').submit();
+                if (wrapper === '#cart-form') {
+                    $(wrapper).submit();
+                } else if (wrapper === '#wl-items-form') {
+                    that.updateWishlistItem(currentBox);
+                }
             }
+        },
+
+        updateWishlistItem: function($wrapper) {
+            let formID   = 'wl-items-form',
+                $spinner = $.evo.extended().spinner($wrapper.get(0));
+
+            $wrapper.addClass('loading');
+            $.evo.io().call(
+                'updateWishlistItem',
+                [
+                    $('#' + formID + ' input[name="kWunschliste"]').val(),
+                    $.evo.io().getFormValues(formID)
+                ],
+                $(this) , function(error, data) {
+                    $spinner.stop();
+                    $wrapper.removeClass('loading');
+                    if (error) {
+                        return;
+                    }
+                });
         },
 
         setCompareListHeight: function() {
@@ -693,7 +717,9 @@
             this.popover();
             this.addCartBtnAnimation();
             this.checkout();
-            this.addInactivityCheck();
+            if ($('body').data('page') == 3) {
+                this.addInactivityCheck('#cart-form');
+            }
             this.setCompareListHeight();
             this.fixStickyElements();
             this.setWishlistVisibilitySwitches();

@@ -350,11 +350,6 @@ class URL
                         ? $prefix . $obj->cSeo
                         : $prefix . '?nk=' . $obj->kNewsKategorie . $lang;
 
-                case \URLART_UMFRAGE:
-                    return !empty($obj->cSeo)
-                        ? $prefix . $obj->cSeo
-                        : $prefix . '?u=' . $obj->kUmfrage . $lang;
-
                 case \URLART_SEARCHSPECIALS:
                     return !empty($obj->cSeo)
                         ? $prefix . $obj->cSeo

@@ -437,12 +437,12 @@ $(document).ready(function() {
                     <div class="item">
                         <label for="useVita">{__('resume')}:</label>
                         <select class="form-control custom-select" id="selectVitaLang">
-                            {foreach $sprachen as $language}
+                            {foreach $availableLanguages as $language}
                                 <option value="{$language->cISO}"{if $language->cShopStandard === 'Y'} selected="selected"{/if}>{$language->getLocalizedName()} {if $language->cShopStandard === 'Y'}({__('standard')}){/if}</option>
                             {/foreach}
                         </select>
                         <div class="mt-3">
-                            {foreach $sprachen as $language}
+                            {foreach $availableLanguages as $language}
                                 {assign var="cISO" value=$language->cISO}
                                 {assign var="useVita_ISO" value="useVita_"|cat:$cISO}
                                 <div id="isoVita_{$cISO}" class="iso_wrapper{if $language->cShopStandard != 'Y'} hidden-soft{/if}">

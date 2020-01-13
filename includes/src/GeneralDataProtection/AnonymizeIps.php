@@ -23,7 +23,6 @@ use JTL\DB\ReturnType;
  * `tredirectreferer`
  * `tsitemaptracker`
  * `tsuchanfragencache`
- * `tumfragedurchfuehrung`
  * `tverfuegbarkeitsbenachrichtigung`
  * `tvergleichsliste`
  */
@@ -73,12 +72,6 @@ class AnonymizeIps extends Method implements MethodInterface
             'ColKey'     => 'kSuchanfrageCache',
             'ColIp'      => 'cIP',
             'ColCreated' => 'dZeit',
-            'ColType'    => 'DATETIME'
-        ],
-        'tumfragedurchfuehrung'            => [
-            'ColKey'     => 'kUmfrageDurchfuehrung',
-            'ColIp'      => 'cIP',
-            'ColCreated' => 'dDurchgefuehrt',
             'ColType'    => 'DATETIME'
         ],
         'tverfuegbarkeitsbenachrichtigung' => [

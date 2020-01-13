@@ -226,6 +226,9 @@ Dieses Beispiel würde bewirken, dass die Datei ``js/jtl.evo.js`` Ihres Child-Te
 des Evo-Templates eingebunden wird.  Ohne das **override**-Attribut würde die genannte Datei **zusätzlich**
 zur ``jtl.evo.js`` des Parent-Templates eingebunden werden.
 
+
+.. _label_eigenestemplate_tpldateien:
+
 Änderungen an Template-Dateien
 ------------------------------
 

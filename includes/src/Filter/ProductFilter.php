@@ -543,7 +543,6 @@ class ProductFilter
             'kSuchanfrage'           => 0,
             'kMerkmalWert'           => 0,
             'kSuchspecial'           => 0,
-            'kUmfrage'               => 0,
             'kKategorieFilter'       => 0,
             'kHerstellerFilter'      => 0,
             'nBewertungSterneFilter' => 0,

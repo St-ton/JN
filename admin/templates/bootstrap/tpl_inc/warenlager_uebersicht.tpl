@@ -60,7 +60,7 @@
                                 </tr>
                                 <tr class="collapse" id="collapse-{$warehouse->kWarenlager}">
                                     <td colspan="4" class="border-top-0">
-                                    {foreach $sprachen as $language}
+                                    {foreach $availableLanguages as $language}
                                         {assign var=kSprache value=$language->getId()}
                                         <div class="form-group form-row align-items-center mb-5 mb-md-3">
                                             <label class="col col-sm-4 col-form-label text-sm-right order-1" for="cNameSprache[{$warehouse->kWarenlager}][{$kSprache}]">{$language->getLocalizedName()}:</label>

@@ -93,12 +93,6 @@
                     </div>
                     <div class="item">
                         <div class="custom-control custom-checkbox">
-                            <input class="custom-control-input" type="checkbox" name="cOption_arr[]" value="umfragen" tabindex="9" id="Umfragen" />
-                            <label class="custom-control-label" for="Umfragen">{__('deletePolls')}</label>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <div class="custom-control custom-checkbox">
                             <input class="custom-control-input" type="checkbox" name="cOption_arr[]" value="verfuegbarkeitsbenachrichtigungen" tabindex="10" id="Verfugbarkeitsbenachrichtigungen" />
                             <label class="custom-control-label" for="Verfugbarkeitsbenachrichtigungen">{__('deleteAvailabilityNotifications')}</label>
                         </div>

@@ -99,7 +99,7 @@
                                 <input class="form-control" type="text" id="cName" name="cName" value="{if isset($Versandart->cName)}{$Versandart->cName}{/if}" />
                             </div>
                         </div>
-                        {foreach $sprachen as $language}
+                        {foreach $availableLanguages as $language}
                             {assign var=cISO value=$language->getIso()}
                             {if isset($oVersandartSpracheAssoc_arr[$cISO])}
                                 <div class="form-group form-row align-items-center">
@@ -124,7 +124,7 @@
                             </div>
                             <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('pictureDesc')}</div>
                         </div>
-                        {foreach $sprachen as $language}
+                        {foreach $availableLanguages as $language}
                             {assign var=cISO value=$language->getIso()}
                             {if isset($oVersandartSpracheAssoc_arr[$cISO])}
                                 <div class="form-group form-row align-items-center">
@@ -135,7 +135,7 @@
                                 </div>
                             {/if}
                         {/foreach}
-                        {foreach $sprachen as $language}
+                        {foreach $availableLanguages as $language}
                             {assign var=cISO value=$language->getIso()}
                             {if isset($oVersandartSpracheAssoc_arr[$cISO])}
                                 <div class="form-group form-row align-items-center">
@@ -158,7 +158,7 @@
                                 <input class="form-control" type="text" id="nMaxLiefertage" name="nMaxLiefertage" value="{if isset($Versandart->nMaxLiefertage)}{$Versandart->nMaxLiefertage}{/if}" />
                             </div>
                         </div>
-                        {foreach $sprachen as $language}
+                        {foreach $availableLanguages as $language}
                             {assign var=cISO value=$language->getIso()}
                             {if isset($oVersandartSpracheAssoc_arr[$cISO])}
                                 <div class="form-group form-row align-items-center">

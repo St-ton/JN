@@ -201,14 +201,6 @@ class Notification implements IteratorAggregate, Countable
         }
         */
 
-        if ($status->hasInvalidPollCoupons()) {
-            $this->add(
-                NotificationEntry::TYPE_WARNING,
-                __('hasInvalidPollCouponsTitle'),
-                __('hasInvalidPollCouponsMessage')
-            );
-        }
-
         if ($status->hasFullTextIndexError()) {
             $this->add(
                 NotificationEntry::TYPE_WARNING,

@@ -2738,24 +2738,6 @@ msgstr "Submit sitemap to Google and Bing after export"
 msgid "sitemap_google_ping_desc"
 msgstr "Specify whether a notification is sent to Google and Bing after the files sitemap.xml and sitemap_index.xml have been exported so that they can recrawl the sitemap."
 
-msgid "umfrage_nutzen_name"
-msgstr "Use survey system"
-
-msgid "umfrage_nutzen_desc"
-msgstr "Specify whether to integrate the survey system into your JTL-Shop."
-
-msgid "umfrage_einloggen_name"
-msgstr "Login required"
-
-msgid "umfrage_einloggen_desc"
-msgstr "Specify whether only registered users with customer accounts can take part in surveys."
-
-msgid "umfrage_box_anzahl_name"
-msgstr "Number of displayed surveys"
-
-msgid "umfrage_box_anzahl_desc"
-msgstr "Specify how many surveys are to be displayed in the box when you add it to a page using the box management."
-
 msgid "kwk_nutzen_name"
 msgstr "Activate customer referral programme"
 

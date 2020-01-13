@@ -14,6 +14,7 @@ use JTL\OPC\Portlets\MissingPortlet\MissingPortlet;
 use JTL\Plugin\PluginLoader;
 use JTL\Shop;
 use function Functional\map;
+use JTL\Update\Updater;
 
 /**
  * Class DB
@@ -261,6 +262,16 @@ class DB
      */
     public function isOPCInstalled(): bool
     {
-        return $this->shopDB->select('tmigration', 'kMigration', 20191211154600) !== null;
+        return $this->shopDB->select('tmigration', 'kMigration', 20180507101900) !== null;
+    }
+
+    /**
+     * @return bool
+     * @throws Exception
+     */
+    public function shopHasUpdates(): bool
+    {
+        $updater = new Updater($this->shopDB);
+        return $updater->hasPendingUpdates();
     }
 }

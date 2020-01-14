@@ -6,6 +6,7 @@
 
 namespace JTL\Filter\States;
 
+use JTL\Catalog\Hersteller;
 use JTL\DB\ReturnType;
 use JTL\Filter\AbstractFilter;
 use JTL\Filter\FilterInterface;
@@ -204,6 +205,7 @@ class BaseManufacturer extends AbstractFilter
             $manufacturer->cURL        = $this->productFilter->getFilterURL()->getURL(
                 $additionalFilter->init($manufacturer->kHersteller)
             );
+            $manufacturerData          = new Hersteller($manufacturer->kHersteller, $this->getLanguageID());
 
             $options[] = (new Option())
                 ->setURL($manufacturer->cURL)
@@ -221,7 +223,7 @@ class BaseManufacturer extends AbstractFilter
                 ->setValue($manufacturer->kHersteller)
                 ->setCount($manufacturer->nAnzahl)
                 ->setSort($manufacturer->nSortNr)
-                ->setData('cBildpfadKlein', \PFAD_HERSTELLERBILDER_KLEIN . $manufacturer->cBildPfad);
+                ->setData('cBildpfadKlein', $manufacturerData->getImage(\JTL\Media\Image::SIZE_XS));
         }
         $this->options = $options;
         $this->productFilter->getCache()->set($cacheID, $options, [\CACHING_GROUP_FILTER]);

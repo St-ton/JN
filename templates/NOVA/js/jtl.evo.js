@@ -698,6 +698,104 @@
             });
         },
 
+        initPriceSlider: function ($wrapper, redirect) {
+            let priceRange      = $wrapper.find('[data-id="js-price-range"]').val(),
+                priceRangeID    = $wrapper.find('[data-id="js-price-range-id"]').val(),
+                priceRangeMin   = 0,
+                priceRangeMax   = $wrapper.find('[data-id="js-price-range-max"]').val(),
+                currentPriceMin = priceRangeMin,
+                currentPriceMax = priceRangeMax,
+                $priceRangeFrom = $("#" + priceRangeID + "-from"),
+                $priceRangeTo = $("#" + priceRangeID + "-to"),
+                $priceSlider = document.getElementById(priceRangeID);
+
+            if (priceRange) {
+                let priceRangeMinMax = priceRange.split('_');
+                currentPriceMin = priceRangeMinMax[0];
+                currentPriceMax = priceRangeMinMax[1];
+                $priceRangeFrom.val(currentPriceMin);
+                $priceRangeTo.val(currentPriceMax);
+            }
+            noUiSlider.create($priceSlider, {
+                start: [parseInt(currentPriceMin), parseInt(currentPriceMax)],
+                connect: true,
+                range: {
+                    'min': parseInt(priceRangeMin),
+                    'max': parseInt(priceRangeMax)
+                },
+                step: 1
+            });
+            $priceSlider.noUiSlider.on('end', function (values, handle) {
+                $.evo.redirectToNewPriceRange(values[0] + '_' + values[1], redirect, $wrapper);
+            });
+            $priceSlider.noUiSlider.on('slide', function (values, handle) {
+                $priceRangeFrom.val(values[0]);
+                $priceRangeTo.val(values[1]);
+            });
+            $('.price-range-input').change(function () {
+                let prFrom = $priceRangeFrom.val(),
+                    prTo = $priceRangeTo.val();
+                $.evo.redirectToNewPriceRange(
+                    (prFrom > 0 ? prFrom : priceRangeMin) + '_' + (prTo > 0 ? prTo : priceRangeMax),
+                    redirect,
+                    $wrapper
+                );
+            });
+        },
+
+        initFilters: function (href) {
+            let $wrapper = $('.js-collapse-filter'),
+                $spinner = $.evo.extended().spinner($wrapper.get(0))
+                self=this;
+
+            $wrapper.addClass('loading');
+            $.ajax(href, {data: {'isAjax':1}})
+            .done(function(data) {
+                $wrapper.html(data);
+                self.initPriceSlider($wrapper, false);
+            })
+            .always(function() {
+                $spinner.stop();
+                $wrapper.removeClass('loading');
+            });
+        },
+
+        redirectToNewPriceRange: function (priceRange, redirect, $wrapper) {
+            let currentURL  = window.location.href;
+            if (!redirect) {
+                currentURL  = $wrapper.find('[data-id="js-price-range-url"]').val();
+            }
+            let redirectURL = $.evo.updateURLParameter(
+                currentURL,
+                'pf',
+                priceRange
+            );
+            if (redirect) {
+                window.location.href = redirectURL;
+            } else {
+                $.evo.initFilters(redirectURL);
+            }
+        },
+
+        updateURLParameter: function (url, param, paramVal) {
+            let newAdditionalURL = '',
+                tempArray        = url.split('?'),
+                baseURL          = tempArray[0],
+                additionalURL    = tempArray[1],
+                temp             = '';
+            if (additionalURL) {
+                tempArray = additionalURL.split('&');
+                for (let i=0; i<tempArray.length; i++){
+                    if(tempArray[i].split('=')[0] != param){
+                        newAdditionalURL += temp + tempArray[i];
+                        temp = '&';
+                    }
+                }
+            }
+
+            return baseURL + '?' + newAdditionalURL + temp + param + '=' + paramVal;
+        },
+
         /**
          * $.evo.extended() is deprecated, please use $.evo instead
          */

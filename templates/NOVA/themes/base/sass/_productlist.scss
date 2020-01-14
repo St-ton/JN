@@ -12,6 +12,12 @@
 	font-family: $font-family-sans-serif;
 }
 
+.modal .productlist-filter-wrapper {
+	max-height: 75vh;
+	overflow-x: auto;
+	padding-right: 10px;
+}
+
 .productlist-filter {
 	&:not(.collapse) { display: none;
 		@include media-breakpoint-up(lg) { display: block; }
@@ -28,6 +34,31 @@
 			.productlist-filter-wrapper { display: flex; flex-direction: column; padding-right: ($grid-gutter-width / 2); padding-left: ($grid-gutter-width / 2); overflow: auto; }
 			.productlist-filter-footer { background: $white; box-shadow: 0 -.5rem 1rem rgba($black, .15); padding: ($grid-gutter-width / 2); }
 		}
+	}
+}
+
+.filter-item {
+	padding: map-get($spacers, 1) 0;
+	display: block;
+	text-decoration: none;
+	.filter-img {
+		width: auto;
+		height: 42px;
+		margin: 0.2rem;
+		border: 3px solid transparent;
+	}
+	&.active, &:active {
+		color: $gray-dark;
+		font-weight: $font-weight-semibold;
+		background-color: transparent;
+
+		.filter-img {
+			border: 3px solid $primary;
+			border-radius: $border-radius;
+		}
+	}
+	&.dropdown-item {
+		padding: map-get($spacers, 1) map-get($spacers, 4);
 	}
 }
 

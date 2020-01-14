@@ -780,7 +780,7 @@ class Wishlist
      */
     public static function update(int $id, array $post = null): string
     {
-        $post = $post ?: $_POST;
+        $post = $post ?? $_POST;
         $db   = Shop::Container()->getDB();
         foreach (['wishlistName', 'WunschlisteName'] as $wishlistName) {
             if (Request::postVar($wishlistName, '') !== '') {

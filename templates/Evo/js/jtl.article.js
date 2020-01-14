@@ -155,6 +155,7 @@
                     $item.on('change', function () {
                         that.variationPrice($(this), true, wrapper);
                     });
+                    $item.prop('disabled', false);
                 });
         },
 

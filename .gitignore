@@ -41,6 +41,7 @@
 /media/image/news/*
 /media/image/newscategory/*
 /media/image/opc/*
+/media/video/*
 
 # mediafiles
 /mediafiles/Bilder/*

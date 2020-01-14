@@ -613,7 +613,9 @@
             }
 
             function resetTimer(e) {
-                currentBox = $(e.target).closest('.productbox-inner');
+                if (wrapper === '#wl-items-form') {
+                    currentBox = $(e.target).closest('.productbox-inner');
+                }
                 if (timeoutID == undefined) {
                     startTimer();
                 }
@@ -645,9 +647,6 @@
                 $(this) , function(error, data) {
                     $spinner.stop();
                     $wrapper.removeClass('loading');
-                    if (error) {
-                        return;
-                    }
                 });
         },
 

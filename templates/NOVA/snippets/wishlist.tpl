@@ -572,7 +572,7 @@
                         {block name='snippets-wishlist-form-basket-submit'}
                             <div class="sticky-bottom">
                             {row}
-                                {col md=4 xl=3}
+                                {col cols=12 md="auto" class="ml-auto"}
                                     {if $isCurrenctCustomer === true}
                                         {button type="submit"
                                             title="{lang key='addCurrentProductsToCart' section='wishlist'}"

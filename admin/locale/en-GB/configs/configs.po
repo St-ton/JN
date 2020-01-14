@@ -669,10 +669,10 @@ msgid "livesuche_max_ip_count_desc"
 msgstr "Specify the maximum number of entries per visitor and hour saved in the live search. This allows you to prevent manipulation of the live search."
 
 msgid "suchfilter_anzeigen_ab_name"
-msgstr "Show \"Refine search\" from"
+msgstr "Show search filters from"
 
 msgid "suchfilter_anzeigen_ab_desc"
-msgstr "Specify the minimum number of items that must be displayed in the search results for further search filters to be available for selection."
+msgstr "Specify the minimum number of items that must be displayed in the search results for search filters to be available for selection."
 
 msgid "artikeluebersicht_erw_darstellung_name"
 msgstr "Use expanded item overview"

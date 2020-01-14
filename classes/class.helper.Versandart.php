@@ -678,7 +678,7 @@ class VersandartHelper
 
             return sprintf(
                 Shop::Lang()->get('productExtraShippingNotice', 'global'),
-                gibPreisStringLocalized(berechneBrutto($oVersandart->fEndpreis, gibUst($kSteuerklasse)) . ' an.')
+                gibPreisStringLocalized(berechneBrutto($oVersandart->fEndpreis, gibUst($kSteuerklasse), 4) . ' an.')
             );
         }
          

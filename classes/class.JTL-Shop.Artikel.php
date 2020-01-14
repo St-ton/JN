@@ -2413,7 +2413,8 @@ class Artikel
                     if (isset($this->Variationen[$nZaehler]->Werte[$i]->fAufpreisNetto) && $this->Variationen[$nZaehler]->Werte[$i]->fAufpreisNetto != 0) {
                         $this->Variationen[$nZaehler]->Werte[$i]->cAufpreisLocalized[0] = gibPreisStringLocalized(berechneBrutto(
                             $this->Variationen[$nZaehler]->Werte[$i]->fAufpreisNetto,
-                            $_SESSION['Steuersatz'][$this->kSteuerklasse]
+                            $_SESSION['Steuersatz'][$this->kSteuerklasse],
+                            4
                         ));
                         $this->Variationen[$nZaehler]->Werte[$i]->cAufpreisLocalized[1] = gibPreisStringLocalized($this->Variationen[$nZaehler]->Werte[$i]->fAufpreisNetto);
                         // Wenn der Artikel ein VarikombiKind ist, rechne nicht nochmal die Variationsaufpreise drauf

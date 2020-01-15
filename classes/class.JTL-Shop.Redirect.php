@@ -470,10 +470,7 @@ class Redirect
     public function normalize($cUrl)
     {
         require_once PFAD_ROOT . PFAD_CLASSES . 'class.helper.Url.php';
-        $oUrl = new UrlHelper();
-        $oUrl->setUrl($cUrl);
-
-        return '/' . trim($oUrl->normalize(), "\\/");
+        return '/' . trim((new UrlHelper($cUrl))->normalize(), "\\/");
     }
 
     /**

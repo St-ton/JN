@@ -19,7 +19,7 @@
                                 {link href=$activeFilter->getUnsetFilterURL($filterOption->getValue())
                                     rel="nofollow"
                                     title="Filter {lang key='delete'}"
-                                    class="btn btn-outline-secondary btn-sm filter-type-{$activeFilter->getNiceName()} mb-2 mr-2"}
+                                    class="btn btn-outline-secondary btn-sm filter-type-{$activeFilter->getNiceName()} mb-2 mr-2 js-filter-item"}
                                     {$filterOption->getFrontendName()}<span class="fa fa-times ml-2"></span>
                                 {/link}
                             {/block}
@@ -29,7 +29,7 @@
                             {link href=$activeFilter->getUnsetFilterURL($activeFilter->getValue())
                                 rel="nofollow"
                                 title="Filter {lang key='delete'}"
-                                class="btn btn-outline-secondary btn-sm filter-type-{$activeFilter->getNiceName()} mb-2 mr-2"}
+                                class="btn btn-outline-secondary btn-sm filter-type-{$activeFilter->getNiceName()} mb-2 mr-2 js-filter-item"}
                                 {$activeValues->getFrontendName()}<span class="fa fa-times ml-2"></span>
                             {/link}
                         {/block}
@@ -40,7 +40,7 @@
                 {block name='snippets-filter-active-filter-remove'}
                     {link href=$NaviFilter->getURL()->getUnsetAll()
                         title="{lang key='removeFilters'}"
-                        class='text-decoration-none d-inline-block'}
+                        class='text-decoration-none d-inline-block js-filter-item'}
                         {lang key='removeFilters'}
                     {/link}
                 {/block}

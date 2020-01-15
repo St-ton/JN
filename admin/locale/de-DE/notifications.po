@@ -56,12 +56,6 @@ msgstr "Plugin"
 msgid "hasNewPluginVersionsMessage"
 msgstr "Es sind neue Plugin-Versionen verfügbar."
 
-msgid "hasInvalidPollCouponsTitle"
-msgstr "Umfrage"
-
-msgid "hasInvalidPollCouponsMessage"
-msgstr "In einer Umfrage wird ein Coupon verwendet, der inaktiv ist oder nicht mehr existiert."
-
 msgid "hasFullTextIndexErrorTitle"
 msgstr "Volltextsuche"
 
@@ -118,3 +112,6 @@ msgstr "Spezialseite mehrmals angelegt"
 
 msgid "duplicateSpecialLinkDesc"
 msgstr "Mindestens eine Spezialseite wurde mehrmals für die gleiche(n) Kundengruppe(n) angelegt."
+
+msgid "Safe mode enabled."
+msgstr "Abgesicherter Modus aktiv. Gewisse Funktionalitäten stehen nicht zur Verfügung."

@@ -112,7 +112,7 @@ class PaymentMethod
             default:
                 $payMethod = LegacyMethod::create($paymentMethod->cModulId);
                 if ($payMethod !== null) {
-                    return $payMethod->isValid(Frontend::getCustomer(), Frontend::getCart());
+                    return $payMethod->isValidIntern([Frontend::getCustomer(), Frontend::getCart()]);
                 }
                 break;
         }

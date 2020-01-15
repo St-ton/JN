@@ -1406,9 +1406,6 @@ msgstr "Kontakt"
 msgid "news"
 msgstr "News"
 
-msgid "poll"
-msgstr "Umfrage"
-
 msgid "mapping"
 msgstr "Mapping"
 
@@ -1562,10 +1559,6 @@ msgstr "Newskategorie"
 
 msgid "pageNewsDetail"
 msgstr "Detailseite für News-Beitrag"
-
-# page type (tspezialseite)
-msgid "Umfrage"
-msgstr "Umfrage"
 
 msgid "pagePlugin"
 msgstr "Plugin"

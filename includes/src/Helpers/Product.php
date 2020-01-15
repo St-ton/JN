@@ -916,18 +916,17 @@ class Product
                 ReturnType::ARRAY_OF_OBJECTS
             );
             if (\count($xsell) > 0) {
-                $xsellgruppen   = group($xsell, static function ($e) {
+                $xsellgruppen = group($xsell, static function ($e) {
                     return $e->kXSellGruppe;
                 });
-                $defaultOptions = Artikel::getDefaultOptions();
                 foreach ($xsellgruppen as $groupID => $products) {
                     $group          = new stdClass();
                     $group->Artikel = [];
                     foreach ($products as $xs) {
                         $group->Name         = $xs->cName;
                         $group->Beschreibung = $xs->cBeschreibung;
-                        $product             = (new Artikel())->fuelleArtikel((int)$xs->kXSellArtikel, $defaultOptions);
-                        if ($product !== null && $product->kArtikel > 0 && $product->aufLagerSichtbarkeit()) {
+                        $product             = (new Artikel())->fuelleArtikel((int)$xs->kXSellArtikel);
+                        if ($product !== null && (int)$product->kArtikel > 0 && $product->aufLagerSichtbarkeit()) {
                             $group->Artikel[] = $product;
                         }
                     }

@@ -41,7 +41,7 @@
         </div>
     {/block}
     {if !empty($Versandland) && !empty($VersandPLZ)}
-        <div id="shipping-estimated">
+        <div id="shipping-estimated" class="table-responsive">
             {block name='snippets-shipping-calculator-content'}
                 {if !empty($ArtikelabhaengigeVersandarten)}
                     {block name='snippets-shipping-calculator-table-artikelabhaengig'}
@@ -76,7 +76,7 @@
                                         <tr id="shipment_{$versandart->kVersandart}">
                                             <td>
                                                 {if $versandart->cBild}
-                                                    {image src=$versandart->cBild alt="{$versandart->angezeigterName|trans}"}
+                                                    {image src=$versandart->cBild alt="{$versandart->angezeigterName|trans}" fluid=true}
                                                 {else}
                                                     {$versandart->angezeigterName|trans}
                                                 {/if}

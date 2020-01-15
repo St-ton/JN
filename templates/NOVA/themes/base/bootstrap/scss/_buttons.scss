@@ -22,12 +22,6 @@
     text-decoration: none;
   }
 
-  &:focus,
-  &.focus {
-    outline: 0;
-    box-shadow: $btn-focus-box-shadow;
-  }
-
   // Disabled comes first so active can properly restyle
   &.disabled,
   &:disabled {

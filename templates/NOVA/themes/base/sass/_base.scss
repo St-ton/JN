@@ -43,6 +43,19 @@ a { transition: color $transition-base-duration $transition-base-timing; }
   width: max-content;
 }
 
+:focus, .focus {
+  box-shadow: 0;
+  outline: $primary auto 1px;
+}
+button:focus {
+  box-shadow: 0;
+  outline: $primary auto 1px;
+}
+
+image:focus {
+  outline: none;
+}
+
 .evo-slider {
   padding-bottom: $spacer;
   //border-bottom: 1px solid $gray-light;
@@ -108,7 +121,13 @@ header, #main-wrapper { background: #fff; }
 }
 
 .word-break {
-  word-break: break-all;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  -ms-hyphens: auto;
+  hyphens: auto;
 }
 
 ul.config-items,
@@ -388,18 +407,6 @@ ul.partlist-items {
 .form-control {
   -webkit-box-shadow: none;
   box-shadow: none;
-
-  @include form-control-focus();
-  @include media-breakpoint-down(md) {
-    height: calc(2.7rem + 2px);
-  }
-}
-
-.filter-item,
-aside {
-  .badge-light {
-    border: 1px solid $gray-light;
-  }
 }
 
 #navbar-filter {
@@ -411,56 +418,6 @@ aside {
 .row.gallery .product-wrapper {
   border-bottom: none;
   border-right: none;
-}
-
-#result-options {
-  .dropdown-item {
-    text-decoration: none;
-    &.active, &:active {
-      color: $gray-dark;
-      font-weight: $font-weight-semibold;
-      background-color: transparent;
-    }
-  }
-  .form-group {
-    margin-right: 25px;
-    &.open {
-      > a {
-        background: $sand;
-        font-weight: $font-weight-semibold;
-      }
-      .dropdown-menu {
-        padding: 10px 0;
-        a {
-          padding: 10px 20px;
-        }
-      }
-    }
-  }
-  .active-filters {
-    margin: 5px 0 15px;
-    a .filter-remove-all {
-      border: 0;
-    }
-  }
-  #filter-collapsible button {
-    padding: map_get($spacers, 3) 0;
-    margin: 0 $btn-padding-x;
-    border-bottom: 1px solid $sand;
-    &[data-toggle="collapse"][aria-expanded="true"] {
-      border-bottom: 0;
-      i.fa-plus:before {
-        content: "\f068";
-      }
-    }
-    + .collapse{
-      border-bottom: 1px solid $sand;
-    }
-  }
-  .max-h-150-scroll {
-    max-height: 150px;
-    overflow-y: scroll;
-  }
 }
 
 .product-cell {
@@ -954,4 +911,8 @@ body {
 
 .cursor-pointer {
   cursor: pointer;
+}
+
+.loading {
+  min-height: 140px
 }

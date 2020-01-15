@@ -34,6 +34,8 @@ $gray-500:                          $gray-light;
 $gray-600:                          $gray;
 $gray-700:                          $gray-dark;
 
+$bg-typeahead-fix:                  $white !important;
+
 $yiq-text-dark:                     $gray-darker;
 $yiq-text-light:                    $gray-lighter;
 
@@ -125,16 +127,17 @@ $headings-color:                    $gray-darker;
 $btn-box-shadow:                    none;
 $btn-active-box-shadow:             none;
 $btn-focus-box-shadow:              none;
+$btn-focus-width:                   0;
 $btn-decoration:                    none;
 $btn-hover-decoration:              none;
 $btn-font-weight:                   $font-weight-semibold;
 
 // transition
 
-$transition-base-duration	: .2s;
-$transition-base-timing 	: ease-in-out;
-$transition-base			: all $transition-base-duration $transition-base-timing;
-
+$transition-base-duration:          .2s;
+$transition-base-timing:            ease-in-out;
+$transition-base:                   all $transition-base-duration $transition-base-timing;
+$transition-fade:                   opacity .35s linear;
 // styles
 
 $highlight-border-size:             .375rem;
@@ -384,7 +387,4 @@ $dropdown-link-active-bg	: $dropdown-link-hover-bg;
 
 $dropdown-padding-y         : 0;
 
-/* photoswipe */
-$pswp__background-color		: rgba($gray-darker, .5);
-$pswp__assets-path			: '../../js/photoswipe/css/default-skin/';
-
+$list-max-img-height        : 300px;

@@ -415,7 +415,6 @@ class Navigation
                 $breadCrumb[] = $ele;
                 break;
 
-            case \PAGE_UMFRAGE:
             case \PAGE_NEWSLETTER:
                 if ($this->link !== null) {
                     $ele->setName($this->link->getName());

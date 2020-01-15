@@ -49,7 +49,7 @@
             {col lg=4 class="nav-item step {if $step3_active}step-active step-current{/if}"}
                 {block name='checkout-inc-steps-third'}
                     <div class="step-content">
-                        <span class="badge badge-pill badge-{if $step3_active}primary{else}secondary{/if} mr-3 ml-md-auto">
+                        <span class="badge badge-pill badge-{if $step3_active}primary mr-3{else}secondary{/if} mr-md-3 ml-md-auto">
                             <span class="badge-count">3</span>
                         </span>
                         <span class="step-text {if !$step3_active}d-none d-md-inline-block{/if} mr-auto">

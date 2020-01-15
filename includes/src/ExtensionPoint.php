@@ -122,11 +122,6 @@ class ExtensionPoint
                 $key->cValue = (int)$this->cParam_arr['kLink'];
                 break;
 
-            case \PAGE_UMFRAGE:
-                $key->cKey   = 'kUmfrage';
-                $key->cValue = (int)$this->cParam_arr['kUmfrage'];
-                break;
-
             case \PAGE_ARTIKELLISTE:
                 $productFilter = Shop::getProductFilter();
                 // MerkmalWert

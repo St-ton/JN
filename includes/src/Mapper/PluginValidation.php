@@ -444,6 +444,9 @@ class PluginValidation
             case InstallCode::WRONG_EXT_DIR:
                 $return = __('WRONG_EXT_DIR');
                 break;
+            case InstallCode::MISSING_PLUGIN_NODE:
+                $return = 'Fehler: Der jtlshopplugin-Knoten ist nicht vorhanden.';
+                break;
             default:
                 $return = __('unknownError');
                 break;

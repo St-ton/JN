@@ -108,8 +108,10 @@
                                                 {block name='productdetails-details-product-info-manufacturer'}
                                                     <li itemprop="brand" itemscope="true" itemtype="http://schema.org/Organization">
                                                         <span class="font-weight-bold">{lang key='manufacturers'}:</span>
-                                                        <a href="{$Artikel->cHerstellerSeo}"{if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'B'} data-toggle="tooltip" data-placement="left" title="{$Artikel->cHersteller}"{/if} itemprop="url">
-                                                            {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'Y' && (!empty($Artikel->cBildpfad_thersteller) || $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'B') && isset($Artikel->cHerstellerBildKlein)}
+                                                        <a href="{$Artikel->cHerstellerSeo}"{if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'B'} data-toggle="tooltip" data-placement="left" title="{$Artikel->cHersteller}"{/if} itemprop="url">
+                                                            {if ($Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'B'
+                                                                || $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'BT')
+                                                                && !empty($Artikel->cHerstellerBildURLKlein)}
                                                                 {image lazy=true webp=true
                                                                     src=$Artikel->cHerstellerBildURLKlein
                                                                     alt=$Artikel->cHersteller
@@ -129,16 +131,15 @@
                                         || $Einstellungen.artikeldetails.adr_hazard_display === 'DL')}
                                             {block name='productdetails-details-hazard-info'}
                                                 <li>
-                                                    <div class="title text-muted">{lang key='adrHazardSign'}:
-                                                        <table class="adr-table">
-                                                            <tr>
-                                                                <td>{$Artikel->cGefahrnr}</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>{$Artikel->cUNNummer}</td>
-                                                            </tr>
-                                                        </table>
-                                                    </div>
+                                                    <span class="font-weight-bold">{lang key='adrHazardSign'}:</span>
+                                                    <table class="adr-table">
+                                                        <tr>
+                                                            <td>{$Artikel->cGefahrnr}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>{$Artikel->cUNNummer}</td>
+                                                        </tr>
+                                                    </table>
                                                 </li>
                                             {/block}
                                         {/if}

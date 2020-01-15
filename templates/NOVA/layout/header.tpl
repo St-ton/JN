@@ -49,7 +49,14 @@
         {/block}
 
         {block name='layout-header-head-resources'}
-            {include file='layout/header_inline_css.tpl'}
+            {if empty($parentTemplateDir)}
+                {$templateDir = $currentTemplateDir}
+            {else}
+                {$templateDir = $parentTemplateDir}
+            {/if}
+            <style id="criticalCSS">
+                {file_get_contents("{$currentThemeDir}{$Einstellungen.template.theme.theme_default}_crit.min.css")}
+            </style>
             {* css *}
             {if !isset($Einstellungen.template.general.use_minify) || $Einstellungen.template.general.use_minify === 'N'}
                 {foreach $cCSS_arr as $cCSS}
@@ -95,112 +102,87 @@
                 </noscript>
             {/foreach}
             <script>
-
                 /*! loadCSS rel=preload polyfill. [c]2017 Filament Group, Inc. MIT License */
-                (function( w ){
+                (function (w) {
                     "use strict";
-                    // rel=preload support test
-                    if( !w.loadCSS ){
-                        w.loadCSS = function(){};
+                    if (!w.loadCSS) {
+                        w.loadCSS = function (){};
                     }
-                    // define on the loadCSS obj
                     var rp = loadCSS.relpreload = {};
-                    // rel=preload feature support test
-                    // runs once and returns a function for compat purposes
-                    rp.support = (function(){
+                    rp.support                  = (function () {
                         var ret;
                         try {
-                            ret = w.document.createElement( "link" ).relList.supports( "preload" );
+                            ret = w.document.createElement("link").relList.supports("preload");
                         } catch (e) {
                             ret = false;
                         }
-                        return function(){
+                        return function () {
                             return ret;
                         };
                     })();
-
-                    // if preload isn't supported, get an asynchronous load by using a non-matching media attribute
-                    // then change that media back to its intended value on load
-                    rp.bindMediaToggle = function( link ){
-                        // remember existing media attr for ultimate state, or default to 'all'
+                    rp.bindMediaToggle          = function (link) {
                         var finalMedia = link.media || "all";
 
-                        function enableStylesheet(){
-                            // unbind listeners
-                            if( link.addEventListener ){
-                                link.removeEventListener( "load", enableStylesheet );
-                            } else if( link.attachEvent ){
-                                link.detachEvent( "onload", enableStylesheet );
+                        function enableStylesheet() {
+                            if (link.addEventListener) {
+                                link.removeEventListener("load", enableStylesheet);
+                            } else if (link.attachEvent) {
+                                link.detachEvent("onload", enableStylesheet);
                             }
-                            link.setAttribute( "onload", null );
+                            link.setAttribute("onload", null);
                             link.media = finalMedia;
                         }
 
-                        // bind load handlers to enable media
-                        if( link.addEventListener ){
-                            link.addEventListener( "load", enableStylesheet );
-                        } else if( link.attachEvent ){
-                            link.attachEvent( "onload", enableStylesheet );
+                        if (link.addEventListener) {
+                            link.addEventListener("load", enableStylesheet);
+                        } else if (link.attachEvent) {
+                            link.attachEvent("onload", enableStylesheet);
                         }
-
-                        // Set rel and non-applicable media type to start an async request
-                        // note: timeout allows this to happen async to let rendering continue in IE
-                        setTimeout(function(){
-                            link.rel = "stylesheet";
+                        setTimeout(function () {
+                            link.rel   = "stylesheet";
                             link.media = "only x";
                         });
-                        // also enable media after 3 seconds,
-                        // which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
-                        setTimeout( enableStylesheet, 3000 );
+                        setTimeout(enableStylesheet, 3000);
                     };
 
-                    // loop through link elements in DOM
-                    rp.poly = function(){
-                        // double check this to prevent external calls from running
-                        if( rp.support() ){
+                    rp.poly = function () {
+                        if (rp.support()) {
                             return;
                         }
-                        var links = w.document.getElementsByTagName( "link" );
-                        for( var i = 0; i < links.length; i++ ){
-                            var link = links[ i ];
-                            // qualify links to those with rel=preload and as=style attrs
-                            if( link.rel === "preload" && link.getAttribute( "as" ) === "style" && !link.getAttribute( "data-loadcss" ) ){
-                                // prevent rerunning on link
-                                link.setAttribute( "data-loadcss", true );
-                                // bind listeners to toggle media back
-                                rp.bindMediaToggle( link );
+                        var links = w.document.getElementsByTagName("link");
+                        for (var i = 0; i < links.length; i++) {
+                            var link = links[i];
+                            if (link.rel === "preload" && link.getAttribute("as") === "style" && !link.getAttribute("data-loadcss")) {
+                                link.setAttribute("data-loadcss", true);
+                                rp.bindMediaToggle(link);
                             }
                         }
                     };
 
-                    // if unsupported, run the polyfill
-                    if( !rp.support() ){
-                        // run once at least
+                    if (!rp.support()) {
                         rp.poly();
 
-                        // rerun poly on an interval until onload
-                        var run = w.setInterval( rp.poly, 500 );
-                        if( w.addEventListener ){
-                            w.addEventListener( "load", function(){
+                        var run = w.setInterval(rp.poly, 500);
+                        if (w.addEventListener) {
+                            w.addEventListener("load", function () {
                                 rp.poly();
-                                w.clearInterval( run );
-                            } );
-                        } else if( w.attachEvent ){
-                            w.attachEvent( "onload", function(){
+                                w.clearInterval(run);
+                            });
+                        } else if (w.attachEvent) {
+                            w.attachEvent("onload", function () {
                                 rp.poly();
-                                w.clearInterval( run );
-                            } );
+                                w.clearInterval(run);
+                            });
                         }
                     }
 
-                    // commonjs
-                    if( typeof exports !== "undefined" ){
+                    if (typeof exports !== "undefined") {
                         exports.loadCSS = loadCSS;
                     }
                     else {
                         w.loadCSS = loadCSS;
                     }
-                }( typeof global !== "undefined" ? global : this ) );
+                }(typeof global !== "undefined" ? global : this));
             </script>
             {* RSS *}
             {if isset($Einstellungen.rss.rss_nutzen) && $Einstellungen.rss.rss_nutzen === 'Y'}
@@ -226,12 +208,6 @@
             {/block}
         {/if}
         {$dbgBarHead}
-
-        {if empty($parentTemplateDir)}
-            {$templateDir = $currentTemplateDir}
-        {else}
-            {$templateDir = $parentTemplateDir}
-        {/if}
 
         <script src="{$ShopURL}/{$templateDir}js/jquery-3.4.1.min.js"></script>
 
@@ -301,8 +277,10 @@
         {block name='layout-header-header'}
             {block name='layout-header-branding-top-bar'}
                 {if !$device->isMobile()}
-                    <div id="header-top-bar" class="pb-2 d-none {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex{/if}">
-                        {include file='layout/header_top_bar.tpl'}
+                    <div id="header-top-bar" class="d-none {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex{/if}">
+                        <div class="container-fluid container-fluid-xl {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex flex-row-reverse{/if}">
+                            {include file='layout/header_top_bar.tpl'}
+                        </div>
                     </div>
                 {/if}
             {/block}
@@ -311,7 +289,7 @@
                 {block name='layout-header-container-inner'}
                     <div class="container-fluid container-fluid-xl">
                     {block name='layout-header-category-nav'}
-                        {navbar toggleable=true fill=true type="expand-lg" class="justify-content-start {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}align-items-center{else}align-items-lg-end{/if} px-0 pb-lg-0"}
+                        {navbar toggleable=true fill=true type="expand-lg" class="justify-content-start {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}align-items-center{else}align-items-lg-end{/if} pt-0 px-0 pb-lg-0"}
                             {block name='layout-header-navbar-toggle'}
                                 <button class="navbar-toggler mr-3 collapsed {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}d-none{/if}" type="button" data-toggle="collapse" data-target="#mainNavigation" aria-controls="mainNavigation" aria-expanded="false" aria-label="Toggle navigation">
                                     <span class="navbar-toggler-icon"></span>
@@ -323,11 +301,11 @@
                                     <span itemprop="name" class="d-none">{$meta_publisher}</span>
                                     <meta itemprop="url" content="{$ShopURL}">
                                     <meta itemprop="logo" content="{$ShopLogoURL}">
-                                    {link class="navbar-brand {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}mb-lg-3{/if} mr-lg-6" href=$ShopURL title=$Einstellungen.global.global_shopname}
+                                    {link class="navbar-brand mr-lg-6" href=$ShopURL title=$Einstellungen.global.global_shopname}
                                         {if isset($ShopLogoURL)}
                                             {image src=$ShopLogoURL
                                             alt=$Einstellungen.global.global_shopname
-                                            height=53}
+                                            height=56}
                                         {else}
                                             <span class="h1">{$Einstellungen.global.global_shopname}</span>
                                         {/if}
@@ -414,7 +392,7 @@
     {block name='layout-header-content-all-starttags'}
         {block name='layout-header-content-wrapper-starttag'}
             <div id="content-wrapper"
-                 class="{if !$bExclusive && !empty($boxes.left|strip_tags|trim) && $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}
+                 class="{if $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}
                             container-fluid container-fluid-xl
                         {/if} mt-0 {if $isFluidBanner || $isFluidSlider}pt-3{else}pt-5 pt-lg-7{/if}">
         {/block}

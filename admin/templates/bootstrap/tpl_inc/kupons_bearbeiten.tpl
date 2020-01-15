@@ -53,7 +53,7 @@
                         <input type="text" class="form-control" name="cName" id="cName" value="{$oKupon->cName}">
                     </div>
                 </div>
-                {foreach $sprachen as $language}
+                {foreach $availableLanguages as $language}
                     {assign var=langCode value=$language->getIso()}
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="cName_{$langCode}">{__('showedName')} ({$language->getLocalizedName()}):</label>
@@ -207,7 +207,7 @@
                         <label class="col col-sm-4 col-form-label text-sm-right" for="kSteuerklasse">{__('taxClass')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <select name="kSteuerklasse" id="kSteuerklasse" class="custom-select combo">
-                                {foreach $taxClasss as $taxClass}
+                                {foreach $taxClasses as $taxClass}
                                     <option value="{$taxClass->kSteuerklasse}"{if (int)$oKupon->kSteuerklasse === (int)$taxClass->kSteuerklasse} selected{/if}>
                                         {$taxClass->cName}
                                     </option>

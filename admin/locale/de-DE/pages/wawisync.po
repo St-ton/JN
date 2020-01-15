@@ -10,3 +10,6 @@ msgstr "Hier hinterlegen Sie einen Benutzernamen und ein Passwort für den Abgle
 
 msgid "wawisyncURL"
 msgstr "https://jtl-url.de/gvca6"
+
+msgid "errorInvalidPassword"
+msgstr "Benutzername und Passwort dürfen nur Groß- und Kleinbuchstaben, Zahlen sowie folgende Sonderzeichen enthalten: !\"#$%&'()*+,-./:;=>?@[\\]^_`|}~"

@@ -26,33 +26,37 @@
                         {/if}
                         {block name="productlist-item-list-images"}
                             <div class="productbox-images">
-                                <div class="clearfix list-gallery slick-smooth-loading carousel carousel-btn-arrows">
-                                    {block name="productlist-item-list-image-desktop"}
-                                        <div class="list-gallery slick-smooth-loading carousel carousel-arrows-inside carousel-btn-arrows">
-                                            {foreach $Artikel->Bilder as $image}
-                                                {strip}
-                                                    <div>
-                                                        {image fluid=true
-                                                            webp=true
-                                                            lazy=true
-                                                            alt=$image->cAltAttribut|escape:'html'
-                                                            src=$Artikel->Bilder[0]->cURLKlein
-                                                            srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                {link href=$Artikel->cURLFull}
+                                    <div class="list-gallery">
+                                        {block name="productlist-item-list-image"}
+                                            {strip}
+                                                {$image = $Artikel->Bilder[0]}
+                                                {image alt=$image->cAltAttribut|escape:'html' fluid=true webp=true lazy=true
+                                                    src="{$image->cURLKlein}"
+                                                    srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                        {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                        {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                                    sizes="auto"
+                                                    class="{if !$device->isMobile() && !empty($Artikel->Bilder[1])}first{/if}"
+                                                }
+                                                {if !$device->isMobile() && !empty($Artikel->Bilder[1])}
+                                                    {$image = $Artikel->Bilder[1]}
+                                                    {image alt=$image->cAltAttribut|escape:'html' fluid=true webp=true lazy=true
+                                                        src="{$image->cURLKlein}"
+                                                        srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
                                                             {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
                                                             {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
-                                                            sizes="auto"
-                                                            class='w-100'}
-                                                    </div>
-                                                {/strip}
-                                            {/foreach}
-                                        </div>
-                                    {/block}
-                                </div>
-                                {block name='productlist-item-list-include-productlist-actions'}
-                                    <div class="productbox-quick-actions productbox-onhover d-none d-md-flex">
-                                        {include file='productlist/productlist_actions.tpl'}
+                                                        sizes="auto"
+                                                        class="second"
+                                                    }
+                                                {/if}
+                                            {/strip}
+                                        {/block}
                                     </div>
-                                {/block}
+                                {/link}
+                                {if !empty($Artikel->Bilder[0]->cURLNormal)}
+                                    <meta itemprop="image" content="{$Artikel->Bilder[0]->cURLNormal}">
+                                {/if}
                             </div>
                         {/block}
 

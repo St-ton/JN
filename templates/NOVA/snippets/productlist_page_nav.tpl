@@ -20,8 +20,16 @@
                                 {opcMountPoint id='opc_before_result_options'}
                             {/if}
                             {if $navid === 'header'}
-                                <div id="improve_search">
-                                    {include file='productlist/result_options.tpl'}
+                                {$filterPlacement=''}
+                                {if $device->isMobile() && !$device->isTablet()}
+                                    {$filterPlacement="collapse"}
+                                {elseif $device->isTablet() || $Einstellungen.template.productlist.filter_placement === 'modal'}
+                                    {$filterPlacement="modal"}
+                                {/if}
+                                <div id="improve_search" class="{if $filterPlacement !== 'collapse'}d-inline-block btn-group{/if} mr-2 {if $filterPlacement === ''}d-lg-none{/if}">
+                                    {include file='productlist/result_options.tpl'
+                                        itemCount=$Suchergebnisse->getProductCount()
+                                        filterPlacement=$filterPlacement}
                                 </div>
                             {/if}
                         {/block}
@@ -67,7 +75,7 @@
                             <ul class="pagination">
                                 {block name='snippets-productlist-page-nav-first-page'}
                                     <li class="page-item{if $Suchergebnisse->getPages()->getCurrentPage() == 1} disabled{/if}">
-                                        {link class="page-link" href=$filterPagination->getPrev()->getURL() aria=['label' => {lang key='previous' section='productOverview'}]}<span aria-hidden="true">&#8592;</span>{/link}
+                                        {link class="page-link" href=$filterPagination->getPrev()->getURL() aria=['label' => {lang key='previous' section='productOverview'}]}<i class="fas fa-long-arrow-alt-left"></i>{/link}
                                     </li>
                                 {/block}
                                 <li class="page-item dropdown">
@@ -88,7 +96,7 @@
                                 </li>
                                 {block name='snippets-productlist-page-nav-last-page'}
                                     <li class="page-item{if $Suchergebnisse->getPages()->getCurrentPage() == $Suchergebnisse->getPages()->getMaxPage()} disabled{/if}">
-                                        {link class="page-link" href=$filterPagination->getNext()->getURL() aria=['label' => {lang key='next' section='productOverview'}]}<span aria-hidden="true">&#8594;</span>{/link}
+                                        {link class="page-link" href=$filterPagination->getNext()->getURL() aria=['label' => {lang key='next' section='productOverview'}]}<i class="fas fa-long-arrow-alt-right"></i>{/link}
                                     </li>
                                 {/block}
                             </ul>

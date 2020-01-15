@@ -6,7 +6,6 @@
 
 from docutils.parsers.rst import Directive, directives
 from docutils import nodes
-from string import upper
 
 class configurationblock(nodes.General, nodes.Element):
     pass
@@ -25,6 +24,9 @@ class ConfigurationBlock(Directive):
         'jinja':           'Twig',
         'html+jinja':      'Twig',
         'jinja+html':      'Twig',
+        'twig':            'Twig',
+        'html+twig':       'Twig',
+        'twig+html':       'Twig',
         'php+html':        'PHP',
         'html+php':        'PHP',
         'ini':             'INI',
@@ -32,6 +34,14 @@ class ConfigurationBlock(Directive):
         'php-standalone':  'Standalone Use',
         'php-symfony':     'Framework Use',
     }
+
+    def __init__(self, *args):
+        Directive.__init__(self, *args)
+        env = self.state.document.settings.env
+        config_block = env.app.config.config_block
+
+        for language in config_block:
+            self.formats[language] = config_block[language]
 
     def run(self):
         env = self.state.document.settings.env
@@ -47,8 +57,12 @@ class ConfigurationBlock(Directive):
                 #targetid = "configuration-block-%d" % env.new_serialno('configuration-block')
                 #targetnode = nodes.target('', '', ids=[targetid])
                 #targetnode.append(child)
+                if 'language' in child:
+                    language = child['language']
+                else:
+                    language = env.app.config.highlight_language
 
-                innernode = nodes.emphasis(self.formats[child['language']], self.formats[child['language']])
+                innernode = nodes.emphasis(self.formats[language], self.formats[language])
 
                 para = nodes.paragraph()
                 para += [innernode, child]
@@ -79,3 +93,4 @@ def setup(app):
                  html=(visit_configurationblock_html, depart_configurationblock_html),
                  latex=(visit_configurationblock_latex, depart_configurationblock_latex))
     app.add_directive('configuration-block', ConfigurationBlock)
+    app.add_config_value('config_block', {}, 'env')

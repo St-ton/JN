@@ -1,4 +1,5 @@
 <?php declare(strict_types=1);
+
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -34,7 +35,8 @@ if (Shop::$kLink === null && $kLink !== null) {
 if (isset($_GET['i'])) {
     $bestellid = $db->select('tbestellid', 'cId', $_GET['i']);
     if (isset($bestellid->kBestellung) && $bestellid->kBestellung > 0) {
-        $bestellung = new Bestellung($bestellid->kBestellung);
+        $bestellid->kBestellung = (int)$bestellid->kBestellung;
+        $bestellung             = new Bestellung($bestellid->kBestellung);
         $bestellung->fuelleBestellung(false);
         speicherUploads($bestellung);
         $db->delete('tbestellid', 'kBestellung', (int)$bestellid->kBestellung);
@@ -97,14 +99,14 @@ if (isset($_GET['i'])) {
     setzeSmartyWeiterleitung($bestellung);
 }
 $smarty->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
-       ->assign('oPlugin', null)
-       ->assign('plugin', null)
-       ->assign('Bestellung', $bestellung)
-       ->assign('Link', $link)
-       ->assign('Kunde', $_SESSION['Kunde'] ?? null)
-       ->assign('bOrderConf', true)
-       ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
-       ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK);
+    ->assign('oPlugin', null)
+    ->assign('plugin', null)
+    ->assign('Bestellung', $bestellung)
+    ->assign('Link', $link)
+    ->assign('Kunde', $_SESSION['Kunde'] ?? null)
+    ->assign('bOrderConf', true)
+    ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
+    ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK);
 
 $kPlugin = isset($bestellung->Zahlungsart->cModulId)
     ? Helper::getIDByModuleID($bestellung->Zahlungsart->cModulId)
@@ -113,7 +115,7 @@ if ($kPlugin > 0) {
     $loader = Helper::getLoaderByPluginID($kPlugin, $db);
     $plugin = $loader->init($kPlugin);
     $smarty->assign('oPlugin', $plugin)
-           ->assign('plugin', $plugin);
+        ->assign('plugin', $plugin);
 }
 if (empty($_SESSION['Zahlungsart']->nWaehrendBestellung) || isset($_GET['i'])) {
     $session->cleanUp();

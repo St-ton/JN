@@ -46,4 +46,11 @@ interface PasswordServiceInterface
      * @return mixed
      */
     public function getInfo($hash): array;
+
+    /**
+     * @param string $pass
+     * @param string $validCharRegex
+     * @return bool
+     */
+    public function hasOnlyValidCharacters(string $pass, string $validCharRegex = ''): bool;
 }

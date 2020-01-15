@@ -100,11 +100,11 @@ class UstID
                     // Taeglich von 5 Uhr - 23 Uhr
                     if ((int)date('H') >= 5 && (int)date('H') < 23) {
                         $cURL = 'https://evatr.bff-online.de/evatrRPC?UstId_1=' . $this->urlencode_special($this->cUstId_1) .
-                            '&UstId_2=' . $this->urlencode_special($this->cUstId_2) . 
-                            '&Firmenname=' . $this->urlencode_special($this->cFirmenname) . 
-                            '&Ort=' . $this->urlencode_special($this->cOrt) . 
-                            '&PLZ=' . $this->urlencode_special($this->cPLZ) . 
-                            '&Strasse=' . $this->urlencode_special($this->cStrasse . ' ' . $this->cHausnummer) . 
+                            '&UstId_2=' . $this->urlencode_special($this->cUstId_2) .
+                            '&Firmenname=' . $this->urlencode_special($this->cFirmenname) .
+                            '&Ort=' . $this->urlencode_special($this->cOrt) .
+                            '&PLZ=' . $this->urlencode_special($this->cPLZ) .
+                            '&Strasse=' . $this->urlencode_special($this->cStrasse . ' ' . $this->cHausnummer) .
                             '&Druck=' . $this->urlencode_special($this->cDruck);
                         $xml = file_get_contents(str_replace(' ', '%20', $cURL));
                         $this->cAntwort = XML_unserialize($xml);
@@ -121,7 +121,7 @@ class UstID
                         if ($nFehlerCode > 200) {
                             Jtllog::writeLog("Ust-ID-Pr&uuml;fung ErrorCode {$nFehlerCode} (" . $this->cAntwortInfo_arr['cFehlerNachricht'] . ")\n <br>Anfrage-URL: " . htmlentities($cURL), JTLLOG_LEVEL_DEBUG);
                         }
-                        
+
                         return $nFehlerCode;
                     }
                     $this->mappeFehlerCode(999);
@@ -321,8 +321,8 @@ class UstID
                 }
                 break;
             case 'FR':
-                if (preg_match('/^[0-9]{11}$/', $cIDNummer) !== 1) {
-                    $oReturn->cError = 'FR99999999999';
+                if (preg_match('/^[0-9A-Z]{2}[0-9]{9}$/', $cIDNummer) !== 1) {
+                    $oReturn->cError = 'FRXX999999999 (FR1A999999999 oder FR00999999999 oder FRA5999999999)';
                 } else {
                     $oReturn->nRichtig = 1;
                 }
@@ -445,11 +445,11 @@ class UstID
 
         return $oReturn;
     }
-    
+
     /**
-     * Trims and encodes parameter for use with XML-RPC-API. 
+     * Trims and encodes parameter for use with XML-RPC-API.
      * Requirements for special chars: http://evatr.bff-online.de/eVatR/xmlrpc/faq_xmlrpc#f11
-     * 
+     *
      * @param the $param to encode
      * @return urlencoded param with some specials
      */

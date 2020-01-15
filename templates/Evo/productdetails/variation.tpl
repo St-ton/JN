@@ -139,6 +139,7 @@
                                                 data-ref="{$Variationswert->oVariationsKombi->kArtikel}"
                                             {/if}>
                                         <input type="radio"
+                                               disabled="disabled"
                                                class="control-hidden"
                                                name="eigenschaftwert[{$Variation->kEigenschaft}]"
                                                id="{if $modal}modal-{elseif isset($smallView) && $smallView}a-{$Artikel->kArtikel}{/if}vt{$Variationswert->kEigenschaftWert}"

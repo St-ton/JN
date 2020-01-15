@@ -3,7 +3,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "pluginverwaltung"
-msgstr "Plugin-Verwaltung"
+msgstr "Plugin-Manager"
 
 msgid "pluginverwaltungLocales"
 msgstr "Sprachvariablen"
@@ -15,7 +15,7 @@ msgid "pluginverwaltungLicenceKey"
 msgstr "Lizenzschlüssel"
 
 msgid "pluginverwaltungDesc"
-msgstr "Plugins erweitern den Funktionsumfang von JTL-Shop, ohne den Kern zu verändern. Aktive Plugins können jederzeit deaktiviert bzw. komplett deinstalliert werden. Bitte installieren Sie keine Plugins, deren Ursprung Ihnen nicht bekannt ist. <br/><strong>Sicherheitshinweis: Plugins haben Zugriff auf die gesamte Datenbank des Shopsystems.</strong>"
+msgstr "Plugins erweitern den Funktionsumfang von JTL-Shop, ohne den Kern zu verändern. Aktive Plugins können jederzeit deaktiviert bzw. komplett deinstalliert werden. Bitte installieren Sie keine Plugins, deren Ursprung Ihnen nicht bekannt ist. <br/><strong>Sicherheitshinweis: Plugins haben Zugriff auf die gesamte Datenbank von JTL-Shop.</strong>"
 
 msgid "pluginverwaltungURL"
 msgstr "https://jtl-url.de/5stze"
@@ -213,37 +213,37 @@ msgid "storeUpdateNow"
 msgstr "Aktualisieren"
 
 msgid "deletePluginData"
-msgstr "Plugindaten aus Datenbank löschen?"
+msgstr "Möchten Sie das Plugin aus der Datenbank löschen?"
 
 msgid "deletePluginDataYes"
-msgstr "Ja, alle Plugindaten löschen"
+msgstr "Ja, alle Plugin-Daten löschen."
 
 msgid "deletePluginDataNo"
-msgstr "Nein, Plugindaten behalten"
+msgstr "Nein, Plugin-Daten behalten."
 
 msgid "WRONG_PARAM"
-msgstr "Die Plausibilität ist aufgrund fehlender Parameter abgebrochen."
+msgstr "Die Plausibilitätsprüfung wurde aufgrund fehlender Parameter abgebrochen."
 
 msgid "DIR_DOES_NOT_EXIST"
-msgstr "Das Pluginverzeichnis existiert nicht."
+msgstr "Das Plugin-Verzeichnis existiert nicht."
 
 msgid "INFO_XML_MISSING"
-msgstr "Die Informations XML Datei existiert nicht."
+msgstr "Die Datei „info.xml“ existiert nicht."
 
 msgid "NO_PLUGIN_FOUND"
 msgstr "Das ausgewählte Plugin wurde nicht in der Datenbank gefunden."
 
 msgid "INVALID_NAME"
-msgstr "Der Pluginname entspricht nicht der Konvention."
+msgstr "Der Plugin-Name entspricht nicht der Konvention."
 
 msgid "INVALID_PLUGIN_ID"
-msgstr "Die PluginID entspricht nicht der Konvention."
+msgstr "Die Plugin-ID entspricht nicht der Konvention."
 
 msgid "INSTALL_NODE_MISSING"
 msgstr "Der Installationsknoten ist nicht vorhanden."
 
 msgid "INVALID_XML_VERSION_NUMBER"
-msgstr "Erste Versionsnummer entspricht nicht der Konvention."
+msgstr "Die erste Versionsnummer entspricht nicht der Konvention."
 
 msgid "INVALID_VERSION_NUMBER"
 msgstr "Die Versionsnummer entspricht nicht der Konvention."
@@ -252,43 +252,43 @@ msgid "INVALID_DATE"
 msgstr "Das Versionsdatum entspricht nicht der Konvention."
 
 msgid "MISSING_SQL_FILE"
-msgstr "SQL-Datei für die aktuelle Version existiert nicht."
+msgstr "Die SQL-Datei für die aktuelle Version existiert nicht."
 
 msgid "MISSING_HOOKS"
 msgstr "Keine Hooks vorhanden."
 
 msgid "INVALID_HOOK"
-msgstr "Die Hook-Werte entsprechen nicht den Konventionen."
+msgstr "Die Hook-Werte entsprechen nicht der Konvention."
 
 msgid "INVALID_CUSTOM_LINK_NAME"
-msgstr "CustomLink Name entspricht nicht der Konvention."
+msgstr "„CustomLink Name“ entspricht nicht der Konvention."
 
 msgid "INVALID_CUSTOM_LINK_FILE_NAME"
-msgstr "Dateiname entspricht nicht der Konvention."
+msgstr "Der Dateiname entspricht nicht der Konvention."
 
 msgid "MISSING_CUSTOM_LINK_FILE"
-msgstr "CustomLink-Datei existiert nicht."
+msgstr "Die CustomLink-Datei existiert nicht."
 
 msgid "INVALID_CONFIG_LINK_NAME"
-msgstr "EinstellungsLink Name entspricht nicht der Konvention."
+msgstr "„SettingsLink Name“ entspricht nicht der Konvention."
 
 msgid "MISSING_CONFIG"
-msgstr "Einstellungen fehlen."
+msgstr "Keine Einstellungen vorhanden."
 
 msgid "INVALID_CONFIG_TYPE"
-msgstr "Einstellungen type entspricht nicht der Konvention."
+msgstr "„Setting type“ entspricht nicht der Konvention."
 
 msgid "INVALID_CONFIG_INITIAL_VALUE"
-msgstr "Einstellungen initialValue entspricht nicht der Konvention."
+msgstr "„Setting initialValue“ entspricht nicht der Konvention."
 
 msgid "INVALID_CONFIG_SORT_VALUE"
-msgstr "Einstellungen sort entspricht nicht der Konvention."
+msgstr "„Setting sort“ entspricht nicht der Konvention."
 
 msgid "INVALID_CONFIG_NAME"
-msgstr "Einstellungen Name entspricht nicht der Konvention."
+msgstr "„Setting Name“ entspricht nicht der Konvention."
 
 msgid "MISSING_CONFIG_SELECTBOX_OPTIONS"
-msgstr "Keine SelectboxOptionen vorhanden."
+msgstr "„SelectboxOptionen“ nicht vorhanden."
 
 msgid "INVALID_CONFIG_OPTION"
 msgstr "Die Option entspricht nicht der Konvention."
@@ -297,7 +297,7 @@ msgid "MISSING_LANG_VARS"
 msgstr "Keine Sprachvariablen vorhanden."
 
 msgid "INVALID_LANG_VAR_NAME"
-msgstr "Variable Name entspricht nicht der Konvention."
+msgstr "„Variable Name“ entspricht nicht der Konvention."
 
 msgid "MISSING_LOCALIZED_LANG_VAR"
 msgstr "Keine lokalisierte Sprachvariable vorhanden."
@@ -309,334 +309,334 @@ msgid "INVALID_LOCALIZED_LANG_VAR_NAME"
 msgstr "Der Name der lokalisierten Sprachvariable entspricht nicht der Konvention."
 
 msgid "MISSING_HOOK_FILE"
-msgstr "Die Hook-Datei ist nicht vorhanden."
+msgstr "Keine Hook-Datei vorhanden."
 
 msgid "MISSING_VERSION_DIR"
-msgstr "Version existiert nicht im Versionsordner."
+msgstr "Die Version existiert nicht im Versionsordner."
 
 msgid "INVALID_CONF"
-msgstr "Einstellungen conf entspricht nicht der Konvention."
+msgstr "„Setting conf“ entspricht nicht der Konvention."
 
 msgid "INVALID_CONF_VALUE_NAME"
-msgstr "Einstellungen ValueName entspricht nicht der Konvention."
+msgstr "„Setting ValueName“ entspricht nicht der Konvention."
 
 msgid "INVALID_XML_VERSION"
-msgstr "XML-Version entspricht nicht der Konvention."
+msgstr "Die XML-Version entspricht nicht der Konvention."
 
 msgid "INVALID_SHOP_VERSION"
-msgstr "Shopversion entspricht nicht der Konvention."
+msgstr "Die Version von JTL-Shop entspricht nicht der Konvention."
 
 msgid "SHOP_VERSION_COMPATIBILITY"
-msgstr "Shopversion ist zu niedrig."
+msgstr "Diese Version von JTL-Shop ist nicht mehr kompatibel. Sie benötigen eine neuere Version."
 
 msgid "MISSING_FRONTEND_LINKS"
-msgstr "Keine Frontendlinks vorhanden, obwohl der Node angelegt wurde."
+msgstr "Keine Frontend-Links vorhanden, obwohl der Node angelegt wurde."
 
 msgid "INVALID_FRONTEND_LINK_FILENAME"
-msgstr "Link Filename entspricht nicht der Konvention."
+msgstr "Der Link „Filename“ entspricht nicht der Konvention."
 
 msgid "INVALID_FRONTEND_LINK_NAME"
-msgstr "LinkName entspricht nicht der Konvention."
+msgstr "„LinkName“ entspricht nicht der Konvention."
 
 msgid "INVALID_FRONEND_LINK_VISIBILITY"
-msgstr "Angabe ob erst Sichtbar nach Login entspricht nicht der Konvention."
+msgstr "Angabe zu „Erst sichtbar nach Login“ entspricht nicht der Konvention."
 
 msgid "INVALID_FRONEND_LINK_PRINT"
-msgstr "Abgabe ob eine Druckbutton gezeigt werden soll entspricht nicht der Konvention."
+msgstr "Angabe, ob die Schaltfläche „Drucken“ gezeigt werden soll, entspricht nicht der Konvention."
 
 msgid "INVALID_FRONEND_LINK_ISO"
 msgstr "Die ISO der Linksprache entspricht nicht der Konvention."
 
 msgid "INVALID_FRONEND_LINK_SEO"
-msgstr "Der Seo Name entspricht nicht der Konvention."
+msgstr "Der SEO-Name entspricht nicht der Konvention."
 
 msgid "INVALID_FRONEND_LINK_NAME"
 msgstr "Der Name entspricht nicht der Konvention."
 
 msgid "INVALID_FRONEND_LINK_TITLE"
-msgstr "Der Title entspricht nicht der Konvention."
+msgstr "„Title“ entspricht nicht der Konvention."
 
 msgid "INVALID_FRONEND_LINK_META_TITLE"
-msgstr "Der MetaTitle entspricht nicht der Konvention."
+msgstr "„MetaTitle“ entspricht nicht der Konvention."
 
 msgid "INVALID_FRONEND_LINK_META_KEYWORDS"
-msgstr "Die MetaKeywords entsprechen nicht der Konvention."
+msgstr "„MetaKeywords“ entspricht nicht der Konvention."
 
 msgid "INVALID_FRONEND_LINK_META_DESCRIPTION"
-msgstr "Die MetaDescription entspricht nicht der Konvention."
+msgstr "„MetaDescription“ entspricht nicht der Konvention."
 
 msgid "INVALID_PAYMENT_METHOD_NAME"
 msgstr "Der Name in den Zahlungsmethoden entspricht nicht der Konvention."
 
 msgid "INVALID_PAYMENT_METHOD_MAIL"
-msgstr "Sende Mail in den Zahlungsmethoden entspricht nicht der Konvention."
+msgstr "„SendMail“ in den Zahlungsmethoden entspricht nicht der Konvention."
 
 msgid "INVALID_PAYMENT_METHOD_TSCODE"
-msgstr "TSCode in den Zahlungsmethoden entspricht nicht der Konvention."
+msgstr "„TSCode“ in den Zahlungsmethoden entspricht nicht der Konvention."
 
 msgid "INVALID_PAYMENT_METHOD_PRE_ORDER"
-msgstr "PreOrder in den Zahlungsmethoden entspricht nicht der Konvention."
+msgstr "„PreOrder“ in den Zahlungsmethoden entspricht nicht der Konvention."
 
 msgid "INVALID_PAYMENT_METHOD_CLASS_FILE"
-msgstr "ClassFile in den Zahlungsmethoden entspricht nicht der Konvention."
+msgstr "„ClassFile“ in den Zahlungsmethoden entspricht nicht der Konvention."
 
 msgid "MISSING_PAYMENT_METHOD_FILE"
 msgstr "Die Datei für die Klasse der Zahlungsmethode existiert nicht."
 
 msgid "INVALID_PAYMENT_METHOD_TEMPLATE"
-msgstr "TemplateFile in den Zahlungsmethoden entspricht nicht der Konvention."
+msgstr "„TemplateFile“ in den Zahlungsmethoden entspricht nicht der Konvention."
 
 msgid "MISSING_PAYMENT_METHOD_TEMPLATE"
 msgstr "Die Datei für das Template der Zahlungsmethode existiert nicht."
 
 msgid "MISSING_PAYMENT_METHOD_LANGUAGES"
-msgstr "Keine Sprachen in den Zahlungsmethoden hinterlegt."
+msgstr "Keine Sprachen in den Zahlungsmethoden vorhanden."
 
 msgid "INVALID_PAYMENT_METHOD_LANGUAGE_ISO"
-msgstr "Die ISO der Sprache in der Zahlungsmethode entspricht nicht der Konvention."
+msgstr "ISO der Sprache in der Zahlungsmethode entspricht nicht der Konvention."
 
 msgid "INVALID_PAYMENT_METHOD_NAME_LOCALIZED"
-msgstr "Der Name in den Zahlungsmethoden Sprache entspricht nicht der Konvention."
+msgstr "Name in den Zahlungsmethodensprachen entspricht nicht der Konvention."
 
 msgid "INVALID_PAYMENT_METHOD_CHARGE_NAME"
-msgstr "Der ChargeName in den Zahlungsmethoden Sprache entspricht nicht der Konvention."
+msgstr "„ChargeName“ in den Zahlungsmethodensprachen entspricht nicht der Konvention."
 
 msgid "INVALID_PAYMENT_METHOD_INFO_TEXT"
-msgstr "Der InfoText in den Zahlungsmethoden Sprache entspricht nicht der Konvention."
+msgstr "„InfoText“ in den Zahlungsmethodensprachen entspricht nicht der Konvention."
 
 msgid "INVALID_PAYMENT_METHOD_CONFIG_TYPE"
-msgstr "Zahlungsmethode Einstellungen type entspricht nicht der Konvention."
+msgstr "„type“ in einer Einstellung der Zahlungsmethode entspricht nicht der Konvention."
 
 msgid "INVALID_PAYMENT_METHOD_CONFIG_INITITAL_VALUE"
-msgstr "Zahlungsmethode Einstellungen initialValue entspricht nicht der Konvention."
+msgstr "„initialValue“ in einer Einstellung der Zahlungsmethode entspricht nicht der Konvention."
 
 msgid "INVALID_PAYMENT_METHOD_CONFIG_SORT"
-msgstr "Zahlungsmethode Einstellungen sort entspricht nicht der Konvention."
+msgstr "„sort“ in einer Einstellung der Zahlungsmethode entspricht nicht der Konvention."
 
 msgid "INVALID_PAYMENT_METHOD_CONFIG_CONF"
-msgstr "Zahlungsmethode Einstellungen conf entspricht nicht der Konvention."
+msgstr "„conf“ in einer Einstellung der Zahlungsmethode entspricht nicht der Konvention."
 
 msgid "INVALID_PAYMENT_METHOD_CONFIG_NAME"
-msgstr "Zahlungsmethode Einstellungen Name entspricht nicht der Konvention."
+msgstr "„Name“ in einer Einstellung der Zahlungsmethode entspricht nicht der Konvention."
 
 msgid "INVALID_PAYMENT_METHOD_VALUE_NAME"
-msgstr "Zahlungsmethode Einstellungen ValueName entspricht nicht der Konvention."
+msgstr "„ValueName“ in einer Einstellung der Zahlungsmethode entspricht nicht der Konvention."
 
 msgid "INVALID_PAYMENT_METHOD_SORT"
 msgstr "Die Sortierung in den Zahlungsmethoden entspricht nicht der Konvention."
 
 msgid "INVALID_PAYMENT_METHOD_SOAP"
-msgstr "Soap in den Zahlungsmethoden entspricht nicht der Konvention."
+msgstr "„Soap“ in den Zahlungsmethoden entspricht nicht der Konvention."
 
 msgid "INVALID_PAYMENT_METHOD_CURL"
-msgstr "Curl in den Zahlungsmethoden entspricht nicht der Konvention."
+msgstr "„Curl“ in den Zahlungsmethoden entspricht nicht der Konvention."
 
 msgid "INVALID_PAYMENT_METHOD_SOCKETS"
-msgstr "Sockets in den Zahlungsmethoden entspricht nicht der Konvention."
+msgstr "„Sockets“ in den Zahlungsmethoden entspricht nicht der Konvention."
 
 msgid "INVALID_PAYMENT_METHOD_CLASS_NAME"
-msgstr "ClassName in den Zahlungsmethoden entspricht nicht der Konvention."
+msgstr "„ClassName“ in den Zahlungsmethoden entspricht nicht der Konvention."
 
 msgid "INVALID_FULLSCREEN_TEMPLATE"
 msgstr "Der Fullscreen-Templatename entspricht nicht der Konvention."
 
 msgid "MISSING_FRONTEND_LINK_TEMPLATE"
-msgstr "Die Templatedatei für den Frontend Link existiert nicht."
+msgstr "Die Templatedatei für den Frontend-Link existiert nicht."
 
 msgid "TOO_MANY_FULLSCREEN_TEMPLATE_NAMES"
-msgstr "Es darf nur ein Templatename oder ein Fullscreen Templatename existieren."
+msgstr "Es darf nur ein Templatename oder ein Fullscreen-Templatename existieren."
 
 msgid "INVALID_FULLSCREEN_TEMPLATE_NAME"
-msgstr "Der Fullscreen Templatename entspricht nicht der Konvention."
+msgstr "Der Fullscreen-Templatename entspricht nicht der Konvention."
 
 msgid "MISSING_FULLSCREEN_TEMPLATE_FILE"
-msgstr "Die Fullscreen Templatedatei für den Frontend Link existiert nicht."
+msgstr "Die Fullscreen-Templatedatei für den Frontend-Link existiert nicht."
 
 msgid "INVALID_FRONTEND_LINK_TEMPLATE_FULLSCREEN_TEMPLATE"
-msgstr "Für einen Frontend Link muss ein Templatename oder Fullscreen Templatename angegeben werden."
+msgstr "Geben Sie für einen Frontend-Link einen Templatenamen oder Fullscreen-Templatenamen an."
 
 msgid "MISSING_BOX"
 msgstr "Keine Box vorhanden."
 
 msgid "INVALID_BOX_NAME"
-msgstr "Box Name entspricht nicht der Konvention."
+msgstr "„Box Name“ entspricht nicht der Konvention."
 
 msgid "INVALID_BOX_TEMPLATE"
-msgstr "Box Templatedatei entspricht nicht der Konvention."
+msgstr "„Box TemplateFile“ entspricht nicht der Konvention."
 
 msgid "MISSING_BOX_TEMPLATE_FILE"
-msgstr "Box Templatedatei existiert nicht."
+msgstr "„Box TemplateFile“ nicht vorhanden."
 
 msgid "MISSING_LICENCE_FILE"
-msgstr "Lizenzklasse existiert nicht."
+msgstr "Lizenzklasse nicht vorhanden."
 
 msgid "INVALID_LICENCE_FILE_NAME"
-msgstr "Name der Lizenzklasse entspricht nicht der konvention."
+msgstr "Der Name der Lizenzklasse entspricht nicht der Konvention."
 
 msgid "MISSING_LICENCE"
-msgstr "Lizenklasse ist nicht definiert."
+msgstr "Die Lizenzklasse ist nicht definiert."
 
 msgid "MISSING_LICENCE_CHECKLICENCE_METHOD"
-msgstr "Methode checkLicence in der Lizenzklasse ist nicht definiert."
+msgstr "Die Methode „checkLicence“ in der Lizenzklasse ist nicht definiert."
 
 msgid "DUPLICATE_PLUGIN_ID"
-msgstr "PluginID bereits in der Datenbank vorhanden."
+msgstr "Die Plugin-ID ist bereits in der Datenbank vorhanden."
 
 msgid "MISSING_EMAIL_TEMPLATES"
-msgstr "Keine Emailtemplates vorhanden, obwohl der Node angelegt wurde."
+msgstr "Keine E-Mail-Templates vorhanden, obwohl der Node angelegt wurde."
 
 msgid "INVALID_TEMPLATE_NAME"
-msgstr "Template Name entspricht nicht der Konvention."
+msgstr "Der Name des Templates entspricht nicht der Konvention."
 
 msgid "INVALID_TEMPLATE_TYPE"
-msgstr "Template Type entspricht nicht der Konvention."
+msgstr "Die Einstellung „Type“ des Templates entspricht nicht der Konvention."
 
 msgid "INVALID_TEMPLATE_MODULE_ID"
-msgstr "Template ModulId entspricht nicht der Konvention."
+msgstr "Die Modul-ID des Templates entspricht nicht der Konvention."
 
 msgid "INVALID_TEMPLATE_ACTIVE"
-msgstr "Template Active entspricht nicht der Konvention."
+msgstr "„Template Active“ entspricht nicht der Konvention."
 
 msgid "INVALID_TEMPLATE_AKZ"
-msgstr "Template AKZ entspricht nicht der Konvention."
+msgstr "„Template AKZ“ entspricht nicht der Konvention."
 
 msgid "INVALID_TEMPLATE_AGB"
-msgstr "Template AGB entspricht nicht der Konvention."
+msgstr "„Template AGB“ entspricht nicht der Konvention."
 
 msgid "INVALID_TEMPLATE_WRB"
-msgstr "Template WRB entspricht nicht der Konvention."
+msgstr "„Template WRB“ entspricht nicht der Konvention."
 
 msgid "INVALID_EMAIL_TEMPLATE_ISO"
-msgstr "Die ISO der Emailtemplate Sprache entspricht nicht der Konvention."
+msgstr "ISO der Sprache des E-Mail-Templates entspricht nicht der Konvention."
 
 msgid "INVALID_EMAIL_TEMPLATE_SUBJECT"
-msgstr "Der Subject Name entspricht nicht der Konvention."
+msgstr "„Subject Name“ entspricht nicht der Konvention."
 
 msgid "MISSING_EMAIL_TEMPLATE_LANGUAGE"
 msgstr "Keine Templatesprachen vorhanden."
 
 msgid "INVALID_CHECKBOX_FUNCTION_NAME"
-msgstr "CheckBoxFunction Name entspricht nicht der Konvention."
+msgstr "„CheckBoxFunction Name“ entspricht nicht der Konvention."
 
 msgid "INVALID_CHECKBOX_FUNCTION_ID"
-msgstr "CheckBoxFunction ID entspricht nicht der Konvention."
+msgstr "„CheckBoxFunction ID“ entspricht nicht der Konvention."
 
 msgid "INVALID_FRONTEND_LINK_NO_FOLLOW"
-msgstr "Frontend Link Attribut NoFollow entspricht nicht der Konvention."
+msgstr "Frontend-Link-Attribut „NoFollow“ entspricht nicht der Konvention."
 
 msgid "MISSING_WIDGETS"
 msgstr "Keine Widgets vorhanden."
 
 msgid "INVALID_WIDGET_TITLE"
-msgstr "Widget Title entspricht nicht der Konvention."
+msgstr "„Widget Title“ entspricht nicht der Konvention."
 
 msgid "INVALID_WIDGET_CLASS"
-msgstr "Widget Class entspricht nicht der Konvention."
+msgstr "„Widget Class“ entspricht nicht der Konvention."
 
 msgid "MISSING_WIDGET_CLASS_FILE"
-msgstr "Die Datei für die Klasse des AdminWidgets existiert nicht."
+msgstr "Die Datei für die Klasse von „AdminWidget“ existiert nicht."
 
 msgid "INVALID_WIDGET_CONTAINER"
-msgstr "Container im Widget entspricht nicht der Konvention."
+msgstr "„Container“ im Widget entspricht nicht der Konvention."
 
 msgid "INVALID_WIDGET_POS"
-msgstr "Pos im Widget entspricht nicht der Konvention."
+msgstr "„Pos“ im Widget entspricht nicht der Konvention."
 
 msgid "INVALID_WIDGET_EXPANDED"
-msgstr "Expanded im Widget entspricht nicht der Konvention."
+msgstr "„Expanded“ im Widget entspricht nicht der Konvention."
 
 msgid "INVALID_WIDGET_ACTIVE"
-msgstr "Active im Widget entspricht nicht der Konvention."
+msgstr "„Active“ im Widget entspricht nicht der Konvention."
 
 msgid "INVALID_PAYMENT_METHOD_ADDITIONAL_STEP_TEMPLATE_FILE"
-msgstr "AdditionalTemplateFile in den Zahlungsmethoden entspricht nicht der Konvention"
+msgstr "„AdditionalTemplateFile“ in den Zahlungsmethoden entspricht nicht der Konvention."
 
 msgid "MISSING_PAYMENT_METHOD_ADDITIONAL_STEP_FILE"
-msgstr "Die Datei für das Zusatzschritt-Template der Zahlungsmethode existiert nicht"
+msgstr "Die Datei für das Zusatzschritt-Template der Zahlungsmethode ist nicht vorhanden."
 
 msgid "MISSING_FORMATS"
-msgstr "Keine Formate vorhanden"
+msgstr "Keine Formate vorhanden."
 
 msgid "INVALID_FORMAT_NAME"
-msgstr "Format Name entspricht nicht der Konvention"
+msgstr "„Format Name“ entspricht nicht der Konvention."
 
 msgid "INVALID_FORMAT_FILE_NAME"
-msgstr "Format Filename entspricht nicht der Konvention"
+msgstr "„Format Filename“ entspricht nicht der Konvention."
 
 msgid "MISSING_FORMAT_CONTENT"
-msgstr "Format enthält weder Content, noch eine Contentdatei"
+msgstr "Format enthält weder Content noch eine Contentdatei."
 
 msgid "INVALID_FORMAT_ENCODING"
-msgstr "Format Encoding entspricht nicht der Konvention"
+msgstr "„Format Encoding“ entspricht nicht der Konvention."
 
 msgid "INVALID_FORMAT_SHIPPING_COSTS_DELIVERY_COUNTRY"
-msgstr "Format ShippingCostsDeliveryCountry entspricht nicht der Konvention"
+msgstr "„Format ShippingCostsDeliveryCountry“ entspricht nicht der Konvention."
 
 msgid "INVALID_FORMAT_CONTENT_FILE"
-msgstr "Format ContenFile entspricht nicht der Konvention"
+msgstr "„Format ContentFile“ entspricht nicht der Konvention."
 
 msgid "MISSING_EXTENDED_TEMPLATE"
-msgstr "Kein Template vorhanden"
+msgstr "Kein Template vorhanden."
 
 msgid "INVALID_EXTENDED_TEMPLATE_FILE_NAME"
-msgstr "Templatedatei entspricht nicht der Konvention"
+msgstr "Templatedatei entspricht nicht der Konvention."
 
 msgid "MISSING_EXTENDED_TEMPLATE_FILE"
-msgstr "Templatedatei existiert nicht"
+msgstr "Keine Templatedatei vorhanden."
 
 msgid "MISSING_UNINSTALL_FILE"
-msgstr "Uninstall File existiert nicht"
+msgstr "Uninstall File nicht vorhanden."
 
 msgid "IONCUBE_REQUIRED"
-msgstr "Das Plugin benötigt ionCube"
+msgstr "Das Plugin benötigt ionCube."
 
 msgid "INVALID_OPTIONS_SOURE_FILE"
-msgstr "OptionsSource-Datei wurde nicht angegeben"
+msgstr "Datei „OptionsSource“ wurde nicht angegeben."
 
 msgid "MISSING_OPTIONS_SOURE_FILE"
-msgstr "OptionsSource-Datei existiert nicht"
+msgstr "Datei „OptionsSource“ nicht vorhanden."
 
 msgid "MISSING_BOOTSTRAP_CLASS"
-msgstr "Bootstrap-Klasse \"%cPluginID%\\Bootstrap\" existiert nicht"
+msgstr "Bootstrap-Klasse „%cPluginID%\\Bootstrap“ existiert nicht."
 
 msgid "INVALID_BOOTSTRAP_IMPLEMENTATION"
-msgstr "Bootstrap-Klasse \"%cPluginID%\\Bootstrap\" muss das PlugInterface implementieren"
+msgstr "Bootstrap-Klasse „%cPluginID%\\Bootstrap“ muss „PlugInterface“ implementieren."
 
 msgid "INVALID_AUTHOR"
 msgstr "Autor entspricht nicht der Konvention."
 
 msgid "MISSING_PORTLETS"
-msgstr "Keine Portlets vorhanden"
+msgstr "Keine Portlets vorhanden."
 
 msgid "INVALID_PORTLET_TITLE"
-msgstr "Portlet Title entspricht nicht der Konvention"
+msgstr "„Portlet Title“ entspricht nicht der Konvention."
 
 msgid "INVALID_PORTLET_CLASS"
-msgstr "Portlet Class entspricht nicht der Konvention"
+msgstr "„Portlet Class“ entspricht nicht der Konvention."
 
 msgid "INVALID_PORTLET_CLASS_FILE"
-msgstr "Die Datei für die Klasse des Portlet existiert nicht"
+msgstr "Die Datei für die Klasse des Portlets ist nicht vorhanden."
 
 msgid "INVALID_PORTLET_GROUP"
-msgstr "Group im Portlet entspricht nicht der Konvention"
+msgstr "„Group“ im Portlet entspricht nicht der Konvention."
 
 msgid "INVALID_PORTLET_ACTIVE"
-msgstr "Active im Portlet entspricht nicht der Konvention"
+msgstr "„Active“ im Portlet entspricht nicht der Konvention."
 
 msgid "MISSING_BLUEPRINTS"
-msgstr "Keine Blueprints vorhanden"
+msgstr "Keine Blueprints vorhanden."
 
 msgid "INVALID_BLUEPRINT_NAME"
-msgstr "Blueprint Name entspricht nicht der Konvention"
+msgstr "„Blueprint Name“ entspricht nicht der Konvention."
 
 msgid "INVALID_BLUEPRINT_FILE"
-msgstr "Die Datei für das Blueprint existiert nicht"
+msgstr "Die Datei für den Blueprint existiert nicht."
 
 msgid "EXT_MUST_NOT_HAVE_UNINSTALLER"
-msgstr "Extension darf keinen Uninstaller definieren"
+msgstr "Extension darf keinen Uninstaller definieren."
 
 msgid "WRONG_EXT_DIR"
-msgstr "Extension in falschem Ordner installiert"
+msgstr "Extension wurde in falschem Ordner installiert."
 
 msgid "unknownError"
 msgstr "Unbekannter Fehler."

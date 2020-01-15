@@ -1225,6 +1225,7 @@ function baueNewsletterVorschau(&$oNewsletterVorlage)
                ->assign('oNewsletterVorlage', $oNewsletterVorlage)
                ->assign('Kunde', $oKunde)
                ->assign('Artikelliste', $oArtikel_arr)
+               ->assign('NettoPreise', 0)
                ->assign('Herstellerliste', $oHersteller_arr)
                ->assign('Kategorieliste', $oKategorie_arr)
                ->assign('Kampagne', $oKampagne);

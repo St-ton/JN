@@ -141,7 +141,7 @@ class Redirect
             }
 
             $oRedirect = $this->find($cSource);
-            if (empty($oRedirect)) {
+            if ($oRedirect === null) {
                 $oObj             = new stdClass();
                 $oObj->cFromUrl   = StringHandler::convertISO($cSource);
                 $oObj->cToUrl     = StringHandler::convertISO($cDestination);
@@ -151,15 +151,13 @@ class Redirect
                 if ((int)$kRedirect > 0) {
                     return true;
                 }
-            } elseif ($this->normalize($oRedirect->cFromUrl) === $this->normalize($cSource)
-                && empty($oRedirect->cToUrl)
-                && (int)Shop::DB()->update(
-                    'tredirect', 'cFromUrl', $this->normalize($cSource),
-                    (object)['cToUrl' => StringHandler::convertISO($cDestination)]
-                ) > 0
-            ) {
-                // the redirect already exists but has an empty cToUrl => update it
-                return true;
+            } elseif ($this->normalize($oRedirect->cFromUrl) === $this->normalize($cSource)) {
+                if ($bForce || empty($oRedirect->cToUrl)) {
+                    return (int)Shop::DB()->update(
+                        'tredirect', 'cFromUrl', $this->normalize($cSource),
+                        (object)['cToUrl' => StringHandler::convertISO($cDestination)]
+                    ) > 0;
+                }
             }
         }
 
@@ -472,10 +470,7 @@ class Redirect
     public function normalize($cUrl)
     {
         require_once PFAD_ROOT . PFAD_CLASSES . 'class.helper.Url.php';
-        $oUrl = new UrlHelper();
-        $oUrl->setUrl($cUrl);
-
-        return '/' . trim($oUrl->normalize(), "\\/");
+        return '/' . trim((new UrlHelper($cUrl))->normalize(), "\\/");
     }
 
     /**

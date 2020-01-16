@@ -116,9 +116,13 @@
                         <table class="table table-condensed table-hover">
                             <thead>
                                 <tr>
-                                    <th class="text-right">{lang key='fromDifferential' section='productOverview'}{if $Artikel->cEinheit} {$Artikel->cEinheit}{/if}</th>
+                                    <th class="text-right">
+                                        {lang key='fromDifferential' section='productOverview'}{if $Artikel->cEinheit} {$Artikel->cEinheit}{/if}
+                                        {if isset($Artikel->cMasseinheitName) && isset($Artikel->fMassMenge) && $Artikel->fMassMenge > 0 && $Artikel->cTeilbar !== 'Y' && ($Artikel->fAbnahmeintervall == 0 || $Artikel->fAbnahmeintervall == 1) && isset($Artikel->cMassMenge)}
+                                            ({$Artikel->cMassMenge} {$Artikel->cMasseinheitName})
+                                        {/if}
+                                    </th>
                                     <th class="text-right">{lang key='pricePerUnit' section='productDetails'}</th>
-                                    {if !empty($Artikel->cLocalizedVPE)}<th></th>{/if}
                                 </tr>
                             </thead>
                             <tbody>
@@ -126,8 +130,10 @@
                                     {if $bulkPrice.nAnzahl > 0}
                                         <tr class="bulk-price-{$bulkPrice.nAnzahl}">
                                             <td class="text-right">{$bulkPrice.nAnzahl}</td>
-                                            <td class="text-right bulk-price">{$bulkPrice.cPreisLocalized[$NettoPreise]} <span class="footnote-reference">*</span></td>
-                                            {if !empty($bulkPrice.cBasePriceLocalized)}<td class="text-muted bulk-base-price">{$bulkPrice.cBasePriceLocalized[$NettoPreise]}</td>{/if}
+                                            <td class="text-right bulk-price">
+                                                {$bulkPrice.cPreisLocalized[$NettoPreise]} <span class="footnote-reference">*</span>
+                                                {if !empty($bulkPrice.cBasePriceLocalized)}, <span class="bulk-base-price ml-2">{$bulkPrice.cBasePriceLocalized[$NettoPreise]}</span>{/if}
+                                            </td>
                                         </tr>
                                     {/if}
                                 {/foreach}

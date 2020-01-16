@@ -373,13 +373,20 @@ class Preise
                                 AND (tartikelsonderpreis.nAnzahl <= tartikel.fLagerbestand OR tartikelsonderpreis.nIstAnzahl = 0)
                             WHERE tsonderpreise.kKundengruppe = {$kKundengruppe}", 1);
 
-                    if (isset($specialPrice->fNettoPreis) && (double)$specialPrice->fNettoPreis < $this->fVKNetto) {
-                        $specialPriceValue       = $this->getRecalculatedNetPrice($specialPrice->fNettoPreis, $defaultTax, $currentTax);
-                        $this->alterVKNetto      = $this->fVKNetto;
-                        $this->fVKNetto          = $specialPriceValue;
-                        $this->Sonderpreis_aktiv = 1;
-                        $this->SonderpreisBis_de = $specialPrice->dEnde_de;
-                        $this->SonderpreisBis_en = $specialPrice->dEnde_en;
+                    if (isset($specialPrice->fNettoPreis)) {
+                        $specialPrice->fNettoPreis = $this->getRecalculatedNetPrice(
+                            $specialPrice->fNettoPreis,
+                            $defaultTax,
+                            $currentTax
+                        );
+                        if ((double)$specialPrice->fNettoPreis < $this->fVKNetto) {
+                            $specialPriceValue       = $specialPrice->fNettoPreis;
+                            $this->alterVKNetto      = $this->fVKNetto;
+                            $this->fVKNetto          = $specialPriceValue;
+                            $this->Sonderpreis_aktiv = 1;
+                            $this->SonderpreisBis_de = $specialPrice->dEnde_de;
+                            $this->SonderpreisBis_en = $specialPrice->dEnde_en;
+                        }
                     }
                 } else {
                     // Alte Preisstaffeln

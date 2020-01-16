@@ -60,7 +60,6 @@ abstract class AbstractBox implements BoxInterface
         \PAGE_WARENKORB,
         \PAGE_MEINKONTO,
         \PAGE_KONTAKT,
-        \PAGE_UMFRAGE,
         \PAGE_NEWS,
         \PAGE_NEWSLETTER,
         \PAGE_LOGIN,

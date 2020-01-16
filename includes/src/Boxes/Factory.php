@@ -29,7 +29,6 @@ use JTL\Boxes\Items\NewsCategories;
 use JTL\Boxes\Items\NewsCurrentMonth;
 use JTL\Boxes\Items\Plain;
 use JTL\Boxes\Items\Plugin;
-use JTL\Boxes\Items\Poll;
 use JTL\Boxes\Items\ProductCategories;
 use JTL\Boxes\Items\RecentlyViewedProducts;
 use JTL\Boxes\Items\SearchCloud;
@@ -101,8 +100,6 @@ class Factory implements FactoryInterface
                 return new Plain($this->config);
             case \BOX_LINKGRUPPE:
                 return new LinkGroup($this->config);
-            case \BOX_UMFRAGE:
-                return new Poll($this->config);
             case \BOX_HERSTELLER:
                 return new Manufacturer($this->config);
             case \BOX_FILTER_MERKMALE:

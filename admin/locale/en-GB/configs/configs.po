@@ -669,10 +669,10 @@ msgid "livesuche_max_ip_count_desc"
 msgstr "Specify the maximum number of entries per visitor and hour saved in the live search. This allows you to prevent manipulation of the live search."
 
 msgid "suchfilter_anzeigen_ab_name"
-msgstr "Show \"Refine search\" from"
+msgstr "Show search filters from"
 
 msgid "suchfilter_anzeigen_ab_desc"
-msgstr "Specify the minimum number of items that must be displayed in the search results for further search filters to be available for selection."
+msgstr "Specify the minimum number of items that must be displayed in the search results for search filters to be available for selection."
 
 msgid "artikeluebersicht_erw_darstellung_name"
 msgstr "Use expanded item overview"
@@ -2737,24 +2737,6 @@ msgstr "Submit sitemap to Google and Bing after export"
 
 msgid "sitemap_google_ping_desc"
 msgstr "Specify whether a notification is sent to Google and Bing after the files sitemap.xml and sitemap_index.xml have been exported so that they can recrawl the sitemap."
-
-msgid "umfrage_nutzen_name"
-msgstr "Use survey system"
-
-msgid "umfrage_nutzen_desc"
-msgstr "Specify whether to integrate the survey system into your JTL-Shop."
-
-msgid "umfrage_einloggen_name"
-msgstr "Login required"
-
-msgid "umfrage_einloggen_desc"
-msgstr "Specify whether only registered users with customer accounts can take part in surveys."
-
-msgid "umfrage_box_anzahl_name"
-msgstr "Number of displayed surveys"
-
-msgid "umfrage_box_anzahl_desc"
-msgstr "Specify how many surveys are to be displayed in the box when you add it to a page using the box management."
 
 msgid "kwk_nutzen_name"
 msgstr "Activate customer referral programme"

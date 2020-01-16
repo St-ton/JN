@@ -215,8 +215,9 @@ class Newsletter
             ->assign('oNewsletterVorlage', $template)
             ->assign('Kunde', $customer)
             ->assign('Artikelliste', $products)
+            ->assign('NettoPreise', 0)
             ->assign('Herstellerliste', $manufacturers)
-            ->assign('Kategorieiste', $categories)
+            ->assign('Kategorieliste', $categories)
             ->assign('Kampagne', $campaign);
 
         try {

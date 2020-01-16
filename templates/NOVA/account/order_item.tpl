@@ -7,7 +7,7 @@
         {foreach $Bestellung->Positionen as $oPosition}
             {if !(is_string($oPosition->cUnique) && !empty($oPosition->cUnique) && (int)$oPosition->kKonfigitem > 0)} {*!istKonfigKind()*}
                 {row class="type-{$oPosition->nPosTyp}"}
-                    {col cols=12 md="{if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}7{else}9{/if}"}
+                    {col cols=12 md="{if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}6{else}8{/if}"}
                         {row}
                             {col cols=3 md=4 class='pr-1 pl-1'}
                                 {if !empty($oPosition->Artikel->cVorschaubild)}
@@ -166,8 +166,8 @@
 
                     {block name='account-order-item-price'}
                         {block name='account-order-item-price-qty'}
-                            {col class='qty-col text-right' md=1 cols=6}
-                                {$oPosition->nAnzahl|replace_delim} {if !empty($oPosition->Artikel->cEinheit)}{$oPosition->Artikel->cEinheit} {/if}x
+                            {col class='qty-col text-right' md=2 cols=6}
+                                {$oPosition->nAnzahl|replace_delim} {if !empty($oPosition->Artikel->cEinheit)}{if preg_match("/(\d)/", $oPosition->Artikel->cEinheit)} x{/if} {$oPosition->Artikel->cEinheit} {/if}
                             {/col}
                         {/block}
                         {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}

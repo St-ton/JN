@@ -163,6 +163,7 @@
                     $item.on('change', function () {
                         that.variationPrice($(this), true, wrapper);
                     });
+                    $item.prop('disabled', false);
                 });
         },
 
@@ -195,6 +196,7 @@
                     $item.on('change', function () {
                         that.variationSwitch($(this), false, wrapper);
                     });
+                    $item.prop('disabled', false);
                 });
 
             // ie11 fallback

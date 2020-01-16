@@ -10,3 +10,6 @@ msgstr "Enter a user name and a password for the synchronisation with JTL-Wawi. 
 
 msgid "wawisyncURL"
 msgstr "https://jtl-url.de/vdh3z"
+
+msgid "errorInvalidPassword"
+msgstr "User name and password must only contain uppercase and lowercase letters, numbers, and the following special characters: !\"#$%&'()*+,-./:;=>?@[\\]^_`|}~"

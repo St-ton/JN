@@ -12,7 +12,7 @@
             <input class="form-control" type="text" id="cName" name="cName" value="{if isset($surchargeNew)}{$surchargeNew->getTitle()}{/if}" tabindex="1" required/>
         </div>
     </div>
-    {foreach $sprachen as $language}
+    {foreach $availableLanguages as $language}
         <div class="form-group form-row align-items-center">
             <label class="col col-sm-4 col-form-label text-sm-right" for="cName_{$language->getIso()}">{__('showedName')} ({$language->getLocalizedName()}):</label>
             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">

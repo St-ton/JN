@@ -146,17 +146,6 @@ if (Request::postInt('zuruecksetzen') === 1 && Form::validateToken()) {
                     $db->query('TRUNCATE tpreisverlauf', ReturnType::DEFAULT);
                     break;
 
-                case 'umfragen':
-                    $db->query('TRUNCATE tumfrage', ReturnType::DEFAULT);
-                    $db->query('TRUNCATE tumfragedurchfuehrung', ReturnType::DEFAULT);
-                    $db->query('TRUNCATE tumfragedurchfuehrungantwort', ReturnType::DEFAULT);
-                    $db->query('TRUNCATE tumfragefrage', ReturnType::DEFAULT);
-                    $db->query('TRUNCATE tumfragefrageantwort', ReturnType::DEFAULT);
-                    $db->query('TRUNCATE tumfragematrixoption', ReturnType::DEFAULT);
-
-                    $db->delete('tseo', 'cKey', 'kUmfrage');
-                    break;
-
                 case 'verfuegbarkeitsbenachrichtigungen':
                     $db->query(
                         'TRUNCATE tverfuegbarkeitsbenachrichtigung',

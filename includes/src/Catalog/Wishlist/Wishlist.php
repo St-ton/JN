@@ -775,14 +775,16 @@ class Wishlist
 
     /**
      * @param int $id
+     * @param array|null $post
      * @return string
      */
-    public static function update(int $id): string
+    public static function update(int $id, array $post = null): string
     {
-        $db = Shop::Container()->getDB();
+        $post = $post ?? $_POST;
+        $db   = Shop::Container()->getDB();
         foreach (['wishlistName', 'WunschlisteName'] as $wishlistName) {
             if (Request::postVar($wishlistName, '') !== '') {
-                $name = Text::htmlentities(Text::filterXSS(\mb_substr($_POST[$wishlistName], 0, 254)));
+                $name = Text::htmlentities(Text::filterXSS(\mb_substr($post[$wishlistName], 0, 254)));
                 $db->update('twunschliste', 'kWunschliste', $id, (object)['cName' => $name]);
             }
         }
@@ -799,15 +801,15 @@ class Wishlist
         foreach ($items as $item) {
             $id  = (int)$item->kWunschlistePos;
             $idx = 'Kommentar_' . $id;
-            if (!isset($_POST[$idx])) {
-                break;
+            if (isset($post[$idx])) {
+                $upd             = new stdClass();
+                $upd->cKommentar = Text::htmlentities(Text::filterXSS($db->escape(\mb_substr($post[$idx], 0, 254))));
+                $db->update('twunschlistepos', 'kWunschlistePos', $id, $upd);
             }
-            $upd             = new stdClass();
-            $upd->cKommentar = Text::htmlentities(Text::filterXSS($db->escape(\mb_substr($_POST[$idx], 0, 254))));
-            $db->update('twunschlistepos', 'kWunschlistePos', $id, $upd);
+
             $idx = 'Anzahl_' . $id;
-            if (isset($_POST[$idx])) {
-                $quantity = \str_replace(',', '.', $_POST[$idx]);
+            if (isset($post[$idx])) {
+                $quantity = \str_replace(',', '.', $post[$idx]);
                 if ((float)$quantity > 0) {
                     $db->update(
                         'twunschlistepos',

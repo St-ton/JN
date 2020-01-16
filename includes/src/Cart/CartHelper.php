@@ -1773,12 +1773,15 @@ class CartHelper
             );
         }
         if (isset($productData->kArtikel) && $productData->kArtikel > 0) {
-            $product = (new Artikel())->fuelleArtikel($productData->kArtikel, Artikel::getDefaultOptions());
-            if ($product !== null && $product->kArtikel > 0 && self::addProductIDToCart(
-                $productData->kArtikel,
-                1,
-                Product::getSelectedPropertiesForArticle($productData->kArtikel)
-            )) {
+            $product = (new Artikel())->fuelleArtikel($productData->kArtikel);
+            if ($product !== null
+                && (int)$product->kArtikel > 0
+                && self::addProductIDToCart(
+                    $productData->kArtikel,
+                    1,
+                    Product::getSelectedPropertiesForArticle($productData->kArtikel)
+                )
+            ) {
                 $msg = $productData->cName . ' ' . Shop::Lang()->get('productAddedToCart');
             }
         }
@@ -1864,7 +1867,9 @@ class CartHelper
                 $options                 = Artikel::getDefaultOptions();
                 foreach ($xsellData as $item) {
                     $product = (new Artikel())->fuelleArtikel((int)$item->kXSellArtikel, $options);
-                    if ($product !== null && $product->kArtikel > 0 && $product->aufLagerSichtbarkeit()) {
+                    if ($product !== null
+                        && (int)$product->kArtikel > 0
+                        && $product->aufLagerSichtbarkeit()) {
                         $xSelling->Kauf->Artikel[] = $product;
                     }
                 }
@@ -1910,6 +1915,7 @@ class CartHelper
             foreach ($giftsTmp as $gift) {
                 $product = (new Artikel())->fuelleArtikel((int)$gift->kArtikel, Artikel::getDefaultOptions());
                 if ($product !== null
+                    && (int)$product->kArtikel > 0
                     && ($product->kEigenschaftKombi > 0
                         || !\is_array($product->Variationen)
                         || \count($product->Variationen) === 0)

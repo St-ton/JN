@@ -37,6 +37,10 @@ if (Form::validateToken()) {
                 'rm rename' => static function ($cmd, &$result, $args, $elfinder, $volume) {
                     $sizes = ['xs', 'sm', 'md', 'lg', 'xl'];
 
+                    foreach ($result['added'] as &$item) {
+                        $item['name'] = mb_strtolower($item['name']);
+                    }
+
                     foreach ($result['removed'] as $filename) {
                         foreach ($sizes as $size) {
                             $scaledFile = PFAD_ROOT . PFAD_MEDIA_IMAGE . 'opc/' . $size . '/' . $filename['name'];
@@ -45,6 +49,9 @@ if (Form::validateToken()) {
                             }
                         }
                     }
+                },
+                'upload.presave' => static function (&$path, &$name, $tmpname, $_this, $volume) {
+                    $name = mb_strtolower($name);
                 },
             ],
             'roots' => [

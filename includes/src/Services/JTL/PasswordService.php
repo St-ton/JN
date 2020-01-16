@@ -99,4 +99,15 @@ class PasswordService implements PasswordServiceInterface
     {
         return \password_get_info($hash);
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function hasOnlyValidCharacters(string $pass, string $validCharRegex = ''): bool
+    {
+        return !preg_match(
+            $validCharRegex ?: '/[^A-Za-z0-9\!"\#\$%&\'\(\)\*\+,-\.\/:;\=\>\?@\[\\\\\]\^_`\|\}~]/',
+            $pass
+        );
+    }
 }

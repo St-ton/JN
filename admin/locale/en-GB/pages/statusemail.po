@@ -89,9 +89,6 @@ msgstr "Number of acquired customers who purchased something"
 msgid "contentTypeCountSentWishlists"
 msgstr "Number of sent wish lists"
 
-msgid "contentTypeCountPolls"
-msgstr "Number of created surveys"
-
 msgid "contentTypeCountNewsComments"
 msgstr "Number of new news comments"
 

@@ -1850,36 +1850,46 @@ class Cart
         }
 
         $maxPrices       = 0;
+        $itemCount       = 0;
         $totalWeight     = 0;
-        $shippingClasses = [];
+        $shippingClasses = ShippingMethod::getShippingClasses(Frontend::getCart());
 
         foreach ($this->PositionenArr as $item) {
-            $shippingClasses[] = $item->kVersandklasse;
-            $totalWeight      += $item->fGesamtgewicht;
-            $maxPrices        += $item->Artikel->Preise->fVKNetto ?? 0;
+            $totalWeight += $item->fGesamtgewicht;
+            $itemCount   += $item->nAnzahl;
+            $maxPrices   += $item->Artikel->Preise->fVKNetto
+                ? $item->Artikel->Preise->fVKNetto * $item->nAnzahl : 0;
         }
 
         // cheapest shipping except shippings that offer cash payment
-        $shipping = Shop::Container()->getDB()->query(
+        $shipping = Shop::Container()->getDB()->queryPrepared(
             "SELECT va.kVersandart, IF(vas.fPreis IS NOT NULL, vas.fPreis, va.fPreis) AS minPrice, va.nSort
                 FROM tversandart va
                 LEFT JOIN tversandartstaffel vas
                     ON vas.kVersandart = va.kVersandart
                 WHERE cIgnoreShippingProposal != 'Y'
-                AND va.cLaender LIKE '%" . $countryCode . "%'
+                AND va.cLaender LIKE :iso
                 AND (va.cVersandklassen = '-1'
-                    OR va.cVersandklassen IN (" . \implode(',', $shippingClasses) . "))
+                    OR va.cVersandklassen RLIKE :scl)
                 AND (va.cKundengruppen = '-1' " . $customerGroupSQL . ')
                 AND va.kVersandart NOT IN (
                     SELECT vaza.kVersandart
                         FROM tversandartzahlungsart vaza
                         WHERE kZahlungsart = 6)
                 AND (
-                    va.kVersandberechnung = 1 OR va.kVersandberechnung = 4
-                    OR ( va.kVersandberechnung = 2 AND vas.fBis > 0 AND ' . $totalWeight . ' <= vas.fBis )
-                    OR ( va.kVersandberechnung = 3 AND vas.fBis > 0 AND ' . $maxPrices . ' <= vas.fBis )
+                    va.kVersandberechnung = 1 
+                    OR ( va.kVersandberechnung = 4 AND vas.fBis > 0 AND :itemCount <= vas.fBis)
+                    OR ( va.kVersandberechnung = 2 AND vas.fBis > 0 AND :totalWeight <= vas.fBis )
+                    OR ( va.kVersandberechnung = 3 AND vas.fBis > 0 AND :maxPrices <= vas.fBis )
                     )
                 ORDER BY minPrice, nSort ASC LIMIT 1',
+            [
+                'iso'         => '%' . $countryCode . '%',
+                'itemCount'   => $itemCount,
+                'totalWeight' => $totalWeight,
+                'maxPrices'   => $maxPrices,
+                'scl'         => '^([0-9 -]* )?' . $shippingClasses
+            ],
             ReturnType::SINGLE_OBJECT
         );
 
@@ -1889,21 +1899,21 @@ class Cart
             $method->cCountryCode = $countryCode;
 
             if ($method->eSteuer === 'brutto') {
-                $method->cPriceLocalized[0] = Preise::getLocalizedPriceString($method->fPreis);
+                $method->cPriceLocalized[0] = Preise::getLocalizedPriceString($shipping->minPrice);
                 $method->cPriceLocalized[1] = Preise::getLocalizedPriceString(
                     Tax::getNet(
-                        $method->fPreis,
+                        $shipping->minPrice,
                         $_SESSION['Steuersatz'][$this->gibVersandkostenSteuerklasse()]
                     )
                 );
             } else {
                 $method->cPriceLocalized[0] = Preise::getLocalizedPriceString(
                     Tax::getGross(
-                        $method->fPreis,
+                        $shipping->minPrice,
                         $_SESSION['Steuersatz'][$this->gibVersandkostenSteuerklasse()]
                     )
                 );
-                $method->cPriceLocalized[1] = Preise::getLocalizedPriceString($method->fPreis);
+                $method->cPriceLocalized[1] = Preise::getLocalizedPriceString($shipping->minPrice);
             }
             $this->oFavourableShipping = $method;
         }

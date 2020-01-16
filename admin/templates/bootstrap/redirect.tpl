@@ -69,7 +69,6 @@
             case 'kNews': type = 'News'; break;
             case 'kNewsKategorie': type = 'News-Kategorie'; break;
             case 'kNewsMonatsUebersicht': type = 'News-Montasübersicht'; break;
-            case 'kUmfrage': type = 'Umfrage'; break;
             case 'kArtikel': type = 'Artikel'; break;
             case 'kKategorie': type = 'Kategorie'; break;
             case 'kHersteller': type = 'Hersteller'; break;

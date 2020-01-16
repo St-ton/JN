@@ -97,7 +97,6 @@ class TestHydrator extends DefaultsHydrator
         $mail->nAnzahlGeworbenerKunden                  = 11;
         $mail->nAnzahlErfolgreichGeworbenerKunden       = 0;
         $mail->nAnzahlVersendeterWunschlisten           = 0;
-        $mail->nAnzahlDurchgefuehrteUmfragen            = -1;
         $mail->nAnzahlNewskommentare                    = 21;
         $mail->nAnzahlNewskommentareNichtFreigeschaltet = 11;
         $mail->nAnzahlProduktanfrageArtikel             = 1;

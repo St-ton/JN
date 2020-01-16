@@ -837,27 +837,6 @@ class Text
                     }
                     break;
 
-                case \URLART_UMFRAGE:
-                    $item->kNews = (int)$keyName;
-                    $item->cKey  = 'kUmfrage';
-                    $data        = Shop::Container()->getDB()->query(
-                        "SELECT tumfrage.kUmfrage, tumfrage.cName, tseo.cSeo
-                            FROM tumfrage
-                            LEFT JOIN tseo
-                                ON tseo.cKey = 'kUmfrage'
-                                AND tseo.kKey = tumfrage.kUmfrage
-                                AND tseo.kSprache = " . $languageID . '
-                            WHERE tumfrage.kUmfrage = ' . (int)$keyName,
-                        ReturnType::SINGLE_OBJECT
-                    );
-
-                    if (isset($data->kUmfrage) && $data->kUmfrage > 0) {
-                        $exists      = true;
-                        $item->cSeo  = $data->cSeo;
-                        $item->cName = !empty($data->cName) ? $data->cName : 'Link';
-                    }
-                    break;
-
                 case \URLART_LIVESUCHE:
                     $item->kNews = (int)$keyName;
                     $item->cKey  = 'kSuchanfrage';

@@ -319,34 +319,6 @@ class Status
     }
 
     /**
-     * @return bool
-     */
-    protected function hasInvalidPollCoupons(): bool
-    {
-        $pollCoupons         = Shop::Container()->getDB()->selectAll('tumfrage', 'nAktiv', 1);
-        $invalidCouponsFound = false;
-        foreach ($pollCoupons as $coupon) {
-            if ($coupon->kKupon > 0) {
-                $couponID = Shop::Container()->getDB()->select(
-                    'tkupon',
-                    'kKupon',
-                    $coupon->kKupon,
-                    'cAktiv',
-                    'Y',
-                    null,
-                    null,
-                    false,
-                    'kKupon'
-                );
-
-                $invalidCouponsFound = empty($couponID);
-            }
-        }
-
-        return $invalidCouponsFound;
-    }
-
-    /**
      * @param bool $has
      * @return array|bool
      */

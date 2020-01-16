@@ -36,7 +36,7 @@
                     <label class="col col-sm-4 col-form-label text-sm-right" for="kSprache">{__('language')}:</label>
                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         <select class="custom-select" name="kSprache" id="kSprache">
-                            {foreach $sprachen as $language}
+                            {foreach $availableLanguages as $language}
                                 <option value="{$language->getId()}" {if isset($Exportformat->kSprache) && $Exportformat->kSprache == $language->getId() || (isset($cPlausiValue_arr.kSprache) && $cPlausiValue_arr.kSprache == $language->getId())}selected{/if}>{$language->getLocalizedName()}</option>
                             {/foreach}
                         </select>

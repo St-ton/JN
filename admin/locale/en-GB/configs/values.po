@@ -2018,18 +2018,6 @@ msgstr "Yes"
 msgid "sitemap_google_ping_value(N)"
 msgstr "No"
 
-msgid "umfrage_nutzen_value(Y)"
-msgstr "Yes"
-
-msgid "umfrage_nutzen_value(N)"
-msgstr "No"
-
-msgid "umfrage_einloggen_value(Y)"
-msgstr "Yes"
-
-msgid "umfrage_einloggen_value(N)"
-msgstr "No"
-
 msgid "kwk_nutzen_value(Y)"
 msgstr "Yes"
 

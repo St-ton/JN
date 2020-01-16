@@ -80,9 +80,6 @@ msgstr "Mehr Details unter <a href=\"statistik.php?s=3\">Statistiken</a>"
 msgid "noStatisticsFound"
 msgstr "Keine Statistiken gefunden"
 
-msgid "moduleSurvey"
-msgstr "Umfragen-Modul"
-
 msgid "moduleSelectionWizard"
 msgstr "Auswahlassistent-Modul"
 

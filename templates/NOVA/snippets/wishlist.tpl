@@ -374,7 +374,8 @@
                 {form method="post"
                     action="{get_static_route id='wunschliste.php'}{if $CWunschliste->nStandard != 1}?wl={$CWunschliste->kWunschliste}{/if}"
                     name="Wunschliste"
-                    class="basket_wrapper{if $hasItems === true} mt-6{/if}"}
+                    class="basket_wrapper{if $hasItems === true} mt-6{/if}"
+                    id="wl-items-form"}
                 {block name='snippets-wishlist-form-basket-content'}
                     {block name='snippets-wishlist-form-basket-inputs-hidden'}
                         {input type="hidden" name="wla" value="1"}
@@ -406,7 +407,7 @@
                                                                 name="remove" value=$wlPosition->kWunschlistePos
                                                                 aria=["label"=>"{lang key='wishlistremoveItem' section='login'}"]
                                                                 title="{lang key='wishlistremoveItem' section='login'}"
-                                                                class="wishlist-pos-delete float-right text-decoration-none mb-2 font-size-lg"
+                                                                class="wishlist-pos-delete float-right text-decoration-none mt-n2 m-0 p-1 font-size-lg"
                                                                 data=["toggle"=>"tooltip"]
                                                             }
                                                                 <i class="fas fa-times"></i>
@@ -415,23 +416,33 @@
                                                         {/block}
                                                     {/if}
                                                     {block name='snippets-wishlist-form-basket-image'}
-                                                        <div class="list-gallery slick-smooth-loading carousel carousel-arrows-inside productbox-images">
-                                                            {foreach $wlPosition->Artikel->Bilder as $image}
-                                                                {strip}
-                                                                    <div>
-                                                                        {link href=$wlPosition->Artikel->cURLFull}
-                                                                            {image alt=$wlPosition->Artikel->cName fluid=true webp=true lazy=true
-                                                                                src="{$image->cURLKlein}"
-                                                                                srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                        <div class="list-gallery productbox-images">
+                                                            {assign var=image value=$wlPosition->Artikel->Bilder[0]}
+                                                            {strip}
+                                                                <div>
+                                                                    {link href=$wlPosition->Artikel->cURLFull}
+                                                                        {image alt=$wlPosition->Artikel->cName fluid=true webp=true lazy=true
+                                                                            src="{$image->cURLKlein}"
+                                                                            srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                                             {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                                             {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                                                            sizes="auto"
+                                                                            class="w-100{if !$device->isMobile() && !empty($wlPosition->Artikel->Bilder[1])} first{/if}"
+                                                                        }
+                                                                    {if !$device->isMobile() && !empty($wlPosition->Artikel->Bilder[1])}
+                                                                        {$image = $wlPosition->Artikel->Bilder[1]}
+                                                                        {image alt=$wlPosition->Artikel->cName fluid=true webp=true lazy=true
+                                                                            src="{$image->cURLKlein}"
+                                                                            srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
                                                                                  {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
                                                                                  {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
-                                                                                sizes="auto"
-                                                                                class='w-100'
-                                                                            }
-                                                                        {/link}
-                                                                    </div>
-                                                                {/strip}
-                                                            {/foreach}
+                                                                            sizes="auto"
+                                                                            class='second'
+                                                                        }
+                                                                    {/if}
+                                                                    {/link}
+                                                                </div>
+                                                            {/strip}
                                                         </div>
                                                     {/block}
                                                 </div>
@@ -475,7 +486,7 @@
                                                                     readonly=($isCurrenctCustomer !== true)
                                                                     rows="5"
                                                                     name="Kommentar_{$wlPosition->kWunschlistePos}"
-                                                                    class="my-3"
+                                                                    class="my-3 js-update-wl"
                                                                 }{$wlPosition->cKommentar}{/textarea}
                                                             {/block}
                                                             {if !($wlPosition->Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N')}
@@ -486,6 +497,7 @@
                                                                                 {inputgroup class="form-counter"}
                                                                                     {inputgroupprepend}
                                                                                         {button variant=""
+                                                                                            class="btn-decrement"
                                                                                             data=["count-down"=>""]
                                                                                             aria=["label"=>{lang key='decreaseQuantity' section='aria'}]}
                                                                                             <span class="fas fa-minus"></span>
@@ -497,7 +509,8 @@
                                                                                         max=$wlPosition->Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE]|default:''
                                                                                         required=($wlPosition->Artikel->fAbnahmeintervall > 0)
                                                                                         step="{if $wlPosition->Artikel->fAbnahmeintervall > 0}{$wlPosition->Artikel->fAbnahmeintervall}{/if}"
-                                                                                        class="quantity wunschliste_anzahl" name="Anzahl_{$wlPosition->kWunschlistePos}"
+                                                                                        class="quantity wunschliste_anzahl"
+                                                                                        name="Anzahl_{$wlPosition->kWunschlistePos}"
                                                                                         aria=["label"=>"{lang key='quantity'}"]
                                                                                         value="{$wlPosition->fAnzahl}"
                                                                                         data=["decimals"=>"{if $wlPosition->Artikel->fAbnahmeintervall > 0}2{else}0{/if}"]
@@ -511,6 +524,7 @@
                                                                                             {/block}
                                                                                         {/if}
                                                                                         {button variant=""
+                                                                                            class="btn-increment"
                                                                                             data=["count-up"=>""]
                                                                                             aria=["label"=>{lang key='decreaseQuantity' section='aria'}]}
                                                                                             <span class="fas fa-plus"></span>
@@ -558,16 +572,21 @@
                         {block name='snippets-wishlist-form-basket-submit'}
                             <div class="sticky-bottom">
                             {row}
-                                {col md=4 xl=3 class='ml-auto'}
+                                {col cols=12 md="auto" class="ml-auto"}
                                     {if $isCurrenctCustomer === true}
                                         {button type="submit"
-                                            title="{lang key='wishlistUpdate' section='login'}"
+                                            title="{lang key='addCurrentProductsToCart' section='wishlist'}"
                                             name="action"
-                                            value="update"
+                                            value="addAllToCart"
                                             block=true
-                                            variant="outline-primary"
-                                            class="btn-white"}
-                                            <i class="fa fa-sync"></i> {lang key='wishlistUpdate' section='login'}
+                                            variant="primary"
+                                        }
+                                            <i class="fa fa-shopping-cart"></i>
+                                            {if !empty($wlsearch)}
+                                                {lang key='addCurrentProductsToCart' section='wishlist'}
+                                            {else}
+                                                {lang key='wishlistAddAllToCart' section='login'}
+                                            {/if}
                                         {/button}
                                     {/if}
                                 {/col}
@@ -585,6 +604,13 @@
         {/if}
         {/container}
     {/block}
+
+    {inline_script}<script>
+        $.evo.extended().addInactivityCheck('#wl-items-form');
+        $('.js-update-wl').on('change', function () {
+            $.evo.extended().updateWishlistItem($(this).closest('.productbox-inner'));
+        });
+    </script>{/inline_script}
 
     {block name='snippets-wishlist-include-footer'}
         {include file='layout/footer.tpl'}

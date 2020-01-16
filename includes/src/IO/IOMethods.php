@@ -87,7 +87,8 @@ class IOMethods
                         ->register('setSelectionWizardAnswers', [$this, 'setSelectionWizardAnswers'])
                         ->register('getCitiesByZip', [$this, 'getCitiesByZip'])
                         ->register('getOpcDraftsHtml', [$this, 'getOpcDraftsHtml'])
-                        ->register('setWishlistVisibility', [$this, 'setWishlistVisibility']);
+                        ->register('setWishlistVisibility', [$this, 'setWishlistVisibility'])
+                        ->register('updateWishlistItem', [$this, 'updateWishlistItem']);
     }
 
     /**
@@ -1290,6 +1291,24 @@ class IOMethods
         $response->wlID  = $wlID;
         $response->state = $state;
         $response->url   = Wishlist::instanceByID($wlID)->cURLID;
+
+        $objResponse->script('this.response = ' . \json_encode($response) . ';');
+
+        return $objResponse;
+    }
+
+    /**
+     * @param int $wlID
+     * @param array $formData
+     * @return IOResponse
+     */
+    public function updateWishlistItem(int $wlID, array $formData): IOResponse
+    {
+        Wishlist::update($wlID, $formData);
+
+        $objResponse    = new IOResponse();
+        $response       = new stdClass();
+        $response->wlID = $wlID;
 
         $objResponse->script('this.response = ' . \json_encode($response) . ';');
 

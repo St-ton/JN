@@ -62,6 +62,7 @@ aside {
     .nav a ,
     .dropdown-menu .dropdown-item {
       text-decoration: none;
+      white-space: normal;
     }
   }
 
@@ -86,20 +87,6 @@ aside {
    .collapse {
       background: $gray-lighter;
    }
-}
-
-.box-filter-characteristics, .box-filter-manufacturer {
-  .filter-img {
-    width: auto;
-    height: 45px;
-    margin: 0.2rem;
-    border: 3px solid transparent;
-  }
-
-  .active .filter-img {
-    border: 3px solid $primary;
-    border-radius: $border-radius;
-  }
 }
 
 // boxes

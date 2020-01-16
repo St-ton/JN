@@ -189,11 +189,6 @@ final class Shop
     /**
      * @var int
      */
-    public static $kUmfrage;
-
-    /**
-     * @var int
-     */
     public static $nBewertungSterneFilter;
 
     /**
@@ -926,7 +921,6 @@ final class Shop
         self::$kNews                  = Request::verifyGPCDataInt('n');
         self::$kNewsMonatsUebersicht  = Request::verifyGPCDataInt('nm');
         self::$kNewsKategorie         = Request::verifyGPCDataInt('nk');
-        self::$kUmfrage               = Request::verifyGPCDataInt('u');
         self::$nBewertungSterneFilter = Request::verifyGPCDataInt('bf');
         self::$cPreisspannenFilter    = Request::verifyGPDataString('pf');
         self::$kHerstellerFilter      = Request::verifyGPCDataInt('hf');
@@ -963,10 +957,6 @@ final class Shop
             self::$cSuche = Text::xssClean(Request::verifyGPDataString('suchausdruck'));
         } else {
             self::$cSuche = Text::xssClean(Request::verifyGPDataString('suche'));
-        }
-        // avoid redirect loops for surveys that require logged in customers
-        if (self::$kUmfrage > 0 && empty($_SESSION['Kunde']->kKunde) && Request::verifyGPCDataInt('r') !== 0) {
-            self::$kUmfrage = 0;
         }
 
         self::$nArtikelProSeite = Request::verifyGPCDataInt('af');
@@ -1065,7 +1055,6 @@ final class Shop
             'kNews'                  => self::$kNews,
             'kNewsMonatsUebersicht'  => self::$kNewsMonatsUebersicht,
             'kNewsKategorie'         => self::$kNewsKategorie,
-            'kUmfrage'               => self::$kUmfrage,
             'kKategorieFilter'       => self::$kKategorieFilter,
             'kHerstellerFilter'      => self::$kHerstellerFilter,
             'nBewertungSterneFilter' => self::$nBewertungSterneFilter,
@@ -1423,10 +1412,6 @@ final class Shop
                     case 'kNewsKategorie':
                         self::$kNewsKategorie = $oSeo->kKey;
                         break;
-
-                    case 'kUmfrage':
-                        self::$kUmfrage = $oSeo->kKey;
-                        break;
                 }
             }
             if (isset($oSeo->kSprache) && $oSeo->kSprache > 0) {
@@ -1511,9 +1496,6 @@ final class Shop
         } elseif (self::$kNews > 0 || self::$kNewsMonatsUebersicht > 0 || self::$kNewsKategorie > 0) {
             self::$fileName = 'news.php';
             self::setPageType(\PAGE_NEWS);
-        } elseif (self::$kUmfrage > 0) {
-            self::$fileName = 'umfrage.php';
-            self::setPageType(\PAGE_UMFRAGE);
         } elseif (!empty(self::$cSuche)) {
             self::$fileName = 'filter.php';
             self::setPageType(\PAGE_ARTIKELLISTE);
@@ -1609,9 +1591,6 @@ final class Shop
                         break;
                     case 'registrieren.php':
                         self::setPageType(\PAGE_REGISTRIERUNG);
-                        break;
-                    case 'umfrage.php':
-                        self::setPageType(\PAGE_UMFRAGE);
                         break;
                     case 'warenkorb.php':
                         self::setPageType(\PAGE_WARENKORB);

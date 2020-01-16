@@ -130,24 +130,34 @@
                                         <table class="table table-sm table-hover">
                                             <thead>
                                                 <tr>
-                                                    <th class="text-left">
-                                                        {lang key='fromDifferential' section='productOverview'}{if $Artikel->cEinheit} {$Artikel->cEinheit}{/if}
+                                                    <th>
+                                                        {lang key='fromDifferential' section='productOverview'}
+                                                    </th>
+                                                    <th>{lang key='pricePerUnit' section='productDetails'}{if $Artikel->cEinheit} / {$Artikel->cEinheit}{/if}
                                                         {if isset($Artikel->cMasseinheitName) && isset($Artikel->fMassMenge) && $Artikel->fMassMenge > 0 && $Artikel->cTeilbar !== 'Y' && ($Artikel->fAbnahmeintervall == 0 || $Artikel->fAbnahmeintervall == 1) && isset($Artikel->cMassMenge)}
                                                             ({$Artikel->cMassMenge} {$Artikel->cMasseinheitName})
                                                         {/if}
                                                     </th>
-                                                    <th class="text-left">{lang key='pricePerUnit' section='productDetails'}</th>
+                                                    {if !empty($Artikel->staffelPreis_arr[0].cBasePriceLocalized)}
+                                                    <th>
+                                                        {lang key='basePrice'}
+                                                    </th>
+                                                    {/if}
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 {foreach $Artikel->staffelPreis_arr as $bulkPrice}
                                                     {if $bulkPrice.nAnzahl > 0}
                                                         <tr class="bulk-price-{$bulkPrice.nAnzahl}">
-                                                            <td class="text-left">{$bulkPrice.nAnzahl}</td>
-                                                            <td class="text-left bulk-price">
+                                                            <td>{$bulkPrice.nAnzahl}</td>
+                                                            <td class="bulk-price">
                                                                 {$bulkPrice.cPreisLocalized[$NettoPreise]} <span class="footnote-reference">*</span>
-                                                                {if !empty($bulkPrice.cBasePriceLocalized)}, <span class="bulk-base-price ml-2">{$bulkPrice.cBasePriceLocalized[$NettoPreise]}</span>{/if}
                                                             </td>
+                                                            {if !empty($bulkPrice.cBasePriceLocalized)}
+                                                                <td class="bulk-base-price">
+                                                                    {$bulkPrice.cBasePriceLocalized[$NettoPreise]}
+                                                                </td>
+                                                            {/if}
                                                         </tr>
                                                     {/if}
                                                 {/foreach}

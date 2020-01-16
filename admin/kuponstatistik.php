@@ -92,7 +92,8 @@ $couponAmountAll       = 0;
 $tmpUser               = [];
 $date                  = [];
 foreach ($usedCouponsOrder as $key => $usedCouponOrder) {
-    $customer                            = new Customer($usedCouponOrder['kKunde'] ?? 0);
+    $usedCouponOrder['kKunde']           = isset($usedCouponOrder['kKunde']) ? (int)$usedCouponOrder['kKunde'] : 0;
+    $customer                            = new Customer($usedCouponOrder['kKunde']);
     $usedCouponsOrder[$key]['cUserName'] = $customer->cVorname . ' ' . $customer->cNachname;
     unset($customer);
     $usedCouponsOrder[$key]['nCouponValue']        =

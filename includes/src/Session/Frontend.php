@@ -149,7 +149,7 @@ class Frontend extends AbstractSession
                 $_SESSION['kSprache'] ?? $_SESSION['Kunde']->kSprache ?? 0,
                 $_SESSION['cISOSprache'] ?? null
             );
-            $this->setCustomer(new Customer($_SESSION['Kunde']->kKunde));
+            $this->setCustomer(new Customer((int)$_SESSION['Kunde']->kKunde));
             $_SESSION['kundendaten_aktualisiert'] = 1;
         }
 

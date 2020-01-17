@@ -27,6 +27,8 @@ class GUI
             'loaderModal',
             'errorModal',
             'errorAlert',
+            'messageboxModal',
+            'messageboxAlert',
             'configModal',
             'configModalTitle',
             'configPortletName',
@@ -164,6 +166,13 @@ class GUI
         return Promise.reject(msg);
     }
 
+    showMessageBox(msg, title)
+    {
+        this.messageboxAlert.html(msg);
+        this.messageboxModal.find('.modal-title').html(title);
+        this.messageboxModal.modal('show');
+    }
+
     updateBlueprintList()
     {
         this.io.getBlueprints().then(blueprints => {
@@ -225,7 +234,10 @@ class GUI
     {
         this.page.loadFromImport()
             .catch(er => this.showError('Could not import OPC page JSON: ' + er.error.message))
-            .then(this.iframe.onPageLoad);
+            .then(this.iframe.onPageLoad)
+            .then(() => {
+                this.showMessageBox('Einwandfrei!', '');
+            });
     }
 
     onBtnExport()

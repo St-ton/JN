@@ -3232,10 +3232,10 @@ function encodeCode($klartext)
     $mod1 = (ord($key[0]) + ord($key[1]) + ord($key[2])) % 9 + 1;
     $mod2 = strlen($_SERVER['DOCUMENT_ROOT']) % 9 + 1;
 
-    $s1 = ord($klartext{0}) - $mod2 + $mod1 + 123;
-    $s2 = ord($klartext{1}) - $mod1 + $mod2 + 234;
-    $s3 = ord($klartext{2}) + $mod1 + 345;
-    $s4 = ord($klartext{3}) + $mod2 + 456;
+    $s1 = ord($klartext[0]) - $mod2 + $mod1 + 123;
+    $s2 = ord($klartext[1]) - $mod1 + $mod2 + 234;
+    $s3 = ord($klartext[2]) + $mod1 + 345;
+    $s4 = ord($klartext[3]) + $mod2 + 456;
 
     return rand(100, 999) . $s3 . rand(0, 9) . $s4 . rand(10, 99) . $s1 . $s2 . rand(1000, 9999);
 }
@@ -6879,7 +6879,7 @@ function formatSize($size)
 
 /**
  * @param DateTime|string|int $date
- * @param int $weekdays 
+ * @param int $weekdays
  * @return DateTime
  */
 function dateAddWeekday($date, $weekdays)

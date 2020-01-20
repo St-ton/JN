@@ -99,7 +99,7 @@ final class Newsletter extends Job
                     $manufacturers,
                     $categories[$cgID],
                     $campaign,
-                    $recipient->kKunde > 0 ? new Customer($recipient->kKunde) : null
+                    $recipient->kKunde > 0 ? new Customer((int)$recipient->kKunde) : null
                 );
                 $this->db->update(
                     'tnewsletterempfaenger',

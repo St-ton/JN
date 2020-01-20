@@ -81,7 +81,7 @@ function gibNewskommentarFreischalten(string $sql, $searchSQL, bool $checkLangua
         ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($newsComments as $comment) {
-        $customer = new Customer($comment->kKunde ?? 0);
+        $customer = new Customer(isset($comment->kKunde) ? (int)$comment->kKunde : null);
 
         $comment->cNachname = $customer->cNachname;
     }

@@ -695,7 +695,7 @@ if ($step === 'uebersicht') {
         ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($inactiveRecipients as $recipient) {
-        $customer             = new Customer($recipient->kKunde ?? null);
+        $customer             = new Customer(isset($recipient->kKunde) ? (int)$recipient->kKunde : null);
         $recipient->cNachname = $customer->cNachname;
     }
 

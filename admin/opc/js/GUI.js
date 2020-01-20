@@ -23,6 +23,7 @@ class GUI
         installGuiElements(this, [
             'opcSidebar',
             'opcHeader',
+            'btnPagetree',
             'iframePanel',
             'previewPanel',
             'loaderModal',
@@ -52,12 +53,7 @@ class GUI
             'checkPublishInfinite',
             'publishFrom',
             'publishTo',
-            'btnImport',
-            'btnExport',
             'btnHelp',
-            'btnPublish',
-            'btnClose',
-            'btnImportBlueprint',
             'btnNoRestoreUnsaved',
             'revisionList',
             'revisionBtnBlueprint',
@@ -68,11 +64,6 @@ class GUI
             'portletGroupBtn',
             'restoreUnsavedModal',
             'restoreUnsavedForm',
-            'btnDisplayWidthXS',
-            'btnDisplayWidthSM',
-            'btnDisplayWidthMD',
-            'btnDisplayWidthLG',
-            'btnDisplayWidthXL',
             'unsavedState',
             'iconpicker',
             'disableVeil',
@@ -221,6 +212,15 @@ class GUI
         });
     }
 
+    updatePagetreeBtn()
+    {
+        if (this.page.offscreenAreas.length) {
+            this.btnPagetree.addClass('has-unmapped');
+        } else {
+            this.btnPagetree.removeClass('has-unmapped');
+        }
+    }
+
     updateDynamicGui()
     {
         installGuiElements(this, [
@@ -231,7 +231,7 @@ class GUI
         ]);
     }
 
-    onBtnImport()
+    importDraft()
     {
         this.page.loadFromImport()
             .catch(er => this.showError('Could not import OPC page JSON: ' + er.error.message))
@@ -258,12 +258,14 @@ class GUI
                         );
                     }
 
-                    $('[href="#pagetree"]').click()
+                    $('[href="#pagetree"]').click();
+                    this.updatePagetreeBtn();
+                    this.setUnsaved(true, true);
                 }
             });
     }
 
-    onBtnExport()
+    exportDraft()
     {
         this.page.exportAsDownload();
     }
@@ -326,7 +328,7 @@ class GUI
         return this.unsavedState.css('display') !== 'none';
     }
 
-    onBtnClose(e)
+    closeEditor(e)
     {
         this.page.unlock().then(() => {
             window.location = this.page.fullUrl;
@@ -385,6 +387,7 @@ class GUI
             .then(this.iframe.onPageLoad)
             .then(() => {
                 this.iframe.loadMissingPortletPreviewStyles();
+                this.updatePagetreeBtn();
             });
 
         this.setUnsaved(revId !== 0);
@@ -499,7 +502,7 @@ class GUI
         });
     }
 
-    onBtnImportBlueprint()
+    importBlueprint()
     {
         $('<input type="file" accept=".json">')
             .on(
@@ -527,7 +530,7 @@ class GUI
         e.preventDefault();
     }
 
-    onBtnPublish(e)
+    publishDraft(e)
     {
         if(typeof this.page.publishFrom === 'string' && this.page.publishFrom.length > 0) {
             this.setPublishSchedule();
@@ -702,50 +705,41 @@ class GUI
         this.iconPickerCB = callback;
     }
 
-    onBtnDisplayWidthXS(e)
+    setDisplayFrameWidth(btn, value)
     {
-        this.iframe.iframe.width('375px');
-        this.previewFrame.previewFrame.width('375px');
+        this.iframe.iframe.width(value);
+        this.previewFrame.previewFrame.width(value);
         $('#displayWidths .active').removeClass('active');
-        this.btnDisplayWidthXS.parent().addClass('active');
+        $(btn).addClass('active');
     }
 
-    onBtnDisplayWidthSM(e)
+    setDisplayWidthXS()
     {
-        this.iframe.iframe.width('577px');
-        this.previewFrame.previewFrame.width('577px');
-        $('#displayWidths .active').removeClass('active');
-        this.btnDisplayWidthSM.parent().addClass('active');
+        this.setDisplayFrameWidth(event.currentTarget, '375px');
     }
 
-    onBtnDisplayWidthMD(e)
+    setDisplayWidthSM()
     {
-        this.iframe.iframe.width('769px');
-        this.previewFrame.previewFrame.width('769px');
-        $('#displayWidths .active').removeClass('active');
-        this.btnDisplayWidthMD.parent().addClass('active');
+        this.setDisplayFrameWidth(event.currentTarget, '577px');
     }
 
-    onBtnDisplayWidthLG(e)
+    setDisplayWidthMD()
     {
-        this.iframe.iframe.width('993px');
-        this.previewFrame.previewFrame.width('993px');
-        $('#displayWidths .active').removeClass('active');
-        this.btnDisplayWidthLG.parent().addClass('active');
+        this.setDisplayFrameWidth(event.currentTarget, '769px');
     }
 
-    onBtnDisplayWidthXL(e)
+    setDisplayWidthLG()
     {
-        this.iframe.iframe.width('100%');
-        this.previewFrame.previewFrame.width('100%');
-        $('#displayWidths .active').removeClass('active');
-        this.btnDisplayWidthXL.parent().addClass('active');
+        this.setDisplayFrameWidth(event.currentTarget, '993px');
+    }
+
+    setDisplayWidthXL()
+    {
+        this.setDisplayFrameWidth(event.currentTarget, '100%');
     }
 
     onBeginEditDraftName()
     {
-        let draftName = $('#footerDraftName span').text();
-
         $('#footerDraftName').hide();
         $('#footerDraftNameInput').val(this.page.name).show();
     }
@@ -782,6 +776,6 @@ class GUI
 
     onBtnNoRestoreUnsaved()
     {
-        this.page.clearPageWebStorage();
+        this.setUnsaved(false, true);
     }
 }

@@ -355,5 +355,26 @@
         }
       }
     }
+
+    #btnPagetree {
+      &.has-unmapped {
+        .nav-link {
+          position: relative;
+          color: #f68b25;
+
+          &:after {
+            display: block;
+            position: absolute;
+            content: "";
+            background-color: #f68b25;
+            width: 8px;
+            height: 8px;
+            right: -8px;
+            top: 11px;
+            border-radius: 100%;
+          }
+        }
+      }
+    }
   }
 }

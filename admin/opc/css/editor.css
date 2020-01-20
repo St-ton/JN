@@ -304,6 +304,21 @@
   border-color: #435A6B;
   color: #435A6B;
 }
+#opc .nav-tabs #btnPagetree.has-unmapped .nav-link {
+  position: relative;
+  color: #f68b25;
+}
+#opc .nav-tabs #btnPagetree.has-unmapped .nav-link:after {
+  display: block;
+  position: absolute;
+  content: "";
+  background-color: #f68b25;
+  width: 8px;
+  height: 8px;
+  right: -8px;
+  top: 11px;
+  border-radius: 100%;
+}
 
 #portlets hr {
   margin-top: 0;
@@ -1158,7 +1173,7 @@ html, body {
 #opc #opcSidebar #sidebarFooter #previewToolbar #displayWidths > li > button {
   color: #BDBDBD;
 }
-#opc #opcSidebar #sidebarFooter #previewToolbar #displayWidths > li.active > button {
+#opc #opcSidebar #sidebarFooter #previewToolbar #displayWidths > li > button.active {
   color: #435A6B;
 }
 #opc #opcSidebar #displayPreviews {

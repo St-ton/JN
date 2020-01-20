@@ -351,10 +351,10 @@ html, body {
 
             > button {
               color: $muted-text;
-            }
 
-            &.active > button {
-              color: $text-color;
+              &.active {
+                color: $text-color;
+              }
             }
           }
         }

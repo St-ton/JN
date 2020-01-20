@@ -128,6 +128,7 @@ class PageTree
 
                             this.render();
                             this.gui.setUnsaved(true, true);
+                            this.gui.updatePagetreeBtn();
                         });
 
                         dropdownMenu.append(btn);

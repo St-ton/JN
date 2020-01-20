@@ -18,7 +18,6 @@ use JTL\Newsletter\NewsletterCronDAO;
 use JTL\Pagination\Pagination;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use function Functional\map;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -679,7 +678,7 @@ if ($step === 'uebersicht') {
             ReturnType::ARRAY_OF_OBJECTS
         );
     }
-    $inactiveRecipients = map($db->query(
+    $inactiveRecipients = $db->query(
         "SELECT tnewsletterempfaenger.kNewsletterEmpfaenger, tnewsletterempfaenger.cVorname AS newsVorname,
             tnewsletterempfaenger.cNachname AS newsNachname, tkunde.cVorname, tkunde.cNachname,
             tnewsletterempfaenger.cEmail, tnewsletterempfaenger.nAktiv, tkunde.kKundengruppe, tkundengruppe.cName,
@@ -694,13 +693,9 @@ if ($step === 'uebersicht') {
             ORDER BY tnewsletterempfaenger.dEingetragen DESC
             LIMIT ' . $pagiInactive->getLimitSQL(),
         ReturnType::ARRAY_OF_OBJECTS
-    ), static function ($e) {
-        $e->kKunde = isset($e->kKunde) ? (int)$e->kKunde : null;
-
-        return $e;
-    });
+    );
     foreach ($inactiveRecipients as $recipient) {
-        $customer             = new Customer($recipient->kKunde);
+        $customer             = new Customer(isset($recipient->kKunde) ? (int)$recipient->kKunde : null);
         $recipient->cNachname = $customer->cNachname;
     }
 

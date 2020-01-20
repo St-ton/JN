@@ -9,7 +9,6 @@ use JTL\DB\ReturnType;
 use JTL\Helpers\Seo;
 use JTL\Review\ReviewAdminController;
 use JTL\Shop;
-use function Functional\map;
 
 /**
  * @param string $sql
@@ -67,7 +66,7 @@ function gibNewskommentarFreischalten(string $sql, $searchSQL, bool $checkLangua
     $cond         = $checkLanguage === true
         ? ' AND t.languageID = ' . (int)$_SESSION['kSprache'] . ' '
         : '';
-    $newsComments = map(Shop::Container()->getDB()->query(
+    $newsComments = Shop::Container()->getDB()->query(
         "SELECT tnewskommentar.*, DATE_FORMAT(tnewskommentar.dErstellt, '%d.%m.%Y  %H:%i') AS dErstellt_de, 
             tkunde.kKunde, tkunde.cVorname, tkunde.cNachname, t.title AS cBetreff
             FROM tnewskommentar
@@ -80,13 +79,9 @@ function gibNewskommentarFreischalten(string $sql, $searchSQL, bool $checkLangua
             WHERE tnewskommentar.nAktiv = 0" .
             $searchSQL->cWhere . $cond . $sql,
         ReturnType::ARRAY_OF_OBJECTS
-    ), static function ($e) {
-        $e->kKunde = isset($e->kKunde) ? (int)$e->kKunde : null;
-
-        return $e;
-    });
+    );
     foreach ($newsComments as $comment) {
-        $customer = new Customer($comment->kKunde);
+        $customer = new Customer(isset($comment->kKunde) ? (int)$comment->kKunde : null);
 
         $comment->cNachname = $customer->cNachname;
     }

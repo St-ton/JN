@@ -873,6 +873,10 @@
   padding: 2px 2px 7px 2px;
 }
 
+#opc #messageboxModal .modal-content {
+  display: block;
+}
+
 html, body {
   margin: 0;
   padding: 0;

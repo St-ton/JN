@@ -1,11 +1,12 @@
 class GUI
 {
-    constructor(io, page)
+    constructor(io, page, messages)
     {
         bindProtoOnHandlers(this);
 
         this.io            = io;
         this.page          = page;
+        this.messages      = messages;
         this.configSaveCb  = noop;
         this.imageSelectCB = noop;
         this.iconPickerCB  = noop;
@@ -236,7 +237,29 @@ class GUI
             .catch(er => this.showError('Could not import OPC page JSON: ' + er.error.message))
             .then(this.iframe.onPageLoad)
             .then(() => {
-                this.showMessageBox('Einwandfrei!', '');
+                let unmappedCount = this.page.offscreenAreas.length;
+
+                if (unmappedCount === 0) {
+                    this.showMessageBox(
+                        this.messages.opcImportSuccess,
+                        this.messages.opcImportSuccessTitle,
+                    );
+                } else {
+                    if (unmappedCount === 1) {
+                        this.showMessageBox(
+                            this.messages.opcImportSuccess + '<br><br>' + this.messages.opcImportUnmappedS,
+                            this.messages.opcImportSuccessTitle,
+                        );
+                    } else {
+                        this.showMessageBox(
+                            this.messages.opcImportSuccess + '<br><br>' +
+                            this.messages.opcImportUnmappedP.replace('%s', unmappedCount),
+                            this.messages.opcImportSuccessTitle,
+                        );
+                    }
+
+                    $('[href="#pagetree"]').click()
+                }
             });
     }
 

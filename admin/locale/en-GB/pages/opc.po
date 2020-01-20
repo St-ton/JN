@@ -397,3 +397,11 @@ msgstr "expired on"
 
 msgid "dropPortletHere"
 msgstr "Drop Portlet here"
+
+# Messages
+
+msgid "opcImportSuccess"
+msgstr "Draft imported successfully"
+
+msgid "opcImportSuccessTitle"
+msgstr "Draft imported successfully"

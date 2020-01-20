@@ -77,6 +77,19 @@ class Service
     }
 
     /**
+     * @return string[]
+     */
+    public function getEditorMessageNames(): array
+    {
+        return [
+            'opcImportSuccessTitle',
+            'opcImportSuccess',
+            'opcImportUnmappedS',
+            'opcImportUnmappedP',
+        ];
+    }
+
+    /**
      * @param AdminIO $io
      * @throws Exception
      */

@@ -50,6 +50,11 @@
             templateUrl: '{$templateUrl}',
             pageKey:     {$pageKey},
             error:       {$error|json_encode},
+            messages:    {
+                {foreach $opc->getEditorMessageNames() as $varname}
+                    {$varname}: {__($varname)|json_encode},
+                {/foreach}
+            },
         });
 
         opc.init();

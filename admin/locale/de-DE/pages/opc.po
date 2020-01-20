@@ -427,3 +427,17 @@ msgstr "Inhalt in sichtbaren Bereich übertragen"
 
 msgid "Unmapped areas"
 msgstr "Nicht abgebildete Bereiche"
+
+# Messages
+
+msgid "opcImportSuccess"
+msgstr "Entwurf wurde erfolgreich importiert! "
+
+msgid "opcImportUnmappedS"
+msgstr "Es wurde ein nicht abbildbarer Bereich gefunden."
+
+msgid "opcImportUnmappedP"
+msgstr "Es wurden %s nicht abbildbare Bereiche gefunden."
+
+msgid "opcImportSuccessTitle"
+msgstr "Entwurf erfolgreich importiert"

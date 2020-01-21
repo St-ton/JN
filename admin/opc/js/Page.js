@@ -323,4 +323,11 @@ class Page
 
         return widthHeuristics;
     }
+
+    removeOffscreenArea(area)
+    {
+        this.offscreenAreas = this.offscreenAreas.filter((i,elm) => (
+            elm !== area[0]
+        ));
+    }
 }

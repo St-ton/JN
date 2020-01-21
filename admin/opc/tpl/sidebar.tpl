@@ -161,8 +161,3 @@
 <a class="revisionBtn" href="#" data-revision-id="999"
    style="display:none" id="revisionBtnBlueprint"></a>
 {*/blueprint*}
-
-{*translations for page tree GUI*}
-<span style="display: none" id="btnTitleCopyArea">{__('Transfer content to visible area')}</span>
-<span style="display: none" id="offscreenAreasDivider">{__('Unmapped areas')}</span>
-{*/translations for page tree GUI*}

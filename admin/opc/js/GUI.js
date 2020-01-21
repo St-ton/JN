@@ -526,7 +526,7 @@ class GUI
         event.preventDefault();
     }
 
-    publishDraft(e)
+    publishDraft()
     {
         if(typeof this.page.publishFrom === 'string' && this.page.publishFrom.length > 0) {
             this.setPublishSchedule();

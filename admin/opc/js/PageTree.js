@@ -58,7 +58,8 @@ class PageTree
                 ul.append(this.renderArea(jq(area), false, true));
             });
 
-            let offscreenDivider = $('<div class="offscreenDivider">').html($('#offscreenAreasDivider').text());
+            let offscreenDivider = $('<div class="offscreenDivider">')
+                .html(this.gui.messages.offscreenAreasDivider);
             this.pageTreeView.append(offscreenDivider);
             this.pageTreeView.append(ul);
         }
@@ -99,16 +100,22 @@ class PageTree
         });
 
         if(offscreenArea) {
-            let copybtn      = $('<a href="#" class="_item-copybtn" data-toggle="dropdown">');
-            let dropdownMenu = $('<div class="dropdown-menu opc-dropdown-menu" style="width: 250px">');
-            let dropdown     = $('<div class="item-copybtn opc-dropdown">');
+            let copybtn         = $('<a href="#" data-toggle="dropdown">');
+            let delbtn          = $('<a href="#" data-toggle="dropdown">');
+            let dropdownMenu    = $('<div class="dropdown-menu opc-dropdown-menu" style="width: 250px">');
+            let dropdown        = $('<div class="item-copybtn opc-dropdown">');
+            let deldropdownMenu = $('<div class="dropdown-menu opc-dropdown-menu" style="width: 250px">');
+            let deldropdown     = $('<div class="item-copybtn opc-dropdown">');
+
+            delbtn.append('<i class="fas fa-fw fa-trash">');
             copybtn.append('<i class="fas fa-fw fa-arrow-right">');
             dropdown.append(copybtn).append(dropdownMenu);
-            head.append(dropdown);
+            deldropdown.append(delbtn).append(deldropdownMenu);
+            head.append(dropdown).append(deldropdown);
+            copybtn.attr('title', this.gui.messages.btnTitleCopyArea);
+            delbtn.attr('title', this.gui.messages.yesDeleteArea);
 
-            copybtn.attr('title', $('#btnTitleCopyArea').text());
-
-            copybtn.dropdown().click(() => {
+            copybtn.click(() => {
                 dropdownMenu.empty();
 
                 this.page.rootAreas.each((i, targetArea) => {
@@ -116,25 +123,29 @@ class PageTree
 
                     if(targetArea.find('[data-portlet]').length === 0) {
                         let areaId = targetArea.data('area-id');
-                        let btn    = $('<button type="button" class="opc-dropdown-item">' + areaId + "</button>");
+                        let btn    = $('<button type="button" class="opc-dropdown-item">' + areaId + '</button>');
 
                         btn.on('click', () => {
                             targetArea.html(area.html());
                             this.iframe.updateDropTargets();
-
-                            this.page.offscreenAreas = this.page.offscreenAreas.filter((i,elm) => (
-                                elm !== area[0]
-                            ));
-
-                            this.render();
-                            this.gui.setUnsaved(true, true);
-                            this.gui.updatePagetreeBtn();
+                            this.removeOffscreenArea(area);
                         });
 
                         dropdownMenu.append(btn);
                     }
                 });
             });
+
+            let yes = $('<button type="button" class="opc-dropdown-item">' +
+                this.gui.messages.yesDeleteArea + '!</button>')
+                .on('click', () => {
+                    this.removeOffscreenArea(area);
+                });
+
+            let no  = $('<button type="button" class="opc-dropdown-item">' +
+                this.gui.messages.Cancel + '</button>');
+
+            deldropdownMenu.append(yes).append(no);
         }
 
         return li;
@@ -197,5 +208,13 @@ class PageTree
         let expanded = treeItem.hasClass('expanded');
 
         $(area[0].treeItem).replaceWith(this.renderArea(area, expanded));
+    }
+
+    removeOffscreenArea(area)
+    {
+        this.page.removeOffscreenArea(area);
+        this.render();
+        this.gui.setUnsaved(true, true);
+        this.gui.updatePagetreeBtn();
     }
 }

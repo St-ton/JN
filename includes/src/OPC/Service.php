@@ -86,6 +86,10 @@ class Service
             'opcImportSuccess',
             'opcImportUnmappedS',
             'opcImportUnmappedP',
+            'btnTitleCopyArea',
+            'offscreenAreasDivider',
+            'yesDeleteArea',
+            'Cancel',
         ];
     }
 

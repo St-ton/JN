@@ -39,13 +39,10 @@ class GUI
             'stdConfigButtons',
             'missingConfigButtons',
             'blueprintModal',
-            'blueprintForm',
             'blueprintName',
             'blueprintDeleteModal',
             'blueprintDeleteId',
-            'blueprintDeleteForm',
             'publishModal',
-            'publishForm',
             'draftName',
             'checkPublishNot',
             'checkPublishNow',
@@ -53,8 +50,6 @@ class GUI
             'checkPublishInfinite',
             'publishFrom',
             'publishTo',
-            'btnHelp',
-            'btnNoRestoreUnsaved',
             'revisionList',
             'revisionBtnBlueprint',
             'unsavedRevision',
@@ -63,7 +58,6 @@ class GUI
             'portletButton',
             'portletGroupBtn',
             'restoreUnsavedModal',
-            'restoreUnsavedForm',
             'unsavedState',
             'iconpicker',
             'disableVeil',
@@ -270,7 +264,7 @@ class GUI
         this.page.exportAsDownload();
     }
 
-    onBtnHelp(e)
+    startHelp(e)
     {
         this.tutorial.start();
     }
@@ -422,34 +416,36 @@ class GUI
 
     }
 
-    onConfigForm(e)
+    saveConfig()
     {
-        e.preventDefault();
+        event.preventDefault();
 
         this.configSaveCb();
 
-        var portletData  = this.page.portletToJSON(this.curPortlet);
-        var configObject = this.configForm.serializeControls();
+        let portletData  = this.page.portletToJSON(this.curPortlet);
+        let configObject = $(e.target).serializeControls();
 
-        for(var propname in configObject) {
-            var propval   = configObject[propname];
-            var propInput = $('#config-' + propname);
+        for(let propname in configObject) {
+            if(configObject.hasOwnProperty(propname)) {
+                let propval   = configObject[propname];
+                let propInput = $('#config-' + propname);
 
-            if (propInput.length > 0) {
-                var propType = propInput.data('prop-type');
+                if (propInput.length > 0) {
+                    let propType = propInput.data('prop-type');
 
-                if (propType === 'json') {
-                    propval = JSON.parse(propval);
-                } else if (propType === 'datetime') {
-                    propval = this.page.encodeDate(propval);
-                } else if (propInput[0].type === 'checkbox') {
-                    propval = propval === '1';
-                } else if (propInput[0].type === 'number') {
-                    propval = parseInt(propval);
+                    if (propType === 'json') {
+                        propval = JSON.parse(propval);
+                    } else if (propType === 'datetime') {
+                        propval = this.page.encodeDate(propval);
+                    } else if (propInput[0].type === 'checkbox') {
+                        propval = propval === '1';
+                    } else if (propInput[0].type === 'number') {
+                        propval = parseInt(propval);
+                    }
                 }
-            }
 
-            configObject[propname] = propval;
+                configObject[propname] = propval;
+            }
         }
 
         portletData.properties = configObject;
@@ -466,9 +462,9 @@ class GUI
             });
     }
 
-    onBlueprintForm(e)
+    createBlueprint()
     {
-        e.preventDefault();
+        event.preventDefault();
 
         if(this.selectedElm !== null) {
             var blueprintName = this.blueprintName.val();
@@ -520,14 +516,14 @@ class GUI
             .click();
     }
 
-    onBlueprintDeleteForm (e)
+    deleteBlueprint()
     {
         var blueprintId = this.blueprintDeleteId.val();
 
         this.io.deleteBlueprint(blueprintId).then(() => this.updateBlueprintList());
         this.blueprintDeleteModal.modal('hide');
 
-        e.preventDefault();
+        event.preventDefault();
     }
 
     publishDraft(e)
@@ -615,9 +611,9 @@ class GUI
         this.publishTo.val(moment(this.publishFrom.val(), localDateFormat).add(1, 'M').format(localDateFormat));
     }
 
-    onPublishForm (e)
+    publish()
     {
-        e.preventDefault();
+        event.preventDefault();
 
         this.page.name = this.draftName.val();
         $('#footerDraftName span').text(this.page.name);
@@ -682,9 +678,9 @@ class GUI
         openElFinder(callback, type);
     }
 
-    onRestoreUnsavedForm (e)
+    restoreUnsaved()
     {
-        e.preventDefault();
+        event.preventDefault();
 
         this.unsavedRevision.click();
         this.restoreUnsavedModal.modal('hide');
@@ -774,7 +770,7 @@ class GUI
         }
     }
 
-    onBtnNoRestoreUnsaved()
+    noRestoreUnsaved()
     {
         this.setUnsaved(false, true);
     }

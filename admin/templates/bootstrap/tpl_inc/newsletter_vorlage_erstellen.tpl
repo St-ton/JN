@@ -43,21 +43,29 @@ function checkNewsletterSend() {ldelim}
                     <hr class="mb-n3">
                 </div>
                 <div class="card-body">
-                    <div class="form-group form-row align-items-center">
+                    <div class="form-group form-row align-items-center {if isset($cPlausiValue_arr.cName)}error{/if}">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="cName">{__('newsletterdraftname')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <input id="cName" name="cName" type="text" class="form-control {if isset($cPlausiValue_arr.cName)}fieldfillout{else}field{/if}" value="{if isset($cPostVar_arr.cName)}{$cPostVar_arr.cName}{elseif isset($oNewsletterVorlage->cName)}{$oNewsletterVorlage->cName}{/if}">
-                            {if isset($cPlausiValue_arr.cName)}<span class="fillout">{__('newsletterdraftFillOut')}</span>{/if}
+                            <input id="cName"
+                                   name="cName"
+                                   type="text"
+                                   class="form-control"
+                                   value="{if isset($cPostVar_arr.cName)}{$cPostVar_arr.cName}{elseif isset($oNewsletterVorlage->cName)}{$oNewsletterVorlage->cName}{/if}"
+                                   required>
                         </div>
                     </div>
-                    <div class="form-group form-row align-items-center">
+                    <div class="form-group form-row align-items-center {if isset($cPlausiValue_arr.cBetreff)}error{/if}">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="cBetreff">{__('subject')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <input id="cBetreff" name="cBetreff" type="text" class="form-control {if isset($cPlausiValue_arr.cBetreff)}fieldfillout{else}field{/if}" value="{if isset($cPostVar_arr.cBetreff)}{$cPostVar_arr.cBetreff}{elseif isset($oNewsletterVorlage->cBetreff)}{$oNewsletterVorlage->cBetreff}{/if}">
-                            {if isset($cPlausiValue_arr.cBetreff)}<span class="fillout">{__('newsletterdraftFillOut')}</span>{/if}
+                            <input id="cBetreff"
+                                   name="cBetreff"
+                                   type="text"
+                                   class="form-control"
+                                   value="{if isset($cPostVar_arr.cBetreff)}{$cPostVar_arr.cBetreff}{elseif isset($oNewsletterVorlage->cBetreff)}{$oNewsletterVorlage->cBetreff}{/if}"
+                                   required>
                         </div>
                     </div>
-                    <div class="form-group form-row align-items-center">
+                    <div class="form-group form-row align-items-center {if isset($cPlausiValue_arr.kKundengruppe_arr)} error{/if}">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="kKundengruppe">{__('newslettercustomergrp')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <select id="kKundengruppe"
@@ -66,7 +74,8 @@ function checkNewsletterSend() {ldelim}
                                     class="selectpicker custom-select {if isset($cPlausiValue_arr.kKundengruppe_arr)}fieldfillout{else}combo{/if}"
                                     data-selected-text-format="count > 2"
                                     data-size="7"
-                                    data-actions-box="true">
+                                    data-actions-box="true"
+                                    required>
                                 <option value="0"
                                         {if isset($kKundengruppe_arr)}
                                             {foreach $kKundengruppe_arr as $kKundengruppe}
@@ -93,7 +102,6 @@ function checkNewsletterSend() {ldelim}
                                 {/foreach}
                             </select>
                         </div>
-                        {if isset($cPlausiValue_arr.kKundengruppe_arr)}<span class="fillout">{__('newsletterdraftFillOut')}</span>{/if}
                     </div>
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="cArt">{__('newsletterdraftcharacter')}:</label>
@@ -279,16 +287,16 @@ function checkNewsletterSend() {ldelim}
                             {include file='snippets/searchpicker_button.tpl' target='#categoryPicker-modal'}
                         </div>
                     </div>
-                    <div class="form-group form-row align-items-center">
+                    <div class="form-group form-row align-items-center {if isset($cPlausiValue_arr.cHtml)} error{/if}">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="cHtml">{__('newsletterHtml')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <textarea class="codemirror smarty form-control" id="cHtml" name="cHtml">{if isset($cPostVar_arr.cHtml)}{$cPostVar_arr.cHtml}{elseif isset($oNewsletterVorlage->cInhaltHTML)}{$oNewsletterVorlage->cInhaltHTML}{/if}</textarea>
+                            <textarea class="ckeditor smarty form-control" id="cHtml" name="cHtml">{if isset($cPostVar_arr.cHtml)}{$cPostVar_arr.cHtml}{elseif isset($oNewsletterVorlage->cInhaltHTML)}{$oNewsletterVorlage->cInhaltHTML}{/if}</textarea>
                         </div>
                     </div>
-                    <div class="form-group form-row align-items-center">
+                    <div class="form-group form-row align-items-center {if isset($cPlausiValue_arr.cText)} error{/if}">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="cText">{__('newsletterText')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <textarea class="codemirror smarty form-control" id="cText" name="cText">{if isset($cPostVar_arr.cText)}{$cPostVar_arr.cText}{elseif isset($oNewsletterVorlage->cInhaltText)}{$oNewsletterVorlage->cInhaltText}{/if}</textarea>
+                            <textarea class="ckeditor smarty form-control" id="cText" name="cText">{if isset($cPostVar_arr.cText)}{$cPostVar_arr.cText}{elseif isset($oNewsletterVorlage->cInhaltText)}{$oNewsletterVorlage->cInhaltText}{/if}</textarea>
                         </div>
                     </div>
                 </div>

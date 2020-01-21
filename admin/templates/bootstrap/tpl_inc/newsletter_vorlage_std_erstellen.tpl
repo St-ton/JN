@@ -29,11 +29,6 @@
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('newsletterdraft') cBeschreibung=__('newsletterdraftdesc')}
 <div id="content">
-    {if !empty($cPlausiValue_arr)}
-        <div class="alert alert-danger">
-            <p>{__('errorFillRequired')}</p>
-        </div>
-    {/if}
     <form name="formnewslettervorlagestd" id="formnewslettervorlagestd" method="post" action="newsletter.php" enctype="multipart/form-data">
         {$jtl_token}
         <div class="card settings">
@@ -368,7 +363,7 @@
                             <div class="form-group form-row align-items-center">
                                 <label class="col col-sm-4 col-form-label text-sm-right" for="kNewslettervorlageStdVar_{$oNewslettervorlageStdVar->kNewslettervorlageStdVar}">{$oNewslettervorlageStdVar->cName}:</label>
                                 <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                    <textarea id="kNewslettervorlageStdVar_{$oNewslettervorlageStdVar->kNewslettervorlageStdVar}" class="form-control codemirror smarty" name="kNewslettervorlageStdVar_{$oNewslettervorlageStdVar->kNewslettervorlageStdVar}" style="width: 500px; height: 400px;">
+                                    <textarea id="kNewslettervorlageStdVar_{$oNewslettervorlageStdVar->kNewslettervorlageStdVar}" class="form-control ckeditor smarty" name="kNewslettervorlageStdVar_{$oNewslettervorlageStdVar->kNewslettervorlageStdVar}" style="width: 500px; height: 400px;">
                                         {if isset($oNewslettervorlageStdVar->cInhalt) && $oNewslettervorlageStdVar->cInhalt|strlen > 0}{$oNewslettervorlageStdVar->cInhalt}{/if}
                                     </textarea>
                                 </div>

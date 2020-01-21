@@ -423,7 +423,7 @@ class GUI
         this.configSaveCb();
 
         let portletData  = this.page.portletToJSON(this.curPortlet);
-        let configObject = $(e.target).serializeControls();
+        let configObject = $(event.target).serializeControls();
 
         for(let propname in configObject) {
             if(configObject.hasOwnProperty(propname)) {

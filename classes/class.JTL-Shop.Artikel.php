@@ -1805,7 +1805,7 @@ class Artikel
         if ($sub === 'intern_' || $sub === 'img_alt') {
             return true;
         }
-        if ($attributeName{0} === 't' || $attributeName{0} === 'T') {
+        if ($attributeName[0] === 't' || $attributeName[0] === 'T') {
             for ($i = 1; $i < 11; $i++) {
                 $stl = strtolower($attributeName);
                 if ($stl === 'tab' . $i . ' name' || $stl === 'tab' . $i . ' inhalt') {

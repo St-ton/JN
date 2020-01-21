@@ -38,9 +38,9 @@ class PayPal extends PaymentMethod
         $this->caption = 'PayPal';
 
         // Mode
-        $nMode = (isset($Einstellungen['zahlungsarten']['zahlungsart_paypal_modus']) && 
-            $Einstellungen['zahlungsarten']['zahlungsart_paypal_modus'] === 'T') 
-            ? 1 
+        $nMode = (isset($Einstellungen['zahlungsarten']['zahlungsart_paypal_modus']) &&
+            $Einstellungen['zahlungsarten']['zahlungsart_paypal_modus'] === 'T')
+            ? 1
             : 0;
         if (!defined('PP_MODE')) {
             define('PP_MODE', $nMode);
@@ -161,8 +161,8 @@ class PayPal extends PaymentMethod
                         WHERE kBestellung = {$zahlungsid->kBestellung}", 1
                 );
 
-                if (is_object($oZahlungseingang) && 
-                    isset($oZahlungseingang->kZahlungseingang) && 
+                if (is_object($oZahlungseingang) &&
+                    isset($oZahlungseingang->kZahlungseingang) &&
                     (int)$oZahlungseingang->kZahlungseingang > 0
                 ) {
                     die('0');
@@ -188,7 +188,7 @@ class PayPal extends PaymentMethod
             $bestellung->fuelleBestellung(0);
             if ($bestellung->Waehrung->cISO !== $_POST['mc_currency']) {
                 if (PP_D_MODE === 1) {
-                    writeLog(PP_D_PFAD, 'Falsche Waehrung: ' . $bestellung->Waehrung->cISO . ' != ' . 
+                    writeLog(PP_D_PFAD, 'Falsche Waehrung: ' . $bestellung->Waehrung->cISO . ' != ' .
                         StringHandler::filterXSS($_POST['mc_currency']), 1);
                 }
                 die('0');
@@ -268,7 +268,7 @@ class PayPal extends PaymentMethod
                     // check the payment_status is Completed
                     if ($args['payment_status'] !== 'Completed') {
                         if (PP_D_MODE === 1) {
-                            writeLog(PP_D_PFAD, $args['payment_status'] . 
+                            writeLog(PP_D_PFAD, $args['payment_status'] .
                                 ' erwartet "Completed", ist "' . $args['payment_status'] . '"', 1);
                         }
 
@@ -291,7 +291,7 @@ class PayPal extends PaymentMethod
                             strtolower($args['business'])
                     ) {
                         if (PP_D_MODE === 1) {
-                            writeLog(PP_D_PFAD, "Falscher Emailempfaenger: " . $args['receiver_email'] . " != " . 
+                            writeLog(PP_D_PFAD, "Falscher Emailempfaenger: " . $args['receiver_email'] . " != " .
                                 $Einstellungen['zahlungsarten']['zahlungsart_paypal_empfaengermail'], 1);
                         }
 
@@ -299,7 +299,7 @@ class PayPal extends PaymentMethod
                     }
                     // check that payment_amount/payment_currency are correct
 
-                    if ($_POST['custom']{0} === '_') {
+                    if ($_POST['custom'][0] === '_') {
                         checkeExterneZahlung($args['custom']);
                     } else {
                         $zahlungsid = Shop::DB()->select('tzahlungsid', 'cId', $args['custom']);

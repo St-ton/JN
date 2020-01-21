@@ -400,7 +400,7 @@ function resolve_url($base, $url)
         return $url;
     }
     $base = parse_url($base);
-    if ($url{0} == "#") {
+    if ($url[0] == "#") {
         // Step 2 (fragment)
         $base['fragment'] = substr($url, 1);
         return unparse_url($base);
@@ -413,7 +413,7 @@ function resolve_url($base, $url)
             'scheme' => $base['scheme'],
             'path' => substr($url, 2),
         ));
-    } elseif ($url{0} == "/") {
+    } elseif ($url[0] == "/") {
         // Step 5
         $base['path'] = $url;
     } else {

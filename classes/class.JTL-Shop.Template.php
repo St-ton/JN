@@ -808,7 +808,7 @@ class Template
                 return false;
             }
             while (($obj = readdir($dh)) !== false) {
-                if ($obj{0} === '.') {
+                if ($obj[0] === '.') {
                     continue;
                 }
                 if (!is_dir(PFAD_ROOT . PFAD_COMPILEDIR . $obj)) {

@@ -504,7 +504,7 @@ class VersandartHelper
                     $oArtikelTMP->kVaterArtikel == 0 &&
                     count($oArtikelTMP->Variationen) > 0
                 ) { // Normale Variation
-                    if ($oArtikel['cInputData']{0} == '_') {
+                    if ($oArtikel['cInputData'][0] == '_') {
                         // 1D
                         $cVariation0                             = substr($oArtikel['cInputData'], 1);
                         list($kEigenschaft0, $kEigenschaftWert0) = explode(':', $cVariation0);
@@ -538,7 +538,7 @@ class VersandartHelper
                     }
                 } elseif ($oArtikelTMP->nIstVater > 0) { // Variationskombination (Vater)
                     $oArtikelKind = new Artikel();
-                    if ($oArtikel['cInputData']{0} === '_') {
+                    if ($oArtikel['cInputData'][0] === '_') {
                         // 1D
                         $cVariation0                             = substr($oArtikel['cInputData'], 1);
                         list($kEigenschaft0, $kEigenschaftWert0) = explode(':', $cVariation0);
@@ -681,7 +681,7 @@ class VersandartHelper
                 gibPreisStringLocalized(berechneBrutto($oVersandart->fEndpreis, gibUst($kSteuerklasse)) . ' an.')
             );
         }
-         
+
         //Versand mit neuen Artikeln gleich oder guenstiger als ohne
         return Shop::Lang()->get('productNoExtraShippingNotice', 'global');
     }

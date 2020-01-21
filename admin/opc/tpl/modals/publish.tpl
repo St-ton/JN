@@ -8,7 +8,7 @@
                     <i class="fa fas fa-times"></i>
                 </button>
             </div>
-            <form id="publishForm">
+            <form onsubmit="opc.gui.publish()">
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="draftName">{__('draftName')}</label>

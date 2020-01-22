@@ -142,12 +142,12 @@ class MinifyService
             'cPluginJsHead_arr' => &$minify['plugin_js_head'],
             'cPluginJsBody_arr' => &$minify['plugin_js_body'],
         ]);
-        $cacheTime  = $this->getCacheTime();
+        $cacheTime = $this->getCacheTime();
         foreach ($data as $type => $groups) {
             $res[$type] = [];
             foreach ($groups as $group) {
                 if ($this->allowStatic === true) {
-                    $uri   = $this->buildURI('static', 'g=' . $group, $type, $cacheTime);
+                    $uri = $this->buildURI('static', 'g=' . $group, $type, $cacheTime);
                 } else {
                     $uri = 'asset/' . $group . '?v=' . $tplVersion;
                 }

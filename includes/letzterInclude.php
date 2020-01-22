@@ -100,7 +100,7 @@ if (!isset($NaviFilter)) {
     $NaviFilter = Shop::run();
 }
 $linkHelper->activate($pageType);
-$origin = (isset($_SESSION['Kunde']->cLand) && mb_strlen($_SESSION['Kunde']->cLand) > 0)
+$origin  = (isset($_SESSION['Kunde']->cLand) && mb_strlen($_SESSION['Kunde']->cLand) > 0)
     ? $_SESSION['Kunde']->cLand
     : '';
 $service = new MinifyService();

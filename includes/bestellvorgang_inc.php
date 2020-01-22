@@ -458,68 +458,62 @@ function pruefeZahlungsartwahlStep($cPost_arr)
 {
     global $zahlungsangaben, $hinweis, $step;
     /** @var array('Warenkorb' => Warenkorb) $_SESSION */
-
-    if (!isset($cPost_arr['zahlungsartwahl']) || (int)$cPost_arr['zahlungsartwahl'] !== 1) {
-        if (isset($_SESSION['Zahlungsart'])) {
-            $zahlungsangaben = zahlungsartKorrekt((int)$_SESSION['Zahlungsart']->kZahlungsart);
-        } else {
-            return null;
-        }
-    } else {
+    if (isset($cPost_arr['zahlungsartwahl']) && (int)$cPost_arr['zahlungsartwahl'] === 1) {
         $zahlungsangaben = zahlungsartKorrekt($cPost_arr['Zahlungsart']);
+        $conf            = Shop::getSettings([CONF_TRUSTEDSHOPS]);
+        executeHook(HOOK_BESTELLVORGANG_PAGE_STEPZAHLUNG_PLAUSI);
+        // Trusted Shops
+        if ($zahlungsangaben > 0 &&
+            $_SESSION['Zahlungsart']->nWaehrendBestellung == 0 &&
+            isset($cPost_arr['bTS']) &&
+            (int)$cPost_arr['bTS'] === 1 &&
+            $conf['trustedshops']['trustedshops_nutzen'] === 'Y'
+        ) {
+            $_SESSION['TrustedShops']->cKaeuferschutzProdukt =
+                StringHandler::htmlentities(StringHandler::filterXSS($cPost_arr['cKaeuferschutzProdukt']));
+
+            $fNetto        = $_SESSION['TrustedShops']->oKaeuferschutzProduktIDAssoc_arr[StringHandler::htmlentities(
+                StringHandler::filterXSS($cPost_arr['cKaeuferschutzProdukt'])
+            )];
+            $cLandISO      = isset($_SESSION['Lieferadresse']->cLand) ? $_SESSION['Lieferadresse']->cLand : '';
+            $kSteuerklasse = $_SESSION['Warenkorb']->gibVersandkostenSteuerklasse($cLandISO);
+            $fPreis        = $_SESSION['Kundengruppe']->nNettoPreise
+                ? $fNetto
+                : ($fNetto * ((100 + (float)$_SESSION['Steuersatz'][$kSteuerklasse]) / 100));
+            $cName['ger']  = Shop::Lang()->get('trustedshopsName', 'global');
+            $cName['eng']  = Shop::Lang()->get('trustedshopsName', 'global');
+            $_SESSION['Warenkorb']->erstelleSpezialPos(
+                $cName,
+                1,
+                $fPreis,
+                $kSteuerklasse,
+                C_WARENKORBPOS_TYP_TRUSTEDSHOPS,
+                true,
+                (bool)!$_SESSION['Kundengruppe']->nNettoPreise
+            );
+        }
+
+        switch ($zahlungsangaben) {
+            case 0:
+                $hinweis = Shop::Lang()->get('fillPayment', 'checkout');
+                $step    = 'Zahlung';
+
+                return 0;
+                break;
+            case 1:
+                $step = 'ZahlungZusatzschritt';
+
+                return 1;
+                break;
+            case 2:
+                $step = 'Bestaetigung';
+
+                return 2;
+                break;
+        }
     }
 
-    $conf = Shop::getSettings([CONF_TRUSTEDSHOPS]);
-    executeHook(HOOK_BESTELLVORGANG_PAGE_STEPZAHLUNG_PLAUSI);
-    // Trusted Shops
-    if ($zahlungsangaben > 0 &&
-        $_SESSION['Zahlungsart']->nWaehrendBestellung == 0 &&
-        isset($cPost_arr['bTS']) &&
-        (int)$cPost_arr['bTS'] === 1 &&
-        $conf['trustedshops']['trustedshops_nutzen'] === 'Y'
-    ) {
-        $_SESSION['TrustedShops']->cKaeuferschutzProdukt =
-            StringHandler::htmlentities(StringHandler::filterXSS($cPost_arr['cKaeuferschutzProdukt']));
-
-        $fNetto        = $_SESSION['TrustedShops']->oKaeuferschutzProduktIDAssoc_arr[StringHandler::htmlentities(
-            StringHandler::filterXSS($cPost_arr['cKaeuferschutzProdukt'])
-        )];
-        $cLandISO      = isset($_SESSION['Lieferadresse']->cLand) ? $_SESSION['Lieferadresse']->cLand : '';
-        $kSteuerklasse = $_SESSION['Warenkorb']->gibVersandkostenSteuerklasse($cLandISO);
-        $fPreis        = $_SESSION['Kundengruppe']->nNettoPreise
-            ? $fNetto
-            : ($fNetto * ((100 + (float)$_SESSION['Steuersatz'][$kSteuerklasse]) / 100));
-        $cName['ger']  = Shop::Lang()->get('trustedshopsName', 'global');
-        $cName['eng']  = Shop::Lang()->get('trustedshopsName', 'global');
-        $_SESSION['Warenkorb']->erstelleSpezialPos(
-            $cName,
-            1,
-            $fPreis,
-            $kSteuerklasse,
-            C_WARENKORBPOS_TYP_TRUSTEDSHOPS,
-            true,
-            (bool)!$_SESSION['Kundengruppe']->nNettoPreise
-        );
-    }
-
-    switch ($zahlungsangaben) {
-        case 0:
-            $hinweis = Shop::Lang()->get('fillPayment', 'checkout');
-            $step    = 'Zahlung';
-
-            return 0;
-            break;
-        case 1:
-            $step = 'ZahlungZusatzschritt';
-
-            return 1;
-            break;
-        case 2:
-            $step = 'Bestaetigung';
-
-            return 2;
-            break;
-    }
+    return null;
 }
 
 /**

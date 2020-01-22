@@ -58,7 +58,7 @@
                 {file_get_contents("{$currentThemeDir}{$Einstellungen.template.theme.theme_default}_crit.min.css")}
             </style>
             {* css *}
-            {if !isset($Einstellungen.template.general.use_minify) || $Einstellungen.template.general.use_minify === 'N'}
+            {if $Einstellungen.template.general.use_minify === 'N'}
                 {foreach $cCSS_arr as $cCSS}
                     <link rel="preload" href="{$ShopURL}/{$cCSS}?v={$nTemplateVersion}" as="style"
                           onload="this.onload=null;this.rel='stylesheet'">
@@ -81,9 +81,9 @@
                     {/if}
                 </noscript>
             {else}
-                <link rel="preload" href="{$ShopURL}/asset/{$Einstellungen.template.theme.theme_default}.css{if isset($cPluginCss_arr) && $cPluginCss_arr|@count > 0},plugin_css{/if}?v={$nTemplateVersion}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+                <link rel="preload" href="{$ShopURL}/{$combinedCSS}" as="style" onload="this.onload=null;this.rel='stylesheet'">
                 <noscript>
-                    <link href="{$ShopURL}/asset/{$Einstellungen.template.theme.theme_default}.css{if isset($cPluginCss_arr) && $cPluginCss_arr|@count > 0},plugin_css{/if}?v={$nTemplateVersion}" rel="stylesheet">
+                    <link href="{$ShopURL}/{$combinedCSS}" rel="stylesheet">
                 </noscript>
             {/if}
 
@@ -217,26 +217,16 @@
                     <script defer src="{$ShopURL}/{$cJS}?v={$nTemplateVersion}"></script>
                 {/foreach}
             {/if}
-        {else}
-            {if isset($cPluginJsHead_arr) && $cPluginJsHead_arr|@count > 0}
-                <script defer src="{$ShopURL}/asset/plugin_js_head?v={$nTemplateVersion}"></script>
-            {/if}
-        {/if}
-
-        {if !isset($Einstellungen.template.general.use_minify) || $Einstellungen.template.general.use_minify === 'N'}
             {foreach $cJS_arr as $cJS}
                 <script defer src="{$ShopURL}/{$cJS}?v={$nTemplateVersion}"></script>
             {/foreach}
-            {if isset($cPluginJsBody_arr)}
-                {foreach $cPluginJsBody_arr as $cJS}
-                    <script defer src="{$ShopURL}/{$cJS}?v={$nTemplateVersion}"></script>
-                {/foreach}
-            {/if}
+            {foreach $cPluginJsBody_arr as $cJS}
+                <script defer src="{$ShopURL}/{$cJS}?v={$nTemplateVersion}"></script>
+            {/foreach}
         {else}
-            <script defer src="{$ShopURL}/asset/jtl3.js?v={$nTemplateVersion}"></script>
-            {if isset($cPluginJsBody_arr) && $cPluginJsBody_arr|@count > 0}
-                <script defer src="{$ShopURL}/asset/plugin_js_body?v={$nTemplateVersion}"></script>
-            {/if}
+            {foreach $minifiedJS as $item}
+                <script defer src="{$ShopURL}/{$item}"></script>
+            {/foreach}
         {/if}
 
         {$customJSPath = $currentTemplateDir|cat:'/js/custom.js'}

@@ -39,7 +39,7 @@ $get_cache_time = static function (bool $auto_create = true) {
     return $time;
 };
 
-$app = (require __DIR__ . '/../bootstrap.php');
+$app = (require __DIR__ . '/bootstrap.php');
 /* @var \Minify\App $app */
 
 if (!$app->config->enableStatic) {

@@ -19,7 +19,7 @@ class MinifyService
     /**
      * @var string
      */
-    protected $baseDir = \PFAD_ROOT . \PFAD_INCLUDES_LIBS . 'minify/static/';
+    protected $baseDir = \PFAD_ROOT . \PATH_STATIC_MINIFY;
 
     /**
      * @var bool
@@ -30,6 +30,9 @@ class MinifyService
 
     public const TYPE_JS = 'js';
 
+    /**
+     * MinifyService constructor.
+     */
     public function __construct()
     {
         $this->allowStatic = \defined('ALLOW_STATIC_MINIFY') && \ALLOW_STATIC_MINIFY === true;
@@ -146,6 +149,9 @@ class MinifyService
         foreach ($data as $type => $groups) {
             $res[$type] = [];
             foreach ($groups as $group) {
+                if (!isset($minify[$group]) || \count($minify[$group]) === 0) {
+                    continue;
+                }
                 if ($this->allowStatic === true) {
                     $uri = $this->buildURI('static', 'g=' . $group, $type, $cacheTime);
                 } else {
@@ -155,7 +161,11 @@ class MinifyService
             }
         }
         if ($this->allowStatic === true) {
-            $combinedCSS = $this->buildURI('static', 'g=plugin_css,' . $themeDir . '.css', self::TYPE_CSS, $cacheTime);
+            $uri = 'g=' . $themeDir . '.css';
+            if (isset($minify['plugin_css']) && \count($minify['plugin_css']) > 0) {
+                $uri .= ',plugin_css';
+            }
+            $combinedCSS = $this->buildURI('static', $uri, self::TYPE_CSS, $cacheTime);
         } else {
             $combinedCSS = 'asset/' . $themeDir . '.css';
             if (\count($minify['plugin_css']) > 0) {

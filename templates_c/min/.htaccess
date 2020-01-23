@@ -36,5 +36,5 @@ RewriteEngine on
 #RewriteBase /min/static
 
 RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^(.*)$ gen.php [QSA,L]
+RewriteRule ^(.*)$ ../../includes/libs/minify/static/gen.php [QSA,L]
 </IfModule>

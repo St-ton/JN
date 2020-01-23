@@ -20,7 +20,7 @@ $send_301 = static function ($url) {
  * @return null|string null if missing or can't create
  */
 $get_cache_time = static function (bool $auto_create = true) {
-    foreach (\scandir(\PFAD_ROOT . \PATH_STATIC_MINIFY) as $entry) {
+    foreach (\scandir(__DIR__) as $entry) {
         if (\ctype_digit($entry)) {
             return $entry;
         }
@@ -31,7 +31,7 @@ $get_cache_time = static function (bool $auto_create = true) {
     }
 
     $time = (string)\time();
-    $dir  = \PFAD_ROOT . \PATH_STATIC_MINIFY . $time;
+    $dir  = __DIR__ . '/' . $time;
     if (!mkdir($dir) && !is_dir($dir)) {
         return null;
     }
@@ -46,14 +46,14 @@ if (!$app->config->enableStatic) {
     die('Minify static serving is not enabled. Set $min_enableStatic = true; in config.php');
 }
 
-if (!is_writable(\PFAD_ROOT . \PATH_STATIC_MINIFY)) {
+if (!is_writable(__DIR__)) {
     http_response_code(500);
     die('Directory is not writable.');
 }
 $root_uri = dirname($_SERVER['SCRIPT_NAME']);
 $uri      = substr($_SERVER['REQUEST_URI'], strlen($root_uri));
 if (strpos($_SERVER['REQUEST_URI'], PFAD_INCLUDES_LIBS) === false || $uri === '') {
-    // handle rewrite of templates_c/min/static to /static
+    // handle rewrite of PFAD_INCLUDES_LIB/minify/static to /static
     $uri = substr($_SERVER['REQUEST_URI'], strlen('/static'));
 }
 if (!preg_match('~^/(\d+)/(.*)$~', $uri, $m)) {
@@ -125,7 +125,7 @@ if ($cache_time !== $requested_cache_dir) {
 $content = $app->minify->combine($sources);
 
 // save and send file
-$file = \PFAD_ROOT . \PATH_STATIC_MINIFY . $cache_time . '/' . $query;
+$file = __DIR__ . "/$cache_time/$query";
 if (!is_dir(dirname($file))) {
     mkdir(dirname($file), 0777, true);
 }

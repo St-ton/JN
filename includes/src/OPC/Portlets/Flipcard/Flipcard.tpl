@@ -47,11 +47,16 @@
 
             function flipCard(e)
             {
-                flipcardInner.toggleClass('opc-Flipcard-flipped');
-                flipcard.find('.opc-Flipcard-label-front').toggleClass('active');
-                flipcard.find('.opc-Flipcard-label-back').toggleClass('active');
-                updateHeight_{$uid}();
-                e.preventDefault();
+                let isLink = e.target.tagName === 'A' && typeof e.target.href === 'string'
+                    || e.target.tagName === 'BUTTON';
+
+                if(!isLink) {
+                    flipcardInner.toggleClass('opc-Flipcard-flipped');
+                    flipcard.find('.opc-Flipcard-label-front').toggleClass('active');
+                    flipcard.find('.opc-Flipcard-label-back').toggleClass('active');
+                    updateHeight_{$uid}();
+                    e.preventDefault();
+                }
             }
         }
 

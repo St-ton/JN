@@ -347,7 +347,7 @@ $nav-tabs-link-active-border-color		: $primary;
 $modal-inner-padding			: $spacer 0;
 
 $modal-content-padding			: $spacer map-get($spacers, 5);
-$modal-content-padding-sm   	: $spacer $spacer;
+$modal-content-padding-sm   	: $spacer;
 $modal-content-border-width		: 0;
 $modal-content-box-shadow-sm-up	: 0 0 rem(10px) transparentize($black, .9);
 $modal-content-border-radius	: $border-radius;

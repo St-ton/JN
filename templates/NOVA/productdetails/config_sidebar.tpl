@@ -21,8 +21,8 @@
                 </tfoot>
             </table>
         {/block}
-        {block name='productdetails-config-sidebar-include-basket'}
-            {include file='productdetails/basket.tpl'}
-        {/block}
+        {button variant="primary" class="float-right mb-3" data=["dismiss"=>"modal"] disabled=true}
+            {lang key='applyConfiguration' section='productDetails'}
+        {/button}
     </div>
 {/block}

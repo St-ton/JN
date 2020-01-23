@@ -4,7 +4,7 @@
  *}
 {block name='productdetails-config-container'}
     {block name='productdetails-config-container-main'}
-        {modal id="cfg-container" class="mb-5" size="xl" title="{lang key="yourConfiguration"}"}
+        {modal id="cfg-container" class="mb-5" size="xl" title="{lang key="configure"}"}
             <div class="tab-content" id="cfg-container-tab-panes">
                 <div class="tab-pane fade show active" id="cfg-tab-pane-options" role="tabpanel" aria-labelledby="cfg-tab-options">
                     {block name='productdetails-config-container-options'}
@@ -27,13 +27,13 @@
                     href="#cfg-tab-pane-options" role="tab" router-data=["toggle"=>"pill"]
                     router-aria=["controls"=>"cfg-tab-pane-options", "selected"=>"true"]
                 }
-                    <i class="fas fa-cogs"></i> <span class="d-none d-sm-inline-flex ml-2">Options</span>
+                    <i class="fas fa-cogs"></i> <span class="d-none d-sm-inline-flex ml-2">{lang key='configComponents' section='productDetails'}</span>
                 {/navitem}
                 {navitem id="cfg-tab-summary"
                     href="#cfg-tab-pane-summary" role="tab" router-data=["toggle"=>"pill"]
                     router-aria=["controls"=>"cfg-tab-pane-summary", "selected"=>"false"]
                 }
-                    <i class="fas fa-cart-plus"></i> <span class="d-none d-sm-inline-flex ml-2">Details</span>
+                    <i class="fas fa-cart-plus"></i> <span class="d-none d-sm-inline-flex ml-2">{lang key='yourConfiguration'}</span>
                 {/navitem}
                 {*{navitem id="cfg-tab-save"
                     href="#cfg-tab-pane-save" role="tab" router-data=["toggle"=>"pill"]
@@ -42,15 +42,15 @@
                     <i class="fas fa-save"></i> <span class="d-none d-sm-inline-flex ml-2">save</span>
                 {/navitem}*}
                 {navitem href="#" disabled=true}
-                    <span id="cfg-price" class="price">465,18 €</span>
+                    <strong id="cfg-price" class="price"></strong>
                 {/navitem}
             {/nav}
         {/modal}
     {/block}
 
-    {block name='productdetails-config-container-sticky-sidebar'}
+    {*{block name='productdetails-config-container-sticky-sidebar'}
         {col cols=12 class="mb-6"}
-            {*<div id="cfg-sticky-sidebar" class="mb-4">
+            <div id="cfg-sticky-sidebar" class="mb-4">
                 {if $Artikel->bHasKonfig}
                     {block name='productdetails-config-container-include-config-sidebar'}
                         {include file='productdetails/config_sidebar.tpl'}
@@ -65,7 +65,7 @@
                         </div>
                     {/block}
                 {/col}
-            {/row}*}
+            {/row}
         {/col}
-    {/block}
+    {/block}*}
 {/block}

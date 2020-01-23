@@ -458,7 +458,6 @@ define('JTL_GENNUMBER_ORDERNUMBER', 1);
 // JTL URLS
 define('JTLURL_BASE', 'https://ext.jtl-software.de/');
 define('JTLURL_HP', 'https://www.jtl-software.de/');
-define('JTLURL_GET_DUK', JTLURL_BASE . 'json_duk.php');
 define('JTLURL_GET_SHOPNEWS', 'https://feed.jtl-software.de/websitenews');
 define('JTLURL_GET_SHOPPATCH', JTLURL_BASE . 'json_patch.php');
 define('JTLURL_GET_SHOPHELP', JTLURL_BASE . 'jtlhelp.php');

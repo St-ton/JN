@@ -39,7 +39,7 @@
                     href="#cfg-tab-pane-save" role="tab" router-data=["toggle"=>"pill"]
                     router-aria=["controls"=>"cfg-tab-pane-save", "selected"=>"false"]
                 }
-                    <i class="fas fa-save"></i> <span class="d-none d-sm-inline-flex ml-2">save</span>
+                    <i class="fas fa-save"></i> <span class="d-none d-sm-inline-flex ml-2">{lang key='saveComponents' section='productDetails'}</span>
                 {/navitem}*}
                 {navitem href="#" disabled=true}
                     <strong id="cfg-price" class="price"></strong>

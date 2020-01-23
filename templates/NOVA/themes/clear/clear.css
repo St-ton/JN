@@ -19944,7 +19944,7 @@ label {
 }
 @media (max-width: 767.98px) {
   .modal-content {
-    padding: 1rem 1rem;
+    padding: 1rem;
   }
 }
 
@@ -22862,11 +22862,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-@media (max-width: 767.98px) {
-  .cfg-item-description {
-    flex-direction: column;
-  }
+  flex-wrap: wrap;
 }
 
 #cfg-container .cfg-group .h5 {
@@ -22874,6 +22870,12 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 #cfg-container .cfg-group .list-group-item {
   border: 0;
+}
+#cfg-container .cfg-group .custom-control-inline {
+  width: 100%;
+}
+#cfg-container .cfg-group .custom-control-inline .custom-control-label {
+  width: 100%;
 }
 
 .modal-body .tab-content {
@@ -22887,7 +22889,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 
 #cfg-container-tab-panes {
   max-height: 75vh;
-  max-height: calc((var(--vh, 1vh) * 75) - 3rem);
+  max-height: calc((var(--vh, 1vh) * 78) - 3rem);
   overflow-x: auto;
   padding-right: 16px;
   border-bottom: 2px solid #ebebeb;

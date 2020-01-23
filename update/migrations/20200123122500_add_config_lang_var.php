@@ -22,10 +22,14 @@ class Migration_20200123122500 extends Migration implements IMigration
     {
         $this->setLocalization('ger', 'productDetails', 'applyConfiguration', 'Konfiguration übernehmen');
         $this->setLocalization('eng', 'productDetails', 'applyConfiguration', 'apply configuration');
+
+        $this->setLocalization('ger', 'productDetails', 'saveConfiguration', 'Speichern');
+        $this->setLocalization('eng', 'productDetails', 'saveConfiguration', 'Save');
     }
 
     public function down()
     {
         $this->removeLocalization('applyConfiguration');
+        $this->removeLocalization('saveConfiguration');
     }
 }

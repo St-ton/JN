@@ -105,9 +105,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	@include media-breakpoint-down(sm) {
-		flex-direction: column;
-	}
+	flex-wrap: wrap;
 }
 
 #cfg-container .cfg-group {
@@ -116,6 +114,12 @@
 	}
 	.list-group-item {
 		border: 0;
+	}
+	.custom-control-inline {
+		width: 100%;
+		.custom-control-label {
+			width: 100%;
+		}
 	}
 }
 
@@ -130,7 +134,7 @@
 
 #cfg-container-tab-panes {
 	max-height: 75vh;
-	max-height: calc((var(--vh, 1vh) * 75) - 3rem);
+	max-height: calc((var(--vh, 1vh) * 78) - 3rem);
 	overflow-x: auto;
 	padding-right: 16px;
 	border-bottom: 2px solid $border-color;

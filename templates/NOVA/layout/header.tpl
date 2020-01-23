@@ -394,7 +394,7 @@
             <div id="content-wrapper"
                  class="{if $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}
                             container-fluid container-fluid-xl
-                        {/if} mt-0 {if $isFluidBanner || $isFluidSlider}pt-3{else}pt-5 pt-lg-7{/if}">
+                        {/if} mt-0 {if $isFluidBanner || $isFluidSlider}pt-3{else}pt-sm-3 pt-5 pt-lg-7{/if}">
         {/block}
 
         {block name='layout-header-breadcrumb'}

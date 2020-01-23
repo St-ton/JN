@@ -131,36 +131,23 @@
                                                             }
                                                         </p>
                                                     {/if}
-                                                    <p class="mb-2">
+                                                    <p class="mb-2 cfg-item-description">
                                                         {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
                                                         {if $smarty.session.Kundengruppe->mayViewPrices()}
                                                             {badge variant="light"}
-                                                                {if $oItem->hasRabatt() && $oItem->showRabatt()}
-                                                                    <span class="discount">{$oItem->getRabattLocalized()} {lang key='discount'}</span>{elseif $oItem->hasZuschlag() && $oItem->showZuschlag()}
-                                                                    <span class="additional">{$oItem->getZuschlagLocalized()} {lang key='additionalCharge'}</span>
-                                                                {/if}
-                                                                {$oItem->getPreisLocalized()}
+                                                            {if $oItem->hasRabatt() && $oItem->showRabatt()}
+                                                                <span class="discount">{$oItem->getRabattLocalized()} {lang key='discount'}</span>{elseif $oItem->hasZuschlag() && $oItem->showZuschlag()}
+                                                                <span class="additional">{$oItem->getZuschlagLocalized()} {lang key='additionalCharge'}</span>
+                                                            {/if}
+                                                            {$oItem->getPreisLocalized()}
                                                             {/badge}
                                                         {/if}
+                                                        {if !empty($cBeschreibung)}
+                                                            {link title=$cBeschreibung|escape:"html" data=["toggle"=>"tooltip", "html"=>"true"]}
+                                                                <i class="fas fa-question-circle"></i>
+                                                            {/link}
+                                                        {/if}
                                                     </p>
-
-                                                    {if !empty($cBeschreibung)}
-                                                        <div class="mb-2">
-                                                            {button
-                                                                id="desc_link_{$kKonfigitem}"
-                                                                variant="link"
-                                                                data=["toggle"=>"collapse","target"=>"#desc_{$kKonfigitem}"]
-                                                                size="sm"
-                                                                role="button"
-                                                                aria=["expanded"=>"false", "controls"=>"desc_{$kKonfigitem}"]
-                                                            }
-                                                                {lang key='showDescription'}
-                                                            {/button}
-                                                            {collapse visible=false id="desc_{$kKonfigitem}" aria=["labelledby"=>"#desc_link_{$kKonfigitem}"]}
-                                                                {$cBeschreibung}
-                                                            {/collapse}
-                                                        </div>
-                                                    {/if}
 
                                                     {if $oItem->getMin() == $oItem->getMax()}
                                                         {lang key='quantity'}: {$oItem->getInitial()}

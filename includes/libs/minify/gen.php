@@ -8,7 +8,7 @@ $send_400 = static function ($content = 'Bad URL') {
 $send_301 = static function ($url) {
     http_response_code(301);
     header('Cache-Control: max-age=31536000');
-    header("Location: $url");
+    header('Location: ' . $url);
     exit;
 };
 

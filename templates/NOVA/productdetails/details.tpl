@@ -223,11 +223,22 @@
                                     {include file="snippets/uploads.tpl" tplscope='product'}
                                 {/block}
                                 {*WARENKORB anzeigen wenn keine variationen mehr auf lager sind?!*}
-                                {if !$Artikel->bHasKonfig}
-                                    {block name='productdetails-details-include-basket'}
-                                        {include file='productdetails/basket.tpl'}
-                                    {/block}
+                                {if $Artikel->bHasKonfig}
+                                    {row class="align-items-center mt-5"}
+                                        {col cols=12 sm=6 offset-sm=6 class="mb-3 mb-sm-0"}
+                                            {button type="button" variant="primary"
+                                                value="{lang key='configure'}"
+                                                block=true
+                                                data=["toggle"=>"modal", "target"=>"#cfg-container"]
+                                            }
+                                                <span class="d-none d-sm-inline-block mr-1">{lang key='configure'}</span> <i class="fas fa-cogs"></i>
+                                            {/button}
+                                        {/col}
+                                    {/row}
                                 {/if}
+                                {block name='productdetails-details-include-basket'}
+                                    {include file='productdetails/basket.tpl'}
+                                {/block}
                             </div>
                         </div>{* /product-info-inner *}
                         {/block}{* productdetails-info *}

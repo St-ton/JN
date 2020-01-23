@@ -4,13 +4,8 @@
  *}
 {block name='productdetails-config-sidebar'}
     <div id="product-configuration-sidebar">
-        {block name='productdetails-config-sidebar-button'}
-            {button variant="link" class="cfg-toggle" block=true data=["toggle"=>"collapse", "target"=>"#configuration-table"]}
-                <div class="h5 text-left">{lang key='yourConfiguration'}</div>
-            {/button}
-        {/block}
         {block name='productdetails-config-sidebar-table'}
-            <table id="configuration-table" class="table table-striped collapse">
+            <table id="configuration-table" class="table table-striped">
                 <tbody class="summary"></tbody>
                 <tfoot>
                 <tr>
@@ -25,6 +20,9 @@
                 </tr>
                 </tfoot>
             </table>
+        {/block}
+        {block name='productdetails-config-sidebar-include-basket'}
+            {include file='productdetails/basket.tpl'}
         {/block}
     </div>
 {/block}

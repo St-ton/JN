@@ -50,6 +50,11 @@
             templateUrl: '{$templateUrl}',
             pageKey:     {$pageKey},
             error:       {$error|json_encode},
+            messages:    {
+                {foreach $opc->getEditorMessageNames() as $varname}
+                    {$varname}: {__($varname)|json_encode},
+                {/foreach}
+            },
         });
 
         opc.init();
@@ -84,6 +89,7 @@
         {include file="./modals/blueprint_delete.tpl"}
         {include file="./modals/tour.tpl"}
         {include file="./modals/restore_unsaved.tpl"}
+        {include file="./modals/messagebox.tpl"}
 
         <div id="portletToolbar" class="opc-portlet-toolbar" style="display:none">
             <button type="button" class="opc-toolbar-btn opc-label" id="portletLabel"></button>

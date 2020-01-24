@@ -119,6 +119,8 @@
                 <i class="opc-droptarget-info fas fa-info-circle" data-toggle="tooltip" data-placement="left"></i>
             </div>
         </div>
+
+        {include file="./tutorials.tpl"}
     </div>
 </body>
 </html>

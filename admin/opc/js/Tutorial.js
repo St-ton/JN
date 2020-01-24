@@ -13,6 +13,7 @@ class Tutorial
         installGuiElements(this, [
             'tourModal',
             'tourForm',
+            'tutorials',
         ]);
     }
 
@@ -29,6 +30,11 @@ class Tutorial
 
         this.tourModal.modal('hide');
         this['startTour_' + tourId]();
+    }
+
+    startTour_ht1()
+    {
+        this.tutorials.addClass('active');
     }
 
     fixIframePos(element)
@@ -65,7 +71,7 @@ class Tutorial
         // backdropBottom.offset({top: off.top + pTop});
     }
 
-    startTour_ht1()
+    _startTour_ht1()
     {
         let confModal = this.gui.configModal;
 
@@ -190,7 +196,7 @@ class Tutorial
         tour.start(true);
     }
 
-    startTour_ht2()
+    _startTour_ht2()
     {
         let confModal = this.gui.configModal;
 
@@ -355,7 +361,7 @@ class Tutorial
         tour2.start(true);
     }
 
-    startTour_ht3()
+    _startTour_ht3()
     {
         let tour3 = new Tour({
             name: "tBlueprint",
@@ -413,7 +419,7 @@ class Tutorial
         tour3.start(true);
     }
 
-    startTour_ht4()
+    _startTour_ht4()
     {
         let tour4 = new Tour({
            name: "tSettings",

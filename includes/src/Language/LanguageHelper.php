@@ -1087,10 +1087,15 @@ class LanguageHelper
                         $lang->setUrl($url);
                     }
                 } else {
-                    $originalLanguage = $productFilter->getFilterConfig()->getLanguageID();
-                    $productFilter->getFilterConfig()->setLanguageID($langID);
+                    $config = $productFilter->getFilterConfig();
+                    $originalLanguage = $config->getLanguageID();
+                    $originalBase     = $config->getBaseURL();
+                    $config->setLanguageID($langID);
+                    $config->setBaseURL(Shop::getURL(false, $langID) . '/');
                     $url = $productFilter->getFilterURL()->getURL($oZusatzFilter);
-                    $productFilter->getFilterConfig()->setLanguageID($originalLanguage);
+                    // reset
+                    $config->setLanguageID($originalLanguage);
+                    $config->setBaseURL($originalBase);
                     if ($productFilter->getPage() > 1) {
                         if (\mb_strpos($url, '?') !== false || \mb_strpos($url, 'navi.php') !== false) {
                             $url .= '&amp;seite=' . $productFilter->getPage();

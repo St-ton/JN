@@ -24,6 +24,8 @@ use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Checkout\Kupon;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\ReturnType;
+use JTL\Extensions\Config\Configurator;
+use JTL\Extensions\Config\Item;
 use JTL\Extensions\SelectionWizard\Wizard;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Product;
@@ -655,6 +657,72 @@ class IOMethods
             1 => Preise::getLocalizedPriceString($fVK[1])
         ];
 
+        $configGroups      = $items;
+        $configGroupCounts = $quantities;
+        $configItemCounts  = $itemQuantities;
+        foreach ($configGroups as $itemList) {
+            foreach ($itemList as $configItemID) {
+                $configItemID = (int)$configItemID;
+                // Falls ungültig, ignorieren
+                if ($configItemID <= 0) {
+                    continue;
+                }
+                $configItem          = new Item($configItemID);
+                $configItem->fAnzahl = (float)($configItemCounts[$configItemID]
+                    ?? $configGroupCounts[$configItem->getKonfiggruppe()] ?? $configItem->getInitial());
+                if ($configItemCounts && isset($configItemCounts[$configItem->getKonfigitem()])) {
+                    $configItem->fAnzahl = (float)$configItemCounts[$configItem->getKonfigitem()];
+                }
+                if ($configItem->fAnzahl < 1) {
+                    $configItem->fAnzahl = 1;
+                }
+                $count                 = \max($amount, 1);
+                $configItem->fAnzahlWK = $configItem->fAnzahl;
+                if (!$configItem->ignoreMultiplier()) {
+                    $configItem->fAnzahlWK *= $count;
+                }
+                $configItems[] = $configItem;
+                // Alle Artikel können in den WK gelegt werden?
+                if ($configItem->getPosTyp() === \KONFIG_ITEM_TYP_ARTIKEL) {
+                    // Varikombi
+                    /** @var Artikel $tmpProduct */
+                    $configItem->oEigenschaftwerte_arr = [];
+                    $tmpProduct                        = $configItem->getArtikel();
+
+                    if ($tmpProduct !== null
+                        && $tmpProduct->kVaterArtikel > 0
+                        && isset($tmpProduct->kEigenschaftKombi)
+                        && $tmpProduct->kEigenschaftKombi > 0
+                    ) {
+                        $configItem->oEigenschaftwerte_arr =
+                            Product::getVarCombiAttributeValues($tmpProduct->kArtikel, false);
+                    }
+                    if ($tmpProduct->cTeilbar !== 'Y' && (int)$count != $count) {
+                        $count = (int)$count;
+                    }
+                    $tmpProduct->isKonfigItem = true;
+                    $redirectParam            = CartHelper::addToCartCheck(
+                        $tmpProduct,
+                        $configItem->fAnzahlWK,
+                        $configItem->oEigenschaftwerte_arr
+                    );
+                    if (\count($redirectParam) > 0) {
+                        $valid           = false;
+                        $productMessages = Product::getProductMessages(
+                            $redirectParam,
+                            true,
+                            $configItem->getArtikel(),
+                            $configItem->fAnzahlWK,
+                            $configItem->getKonfigitem()
+                        );
+
+                        $itemErrors[$configItem->getKonfigitem()] = $productMessages[0];
+                    }
+                }
+            }
+        }
+
+        $config->errors = array_keys(Configurator::validateCart($productID, $configItems ?? []));
         $smarty->assign('oKonfig', $config)
                ->assign('NettoPreise', $net)
                ->assign('Artikel', $product);

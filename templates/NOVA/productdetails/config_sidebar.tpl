@@ -21,7 +21,7 @@
                 </tfoot>
             </table>
         {/block}
-        {button variant="primary" class="float-right mb-3" data=["dismiss"=>"modal"] disabled=true}
+        {button variant="primary" class="float-right mb-3 js-cfg-validate" data=["dismiss"=>"modal"] disabled=true}
             {lang key='applyConfiguration' section='productDetails'}
         {/button}
     </div>

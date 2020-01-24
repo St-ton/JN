@@ -193,4 +193,9 @@
 	.drpdwn_qnt{
 		display: none;
 	}
+	&.visited {
+		.js-group-checked {
+			color: $success;
+		}
+	}
 }

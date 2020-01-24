@@ -9,8 +9,9 @@
                 {$configLocalization = $oGruppe->getSprache()}
                 {$configImagePath = $oGruppe->getImage(\JTL\Media\Image::SIZE_XS)}
                 {$kKonfiggruppe = $oGruppe->getKonfiggruppe()}
-                <div class="cfg-group" data-id="{$kKonfiggruppe}">
+                <div class="cfg-group js-cfg-group {if $oGruppe@first}visited{/if}" data-id="{$kKonfiggruppe}">
                     <div class="hr-sect mb-0">
+                        <span class="d-none js-group-checked"><i class="fas fa-check"></i></span>
                         {button
                             id="crd-hdr-{$oGruppe@iteration}"
                             variant="link"

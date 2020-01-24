@@ -211,8 +211,9 @@ class PageService
      * @param int $langId
      * @return string
      */
-    public function getCurPageUri(int $langId = 0)
+    public function getCurPageUri(int $langId = 0): string
     {
+        $uri = $_SERVER['HTTP_X_REWRITE_URL'] ?? $_SERVER['REQUEST_URI'];
         if ($langId > 0) {
             $languages = $_SESSION['Sprachen'];
             foreach ($languages as $language) {
@@ -221,13 +222,9 @@ class PageService
                     break;
                 }
             }
-        } else {
-            $uri = $_SERVER['HTTP_X_REWRITE_URL'] ?? $_SERVER['REQUEST_URI'];
         }
-
         $shopURLdata = \parse_url(Shop::getURL());
         $baseURLdata = \parse_url($uri);
-
         if (empty($shopURLdata['path'])) {
             $shopURLdata['path'] = '/';
         }
@@ -235,13 +232,10 @@ class PageService
         if (!isset($baseURLdata['path'])) {
             return '/';
         }
-
         $result = \mb_substr($baseURLdata['path'], \mb_strlen($shopURLdata['path']));
-
         if (isset($baseURLdata['query'])) {
             $result .= '?' . $baseURLdata['query'];
         }
-
         $result = '/' . \ltrim($result, '/');
 
         return $result;

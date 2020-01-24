@@ -8,7 +8,7 @@
                     <i class="fa fas fa-times"></i>
                 </button>
             </div>
-            <form id="tourForm">
+            <form id="tourForm" onsubmit="opc.tutorial.startTour()">
                 <div class="modal-body">
                     <p>{__('noteInfoInGuide')}</p>
                     <div class="radio">

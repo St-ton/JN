@@ -12,7 +12,7 @@ class Tutorial
     {
         installGuiElements(this, [
             'tourModal',
-            'tourForm'
+            'tourForm',
         ]);
     }
 
@@ -21,35 +21,35 @@ class Tutorial
         this.tourModal.modal('show');
     }
 
-    onTourForm(e)
+    startTour()
     {
-        var tourId = this.tourForm.find('input[name="help-tour"]:checked').val();
+        event.preventDefault();
+
+        let tourId = this.tourForm.find('input[name="help-tour"]:checked').val();
 
         this.tourModal.modal('hide');
         this['startTour_' + tourId]();
-
-        e.preventDefault();
     }
 
     fixIframePos(element)
     {
-        var off   = element.offset();
-        var pLeft = this.gui.opcSidebar.outerWidth();
+        let off   = element.offset();
+        let pLeft = this.gui.opcSidebar.outerWidth();
 
         element.offset({left: off.left + pLeft});
     }
 
     fixBackdrop()
     {
-        var backdropTop    = $('.tour-backdrop.top');
-        var backdropLeft   = $('.tour-backdrop.left');
-        var backdropRight  = $('.tour-backdrop.right');
-        var backdropBottom = $('.tour-backdrop.bottom');
+        let backdropTop    = $('.tour-backdrop.top');
+        let backdropLeft   = $('.tour-backdrop.left');
+        let backdropRight  = $('.tour-backdrop.right');
+        let backdropBottom = $('.tour-backdrop.bottom');
 
-        var off       = backdropTop.offset();
-        var pTop      = this.gui.opcHeader.height();
-        var pLeft     = this.gui.opcSidebar.outerWidth();
-        var leftWidth = backdropLeft.width();
+        let off       = backdropTop.offset();
+        let pTop      = this.gui.opcHeader.height();
+        let pLeft     = this.gui.opcSidebar.outerWidth();
+        let leftWidth = backdropLeft.width();
 
         // backdropTop.offset({top: off.top + pTop});
 
@@ -67,9 +67,9 @@ class Tutorial
 
     startTour_ht1()
     {
-        var confModal = this.gui.configModal;
+        let confModal = this.gui.configModal;
 
-        var tour = new Tour({
+        let tour = new Tour({
             name: "tAllgemein",
             orphan: true,
             template: "<div class='popover tour'><div class='arrow'></div><h3 class='popover-title'></h3>" +
@@ -192,9 +192,9 @@ class Tutorial
 
     startTour_ht2()
     {
-        var confModal = this.gui.configModal;
+        let confModal = this.gui.configModal;
 
-        var tour2 = new Tour({
+        let tour2 = new Tour({
             name: "tAnimation",
             smartPlacement: false,
             orphan: true,
@@ -357,7 +357,7 @@ class Tutorial
 
     startTour_ht3()
     {
-        var tour3 = new Tour({
+        let tour3 = new Tour({
             name: "tBlueprint",
             orphan: true,
             template: "<div class='popover tour'><div class='arrow'></div><h3 class='popover-title'></h3>" +
@@ -415,7 +415,7 @@ class Tutorial
 
     startTour_ht4()
     {
-        var tour4 = new Tour({
+        let tour4 = new Tour({
            name: "tSettings",
            debug: true,
            orphan: true,

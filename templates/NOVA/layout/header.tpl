@@ -211,7 +211,7 @@
 
         <script src="{$ShopURL}/{$templateDir}js/jquery-3.4.1.min.js"></script>
 
-        {if !isset($Einstellungen.template.general.use_minify) || $Einstellungen.template.general.use_minify === 'N'}
+        {if $Einstellungen.template.general.use_minify === 'N'}
             {if isset($cPluginJsHead_arr)}
                 {foreach $cPluginJsHead_arr as $cJS}
                     <script defer src="{$ShopURL}/{$cJS}?v={$nTemplateVersion}"></script>

@@ -6,7 +6,6 @@
 
 namespace JTL\Minify;
 
-use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use JTL\Template;
 
@@ -21,22 +20,9 @@ class MinifyService
      */
     protected $baseDir = \PFAD_ROOT . \PATH_STATIC_MINIFY;
 
-    /**
-     * @var bool
-     */
-    protected $allowStatic;
-
     public const TYPE_CSS = 'css';
 
     public const TYPE_JS = 'js';
-
-    /**
-     * MinifyService constructor.
-     */
-    public function __construct()
-    {
-        $this->allowStatic = \defined('ALLOW_STATIC_MINIFY') && \ALLOW_STATIC_MINIFY === true;
-    }
 
     /**
      * Build a URI for the static cache
@@ -52,10 +38,10 @@ class MinifyService
         $urlPrefix = \rtrim($urlPrefix, '/');
         $query     = \ltrim($query, '?');
         $ext       = '.' . $type;
+        $cacheTime = $cacheTime ?? $this->getCacheTime();
         if (\substr($query, -\strlen($ext)) !== $ext) {
             $query .= '&z=' . $ext;
         }
-        $cacheTime = $cacheTime ?? $this->getCacheTime();
 
         return $urlPrefix . '/' . $cacheTime . '/' . $query;
     }
@@ -91,14 +77,9 @@ class MinifyService
      */
     public function flushCache(): bool
     {
-        if ($this->allowStatic === true) {
-            $time = $this->getCacheTime(false);
-            if ($time) {
-                return $this->removeTree($this->baseDir . $time);
-            }
-        }
+        $time = $this->getCacheTime(false);
 
-        return false;
+        return $time ? $this->removeTree($this->baseDir . $time) : false;
     }
 
     /**
@@ -122,12 +103,15 @@ class MinifyService
      */
     public function buildURIs(JTLSmarty $smarty, Template $template, string $themeDir): void
     {
-        $minify     = $template->getMinifyArray();
-        $tplVersion = $template->getVersion();
-        $css        = $minify[$themeDir . '.css'] ?? [];
-        $js         = $minify['jtl3.js'] ?? [];
-        $res        = [];
-        $data       = [
+        $minify      = $template->getMinifyArray();
+        $tplVersion  = $template->getVersion();
+        $config      = $template->getConfig();
+        $allowStatic = isset($config['general']['use_minify']) && $config['general']['use_minify'] === 'static';
+        $cacheTime   = $allowStatic ? $this->getCacheTime() : null;
+        $css         = $minify[$themeDir . '.css'] ?? [];
+        $js          = $minify['jtl3.js'] ?? [];
+        $res         = [];
+        $data        = [
             self::TYPE_CSS => [
                 $themeDir . '.css',
                 'plugin_css',
@@ -145,14 +129,13 @@ class MinifyService
             'cPluginJsHead_arr' => &$minify['plugin_js_head'],
             'cPluginJsBody_arr' => &$minify['plugin_js_body'],
         ]);
-        $cacheTime = $this->getCacheTime();
         foreach ($data as $type => $groups) {
             $res[$type] = [];
             foreach ($groups as $group) {
                 if (!isset($minify[$group]) || \count($minify[$group]) === 0) {
                     continue;
                 }
-                if ($this->allowStatic === true) {
+                if ($allowStatic === true) {
                     $uri = $this->buildURI('static', 'g=' . $group, $type, $cacheTime);
                 } else {
                     $uri = 'asset/' . $group . '?v=' . $tplVersion;
@@ -160,7 +143,7 @@ class MinifyService
                 $res[$type][$group] = $uri;
             }
         }
-        if ($this->allowStatic === true) {
+        if ($allowStatic === true) {
             $uri = 'g=' . $themeDir . '.css';
             if (isset($minify['plugin_css']) && \count($minify['plugin_css']) > 0) {
                 $uri .= ',plugin_css';

@@ -28,7 +28,7 @@ $currentTemplateDir = $smarty->getTemplateUrlPath();
 $updater            = new Updater($db);
 $hasPendingUpdates  = $updater->hasPendingUpdates();
 $resourcePaths      = $template->getResources(isset($config['template']['general']['use_minify'])
-    && $config['template']['general']['use_minify'] === 'Y');
+    && $config['template']['general']['use_minify'] !== 'N');
 $adminLoginGruppe   = !empty($oAccount->account()->oGroup->kAdminlogingruppe)
     ? (int)$oAccount->account()->oGroup->kAdminlogingruppe
     : -1;

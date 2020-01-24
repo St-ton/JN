@@ -733,7 +733,7 @@ class IOMethods
             \array_keys(\is_array($errors) ? $errors : [])
         ));
         $config->errorMessages = $itemErrors ?? [];
-        $config->valid         = empty($config->errors) && empty($config->errorMessages);
+        $config->valid         = empty($config->invalidGroups) && empty($config->errorMessages);
         $smarty->assign('oKonfig', $config)
                ->assign('NettoPreise', $net)
                ->assign('Artikel', $product);

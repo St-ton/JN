@@ -1051,7 +1051,7 @@ class LanguageHelper
                 $langID  = $lang->getId();
                 $langISO = $lang->getIso();
                 if (isset($AktuellerArtikel->cSprachURL_arr[$langISO])) {
-                    $lang->setUrl($shopURL . $AktuellerArtikel->cSprachURL_arr[$langISO]);
+                    $lang->setUrl(Shop::getURL(false, $langID)  . '/'. $AktuellerArtikel->cSprachURL_arr[$langISO]);
                 } elseif ($page !== null) {
                     $url = $page->getURL($langID);
                     if (\mb_strpos($url, '/?s=') !== false) {

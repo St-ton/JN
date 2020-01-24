@@ -1960,7 +1960,7 @@ function versandartKorrekt(int $shippingMethodID, $formValues = 0)
     if (isset($shippingMethod->Zuschlag->fZuschlag) && $shippingMethod->Zuschlag->fZuschlag != 0) {
         $specialItem->cName = [];
         foreach (Frontend::getLanguages() as $lang) {
-            $loc                           = $db->select(
+            $loc                             = $db->select(
                 'tversandzuschlagsprache',
                 'kVersandzuschlag',
                 (int)$shippingMethod->Zuschlag->kVersandzuschlag,

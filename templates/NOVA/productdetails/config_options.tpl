@@ -46,6 +46,9 @@
                             </div>
                         {/if}
                     {block name='productdetails-config-container-group-description'}
+                        {alert variant="danger" class="js-cfg-group-error" data=["id"=>"{$kKonfiggruppe}"]}{/alert}
+                    {/block}
+                    {block name='productdetails-config-container-group-description'}
                         {row class="group-description mb-3"}
                             {if !empty($aKonfigerror_arr[$kKonfiggruppe])}
                                 {col cols=12}

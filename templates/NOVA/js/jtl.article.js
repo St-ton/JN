@@ -979,13 +979,17 @@
                         nNetto,
                         quantityInput;
                     $('.js-cfg-group').each(function (i, item) {
-                        if (data.response.errors && data.response.errors.includes($(this).data('id'))) {
+                        if (data.response.invalidGroups && data.response.invalidGroups.includes($(this).data('id'))) {
                             $(this).find('.js-group-checked').addClass('d-none');
                         } else {
                             $(this).find('.js-group-checked').removeClass('d-none');
                         }
                     });
-                    if (!data.response.errors) {
+                    $('.js-cfg-group-error').addClass('d-none').html('');
+                    $.each(data.response.errorMessages, function (i, item) {
+                        $('.js-cfg-group-error[data-id="' + item.group + '"]').removeClass('d-none').html(item.message);
+                    });
+                    if (data.response.valid) {
                         $('.js-cfg-validate').prop('disabled', false);
                     } else {
                         $('.js-cfg-validate').prop('disabled', true);

@@ -636,6 +636,7 @@ class IOMethods
         $itemQuantities  = $aValues['item_quantity'] ?? [];
         $variationValues = $aValues['eigenschaftwert'] ?? [];
         $amount          = $aValues['anzahl'] ?? 1;
+        $invalidGroups   = [];
         $config          = Product::buildConfig(
             $productID,
             $amount,
@@ -716,13 +717,23 @@ class IOMethods
                             $configItem->getKonfigitem()
                         );
 
-                        $itemErrors[$configItem->getKonfigitem()] = $productMessages[0];
+                        $itemErrors[$configItem->getKonfigitem()] = (object)[
+                            'message' => $productMessages[0],
+                            'group'   => $configItem->getKonfiggruppe()
+                        ];
+                        $invalidGroups[]                          = $configItem->getKonfiggruppe();
                     }
                 }
             }
         }
 
-        $config->errors = array_keys(Configurator::validateCart($productID, $configItems ?? []));
+        $errors                = Configurator::validateCart($productID, $configItems ?? []);
+        $config->invalidGroups = \array_unique(\array_merge(
+            $invalidGroups,
+            \array_keys(\is_array($errors) ? $errors : [])
+        ));
+        $config->errorMessages = $itemErrors ?? [];
+        $config->valid         = empty($config->errors) && empty($config->errorMessages);
         $smarty->assign('oKonfig', $config)
                ->assign('NettoPreise', $net)
                ->assign('Artikel', $product);

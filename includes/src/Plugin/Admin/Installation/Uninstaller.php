@@ -128,10 +128,12 @@ final class Uninstaller
         $this->db->delete('tplugincustomtabelle', 'kPlugin', $pluginID);
         $this->db->delete('tpluginlinkdatei', 'kPlugin', $pluginID);
         $this->db->queryPrepared(
-            'DELETE tzahlungsartsprache, tzahlungsart
+            'DELETE tzahlungsartsprache, tzahlungsart, tversandartzahlungsart
                 FROM tzahlungsart
                 LEFT JOIN tzahlungsartsprache
                     ON tzahlungsartsprache.kZahlungsart = tzahlungsart.kZahlungsart
+                LEFT JOIN tversandartzahlungsart
+                    ON tversandartzahlungsart.kZahlungsart = tzahlungsart.kZahlungsart
                 WHERE tzahlungsart.cModulId LIKE :pid',
             ['pid' => 'kPlugin_' . $pluginID . '_%'],
             ReturnType::DEFAULT

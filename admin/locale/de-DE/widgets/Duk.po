@@ -1,9 +1,0 @@
-msgid ""
-msgstr ""
-"Content-Type: text/plain; charset=UTF-8\n"
-
-msgid "Duk_title"
-msgstr "Wussten Sie schon?"
-
-msgid "Duk_desc"
-msgstr "Nützliche Tipps zu JTL-Shop"

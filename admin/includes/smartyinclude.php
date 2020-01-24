@@ -110,7 +110,7 @@ if (!$hasPendingUpdates) {
                         'cURL'      => $secondEntry->link,
                         'cRecht'    => $secondEntry->permissions,
                     ];
-                    if (strpos($curScriptFileNameWithRequest, $linkGruppe->oLink_arr->cURL) !== false) {
+                    if (strpos($curScriptFileNameWithRequest, $linkGruppe->oLink_arr->cURL) === 0) {
                         $currentToplevel    = $mainGroup->key;
                         $currentSecondLevel = $linkGruppe->key;
                     }

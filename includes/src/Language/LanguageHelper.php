@@ -1052,6 +1052,13 @@ class LanguageHelper
                 $langISO = $lang->getIso();
                 if (isset($AktuellerArtikel->cSprachURL_arr[$langISO])) {
                     $lang->setUrl($shopURL . $AktuellerArtikel->cSprachURL_arr[$langISO]);
+                } elseif ($page !== null) {
+                    $url = $page->getURL($langID);
+                    if (\mb_strpos($url, '/?s=') !== false) {
+                        $lang->setUrl(\rtrim($shopURL, '/') . $url);
+                    } else {
+                        $lang->setUrl($url);
+                    }
                 } elseif ($specialPage !== null) {
                     if (Shop::getPageType() === \PAGE_STARTSEITE) {
                         $url = $shopURL . '?lang=' . $langISO;
@@ -1079,13 +1086,6 @@ class LanguageHelper
                     }
                     $lang->setUrl($url);
                     \executeHook(\HOOK_TOOLSGLOBAL_INC_SWITCH_SETZESPRACHEUNDWAEHRUNG_SPRACHE);
-                } elseif ($page !== null) {
-                    $url = $page->getURL($langID);
-                    if (\mb_strpos($url, '/?s=') !== false) {
-                        $lang->setUrl(\rtrim($shopURL, '/') . $url);
-                    } else {
-                        $lang->setUrl($url);
-                    }
                 } else {
                     $config           = $productFilter->getFilterConfig();
                     $originalLanguage = $config->getLanguageID();

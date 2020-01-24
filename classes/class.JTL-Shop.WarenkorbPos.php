@@ -355,9 +355,9 @@ class WarenkorbPos
             $ust = gibUst($this->kSteuerklasse);
             foreach ($_SESSION['Waehrungen'] as $Waehrung) {
                 // Standardartikel
-                $this->cGesamtpreisLocalized[0][$Waehrung->cName] = gibPreisStringLocalized(berechneBrutto($this->fPreis * $this->nAnzahl, $ust), $Waehrung);
+                $this->cGesamtpreisLocalized[0][$Waehrung->cName] = gibPreisStringLocalized(berechneBrutto($this->fPreis * $this->nAnzahl, $ust, 4), $Waehrung);
                 $this->cGesamtpreisLocalized[1][$Waehrung->cName] = gibPreisStringLocalized($this->fPreis * $this->nAnzahl, $Waehrung);
-                $this->cEinzelpreisLocalized[0][$Waehrung->cName] = gibPreisStringLocalized(berechneBrutto($this->fPreis, $ust), $Waehrung);
+                $this->cEinzelpreisLocalized[0][$Waehrung->cName] = gibPreisStringLocalized(berechneBrutto($this->fPreis, $ust, 4), $Waehrung);
                 $this->cEinzelpreisLocalized[1][$Waehrung->cName] = gibPreisStringLocalized($this->fPreis, $Waehrung);
 
                 if (!empty($this->Artikel->cVPEEinheit) && isset($this->Artikel->cVPE) && $this->Artikel->cVPE === 'Y' && $this->Artikel->fVPEWert > 0) {
@@ -365,9 +365,9 @@ class WarenkorbPos
                 }
 
                 if ($this->istKonfigVater()) {
-                    $this->cKonfigpreisLocalized[0][$Waehrung->cName]       = gibPreisStringLocalized(berechneBrutto($this->fPreis * $this->nAnzahl, $ust), $Waehrung);
+                    $this->cKonfigpreisLocalized[0][$Waehrung->cName]       = gibPreisStringLocalized(berechneBrutto($this->fPreis * $this->nAnzahl, $ust, 4), $Waehrung);
                     $this->cKonfigpreisLocalized[1][$Waehrung->cName]       = gibPreisStringLocalized($this->fPreis * $this->nAnzahl, $Waehrung);
-                    $this->cKonfigeinzelpreisLocalized[0][$Waehrung->cName] = gibPreisStringLocalized(berechneBrutto($this->fPreis, $ust), $Waehrung);
+                    $this->cKonfigeinzelpreisLocalized[0][$Waehrung->cName] = gibPreisStringLocalized(berechneBrutto($this->fPreis, $ust, 4), $Waehrung);
                     $this->cKonfigeinzelpreisLocalized[1][$Waehrung->cName] = gibPreisStringLocalized($this->fPreis, $Waehrung);
                 }
 

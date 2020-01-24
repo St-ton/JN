@@ -114,8 +114,34 @@ class Frontend extends AbstractSession
                 'und dem erstem Abgleich mit JTL-Wawi</a>.</h1>');
         }
         $this->checkCustomerUpdate();
+        $this->initLanguageURLs();
 
         return $this;
+    }
+
+    /**
+     * pre-calculate all the localized shop base URLs
+     */
+    private function initLanguageURLs(): void
+    {
+        if (!\defined('EXPERIMENTAL_MULTILANG_SHOP') || \EXPERIMENTAL_MULTILANG_SHOP !== true) {
+            return;
+        }
+        $urls      = [];
+        $sslStatus = Request::checkSSL();
+        foreach ($_SESSION['Sprachen'] ?? [] as $language) {
+            $code    = \mb_convert_case($language->getCode(), \MB_CASE_UPPER);
+            $shopURL = \defined('URL_SHOP_' . $code) ? \constant('URL_SHOP_' . $code) : \URL_SHOP;
+            foreach ([0, 1] as $forceSSL) {
+                if ($sslStatus === 2) {
+                    $shopURL = \str_replace('http://', 'https://', $shopURL);
+                } elseif ($sslStatus === 4 || ($sslStatus === 3 && $forceSSL)) {
+                    $shopURL = \str_replace('http://', 'https://', $shopURL);
+                }
+                $urls[$language->getId()][$forceSSL] = \rtrim($shopURL, '/');
+            }
+        }
+        Shop::setURLs($urls);
     }
 
     /**

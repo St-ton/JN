@@ -797,10 +797,13 @@ class VersandartHelper
             $steuerDaten = Shop::DB()->select(
                 'tsteuersatz',
                 'kSteuerklasse',
-                (int)$_SESSION['Warenkorb']->gibVersandkostenSteuerklasse()
+                $_SESSION['Warenkorb'] !== null
+                    ? (int)$_SESSION['Warenkorb']->gibVersandkostenSteuerklasse()
+                    : (int)$Artikel->kSteuerklasse
             );
-            $steuerSatz  = $steuerDaten->fSteuersatz;
+            $steuerSatz  = isset($steuerDaten) ? $steuerDaten->fSteuersatz : 0;
         }
+
         //gestaffelte
         if (isset($Artikel->FunktionsAttribute[FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT]) &&
             $Artikel->FunktionsAttribute[FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT]

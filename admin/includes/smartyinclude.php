@@ -145,7 +145,7 @@ if (!$hasPendingUpdates) {
                             mb_parse_str($urlParts['query'], $urlParts['query']);
                         }
 
-                        if (strpos($curScriptFileNameWithRequest, explode('#', $link->cURL)[0]) !== false) {
+                        if (strpos($curScriptFileNameWithRequest, explode('#', $link->cURL)[0]) === 0) {
                             $currentToplevel    = $mainGroup->key;
                             $currentSecondLevel = $linkGruppe->key;
                             $currentThirdLevel  = $link->key;

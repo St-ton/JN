@@ -1087,7 +1087,7 @@ class LanguageHelper
                         $lang->setUrl($url);
                     }
                 } else {
-                    $config = $productFilter->getFilterConfig();
+                    $config           = $productFilter->getFilterConfig();
                     $originalLanguage = $config->getLanguageID();
                     $originalBase     = $config->getBaseURL();
                     $config->setLanguageID($langID);

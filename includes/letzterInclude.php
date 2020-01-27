@@ -26,6 +26,7 @@ use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Text;
 use JTL\Campaign;
 use JTL\Link\Link;
+use JTL\MobileDetect\MobileDetect;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
@@ -53,7 +54,7 @@ executeHook(HOOK_LETZTERINCLUDE_CSS_JS, [
     'cPluginJsHead_arr' => &$minify['plugin_js_head'],
     'cPluginJsBody_arr' => &$minify['plugin_js_body']
 ]);
-$device             = new Mobile_Detect();
+$mobileDetect       = new MobileDetect();
 $expandedCategories = $expandedCategories ?? new KategorieListe();
 $debugbar           = Shop::Container()->getDebugBar();
 $debugbarRenderer   = $debugbar->getJavascriptRenderer();
@@ -189,9 +190,8 @@ $smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
        ->assign('shopFaviconURL', Shop::getFaviconURL())
        ->assign('wishlists', Wishlist::getWishlists())
        ->assign('robotsContent', $smarty->get_template_vars('robotsContent'))
-       ->assign('device', $device)
-       ->assign('isMobile', $device->isMobile())
-       ->assign('isTablet', $device->isTablet());
+       ->assign('isMobile', $mobileDetect->isMobile())
+       ->assign('isTablet', $mobileDetect->isTablet());
 
 $nav = new Navigation(Shop::Lang(), Shop::Container()->getLinkService());
 $nav->setPageType(Shop::getPageType());

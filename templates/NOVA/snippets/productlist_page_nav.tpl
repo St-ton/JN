@@ -21,9 +21,9 @@
                             {/if}
                             {if $navid === 'header'}
                                 {$filterPlacement=''}
-                                {if $device->isMobile() && !$device->isTablet()}
+                                {if $isMobile && !$isTablet}
                                     {$filterPlacement="collapse"}
-                                {elseif $device->isTablet() || $Einstellungen.template.productlist.filter_placement === 'modal'}
+                                {elseif $isTablet || $Einstellungen.template.productlist.filter_placement === 'modal'}
                                     {$filterPlacement="modal"}
                                 {/if}
                                 <div id="improve_search" class="{if $filterPlacement !== 'collapse'}d-inline-block btn-group{/if} mr-2 {if $filterPlacement === ''}d-lg-none{/if}">
@@ -33,7 +33,7 @@
                                 </div>
                             {/if}
                         {/block}
-                        {if (!$device->isMobile() || $device->isTablet()) && $navid === 'header'}
+                        {if (!$isMobile || $isTablet) && $navid === 'header'}
                             {block name='snippets-productlist-page-nav-actions'}
                                 {block name='snippets-productlist-page-nav-actions-sort'}
                                     {dropdown class="filter-type-FilterItemSort btn-group" variant="outline-secondary" text="{lang key='sorting' section='productOverview'}"}
@@ -53,7 +53,7 @@
                                         {/foreach}
                                     {/dropdown}
                                 {/block}
-                                {if !$device->isMobile()}
+                                {if !$isMobile}
                                     {block name='snippets-productlist-page-nav-include-layout-options'}
                                         {include file='productlist/layout_options.tpl'}
                                     {/block}
@@ -68,7 +68,7 @@
                     {lang key="products"} {$Suchergebnisse->getOffsetStart()} - {$Suchergebnisse->getOffsetEnd()} {lang key='of' section='productOverview'} {$Suchergebnisse->getProductCount()}
                 {/col}
             {/block}
-            {if $Suchergebnisse->getPages()->getMaxPage() > 1 && !($device->isMobile() && $navid === 'header')}
+            {if $Suchergebnisse->getPages()->getMaxPage() > 1 && !($isMobile && $navid === 'header')}
                 {block name='snippets-productlist-page-nav-page-nav'}
                     {col cols=12 md="auto" class="productlist-pagination"}
                         <nav class="navbar-pagination" aria-label="Productlist Navigation">

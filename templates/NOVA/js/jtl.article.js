@@ -978,6 +978,22 @@
                         enableQuantity,
                         nNetto,
                         quantityInput;
+                    $('.js-cfg-group').each(function (i, item) {
+                        if (data.response.invalidGroups && data.response.invalidGroups.includes($(this).data('id'))) {
+                            $(this).find('.js-group-checked').addClass('d-none');
+                        } else {
+                            $(this).find('.js-group-checked').removeClass('d-none');
+                        }
+                    });
+                    $('.js-cfg-group-error').addClass('d-none').html('');
+                    $.each(data.response.errorMessages, function (i, item) {
+                        $('.js-cfg-group-error[data-id="' + item.group + '"]').removeClass('d-none').html(item.message);
+                    });
+                    if (data.response.valid) {
+                        $('.js-cfg-validate').prop('disabled', false);
+                    } else {
+                        $('.js-cfg-validate').prop('disabled', true);
+                    }
                     if (error) {
                         $.evo.error(data);
                         return;
@@ -1000,6 +1016,12 @@
                         .trigger('priceChanged', result);
                 });
             }
+        },
+
+        initConfigListeners: function () {
+            $('.js-cfg-group').on('click', function () {
+                $(this).addClass('visited');
+            });
         },
 
         variationRefreshAll: function($wrapper) {

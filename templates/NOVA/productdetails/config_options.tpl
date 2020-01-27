@@ -9,8 +9,9 @@
                 {$configLocalization = $oGruppe->getSprache()}
                 {$configImagePath = $oGruppe->getImage(\JTL\Media\Image::SIZE_XS)}
                 {$kKonfiggruppe = $oGruppe->getKonfiggruppe()}
-                <div class="cfg-group" data-id="{$kKonfiggruppe}">
+                <div class="cfg-group js-cfg-group {if $oGruppe@first}visited{/if}" data-id="{$kKonfiggruppe}">
                     <div class="hr-sect mb-0">
+                        <span class="d-none js-group-checked"><i class="fas fa-check"></i></span>
                         {button
                             id="crd-hdr-{$oGruppe@iteration}"
                             variant="link"
@@ -44,6 +45,9 @@
                                 {badge variant="info"}{lang key='optional'}{/badge}
                             </div>
                         {/if}
+                    {block name='productdetails-config-container-group-description'}
+                        {alert variant="danger" class="js-cfg-group-error" data=["id"=>"{$kKonfiggruppe}"]}{/alert}
+                    {/block}
                     {block name='productdetails-config-container-group-description'}
                         {row class="group-description mb-3"}
                             {if !empty($aKonfigerror_arr[$kKonfiggruppe])}

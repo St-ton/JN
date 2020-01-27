@@ -13,7 +13,8 @@ class Migration_20200115104100 extends Migration implements IMigration
 
     public function up()
     {
-        $shopPath = rtrim(parse_url(Shop::getURL())['path'] ?? '', '/') . '/';
+        $urlParts = parse_url(Shop::getURL());
+        $shopPath = rtrim(isset($urlParts['path']) ? $urlParts['path'] : '', '/') . '/';
 
         $entries = $this->fetchAll(
             "SELECT r2.kRedirect

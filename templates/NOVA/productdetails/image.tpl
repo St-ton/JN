@@ -93,7 +93,7 @@
         {/block}
 
         {block name='productdetails-image-variation-preview'}
-            {if !$device->isMobile() && isset($Artikel->Variationen) && $Artikel->Variationen|@count > 0}
+            {if !$isMobile && isset($Artikel->Variationen) && $Artikel->Variationen|@count > 0}
                 {assign var=VariationsSource value='Variationen'}
                 {if isset($ohneFreifeld) && $ohneFreifeld}
                     {assign var=VariationsSource value='VariationenOhneFreifeld'}

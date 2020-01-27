@@ -37,9 +37,9 @@
                                                         {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
                                                         {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
                                                     sizes="auto"
-                                                    class="{if !$device->isMobile() && !empty($Artikel->Bilder[1])}first{/if}"
+                                                    class="{if !$isMobile && !empty($Artikel->Bilder[1])}first{/if}"
                                                 }
-                                                {if !$device->isMobile() && !empty($Artikel->Bilder[1])}
+                                                {if !$isMobile && !empty($Artikel->Bilder[1])}
                                                     {$image = $Artikel->Bilder[1]}
                                                     {image alt=$image->cAltAttribut|escape:'html' fluid=true webp=true lazy=true
                                                         src="{$image->cURLKlein}"

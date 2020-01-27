@@ -304,6 +304,21 @@
   border-color: #435A6B;
   color: #435A6B;
 }
+#opc .nav-tabs #btnPagetree.has-unmapped .nav-link {
+  position: relative;
+  color: #f68b25;
+}
+#opc .nav-tabs #btnPagetree.has-unmapped .nav-link:after {
+  display: block;
+  position: absolute;
+  content: "";
+  background-color: #f68b25;
+  width: 8px;
+  height: 8px;
+  right: -6px;
+  top: 12px;
+  border-radius: 100%;
+}
 
 #portlets hr {
   margin-top: 0;
@@ -434,12 +449,22 @@
 #pagetree {
   height: 100%;
 }
+#pagetree .offscreenDivider {
+  font-weight: 600;
+  margin: 1em;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  padding-top: 1em;
+}
 #pagetree #pageTreeView {
   padding: 1em 0;
   background-color: #F5F7FA;
   border-radius: 5px;
   height: 100%;
   overflow-y: auto;
+}
+#pagetree #pageTreeView .item-copybtn {
+  float: right;
+  margin-right: 1em;
 }
 #pagetree #pageTreeView ul {
   list-style: none;
@@ -452,15 +477,18 @@
   text-decoration: none;
   color: #435A6B;
 }
-#pagetree #pageTreeView .area-item {
+#pagetree #pageTreeView .area-item > .item-head > .item-label {
   color: #63849d;
   padding: 0 4px;
   margin: 2px;
 }
-#pagetree #pageTreeView .portlet-item {
+#pagetree #pageTreeView .portlet-item > .item-head > .item-label {
   border-radius: 4px;
   padding: 0 4px;
   margin: 2px;
+}
+#pagetree #pageTreeView .portlet-item > .item-head > .item-copybtn {
+  visibility: hidden;
 }
 #pagetree #pageTreeView .item-expander > .fa-chevron-down {
   display: none;
@@ -471,22 +499,23 @@
 #pagetree #pageTreeView li > ul {
   display: none;
 }
-#pagetree #pageTreeView li.expanded > .item-expander > .fa-chevron-down {
+#pagetree #pageTreeView li.expanded > .item-head > .item-expander > .fa-chevron-down {
   display: inline-block;
 }
-#pagetree #pageTreeView li.expanded > .item-expander > .fa-chevron-right {
+#pagetree #pageTreeView li.expanded > .item-head > .item-expander > .fa-chevron-right {
   display: none;
 }
 #pagetree #pageTreeView li.expanded > ul {
   display: block;
 }
-#pagetree #pageTreeView li.leaf > .item-expander {
-  visibility: hidden;
-}
-#pagetree #pageTreeView li.leaf > .area-item {
+#pagetree #pageTreeView li.leaf.area-item > .item-head > .item-label {
   color: #BDBDBD;
 }
-#pagetree #pageTreeView li.selected > .item-label {
+#pagetree #pageTreeView li.leaf > .item-head > .item-expander,
+#pagetree #pageTreeView li.leaf > .item-head > .item-copybtn {
+  visibility: hidden;
+}
+#pagetree #pageTreeView li.selected > .item-head > .item-label {
   background-color: #525252;
   color: #F5F7FA;
 }
@@ -859,6 +888,10 @@
   padding: 2px 2px 7px 2px;
 }
 
+#opc #messageboxModal .modal-content {
+  display: block;
+}
+
 html, body {
   margin: 0;
   padding: 0;
@@ -1140,7 +1173,7 @@ html, body {
 #opc #opcSidebar #sidebarFooter #previewToolbar #displayWidths > li > button {
   color: #BDBDBD;
 }
-#opc #opcSidebar #sidebarFooter #previewToolbar #displayWidths > li.active > button {
+#opc #opcSidebar #sidebarFooter #previewToolbar #displayWidths > li > button.active {
   color: #435A6B;
 }
 #opc #opcSidebar #displayPreviews {

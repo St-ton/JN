@@ -427,9 +427,9 @@
                                                                              {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
                                                                              {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
                                                                             sizes="auto"
-                                                                            class="w-100{if !$device->isMobile() && !empty($wlPosition->Artikel->Bilder[1])} first{/if}"
+                                                                            class="w-100{if !$isMobile && !empty($wlPosition->Artikel->Bilder[1])} first{/if}"
                                                                         }
-                                                                    {if !$device->isMobile() && !empty($wlPosition->Artikel->Bilder[1])}
+                                                                    {if !$isMobile && !empty($wlPosition->Artikel->Bilder[1])}
                                                                         {$image = $wlPosition->Artikel->Bilder[1]}
                                                                         {image alt=$wlPosition->Artikel->cName fluid=true webp=true lazy=true
                                                                             src="{$image->cURLKlein}"

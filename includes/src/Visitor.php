@@ -260,7 +260,7 @@ class Visitor
      */
     public static function getReferer(): string
     {
-        if (!isset($_SERVER['HTTP_REFERER'])) {
+        if (empty($_SERVER['HTTP_REFERER'])) {
             return '';
         }
 

@@ -3,7 +3,7 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='snippets-filter-mobile'}
-    {if $device->isMobile() && !$device->isTablet()}
+    {if $isMobile && !$isTablet}
         <span class="h2 mt-3 border-0 px-3" id="productlist-filter">{lang key='filterAndSort'}</span>
     {/if}
     <div class="productlist-filter-wrapper">

@@ -28,7 +28,7 @@
                 size="lg"
                 class="fade"}
                 {block name='productdetails-warehouse-modal-content'}
-                    {row class="mt-5"}
+                    {row}
                         {col}
                             <span class="font-weight-bold">{lang key='warehouse'}</span>
                         {/col}

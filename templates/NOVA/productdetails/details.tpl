@@ -209,7 +209,7 @@
                                     {/block}
                                 {/if}
 
-                                {row}
+                                {row class="mb-4"}
                                     {block name='productdetails-details-include-price'}
                                         {col}
                                             {include file='productdetails/price.tpl' Artikel=$Artikel tplscope='detail' priceLarge=true}
@@ -217,7 +217,7 @@
                                     {/block}
                                     {block name='productdetails-details-include-stock'}
                                         {col cols=12}
-                                            {row class="border-top border-bottom align-items-end no-gutters {if !isset($availability) && !isset($shippingTime)}py-3 mt-5 px-lg-3{/if}"}
+                                            {row class="border-top border-bottom align-items-end no-gutters {if !isset($availability) && !isset($shippingTime)}py-3 px-lg-3{/if}"}
                                                 {col}
                                                     {include file='productdetails/stock.tpl'}
                                                 {/col}

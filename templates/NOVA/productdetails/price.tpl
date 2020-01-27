@@ -4,7 +4,7 @@
  *}
 {block name='productdetails-price'}
     {if $smarty.session.Kundengruppe->mayViewPrices()}
-        <div class="price_wrapper">
+        <div class="price_wrapper mb-4">
             {block name='productdetails-price-wrapper'}
             {if $Artikel->getOption('nShowOnlyOnSEORequest', 0) === 1}
                 {block name='productdetails-price-out-of-stock'}

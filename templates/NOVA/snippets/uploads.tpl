@@ -16,7 +16,7 @@
             {/block}
             {block name='snippets-uploads-schemes-product'}
                 {foreach $oUploadSchema_arr as $oUploadSchema}
-                    {row class="mb-5"}
+                    {row class="mb-4"}
                         {if !empty($oUploadSchema->cName) || !empty($oUploadSchema->cBeschreibung)}
                             {block name='snippets-uploads-scheme-product-name'}
                                 {col cols=12}

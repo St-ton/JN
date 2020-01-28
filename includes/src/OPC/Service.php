@@ -77,6 +77,23 @@ class Service
     }
 
     /**
+     * @return string[]
+     */
+    public function getEditorMessageNames(): array
+    {
+        return [
+            'opcImportSuccessTitle',
+            'opcImportSuccess',
+            'opcImportUnmappedS',
+            'opcImportUnmappedP',
+            'btnTitleCopyArea',
+            'offscreenAreasDivider',
+            'yesDeleteArea',
+            'Cancel',
+        ];
+    }
+
+    /**
      * @param AdminIO $io
      * @throws Exception
      */

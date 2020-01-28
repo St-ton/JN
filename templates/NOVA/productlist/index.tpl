@@ -58,7 +58,7 @@
                         {col cols={$grid} md="{if isset($gridmd)}{$gridmd}{/if}"  sm="{if isset($gridsm)}{$gridsm}{/if}" xl="{if isset($gridxl)}{$gridxl}{/if}"
                              class="product-wrapper {if !($style === 'list' && $Artikel@last)}mb-7{/if}"
                              itemprop="itemListElement" itemscope=true itemtype="http://schema.org/Product"}
-                            {if $style === 'list' && !$device->isMobile()}
+                            {if $style === 'list' && !$isMobile}
                                 {block name='productlist-index-include-item-list'}
                                     {include file='productlist/item_list.tpl' tplscope=$style}
                                 {/block}

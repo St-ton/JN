@@ -55,7 +55,7 @@ class Banner extends Portlet
                 'default' => [],
             ],
             'alt'   => [
-                'label' => __('Alternative text'),
+                'label' => __('alternativeText'),
             ],
         ];
     }

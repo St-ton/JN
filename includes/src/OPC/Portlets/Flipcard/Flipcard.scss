@@ -17,40 +17,40 @@
 
   &.opc-Flipcard-v {
     .opc-Flipcard-front {
-      transform: rotateX(0deg);
+      transform: perspective(1024px) rotateX(0deg);
     }
 
     .opc-Flipcard-back {
-      transform: rotateX(180deg);
+      transform: perspective(1024px) rotateX(180deg);
     }
 
     .opc-Flipcard-flipped {
       .opc-Flipcard-front {
-        transform: rotateX(-180deg);
+        transform: perspective(1024px) rotateX(-180deg);
       }
 
       .opc-Flipcard-back {
-        transform: rotateX(0deg);
+        transform: perspective(1024px) rotateX(0deg);
       }
     }
   }
 
   &.opc-Flipcard-h {
     .opc-Flipcard-front {
-      transform: rotateY(0deg);
+      transform: perspective(1024px) rotateY(0deg);
     }
 
     .opc-Flipcard-back {
-      transform: rotateY(180deg);
+      transform: perspective(1024px) rotateY(180deg);
     }
 
     .opc-Flipcard-flipped {
       .opc-Flipcard-front {
-        transform: rotateY(-180deg);
+        transform: perspective(1024px) rotateY(-180deg);
       }
 
       .opc-Flipcard-back {
-        transform: rotateY(0deg);
+        transform: perspective(1024px) rotateY(0deg);
       }
     }
   }

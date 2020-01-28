@@ -189,7 +189,9 @@ $smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
        ->assign('shopFaviconURL', Shop::getFaviconURL())
        ->assign('wishlists', Wishlist::getWishlists())
        ->assign('robotsContent', $smarty->get_template_vars('robotsContent'))
-       ->assign('device', $device);
+       ->assign('device', $device)
+       ->assign('isMobile', $device->isMobile())
+       ->assign('isTablet', $device->isTablet());
 
 $nav = new Navigation(Shop::Lang(), Shop::Container()->getLinkService());
 $nav->setPageType(Shop::getPageType());

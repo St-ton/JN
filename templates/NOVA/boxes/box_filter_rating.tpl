@@ -4,7 +4,7 @@
  *}
 {block name='boxes-box-filter-rating'}
     {if $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE
-        && !($device->isMobile() || $Einstellungen.template.productlist.filter_placement === 'modal')}
+        && !($isMobile || $Einstellungen.template.productlist.filter_placement === 'modal')}
         <div class="box box-filter-rating d-none d-lg-block" id="sidebox{$oBox->getID()}">
             {button
                 variant="link"

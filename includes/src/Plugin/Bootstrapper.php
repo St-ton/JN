@@ -172,6 +172,11 @@ abstract class Bootstrapper implements BootstrapperInterface
      */
     public function prepareFrontend(LinkInterface $link, JTLSmarty $smarty): bool
     {
+        $smarty->assign(
+            'cPluginTemplate',
+            $this->getPlugin()->getPaths()->getFrontendPath() . \PFAD_PLUGIN_TEMPLATE . $link->getTemplate()
+        );
+
         return false;
     }
 

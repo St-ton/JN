@@ -214,7 +214,7 @@ class LanguageHelper
     public static function __callStatic($method, $arguments)
     {
         return ($mapping = self::map($method)) !== null
-            ? \call_user_func_array([self::$instance, $mapping], $arguments)
+            ? \call_user_func_array([self::getInstance(), $mapping], $arguments)
             : null;
     }
 

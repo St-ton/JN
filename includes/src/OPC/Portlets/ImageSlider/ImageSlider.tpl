@@ -14,7 +14,7 @@
 {else}
     {$uid = $instance->getUid()}
 
-    <div style="{$instance->getStyleString()}"
+    <div style="{$instance->getStyleString()}">
         {if $instance->getProperty('slides')|count > 0}
             <div class="theme-{$instance->getProperty('slider-theme')}">
                 <div id="{$uid}" class="nivoSlider">
@@ -43,10 +43,10 @@
                                 alt=$imgAttribs.alt
                                 title=$slideTitle
                                 data=['desc' => $slide.desc]}
-                            {if !empty($slide.link)}
-                                </a>
-                            {else}
+                            {if empty($slide.link)}
                                 </div>
+                            {else}
+                                </a>
                             {/if}
                         {/if}
                     {/foreach}

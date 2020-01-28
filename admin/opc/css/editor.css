@@ -892,7 +892,7 @@
   display: block;
 }
 
-#tutorial #tutBackdrop {
+#tutorials #tutBackdrop {
   position: absolute;
   left: 0;
   top: 0;
@@ -902,15 +902,57 @@
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.5s ease;
+  z-index: 1049 !important;
 }
-#tutorial #tutBox {
+#tutorials #tutBox {
+  display: none;
   width: 300px;
-  height: 100px;
   background-color: white;
+  position: absolute;
+  box-shadow: 0 0 4px 4px black;
+  z-index: 99999 !important;
 }
-#tutorial.active #tutBackdrop {
+#tutorials #tutBox.centered {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+#tutorials #tutBox.centered-v {
+  top: 50%;
+  transform: translate(0, -50%);
+}
+#tutorials #tutBox.centered-h {
+  left: 50%;
+  transform: translate(-50%, 0);
+}
+#tutorials.active #tutBackdrop {
   opacity: 0.5;
   pointer-events: all;
+}
+#tutorials.active #tutBox {
+  display: block;
+}
+
+.hightlighted-element {
+  z-index: 99999 !important;
+  position: relative;
+}
+
+.hightlighted-modal {
+  z-index: 99999 !important;
+}
+
+#tutBackdrop2.active {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: black;
+  opacity: 0.5;
+  pointer-events: all;
+  transition: opacity 0.5s ease;
+  z-index: 9999 !important;
 }
 
 html, body {

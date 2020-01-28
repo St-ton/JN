@@ -350,6 +350,7 @@ class GUI
 
     onPortletButtonDragEnd(e)
     {
+        opc.emit('portlet.dragend');
         this.iframe.dragNewPortlet();
         this.iframe.cleanUpDrag();
     }
@@ -421,6 +422,7 @@ class GUI
         event.preventDefault();
 
         this.configSaveCb();
+        opc.emit('portlet.save');
 
         let portletData  = this.page.portletToJSON(this.curPortlet);
         let configObject = $(event.target).serializeControls();

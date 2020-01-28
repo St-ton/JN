@@ -63,7 +63,7 @@ class Emitter
 
     once(name, cb)
     {
-        this.subject(name).one(cb);
+        this.subject(name).once(cb);
     }
 
     emit(name, data)

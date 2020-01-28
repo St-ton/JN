@@ -8,12 +8,12 @@
                     <i class="fa fas fa-times"></i>
                 </button>
             </div>
-            <form id="tourForm" onsubmit="opc.tutorial.startTour()">
+            <form id="tourForm" onsubmit="opc.tutorial.modalStartTour()">
                 <div class="modal-body">
                     <p>{__('noteInfoInGuide')}</p>
                     <div class="radio">
                         <label class="tour-label">
-                            <input type="radio" name="help-tour" id="helpTour1" value="ht1" checked
+                            <input type="radio" name="help-tour" id="helpTour0" value="0" checked
                                    class="hidden">
                             <span class="card">
                                 <span class="card-header">{__('generalIntroduction')}</span>
@@ -25,7 +25,7 @@
                     </div>
                     <div class="radio">
                         <label class="tour-label">
-                            <input type="radio" name="help-tour" id="helpTour2" value="ht2"
+                            <input type="radio" name="help-tour" id="helpTour1" value="1"
                                    class="hidden">
                             <div class="card">
                                 <div class="card-header">{__('animation')}</div>
@@ -37,7 +37,7 @@
                     </div>
                     <div class="radio">
                         <label class="tour-label">
-                            <input type="radio" name="help-tour" id="helpTour3" value="ht3"
+                            <input type="radio" name="help-tour" id="helpTour2" value="2"
                                    class="hidden">
                             <div class="card">
                                 <div class="card-header">{__('templates')}</div>
@@ -49,7 +49,7 @@
                     </div>
                     <div class="radio">
                         <label class="tour-label">
-                            <input type="radio" name="help-tour" id="helpTour4" value="ht4"
+                            <input type="radio" name="help-tour" id="helpTour3" value="3"
                                    class="hidden">
                             <div class="card">
                                 <div class="card-header">{__('settingsMore')}</div>

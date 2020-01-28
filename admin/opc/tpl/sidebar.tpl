@@ -106,7 +106,8 @@
                 <button type="button" class="opc-btn-secondary opc-small-btn" onclick="opc.gui.savePage()">
                     {__('save')} <i class="fas fa-asterisk" id="unsavedState" style="display: none"></i>
                 </button>
-                <button type="button" class="opc-btn-primary opc-small-btn" onclick="opc.gui.publishDraft()">
+                <button type="button" class="opc-btn-primary opc-small-btn" onclick="opc.gui.publishDraft()"
+                        id="btnPublishDraft">
                     {__('Publish')}
                 </button>
             </div>

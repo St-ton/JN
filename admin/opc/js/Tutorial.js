@@ -1,19 +1,30 @@
 class Tutorial
 {
-    constructor(gui, iframe)
+    constructor(gui, iframe, opc)
     {
         bindProtoOnHandlers(this);
 
         this.gui    = gui;
         this.iframe = iframe;
+        this.opc    = opc;
+        this.tourId = null;
+        this.stepId = null;
     }
 
     init()
     {
         installGuiElements(this, [
+            'opcSidebar',
+            'portlets',
             'tourModal',
             'tourForm',
             'tutorials',
+            'tutBackdrop',
+            'tutBackdrop2',
+            'tutBox',
+            'tutboxTitle',
+            'tutboxContent',
+            'tutboxNext',
         ]);
     }
 
@@ -22,19 +33,167 @@ class Tutorial
         this.tourModal.modal('show');
     }
 
-    startTour()
+    modalStartTour()
     {
         event.preventDefault();
-
-        let tourId = this.tourForm.find('input[name="help-tour"]:checked').val();
-
-        this.tourModal.modal('hide');
-        this['startTour_' + tourId]();
+        this.startTour(this.tourForm.find('input[name="help-tour"]:checked').val());
     }
 
-    startTour_ht1()
+    startTour(tourId)
     {
+        this.tourId = tourId;
+        this.tourModal.modal('hide');
         this.tutorials.addClass('active');
+        this.startStep(0);
+    }
+
+    reset()
+    {
+        this.tutBox.removeClass('centered');
+        this.tutBox.removeClass('centered-v');
+        this.tutBox.removeClass('centered-h');
+        this.tutBox.css('left', '');
+        this.tutBox.css('top', '');
+        this.tutBackdrop.css('width', '');
+        this.tutBackdrop2.remove();
+        this.tutBackdrop2.removeClass('active');
+        this.tutBackdrop2.css('width', '');
+        this.tutBackdrop2.css('height', '');
+        this.iframe.jq('.hightlighted-element').removeClass('hightlighted-element');
+        $('.hightlighted-element').removeClass('hightlighted-element');
+        $('.hightlighted-modal').removeClass('hightlighted-modal');
+    }
+
+    startStep(stepId)
+    {
+        let title   = opc.messages["tutStepTitle_" + this.tourId + "_" + stepId];
+        let content = opc.messages["tutStepText_" + this.tourId + "_" + stepId];
+
+        this.stepId = stepId;
+        this.tutboxTitle.html(title);
+        this.tutboxContent.html(content);
+        this.reset();
+
+        switch (stepId) {
+            case 0: {
+                this.tutBox.addClass('centered');
+                break;}
+            case 1: {
+                this.tutBox.addClass('centered-v');
+                this.tutBox.offset({left: 32});
+                this.opcSidebar.addClass('hightlighted-element');
+                break;}
+            case 2: {
+                this.tutBox.addClass('centered-v');
+                this.tutBox.offset({left: this.opcSidebar.width() + 64});
+                this.makeBackdrop('iframepanel');
+                break;}
+            case 3: {
+                this.tutBox.addClass('centered-v');
+                this.tutBox.offset({left: this.opcSidebar.width() - 32});
+                this.portlets.addClass('hightlighted-element');
+                break;}
+            case 4: {
+                this.tutBox.addClass('centered-v');
+                this.tutBox.offset({left: this.opcSidebar.width() + 64});
+                this.makeBackdrop('iframe');
+                this.iframe.dropTargets().addClass('hightlighted-element');
+                break;}
+            case 5: {
+                this.tutBox.addClass('centered-v');
+                this.tutBox.offset({left: this.opcSidebar.width() + 64});
+                this.makeBackdrop('iframe');
+                $('[data-portlet-class="Heading"]').addClass('hightlighted-element');
+                this.iframe.dropTargets().addClass('hightlighted-element');
+                opc.once('portlet.dragend', () => this.reset());
+                $('#configModal').one('shown.bs.modal', () => this.tutboxNext.click());
+                break;}
+            case 6: {
+                this.tutBox.addClass('centered');
+                $('#configModal').addClass('hightlighted-modal');
+                break;}
+            case 7: {
+                let configModal = $('#configModal');
+                this.tutBox.addClass('centered');
+                this.makeBackdrop('modal', configModal);
+                configModal.addClass('hightlighted-modal');
+                $('#config-text').addClass('hightlighted-element');
+                $('#configSave').addClass('hightlighted-element');
+                configModal.one('hide.bs.modal', () => this.reset());
+                configModal.one('hidden.bs.modal', () => this.tutboxNext.click());
+                break;}
+            case 8: {
+                this.tutBox.addClass('centered');
+                this.tutBox.offset({left: this.opcSidebar.width() + 64});
+                this.makeBackdrop('iframe');
+                this.iframe.portletToolbar.addClass('hightlighted-element');
+                break;}
+            case 9:{
+                let modal = $('#publishModal');
+                let btn = $('#btnPublishDraft');
+                this.tutBox.addClass('centered-h');
+                btn.addClass('hightlighted-element');
+                this.tutBox.offset({top: btn.offset().top - 100});
+                modal.one('show.bs.modal', () => this.reset());
+                modal.one('shown.bs.modal', () => this.tutboxNext.click());
+                break;}
+            case 10:{
+                let modal  = $('#publishModal');
+                let dialog = modal.find('.modal-dialog');
+                this.tutBox.addClass('centered-h');
+                this.tutBox.offset({top: dialog.offset().top + dialog.height() + 32});
+                modal.addClass('hightlighted-modal');
+                modal.one('show.bs.modal', () => this.reset());
+                modal.one('shown.bs.modal', () => this.tutboxNext.click());
+                break;}
+            case 11:{
+                let modal = $('#publishModal');
+                let dialog = modal.find('.modal-dialog');
+                this.tutBox.addClass('centered-h');
+                this.tutBox.offset({top: dialog.offset().top + dialog.height() + 32});
+                this.makeBackdrop('modal', modal);
+                modal.addClass('hightlighted-modal');
+                $('#btnApplyPublish').addClass('hightlighted-element');
+                modal.one('hide.bs.modal', () => this.reset());
+                modal.one('hidden.bs.modal', () => this.tutboxNext.click());
+                break;}
+            default:
+                this.tutBox.addClass('centered');
+        }
+
+        let nextStep = stepId + 1;
+
+        if(opc.messages["tutStepTitle_" + this.tourId + "_" + nextStep]) {
+            this.tutboxNext.off('click').on('click', () => this.startStep(nextStep));
+        } else {
+            this.tutboxNext.off('click').on('click', () => this.stopTutorial());
+        }
+    }
+
+    stopTutorial()
+    {
+        this.reset();
+        this.tutorials.removeClass('active');
+    }
+
+    makeBackdrop(type, modal)
+    {
+        switch(type) {
+            case 'iframepanel':
+                this.tutBackdrop.width(this.opcSidebar.width());
+                break;
+            case 'iframe':
+                this.tutBackdrop.width(this.opcSidebar.width());
+                this.tutBackdrop2.appendTo(this.iframe.body);
+                this.tutBackdrop2.addClass('active');
+                break;
+            case 'modal':
+                this.tutBackdrop2.appendTo(modal.find('.modal-content'));
+                this.tutBackdrop2.addClass('active');
+                this.tutBackdrop2.css('width', '100%');
+                this.tutBackdrop2.css('height', '100%');
+                break;
+        }
     }
 
     fixIframePos(element)

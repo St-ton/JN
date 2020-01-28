@@ -79,9 +79,9 @@ class Service
     /**
      * @return string[]
      */
-    public function getEditorMessageNames(): array
+    public function getEditorMessages(): array
     {
-        return [
+        $messageNames = [
             'opcImportSuccessTitle',
             'opcImportSuccess',
             'opcImportUnmappedS',
@@ -91,6 +91,65 @@ class Service
             'yesDeleteArea',
             'Cancel',
         ];
+
+        $messages = [];
+
+        foreach ($messageNames as $name) {
+            $messages[$name] = __($name);
+        }
+
+        $messages += [
+            'tutStepTitle_0_0' => 'Willkommen',
+            'tutStepText_0_0'  => 'In dieser kurzen Einführung wollen wir dir einen Überblick vom OnPage Composer
+                geben, ein Editor mit dem schnell neue Inhalte auf deiner Shop-Seite entstehen können.',
+
+            'tutStepTitle_0_1' => 'Aufteilung',
+            'tutStepText_0_1'  => 'Grundsätzlich ist der Editor in die zwei Bereich aufgeteilt. Hier links siehst du
+                die Sidebar.',
+
+            'tutStepTitle_0_2' => 'Aufteilung',
+            'tutStepText_0_2'  => 'Im rechten Fenster siehst du deine aktuelle Seite im Bearbeitungsmodus.',
+
+            'tutStepTitle_0_3' => 'Portlets',
+            'tutStepText_0_3'  => 'Das sind unsere Portlets, fertige Bausteine um deine Seiten mit neuen Inhalten zu
+                ergänzen.',
+
+            'tutStepTitle_0_4' => 'Portlets',
+            'tutStepText_0_4'  => 'Die grauen Bereiche auf der Seite zeigen dir wo du Portlets ablegen kannst.',
+
+            'tutStepTitle_0_5' => 'Portlets',
+            'tutStepText_0_5'  => 'Ziehe nun das Portlet "Überschrift" in einen der grauen Bereiche und schau was
+                passiert!',
+
+            'tutStepTitle_0_6' => 'Portlets',
+            'tutStepText_0_6'  => 'Alle Portlets bieten verschiedene Einstellungen. In diesem Fenster kannst du dein
+                Portlet konfigurieren.',
+
+            'tutStepTitle_0_7' => 'Einstellungen',
+            'tutStepText_0_7'  => 'Gib einen eigenen Text für diese Überschrift ein und klicke auf "Speichern"!',
+
+            'tutStepTitle_0_8' => 'Einstellungen',
+            'tutStepText_0_8'  => 'An dem neuen Portlet siehst du eine Leiste mit verschiedenen Buttons. Über den Stift
+                kannst du das Portlet jederzeit erneut bearbeiten.',
+
+            'tutStepTitle_0_9' => 'Seite Veröffentlichen',
+            'tutStepText_0_9'  => 'Nur veröffentlichte Entwürfe sind für deine Shop-Besucher sichtbar. Um deinen
+                Entwurf jetzt zu veröffentlichen klicke auf diesen Button.',
+
+            'tutStepTitle_0_10' => 'Seite Veröffentlichen',
+            'tutStepText_0_10'  => 'Für jede Seite kannst beliebig viele Entwürfe pflegen. Jeden Entwurf kannst du
+                zeitlich planen. Z.B. einen allgemeinen und einen Entwurf für die Weihnachtszeit.',
+
+            'tutStepTitle_0_11' => 'Seite Veröffentlichen',
+            'tutStepText_0_11'  => 'Die Voreinstellung macht den Entwurf ab sofort und bis auf unbestimmte
+                Zeit sichtbar. Klicke jetzt auf "Übernehmen" und der Entwurf ist online!',
+
+            'tutStepTitle_0_12' => 'Fertig!',
+            'tutStepText_0_12'  => 'Du kannst den Editor nun beenden und deine Seite anschauen
+                 Das waren die Basics. Wir wünschen dir weiterhin viel Spaß mit dem OnPage Composer!',
+        ];
+
+        return $messages;
     }
 
     /**

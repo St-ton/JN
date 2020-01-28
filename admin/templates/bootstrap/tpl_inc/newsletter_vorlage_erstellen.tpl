@@ -294,13 +294,13 @@ function checkNewsletterSend() {ldelim}
                     <div class="form-group form-row align-items-center {if isset($cPlausiValue_arr.cHtml)} error{/if}">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="cHtml">{__('newsletterHtml')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <textarea class="ckeditor smarty form-control" id="cHtml" name="cHtml">{if isset($cPostVar_arr.cHtml)}{$cPostVar_arr.cHtml}{elseif isset($oNewsletterVorlage->cInhaltHTML)}{$oNewsletterVorlage->cInhaltHTML}{/if}</textarea>
+                            <textarea class="codemirror smarty form-control" id="cHtml" name="cHtml">{if isset($cPostVar_arr.cHtml)}{$cPostVar_arr.cHtml}{elseif isset($oNewsletterVorlage->cInhaltHTML)}{$oNewsletterVorlage->cInhaltHTML}{/if}</textarea>
                         </div>
                     </div>
                     <div class="form-group form-row align-items-center {if isset($cPlausiValue_arr.cText)} error{/if}">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="cText">{__('newsletterText')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <textarea class="ckeditor smarty form-control" id="cText" name="cText">{if isset($cPostVar_arr.cText)}{$cPostVar_arr.cText}{elseif isset($oNewsletterVorlage->cInhaltText)}{$oNewsletterVorlage->cInhaltText}{/if}</textarea>
+                            <textarea class="codemirror smarty form-control" id="cText" name="cText">{if isset($cPostVar_arr.cText)}{$cPostVar_arr.cText}{elseif isset($oNewsletterVorlage->cInhaltText)}{$oNewsletterVorlage->cInhaltText}{/if}</textarea>
                         </div>
                     </div>
                 </div>

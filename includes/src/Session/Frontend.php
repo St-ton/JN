@@ -286,7 +286,7 @@ class Frontend extends AbstractSession
         foreach ($_SESSION['Sprachen'] as $lang) {
             if (\defined('URL_SHOP_' . \mb_convert_case($lang->cISO, \MB_CASE_UPPER))) {
                 $shopLangURL = \constant('URL_SHOP_' . \mb_convert_case($lang->cISO, \MB_CASE_UPPER));
-                if (\mb_strpos($shopLangURL, $_SERVER['HTTP_HOST']) !== false) {
+                if (\mb_strpos($shopLangURL, ($_SERVER['HTTP_HOST'] ?? ' ')) !== false) {
                     $_SESSION['kSprache']    = $lang->kSprache;
                     $_SESSION['cISOSprache'] = \trim($lang->cISO);
                     Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);

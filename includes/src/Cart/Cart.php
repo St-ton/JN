@@ -1854,10 +1854,9 @@ class Cart
         $itemCount       = 0;
         $totalWeight     = 0;
         $shippingClasses = ShippingMethod::getShippingClasses(Frontend::getCart());
-        $poCode          = ($_SESSION['Lieferadresse']->cPLZ ?? null) ?? Frontend::getCustomer()->cPLZ;
         $shippingMethods = map(ShippingMethod::getPossibleShippingMethods(
-            $_SESSION['Lieferadresse']->cLand ?? $_SESSION['Kunde']->cLand ?? $_SESSION['cLieferlandISO'],
-            $poCode,
+            ($_SESSION['Lieferadresse']->cLand ?? $_SESSION['Kunde']->cLand) ?? $_SESSION['cLieferlandISO'],
+            ($_SESSION['Lieferadresse']->cPLZ ?? null) ?? Frontend::getCustomer()->cPLZ,
             $shippingClasses,
             $customerGroupID
         ), static function ($e) {
@@ -1892,7 +1891,7 @@ class Cart
                     OR ( va.kVersandberechnung = 2 AND vas.fBis > 0 AND :totalWeight <= vas.fBis )
                     OR ( va.kVersandberechnung = 3 AND vas.fBis > 0 AND :maxPrices <= vas.fBis )
                     )
-                AND va.kVersandart IN (' . implode(', ', $shippingMethods) . ')
+                AND va.kVersandart IN (' . \implode(', ', $shippingMethods) . ')
                 ORDER BY minPrice, nSort ASC LIMIT 1',
             [
                 'iso'         => '%' . $countryCode . '%',

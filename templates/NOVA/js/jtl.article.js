@@ -1021,6 +1021,18 @@
         initConfigListeners: function () {
             $('.js-cfg-group').on('click', function () {
                 $(this).addClass('visited');
+                let self = $(this);
+                setTimeout(function() {
+                    $(this).closest('.tab-content').animate({
+                        scrollTop: self.offset().top
+                    }, 500);
+                }, 200);
+            });
+            $('#cfg-accordion .collapse').on('shown.bs.collapse', function () {
+                $(this).prev()[0].scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
             });
         },
 

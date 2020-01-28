@@ -133,8 +133,7 @@
 }
 
 #cfg-container-tab-panes {
-	max-height: 75vh;
-	max-height: calc((var(--vh, 1vh) * 78) - 3rem);
+	height: calc((var(--vh, 1vh) * 78) - 3rem);
 	overflow-x: auto;
 	padding-right: 16px;
 	border-bottom: 2px solid $border-color;

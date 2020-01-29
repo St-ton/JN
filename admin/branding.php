@@ -12,12 +12,18 @@ use JTL\Media\Media;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
-
 $oAccount->permission('DISPLAY_BRANDING_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 $step        = 'branding_uebersicht';
 $alertHelper = Shop::Container()->getAlertService();
-
+if (isset($_POST['action']) && $_POST['action'] === 'delete' && Form::validateToken()) {
+    $id = (int)$_POST['id'];
+    loescheBrandingBild($id);
+    $response    = new stdClass();
+    $response->id = $id;
+    $response->status = 'OK';
+    die(json_encode($response));
+}
 if (Request::verifyGPCDataInt('branding') === 1) {
     $step = 'branding_detail';
     if (Request::postInt('speicher_einstellung') === 1 && Form::validateToken()) {
@@ -117,16 +123,14 @@ function speicherEinstellung(int $brandingID, array $post, array $files)
  * @param array $files
  * @param int   $brandingID
  * @return bool
- * @todo: make size (2097152) configurable?
  */
 function speicherBrandingBild($files, int $brandingID)
 {
-    if (($files['cBrandingBild']['type'] === 'image/jpeg'
+    if ($files['cBrandingBild']['type'] === 'image/jpeg'
         || $files['cBrandingBild']['type'] === 'image/pjpeg'
         || $files['cBrandingBild']['type'] === 'image/gif'
         || $files['cBrandingBild']['type'] === 'image/png'
         || $files['cBrandingBild']['type'] === 'image/bmp'
-    ) && $files['cBrandingBild']['size'] <= 2097152
     ) {
         $upload = PFAD_ROOT . PFAD_BRANDINGBILDER . 'kBranding_' .
             $brandingID . mappeFileTyp($files['cBrandingBild']['type']);

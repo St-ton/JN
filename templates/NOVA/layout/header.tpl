@@ -276,9 +276,11 @@
 
         {block name='layout-header-header'}
             {block name='layout-header-branding-top-bar'}
-                {if !$device->isMobile()}
-                    <div id="header-top-bar" class="pb-2 d-none {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex{/if}">
-                        {include file='layout/header_top_bar.tpl'}
+                {if !$isMobile}
+                    <div id="header-top-bar" class="d-none {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex{/if}">
+                        <div class="container-fluid container-fluid-xl {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex flex-row-reverse{/if}">
+                            {include file='layout/header_top_bar.tpl'}
+                        </div>
                     </div>
                 {/if}
             {/block}
@@ -287,7 +289,7 @@
                 {block name='layout-header-container-inner'}
                     <div class="container-fluid container-fluid-xl">
                     {block name='layout-header-category-nav'}
-                        {navbar toggleable=true fill=true type="expand-lg" class="justify-content-start {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}align-items-center{else}align-items-lg-end{/if} px-0 pb-lg-0"}
+                        {navbar toggleable=true fill=true type="expand-lg" class="justify-content-start {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}align-items-center{else}align-items-lg-end{/if} pt-0 px-0 pb-lg-0"}
                             {block name='layout-header-navbar-toggle'}
                                 <button class="navbar-toggler mr-3 collapsed {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}d-none{/if}" type="button" data-toggle="collapse" data-target="#mainNavigation" aria-controls="mainNavigation" aria-expanded="false" aria-label="Toggle navigation">
                                     <span class="navbar-toggler-icon"></span>
@@ -299,11 +301,11 @@
                                     <span itemprop="name" class="d-none">{$meta_publisher}</span>
                                     <meta itemprop="url" content="{$ShopURL}">
                                     <meta itemprop="logo" content="{$ShopLogoURL}">
-                                    {link class="navbar-brand {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}mb-lg-3{/if} mr-lg-6" href=$ShopURL title=$Einstellungen.global.global_shopname}
+                                    {link class="navbar-brand mr-lg-6" href=$ShopURL title=$Einstellungen.global.global_shopname}
                                         {if isset($ShopLogoURL)}
                                             {image src=$ShopLogoURL
                                             alt=$Einstellungen.global.global_shopname
-                                            height=53}
+                                            height=56}
                                         {else}
                                             <span class="h1">{$Einstellungen.global.global_shopname}</span>
                                         {/if}

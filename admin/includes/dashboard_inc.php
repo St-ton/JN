@@ -206,7 +206,7 @@ function getRemoteDataIO($url, $dataName, $tpl, $wrapperID, $post = null, $callb
 {
     Shop::Container()->getGetText()->loadAdminLocale('widgets');
     $response    = new IOResponse();
-    $urlsToCache = ['oNews_arr', 'oMarketplace_arr', 'oMarketplaceUpdates_arr', 'oPatch_arr', 'oDuk', 'oHelp_arr'];
+    $urlsToCache = ['oNews_arr', 'oMarketplace_arr', 'oMarketplaceUpdates_arr', 'oPatch_arr', 'oHelp_arr'];
     if (in_array($dataName, $urlsToCache, true)) {
         $cacheID = str_replace('/', '_', $dataName . '_' . $tpl . '_' . md5($wrapperID . $url));
         if (($remoteData = Shop::Container()->getCache()->get($cacheID)) === false) {

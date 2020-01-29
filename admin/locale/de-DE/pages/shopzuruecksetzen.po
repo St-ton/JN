@@ -38,9 +38,6 @@ msgstr "Besucherstatistiken löschen"
 msgid "deletePriceStatistics"
 msgstr "Preisverläufe löschen"
 
-msgid "deletePolls"
-msgstr "Umfragen löschen"
-
 msgid "deleteAvailabilityNotifications"
 msgstr "Verfügbarkeitsbenachrichtigungen löschen"
 

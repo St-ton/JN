@@ -216,10 +216,6 @@ msgid "Warenkorb"
 msgstr "Basket"
 
 #box name
-msgid "Umfrage"
-msgstr "Survey"
-
-#box name
 msgid "Linkgruppe"
 msgstr "Link group"
 

@@ -3,8 +3,9 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='boxes-box-filter-search'}
-    {if $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE && (!$device->isMobile() || $device->isTablet())}
-        <div class="box box-search-category" id="sidebox{$oBox->getID()}">
+    {if $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE
+        && !($isMobile || $Einstellungen.template.productlist.filter_placement === 'modal')}
+        <div class="box box-search-category d-none d-lg-block" id="sidebox{$oBox->getID()}">
             {button
                 variant="link"
                 class="text-decoration-none px-0 text-left dropdown-toggle"

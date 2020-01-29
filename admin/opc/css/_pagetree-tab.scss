@@ -1,12 +1,24 @@
 #pagetree {
   height: 100%;
 
+  .offscreenDivider {
+    font-weight: 600;
+    margin: 1em;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    padding-top: 1em;
+  }
+
   #pageTreeView {
     padding: 1em 0;
     background-color: $light-bg;
     border-radius: 5px;
     height: 100%;
     overflow-y: auto;
+
+    .item-copybtn {
+      float: right;
+      margin-right: 1em;
+    }
 
     ul {
       list-style: none;
@@ -21,16 +33,22 @@
       color: $text-color;
     }
 
-    .area-item {
+    .area-item > .item-head > .item-label {
       color: $text-lighter;
       padding: 0 4px;
       margin: 2px;
     }
 
-    .portlet-item {
-      border-radius: 4px;
-      padding: 0 4px;
-      margin: 2px;
+    .portlet-item > .item-head {
+      > .item-label {
+        border-radius: 4px;
+        padding: 0 4px;
+        margin: 2px;
+      }
+
+      > .item-copybtn {
+        visibility: hidden;
+      }
     }
 
     .item-expander {
@@ -49,13 +67,15 @@
       }
 
       &.expanded {
-        > .item-expander {
-          > .fa-chevron-down {
-            display: inline-block;
-          }
+        > .item-head {
+          > .item-expander {
+            > .fa-chevron-down {
+              display: inline-block;
+            }
 
-          > .fa-chevron-right {
-            display: none;
+            > .fa-chevron-right {
+              display: none;
+            }
           }
         }
 
@@ -65,19 +85,28 @@
       }
 
       &.leaf {
-        > .item-expander {
-          visibility: hidden;
+        &.area-item {
+          > .item-head {
+            > .item-label {
+              color: $muted-text;
+            }
+          }
         }
 
-        > .area-item {
-          color: $muted-text;
+        > .item-head {
+          > .item-expander ,
+          > .item-copybtn {
+            visibility: hidden;
+          }
         }
       }
 
       &.selected {
-        > .item-label {
-          background-color: $gray-dark;
-          color: $light-bg;
+        > .item-head {
+          > .item-label {
+            background-color: $gray-dark;
+            color: $light-bg;
+          }
         }
       }
     }

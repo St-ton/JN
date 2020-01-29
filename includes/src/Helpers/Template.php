@@ -265,7 +265,7 @@ class Template
             $xml = null;
         }
         if (\EVO_COMPATIBILITY === false
-            && ((string)$xml->Name === 'Evo' || (string)$xml->Parent ?? '' === 'Evo')
+            && ((string)$xml->Name === 'Evo' || ((string)$xml->Parent ?? '') === 'Evo')
             && CurrentTemplate::getInstance()->getName() !== (string)$xml->Name
         ) {
             return null;

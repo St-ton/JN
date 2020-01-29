@@ -110,7 +110,7 @@ if (!$hasPendingUpdates) {
                         'cURL'      => $secondEntry->link,
                         'cRecht'    => $secondEntry->permissions,
                     ];
-                    if ($linkGruppe->oLink_arr->cURL === $curScriptFileNameWithRequest) {
+                    if (strpos($curScriptFileNameWithRequest, $linkGruppe->oLink_arr->cURL) === 0) {
                         $currentToplevel    = $mainGroup->key;
                         $currentSecondLevel = $linkGruppe->key;
                     }
@@ -145,7 +145,7 @@ if (!$hasPendingUpdates) {
                             mb_parse_str($urlParts['query'], $urlParts['query']);
                         }
 
-                        if (explode('#', $link->cURL)[0] === $curScriptFileNameWithRequest) {
+                        if (strpos($curScriptFileNameWithRequest, explode('#', $link->cURL)[0]) === 0) {
                             $currentToplevel    = $mainGroup->key;
                             $currentSecondLevel = $linkGruppe->key;
                             $currentThirdLevel  = $link->key;
@@ -199,7 +199,7 @@ $smarty->assign('URL_SHOP', $shopURL)
     ->assign('favorites', $oAccount->favorites())
     ->assign('language', $langTag)
     ->assign('hasPendingUpdates', $hasPendingUpdates)
-    ->assign('sprachen', LanguageHelper::getAllLanguages())
+    ->assign('sprachen', LanguageHelper::getInstance()->gibInstallierteSprachen())
     ->assign('availableLanguages', LanguageHelper::getInstance()->gibInstallierteSprachen())
     ->assign('languageName', Locale::getDisplayLanguage($langTag, $langTag))
     ->assign('languages', Shop::Container()->getGetText()->getAdminLanguages())

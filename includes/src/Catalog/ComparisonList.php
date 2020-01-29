@@ -103,6 +103,7 @@ class ComparisonList
         $product->kArtikel = $productID;
         $product->cName    = $tmpProduct !== null ? $tmpProduct->cName : '';
         $product->cURLFull = $tmpProduct !== null ? $tmpProduct->cURLFull : '';
+        $product->image    = $tmpProduct !== null ? $tmpProduct->Bilder[0] : '';
         if (\is_array($variations) && \count($variations) > 0) {
             $product->Variationen = $variations;
         }

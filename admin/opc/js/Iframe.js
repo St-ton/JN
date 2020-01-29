@@ -79,7 +79,10 @@ class Iframe
 
             return this.page.initIframe(this.jq)
                 .catch(er => this.gui.showError('Error while loading draft preview: ' + er.toString()))
-                .then(this.onPageLoad);
+                .then(this.onPageLoad)
+                .then(() => {
+                    this.gui.updatePagetreeBtn();
+                });
         })
     }
 

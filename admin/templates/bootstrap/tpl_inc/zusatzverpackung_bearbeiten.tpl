@@ -10,7 +10,7 @@
             <hr class="mb-n3">
         </div>
         <div class="card-body">
-            {foreach $sprachen as $key => $language}
+            {foreach $availableLanguages as $key => $language}
             {assign var=cISO value=$language->getIso()}
                 <div class="form-group form-row align-items-center">
                     <label class="col col-sm-3 col-form-label text-sm-right" for="cName_{$cISO}">{__('name')} ({$language->getLocalizedName()}):</label>
@@ -40,7 +40,7 @@
                     <span id="KostenfreiAjax">{if isset($oVerpackungEdit->fKostenfrei)}{getCurrencyConversionSmarty fPreisBrutto=$oVerpackungEdit->fKostenfrei}{/if}</span>
                 </div>
             </div>
-            {foreach $sprachen as $language}
+            {foreach $availableLanguages as $language}
             {assign var=cISO value=$language->getIso()}
                 <div class="form-group form-row align-items-center">
                     <label class="col col-sm-3 col-form-label text-sm-right" for="cBeschreibung_{$cISO}">{__('description')} ({$language->getLocalizedName()}):</label>

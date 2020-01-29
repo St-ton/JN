@@ -63,6 +63,10 @@
             </Setting>
         </Section>
         <Section Name="Listen- und Gallerieansicht" Key="productlist">
+            <Setting Description="Filter anzeigen in (Desktop)" Key="filter_placement" Type="select" Value="modal">
+                <Option Value="sidebar">Seitenleiste (Einstellbar unter "Standardelemente -> Footer / Boxen" und "Standardansichten -> Artikelübersicht")</Option>
+                <Option Value="modal">Modal (Einstellbar unter "Standardansichten -> Artikelübersicht")</Option>
+            </Setting>
             <Setting Description="aus der Liste heraus einkaufen? (&lt;small&gt;zeigt den Warenkorb-Button in den Artikellisten an&lt;/small&gt;)" Key="buy_productlist" Type="select" Value="Y">
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
@@ -85,10 +89,6 @@
                 <Option Value="9"><![CDATA[max. 9]]></Option>
                 <Option Value="12"><![CDATA[max. 12]]></Option>
                 <Option Value="9999"><![CDATA[keine Beschr&auml;nkung]]></Option>
-            </Setting>
-            <Setting Description="Filteroptionen bei Seitenaufruf anzeigen?" Key="initial_display_filter" Type="select" Value="Y">
-                <Option Value="Y">Ja</Option>
-                <Option Value="N">Nein</Option>
             </Setting>
             <Setting Description="Anzahl der sichtbaren Filteroptionen in Boxen. (&lt;small&gt;weiter Optionen können eingeblendet werden&lt;/small&gt;)" Key="filter_max_options" Type="select" Value="5">
                 <Option Value="3"><![CDATA[max. 3]]></Option>

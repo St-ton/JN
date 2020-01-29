@@ -17,6 +17,7 @@ use JTL\Filter\StateSQL;
 use JTL\Helpers\Request;
 use JTL\Helpers\Seo;
 use JTL\MagicCompatibilityTrait;
+use JTL\Shop;
 use stdClass;
 
 /**
@@ -67,6 +68,8 @@ class Search extends AbstractFilter
     {
         parent::__construct($productFilter);
         $this->setIsCustom(false)
+             ->setVisibility($this->getConfig('navigationsfilter')['suchtrefferfilter_nutzen'])
+             ->setFrontendName(Shop::Lang()->get('searchFilter'))
              ->setUrlParam('sf');
     }
 

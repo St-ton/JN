@@ -8,9 +8,9 @@
         && $ssf->getVisibility() !== \JTL\Filter\Visibility::SHOW_NEVER
         && $ssf->getVisibility() !== \JTL\Filter\Visibility::SHOW_CONTENT
         && (!empty($Suchergebnisse->getSearchSpecialFilterOptions()) || $ssf->isInitialized())
-        && (!$device->isMobile() || $device->isTablet())}
+        && !($isMobile || $Einstellungen.template.productlist.filter_placement === 'modal')}
         {if $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE}
-            <div class="box box-filter-special" id="sidebox{$oBox->getID()}">
+            <div class="box box-filter-special d-none d-lg-block" id="sidebox{$oBox->getID()}">
                 {button
                     variant="link"
                     class="text-decoration-none px-0 text-left dropdown-toggle"

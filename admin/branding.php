@@ -19,8 +19,8 @@ $alertHelper = Shop::Container()->getAlertService();
 if (isset($_POST['action']) && $_POST['action'] === 'delete' && Form::validateToken()) {
     $id = (int)$_POST['id'];
     loescheBrandingBild($id);
-    $response    = new stdClass();
-    $response->id = $id;
+    $response         = new stdClass();
+    $response->id     = $id;
     $response->status = 'OK';
     die(json_encode($response));
 }

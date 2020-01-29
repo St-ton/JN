@@ -266,7 +266,7 @@
 
         {block name='layout-header-header'}
             {block name='layout-header-branding-top-bar'}
-                {if !$device->isMobile()}
+                {if !$isMobile}
                     <div id="header-top-bar" class="d-none {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex{/if}">
                         <div class="container-fluid container-fluid-xl {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex flex-row-reverse{/if}">
                             {include file='layout/header_top_bar.tpl'}

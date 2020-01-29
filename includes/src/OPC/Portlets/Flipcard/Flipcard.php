@@ -24,11 +24,22 @@ class Flipcard extends Portlet
             'flip-dir' => [
                 'type'    => InputType::RADIO,
                 'label'   => __('flipcardOrientation'),
+                'width'   => 50,
                 'options' => [
                     'v' => __('vertical'),
                     'h' => __('horizontal'),
                 ],
                 'default' => 'v',
+            ],
+            'flip-trigger' => [
+                'type'    => InputType::RADIO,
+                'label'   => __('flipTrigger'),
+                'width'   => 50,
+                'options' => [
+                    'click' => __('onClick'),
+                    'hover' => __('onHover'),
+                ],
+                'default' => 'click',
             ],
         ];
     }

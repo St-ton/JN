@@ -7,3 +7,12 @@ msgstr "Flipcard"
 
 msgid "flipcardOrientation"
 msgstr "Richtung"
+
+msgid "flipTrigger"
+msgstr "Flip-Auslöser"
+
+msgid "onClick"
+msgstr "Klick"
+
+msgid "onHover"
+msgstr "Hover"

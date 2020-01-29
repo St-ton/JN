@@ -7,7 +7,7 @@
         {link href=$mainCategory->getURL() class="d-lg-block {if $firstChild}submenu-headline submenu-headline-toplevel{/if} nav-link {if $mainCategory->hasChildren()}dropdown-toggle{/if}" aria=["expanded"=>"false"]}
             {if $firstChild
                 && $Einstellungen.template.megamenu.show_category_images !== 'N'
-                && (!$device->isMobile() || $device->isTablet())
+                && (!$isMobile || $isTablet)
                 && !empty($mainCategory->getImage(\JTL\Media\Image::SIZE_XS))}
                     {image fluid=true lazy=true webp=true
                     src=$mainCategory->getImage(\JTL\Media\Image::SIZE_XS)

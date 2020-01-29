@@ -64,6 +64,8 @@ class Migration_20191213093300 extends Migration implements IMigration
         $this->removeLocalization('umfrageQRequired');
         $this->removeLocalization('umfrageSubmit');
         $this->removeLocalization('umfrageQs');
+
+        $this->execute("DELETE FROM `tadminrecht` WHERE cRecht='EXTENSION_VOTE_VIEW'");
     }
 
     /**
@@ -146,5 +148,7 @@ class Migration_20191213093300 extends Migration implements IMigration
         $this->setLocalization('eng', 'umfrage', 'umfrageQs', 'Questions');
         $this->setLocalization('ger', 'umfrage', 'umfrageSubmit', 'Umfrage absenden');
         $this->setLocalization('eng', 'umfrage', 'umfrageSubmit', 'Submit survey');
+
+        $this->execute("INSERT INTO `tadminrecht` VALUES('EXTENSION_VOTE_VIEW', 'Umfragesystem')");
     }
 }

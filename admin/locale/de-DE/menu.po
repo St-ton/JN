@@ -515,3 +515,9 @@ msgstr "Fehlerbehebung"
 
 msgid "System diagnostics"
 msgstr "Diagnose"
+
+msgid "Email templates"
+msgstr "Vorlage"
+
+msgid "Global"
+msgstr "Global"

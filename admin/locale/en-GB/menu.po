@@ -491,3 +491,9 @@ msgstr "Troubleshooting"
 
 msgid "System diagnostics"
 msgstr "System diagnostics"
+
+msgid "Email templates"
+msgstr "Templates"
+
+msgid "Global"
+msgstr "Global"

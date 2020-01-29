@@ -203,7 +203,9 @@ class PaymentMethod
         global $Einstellungen;
         // Load Mail Settings
         if (!isset($Einstellungen['emails'])) {
-            $Einstellungen = Shop::getSettings([CONF_EMAILS]);
+            $Einstellungen = is_array($Einstellungen)
+                ? array_merge($Einstellungen, Shop::getSettings([CONF_EMAILS]))
+                : Shop::getSettings([CONF_EMAILS]);
         }
         $mail = new stdClass();
         // Content
@@ -217,13 +219,13 @@ class PaymentMethod
         );
         $mail->bodyText  = $body;
         // Method
-        $mail->methode       = $Einstellungen['eMails']['eMail_methode'];
-        $mail->sendMail_pfad = $Einstellungen['eMails']['eMail_sendMail_pfad'];
-        $mail->smtp_hostname = $Einstellungen['eMails']['eMail_smtp_hostname'];
-        $mail->smtp_port     = $Einstellungen['eMails']['eMail_smtp_port'];
-        $mail->smtp_auth     = $Einstellungen['eMails']['eMail_smtp_auth'];
-        $mail->smtp_user     = $Einstellungen['eMails']['eMail_smtp_user'];
-        $mail->smtp_pass     = $Einstellungen['eMails']['eMail_smtp_pass'];
+        $mail->methode       = $Einstellungen['emails']['email_methode'];
+        $mail->sendMail_pfad = $Einstellungen['emails']['email_sendMail_pfad'];
+        $mail->smtp_hostname = $Einstellungen['emails']['email_smtp_hostname'];
+        $mail->smtp_port     = $Einstellungen['emails']['email_smtp_port'];
+        $mail->smtp_auth     = $Einstellungen['emails']['email_smtp_auth'];
+        $mail->smtp_user     = $Einstellungen['emails']['email_smtp_user'];
+        $mail->smtp_pass     = $Einstellungen['emails']['email_smtp_pass'];
         $mail->SMTPSecure    = $Einstellungen['emails']['email_smtp_verschluesselung'];
         // Send
         include_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';

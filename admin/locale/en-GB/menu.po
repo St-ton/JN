@@ -497,3 +497,6 @@ msgstr "Templates"
 
 msgid "Global"
 msgstr "Global"
+
+msgid "Availability notifications"
+msgstr "Availability notifications"

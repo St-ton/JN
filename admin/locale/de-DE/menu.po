@@ -521,3 +521,6 @@ msgstr "Vorlage"
 
 msgid "Global"
 msgstr "Global"
+
+msgid "Availability notifications"
+msgstr "Verfügbarkeitsanfragen"

@@ -33,6 +33,15 @@ class Migration_20200130101300 extends Migration implements IMigration
         'produktfrage_sperre_minuten',
         'produktfrage_abfragen_captcha'
     ];
+    protected $settingsItemAvailability = [
+        'configgroup_5_product_available',
+        'benachrichtigung_nutzen',
+        'benachrichtigung_abfragen_vorname',
+        'benachrichtigung_abfragen_nachname',
+        'benachrichtigung_sperre_minuten',
+        'benachrichtigung_abfragen_captcha',
+        'benachrichtigung_min_lagernd'
+    ];
 
     /**
      * @return mixed|void
@@ -51,7 +60,22 @@ class Migration_20200130101300 extends Migration implements IMigration
         );
         $this->execute(
             "INSERT INTO `teinstellungensektion` (`kEinstellungenSektion`, `cName`, `kAdminmenueGruppe`, `nSort`, `cRecht`)
-                VALUES (12, 'Frage zum Produkt', 0, 0, 'SETTINGS_ARTICLEDETAILS_VIEW')"
+                VALUES (" . \CONF_FRAGE_ZUM_PRODUKT . ", 'Frage zum Produkt', 0, 0, 'SETTINGS_ARTICLEDETAILS_VIEW')"
+        );
+
+        $this->execute(
+            "UPDATE teinstellungenconf
+                SET kEinstellungenSektion = " . \CONF_VERFUEGBARKEITSBENACHRICHTIGUNG . "
+                WHERE cWertName IN ('" . implode("','", $this->settingsItemAvailability) . "')"
+        );
+        $this->execute(
+            "UPDATE teinstellungen
+                SET kEinstellungenSektion = " . \CONF_VERFUEGBARKEITSBENACHRICHTIGUNG . "
+                WHERE cName IN ('" . implode("','", $this->settingsItemAvailability) . "')"
+        );
+        $this->execute(
+            "INSERT INTO `teinstellungensektion` (`kEinstellungenSektion`, `cName`, `kAdminmenueGruppe`, `nSort`, `cRecht`)
+                VALUES (" . \CONF_VERFUEGBARKEITSBENACHRICHTIGUNG . ", 'Verfuegbarkeitsbenachrichtigung', 0, 0, 'SETTINGS_ARTICLEDETAILS_VIEW')"
         );
     }
 
@@ -72,6 +96,20 @@ class Migration_20200130101300 extends Migration implements IMigration
         );
         $this->execute(
             'DELETE FROM `teinstellungensektion` WHERE kEinstellungenSektion=' .\CONF_FRAGE_ZUM_PRODUKT
+        );
+
+        $this->execute(
+            "UPDATE teinstellungenconf
+                SET kEinstellungenSektion = " . \CONF_ARTIKELDETAILS . "
+                WHERE cWertName IN ('" . implode("','", $this->settingsItemAvailability) . "')"
+        );
+        $this->execute(
+            "UPDATE teinstellungen
+                SET kEinstellungenSektion = " . \CONF_ARTIKELDETAILS . "
+                WHERE cName IN ('" . implode("','", $this->settingsItemAvailability) . "')"
+        );
+        $this->execute(
+            'DELETE FROM `teinstellungensektion` WHERE kEinstellungenSektion=' . \CONF_VERFUEGBARKEITSBENACHRICHTIGUNG
         );
     }
 }

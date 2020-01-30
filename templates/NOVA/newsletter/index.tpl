@@ -28,7 +28,7 @@
                                     {block name='newsletter-index-newsletter-subscribe-desc'}
                                         <p>{lang key='newsletterSubscribeDesc' section='newsletter'}</p>
                                     {/block}
-                                    {form method="post" action="{get_static_route id='newsletter.php'}" role="form" class="evo-validate label-slide"}
+                                    {form method="post" action="{get_static_route id='newsletter.php'}" role="form" class="jtl-validate label-slide"}
                                     {block name='newsletter-index-newsletter-subscribe-form-content'}
                                         <fieldset>
                                             {if !empty($oPlausi->cPost_arr.cEmail)}
@@ -96,7 +96,7 @@
                                 {block name='newsletter-index-newsletter-unsubscribe-desc'}
                                     <p>{lang key='newsletterUnsubscribeDesc' section='newsletter'}</p>
                                 {/block}
-                                {form method="post" action="{get_static_route id='newsletter.php'}" name="newsletterabmelden" class="evo-validate label-slide"}
+                                {form method="post" action="{get_static_route id='newsletter.php'}" name="newsletterabmelden" class="jtl-validate label-slide"}
                                 {block name='newsletter-index-newsletter-unsubscribe-form-content'}
                                     <fieldset>
                                         {include file='snippets/form_group_simple.tpl'

@@ -2,7 +2,7 @@
 
 ## [4.06.16]
 
-Dieses Update enthält Bugfixes.
+Dieses Update enthält Bugfixes und ein Sicherheitsupdate.
 
 Alle für diese Zielversion gelösten Vorgänge finden Sie unter diesem Link: https://jtl-url.de/cl40616
 

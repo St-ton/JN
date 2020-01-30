@@ -42,7 +42,7 @@
                         {/block}
                     {/if}
                     {block name='contact-index-form'}
-                        {form name="contact" action="{get_static_route id='kontakt.php'}" method="post" class="evo-validate label-slide"}
+                        {form name="contact" action="{get_static_route id='kontakt.php'}" method="post" class="jtl-validate label-slide"}
                             {block name='contact-index-form-content'}
                                 {block name='contact-index-fieldset-contact'}
                                 <fieldset>

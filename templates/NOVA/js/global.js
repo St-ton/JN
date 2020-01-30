@@ -153,11 +153,20 @@ function loadContent(url)
     });
 }
 
+function sanitizeOutput(val) {
+    return val.replace(/\&/g, '&amp;')
+        .replace(/\</g, '&lt;')
+        .replace(/\>/g, '&gt;')
+        .replace(/\"/g, '&quot;')
+        .replace(/\'/g, '&#x27;')
+        .replace(/\//g, '&#x2F;');
+}
+
 function addValidationListener() {
-    var forms      = $('form.evo-validate'),
-        inputs     = $('form.evo-validate input, form.evo-validate textarea').not('[type="radio"],[type="checkbox"]'),
-        selects    = $('form.evo-validate select'),
-        checkables = $('form.evo-validate input[type="radio"], form.evo-validate input[type="checkbox"]'),
+    var forms      = $('form.jtl-validate'),
+        inputs     = $('form.jtl-validate input, form.jtl-validate textarea').not('[type="radio"],[type="checkbox"]'),
+        selects    = $('form.jtl-validate select'),
+        checkables = $('form.jtl-validate input[type="radio"], form.jtl-validate input[type="checkbox"]'),
         $body      = $('body');
 
     for (var i = 0; i < forms.length; i++) {
@@ -166,7 +175,7 @@ function addValidationListener() {
             $(event.target).closest('.form-group').find('div.form-error-msg').remove();
             $(event.target).closest('.form-group')
                 .addClass('has-error')
-                .append('<div class="form-error-msg text-danger w-100">' + event.target.validationMessage + '</div>');
+                .append('<div class="form-error-msg text-danger w-100">' + sanitizeOutput(event.target.validationMessage) + '</div>');
 
             if (!$body.data('doScrolling')) {
                 var $firstError = $(event.target).closest('.form-group.has-error');
@@ -223,7 +232,7 @@ function checkInputError(event)
         if ($equalsTo.length === 1) {
             var theOther = $equalsTo[0];
             if (theOther.value !== '' && theOther.value !== event.target.value && event.target.value !== '') {
-                event.target.setCustomValidity($target.data('custom-message') !== undefined ? $target.data('custom-message') : event.target.validationMessage);
+                event.target.setCustomValidity($target.data('custom-message') !== undefined ? $target.data('custom-message') : sanitizeOutput(event.target.validationMessage));
             } else {
                 event.target.setCustomValidity('');
             }
@@ -233,7 +242,7 @@ function checkInputError(event)
     if (event.target.validity.valid) {
         $target.closest('.form-group').removeClass('has-error');
     } else {
-        $target.closest('.form-group').addClass('has-error').append('<div class="form-error-msg text-danger">' + event.target.validationMessage + '</div>');
+        $target.closest('.form-group').addClass('has-error').append('<div class="form-error-msg text-danger">' + sanitizeOutput(event.target.validationMessage) + '</div>');
     }
 }
 

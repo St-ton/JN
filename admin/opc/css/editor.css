@@ -54,6 +54,14 @@
 #opc button.opc-btn-primary.opc-full-width, #opc button.opc-btn-secondary.opc-full-width {
   width: 100%;
 }
+#opc button.opc-btn-primary[disabled], #opc button.opc-btn-secondary[disabled] {
+  background-color: #BDBDBD;
+  color: #F5F7FA;
+  border: 1px solid #BDBDBD;
+}
+#opc button.opc-btn-primary[disabled]:hover, #opc button.opc-btn-secondary[disabled]:hover {
+  background-color: #BDBDBD;
+}
 #opc button.opc-btn-primary:hover {
   background-color: #22a4f3;
 }
@@ -64,6 +72,9 @@
 }
 #opc button.opc-btn-secondary:hover {
   color: #22a4f3;
+}
+#opc button.opc-mini-btn {
+  padding: 6px 12px;
 }
 #opc button.opc-small-btn {
   padding: 8px 10px;
@@ -286,6 +297,7 @@
 }
 #opc .nav-tabs .nav-item {
   margin: 0;
+  background-color: inherit;
 }
 #opc .nav-tabs .nav-item .nav-link {
   border: none;
@@ -892,6 +904,19 @@
   display: block;
 }
 
+#tutBackdrop2.active {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  opacity: 0.5;
+  pointer-events: all;
+  transition: opacity 0.5s ease;
+  z-index: 9999 !important;
+}
+
 #tutorials #tutBackdrop {
   position: absolute;
   left: 0;
@@ -909,10 +934,14 @@
   width: 300px;
   background-color: white;
   position: absolute;
-  box-shadow: 0 0 4px 4px black;
+  box-shadow: 0 0 4px 4px rgba(0, 0, 0, 0.125);
   z-index: 99999 !important;
+  font-size: 14px;
+  color: #435A6B;
+  border-radius: 4px;
+  overflow: hidden;
 }
-#tutorials #tutBox.centered {
+#tutorials #tutBox.centered-c {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
@@ -925,6 +954,29 @@
   left: 50%;
   transform: translate(-50%, 0);
 }
+#tutorials #tutBox #tutboxHeader {
+  padding: 10px 14px;
+  background-color: #5cbcf6;
+  color: #fff;
+}
+#tutorials #tutBox #tutboxHeader h5 {
+  font-size: 16px;
+  font-weight: normal;
+  margin: 0;
+}
+#tutorials #tutBox #tutboxContent {
+  padding: 0;
+  margin: 12px;
+}
+#tutorials #tutBox #tutboxFooter {
+  padding: 0;
+  margin: 12px;
+}
+#tutorials #tutBox #tutboxFooter:after {
+  display: block;
+  content: "";
+  clear: both;
+}
 #tutorials.active #tutBackdrop {
   opacity: 0.5;
   pointer-events: all;
@@ -936,23 +988,11 @@
 .hightlighted-element {
   z-index: 99999 !important;
   position: relative;
+  background-color: inherit;
 }
 
 .hightlighted-modal {
   z-index: 99999 !important;
-}
-
-#tutBackdrop2.active {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: black;
-  opacity: 0.5;
-  pointer-events: all;
-  transition: opacity 0.5s ease;
-  z-index: 9999 !important;
 }
 
 html, body {

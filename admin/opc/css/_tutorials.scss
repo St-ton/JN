@@ -1,3 +1,16 @@
+#tutBackdrop2.active {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  opacity: 0.5;
+  pointer-events: all;
+  transition: opacity 0.5s ease;
+  z-index: 9999!important;
+}
+
 #tutorials {
   #tutBackdrop {
     position: absolute;
@@ -17,10 +30,14 @@
     width: 300px;
     background-color: white;
     position: absolute;
-    box-shadow: 0 0 4px 4px black;
+    box-shadow: 0 0 4px 4px rgba(0, 0, 0, 0.125);
     z-index: 99999!important;
+    font-size: 14px;
+    color: $text-color;
+    border-radius: 4px;
+    overflow: hidden;
 
-    &.centered {
+    &.centered-c {
       left: 50%;
       top: 50%;
       transform: translate(-50%, -50%);
@@ -34,6 +51,34 @@
     &.centered-h {
       left: 50%;
       transform: translate(-50%, 0);
+    }
+
+    #tutboxHeader {
+      padding: 10px 14px;
+      background-color: $primary-color;
+      color: $bg-color;
+
+      h5 {
+        font-size: 16px;
+        font-weight: normal;
+        margin: 0;
+      }
+    }
+
+    #tutboxContent {
+      padding: 0;
+      margin: 12px;
+    }
+
+    #tutboxFooter {
+      padding: 0;
+      margin: 12px;
+
+      &:after {
+        display: block;
+        content: "";
+        clear: both;
+      }
     }
   }
 
@@ -52,21 +97,9 @@
 .hightlighted-element {
   z-index: 99999!important;
   position: relative;
+  background-color: inherit;
 }
 
 .hightlighted-modal {
   z-index: 99999!important;
-}
-
-#tutBackdrop2.active {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: black;
-  opacity: 0.5;
-  pointer-events: all;
-  transition: opacity 0.5s ease;
-  z-index: 9999!important;
 }

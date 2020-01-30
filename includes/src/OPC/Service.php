@@ -147,6 +147,62 @@ class Service
             'tutStepTitle_0_12' => 'Fertig!',
             'tutStepText_0_12'  => 'Du kannst den Editor nun beenden und deine Seite anschauen
                  Das waren die Basics. Wir wünschen dir weiterhin viel Spaß mit dem OnPage Composer!',
+
+            'tutStepTitle_1_0' => 'Animationen',
+            'tutStepText_1_0'  => 'Hier lernst du, wie du Portlets mit einfachen Animationen versiehst. Einige
+                Portlets verfügen über Einstellungen, um Animationen zu erstellen.',
+
+            'tutStepTitle_1_1' => 'Animationen',
+            'tutStepText_1_1'  => 'Ziehe zunächst einen Button in deine Seite!',
+
+            'tutStepTitle_1_2' => 'Animationen',
+            'tutStepText_1_2'  => 'Wechsel nun zu dem Reiter "Animation".',
+
+            'tutStepTitle_1_3' => 'Animationen',
+            'tutStepText_1_3'  => 'Unter "Animationstyp" kannst du einen von verschiedenen Animations-Stilen auswählen.
+                (z.B. "bounce" lässt das Portlet hüpfen)
+                Speichere dann die Einstellungen!',
+
+            'tutStepTitle_1_4' => 'Animationen',
+            'tutStepText_1_4'  => 'Sofort siehst du deine erste Animation im Editorfenster.
+                Versuchen wir nun was komplexeres!',
+
+            'tutStepTitle_1_5' => 'Animation',
+            'tutStepText_1_5'  => 'Öffne erneut die Einstellungen des Buttons. (Doppelklick auf das Portlet oder
+                klicke den Stift-Button)',
+
+            'tutStepTitle_1_6' => 'Animationen',
+            'tutStepText_1_6'  => 'Hier im Reiter "Stile" kannst du dem Button einen unteren Abstand von 350 (Pixeln)
+                zuweisen. Wechsle dann noch mal zum Animations-Reiter!',
+
+            'tutStepTitle_1_7' => 'Animationen',
+            'tutStepText_1_7'  => 'Als Animationstyp eignet sich "fade-in" ganz gut. Gib außerdem bei "Abstand" 350
+                ein. Nun Kannst du die Einstellungen schließen!',
+
+            'tutStepTitle_1_8' => 'Animationen',
+            'tutStepText_1_8'  => 'Um zu sehen wie sich die Einstellung auswirkt, lass uns den Button, so wie er ist
+                ein paar mal klonen. Klicke dazu auf den "Kopieren"-Button!',
+
+            'tutStepTitle_1_9' => 'Animationen',
+            'tutStepText_1_9'  => 'Und noch einmal!',
+
+            'tutStepTitle_1_10' => 'Animationen',
+            'tutStepText_1_10'  => 'Und noch ein letztes mal, so dass wir 4 Exemplare des Buttons
+                untereinander haben!',
+
+            'tutStepTitle_1_11' => 'Animationen',
+            'tutStepText_1_11'  => 'Über den "Vorschau"-Switch kannst du das Ergebnis gleich mal testen!',
+
+            'tutStepTitle_1_12' => 'Animationen',
+            'tutStepText_1_12'  => 'Scroll die Seite nach unten und beachte dabei, dass die Animation nicht eher
+                startet, ehe der Button mindesten 350 Pixel über die Viewport-Untergrenze gescrollt wurde.
+                Man kann dieses Konzept auch weiter ausbauen und die Bereiche z.B. abwechselnd von rechts und links in
+                die Seite einfahren lassen.',
+
+            'tutStepTitle_1_13' => 'Animationen',
+            'tutStepText_1_13'  => 'Bedenke aber bitte, dass "weniger oft mehr ist". Soll heißen: geh sparsam mit
+                Animationen um, damit deine Kunden nicht abgelenkt oder gar verschreckt werden. Damit sind wir mit
+                dem Tutorial "Animationen" durch. Wir wünschen dir weiterhin viel Spaß mit dem OnPage Composer!',
         ];
 
         return $messages;

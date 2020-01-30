@@ -4,17 +4,20 @@ class Tutorial
     {
         bindProtoOnHandlers(this);
 
-        this.gui    = gui;
-        this.iframe = iframe;
-        this.opc    = opc;
-        this.tourId = null;
-        this.stepId = null;
+        this.gui      = gui;
+        this.iframe   = iframe;
+        this.opc      = opc;
+        this.tourId   = null;
+        this.stepId   = null;
+        this.handlers = [];
     }
 
     init()
     {
         installGuiElements(this, [
             'opcSidebar',
+            'iframePanel',
+            'previewPanel',
             'portlets',
             'tourModal',
             'tourForm',
@@ -41,7 +44,7 @@ class Tutorial
 
     startTour(tourId)
     {
-        this.tourId = tourId;
+        this.tourId = parseInt(tourId);
         this.tourModal.modal('hide');
         this.tutorials.addClass('active');
         this.startStep(0);
@@ -49,11 +52,12 @@ class Tutorial
 
     reset()
     {
-        this.tutBox.removeClass('centered');
+        this.tutBox.removeClass('centered-c');
         this.tutBox.removeClass('centered-v');
         this.tutBox.removeClass('centered-h');
         this.tutBox.css('left', '');
         this.tutBox.css('top', '');
+        this.tutboxNext.prop('disabled', false);
         this.tutBackdrop.css('width', '');
         this.tutBackdrop2.remove();
         this.tutBackdrop2.removeClass('active');
@@ -70,118 +74,235 @@ class Tutorial
         let content = opc.messages["tutStepText_" + this.tourId + "_" + stepId];
 
         this.stepId = stepId;
+        this.reset();
         this.tutboxTitle.html(title);
         this.tutboxContent.html(content);
-        this.reset();
 
-        switch (stepId) {
-            case 0: {
-                this.tutBox.addClass('centered');
-                break;}
-            case 1: {
-                this.tutBox.addClass('centered-v');
-                this.tutBox.offset({left: 32});
-                this.opcSidebar.addClass('hightlighted-element');
-                break;}
-            case 2: {
-                this.tutBox.addClass('centered-v');
-                this.tutBox.offset({left: this.opcSidebar.width() + 64});
-                this.makeBackdrop('iframepanel');
-                break;}
-            case 3: {
-                this.tutBox.addClass('centered-v');
-                this.tutBox.offset({left: this.opcSidebar.width() - 32});
-                this.portlets.addClass('hightlighted-element');
-                break;}
-            case 4: {
-                this.tutBox.addClass('centered-v');
-                this.tutBox.offset({left: this.opcSidebar.width() + 64});
-                this.makeBackdrop('iframe');
-                this.iframe.dropTargets().addClass('hightlighted-element');
-                break;}
-            case 5: {
-                this.tutBox.addClass('centered-v');
-                this.tutBox.offset({left: this.opcSidebar.width() + 64});
-                this.makeBackdrop('iframe');
-                $('[data-portlet-class="Heading"]').addClass('hightlighted-element');
-                this.iframe.dropTargets().addClass('hightlighted-element');
-                opc.once('portlet.dragend', () => this.reset());
-                $('#configModal').one('shown.bs.modal', () => this.tutboxNext.click());
-                break;}
-            case 6: {
-                this.tutBox.addClass('centered');
-                $('#configModal').addClass('hightlighted-modal');
-                break;}
-            case 7: {
-                let configModal = $('#configModal');
-                this.tutBox.addClass('centered');
-                this.makeBackdrop('modal', configModal);
-                configModal.addClass('hightlighted-modal');
-                $('#config-text').addClass('hightlighted-element');
-                $('#configSave').addClass('hightlighted-element');
-                configModal.one('hide.bs.modal', () => this.reset());
-                configModal.one('hidden.bs.modal', () => this.tutboxNext.click());
-                break;}
-            case 8: {
-                this.tutBox.addClass('centered');
-                this.tutBox.offset({left: this.opcSidebar.width() + 64});
-                this.makeBackdrop('iframe');
-                this.iframe.portletToolbar.addClass('hightlighted-element');
-                break;}
-            case 9:{
-                let modal = $('#publishModal');
-                let btn = $('#btnPublishDraft');
-                this.tutBox.addClass('centered-h');
-                btn.addClass('hightlighted-element');
-                this.tutBox.offset({top: btn.offset().top - 100});
-                modal.one('show.bs.modal', () => this.reset());
-                modal.one('shown.bs.modal', () => this.tutboxNext.click());
-                break;}
-            case 10:{
-                let modal  = $('#publishModal');
-                let dialog = modal.find('.modal-dialog');
-                this.tutBox.addClass('centered-h');
-                this.tutBox.offset({top: dialog.offset().top + dialog.height() + 32});
-                modal.addClass('hightlighted-modal');
-                modal.one('show.bs.modal', () => this.reset());
-                modal.one('shown.bs.modal', () => this.tutboxNext.click());
-                break;}
-            case 11:{
-                let modal = $('#publishModal');
-                let dialog = modal.find('.modal-dialog');
-                this.tutBox.addClass('centered-h');
-                this.tutBox.offset({top: dialog.offset().top + dialog.height() + 32});
-                this.makeBackdrop('modal', modal);
-                modal.addClass('hightlighted-modal');
-                $('#btnApplyPublish').addClass('hightlighted-element');
-                modal.one('hide.bs.modal', () => this.reset());
-                modal.one('hidden.bs.modal', () => this.tutboxNext.click());
-                break;}
-            default:
-                this.tutBox.addClass('centered');
+        switch(this.tourId) {
+            case 0:
+                switch (stepId) {
+                    case 0: {
+                        this.makeTutbox({cls: 'c'});
+                        break;}
+                    case 1: {
+                        this.makeTutbox({cls: 'v', left: 32});
+                        this.highlightElms(this.opcSidebar);
+                        break;}
+                    case 2: {
+                        this.makeTutbox({cls: 'v', left: this.opcSidebar.width() + 64});
+                        this.highlightElms(this.iframePanel, this.previewPanel);
+                        break;}
+                    case 3: {
+                        this.makeTutbox({cls: 'v', left: this.opcSidebar.width() - 32});
+                        this.highlightElms(this.portlets);
+                        break;}
+                    case 4: {
+                        this.makeTutbox({cls: 'v', left: this.opcSidebar.width() + 64});
+                        this.makeBackdrop('iframe');
+                        this.highlightElms(this.iframe.dropTargets());
+                        break;}
+                    case 5: {
+                        this.makeTutbox({cls: 'v', left: this.opcSidebar.width() + 64});
+                        this.makeBackdrop('iframe');
+                        this.highlightElms($('[data-portlet-class="Heading"]'), this.iframe.dropTargets());
+                        this.bindResetEvent(opc.page.rootAreas, 'drop');
+                        this.bindNextEvent($('#configModal'), 'shown.bs.modal');
+                        break;}
+                    case 6: {
+                        this.makeTutbox({cls: 'c'});
+                        this.highlightModal($('#configModal'));
+                        break;}
+                    case 7: {
+                        let modal = $('#configModal');
+                        this.makeTutbox({cls: 'c'});
+                        this.makeBackdrop('modal', modal);
+                        this.highlightModal(modal);
+                        this.highlightElms($('#config-text'), $('#configSave'));
+                        this.bindResetEvent(modal, 'hide.bs.modal');
+                        this.bindNextEvent(modal, 'hidden.bs.modal');
+                        break;}
+                    case 8: {
+                        this.makeTutbox({cls: 'c', left: this.opcSidebar.width() + 64});
+                        this.makeBackdrop('iframe');
+                        this.highlightElms(this.iframe.portletToolbar);
+                        break;}
+                    case 9:{
+                        let modal = $('#publishModal');
+                        let btn   = $('#btnPublishDraft');
+                        this.makeTutbox({left: this.opcSidebar.width() + 64, top: btn.offset().top - 150});
+                        this.highlightElms(btn);
+                        this.bindResetEvent(modal, 'show.bs.modal');
+                        this.bindNextEvent(modal, 'shown.bs.modal');
+                        break;}
+                    case 10:{
+                        let modal  = $('#publishModal');
+                        let dialog = modal.find('.modal-dialog');
+                        this.makeTutbox({cls: 'h', top: this.elmBottom(dialog, 32)});
+                        this.highlightModal(modal);
+                        break;}
+                    case 11:{
+                        let modal  = $('#publishModal');
+                        let dialog = modal.find('.modal-dialog');
+                        this.makeTutbox({cls: 'h', top: this.elmBottom(dialog, 32)});
+                        this.makeBackdrop('modal', modal);
+                        this.highlightModal(modal);
+                        this.highlightElms($('#btnApplyPublish'));
+                        this.bindResetEvent(modal, 'hide.bs.modal');
+                        this.bindNextEvent(modal, 'hidden.bs.modal');
+                        break;}
+                    default:
+                        this.makeTutbox({cls: 'c'});
+                        break;
+                }
+                break;
+            case 1:
+                switch (stepId) {
+                    case 0: {
+                        this.makeTutbox({cls: 'c'});
+                        break;}
+                    case 1: {
+                        let buttonPortlet = $('[data-portlet-class="Button"]');
+                        this.makeTutbox({left: 32, top: this.elmBottom(buttonPortlet, 32)});
+                        this.makeBackdrop('iframe');
+                        this.highlightElms(buttonPortlet, this.iframe.dropTargets());
+                        this.bindResetEvent(opc.page.rootAreas, 'drop');
+                        this.bindNextEvent($('#configModal'), 'shown.bs.modal');
+                        break;}
+                    case 2: {
+                        let modal  = $('#configModal');
+                        let dialog = modal.find('.modal-dialog');
+                        this.makeTutbox({cls: 'h', top: this.elmBottom(dialog, 32)});
+                        this.bindNextEvent($('[href="#conftab3"]'), 'shown.bs.tab');
+                        break;}
+                    case 3: {
+                        let modal  = $('#configModal');
+                        let formgr = $('#config-animation-style').closest('.form-group');
+                        this.makeTutbox({left: formgr.offset().left, top: this.elmBottom(formgr, 32)});
+                        this.makeBackdrop('modal', modal);
+                        this.highlightElms(formgr, $('#configSave'));
+                        this.bindResetEvent(modal, 'hide.bs.modal');
+                        this.bindNextEvent(modal, 'hidden.bs.modal');
+                        break;}
+                    case 4: {
+                        this.makeTutbox({cls:'c'});
+                        this.makeBackdrop('iframe');
+                        this.highlightElms(opc.iframe.selectedElm);
+                        break;}
+                    case 5: {
+                        let modal    = $('#configModal');
+                        this.makeTutbox({cls:'c'});
+                        this.makeBackdrop('iframe');
+                        this.highlightElms(opc.iframe.selectedElm, this.iframe.portletToolbar);
+                        this.bindResetEvent(modal, 'show.bs.modal');
+                        this.bindNextEvent(modal, 'shown.bs.modal');
+                        break;}
+                    case 6: {
+                        let styleTab = $('[href="#conftab2"]');
+                        let animTab  = $('[href="#conftab3"]');
+                        let modal    = $('#configModal');
+                        styleTab.click();
+                        styleTab.one('shown.bs.tab', () => {
+                            let marginInp = $('#margin-bottom-input');
+                            this.makeBackdrop('modal', modal);
+                            this.makeTutbox({cls:'h', top: this.elmBottom(marginInp, 32)});
+                            this.highlightElms(marginInp, animTab.closest('.nav-item'));
+                            this.bindNextEvent(animTab, 'shown.bs.tab');
+                        });
+                        break;}
+                    case 7: {
+                        let modal   = $('#configModal');
+                        let formgr  = $('#config-animation-style').closest('.form-group');
+                        let formgr2 = $('#config-wow-offset').closest('.form-group');
+                        this.makeTutbox({cls:'c'});
+                        this.makeTutbox({left: formgr2.offset().left, top: this.elmBottom(formgr2, 32)});
+                        this.makeBackdrop('modal', modal);
+                        this.highlightElms(formgr, formgr2, $('#configSave'));
+                        this.bindResetEvent(modal, 'hide.bs.modal');
+                        this.bindNextEvent(modal, 'hidden.bs.modal');
+                        break;}
+                    case 8: case 9: case 10: {
+                        let tb = this.iframe.portletToolbar;
+                        this.makeTutbox({left: 32, top: 128});
+                        this.makeBackdrop('iframe');
+                        this.highlightElms(opc.iframe.selectedElm, tb);
+                        this.bindNextEvent(this.iframe.jq('#btnClone'), 'click');
+                        break;}
+                    case 11: {
+                        let toggle = $('#previewToolbar').find('.toggle-switch');
+                        this.makeTutbox({left: 32, top: toggle.offset().top - 200});
+                        this.highlightElms(toggle);
+                        this.bindNextEvent(toggle.find('.toggle-slider'), 'click');
+                        break;}
+                    case 12: {
+                        let toggle = $('#previewToolbar').find('.toggle-switch');
+                        this.makeTutbox({left: 32, top: toggle.offset().top - 400});
+                        this.highlightElms(toggle, $('#previewPanel'));
+                        break;}
+                    default:
+                        this.makeTutbox({cls:'c'});
+                        break;
+                }
+                break;
         }
+    }
 
-        let nextStep = stepId + 1;
+    elmRight(elm, extraOffset)
+    {
+        return elm.offset().left + elm.width() + extraOffset;
+    }
+
+    elmBottom(elm, extraOffset)
+    {
+        return elm.offset().top + elm.height() + extraOffset;
+    }
+
+    goNextStep()
+    {
+        let nextStep = this.stepId + 1;
 
         if(opc.messages["tutStepTitle_" + this.tourId + "_" + nextStep]) {
-            this.tutboxNext.off('click').on('click', () => this.startStep(nextStep));
+            this.startStep(nextStep);
         } else {
-            this.tutboxNext.off('click').on('click', () => this.stopTutorial());
+            this.stopTutorial();
         }
+    }
+
+    bindEvent(elm, event, handler)
+    {
+        elm.one(event + '.tutorial', handler);
+        this.handlers.push(elm);
+    }
+
+    bindNextEvent(elm, event)
+    {
+        this.bindEvent(elm, event, () => this.tutboxNext.click());
+        this.tutboxNext.prop('disabled', true);
+    }
+
+    bindResetEvent(elm, event)
+    {
+        this.bindEvent(elm, event, () => this.reset());
     }
 
     stopTutorial()
     {
         this.reset();
         this.tutorials.removeClass('active');
+        this.handlers.forEach(h => h.off('.tutorial'));
+        this.handlers = [];
+    }
+
+    makeTutbox({cls, left, top, disable})
+    {
+        if(cls)     this.tutBox.addClass('centered-' + cls);
+        if(left)    this.tutBox.offset({left: left});
+        if(top)     this.tutBox.offset({top: top});
+        if(disable) this.tutboxNext.prop('disabled', true);
     }
 
     makeBackdrop(type, modal)
     {
         switch(type) {
-            case 'iframepanel':
-                this.tutBackdrop.width(this.opcSidebar.width());
-                break;
             case 'iframe':
                 this.tutBackdrop.width(this.opcSidebar.width());
                 this.tutBackdrop2.appendTo(this.iframe.body);
@@ -190,334 +311,18 @@ class Tutorial
             case 'modal':
                 this.tutBackdrop2.appendTo(modal.find('.modal-content'));
                 this.tutBackdrop2.addClass('active');
-                this.tutBackdrop2.css('width', '100%');
-                this.tutBackdrop2.css('height', '100%');
                 break;
         }
     }
 
-    fixIframePos(element)
+    highlightElms(...elms)
     {
-        let off   = element.offset();
-        let pLeft = this.gui.opcSidebar.outerWidth();
-
-        element.offset({left: off.left + pLeft});
+        elms.forEach(elm => elm.addClass('hightlighted-element'));
     }
 
-    fixBackdrop()
+    highlightModal(modal)
     {
-        let backdropTop    = $('.tour-backdrop.top');
-        let backdropLeft   = $('.tour-backdrop.left');
-        let backdropRight  = $('.tour-backdrop.right');
-        let backdropBottom = $('.tour-backdrop.bottom');
-
-        let off       = backdropTop.offset();
-        let pTop      = this.gui.opcHeader.height();
-        let pLeft     = this.gui.opcSidebar.outerWidth();
-        let leftWidth = backdropLeft.width();
-
-        // backdropTop.offset({top: off.top + pTop});
-
-        off = backdropLeft.offset();
-        // backdropLeft.offset({top: off.top + pTop});
-        backdropLeft.width(leftWidth + pLeft);
-
-        off = backdropRight.offset();
-        // backdropRight.offset({top: off.top + pTop, left: off.left + pLeft});
-        backdropRight.offset({left: off.left + pLeft});
-
-        // off = backdropBottom.offset();
-        // backdropBottom.offset({top: off.top + pTop});
-    }
-
-    _startTour_ht1()
-    {
-        let confModal = this.gui.configModal;
-
-        let tour = new Tour({
-            name: "tAllgemein",
-            orphan: true,
-            template: "<div class='popover tour'><div class='arrow'></div><h3 class='popover-title'></h3>" +
-                "<div class='popover-content'></div><div class='popover-navigation'>" +
-                "<button class='btn btn-default' data-role='prev'>« Prev</button>" +
-                "<span data-role='separator'>|</span><button class='btn btn-default' data-role='next'>Next »</button>" +
-                "<button class='btn btn-primary' data-role='end' style='margin-left: 15px;'>End tour</button>" +
-                "</div></div>",
-            steps: [
-                {
-                    backdrop: true,
-                    title: "Willkommen",
-                    content: "In dieser kurzen Einführung wollen wir dir einen Überblick über dieses neue Feature geben."
-                },
-                {
-                    backdrop: true,
-                    element: this.gui.opcSidebar,
-                    title: "Aufteilung",
-                    content: "Grundsätzlich ist der Editor in die zwei Bereich aufgeteilt.<br>Hier siehst du die Sidebar."
-                },
-                {
-                    backdrop: true,
-                    element: this.gui.iframePanel,
-                    placement: "top",
-                    title: "Aufteilung",
-                    content: "In diesem Bereich wird der aktuelle Stand deiner Bearbeitung gezeigt."
-                },
-                {
-                    backdrop: true,
-                    element: "#portlets",
-                    placement: "right",
-                    title: "Portlets",
-                    content: "Das sind unserer Portlets. Diese kannst du nutzen um deine Seiten mit Inhalt zu füllen."
-                },
-                {
-                    backdrop: true,
-                    element: this.iframe.dropTargets().first(),
-                    placement: "top",
-                    title: "Portlets",
-                    content: "Die grauen Bereiche auf dieser Seite zeigen dir wo du Portlets ablegen kannst.",
-                    onShown: tour => {
-                        this.fixIframePos($('#step-4'));
-                        this.fixBackdrop();
-                    },
-                },
-                {
-                    element: "#portlets",
-                    placement: "bottom",
-                    title: "Portlets",
-                    reflex: 'dragend',
-                    content: "Ziehe nun das Portlet 'Überschrift' in den obersten grauen Bereich und du hast den " +
-                        "ersten Inhalt auf dieser Seite eingefügt."
-                },
-                {
-                    element: this.iframe.portletToolbar,
-                    placement: "right",
-                    title: "Einstellungen",
-                    onShown: tour => {
-                        this.fixIframePos($('#step-6'));
-                        confModal.off('shown.bs.modal.tour').on('shown.bs.modal.tour', () => {
-                            tour.next();
-                        });
-                    },
-                    content: "An diesem Portlet siehst du eine Leiste mit verschiedenen Icons. Klicke auf den Stift" +
-                        " um die Einstellungen zu öffnen."
-                },
-                {
-                    element: "#configModal .btn-primary",
-                    placement: "bottom",
-                    title: "Einstellungen",
-                    reflex: true,
-                    content: "Alle Portlets bieten verschiedene Einstellungen. Trage hier einen neuen Text für die " +
-                        "Überschrift ein und klicke auf Speichern."
-                },
-                {
-                    element: "#btnSave",
-                    placement: "bottom",
-                    title: "Seite Speichern",
-                    reflex: true,
-                    content: "Um deine Änderungen zu Sichern klicke bitte auf das Speichern-Symbol. Beachte bitte, dass " +
-                        "man im Shop noch keine Änderungen sieht."
-                },
-                {
-                    element: "#btnPublish",
-                    placement: "bottom",
-                    title: "Seite Veröffentlichen",
-                    reflex: true,
-                    content: "Nur veröffentlichte Seiten sind für deine Kunden sichtbar. " +
-                             "Um die Änderungen im Shop zu veröffentlichen klicke auf das Zeitungsymbol."
-                },
-                {
-                    element: "#publishModal .btn-primary",
-                    placement: "bottom",
-                    title: "Veröffentlichen",
-                    reflex: true,
-                    content: "Für jede Seite kannst du verschiedene Versionen haben. " +
-                             "Z.B. eine allgemeine (nur mit 'veröffentlicht ab') und eine Weihnachtsversion " +
-                             "(gültig während der Weihnachtszeit). Klicke auf 'veröffentlichen ab' und speichere danach."
-                },
-                {
-                    element: "#btnClose",
-                    placement: "bottom",
-                    title: "Beenden",
-                    reflex: true,
-                    content: "Du kannst nun den OPC beenden und deine Seite anschauen oder mit einem Klick auf 'end Tour' diese Hilfe beenden." +
-                             "Das waren die Basics. Wir wünschen dir weiterhin viel Spaß mit dem OnPage Composer!"
-                },
-
-            ]
-        });
-
-        // Initialize the tour
-        tour.init();
-        $('.tour-tAllgemein-5-element').on('dragend', () => {
-            tour.next();
-        });
-        // Initialize the tour
-        tour.start(true);
-    }
-
-    _startTour_ht2()
-    {
-        let confModal = this.gui.configModal;
-
-        let tour2 = new Tour({
-            name: "tAnimation",
-            smartPlacement: false,
-            orphan: true,
-            template: "<div class='popover tour'><div class='arrow'></div><h3 class='popover-title'></h3>" +
-                "<div class='popover-content'></div><div class='popover-navigation'>" +
-                "<button class='btn btn-default' data-role='prev'>« Prev</button><span data-role='separator'>|</span>" +
-                "<button class='btn btn-default' data-role='next'>Next »</button>" +
-                "<button class='btn btn-primary' data-role='end' style='margin-left: 15px;'>End tour</button>" +
-                "</div></div>",
-            steps: [
-                {
-                    element: '',
-                    backdrop: true,
-                    title: "Animationen",
-                    content: "Lerne hier wie du Portlets mit einfachen Animationen erstellst. Es empfiehlt sich mit einer leeren Seite zu arbeiten."
-                },
-                {
-                    backdrop: true,
-                    title: "Animationen",
-                    content: "Nicht jedes Portlet verfügt über die Einstellungen um Animationen zu erstellen."
-                },
-                {
-                    title: "Animationen",
-                    content: "Ziehe zunächst einen Button in deine Seite und öffne die Einstellungen.",
-                    onShown: tour => {
-                        confModal.off('shown.bs.modal.tour').on('shown.bs.modal.tour', () => {
-                            tour.next();
-                        });
-                    },
-                },
-                {
-                    element: "#configModalBody .nav-tabs a[href='#Animation']",
-                    title: "Animationen",
-                    reflex: true,
-                    content: "Wechsel nun zu dem Reiter 'Animation'.",
-                },
-                {
-                    title: "Animationen",
-                    content: "Die Einstellung 'animation-style' enthält viele verschiedene Typen." +
-                             " Bitte wähle einen Animationsstil aus und speichere die Einstellungen.",
-                    onShown: tour => {
-                        confModal.off('hide.bs.modal.tour').on('hide.bs.modal.tour', () => {
-                            tour.next();
-                        });
-                    },
-                },
-                {
-                    title: "Animationen",
-                    content: "Hier siehts du deine erste einfache Animation. Wenden wir uns einer etwas umfangreicheren Aufgabe zu. Lösche dazu den erstellten Button.",
-                    onShown: tour => {
-                        this.iframe.btnTrash.off('click.tour').on('click.tour', () => {
-                            tour.next();
-                        });
-                    },
-                },
-                {
-                    title: "Animationen",
-                    content: "Erstelle nun ein Spaltenportlet (in der Sidebar unter 'LAYOUT') und öffne die Einstellungen.",
-                    onShown: tour => {
-                        confModal.off('shown.bs.modal.tour').on('shown.bs.modal.tour', () => {
-                            tour.next();
-                        });
-                    },
-                },
-                {
-                    title: "Animationen",
-                    content: "Setze das Layout auf die volle Breite (12). Im Tab 'Styles' änderst du 'margin-bottom' auf 50, wählst eine Hintergrundfarbe und wechselst zu Animationen.",
-                    onShown: tour => {
-                        $('#configModalBody .nav-tabs a[href="#Animation"]').off('click.tour').on('click.tour', () => {
-                            tour.next();
-                        });
-                    },
-                },
-                {
-                    title: "Animationen",
-                    content: "Wähle 'fade-in' als Animationsstil und gibt bei 'offset' 150 ein. Nun Kannst du die Einstellungen schließen.",
-                    onShown: tour => {
-                        confModal.off('hide.bs.modal.tour').on('hide.bs.modal.tour', () => {
-                            tour.next();
-                        });
-                    },
-                },
-                {
-                    title: "Animationen",
-                    content: "Füge in das Spaltenportlet eine Überschrift ein und öffne auch hier die Einstellungen.",
-                    onShown: tour => {
-                        confModal.off('shown.bs.modal.tour').on('shown.bs.modal.tour', () => {
-                            tour.next();
-                        });
-                    },
-                },
-                {
-                    title: "Animationen",
-                    content: "Im Styles-tab gibst du unter 'margin-bottom' 250 ein und speicherst die Einstellungen.",
-                    onShown: tour => {
-                        confModal.off('hide.bs.modal.tour').on('hide.bs.modal.tour', () => {
-                            tour.next();
-                        });
-                    },
-                },
-                {
-                    title: "Animationen",
-                    content: "Kopiere nun das Spaltenportlet ein paar mal.",
-                    onShown: tour => {
-                        this.iframe.btnClone.off('click.tour').on('click.tour', () => {
-                            tour.next();
-                        });
-                    },
-                },
-                {
-                    title: "Animationen",
-                    content: "1x",
-                    onShown: tour => {
-                        this.iframe.btnClone.off('click.tour').on('click.tour', () => {
-                            tour.next();
-                        });
-                    },
-                },
-                {
-                    title: "Animationen",
-                    content: "2x",
-                    onShown: tour => {
-                        this.iframe.btnClone.off('click.tour').on('click.tour', () => {
-                            tour.next();
-                        });
-                    },
-                },
-                {
-                    title: "Animationen",
-                    content: "3x",
-                    onShown: tour => {
-                        this.iframe.btnClone.off('click.tour').on('click.tour', () => {
-                            tour.next();
-                        });
-                    },
-                },
-                {
-                    title: "Animationen",
-                    content: "einmal noch!",
-                    onShown: tour => {
-                        this.iframe.btnClone.off('click.tour').on('click.tour', () => {
-                            tour.next();
-                        });
-                    },
-                },
-                {
-                    title: "Animationen",
-                    content: "<p>Du kannst die Seite jetzt speichern und dir im Frontend anschauen. <br/>" +
-                             "Beim Scrollen solltest du nun sehen, dass die verschiedenen Zeilen nacheinander eingeblendet werden. </p><p>" +
-                             "Man kann dieses Konzept auch weiter ausbauen und die Bereiche z.B. abwechselnd von rechts und links in die Seite einfahren lassen. " +
-                             "Mit einem schönen zweifarbigen Design lassen sich damit effektvolle Seiten kreieren. " +
-                             "Bedenke aber bitte, dass 'weniger oft mehr ist'. Soll heißen: geh sparsam mit Animationen um, damit deine Kunden nicht abgelenkt oder gar verschreckt werden.</p>" +
-                             "<p>Damit sind wir mit dem Tutorial 'Animationen' durch. Wir wünschen dir weiterhin viel Spaß mit dem OnPage Composer!</p>",
-                },
-            ]
-        });
-        tour2.init();
-        tour2.start(true);
+        modal.addClass('hightlighted-modal');
     }
 
     _startTour_ht3()

@@ -1018,7 +1018,7 @@ final class Shop
         Dispatcher::getInstance()->fire(Event::RUN);
 
         self::$productFilter->initStates(self::getParameters());
-        $starterFactory = new StarterFactory(self::getConfig([\CONF_CRON])['cron']);
+        $starterFactory = new StarterFactory(self::getConfig([\CONF_CRON])['cron'] ?? []);
         $starterFactory->getStarter()->start();
 
         return self::$productFilter;

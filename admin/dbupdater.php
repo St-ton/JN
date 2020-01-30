@@ -43,6 +43,6 @@ $smarty->assign('updatesAvailable', $updatesAvailable)
        ->assign('hasDifferentVersions', !Version::parse($fileVersion)->equals(Version::parse($fileVersion)))
        ->assign('version', $version)
        ->assign('updateError', $updateError)
-       ->assign('currentTemplateFileVersion', $template->xmlData->cVersion)
+       ->assign('currentTemplateFileVersion', $template->xmlData->cVersion ?? '1.0.0')
        ->assign('currentTemplateDatabaseVersion', $template->version)
        ->display('dbupdater.tpl');

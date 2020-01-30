@@ -133,18 +133,6 @@ $adminMenu = [
                 ],
             ],
             __('Default elements') => [
-                __('Question on item')        => (object)[
-                    'link'   => 'einstellungen.php?kSektion=' . CONF_FRAGE_ZUM_PRODUKT,
-                    'permissions' => 'SETTINGS_ARTICLEDETAILS_VIEW',
-                    'excludeFromAccessView' => true,
-                    'section' => CONF_FRAGE_ZUM_PRODUKT,
-                ],
-                __('Availability notifications')        => (object)[
-                    'link'   => 'einstellungen.php?kSektion=' . CONF_VERFUEGBARKEITSBENACHRICHTIGUNG,
-                    'permissions' => 'SETTINGS_ARTICLEDETAILS_VIEW',
-                    'excludeFromAccessView' => true,
-                    'section' => CONF_VERFUEGBARKEITSBENACHRICHTIGUNG,
-                ],
                 __('Shop logo')               => (object)[
                     'link'   => 'shoplogouploader.php',
                     'permissions' => 'DISPLAY_OWN_LOGO_VIEW',
@@ -158,6 +146,18 @@ $adminMenu = [
                     'link'   => 'preisverlauf.php',
                     'permissions' => 'MODULE_PRICECHART_VIEW',
                     'section' => CONF_PREISVERLAUF,
+                ],
+                __('Question on item')        => (object)[
+                    'link'   => 'einstellungen.php?kSektion=' . CONF_FRAGE_ZUM_PRODUKT,
+                    'permissions' => 'SETTINGS_ARTICLEDETAILS_VIEW',
+                    'excludeFromAccessView' => true,
+                    'section' => CONF_FRAGE_ZUM_PRODUKT,
+                ],
+                __('Availability notifications')        => (object)[
+                    'link'   => 'einstellungen.php?kSektion=' . CONF_VERFUEGBARKEITSBENACHRICHTIGUNG,
+                    'permissions' => 'SETTINGS_ARTICLEDETAILS_VIEW',
+                    'excludeFromAccessView' => true,
+                    'section' => CONF_VERFUEGBARKEITSBENACHRICHTIGUNG,
                 ],
                 __('Item badges')            => (object)[
                     'link'   => 'suchspecialoverlay.php',

@@ -5350,7 +5350,7 @@ class Artikel
      */
     private function formatTax($taxRate)
     {
-        if ($taxRate <= 0) {
+        if ($taxRate < 0) {
             return '';
         }
         $mwst2 = \number_format((float)$taxRate, 2, ',', '.');

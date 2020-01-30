@@ -5,9 +5,6 @@
     {/if}
     {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=$cPrefDesc cDokuURL=$cPrefURL}
 {/if}
-{if !isset($action) || !$action}
-    {assign var=action value='einstellungen.php'}
-{/if}
 {$search = isset($cSuche) && !empty($cSuche)}
 
 {if $search}
@@ -27,10 +24,9 @@
         });
     </script>
 {/if}
-
 <div id="content">
     <div id="settings">
-        <form name="einstellen" method="post" action="{$action}" class="settings navbar-form">
+        <form name="einstellen" method="post" action="{$action|default:''}" class="settings navbar-form">
             {$jtl_token}
             <input type="hidden" name="einstellungen_bearbeiten" value="1" />
             {if $search}

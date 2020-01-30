@@ -134,11 +134,10 @@ $adminMenu = [
             ],
             __('Default elements') => [
                 __('Question on item')        => (object)[
-                    'link'   => 'einstellungen.php?kSektion=' . CONF_ARTIKELDETAILS .
-                        '&group=configgroup_5_product_question#configgroup_5_product_question',
+                    'link'   => 'einstellungen.php?kSektion=' . CONF_FRAGE_ZUM_PRODUKT,
                     'permissions' => 'SETTINGS_ARTICLEDETAILS_VIEW',
                     'excludeFromAccessView' => true,
-                    'section' => CONF_ARTIKELDETAILS,
+                    'section' => CONF_FRAGE_ZUM_PRODUKT,
                 ],
                 __('Shop logo')               => (object)[
                     'link'   => 'shoplogouploader.php',

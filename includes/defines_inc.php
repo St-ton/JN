@@ -20,6 +20,7 @@ define('CONF_BOXEN', 8);
 define('CONF_BILDER', 9);
 define('CONF_SONSTIGES', 10);
 define('CONF_TEMPLATE', 11);
+define('CONF_FRAGE_ZUM_PRODUKT', 12);
 //
 define('CONF_ZAHLUNGSARTEN', 100);
 define('CONF_EXPORTFORMATE', 101);

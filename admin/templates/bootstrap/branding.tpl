@@ -144,6 +144,7 @@
     $('#cBrandingBild').fileinput({
         showUpload: false,
         showRemove: false,
+        initialPreviewShowDelete: false,
         showCancel: false,
         uploadAsync: false,
         showPreview: true,
@@ -163,8 +164,13 @@
         {if $oBranding->cBrandingBild|strlen > 0}
         initialPreviewConfig: [
             {
-                url: '{$shopURL}/{$PFAD_BRANDINGBILDER}{$oBranding->cBrandingBild}?rnd={$cRnd}',
-                extra: { logo: '{$oBranding->cBrandingBild}' }
+                url: '{$shopURL}/{$PFAD_ADMIN}branding.php',
+                extra: {
+                    action: 'delete',
+                    logo: '{$oBranding->cBrandingBild}',
+                    id: {$oBranding->kBrandingTMP},
+                    jtl_token: '{$smarty.session.jtl_token}'
+                }
             }
         ],
         initialPreview: [

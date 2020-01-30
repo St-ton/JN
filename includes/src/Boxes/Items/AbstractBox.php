@@ -287,7 +287,6 @@ abstract class AbstractBox implements BoxInterface
         foreach (self::$validPageTypes as $pageType) {
             $this->filter[$pageType] = false;
         }
-
         foreach ($boxData as $box) {
             if (!empty($box->cFilter)) {
                 $this->filter[(int)$box->kSeite] = \array_map('\intval', \explode(',', $box->cFilter));
@@ -299,7 +298,11 @@ abstract class AbstractBox implements BoxInterface
                     $this->filter[(int)$pageID] = (bool)$visibility;
                 }
             }
+
             if (!empty($box->kSprache)) {
+                if (!\is_array($this->content)) {
+                    $this->content = [];
+                }
                 $this->content[(int)$box->kSprache] = $box->cInhalt;
                 $this->title[(int)$box->kSprache]   = $box->cTitel;
             }

@@ -11,7 +11,8 @@
                 {$kKonfiggruppe = $oGruppe->getKonfiggruppe()}
                 <div class="cfg-group js-cfg-group {if $oGruppe@first}visited{/if}" data-id="{$kKonfiggruppe}">
                     <div class="hr-sect mb-0">
-                        <span class="d-none js-group-checked"><i class="fas fa-check"></i></span>
+                        <span class="d-none js-group-checked"><i class="far fa-check-square"></i></span>
+                        <span class="d-none"><i class="far fa-square"></i></span>
                         {button
                             id="crd-hdr-{$oGruppe@iteration}"
                             variant="link"
@@ -23,9 +24,9 @@
                     </div>
 
                     {collapse visible=$oGruppe@first id="cfg-grp-cllps-{$kKonfiggruppe}" aria=["labelledby"=>"crd-hdr-{$oGruppe@iteration}"] data=["parent"=>"#cfg-accordion"]}
-                        {if !empty($oGruppe->getMin()) || !empty($oGruppe->getMax())}
-                            <div class="text-center mb-5">
-                                {badge variant="info"}
+                        <div class="text-center mb-5 sticky-top">
+                            {if !empty($oGruppe->getMin()) || !empty($oGruppe->getMax())}
+                                {badge variant="info" class="js-group-badge-checked"}
                                     {if $oGruppe->getMin() === 1 && $oGruppe->getMax() === 1}
                                         {lang key='configChooseOneComponent' section='productDetails'}
                                     {else}
@@ -39,12 +40,10 @@
                                         {/if}
                                     {/if}
                                 {/badge}
-                            </div>
-                        {elseif $oGruppe->getMin() == 0}
-                            <div class="text-center mb-5">
-                                {badge variant="info"}{lang key='optional'}{/badge}
-                            </div>
-                        {/if}
+                            {elseif $oGruppe->getMin() == 0}
+                                {badge variant="info" class="js-group-badge-checked"}{lang key='optional'}{/badge}
+                            {/if}
+                        </div>
                     {block name='productdetails-config-container-group-description'}
                         {alert variant="danger" class="js-cfg-group-error" data=["id"=>"{$kKonfiggruppe}"]}{/alert}
                     {/block}

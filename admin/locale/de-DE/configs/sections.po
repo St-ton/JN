@@ -25,3 +25,9 @@ msgstr "Warenkorb / Kaufabwicklung"
 
 msgid "configsection_8"
 msgstr "Boxen"
+
+msgid "configsection_12"
+msgstr "Frage zum Artikel"
+
+msgid "configsection_13"
+msgstr "Verfügbarkeitsanfragen"

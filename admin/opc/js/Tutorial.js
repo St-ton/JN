@@ -209,8 +209,9 @@ class Tutorial
                             let marginInp = $('#margin-bottom-input');
                             this.makeBackdrop('modal', modal);
                             this.makeTutbox({cls:'h', top: this.elmBottom(marginInp, 32)});
-                            this.highlightElms(marginInp, animTab.closest('.nav-item'));
-                            this.bindNextEvent(styleTab, animTab, 'shown.bs.tab');
+                            this.highlightElms(marginInp, animTab.closest('.nav-item'),
+                                styleTab.closest('.nav-item'));
+                            this.bindNextEvent(animTab, 'shown.bs.tab');
                         });
                         break;}
                     case 7: {
@@ -240,6 +241,7 @@ class Tutorial
                     case 12: {
                         let toggle = $('#previewToolbar').find('.toggle-switch');
                         this.makeTutbox({left: 32, top: toggle.offset().top - 400});
+                        this.makeBackdrop('none');
                         this.highlightElms(toggle, $('#previewPanel'));
                         break;}
                     default:

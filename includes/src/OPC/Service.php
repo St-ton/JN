@@ -100,72 +100,73 @@ class Service
 
         $messages += [
             'tutStepTitle_0_0' => 'Willkommen',
-            'tutStepText_0_0'  => 'In dieser kurzen Einführung wollen wir dir einen Überblick vom OnPage Composer
-                geben, ein Editor mit dem schnell neue Inhalte auf deiner Shop-Seite entstehen können.',
+            'tutStepText_0_0'  => 'In dieser kurzen Einführung wollen wir dir einen Überblick vom
+                <em>OnPage Composer</em> geben, ein Editor mit dem schnell neue Inhalte auf deiner Shop-Seite
+                entstehen können.',
 
             'tutStepTitle_0_1' => 'Aufteilung',
-            'tutStepText_0_1'  => 'Grundsätzlich ist der Editor in die zwei Bereich aufgeteilt. Hier links siehst du
-                die Sidebar.',
+            'tutStepText_0_1'  => '<p>Grundsätzlich ist der Editor in die zwei Bereich aufgeteilt.</p><p>Hier links
+                siehst du die Sidebar.</p>',
 
             'tutStepTitle_0_2' => 'Aufteilung',
             'tutStepText_0_2'  => 'Im rechten Fenster siehst du deine aktuelle Seite im Bearbeitungsmodus.',
 
             'tutStepTitle_0_3' => 'Portlets',
-            'tutStepText_0_3'  => 'Das sind unsere Portlets, fertige Bausteine um deine Seiten mit neuen Inhalten zu
-                ergänzen.',
+            'tutStepText_0_3'  => 'Das sind unsere <em>Portlets</em>, fertige Bausteine um deine Seiten mit neuen
+                Inhalten zu ergänzen.',
 
             'tutStepTitle_0_4' => 'Portlets',
             'tutStepText_0_4'  => 'Die hellblauen Bereiche auf der Seite zeigen dir wo du Portlets ablegen kannst.',
 
             'tutStepTitle_0_5' => 'Portlets',
-            'tutStepText_0_5'  => 'Ziehe nun das Portlet "Überschrift" in einen der hellblauen Bereiche und schau was
-                passiert!',
+            'tutStepText_0_5'  => 'Ziehe nun das Portlet <em>Überschrift</em> in einen der hellblauen Bereiche und
+                schau was passiert!',
 
             'tutStepTitle_0_6' => 'Portlets',
             'tutStepText_0_6'  => 'Alle Portlets bieten verschiedene Einstellungen. In diesem Fenster kannst du dein
                 Portlet konfigurieren.',
 
             'tutStepTitle_0_7' => 'Einstellungen',
-            'tutStepText_0_7'  => 'Gib einen eigenen Text für die Überschrift ein und klicke auf "Speichern"!',
+            'tutStepText_0_7'  => 'Gib einen eigenen Text für die Überschrift ein und klicke auf <em>Speichern</em>!',
 
             'tutStepTitle_0_8' => 'Einstellungen',
             'tutStepText_0_8'  => 'An dem neuen Portlet siehst du eine Leiste mit verschiedenen Buttons. Über den Stift
                 kannst du das Portlet jederzeit erneut bearbeiten.',
 
             'tutStepTitle_0_9' => 'Seite Veröffentlichen',
-            'tutStepText_0_9'  => 'Nur veröffentlichte Entwürfe sind für deine Shop-Besucher sichtbar. Um deinen
-                Entwurf jetzt zu veröffentlichen klicke auf diesen Button.',
+            'tutStepText_0_9'  => '<p>Nur veröffentlichte Entwürfe sind für deine Shop-Besucher sichtbar.</p>
+                <p>Um deinen Entwurf jetzt zu veröffentlichen klicke auf diesen Button.</p>',
 
             'tutStepTitle_0_10' => 'Seite Veröffentlichen',
             'tutStepText_0_10'  => 'Für jede Seite kannst mehrere Entwürfe pflegen, deren Sichtbarkeit du
-                außerdem zeitlich planen kannst. Z.B. einen allgemeinen und einen Entwurf für die Weihnachtszeit.',
+                außerdem zeitlich planen kannst. (Z.B. einen allgemeinen und einen Entwurf für die Weihnachtszeit)',
 
             'tutStepTitle_0_11' => 'Seite Veröffentlichen',
             'tutStepText_0_11'  => 'Die Voreinstellung macht den Entwurf ab sofort und bis auf unbestimmte
-                Zeit sichtbar. Klicke jetzt auf "Übernehmen" und der Entwurf ist online!',
+                Zeit sichtbar. Klicke jetzt auf <em>Übernehmen</em> und der Entwurf ist online!',
 
             'tutStepTitle_0_12' => 'Fertig!',
-            'tutStepText_0_12'  => 'Du kannst den Editor nun beenden und deine Seite anschauen
-                Das waren die Basics. Wir wünschen dir weiterhin viel Spaß mit dem OnPage Composer!',
+            'tutStepText_0_12'  => '<p>Du kannst den Editor nun beenden und deine Seite anschauen.</p>
+                <p>Das waren die Basics. Wir wünschen dir weiterhin viel Spaß mit dem OnPage Composer!</p>',
 
             'tutStepTitle_1_0' => 'Animationen',
-            'tutStepText_1_0'  => 'Einige Portlets verfügen über Einstellungen, um Animationen zu erstellen.
+            'tutStepText_1_0'  => 'Einige Portlets verfügen über Einstellungen, um <em>Animationen zu erstellen.
                 Hier lernst du, wie du diese nutzt.',
 
             'tutStepTitle_1_1' => 'Animationen',
-            'tutStepText_1_1'  => 'Ziehe zunächst einen Button in deine Seite!',
+            'tutStepText_1_1'  => 'Ziehe zunächst einen <em>Button</em> in deine Seite!',
 
             'tutStepTitle_1_2' => 'Animationen',
-            'tutStepText_1_2'  => 'Wechsel nun zu dem Reiter "Animation".',
+            'tutStepText_1_2'  => 'Wechsel nun zu dem Reiter <em>Animation</em>.',
 
             'tutStepTitle_1_3' => 'Animationen',
-            'tutStepText_1_3'  => 'Unter "Animationstyp" kannst du einen von verschiedenen Animations-Stilen auswählen.
-                (z.B. "bounce" lässt das Portlet hüpfen)
-                Speichere dann die Einstellungen!',
+            'tutStepText_1_3'  => '<p>Unter <em>Animationstyp</em> kannst du einen von verschiedenen Animations-Stilen
+                auswählen. (z.B. <em>"bounce"</em> lässt das Portlet hüpfen)</p>
+                <p>Speichere dann die Einstellungen!</p>',
 
             'tutStepTitle_1_4' => 'Animationen',
-            'tutStepText_1_4'  => 'Sofort siehst du deine erste Animation im Editorfenster.
-                Versuchen wir nun was komplexeres!',
+            'tutStepText_1_4'  => '<p>Sofort siehst du deine erste Animation im Editorfenster.</p>
+                <p>Versuchen wir nun was komplexeres!</p>',
 
             'tutStepTitle_1_5' => 'Animation',
             'tutStepText_1_5'  => 'Öffne erneut die Einstellungen des Buttons. (Doppelklick auf das Portlet oder
@@ -176,12 +177,12 @@ class Service
                 zuweisen. Wechsle dann noch mal zum Animations-Reiter!',
 
             'tutStepTitle_1_7' => 'Animationen',
-            'tutStepText_1_7'  => 'Als Animationstyp eignet sich "fade-in" ganz gut. Gib außerdem bei "Abstand" 350
-                ein. Nun Kannst du die Einstellungen speichern!',
+            'tutStepText_1_7'  => 'Als Animationstyp eignet sich <em>"fade-in"</em> ganz gut. Gib außerdem bei
+                <em>Abstand</em> 350 ein! Nun Kannst du die Einstellungen speichern!',
 
             'tutStepTitle_1_8' => 'Animationen',
             'tutStepText_1_8'  => 'Um zu sehen wie sich die Einstellung auswirkt, lass uns den Button, so wie er ist
-                ein paar mal klonen. Klicke dazu auf den "Kopieren"-Button!',
+                ein paar mal klonen. Klicke dazu auf den <em>Kopieren</em>-Button!',
 
             'tutStepTitle_1_9' => 'Animationen',
             'tutStepText_1_9'  => 'Und noch einmal!',
@@ -191,34 +192,37 @@ class Service
                 untereinander haben!',
 
             'tutStepTitle_1_11' => 'Animationen',
-            'tutStepText_1_11'  => 'Mit dem "Vorschau"-Schalter kannst du das Ergebnis gleich mal testen!',
+            'tutStepText_1_11'  => 'Mit dem <em>Vorschau</em>-Schalter kannst du das Ergebnis gleich mal testen!',
 
             'tutStepTitle_1_12' => 'Animationen',
-            'tutStepText_1_12'  => 'Scroll die Seite nach unten und beachte dabei, dass die Animation nicht eher
-                startet, ehe der Button mindesten 350 Pixel über die Viewport-Untergrenze gescrollt wurde.
-                Man kann dieses Konzept auch weiter ausbauen und die Bereiche z.B. abwechselnd von rechts und links in
-                die Seite einfahren lassen.',
+            'tutStepText_1_12'  => '<p>Scroll die Seite nach unten und beachte dabei, dass die Animation nicht eher
+                startet, ehe der Button mindesten 350 Pixel über die Viewport-Untergrenze gescrollt wurde.</p>
+                <p>Man kann dieses Konzept auch weiter ausbauen und die Bereiche z.B. abwechselnd von rechts und links
+                in die Seite einfahren lassen.</p>',
 
             'tutStepTitle_1_13' => 'Animationen',
-            'tutStepText_1_13'  => 'Bedenke aber bitte, dass "weniger oft mehr ist". Soll heißen: geh sparsam mit
-                Animationen um, damit deine Kunden nicht abgelenkt oder gar verschreckt werden. Damit sind wir mit
-                dem Tutorial "Animationen" durch. Wir wünschen dir weiterhin viel Spaß mit dem OnPage Composer!',
+            'tutStepText_1_13'  => '<p>Bedenke aber bitte, dass "weniger oft mehr ist". Soll heißen: geh sparsam mit
+                Animationen um, damit deine Kunden nicht abgelenkt oder gar verschreckt werden.</p>
+                <p>Damit sind wir mit dem Tutorial "Animationen" durch. Wir wünschen dir weiterhin viel Spaß mit dem
+                <em>OnPage Composer</em>!</p>',
 
             'tutStepTitle_2_0' => 'Vorlagen',
-            'tutStepText_2_0'  => 'Lerne hier wie du Vorlagen anlegst und wiederverwendest. Ziehe zunächst ein
-                Grid-Layout in die Seite und fülle die Spalten nach Herzenslust mit beliebigen Inhalten.',
+            'tutStepText_2_0'  => '<p>Lerne hier wie du Vorlagen anlegst und wiederverwendest.</p>
+                <p>Ziehe zunächst ein <em>Grid-Layout</em> in die Seite und fülle die Spalten nach Herzenslust mit
+                beliebigen Inhalten.</p>',
 
             'tutStepTitle_2_1' => 'Vorlagen anlegen',
             'tutStepText_2_1'  => 'Willst du deine Kreation zu einem späteren Zeitpunkt wiederverwenden, so kannst du
-                einfach eine Vorlage daraus machen. Wähle das gesamte Grid-Layout mit einem Klick aus!',
+                einfach eine <em>Vorlage</em> daraus machen. Wähle das gesamte Grid-Layout mit einem Klick aus!',
 
             'tutStepTitle_2_2' => 'Vorlagen anlegen',
-            'tutStepText_2_2'  => 'Klicke jetzt in der Toolbar auf den Stern-Button!',
+            'tutStepText_2_2'  => 'Klicke jetzt in der Toolbar auf den <em>Stern</em>-Button!',
 
             'tutStepTitle_2_3' => 'Vorlagen anlegen',
-            'tutStepText_2_3'  => 'Trage hier einen aussagekräftigen Namen ein. Mit diesem Namen findest du später
-                deine Vorlage schneller wieder. Gute Beispiele sind "Produkttabelle", "Video mit Beschreibungstext"
-                oder "3-spaltiger Text"',
+            'tutStepText_2_3'  => 'Trage hier einen aussagekräftigen Namen ein! Mit diesem Namen findest du später
+                deine Vorlage schneller wieder.<br>
+                (Gute Beispiele sind <em>"Produkttabelle", "Video mit Beschreibungstext"</em> oder
+                <em>"3-spaltiger Text"</em>)',
 
             'tutStepTitle_2_4' => 'Vorlagen wiederverwenden',
             'tutStepText_2_4'  => 'Alle gespeicherten Vorlagen findest du über den entsprechenden Tab in der Sidebar.',
@@ -227,9 +231,10 @@ class Service
             'tutStepText_2_5'  => 'Du kannst jede Vorlage wie ein normales Portlet einfach in die Seite ziehen.',
 
             'tutStepTitle_2_6' => 'Vorlagen wiederverwenden',
-            'tutStepText_2_6'  => 'Das Plugin "JTL-Portlets" bietet übrigens eine kleine Auswahl an Vorlagen, die,
-                wenn installiert, hier mit zur Verfügung gestellt werden. Das war es auch schon mit den "Vorlagen". Wir
-                wünschen dir weiterhin viel Spaß mit dem OnPage Composer!',
+            'tutStepText_2_6'  => '<p>Das Plugin <em>"JTL-Portlets"</em> bietet übrigens eine kleine Auswahl an
+                Vorlagen, die, wenn installiert, hier mit zur Verfügung gestellt werden.</p>
+                <p>Das war es auch schon mit den <em>Vorlagen</em>. Wir wünschen dir weiterhin viel Spaß mit dem 
+                <em>OnPage Composer</em>!</p>',
         ];
 
         return $messages;

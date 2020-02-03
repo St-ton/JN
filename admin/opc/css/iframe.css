@@ -18,6 +18,15 @@
   z-index: 9999 !important;
 }
 
+#tutorials #tutboxPrev {
+  margin-right: 12px;
+}
+#tutorials .button .fa-chevron-right {
+  margin-left: 4px;
+}
+#tutorials .button .fa-chevron-left {
+  margin-right: 4px;
+}
 #tutorials #tutBackdrop {
   position: absolute;
   left: 0;

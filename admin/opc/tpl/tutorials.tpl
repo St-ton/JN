@@ -13,6 +13,12 @@
             <button type="button" id="tutboxNext" class="opc-btn-primary opc-mini-btn opc-float-right"
                     onclick="opc.tutorial.goNextStep()">
                 Weiter
+                <i class="fas fa-chevron-right"></i>
+            </button>
+            <button type="button" id="tutboxPrev" class="opc-btn-secondary opc-mini-btn opc-float-right"
+                    onclick="opc.tutorial.goPrevStep()">
+                <i class="fas fa-chevron-left"></i>
+                Zurück
             </button>
         </div>
     </div>

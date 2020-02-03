@@ -177,7 +177,7 @@ class Service
 
             'tutStepTitle_1_7' => 'Animationen',
             'tutStepText_1_7'  => 'Als Animationstyp eignet sich "fade-in" ganz gut. Gib außerdem bei "Abstand" 350
-                ein. Nun Kannst du die Einstellungen schließen!',
+                ein. Nun Kannst du die Einstellungen speichern!',
 
             'tutStepTitle_1_8' => 'Animationen',
             'tutStepText_1_8'  => 'Um zu sehen wie sich die Einstellung auswirkt, lass uns den Button, so wie er ist

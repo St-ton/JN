@@ -28,6 +28,7 @@ class Tutorial
             'tutboxTitle',
             'tutboxContent',
             'tutboxNext',
+            'tutboxPrev',
         ]);
     }
 
@@ -79,6 +80,7 @@ class Tutorial
         this.reset();
         this.tutboxTitle.html(title);
         this.tutboxContent.html(content);
+        this.tutboxPrev.prop('disabled', stepId === 0);
 
         switch(this.tourId) {
             case 0:
@@ -208,7 +210,7 @@ class Tutorial
                             this.makeBackdrop('modal', modal);
                             this.makeTutbox({cls:'h', top: this.elmBottom(marginInp, 32)});
                             this.highlightElms(marginInp, animTab.closest('.nav-item'));
-                            this.bindNextEvent(animTab, 'shown.bs.tab');
+                            this.bindNextEvent(styleTab, animTab, 'shown.bs.tab');
                         });
                         break;}
                     case 7: {
@@ -328,6 +330,18 @@ class Tutorial
         }
     }
 
+    goPrevStep()
+    {
+        let nextStep = this.stepId - 1;
+
+        if(opc.messages["tutStepTitle_" + this.tourId + "_" + nextStep]) {
+            this.unbindEvents();
+            this.startStep(nextStep);
+        } else {
+            this.stopTutorial();
+        }
+    }
+
     bindEvent(elm, event, handler)
     {
         elm.one(event + '.tutorial', handler);
@@ -345,12 +359,17 @@ class Tutorial
         this.bindEvent(elm, event, () => this.reset());
     }
 
+    unbindEvents()
+    {
+        this.handlers.forEach(h => h.off('.tutorial'));
+        this.handlers = [];
+    }
+
     stopTutorial()
     {
         this.reset();
         this.tutorials.removeClass('active');
-        this.handlers.forEach(h => h.off('.tutorial'));
-        this.handlers = [];
+        this.unbindEvents();
     }
 
     makeTutbox({cls, left, top, right, bottom, disable})

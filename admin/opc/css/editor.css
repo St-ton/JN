@@ -918,6 +918,15 @@
   z-index: 9999 !important;
 }
 
+#tutorials #tutboxPrev {
+  margin-right: 12px;
+}
+#tutorials .button .fa-chevron-right {
+  margin-left: 4px;
+}
+#tutorials .button .fa-chevron-left {
+  margin-right: 4px;
+}
 #tutorials #tutBackdrop {
   position: absolute;
   left: 0;
@@ -1343,19 +1352,6 @@ html, body {
 }
 #opc #publishModal .modal-body {
   overflow: inherit;
-}
-#opc .icons-container .fa {
-  margin: 3px;
-}
-#opc .popover[class*=tour-] {
-  z-index: 1102;
-  /* top: 20px !important;
-  left: auto !important;
-  right: 20px !important;*/
-}
-#opc .popover[class*=tour-] .popover-title {
-  color: #fff;
-  background-color: #5cbcf6;
 }
 #opc .banner-zones {
   position: absolute;

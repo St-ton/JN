@@ -12,6 +12,20 @@
 }
 
 #tutorials {
+  #tutboxPrev {
+    margin-right: 12px;
+  }
+
+  .button {
+    .fa-chevron-right {
+      margin-left: 4px;
+    }
+
+    .fa-chevron-left {
+      margin-right: 4px;
+    }
+  }
+
   #tutBackdrop {
     position: absolute;
     left: 0;

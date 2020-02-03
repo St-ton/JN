@@ -89,7 +89,6 @@
 .hightlighted-element {
   z-index: 99999 !important;
   position: relative;
-  background-color: inherit;
 }
 
 .hightlighted-modal {

@@ -177,6 +177,7 @@
 }
 #opc .toggle-switch {
   cursor: pointer;
+  background-color: inherit;
 }
 #opc .toggle-switch input {
   display: none;
@@ -307,7 +308,7 @@
   margin: 0 14px;
   margin-right: 8px;
   color: #BDBDBD;
-  background: none;
+  background-color: inherit;
 }
 #opc .nav-tabs .nav-item .nav-link:hover {
   color: #435A6B;

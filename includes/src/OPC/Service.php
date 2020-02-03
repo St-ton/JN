@@ -115,10 +115,10 @@ class Service
                 ergänzen.',
 
             'tutStepTitle_0_4' => 'Portlets',
-            'tutStepText_0_4'  => 'Die grauen Bereiche auf der Seite zeigen dir wo du Portlets ablegen kannst.',
+            'tutStepText_0_4'  => 'Die hellblauen Bereiche auf der Seite zeigen dir wo du Portlets ablegen kannst.',
 
             'tutStepTitle_0_5' => 'Portlets',
-            'tutStepText_0_5'  => 'Ziehe nun das Portlet "Überschrift" in einen der grauen Bereiche und schau was
+            'tutStepText_0_5'  => 'Ziehe nun das Portlet "Überschrift" in einen der hellblauen Bereiche und schau was
                 passiert!',
 
             'tutStepTitle_0_6' => 'Portlets',
@@ -126,7 +126,7 @@ class Service
                 Portlet konfigurieren.',
 
             'tutStepTitle_0_7' => 'Einstellungen',
-            'tutStepText_0_7'  => 'Gib einen eigenen Text für diese Überschrift ein und klicke auf "Speichern"!',
+            'tutStepText_0_7'  => 'Gib einen eigenen Text für die Überschrift ein und klicke auf "Speichern"!',
 
             'tutStepTitle_0_8' => 'Einstellungen',
             'tutStepText_0_8'  => 'An dem neuen Portlet siehst du eine Leiste mit verschiedenen Buttons. Über den Stift
@@ -137,8 +137,8 @@ class Service
                 Entwurf jetzt zu veröffentlichen klicke auf diesen Button.',
 
             'tutStepTitle_0_10' => 'Seite Veröffentlichen',
-            'tutStepText_0_10'  => 'Für jede Seite kannst beliebig viele Entwürfe pflegen. Jeden Entwurf kannst du
-                zeitlich planen. Z.B. einen allgemeinen und einen Entwurf für die Weihnachtszeit.',
+            'tutStepText_0_10'  => 'Für jede Seite kannst mehrere Entwürfe pflegen, deren Sichtbarkeit du
+                außerdem zeitlich planen kannst. Z.B. einen allgemeinen und einen Entwurf für die Weihnachtszeit.',
 
             'tutStepTitle_0_11' => 'Seite Veröffentlichen',
             'tutStepText_0_11'  => 'Die Voreinstellung macht den Entwurf ab sofort und bis auf unbestimmte
@@ -146,11 +146,11 @@ class Service
 
             'tutStepTitle_0_12' => 'Fertig!',
             'tutStepText_0_12'  => 'Du kannst den Editor nun beenden und deine Seite anschauen
-                 Das waren die Basics. Wir wünschen dir weiterhin viel Spaß mit dem OnPage Composer!',
+                Das waren die Basics. Wir wünschen dir weiterhin viel Spaß mit dem OnPage Composer!',
 
             'tutStepTitle_1_0' => 'Animationen',
-            'tutStepText_1_0'  => 'Hier lernst du, wie du Portlets mit einfachen Animationen versiehst. Einige
-                Portlets verfügen über Einstellungen, um Animationen zu erstellen.',
+            'tutStepText_1_0'  => 'Einige Portlets verfügen über Einstellungen, um Animationen zu erstellen.
+                Hier lernst du, wie du diese nutzt.',
 
             'tutStepTitle_1_1' => 'Animationen',
             'tutStepText_1_1'  => 'Ziehe zunächst einen Button in deine Seite!',
@@ -191,7 +191,7 @@ class Service
                 untereinander haben!',
 
             'tutStepTitle_1_11' => 'Animationen',
-            'tutStepText_1_11'  => 'Über den "Vorschau"-Switch kannst du das Ergebnis gleich mal testen!',
+            'tutStepText_1_11'  => 'Mit dem "Vorschau"-Schalter kannst du das Ergebnis gleich mal testen!',
 
             'tutStepTitle_1_12' => 'Animationen',
             'tutStepText_1_12'  => 'Scroll die Seite nach unten und beachte dabei, dass die Animation nicht eher
@@ -203,6 +203,33 @@ class Service
             'tutStepText_1_13'  => 'Bedenke aber bitte, dass "weniger oft mehr ist". Soll heißen: geh sparsam mit
                 Animationen um, damit deine Kunden nicht abgelenkt oder gar verschreckt werden. Damit sind wir mit
                 dem Tutorial "Animationen" durch. Wir wünschen dir weiterhin viel Spaß mit dem OnPage Composer!',
+
+            'tutStepTitle_2_0' => 'Vorlagen',
+            'tutStepText_2_0'  => 'Lerne hier wie du Vorlagen anlegst und wiederverwendest. Ziehe zunächst ein
+                Grid-Layout in die Seite und fülle die Spalten nach Herzenslust mit beliebigen Inhalten.',
+
+            'tutStepTitle_2_1' => 'Vorlagen anlegen',
+            'tutStepText_2_1'  => 'Willst du deine Kreation zu einem späteren Zeitpunkt wiederverwenden, so kannst du
+                einfach eine Vorlage daraus machen. Wähle das gesamte Grid-Layout mit einem Klick aus!',
+
+            'tutStepTitle_2_2' => 'Vorlagen anlegen',
+            'tutStepText_2_2'  => 'Klicke jetzt in der Toolbar auf den Stern-Button!',
+
+            'tutStepTitle_2_3' => 'Vorlagen anlegen',
+            'tutStepText_2_3'  => 'Trage hier einen aussagekräftigen Namen ein. Mit diesem Namen findest du später
+                deine Vorlage schneller wieder. Gute Beispiele sind "Produkttabelle", "Video mit Beschreibungstext"
+                oder "3-spaltiger Text"',
+
+            'tutStepTitle_2_4' => 'Vorlagen wiederverwenden',
+            'tutStepText_2_4'  => 'Alle gespeicherten Vorlagen findest du über den entsprechenden Tab in der Sidebar.',
+
+            'tutStepTitle_2_5' => 'Vorlagen wiederverwenden',
+            'tutStepText_2_5'  => 'Du kannst jede Vorlage wie ein normales Portlet einfach in die Seite ziehen.',
+
+            'tutStepTitle_2_6' => 'Vorlagen wiederverwenden',
+            'tutStepText_2_6'  => 'Das Plugin "JTL-Portlets" bietet übrigens eine kleine Auswahl an Vorlagen, die,
+                wenn installiert, hier mit zur Verfügung gestellt werden. Das war es auch schon mit den "Vorlagen". Wir
+                wünschen dir weiterhin viel Spaß mit dem OnPage Composer!',
         ];
 
         return $messages;

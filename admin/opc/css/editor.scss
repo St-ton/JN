@@ -425,21 +425,19 @@ html, body {
     }
   }
 
-  #tourForm {
-    .tour-label {
-      padding-left: 0;
-      width: 100%;
-      margin-bottom: 16px;
+  #tourModal {
+    .card {
       cursor: pointer;
-    }
+      margin-bottom: 16px;
 
-    input:checked + .card {
-      border-color: $primary-color;
+      &:hover {
+        border-color: $primary-color;
 
-      .card-header {
-        background-color: $primary-color;
-        background-image: none;
-        color: $light-bg;
+        .card-header {
+          background-color: $primary-color;
+          background-image: none;
+          color: $light-bg;
+        }
       }
     }
   }

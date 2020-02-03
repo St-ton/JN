@@ -1329,16 +1329,14 @@ html, body {
   height: 100%;
   transition: all 0.2s ease-in-out;
 }
-#opc #tourForm .tour-label {
-  padding-left: 0;
-  width: 100%;
-  margin-bottom: 16px;
+#opc #tourModal .card {
   cursor: pointer;
+  margin-bottom: 16px;
 }
-#opc #tourForm input:checked + .card {
+#opc #tourModal .card:hover {
   border-color: #5cbcf6;
 }
-#opc #tourForm input:checked + .card .card-header {
+#opc #tourModal .card:hover .card-header {
   background-color: #5cbcf6;
   background-image: none;
   color: #F5F7FA;

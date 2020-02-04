@@ -1,12 +1,10 @@
 class Tutorial
 {
-    constructor(gui, iframe, opc)
+    constructor(iframe)
     {
         bindProtoOnHandlers(this);
 
-        this.gui      = gui;
         this.iframe   = iframe;
-        this.opc      = opc;
         this.tourId   = null;
         this.stepId   = null;
         this.handlers = [];

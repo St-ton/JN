@@ -469,7 +469,7 @@ msgid "tutStepTitle_0_2"
 msgstr "Aufteilung"
 
 msgid "tutStepText_0_2"
-msgstr "Im rechten Fenster siehst du deine aktuelle Seite im Bearbeitungsmodus."
+msgstr "Im rechten Fenster siehst du die Seite die du gerade bearbeitest."
 
 msgid "tutStepTitle_0_3"
 msgstr "Portlets"

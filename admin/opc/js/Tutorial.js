@@ -18,7 +18,6 @@ class Tutorial
             'previewPanel',
             'portlets',
             'tourModal',
-            'tourForm',
             'tutorials',
             'tutBackdrop',
             'tutBackdrop2',
@@ -35,12 +34,6 @@ class Tutorial
     start()
     {
         this.tourModal.modal('show');
-    }
-
-    modalStartTour()
-    {
-        event.preventDefault();
-        this.startTour(this.tourForm.find('input[name="help-tour"]:checked').val());
     }
 
     startTour(tourId)

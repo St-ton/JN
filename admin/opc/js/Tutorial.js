@@ -29,6 +29,8 @@ class Tutorial
             'tutboxContent',
             'tutboxNext',
             'tutboxPrev',
+            'tutboxNextLabel',
+            'tutboxDoneLabel',
         ]);
     }
 
@@ -81,6 +83,14 @@ class Tutorial
         this.tutboxTitle.html(title);
         this.tutboxContent.html(content);
         this.tutboxPrev.prop('disabled', stepId === 0);
+
+        if(opc.messages["tutStepTitle_" + this.tourId + "_" + (stepId + 1)]) {
+            this.tutboxNextLabel.show();
+            this.tutboxDoneLabel.hide();
+        } else {
+            this.tutboxNextLabel.hide();
+            this.tutboxDoneLabel.show();
+        }
 
         switch(this.tourId) {
             case 0:

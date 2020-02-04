@@ -424,6 +424,15 @@ msgstr "Discard this area"
 msgid "Cancel"
 msgstr "Cancel"
 
+msgid "Next"
+msgstr "Next"
+
+msgid "Back"
+msgstr "Back"
+
+msgid "Done"
+msgstr "Done"
+
 # Tutorials
 
 msgid "tutStepTitle_0_0"

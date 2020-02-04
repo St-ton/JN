@@ -448,6 +448,15 @@ msgstr "Diesen Bereich verwerfen"
 msgid "Cancel"
 msgstr "Abbrechen"
 
+msgid "Next"
+msgstr "Weiter"
+
+msgid "Back"
+msgstr "Zurück"
+
+msgid "Done"
+msgstr "Fertig"
+
 # Tutorials
 
 msgid "tutStepTitle_0_0"

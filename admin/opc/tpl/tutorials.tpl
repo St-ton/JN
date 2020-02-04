@@ -12,13 +12,19 @@
         <div id="tutboxFooter">
             <button type="button" id="tutboxNext" class="opc-btn-primary opc-mini-btn opc-float-right"
                     onclick="opc.tutorial.goNextStep()">
-                Weiter
-                <i class="fas fa-chevron-right"></i>
+                <span id="tutboxNextLabel">
+                    {__('Next')}
+                    <i class="fas fa-chevron-right"></i>
+                </span>
+                <span id="tutboxDoneLabel" style="display: none">
+                    <i class="fas fa-check"></i>
+                    {__('Done')}
+                </span>
             </button>
             <button type="button" id="tutboxPrev" class="opc-btn-secondary opc-mini-btn opc-float-right"
                     onclick="opc.tutorial.goPrevStep()">
                 <i class="fas fa-chevron-left"></i>
-                Zurück
+                {__('Back')}
             </button>
         </div>
     </div>

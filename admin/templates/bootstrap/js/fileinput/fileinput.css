@@ -360,7 +360,7 @@ input[type=file].file-loading, .file-loading input[type=file] {
 }
 
 .file-uploading {
-    background: url(../base/images/loading-sm.gif) no-repeat center bottom 10px;
+    background: url(../../css/images/loading-sm.gif) no-repeat center bottom 10px;
     opacity: 0.65;
 }
 

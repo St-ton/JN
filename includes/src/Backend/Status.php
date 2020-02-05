@@ -225,7 +225,7 @@ class Status
         $template = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'standard');
         if ($template !== null && isset($template->cTemplate)) {
             $tplData = TemplateHelper::getInstance()->getData($template->cTemplate);
-            if ($tplData->bResponsive) {
+            if ($tplData !== false && $tplData->bResponsive) {
                 $mobileTpl = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'mobil');
                 if ($mobileTpl !== null) {
                     $xmlFile = \PFAD_ROOT . \PFAD_TEMPLATES . $mobileTpl->cTemplate .

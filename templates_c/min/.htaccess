@@ -7,6 +7,16 @@
 	FileETag MTime Size
 </FilesMatch>
 
+<Files *>
+    <IfModule mod_authz_core.c>
+        Require all granted
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order Allow,Deny
+        Allow from all
+    </IfModule>
+</Files>
+
 <IfModule mod_gzip.c>
 	mod_gzip_on yes
 	mod_gzip_dechunk yes
@@ -36,5 +46,5 @@ RewriteEngine on
 #RewriteBase /min/static
 
 RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^(.*)$ ../../includes/libs/minify/gen.php [QSA,L]
+RewriteRule ^(.*)$ gen.php [QSA,L]
 </IfModule>

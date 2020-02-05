@@ -1,9 +1,8 @@
 {if isset($Sektion) && $Sektion}
-    {assign var=cTitel value=__('settings')|cat:': '|cat:{__($Sektion->cName)}}
     {if isset($cSearch) && $cSearch|strlen  > 0}
-        {assign var=cTitel value=$cSearch}
+        {assign var=title value=$cSearch}
     {/if}
-    {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=$cPrefDesc cDokuURL=$cPrefURL}
+    {include file='tpl_inc/seite_header.tpl' cTitel=$title cBeschreibung=$cPrefDesc cDokuURL=$cPrefURL}
 {/if}
 {$search = isset($cSuche) && !empty($cSuche)}
 

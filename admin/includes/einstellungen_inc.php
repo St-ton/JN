@@ -7,6 +7,8 @@
 use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
 use JTL\Shop;
+use function Functional\filter;
+use function Functional\flatten;
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admin_menu.php';
 
@@ -291,4 +293,54 @@ function sortiereEinstellungen($config)
     }
 
     return [];
+}
+
+/**
+ * @param array $confData
+ * @param string $filter
+ * @return array
+ */
+function filteredConfData(array $confData, string $filter): array
+{
+    $keys = [
+        'configgroup_5_product_question' => [
+            'configgroup_5_product_question',
+            'artikeldetails_fragezumprodukt_anzeigen',
+            'artikeldetails_fragezumprodukt_email',
+            'produktfrage_abfragen_anrede',
+            'produktfrage_abfragen_vorname',
+            'produktfrage_abfragen_nachname',
+            'produktfrage_abfragen_firma',
+            'produktfrage_abfragen_tel',
+            'produktfrage_abfragen_fax',
+            'produktfrage_abfragen_mobil',
+            'produktfrage_kopiekunde',
+            'produktfrage_sperre_minuten',
+            'produktfrage_abfragen_captcha'
+        ],
+        'configgroup_5_product_available' => [
+            'configgroup_5_product_available',
+            'benachrichtigung_nutzen',
+            'benachrichtigung_abfragen_vorname',
+            'benachrichtigung_abfragen_nachname',
+            'benachrichtigung_sperre_minuten',
+            'benachrichtigung_abfragen_captcha',
+            'benachrichtigung_min_lagernd'
+        ]
+    ];
+
+    if ($filter !== '' && isset($keys[$filter])) {
+        $keysToFilter = $keys[$filter];
+
+        return filter($confData, static function ($e) use ($keysToFilter) {
+            return \in_array($e->cWertName, $keysToFilter, true);
+        });
+    } else {
+        $keysToFilter = flatten($keys);
+
+        return filter($confData, static function ($e) use ($keysToFilter) {
+            return !\in_array($e->cWertName, $keysToFilter, true);
+        });
+    }
+
 }

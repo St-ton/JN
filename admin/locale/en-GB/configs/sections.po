@@ -25,9 +25,3 @@ msgstr "Basket/Checkout"
 
 msgid "configsection_8"
 msgstr "Boxes"
-
-msgid "configsection_12"
-msgstr "Question on item"
-
-msgid "configsection_13"
-msgstr "Availability notifications"

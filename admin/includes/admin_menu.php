@@ -148,16 +148,18 @@ $adminMenu = [
                     'section' => CONF_PREISVERLAUF,
                 ],
                 __('Question on item')        => (object)[
-                    'link'   => 'einstellungen.php?kSektion=' . CONF_FRAGE_ZUM_PRODUKT,
+                    'link'   => 'einstellungen.php?kSektion=' . CONF_ARTIKELDETAILS .
+                        '&group=configgroup_5_product_question',
                     'permissions' => 'SETTINGS_ARTICLEDETAILS_VIEW',
                     'excludeFromAccessView' => true,
-                    'section' => CONF_FRAGE_ZUM_PRODUKT,
+                    'section' => CONF_ARTIKELDETAILS,
                 ],
                 __('Availability notifications')        => (object)[
-                    'link'   => 'einstellungen.php?kSektion=' . CONF_VERFUEGBARKEITSBENACHRICHTIGUNG,
+                    'link'   => 'einstellungen.php?kSektion=' . CONF_ARTIKELDETAILS .
+                        '&group=configgroup_5_product_available',
                     'permissions' => 'SETTINGS_ARTICLEDETAILS_VIEW',
                     'excludeFromAccessView' => true,
-                    'section' => CONF_VERFUEGBARKEITSBENACHRICHTIGUNG,
+                    'section' => CONF_ARTIKELDETAILS,
                 ],
                 __('Item badges')            => (object)[
                     'link'   => 'suchspecialoverlay.php',

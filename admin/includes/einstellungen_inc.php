@@ -342,5 +342,4 @@ function filteredConfData(array $confData, string $filter): array
             return !\in_array($e->cWertName, $keysToFilter, true);
         });
     }
-
 }

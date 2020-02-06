@@ -677,10 +677,10 @@ function getLinkedDiscountCategories($categoryID)
     return Shop::DB()->queryPrepared(
         'SELECT DISTINCT tkgrp_b.kKategorie
             FROM tkategorieartikel tart_a
-            LEFT JOIN tkategoriekundengruppe tkgrp_a ON tkgrp_a.kKategorie = tart_a.kKategorie
             INNER JOIN tkategorieartikel tart_b ON tart_a.kArtikel = tart_b.kArtikel
                 AND tart_a.kKategorie != tart_b.kKategorie
             INNER JOIN tkategoriekundengruppe tkgrp_b ON tart_b.kKategorie = tkgrp_b.kKategorie
+            LEFT JOIN tkategoriekundengruppe tkgrp_a ON tkgrp_a.kKategorie = tart_a.kKategorie
             LEFT JOIN tkategoriesichtbarkeit tsicht ON tsicht.kKategorie = tkgrp_b.kKategorie
                 AND tsicht.kKundengruppe = tkgrp_b.kKundengruppe
             WHERE tart_a.kKategorie = :categoryID

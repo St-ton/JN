@@ -17,7 +17,6 @@ use JTL\DB\ReturnType;
 use JTL\Extensions\Config\Item;
 use JTL\Extensions\Config\ItemLocalization;
 use JTL\Extensions\Download\Download;
-use JTL\GlobalSetting;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;

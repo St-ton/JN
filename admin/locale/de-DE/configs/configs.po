@@ -3049,3 +3049,9 @@ msgstr "Hersteller anzeigen als"
 
 msgid "hersteller_anzeigen_als_desc"
 msgstr "Hier legen Sie fest, wie die Hersteller angezeigt werden sollen."
+
+msgid "general_child_item_bulk_pricing_name"
+msgstr "Variationsübergreifende Staffelpreise"
+
+msgid "general_child_item_bulk_pricing_desc"
+msgstr "Für Staffelpreisgrenzen im Warenkorb zählen alle Kindartikel einer VarKombi."

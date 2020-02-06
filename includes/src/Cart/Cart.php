@@ -17,7 +17,6 @@ use JTL\DB\ReturnType;
 use JTL\Extensions\Config\Item;
 use JTL\Extensions\Config\ItemLocalization;
 use JTL\Extensions\Download\Download;
-use JTL\GlobalSetting;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
@@ -955,10 +954,7 @@ class Cart
                         }
                     }
                 }
-                if ($product->kVaterArtikel > 0 && GlobalSetting::getInstance()->getValue(
-                    GlobalSetting::CHILD_ITEM_BULK_PRICING,
-                    DEFAULT_GENERAL_CHILD_ITEM_BULK_PRICING
-                )) {
+                if ($product->kVaterArtikel > 0 && $this->config['kaufabwicklung']['general_child_item_bulk_pricing'] === 'Y') {
                     $qty = $this->gibAnzahlEinesArtikels($product->kVaterArtikel, -1, true);
                 } else {
                     $qty = $this->gibAnzahlEinesArtikels($product->kArtikel);

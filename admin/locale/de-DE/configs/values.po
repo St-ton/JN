@@ -2386,3 +2386,9 @@ msgstr "Bild und Text"
 
 msgid "hersteller_anzeigen_als_value(B)"
 msgstr "Bild"
+
+msgid "general_child_item_bulk_pricing_value(Y)"
+msgstr "Ja"
+
+msgid "general_child_item_bulk_pricing_value(N)"
+msgstr "Nein"

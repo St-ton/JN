@@ -796,19 +796,22 @@
             return baseURL + '?' + newAdditionalURL + temp + param + '=' + paramVal;
         },
 
-        updateReviewHelpful: function(key) {
-            console.log('before');
+        updateReviewHelpful: function(item) {
             let formData = $.evo.io().getFormValues('reviews-list');
-            formData[key] = '';
+            formData[item.prop('name')] = '';
+            formData['reviewID'] = item.data('review-id');
 
             $.evo.io().call(
                 'updateReviewHelpful',
                 [formData],
                 $(this) , function(error, data) {
-                    console.log(data);
                     if (error) {
                         return;
                     }
+                    let review = data.response.review;
+
+                    $('[data-review-count-id="hilfreich_' + review.kBewertung + '"]').html(review.nHilfreich);
+                    $('[data-review-count-id="nichthilfreich_' + review.kBewertung + '"]').html(review.nNichtHilfreich);
                 });
         },
 

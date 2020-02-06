@@ -32,13 +32,14 @@ use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Helpers\URL;
 use JTL\Review\ReviewController;
-use JTL\Review\ReviewHelpfulModel;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Staat;
 use SmartyException;
 use stdClass;
+use function Functional\filter;
+use function Functional\flatten;
 use function Functional\pluck;
 
 require_once \PFAD_ROOT . \PFAD_INCLUDES . 'artikel_inc.php';
@@ -1325,8 +1326,8 @@ class IOMethods
      */
     public function updateReviewHelpful(array $formData): IOResponse
     {
+        $_POST = $formData;
         Shop::run();
-        $_POST      = $formData;
         $controller = new ReviewController(
             Shop::Container()->getDB(),
             Shop::Container()->getCache(),
@@ -1334,9 +1335,13 @@ class IOMethods
             Shop::Smarty()
         );
         $controller->handleRequest();
-        $objResponse = new IOResponse();
-        $response    = new stdClass();
-
+        $objResponse      = new IOResponse();
+        $response         = new stdClass();
+        $response->review = flatten(filter(
+            (new Artikel())->fuelleArtikel(Shop::$kArtikel, Artikel::getDetailOptions())->Bewertungen->oBewertung_arr,
+            static function ($e) use ($formData) {
+                return (int)$e->kBewertung === (int)$formData['reviewID'];
+        }))[0];
 
         $objResponse->script('this.response = ' . \json_encode($response) . ';');
 

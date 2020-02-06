@@ -162,9 +162,9 @@
     </div>
 {/block}
 
-{*{inline_script}<script>*}
-    {*$('.js-helpful').on('click', function (e) {*}
-        {*e.preventDefault();*}
-        {*$.evo.extended().updateReviewHelpful($(this).prop('name'));*}
-    {*});*}
-{*</script>{/inline_script}*}
+{inline_script}<script>
+    $('.js-helpful').on('click', function (e) {
+        e.preventDefault();
+        $.evo.extended().updateReviewHelpful($(this));
+    });
+</script>{/inline_script}

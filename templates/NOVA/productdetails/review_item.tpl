@@ -3,7 +3,6 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='productdetails-review-item'}
-    {$oBewertung|var_dump}
     {row id="comment{$oBewertung->kBewertung}" class="review-comment {if $Einstellungen.bewertung.bewertung_hilfreich_anzeigen === 'Y' && isset($smarty.session.Kunde->kKunde) && $smarty.session.Kunde->kKunde > 0 && $smarty.session.Kunde->kKunde != $oBewertung->kKunde}use_helpful{/if} {if isset($bMostUseful) && $bMostUseful}most_useful{/if}"}
         {if $oBewertung->nHilfreich > 0}
             {block name='productdetails-review-itme-helpful'}
@@ -50,10 +49,11 @@
                                                     title="{lang key='yes'}"
                                                     name="hilfreich_{$oBewertung->kBewertung}"
                                                     type="submit"
-                                                    variant="icon-primary"}
+                                                    variant="icon-primary"
+                                                    data=["review-id"=>{$oBewertung->kBewertung}]}
                                                     <i class="far fa-thumbs-up"></i>
                                                 {/button}
-                                                <span class="d-block"><b>{$oBewertung->nHilfreich}</b></span>
+                                                <b><span class="d-block" data-review-count-id="hilfreich_{$oBewertung->kBewertung}">{$oBewertung->nHilfreich}</span></b>
                                             {/col}
                                             {col class='col-auto mr-auto'}
                                                 {button size="sm"
@@ -61,10 +61,11 @@
                                                     title="{lang key='no'}"
                                                     name="nichthilfreich_{$oBewertung->kBewertung}"
                                                     type="submit"
-                                                    variant="icon-primary"}
+                                                    variant="icon-primary"
+                                                    data=["review-id"=>{$oBewertung->kBewertung}]}
                                                     <i class="far fa-thumbs-down"></i>
                                                 {/button}
-                                                <span class="d-block"><b>{$oBewertung->nNichtHilfreich}</b></span>
+                                                <b><span class="d-block" data-review-count-id="nichthilfreich_{$oBewertung->kBewertung}">{$oBewertung->nNichtHilfreich}</span></b>
                                             {/col}
                                         {/formrow}
                                     {/block}

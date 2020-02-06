@@ -796,6 +796,22 @@
             return baseURL + '?' + newAdditionalURL + temp + param + '=' + paramVal;
         },
 
+        updateReviewHelpful: function(key) {
+            console.log('before');
+            let formData = $.evo.io().getFormValues('reviews-list');
+            formData[key] = '';
+
+            $.evo.io().call(
+                'updateReviewHelpful',
+                [formData],
+                $(this) , function(error, data) {
+                    console.log(data);
+                    if (error) {
+                        return;
+                    }
+                });
+        },
+
         /**
          * $.evo.extended() is deprecated, please use $.evo instead
          */

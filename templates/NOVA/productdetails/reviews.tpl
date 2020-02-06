@@ -141,7 +141,7 @@
                 {include file='snippets/pagination.tpl' oPagination=$ratingPagination cThisUrl=$Artikel->cURLFull cAnchor='tab-votes'}
             {/block}
             {block name='productdetails-reviews-form'}
-                {form method="post" action="{get_static_route id='bewertung.php'}#tab-votes" class="reviews-list"}
+                {form id="reviews-list" method="post" action="{get_static_route id='bewertung.php'}#tab-votes" class="reviews-list"}
                     {input type="hidden" name="bhjn" value="1"}
                     {input type="hidden" name="a" value=$Artikel->kArtikel}
                     {input type="hidden" name="btgsterne" value=$BlaetterNavi->nSterne}
@@ -161,3 +161,10 @@
         {/if}
     </div>
 {/block}
+
+{*{inline_script}<script>*}
+    {*$('.js-helpful').on('click', function (e) {*}
+        {*e.preventDefault();*}
+        {*$.evo.extended().updateReviewHelpful($(this).prop('name'));*}
+    {*});*}
+{*</script>{/inline_script}*}

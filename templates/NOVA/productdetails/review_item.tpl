@@ -3,6 +3,7 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='productdetails-review-item'}
+    {$oBewertung|var_dump}
     {row id="comment{$oBewertung->kBewertung}" class="review-comment {if $Einstellungen.bewertung.bewertung_hilfreich_anzeigen === 'Y' && isset($smarty.session.Kunde->kKunde) && $smarty.session.Kunde->kKunde > 0 && $smarty.session.Kunde->kKunde != $oBewertung->kKunde}use_helpful{/if} {if isset($bMostUseful) && $bMostUseful}most_useful{/if}"}
         {if $oBewertung->nHilfreich > 0}
             {block name='productdetails-review-itme-helpful'}
@@ -45,7 +46,7 @@
                                         {formrow class="review-helpful mt-3 mb-5 mg-lg-0" id="help{$oBewertung->kBewertung}"}
                                             {col class='col-auto ml-auto'}
                                                 {button size="sm"
-                                                    class="btn-icon btn-icon-primary"
+                                                    class="btn-icon btn-icon-primary js-helpful"
                                                     title="{lang key='yes'}"
                                                     name="hilfreich_{$oBewertung->kBewertung}"
                                                     type="submit"
@@ -56,7 +57,7 @@
                                             {/col}
                                             {col class='col-auto mr-auto'}
                                                 {button size="sm"
-                                                    class="btn-icon"
+                                                    class="btn-icon js-helpful"
                                                     title="{lang key='no'}"
                                                     name="nichthilfreich_{$oBewertung->kBewertung}"
                                                     type="submit"

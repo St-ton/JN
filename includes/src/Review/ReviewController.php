@@ -325,8 +325,10 @@ class ReviewController extends BaseController
 
             $helpfulReview->save();
             $this->cache->flushTags([\CACHING_GROUP_ARTICLE . '_' . $review->getProductID()]);
-            \header('Location: ' . $baseURL . '&cHinweis=h02', true, 303);
-            exit;
+            if (!Request::isAjaxRequest()) {
+                \header('Location: ' . $baseURL . '&cHinweis=h02', true, 303);
+                exit;
+            }
         }
         // Wenn Hilfreich nicht neu (wechsel) für eine Bewertung eingetragen wird und diese positiv ist
         if ($helpful === 1 && $helpfulReview->getRating() !== $helpful) {
@@ -344,7 +346,9 @@ class ReviewController extends BaseController
         $helpfulReview->customerID = $customerID;
         $helpfulReview->save();
         $this->cache->flushTags([\CACHING_GROUP_ARTICLE . '_' . $review->getProductID()]);
-        \header('Location: ' . $baseURL . '&cHinweis=h03', true, 303);
-        exit;
+        if (!Request::isAjaxRequest()) {
+            \header('Location: ' . $baseURL . '&cHinweis=h03', true, 303);
+            exit;
+        }
     }
 }

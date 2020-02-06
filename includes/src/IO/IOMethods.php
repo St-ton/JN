@@ -31,6 +31,8 @@ use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Helpers\URL;
+use JTL\Review\ReviewController;
+use JTL\Review\ReviewHelpfulModel;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
@@ -88,7 +90,8 @@ class IOMethods
                         ->register('getCitiesByZip', [$this, 'getCitiesByZip'])
                         ->register('getOpcDraftsHtml', [$this, 'getOpcDraftsHtml'])
                         ->register('setWishlistVisibility', [$this, 'setWishlistVisibility'])
-                        ->register('updateWishlistItem', [$this, 'updateWishlistItem']);
+                        ->register('updateWishlistItem', [$this, 'updateWishlistItem'])
+                        ->register('updateReviewHelpful', [$this, 'updateReviewHelpful']);
     }
 
     /**
@@ -1309,6 +1312,31 @@ class IOMethods
         $objResponse    = new IOResponse();
         $response       = new stdClass();
         $response->wlID = $wlID;
+
+        $objResponse->script('this.response = ' . \json_encode($response) . ';');
+
+        return $objResponse;
+    }
+
+    /**
+     * @param array $formData
+     * @return IOResponse
+     * @throws Exception
+     */
+    public function updateReviewHelpful(array $formData): IOResponse
+    {
+        Shop::run();
+        $_POST      = $formData;
+        $controller = new ReviewController(
+            Shop::Container()->getDB(),
+            Shop::Container()->getCache(),
+            Shop::Container()->getAlertService(),
+            Shop::Smarty()
+        );
+        $controller->handleRequest();
+        $objResponse = new IOResponse();
+        $response    = new stdClass();
+
 
         $objResponse->script('this.response = ' . \json_encode($response) . ';');
 

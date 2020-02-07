@@ -490,10 +490,10 @@ class Iframe
     {
         if(this.selectedElm !== null) {
             let data = this.page.portletToJSON(this.selectedElm);
+            this.opc.emit('clone-portlet', data);
             this.io.getPortletPreviewHtml(data)
                 .then(html => {
                     let copiedElm = this.createPortletElm(html);
-                    this.opc.emit('clone-portlet', copiedElm);
                     copiedElm.insertAfter(this.selectedElm);
                     let area = copiedElm.parent();
                     this.pagetree.updateArea(area);

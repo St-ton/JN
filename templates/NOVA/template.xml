@@ -141,7 +141,7 @@
             <File Path="js/bootstrap-toolkit.js"/>
             <File Path="js/popper.min.js"/>
             <File Path="js/bootstrap.bundle.min.js"/>
-            <File Path="js/slick.js"/>
+            <File Path="js/slick.min.js"/>
             <File Path="js/eModal.min.js"/>
             <File Path="js/jquery.nivo.slider.pack.js"/>
             <File Path="js/bootstrap-select.min.js"/>

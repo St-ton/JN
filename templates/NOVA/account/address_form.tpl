@@ -4,7 +4,7 @@
  *}
 {block name='account-address-form'}
     {block name='account-address-form-form-rechnungsdaten'}
-        {form method="post" id='rechnungsdaten' action="{get_static_route params=['editRechnungsadresse' => 1]}" class="evo-validate label-slide"}
+        {form method="post" id='rechnungsdaten' action="{get_static_route params=['editRechnungsadresse' => 1]}" class="jtl-validate label-slide"}
             <div id="panel-address-form">
                 {block name='account-address-form-include-inc-billing-address-form'}
                     {include file='checkout/inc_billing_address_form.tpl'}

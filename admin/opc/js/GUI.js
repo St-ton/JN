@@ -468,6 +468,7 @@ class GUI
                 this.iframe.replaceSelectedPortletHtml(preview);
                 this.configModal.modal('hide');
                 this.page.updateFlipcards();
+                this.iframe.disableLinks();
             });
     }
 

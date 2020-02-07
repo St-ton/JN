@@ -37,9 +37,9 @@
                                                         {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
                                                         {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
                                                     sizes="auto"
-                                                    class="{if !$device->isMobile() && !empty($Artikel->Bilder[1])}first{/if}"
+                                                    class="{if !$isMobile && !empty($Artikel->Bilder[1])}first{/if}"
                                                 }
-                                                {if !$device->isMobile() && !empty($Artikel->Bilder[1])}
+                                                {if !$isMobile && !empty($Artikel->Bilder[1])}
                                                     {$image = $Artikel->Bilder[1]}
                                                     {image alt=$image->cAltAttribut|escape:'html' fluid=true webp=true lazy=true
                                                         src="{$image->cURLKlein}"
@@ -92,7 +92,7 @@
                         {/block}
                     {/if}
                 {/block}
-                {form id="buy_form_{$Artikel->kArtikel}" action=$ShopURL class="form form-basket evo-validate" data=["toggle" => "basket-add"]}
+                {form id="buy_form_{$Artikel->kArtikel}" action=$ShopURL class="form form-basket jtl-validate" data=["toggle" => "basket-add"]}
                     {row}
                         {col cols=12 xl=4 class='productbox-details'}
                             {block name='productlist-item-list-details'}

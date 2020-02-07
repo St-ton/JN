@@ -4,7 +4,7 @@
  *}
 {block name='checkout-coupon-form'}
     {if $KuponMoeglich == 1}
-        {form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form evo-validate"}
+        {form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form jtl-validate"}
             {block name='checkout-coupon-form-form-content'}
                 {input type="hidden" name="pruefekupon" value="1"}
                 <fieldset>

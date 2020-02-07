@@ -1,8 +1,12 @@
-<?php
-// adjust this path as necessary
-require __DIR__ . '/../../vendor/autoload.php';
-define('JTL_INCLUDE_ONLY_DB', true);
-require_once __DIR__ . '/../../../includes/globalinclude.php';
+<?php declare(strict_types=1);
+/**
+ * Sets up MinApp controller and serves files
+ * @package Minify
+ */
 
-$app = new \Minify\App(__DIR__);
+use Minify\App;
+
+$app = (require __DIR__ . '/bootstrap.php');
+/* @var App $app */
+
 $app->runServer();

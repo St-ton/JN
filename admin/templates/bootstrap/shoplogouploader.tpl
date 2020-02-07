@@ -38,7 +38,11 @@
                             initialPreviewConfig: [
                                 {
                                     url: '{$shopURL}/{$PFAD_ADMIN}shoplogouploader.php',
-                                    extra: { logo: '{$ShopLogo}' }
+                                    extra: {
+                                        action: 'deleteLogo',
+                                        logo: '{$ShopLogo}',
+                                        jtl_token: '{$smarty.session.jtl_token}'
+                                    }
                                 }
                             ],
                             initialPreview: [

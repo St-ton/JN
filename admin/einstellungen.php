@@ -195,7 +195,6 @@ if ($step === 'einstellungen bearbeiten') {
     if (!isset($sql->cWHERE)) {
         $sql->cWHERE = '';
     }
-    $confData = [];
     if (mb_strlen($sql->cWHERE) > 0) {
         $confData = $sql->oEinstellung_arr;
         $smarty->assign('cSearch', $sql->cSearch)
@@ -265,7 +264,14 @@ if ($step === 'einstellungen bearbeiten') {
     }
 
     $smarty->assign('Sektion', $section)
-           ->assign('Conf', $confData)
+           ->assign('Conf', filteredConfData($confData, Request::verifyGPDataString('group')))
+           ->assign(
+               'title',
+               __('settings') . ': ' . (Request::verifyGPDataString('group') !== ''
+                   ? __(Request::verifyGPDataString('group'))
+                   : __($section->cName)
+               )
+           )
            ->assign('oSections', $oSections);
 }
 

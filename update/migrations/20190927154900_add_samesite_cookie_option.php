@@ -22,7 +22,7 @@ class Migration_20190927154900 extends Migration implements IMigration
     {
         $this->setConfig(
             'global_cookie_samesite',
-            '1',
+            'S',
             \CONF_GLOBAL,
             'Samesite',
             'selectbox',

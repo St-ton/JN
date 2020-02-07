@@ -480,11 +480,15 @@ final class Admin
      */
     public function saveTemplate($post)
     {
+        foreach (['cName', 'cBetreff', 'cHtml', 'cText'] as $key) {
+            $post[$key] = trim($post[$key]);
+        }
+
         $alertHelper = Shop::Container()->getAlertService();
         $tpl         = null;
         $checks      = $this->checkTemplate(
             $post['cName'],
-            $post['kKundengruppe'],
+            $post['kKundengruppe'] ?? '',
             $post['cBetreff'],
             $post['cArt'],
             $post['cHtml'],

@@ -28,7 +28,7 @@ $currentTemplateDir = $smarty->getTemplateUrlPath();
 $updater            = new Updater($db);
 $hasPendingUpdates  = $updater->hasPendingUpdates();
 $resourcePaths      = $template->getResources(isset($config['template']['general']['use_minify'])
-    && $config['template']['general']['use_minify'] === 'Y');
+    && $config['template']['general']['use_minify'] !== 'N');
 $adminLoginGruppe   = !empty($oAccount->account()->oGroup->kAdminlogingruppe)
     ? (int)$oAccount->account()->oGroup->kAdminlogingruppe
     : -1;
@@ -110,7 +110,9 @@ if (!$hasPendingUpdates) {
                         'cURL'      => $secondEntry->link,
                         'cRecht'    => $secondEntry->permissions,
                     ];
-                    if ($linkGruppe->oLink_arr->cURL === $curScriptFileNameWithRequest) {
+                    if (Request::urlHasEqualRequestParameter($linkGruppe->oLink_arr->cURL, 'kSektion')
+                        && strpos($curScriptFileNameWithRequest, $linkGruppe->oLink_arr->cURL) === 0
+                    ) {
                         $currentToplevel    = $mainGroup->key;
                         $currentSecondLevel = $linkGruppe->key;
                     }
@@ -145,7 +147,9 @@ if (!$hasPendingUpdates) {
                             mb_parse_str($urlParts['query'], $urlParts['query']);
                         }
 
-                        if (explode('#', $link->cURL)[0] === $curScriptFileNameWithRequest) {
+                        if (Request::urlHasEqualRequestParameter($link->cURL, 'kSektion')
+                            && strpos($curScriptFileNameWithRequest, explode('#', $link->cURL)[0]) === 0
+                        ) {
                             $currentToplevel    = $mainGroup->key;
                             $currentSecondLevel = $linkGruppe->key;
                             $currentThirdLevel  = $link->key;

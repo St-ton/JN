@@ -8,7 +8,7 @@
         && $ssf->getVisibility() !== \JTL\Filter\Visibility::SHOW_NEVER
         && $ssf->getVisibility() !== \JTL\Filter\Visibility::SHOW_CONTENT
         && (!empty($Suchergebnisse->getSearchSpecialFilterOptions()) || $ssf->isInitialized())
-        && !($device->isMobile() || $Einstellungen.template.productlist.filter_placement === 'modal')}
+        && !($isMobile || $Einstellungen.template.productlist.filter_placement === 'modal')}
         {if $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE}
             <div class="box box-filter-special d-none d-lg-block" id="sidebox{$oBox->getID()}">
                 {button

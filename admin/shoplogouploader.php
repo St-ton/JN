@@ -13,11 +13,10 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('DISPLAY_OWN_LOGO_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'shoplogouploader_inc.php';
-
-if (isset($_POST['key'], $_POST['logo'])) {
+if (isset($_POST['action'], $_POST['logo']) && $_POST['action'] === 'deleteLogo') {
     $currentLogo = Shop::getLogo();
     $response    = new stdClass();
-    if ($currentLogo === $_POST['logo']) {
+    if ($currentLogo === $_POST['logo'] && Form::validateToken()) {
         $delete                        = deleteShopLogo($currentLogo);
         $response->status              = ($delete === true) ? 'OK' : 'FAILED';
         $option                        = new stdClass();
@@ -81,8 +80,7 @@ if (Request::verifyGPCDataInt('upload') === 1 && Form::validateToken()) {
     }
 }
 
-$smarty->assign('cRnd', time())
-    ->assign('ShopLogo', Shop::getLogo(false))
+$smarty->assign('ShopLogo', Shop::getLogo(false))
     ->assign('ShopLogoURL', Shop::getLogo(true))
     ->assign('step', $step)
     ->display('shoplogouploader.tpl');

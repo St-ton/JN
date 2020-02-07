@@ -10,39 +10,34 @@
                 <div class="alert alert-success"><i class="fal fa-info-circle"></i> {$success}</div>
             {/if}
             <div class="table-responsive">
-                <table class="list table" id="cache-items">
+                <table class="list table" id="cache-items" style="width: 100%">
                     <thead>
                     <tr>
                         <th class="text-left">{__('headlineTyp')}</th>
                         <th class="text-center">{__('headlineTotal')}</th>
                         <th class="text-center abbr">{__('headlineCache')}</th>
                         <th class="text-center">{__('faulty')}</th>
-                        <th class="text-center" width="125">{__('headlineSize')}</th>
-                        <th class="text-center" width="200">{__('actions')}</th>
+                        <th class="text-center" style="width:125px">{__('headlineSize')}</th>
+                        <th class="text-center" style="width:200px">{__('actions')}</th>
                     </tr>
                     </thead>
                     <tbody>
                     {foreach $items as $item}
-                        {$corruptedPicsTypes[{$item->type}] = $item->stats->corrupted}
+                        {$corruptedPicsTypes[{$item->type}] = $item->stats->getCorrupted()}
                         <tr data-type="{$item->type}">
                             <td class="item-name">{$item->name}</td>
                             <td class="text-center">
                                 <span class="item-total">
-                                  {$item->stats->total}
+                                  {$item->stats->getTotal()}
                                 </span>
                             </td>
                             <td class="text-center">
                                 <span class="item-generated">
-                                  {(($item->stats->generated[$SIZE_XS] + $item->stats->generated[$SIZE_SM] + $item->stats->generated[$SIZE_MD] + $item->stats->generated[$SIZE_LG]) / 4)|round:0}
+                                  {(($item->stats->getGeneratedBySize(Image::SIZE_XS) + $item->stats->getGeneratedBySize(Image::SIZE_SM) + $item->stats->getGeneratedBySize(Image::SIZE_MD) + $item->stats->getGeneratedBySize(Image::SIZE_LG)) / 4)|round:0}
                                 </span>
-                                (
-                                <span class="item-fallback">
-                                    {$item->stats->fallback}
-                                </span>
-                                )
                             </td>
                             <td class="text-center">
-                                <span class="item-corrupted">{$item->stats->corrupted}</span>
+                                <span class="item-corrupted">{$item->stats->getCorrupted()}</span>
                             </td>
                             <td class="text-center item-total-size">
                                 <i class="fa fa-spinner fa-spin"></i>
@@ -51,7 +46,10 @@
                                 <a class="btn btn-outline-primary btn-sm mb-2" href="#" data-callback="flush" data-type="{$item->type}">
                                     <i class="fas fa-trash-alt"></i>{__('deleteCachedPics')}
                                 </a>
-                                <a class="btn btn-primary btn-sm" href="#" data-callback="generate">
+                                <a class="btn btn-outline-primary btn-sm mb-2" href="#" data-callback="cleanup" data-type="{$item->type}">
+                                    <i class="fas fa-trash"></i>{__('cleanup')}
+                                </a>
+                                <a class="btn btn-primary btn-sm" href="#" data-callback="generate" data-type="{$item->type}">
                                     <i class="fa fa-cog"></i>{__('generatePics')}
                                 </a>
                             </td>
@@ -60,12 +58,8 @@
                     </tbody>
                 </table>
             </div>
-            <div class="footnote small text-muted">
-                <p>{__('fallbackNote')}</p>
-            </div>
         </div>
     </div>
-
 
     {foreach $corruptedPicsTypes as $corruptedPicsType}
         {if $corruptedPicsType > 0}
@@ -145,7 +139,6 @@
                 $('.item-total', item).text(data.total);
                 $('.item-corrupted', item).text(data.corrupted);
                 $('.item-total-size', item).text(formatSize(data.totalSize));
-
                 $(['xs', 'sm', 'md', 'lg']).each(function (i, size) {
                     totalCached += data.generated[size];
                 });
@@ -157,19 +150,15 @@
     var lastResults = null,
         lastTick = null,
         running = false,
-        notify = null
+        notify = null;
 
-    function generate() {
-        startGenerate('product');
-    }
-
-    function cleanup() {
+    function cleanup(param) {
         running = true;
         lastResults = [];
         lastTick = new Date();
         notify = showGenerateNotify('{/literal}{__('pendingImageCleanup')}{literal}', '{/literal}{__('successImageDelete')}{literal}');
         $('.action-buttons a').attr('disabled', true);
-        doCleanup(0);
+        doCleanup((typeof param.data('type') !== 'undefined') ? param.data('type') : 'product', 0);
     }
 
     function stopCleanup() {
@@ -182,15 +171,15 @@
 
         notify.update({
             progress: 100,
-            message: result.deletedImages + '{/literal}{__('successImageDelete')}{literal}',
+            message: result.deletedImages + '{/literal} {__('successImageDelete')}{literal}',
             type: 'success',
             title: '{/literal}{__('successImageCleanup')}{literal}'
         });
     }
 
-    function doCleanup(index) {
+    function doCleanup(type, index) {
         lastTick = new Date().getTime();
-        ioCall('cleanupStorage', [index], function (result) {
+        ioCall('cleanupStorage', [type, index], function (result) {
             var items = result.deletes,
                 deleted = result.deletedImages,
                 total = result.total,
@@ -225,7 +214,7 @@
             }
 
             if (result.nextIndex > 0 && result.nextIndex < total && running) {
-                doCleanup(result.nextIndex);
+                doCleanup(type, result.nextIndex);
             }
         });
     }
@@ -242,6 +231,10 @@
                 stopCleanup();
             }
         });
+    }
+
+    function generate(param) {
+        startGenerate((typeof param.data('type') !== 'undefined') ? param.data('type') : 'product');
     }
 
     function flush(param) {

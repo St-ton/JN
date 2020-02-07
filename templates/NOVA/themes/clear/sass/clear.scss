@@ -1,44 +1,5 @@
-@import 'functions';
+@import '../../base/sass/functions';
 
-// theme variables
-@import "variables";
+@import 'variables';
 
-// bootstrap
-@import "../../base/bootstrap/scss/bootstrap.scss";
-@import "../../base/bootstrap-select/bootstrap-select.scss";
-
-// slick slider
-@import "../../base/slick/slick.scss";
-
-// fileinput
-@import "../../base/fileinput/fileinput.min.scss";
-
-// wow animation
-@import "../../base/wow/animate";
-
-// slider
-@import "../../base/slider/slider";
-
-// theme mixins
-@import "mixins";
-
-// theme fonts
-@import "fonts";
-
-// components
-@import "components/grid";
-@import "components/boxes";
-@import "components/navs";
-@import "components/breadcrumbs";
-@import "components/buttons";
-@import "components/productbox";
-@import "components/tooltip";
-@import "components/ui_slider";
-@import "components/ribbons";
-@import "components/slider";
-
-// theme base
-@import "base";
-
-/* utilities */
-@import 'utilities/all';
+@import 'allstyles';

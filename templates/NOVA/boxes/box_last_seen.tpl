@@ -4,8 +4,13 @@
  *}
 {block name='boxes-box-last-seen'}
     {lang key='lastViewed' assign='boxtitle'}
-    {card class="box box-last-seen mb-7" id="sidebox{$oBox->getID()}" title="{$boxtitle}"}
+    {card class="box box-last-seen mb-4" id="sidebox{$oBox->getID()}"}
         {block name='boxes-box-last-seen-content'}
+            {block name='boxes-box-last-seen-title'}
+                <div class="productlist-filter-headline">
+                    <span>{$boxtitle}</span>
+                </div>
+            {/block}
             {foreach $oBox->getProducts() as $product}
                 {block name='boxes-box-last-seen-image-link'}
                     {row}
@@ -16,18 +21,27 @@
                                 {else}
                                     {assign var=alt value=$product->cName}
                                 {/if}
-                                {include file='snippets/image.tpl' src=$product->Bilder[0]->cURLNormal alt=$alt}
+                            {image fluid=true webp=true lazy=true
+                                alt=$alt
+                                src=$product->Bilder[0]->cURLKlein
+                                srcset="{$product->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                    {$product->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                    {$product->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                sizes="auto"
+                            }
                             {/link}
                         {/col}
                         {col cols=8}
                             {link class="last-seen-link" href=$product->cURLFull}
                                 {$product->cKurzbezeichnung}
                             {/link}
-                            {include file='productdetails/price.tpl' Artikel=$product tplscope='gallery'}
+                            {include file='productdetails/price.tpl' Artikel=$product tplscope='box'}
                         {/col}
                     {/row}
                     {if !$product@last}
-                        <hr class="my-3">
+                        {block name='boxes-box-last-seen-hr'}
+                            <hr class="my-3">
+                        {/block}
                     {/if}
                 {/block}
             {/foreach}

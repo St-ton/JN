@@ -2,7 +2,7 @@
 /**
  * Upgrade sessiondata to MEDIUMTEXT
  *
- * @author Falk Prüfer
+ * @author fp
  * @created Fri, 24 Feb 2017 13:37:10 +0100
  */
 

@@ -142,7 +142,7 @@ class Statusmail
         $conf                         = new stdClass();
         $conf->cIntervallMoeglich_arr = $this->getPossibleIntervals();
         $conf->cInhaltMoeglich_arr    = $this->getPossibleContentTypes();
-        $conf->nIntervall_arr         = map($data, function ($e) {
+        $conf->nIntervall_arr         = map($data, static function ($e) {
             return (int)$e->nInterval;
         });
         $conf->nInhalt_arr            = Text::parseSSKint($first->cInhalt ?? '');
@@ -185,7 +185,6 @@ class Statusmail
             __('contentTypeCountCustomerRecruited')         => 13,
             __('contentTypeCountCustomerRecruitedOrdered')  => 14,
             __('contentTypeCountSentWishlists')             => 15,
-            __('contentTypeCountPolls')                     => 16,
             __('contentTypeCountNewsComments')              => 17,
             __('contentTypeCountNewsCommentsLocked')        => 18,
             __('contentTypeCountProductQuestion')           => 19,
@@ -531,26 +530,6 @@ class Statusmail
     }
 
     /**
-     * Holt die Anzahl durchgeführter Umfragen für einen bestimmten Zeitraum
-     *
-     * @return int
-     */
-    private function getSurveyParticipationsCount(): int
-    {
-        return (int)$this->db->queryPrepared(
-            'SELECT COUNT(*) AS cnt
-                FROM tumfragedurchfuehrung
-                WHERE dDurchgefuehrt >= :from
-                    AND dDurchgefuehrt < :to',
-            [
-                'from' => $this->dateStart,
-                'to'   => $this->dateEnd
-            ],
-            ReturnType::SINGLE_OBJECT
-        )->cnt;
-    }
-
-    /**
      * Holt die Anzahl an Newskommentare für einen bestimmten Zeitraum
      *
      * @return int
@@ -692,7 +671,7 @@ class Statusmail
                 ],
                 ReturnType::ARRAY_OF_OBJECTS
             ),
-            function ($e) {
+            static function ($e) {
                 $e->kLog   = (int)$e->kLog;
                 $e->nLevel = (int)$e->nLevel;
                 $e->kKey   = (int)$e->kKey;
@@ -749,7 +728,6 @@ class Statusmail
         $mail->nAnzahlGeworbenerKunden                  = -1;
         $mail->nAnzahlErfolgreichGeworbenerKunden       = -1;
         $mail->nAnzahlVersendeterWunschlisten           = -1;
-        $mail->nAnzahlDurchgefuehrteUmfragen            = -1;
         $mail->nAnzahlNewskommentare                    = -1;
         $mail->nAnzahlNewskommentareNichtFreigeschaltet = -1;
         $mail->nAnzahlProduktanfrageArtikel             = -1;
@@ -803,9 +781,6 @@ class Statusmail
                     break;
                 case 15:
                     $mail->nAnzahlVersendeterWunschlisten = $this->getSentWishlistCount();
-                    break;
-                case 16:
-                    $mail->nAnzahlDurchgefuehrteUmfragen = $this->getSurveyParticipationsCount();
                     break;
                 case 17:
                     $mail->nAnzahlNewskommentare = $this->getNewsCommentsCount();

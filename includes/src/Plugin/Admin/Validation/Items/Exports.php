@@ -6,6 +6,7 @@
 
 namespace JTL\Plugin\Admin\Validation\Items;
 
+use JTL\Helpers\GeneralObject;
 use JTL\Plugin\InstallCode;
 
 /**
@@ -21,17 +22,15 @@ final class Exports extends AbstractItem
     {
         $node = $this->getInstallNode();
         $dir  = $this->getDir();
-        if (!isset($node['Exportformat']) || !\is_array($node['Exportformat'])) {
+        if (!GeneralObject::isCountable('Exportformat', $node)) {
             return InstallCode::OK;
         }
-        if (!isset($node['Exportformat'][0]['Format'])
-            || !\is_array($node['Exportformat'][0]['Format'])
-            || \count($node['Exportformat'][0]['Format']) === 0
-        ) {
+        $node = $node['Exportformat'][0]['Format'] ?? null;
+        if (!GeneralObject::hasCount($node)) {
             return InstallCode::MISSING_FORMATS;
         }
         $base = $dir . \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_EXPORTFORMAT;
-        foreach ($node['Exportformat'][0]['Format'] as $i => $export) {
+        foreach ($node as $i => $export) {
             $i = (string)$i;
             \preg_match('/[0-9]+/', $i, $hits2);
             if (\mb_strlen($hits2[0]) !== \mb_strlen($i)) {

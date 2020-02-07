@@ -214,7 +214,7 @@ class LanguageHelper
     public static function __callStatic($method, $arguments)
     {
         return ($mapping = self::map($method)) !== null
-            ? \call_user_func_array([self::$instance, $mapping], $arguments)
+            ? \call_user_func_array([self::getInstance(), $mapping], $arguments)
             : null;
     }
 
@@ -272,7 +272,7 @@ class LanguageHelper
             /** @var Collection $allLangVars */
             $collection = $allLangVars->groupBy([
                 'langID',
-                function ($e) {
+                static function ($e) {
                     return $e->sectionName;
                 }
             ]);
@@ -304,17 +304,17 @@ class LanguageHelper
             return true;
         });
         /** @var Collection $data */
-        $this->availableLanguages = $data->map(function ($e) {
+        $this->availableLanguages = $data->map(static function ($e) {
             return (object)['kSprache' => (int)$e->kSprache];
         })->toArray();
 
-        $this->byISO = $data->groupBy('cISO')->transform(function (Collection $e) {
+        $this->byISO = $data->groupBy('cISO')->transform(static function (Collection $e) {
             $e = $e->first();
 
             return (object)['kSprachISO' => (int)$e->kSprache, 'cISO' => $e->cISO];
         })->toArray();
 
-        $this->byLangID = $data->groupBy('kSprache')->transform(function (Collection $e) {
+        $this->byLangID = $data->groupBy('kSprache')->transform(static function (Collection $e) {
             $e = $e->first();
 
             return (object)['cISO' => $e->cISO];
@@ -547,7 +547,7 @@ class LanguageHelper
                 'tsprachwerte',
                 ['kSprachISO', 'kSprachsektion'],
                 [$this->currentLanguageID, $section->kSprachsektion]
-            ), function ($e) {
+            ), static function ($e) {
                 $e->kSprachISO     = (int)$e->kSprachISO;
                 $e->kSprachsektion = (int)$e->kSprachsektion;
                 $e->bSystem        = (int)$e->bSystem;
@@ -957,12 +957,12 @@ class LanguageHelper
         }
         switch ($returnType) {
             case 2:
-                return reindex($languages, function ($e) {
+                return reindex($languages, static function ($e) {
                     return $e->cISO;
                 });
 
             case 1:
-                return reindex($languages, function ($e) {
+                return reindex($languages, static function ($e) {
                     return $e->kSprache;
                 });
 

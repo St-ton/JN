@@ -4,7 +4,7 @@
  *}
 {block name='productdetails-basket'}
     {if ($Artikel->inWarenkorbLegbar == 1 || $Artikel->nErscheinendesProdukt == 1) || $Artikel->Variationen}
-        <div id="add-to-cart" class="d-print-none product-buy{if $Artikel->nErscheinendesProdukt} coming_soon{/if}">
+        <div id="add-to-cart" class="mt-5 d-print-none product-buy{if $Artikel->nErscheinendesProdukt} coming_soon{/if}">
             {if $Artikel->nErscheinendesProdukt}
                 {block name='productdetails-basket-coming-soon'}
                     <div class="{if $Einstellungen.global.global_erscheinende_kaeuflich === 'Y'}alert alert-warning coming_soon{/if} text-center">
@@ -25,10 +25,18 @@
                 {if !$showMatrix}
                     {block name='productdetails-basket-form-inline'}
                         {row class="align-items-center"}
-                            {col cols=12 sm=6 class="mb-3 mb-md-0"}
-                                {inputgroup id="quantity-grp" class="choose_quantity"}
+                            {col cols=12 sm=6 class="mb-3 mb-sm-0"}
+                                {inputgroup id="quantity-grp" class="form-counter choose_quantity"}
+                                    {inputgroupprepend}
+                                        {button variant=""
+                                            data=["count-down"=>""]
+                                            aria=["label"=>{lang key='decreaseQuantity' section='aria'}]}
+                                            <span class="fas fa-minus"></span>
+                                        {/button}
+                                    {/inputgroupprepend}
                                     {input type="{if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}text{else}number{/if}"
                                         min="{if $Artikel->fMindestbestellmenge}{$Artikel->fMindestbestellmenge}{else}0{/if}"
+                                        max=$Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE]|default:''
                                         required=($Artikel->fAbnahmeintervall > 0)
                                         step="{if $Artikel->fAbnahmeintervall > 0}{$Artikel->fAbnahmeintervall}{/if}"
                                         id="quantity" class="quantity" name="anzahl"
@@ -36,19 +44,24 @@
                                         value="{if $Artikel->fAbnahmeintervall > 0 || $Artikel->fMindestbestellmenge > 1}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}"
                                         data=["decimals"=>{getDecimalLength quantity=$Artikel->fAbnahmeintervall}]
                                     }
-                                    {if $Artikel->cEinheit}
-                                        {inputgroupappend}
+                                    {inputgroupappend}
+                                        {if $Artikel->cEinheit}
                                             {inputgrouptext class="unit form-control"}
                                                 {$Artikel->cEinheit}
                                             {/inputgrouptext}
-                                        {/inputgroupappend}
-                                    {/if}
+                                        {/if}
+                                        {button variant=""
+                                            data=["count-up"=>""]
+                                            aria=["label"=>{lang key='increaseQuantity' section='aria'}]}
+                                            <span class="fas fa-plus"></span>
+                                        {/button}
+                                    {/inputgroupappend}
                                 {/inputgroup}
                             {/col}
                             {col cols=12 sm=6}
                                 {button aria=["label"=>"{lang key='addToCart'}"] block=true name="inWarenkorb" type="submit" value="{lang key='addToCart'}" variant="primary"}
                                     <span class="btn-basket-check">
-                                        <span class="fas fa-shopping-cart d-sm-none"></span><span class="d-none d-sm-block">{lang key='addToCart'}</span>
+                                        <span class="d-none d-sm-inline-block mr-1">{lang key='addToCart'}</span> <i class="fas fa-shopping-cart"></i>
                                     </span>
                                     <svg x="0px" y="0px" width="32px" height="32px" viewBox="0 0 32 32">
                                         <path stroke-dasharray="19.79 19.79" stroke-dashoffset="19.79" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" d="M9,17l3.9,3.9c0.1,0.1,0.2,0.1,0.3,0L23,11"/>
@@ -59,7 +72,12 @@
                     {/block}
                 {/if}
             {/if}
-            {if $Artikel->inWarenkorbLegbar == 1 && ($Artikel->fMindestbestellmenge > 1 || ($Artikel->fMindestbestellmenge > 0 && $Artikel->cTeilbar === 'Y') || $Artikel->fAbnahmeintervall > 0 || $Artikel->cTeilbar === 'Y' || (isset($Artikel->FunktionsAttribute[$FKT_ATTRIBUT_MAXBESTELLMENGE]) && $Artikel->FunktionsAttribute[$FKT_ATTRIBUT_MAXBESTELLMENGE] > 0))}
+            {if $Artikel->inWarenkorbLegbar == 1
+            && ($Artikel->fMindestbestellmenge > 1
+                || ($Artikel->fMindestbestellmenge > 0 && $Artikel->cTeilbar === 'Y')
+                || $Artikel->fAbnahmeintervall > 0
+                || $Artikel->cTeilbar === 'Y'
+                || $Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE]|default:0 > 0)}
                 {block name='productdetails-basket-alert-purchase-info'}
                     {alert variant="info" class="mt-2 purchase-info"}
                         {assign var=units value=$Artikel->cEinheit}
@@ -80,10 +98,9 @@
                         {if $Artikel->cTeilbar === 'Y'}
                             <p>{lang key='integralQuantities' section='productDetails'}</p>
                         {/if}
-
-                        {if isset($Artikel->FunktionsAttribute[$FKT_ATTRIBUT_MAXBESTELLMENGE]) && $Artikel->FunktionsAttribute[$FKT_ATTRIBUT_MAXBESTELLMENGE] > 0}
+                        {if $Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE]|default:0 > 0}
                             {lang key='maximalPurchase' section='productDetails' assign='maximalPurchase'}
-                            <p>{$maximalPurchase|replace:"%d":$Artikel->FunktionsAttribute[$FKT_ATTRIBUT_MAXBESTELLMENGE]|replace:"%s":$units}</p>
+                            <p>{$maximalPurchase|replace:"%d":$Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE]|replace:"%s":$units}</p>
                         {/if}
                     {/alert}
                 {/block}

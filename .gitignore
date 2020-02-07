@@ -34,6 +34,14 @@
 /media/image/product/*
 /media/image/storage/*
 /media/image/avatare/*
+/media/image/category/*
+/media/image/characteristic/*
+/media/image/characteristicvalue/*
+/media/image/manufacturer/*
+/media/image/news/*
+/media/image/newscategory/*
+/media/image/opc/*
+/media/video/*
 
 # mediafiles
 /mediafiles/Bilder/*

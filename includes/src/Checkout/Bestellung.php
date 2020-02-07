@@ -10,6 +10,7 @@ use JTL\Cart\CartHelper;
 use JTL\Cart\CartItem;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Category\KategorieListe;
+use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Customer\Customer;
@@ -19,8 +20,9 @@ use JTL\Extensions\Upload\Upload;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Language\LanguageHelper;
+use JTL\Plugin\Payment\LegacyMethod;
+use JTL\Plugin\Payment\Method as PaymentMethod;
 use JTL\Shop;
-use PaymentMethod;
 use stdClass;
 
 /**
@@ -451,8 +453,11 @@ class Bestellung
         if ($this->kKunde !== null && $this->kKunde > 0) {
             $customer = new Customer($this->kKunde);
             if ($customer->kKunde !== null && $customer->kKunde > 0) {
-                unset($customer->cPasswort, $customer->fRabatt, $customer->fGuthaben, $customer->cUSTID);
-                $this->oKunde = $customer;
+                $customer->cPasswort = null;
+                $customer->fRabatt   = null;
+                $customer->fGuthaben = null;
+                $customer->cUSTID    = null;
+                $this->oKunde        = $customer;
             }
         }
 
@@ -463,7 +468,7 @@ class Bestellung
         );
         $this->BestellstatusURL = Shop::getURL() . '/status.php?uid=' . $orderState->cUID;
         $sum                    = $db->query(
-            'SELECT sum(((fPreis*fMwSt)/100+fPreis)*nAnzahl) AS wert
+            'SELECT SUM(((fPreis * fMwSt)/100 + fPreis) * nAnzahl) AS wert
                 FROM twarenkorbpos
                 WHERE kWarenkorb = ' . (int)$this->kWarenkorb,
             ReturnType::SINGLE_OBJECT
@@ -506,7 +511,7 @@ class Bestellung
         $this->cBestellwertLocalized = Preise::getLocalizedPriceString($sum->wert ?? 0, $htmlCurrency);
         $this->Status                = \lang_bestellstatus((int)$this->cStatus);
         if ($this->kWaehrung > 0) {
-            $this->Waehrung = $db->select('twaehrung', 'kWaehrung', (int)$this->kWaehrung);
+            $this->Waehrung = new Currency((int)$this->kWaehrung);
             if ($this->fWaehrungsFaktor !== null && $this->fWaehrungsFaktor != 1 && isset($this->Waehrung->fFaktor)) {
                 $this->Waehrung->fFaktor = $this->fWaehrungsFaktor;
             }
@@ -520,15 +525,13 @@ class Bestellung
                 $this->Waehrung
             );
             if ($this->kZahlungsart > 0) {
-                require_once \PFAD_ROOT . \PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
                 $this->Zahlungsart = $db->select(
                     'tzahlungsart',
                     'kZahlungsart',
                     (int)$this->kZahlungsart
                 );
                 if ($this->Zahlungsart !== null) {
-                    $oPaymentMethod = new PaymentMethod($this->Zahlungsart->cModulId, 1);
-                    $oZahlungsart   = $oPaymentMethod::create($this->Zahlungsart->cModulId);
+                    $oZahlungsart = LegacyMethod::create($this->Zahlungsart->cModulId, 1);
                     if ($oZahlungsart !== null) {
                         $this->Zahlungsart->bPayAgain = $oZahlungsart->canPayAgain();
                     }
@@ -584,8 +587,10 @@ class Bestellung
                 if ($initProduct) {
                     $item->Artikel = (new Artikel())->fuelleArtikel($item->kArtikel, $defaultOptions);
                 }
-                $this->oDownload_arr = Download::getDownloads(['kBestellung' => $this->kBestellung], $languageID);
-                $this->oUpload_arr   = Upload::gibBestellungUploads($this->kBestellung);
+                if ($this->kBestellung > 0) {
+                    $this->oDownload_arr = Download::getDownloads(['kBestellung' => $this->kBestellung], $languageID);
+                    $this->oUpload_arr   = Upload::gibBestellungUploads($this->kBestellung);
+                }
                 if ($item->kWarenkorbPos > 0) {
                     $item->WarenkorbPosEigenschaftArr = $db->selectAll(
                         'twarenkorbposeigenschaft',
@@ -726,7 +731,7 @@ class Bestellung
                 'kLieferschein'
             );
             foreach ($deliveryNotes as $note) {
-                $note                = new Lieferschein($note->kLieferschein, $sData);
+                $note                = new Lieferschein((int)$note->kLieferschein, $sData);
                 $note->oPosition_arr = [];
                 /** @var Lieferscheinpos $lineItem */
                 foreach ($note->oLieferscheinPos_arr as &$lineItem) {

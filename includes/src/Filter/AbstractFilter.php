@@ -262,7 +262,7 @@ abstract class AbstractFilter implements FilterInterface
             ? $this->filterCollection
             : \array_filter(
                 $this->filterCollection,
-                function (FilterInterface $f) {
+                static function (FilterInterface $f) {
                     return $f->getVisibility() !== Visibility::SHOW_NEVER;
                 }
             );

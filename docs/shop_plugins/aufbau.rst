@@ -1,102 +1,292 @@
 Aufbau
 ======
 
-Ein Plugin besteht aus einer Verzeichnisstruktur die physikalisch auf dem Datenträger des Shops vorhanden sein muss und einer XML-Datei (info.xml), die für die Installation und Updates des Plugins zuständig ist.
-Die info.xml ist der zentrale Kern jedes Plugins. Dort wird definiert, welche Dateien ein Plugin nutzt, welche Aufgaben es übernehmen soll und welche Identität das Plugin hat.
+.. |br| raw:: html
 
-Die Installationsdatei und damit auch die Verzeichnisstruktur variiert je nach Aufgabenbereich des jeweiligen Plugins. In der JTL-Shop Ordnerstruktur existiert ein fest definierter Ordner, der alle Plugins beinhaltet.
+   <br />
+
+Ein Plugin besteht aus einer *Verzeichnisstruktur*, die physikalisch auf dem Datenträger des Shops vorhanden sein muss,
+und einer XML-Datei (``info.xml``, siehe auch :doc:`hier <infoxml>`), die für die Installation und die Updates des
+Plugins zuständig ist. |br|
+Die ``info.xml`` beschreibt das Plugin. Dort wird definiert, welche Dateien ein Plugin nutzt,
+welche Aufgaben es übernehmen soll und welche Identität das Plugin hat.
+
+Die Installationsdatei und damit auch die Verzeichnisstruktur variiert je nach Aufgabenbereich des jeweiligen
+Plugins. |br|
+In der JTL-Shop-Ordnerstruktur existiert ein fest definierter Ordner, der alle Plugins beinhaltet.
 Von dort aus greift das System auf Pluginressourcen und Installationsinformationen zu.
 
-.. note::
+.. hint::
 
-    Ein Plugin zur automatischen Erstellung von JTL-Shop-Plugins findet sich im `öffentlichen Gitlab-Repository <https://gitlab.jtl-software.de/jtlshop/JTLpluginBootstrapper>`_.
-    Dadurch kann das manuelle Erstellen der info.xml und der Dateistruktur entfallen.
+    Ein Plugin zur automatischen Erstellung von JTL-Shop-Plugins findet sich im
+    `öffentlichen Gitlab-Repository <https://gitlab.com/jtl-software/jtl-shop/legacy-plugins/plugin-bootstrapper>`_.
+    Dadurch kann das manuelle Erstellen der ``info.xml`` und der Dateistruktur vereinfacht werden.
 
 Verzeichnisstruktur
 -------------------
 
-Ein Plugin benötigt eine festdefinierte Verzeichnisstruktur, damit es installiert werden kann. Es gibt einige Ausnahmen, wobei man gewisse Verzeichnisse weglassen oder nach eigenen Vorlieben strukturieren kann.
+Ein Plugin benötigt eine fest definierte Verzeichnisstruktur, damit es installiert werden kann. |br|
+Es gibt einige Ausnahmen, wobei man gewisse Verzeichnisse weglassen oder nach eigenen Vorlieben strukturieren kann.
 Jedes Plugin hat sein eigenes Unterverzeichnis innerhalb des Pluginverzeichnisses.
 
-Das Pluginverzeichnis ``plugins``, in dem alle Plugins des Shops zu finden sind, liegt bis Version 4.X im Ordner ``/includes/``, welcher im Shop Root zu finden ist.
-Demnach könnte ein typisches Plugin unter ``<shoproot>/includes/plugins/<Ihr_Pluginordner>`` zu finden sein.
+Es sollte darauf geachtet werden, stets aussagekräftige und eindeutige Pluginnamen zu vergeben, um Überschneidungen in
+Plugin-Verzeichnisnamen zu vermeiden.
+Das neuere Pluginverzeichnis würde demnach beim Upload das ältere überschreiben und das ursprüngliche Plugin
+würde nicht mehr funktionieren. Wir empfehlen, den Plugin-Verzeichnisnamen um eindeutige Merkmale
+wie z.B. den Firmennamen des Autors zu erweitern.
 
-Es sollte darauf geachtet werden, stets aussagekräftige und eindeutige Pluginnamen zu vergeben, damit es niemals eine Pluginverzeichniskollision gibt, was andernfalls bei vielen Plugins unterschiedlicher Autoren in einen Shop vorkommen könnte.
-Das neuere Pluginverzeichnis würde demnach beim Upload das ältere überschreiben und das ursprüngliche Plugin würde nicht mehr funktionieren. Wir empfehlen daher dringend, das Pluginverzeichnis um eindeutige Merkmale wie z.B. den Firmennamen des Autors zu erweitern.
+**Bis Shop Version 4.x** liegt das Pluginverzeichnis ``plugins/``, in dem alle Plugins des Shops zu finden sind,
+im Ordner ``<Shop-Root>/includes/``. |br|
+Demnach könnte ein typisches Plugin unter ``[Shop-Rot]/includes/plugins/[Ihr_Pluginordner]`` zu finden sein.
 
-Jedes Plugin muss mindestens einen Versionsordner enthalten. Die Versionen fangen bei der Ganzzahl 100 an (Bedeutung Version 1.00) und werden mit 101, 102 usw. weitergeführt.
-Die ganzzahligen Versionssnummern sind gleichzeitig die Ordnernamen. D.h. jedes Plugin muss auf jeden Fall den Ordner ``100/`` enthalten (siehe Versionen).
+Jedes Plugin, in einem Shop Version 4.x, muss mindestens einen *Versionsordner* enthalten. |br|
+Die Versionen fangen bei der Ganzzahl 100 an (Bedeutung: Version 1.00) und werden mit 101, 102 usw. weitergeführt.
+Die ganzzahligen Versionsnummern sind gleichzeitig die Ordnernamen, unterhalb des *Versionsordners*. |br|
+Jedes Plugin muss auf jeden Fall den Ordner ``100/`` enthalten (siehe Versionen).
 
-Ab 5.0.0 existiert außerdem der Unterodner ``plugins`` direkt im Shopverzeichnis, in dem aktuelle Plugins installiert werden können.
-**Der Name des Plugin-Ordners muss hier zwingend der in der info.xml angegebenen PluginID entsprechen!**
+.. code-block:: console
+   :emphasize-lines: 2-3
+
+    [Shop-Root]/includes/plugins/[PluginName]/
+    ├── version
+    │   └── 100
+    │       ├── adminmenu
+    │       ├── frontend
+    │       └── sql
+    ├── info.xml
+    └── README.md
+
+**Ab Shop Version 5.x** befindet sich der Plugin-Ordner direkt unterhalb der Shop-Root,
+also ``[Shop-Root]/plugins/[Ihr_Pluginordner]``.
+
+.. attention::
+
+    Ab Shop Version 5.x ist besonders darauf zu achten, dass der **Plugin-Ordnername** zwingend
+    der **Plugin-ID** in der ``info.xml`` entsprechen muss.
+
+.. code-block:: console
+   :emphasize-lines: 12
+
+    [Shop-Root]/plugins/[PluginName]/
+    ├── adminmenu
+    │   └── ...
+    ├── frontend
+    │   └── ...
+    ├── paymentmethod
+    │   └── ...
+    ├── locale
+    │   └── ...
+    ├── Migrations
+    │   └── ...
+    ├── info.xml
+    ├── README.md
+    └── Bootstrap.php
+
+Mögliche Unterverzeichnisse
+"""""""""""""""""""""""""""
+
++--------------------+--------------------------------------------------------------------------------------------------------+
+| Ordnername         | Funktion                                                                                               |
++====================+========================================================================================================+
+| ``adminmenu/``     | Shopadmin Tabs, um eigenen Inhalt im Adminbereich auszugeben bzw. um Einstellungen zu implementieren.  |
++--------------------+--------------------------------------------------------------------------------------------------------+
+| ``frontend/``      | Frontend Links zu Seiten im Shop mit eigenem Inhalt                                                    |
++--------------------+--------------------------------------------------------------------------------------------------------+
+| ``paymentmethod/`` | Implementierung von Zahlungsmethoden im Shop.                                                          |
++--------------------+--------------------------------------------------------------------------------------------------------+
+| ``sql/``           | Nur bis 4.x, SQL-Datei, um eigene Datenbanktabellen anzulegen, Daten dort abzulegen oder zu verändern. |
++--------------------+--------------------------------------------------------------------------------------------------------+
+| ``src/``           | Ab 5.0.0, plugin-spezifische Helper-Klassen (organisiert als Packages)                                 |
++--------------------+--------------------------------------------------------------------------------------------------------+
+| ``locale/``        | Ab 5.0.0, Übersetzungsdateien                                                                          |
++--------------------+--------------------------------------------------------------------------------------------------------+
+| ``Migrations/``    | Ab 5.0.0, SQL-Migrationen                                                                              |
++--------------------+--------------------------------------------------------------------------------------------------------+
+| ``Portlets/``      | Ab 5.0.0, OPC-Portlets                                                                                 |
++--------------------+--------------------------------------------------------------------------------------------------------+
+| ``blueprints/``    | Ab 5.0.0, OPC-Blueprints                                                                               |
++--------------------+--------------------------------------------------------------------------------------------------------+
+
+Verzeichnisstruktur Payment
+"""""""""""""""""""""""""""
+
+Ein Plugin kann beliebig viele Zahlungsmethoden im Shop implementieren. |br|
+Hierfür wird ein Unterordner namens ``paymentmethod/`` nötig, der in Shop Version 4.x unterhalb der jeweiligen
+Pluginversion und ab Shop Version 5.x, direkt unterhalb der Plugin-Root, liegt.
+
+**Beispiel, Shop Version 4.x**
+
+.. code-block:: console
+   :emphasize-lines: 8-9
+
+    [Shop-Root]/includes/plugins/[PluginName]/
+    ├── version
+    │   └── 100
+    │       ├── adminmenu
+    │       │   └── ...
+    │       ├── frontend
+    │       │   └── ...
+    │       ├── paymentmethod
+    │       │   └── ...
+    │       └── sql
+    │           └── ...
+    ├── preview.png
+    ├── info.xml
+    ├── README.md
+    └── LICENSE.md
+
+**Beispiel, Shop Version 5.x**
+
+.. code-block:: console
+   :emphasize-lines: 6-7
+
+    [Shop-Root]/plugins/[PluginName]/
+    ├── adminmenu
+    │   └── ...
+    ├── frontend
+    │   └── ...
+    ├── paymentmethod
+    │   └── ...
+    ├── locale
+    │   └── ...
+    ├── Migrations
+    │   └── ...
+    ├── preview.png
+    ├── info.xml
+    ├── README.md
+    ├── LICENSE.md
+    └── Bootstrap.php
+
+Unterhalb des Ordners ``paymentmethod/`` ist es sinnvoll, mindestens den Ordner ``template/`` anzulegen und dort
+entsprechend die Templates abzulegen, die zahlungsartspezifische Inhalte anzeigen. |br|
+Die eigentlichen Zahlart-Klassen sind direkt unterhalb von ``paymentmethod/`` anzuordnen. |br|
+Eventuelle "Helper"-Klassen, hingegen, werden unterhalb des plugin-spezifischen ``src/``-Ordners platziert, in dem sie
+selbstverständlich namespace-konform in Packages organisiert werden sollten. |br|
+
+.. code-block:: console
+   :emphasize-lines: 3,9-10,12
+
+    ├── src
+    │   ├── Payment
+    │   │   └── PaymentHelper.php
+    │   └── ...
+    └── paymentmethod
+        ├── images
+        │   ├── de-ppcc-logo-175px.png
+        │   └── ...
+        ├── template
+        │   ├── paypalplus.tpl
+        │   └── ...
+        └── PayPalPlus.php
+
+Im Abschnitt :ref:`label_infoxml_paymentmethode`, finden sie ein **Beispiel**, wie diese Verzeichnisstruktur
+in der ``info.xlm`` definiert wird.
 
 
-Mögliche weitere Ordner
------------------------
+.. _label_aufbau_versionierung:
 
-+---------------+-------------------------------------------------------------------------------------------------------+
-| Ordnername    | Funktion                                                                                              |
-+===============+=======================================================================================================+
-| adminmenu     | Shopadmin Tabs, um eigenen Inhalt im Adminbereich auszugeben bzw. um Einstellungen zu implementieren. |
-+---------------+-------------------------------------------------------------------------------------------------------+
-| frontend      | Frontend Links zu Seiten im Shop mit eigenem Inhalt                                                   |
-+---------------+-------------------------------------------------------------------------------------------------------+
-| paymentmethod | Implementierung von Zahlungsmethoden im Shop.                                                         |
-+---------------+-------------------------------------------------------------------------------------------------------+
-| sql           | Bis 4.X, SQL-Datei, um eigene Datenbanktabellen anzulegen, Daten dort abzulegen oder zu verändern.    |
-+---------------+-------------------------------------------------------------------------------------------------------+
-| locale        | Ab 5.0.0, Übersetzungsdateien                                                                         |
-+---------------+-------------------------------------------------------------------------------------------------------+
-| Migrations    | Ab 5.0.0, SQL-Migrationen                                                                             |
-+---------------+-------------------------------------------------------------------------------------------------------+
-| Portlets      | Ab 5.0.0, OPC-Portlets                                                                                |
-+---------------+-------------------------------------------------------------------------------------------------------+
-| blueprints    | Ab 5.0.0, OPC-Blueprints                                                                              |
-+---------------+-------------------------------------------------------------------------------------------------------+
+Versionierung
+-------------
 
+Wie die XML-Definition der Plugin-Version aussieht, finden sie
+im ``info.xml``-Abschnitt ":ref:`label_infoxml_versionierung`".
 
-Versionen bis einschließlich Shop 4.X
--------------------------------------
+bis Shop Version 4.x
+""""""""""""""""""""
 
-Da sich Plugins mit der Zeit auch weiterentwickeln können, gibt es eine Versionierung der Plugins.
-Damit besteht die Möglichkeit, ein Plugin mit dem Updatemechanismus des Pluginsystems zu aktualisieren, um neue Funktionalität einzuführen oder Fehler zu beheben.
+Da sich Plugins mit der Zeit auch weiterentwickeln können, gibt es eine Versionierung der Plugins. |br|
+Damit besteht die Möglichkeit, ein Plugin mit dem Updatemechanismus des Pluginsystems zu aktualisieren,
+um neue Funktionalität einzuführen oder Fehler zu beheben.
 
-Jedes Plugin muss den Ordner ``version`` enthalten. Dieser Ordner enthält alle bisher erschienenen Versionen des Plugins. Jedes Plugin muss die niedrigste Grundversion 100 (Bedeutung Version 1.00) enthalten.
-In den jeweiligen Unterordnern (Pluginversionen) befinden sich alle Ressourcen des Plugins für die jeweilige Version.
+Jedes Plugin muss den Ordner ``version/`` enthalten. |br|
+Dieser Ordner enthält alle bisher erschienenen Versionen des Plugins. Jedes Plugin muss die niedrigste Version
+100 (Bedeutung Version 1.00) enthalten. |br|
+In diesen Unterordnern (Versions-Ordnern) befinden sich alle Ressourcen des Plugins für die jeweilige Version.
 
-Wird eine neue Version vom Plugin entwickelt, wird die Version um 1 hochgezählt, d.h. die Versionierung von Plugins ist fortlaufend: 100, 101, 102, 103, …
-Eine Versionsgrenze nach oben existiert nicht.
+.. code-block:: console
+   :emphasize-lines: 2,3
 
-Um ein Plugin zu aktualisieren, überträgt man die info.xml in das jeweilige Pluginverzeichnis sowie alle neuen Versionsverzeichnisse in das Verzeichnis ``version`` des jeweiligen Pluginverzeichnisses.
-D.h. wurde etwa die Version 113 von einem Plugin erstellt, so kopiert man die <pluginname>/info.xml sowie alle <pluginname>/version/* Versionsverzeichnisse in den Shop.
-Die Pluginverwaltung im Adminbereich erkennt dabei automatisch, ob Updates zu einem Plugin vorliegen und bietet einen entsprechenden Updatebutton an.
+    [Shop-Root]/includes/plugins/[PluginName]/
+    ├── version
+    │   └── 100
+    │       ├── adminmenu
+    │       │   └── ...
+    │       ├── frontend
+    │       │   └── ...
+    │       └── sql
+    │           └── ...
+    ├── preview.png
+    ├── info.xml
+    ├── README.md
+    └── LICENSE.md
+
+Wird eine neue Version entwickelt, wird die Version um 1 hochgezählt, d.h. die Versionierung
+ist fortlaufend: 100, 101, 102, 103, und so weiter. Eine Versionsgrenze nach oben existiert nicht.
+
+Um ein Plugin zu aktualisieren, überträgt man die info.xml in das jeweilige Pluginverzeichnis sowie alle neuen
+Versionsverzeichnisse in das Verzeichnis ``version`` des jeweiligen Pluginverzeichnisses.
+D.h. wurde etwa die Version 113 von einem Plugin erstellt, so kopiert man die <pluginname>/info.xml sowie
+alle <pluginname>/version/* Versionsverzeichnisse in den Shop.
+Die Pluginverwaltung im Adminbereich erkennt dabei automatisch, ob Updates zu einem Plugin vorliegen und bietet
+einen entsprechenden Updatebutton an.
 
 Beispiel:
-In der info.xml wurden zwei Versionen definiert. Demnach würden die Unterordner von *version* wie folgt aussehen: */version/100/* und */version/101/*.
+In der info.xml wurden zwei Versionen definiert. Demnach würden die Unterordner von *version* wie folgt
+aussehen: */version/100/* und */version/101/*.
 
 Für jede Version, die in der Installationsdatei definiert wurde, muss auch ein physischer Ordner existieren.
 
-**Ab Version 5.0.0 entfällt der Unterordner** ``version`` **und alle anderen Ordner müssen direkt unterhalb des Plugin-Ordners angelegt werden!**
+ab Shop Version 5.x
+"""""""""""""""""""
+
+.. important::
+    Ab Shop Version 5.0 entfällt der Unterordner ``version/`` und alle anderen Ordner müssen direkt unterhalb
+    des Plugin-Ordners angelegt werden!
+
+.. code-block:: console
+
+    [Shop-Root]/plugins/[PluginName]/
+    ├── adminmenu
+    │   └── ...
+    ├── frontend
+    │   └── ...
+    ├── locale
+    │   └── ...
+    ├── Migrations
+    │   └── ...
+    ├── preview.png
+    ├── info.xml
+    ├── README.md
+    ├── LICENSE.md
+    └── Bootstrap.php
+
+Wie sich die Versionierung in der ``info.xml`` wiederspiegelt, lesen Sie
+im entsprechenden Abschnitt ":ref:`label_infoxml_versionierung`".
 
 
-info.xml
---------
+.. _label_infoxml_sql:
 
-Auf der obersten Ebene eines Pluginverzeichnisses des jeweiligen Plugins, liegt die XML Installationsdatei *info.xml*.
-Jedes Plugin muss eine Datei names info.xml enthalten, die alle Informationen über das Plugin und seine Ressourcen enthält. Den Aufbau dieser XML-Installationsdatei beschreiben die folgenden Abschnitte.
+SQL im Plugin
+-------------
 
+Bis Shop Version 4.x
+""""""""""""""""""""
 
-SQL (bis Version 4.X)
----------------------
-
-Jede Version eines Plugins hat die Möglichkeit, eine SQL-Datei anzugeben, welche beliebige SQL-Befehle ausführt.
+Jede Version eines Plugins hat die Möglichkeit, eine SQL-Datei anzugeben, welche beliebige SQL-Befehle ausführt. |br|
 Diese SQL-Datei kann z.B. zum Erstellen neuer Tabellen oder zum Verändern von Daten in der Datenbank genutzt werden.
-Falls in der info.xml eine SQL-Datei angegeben wurde, muss diese auch physikalisch vorhanden sein.
-Zu beachten gilt, wenn eine neue Tabelle in der SQL-Datei angelegt wird, sprich der SQL Befehl ``CREATE TABLE`` genutzt wird, muss der Tabellenname eine bestimmte Konvention einhalten.
-Der Name muss mit *xplugin_* beginnen, gefolgt von der eindeutigen *PluginID_* und endet mit einem beliebigen Namen (Syntax: ``xplugin_<PluginID>_<belieber Name>``).
+Falls in der ``info.xml`` eine SQL-Datei angegeben wurde, muss diese auch physikalisch vorhanden sein. |br|
+Zu beachten gilt, wenn eine neue Tabelle in der SQL-Datei angelegt wird, sprich: der SQL Befehl ``CREATE TABLE``
+genutzt wird, muss der Tabellenname eine bestimmte Konvention einhalten.
+Der Name muss mit ``xplugin_`` beginnen, gefolgt von der eindeutigen ``[PluginID]_`` und endet mit einem
+beliebigen Namen (daraus ergibt sich dann: ``xplugin_[PluginID]_[belieber Name]``).
 
-Beispiel: Lautet die PluginID jtl_exampleplugin und die Tabelle soll **tuser** heißen, so muss der Tabellenname letztlich **xplugin_jtl_exampleplugin_tuser** lauten.
-Der SQL-Ordner liegt im Ordner jeweiligen Pluginversion. Beispiel: Ein Plugin in der Version 102:
+Beispiel: Lautet die PluginID "*jtl_exampleplugin*" und die Tabelle soll "*tuser*" heißen, so muss der Tabellenname
+letztlich "*xplugin_jtl_exampleplugin_tuser*" lauten. |br|
+Der SQL-Ordner liegt im Ordner der jeweiligen Pluginversion.
+
+**Beispiel:**
+
+Bei einem Plugin in der Version 102, muss der entsprechende Abschnitt der ``info.xml`` dann wie folgt aussehen:
 
 .. code-block:: xml
 
@@ -105,67 +295,155 @@ Der SQL-Ordner liegt im Ordner jeweiligen Pluginversion. Beispiel: Ein Plugin in
         <CreateDate>2016-03-17</CreateDate>
     </Version>
 
-Hier muss die Datei *install.sql* (der Dateiname der SQL-Datei wird in der info.xml festgelegt) im SQL-Ordner namens **sql** der Version 102 liegen. Der Dateipfad sieht daher in diesem Beispiel wie folgt aus:
+Hier muss die Datei ``install.sql`` im SQL-Ordner namens ``sql/`` der Version 102 liegen. |br|
+Die Verzeichnisstruktur sieht daher in diesem Beispiel wie folgt aus:
 
-``<pluginname>/version/102/sql/install.sql``
+.. code-block:: console
+    :emphasize-lines: 11
 
-Pro Pluginversion kann es immer nur eine SQL-Datei geben. Falls in der info.xml keine SQL-Datei für eine Version angegeben wurde, sollte man das SQL-Verzeichnis in der jeweiligen Version weglassen.
+    includes/plugins/[PluginName]/
+    ├── info.xml
+    └── version
+        ├── 100
+        │   └── ...
+        ├── 101
+        │   └── ...
+        └── 102
+            ├── adminmenu
+            ├── sql
+            │    └── install-102.sql
+            └── frontend
 
-Bei der Installation wird jede SQL-Datei von der kleinsten zur größten Version inkrementell abgearbeitet. D.h. liegt ein Plugin in der Version 1.23 vor, so werden bei der Installation die SQL-Dateien aller Versionen, Version 1.00 - 1.23, nacheinander ausgeführt!
-Analog verhält es sich bei einem Update. Hat man die Version 1.07 von einem Plugin installiert und möchte nun auf Version 1.13 updaten, so werden beim Update alle SQL-Dateien ab 1.08 ausgeführt.
+Pro Plugin-Version kann es immer nur eine SQL-Datei geben. Falls in der ``info.xml`` keine SQL-Datei für eine Version
+angegeben wurde, sollte man das SQL-Verzeichnis in der jeweiligen Version *weglassen*.
 
+Bei der Installation wird jede SQL-Datei von der kleinsten zur größten Version inkrementell abgearbeitet. |br|
+D.h.: liegt ein Plugin in der Version 1.23 vor, so werden bei der Installation die SQL-Dateien aller Versionen,
+Version 1.00 - 1.23, nacheinander ausgeführt!
+Analog verhält es sich bei einem Update. Hat man die Version 1.07 von einem Plugin installiert und möchte nun
+auf Version 1.13 updaten, so werden beim Update alle SQL-Dateien ab 1.08 bis 1.13 ausgeführt.
 
-SQL/Migrationen (ab Version 5.X)
---------------------------------
+ab Shop Version 5.x
+"""""""""""""""""""
 
-Ab Shop 5.0.0 wird der Unterordner *sql* nicht mehr unterstützt und somit auch keine SQL-Dateien mehr ausgeführt.
-Stattdessen können Plugins - wie der Shop selbst - Migrationen nutzen.
+Ab Shop 5.0.0 wird der Unterordner ``sql/`` *nicht mehr unterstützt* und somit auch keine SQL-Dateien mehr
+ausgeführt. |br|
 
-Diese müssen nicht via XML definiert werden, sondern im Unterodner *Migrations* des Plugin-Verzeichnisses liegen.
+.. hint::
+
+    Plugins können nun, wie der Shop selbst, *Migrationen* nutzen.
+
+Diese müssen *nicht mehr* in der ``info.xml`` definiert werden, sondern im Unterordner ``Migrations/``
+des Plugin-Verzeichnisses liegen. |br|
 Das Namensschema der Datei- und somit auch Klassennamen lautet ``Migration<YYYYMMDDHHmi>.php``.
 
-Alle Plugin-Migrationen müssen das Interface ``JTL\Update\IMigration`` implementieren und im Namespace ``Plugin\<PLUGIN-ID>\Migrations`` liegen.
-Dieses definiert die zwei wichtigsten Methoden ``up()`` zur Ausführung von SQL-Code und ``down()`` zum Zurücknehmen dieser Änderungen.
+.. code-block:: console
+   :emphasize-lines: 6-8
 
-Ein Beispiel könnte wie folgt lauten:
+    plugins/jtl_test/
+    ├── adminmenu
+    │   └── ...
+    ├── frontend
+    │   └── ...
+    ├── Migrations
+    │   ├── Migration20181112155500.php
+    │   └── Migration20181127162200.php
+    ├── info.xml
+    ├── Bootstrap.php
+    ├── preview.png
+    └── README.md
+
+Alle Plugin-Migrationen müssen das Interface ``JTL\Update\IMigration`` implementieren
+und im Namespace ``Plugin\<PLUGIN-ID>\Migrations`` liegen. |br|
+Dieses Interface definiert die zwei wichtigsten Methoden ``up()`` zur Ausführung von SQL-Code
+und ``down()`` zum Zurücknehmen dieser Änderungen.
+
+Ein **Beispiel** könnte wie folgt lauten:
 
 .. code-block:: php
 
-	<?php declare(strict_types=1);
+    <?php declare(strict_types=1);
 
-	namespace Plugin\jtl_test\Migrations;
+    namespace Plugin\jtl_test\Migrations;
 
-	use JTL\Plugin\Migration;
-	use JTL\Update\IMigration;
+    use JTL\Plugin\Migration;
+    use JTL\Update\IMigration;
 
-	class Migration20190321155500 extends Migration implements IMigration
-	{
-	    public function up()
-	    {
-	        $this->execute("CREATE TABLE IF NOT EXISTS `jtl_test_table` (
-	                      `id` int(10) NOT NULL AUTO_INCREMENT,
-	                      `test` int(10) unsigned NOT NULL,
-	                      PRIMARY KEY (`id`)
-	                    ) ENGINE=InnoDB COLLATE utf8_unicode_ci");
-	    }
+    class Migration20190321155500 extends Migration implements IMigration
+    {
+        public function up()
+        {
+            $this->execute("CREATE TABLE IF NOT EXISTS `jtl_test_table` (
+                          `id` int(10) NOT NULL AUTO_INCREMENT,
+                          `test` int(10) unsigned NOT NULL,
+                          PRIMARY KEY (`id`)
+                        ) ENGINE=InnoDB COLLATE utf8_unicode_ci");
+        }
 
-	    public function down()
-	    {
-	        $this->execute("DROP TABLE IF EXISTS `jtl_test_table`");
-	    }
-	}
+        public function down()
+        {
+            $this->execute("DROP TABLE IF EXISTS `jtl_test_table`");
+        }
+    }
 
-Bei der Installation des Plugins werden automatisch die up()-Methoden aller Migrationen ausgeführt, bei der Deinstallation entsprechend alle down()-Methoden. Hier entfällt auch die Beschränkung auf die Erstellung von Tabellen mit dem Präfix ``xplugin_<PLUGIN-ID>``.
+Bei der Installation des Plugins werden automatisch die ``up()``-Methoden aller Migrationen ausgeführt, bei der
+Deinstallation entsprechend alle ``down()``-Methoden. |br|
+Hier entfällt auch die Beschränkung auf die Erstellung von Tabellen mit dem Präfix ``xplugin_<PLUGIN-ID>``.
+Zusätzlich bietet die Verwendung von :doc:`Bootstrapping <bootstrapping>` mit den Methoden ``installed()``,
+``uninstalled()`` und ``updated()`` erweiterte Möglichkeiten für die Installation, Deinstallation und das
+Update eines Plugins.
 
-Adminmenü Verzeichnisstruktur
------------------------------
 
-Das Adminmenu befindet sich in jedem Versionsordner eines Plugins. Falls kein Adminmenu in der info.xml definiert wurde, kann dieser Ordner weggelassen werden.
-Ein Plugin kann beliebig viele eigene Links (Custom Links) im Adminbereich enthalten. Falls Custom Links in der info.xml angegeben wurden, muss in jedem Ordner adminmenu für jeden Custom Link eine ausführbare PHP-Datei enthalten sein.
-Weitere Verzeichnisse sind dem Pluginentwickler selbst überlassen. Es ist natürlich auch möglich, das Adminmenü nur mit Einstellungen (Setting Links) zu füllen.
+.. _label_aufbau_locale:
 
+Mehrsprachige Settings (ab 5.0.0)
+---------------------------------
+
+Ab Shop 5.0.0 können Plugin-Optionen mehrsprachig gestaltet werden. |br|
+Zu diesem Zweck kann ein Plugin vom gleichen Mechanismus Gebrauch machen,
+wie das Shop-Backend - `gettext <https://www.gnu.org/software/gettext/>`_.
+
+.. code-block:: console
+   :emphasize-lines: 8-14
+
+    [Shop-Root]/plugins/[PluginName]/
+    ├── adminmenu
+    │   └── ...
+    ├── frontend
+    │   └── ...
+    ├── paymentmethod
+    │   └── ...
+    ├── locale
+    │   ├── de-DE
+    │   │   ├── base.mo
+    │   │   └── base.po
+    │   └── en-US
+    │       ├── base.mo
+    │       └── base.po
+    ├── Migrations
+    │   └── ...
+    ├── info.xml
+    ├── README.md
+    └── Bootstrap.php
+
+Einen exemplarischen Überblick, wie Sie dies mit Hilfe der ``info.xml`` bewerkstelligen können, finden Sie im Kapitel
+``info.xml``, im Abschnitt ":ref:`label_infoxml_locale`".
+
+.. _label_adminmenu_structure:
+
+"adminmenu" Struktur
+--------------------
+
+Das Adminmenu befindet sich bei einem Shop, der Version bis 4.x, in jedem Versionsordner des Plugins und
+bei Shops ab Version 5.x, direkt in der Plugin-Root. |br|
+(Falls kein Adminmenu in der ``info.xml`` definiert wurde, kann dieser Ordner auch weggelassen werden.)
+
+Ein Plugin kann beliebig viele eigene Links (:ref:`label_infoxml_custom_links`) im Adminbereich enthalten. |br|
+Falls *Custom Links* in der ``info.xml`` angegeben wurden, muss in jedem Ordner ``adminmenu/``, für jeden
+*Custom Link*, eine entsprechende PHP-Datei enthalten sein. |br|
 
 .. code-block:: xml
+   :emphasize-lines: 4
 
     <Adminmenu>
         <Customlink sort="1">
@@ -174,1090 +452,401 @@ Weitere Verzeichnisse sind dem Pluginentwickler selbst überlassen. Es ist natü
         </Customlink>
     </Adminmenu>
 
-In diesem Beispiel wird im Shop-Backend ein Custom Link erstellt, der als Tab mit dem Namen "Statistik" erscheinen soll. Dieser Tab führt die Datei stats.php im Ordner adminmenu aus.
-Diese Datei inkludiert die Smarty Templateengine und lädt ein eigenes Template, das in einem selbstdefinierten Ordner abgelegt werden kann.
+In diesem Beispiel wird im Shop-Backend ein *Custom Link* erstellt, der als Tab mit dem Namen "Statistik" erscheinen
+soll.  Dieser Tab führt die Datei ``stats.php``, im Ordner ``adminmenu``, aus. Diese Datei inkludiert die Smarty
+Templateengine und lädt ein eigenes Template, das in einem selbst definierten Ordner abgelegt werden kann.
 
-Frontendmenu Verzeichnisstruktur
---------------------------------
+.. code-block:: console
+   :emphasize-lines: 3
 
-Im Frontendmenü können selbstdefinierte Links im Shop-Frontend erstellt werden, wo eigene PHP-Dateien ausgeführt werden. Der Ordner ``frontend`` befindet sich im jeweiligen Versionsordner des Plugins.
-Falls kein Frontendmenü in der info.xml definiert wurde, kann dieser Ordner auch weggelassen werden. Es können beliebig viele Frontend Links eingebunden werden.
+   plugins/[PluginName]/
+   ├── adminmenu
+   │   ├── stats.php
+   │   ├── radiosource.php
+   │   └── selectsource.php
+   ├── frontend
+   │   └── ...
+   ├── info.xml
+   ├── README.md
+   ├── Bootstrap.php
+   └── ...
 
-Jeder Frontend Link benötigt eine Smarty Templatedatei, um Inhalt im Shop anzuzeigen. Diese Templatedatei liegt im ``template``-Ordner des jeweiligen Ordners ``frontend``.
-Der Pfad zur Templatedatei für das untere Beispiel würde also ``/meinplugin/version/102/frontend/template/`` lauten.
+Weitere Verzeichnisse sind dem Pluginentwickler selbst überlassen. |br|
+Es ist natürlich auch möglich, das Adminmenü nur mit Einstellungen (:ref:`label_infoxml_setting_links`) zu füllen.
 
-Sobald man ein Plugin installiert hat das Frontend Links beinhaltet, sollte man darauf achten, dass die Links den jeweiligen Linkgruppen des Shops zugewiesen werden müssen.
-Dazu kann man in der Pluginverwaltung in der Spalte Linkgruppen den Button Bearbeiten klicken und man gelangt zur Linkübersicht des Shops, wo man einzelne Links in andere Linkgruppen verschieben kann.
-Die Installation des Plugins stellt Frontend Links im Shop3 standardmäßig in die erste CMS Linkgruppe ein, ab Version 4 in die Linkgruppe *hidden*.
-
-Die Links des jeweiligen Plugins werden farblich markiert dargestellt. Diese können nun in die gewünschte Linkgruppe via Selectbox verschoben werden.
-
-Paymentmethod Verzeichnisstruktur
----------------------------------
-
-Ein Plugin kann beliebig viele Zahlungsmethoden im Shop implementieren. Im jeweiligen Versionsordner des Plugins wird im Falle, dass das Plugin Zahlungsarten hinzufügen soll, der Unterordner ``paymentmethod`` notwendig.
-Für eine bessere Übersicht sollte für jede Zahlungsmethode die das Plugin implementieren soll im Ordner ``paymentmethod`` ein Unterordner angelegt werden.
-In diesem Unterorder liegt dann die PHP-Klassendatei und weitere Ressourcen für die jeweilige Zahlungsmethode. Im Beispiel heißt der Ordner für die Zahlungsmethode ``paypal``.
-
-.. code-block:: xml
-
-    <ClassFile>paypal/paypal.class.php</ClassFile>
-    <TemplateFile>paypal/template/bestellabschluss.tpl</TemplateFile>
-
-Für jede Zahlungsmethode kann eine Template-Datei angegeben werden. Diese ist für die Anzeige der zahlungsartspezifischen Inhalte zuständig.
-
-Aufbau der info.xml
+"frontend" Struktur
 -------------------
 
-In der XML-Installationsdatei *info.xml* werden das Plugin und seine Funktionen sowie Ressourcen definiert. Diese Datei ist das wichtigste Element eines Plugins, da sie für die Installation und Updates zuständig ist.
-Informationen wie der Pluginname, der Autor oder die Beschreibung werden in dieser Datei hinterlegt. Es werden Hooks, an dem das Plugin eingebunden werden soll sowie Pfade zu Ressourcen definiert.
-Die Installation von Plugins besteht aus zwei Schritten und kann im laufenden Betrieb des Shops vorgenommen werden:
-
-* Upload des Plugins in das Verzeichnis ``includes/plugins/`` des Shops oder ab Version 4 via direktem Upload im Backend
-* Installationsanstoß im Shopadmin über den Link *Pluginverwaltung*. Die Installation verläuft vollautomatisch.
-
-Ein weiterer wichtiger Aspekt ist, dass die Installationsdatei (info.xml) auch für Updates des Plugins zuständig ist.
-
-Der Inhalt der info.xml ist in XML. Ein Plugin kann in die folgenden Hauptbestandteile aufgeteilt werden:
-
-* Globale Plugin-Informationen
-* Versionen
-* Adminmenü mit Custom Links und Setting Links
-* Zahlungsmethoden
-* Frontend Links
-* Sprachvariablen
-* E-Mail-Templates
-* Plugin-Boxen
-* Plugin-Lizensierung
-* statische Ressourcen
-
-Falls Bereiche im Plugin nicht gebraucht werden, sollte der komplette Block weggelassen werden. Die globalen Informationen können dabei nicht weggelassen werden.
-
-Der Rumpf
----------
-
-Das Hauptelement der XML-Datei heißt sowohl für Shop3 als auch Version 4 *<jtlshop3plugin>*, ab Version 5.0.0 *<jtlshopplugin>*. Damit wird der Rumpf festgelegt.
-
-.. code-block:: xml
-
-  <jtlshop3plugin>
-    ...
-  </jtlshop3plugin>
-
-bzw. ab 5.0.0
-
-.. code-block:: xml
-
-  <jtlshopplugin>
-    ...
-  </jtlshopplugin>
-
-Globale Plugin-Informationen
-----------------------------
-
-Nach dem Rumpf der XML-Datei folgen allgemeine Informationen, die als Kindelemente angehängt werden.
-
-.. code-block:: xml
-
- <jtlshop3plugin>
-    <Name></Name>
-    <Description></Description>
-    <Author></Author>
-    <URL></URL>
-    <XMLVersion></XMLVersion>
-    <ShopVersion></ShopVersion>
-    <PluginID></PluginID>
- </jtlshop3plugin>
-
-
-+-------------------+-------------------------------------------------+
-| Elementname       | Funktion                                        |
-+===================+=================================================+
-| Name*             | Name des Plugins ([\a-\zA-\Z0-\9_])             |
-+-------------------+-------------------------------------------------+
-| Description       | Pluginbeschreibung                              |
-+-------------------+-------------------------------------------------+
-| Author            | Herausgeber eines Plugins                       |
-+-------------------+-------------------------------------------------+
-| URL               | Link zum Pluginherausgeber                      |
-+-------------------+-------------------------------------------------+
-| XMLVersion*       | XML Installationsroutinen Version ([0-9]{3})    |
-+-------------------+-------------------------------------------------+
-| ShopVersion       | Mindest-Shop-Version (>= 300, < 400)            |
-+-------------------+-------------------------------------------------+
-| Shop4Version      | Mindest-Shop4-Version (>= 400)                  |
-+-------------------+-------------------------------------------------+
-| PluginID*         | Plugin-Identifikator ([\a-\zA-\Z0-\9_])         |
-+-------------------+-------------------------------------------------+
-| Icon              | Dateiname zu einem Icon                         |
-+-------------------+-------------------------------------------------+
-| Version           | ab 5.0.0 - die Plugin-Version ([0-9]+)          |
-+-------------------+-------------------------------------------------+
-| CreateDate        | ab 5.0.0 - Erstellungsdatum (YYYY-MM-DD)        |
-+-------------------+-------------------------------------------------+
-
-(*)Pflichtfelder
-
-Name
-~~~~
-
-Der Name des Plugins wird in der Pluginverwaltung und den automatisch generierten Menüs im Backend dargestellt und dient der Identifizierung des Plugins.
-
-Description
-~~~~~~~~~~~
-
-Die Beschreibung wird unterhalb des Plugin-Namens im Tab "Verfügbar" der Pluginverwaltung dargestellt und sollte eine kurze Funktionsbeschreibung des Plugins enthalten.
-
-
-Author
-~~~~~~
-
-Der Autor wird im Admin-Menü des Plugins dargestellt. Hier kann sowohl eine Firma als auch eine Privatperson eingetragen werden.
-
-
-URL
-~~~
-
-Die URL sollte einen Link zum Hersteller oder einer dedizierten Plugin-Seite enthalten, sodass der Kunde schnell und einfach weitere Informationen oder Support erhalten kann.
-
-XMLVersion
-~~~~~~~~~~
-
-Da sich mit der Zeit auch die Anforderungen an das Pluginsystem ändern können, kann sich auch die XML-Installationsdatei ändern. Daher ist die Angabe der XML-Version sehr wichtig, um auch die richtigen Parameter für das eigene Plugin zur Verfügung zu haben.
-
-ShopVersion
-~~~~~~~~~~~
-
-ShopVersion gibt die Mindest-Version für Shop3 an. Ist sie höher als die aktuell installierte Shopversion, so wird eine Fehlermeldung im Backend angezeigt und das Plugin kann nicht installiert werden.
-Falls nur dieser Wert, nicht aber ``Shop4Version`` konfiguiert wurde, erscheint in einem Shop 4.00+ ein Hinweis, dass das Plugin möglicherweise nicht in dieser Version funktioniert, es kann jedoch trotzdem installiert werden.
-
-Shop4Version
-~~~~~~~~~~~~
-
-Shop4Version gibt die Mindest-Version für Shop4 an. Wurde nur dieser Wert und nicht ``ShopVersion`` konfiguriert, ist eine Installation nur in JTL Shop 4.X möglich.
-**Ab Version 5.0.0 wird dieser Tag nicht mehr unterstützt!**
-
-PluginID
-~~~~~~~~
-
-Die PluginID identifiziert ein Plugin im Shop eindeutig. Es muss genau darauf geachtet werden, eine sinnvolle und einmalige ID für das eigene Plugin zu wählen, damit gleichnamige Plugins unterschiedlicher Hersteller nicht kollidieren.
-
-Beispiel-ID für ein Plugin: **SoftwareFirma_PluginName**
-
-Namenskonvention: Es sind nur Zeichen a-z bzw. A-Z, 0-9 und der Unterstrich erlaubt (Punkt und Bindestrich sind laut Konvention nicht erlaubt).
-
-Ab Shop 5.0.0 entspricht die PluginID außerdem dem automatisch zugewiesenen PSR-4 Namespace (plus Präfix ``Plugin\``) für das gesamte Plugin. Deshalb ist dabei zu beachten, dass der Ordnername des Plugins der PluginID entspricht.
-Ein Plugin mit der PluginID *mycompany_someplugin* erhält so den Namespace ``Plugin\mycompany_someplugin``.
-
-
-Icon
-~~~~
-
-Aktuell noch nicht implementiert, perspektivisch zur besseren Übersicht geplant.
-
-Version
-~~~~~~~
-
-Aber Version 5.0.0 ist dies Pflichtangabe zur Definition der Plugin-Version.
-
-CreateDate
-~~~~~~~~~~
-
-Aber Version 5.0.0 ist dies Pflichtangabe zur Definition des Erstellungsdatums der jeweiligen Plugin-Version. Das Datum muss im Format YYYY-MM-DD angegeben werden.
-Beispielsweise 2019-03-21 für den 21. März 2019.
-
-
-Install-Block
-~~~~~~~~~~~~~
-
-Nach den Globalen Plugin-Informationen folgt der Installationsblock. Dieser sieht wie folgt aus:
-
- <Install>
-
- </Install>
-
-Alle Informationen zum Plugin wie z.B. Version und verwendete Hooks werden in diesem Block als Kindelemente aufgeführt.
-
-Plugin-Versionierung
---------------------
-
-Ein Plugin kann beliebig viele Versionen beinhalten. Die Versionierung fängt ab Version 100 an und wird dann mit 101, 102 usw. weitergeführt.
-Es muss mindestens ein Block mit der Version 100 vorhanden sein.
-**Ab Version 5.0.0 entfällt dieser Block!**
-
-.. code-block:: xml
-
-    <Version nr="100">
-        <CreateDate>2015-05-17</CreateDate>
-    </Version>
-
-Es besteht zu jeder Version die Möglichkeit, eine SQL-Datei anzugeben, die bei der Installation bzw. Aktualisierung ausgeführt wird. Hierbei gilt es die Pluginverzeichnisstruktur für SQL-Dateien zu beachten.
-
-.. code-block:: xml
-
-    <Version nr="100">
-        <SQL>install.sql</SQL>
-        <CreateDate>2016-05-17</CreateDate>
-    </Version>
-
-
-+-------------+-------------------------------------------+
-| Elementname | Funktion                                  |
-+=============+===========================================+
-| nr*         | Versionsnummer des Plugins ([0-9]+)       |
-+-------------+-------------------------------------------+
-| SQL         | SQL-Datei                                 |
-+-------------+-------------------------------------------+
-| CreateDate  | Erstellungsdatum der Version (YYYY-MM-DD) |
-+-------------+-------------------------------------------+
-
-(*)Pflichtfelder
-
-Falls weitere Versionen zu einem Plugin existieren, werden diese untereinander aufgeführt.
-
-.. code-block:: xml
-
-    <Version nr="100">
-        <CreateDate>2015-03-25</CreateDate>
-    </Version>
-    <Version nr="101">
-        <CreateDate>2015-04-15</CreateDate>
-    </Version>
-
-
-Plugin-Hooks
-------------
-
-Nach der Versionierung folgt das ``<Hooks>`` Element. In diesem Element werden jene Stellen im Shop definiert, an denen das Plugin Code ausführen soll.
-
-Der Frontend-Link und Zahlungsmethoden benötigen keine expliziten Hookangaben, da diese an einem bestimmten Hook vom System aus eingebunden werden. In diesem Fall kann der Hook Block ganz weggelassen werden.
-
-.. code-block:: xml
-
-    <Hooks>
-        <Hook id="129">onlineuser.php</Hook>
-        <Hook id="130">managemenet.php</Hook>
-    </Hooks>
-
-Die ID identifiziert hierbei eindeutig eine bestimmte Stelle im Shopcode. Die angegebene PHP-Datei wird dann am Hook der ID ausgeführt.
-Möchten Sie Beispielsweise nach dem Erstellen eines Artikelobjektes am Objekt noch einige Member verändern, können Sie den entsprechenden Hook benutzen um dies zu erledigen.
-
-+-------------+------------------------------------------------------------------------+
-| Elementname | Funktion                                                               |
-+=============+========================================================================+
-| id*         | Eindeutige HookID ([0\-9]+)                                            |
-+-------------+------------------------------------------------------------------------+
-| priority    | Priorität (ab Version 4.05, niedriger => früherer Auführung) ([0\-9]+) |
-+-------------+------------------------------------------------------------------------+
-| Hook        | PHP-Datei im Ordner frontend, die an ID ausgeführt wird.               |
-+-------------+------------------------------------------------------------------------+
-
-(*) Pflichtfelder
-
-Eine Liste der Hook-IDs finden Sie in der :doc:`Hook-Referenz </shop_plugins/hook_list>`.
-
-
-Adminmenü
----------
-
-Im Administrationsbereich des JTL Shops werden im Menüpunkt **Pluginverwaltung** alle Plugins angezeigt, die entweder nicht installiert (verfügbar), fehlerhaft oder installiert sind.
-Falls kein Adminmenü gewünscht ist, lassen Sie bitte den kompletten <Adminmenu> Block weg.
-
-Fehlerhafte Plugins werden mit dem entsprechenden Fehlercode angezeigt. Eine Tabelle mit möglichen Fehlercodes, finden Sie unter :doc:`Fehlercodes </shop_plugins/fehlercodes>`.
-
-In der XML-Installationsdatei wird das Adminmenü unter dem ``<Hooks>`` Element positioniert.
-
-.. code-block:: xml
-
-    <Adminmenu>
-        ...
-    </Adminmenu>
-
-In diesem Element folgen nach Bedarf das Kindelement ``<Customlink>`` (Custom Links) und ``<Settinglink>`` (Setting Links). Falls kein ``<Customlink>`` und ``<Settinglink>`` existiert, wird der ``<Adminmenu>`` Block weggelassen.
-
-
-Objektcache
------------
-
-Sollen bei Installation des Plugins bestimmte Inhalte des Objektcaches gelöscht werden, weil das Plugin beispielsweise Artikeldaten modifizieren soll, so kann im Element ``<FlushTags>`` eine Liste von Tags angegeben werden.
-
-.. code-block:: xml
-
-    <FlushTags>CACHING_GROUP_CATEGORY, CACHING_GROUP_ARTICLE</FlushTags>
-
-Für weitere Informationen zum Caching und den vorhandenen Tags, siehe Kapitel :doc:`Cache </shop_plugins/cache>`.
-
-
-Custom Links
-------------
-
-Custom Links werden im Adminbereich unter dem jeweiligen Plugin angezeigt. Mit Hilfe dieser Links kann ein Plugin Seiten mit eigenem Inhalt im Backend anlegen, die Informationen für den Shopbetreiber bereitstellen.
-Customlinks werden im Backend in Tabs dargestellt.
-
-.. code-block:: xml
-
-    <Customlink sort="1">
-        <Name>Statistik</Name>
-        <Filename>stats.php</Filename>
-    </Customlink>
-
-
-+-------------+-------------------------------------+
-| Elementname | Funktion                            |
-+=============+=====================================+
-| sort*       | Sortierungsnummer des Tabs          |
-+-------------+-------------------------------------+
-| Name*       | Name des Tabs ([a\-zA\-Z0\-9\_\-]+) |
-+-------------+-------------------------------------+
-| Filename*   | Ausführbare PHP-Datei               |
-+-------------+-------------------------------------+
-
-(*)Pflichtfelder
-
-Setting Links
--------------
-
-Setting Links sind Tabs, die Einstellungen zum Plugin abfragen. Hier können beliebig viele Einstellungen angelegt werden.
-Einstellungen können unterschiedliche Werte abfragen (Text, Zahl, Auswahl aus einer Selectbox). Diese Einstellungen können durch den Shopbetreiber im Backend konfiguriert und dann im eigenen Plugin-Code abgefragt werden.
-
-.. code-block:: xml
-
-    <Settingslink sort="2">
-        <Name>Einstellungen</Name>
-        <Setting type="text" initialValue="Y" sort="4" conf="N">
-            <Name>Online Watcher</Name>
-            <Description>Online Watcher</Description>
-            <ValueName>onlinewatcher</ValueName>
-        </Setting>
-    <Settingslink>
-
-+-------------+---------------------+
-| Elementname | Funktion            |
-+=============+=====================+
-| Name*       | Name des Tabs       |
-+-------------+---------------------+
-| Setting*    | Einstellungselement |
-+-------------+---------------------+
-
-(*)Pflichtfelder
-
-
-+------------------+-------------------------------------------------------------------+
-| Elementename     | Funktion                                                          |
-+==================+===================================================================+
-| Name*            | Name der Einstellung ([a\-zA\-Z0\-9\_\-]+)                        |
-+------------------+-------------------------------------------------------------------+
-| type*            | Einstellungstyp (text, zahl, selectbox, ab Shop4 checkbox, radio) |
-+------------------+-------------------------------------------------------------------+
-| initialValue*    | Vorrausgewählte Einstellung                                       |
-+------------------+-------------------------------------------------------------------+
-| Setting sort     | Sortierung der Einstellung (Höher = weiter unten)                 |
-+------------------+-------------------------------------------------------------------+
-| conf*            | Y = echte Einstellung, N = Überschrift                            |
-+------------------+-------------------------------------------------------------------+
-| Description      | Beschreibung der Einstellung                                      |
-+------------------+-------------------------------------------------------------------+
-| ValueName*       | Name der Einstellungsvariable, die im PHP-Code genutzt wird       |
-+------------------+-------------------------------------------------------------------+
-| SelectboxOptions | Optionales Kindelement bei type = selectbox                       |
-+------------------+-------------------------------------------------------------------+
-| RadioOptions     | Optionales Kindelement bei type = radio                           |
-+------------------+-------------------------------------------------------------------+
-| sort*            | Sortierungsnummer des Tabs                                        |
-+------------------+-------------------------------------------------------------------+
-| OptionsSource    | Dynamische Quelle für Optionen in Checkbox/Selectbox              |
-+------------------+-------------------------------------------------------------------+
-
-(*)Pflichtfelder
-
-Falls der Typ der Einstellung eine **selectbox** ist, muss das Kindelement <SelectboxOptions> angegeben werden.
-
-.. code-block:: xml
-
-    <SelectboxOptions>
-        <Option value="Y" sort="1">Ja</Option>
-        <Option value="N" sort="2">Nein</Option>
-    </SelectboxOptions>
-
-+-------------+----------------------------------------------+
-| Elementname | Funktion                                     |
-+=============+==============================================+
-| Option*     | Angezeigter Wert in der Selectbox-Option     |
-+-------------+----------------------------------------------+
-| value*      | Wert der Selectbox-Option                    |
-+-------------+----------------------------------------------+
-| sort        | Sortierung der Option (Höher = weiter unten) |
-+-------------+----------------------------------------------+
-
-(*)Pflichtfelder
-
-
-Falls der Typ der Einstellung **radio** ist, muss das Kindelement <RadioOptions> angegeben werden.
-
-.. code-block:: xml
-
-    <RadioOptions>
-        <Option value="Y" sort="1">Ja</Option>
-        <Option value="N" sort="2">Nein</Option>
-        <Option value="V" sort="3">Vielleicht</Option>
-    </RadioOptions>
-
-+-------------+----------------------------------------------+
-| Elementname | Funktion                                     |
-+=============+==============================================+
-| Option*     | Angezeigter Wert in der Radio-Option         |
-+-------------+----------------------------------------------+
-| value*      | Wert der Radio-Option                        |
-+-------------+----------------------------------------------+
-| sort        | Sortierung der Option (Höher = weiter unten) |
-+-------------+----------------------------------------------+
-
-(*)Pflichtfelder
-
-Ab Version 5.0.0 kann als Typ auch "none" gewählt werden. Diese Optionen werden nicht im Settings-Tab angezeigt.
-Dies bietet sich an, falls eine eigene Darstellung in einem anderen Tab für die Option gewählt werden soll.
-Der Wert wird dann trotzdem in der Plugin-Instanz gespeichert, sodass kein Umweg über eigene SQL-Logik erforderlich ist.
-Allerdings muss der Objektcache ggf. manuell invalidiert werden.
-
-
-Statt oder zusätzlich zu RadioOptions bzw. SelectboxOptions kann seit Version 4.05 das Element OptionsSource hinzugefügt werden.
-Sobald es vorhanden ist, wird das RadioOptions- bzw. SelectboxOptions-Element ignoriert.
-
-+-------------+----------------------------------------------+
-| Elementname | Funktion                                     |
-+=============+==============================================+
-| File*       | Dateiname, relativ zu adminmenu              |
-+-------------+----------------------------------------------+
-
-Hierdurch können in einer PHP-Datei dynamische Optionswerte definiert werden. Dies ist insbesondere dann sinnvoll, wenn keine statischen Auswahlmöglichkeiten wie "Ja/Nein" o.Ä. zur Auswahl angeboten werden sollten, sondern z.B. Artikel/Kategorien/Seiten oder andere Shop-spezifische Werte.
-
-Die angegebene Datei muss ein Array von Objekten ausgeben, wobei als Objektmember jeweils cWert und cName und optional nSort vorhanden sein müssen.
-
-Beispiel für eine dynamische Option:
-
-.. code-block:: php
-
-    <?php
-        $options = [];
-        $option  = new stdClass();
-
-        $option->cWert = 123;
-        $option->cName = 'Wert A';
-        $option->nSort = 1;
-        $options[]     = $option;
-
-        $option        = new stdClass();
-        $option->cWert = 456;
-        $option->cName = 'Wert B';
-        $option->nSort = 2;
-        $options[]     = $option;
-
-        $option        = new stdClass();
-        $option->cWert = 789;
-        $option->cName = 'Wert C';
-        $option->nSort = 2;
-        $options[]     = $option;
-
-        return $options;
-
-In diesem Beispie würden entsprechend die 3 Auswahlmöglichkeiten "Wert A", "Wert B" und "Wert C" zur Auswahl stehen.
-
-Übersetzungen von Settings
---------------------------
-
-Ab Shop 5.0.0 können Plugin-Optionen mehrsprachig gestaltet werden.
-Dies betrifft in jedem ``<Setting>``-Element die Knoten ``<Name>`` und ``<Description>`` sowie die Werte von ``<SelectboxOptions>`` und ``<RadioOptions>``.
-Die jeweiligen Werte können als msgid-Schlüssel in der base.po des Plugins angegeben und übersetzt werden.
-
-Generell muss hierzu im Unteroder *locale* des Plugins für jede zu übersetzende Sprache ein Unterordner mit zurgehörigen IETF Language Tag und darin die Datei *base.po* erstellt werden.
-Angenommen man möchte die folgende Option in die Sprachen Englisch und Deutsch übersetzen:
-
-.. code-block:: xml
-
-    <Setting type="selectbox" initialValue="Y" sort="1" conf="Y">
-        <Name>Finden Sie das hier hilfreich?</Name>
-        <Description>Stellt eine simple Ja/Nein-Frage</Description>
-        <ValueName>myplugin_is_helpful</ValueName>
-        <SelectboxOptions>
-            <Option value="Y" sort="0">Ja</Option>
-            <Option value="N" sort="1">Nein</Option>
-            <Option value="V" sort="2">Vielleicht</Option>
-        </SelectboxOptions>
-    </Setting>
-
-So können die folgenden Strings übersetzt werden:
-
-* Finden Sie das hier hilfreich?
-* Stellt eine simple Ja/Nein-Frage
-* Ja
-* Nein
-* Vielleicht
-
-Also folgende zwei Dateien erstellen: ``myplugin/locale/de-DE/base.po`` und ``myplugin/locale/en-US/base.po``.
-
-Der Inhalt könnte im Deutschen folgendermaßen aussehen:
-
-.. code-block:: xml
-
-	msgid "Ja"
-	msgstr "Ja"
-
-	msgid "Nein"
-	msgstr "Nein"
-
-	msgid "Finden Sie das hier hilfreich?"
-	msgstr "Finden Sie das hier hilfreich?"
-
-	msgid "Stellt eine simple Ja/Nein-Frage"
-	msgstr "Stellt eine simple Ja/Nein-Frage"
-
-
-Und im Englischen:
-
-.. code-block:: xml
-
-	msgid "Ja"
-	msgstr "Yes"
-
-	msgid "Nein"
-	msgstr "No"
-
-	msgid "Finden Sie das hier hilfreich?"
-	msgstr "Do you find this helpful?"
-
-	msgid "Stellt eine simple Ja/Nein-Frage"
-	msgstr "Asks a simple yes/no question"
-
-
-Anschließend müssen die .po-Dateien nur noch z.B. mit `Poedit <https://poedit.net/PoEdit>`_ zur base.mo kompliliert werden.
-In unserem Beispiel haben wir jetzt den String "Vielleicht" nicht übersetzt. Dieser würde somit in allen Sprachen unverändert ausgegeben werden.
-
-
-Frontend Links
---------------
-
-Mit Hilfe von Frontend Links ist ein Plugin in der Lage einen Link im JTL-Shop anzulegen und den Inhalt zu verwalten.
-Es können beliebig viele Link-Elemente <Link> angelegt werden. Falls kein Link angegeben wird, sollte der Block <FrontendLink> komplett weggelassen werden.
-Normalerweise werden Links im Shopbackend unter CMS (Eigene Seiten) angelegt. Dort können durch Plugins angelegte Links im Nachhinein verwaltet werden.
-
-Jeder Link kann in beliebig vielen Sprachen lokalisiert werden. Dazu wird das Element <LinkLanguage> mit dessen Attribut iso (Großbuchstaben ISO 639-2/B z.b. Deutschland = GER) verwendet.
-Es werden jedoch immer nur maximal die Sprachen installiert, die der Shop auch beinhaltet. Hat ein Plugin weniger als die im Shop installierten Sprachen hinterlegt, werden alle weiteren Shopsprachen mit der Standardsprache aufgefüllt.
-
-Jeder Frontend Link benötigt eine Smarty Template-Datei. Es gibt zwei verschiedene Arten, dessen Inhalt anzuzeigen. Die erste Möglichkeit besteht darin, den Inhalt in einem definierten Bereich (Contentbereich) des Shops anzuzeigen.
-Dies wird durch das Element <Template> erreicht. Die zweite Möglichkeit wäre, den Inhalt auf einer komplett neuen Seite zu zeigen. Dies benötigt das Element <FullscreenTemplate>.
-Beide Anzeigemöglichkeiten können nicht gleichzeitig in der info.xml definiert werden. Eine der beiden Varianten muss gesetzt sein.
-
-Im folgenden Beispiel wird die Smarty Template-Datei (onlineuser.tpl), welche sich im Ordner *template* befindet, im fest definierten Contentbereich des Shops geladen.
-
-.. code-block:: xml
-
-    <FrontendLink>
-        <Link>
-            <Filename>onlineuser.php</Filename>
-            <Name>Online Watcher</Name>
-            <Template>onlineuser.tpl</Template>
-            <VisibleAfterLogin>N</VisibleAfterLogin>
-            <PrintButton>N</PrintButton>
-            <NoFollow>N</NoFollow>
-            <SSL>2</SSL>
-            <LinkLanguage iso="GER">
-                <Seo>Online Watcher</Seo>
-                <Name>Online Watcher</Name>
-                <Title>Online Watcher</Title>
-                <MetaTitle>Online Watcher</MetaTitle>
-                <MetaKeywords>Online Watcher, Online, Watcher</MetaKeywords>
-                <MetaDescription>Zeigt die momentan aktiven Besucher im eingestellten Zeitraum an.</MetaDescription>
-            </LinkLanguage>
-        </Link>
-    </FrontendLink>
-
-Ein Frontend Link benötigt keinen expliziten Hook, denn das System bindet den Link automatisch an einem fest definierten Hook.
-
-Link:
-
-+---------------------+--------------------------------------------------------+
-| Elementname         | Funktion                                               |
-+=====================+========================================================+
-| Filename*           | Auszuführende Datei beim Link                          |
-+---------------------+--------------------------------------------------------+
-| Name*               | Name des Links ([a-zA-Zo-9 ]+)                         |
-+---------------------+--------------------------------------------------------+
-| Template*           | Smarty-Templatedatei die den Linkinhalt anzeigt        |
-+---------------------+--------------------------------------------------------+
-| FullscreenTemplate* | Smarty-Templatedatei die den Linkinhalt anzeigt        |
-+---------------------+--------------------------------------------------------+
-| VisibleAfterLogin*  | Nur anzeigen wenn der User eingeloggt ist ([NY]{1,1})  |
-+---------------------+--------------------------------------------------------+
-| PrintButton*        | Druckbutton anzeigen ([NY]{1,1})                       |
-+---------------------+--------------------------------------------------------+
-| NoFollow*           | NoFollow Attribut in den HTML Code einfügen([NY]{1,1}) |
-+---------------------+--------------------------------------------------------+
-| LinkLanguage*       |                                                        |
-+---------------------+--------------------------------------------------------+
-| SSL                 | 0 oder 1 für Standard, 2 für erzwungenes SSL           |
-+---------------------+--------------------------------------------------------+
-
-LinkLanguage
-
-+-----------------+-------------------------------------------------+
-| Elementname     | Funktion                                        |
-+=================+=================================================+
-| iso*            | Sprach.ISO ([A\-Z]{3})                          |
-+-----------------+-------------------------------------------------+
-| Seo*            | SEO Name des Links ([a\-zA\-Z0\-9 ]+)           |
-+-----------------+-------------------------------------------------+
-| Name*           | Name des Links ([a\-zA\-Z0\-9 ]+)               |
-+-----------------+-------------------------------------------------+
-| Title*          | Titel des Links ([a\-zA\-Z0\-9 ]+)              |
-+-----------------+-------------------------------------------------+
-| MetaTitle*      | Meta Title des Links ([a\-zA\-Z0\-9,. ]+)       |
-+-----------------+-------------------------------------------------+
-| MetaKeywords*   | Meta Keywords des Links ([a\-zA\-Z0\-9, ]+)     |
-+-----------------+-------------------------------------------------+
-| MetaDescription | Meta Description des Links ([a\-zA\-Z0\-9,. ]+) |
-+-----------------+-------------------------------------------------+
-
-
-Zahlungsmethoden
-----------------
-
-Das JTL-Shop Pluginsystem ist in der Lage, eine oder mehrere Zahlungsmethoden zugleich ohne Eingriff in den Shopcode zu implementieren.
-Das Hauptelement <PaymentMethod> wird unter dem Element <FrontendLink> eingefügt. Es können beliebig viele Zahlungsmethoden (<Method>) implementiert werden.
-Falls das Plugin keine Zahlungsmethode implementieren soll, wird der <PaymentMethod> Block ganz weggelassen.
-
-.. code-block:: xml
-
-    <PaymentMethod>
-        ...
-    </PaymentMethod>
-
-+-------------+-----------------+
-| Elementname | Funktion        |
-+=============+=================+
-| Method*     | Zahlungsmethode |
-+-------------+-----------------+
-
-(*)Pflichtfeld
-
-.. code-block:: xml
-
-    <Method>
-        <Name>PayPal (Plugin)</Name>
-        <PictureURL>paypal/template/paypal.gif</PictureURL>
-        <Sort>3</Sort>
-        <SendMail>0</SendMail>
-        <Provider>PayPal</Provider>
-        <TSCode>PAYPAL</TSCode>
-        <PreOrder>0</PreOrder>
-        <Soap>0</Soap>
-        <Curl>0</Curl>
-        <Sockets>0</Sockets>
-        <ClassFile>paypal/paypal.class.php</ClassFile>
-        <ClassName>PayPal</ClassName>
-        <TemplateFile>paypal/template/bestellabschluss.tpl</TemplateFile>
-        <MethodLanguage iso="GER">
-            <Name>PayPal</Name>
-            <ChargeName>PayPal</ChargeName>
-            <InfoText>Wir sorgen für einfache, schnelle und sichere Zahlungen beim online Einkaufen und Verkaufen.</InfoText>
-        </MethodLanguage>
-        <Setting type="text" initialValue="" sort="1" conf="Y">
-            <Name>PayPal Empfänger-Emailadresse</Name>
-            <Description>An diese Emailadresse werden PayPal Zahlungen eingehen.</Description>
-            <ValueName>paypal_email</ValueName>
-        </Setting>
-    </Method>
-
-+------------------------+-------------------------------------------------------------+
-| Elementname            | Funktion                                                    |
-+========================+=============================================================+
-| Name*                  | Name der Zahlungsmethode                                    |
-+------------------------+-------------------------------------------------------------+
-| PictureURL*            | Link zu einem Logo                                          |
-+------------------------+-------------------------------------------------------------+
-| Sort*                  | Sortierungsnummer der Zahlungsmethode ([0\-9]+)             |
-+------------------------+-------------------------------------------------------------+
-| SendMail*              | Versendet eine Email beim Zahlungseingang. 1 = Ja, 0 = Nein |
-+------------------------+-------------------------------------------------------------+
-| Provider               | Zahlungsanbieter                                            |
-+------------------------+-------------------------------------------------------------+
-| TSCode*                | Trusted Shops TSCode([A\-Z\_]+)                             |
-+------------------------+-------------------------------------------------------------+
-| PreOrder*              | Pre(1) -oder Post(0) Bestellung([0\-1]{1})                  |
-+------------------------+-------------------------------------------------------------+
-| Soap*                  | Übertragungsprotokoll Flag ([0\-1]{1})                      |
-+------------------------+-------------------------------------------------------------+
-| Curl*                  | Übertragungsprotokoll Flag ([0\-1]{1})                      |
-+------------------------+-------------------------------------------------------------+
-| Sockets*               | Übertragungsprotokoll Flag ([0\-1]{1})                      |
-+------------------------+-------------------------------------------------------------+
-| Class File*            | Name der PHP Klasse ([a\-zA\-Z0\-9\/_\-.]+.php)             |
-+------------------------+-------------------------------------------------------------+
-| ClassName*             | Exakter Name der Klasse                                     |
-+------------------------+-------------------------------------------------------------+
-| TemplateFile           | Name der Template-Datei ([a\-zA\-Z0\-9\/_\-.]+.tpl)         |
-+------------------------+-------------------------------------------------------------+
-| AdditionalTemplateFile | Template-Datei für einen Zusatzschritt                      |
-+------------------------+-------------------------------------------------------------+
-| MethodLanguage*        | Lokalisierung der Zahlungsmethode                           |
-+------------------------+-------------------------------------------------------------+
-| Setting                | Einstellungen der Zahlungsmethode                           |
-+------------------------+-------------------------------------------------------------+
-
-(*) Pflichtfelder
-
-Die Elemente <Soap>, <Curl> und <Sockets> beschreiben die nötigen Serveranforderungen, die für die Zahlungsmethode notwendig sind. Falls die Zahlungsmethode z.B. auf einem POST-Formular aufgebaut ist, kann man jedem Element eine 0 zuweisen.
-Im Element <TemplateFile> kann der Name oder Pfad zu einer Smarty Template-Datei angegeben werden. Dort können dann z.B. POST-Formulare ausgegeben werden.
-
-Im Element <AdditionalTemplateFile> kann außerdem eine Smarty-Template-Datei für einen Zahlungs-Zusatzschritt angegeben werden. Hier können z.B. Kreditkarteninfos abgefragt werden.
-
-Das Element <TSCode> kann folgende Werte enthalten: "DIRECT_DEBIT", "CREDIT_CARD", "INVOICE", "CASH_ON_DELIVERY", "PREPAYMENT", "CHEQUE", "PAYBOX", "PAYPAL", "CASH_ON_PICKUP", "FINANCING", "LEASING", "T_PAY", "CLICKANDBUY", "GIROPAY", "GOOGLE_CHECKOUT", "SHOP_CARD", "DIRECT_E_BANKING", "OTHER".
-
-MethodLanguage:
-Es können beliebig viele Sprachen für eine Zahlungsmethode implementiert werden, jedoch muss mindestens eine enthalten sein.
-
-+-------------+-------------------------------------------------+
-| Elementname | Funktion                                        |
-+=============+=================================================+
-| iso*        | Sprachcode der jeweiligen Sprache               |
-+-------------+-------------------------------------------------+
-| Name*       | Name der Zahlungsmethode                        |
-+-------------+-------------------------------------------------+
-| ChargeName* | Sortierungsnummer der Zahlungsmethode ([0\-9]+) |
-+-------------+-------------------------------------------------+
-| InfoText*   |                                                 |
-+-------------+-------------------------------------------------+
-
-(*) Pflichtfelder
-
-Setting:
-
-Jede Zahlungsmethode kann beliebeig viele Einstellungen enthalten. Z.B. die Logindaten für einen bestimmten Shopbetreiber. Diese Einstellungen werden im Backend bei der jeweilligen Zahlungsmethode angezeigt und können dort editiert werden.
-
-+------------------+---------------------------------------------------+
-| Elementname      | Funktion                                          |
-+==================+===================================================+
-| type*            | Einstellungstyp (text, zahl, selectbox)           |
-+------------------+---------------------------------------------------+
-| initValue*       | Vorrausgewählte Einstellung                       |
-+------------------+---------------------------------------------------+
-| sort*            | Sortierung der Einstellung (Höher = weiter unten) |
-+------------------+---------------------------------------------------+
-| conf*            | Y = echte Einstellung, N = Überschrift            |
-+------------------+---------------------------------------------------+
-| Name*            | Name der Einstellung                              |
-+------------------+---------------------------------------------------+
-| Description*     | Beschreibung der Einstellungsvariable             |
-+------------------+---------------------------------------------------+
-| ValueName*       | Name der Einstellungsvariable                     |
-+------------------+---------------------------------------------------+
-| SelectboxOptions | Optionales Element der bei type = selectbox       |
-+------------------+---------------------------------------------------+
-
-(*) Pflichtfelder
-
-Sprachvariablen
+Im Frontendmenü können selbst definierte Links im Shop-Frontend erstellt werden, so dass dort eigene PHP-Dateien
+ausgeführt werden. |br|
+Der Ordner ``frontend/`` befindet sich, bei Shop Version 4.x, im jeweiligen Versionsordner des Plugins und ab
+Shop Version 5.x direkt in der Plugin-Root. |br|
+(Falls kein Frontendmenü in der ``info.xml`` definiert wurde, kann dieser Ordner auch weggelassen werden.) |br|
+Es können beliebig viele *Frontend Links* eingebunden werden.
+
+Wie *Fontend Links*, in der ``infox.xml``, definiert werden, finden sie im Abschnitt :ref:`label_infoxml_fontendlinks`.
+
+Jeder *Frontend Link* benötigt eine Smarty-Templatedatei, um Inhalt im Shop anzuzeigen. |br|
+Diese Templatedatei liegt im ``template/``-Ordner des jeweiligen Ordners ``frontend/``.
+Der Pfad zur Templatedatei für das untere Beispiel würde also ``/meinplugin/version/102/frontend/template/`` lauten.
+
+**Beispiel für Shop Version 5.x:**
+
+.. code-block:: console
+   :emphasize-lines: 12-15
+
+   plugins/[PluginName]/
+   ├── adminmenu
+   │   └─── ...
+   ├── frontend
+   │   ├── boxes
+   │   │   └── ...
+   │   ├── css
+   │   │   └── ...
+   │   ├── js
+   │   │   └── ...
+   │   ├── template
+   │   │   ├── test_page_fullscreen.tpl
+   │   │   └── test_page.tpl
+   │   ├── test_page_fullscreen.php
+   │   └── test_page.php
+   ├── info.xml
+   ├── README.md
+   ├── Bootstrap.php
+   └── ...
+
+.. important::
+
+    Sobald man ein Plugin installiert hat, welches *Frontend Links* beinhaltet, sollte man darauf achten, dass die
+    Links den jeweiligen Linkgruppen des Shops, vom Administrator, zugewiesen werden müssen.
+
+Um dies zu bewerkstelligen, bietet die Pluginverwaltung die Spalte "Linkgruppe".
+Der, im Falle vorhandener *Frontend Links*, dort angezeigte Button führt den Administrator zur Verwaltung der
+Linkgruppen (ab Shop Version 4.x "Seiten -> Eigene Seiten"). |br|
+
+Die Installation des Plugins stellt *Frontend Links* (in Shop3 in die erste CMS Linkgruppe) ab Shop Version 4
+in die Linkgruppe "*hidden*" ein.
+
+Die Links des jeweiligen Plugins werden hier farblich hervorgehoben, um das Auffinden der plugin-eigenen
+*Frontend Links* zu erleichtern. |br|
+Die *Fontend Links* des Plugins können nun, via Selectbox, in andere Linkgruppen verschoben werden.
+
+
+.. _label_aufbau_frontend_res:
+
+Frontend Ressourcen
+-------------------
+
+Weiterhin gehören zur Struktur des Verzeichnisses ``frontend/`` die zusätzlichen "*Frontend Ressourcen*".
+
+**Beispiel bis Shop Version 4.x:**
+
+.. code-block:: console
+   :emphasize-lines: 11-17
+
+   includes/plugins/[PluginName]/
+   ├── version
+   │    ├── 100
+   │    │   └── ...
+   │    ├── 101
+   │    │   └── ...
+   │    └── 102
+   │        ├── adminmenu
+   │        ├── sql
+   │        └── frontend
+   │           ├── css
+   │           │   ├── bar.css
+   │           │   ├── bar_custom.css
+   │           │   └── foo.css
+   │           ├── js
+   │           │   ├── bar.js
+   │           │   └── foo.js
+   │           ├── template
+   │           │   └── ...
+   │           └── ...
+   ├── info.xml
+   ├── README.md
+   └── ...
+
+**Beispiel ab Shop Version 5.x:**
+
+.. code-block:: console
+   :emphasize-lines: 7-13
+
+   plugins/[PluginName]/
+   ├── adminmenu
+   │   └─── ...
+   ├── frontend
+   │   ├── boxes
+   │   │   └── ...
+   │   ├── css
+   │   │   ├── bar.css
+   │   │   ├── bar_custom.css
+   │   │   └── foo.css
+   │   ├── js
+   │   │   ├── bar.js
+   │   │   └── foo.js
+   │   ├── template
+   │   │   └── ...
+   │   └── ...
+   ├── info.xml
+   ├── README.md
+   ├── Bootstrap.php
+   └── ...
+
+Weitere Informationen finden Sie im ``info.xml``-Abschnitt ":ref:`label_aufbau_fontend_res`".
+
+Template-Blöcke
 ---------------
 
-Sprachvariablen sind lokalisierte Variablen, die für verschiedene Sprachen hinterlegt und abgerufen werden können.
-Sofern die Sprachen vom Shop und die Sprachen des Plugins übereinstimmen, passen sich die Sprachvariablen für jede eingestellte Sprache im Shop automatisch an (lokalisiert).
-Sollte das Plugin Frontend Links bereitstehen, so sollte jede textuelle Ausgabe mittels dieser Sprachvariablen ausgegeben werden.
+Auch Template-Blöcke des Frontends lassen sich durch Plugins manipulieren. |br|
+Hierfür sind keine Einträge in der ``info.xml`` nötig. Lediglich die Layoutstruktur des Templates muss im Plugin
+nachgebildet werden.
 
-Anpassung der Sprachvariablen in den Plugin-Einstellungen des Admin-Bereichs
-Sprachvariablen können nach der Installation eines Plugins vom Shopbetreiber angepasst werden. Dazu befindet sich ein Button „Sprachvariablen bearbeiten“ bei jedem Plugin mit Sprachvariablen in der Pluginverwaltung.
-Sprachvariablen können auf ihren Ursprungswert zurückgesetzt werden. Bei einem Pluginupdate oder beim Deaktivieren eines Plugins, bleiben durch den Shopbetreiber angepasste Sprachvariablen erhalten.
-Erst bei einer Deinstallation des Plugins werden die Sprachvariablen endgültig gelöscht.
+Ein minimalistisches Plugin, für Shop 5 und das NOVA-Template, könnte dann so aussehen:
 
-Einbindung in info.xml im <Install> Block
-Ein Plugin kann beliebig viele Sprachvariablen definieren. Das Hauptelement der Sprachvariablen heißt <Locales> und jede Sprachvariable wird im Element <Variable> definiert.
+**komplettes Beispiel:**
 
-Das Element <Locales> ist ein Kindelement von <Install>.
+.. code-block:: console
+   :emphasize-lines: 7,8
 
-Wichtig: Änderungen an der info.xml sind erst nach einer Plugin-Neuinstallation sichtbar, da die Variablen bei der Installation in die Datenbank geschrieben werden.
+   plugins/[PluginID]/
+   ├── adminmenu
+   │   ├── widget
+   │   ├── templates
+   │   └── ...
+   ├── frontend
+   │   └── template
+   │       └── layout
+   │           └── header.tpl
+   └── info.xml
 
-.. code-block:: xml
+Beim Anlegen der Struktur im Plugin-Verzeichnis ``frontend/`` ist darauf zu achten, daß die Templatestruktur genau
+nachgebildet wird. |br|
+Das Verzeichnis ``adminmenu/`` ist hier nur zur Veranschaulichung des Unterschiedes der Verzeichnisnamen
+``adminmenu/templates`` und ``frontend/template`` aufgelistet. Es muß für dieses Beispiel nicht angelegt werden.
 
-    <Locales>
-        <Variable>
-            <Name>dani_onlinewatcher_activeuser</Name>
-            <Description>Aktive Shopbesucher</Description>
-            <VariableLocalized iso="GER">Aktive Shopbesucher</VariableLocalized>
-            <VariableLocalized iso="ENG">Onlineuser</VariableLocalized>
-        </Variable>
-    </Locales>
-
-+--------------------+---------------------------------+
-| Elementname        | Funktion                        |
-+====================+=================================+
-| Name*              | Name der Sprachvariable         |
-+--------------------+---------------------------------+
-| Description*       | Beschreibung der Sprachvariable |
-+--------------------+---------------------------------+
-| VariableLocalized* | Lokalisierter Name              |
-+--------------------+---------------------------------+
-| iso*               | Sprach-ISO ([A\-Z]{3})          |
-+--------------------+---------------------------------+
-
-(*) Pflichtfelder
-
-In einem Elementblock <Variable>, können beliebig viele <VariableLocalized> eingebunden werden. Das ISO Attribut arbeitet nach Großbuchstaben ISO 639-2/B.
-
-E-Mail Templates
-----------------
-
-Ein Plugin kann auch neue Emailtypen definieren, die versendet werden können. Dabei kann der E-Mail-Inhalt eines Templates für alle im Shop verfügbaren Sprachen vorbelegt werden.
-Die vordefinierten Texte sind weiterhin in der E-Mail Vorlagenverwaltung im Admin-Backend durch den Shop-Betreiber editierbar.
-
-Mit dem Ausgangselement <Emailtemplate>, das im Element <Install> eingefügt wird, wird eine neue Emailvorlage definiert:
+Die hier verwendete ``info.xml`` konfiguriert nur den Rumpf eines Plugins:
 
 .. code-block:: xml
 
-    <Emailtemplate>
-        <Template>
-            <Name>Zahlungs-Erinnerungsemail</Name>
-            <Description></Description>
-            <Type>text/html</Type>
-            <ModulId>zahlungserinnerung</ModulId>
-            <Active>Y</Active>
-            <AKZ>0</AKZ>
-            <AGB>0</AGB>
-            <WRB>0</WRB>
-            <TemplateLanguage iso="GER">
-                <Subject>Zahlungserinnerung</Subject>
-                <ContentHtml></ContentHtml>
-                <ContentText></ContentText>
-            </TemplateLanguage>
-            <TemplateLanguage iso="ENG">
-                <Subject>Reminder</Subject>
-                <ContentHtml></ContentHtml>
-                <ContentText></ContentText>
-            </TemplateLanguage>
-        </Template>
-    </Emailtemplate>
+    <?xml version="1.0" encoding="UTF-8"?>
+    <jtlshopplugin>
+        <Name>[PluginName]</Name>
+        <Description>Blendet einen deutlichen Hinweis auf jeder Seite ein, dass es sich um einen Testshop handelt</Description>
+        <Author>JTL</Author>
+        <URL>https://www.jtl-software.de</URL>
+        <PluginID>[PluginID]</PluginID>
+        <XMLVersion>100</XMLVersion>
+        <ShopVersion>500</ShopVersion>
+        <CreateDate>2019-12-03</CreateDate>
+        <Version>1.0.0</Version>
+        <Install>
+            <FlushTags>CACHING_GROUP_CATEGORY, CACHING_GROUP_ARTICLE</FlushTags>
+        </Install>
+    </jtlshopplugin>
 
-+------------------+--------------------------------------------------------------------------------------------+
-| Template         | Pro Emailvorlage muss es ein Element Template geben                                        |
-+==================+============================================================================================+
-| Name             | Name der Emailvorlage                                                                      |
-+------------------+--------------------------------------------------------------------------------------------+
-| Description      | Beschreibung der Emailvorlage                                                              |
-+------------------+--------------------------------------------------------------------------------------------+
-| Type             | Sendeformat der Emailvorlage (html/text oder text)                                         |
-+------------------+--------------------------------------------------------------------------------------------+
-| ModulId          | Eindeutiger Schlüssel der Emailvorlage                                                     |
-+------------------+--------------------------------------------------------------------------------------------+
-| Active           | Aktivierungsflag der Emailvorlage (Y/N)                                                    |
-+------------------+--------------------------------------------------------------------------------------------+
-| AKZ              | Anbieterkennzeichnung in der Emailvorlage anhängen (1/0)                                   |
-+------------------+--------------------------------------------------------------------------------------------+
-| AGB              | Allgemeine Geschäftsbedingungen in der Emailvorlage anhängen (1/0)                         |
-+------------------+--------------------------------------------------------------------------------------------+
-| WRB              | Widerrufsbelehrung in der Emailvorlage anhängen (1/0)                                      |
-+------------------+--------------------------------------------------------------------------------------------+
-| TemplateLanguage | Lokalisierte Inhalte pro Sprache (min. eine Sprache muss vorhanden sein) (Key = SprachISO) |
-+------------------+--------------------------------------------------------------------------------------------+
-| Subject          | Betreff der Emailvorlage in der jeweiligen Sprache                                         |
-+------------------+--------------------------------------------------------------------------------------------+
-| ContentHtml      | Inhalt in HTML                                                                             |
-+------------------+--------------------------------------------------------------------------------------------+
-| ContentText      | Inhalt als Text                                                                            |
-+------------------+--------------------------------------------------------------------------------------------+
+Die Datei ``header.tpl`` enthält alles, was im Frontend ausgegeben werden soll:
 
-Plugin-Boxen
+.. code-block:: smarty
+   :emphasize-lines: 2
+
+    extends file="{$parent_template_path}/layout/header.tpl"}
+    {block name='layout-header-content-all-starttags' prepend}
+        <script>
+            console.log('Diese Ausgabe erscheint in der Javascript-console und wurde erzeugt vom plugin: [PluginID]');
+        </script>
+        <div id="testing-purpose-alert" class="alert alert-warning text-center">
+            Dieser Shop dient ausschlie&szlig;lich Demonstrations- und Testzwecken.
+            Es k&ouml;nnen keine realen Bestellungen ausgef&uuml;hrt werden.
+        </div>
+    {/block}
+
+Weiter Erläuterungen zur Manipulation von Blöcken finden Sie im Abschnitt ":ref:`label_eigenestemplate_tpldateien`".
+
+.. _label_aufbau_boxen:
+
+Boxen
+-----
+
+Ein Plugin kann ebenso Boxen für das Shop-Frontend mitbringen. |br|
+Das Verzeichnis für diese Darstellungselemente befinden sich ebenfalls im Ordner ``frontend/``.
+
+**Beispiel bis Shop Version 4.x:**
+
+.. code-block:: console
+   :emphasize-lines: 11,12
+
+   includes/plugins/[PluginName]/
+   ├── version
+   │    ├── 100
+   │    │   └── ...
+   │    ├── 101
+   │    │   └── ...
+   │    └── 102
+   │        ├── adminmenu
+   │        ├── sql
+   │        └── frontend
+   │           ├── boxen
+   │           │   └── example_box.tpl
+   │           ├── css
+   │           │   └── ...
+   │           ├── js
+   │           │   └── ...
+   │           ├── template
+   │           │   └── ...
+   │           └── ...
+   ├── info.xml
+   ├── README.md
+   └── ...
+
+.. hint::
+
+    Von Shop 4.x zu Shop 5.0 hat sich der Name dieses Verzeichnisses von ``boxen/`` (Shop 4.x)
+    zu ``boxes/`` (ab Shop 5.0) geändert.
+
+**Beispiel ab Shop Version 5.x:**
+
+.. code-block:: console
+   :emphasize-lines: 5,6
+
+   plugins/[PluginName]/
+   ├── adminmenu
+   │   └─── ...
+   ├── frontend
+   │   ├── boxes
+   │   │   └── example_box.tpl
+   │   ├── css
+   │   │   └── ...
+   │   ├── js
+   │   │   └── ...
+   │   ├── template
+   │   │   └── ...
+   │   └── ...
+   ├── info.xml
+   ├── README.md
+   ├── Bootstrap.php
+   └── ...
+
+Wie Sie diese neuen Boxen in der ``info.xml`` definieren und dem Shop bekannt machen,
+finden Sie im Abschnitt ":ref:`label_infoxml_boxen`".
+
+
+.. _label_aufbau_widgets:
+
+Widgets
+-------
+
+Auch im Backend des Shops lassen sich via Plugin neue Elemente einfügen. So z.B. im Dashboard des
+Administrationsbereiches. |br|
+Hierfür werden *Widgets* eingesetzt. Wie sie der Logik des Shops bekannt gemacht werden, erfahren Sie im
+``info.xml``-Abschnitt ":ref:`label_infoxml_widgets`".
+
+Platziert werden die zugehörigen Dateien wie folgt:
+
+**bis Shop Version 4.x:**
+
+.. code-block:: console
+   :emphasize-lines: 9-11
+
+   includes/plugins/[PluginName]/
+   ├── version
+   │    ├── 100
+   │    │   └── ...
+   │    ├── 101
+   │    │   └── ...
+   │    └── 102
+   │        ├── adminmenu
+   │        │   └── widget
+   │        │       ├── examplewidgettemplate.tpl
+   │        │       └── class.WidgetInfo_jtl_test.php
+   │        ├── sql
+   │        └── frontend
+   ├── info.xml
+   ├── README.md
+   └── ...
+
+**ab Shop Version 5.x:**
+
+.. code-block:: console
+   :emphasize-lines: 6-8
+
+   plugins/[PluginName]/
+   ├── adminmenu
+   │   ├── ...
+   │   ├── templates
+   │   │   └── ..
+   │   └── widget
+   │       ├── examplewidgettemplate.tpl
+   │       └── Info.php
+   ├── frontend
+   │   └── ...
+   ├── info.xml
+   ├── README.md
+   ├── Bootstrap.php
+   └── ...
+
+
+.. _label_aufbau_license:
+
+Lizensierung
 ------------
 
-Dank der Boxenverwaltung des JTL-Shop ist der Shopbetreiber in der Lage, einfach und schnell Boxen im Shop zu verschieben, anzulegen oder zu löschen.
+Bei kommerziellen Shop-Plugins ist es möglich, eine eigene Klasse die Lizenzprüfung erledigen zu lassen. |br|
+Nähere Informationen hierzu, finden Sie im Kapitel ``info.xml`` unter dem Abschnitt ":ref:`label_infoxml_license`".
 
-Ein Plugin ist in der Lage, einen neuen Boxentyp anzulegen. Diese neue Box kann in der Boxenverwaltung ausgewählt und einer Stelle im JTL-Shop zugewiesen werden.
-Der Inhalt dieser Box wird durch ein Template, das der Box zugewiesen wird, gesteuert. Dort können beliebige Inhalte angezeigt werden.
+Ihre Klasse zur Lizenzprüfung erhält hier ihren Platz:
 
-Sie erstellen einen neuen Boxtypen, indem Sie folgenden neuen Block in der info.xml anlegen:
+**bis Shop verion 4.x:**
 
-.. code-block:: xml
+.. code-block:: console
+   :emphasize-lines: 11,12
 
-    <Boxes>
-     ...
-    </Boxes>
+   includes/plugins/[PluginName]/
+   ├── version
+   │    ├── 100
+   │    │   └── ...
+   │    ├── 101
+   │    │   └── ...
+   │    └── 102
+   │        ├── adminmenu
+   │        ├── frontend
+   │        ├── sql
+   │        └── licence
+   │            └── class.PluginLicence.php
+   ├── info.xml
+   ├── README.md
+   └── ...
 
-In diesem Block können beliebig viele Unterelemente vom Typ <Box> liegen. Das heißt, ein Plugin kann beliebig viele Boxentypen anlegen. Vergeben Sie stets eindeutige Boxennamen, damit sich diese nicht mit anderen Plugins überschneiden.
+**ab Shop Version 5.x:**
 
-XML Darstellung in der info.xml:
+.. code-block:: console
+   :emphasize-lines: 6,7
 
-.. code-block:: xml
+   plugins/[PluginName]/
+   ├── adminmenu
+   │   └── ...
+   ├── frontend
+   │   └── ...
+   ├── licence
+   │   └── PluginLicence.php
+   ├── info.xml
+   ├── README.md
+   ├── Bootstrap.php
+   └── ...
 
-    <Boxes>
-        <Box>
-            <Name>Template Switcher</Name>
-            <Available>0</Available>
-            <TemplateFile>box_tswitcher.tpl</TemplateFile>
-        </Box>
-    </Boxes>
-
-+--------------+--------------------------------------+
-| Elementname  | Beschreibung                         |
-+==============+======================================+
-| Name         | Name des Boxentyps                   |
-+--------------+--------------------------------------+
-| Available    | Seite in der Die Box verfügbar ist   |
-+--------------+--------------------------------------+
-| TemplateFile | Templatedatei mit dem Inhalt der Box |
-+--------------+--------------------------------------+
-
-Das folgende Beispiel demonstriert, wie man eine Plugin-Box zum Wechseln des Shoptemplates erzeugt.
-
-.. code-block:: xml
-
-    <?xml version='1.0' encoding="ISO-8859-1"?>
-    <jtlshop3plugin>
-        <Name>Template Switcher</Name>
-        <Description>Ändert in der Session das JTL-Shop Template.</Description>
-        <Author>Daniel Böhmer</Author>
-        <URL>http://www.jtl-software.de</URL>
-        <XMLVersion>100</XMLVersion>
-        <ShopVersion>300</ShopVersion>
-        <PluginID>dani_tswitcher</PluginID>
-        <Install>
-            <Version nr="100">
-                <CreateDate>2010-07-05</CreateDate>
-            </Version>
-            <Hooks>
-                <Hook id="132">switcher.php</Hook>
-                <Hook id="133">smarty.php</Hook>
-            </Hooks>
-            <Boxes>
-                <Box>
-                    <Name>Template Switcher</Name>
-                    <Available>0</Available>
-                    <TemplateFile>box_tswitcher.tpl</TemplateFile>
-                </Box>
-            </Boxes>
-        </Install>
-    </jtlshop3plugin>
-
-Plugin-Widgets
---------------
-
-Mit Plugin-Widgets lassen sich einfach und schnell eigene Widgets im Backend Dashboard des JTL-Shop implementieren.
-
-Ein Plugin ist in der Lage, ein AdminWidget anzulegen. Der Inhalt dieses Widgets wird durch ein Template gesteuert. Dort können beliebige Inhalte angezeigt werden.
-
-Sie erstellen einen neues AdminWidget, indem Sie folgenden neuen Block in der info.xml anlegen:
-
-.. code-block:: xml
-
-    <AdminWidget>
-     ...
-    </AdminWidget>
-
-In diesem Block können beliebig viele Unterelemente vom Typ <Widget> liegen. Das heißt, ein Plugin kann beliebig viele AdminWidgets anlegen.
-
-XML Darstellung in der info.xml:
-
-.. code-block:: xml
-
-    <AdminWidget>
-        <Widget>
-            <Title>Serverinfo (Plugin)</Title>
-            <Class>ServerInfo</Class>
-            <Container>center</Container>
-            <Description>Beispielplugin</Description>
-            <Pos>1</Pos>
-            <Expanded>1</Expanded>
-            <Active>1</Active>
-        </Widget>
-    </AdminWidget>
-
-+-------------+-----------------------------------------------------------------------+
-| Elementname | Beschreibung                                                          |
-+=============+=======================================================================+
-| Title*      | Titelüberschrift des AdminWidgets                                     |
-+-------------+-----------------------------------------------------------------------+
-| Class*      | Klassenname der PHP-Klasse die den Inhalt des Widgets bereitstellt    |
-+-------------+-----------------------------------------------------------------------+
-| Container*  | Position des Dashboardcontainers. Werte: center, left, right          |
-+-------------+-----------------------------------------------------------------------+
-| Description | Beschreibung des AdminWidgets                                         |
-+-------------+-----------------------------------------------------------------------+
-| Pos*        | Vertikale Position im Container. Ganzzahl (1 = oben)                  |
-+-------------+-----------------------------------------------------------------------+
-| Expanded*   | AdminWidget soll ausgeklappt oder minimiert sein. Ganzzahl, 0 oder 1. |
-+-------------+-----------------------------------------------------------------------+
-| Active*     | AdminWidget direkt sichtbar im Dashboard. Ganzzahl, 0 oder 1.         |
-+-------------+-----------------------------------------------------------------------+
+Der Platz, im Root-Verzeichnis Ihres Plugins, ist für Shop Version 4.x, wie auch für 5.x, der Gleiche. |br|
 
 
-Der Klassenname wird bis einschließlich Shop 4.X wie folgt generiert:
-
-* Annahme *<Class>Info</Class>* und die PluginId lautet *<PluginID>jtl_test</PluginID>*.
-
-* Dann muss im Verzeichnis "/version/xxx/adminmenu/widget/" des Plugins die folgende Klasse mit Namen "class.WidgetInfo_jtl_test.php" liegen: ``class.Widget + <Class> + _ + <PluginID> + .php``
-
-* Die Klasse in der Datei muss wie folgt lauten: ``Widget + <Class> +_ + <PluginID>`` und muss von der Basisklasse "WidgetBase" abgeleitet sein. In Beispiel also ``class WidgetInfo_jtl_test extends WidgetBase {}``
 
 
-Das folgende Beispiel demonstriert, wie man ein Plugin-Widget zum Anzeigen der Serverinformationen erzeugt:
-
-.. code-block:: xml
-
-    <?xml version='1.0' encoding="ISO-8859-1"?>
-    <jtlshop3plugin>
-        <Name>AdminWidget Serverinfo</Name>
-        <Description>Erstellt ein Widget mit Serverinformationen</Description>
-        <Author>JTL-Software-GmbH</Author>
-        <URL>https://www.jtl-software.de</URL>
-        <XMLVersion>100</XMLVersion>
-        <ShopVersion>310</ShopVersion>
-        <PluginID>dani_adminwidget</PluginID>
-        <Install>
-            <Version nr="100">
-                <CreateDate>2016-05-17</CreateDate>
-            </Version>
-            <AdminWidget>
-                <Widget>
-                    <Title>Serverinfo (Plugin)</Title>
-                    <Class>ServerInfo</Class>
-                    <Container>center</Container>
-                    <Description>Beispielplugin</Description>
-                    <Pos>1</Pos>
-                    <Expanded>1</Expanded>
-                    <Active>1</Active>
-                </Widget>
-            </AdminWidget>
-        </Install>
-    </jtlshop3plugin>
-
-Plugin-Widgets ab 5.0.0
------------------------
-
-Ab Shop 5.0.0 werden Klassen wie folgt generiert:
-
-* Annahme *<Class>Info</Class>* und die PluginId lautet *<PluginID>jtl_test</PluginID>*.
-
-* Dann muss im Verzeichnis "/adminmenu/widget/" des Plugins die Datei "Info.php" liegen
-
-* Die Klasse in der Datei muss den Namen "Info" haben und von der Basisklasse "AbstractWidget" abgeleitet sein.
-
-* Die Klasse muss im Namespace *<PluginID>* liegen
-
-* In Beispiel also
-
-.. code-block:: php
-
-	<?php
-
-	namespace jtl_test;
-
-	use JTL\Widgets\AbstractWidget;
-
-	class Info extends AbstractWidget
-	{
-	}
 
 
-Plugin-Exportformate
---------------------
+Exportformate
+-------------
 
-Mit einem Plugin-Exportformat lassen sich schnell und einfach Exportformate in den JTL-Shop integrieren.
-Sie erstellen einen neues AdminWidget, indem Sie folgenden neuen Block in der info.xml anlegen:
+Mit einem Plugin-Exportformat lassen sich neue Exportformate in den JTL-Shop integrieren.
+Sie erstellen einen neues Exportformate, indem Sie folgenden neuen Block in der info.xml anlegen:
 
 .. code-block:: xml
 
@@ -1291,58 +880,57 @@ XML Darstellung in der info.xml:
         </Format>
     </ExportFormat>
 
-+------------------------------+-------------------------------------------------------------------------------------------------------------+
-| Elementname                  | Beschreibung                                                                                                |
-+==============================+=============================================================================================================+
-| Name                         | Name des Exportformats                                                                                      |
-+------------------------------+-------------------------------------------------------------------------------------------------------------+
-| FileName                     | Dateiname ohne Pfadangabe in welche die Artikel exportiert werden sollen                                    |
-+------------------------------+-------------------------------------------------------------------------------------------------------------+
-| Header                       | Kopfzeile der Exportdatei                                                                                   |
-+------------------------------+-------------------------------------------------------------------------------------------------------------+
-| Content                      | Exportformat (Smarty)                                                                                       |
-+------------------------------+-------------------------------------------------------------------------------------------------------------+
-| footer                       | Fußzeile der Exportdatei                                                                                    |
-+------------------------------+-------------------------------------------------------------------------------------------------------------+
-| Encoding                     | ASCII oder UTF-8-Kodierung der Exportdatei                                                                  |
-+------------------------------+-------------------------------------------------------------------------------------------------------------+
-| VarCombiOption               | 1 = Väter- und Kindartikel exportieren / 2 = Nur Väterartikel exportieren / 3 = Nur Kindartikel exportieren |
-+------------------------------+-------------------------------------------------------------------------------------------------------------+
-| SplitSize                    | In wie große Dateien soll das Exportformat gesplittet werden? (Megabyte)                                    |
-+------------------------------+-------------------------------------------------------------------------------------------------------------+
-| OnlyStockGreaterZero         | Nur Produkte mit Lagerbestand über 0                                                                        |
-+------------------------------+-------------------------------------------------------------------------------------------------------------+
-| OnlyPriceGreaterZero         | Nur Produkte mit Preis über 0                                                                               |
-+------------------------------+-------------------------------------------------------------------------------------------------------------+
-| OnlyProductsWithDescription  | Nur Produkte mit Beschreibung                                                                               |
-+------------------------------+-------------------------------------------------------------------------------------------------------------+
-| ShippingCostsDeliveryCountry | Versandkosten Lieferland (ISO-Code)                                                                         |
-+------------------------------+-------------------------------------------------------------------------------------------------------------+
-| EncodingQuote                | Zeichenmaskierung für Anführungszeichen                                                                     |
-+------------------------------+-------------------------------------------------------------------------------------------------------------+
-| EncodingDoubleQuote          | Zeichenmaskierung für doppelte Anführungszeichen                                                            |
-+------------------------------+-------------------------------------------------------------------------------------------------------------+
-| EncodingSemicolon            | Zeichenmaskierung für Semikolons                                                                            |
-+------------------------------+-------------------------------------------------------------------------------------------------------------+
++------------------------------------+-------------------------------------------------------------------------------------------------------------+
+| Elementname                        | Beschreibung                                                                                                |
++====================================+=============================================================================================================+
+| ``<Name>``                         | Name des Exportformates                                                                                     |
++------------------------------------+-------------------------------------------------------------------------------------------------------------+
+| ``<FileName>``                     | Dateiname ohne Pfadangabe in welche die Artikel exportiert werden sollen                                    |
++------------------------------------+-------------------------------------------------------------------------------------------------------------+
+| ``<Header>``                       | Kopfzeile der Exportdatei                                                                                   |
++------------------------------------+-------------------------------------------------------------------------------------------------------------+
+| ``<Content>``                      | Exportformat (Smarty)                                                                                       |
++------------------------------------+-------------------------------------------------------------------------------------------------------------+
+| ``<footer>``                       | Fußzeile der Exportdatei                                                                                    |
++------------------------------------+-------------------------------------------------------------------------------------------------------------+
+| ``<Encoding>``                     | ASCII oder UTF-8-Kodierung der Exportdatei                                                                  |
++------------------------------------+-------------------------------------------------------------------------------------------------------------+
+| ``<VarCombiOption>``               | 1 = Väter- und Kindartikel exportieren / 2 = Nur Väterartikel exportieren / 3 = Nur Kindartikel exportieren |
++------------------------------------+-------------------------------------------------------------------------------------------------------------+
+| ``<SplitSize>``                    | In wie große Dateien soll das Exportformat gesplittet werden? (Megabyte)                                    |
++------------------------------------+-------------------------------------------------------------------------------------------------------------+
+| ``<OnlyStockGreaterZero>``         | Nur Produkte mit Lagerbestand über 0                                                                        |
++------------------------------------+-------------------------------------------------------------------------------------------------------------+
+| ``<OnlyPriceGreaterZero>``         | Nur Produkte mit Preis über 0                                                                               |
++------------------------------------+-------------------------------------------------------------------------------------------------------------+
+| ``<OnlyProductsWithDescription>``  | Nur Produkte mit Beschreibung                                                                               |
++------------------------------------+-------------------------------------------------------------------------------------------------------------+
+| ``<ShippingCostsDeliveryCountry>`` | Versandkosten Lieferland (ISO-Code)                                                                         |
++------------------------------------+-------------------------------------------------------------------------------------------------------------+
+| ``<EncodingQuote>``                | Zeichenmaskierung für Anführungszeichen                                                                     |
++------------------------------------+-------------------------------------------------------------------------------------------------------------+
+| ``<EncodingDoubleQuote>``          | Zeichenmaskierung für doppelte Anführungszeichen                                                            |
++------------------------------------+-------------------------------------------------------------------------------------------------------------+
+| ``<EncodingSemicolon>``            | Zeichenmaskierung für Semikolons                                                                            |
++------------------------------------+-------------------------------------------------------------------------------------------------------------+
 
+(*) Pflichtfeld
 
 Das folgende Beispiel demonstriert, wie ein Plugin-Exportformat aussehen könnte:
 
 .. code-block:: xml
 
     <?xml version='1.0' encoding="ISO-8859-1"?>
-    <jtlshop3plugin>
-        <Name>Exportformat Test</Name>
-        <Description>Beispielplugin zum Erstellen eines Exportformats</Description>
-        <Author>JTL-Software-GmbH, Daniel Boehmer</Author>
+    <jtlshopplugin>
+        <Name>Exportformat</Name>
+        <Description>Beispiel eines Exportformats</Description>
+        <Author>JTL-Software-GmbH</Author>
         <URL>http://www.jtl-software.de</URL>
         <XMLVersion>100</XMLVersion>
-        <ShopVersion>311</ShopVersion>
-        <PluginID>jtl_dani_export</PluginID>
+        <ShopVersion>500</ShopVersion>
+        <PluginID>jtl_export</PluginID>
+        <Version>1.0.0</Version>
         <Install>
-            <Version nr="100">
-                <CreateDate>2011-07-11</CreateDate>
-            </Version>
             <ExportFormat>
                 <Format>
                     <Name>Google Base (Plugin)</Name>
@@ -1363,269 +951,86 @@ Das folgende Beispiel demonstriert, wie ein Plugin-Exportformat aussehen könnte
                 </Format>
             </ExportFormat>
         </Install>
-    </jtlshop3plugin>
-
-Plugin-Lizensierung
--------------------
-
-Bei der Erstellung kommerzieller Shop-Plugins stellt sich die Frage, wie das eigene Plugin gegen unauthorisierte Weitergabe und Nutzung abgesichert werden kann.
-
-Ein Plugin kann dem Shopsystem mittels eines Blocks in der info.xml mitteilen, dass es unter einer bestimmten Lizenz steht und diese abgefragt werden muss.
-Dazu stellt der JTL-Shop eine Interface-Klasse zur Verfügung, die das Plugin nutzen kann, um eine bestimmte Lizenzmethode zu überschreiben.
-Diese Methode wird dann beim Aufruf des Plugins stets überprüft. Wie und mit welchen mitteln das Plugin seine Lizenz überprüft, muss selbst implementiert werden.
-Am Ende der Methode muss dem System nur mitgeteilt werden, ob die Prüfung erfolgreich war oder fehlschlug.
-
-Zwei Einträge müssen in die Info.xml eingefügt werden, damit die Lizenzprüfung ausgeführt wird:
-
-.. code-block:: xml
-
-    <LicenceClass>jtl_license_examplePluginLicence</LicenceClass>
-    <LicenceClassFile>class.PluginLicence.php</LicenceClassFile>
-
-Die o.g. Elemente befinden sich dabei direkt im Block <jtlshop3plugin>.
-
-Beispiel:
-
-.. code-block:: xml
-
-    <?xml version='1.0' encoding="ISO-8859-1"?>
-    <jtlshop3plugin>
-        <Name>Lizenz-Beispiel</Name>
-        <Description>Zeig alle Module des Shops an.</Description>
-        <Author>JTL-Software-GmbH</Author>
-        <URL>https://www.jtl-software.de</URL>
-        <XMLVersion>100</XMLVersion>
-        <ShopVersion>300</ShopVersion>
-        <PluginID>jtl_license_example</PluginID>
-        <LicenceClass>jtl_license_examplePluginLicence</LicenceClass>
-        <LicenceClassFile>class.PluginLicence.php</LicenceClassFile>
-        <Install>
-            <Version nr="100">
-                <CreateDate>2016-05-17</CreateDate>
-            </Version>
-            <Hooks>
-                <Hook id="132">example.php</Hook>
-            </Hooks>
-        </Install>
-    </jtlshop3plugin>
-
-+------------------+-------------------------------------------------------------------------------------------------------------------+
-| Elementname      | Beschreibung                                                                                                      |
-+==================+===================================================================================================================+
-| LicenceClass     | Gibt an, wie die Lizenzprüfungsklasse des Plugins heißt, die von der JTL-Shop Interface-Klasse PluginLizenz erbt. |
-+------------------+-------------------------------------------------------------------------------------------------------------------+
-| LicenceClassFile | Gibt den Dateinamen der Lizenzprüfungsklasse des Plugins an.                                                      |
-+------------------+-------------------------------------------------------------------------------------------------------------------+
+    </jtlshopplugin>
 
 
-Es gibt also eine bestimmte Klasse die das Plugin mitbringen muss, die die Lizenzprüfung durchführt. Name der Klasse und Dateiname der Klasse müssen in der info.xml angegeben werden.
-Die Lizenzklasse muss im Ordner licence liegen, der sich wiederum im Ordner der jeweiligen Pluginversion befindet. Beispiel: <pluginname>/version/100/licence/
-
-Im o.g. Beispiel lautet die Lizenzklasse vom Plugin ``jtl_license_examplePluginLicence`` und befindet sich in der Datei class.PluginLicence.php.
-
-Beispiel wie eine Lizenzprüfung im Minimalfall ausschauen könnte:
-
-.. code-block:: php
-
-    <?php
-
-    class jtl_license_exmplePluginLicence implements PluginLizenz
-    {
-        /**
-        * @param string $cLicence
-        * @return bool - true if successfully validated
-        */
-        public function checkLicence($cLicence)
-        {
-            return $cLicence === '123';
-        }
-    }
-
-Im Beispiel ist zu erkennen, dass die vorher in der info.xml angegebenen Klasse dani_extviewerPluginLicence von der Interfaceklasse PluginLizenz aus dem JTL-Shop erbt.
-Diese Interfaceklasse beinhaltet die Methode checkLicence die es zu überschreiben gilt. In unserem Beispiel fragt diese Methode den Parameter $cLicence ab. Die Methode muss den boolschen Wert true oder false zurückgeben, damit das System dieses Plugin ausführt oder nicht.
-
-Es bietet sich an, die Plugin-Lizenzklasse mit Hilfe von ionCube zu verschlüsseln, um Manipulationen vorzubeugen.
-
-.. note::
-    Der JTL-Shop selbst benötigt seit Version 4.00 kein Ioncube mehr - es ist also nicht garantiert, dass potentielle Käufer tatsächlich bereits Ioncube auf ihrem Server installiert haben.
-
-Checkbox-Spezialfunktionen
---------------------------
-
-Über die Pluginschnittstelle lassen sich Checkboxfunktionen registrieren, welche dann als Spezialfunktion in der Checkboxverwaltung dem Kunden zur Verfügung stehen.
-
-Beispiel-XML (muss in den install-Block):
-
-.. code-block:: xml
-
-    <CheckBoxFunction>
-        <Function>
-            <Name>Name der Spezialfunktion</Name>
-            <ID>meinespezialfunktion</ID>
-        </Function>
-    </CheckBoxFunction>
-
-Damit wird dann bei Plugin-Installation eine neue Zeile in tcheckboxfunktion geschrieben.
-
-Wird die Checkbox angehakt und ist dafür Spezialfunktion Plugin gewählt, dann wird die jeweilige Plugin php-Datei inkludiert.
-
-
-Statische Ressourcen
---------------------
-
-Seit Shop 4.00 haben Plugins die Möglichkeit, bereits in der XML-Definition statische Ressourcen - also JavaScript- und CSS-Dateien - anzugeben, die im Frontend auf allen Seiten eingebunden werden.
-Die hat den Vorteil, dass sie nicht einzeln über das Template bzw. via **pq()** eingebunden werden müssen und darüber hinaus auf direkt Minifiziert werden können.
-
-Die entsprechenden XML-Blöcke lauten *<CSS>* bzw. *<JS>* und sind direkte Unterknoten von *<Install>*. Die angegebenen Dateien müssen im Ordner ``<Plugin-Ordner>/version/<Versionsnummer>/frontend/js/`` respektive ``<Plugin-Ordner>/version/<Versionsnummer>/frontend/css/`` liegen.
-Beispiel für das Einfügen von jeweils zwei JavaScript- und CSS-Dateien:
-
-.. code-block:: xml
-
-    <CSS>
-        <file>
-            <name>datei1.css</name>
-            <priority>4</priority>
-        </file>
-        <file>
-            <name>datei2.css</name>
-            <priority>9</priority>
-        </file>
-    </CSS>
-    <JS>
-        <file>
-            <name>script1.js</name>
-            <priority>8</priority>
-            <position>body</position>
-        </file>
-        <file>
-            <name>script2.js</name>
-        </file>
-    </JS>
-
-
-CSS file:
-
-+-------------+----------------------------------------------------------------------------+
-| Elementname | Beschreibung                                                               |
-+=============+============================================================================+
-| name*       | Der Dateiname im Unterordner css/                                          |
-+-------------+----------------------------------------------------------------------------+
-| priority    | Die Priorität von 0\-10, je höher, desto später wird die Datei eingebunden |
-+-------------+----------------------------------------------------------------------------+
-
-JS file:
-
-+-------------+----------------------------------------------------------------------------+
-| Elementname | Beschreibung                                                               |
-+=============+============================================================================+
-| name*       | Der Dateiname im Unterordner js/                                           |
-+-------------+----------------------------------------------------------------------------+
-| priority    | Die Priorität von 0\-10, je höher, desto später wird die Datei eingebunden |
-+-------------+----------------------------------------------------------------------------+
-| position    | Die Position im DOM, an der die Datei eingebunden wird, "body" oder "head" |
-+-------------+----------------------------------------------------------------------------+
-
+.. _label_aufbau_portlets:
 
 Portlets (ab 5.0.0)
 -------------------
 
-Ab Shop 5.0.0 können Plugins auch Portlets definieren.
+Ab Shop 5.0.0 können Plugins auch :doc:`Portlets </shop_plugins/portlets>` für den *OnPageComposer* mitbringen.
 
-.. code-block:: xml
+**ab Shop Version 5.x:**
 
-    <Portlets>
-        <Portlet>
-            <Title>MyTitle</Title>
-            <Class>MyClass</Class>
-            <Group>content</Group>
-            <Active>1</Active>
-        </Portlet>
-        <Portlet>
-            <Title>MyOtherTitle</Title>
-            <Class>MyOtherClass</Class>
-            <Group>content</Group>
-            <Active>1</Active>
-        </Portlet>
-    </Portlets>
+.. code-block:: console
+   :emphasize-lines: 6-9
 
-Portlet:
+   plugins/[PluginName]/
+   ├── adminmenu
+   │   └── ...
+   ├── frontend
+   │   └── ...
+   ├── Portlets
+   │   └── MyPortlet
+   │       ├── MyPortlet.tpl
+   │       ├── MyPortlet.php
+   │       └── ...
+   ├── info.xml
+   ├── README.md
+   ├── Bootstrap.php
+   └── ...
 
-+-------------+----------------------------------------------------------------------------+
-| Elementname | Beschreibung                                                               |
-+=============+============================================================================+
-| Title*      | Der im OPC Control Center angzeigte Name                                   |
-+-------------+----------------------------------------------------------------------------+
-| Class*      | Der Klassenname                                                            |
-+-------------+----------------------------------------------------------------------------+
-| Group*      | Der Gruppenname                                                            |
-+-------------+----------------------------------------------------------------------------+
-| Active*     | Status (1 = aktiviert, 0 = deaktiviert)                                    |
-+-------------+----------------------------------------------------------------------------+
+Das Bekanntmachen der neuen Portlets geschieht via XML, in der ``info.xml``. |br|
+Nachzulesen im Abschnitt ":ref:`label_infoxml_portlets`".
 
-Portlets bestehen immer aus einer PHP-Datei mit dem Dateinamen ``<Class>.php``, die eine einzelne Klasse mit Name ``<Class>`` definiert und sich im Namespace ``Plugin\<PLUGIN-ID>\Portlets`` befinden muss.
-Es sollte ``JTL\OPC\Portlet`` extended werden. Zu jeder Klasse muss im Unterordner *Portlets/templates* eine Templatedatei mit den Namen ``<Class>.tpl`` existieren.
+Alles, was logisch zu einem Portlet gehört, befindet sich in einem eigenen Verzeichnis. |br|
+Wie ein solches Portlet-Unterverzeichnis im Einzelnen aussehen kann, lesen Sie
+im Abschnitt :doc:`Portlets </shop_plugins/portlets>`.
 
-Beispiel:
-
-.. code-block:: php
-
-	<?php declare(strict_types=1);
-
-	namespace Plugin\jtl_test\Portlets;
-
-	use JTL\OPC\Portlet;
-
-	class MyPortlet extends Portlet
-	{
-	}
-
-In diesem Beispiel müssten die Dateien **<SHOP-ROOT>/plugins/<PLUGIN-ID>/Portlets/MyPortlet.php** und **<SHOP-ROOT>/plugins/<PLUGIN-ID>/Portlets/templates/MyPortlet.tpl** existieren.
-
+.. _label_aufbau_blueprints:
 
 Blueprints (ab 5.0.0)
 ---------------------
 
-Ab Shop 5.0.0 können Plugins auch Blueprints, also Kompositionen von einzelnen Portlets - definieren.
+Ab Shop 5.0.0 können Plugins auch Blueprints, also *Kompositionen von einzelnen Portlets*, definieren. |br|
+Wie dies per ``info.xml`` dem Shop mitgeteilt wird lesen im Abschnitt ":ref:`label_infoxml_blueprints`".
 
-.. code-block:: xml
+**ab Shop Version 5.x:**
 
-    <Blueprints>
-        <Blueprint>
-            <Name>Bild links Text rechts</Name>
-            <JSONFile>image_4_text_8.json</JSONFile>
-        </Blueprint>
-        <Blueprint>
-            <Name>Text links Bild rechts</Name>
-            <JSONFile>text_8_image_4.json</JSONFile>
-        </Blueprint>
-    </Blueprints>
+.. code-block:: console
+   :emphasize-lines: 6-8
 
-
-Blueprint:
-
-+-------------+----------------------------------------------------------------------------+
-| Elementname | Beschreibung                                                               |
-+=============+============================================================================+
-| Name*       | Der im OPC Control Center angzeigte Name                                   |
-+-------------+----------------------------------------------------------------------------+
-| JSONFile*   | Name der JSON-Datei im Unterordner *blueprints* des Plugins                |
-+-------------+----------------------------------------------------------------------------+
-
-Erstellt werden können die json-Datein über den Export im OPC Control Center.
+   plugins/[PluginName]/
+   ├── adminmenu
+   │   └── ...
+   ├── frontend
+   │   └── ...
+   ├── blueprints
+   │   ├── image_4_text_8.json
+   │   └── text_8_image_4.json
+   ├── info.xml
+   ├── README.md
+   ├── Bootstrap.php
+   └── ...
 
 
-Änderungen von Shop Version 4.X zu 5.X.Y
-----------------------------------------
+----
+
+
+Änderungen von Shop Version 4.x zu Version 5.x
+----------------------------------------------
 
 Hier eine kurze Zusammenfassung aller Änderungen für Plugins von Shop 4.X zu 5.X
 
 * neuer Installationsordner: ``<SHOP-ROOT>/plugins/<PLUGIN-ID>/``
-* keine Unterodner ``version/<VERSION>/`` mehr
+* keine Unterordner ``version/<VERSION>/`` mehr
 * XML-Root ``<jtlshopplugin>`` statt ``<jtlshop3plugin>``
 * Knoten ``<Version>`` als Unterknoten von ``<Install>`` entfallen
-* ``<CreateDate>`` und ``<Version>`` müssen als Unterknoten von ``<jtlshopplugin>`` angegeben werden und nicht mehr von ``<Install><Version>``
+* ``<CreateDate>`` und ``<Version>`` müssen als Unterknoten von ``<jtlshopplugin>`` angegeben werden und nicht mehr
+  von ``<Install><Version>``
 * Plugins erhalten den Namespace ``Plugin\<PLUGIN-ID>``
 * Plugins können Migrationen ausführen aber keine SQL-Dateien
-* Widget-Klassen entsprechen der in der info.xml definierten Klasse und erfodern keinerlei weitere Konventionen
+* Widget-Klassen entsprechen der in der info.xml definierten Klasse und erfordern keinerlei weitere Konventionen
 * Plugins können Lokalisierungen anbieten
 * Plugins können Portlets und Blueprints definieren

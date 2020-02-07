@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -11,23 +11,27 @@ use JTL\Console\Command\Backup\FilesCommand;
 use JTL\Console\Command\Cache\DbesTmpCommand;
 use JTL\Console\Command\Cache\DeleteFileCacheCommand;
 use JTL\Console\Command\Cache\DeleteTemplateCacheCommand;
+use JTL\Console\Command\Command;
 use JTL\Console\Command\InstallCommand;
 use JTL\Console\Command\Migration\CreateCommand;
 use JTL\Console\Command\Migration\MigrateCommand;
 use JTL\Console\Command\Migration\StatusCommand;
 use JTL\Console\Command\Plugin\CreateCommandCommand;
 use JTL\Console\Command\Plugin\CreateMigrationCommand;
+use JTL\Console\Command\Model\CreateCommand as CreateModelCommand;
 use JTL\Plugin\Admin\Listing;
 use JTL\Plugin\Admin\ListingItem;
 use JTL\Plugin\Admin\Validation\LegacyPluginValidator;
 use JTL\Plugin\Admin\Validation\PluginValidator;
 use JTL\Shop;
 use JTL\XMLParser;
+use RuntimeException;
 use Symfony\Component\Console\Application as BaseApplication;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
 
 /**
  * Class Application
@@ -59,7 +63,11 @@ class Application extends BaseApplication
     public function __construct()
     {
         $this->devMode     = !empty(\APPLICATION_BUILD_SHA) && \APPLICATION_BUILD_SHA === '#DEV#' ?? false;
-        $this->isInstalled = \defined('DB_HOST') && Shop::Container()->getDB()->isConnected();
+        $this->isInstalled = \defined('BLOWFISH_KEY');
+        if ($this->isInstalled) {
+            $cache = Shop::Container()->getCache();
+            $cache->setJtlCacheConfig(Shop::Container()->getDB()->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING));
+        }
 
         parent::__construct('JTL-Shop', \APPLICATION_VERSION . ' - ' . ($this->devMode ? 'develop' : 'production'));
     }
@@ -80,7 +88,7 @@ class Application extends BaseApplication
         $listing         = new Listing($db, $cache, $validator, $modernValidator);
         $installed       = $listing->getInstalled();
         $sorted          = $listing->getAll($installed);
-        $filteredPlugins = $sorted->filter(function (ListingItem $i) {
+        $filteredPlugins = $sorted->filter(static function (ListingItem $i) {
             return $i->isShop5Compatible();
         });
 
@@ -95,24 +103,26 @@ class Application extends BaseApplication
                 ->in($plugin->getPath() . '/Commands');
 
             foreach ($finder->files() as $file) {
+                /** @var SplFileInfo $file */
                 $class = \sprintf(
                     'Plugin\\%s\\Commands\\%s',
                     $plugin->getDir(),
                     \str_replace('.' . $file->getExtension(), '', $file->getBasename())
                 );
                 if (!\class_exists($class)) {
-                    throw new \RuntimeException("Class '" . $class . "' does not exist");
+                    throw new RuntimeException("Class '" . $class . "' does not exist");
                 }
 
                 $command = new $class();
-                $command->setName($plugin->getId() . ':' . $command->getName());
+                /** @var Command $command */
+                $command->setName($plugin->getID() . ':' . $command->getName());
                 $this->add($command);
             }
         }
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function doRun(InputInterface $input, OutputInterface $output)
     {
@@ -124,7 +134,7 @@ class Application extends BaseApplication
     /**
      * @return ConsoleIO
      */
-    public function getIO()
+    public function getIO(): ConsoleIO
     {
         return $this->io;
     }
@@ -132,7 +142,7 @@ class Application extends BaseApplication
     /**
      * @inheritDoc
      */
-    protected function getDefaultCommands()
+    protected function getDefaultCommands(): array
     {
         $cmds = parent::getDefaultCommands();
 
@@ -144,11 +154,12 @@ class Application extends BaseApplication
             $cmds[] = new DeleteTemplateCacheCommand();
             $cmds[] = new DeleteFileCacheCommand();
             $cmds[] = new DbesTmpCommand();
+            $cmds[] = new CreateModelCommand();
 
             if ($this->devMode) {
                 $cmds[] = new CreateCommand();
             }
-            if (\defined('PLUGIN_DEV_MODE') && \PLUGIN_DEV_MODE) {
+            if (\PLUGIN_DEV_MODE === true) {
                 $cmds[] = new CreateMigrationCommand();
                 $cmds[] = new CreateCommandCommand();
             }

@@ -5,6 +5,7 @@
  */
 
 use JTL\Alert\Alert;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
@@ -145,12 +146,7 @@ if ($action === 'save') {
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successPackagingSaveMultiple'), 'successPackagingSaveMultiple');
     }
 }
-
-$customerGroups = $db->query(
-    'SELECT kKundengruppe, cName FROM tkundengruppe',
-    ReturnType::ARRAY_OF_OBJECTS
-);
-$taxClasses     = $db->query(
+$taxClasses = $db->query(
     'SELECT * FROM tsteuerklasse',
     ReturnType::ARRAY_OF_OBJECTS
 );
@@ -178,9 +174,9 @@ foreach ($packagings as $i => $packaging) {
     $packaging->cKundengruppe_arr = $customerGroup->cKundengruppe_arr;
 }
 
-$smarty->assign('oKundengruppe_arr', $customerGroups)
-    ->assign('oSteuerklasse_arr', $taxClasses)
-    ->assign('oVerpackung_arr', $packagings)
+$smarty->assign('customerGroups', CustomerGroup::getGroups())
+    ->assign('taxClasses', $taxClasses)
+    ->assign('packagings', $packagings)
     ->assign('step', $step)
     ->assign('pagination', $pagination)
     ->assign('action', $action)

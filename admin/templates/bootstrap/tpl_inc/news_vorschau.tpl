@@ -8,7 +8,7 @@
         <div class="card-body">
             {$oNews->getContent()}
 
-        {if $oNewsKommentar_arr|@count > 0}
+        {if $comments|@count > 0}
             <form method="post" action="news.php">
                 {$jtl_token}
                 <input type="hidden" name="news" value="1" />
@@ -26,15 +26,15 @@
                     <hr class="my-2">
                 </div>
 
-                {foreach $oNewsKommentar_arr as $oNewsKommentar}
+                {foreach $comments as $comment}
                     <div class="card ">
                         <div class="card-header">
                             <div class="form-check">
                                 <div class="custom-control custom-checkbox">
-                                    <input class="custom-control-input form-check-input" name="kNewsKommentar[]" type="checkbox" value="{$oNewsKommentar->getID()}" id="nk-{$oNewsKommentar->getID()}" />
-                                    <label class="custom-control-label form-check-label" for="nk-{$oNewsKommentar->getID()}">{$oNewsKommentar->getName()}, {$oNewsKommentar->getDateCreated()->format('d.m.Y H:i')}</label>
+                                    <input class="custom-control-input form-check-input" name="kNewsKommentar[]" type="checkbox" value="{$comment->getID()}" id="nk-{$comment->getID()}" />
+                                    <label class="custom-control-label form-check-label" for="nk-{$comment->getID()}">{$comment->getName()}, {$comment->getDateCreated()->format('d.m.Y H:i')}</label>
                                     <div class="btn-group">
-                                        <a href="news.php?news=1&kNews={$oNews->getID()}&kNewsKommentar={$oNewsKommentar->getID()}{if isset($cBackPage)}&{$cBackPage}{elseif isset($cTab)}&tab={$cTab}{/if}&nkedit=1&token={$smarty.session.jtl_token}"
+                                        <a href="news.php?news=1&kNews={$oNews->getID()}&kNewsKommentar={$comment->getID()}{if isset($cBackPage)}&{$cBackPage}{elseif isset($cTab)}&tab={$cTab}{/if}&nkedit=1&token={$smarty.session.jtl_token}"
                                            class="btn btn-link px-2"
                                            title="{__('modify')}"
                                            data-toggle="tooltip">
@@ -49,7 +49,7 @@
                             <hr class="mb-n3">
                         </div>
                         <div class="card-body">
-                            {$oNewsKommentar->getText()}
+                            {$comment->getText()}
                         </div>
                     </div>
                 {/foreach}

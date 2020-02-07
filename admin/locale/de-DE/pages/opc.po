@@ -46,8 +46,11 @@ msgstr "Aktuelle Version"
 msgid "Please wait..."
 msgstr "Bitte warten…"
 
-msgid "Edit Portlet"
-msgstr "Portlet bearbeiten"
+msgid "editPortletPrefix"
+msgstr " "
+
+msgid "editPortletPostfix"
+msgstr " bearbeiten"
 
 msgid "Save this Portlet as a blueprint"
 msgstr "Portlet als Vorlage speichern"
@@ -64,11 +67,11 @@ msgid "Styles"
 msgstr "Stile"
 
 msgid "Animation"
-msgstr "Animation"
+msgstr "Animation" 
 
 # Styles tab
 
-msgid "Font color"
+msgid "Font colour"
 msgstr "Schriftfarbe"
 
 msgid "Visibility"
@@ -77,11 +80,23 @@ msgstr "Sichtbarkeit"
 msgid "hide"
 msgstr "ausblenden"
 
-msgid "Background color"
+msgid "Background colour"
 msgstr "Hintergrundfarbe"
 
 msgid "Font size"
 msgstr "Schriftgröße"
+
+msgid "Default colour"
+msgstr "Standardfarbe"
+
+msgid "Border style"
+msgstr "Rahmenstil"
+
+msgid "Border colour"
+msgstr "Rahmenfarbe"
+
+msgid "Border radius"
+msgstr "Rahmenabrundung"
 
 # Animations tab
 
@@ -340,15 +355,6 @@ msgstr "Rahmen"
 msgid "padding"
 msgstr "Innenabstand"
 
-msgid "Border style"
-msgstr "Rahmenstil"
-
-msgid "Border color"
-msgstr "Rahmenfarbe"
-
-msgid "Border radius"
-msgstr "Rahmenabrundung"
-
 msgid "noAction"
 msgstr "Keine Aktion"
 
@@ -415,3 +421,29 @@ msgstr "Abgelaufen am"
 
 msgid "dropPortletHere"
 msgstr "Portlet hier einfügen"
+
+# Messages
+
+msgid "opcImportSuccess"
+msgstr "Entwurf wurde erfolgreich importiert! "
+
+msgid "opcImportUnmappedS"
+msgstr "Ein Bereich konnte nicht abgebildet werden, da dessen ID auf der aktuellen Seite nicht auftaucht."
+
+msgid "opcImportUnmappedP"
+msgstr "%s Bereiche konnten nicht abgebildet werden, da deren IDs auf der aktuellen Seite nicht auftauchen."
+
+msgid "opcImportSuccessTitle"
+msgstr "Entwurf erfolgreich importiert"
+
+msgid "btnTitleCopyArea"
+msgstr "Inhalt in sichtbaren Bereich übertragen"
+
+msgid "offscreenAreasDivider"
+msgstr "Nicht abgebildete Bereiche"
+
+msgid "yesDeleteArea"
+msgstr "Diesen Bereich verwerfen"
+
+msgid "Cancel"
+msgstr "Abbrechen"

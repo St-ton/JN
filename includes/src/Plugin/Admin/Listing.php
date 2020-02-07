@@ -8,18 +8,17 @@ namespace JTL\Plugin\Admin;
 
 use DirectoryIterator;
 use Illuminate\Support\Collection;
+use InvalidArgumentException;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
-use JTL\Mapper\PluginValidation;
 use JTL\Plugin\Admin\Validation\ValidatorInterface;
 use JTL\Plugin\InstallCode;
-use JTL\Plugin\LegacyPlugin;
 use JTL\Plugin\LegacyPluginLoader;
-use JTL\Plugin\PluginInterface;
 use JTL\Plugin\PluginLoader;
 use JTL\Shop;
 use JTL\XMLParser;
+use stdClass;
 use function Functional\map;
 
 /**
@@ -28,9 +27,9 @@ use function Functional\map;
  */
 final class Listing
 {
-    private const PLUGINS_DIR = \PFAD_ROOT . \PFAD_PLUGIN;
+    private const LEGACY_PLUGINS_DIR = \PFAD_ROOT . \PFAD_PLUGIN;
 
-    private const EXTENSIONS_DIR = \PFAD_ROOT . \PLUGIN_DIR;
+    private const PLUGINS_DIR = \PFAD_ROOT . \PLUGIN_DIR;
 
     /**
      * @var DbInterface
@@ -45,17 +44,17 @@ final class Listing
     /**
      * @var ValidatorInterface
      */
-    private $validator;
+    private $legacyValidator;
 
     /**
      * @var ValidatorInterface
      */
-    private $modernValidator;
+    private $validator;
 
     /**
      * @var Collection
      */
-    private $plugins;
+    private $items;
 
     /**
      * Listing constructor.
@@ -72,62 +71,55 @@ final class Listing
     ) {
         $this->db              = $db;
         $this->cache           = $cache;
-        $this->validator       = $validator;
-        $this->modernValidator = $modernValidator;
-        $this->plugins         = new Collection();
+        $this->legacyValidator = $validator;
+        $this->validator       = $modernValidator;
+        $this->items           = new Collection();
     }
 
     /**
-     * @return Collection
+     * @return Collection - Collection of ListingItems
      * @former gibInstalliertePlugins()
      */
     public function getInstalled(): Collection
     {
-        $plugins = new Collection();
-        $mapper  = new PluginValidation();
+        $items = new Collection();
         try {
             $all = $this->db->selectAll('tplugin', [], [], 'kPlugin, bExtension', 'cName, cAutor, nPrio');
-        } catch (\InvalidArgumentException $e) {
-            $all = Shop::Container()->getDB()->query(
+        } catch (InvalidArgumentException $e) {
+            $all = $this->db->query(
                 'SELECT kPlugin, 0 AS bExtension
                     FROM tplugin
                     ORDER BY cName, cAutor, nPrio',
                 ReturnType::ARRAY_OF_OBJECTS
             );
         }
-        $pluginIDs       = map(
+        $data         = map(
             $all,
-            function (\stdClass $e) {
+            static function (stdClass $e) {
                 $e->kPlugin    = (int)$e->kPlugin;
                 $e->bExtension = (int)$e->bExtension;
 
                 return $e;
             }
         );
-        $pluginLoader    = new LegacyPluginLoader($this->db, $this->cache);
-        $extensionLoader = new PluginLoader($this->db, $this->cache);
-        foreach ($pluginIDs as $pluginID) {
-            if ($pluginID->bExtension === 1) {
-                $plugin = $extensionLoader->init($pluginID->kPlugin, true);
-            } else {
-                $pluginLoader->setPlugin(new LegacyPlugin());
-                $plugin = $pluginLoader->init($pluginID->kPlugin, true);
+        $legacyLoader = new LegacyPluginLoader($this->db, $this->cache);
+        $pluginLoader = new PluginLoader($this->db, $this->cache);
+        foreach ($data as $dataItem) {
+            $item           = new ListingItem();
+            $plugin         = (int)$dataItem->bExtension === 1
+                ? $pluginLoader->init($dataItem->kPlugin, true)
+                : $legacyLoader->init($dataItem->kPlugin, true);
+            $currentVersion = $plugin->getCurrentVersion();
+            if ($currentVersion->greaterThan($plugin->getMeta()->getSemVer())) {
+                $plugin->getMeta()->setUpdateAvailable($currentVersion);
             }
-            $plugin->getMeta()->setUpdateAvailable(
-                $plugin->getCurrentVersion()->greaterThan($plugin->getMeta()->getSemVer())
-            );
-            if ($plugin->getMeta()->isUpdateAvailable()) {
-                $code = $this->validator->validateByPluginID($pluginID->kPlugin, true);
-                if ($code !== InstallCode::OK) {
-                    // @todo
-                    $plugin->cFehler = $mapper->map($code, $plugin->getPluginID());
-                }
-            }
-            $plugins->push($plugin);
-            unset($plugin);
+            $item->loadFromPlugin($plugin);
+            $item->setInstalled(true);
+            $item->setAvailable(true);
+            $items->add($item);
         }
 
-        return $plugins;
+        return $items;
     }
 
     /**
@@ -137,15 +129,46 @@ final class Listing
      */
     public function getAll(Collection $installed): Collection
     {
-        $installedPlugins = $installed->map(function (PluginInterface $item) {
-            return $item->getPaths()->getBaseDir();
+        $installedItems = $installed->map(static function (ListingItem $item) {
+            return $item->getPath();
         });
-        $parser           = new XMLParser();
-        $this->parsePluginsDir($parser, self::PLUGINS_DIR, $installedPlugins);
-        $this->parsePluginsDir($parser, self::EXTENSIONS_DIR, $installedPlugins);
+        $parser         = new XMLParser();
+        $this->parsePluginsDir($parser, self::PLUGINS_DIR, $installedItems);
+        $this->parsePluginsDir($parser, self::LEGACY_PLUGINS_DIR, $installedItems);
         $this->sort();
 
-        return $this->plugins;
+        return $this->items;
+    }
+
+    /**
+     * check if legacy plugins can be updated to modern ones
+     *
+     * @param Collection $installed
+     * @param Collection $all
+     */
+    public function checkLegacyToModernUpdates(Collection $installed, Collection $all): void
+    {
+        $legacyItems = $installed->filter(static function (ListingItem $e) {
+            return $e->isLegacy() === true;
+        });
+        $items       = $all->filter(static function (ListingItem $e) {
+            return $e->isLegacy() === false;
+        });
+        foreach ($legacyItems as $legacyItem) {
+            /** @var ListingItem $legacyItem */
+            /** @var ListingItem $hit */
+            $pid = $legacyItem->getPluginID();
+            $hit = $items->filter(static function (ListingItem $e) use ($pid) {
+                return $e->getPluginID() === $pid;
+            })->first();
+            if ($hit === null) {
+                continue;
+            }
+            if ($hit->getVersion()->greaterThan($legacyItem->getVersion())) {
+                $legacyItem->setUpdateAvailable($hit->getVersion());
+                $legacyItem->setUpdateFromDir($hit->getPath());
+            }
+        }
     }
 
     /**
@@ -154,16 +177,17 @@ final class Listing
      * @param Collection $installedPlugins
      * @return Collection
      */
-    private function parsePluginsDir(XMLParser $parser, string $pluginDir, $installedPlugins): Collection
+    private function parsePluginsDir(XMLParser $parser, string $pluginDir, Collection $installedPlugins): Collection
     {
-        $isExtension = $pluginDir === self::EXTENSIONS_DIR;
-        $validator   = $isExtension
-            ? $this->modernValidator
-            : $this->validator;
+        $modern    = $pluginDir === self::PLUGINS_DIR;
+        $validator = $modern
+            ? $this->validator
+            : $this->legacyValidator;
 
         if (!\is_dir($pluginDir)) {
-            return $this->plugins;
+            return $this->items;
         }
+        $gettext = Shop::Container()->getGetText();
         foreach (new DirectoryIterator($pluginDir) as $fileinfo) {
             if ($fileinfo->isDot() || !$fileinfo->isDir()) {
                 continue;
@@ -178,14 +202,14 @@ final class Listing
             $xml['cVerzeichnis'] = $dir;
             $xml['cFehlercode']  = $code;
             $item                = new ListingItem();
-            $plugin              = $item->parseXML($xml);
-            $plugin->setPath($pluginDir . $dir);
+            $item->parseXML($xml);
+            $item->setPath($pluginDir . $dir);
 
-            if ($isExtension) {
-                Shop::Container()->getGetText()->loadPluginItemLocale('base', $item);
-                $msgid = $item->getID() . '_desc';
+            if ($modern) {
+                $item->setIsLegacy(false);
+                $gettext->loadPluginItemLocale('base', $item);
+                $msgid = $item->getPluginID() . '_desc';
                 $desc  = __($msgid);
-
                 if ($desc !== $msgid) {
                     $item->setDescription($desc);
                 } else {
@@ -194,20 +218,26 @@ final class Listing
                 $item->setAuthor(__($item->getAuthor()));
                 $item->setName(__($item->getName()));
             }
-
-            if ($code === InstallCode::DUPLICATE_PLUGIN_ID && $installedPlugins->contains($dir)) {
-                $plugin->setInstalled(true);
-                $plugin->setHasError(false);
-                $plugin->setIsShop4Compatible(true);
-            } elseif ($code === InstallCode::OK_LEGACY || $code === InstallCode::OK) {
-                $plugin->setAvailable(true);
-                $plugin->setHasError(false);
-                $plugin->setIsShop4Compatible($code === InstallCode::OK);
+            if (!$modern && $this->items->contains(static function (ListingItem $e) use ($dir) {
+                    return $e->isLegacy() === false && $e->getDir() === $dir;
+            })) {
+                // do not add legacy plugins to list when there is a modern variant for it
+                continue;
             }
-            $this->plugins[] = $plugin;
+            if ($code === InstallCode::DUPLICATE_PLUGIN_ID && $installedPlugins->contains($dir)) {
+                $item->setInstalled(true);
+                $item->setHasError(false);
+                $item->setIsShop4Compatible(true);
+            } elseif ($code === InstallCode::OK_LEGACY || $code === InstallCode::OK) {
+                $item->setAvailable(true);
+                $item->setHasError(false);
+                $item->setIsShop4Compatible($code === InstallCode::OK);
+            }
+
+            $this->items[] = $item;
         }
 
-        return $this->plugins;
+        return $this->items;
     }
 
     /**
@@ -215,7 +245,7 @@ final class Listing
      */
     private function sort(): void
     {
-        $this->plugins->sortBy(function (ListingItem $item) {
+        $this->items = $this->items->sortBy(static function (ListingItem $item) {
             return \mb_convert_case($item->getName(), \MB_CASE_LOWER);
         });
     }

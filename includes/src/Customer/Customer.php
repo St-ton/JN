@@ -740,14 +740,14 @@ class Customer
                 return false;
             }
             foreach ($members1 as $member) {
-                if (!isset($customer2->{$member})) {
+                if (!isset($customer2->$member)) {
                     return false;
                 }
-                $value1 = $customer1->{$member};
+                $value1 = $customer1->$member;
                 $value2 = null;
                 foreach ($members2 as $member2) {
                     if ($member == $member2) {
-                        $value2 = $customer2->{$member};
+                        $value2 = $customer2->$member;
                     }
                 }
                 if ($value1 != $value2) {
@@ -1178,7 +1178,7 @@ class Customer
         if ($this->cLand !== null) {
             $cISOLand = $this->cLand;
             $sel_var  = 'cDeutsch';
-            if (mb_convert_case($lang->cISO, MB_CASE_LOWER) !== 'ger') {
+            if (\mb_convert_case($lang->cISO, \MB_CASE_LOWER) !== 'ger') {
                 $sel_var = 'cEnglisch';
             }
             $land = Shop::Container()->getDB()->select(

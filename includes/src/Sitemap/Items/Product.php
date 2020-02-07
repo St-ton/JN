@@ -8,7 +8,7 @@ namespace JTL\Sitemap\Items;
 
 use JTL\Helpers\URL;
 use JTL\Media\Image;
-use JTL\Media\MediaImage;
+use JTL\Media\Image\Product as ProductImage;
 
 /**
  * Class Product
@@ -24,8 +24,8 @@ final class Product extends AbstractItem
         if ($this->config['sitemap']['sitemap_googleimage_anzeigen'] !== 'Y') {
             return;
         }
-        if (($number = MediaImage::getPrimaryNumber(Image::TYPE_PRODUCT, $this->data->kArtikel)) !== null) {
-            $googleImage = MediaImage::getThumb(
+        if (($number = ProductImage::getPrimaryNumber(Image::TYPE_PRODUCT, (int)$this->data->kArtikel)) !== null) {
+            $googleImage = ProductImage::getThumb(
                 Image::TYPE_PRODUCT,
                 $this->data->kArtikel,
                 $this->data,
@@ -53,8 +53,8 @@ final class Product extends AbstractItem
     public function generateData($data, array $languages): void
     {
         $this->setData($data);
-        $this->setPrimaryKeyID($data->kArtikel);
-        $this->setLanguageData($languages, $data->langID);
+        $this->setPrimaryKeyID((int)$data->kArtikel);
+        $this->setLanguageData($languages, (int)$data->langID);
         $this->generateImage();
         $this->generateLocation();
         $this->setChangeFreq(\FREQ_DAILY);

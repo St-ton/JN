@@ -8,421 +8,411 @@
 
 /** @var array $adminMenu */
 $adminMenu = [
-    __('Presentation')   => (object)[
-        'icon'  => 'display',
-        'items' => [
-            __('Template settings') => (object)[
-                'link'   => 'shoptemplate.php',
-                'rights' => 'DISPLAY_TEMPLATE_VIEW',
-            ],
-            __('Images')   => [
-                __('Settings')      => (object)[
-                    'link'   => 'bilder.php',
-                    'rights' => 'SETTINGS_IMAGES_VIEW',
-                    'section' => CONF_BILDER,
-                ],
-                __('Watermark')     => (object)[
-                    'link'   => 'branding.php',
-                    'rights' => 'DISPLAY_BRANDING_VIEW',
-                ],
-                __('Shop logo')     => (object)[
-                    'link'   => 'shoplogouploader.php',
-                    'rights' => 'ORDER_AGB_WRB_VIEW',
-                ],
-                __('Item overlays') => (object)[
-                    'link'   => 'suchspecialoverlay.php',
-                    'rights' => 'ORDER_AGB_WRB_VIEW',
-                ],
-                __('Image administration') => (object)[
-                    'link'   => 'bilderverwaltung.php',
-                    'rights' => 'DISPLAY_IMAGES_VIEW',
-                ],
-            ],
-        ]
-    ],
-    __('Contents')       => (object)[
-        'icon'  => 'content',
-        'items' => [
-            __('Item')    => [
-                __('Selection wizard') => (object)[
-                    'link'   => 'auswahlassistent.php',
-                    'rights' => 'EXTENSION_SELECTIONWIZARD_VIEW',
-                    'section' => CONF_AUSWAHLASSISTENT,
-                ],
-                __('Item details')     => (object)[
-                    'link'   => 'einstellungen.php?kSektion=' . CONF_ARTIKELDETAILS,
-                    'rights' => 'SETTINGS_ARTICLEDETAILS_VIEW',
-                    'section' => CONF_ARTIKELDETAILS,
-                ],
-                __('Customer reviews') => (object)[
-                    'link'   => 'bewertung.php',
-                    'rights' => 'MODULE_VOTESYSTEM_VIEW',
-                    'section' => CONF_BEWERTUNG,
-                ],
-                __('Price history')    => (object)[
-                    'link'   => 'preisverlauf.php',
-                    'rights' => 'MODULE_PRICECHART_VIEW',
-                    'section' => CONF_PREISVERLAUF,
-                ],
-                __('Warehouse')        => (object)[
-                    'link'   => 'warenlager.php',
-                    'rights' => 'WAREHOUSE_VIEW',
-                ],
-            ],
-            __('Pages')   => [
-                __('OnPage Composer')         => (object)[
-                    'link'   => 'opc-controlcenter.php',
-                    'rights' => 'CONTENT_PAGE_VIEW',
-                ],
-                __('Front page')              => (object)[
-                    'link'   => 'einstellungen.php?kSektion=' . CONF_STARTSEITE,
-                    'rights' => 'SETTINGS_STARTPAGE_VIEW',
-                    'section' => CONF_STARTSEITE,
-                ],
-                __('GTC/cancellation policy') => (object)[
-                    'link'   => 'agbwrb.php',
-                    'rights' => 'ORDER_AGB_WRB_VIEW',
-                ],
-                __('Own pages')               => (object)[
-                    'link'   => 'links.php',
-                    'rights' => 'CONTENT_PAGE_VIEW',
-                ],
-                __('News')                    => (object)[
-                    'link'   => 'news.php',
-                    'rights' => 'CONTENT_NEWS_SYSTEM_VIEW',
-                    'section' => CONF_NEWS,
-                ],
-                __('Box settings')            => (object)[
-                    'link'   => 'einstellungen.php?kSektion=' . CONF_BOXEN,
-                    'rights' => 'SETTINGS_BOXES_VIEW',
-                    'section' => CONF_BOXEN,
-                ],
-                __('Boxes')                   => (object)[
-                    'link'   => 'boxen.php',
-                    'rights' => 'BOXES_VIEW',
-                ],
-                //            __('IT-Recht Kanzlei') => (object)[
-                //                // TODO: correct link and rights
-                //                'link' => 'sprache.php',
-                //                'rights' => 'LANGUAGE_VIEW',
-                //                'partner' => true
-                //            ],
-                //            __('Trustbadge Reviews') => (object)[
-                //                'link' => 'premiumplugin.php?plugin_id=agws_ts_features',
-                //                'rights' => 'PLUGIN_ADMIN_VIEW',
-                //                'partner' => true
-                //            ],
-            ],
-            __('Forms')   => [
-                __('Form settings')            => (object)[
-                    'link'   => 'einstellungen.php?kSektion=' . CONF_KUNDEN,
-                    'rights' => 'SETTINGS_CUSTOMERFORM_VIEW',
-                    'section' => CONF_KUNDEN,
-                ],
-                __('Contact form')             => (object)[
-                    'link'   => 'kontaktformular.php',
-                    'rights' => 'SETTINGS_CONTACTFORM_VIEW',
-                    'section' => CONF_KONTAKTFORMULAR,
-                ],
-                __('Custom form fields')       => (object)[
-                    'link'   => 'kundenfeld.php',
-                    'rights' => 'ORDER_CUSTOMERFIELDS_VIEW',
-                    'section' => CONF_KUNDENFELD,
-                ],
-                __('Check box administration') => (object)[
-                    'link'   => 'checkbox.php',
-                    'rights' => 'CHECKBOXES_VIEW',
-                ],
-            ],
-            __('E-Mails') => [
-                __('Settings')   => (object)[
-                    'link'   => 'einstellungen.php?kSektion=' . CONF_EMAILS,
-                    'rights' => 'SETTINGS_EMAILS_VIEW',
-                    'section' => CONF_EMAILS,
-                ],
-                __('Templates')  => (object)[
-                    'link'   => 'emailvorlagen.php',
-                    'rights' => 'CONTENT_EMAIL_TEMPLATE_VIEW',
-                ],
-                __('Reports')    => (object)[
-                    'link'   => 'statusemail.php',
-                    'rights' => 'EMAIL_REPORTS_VIEW',
-                ],
-                __('Blacklist')  => (object)[
-                    'link'   => 'emailblacklist.php',
-                    'rights' => 'SETTINGS_EMAIL_BLACKLIST_VIEW',
-                    'section' => CONF_EMAILBLACKLIST,
-                ],
-                __('E-mail log') => (object)[
-                    'link'   => 'emailhistory.php',
-                    'rights' => 'EMAILHISTORY_VIEW',
-                ],
-            ],
-        ]
-    ],
-    __('Purchases')      => (object)[
-        'icon'  => 'purchase',
-        'items' => [
-            __('Shopping cart') => [
-                __('Shopping cart settings') => (object)[
-                    'link'   => 'einstellungen.php?kSektion=' . CONF_KAUFABWICKLUNG,
-                    'rights' => 'SETTINGS_BASKET_VIEW',
-                    'section' => CONF_KAUFABWICKLUNG,
-                ],
-                __('Saved baskets')          => (object)[
-                    'link'   => 'warenkorbpers.php',
-                    'rights' => 'MODULE_SAVED_BASKETS_VIEW',
-                ],
-            ],
-            __('Method of payment') => (object)[
-                'link'   => 'zahlungsarten.php',
-                'rights' => 'ORDER_PAYMENT_VIEW',
-            ],
-            __('Delivery')      => [
-                __('Shipping methods')     => (object)[
-                    'link'   => 'versandarten.php',
-                    'rights' => 'ORDER_SHIPMENT_VIEW',
-                ],
-                __('Additional packaging') => (object)[
-                    'link'   => 'zusatzverpackung.php',
-                    'rights' => 'ORDER_PACKAGE_VIEW',
-                ],
-            ],
-        ]
-    ],
     __('Marketing')      => (object)[
         'icon'  => 'marketing',
         'items' => [
-            __('Customer loyalty') => [
-                __('Surveys')                 => (object)[
-                    'link'   => 'umfrage.php',
-                    'rights' => 'EXTENSION_VOTE_VIEW',
-                    'section' => CONF_UMFRAGE,
+            __('Orders')        => (object)[
+                'link'   => 'bestellungen.php',
+                'permissions' => 'ORDER_VIEW',
+            ],
+            __('Promotions') => [
+                __('Newsletter')              => (object)[
+                    'link'   => 'newsletter.php',
+                    'permissions' => 'MODULE_NEWSLETTER_VIEW',
+                    'section' => CONF_NEWSLETTER,
                 ],
-                __('Customers win customers') => (object)[
-                    'link'   => 'kundenwerbenkunden.php',
-                    'rights' => 'MODULE_CAC_VIEW',
-                    'section' => CONF_KUNDENWERBENKUNDEN,
+                __('Blog posts')              => (object)[
+                    'link'   => 'news.php',
+                    'permissions' => 'CONTENT_NEWS_SYSTEM_VIEW',
+                    'section' => CONF_NEWS,
                 ],
                 __('Coupons')                 => (object)[
                     'link'   => 'kupons.php',
-                    'rights' => 'ORDER_COUPON_VIEW',
+                    'permissions' => 'ORDER_COUPON_VIEW',
                 ],
-                __('Free gift')              => (object)[
+                __('Free gifts')               => (object)[
                     'link'   => 'gratisgeschenk.php',
-                    'rights' => 'MODULE_GIFT_VIEW',
+                    'permissions' => 'MODULE_GIFT_VIEW',
                 ],
-                __('Wish list')               => (object)[
-                    'link'   => 'wunschliste.php',
-                    'rights' => 'MODULE_WISHLIST_VIEW',
-                ],
-                __('Comparison list')         => (object)[
-                    'link'   => 'vergleichsliste.php',
-                    'rights' => 'MODULE_COMPARELIST_VIEW',
-                    'section' => CONF_VERGLEICHSLISTE,
-                ],
-                __('Newsletter')              => (object)[
-                    'link'   => 'newsletter.php',
-                    'rights' => 'MODULE_NEWSLETTER_VIEW',
-                    'section' => CONF_NEWSLETTER,
-                ],
-            ],
-            __('Publicity')        => [
-                __('Banner')    => (object)[
-                    'link'   => 'banner.php',
-                    'rights' => 'DISPLAY_BANNER_VIEW',
-                ],
-                __('Slider')    => (object)[
-                    'link'   => 'slider.php',
-                    'rights' => 'SLIDER_VIEW',
-                ],
-                __('Campaigns') => (object)[
-                    'link'   => 'kampagne.php',
-                    'rights' => 'STATS_CAMPAIGN_VIEW',
+                __('Recommendations') => (object)[
+                    'link'   => 'kundenwerbenkunden.php',
+                    'permissions' => 'MODULE_CAC_VIEW',
+                    'section' => CONF_KUNDENWERBENKUNDEN,
                 ],
             ],
             __('Statistics')       => [
-                __('Sales revenues')    => (object)[
+                __('Sales')          => (object)[
                     'link'   => 'statistik.php?s=4',
-                    'rights' => 'STATS_EXCHANGE_VIEW',
+                    'permissions' => 'STATS_EXCHANGE_VIEW',
                 ],
-                __('Visitors')          => (object)[
+                __('Campaigns')               => (object)[
+                    'link'   => 'kampagne.php#globalestats',
+                    'permissions' => 'STATS_CAMPAIGN_VIEW',
+                ],
+                __('Baskets')                 => (object)[
+                    'link'   => 'warenkorbpers.php',
+                    'permissions' => 'MODULE_SAVED_BASKETS_VIEW',
+                ],
+                __('Coupon statistics')       => (object)[
+                    'link'   => 'kuponstatistik.php',
+                    'permissions' => 'STATS_COUPON_VIEW',
+                ],
+                __('Visitors')                => (object)[
                     'link'   => 'statistik.php?s=1',
-                    'rights' => 'STATS_VISITOR_VIEW',
+                    'permissions' => 'STATS_VISITOR_VIEW',
                 ],
-                __('Customer origin')   => (object)[
+                __('Referrer pages')         => (object)[
                     'link'   => 'statistik.php?s=2',
-                    'rights' => 'STATS_VISITOR_LOCATION_VIEW',
+                    'permissions' => 'STATS_VISITOR_LOCATION_VIEW',
+                ],
+                __('Entry pages')       => (object)[
+                    'link'   => 'statistik.php?s=5',
+                    'permissions' => 'STATS_LANDINGPAGES_VIEW',
                 ],
                 __('Search engines')    => (object)[
                     'link'   => 'statistik.php?s=3',
-                    'rights' => 'STATS_CRAWLER_VIEW',
+                    'permissions' => 'STATS_CRAWLER_VIEW',
                 ],
-                __('Start pages')       => (object)[
-                    'link'   => 'statistik.php?s=5',
-                    'rights' => 'STATS_LANDINGPAGES_VIEW',
+                __('Search queries')          => (object)[
+                    'link'   => 'livesuche.php',
+                    'permissions' => 'MODULE_LIVESEARCH_VIEW',
                 ],
-                __('Coupon statistics') => (object)[
-                    'link'   => 'kuponstatistik.php',
-                    'rights' => 'STATS_COUPON_VIEW',
-                ],
+            ],
+            __('Reports')    => (object)[
+                'link'   => 'statusemail.php',
+                'permissions' => 'EMAIL_REPORTS_VIEW',
             ],
         ]
     ],
-    __('Import/Export')  => (object)[
-        'icon'  => 'import-export',
+    __('Appearance')      => (object)[
+        'icon'  => 'styling',
         'items' => [
-            __('Import') => [
-                __('Customer data import')        => (object)[
-                    'link'   => 'kundenimport.php',
-                    'rights' => 'IMPORT_CUSTOMER_VIEW',
+            __('OnPage Composer')  => (object)[
+                'link'   => 'opc-controlcenter.php',
+                'permissions' => 'OPC_VIEW',
+            ],
+            __('Default views')    => [
+                __('Home page')              => (object)[
+                    'link'   => 'einstellungen.php?kSektion=' . CONF_STARTSEITE,
+                    'permissions' => 'SETTINGS_STARTPAGE_VIEW',
+                    'section' => CONF_STARTSEITE,
                 ],
-                __('Import newsletter recipient') => (object)[
-                    'link'   => 'newsletterimport.php',
-                    'rights' => 'IMPORT_NEWSLETTER_RECEIVER_VIEW',
+                __('Item overview')           => (object)[
+                    'link'   => 'navigationsfilter.php',
+                    'permissions' => 'SETTINGS_NAVIGATION_FILTER_VIEW',
+                    'section' => CONF_NAVIGATIONSFILTER,
                 ],
-                __('Zip code import')             => (object)[
-                    'link'   => 'plz_ort_import.php',
-                    'rights' => 'PLZ_ORT_IMPORT_VIEW',
+                __('Item detail page')            => (object)[
+                    'link'   => 'einstellungen.php?kSektion=' . CONF_ARTIKELDETAILS,
+                    'permissions' => 'SETTINGS_ARTICLEDETAILS_VIEW',
+                    'section' => CONF_ARTIKELDETAILS,
+                ],
+                __('Checkout')                => (object)[
+                    'link'   => 'einstellungen.php?kSektion=' . CONF_KAUFABWICKLUNG,
+                    'permissions' => 'SETTINGS_BASKET_VIEW',
+                    'section' => CONF_KAUFABWICKLUNG,
+                ],
+                __('Comparison list')         => (object)[
+                    'link'   => 'vergleichsliste.php',
+                    'permissions' => 'MODULE_COMPARELIST_VIEW',
+                    'section' => CONF_VERGLEICHSLISTE,
+                ],
+                __('Wish list')               => (object)[
+                    'link'   => 'wunschliste.php',
+                    'permissions' => 'MODULE_WISHLIST_VIEW',
+                ],
+                __('Contact form')            => (object)[
+                    'link'   => 'kontaktformular.php',
+                    'permissions' => 'SETTINGS_CONTACTFORM_VIEW',
+                    'section' => CONF_KONTAKTFORMULAR,
+                ],
+                __('Registration')            => (object)[
+                    'link'   => 'einstellungen.php?kSektion=' . CONF_KUNDEN,
+                    'permissions' => 'SETTINGS_CUSTOMERFORM_VIEW',
+                    'section' => CONF_KUNDEN,
                 ],
             ],
-            __('Export') => [
-                __('Task scheduler') => (object)[
-                    'link'   => 'exportformat_queue.php',
-                    'rights' => 'EXPORT_SCHEDULE_VIEW',
+            __('Default elements') => [
+                __('Shop logo')               => (object)[
+                    'link'   => 'shoplogouploader.php',
+                    'permissions' => 'DISPLAY_OWN_LOGO_VIEW',
                 ],
-                __('Export formats') => (object)[
-                    'link'   => 'exportformate.php',
-                    'rights' => 'EXPORT_FORMATS_VIEW',
+                __('Search')         => (object)[
+                    'link'   => 'sucheinstellungen.php',
+                    'permissions' => 'SETTINGS_ARTICLEOVERVIEW_VIEW',
+                    'section' => CONF_ARTIKELUEBERSICHT,
                 ],
-                __('Sitemap export') => (object)[
-                    'link'   => 'sitemapexport.php',
-                    'rights' => 'EXPORT_SITEMAP_VIEW',
-                    'section' => CONF_SITEMAP,
+                __('Price history')           => (object)[
+                    'link'   => 'preisverlauf.php',
+                    'permissions' => 'MODULE_PRICECHART_VIEW',
+                    'section' => CONF_PREISVERLAUF,
                 ],
-                __('RSS feed')       => (object)[
-                    'link'   => 'rss.php',
-                    'rights' => 'EXPORT_RSSFEED_VIEW',
-                    'section' => CONF_RSS,
+                __('Question on item')        => (object)[
+                    'link'   => 'einstellungen.php?kSektion=' . CONF_ARTIKELDETAILS .
+                        '&group=configgroup_5_product_question',
+                    'permissions' => 'SETTINGS_ARTICLEDETAILS_VIEW',
+                    'excludeFromAccessView' => true,
+                    'section' => CONF_ARTIKELDETAILS,
+                ],
+                __('Availability notifications')        => (object)[
+                    'link'   => 'einstellungen.php?kSektion=' . CONF_ARTIKELDETAILS .
+                        '&group=configgroup_5_product_available',
+                    'permissions' => 'SETTINGS_ARTICLEDETAILS_VIEW',
+                    'excludeFromAccessView' => true,
+                    'section' => CONF_ARTIKELDETAILS,
+                ],
+                __('Item badges')            => (object)[
+                    'link'   => 'suchspecialoverlay.php',
+                    'permissions' => 'DISPLAY_ARTICLEOVERLAYS_VIEW',
+                ],
+                __('Footer / Boxes')          => (object)[
+                    'link'   => 'boxen.php',
+                    'permissions' => 'BOXES_VIEW',
+                ],
+                __('Selection wizard')        => (object)[
+                    'link'   => 'auswahlassistent.php',
+                    'permissions' => 'EXTENSION_SELECTIONWIZARD_VIEW',
+                    'section' => CONF_AUSWAHLASSISTENT,
+                ],
+                __('Warehouse display')      => (object)[
+                    'link'   => 'warenlager.php',
+                    'permissions' => 'WAREHOUSE_VIEW',
+                ],
+                __('Reviews')            => (object)[
+                    'link'   => 'bewertung.php',
+                    'permissions' => 'MODULE_VOTESYSTEM_VIEW',
+                    'section' => CONF_BEWERTUNG,
                 ],
             ],
+            __('Custom contents')   => [
+                __('Pages')               => (object)[
+                    'link'   => 'links.php',
+                    'permissions' => 'CONTENT_PAGE_VIEW',
+                ],
+                __('Terms / Withdrawal') => (object)[
+                    'link'   => 'agbwrb.php',
+                    'permissions' => 'ORDER_AGB_WRB_VIEW',
+                ],
+                __('Extended customer data')         => (object)[
+                    'link'   => 'kundenfeld.php',
+                    'permissions' => 'ORDER_CUSTOMERFIELDS_VIEW',
+                    'section' => CONF_KUNDENFELD,
+                ],
+                __('Check boxes')              => (object)[
+                    'link'   => 'checkbox.php',
+                    'permissions' => 'CHECKBOXES_VIEW',
+                ],
+                __('Banners')                  => (object)[
+                    'link'   => 'banner.php',
+                    'permissions' => 'DISPLAY_BANNER_VIEW',
+                ],
+                __('Sliders')                  => (object)[
+                    'link'   => 'slider.php',
+                    'permissions' => 'SLIDER_VIEW',
+                ],
+            ],
+            __('Settings')         => [
+                __('Global')            => (object)[
+                    'link'   => 'einstellungen.php?kSektion=' . CONF_GLOBAL,
+                    'permissions' => 'SETTINGS_GLOBAL_VIEW',
+                    'section' => CONF_GLOBAL,
+                ],
+                __('Templates') => (object)[
+                    'link'   => 'shoptemplate.php',
+                    'permissions' => 'DISPLAY_TEMPLATE_VIEW',
+                ],
+                __('Images')            => (object)[
+                    'link'   => 'bilder.php',
+                    'permissions' => 'SETTINGS_IMAGES_VIEW',
+                    'section' => CONF_BILDER,
+                ],
+                __('Watermark')         => (object)[
+                    'link'   => 'branding.php',
+                    'permissions' => 'DISPLAY_BRANDING_VIEW',
+                ],
+                __('Number formats')          => (object)[
+                    'link'   => 'trennzeichen.php',
+                    'permissions' => 'SETTINGS_SEPARATOR_VIEW',
+                ],
+            ]
         ]
+    ],
+    __('Plug-ins') => (object)[
+        'icon'  => 'plugins',
+        'items' => [
+            __('Plug-in manager') => (object)[
+                'link'   => 'pluginverwaltung.php',
+                'permissions' => 'PLUGIN_ADMIN_VIEW',
+            ],
+            //        __('Plug-in marketplace') => (object)[
+            //            'link' => 'marktplatz.php',
+            //            'permissions' => 'PLUGIN_ADMIN_VIEW',
+            //        ],
+            //        __('My Purchases') => (object)[
+            //            'link' => 'dummy.php',
+            //            'permissions' => 'PLUGIN_ADMIN_VIEW',
+            //        ],
+            __('Installed plug-ins')             => 'DYNAMIC_PLUGINS',
+        ],
     ],
     __('Administration') => (object)[
         'icon'  => 'administration',
         'items' => [
-             __('Settings')    => [
-                __('Global settings')               => (object)[
-                    'link'   => 'einstellungen.php?kSektion=' . CONF_GLOBAL,
-                    'rights' => 'SETTINGS_GLOBAL_VIEW',
-                    'section' => CONF_GLOBAL,
+            __('Approvals') => (object)[
+                'link'   => 'freischalten.php',
+                'permissions' => 'UNLOCK_CENTRAL_VIEW',
+            ],
+            __('Import') => [
+                __('Newsletters') => (object)[
+                    'link'   => 'newsletterimport.php',
+                    'permissions' => 'IMPORT_NEWSLETTER_RECEIVER_VIEW',
                 ],
-                __('Language administration') => (object)[
-                    'link'   => 'sprache.php',
-                    'rights' => 'LANGUAGE_VIEW',
+                __('Customers')  => (object)[
+                    'link'   => 'kundenimport.php',
+                    'permissions' => 'IMPORT_CUSTOMER_VIEW',
                 ],
-                __('Back end user')                 => (object)[
-                    'link'   => 'benutzerverwaltung.php',
-                    'rights' => 'ACCOUNT_VIEW',
+                __('Postal codes')       => (object)[
+                    'link'   => 'plz_ort_import.php',
+                    'permissions' => 'PLZ_ORT_IMPORT_VIEW',
                 ],
-                __('Synchronisation with JTL-Wawi') => (object)[
-                    'link'   => 'wawisync.php',
-                    'rights' => 'WAWI_SYNC_VIEW',
+            ],
+            __('Export') => [
+                __('Site map') => (object)[
+                    'link'   => 'sitemapexport.php',
+                    'permissions' => 'EXPORT_SITEMAP_VIEW',
+                    'section' => CONF_SITEMAP,
                 ],
-                __('Global meta data')              => (object)[
+                __('RSS feed')       => (object)[
+                    'link'   => 'rss.php',
+                    'permissions' => 'EXPORT_RSSFEED_VIEW',
+                    'section' => CONF_RSS,
+                ],
+                __('Other formats') => (object)[
+                    'link'   => 'exportformate.php',
+                    'permissions' => 'EXPORT_FORMATS_VIEW',
+                ],
+                __('Export manager') => (object)[
+                    'link'   => 'exportformat_queue.php',
+                    'permissions' => 'EXPORT_SCHEDULE_VIEW',
+                ],
+            ],
+            __('Payments') => [
+                __('Payment methods') => (object)[
+                    'link'   => 'zahlungsarten.php',
+                    'permissions' => 'ORDER_PAYMENT_VIEW',
+                ],
+//                __('More payment methods') => (object)[
+//                    'link'   => 'zahlungsarten.php',
+//                    'permissions' => 'ORDER_PAYMENT_VIEW',
+//                ],
+            ],
+            __('Shipments')      => [
+                __('Shipping methods')     => (object)[
+                    'link'   => 'versandarten.php',
+                    'permissions' => 'ORDER_SHIPMENT_VIEW',
+                ],
+                __('Additional packaging') => (object)[
+                    'link'   => 'zusatzverpackung.php',
+                    'permissions' => 'ORDER_PACKAGE_VIEW',
+                ],
+            ],
+            __('Email') => [
+                __('Server') => (object)[
+                    'link'   => 'einstellungen.php?kSektion=' . CONF_EMAILS,
+                    'permissions' => 'SETTINGS_EMAILS_VIEW',
+                    'section' => CONF_EMAILS,
+                ],
+                __('Email templates')     => (object)[
+                    'link'   => 'emailvorlagen.php',
+                    'permissions' => 'CONTENT_EMAIL_TEMPLATE_VIEW',
+                ],
+                __('Blacklist')     => (object)[
+                    'link'   => 'emailblacklist.php',
+                    'permissions' => 'SETTINGS_EMAIL_BLACKLIST_VIEW',
+                    'section' => CONF_EMAILBLACKLIST,
+                ],
+                __('Log')    => (object)[
+                    'link'   => 'emailhistory.php',
+                    'permissions' => 'EMAILHISTORY_VIEW',
+                ],
+            ],
+            __('SEO') => [
+                __('Meta data')  => (object)[
                     'link'   => 'globalemetaangaben.php',
-                    'rights' => 'SETTINGS_GLOBAL_META_VIEW',
+                    'permissions' => 'SETTINGS_GLOBAL_META_VIEW',
                     'section' => CONF_METAANGABEN,
                 ],
-                __('Special items')                 => (object)[
+                __('Forwarding')     => (object)[
+                    'link'   => 'redirect.php',
+                    'permissions' => 'REDIRECT_VIEW',
+                ],
+                __('Site map') => (object)[
+                    'link'   => 'shopsitemap.php',
+                    'permissions' => 'SETTINGS_SITEMAP_VIEW',
+                ],
+                __('SEO path')     => (object)[
                     'link'   => 'suchspecials.php',
-                    'rights' => 'SETTINGS_SPECIALPRODUCTS_VIEW',
+                    'permissions' => 'SETTINGS_SPECIALPRODUCTS_VIEW',
                     'section' => CONF_SUCHSPECIAL,
                 ],
-                __('Sitemap structure')             => (object)[
-                    'link'   => 'shopsitemap.php',
-                    'rights' => 'SETTINGS_SITEMAP_VIEW',
+            ],
+            __('Languages') => (object)[
+                'link'   => 'sprache.php',
+                'permissions' => 'LANGUAGE_VIEW',
+            ],
+            __('Accounts') => [
+                __('Users')                 => (object)[
+                    'link'   => 'benutzerverwaltung.php',
+                    'permissions' => 'ACCOUNT_VIEW',
                 ],
-                __('Number formats')                => (object)[
-                    'link'   => 'trennzeichen.php',
-                    'rights' => 'SETTINGS_SEPARATOR_VIEW',
+                __('JTL-Wawi synchronisation') => (object)[
+                    'link'   => 'wawisync.php',
+                    'permissions' => 'WAWI_SYNC_VIEW',
                 ],
-                __('Cache')                         => (object)[
-                    'link'   => 'cache.php',
-                    'rights' => 'OBJECTCACHE_VIEW',
-                ],
-             ],
-             __('Maintenance') => [
-                __('Order history')        => (object)[
-                    'link'   => 'bestellungen.php',
-                    'rights' => 'ORDER_VIEW',
-                ],
-                __('Activation centre')    => (object)[
-                    'link'   => 'freischalten.php',
-                    'rights' => 'UNLOCK_CENTRAL_VIEW',
-                ],
-                __('System log')           => (object)[
-                    'link'   => 'systemlog.php',
-                    'rights' => 'SYSTEMLOG_VIEW',
-                ],
-                __('Status')               => (object)[
+            ],
+            __('Troubleshooting') => [
+                __('System diagnostics')               => (object)[
                     'link'   => 'status.php',
-                    'rights' => 'FILECHECK_VIEW|DBCHECK_VIEW|PERMISSIONCHECK_VIEW',
+                    'permissions' => 'DIAGNOSTIC_VIEW',
                 ],
-                __('Update')               => (object)[
-                    'link'   => 'dbupdater.php',
-                    'rights' => 'SHOP_UPDATE_VIEW',
+                __('Log')           => (object)[
+                    'link'   => 'systemlog.php',
+                    'permissions' => 'SYSTEMLOG_VIEW',
                 ],
-                __('Re-directions')        => (object)[
-                    'link'   => 'redirect.php',
-                    'rights' => 'REDIRECT_VIEW',
+                __('Item images') => (object)[
+                    'link'   => 'bilderverwaltung.php',
+                    'permissions' => 'DISPLAY_IMAGES_VIEW',
                 ],
-                __('Reset shop')           => (object)[
-                    'link'   => 'shopzuruecksetzen.php',
-                    'rights' => 'RESET_SHOP_VIEW',
+                __('Plug-in profiler')     => (object)[
+                    'link'   => 'profiler.php',
+                    'permissions' => 'PROFILER_VIEW',
                 ],
-                __('Cron')           => (object)[
+
+            ],
+            __('System') => [
+                __('Cache')      => (object)[
+                    'link'   => 'cache.php',
+                    'permissions' => 'OBJECTCACHE_VIEW',
+                ],
+                __('Cron')       => (object)[
                     'link'   => 'cron.php',
-                    'rights' => 'EXPORT_SCHEDULE_VIEW',
+                    'permissions' => 'CRON_VIEW',
                 ],
-             ],
-             __('Search')      => [
-                __('Search settings') => (object)[
-                    'link'   => 'sucheinstellungen.php',
-                    'rights' => 'SETTINGS_ARTICLEOVERVIEW_VIEW',
-                    'section' => CONF_ARTIKELUEBERSICHT,
+                __('Filesystem') => (object)[
+                    'link'   => 'filesystem.php',
+                    'permissions' => 'FILESYSTEM_VIEW',
                 ],
-                __('Filter')          => (object)[
-                    'link'   => 'navigationsfilter.php',
-                    'rights' => 'SETTINGS_NAVIGATION_FILTER_VIEW',
-                    'section' => CONF_NAVIGATIONSFILTER,
+                __('Update')     => (object)[
+                    'link'   => 'dbupdater.php',
+                    'permissions' => 'SHOP_UPDATE_VIEW',
                 ],
-                __('Queries')         => (object)[
-                    'link'   => 'livesuche.php',
-                    'rights' => 'MODULE_LIVESEARCH_VIEW',
+                __('Reset') => (object)[
+                    'link'   => 'shopzuruecksetzen.php',
+                    'permissions' => 'RESET_SHOP_VIEW',
                 ],
-                __('JTL Search')      => 'DYNAMIC_JTL_SEARCH',
-             ],
+            ],
         ]
     ],
-    __('Plugins')        => (object)[
-        'icon'  => 'plugins',
-        'items' => [
-    //        __('Plug-in marketplace') => (object)[
-    //            'link' => 'marktplatz.php',
-    //            'rights' => 'PLUGIN_ADMIN_VIEW',
-    //        ],
-            __('Plug-in administration') => (object)[
-                'link'   => 'pluginverwaltung.php',
-                'rights' => 'PLUGIN_ADMIN_VIEW',
-            ],
-            __('Plug-in profiler')       => (object)[
-                'link'   => 'profiler.php',
-                'rights' => 'PROFILER_VIEW',
-            ],
-            __('My Plugins')  => 'DYNAMIC_PLUGINS',
-        ],
-    ]
 ];
 
 $sectionMenuMapping = [];

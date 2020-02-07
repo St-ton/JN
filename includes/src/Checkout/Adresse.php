@@ -126,7 +126,7 @@ class Adresse
     {
         $cyptoService = Shop::Container()->getCryptoService();
         foreach (self::$encodedProperties as $property) {
-            $this->{$property} = $cyptoService->encryptXTEA(\trim((string)($this->{$property} ?? '')));
+            $this->$property = $cyptoService->encryptXTEA(\trim((string)($this->$property ?? '')));
         }
 
         return $this;
@@ -141,8 +141,8 @@ class Adresse
     {
         $cryptoService = Shop::Container()->getCryptoService();
         foreach (self::$encodedProperties as $property) {
-            if ($this->{$property} !== null) {
-                $this->{$property} = \trim($cryptoService->decryptXTEA($this->{$property}));
+            if ($this->$property !== null) {
+                $this->$property = \trim($cryptoService->decryptXTEA($this->$property));
             }
         }
 
@@ -208,13 +208,23 @@ class Adresse
     /**
      * @param string $iso
      * @return string
+     * @deprecated since 4.06.16 - use static checkISOCountryCode instead
      */
     public function pruefeLandISO(string $iso): string
+    {
+        return self::checkISOCountryCode($iso);
+    }
+
+    /**
+     * @param string $iso
+     * @return string
+     */
+    public static function checkISOCountryCode(string $iso): string
     {
         \preg_match('/[a-zA-Z]{2}/', $iso, $matches);
         if (\mb_strlen($matches[0]) !== \mb_strlen($iso)) {
             $o = LanguageHelper::getIsoCodeByCountryName($iso);
-            if ($o !== 'noISO' && \mb_strlen($o) > 0) {
+            if ($o !== 'noISO' && $o !== '') {
                 $iso = $o;
             }
         }

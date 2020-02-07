@@ -54,6 +54,10 @@ class Iframe
 
             this.ctx.opc = this.opc;
 
+            this.jq('[data-opc-portlet-css-link=true]').each((e, elm) => {
+                this.loadedStylesheets.push(elm.href);
+            });
+
             this.loadStylesheet(this.shopUrl + '/admin/opc/css/iframe.css');
             this.loadStylesheet(this.shopUrl + '/templates/NOVA/themes/base/fontawesome/css/all.min.css');
 
@@ -65,18 +69,26 @@ class Iframe
                 }
             );
 
-            this.jq('a, button')      // disable links and buttons that could change the current iframe page
-                .off('click')
-                .attr('onclick', '')
-                .on('click', e => e.preventDefault());
-
+            this.disableLinks();
             this.portletPreviewLabel.appendTo(this.body);
             this.portletToolbar.appendTo(this.body);
 
             return this.page.initIframe(this.jq)
                 .catch(er => this.gui.showError('Error while loading draft preview: ' + er.toString()))
-                .then(this.onPageLoad);
+                .then(this.onPageLoad)
+                .then(() => {
+                    this.gui.updatePagetreeBtn();
+                });
         })
+    }
+
+    disableLinks()
+    {
+        // disable links and buttons that could change the current iframe page
+        this.jq('a, button')
+            .off('click')
+            .attr('onclick', '')
+            .on('click', e => e.preventDefault());
     }
 
     getIframePageUrl()
@@ -166,9 +178,15 @@ class Iframe
 
     loadPortletPreviewCss(portletCls)
     {
-        this.loadStylesheet(
-            this.shopUrl + '/includes/src/OPC/Portlets/' + portletCls + '/preview.css'
-        );
+        let portletBtn = this.gui.portletButtons.filter("[data-portlet-class='" + portletCls + "']");
+
+        if(portletBtn) {
+            let css = portletBtn.data('portlet-css');
+
+            if(css) {
+                this.loadStylesheet(css);
+            }
+        }
     }
 
     loadMissingPortletPreviewStyles()
@@ -288,8 +306,6 @@ class Iframe
             this.setSelected(this.draggedElm);
 
             if(this.dragNewPortletCls) {
-                let portletCls = this.dragNewPortletCls;
-
                 this.newPortletDropTarget = this.draggedElm;
                 this.setSelected();
                 this.io.createPortlet(this.dragNewPortletCls)
@@ -319,25 +335,28 @@ class Iframe
         this.page.updateFlipcards();
     }
 
-    onNewPortletCreated(data)
+    onNewPortletCreated(html)
     {
-        let newElement = this.createPortletElm(data);
-
-        this.newPortletDropTarget.replaceWith(newElement);
-
-        let newArea = newElement.parent();
-
+        let newPortlet = this.createPortletElm(html);
+        this.newPortletDropTarget.replaceWith(newPortlet);
+        let newArea = newPortlet.parent();
         this.pagetree.updateArea(newArea);
-        this.setSelected(newElement);
+        this.setSelected(newPortlet);
         this.updateDropTargets();
         this.gui.setUnsaved(true, true);
         this.page.updateFlipcards();
         this.loadMissingPortletPreviewStyles();
+        this.disableLinks();
     }
 
-    createPortletElm(previewHtml)
+    createPortletElm(html)
     {
-        return this.jq(previewHtml);
+        let container = document.createElement('div');
+        container.innerHTML = html;
+
+        if (container.firstElementChild) {
+            return this.jq(container.firstElementChild);
+        }
     }
 
     setDragged(elm)
@@ -458,12 +477,9 @@ class Iframe
 
     replaceSelectedPortletHtml(html)
     {
-        var newPortlet = this.jq(html);
-
+        let newPortlet = this.createPortletElm(html);
         this.selectedElm.replaceWith(newPortlet);
-
-        var area = newPortlet.parent();
-
+        let area = newPortlet.parent();
         this.pagetree.updateArea(area);
         this.setSelected(newPortlet);
         this.updateDropTargets();
@@ -476,7 +492,7 @@ class Iframe
             let data = this.page.portletToJSON(this.selectedElm);
             this.io.getPortletPreviewHtml(data)
                 .then(html => {
-                    let copiedElm = this.jq(html);
+                    let copiedElm = this.createPortletElm(html);
                     this.opc.emit('clone-portlet', copiedElm);
                     copiedElm.insertAfter(this.selectedElm);
                     let area = copiedElm.parent();

@@ -38,9 +38,6 @@ msgstr "Delete visitor reports"
 msgid "deletePriceStatistics"
 msgstr "Delete price histories"
 
-msgid "deletePolls"
-msgstr "Delete surveys"
-
 msgid "deleteAvailabilityNotifications"
 msgstr "Delete availability notifications"
 

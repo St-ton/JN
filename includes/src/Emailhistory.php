@@ -164,7 +164,9 @@ class Emailhistory
         );
         $history     = [];
         foreach ($historyData as $item) {
-            $history[] = new self(null, $item);
+            $item->kEmailhistory = (int)$item->kEmailhistory;
+            $item->kEmailvorlage = (int)$item->kEmailvorlage;
+            $history[]           = new self(null, $item);
         }
 
         return $history;
@@ -188,7 +190,7 @@ class Emailhistory
     public function deletePack(array $ids)
     {
         if (\count($ids) > 0) {
-            $ids = \array_map(function ($i) {
+            $ids = \array_map(static function ($i) {
                 return (int)$i;
             }, $ids);
 

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -8,7 +8,7 @@ namespace JTL\Console\Command\Backup;
 
 use JTL\Console\Command\Command;
 use JTL\Filesystem\Filesystem;
-use JTL\Filesystem\LocalFilesystem;
+use League\Flysystem\Adapter\Local;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -23,10 +23,9 @@ class FilesCommand extends Command
     /**
      * @inheritDoc
      */
-    protected function configure()
+    protected function configure(): void
     {
-        $this
-            ->setName('backup:files')
+        $this->setName('backup:files')
             ->setDescription('Backup shop content')
             ->addOption(
                 'exclude-dir',
@@ -37,41 +36,37 @@ class FilesCommand extends Command
     }
 
     /**
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     * @return int|void|null
+     * @inheritDoc
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $io                 = $this->getIO();
-        $archivePath        = \PFAD_ROOT . \PFAD_EXPORT_BACKUP . \date('YmdHis') . '_file_backup.zip';
-        $excludeDirectories = \array_merge(['export',
+        $io         = $this->getIO();
+        $archive    = \PFAD_ROOT . \PFAD_EXPORT_BACKUP . \date('YmdHis') . '_file_backup.zip';
+        $excludes   = \array_merge(['export',
             'templates_c',
+            'build',
             'admin/templates_c',
             'dbeS/tmp',
             'dbeS/logs',
             'jtllogs',
             'install/logs'], $this->getOption('exclude-dir'));
-        $localFilesystem    = new Filesystem(new LocalFilesystem([
-            'root' => PFAD_ROOT
-        ]));
+        $filesystem = new Filesystem(new Local(\PFAD_ROOT));
 
         $finder = Finder::create()
             ->ignoreVCS(false)
             ->ignoreDotFiles(false)
-            ->exclude($excludeDirectories)
-            ->in(PFAD_ROOT);
+            ->exclude($excludes)
+            ->in(\PFAD_ROOT);
 
-        $io
-            ->progress(
-                function ($mycb) use ($localFilesystem, $archivePath, $finder) {
-                    $localFilesystem->zip($finder, $archivePath, function ($count, $index) use (&$mycb) {
+        $io->progress(
+            static function ($mycb) use ($filesystem, $archive, $finder) {
+                    $filesystem->zip($finder, $archive, static function ($count, $index) use (&$mycb) {
                         $mycb($count, $index);
                     });
-                },
-                'Creating archive [%bar%] %percent:3s%%'
-            )
+            },
+            'Creating archive [%bar%] %percent:3s%%'
+        )
             ->newLine()
-            ->success("Archive '{$archivePath}' created.");
+            ->success('Archive "' . $archive . '" created.');
     }
 }

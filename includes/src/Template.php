@@ -195,11 +195,11 @@ class Template
             ['state' => State::ACTIVATED],
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $grouped    = group($resourcesc, function ($e) {
+        $grouped    = group($resourcesc, static function ($e) {
             return $e->type;
         });
         if (isset($grouped['js'])) {
-            $grouped['js'] = group($grouped['js'], function ($e) {
+            $grouped['js'] = group($grouped['js'], static function ($e) {
                 return $e->position;
             });
         }
@@ -725,7 +725,12 @@ class Template
             ? $parentConfig->Version
             : $tplConfig->Version;
         $tplObject->preview   = (string)$tplConfig->Preview;
-        $inserted             = Shop::Container()->getDB()->insert('ttemplate', $tplObject);
+        if (empty($tplObject->version)) {
+            $tplObject->version = !empty($tplConfig->ShopVersion)
+                ? $tplConfig->ShopVersion
+                : $parentConfig->ShopVersion;
+        }
+        $inserted = Shop::Container()->getDB()->insert('ttemplate', $tplObject);
         if ($inserted > 0) {
             if (!$dh = \opendir(\PFAD_ROOT . \PFAD_COMPILEDIR)) {
                 return false;

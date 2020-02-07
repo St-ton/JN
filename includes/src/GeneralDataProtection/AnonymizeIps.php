@@ -7,7 +7,6 @@
 namespace JTL\GeneralDataProtection;
 
 use JTL\DB\ReturnType;
-use JTL\Shop;
 
 /**
  * Class AnonymizeIps
@@ -24,7 +23,6 @@ use JTL\Shop;
  * `tredirectreferer`
  * `tsitemaptracker`
  * `tsuchanfragencache`
- * `tumfragedurchfuehrung`
  * `tverfuegbarkeitsbenachrichtigung`
  * `tvergleichsliste`
  */
@@ -74,12 +72,6 @@ class AnonymizeIps extends Method implements MethodInterface
             'ColKey'     => 'kSuchanfrageCache',
             'ColIp'      => 'cIP',
             'ColCreated' => 'dZeit',
-            'ColType'    => 'DATETIME'
-        ],
-        'tumfragedurchfuehrung'            => [
-            'ColKey'     => 'kUmfrageDurchfuehrung',
-            'ColIp'      => 'cIP',
-            'ColCreated' => 'dDurchgefuehrt',
             'ColType'    => 'DATETIME'
         ],
         'tverfuegbarkeitsbenachrichtigung' => [
@@ -137,7 +129,7 @@ class AnonymizeIps extends Method implements MethodInterface
             $sql .= " ORDER BY {$colData['ColCreated']} ASC
                 LIMIT {$this->workLimit}";
 
-            $res = Shop::Container()->getDB()->query(
+            $res = $this->db->query(
                 $sql,
                 ReturnType::ARRAY_OF_OBJECTS
             );
@@ -148,7 +140,7 @@ class AnonymizeIps extends Method implements MethodInterface
                     ($this->logger === null) ?: $this->logger->log(\JTLLOG_LEVEL_WARNING, $e->getMessage());
                 }
                 $szKeyColName = $colData['ColKey'];
-                Shop::Container()->getDB()->update(
+                $this->db->update(
                     $tableName,
                     $colData['ColKey'],
                     (int)$row->$szKeyColName,

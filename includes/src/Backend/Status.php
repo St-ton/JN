@@ -6,12 +6,14 @@
 
 namespace JTL\Backend;
 
+use Exception;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Checkout\ZahlungsLog;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Template as TemplateHelper;
-use JTL\Media\Image;
-use JTL\Media\MediaImage;
+use JTL\Media\Image\Product;
+use JTL\Media\Image\StatsItem;
+use JTL\Plugin\Helper;
 use JTL\Plugin\State;
 use JTL\Profiler;
 use JTL\Shop;
@@ -19,6 +21,9 @@ use JTL\SingletonTrait;
 use JTL\Template;
 use JTL\Update\Updater;
 use stdClass;
+use Systemcheck\Environment;
+use Systemcheck\Platform\Filesystem;
+use Systemcheck\Platform\Hosting;
 use function Functional\some;
 
 /**
@@ -59,12 +64,12 @@ class Status
     }
 
     /**
-     * @return stdClass
+     * @return StatsItem
      * @throws \Exception
      */
-    protected function getImageCache(): stdClass
+    protected function getImageCache(): StatsItem
     {
-        return MediaImage::getStats(Image::TYPE_PRODUCT);
+        return Product::getStats();
     }
 
     /**
@@ -137,7 +142,7 @@ class Status
      */
     protected function validFolderPermissions(): bool
     {
-        $permissionStat = (new \Systemcheck_Platform_Filesystem(\PFAD_ROOT))->getFolderStats();
+        $permissionStat = (new Filesystem(\PFAD_ROOT))->getFolderStats();
 
         return $permissionStat->nCountInValid === 0;
     }
@@ -220,7 +225,7 @@ class Status
         $template = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'standard');
         if ($template !== null && isset($template->cTemplate)) {
             $tplData = TemplateHelper::getInstance()->getData($template->cTemplate);
-            if ($tplData->bResponsive) {
+            if ($tplData !== false && $tplData->bResponsive) {
                 $mobileTpl = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'mobil');
                 if ($mobileTpl !== null) {
                     $xmlFile = \PFAD_ROOT . \PFAD_TEMPLATES . $mobileTpl->cTemplate .
@@ -251,8 +256,8 @@ class Status
      */
     protected function hasValidEnvironment(): bool
     {
-        $systemcheck = new \Systemcheck_Environment();
-        $systemcheck->executeTestGroup('Shop4');
+        $systemcheck = new Environment();
+        $systemcheck->executeTestGroup('Shop5');
 
         return $systemcheck->getIsPassed();
     }
@@ -262,15 +267,15 @@ class Status
      */
     protected function getEnvironmentTests(): array
     {
-        return (new \Systemcheck_Environment())->executeTestGroup('Shop4');
+        return (new Environment())->executeTestGroup('Shop5');
     }
 
     /**
-     * @return \Systemcheck_Platform_Hosting
+     * @return Hosting
      */
-    protected function getPlatform(): \Systemcheck_Platform_Hosting
+    protected function getPlatform(): Hosting
     {
-        return new \Systemcheck_Platform_Hosting();
+        return new Hosting();
     }
 
     /**
@@ -281,7 +286,7 @@ class Status
         $stats = Shop::Container()->getDB()->stats();
         $info  = Shop::Container()->getDB()->info();
         $lines = \explode('  ', $stats);
-        $lines = \array_map(function ($v) {
+        $lines = \array_map(static function ($v) {
             [$key, $value] = \explode(':', $v, 2);
 
             return ['key' => \trim($key), 'value' => \trim($value)];
@@ -311,34 +316,6 @@ class Status
         }
 
         return $incorrectPaymentMethods;
-    }
-
-    /**
-     * @return bool
-     */
-    protected function hasInvalidPollCoupons(): bool
-    {
-        $pollCoupons         = Shop::Container()->getDB()->selectAll('tumfrage', 'nAktiv', 1);
-        $invalidCouponsFound = false;
-        foreach ($pollCoupons as $coupon) {
-            if ($coupon->kKupon > 0) {
-                $couponID = Shop::Container()->getDB()->select(
-                    'tkupon',
-                    'kKupon',
-                    $coupon->kKupon,
-                    'cAktiv',
-                    'Y',
-                    null,
-                    null,
-                    false,
-                    'kKupon'
-                );
-
-                $invalidCouponsFound = empty($couponID);
-            }
-        }
-
-        return $invalidCouponsFound;
     }
 
     /**
@@ -388,38 +365,31 @@ class Status
      */
     protected function hasNewPluginVersions(): bool
     {
-        $newVersions = false;
-        $data        = Shop::Container()->getDB()->query(
-            'SELECT `cVerzeichnis`, `nVersion` 
+        if (\SAFE_MODE === true) {
+            return false;
+        }
+
+        $data = Shop::Container()->getDB()->query(
+            'SELECT `kPlugin`, `nVersion`, `bExtension`
                 FROM `tplugin`',
             ReturnType::ARRAY_OF_OBJECTS
         );
         if (!\is_array($data) || 1 > \count($data)) {
             return false; // there are no plugins installed
         }
-        $pluginsDB = [];
+
         foreach ($data as $item) {
-            $pluginsDB[$item->cVerzeichnis] = $item->nVersion;
-        }
-        // check against plugins, found in file-system
-        foreach ($pluginsDB as $dir => $version) {
-            $info = \PFAD_ROOT . \PFAD_PLUGIN . $dir . '/' . \PLUGIN_INFO_FILE;
-            $xml  = null;
-            if (\file_exists($info)) {
-                $xml = \simplexml_load_file($info);
-                // read all pluginversions from 'info.xml'
-                $pluginXmlVersions = [0];
-                foreach ($xml->Install->Version as $item) {
-                    $pluginXmlVersions[] = (int)$item['nr'];
-                }
-                // check for the highest and set marker, if it's different from installed db-version
-                if (\max($pluginXmlVersions) !== (int)$version) {
-                    $newVersions = true;
-                }
+            try {
+                $plugin = Helper::getLoader((int)$item->bExtension === 1)->init((int)$item->kPlugin);
+            } catch (Exception $e) {
+                continue;
+            }
+            if ($plugin->getCurrentVersion()->greaterThan($item->nVersion)) {
+                return true;
             }
         }
 
-        return $newVersions;
+        return false;
     }
 
     /**
@@ -474,7 +444,7 @@ class Status
             ReturnType::ARRAY_OF_OBJECTS
         );
 
-        return some($hashes, function ($hash) use ($passwordService) {
+        return some($hashes, static function ($hash) use ($passwordService) {
             return $passwordService->needsRehash($hash->cEmergencyCode);
         });
     }

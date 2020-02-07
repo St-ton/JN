@@ -5,81 +5,87 @@
 {block name='productdetails-reviews'}
     <div class="reviews mt-3">
         {block name='productdetails-reviews-content'}
-        {row id="reviews-overview"}
+        {row id='reviews-overview' class='align-items-center'}
             {block name='productdetails-reviews-overview'}
-                {col cols=12 md=6 order=1 order-md=0}
+                {col cols=12 md=4 order=1 order-md=0}
                     {card class="mb-3"}
                         {block name='productdetails-reviews-heading'}
                             <div class="card-title">
-                                <div class="h6">
+                                <div class="subheadline">
                                     {lang key='averageProductRating' section='product rating'}
                                 </div>
                             </div>
                         {/block}
                         {if $Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0}
-                            {block name='productdetails-reviews-include-rating'}
-                                {link href="#article_votes" data=["toggle"=>"collapse"] role="button" aria=["expanded"=>"true","controls"=>"article_votes"] class="no-deco"}
-                                    {include file='productdetails/rating.tpl' total=$Artikel->Bewertungen->oBewertungGesamt->nAnzahl}<i class="ml-3 fas fa-chevron-down"></i>
-                                {/link}
-                            {/block}
-                        {/if}
-                        {if $Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0}
-                            {block name='productdetails-reviews-votes'}
-                                {collapse id="article_votes" visible=true}
-                                    {foreach name=sterne from=$Artikel->Bewertungen->nSterne_arr item=nSterne key=i}
-                                        {assign var=int1 value=5}
-                                        {math equation='x - y' x=$int1 y=$i assign='schluessel'}
-                                        {assign var=int2 value=100}
-                                        {math equation='a/b*c' a=$nSterne b=$Artikel->Bewertungen->oBewertungGesamt->nAnzahl c=$int2 assign='percent'}
-                                        {row class="mb-2"}
-                                            {col cols=4}
-                                                {if isset($bewertungSterneSelected) && $bewertungSterneSelected === $schluessel}
-                                                    <strong>
-                                                {/if}
-                                                {if $nSterne > 0 && (!isset($bewertungSterneSelected) || $bewertungSterneSelected !== $schluessel)}
-                                                    {link href="{$Artikel->cURLFull}?btgsterne={$schluessel}#tab-votes"}{$schluessel} {if $i == 4}{lang key='starSingular' section='product rating'}{else}{lang key='starPlural' section='product rating'}{/if}{/link}
-                                                {else}
-                                                    {$schluessel} {if $i == 4}{lang key='starSingular' section='product rating'}{else}{lang key='starPlural' section='product rating'}{/if}
-                                                {/if}
-                                                {if isset($bewertungSterneSelected) && $bewertungSterneSelected === $schluessel}
-                                                    </strong>
-                                                {/if}
-                                            {/col}
-                                            {col cols=6}
-                                                {progress now=$percent|round min=0 max=100}
-
-                                            {/col}
-                                            {col cols=2}
-                                                {if !empty($nSterne)}{$nSterne}{else}0{/if}
-                                            {/col}
-                                        {/row}
-                                    {/foreach}
-                                    {if isset($bewertungSterneSelected) && $bewertungSterneSelected > 0}
-                                        {block name='productdetails-reviews-note-all-ratings'}
-                                            <p>
-                                                {link href="{$Artikel->cURLFull}#tab-votes" class="btn btn-secondary"}
-                                                    {lang key='allRatings'}
-                                                {/link}
-                                            </p>
+                            {block name='productdetails-reviews-rating-dropdown'}
+                            <div class="dropdown">
+                                <button class="btn btn-link px-0 dropdown-toggle" type="button" id="ratingDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    {block name='productdetails-reviews-include-rating'}
+                                        {include file='productdetails/rating.tpl' total=$Artikel->Bewertungen->oBewertungGesamt->nAnzahl}
+                                        <span class="mx-2">({$Artikel->Bewertungen->oBewertungGesamt->nAnzahl} {lang key='Votes'})</span>
+                                    {/block}
+                                </button>
+                                <div class="dropdown-menu min-w-lg p-0" aria-labelledby="ratingDropdown" data-dropdown-stay>
+                                    <div class="dropdown-body p-3">
+                                        {block name='productdetails-reviews-votes'}
+                                            {foreach name=sterne from=$Artikel->Bewertungen->nSterne_arr item=nSterne key=i}
+                                                {assign var=int1 value=5}
+                                                {math equation='x - y' x=$int1 y=$i assign='schluessel'}
+                                                {assign var=int2 value=100}
+                                                {math equation='a/b*c' a=$nSterne b=$Artikel->Bewertungen->oBewertungGesamt->nAnzahl c=$int2 assign='percent'}
+                                                {row class="mb-2"}
+                                                    {col cols=4}
+                                                    {if isset($bewertungSterneSelected) && $bewertungSterneSelected === $schluessel}
+                                                        <strong>
+                                                    {/if}
+                                                    {if $nSterne > 0 && (!isset($bewertungSterneSelected) || $bewertungSterneSelected !== $schluessel)}
+                                                        {link href="{$Artikel->cURLFull}?btgsterne={$schluessel}#tab-votes"}{$schluessel} {if $i == 4}{lang key='starSingular' section='product rating'}{else}{lang key='starPlural' section='product rating'}{/if}{/link}
+                                                    {else}
+                                                        {$schluessel} {if $i == 4}{lang key='starSingular' section='product rating'}{else}{lang key='starPlural' section='product rating'}{/if}
+                                                    {/if}
+                                                    {if isset($bewertungSterneSelected) && $bewertungSterneSelected === $schluessel}
+                                                        </strong>
+                                                    {/if}
+                                                    {/col}
+                                                    {col cols=6}
+                                                        {progress now=$percent|round min=0 max=100}
+                                                    {/col}
+                                                    {col cols=2}
+                                                        {if !empty($nSterne)}{$nSterne}{else}0{/if}
+                                                    {/col}
+                                                {/row}
+                                            {/foreach}
+                                            {if isset($bewertungSterneSelected) && $bewertungSterneSelected > 0}
+                                                {block name='productdetails-reviews-note-all-ratings'}
+                                                    <p>
+                                                        {link href="{$Artikel->cURLFull}#tab-votes" class="btn btn-outline-primary "}
+                                                        {lang key='allRatings'}
+                                                        {/link}
+                                                    </p>
+                                                {/block}
+                                            {/if}
                                         {/block}
-                                    {/if}
-                                {/collapse}
+                                    </div>
+                                </div>
+                            </div>
                             {/block}
                         {/if}
                     {/card}
                 {/col}
             {/block}
             {block name='productdetails-reviews-votes'}
-                {col cols=12 md=6  order=0 order-md=1}
+                {col cols=12 md=8  order=0 order-md=1}
                     {form method="post" action="{get_static_route id='bewertung.php'}#tab-votes" id="article_rating"}
-                        {if $Artikel->Bewertungen->oBewertungGesamt->nAnzahl == 0}
-                            <p>{lang key='firstReview'}: </p>
-                        {else}
-                            <p>{lang key='shareYourExperience' section='product rating'}: </p>
-                        {/if}
+                        <div class="subheadline">
+                            {if $Artikel->Bewertungen->oBewertungGesamt->nAnzahl == 0}
+                                <p>{lang key='firstReview'}: </p>
+                            {else}
+                                <p>{lang key='shareYourExperience' section='product rating'}: </p>
+                            {/if}
+                        </div>
                         {input type="hidden" name="bfa" value="1"}
                         {input type="hidden" name="a" value=$Artikel->kArtikel}
-                        {button type="submit" name="bewerten" value="1" class="w-auto mb-3"}
+                        {button type="submit" name="bewerten" value="1" variant="outline-primary" class="w-auto mb-3"}
                             {if $bereitsBewertet === false}
                                 {lang key='productAssess' section='product rating'}
                             {else}
@@ -106,7 +112,9 @@
             {block name='productdetails-reviews-form-most-useful'}
                 {card class="reviews-mosthelpful mb-3" no-body=true}
                     {cardheader}
-                        {lang key='theMostUsefulRating' section='product rating'}
+                        <span class="h3 mb-0">
+                            {lang key='theMostUsefulRating' section='product rating'}
+                        </span>
                     {/cardheader}
                     {form method="post" action="{get_static_route id='bewertung.php'}#tab-votes"}
                         {block name='productdetails-reviews-most-helpful'}

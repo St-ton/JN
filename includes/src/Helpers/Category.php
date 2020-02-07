@@ -244,7 +244,7 @@ class Category
                 GROUP BY node.kKategorie
                 ORDER BY node.lft',
             ReturnType::COLLECTION
-        )->each(function ($item) {
+        )->each(static function ($item) {
             $item->kKategorie       = (int)$item->kKategorie;
             $item->kOberKategorie   = (int)$item->kOberKategorie;
             $item->cnt              = (int)$item->cnt;
@@ -276,7 +276,7 @@ class Category
                 ORDER BY tkategorieattribut.kKategorie, tkategorieattribut.bIstFunktionsAttribut DESC, 
                 tkategorieattribut.nSort',
             ReturnType::COLLECTION
-        )->each(function ($e) {
+        )->each(static function ($e) {
             $e->kKategorie            = (int)$e->kKategorie;
             $e->bIstFunktionsAttribut = (bool)$e->bIstFunktionsAttribut;
             $e->nSort                 = (int)$e->nSort;
@@ -488,9 +488,9 @@ class Category
 
     /**
      * @param int $id
-     * @return false|MenuItem
+     * @return MenuItem|null
      */
-    public function getCategoryById(int $id)
+    public function getCategoryById(int $id): ?MenuItem
     {
         if (self::$fullCategories === null) {
             self::$fullCategories = $this->combinedGetAll();
@@ -526,7 +526,7 @@ class Category
         }
         $tree = [];
         $next = $this->getCategoryById($id);
-        if ($next === false && self::$depth !== 0) {
+        if ($next === null && self::$depth !== 0) {
             // we have an incomplete category tree (because of high category count)
             // and did not find the desired category
             return $this->getFallBackFlatTree($id);
@@ -541,7 +541,7 @@ class Category
             $tree[] = $cat;
             while (!empty($next->getParentID())) {
                 $next = $this->getCategoryById($next->getParentID());
-                if ($next !== false) {
+                if ($next !== null) {
                     if ($noChildren === true) {
                         $cat = clone $next;
                         $cat->setChildren([]);
@@ -559,13 +559,13 @@ class Category
     /**
      * @param int                 $id
      * @param MenuItem[]|MenuItem $haystack
-     * @return object|bool
+     * @return MenuItem|null
      */
-    private function findCategoryInList(int $id, $haystack)
+    private function findCategoryInList(int $id, $haystack): ?MenuItem
     {
         if (\is_array($haystack)) {
             foreach ($haystack as $category) {
-                if (($result = $this->findCategoryInList($id, $category)) !== false) {
+                if (($result = $this->findCategoryInList($id, $category)) !== null) {
                     return $result;
                 }
             }
@@ -579,7 +579,7 @@ class Category
             }
         }
 
-        return false;
+        return null;
     }
 
     /**
@@ -655,7 +655,8 @@ class Category
         if ($categoryID <= 0) {
             return [];
         }
+        $category = self::getInstance()->getCategoryById($categoryID);
 
-        return self::getInstance()->getCategoryById($categoryID)->getChildren() ?? [];
+        return $category === null ? [] : $category->getChildren();
     }
 }

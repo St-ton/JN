@@ -9,11 +9,11 @@ namespace JTL\Update;
 use DateTime;
 use Exception;
 use JTL\DB\ReturnType;
-use JTL\Filesystem\Filesystem;
-use JTL\Filesystem\LocalFilesystem;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
+use League\Flysystem\Adapter\Local;
+use League\Flysystem\Filesystem;
 
 /**
  * Class MigrationHelper
@@ -88,7 +88,7 @@ class MigrationHelper
         if (\preg_match(static::MIGRATION_FILE_NAME_PATTERN, \basename($fileName), $matches)) {
             return \preg_replace_callback(
                 '/(^|_)([a-z])/',
-                function ($m) {
+                static function ($m) {
                     return (\mb_strlen($m[1]) ? ' ' : '') . \mb_convert_case($m[2], \MB_CASE_UPPER);
                 },
                 $matches[2]
@@ -233,7 +233,7 @@ class MigrationHelper
     {
         $datetime      = new DateTime('NOW');
         $timestamp     = $datetime->format('YmdHis');
-        $asFilePath    = function ($text) {
+        $asFilePath    = static function ($text) {
             $text = \preg_replace('/\W/', '_', $text);
             $text = \preg_replace('/_+/', '_', $text);
 
@@ -245,9 +245,9 @@ class MigrationHelper
         );
         $relPath       = 'update/migrations';
         $migrationPath = $relPath . '/' . $filePath . '.php';
-        $fileSystem    = new Filesystem(new LocalFilesystem(['root' => PFAD_ROOT]));
+        $fileSystem    = new Filesystem(new Local(\PFAD_ROOT));
 
-        if (!$fileSystem->exists($relPath)) {
+        if (!$fileSystem->has($relPath)) {
             throw new Exception('Migrations path doesn\'t exist!');
         }
 
@@ -257,7 +257,7 @@ class MigrationHelper
             ->assign('author', $author)
             ->assign('created', $datetime->format(DateTime::RSS))
             ->assign('timestamp', $timestamp)
-            ->fetch(PFAD_ROOT.'includes/src/Console/Command/Migration/Template/migration.class.tpl');
+            ->fetch(\PFAD_ROOT . 'includes/src/Console/Command/Migration/Template/migration.class.tpl');
 
         $fileSystem->put($migrationPath, $content);
 

@@ -121,7 +121,7 @@ final class JTLCache implements JTLCacheInterface
      * @param array $options
      * @param bool  $ignoreInstance - used for page cache to not overwrite the instance and delete debug output
      */
-    public function __construct($options = [], $ignoreInstance = false)
+    public function __construct(array $options = [], bool $ignoreInstance = false)
     {
         if ($ignoreInstance === false) {
             self::$instance = $this;
@@ -297,13 +297,13 @@ final class JTLCache implements JTLCacheInterface
         if (\mb_substr($this->options['cache_dir'], \mb_strlen($this->options['cache_dir']) - 1) !== '/') {
             $this->options['cache_dir'] .= '/';
         }
-        if ($this->options['method'] !== 'redis' && (int)$this->options['lifetime'] < 0) {
+        if ($this->options['method'] !== 'redis' && $this->options['lifetime'] < 0) {
             $this->options['lifetime'] = 0;
         }
         // accept only valid integer lifetime values
-        $this->options['lifetime'] = ($this->options['lifetime'] === '' || (int)$this->options['lifetime'] === 0)
+        $this->options['lifetime'] = ($this->options['lifetime'] === '' || $this->options['lifetime'] === 0)
             ? self::DEFAULT_LIFETIME
-            : (int)$this->options['lifetime'];
+            : $this->options['lifetime'];
         if ($this->options['types_disabled'] === null) {
             $this->options['types_disabled'] = [];
         }
@@ -319,16 +319,18 @@ final class JTLCache implements JTLCacheInterface
      */
     public function setCache(string $methodName): bool
     {
-        $cache = null;
-        /** @var ICachingMethod $className */
-        $class = 'JTL\Cache\Methods\Cache' . \ucfirst($methodName);
-        $cache = new $class($this->options);
-        if (!empty($cache) && $cache instanceof ICachingMethod) {
-            $this->setError($cache->getError());
-            if ($cache->isInitialized() && $cache->isAvailable()) {
-                $this->setMethod($cache);
+        if (\SAFE_MODE === false) {
+            $cache = null;
+            /** @var ICachingMethod $className */
+            $class = 'JTL\Cache\Methods\Cache' . \ucfirst($methodName);
+            $cache = new $class($this->options);
+            if (!empty($cache) && $cache instanceof ICachingMethod) {
+                $this->setError($cache->getError());
+                if ($cache->isInitialized() && $cache->isAvailable()) {
+                    $this->setMethod($cache);
 
-                return true;
+                    return true;
+                }
             }
         }
         $this->setMethod(CacheNull::getInstance($this->options));
@@ -590,9 +592,9 @@ final class JTLCache implements JTLCacheInterface
     /**
      * @inheritdoc
      */
-    public function setCacheLifetime($lifetime): JTLCacheInterface
+    public function setCacheLifetime(int $lifetime): JTLCacheInterface
     {
-        $this->options['lifetime'] = (int)$lifetime > 0
+        $this->options['lifetime'] = $lifetime > 0
             ? (int)$lifetime
             : self::DEFAULT_LIFETIME;
 
@@ -602,7 +604,7 @@ final class JTLCache implements JTLCacheInterface
     /**
      * @inheritdoc
      */
-    public function setCacheDir($dir): JTLCacheInterface
+    public function setCacheDir(string $dir): JTLCacheInterface
     {
         $this->options['cache_dir'] = $dir;
 
@@ -733,19 +735,6 @@ final class JTLCache implements JTLCacheInterface
             'session',
             'xcache'
         ];
-//        $files = scandir(CACHING_METHODS_DIR, SCANDIR_SORT_ASCENDING);
-//        if (!\is_array($files)) {
-//            return [];
-//        }
-//
-//        return \array_filter(\array_map(
-//            function ($m) {
-//                return \mb_strpos($m, 'class.cachingMethod') !== false
-//                    ? \str_replace(['class.cachingMethod.', '.php'], '', $m)
-//                    : false;
-//            },
-//            $files
-//        ));
     }
 
     /**

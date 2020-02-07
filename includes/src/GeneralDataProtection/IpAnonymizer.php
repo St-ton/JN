@@ -218,7 +218,7 @@ class IpAnonymizer
         $len                 = \count($ipParts);
         ($len === 4) ? $glue = '.' : $glue = ':';
         for ($i = 0; $i < $len; $i++) {
-            (\hexdec($maskParts[$i]) !== 0) ?: $ipParts{$i} = '*';
+            (\hexdec($maskParts[$i]) !== 0) ?: $ipParts[$i] = '*';
         }
         return \implode($glue, $ipParts);
     }
@@ -277,7 +277,7 @@ class IpAnonymizer
         $ipParts = \preg_split('/[\.:]/', $ipString);
         $glue    = \mb_strpos($ipString, '.') !== false ? '.' : ':';
 
-        return \implode($glue, \array_map(function ($e) {
+        return \implode($glue, \array_map(static function ($e) {
             return (int)$e;
         }, $ipParts));
     }

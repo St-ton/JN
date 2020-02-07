@@ -11,6 +11,7 @@ use JTL\Plugin\Admin\Updater;
 use JTL\Plugin\Admin\Validation\LegacyPluginValidator;
 use JTL\Plugin\Admin\Validation\PluginValidator;
 use JTL\Plugin\Helper;
+use JTL\Plugin\LegacyPlugin;
 use JTL\Shop;
 use JTL\XMLParser;
 
@@ -54,14 +55,16 @@ function pluginPlausiIntern($xml, $dir)
 function updatePlugin(int $pluginID)
 {
     trigger_error(__FILE__ . ': calling ' . __FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $db              = Shop::Container()->getDB();
-    $cache           = Shop::Container()->getCache();
-    $parser          = new XMLParser();
-    $uninstaller     = new Uninstaller($db, $cache);
-    $validator       = new LegacyPluginValidator($db, $parser);
-    $modernValidator = new PluginValidator($db, $parser);
-    $installer       = new Installer($db, $uninstaller, $validator, $modernValidator);
-    $updater         = new Updater($db, $installer);
+    $db        = Shop::Container()->getDB();
+    $cache     = Shop::Container()->getCache();
+    $parser    = new XMLParser();
+    $installer = new Installer(
+        $db,
+        new Uninstaller($db, $cache),
+        new LegacyPluginValidator($db, $parser),
+        new PluginValidator($db, $parser)
+    );
+    $updater   = new Updater($db, $installer);
 
     return $updater->update($pluginID);
 }
@@ -77,13 +80,15 @@ function updatePlugin(int $pluginID)
 function installierePluginVorbereitung($dir, $oldPlugin = 0)
 {
     trigger_error(__FILE__ . ': calling ' . __FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $db              = Shop::Container()->getDB();
-    $cache           = Shop::Container()->getCache();
-    $parser          = new XMLParser();
-    $uninstaller     = new Uninstaller($db, $cache);
-    $validator       = new LegacyPluginValidator($db, $parser);
-    $modernValidator = new PluginValidator($db, $parser);
-    $installer       = new Installer($db, $uninstaller, $validator, $modernValidator);
+    $db        = Shop::Container()->getDB();
+    $cache     = Shop::Container()->getCache();
+    $parser    = new XMLParser();
+    $installer = new Installer(
+        $db,
+        new Uninstaller($db, $cache),
+        new LegacyPluginValidator($db, $parser),
+        new PluginValidator($db, $parser)
+    );
     $installer->setDir($dir);
     if ($oldPlugin !== 0) {
         $installer->setPlugin($oldPlugin);
@@ -96,15 +101,15 @@ function installierePluginVorbereitung($dir, $oldPlugin = 0)
 /**
  * Laedt das Plugin neu, d.h. liest die XML Struktur neu ein, fuehrt neue SQLs aus.
  *
- * @param \JTL\Plugin\LegacyPlugin $oPlugin
- * @param bool                     $forceReload
+ * @param LegacyPlugin $plugin
+ * @param bool         $forceReload
  * @return int
  * @throws Exception
  * @deprecated since 5.0.0
  * 200 = kein Reload nötig, da info file älter als dZuletztAktualisiert
  * siehe return Codes von installierePluginVorbereitung()
  */
-function reloadPlugin($oPlugin, $forceReload = false)
+function reloadPlugin($plugin, bool $forceReload = false)
 {
     trigger_error(__FILE__ . ': calling ' . __FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $db           = Shop::Container()->getDB();
@@ -116,7 +121,7 @@ function reloadPlugin($oPlugin, $forceReload = false)
         new PluginValidator($db, $parser)
     );
 
-    return $stateChanger->reload($oPlugin, $forceReload);
+    return $stateChanger->reload($plugin, $forceReload);
 }
 
 /**

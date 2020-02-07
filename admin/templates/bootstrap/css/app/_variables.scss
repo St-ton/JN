@@ -38,7 +38,7 @@ $primary-palette : (
 );
 
 $primary					: map-get($primary-palette, 'base');
-$secondary					: map-get($grays, 'light');
+$secondary					: map-get($primary-palette, 'darker');;
 $success					: #0f9d48;
 $info						: #9cadbc;
 $warning					: $wawi;
@@ -47,7 +47,7 @@ $danger						: #e10505;
 $theme-colors				: ();
 $theme-colors: map-merge((
 	'primary'				: $primary,
-	'secondary' 			: map-get($grays, 'light'),
+	'secondary' 			: map-get($primary-palette, 'darker'),
 	'dark-gray'				: map-get($grays, 'dark'),
 	'success' 				: $success,
 	'info' 					: $info,
@@ -146,6 +146,10 @@ $text-muted					: #bdbdbd;
 
 $h1-font-size				: $font-size-base * 1.25;
 $h2-font-size				: $font-size-base * 1.125;
+$h3-font-size				: $h2-font-size;
+$h4-font-size				: $h2-font-size;
+$h5-font-size				: $h2-font-size;
+$h6-font-size				: $h2-font-size;
 
 $subheading1-font-size		: $font-size-base * .875;
 $subheading1-color			: map-get($primary-palette, 'dark');

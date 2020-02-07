@@ -77,7 +77,7 @@ class Request
 
             return \is_numeric($val)
                 ? [(int)$val]
-                : \array_map(function ($e) {
+                : \array_map(static function ($e) {
                     return (int)$e;
                 }, $val);
         }
@@ -395,5 +395,27 @@ class Request
         }
 
         return $seo;
+    }
+
+    /**
+     * returns true if request parameter is not set or if $url has same valued request parameter
+     *
+     * @param string $url
+     * @param string $parameterToCheck
+     * @return bool
+     */
+    public static function urlHasEqualRequestParameter(string $url, string $parameterToCheck): bool
+    {
+        $urlParts = parse_url($url);
+        if (empty($urlParts['query'])) {
+            $urlParts['query'] = [];
+        } else {
+            parse_str($urlParts['query'], $urlParts['query']);
+        }
+
+        return self::verifyGPDataString($parameterToCheck) === ''
+            || (isset($urlParts['query'][$parameterToCheck])
+                && self::verifyGPDataString($parameterToCheck) === $urlParts['query'][$parameterToCheck]
+            );
     }
 }

@@ -176,7 +176,6 @@
                                                         $('#tpl-upload-{$oSetting@iteration}').fileinput({ldelim}
                                                             uploadAsync: false,
                                                             uploadExtraData: {ldelim}id:1{rdelim},
-                                                            uploadUrl: '{$shopURL}/{$PFAD_ADMIN}shoptemplate.php?token={$smarty.session.jtl_token}',
                                                             allowedFileExtensions : {if !empty($oSetting->rawAttributes.allowedFileExtensions)}{$oSetting->rawAttributes.allowedFileExtensions}{else}['jpg', 'jpeg', 'jpe', 'gif', 'png', 'bmp']{/if},
                                                             overwriteInitial: true,
                                                             browseOnZoneClick:     true,
@@ -184,10 +183,11 @@
                                                             fileActionSettings:    {
                                                                 showZoom:   false,
                                                                 showDrag:   false,
-                                                                showRemove: false,
+                                                                showRemove: false
                                                             },
                                                             deleteUrl: '{$shopURL}/{$PFAD_ADMIN}shoptemplate.php?token={$smarty.session.jtl_token}',
                                                             initialPreviewCount: 1,
+                                                            theme: 'fas',
                                                             showPreview: true,
                                                             language: '{$language|mb_substr:0:2}',
                                                             maxFileSize: {if !empty($oSetting->rawAttributes.maxFileSize)}{$oSetting->rawAttributes.maxFileSize}{else}1000{/if},
@@ -250,7 +250,8 @@
                     <th></th>
                     <th></th>
                     <th class="text-center">{__('status')}</th>
-                    <th class="text-center">{__('version')}</th>
+                    {*<th class="text-center">{__('version')}</th>*}
+                    <th class="text-center">{__('shopversion')}</th>
                     <th></th>
                 </tr>
                 </thead>
@@ -308,12 +309,12 @@
                                         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
                                             <div class="modal-content">
                                                 <div class="modal-header">
-                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
                                                     <h5 class="modal-title" id="tplModal{$oTemplate->cName}Label">
                                                         {$oTemplate->cName} – {__('modifiedFiles')} ({$oTemplate->checksums|count})
                                                     </h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
                                                 </div>
                                                 <div class="modal-body">
                                                     <div class="table-responsive table-">
@@ -344,8 +345,11 @@
                                 {/if}
                             {/if}
                         </td>
+                        {*<td class="text-vcenter text-center">*}
+                            {*{$oTemplate->cVersion}*}
+                        {*</td>*}
                         <td class="text-vcenter text-center">
-                            {$oTemplate->cVersion}
+                            {$oTemplate->cShopVersion}
                         </td>
                         <td class="text-vcenter text-center">
                             {if !empty($oTemplate->bHasError) && $oTemplate->bHasError === true}

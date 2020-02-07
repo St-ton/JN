@@ -60,7 +60,6 @@ abstract class AbstractBox implements BoxInterface
         \PAGE_WARENKORB,
         \PAGE_MEINKONTO,
         \PAGE_KONTAKT,
-        \PAGE_UMFRAGE,
         \PAGE_NEWS,
         \PAGE_NEWSLETTER,
         \PAGE_LOGIN,
@@ -288,7 +287,6 @@ abstract class AbstractBox implements BoxInterface
         foreach (self::$validPageTypes as $pageType) {
             $this->filter[$pageType] = false;
         }
-
         foreach ($boxData as $box) {
             if (!empty($box->cFilter)) {
                 $this->filter[(int)$box->kSeite] = \array_map('\intval', \explode(',', $box->cFilter));
@@ -300,7 +298,11 @@ abstract class AbstractBox implements BoxInterface
                     $this->filter[(int)$pageID] = (bool)$visibility;
                 }
             }
+
             if (!empty($box->kSprache)) {
+                if (!\is_array($this->content)) {
+                    $this->content = [];
+                }
                 $this->content[(int)$box->kSprache] = $box->cInhalt;
                 $this->title[(int)$box->kSprache]   = $box->cTitel;
             }
@@ -825,7 +827,7 @@ abstract class AbstractBox implements BoxInterface
         $tags                       = [];
         $tags['options']['speed']   = $nSpeed;
         $tags['options']['opacity'] = $nOpacity;
-        $gibTagFarbe                = function () {
+        $gibTagFarbe                = static function () {
             $cColor = '';
             $cCodes = ['00', '33', '66', '99', 'CC', 'FF'];
             for ($i = 0; $i < 3; $i++) {

@@ -4,24 +4,29 @@
  *}
 {block name='boxes-box-login'}
     {card
-        class="box box-login mb-7"
+        class="box box-login mb-4"
         id="sidebox{$oBox->getID()}"
-        title="{if empty($smarty.session.Kunde)}{lang key='login'}{else}{lang key='hello'}, {$smarty.session.Kunde->cVorname} {$smarty.session.Kunde->cNachname}{/if}"
     }
         {block name='boxes-box-login-content'}
+            {block name='boxes-box-login-title'}
+                <div class="productlist-filter-headline">
+                    <span>{if empty($smarty.session.Kunde)}{lang key='login'}{else}{lang key='hello'}, {$smarty.session.Kunde->cVorname} {$smarty.session.Kunde->cNachname}{/if}</span>
+                </div>
+            {/block}
             {if empty($smarty.session.Kunde->kKunde)}
                 {block name='boxes-box-login-form'}
-                    {form action="{get_static_route id='jtl.php' secure=true}" method="post" class="form box_login evo-validate label-slide"}
+                    {form action="{get_static_route id='jtl.php' secure=true}" method="post" class="form box_login jtl-validate label-slide"}
                         {block name='boxes-box-login-form-data'}
                             {input type="hidden" name="login" value="1"}
                             {include file='snippets/form_group_simple.tpl'
                                 options=[
-                                    'email', 'email-box-login', 'email', null,{lang key='emailadress'}, true
+                                    'email', 'email-box-login', 'email', null,{lang key='emailadress'}, true, null, "email"
                                 ]
                             }
                             {include file='snippets/form_group_simple.tpl'
                                 options=[
-                                    'password', 'password-box-login', 'passwort', null,{lang key='password' section='account data'}, true
+                                    'password', 'password-box-login', 'passwort', null,
+                                    {lang key='password' section='account data'}, true, null, "current-password"
                                 ]
                             }
                         {/block}
@@ -49,10 +54,10 @@
                         {block name='boxes-box-login-form-links'}
                             {nav vertical=true class="register-or-resetpw"}
                                 {navitem class="resetpw" href="{get_static_route id='pass.php' secure=true}"}
-                                    <span class="fa fa-question-circle"></span> {lang key='forgotPassword'}
+                                    {lang key='forgotPassword'}
                                 {/navitem}
                                 {navitem class="register" href="{get_static_route id='registrieren.php'}"}
-                                    <span class="fa fa-pencil-alt"></span> {lang key='newHere'} {lang key='registerNow'}
+                                    {lang key='newHere'} {lang key='registerNow'}
                                 {/navitem}
                             {/nav}
                         {/block}
@@ -60,7 +65,7 @@
                 {/block}
             {else}
                 {block name='boxes-box-login-actions'}
-                    {link href="{get_static_route id='jtl.php'}" class="btn btn-secondary btn-block btn-sm btn-account"}
+                    {link href="{get_static_route id='jtl.php'}" class="btn btn-outline-primary btn-block btn-sm btn-account"}
                         {lang key='myAccount'}
                     {/link}
                     {link href="{get_static_route id='jtl.php'}?logout=1&token={$smarty.session.jtl_token}"

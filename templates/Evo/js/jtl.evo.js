@@ -158,7 +158,9 @@
         },
 
         imagebox: function(wrapper) {
-            var $wrapper = (typeof wrapper === 'undefined' || wrapper.length === 0) ? $('#result-wrapper') : $(wrapper),
+            var $wrapper = (typeof wrapper === 'undefined' || wrapper.length === 0)
+                    ? $('#result-wrapper, .opc-ProductStream-gallery, .opc-ProductStream-list')
+                    : $(wrapper),
                 square   = $('.image-box', $wrapper).first().height() + 'px',
                 padding  = $(window).height() / 2;
 
@@ -253,7 +255,6 @@
              * <div id="popover-content123" class="popover">content here</div>
              */
             $('[data-toggle="popover"]').popover({
-                trigger: 'hover',
                 html: true,
                 sanitize: false,
                 content: function() {

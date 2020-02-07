@@ -202,6 +202,7 @@ class ArtikelListe
                 $categoryIDs[] = $category->getID();
                 if ($category->hasChildren()) {
                     foreach ($category->getChildren() as $level2) {
+                        /** @var MenuItem $level2 */
                         $categoryIDs[] = $level2->getID();
                     }
                 }
@@ -266,6 +267,7 @@ class ArtikelListe
                 $categoryIDs[] = $category->getID();
                 if ($category->hasChildren()) {
                     foreach ($category->getChildren() as $level2) {
+                        /** @var MenuItem $level2 */
                         $categoryIDs[] = $level2->getID();
                     }
                 }
@@ -273,7 +275,7 @@ class ArtikelListe
         }
         $keys = null;
         if ($topProductsList instanceof self) {
-            $keys = map($topProductsList->elemente, function ($e) {
+            $keys = map($topProductsList->elemente, static function ($e) {
                 return $e->cacheID ?? 0;
             });
         }
@@ -284,7 +286,7 @@ class ArtikelListe
             // top artikel nicht nochmal in den bestsellen vorkommen lassen
             $excludes = '';
             if (GeneralObject::isCountable('elemente', $topProductsList)) {
-                $exclude  = map($topProductsList->elemente, function ($e) {
+                $exclude  = map($topProductsList->elemente, static function ($e) {
                     return (int)$e->kArtikel;
                 });
                 $excludes = \count($exclude) > 0

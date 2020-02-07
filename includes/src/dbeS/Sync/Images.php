@@ -8,8 +8,17 @@ namespace JTL\dbeS\Sync;
 
 use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
+use JTL\Media\Image;
+use JTL\Media\Image\Category;
+use JTL\Media\Image\Characteristic;
+use JTL\Media\Image\CharacteristicValue;
+use JTL\Media\Image\Manufacturer;
+use JTL\Media\IMedia;
+use JTL\Media\Media;
 use JTL\Shop;
 use stdClass;
+use function Functional\map;
+use function Functional\reindex;
 
 /**
  * Class Images
@@ -38,9 +47,8 @@ final class Images extends AbstractSync
      */
     public function handle(Starter $starter)
     {
-        $this->brandingConfig = $this->getBrandingConfig();
-        $this->config         = $this->getConfig();
-        $sql                  = $this->getSeoSQL();
+        $this->brandingConfig = $this->initBrandingConfig();
+        $this->config         = Shop::getSettings([\CONF_BILDER])['bilder'];
         $this->db->query('START TRANSACTION', ReturnType::DEFAULT);
         foreach ($starter->getXML() as $i => $item) {
             [$file, $xml] = [\key($item), \reset($item)];
@@ -52,7 +60,7 @@ final class Images extends AbstractSync
                 case 'bilder_m.xml':
                 case 'bilder_mw.xml':
                 case 'bilder_h.xml':
-                    $this->handleInserts($xml, $starter->getUnzipPath(), $sql);
+                    $this->handleInserts($xml, $starter->getUnzipPath());
                     break;
 
                 case 'del_bilder_ka.xml':
@@ -64,6 +72,8 @@ final class Images extends AbstractSync
                 case 'del_bilder_h.xml':
                     $this->handleDeletes($xml);
                     break;
+                default:
+                    break;
             }
         }
         $this->db->query('COMMIT', ReturnType::DEFAULT);
@@ -72,109 +82,49 @@ final class Images extends AbstractSync
     }
 
     /**
-     * @return string
-     */
-    private function getSeoSQL(): string
-    {
-        $lang   = $this->db->select('tsprache', 'cShopStandard', 'Y');
-        $langID = (int)($lang->kSprache ?? 0);
-        $sql    = '';
-        if (!$langID) {
-            $langID = $_SESSION['kSprache'] ?? 0;
-        }
-        if ($langID > 0) {
-            $sql = ' AND tseo.kSprache = ' . $lang->kSprache;
-        }
-
-        return $sql;
-    }
-
-    /**
      * @return array
      */
-    private function getBrandingConfig(): array
+    private function initBrandingConfig(): array
     {
-        $branding = [];
-        $data     = $this->db->query(
-            'SELECT * FROM tbranding',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-        foreach ($data as $item) {
-            $branding[$item->cBildKategorie] = $item;
-        }
-        foreach ($branding as $config) {
-            $config->oBrandingEinstellung = $this->db->select(
-                'tbrandingeinstellung',
-                'kBranding',
-                (int)$config->kBranding
-            );
-        }
-
-        return $branding;
-    }
-
-    /**
-     * @return array
-     */
-    private function getConfig(): array
-    {
-        $config   = Shop::getSettings([\CONF_BILDER]);
-        $defaults = [
-            'bilder_kategorien_breite'         => 100,
-            'bilder_kategorien_hoehe'          => 100,
-            'bilder_variationen_gross_breite'  => 800,
-            'bilder_variationen_gross_hoehe'   => 800,
-            'bilder_variationen_breite'        => 210,
-            'bilder_variationen_hoehe'         => 210,
-            'bilder_variationen_mini_breite'   => 30,
-            'bilder_variationen_mini_hoehe'    => 30,
-            'bilder_artikel_gross_breite'      => 800,
-            'bilder_artikel_gross_hoehe'       => 800,
-            'bilder_artikel_normal_breite'     => 210,
-            'bilder_artikel_normal_hoehe'      => 210,
-            'bilder_artikel_klein_breite'      => 80,
-            'bilder_artikel_klein_hoehe'       => 80,
-            'bilder_artikel_mini_breite'       => 30,
-            'bilder_artikel_mini_hoehe'        => 30,
-            'bilder_hersteller_normal_breite'  => 100,
-            'bilder_hersteller_normal_hoehe'   => 100,
-            'bilder_hersteller_klein_breite'   => 40,
-            'bilder_hersteller_klein_hoehe'    => 40,
-            'bilder_merkmal_normal_breite'     => 100,
-            'bilder_merkmal_normal_hoehe'      => 100,
-            'bilder_merkmal_klein_breite'      => 20,
-            'bilder_merkmal_klein_hoehe'       => 20,
-            'bilder_merkmalwert_normal_breite' => 100,
-            'bilder_merkmalwert_normal_hoehe'  => 100,
-            'bilder_merkmalwert_klein_breite'  => 20,
-            'bilder_merkmalwert_klein_hoehe'   => 20,
-            'bilder_konfiggruppe_klein_breite' => 130,
-            'bilder_konfiggruppe_klein_hoehe'  => 130,
-            'bilder_jpg_quali'                 => 80,
-            'bilder_dateiformat'               => 'PNG',
-            'bilder_hintergrundfarbe'          => '#ffffff',
-            'bilder_skalieren'                 => 'N',
-        ];
-        foreach ($defaults as $option => $value) {
-            if (empty($config['bilder'][$option])) {
-                $config['bilder'][$option] = $value;
+        return map(
+            reindex(
+                $this->db->query(
+                    'SELECT * FROM tbranding',
+                    ReturnType::ARRAY_OF_OBJECTS
+                ),
+                static function ($e) {
+                    return $e->cBildKategorie;
+                }
+            ),
+            function ($e) {
+                $e->config = $this->db->select(
+                    'tbrandingeinstellung',
+                    'kBranding',
+                    (int)$e->kBranding
+                );
+                return $e;
             }
-        }
+        );
+    }
 
-        return $config;
+    /**
+     * @param string $type
+     * @return stdClass|null
+     */
+    private function getBrandingConfig(string $type): ?stdClass
+    {
+        return $this->brandingConfig[$type]->config ?? null;
     }
 
     /**
      * @param array  $xml
      * @param string $unzipPath
-     * @param string $sql
      */
-    private function handleInserts($xml, string $unzipPath, string $sql): void
+    private function handleInserts($xml, string $unzipPath): void
     {
         if (!\is_array($xml['bilder'])) {
             return;
         }
-        $productImages      = $this->mapper->mapArray($xml['bilder'], 'tartikelpict', 'mArtikelPict');
         $categoryImages     = $this->mapper->mapArray($xml['bilder'], 'tkategoriepict', 'mKategoriePict');
         $propertyImages     = $this->mapper->mapArray($xml['bilder'], 'teigenschaftwertpict', 'mEigenschaftWertPict');
         $manufacturerImages = $this->mapper->mapArray($xml['bilder'], 'therstellerbild', 'mEigenschaftWertPict');
@@ -184,7 +134,6 @@ final class Images extends AbstractSync
 
         \executeHook(\HOOK_BILDER_XML_BEARBEITE, [
             'Pfad'             => $unzipPath,
-            'Artikel'          => &$productImages,
             'Kategorie'        => &$categoryImages,
             'Eigenschaftswert' => &$propertyImages,
             'Hersteller'       => &$manufacturerImages,
@@ -194,9 +143,8 @@ final class Images extends AbstractSync
         ]);
         $this->unzipPath = $unzipPath;
 
-        $this->handleProductImages($productImages, $sql);
-        $this->handleCategoryImages($categoryImages, $sql);
-        $this->handlePropertyImages($propertyImages, $sql);
+        $this->handleCategoryImages($categoryImages);
+        $this->handlePropertyImages($propertyImages);
         $this->handleManufacturerImages($manufacturerImages);
         $this->handleCharacteristicImages($charImages);
         $this->handleCharacteristicValueImages($charValImages);
@@ -206,7 +154,6 @@ final class Images extends AbstractSync
         }
 
         \executeHook(\HOOK_BILDER_XML_BEARBEITE_ENDE, [
-            'Artikel'          => &$productImages,
             'Kategorie'        => &$categoryImages,
             'Eigenschaftswert' => &$propertyImages,
             'Hersteller'       => &$manufacturerImages,
@@ -222,46 +169,43 @@ final class Images extends AbstractSync
     private function handleConfigGroupImages(array $images): void
     {
         foreach ($images as $image) {
-            $item                = new stdClass();
-            $item->cBildPfad     = $image->cPfad;
-            $item->kKonfiggruppe = $image->kKonfiggruppe;
-            if (empty($item->cBildPfad)) {
+            if (empty($image->cPfad) || empty($image->kKonfiggruppe)) {
                 continue;
             }
-            $imgFilename = $item->cBildPfad;
-            $format      = $this->getExtension($this->unzipPath . $imgFilename);
-            if (!$format) {
+            $item                = new stdClass();
+            $item->cBildPfad     = $image->cPfad;
+            $item->kKonfiggruppe = (int)$image->kKonfiggruppe;
+            $original            = $this->unzipPath . $item->cBildPfad;
+            $extension           = $this->getExtension($original);
+            if (!$extension) {
                 $this->logger->error(
                     'Bildformat des Konfiggruppenbildes konnte nicht ermittelt werden. Datei ' .
-                    $imgFilename . ' keine Bilddatei?'
+                    $original . ' keine Bilddatei?'
                 );
                 continue;
             }
-            $item->cBildPfad = $item->kKonfiggruppe . '.' . $format;
-            $item->cBildPfad = $this->getNewFilename($item->cBildPfad);
-
-            $branding                               = new stdClass();
-            $branding->oBrandingEinstellung         = new stdClass();
-            $branding->oBrandingEinstellung->nAktiv = 0;
-
+            $item->cBildPfad = $this->getNewFilename($item->kKonfiggruppe . '.' . $extension);
+            \copy($original, \PFAD_ROOT . \STORAGE_CONFIGGROUPS . $item->cBildPfad);
             if ($this->createThumbnail(
-                $branding,
-                $this->unzipPath . $imgFilename,
+                $original,
                 \PFAD_KONFIGURATOR_KLEIN . $item->cBildPfad,
-                $this->config['bilder']['bilder_konfiggruppe_klein_breite'],
-                $this->config['bilder']['bilder_konfiggruppe_klein_hoehe'],
-                $this->config['bilder']['bilder_jpg_quali'],
-                1,
-                $this->config['bilder']['container_verwenden']
+                $this->config['bilder_konfiggruppe_klein_breite'],
+                $this->config['bilder_konfiggruppe_klein_hoehe'],
+                $this->config['bilder_jpg_quali']
             )) {
                 $this->db->update(
                     'tkonfiggruppe',
                     'kKonfiggruppe',
-                    (int)$item->kKonfiggruppe,
+                    $item->kKonfiggruppe,
                     (object)['cBildPfad' => $item->cBildPfad]
                 );
             }
-            \unlink($this->unzipPath . $imgFilename);
+            \unlink($original);
+        }
+        if (\count($images) > 0) {
+            $instance = Media::getClass(Image::TYPE_CONFIGGROUP);
+            /** @var IMedia $instance */
+            $instance::clearCache();
         }
     }
 
@@ -275,34 +219,31 @@ final class Images extends AbstractSync
             if (empty($image->cPfad) || $image->kMerkmalWert <= 0) {
                 continue;
             }
-            $fileName = $image->cPfad;
-            $format   = $this->getExtension($this->unzipPath . $fileName);
-            if (!$format) {
+            $original  = $this->unzipPath . $image->cPfad;
+            $extension = $this->getExtension($original);
+            if (!$extension) {
                 $this->logger->error(
                     'Bildformat des Merkmalwertbildes konnte nicht ermittelt werden. Datei ' .
-                    $fileName . ' keine Bilddatei?'
+                    $original . ' keine Bilddatei?'
                 );
                 continue;
             }
-            $image->cPfad .= '.' . $format;
-            $image->cPfad  = $this->getNewFilename($image->cPfad);
+            $image->cPfad = $this->getCharacteristicValueImageName($image, $extension);
+            \copy($original, \PFAD_ROOT . \STORAGE_CHARACTERISTIC_VALUES . $image->cPfad);
             $this->createThumbnail(
-                $this->brandingConfig['Merkmalwerte'],
-                $this->unzipPath . $fileName,
+                $original,
                 \PFAD_MERKMALWERTBILDER_NORMAL . $image->cPfad,
-                $this->config['bilder']['bilder_merkmalwert_normal_breite'],
-                $this->config['bilder']['bilder_merkmalwert_normal_hoehe'],
-                $this->config['bilder']['bilder_jpg_quali'],
-                1,
-                $this->config['bilder']['container_verwenden']
+                $this->config['bilder_merkmalwert_normal_breite'],
+                $this->config['bilder_merkmalwert_normal_hoehe'],
+                $this->config['bilder_jpg_quali'],
+                $this->getBrandingConfig(Image::TYPE_CHARACTERISTIC_VALUE)
             );
-            if ($this->createBrandedThumbnail(
-                \PFAD_ROOT . \PFAD_MERKMALWERTBILDER_NORMAL . $image->cPfad,
+            if ($this->createThumbnail(
+                $original,
                 \PFAD_MERKMALWERTBILDER_KLEIN . $image->cPfad,
-                $this->config['bilder']['bilder_merkmalwert_klein_breite'],
-                $this->config['bilder']['bilder_merkmalwert_klein_hoehe'],
-                $this->config['bilder']['bilder_jpg_quali'],
-                $this->config['bilder']['container_verwenden']
+                $this->config['bilder_merkmalwert_klein_breite'],
+                $this->config['bilder_merkmalwert_klein_hoehe'],
+                $this->config['bilder_jpg_quali']
             )) {
                 $this->db->update(
                     'tmerkmalwert',
@@ -316,7 +257,7 @@ final class Images extends AbstractSync
 
                 $this->upsert('tmerkmalwertbild', [$charValImage], 'kMerkmalWert');
             }
-            \unlink($this->unzipPath . $fileName);
+            \unlink($original);
         }
     }
 
@@ -326,47 +267,44 @@ final class Images extends AbstractSync
     private function handleCharacteristicImages(array $images): void
     {
         foreach ($images as $image) {
-            $image->kMerkmal = (int)$image->kMerkmal;
-            if (empty($image->cPfad) || $image->kMerkmal <= 0) {
+            if (empty($image->cPfad) || empty($image->kMerkmal)) {
                 continue;
             }
-            $imgFilename = $image->cPfad;
-            $format      = $this->getExtension($this->unzipPath . $imgFilename);
-            if (!$format) {
+            $image->kMerkmal = (int)$image->kMerkmal;
+            $original        = $this->unzipPath . $image->cPfad;
+            $extension       = $this->getExtension($original);
+            if (!$extension) {
                 $this->logger->error(
                     'Bildformat des Merkmalbildes konnte nicht ermittelt werden. Datei ' .
-                    $imgFilename . ' keine Bilddatei?'
+                    $original . ' keine Bilddatei?'
                 );
                 continue;
             }
-            $image->cPfad .= '.' . $format;
-            $image->cPfad  = $this->getNewFilename($image->cPfad);
+            $image->cPfad = $this->getCharacteristicImageName($image, $extension);
+            \copy($original, \PFAD_ROOT . \STORAGE_CHARACTERISTICS . $image->cPfad);
             $this->createThumbnail(
-                $this->brandingConfig['Merkmale'],
-                $this->unzipPath . $imgFilename,
+                $original,
                 \PFAD_MERKMALBILDER_NORMAL . $image->cPfad,
-                $this->config['bilder']['bilder_merkmal_normal_breite'],
-                $this->config['bilder']['bilder_merkmal_normal_hoehe'],
-                $this->config['bilder']['bilder_jpg_quali'],
-                1,
-                $this->config['bilder']['container_verwenden']
+                $this->config['bilder_merkmal_normal_breite'],
+                $this->config['bilder_merkmal_normal_hoehe'],
+                $this->config['bilder_jpg_quali'],
+                $this->getBrandingConfig(Image::TYPE_CHARACTERISTIC)
             );
-            if ($this->createBrandedThumbnail(
-                \PFAD_ROOT . \PFAD_MERKMALBILDER_NORMAL . $image->cPfad,
+            if ($this->createThumbnail(
+                $original,
                 \PFAD_MERKMALBILDER_KLEIN . $image->cPfad,
-                $this->config['bilder']['bilder_merkmal_klein_breite'],
-                $this->config['bilder']['bilder_merkmal_klein_hoehe'],
-                $this->config['bilder']['bilder_jpg_quali'],
-                $this->config['bilder']['container_verwenden']
+                $this->config['bilder_merkmal_klein_breite'],
+                $this->config['bilder_merkmal_klein_hoehe'],
+                $this->config['bilder_jpg_quali']
             )) {
                 $this->db->update(
                     'tmerkmal',
                     'kMerkmal',
-                    (int)$image->kMerkmal,
+                    $image->kMerkmal,
                     (object)['cBildpfad' => $image->cPfad]
                 );
             }
-            \unlink($this->unzipPath . $imgFilename);
+            \unlink($original);
         }
     }
 
@@ -376,53 +314,40 @@ final class Images extends AbstractSync
     private function handleManufacturerImages(array $images): void
     {
         foreach ($images as $image) {
-            $image->kHersteller = (int)$image->kHersteller;
-            if (empty($image->cPfad) || $image->kHersteller <= 0) {
+            if (empty($image->cPfad) || empty($image->kHersteller)) {
                 continue;
             }
-            $fileName = $image->cPfad;
-            $format   = $this->getExtension($this->unzipPath . $fileName);
-            if (!$format) {
+            $image->kHersteller = (int)$image->kHersteller;
+            $original           = $this->unzipPath . $image->cPfad;
+            $extension          = $this->getExtension($original);
+            if (!$extension) {
                 $this->logger->error(
                     'Bildformat des Herstellerbildes konnte nicht ermittelt werden. Datei ' .
-                    $fileName . ' keine Bilddatei?'
+                    $original . ' keine Bilddatei?'
                 );
                 continue;
             }
-            $manufacturer = $this->db->query(
-                'SELECT cSeo
-                FROM thersteller
-                WHERE kHersteller = ' . (int)$image->kHersteller,
-                ReturnType::SINGLE_OBJECT
-            );
-            if (!empty($manufacturer->cSeo)) {
-                $image->cPfad = \str_replace('/', '_', $manufacturer->cSeo . '.' . $format);
-            } elseif (\stripos(\strrev($image->cPfad), \strrev($format)) !== 0) {
-                $image->cPfad .= '.' . $format;
-            }
-            $image->cPfad = $this->getNewFilename($image->cPfad);
+            $image->cPfad = $this->getManufacturerImageName($image, $extension);
+            \copy($original, \PFAD_ROOT . \STORAGE_MANUFACTURERS . $image->cPfad);
             $this->createThumbnail(
-                $this->brandingConfig['Hersteller'],
-                $this->unzipPath . $fileName,
+                $original,
                 \PFAD_HERSTELLERBILDER_NORMAL . $image->cPfad,
-                $this->config['bilder']['bilder_hersteller_normal_breite'],
-                $this->config['bilder']['bilder_hersteller_normal_hoehe'],
-                $this->config['bilder']['bilder_jpg_quali'],
-                1,
-                $this->config['bilder']['container_verwenden']
+                $this->config['bilder_hersteller_normal_breite'],
+                $this->config['bilder_hersteller_normal_hoehe'],
+                $this->config['bilder_jpg_quali'],
+                $this->getBrandingConfig(Image::TYPE_MANUFACTURER)
             );
-            if ($this->createBrandedThumbnail(
-                \PFAD_ROOT . \PFAD_HERSTELLERBILDER_NORMAL . $image->cPfad,
+            if ($this->createThumbnail(
+                $original,
                 \PFAD_HERSTELLERBILDER_KLEIN . $image->cPfad,
-                $this->config['bilder']['bilder_hersteller_klein_breite'],
-                $this->config['bilder']['bilder_hersteller_klein_hoehe'],
-                $this->config['bilder']['bilder_jpg_quali'],
-                $this->config['bilder']['container_verwenden']
+                $this->config['bilder_hersteller_klein_breite'],
+                $this->config['bilder_hersteller_klein_hoehe'],
+                $this->config['bilder_jpg_quali']
             )) {
                 $this->db->update(
                     'thersteller',
                     'kHersteller',
-                    (int)$image->kHersteller,
+                    $image->kHersteller,
                     (object)['cBildpfad' => $image->cPfad]
                 );
             }
@@ -430,251 +355,110 @@ final class Images extends AbstractSync
             foreach ($this->db->selectAll(
                 'tartikel',
                 'kHersteller',
-                (int)$image->kHersteller,
+                $image->kHersteller,
                 'kArtikel'
             ) as $product) {
                 $cacheTags[] = \CACHING_GROUP_ARTICLE . '_' . $product->kArtikel;
             }
             $this->cache->flushTags($cacheTags);
-            \unlink($this->unzipPath . $fileName);
+            \unlink($original);
         }
     }
 
     /**
-     * @param array  $images
-     * @param string $sql
+     * @param array $images
      */
-    private function handlePropertyImages(array $images, string $sql): void
+    private function handlePropertyImages(array $images): void
     {
         foreach ($images as $image) {
             if (empty($image->cPfad)) {
                 continue;
             }
-            $fileName = $image->cPfad;
-            $format   = $this->getExtension($this->unzipPath . $fileName);
-            if (!$format) {
+            $original  = $this->unzipPath . $image->cPfad;
+            $extension = $this->getExtension($original);
+            if (!$extension) {
                 $this->logger->error(
                     'Bildformat des Eigenschaftwertbildes konnte nicht ermittelt werden. Datei ' .
-                    $fileName . ' keine Bilddatei?'
+                    $original . ' keine Bilddatei?'
                 );
                 continue;
             }
-            $image->cPfad = $this->getPropertiesImageName($image, $format, $sql);
+            $image->cPfad = $this->getPropertiesImageName($image, $extension);
             $image->cPfad = $this->getNewFilename($image->cPfad);
+            \copy($original, \PFAD_ROOT . \STORAGE_VARIATIONS . $image->cPfad);
             $this->createThumbnail(
-                $this->brandingConfig['Variationen'],
-                $this->unzipPath . $fileName,
+                $original,
                 \PFAD_VARIATIONSBILDER_GROSS . $image->cPfad,
-                $this->config['bilder']['bilder_variationen_gross_breite'],
-                $this->config['bilder']['bilder_variationen_gross_hoehe'],
-                $this->config['bilder']['bilder_jpg_quali'],
-                1,
-                $this->config['bilder']['container_verwenden']
+                $this->config['bilder_variationen_gross_breite'],
+                $this->config['bilder_variationen_gross_hoehe'],
+                $this->config['bilder_jpg_quali'],
+                $this->getBrandingConfig(Image::TYPE_VARIATION)
             );
-            $this->createBrandedThumbnail(
-                \PFAD_ROOT . \PFAD_VARIATIONSBILDER_GROSS . $image->cPfad,
+            $this->createThumbnail(
+                $original,
                 \PFAD_VARIATIONSBILDER_NORMAL . $image->cPfad,
-                $this->config['bilder']['bilder_variationen_breite'],
-                $this->config['bilder']['bilder_variationen_hoehe'],
-                $this->config['bilder']['bilder_jpg_quali'],
-                $this->config['bilder']['container_verwenden']
+                $this->config['bilder_variationen_breite'],
+                $this->config['bilder_variationen_hoehe'],
+                $this->config['bilder_jpg_quali']
             );
-            if ($this->createBrandedThumbnail(
-                \PFAD_ROOT . \PFAD_VARIATIONSBILDER_GROSS . $image->cPfad,
+            if ($this->createThumbnail(
+                $original,
                 \PFAD_VARIATIONSBILDER_MINI . $image->cPfad,
-                $this->config['bilder']['bilder_variationen_mini_breite'],
-                $this->config['bilder']['bilder_variationen_mini_hoehe'],
-                $this->config['bilder']['bilder_jpg_quali'],
-                $this->config['bilder']['container_verwenden']
+                $this->config['bilder_variationen_mini_breite'],
+                $this->config['bilder_variationen_mini_hoehe'],
+                $this->config['bilder_jpg_quali']
             )) {
                 $this->upsert('teigenschaftwertpict', [$image], 'kEigenschaftWert');
             }
-            \unlink($this->unzipPath . $fileName);
+            \unlink($original);
         }
     }
 
     /**
-     * @param array  $images
-     * @param string $sql
+     * @param array $images
      */
-    private function handleCategoryImages(array $images, string $sql): void
+    private function handleCategoryImages(array $images): void
     {
         foreach ($images as $image) {
             if (empty($image->cPfad)) {
                 continue;
             }
-            $fileName = $image->cPfad;
-            $format   = $this->getExtension($this->unzipPath . $fileName);
-            if (!$format) {
+            $original  = $this->unzipPath . $image->cPfad;
+            $extension = $this->getExtension($original);
+            if (!$extension) {
                 $this->logger->error(
                     'Bildformat des Kategoriebildes konnte nicht ermittelt werden. Datei ' .
-                    $fileName . ' keine Bilddatei?'
+                    $original . ' keine Bilddatei?'
                 );
                 continue;
             }
-
-            $image->cPfad = $this->getCategoryImageName($image, $format, $sql);
-            $image->cPfad = $this->getNewFilename($image->cPfad);
+            $image->cPfad = $this->getCategoryImageName($image, $extension);
+            \copy($original, \PFAD_ROOT . \STORAGE_CATEGORIES . $image->cPfad);
             if ($this->createThumbnail(
-                $this->brandingConfig['Kategorie'],
-                $this->unzipPath . $fileName,
+                $original,
                 \PFAD_KATEGORIEBILDER . $image->cPfad,
-                $this->config['bilder']['bilder_kategorien_breite'],
-                $this->config['bilder']['bilder_kategorien_hoehe'],
-                $this->config['bilder']['bilder_jpg_quali'],
-                1,
-                $this->config['bilder']['container_verwenden']
+                $this->config['bilder_kategorien_breite'],
+                $this->config['bilder_kategorien_hoehe'],
+                $this->config['bilder_jpg_quali'],
+                $this->getBrandingConfig(Image::TYPE_CATEGORY)
             )) {
                 $this->upsert('tkategoriepict', [$image], 'kKategorie');
             }
-            \unlink($this->unzipPath . $fileName);
-        }
-    }
-
-    /**
-     * @param stdClass[] $images
-     * @param string     $sql
-     */
-    private function handleProductImages(array $images, string $sql): void
-    {
-        if (\count($images) === 0) {
-            return;
-        }
-        foreach ($images as $image) {
-            if (\strlen($image->cPfad) <= 0) {
-                continue;
-            }
-            $image->nNr  = (int)$image->nNr;
-            $imgFilename = $image->cPfad;
-            $format      = $this->getExtension($this->unzipPath . $imgFilename);
-            if (!$format) {
-                $this->logger->error(
-                    'Bildformat des Artikelbildes konnte nicht ermittelt werden. Datei ' .
-                    $imgFilename . ' keine Bilddatei?'
-                );
-                continue;
-            }
-            // first delete by kArtikelPict
-            $this->deleteProductImage((int)$image->kArtikelPict);
-            // then delete by kArtikel + nNr since Wawi > .99923 has changed all kArtikelPict keys
-            if ($image->nNr > 0) {
-                $this->deleteProductImageByProductID((int)$image->kArtikel, $image->nNr);
-            }
-            if ($image->kMainArtikelBild > 0) {
-                $main = $this->db->select(
-                    'tartikelpict',
-                    'kArtikelPict',
-                    (int)$image->kMainArtikelBild
-                );
-                if (!empty($main->cPfad)) {
-                    $image->cPfad = $this->getNewFilename($main->cPfad);
-                    $this->upsert('tartikelpict', [$image], 'kArtikel', 'kArtikelpict');
-                } else {
-                    $this->createProductImage($image, $format, $imgFilename, $sql);
-                }
-            } else {
-                $productImage = $this->db->select(
-                    'tartikelpict',
-                    'kArtikelPict',
-                    (int)$image->kArtikelPict
-                );
-                // update all references, if img is used by other products
-                if (!empty($productImage->cPfad)) {
-                    $this->db->update(
-                        'tartikelpict',
-                        'kMainArtikelBild',
-                        (int)$productImage->kArtikelPict,
-                        (object)['cPfad' => $productImage->cPfad]
-                    );
-                }
-                $this->createProductImage($image, $format, $imgFilename, $sql);
-            }
-        }
-        $this->deleteTempProductImages();
-    }
-
-    /**
-     *
-     */
-    private function deleteTempProductImages(): void
-    {
-        $handle = \opendir($this->unzipPath);
-        while (($file = \readdir($handle)) !== false) {
-            if ($file === '.' || $file === '..' || $file === 'bilder_a.xml') {
-                continue;
-            }
-            if (\file_exists($this->unzipPath . $file) && !\unlink($this->unzipPath . $file)) {
-                $this->logger->error('Artikelbild konnte nicht geloescht werden: ' . $file);
-            }
-        }
-        \closedir($handle);
-    }
-
-    /**
-     * @param stdClass $image
-     * @param string   $format
-     * @param string   $fileName
-     * @param string   $sql
-     */
-    private function createProductImage($image, string $format, string $fileName, string $sql): void
-    {
-        $config       = $this->config['bilder'];
-        $image->cPfad = $this->getProductImageName(
-            $image,
-            $config['container_verwenden'] === 'Y' ? 'png' : $format,
-            $sql
-        );
-        $image->cPfad = $this->getNewFilename($image->cPfad);
-        $this->createThumbnail(
-            $this->brandingConfig['Artikel'],
-            $this->unzipPath . $fileName,
-            \PFAD_PRODUKTBILDER_GROSS . $image->cPfad,
-            $config['bilder_artikel_gross_breite'],
-            $config['bilder_artikel_gross_hoehe'],
-            $config['bilder_jpg_quali'],
-            1,
-            $config['container_verwenden']
-        );
-        $this->createBrandedThumbnail(
-            \PFAD_ROOT . \PFAD_PRODUKTBILDER_GROSS . $image->cPfad,
-            \PFAD_PRODUKTBILDER_NORMAL . $image->cPfad,
-            $config['bilder_artikel_normal_breite'],
-            $config['bilder_artikel_normal_hoehe'],
-            $config['bilder_jpg_quali'],
-            $config['container_verwenden']
-        );
-        $this->createBrandedThumbnail(
-            \PFAD_ROOT . \PFAD_PRODUKTBILDER_GROSS . $image->cPfad,
-            \PFAD_PRODUKTBILDER_KLEIN . $image->cPfad,
-            $config['bilder_artikel_klein_breite'],
-            $config['bilder_artikel_klein_hoehe'],
-            $config['bilder_jpg_quali'],
-            $config['container_verwenden']
-        );
-        if ($this->createBrandedThumbnail(
-            $this->unzipPath . $fileName,
-            \PFAD_PRODUKTBILDER_MINI . $image->cPfad,
-            $config['bilder_artikel_mini_breite'],
-            $config['bilder_artikel_mini_hoehe'],
-            $config['bilder_jpg_quali'],
-            $config['container_verwenden']
-        )) {
-            $this->upsert('tartikelpict', [$image], 'kArtikel', 'kArtikelPict');
+            \unlink($original);
         }
     }
 
     /**
      * @param object $image
-     * @param string $format
-     * @param string $sql
+     * @param string $extension
      * @return string
      */
-    private function getPropertiesImageName($image, $format, $sql): string
+    private function getPropertiesImageName($image, string $extension): string
     {
-        if (!$image->kEigenschaftWert || !$this->config['bilder']['bilder_variation_namen']) {
-            return (\stripos(\strrev($image->cPfad), \strrev($format)) === 0)
+        if (empty($image->kEigenschaftWert) || !$this->config['bilder_variation_namen']) {
+            return (\stripos(\strrev($image->cPfad), \strrev($extension)) === 0)
                 ? $image->cPfad
-                : $image->cPfad . '.' . $format;
+                : $image->cPfad . '.' . $extension;
         }
         $propValue = $this->db->query(
             'SELECT kEigenschaftWert, cArtNr, cName, kEigenschaft
@@ -690,7 +474,7 @@ final class Images extends AbstractSync
         }
         $imageName = $propValue->kEigenschaftWert;
         if ($propValue->cName) {
-            switch ($this->config['bilder']['bilder_variation_namen']) {
+            switch ($this->config['bilder_variation_namen']) {
                 case 1:
                     if (!empty($propValue->cArtNr)) {
                         $imageName = 'var' . $this->convertUmlauts($propValue->cArtNr);
@@ -698,16 +482,19 @@ final class Images extends AbstractSync
                     break;
 
                 case 2:
-                    $product = $this->db->query(
+                    $product = $this->db->queryPrepared(
                         "SELECT tartikel.cArtNr, tartikel.cBarcode, tartikel.cName, tseo.cSeo
                             FROM teigenschaftwert, teigenschaft, tartikel
-                            LEFT JOIN tseo
+                            JOIN tseo
                                 ON tseo.cKey = 'kArtikel'
                                 AND tseo.kKey = tartikel.kArtikel
-                                " . $sql . '
+                            JOIN tsprache
+                                ON tsprache.kSprache = tseo.kSprache
                             WHERE teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
+                                AND tsprache.cShopStandard = 'Y'
                                 AND teigenschaft.kArtikel = tartikel.kArtikel
-                                AND teigenschaftwert.kEigenschaftWert = ' . (int)$image->kEigenschaftWert,
+                                AND teigenschaftwert.kEigenschaftWert = :cid",
+                        ['cid' => (int)$image->kEigenschaftWert],
                         ReturnType::SINGLE_OBJECT
                     );
                     if (!empty($product->cArtNr) && !empty($propValue->cArtNr)) {
@@ -718,16 +505,19 @@ final class Images extends AbstractSync
                     break;
 
                 case 3:
-                    $product = $this->db->query(
+                    $product = $this->db->queryPrepared(
                         "SELECT tartikel.cArtNr, tartikel.cBarcode, tartikel.cName, tseo.cSeo
                             FROM teigenschaftwert, teigenschaft, tartikel
-                            LEFT JOIN tseo
+                            JOIN tseo
                                 ON tseo.cKey = 'kArtikel'
                                 AND tseo.kKey = tartikel.kArtikel
-                                " . $sql . '
+                            JOIN tsprache
+                                ON tsprache.kSprache = tseo.kSprache
                             WHERE teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
+                                AND tsprache.cShopStandard = 'Y'
                                 AND teigenschaft.kArtikel = tartikel.kArtikel
-                                AND teigenschaftwert.kEigenschaftWert = ' . $image->kEigenschaftWert,
+                                AND teigenschaftwert.kEigenschaftWert = :cid",
+                        ['cid' => $image->kEigenschaftWert],
                         ReturnType::SINGLE_OBJECT
                     );
 
@@ -753,158 +543,132 @@ final class Images extends AbstractSync
             }
         }
 
-        return $this->removeSpecialChars($imageName) . '.' . $format;
+        return $this->removeSpecialChars($imageName) . '.' . $extension;
     }
 
     /**
      * @param object $image
-     * @param string $format
-     * @param string $sql
+     * @param string $ext
      * @return string
      */
-    private function getCategoryImageName($image, $format, $sql): string
+    private function getCategoryImageName($image, string $ext): string
     {
-        if (!$image->kKategorie || !$this->config['bilder']['bilder_kategorie_namen']) {
-            return (\stripos(\strrev($image->cPfad), \strrev($format)) === 0)
-                ? $image->cPfad
-                : $image->cPfad . '.' . $format;
+        $imageName = $image->cPfad;
+        if (empty($image->kKategorie) || !$this->config['bilder_kategorie_namen']) {
+            return $this->getNewFilename((\pathinfo($imageName)['filename']) . '.' . $ext);
         }
         $attr = $this->db->select(
             'tkategorieattribut',
             'kKategorie',
             (int)$image->kKategorie,
             'cName',
-            \KAT_ATTRIBUT_BILDNAME,
-            null,
-            null,
-            false,
-            'cWert'
+            \KAT_ATTRIBUT_BILDNAME
         );
         if (!empty($attr->cWert)) {
-            return $attr->cWert . '.' . $format;
+            return $attr->cWert . '.' . $ext;
         }
-        $category  = $this->db->query(
+        $data = $this->db->queryPrepared(
             "SELECT tseo.cSeo, tkategorie.cName
-            FROM tkategorie
-            LEFT JOIN tseo
-                ON tseo.cKey = 'kKategorie'
-                AND tseo.kKey = tkategorie.kKategorie
-                " . $sql . '
-            WHERE tkategorie.kKategorie = ' . (int)$image->kKategorie,
+                FROM tkategorie
+                JOIN tseo
+                    ON tseo.cKey = 'kKategorie'
+                    AND tseo.kKey = tkategorie.kKategorie
+                JOIN tsprache
+                    ON tsprache.kSprache = tseo.kSprache
+                WHERE tkategorie.kKategorie = :cid
+                    AND tsprache.cShopStandard = 'Y'",
+            ['cid' => (int)$image->kKategorie],
             ReturnType::SINGLE_OBJECT
         );
-        $imageName = $image->cPfad;
-        if ($category->cName) {
-            switch ($this->config['bilder']['bilder_kategorie_namen']) {
-                case 1:
-                    if ($category->cSeo) {
-                        $imageName = $category->cSeo;
-                    } else {
-                        $imageName = $this->convertUmlauts($category->cName);
-                    }
-                    $imageName = $this->removeSpecialChars($imageName) . '.' . $format;
-                    break;
-
-                default:
-                    return $image->cPfad . '.' . $format;
-                    break;
-            }
+        if (!empty($data->cName) && (int)$this->config['bilder_kategorie_namen'] === 1) {
+            $imageName = $this->removeSpecialChars($data->cSeo ?: $this->convertUmlauts($data->cName)) . '.' . $ext;
+        } else {
+            $imageName = \pathinfo($image->cPfad)['filename'] . '.' . $ext;
         }
 
-        return $imageName;
+        return $this->getNewFilename($imageName);
     }
 
     /**
      * @param object $image
-     * @param string $format
-     * @param string $sql
+     * @param string $ext
      * @return string
      */
-    private function getProductImageName($image, $format, $sql): string
+    private function getManufacturerImageName($image, string $ext): string
     {
-        if (!empty($image->kArtikel)) {
-            $attr = $this->db->select(
-                'tkategorieattribut',
-                'kArtikel',
-                (int)$image->kArtikel,
-                'cName',
-                \FKT_ATTRIBUT_BILDNAME,
-                null,
-                null,
-                false,
-                'cWert'
-            );
-            if (isset($attr->cWert)) {
-                if ($image->nNr > 1) {
-                    $attr->cWert .= '_' . $image->nNr;
-                }
+        $data = $this->db->queryPrepared(
+            'SELECT cName, cSeo
+                FROM thersteller
+                WHERE kHersteller = :mid',
+            ['mid' => $image->kHersteller],
+            ReturnType::SINGLE_OBJECT
+        );
+        if (!empty($data->cSeo) && (int)$this->config['bilder_hersteller_namen'] === 1) {
+            $imageName = $this->removeSpecialChars($data->cSeo ?: $this->convertUmlauts($data->cName)) . '.' . $ext;
+        } else {
+            $imageName = \pathinfo($image->cPfad)['filename'] . '.' . $ext;
+        }
 
-                return $attr->cWert . '.' . $format;
+        return $this->getNewFilename($imageName);
+    }
+
+    /**
+     * @param object $image
+     * @param string $ext
+     * @return string
+     */
+    private function getCharacteristicValueImageName($image, string $ext): string
+    {
+        $conf = (int)$this->config['bilder_merkmalwert_namen'];
+        if ($conf === 2) {
+            $imageName = $image->cPfad . '.' . $ext;
+        } else {
+            $data = $this->db->queryPrepared(
+                'SELECT tmerkmalwertsprache.cSeo, tmerkmalwertsprache.cWert
+                    FROM tmerkmalwertsprache
+                    JOIN tsprache
+                        ON tsprache.kSprache = tmerkmalwertsprache.kSprache
+                    WHERE kMerkmalWert = :cid
+                        AND tsprache.cShopStandard = \'Y\'',
+                ['cid' => $image->kMerkmalWert],
+                ReturnType::SINGLE_OBJECT
+            );
+            if (!empty($data->cSeo) && $conf === 1) {
+                $imageName = $this->removeSpecialChars($data->cSeo ?: $this->convertUmlauts($data->cName)) . '.' . $ext;
+            } else {
+                $imageName = \pathinfo($image->cPfad)['filename'] . '.' . $ext;
             }
         }
 
-        if (!$image->kArtikel || !$this->config['bilder']['bilder_artikel_namen']) {
-            return $image->cPfad . '.' . $format;
-        }
-        $product   = $this->db->query(
-            "SELECT tartikel.cArtNr, tseo.cSeo, tartikel.cName, tartikel.cBarcode
-            FROM tartikel
-            LEFT JOIN tseo
-                ON tseo.cKey = 'kArtikel'
-                AND tseo.kKey = tartikel.kArtikel
-                " . $sql . '
-            WHERE tartikel.kArtikel = ' . (int)$image->kArtikel,
-            ReturnType::SINGLE_OBJECT
-        );
-        $imageName = $image->cPfad;
-        if (empty($product->cName)) {
-            return $image->cPfad . '.' . $format;
-        }
-        switch ($this->config['bilder']['bilder_artikel_namen']) {
-            case 1:
-                if ($product->cArtNr) {
-                    $imageName = $this->convertUmlauts($product->cArtNr);
-                }
-                break;
+        return $this->getNewFilename($imageName);
+    }
 
-            case 2:
-                if ($product->cSeo) {
-                    $imageName = $product->cSeo;
-                } else {
-                    $imageName = $this->convertUmlauts($product->cName);
-                }
-                break;
-
-            case 3:
-                if ($product->cArtNr) {
-                    $imageName = $this->convertUmlauts($product->cArtNr) . '_';
-                }
-                if ($product->cSeo) {
-                    $imageName .= $product->cSeo;
-                } else {
-                    $imageName .= $this->convertUmlauts($product->cName);
-                }
-                break;
-
-            case 4:
-                if ($product->cBarcode) {
-                    $imageName = $this->convertUmlauts($product->cBarcode);
-                }
-                break;
-            default:
-                return $image->cPfad . '.' . $format;
-        }
-
-        if ($image->nNr > 1 && $imageName !== $image->cPfad) {
-            $imageName .= '_b' . $image->nNr;
-        }
-        if ($imageName !== $image->cPfad && (int)$this->config['bilder']['bilder_artikel_namen'] !== 5) {
-            $imageName = $this->removeSpecialChars($imageName) . '.' . $format;
+    /**
+     * @param object $image
+     * @param string $ext
+     * @return string
+     */
+    private function getCharacteristicImageName($image, string $ext): string
+    {
+        $conf = (int)$this->config['bilder_merkmal_namen'];
+        if ($conf === 2) {
+            $imageName = $image->cPfad . '.' . $ext;
         } else {
-            $imageName .= '.' . $format;
+            $data = $this->db->queryPrepared(
+                'SELECT cName
+                    FROM tmerkmal
+                    WHERE kMerkmal = :cid',
+                ['cid' => $image->kMerkmal],
+                ReturnType::SINGLE_OBJECT
+            );
+            if (!empty($data->cName) && $conf === 1) {
+                $imageName = $this->removeSpecialChars($this->convertUmlauts($data->cName)) . '.' . $ext;
+            } else {
+                $imageName = \pathinfo($image->cPfad)['filename'] . '.' . $ext;
+            }
         }
 
-        return $imageName;
+        return $this->getNewFilename($imageName);
     }
 
     /**
@@ -931,121 +695,49 @@ final class Images extends AbstractSync
     }
 
     /**
-     * @param string $imgFilename
-     * @param string $targetImage
+     * @param string $source
+     * @param string $target
      * @param int    $targetWidth
-     * @param int    $targetheight
+     * @param int    $targetHeight
      * @param int    $quality
-     * @param string $container
-     * @return int
-     */
-    private function createBrandedThumbnail(
-        $imgFilename,
-        $targetImage,
-        $targetWidth,
-        $targetheight,
-        int $quality = 80,
-        $container = 'N'
-    ): int {
-        $enlarge          = $this->config['bilder']['bilder_skalieren'] === 'Y';
-        $ret              = 0;
-        $format           = $this->config['bilder']['bilder_dateiformat'];//$this->getExtension($imgFilename);
-        [$width, $height] = \getimagesize($imgFilename);
-        if ($width > 0 && $height > 0) {
-            if (!$enlarge && $width < $targetWidth && $height < $targetheight) {
-                if ($container === 'Y') {
-                    $im = $this->imageloadContainer($imgFilename, $width, $height, $targetWidth, $targetheight);
-                } else {
-                    $im = $this->imageloadAlpha($imgFilename, $width, $height);
-                }
-                $this->saveImage($im, $format, \PFAD_ROOT . $targetImage, $quality);
-                @\chmod(\PFAD_ROOT . $targetImage, 0644);
-
-                return 1;
-            }
-            $ratio     = $width / $height;
-            $newWidth  = $targetWidth;
-            $newHeight = \round($newWidth / $ratio);
-            if ($newHeight > $targetheight) {
-                $newHeight = $targetheight;
-                $newWidth  = \round($newHeight * $ratio);
-            }
-            if ($container === 'Y') {
-                $im = $this->imageloadContainer($imgFilename, $newWidth, $newHeight, $targetWidth, $targetheight);
-            } else {
-                $im = $this->imageloadAlpha($imgFilename, $newWidth, $newHeight);
-            }
-            if ($this->saveImage($im, $format, \PFAD_ROOT . $targetImage, $quality)) {
-                $ret = 1;
-                @\chmod(\PFAD_ROOT . $targetImage, 0644);
-            } else {
-                $this->logger->error('Fehler beim Speichern des Bildes: ' . $targetImage);
-            }
-        } else {
-            $this->logger->error('Fehler beim Speichern des Bildes: ' . $imgFilename);
-        }
-
-        return $ret;
-    }
-
-    /**
-     * @param object       $branding
-     * @param string       $imgFilename
-     * @param string       $target
-     * @param int          $targetWidth
-     * @param int          $targetHeight
-     * @param int          $quality
-     * @param int|resource $brand
-     * @param string       $container
-     * @return int
+     * @param null   $branding
+     * @return bool
      */
     private function createThumbnail(
-        $branding,
-        $imgFilename,
-        $target,
-        $targetWidth,
-        $targetHeight,
-        $quality = 80,
-        $brand = 0,
-        $container = 'N'
-    ): int {
-        $enlarge = $this->config['bilder']['bilder_skalieren'] === 'Y';
-        $ret     = 0;
-        $format  = $this->config['bilder']['bilder_dateiformat'];//$this->getExtension($imgFilename);
-        $im      = $this->imageloadAlpha($imgFilename);
-        if (!$im) {
-            $this->logger->error('Bild konnte nicht erstellt werden. Datei kein Bild?: ' . $imgFilename);
-            return $ret;
+        string $source,
+        string $target,
+        int $targetWidth,
+        int $targetHeight,
+        int $quality = 80,
+        $branding = null
+    ): bool {
+        $container        = $this->config['container_verwenden'] === 'Y';
+        $enlarge          = $this->config['bilder_skalieren'] === 'Y';
+        $extension        = $this->getNewExtension($target);
+        $target           = \PFAD_ROOT . $target;
+        [$width, $height] = \getimagesize($source);
+        if ($width <= 0 || $height <= 0) {
+            $this->logger->error('Bild konnte nicht erstellt werden. Quelle ungueltig: ' . $source);
+
+            return false;
         }
-        [$width, $height] = \getimagesize($imgFilename);
         if (!$enlarge && $width < $targetWidth && $height < $targetHeight) {
-            // Bild nicht neu berechnen, nur verschieben
-            $im = $container === 'Y'
-                ? $this->imageloadContainer($imgFilename, $width, $height, $targetWidth, $targetHeight)
-                : $this->imageloadAlpha($imgFilename, $width, $height);
-            $this->saveImage($this->brandImage($im, $brand, $branding), $format, \PFAD_ROOT . $target, $quality);
-            @\chmod(\PFAD_ROOT . $target, 0644);
-
-            return 1;
-        }
-        $ratio     = $width / $height;
-        $newWidth  = $targetWidth;
-        $newHeight = \round($newWidth / $ratio);
-        if ($newHeight > $targetHeight) {
-            $newHeight = $targetHeight;
-            $newWidth  = \round($newHeight * $ratio);
-        }
-        $image = $container === 'Y'
-            ? $this->imageloadContainer($imgFilename, $newWidth, $newHeight, $targetWidth, $targetHeight)
-            : $this->imageloadAlpha($imgFilename, $newWidth, $newHeight);
-        if ($this->saveImage($this->brandImage($image, $brand, $branding), $format, \PFAD_ROOT . $target, $quality)) {
-            $ret = 1;
-            @\chmod(\PFAD_ROOT . $target, 0644);
+            $newWidth  = $width;
+            $newHeight = $height;
         } else {
-            $this->logger->error('Fehler beim Speichern des Bildes: ' . $target);
+            $ratio     = $width / $height;
+            $newWidth  = $targetWidth;
+            $newHeight = (int)\round($newWidth / $ratio);
+            if ($newHeight > $targetHeight) {
+                $newHeight = $targetHeight;
+                $newWidth  = (int)\round($newHeight * $ratio);
+            }
         }
+        $image = $container === true
+            ? $this->createImage($source, $newWidth, $newHeight, false, $targetWidth, $targetHeight)
+            : $this->createImage($source, $newWidth, $newHeight);
 
-        return $ret;
+        return $this->saveImage($this->brandImage($image, $branding), $extension, $target, $quality) !== false;
     }
 
     /**
@@ -1054,7 +746,6 @@ final class Images extends AbstractSync
     private function handleDeletes($xml): void
     {
         \executeHook(\HOOK_BILDER_XML_BEARBEITEDELETES, [
-            'Artikel'          => $xml['del_bilder']['tArtikelPict'] ?? [],
             'Kategorie'        => $xml['del_bilder']['kKategoriePict'] ?? [],
             'KategoriePK'      => $xml['del_bilder']['kKategorie'] ?? [],
             'Eigenschaftswert' => $xml['del_bilder']['kEigenschaftWertPict'] ?? [],
@@ -1062,19 +753,6 @@ final class Images extends AbstractSync
             'Merkmal'          => $xml['del_bilder']['kMerkmal'] ?? [],
             'Merkmalwert'      => $xml['del_bilder']['kMerkmalWert'] ?? [],
         ]);
-        // Artikelbilder löschen Wawi > .99923
-        if (isset($xml['del_bilder']['tArtikelPict'])) {
-            if (\count($xml['del_bilder']['tArtikelPict']) > 1) {
-                for ($i = 0; $i < (\count($xml['del_bilder']['tArtikelPict']) / 2); $i++) {
-                    $index        = $i . ' attr';
-                    $productImage = (object)$xml['del_bilder']['tArtikelPict'][$index];
-                    $this->deleteProductImageByProductID($productImage->kArtikel, $productImage->nNr);
-                }
-            } else {
-                $productImage = (object)$xml['del_bilder']['tArtikelPict attr'];
-                $this->deleteProductImageByProductID($productImage->kArtikel, $productImage->nNr);
-            }
-        }
         // Kategoriebilder löschen Wawi > .99923
         $this->deleteCategoryImages($xml);
         // Variationsbilder löschen Wawi > .99923
@@ -1110,9 +788,11 @@ final class Images extends AbstractSync
         if (\is_numeric($source)) {
             $source = [$source];
         }
-        foreach (\array_filter(\array_map('\intval', $source)) as $id) {
+        $ids = \array_filter(\array_map('\intval', $source));
+        foreach ($ids as $id) {
             $this->db->delete('tkategoriepict', 'kKategorie', $id);
         }
+        Category::clearCache($ids);
     }
 
     /**
@@ -1125,7 +805,8 @@ final class Images extends AbstractSync
         if (\is_numeric($source)) {
             $source = [$source];
         }
-        foreach (\array_filter(\array_map('\intval', $source)) as $manufacturerID) {
+        $ids = \array_filter(\array_map('\intval', $source));
+        foreach ($ids as $manufacturerID) {
             $this->db->update(
                 'thersteller',
                 'kHersteller',
@@ -1142,6 +823,7 @@ final class Images extends AbstractSync
             }
         }
         $this->cache->flushTags($cacheTags);
+        Manufacturer::clearCache($ids);
     }
 
     /**
@@ -1153,7 +835,8 @@ final class Images extends AbstractSync
         if (\is_numeric($source)) {
             $source = [$source];
         }
-        foreach (\array_filter(\array_map('\intval', $source)) as $attrID) {
+        $ids = \array_filter(\array_map('\intval', $source));
+        foreach ($ids as $attrID) {
             $this->db->update(
                 'tmerkmal',
                 'kMerkmal',
@@ -1161,6 +844,7 @@ final class Images extends AbstractSync
                 (object)['cBildpfad' => '']
             );
         }
+        Characteristic::clearCache($ids);
     }
 
     /**
@@ -1172,7 +856,8 @@ final class Images extends AbstractSync
         if (\is_numeric($source)) {
             $source = [$source];
         }
-        foreach (\array_filter(\array_map('\intval', $source)) as $attrValID) {
+        $ids = \array_filter(\array_map('\intval', $source));
+        foreach ($ids as $attrValID) {
             $this->db->update(
                 'tmerkmalwert',
                 'kMerkmalWert',
@@ -1181,146 +866,31 @@ final class Images extends AbstractSync
             );
             $this->db->delete('tmerkmalwertbild', 'kMerkmalWert', (int)$attrValID);
         }
+        CharacteristicValue::clearCache($ids);
     }
 
     /**
-     * @param int $productID
-     * @param int $no
-     */
-    private function deleteProductImageByProductID(int $productID, int $no): void
-    {
-        if ($productID < 1 || $no < 1) {
-            return;
-        }
-        $image = $this->db->select('tartikelpict', 'kArtikel', $productID, 'nNr', $no);
-        $this->deleteProductImage((int)($image->kArtikelPict ?? 0));
-    }
-
-    /**
-     * @param int $imageID
-     */
-    private function deleteProductImage(int $imageID): void
-    {
-        if ($imageID < 1) {
-            return;
-        }
-        $image     = $this->db->select('tartikelpict', 'kArtikelPict', $imageID);
-        $productID = isset($image->kArtikel) ? (int)$image->kArtikel : 0;
-        // Das Bild ist eine Verknüpfung
-        if (isset($image->kMainArtikelBild) && $image->kMainArtikelBild > 0 && $productID > 0) {
-            // Existiert der Artikel vom Mainbild noch?
-            $main = $this->db->query(
-                'SELECT kArtikel
-                FROM tartikel
-                WHERE kArtikel = (
-                    SELECT kArtikel
-                        FROM tartikelpict
-                        WHERE kArtikelPict = ' . (int)$image->kMainArtikelBild . ')',
-                ReturnType::SINGLE_OBJECT
-            );
-            // Main Artikel existiert nicht mehr
-            if (!isset($main->kArtikel) || (int)$main->kArtikel === 0) {
-                // Existiert noch eine andere aktive Verknüpfung auf das Mainbild?
-                $productImages = $this->db->query(
-                    'SELECT kArtikelPict
-                    FROM tartikelpict
-                    WHERE kMainArtikelBild = ' . (int)$image->kMainArtikelBild . '
-                        AND kArtikel != ' . $productID,
-                    ReturnType::ARRAY_OF_OBJECTS
-                );
-                // Lösche das MainArtikelBild
-                if (\count($productImages) === 0) {
-                    $this->deleteImageFiles($image->cPfad);
-                    $this->db->delete('tartikelpict', 'kArtikelPict', (int)$image->kMainArtikelBild);
-                }
-            }
-            // Bildverknüpfung aus DB löschen
-            $this->db->delete('tartikelpict', 'kArtikelPict', (int)$image->kArtikelPict);
-        } elseif (isset($image->kMainArtikelBild) && (int)$image->kMainArtikelBild === 0) {
-            // Das Bild ist ein Hauptbild
-            // Gibt es Artikel die auf Bilder des zu löschenden Artikel verknüpfen?
-            $childProducts = $this->db->queryPrepared(
-                'SELECT kArtikelPict
-                FROM tartikelpict
-                WHERE kMainArtikelBild = :img',
-                ['img' => (int)$image->kArtikelPict],
-                ReturnType::ARRAY_OF_OBJECTS
-            );
-            if (\count($childProducts) === 0) {
-                $data = $this->db->queryPrepared(
-                    'SELECT COUNT(*) AS nCount
-                    FROM tartikelpict
-                    WHERE cPfad = :pth',
-                    ['pth' => $image->cPfad],
-                    ReturnType::SINGLE_OBJECT
-                );
-                if (isset($data->nCount) && $data->nCount < 2) {
-                    $this->deleteImageFiles($image->cPfad);
-                }
-            } else {
-                // Reorder linked images because master imagelink will be deleted
-                $next = $childProducts[0]->kArtikelPict;
-                // this will be the next masterimage
-                $this->db->update(
-                    'tartikelpict',
-                    'kArtikelPict',
-                    (int)$next,
-                    (object)['kMainArtikelBild' => 0]
-                );
-                // now link other images to the new masterimage
-                $this->db->update(
-                    'tartikelpict',
-                    'kMainArtikelBild',
-                    (int)$image->kArtikelPict,
-                    (object)['kMainArtikelBild' => (int)$next]
-                );
-            }
-            $this->db->delete('tartikelpict', 'kArtikelPict', (int)$image->kArtikelPict);
-        }
-        $this->cache->flushTags([\CACHING_GROUP_ARTICLE . '_' . $productID]);
-    }
-
-    /**
-     * @param string $path
-     */
-    private function deleteImageFiles(string $path): void
-    {
-        $files = [
-            \PFAD_ROOT . \PFAD_PRODUKTBILDER_MINI . $path,
-            \PFAD_ROOT . \PFAD_PRODUKTBILDER_KLEIN . $path,
-            \PFAD_ROOT . \PFAD_PRODUKTBILDER_NORMAL . $path,
-            \PFAD_ROOT . \PFAD_PRODUKTBILDER_GROSS . $path,
-            \PFAD_ROOT . \PFAD_MEDIA_IMAGE_STORAGE . $path
-        ];
-
-        foreach (\array_filter($files, '\file_exists') as $file) {
-            @\unlink($file);
-        }
-    }
-
-    /**
-     * @param resource $im
-     * @param resource $brand
-     * @param object   $brandData
+     * @param resource    $im
+     * @param object|null $config
      * @return mixed
      */
-    private function brandImage($im, $brand, $brandData)
+    private function brandImage($im, $config)
     {
-        if (!$brand
-            || (isset($brandData->oBrandingEinstellung->nAktiv) && (int)$brandData->oBrandingEinstellung->nAktiv === 0)
-            || !isset($brandData->oBrandingEinstellung->cBrandingBild)
+        if ($config === null
+            || (isset($config->nAktiv) && (int)$config->nAktiv === 0)
+            || !isset($config->cBrandingBild)
         ) {
             return $im;
         }
-        $brandingImage = \PFAD_ROOT . \PFAD_BRANDINGBILDER . $brandData->oBrandingEinstellung->cBrandingBild;
+        $brandingImage = \PFAD_ROOT . \PFAD_BRANDINGBILDER . $config->cBrandingBild;
         if (!\file_exists($brandingImage)) {
             return $im;
         }
-        $position     = $brandData->oBrandingEinstellung->cPosition;
-        $transparency = $brandData->oBrandingEinstellung->dTransparenz;
-        $brandingSize = $brandData->oBrandingEinstellung->dGroesse;
-        $randabstand  = $brandData->oBrandingEinstellung->dRandabstand / 100;
-        $branding     = $this->imageloadAlpha($brandingImage, 0, 0, true);
+        $position     = $config->cPosition;
+        $transparency = (int)$config->dTransparenz;
+        $brandingSize = (int)$config->dGroesse;
+        $margin       = (int)($config->dRandabstand / 100);
+        $branding     = $this->createImage($brandingImage, 0, 0, true);
         if (!$im || !$branding) {
             return $im;
         }
@@ -1330,62 +900,26 @@ final class Images extends AbstractSync
         $brandingHeight    = \imagesy($branding);
         $brandingNewWidth  = $brandingWidth;
         $brandingNewHeight = $brandingHeight;
-        $image_branding    = $branding;
-        if ($brandingSize > 0) { // branding auf diese Breite skalieren
-            $brandingNewWidth  = \round(($imageWidth * $brandingSize) / 100.0);
-            $brandingNewHeight = \round(($brandingNewWidth / $brandingWidth) * $brandingHeight);
+        $srcImage          = $branding;
+        if ($brandingSize > 0) { // scale to width
+            $brandingNewWidth  = (int)\round(($imageWidth * $brandingSize) / 100.0);
+            $brandingNewHeight = (int)\round(($brandingNewWidth / $brandingWidth) * $brandingHeight);
+            $srcImage          = $this->createImage($brandingImage, $brandingNewWidth, $brandingNewHeight, true);
+        }
 
-            $image_branding = $this->imageloadAlpha($brandingImage, $brandingNewWidth, $brandingNewHeight, true);
-        }
-        // position bestimmen
-        $brandingPosX = 0;
-        $brandingPosY = 0;
-        switch ($position) {
-            case 'oben':
-                $brandingPosX = $imageWidth / 2 - $brandingNewWidth / 2;
-                $brandingPosY = $imageHeight * $randabstand;
-                break;
-            case 'oben-rechts':
-                $brandingPosX = $imageWidth - $brandingNewWidth - $imageWidth * $randabstand;
-                $brandingPosY = $imageHeight * $randabstand;
-                break;
-            case 'rechts':
-                $brandingPosX = $imageWidth - $brandingNewWidth - $imageWidth * $randabstand;
-                $brandingPosY = $imageHeight / 2 - $brandingNewHeight / 2;
-                break;
-            case 'unten-rechts':
-                $brandingPosX = $imageWidth - $brandingNewWidth - $imageWidth * $randabstand;
-                $brandingPosY = $imageHeight - $brandingNewHeight - $imageHeight * $randabstand;
-                break;
-            case 'unten':
-                $brandingPosX = $imageWidth / 2 - $brandingNewWidth / 2;
-                $brandingPosY = $imageHeight - $brandingNewHeight - $imageHeight * $randabstand;
-                break;
-            case 'unten-links':
-                $brandingPosX = $imageWidth * $randabstand;
-                $brandingPosY = $imageHeight - $brandingNewHeight - $imageHeight * $randabstand;
-                break;
-            case 'links':
-                $brandingPosX = $imageWidth * $randabstand;
-                $brandingPosY = $imageHeight / 2 - $brandingNewHeight / 2;
-                break;
-            case 'oben-links':
-                $brandingPosX = $imageWidth * $randabstand;
-                $brandingPosY = $imageHeight * $randabstand;
-                break;
-            case 'zentriert':
-                $brandingPosX = $imageWidth / 2 - $brandingNewWidth / 2;
-                $brandingPosY = $imageHeight / 2 - $brandingNewHeight / 2;
-                break;
-        }
-        $brandingPosX = \round($brandingPosX);
-        $brandingPosY = \round($brandingPosY);
-        // bild mit branding composen
+        [$brandingPosX, $brandingPosY] = $this->getBrandingCoordinates(
+            $position,
+            $imageWidth,
+            $imageHeight,
+            $brandingNewWidth,
+            $brandingNewHeight,
+            $margin
+        );
         \imagealphablending($im, true);
         \imagesavealpha($im, true);
         $this->imagecopymergeAlpha(
             $im,
-            $image_branding,
+            $srcImage,
             $brandingPosX,
             $brandingPosY,
             0,
@@ -1396,6 +930,69 @@ final class Images extends AbstractSync
         );
 
         return $im;
+    }
+
+    /**
+     * @param string $position
+     * @param int    $imageWidth
+     * @param int    $imageHeight
+     * @param int    $brandingNewWidth
+     * @param int    $brandingNewHeight
+     * @param int    $margin
+     * @return array
+     */
+    private function getBrandingCoordinates(
+        string $position,
+        int $imageWidth,
+        int $imageHeight,
+        int $brandingNewWidth,
+        int $brandingNewHeight,
+        int $margin
+    ): array {
+        switch ($position) {
+            case 'top':
+                $positionX = $imageWidth / 2 - $brandingNewWidth / 2;
+                $positionY = $imageHeight * $margin;
+                break;
+            case 'top-right':
+                $positionX = $imageWidth - $brandingNewWidth - $imageWidth * $margin;
+                $positionY = $imageHeight * $margin;
+                break;
+            case 'right':
+                $positionX = $imageWidth - $brandingNewWidth - $imageWidth * $margin;
+                $positionY = $imageHeight / 2 - $brandingNewHeight / 2;
+                break;
+            case 'bottom-right':
+                $positionX = $imageWidth - $brandingNewWidth - $imageWidth * $margin;
+                $positionY = $imageHeight - $brandingNewHeight - $imageHeight * $margin;
+                break;
+            case 'bottom':
+                $positionX = $imageWidth / 2 - $brandingNewWidth / 2;
+                $positionY = $imageHeight - $brandingNewHeight - $imageHeight * $margin;
+                break;
+            case 'bottom-left':
+                $positionX = $imageWidth * $margin;
+                $positionY = $imageHeight - $brandingNewHeight - $imageHeight * $margin;
+                break;
+            case 'left':
+                $positionX = $imageWidth * $margin;
+                $positionY = $imageHeight / 2 - $brandingNewHeight / 2;
+                break;
+            case 'top-left':
+                $positionX = $imageWidth * $margin;
+                $positionY = $imageHeight * $margin;
+                break;
+            case 'center':
+                $positionX = $imageWidth / 2 - $brandingNewWidth / 2;
+                $positionY = $imageHeight / 2 - $brandingNewHeight / 2;
+                break;
+            default:
+                $positionX = 0;
+                $positionY = 0;
+                break;
+        }
+
+        return [(int)\round($positionX), (int)\round($positionY)];
     }
 
     /**
@@ -1410,34 +1007,28 @@ final class Images extends AbstractSync
      * @param int      $pct
      * @return bool
      */
-    private function imagecopymergeAlpha($destImg, $srcImg, $destX, $destY, $srcX, $srxY, $srcW, $srcH, $pct): bool
-    {
-        if ($pct === null) {
-            return false;
-        }
+    private function imagecopymergeAlpha(
+        $destImg,
+        $srcImg,
+        int $destX,
+        int $destY,
+        int $srcX,
+        int $srxY,
+        int $srcW,
+        int $srcH,
+        int $pct
+    ): bool {
         $pct /= 100;
         // Get image width and height
         $w = \imagesx($srcImg);
         $h = \imagesy($srcImg);
         // Turn alpha blending off
         \imagealphablending($srcImg, false);
-        // Find the most opaque pixel in the image (the one with the smallest alpha value)
-        /*
-        $minalpha = 127;
-        for( $x = 0; $x < $w; $x++ )
-        for( $y = 0; $y < $h; $y++ ){
-            $alpha = ( imagecolorat( $src_im, $x, $y ) >> 24 ) & 0xFF;
-            if( $alpha < $minalpha ){
-                $minalpha = $alpha;
-            }
-        }
-        */
-
         $minalpha = 0;
-        // loop through image pixels and modify alpha for each
+        // loop through image pixels and modify alpha
         for ($x = 0; $x < $w; $x++) {
             for ($y = 0; $y < $h; $y++) {
-                // get current alpha value (represents the TANSPARENCY!)
+                // get current alpha value (represents the transparency!)
                 $colorxy = \imagecolorat($srcImg, $x, $y);
                 $alpha   = ($colorxy >> 24) & 0xFF;
                 // calculate new alpha
@@ -1452,7 +1043,7 @@ final class Images extends AbstractSync
                     ($colorxy >> 16) & 0xFF,
                     ($colorxy >> 8) & 0xFF,
                     $colorxy & 0xFF,
-                    $alpha
+                    (int)$alpha
                 );
                 // set pixel with the new color + opacity
                 if (!\imagesetpixel($srcImg, $x, $y, $alphacolorxy)) {
@@ -1466,15 +1057,15 @@ final class Images extends AbstractSync
     }
 
     /**
-     * @param string $imgFilename
-     * @return bool|string
+     * @param string $filename
+     * @return string|null
      */
-    private function getExtension(string $imgFilename)
+    private function getExtension(string $filename): ?string
     {
-        if (!\file_exists($imgFilename)) {
-            return false;
+        if (!\file_exists($filename)) {
+            return null;
         }
-        $size = \getimagesize($imgFilename);
+        $size = \getimagesize($filename);
         switch ($size[2]) {
             case \IMAGETYPE_JPEG:
                 $ext = 'jpg';
@@ -1489,7 +1080,7 @@ final class Images extends AbstractSync
                 $ext = \function_exists('imagecreatefromwbmp') ? 'bmp' : false;
                 break;
             default:
-                $ext = false;
+                $ext = null;
                 break;
         }
 
@@ -1497,116 +1088,76 @@ final class Images extends AbstractSync
     }
 
     /**
-     * @param string $img
-     * @param int    $width
-     * @param int    $height
-     * @param int    $containerWidth
-     * @param int    $containerHeight
-     * @return resource
+     * @param string|null $sourcePath
+     * @return string
      */
-    private function imageloadContainer($img, int $width, int $height, $containerWidth, $containerHeight)
+    private function getNewExtension(string $sourcePath = null): string
     {
-        $imgInfo = \getimagesize($img);
-        switch ($imgInfo[2]) {
-            case 1:
-                $im = \imagecreatefromgif($img);
-                break;
-            case 2:
-                $im = \imagecreatefromjpeg($img);
-                break;
-            case 3:
-                $im = \imagecreatefrompng($img);
-                break;
-            default:
-                $im = \imagecreatefromjpeg($img);
-                break;
-        }
+        $config = \mb_convert_case($this->config['bilder_dateiformat'], \MB_CASE_LOWER);
 
-        if ($width === 0 && $height === 0) {
-            [$width, $height] = $imgInfo;
-        }
-        $width  = (int)\round($width);
-        $height = (int)\round($height);
-        $newImg = \imagecreatetruecolor($containerWidth, $containerHeight);
-        // hintergrundfarbe
-        $format = \strtolower($this->config['bilder']['bilder_dateiformat']);
-        if ($format === 'jpg') {
-            $rgb   = $this->html2rgb($this->config['bilder']['bilder_hintergrundfarbe']);
-            $color = \imagecolorallocate($newImg, $rgb[0], $rgb[1], $rgb[2]);
-            \imagealphablending($newImg, true);
-        } else {
-            $color = \imagecolorallocatealpha($newImg, 255, 255, 255, 127);
-            \imagealphablending($newImg, false);
-        }
-        \imagesavealpha($newImg, true);
-        \imagefilledrectangle($newImg, 0, 0, $containerWidth, $containerHeight, $color);
-
-        $posX = ($containerWidth / 2) - ($width / 2);
-        $posY = ($containerHeight / 2) - ($height / 2);
-
-        \imagecopyresampled($newImg, $im, $posX, $posY, 0, 0, $width, $height, $imgInfo[0], $imgInfo[1]);
-
-        return $newImg;
+        return $config === 'auto'
+            ? \pathinfo($sourcePath)['extension'] ?? 'jpg'
+            : $config;
     }
 
     /**
-     * @param string $img
-     * @param int    $width
-     * @param int    $height
-     * @param bool   $branding
-     * @return resource
+     * @param string   $source
+     * @param int      $width
+     * @param int      $height
+     * @param bool     $branding
+     * @param int|null $containerWidth
+     * @param int|null $containerHeight
+     * @return false|resource
      */
-    private function imageloadAlpha($img, int $width = 0, int $height = 0, bool $branding = false)
-    {
-        $imgInfo = \getimagesize($img);
+    private function createImage(
+        string $source,
+        int $width = 0,
+        int $height = 0,
+        bool $branding = false,
+        int $containerWidth = null,
+        int $containerHeight = null
+    ) {
+        $imgInfo = \getimagesize($source);
         switch ($imgInfo[2]) {
-            case 1:
-                $im = \imagecreatefromgif($img);
+            case \IMAGETYPE_GIF:
+                $im = \imagecreatefromgif($source);
                 break;
-
-            case 2:
-                $im = \imagecreatefromjpeg($img);
+            case \IMAGETYPE_PNG:
+                $im = \imagecreatefrompng($source);
                 break;
-
-            case 3:
-                $im = \imagecreatefrompng($img);
-                break;
-
+            case \IMAGETYPE_JPEG:
             default:
-                $im = \imagecreatefromjpeg($img);
+                $im = \imagecreatefromjpeg($source);
                 break;
         }
 
         if ($width === 0 && $height === 0) {
             [$width, $height] = $imgInfo;
         }
-
+        $posX   = 0;
+        $posY   = 0;
         $width  = (int)\round($width);
         $height = (int)\round($height);
-        $newImg = \imagecreatetruecolor($width, $height);
-
+        $newImg = \imagecreatetruecolor($containerWidth ?? $width, $containerHeight ?? $height);
         if (!$newImg) {
             return $im;
         }
-
-        // hintergrundfarbe
-        $format = \strtolower($this->config['bilder']['bilder_dateiformat']);
-        if ($format === 'jpg') {
-            $rgb   = $this->html2rgb($this->config['bilder']['bilder_hintergrundfarbe']);
+        if ($this->getNewExtension($source) === 'jpg') {
+            $rgb   = $this->html2rgb($this->config['bilder_hintergrundfarbe']);
             $color = \imagecolorallocate($newImg, $rgb[0], $rgb[1], $rgb[2]);
-            if ($branding) {
-                \imagealphablending($newImg, false);
-            } else {
-                \imagealphablending($newImg, true);
-            }
+            \imagealphablending($newImg, $branding);
         } else {
             $color = \imagecolorallocatealpha($newImg, 255, 255, 255, 127);
             \imagealphablending($newImg, false);
         }
 
         \imagesavealpha($newImg, true);
-        \imagefilledrectangle($newImg, 0, 0, $width, $height, $color);
-        \imagecopyresampled($newImg, $im, 0, 0, 0, 0, $width, $height, $imgInfo[0], $imgInfo[1]);
+        \imagefilledrectangle($newImg, 0, 0, $containerWidth ?? $width, $containerHeight ?? $height, $color);
+        if ($containerHeight !== null) {
+            $posX = ($containerWidth / 2) - ($width / 2);
+            $posY = ($containerHeight / 2) - ($height / 2);
+        }
+        \imagecopyresampled($newImg, $im, $posX, $posY, 0, 0, $width, $height, $imgInfo[0], $imgInfo[1]);
 
         return $newImg;
     }
@@ -1617,10 +1168,7 @@ final class Images extends AbstractSync
      */
     private function getNewFilename(string $path): string
     {
-        $format = \strtolower($this->config['bilder']['bilder_dateiformat']);
-        $path   = \substr($path, 0, -3);
-
-        return $path . $format;
+        return \pathinfo($path)['filename'] . '.' . $this->getNewExtension($path);
     }
 
     /**
@@ -1630,12 +1178,11 @@ final class Images extends AbstractSync
      * @param int      $quality
      * @return bool
      */
-    private function saveImage($im, $format, $path, int $quality = 80): bool
+    private function saveImage($im, string $format, string $path, int $quality = 80): bool
     {
         if (!$im) {
             return false;
         }
-        $path = $this->getNewFilename($path);
         switch (\strtolower($format)) {
             case 'jpg':
                 $res = \function_exists('imagejpeg') ? \imagejpeg($im, $path, $quality) : false;
@@ -1652,6 +1199,11 @@ final class Images extends AbstractSync
             default:
                 $res = false;
                 break;
+        }
+        if ($res !== false) {
+            @\chmod($path, 0644);
+        } else {
+            $this->logger->error('Cannot save image: ' . $path);
         }
 
         return $res;

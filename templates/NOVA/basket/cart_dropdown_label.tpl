@@ -3,14 +3,25 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='basket-cart-dropdown-label'}
-    {navitem tag="div" aria=['expanded' => 'false'] data=['toggle' => 'collapse', 'target' => '#nav-cart-collapse']}
-        <i class='fas fa-shopping-cart{if $WarenkorbArtikelPositionenanzahl == 0} mr-3{/if}'></i>
-        {if $WarenkorbArtikelPositionenanzahl >= 1}
-            <sup class="mr-md-2">{badge pill=true variant='primary'}{$WarenkorbArtikelPositionenanzahl}{/badge}</sup>
-        {/if}
-        <span class="d-none d-md-block">{$WarensummeLocalized[0]}</span>
-    {/navitem}
-    {block name='basket-cart-dropdown-label-include-cart-dropdown'}
-        {include file='basket/cart_dropdown.tpl'}
-    {/block}
+    <li class="cart-icon-dropdown nav-item dropdown">
+        {block name='basket-cart-dropdown-label-link'}
+            {link class='nav-link' aria=['expanded' => 'false', 'label' => {lang key='basket'}] data=['toggle' => 'dropdown']}
+                {block name='basket-cart-dropdown-label-count'}
+                    <i class='fas fa-shopping-cart{if $WarenkorbArtikelPositionenanzahl == 0} mr-md-3{/if} position-relative'>
+                        {if $WarenkorbArtikelPositionenanzahl >= 1}
+                        <span class="fa-sup" title="{$WarenkorbArtikelPositionenanzahl}">
+                            {$WarenkorbArtikelPositionenanzahl}
+                        </span>
+                        {/if}
+                    </i>
+                {/block}
+                {block name='basket-cart-dropdown-labelprice'}
+                    <span class="text-nowrap d-none d-md-inline-block font-size-base {if $WarenkorbArtikelPositionenanzahl != 0}ml-3{/if}">{$WarensummeLocalized[0]}</span>
+                {/block}
+            {/link}
+        {/block}
+        {block name='basket-cart-dropdown-label-include-cart-dropdown'}
+            {include file='basket/cart_dropdown.tpl'}
+        {/block}
+    </li>
 {/block}

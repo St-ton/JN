@@ -8,10 +8,12 @@
             {block name='checkout-credit-form-form-content'}
                 <fieldset>
                     {row}
-                        {col cols=6}
-                            <p class="credit-description">{lang key='creditDesc' section='account data'}</p>
+                        {col cols=12 md=6}
+                            {block name='checkout-credit-form-desc'}
+                                <p class="credit-description">{lang key='creditDesc' section='account data'}</p>
+                            {/block}
                         {/col}
-                        {col cols=6}
+                        {col cols=12 md=6}
                             {block name='checkout-credit-form-alert'}
                                 <div class="credit-amount-description text-center mb-4">
                                     {lang key='yourCreditIs' section='account data'} <strong class="credit-amount">{$GuthabenLocalized}</strong>
@@ -20,7 +22,7 @@
                             {block name='checkout-credit-form-submit'}
                                 {input type="hidden" name="guthabenVerrechnen" value="1"}
                                 {input type="hidden" name="guthaben" value="1"}
-                                {button type="submit" value="1" block=true}{lang key='useCredits' section='checkout'}{/button}
+                                {button type="submit" value="1" block=true variant="outline-primary"}{lang key='useCredits' section='checkout'}{/button}
                             {/block}
                         {/col}
                     {/row}

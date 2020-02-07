@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -50,7 +50,7 @@ trait PortletHtml
      */
     public function getButtonHtml(): string
     {
-        return \file_get_contents($this->getDefaultIconSvgUrl()) . '<span>' . $this->getTitle() . '</span>';
+        return \file_get_contents($this->getDefaultIconSvgPath()) . '<span>' . $this->getTitle() . '</span>';
     }
 
     /**
@@ -232,16 +232,15 @@ trait PortletHtml
     /**
      * @return string
      */
-    final protected function getDefaultIconSvgUrl(): string
+    final protected function getDefaultIconSvgPath(): string
     {
         $path = $this->getBasePath() . 'icon.svg';
-        $url  = $this->getBaseUrl() . 'icon.svg';
 
         if (\file_exists($path) === false) {
-            return Shop::getURL() . '/' . \PFAD_INCLUDES . 'src/OPC/Portlets/GenericPortlet/generic.icon.svg';
+            $path = \PFAD_ROOT . \PFAD_INCLUDES . 'src/OPC/Portlets/GenericPortlet/generic.icon.svg';
         }
 
-        return $url;
+        return $path;
     }
 
     /**
@@ -249,6 +248,21 @@ trait PortletHtml
      */
     final public function getDefaultPreviewImageUrl(): string
     {
-        return Shop::getURL() . '/' . \PFAD_GFX . 'keinBild.gif';
+        return Shop::getURL() . '/' . \BILD_KEIN_KATEGORIEBILD_VORHANDEN;
+    }
+
+    /**
+     * @param string $faCode
+     * @return string
+     */
+    final public function getFontAwesomeIcon(string $faCode): string
+    {
+        /** @var array $faTable */
+        include \PFAD_ROOT . \PFAD_TEMPLATES . 'NOVA/themes/base/fontawesome/metadata/icons.php';
+
+        $faGlyphHex = $faTable[$faCode];
+        $faClass    = \substr($faCode, 0, 3);
+
+        return '<span class="opc-Icon opc-Icon-' . $faClass . '">&#x' . $faGlyphHex . ';</span>';
     }
 }

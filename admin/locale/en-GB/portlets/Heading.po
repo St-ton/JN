@@ -6,4 +6,4 @@ msgid "Heading"
 msgstr "Heading"
 
 msgid "Level"
-msgstr "Ebene"
+msgstr "Level"

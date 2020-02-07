@@ -23,7 +23,7 @@ final class NewsCategory extends AbstractFactory
      */
     public function getCollection(array $languages, array $customerGroups): Generator
     {
-        $languageIDs = map($languages, function ($e) {
+        $languageIDs = map($languages, static function ($e) {
             return (int)$e->kSprache;
         });
         $res         = $this->db->query(
@@ -41,13 +41,7 @@ final class NewsCategory extends AbstractFactory
             ReturnType::QUERYSINGLE
         );
         while (($nc = $res->fetch(PDO::FETCH_OBJ)) !== false) {
-            $nc->kNewsKategorie = (int)$nc->kNewsKategorie;
-            $nc->langID         = (int)$nc->langID;
-            $item               = new Item(
-                $this->config,
-                $this->baseURL,
-                $this->baseImageURL
-            );
+            $item = new Item($this->config, $this->baseURL, $this->baseImageURL);
             $item->generateData($nc, $languages);
             yield $item;
         }

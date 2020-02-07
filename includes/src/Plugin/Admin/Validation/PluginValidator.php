@@ -25,8 +25,13 @@ final class PluginValidator extends AbstractValidator
         $baseNode    = $xml['jtlshopplugin'][0] ?? null;
         $appVersion  = Version::parse(\APPLICATION_VERSION);
         $shopVersion = null;
+        if ($baseNode === null) {
+            return InstallCode::MISSING_PLUGIN_NODE;
+        }
         if (!isset($baseNode['XMLVersion'])) {
-            return InstallCode::INVALID_XML_VERSION;
+            return ($baseNode === null && isset($xml['jtlshop3plugin']))
+                ? InstallCode::WRONG_EXT_DIR
+                : InstallCode::INVALID_XML_VERSION;
         }
         \preg_match('/[0-9]{3}/', $baseNode['XMLVersion'], $hits);
         if (\count($hits) === 0
@@ -58,6 +63,7 @@ final class PluginValidator extends AbstractValidator
         $checks     = $validation->getValidations($baseNode, $this->dir, $version, $baseNode['PluginID']);
         foreach ($checks as $check) {
             $check->setDir($this->dir . \DIRECTORY_SEPARATOR); // override versioned dir from base validator
+            $check->setContext(ValidationItemInterface::CONTEXT_PLUGIN);
             $res = $check->validate();
             if ($res !== InstallCode::OK) {
                 return $res;

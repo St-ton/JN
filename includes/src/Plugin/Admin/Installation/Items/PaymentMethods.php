@@ -75,14 +75,10 @@ class PaymentMethods extends AbstractItem
                 ? $shopURL . $base . $data['PictureURL']
                 : '';
             $method->nNutzbar               = 0;
-            if ($method->nCURL === 0 && $method->nSOAP === 0 && $method->nSOCKETS === 0) {
-                $method->nNutzbar = 1;
-            }
-            $methodID             = $this->db->insert('tzahlungsart', $method);
-            $method->kZahlungsart = $methodID;
-            if ($method->nNutzbar === 0) {
-                PaymentMethod::activatePaymentMethod($method);
-            }
+            $methodID                       = $this->db->insert('tzahlungsart', $method);
+            $method->kZahlungsart           = $methodID;
+            $method->nNutzbar               = PaymentMethod::activatePaymentMethod($method) ? 1 : 0;
+
             $moduleID = $method->cModulId;
             if (!$methodID) {
                 return InstallCode::SQL_CANNOT_SAVE_PAYMENT_METHOD;
@@ -108,12 +104,13 @@ class PaymentMethods extends AbstractItem
                 if (isset($hits1[0]) && \mb_strlen($hits1[0]) === \mb_strlen($l)) {
                     $iso = \mb_convert_case($loc['iso'], \MB_CASE_LOWER);
                 } elseif (\mb_strlen($hits2[0]) === \mb_strlen($l)) {
-                    $localizedMethod               = new stdClass();
-                    $localizedMethod->kZahlungsart = $methodID;
-                    $localizedMethod->cISOSprache  = $iso;
-                    $localizedMethod->cName        = $loc['Name'];
-                    $localizedMethod->cGebuehrname = $loc['ChargeName'];
-                    $localizedMethod->cHinweisText = $loc['InfoText'];
+                    $localizedMethod                   = new stdClass();
+                    $localizedMethod->kZahlungsart     = $methodID;
+                    $localizedMethod->cISOSprache      = $iso;
+                    $localizedMethod->cName            = $loc['Name'];
+                    $localizedMethod->cGebuehrname     = $loc['ChargeName'];
+                    $localizedMethod->cHinweisText     = $loc['InfoText'];
+                    $localizedMethod->cHinweisTextShop = $loc['InfoText'];
                     if (!$default) {
                         $localized = $localizedMethod;
                         $default   = true;

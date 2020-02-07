@@ -22,10 +22,14 @@ use Traversable;
  */
 class CustomerAttributes implements ArrayAccess, IteratorAggregate, Countable
 {
-    /** @var CustomerAttribute[] */
+    /**
+     * @var CustomerAttribute[]
+     */
     private $attributes = [];
 
-    /** @var int */
+    /**
+     * @var int
+     */
     private $customerID = 0;
 
     /**
@@ -36,6 +40,8 @@ class CustomerAttributes implements ArrayAccess, IteratorAggregate, Countable
     {
         if ($customerID > 0) {
             $this->load($customerID);
+        } else {
+            $this->create();
         }
     }
 
@@ -118,6 +124,49 @@ class CustomerAttributes implements ArrayAccess, IteratorAggregate, Countable
         }
 
         return $this->sort();
+    }
+
+    /**
+     * @return self
+     */
+    public function create(): self
+    {
+        $this->attributes = [];
+        $customerFields   = new CustomerFields();
+
+        /** @var CustomerField $customerField */
+        foreach ($customerFields as $customerField) {
+            $attribute = new CustomerAttribute();
+            $attribute->setName($customerField->getName());
+            $attribute->setCustomerFieldID($customerField->getID());
+            $attribute->setEditable(true);
+            $attribute->setLabel($customerField->getLabel());
+            $attribute->setOrder($customerField->getOrder());
+
+            $this->attributes[$customerField->getID()] = $attribute;
+        }
+
+        return $this->sort();
+    }
+
+    /**
+     * @return int
+     */
+    public function getCustomerID(): int
+    {
+        return $this->customerID;
+    }
+
+    /**
+     * @param int $customerID
+     */
+    public function setCustomerID(int $customerID): void
+    {
+        $this->customerID = $customerID;
+
+        foreach ($this->attributes as $attribute) {
+            $attribute->setCustomerID($customerID);
+        }
     }
 
     /**

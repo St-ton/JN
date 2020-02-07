@@ -23,8 +23,8 @@
                 {/block}
             {/if}
         {else}
-            <div id="result-wrapper" data-wrapper="true" itemprop="mainEntity" itemscope itemtype="http://schema.org/Product" itemid="{$ShopURL}/{$Artikel->cSeo}">
-                <meta itemprop="url" content="{$ShopURL}/{$Artikel->cSeo}">
+            <div id="result-wrapper" data-wrapper="true" itemprop="mainEntity" itemscope itemtype="http://schema.org/Product">
+                <meta itemprop="url" content="{$Artikel->cURLFull}">
                 {block name='productdetails-index-include-extension'}
                     {include file='snippets/extension.tpl'}
                 {/block}

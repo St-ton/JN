@@ -109,11 +109,12 @@ final class MigrationManager
     /**
      * Migrate the specified identifier.
      *
-     * @param int $identifier
+     * @param int  $identifier
+     * @param bool $deleteData
      * @return array
      * @throws Exception
      */
-    public function migrate($identifier = null): array
+    public function migrate($identifier = null, bool $deleteData = true): array
     {
         if (!\is_dir($this->getPath())) {
             return [];
@@ -136,6 +137,7 @@ final class MigrationManager
             if ($direction === IMigration::DOWN) {
                 \krsort($migrations);
                 foreach ($migrations as $migration) {
+                    $migration->setDeleteData($deleteData);
                     $id = $migration->getId();
                     if ($id <= $identifier) {
                         break;
@@ -220,7 +222,7 @@ final class MigrationManager
             $this->db->rollback();
             throw new Exception(
                 $migration->getName() . ' ' . $migration->getDescription() . ' | ' . $e->getMessage(),
-                $e->getCode()
+                (int)$e->getCode()
             );
         }
     }
@@ -354,7 +356,7 @@ final class MigrationManager
         $executed   = $this->getExecutedMigrations();
         $migrations = \array_keys($this->getMigrations());
 
-        return \array_udiff($migrations, $executed, function ($a, $b) {
+        return \array_udiff($migrations, $executed, static function ($a, $b) {
             return \strcmp((string)$a, (string)$b);
         });
     }

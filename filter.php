@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -10,6 +10,9 @@ use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Product\ArtikelListe;
 use JTL\Catalog\Product\Bestseller;
 use JTL\Extensions\SelectionWizard\Wizard;
+use JTL\Filter\Metadata;
+use JTL\Filter\Pagination\ItemFactory;
+use JTL\Filter\Pagination\Pagination;
 use JTL\Filter\ProductFilter;
 use JTL\Helpers\Category;
 use JTL\Helpers\Product;
@@ -63,7 +66,10 @@ if ($oSuchergebnisse->getProductCount() === 0) {
         ['showInAlertListTemplate' => false]
     );
 }
-if ($conf['navigationsfilter']['allgemein_weiterleitung'] === 'Y' && $oSuchergebnisse->getVisibleProductCount() === 1) {
+if ($conf['navigationsfilter']['allgemein_weiterleitung'] === 'Y'
+    && $oSuchergebnisse->getVisibleProductCount() === 1
+    && !Request::isAjaxRequest()
+) {
     $hasSubCategories = ($categoryID = $NaviFilter->getCategory()->getValue()) > 0
         ? (new Kategorie(
             $categoryID,
@@ -78,14 +84,15 @@ if ($conf['navigationsfilter']['allgemein_weiterleitung'] === 'Y' && $oSuchergeb
         http_response_code(301);
         $product = $oSuchergebnisse->getProducts()->pop();
         $url     = empty($product->cURL)
-            ? (JTL\Shop::getURL() . '/?a=' . $product->kArtikel)
-            : (JTL\Shop::getURL() . '/' . $product->cURL);
+            ? (Shop::getURL() . '/?a=' . $product->kArtikel)
+            : (Shop::getURL() . '/' . $product->cURL);
         header('Location: ' . $url);
         exit;
     }
 }
 if ($pages->getCurrentPage() > 0
     && $pages->getTotalPages() > 0
+    && !Request::isAjaxRequest()
     && ($oSuchergebnisse->getVisibleProductCount() === 0 || ($pages->getCurrentPage() > $pages->getTotalPages()))
 ) {
     http_response_code(301);
@@ -130,11 +137,10 @@ if ($oSuchergebnisse->getProducts()->count() === 0) {
         $categoryContent->Unterkategorien = new KategorieListe();
         $h                                = Category::getInstance();
         $children                         = $h->getCategoryById($NaviFilter->getCategory()->getValue());
-        if ($children !== false && $children->hasChildren()) {
+        $tb                               = $conf['artikeluebersicht']['topbest_anzeigen'];
+        if ($children !== null && $children->hasChildren()) {
             $categoryContent->Unterkategorien->elemente = $children->getChildren();
         }
-
-        $tb = $conf['artikeluebersicht']['topbest_anzeigen'];
         if ($tb === 'Top' || $tb === 'TopBest') {
             $categoryContent->TopArtikel = new ArtikelListe();
             $categoryContent->TopArtikel->holeTopArtikel($categoryContent->Unterkategorien);
@@ -164,7 +170,7 @@ Wizard::startIfRequired(
     [],
     $NaviFilter
 );
-$pagination = new JTL\Filter\Pagination\Pagination($NaviFilter, new JTL\Filter\Pagination\ItemFactory());
+$pagination = new Pagination($NaviFilter, new ItemFactory());
 $pagination->create($pages);
 
 $priceRanges = $NaviFilter->getPriceRangeFilter()->getOptions();
@@ -181,12 +187,13 @@ $smarty->assign('NaviFilter', $NaviFilter)
        ->assign('filterPagination', $pagination)
        ->assign('Suchergebnisse', $oSuchergebnisse)
        ->assign('oNavigationsinfo', $oNavigationsinfo)
+       ->assign('priceRange', $NaviFilter->getPriceRangeFilter()->getValue())
        ->assign('nMaxAnzahlArtikel', (int)($oSuchergebnisse->getProductCount() >=
            (int)$conf['artikeluebersicht']['suche_max_treffer']));
 
 executeHook(HOOK_FILTER_PAGE);
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
-$globalMetaData = JTL\Filter\Metadata::getGlobalMetaData();
+$globalMetaData = Metadata::getGlobalMetaData();
 $smarty->assign(
     'meta_title',
     $oNavigationsinfo->generateMetaTitle(
@@ -210,6 +217,13 @@ $smarty->assign(
     )
 );
 executeHook(HOOK_FILTER_ENDE);
-$smarty->display('productlist/index.tpl');
 
+if (Request::isAjaxRequest()) {
+    $smarty->assign('NaviFilters', $NaviFilter)
+        ->assign('show_filters', true)
+        ->assign('itemCount', $oSuchergebnisse->getProductCount())
+        ->display('snippets/filter/mobile.tpl');
+} else {
+    $smarty->display('productlist/index.tpl');
+}
 require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';

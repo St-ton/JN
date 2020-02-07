@@ -10,6 +10,7 @@ use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
+use JTL\Minify\MinifyService;
 use JTL\Shop;
 use JTL\Template;
 
@@ -183,12 +184,12 @@ switch ($action) {
                 if ($value->cName === 'caching_method' && $value->cWert === 'auto') {
                     $availableMethods = [];
                     $allMethods       = $cache->checkAvailability();
-                    foreach ($allMethods as $_name => $_status) {
-                        if (isset($_status['available'], $_status['functional'])
-                            && $_status['available'] === true
-                            && $_status['functional'] === true
+                    foreach ($allMethods as $name => $state) {
+                        if (isset($state['available'], $state['functional'])
+                            && $state['available'] === true
+                            && $state['functional'] === true
                         ) {
-                            $availableMethods[] = $_name;
+                            $availableMethods[] = $name;
                         }
                     }
                     if (count($availableMethods) > 0) {
@@ -273,7 +274,7 @@ switch ($action) {
         break;
     case 'flush_template_cache':
         // delete all template cachefiles
-        $callback     = function (array $pParameters) {
+        $callback     = static function (array $pParameters) {
             if (!$pParameters['isdir']) {
                 if (@unlink($pParameters['path'] . $pParameters['filename'])) {
                     $pParameters['count']++;
@@ -300,13 +301,15 @@ switch ($action) {
         $dirMan       = new DirManager();
         $dirMan->getData(PFAD_ROOT . PFAD_COMPILEDIR . $template->getDir(), $callback, $cbParameters);
         $dirMan->getData(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR, $callback, $cbParameters);
+        $ms = new MinifyService();
+        $ms->flushCache();
         $alertHelper->addAlert(Alert::TYPE_ERROR, $error, 'errorCache');
         $alertHelper->addAlert(Alert::TYPE_NOTE, $notice, 'noticeCache');
         $alertHelper->addAlert(
             Alert::TYPE_SUCCESS,
             sprintf(
                 __('successTemplateCacheDelete'),
-                '<strong>' . number_format($cbParameters['count']) . '</strong>'
+                number_format($cbParameters['count'])
             ),
             'successTemplateCacheDelete'
         );
@@ -317,8 +320,8 @@ switch ($action) {
 if ($cache !== null) {
     $options = $cache->getOptions();
     $smarty->assign('method', ucfirst($options['method']))
-           ->assign('all_methods', $cache->getAllMethods())
-           ->assign('stats', $cache->getStats());
+        ->assign('all_methods', $cache->getAllMethods())
+        ->assign('stats', $cache->getStats());
 }
 $settings = $db->selectAll(
     'teinstellungenconf',
@@ -380,25 +383,25 @@ for ($i = 0; $i < $settingsCount; ++$i) {
     $advancedSettings[$i]->gesetzterWert = $setValue->cWert ?? null;
 }
 if (function_exists('opcache_get_status')) {
-    $_opcacheStatus             = opcache_get_status();
+    $data                       = opcache_get_status();
     $opcacheStats               = new stdClass();
-    $opcacheStats->enabled      = isset($_opcacheStatus['opcache_enabled'])
-        && $_opcacheStatus['opcache_enabled'] === true;
-    $opcacheStats->memoryFree   = isset($_opcacheStatus['memory_usage']['free_memory'])
-        ? round($_opcacheStatus['memory_usage']['free_memory'] / 1024 / 1024, 2)
+    $opcacheStats->enabled      = isset($data['opcache_enabled'])
+        && $data['opcache_enabled'] === true;
+    $opcacheStats->memoryFree   = isset($data['memory_usage']['free_memory'])
+        ? round($data['memory_usage']['free_memory'] / 1024 / 1024, 2)
         : -1;
-    $opcacheStats->memoryUsed   = isset($_opcacheStatus['memory_usage']['used_memory'])
-        ? round($_opcacheStatus['memory_usage']['used_memory'] / 1024 / 1024, 2)
+    $opcacheStats->memoryUsed   = isset($data['memory_usage']['used_memory'])
+        ? round($data['memory_usage']['used_memory'] / 1024 / 1024, 2)
         : -1;
-    $opcacheStats->numberScrips = $_opcacheStatus['opcache_statistics']['num_cached_scripts'] ?? -1;
-    $opcacheStats->numberKeys   = $_opcacheStatus['opcache_statistics']['num_cached_keys'] ?? -1;
-    $opcacheStats->hits         = $_opcacheStatus['opcache_statistics']['hits'] ?? -1;
-    $opcacheStats->misses       = $_opcacheStatus['opcache_statistics']['misses'] ?? -1;
-    $opcacheStats->hitRate      = isset($_opcacheStatus['opcache_statistics']['opcache_hit_rate'])
-        ? round($_opcacheStatus['opcache_statistics']['opcache_hit_rate'], 2)
+    $opcacheStats->numberScrips = $data['opcache_statistics']['num_cached_scripts'] ?? -1;
+    $opcacheStats->numberKeys   = $data['opcache_statistics']['num_cached_keys'] ?? -1;
+    $opcacheStats->hits         = $data['opcache_statistics']['hits'] ?? -1;
+    $opcacheStats->misses       = $data['opcache_statistics']['misses'] ?? -1;
+    $opcacheStats->hitRate      = isset($data['opcache_statistics']['opcache_hit_rate'])
+        ? round($data['opcache_statistics']['opcache_hit_rate'], 2)
         : -1;
-    $opcacheStats->scripts      = GeneralObject::isCountable('scripts', $_opcacheStatus)
-        ? $_opcacheStatus['scripts']
+    $opcacheStats->scripts      = GeneralObject::isCountable('scripts', $data)
+        ? $data['scripts']
         : [];
 }
 
@@ -406,7 +409,7 @@ $tplcacheStats           = new stdClass();
 $tplcacheStats->frontend = [];
 $tplcacheStats->backend  = [];
 
-$callback = function (array $pParameters) {
+$callback = static function (array $pParameters) {
     if (!$pParameters['isdir']) {
         $fileObj           = new stdClass();
         $fileObj->filename = $pParameters['filename'];
@@ -420,22 +423,21 @@ $callback = function (array $pParameters) {
 $template = Template::getInstance();
 $dirMan   = new DirManager();
 $dirMan->getData(PFAD_ROOT . PFAD_COMPILEDIR . $template->getDir(), $callback, ['files' => &$tplcacheStats->frontend])
-       ->getData(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR, $callback, ['files' => &$tplcacheStats->backend]);
-
+    ->getData(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR, $callback, ['files' => &$tplcacheStats->backend]);
 $allMethods           = $cache->checkAvailability();
 $availableMethods     = [];
 $disFunctionalMethods = [];
 $nonAvailableMethods  = [];
-foreach ($allMethods as $_name => $_status) {
-    if ($_name === 'null') {
+foreach ($allMethods as $name => $state) {
+    if ($name === 'null') {
         continue;
     }
-    if ($_status['functional'] === true) {
-        $availableMethods[] = $_name;
-    } elseif ($_status['available'] === true) {
-        $disFunctionalMethods[] = $_name;
+    if ($state['functional'] === true) {
+        $availableMethods[] = $name;
+    } elseif ($state['available'] === true) {
+        $disFunctionalMethods[] = $name;
     } else {
-        $nonAvailableMethods[] = $_name;
+        $nonAvailableMethods[] = $name;
     }
 }
 $cachingGroups = [];
@@ -450,17 +452,17 @@ if (!empty($cache->getError())) {
     $alertHelper->addAlert(Alert::TYPE_ERROR, $cache->getError(), 'errorCache');
 }
 $smarty->assign('settings', $settings)
-       ->assign('caching_groups', $cachingGroups)
-       ->assign('cache_enabled', isset($options['activated']) && $options['activated'] === true)
-       ->assign('show_page_cache', $settings)
-       ->assign('options', $options)
-       ->assign('opcache_stats', $opcacheStats)
-       ->assign('tplcacheStats', $tplcacheStats)
-       ->assign('functional_methods', json_encode($availableMethods))
-       ->assign('disfunctional_methods', json_encode($disFunctionalMethods))
-       ->assign('non_available_methods', json_encode($nonAvailableMethods))
-       ->assign('advanced_settings', $advancedSettings)
-       ->assign('disabled_caches', $currentlyDisabled)
-       ->assign('step', $step)
-       ->assign('tab', $tab)
-       ->display('cache.tpl');
+    ->assign('caching_groups', $cachingGroups)
+    ->assign('cache_enabled', isset($options['activated']) && $options['activated'] === true)
+    ->assign('show_page_cache', $settings)
+    ->assign('options', $options)
+    ->assign('opcache_stats', $opcacheStats)
+    ->assign('tplcacheStats', $tplcacheStats)
+    ->assign('functional_methods', json_encode($availableMethods))
+    ->assign('disfunctional_methods', json_encode($disFunctionalMethods))
+    ->assign('non_available_methods', json_encode($nonAvailableMethods))
+    ->assign('advanced_settings', $advancedSettings)
+    ->assign('disabled_caches', $currentlyDisabled)
+    ->assign('step', $step)
+    ->assign('tab', $tab)
+    ->display('cache.tpl');

@@ -132,7 +132,7 @@ class ZahlungsLog
         if (!\is_array($moduleIDs)) {
             $moduleIDs = (array)$moduleIDs;
         }
-        \array_walk($moduleIDs, function (&$value) {
+        \array_walk($moduleIDs, static function (&$value) {
             $value = \sprintf("'%s'", $value);
         });
         $moduleIDlist = \implode(',', $moduleIDs);

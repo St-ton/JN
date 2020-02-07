@@ -1,4 +1,4 @@
-<div class="modal fade" tabindex="-1" id="restoreUnsavedModal">
+<div class="modal fade" tabindex="-1" id="restoreUnsavedModal" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -9,10 +9,10 @@
                     {__('restoreUnsaved')}
                 </div>
             </div>
-            <form id="restoreUnsavedForm">
+            <form onsubmit="opc.gui.restoreUnsaved()">
                 <div class="modal-footer">
                     <button type="button" class="opc-btn-secondary opc-small-btn" data-dismiss="modal"
-                            id="btnNoRestoreUnsaved">
+                            onclick="opc.gui.noRestoreUnsaved()">
                         {__('noCurrent')}
                     </button>
                     <button type="submit" class="opc-btn-primary opc-small-btn">

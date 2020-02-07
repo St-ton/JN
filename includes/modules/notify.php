@@ -9,6 +9,7 @@ use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Plugin\Helper;
+use JTL\Plugin\Payment\LegacyMethod;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
@@ -66,7 +67,7 @@ if (strlen($cSh) > 0) {
         false,
         'cSID, kBestellung'
     );
-    if ($paymentSession === false) {
+    if ($paymentSession === null) {
         $logger->error('Session Hash: ' . $cSh . ' ergab keine Bestellung aus tzahlungsession');
         die();
     }
@@ -89,10 +90,9 @@ if (strlen($cSh) > 0) {
         ?? '---');
     if (!isset($paymentSession->kBestellung) || !$paymentSession->kBestellung) {
         // Generate fake Order and ask PaymentMethod if order should be finalized
-        $order = fakeBestellung();
-        include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
+        $order         = fakeBestellung();
         $paymentMethod = isset($_SESSION['Zahlungsart']->cModulId)
-            ? PaymentMethod::create($_SESSION['Zahlungsart']->cModulId)
+            ? LegacyMethod::create($_SESSION['Zahlungsart']->cModulId)
             : null;
         if ($paymentMethod !== null) {
             if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
@@ -148,11 +148,10 @@ if (strlen($cSh) > 0) {
     } else {
         $order = new Bestellung($paymentSession->kBestellung);
         $order->fuelleBestellung(false);
-        include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
         $logger->debug('Session Hash ' . $cSh . ' hat kBestellung. Modul ' . $order->Zahlungsart->cModulId .
             ' wird aufgerufen');
 
-        $paymentMethod = PaymentMethod::create($order->Zahlungsart->cModulId);
+        $paymentMethod = LegacyMethod::create($order->Zahlungsart->cModulId);
         $paymentMethod->handleNotification($order, '_' . $sessionHash, $_REQUEST);
         if ($paymentMethod->redirectOnPaymentSuccess() === true) {
             header('Location: ' . $paymentMethod->getReturnURL($order));
@@ -195,8 +194,7 @@ if (strlen($cPh) > 0) {
 }
 if ($moduleId !== null) {
     // Let PaymentMethod handle Notification
-    include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
-    $paymentMethod = PaymentMethod::create($moduleId);
+    $paymentMethod = LegacyMethod::create($moduleId);
     if ($paymentMethod !== null) {
         if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
             $logger->debug('Payment Hash ' . $cPh . ' ergab Order' . print_r($paymentMethod, true));

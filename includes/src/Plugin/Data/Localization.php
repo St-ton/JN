@@ -7,6 +7,7 @@
 namespace JTL\Plugin\Data;
 
 use Illuminate\Support\Collection;
+use JTL\Plugin\Admin\InputType;
 use function Functional\first;
 use function Functional\group;
 
@@ -42,7 +43,7 @@ class Localization
      */
     public function load(array $data): self
     {
-        $grouped = group($data, function ($e) {
+        $grouped = group($data, static function ($e) {
             return $e->kPluginSprachvariable;
         });
         foreach ($grouped as $group) {
@@ -58,6 +59,7 @@ class Localization
             $var->description                      = $var->cBeschreibung;
             $var->oPluginSprachvariableSprache_arr = [$lv->cISO => $lv->customValue];
             $var->values                           = $var->oPluginSprachvariableSprache_arr;
+            $var->type                             = $lv->type ?? InputType::TEXT;
             foreach ($group as $translation) {
                 $var->oPluginSprachvariableSprache_arr[$translation->cISO] = $translation->customValue;
                 $var->values[$translation->cISO]                           = $translation->customValue;
@@ -88,7 +90,7 @@ class Localization
     {
         $iso = \mb_convert_case($this->currentLanguageCode, \MB_CASE_UPPER);
 
-        return $this->langVars->mapWithKeys(function ($item) use ($iso) {
+        return $this->langVars->mapWithKeys(static function ($item) use ($iso) {
             return [$item->name => $item->values[$iso] ?? null];
         })->toArray();
     }

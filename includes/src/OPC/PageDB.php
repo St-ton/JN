@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -7,10 +7,10 @@
 namespace JTL\OPC;
 
 use Exception;
-use JTL\Shop;
 use JTL\Backend\Revision;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Shop;
 use stdClass;
 
 /**
@@ -264,7 +264,7 @@ class PageDB
 
             if ($oldAreasJson !== $newAreasJson) {
                 $revision = new Revision($this->shopDB);
-                $revision->addRevision('opcpage', $dbPage->kPage);
+                $revision->addRevision('opcpage', (int)$dbPage->kPage);
             }
 
             if ($this->shopDB->update('topcpage', 'kPage', $page->getKey(), $pageDB) === -1) {
@@ -371,7 +371,7 @@ class PageDB
     protected function getPageFromRow($row): Page
     {
         $page = (new Page())
-            ->setKey($row->kPage)
+            ->setKey((int)$row->kPage)
             ->setId($row->cPageId)
             ->setPublishFrom($row->dPublishFrom)
             ->setPublishTo($row->dPublishTo)

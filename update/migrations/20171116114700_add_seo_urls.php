@@ -2,7 +2,7 @@
 /**
  * Add SEO URLs
  *
- * @author Felix Moche
+ * @author fm
  * @created Thu, 16 Nov 2017 11:47:00 +0200
  */
 
@@ -61,7 +61,6 @@ class Migration_20171116114700 extends Migration implements IMigration
         $this->createSeo(LINKTYP_WUNSCHLISTE, 'Wunschliste', 'Wunschliste', 'Wishlist');
         $this->createSeo(LINKTYP_VERGLEICHSLISTE, 'Vergleichsliste', 'Vergleichsliste', 'Comparelist');
         $this->createSeo(LINKTYP_NEWS, 'News', 'News', 'Blog');
-        $this->createSeo(LINKTYP_UMFRAGE, 'Umfrag', 'Umfrage', 'Survey');
         $this->createSeo(LINKTYP_NEWSLETTER, 'Newsletter', 'Newsletter', 'Newsletter');
     }
 

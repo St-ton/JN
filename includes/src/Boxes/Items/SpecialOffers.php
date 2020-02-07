@@ -11,6 +11,7 @@ use JTL\DB\ReturnType;
 use JTL\Helpers\SearchSpecial;
 use JTL\Session\Frontend;
 use JTL\Shop;
+use function Functional\map;
 
 /**
  * Class SpecialOffers
@@ -31,7 +32,7 @@ final class SpecialOffers extends AbstractBox
             $cached         = true;
             $stockFilterSQL = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $parentSQL      = ' AND tartikel.kVaterArtikel = 0';
-            $limit          = $config['boxen']['box_sonderangebote_anzahl_anzeige'];
+            $limit          = $config['boxen']['box_sonderangebote_anzahl_basis'];
             $cacheTags      = [\CACHING_GROUP_BOX, \CACHING_GROUP_ARTICLE];
             $cacheID        = 'box_special_offer_' . $customerGroupID . '_' .
                 $limit . \md5($stockFilterSQL . $parentSQL);
@@ -54,20 +55,24 @@ final class SpecialOffers extends AbstractBox
                             AND tartikelsonderpreis.dStart <= NOW()
                             AND (tartikelsonderpreis.dEnde IS NULL OR tartikelsonderpreis.dEnde >= CURDATE()) " .
                             $stockFilterSQL . $parentSQL . '
-                        ORDER BY rand() LIMIT :lmt',
+                        LIMIT :lmt',
                     ['lmt' => $limit, 'cgid' => $customerGroupID],
                     ReturnType::ARRAY_OF_OBJECTS
                 );
-                $productIDs = \array_map(function ($e) {
-                    return (int)$e->kArtikel;
-                }, $productIDs);
-
                 Shop::Container()->getCache()->set($cacheID, $productIDs, $cacheTags);
             }
-            if (\count($productIDs) > 0) {
+            \shuffle($productIDs);
+            $res = map(
+                \array_slice($productIDs, 0, $config['boxen']['box_sonderangebote_anzahl_anzeige']),
+                static function ($productID) {
+                    return (int)$productID->kArtikel;
+                }
+            );
+
+            if (\count($res) > 0) {
                 $this->setShow(true);
                 $products = new ArtikelListe();
-                $products->getArtikelByKeys($productIDs, 0, \count($productIDs));
+                $products->getArtikelByKeys($res, 0, \count($res));
                 $this->setProducts($products);
                 $this->setURL(SearchSpecial::buildURL(\SEARCHSPECIALS_SPECIALOFFERS));
                 \executeHook(\HOOK_BOXEN_INC_SONDERANGEBOTE, [

@@ -60,14 +60,13 @@ final class Shopsetting implements ArrayAccess
         \CONF_METAANGABEN         => 'metaangaben',
         \CONF_NEWS                => 'news',
         \CONF_SITEMAP             => 'sitemap',
-        \CONF_UMFRAGE             => 'umfrage',
         \CONF_KUNDENWERBENKUNDEN  => 'kundenwerbenkunden',
         \CONF_SUCHSPECIAL         => 'suchspecials',
         \CONF_TEMPLATE            => 'template',
         \CONF_CHECKBOX            => 'checkbox',
         \CONF_AUSWAHLASSISTENT    => 'auswahlassistent',
         \CONF_CRON                => 'cron',
-        \CONF_FTP                 => 'ftp',
+        \CONF_FS                  => 'fs',
         \CONF_CACHING             => 'caching'
     ];
 
@@ -160,7 +159,7 @@ final class Shopsetting implements ArrayAccess
         if ($section === \CONF_TEMPLATE) {
             $settings = Shop::Container()->getCache()->get(
                 $cacheID,
-                function ($cache, $id, &$content, &$tags) {
+                static function ($cache, $id, &$content, &$tags) {
                     $content = Template::getInstance()->getConfig();
                     $tags    = [\CACHING_GROUP_TEMPLATE, \CACHING_GROUP_OPTION];
 

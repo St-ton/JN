@@ -7,7 +7,6 @@
 namespace JTL\GeneralDataProtection;
 
 use JTL\DB\ReturnType;
-use JTL\Shop;
 
 /**
  * Class AnonymizeDeletedCustomer
@@ -31,7 +30,7 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
      */
     private function anonymizeRatings(): void
     {
-        Shop::Container()->getDB()->queryPrepared(
+        $this->db->queryPrepared(
             "UPDATE tbewertung b
             SET
                 b.cName  = 'Anonym',
@@ -56,7 +55,7 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
      */
     private function anonymizeReceivedPayments(): void
     {
-        Shop::Container()->getDB()->queryPrepared(
+        $this->db->queryPrepared(
             "UPDATE tzahlungseingang z
             SET
                 z.cZahler = '-'
@@ -87,7 +86,7 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
      */
     private function anonymizeNewsComments(): void
     {
-        Shop::Container()->getDB()->queryPrepared(
+        $this->db->queryPrepared(
             "UPDATE tnewskommentar n
             SET
                 n.cName = 'Anonym',

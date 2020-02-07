@@ -50,14 +50,14 @@ interface LoaderInterface
      * @return PluginInterface
      * @throws \InvalidArgumentException
      */
-    public function init(int $id, bool $invalidateCache = false, int $languageID = null);
+    public function init(int $id, bool $invalidateCache = false, int $languageID = null): PluginInterface;
 
     /**
      * @param object $obj
      * @param string $currentLanguageCode
      * @return PluginInterface
      */
-    public function loadFromObject($obj, string $currentLanguageCode);
+    public function loadFromObject($obj, string $currentLanguageCode): PluginInterface;
 
     /**
      * @return PluginInterface|null
@@ -65,8 +65,8 @@ interface LoaderInterface
     public function loadFromCache(): ?PluginInterface;
 
     /**
-     * @param PluginInterface $extension
+     * @param PluginInterface $plugin
      * @return bool
      */
-    public function saveToCache(PluginInterface $extension): bool;
+    public function saveToCache(PluginInterface $plugin): bool;
 }

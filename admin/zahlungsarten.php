@@ -5,6 +5,7 @@
  */
 
 use JTL\Alert\Alert;
+use JTL\Checkout\Zahlungsart;
 use JTL\Checkout\ZahlungsLog;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
@@ -16,7 +17,6 @@ use JTL\Pagination\Filter;
 use JTL\Pagination\Pagination;
 use JTL\Plugin\Helper as PluginHelper;
 use JTL\Shop;
-use JTL\Checkout\Zahlungsart;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -103,11 +103,10 @@ if (Request::postInt('einstellungen_bearbeiten') === 1
     // Weiche fuer eine normale Zahlungsart oder eine Zahlungsart via Plugin
     if (mb_strpos($paymentMethod->cModulId, 'kPlugin_') !== false) {
         $kPlugin     = PluginHelper::getIDByModuleID($paymentMethod->cModulId);
-        $cModulId    = PluginHelper::getModuleIDByPluginID($kPlugin, $paymentMethod->cName);
         $Conf        = $db->query(
             "SELECT *
                 FROM tplugineinstellungenconf
-                WHERE cWertName LIKE '" . $cModulId . "\_%'
+                WHERE cWertName LIKE '" . $paymentMethod->cModulId . "\_%'
                 AND cConf = 'Y' ORDER BY nSort",
             ReturnType::ARRAY_OF_OBJECTS
         );
@@ -209,18 +208,13 @@ if ($step === 'einstellen') {
         $step = 'uebersicht';
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorPaymentMethodNotFound'), 'errorNotFound');
     } else {
-        // Bei SOAP oder CURL => versuche die Zahlungsart auf nNutzbar = 1 zu stellen, falls nicht schon geschehen
-        if ($paymentMethod->getSOAP() === 1 || $paymentMethod->getCURL() === 1 || $paymentMethod->getSOCKETS() === 1) {
-            PaymentMethod::activatePaymentMethod($paymentMethod);
-        }
+        PaymentMethod::activatePaymentMethod($paymentMethod);
         // Weiche fuer eine normale Zahlungsart oder eine Zahlungsart via Plugin
         if (mb_strpos($paymentMethod->cModulId, 'kPlugin_') !== false) {
-            $kPlugin     = PluginHelper::getIDByModuleID($paymentMethod->cModulId);
-            $cModulId    = PluginHelper::getModuleIDByPluginID($kPlugin, $paymentMethod->cName);
             $Conf        = $db->query(
                 "SELECT *
                     FROM tplugineinstellungenconf
-                    WHERE cWertName LIKE '" . $cModulId . "\_%'
+                    WHERE cWertName LIKE '" . $paymentMethod->cModulId . "\_%'
                     ORDER BY nSort",
                 ReturnType::ARRAY_OF_OBJECTS
             );
@@ -234,6 +228,9 @@ if ($step === 'einstellen') {
                         '*',
                         'nSort'
                     );
+                    foreach (array_keys($Conf[$i]->ConfWerte) as $confKey) {
+                        $Conf[$i]->ConfWerte[$confKey]->cName = __($Conf[$i]->ConfWerte[$confKey]->cName);
+                    }
                 }
                 $setValue                = $db->select(
                     'tplugineinstellungen',
@@ -243,6 +240,8 @@ if ($step === 'einstellen') {
                     $Conf[$i]->cWertName
                 );
                 $Conf[$i]->gesetzterWert = $setValue->cWert;
+                $Conf[$i]->cName         = __($Conf[$i]->cName);
+                $Conf[$i]->cBeschreibung = __($Conf[$i]->cBeschreibung);
             }
         } else {
             $Conf        = $db->selectAll(
@@ -322,7 +321,7 @@ if ($step === 'einstellen') {
         && Form::validateToken()
     ) {
         $incomingIDs = $_POST['kEingang_arr'];
-        array_walk($incomingIDs, function (&$i) {
+        array_walk($incomingIDs, static function (&$i) {
             $i = (int)$i;
         });
         $db->query(

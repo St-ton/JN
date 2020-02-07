@@ -6,27 +6,41 @@
 {if $showAttributesTable}
     <div class="product-attributes mt-3">
     {block name='productdetails-attributes-table'}
-        <table class="table table-condensed table-striped">
+        <table class="table table-sm table-striped table-bordered-outline">
             {if $Einstellungen.artikeldetails.merkmale_anzeigen === 'Y'}
                 {block name='productdetails-attributes-characteristics'}
-                    {foreach $Artikel->oMerkmale_arr as $oMerkmal}
+                    {foreach $Artikel->oMerkmale_arr as $characteristic}
                         <tr>
-                            <td class="h6">{$oMerkmal->cName}:</td>
+                            <td class="h6">{$characteristic->cName}:</td>
                             <td class="attr-characteristic">
                                 {strip}
-                                    {foreach $oMerkmal->oMerkmalWert_arr as $oMerkmalWert}
-                                        {if $oMerkmal->cTyp === 'TEXT' || $oMerkmal->cTyp === 'SELECTBOX' || $oMerkmal->cTyp === ''}
-                                            <span class="value">{link href=$oMerkmalWert->cURLFull class="badge badge-light"}{$oMerkmalWert->cWert|escape:'html'}{/link} </span>
+                                    {foreach $characteristic->oMerkmalWert_arr as $characteristicValue}
+                                        {if $characteristic->cTyp === 'TEXT' || $characteristic->cTyp === 'SELECTBOX' || $characteristic->cTyp === ''}
+                                            <span class="value">{link href=$characteristicValue->cURLFull class="badge badge-light"}{$characteristicValue->cWert|escape:'html'}{/link} </span>
                                         {else}
                                             <span class="value">
-                                            {link href=$oMerkmalWert->cURLFull class="text-decoration-none" data=['toggle'=>'tooltip', 'placement'=>'top', 'boundary'=>'window'] title=$oMerkmalWert->cWert|escape:'html'}
-                                                {if $oMerkmalWert->cBildpfadKlein !== 'gfx/keinBild_kl.gif'}
-                                                    {image src=$oMerkmalWert->cBildURLKlein title=$oMerkmalWert->cWert|escape:'html' alt=$oMerkmalWert->cWert|escape:'html'}
+                                            {link href=$characteristicValue->cURLFull
+                                                class="text-decoration-none"
+                                                data=['toggle'=>'tooltip', 'placement'=>'top', 'boundary'=>'window']
+                                                title=$characteristicValue->cWert|escape:'html'
+                                                aria=["label"=>$characteristicValue->cWert|escape:'html']
+                                            }
+                                                {$img = $characteristicValue->getImage(\JTL\Media\Image::SIZE_XS)}
+                                                {if $img !== null && $img|strpos:$smarty.const.BILD_KEIN_MERKMALBILD_VORHANDEN === false
+                                                && $img|strpos:$smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN === false}
+                                                    {image fluid=true webp=true lazy=true
+                                                        src=$img
+                                                        srcset="{$characteristicValue->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_merkmalwert_mini_breite}w,
+                                                            {$characteristicValue->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_merkmalwert_klein_breite}w,
+                                                            {$characteristicValue->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_merkmalwert_normal_breite}w"
+                                                        sizes="40px"
+                                                        alt=$characteristicValue->cWert|escape:'html'
+                                                    }
                                                 {else}
-                                                    <span class="value">{link href=$oMerkmalWert->cURLFull class="badge badge-light"}{$oMerkmalWert->cWert|escape:'html'}{/link} </span>
+                                                    {badge variant="light"}{$characteristicValue->cWert|escape:'html'}{/badge}
                                                 {/if}
                                             {/link}
-                                        </span>
+                                            </span>
                                         {/if}
                                     {/foreach}
                                 {/strip}
@@ -89,7 +103,8 @@
                 {/block}
             {/if}
 
-            {if $Einstellungen.artikeldetails.artikeldetails_attribute_anhaengen === 'Y' || (isset($Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ATTRIBUTEANHAENGEN]) && $Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ATTRIBUTEANHAENGEN] == 1)}
+            {if $Einstellungen.artikeldetails.artikeldetails_attribute_anhaengen === 'Y'
+            || $Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_ATTRIBUTEANHAENGEN]|default:0 == 1}
                 {block name='productdetails-attributes-shop-attributes'}
                     {foreach $Artikel->Attribute as $Attribut}
                         <tr class="attr-custom">

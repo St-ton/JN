@@ -142,7 +142,7 @@ final class Controller
                 $res = self::ERROR_DELETE;
             }
         }
-        $model->setAttachments(null, $languageID);
+        $model->removeAttachments($languageID);
         $model->setAttachmentNames(null, $languageID);
         $model->save();
 
@@ -264,9 +264,16 @@ final class Controller
         foreach ($languages as $lang) {
             try {
                 $this->mailer->getHydrator()->hydrate(null, $lang);
-                $smarty->fetch('string:' . $this->model->getHTML($lang->kSprache));
-                $smarty->fetch('string:' . $this->model->getText($lang->kSprache));
+                $html = $this->model->getHTML($lang->getId());
+                $text = $this->model->getText($lang->getId());
+                $smarty->fetch('string:' . $html);
+                $smarty->fetch('string:' . $text);
                 $this->model->setHasError(false);
+                if ((\mb_strlen($html) === 0 || \mb_strlen($text) === 0)
+                    && !\in_array($this->model->getModuleID(), ['core_jtl_footer', 'core_jtl_header'], true)
+                ) {
+                    throw new \Exception(__('Empty mail body'));
+                }
             } catch (\Exception $e) {
                 $this->setErrorMessages([$e->getMessage()]);
                 $this->model->setHasError(true);
@@ -350,7 +357,7 @@ final class Controller
             'kEmailvorlage',
             $templateID
         );
-        if (isset($data->cDateiname) && mb_strlen($data->cDateiname) > 0) {
+        if (isset($data->cDateiname) && \mb_strlen($data->cDateiname) > 0) {
             $this->resetFromFile($templateID, $data);
         }
 

@@ -10,6 +10,7 @@ use JTL\IO\IOFile;
 use JTL\Plugin\Admin\Installation\MigrationManager as PluginMigrationManager;
 use JTL\Plugin\PluginLoader;
 use JTL\Shop;
+use JTL\Smarty\ContextType;
 use JTL\Template;
 use JTL\Update\IMigration;
 use JTL\Update\MigrationManager;
@@ -194,13 +195,12 @@ function dbUpdateIO()
         } else {
             $templateVersion = $template->version;
         }
-
-        if (!Version::parse($template->xmlData->cVersion)->equals($templateVersion)
-            && $template->setTemplate($template->xmlData->cName, $template->xmlData->eTyp)
+        if ($template->xmlData === false
+            || (!Version::parse($template->xmlData->cVersion)->equals($templateVersion)
+            && $template->setTemplate($template->xmlData->cName, $template->xmlData->eTyp))
         ) {
             unset($_SESSION['cTemplate'], $_SESSION['template']);
         }
-
         $dbVersion       = $updater->getCurrentDatabaseVersion();
         $updateResult    = $updater->update();
         $availableUpdate = $updater->hasPendingUpdates();
@@ -211,6 +211,7 @@ function dbUpdateIO()
         } else {
             $updateResult = sprintf('Version: %.2f', $updateResult / 100);
         }
+
         return [
             'result'          => $updateResult,
             'currentVersion'  => $dbVersion,
@@ -276,7 +277,7 @@ function dbupdaterDownload($file)
 function dbupdaterStatusTpl($pluginID = null)
 {
     Shop::Container()->getGetText()->loadAdminLocale('pages/dbupdater');
-    $smarty                 = Shop::Smarty();
+    $smarty                 = JTLSmarty::getInstance(false, ContextType::BACKEND);
     $db                     = Shop::Container()->getDB();
     $updater                = new Updater($db);
     $template               = Template::getInstance();
@@ -312,7 +313,7 @@ function dbupdaterStatusTpl($pluginID = null)
                                                  ->equals(Version::parse($currentFileVersion)))
            ->assign('version', $version)
            ->assign('updateError', $updateError)
-           ->assign('currentTemplateFileVersion', $template->xmlData->cVersion)
+           ->assign('currentTemplateFileVersion', $template->xmlData->cVersion ?? '1.0.0')
            ->assign('currentTemplateDatabaseVersion', $template->version);
 
     return [
@@ -333,6 +334,8 @@ function dbupdaterMigration($id = null, $version = null, $dir = null, $pluginID 
     Shop::Container()->getGetText()->loadAdminLocale('pages/dbupdater');
     $db = Shop::Container()->getDB();
     try {
+        $updater    = new Updater($db);
+        $hasAlready = $updater->hasPendingUpdates();
         if ($pluginID !== null && is_numeric($pluginID)) {
             $loader  = new PluginLoader($db, Shop::Container()->getCache());
             $plugin  = $loader->init($pluginID);
@@ -351,7 +354,14 @@ function dbupdaterMigration($id = null, $version = null, $dir = null, $pluginID 
 
         $migration    = $manager->getMigrationById($id);
         $updateResult = sprintf('Migration: %s', $migration->getDescription());
-        $result       = ['id' => $id, 'type' => 'migration', 'result' => $updateResult];
+        $hasMore      = $updater->hasPendingUpdates(true);
+        $result       = [
+            'id'          => $id,
+            'type'        => 'migration',
+            'result'      => $updateResult,
+            'hasMore'     => $hasMore,
+            'forceReload' => $hasMore === false || ($hasMore !== $hasAlready),
+        ];
     } catch (Exception $e) {
         $result = new IOError($e->getMessage());
     }

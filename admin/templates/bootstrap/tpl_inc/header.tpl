@@ -34,6 +34,16 @@
         var bootstrapButton = $.fn.button.noConflict();
         $.fn.bootstrapBtn = bootstrapButton;
         setJtlToken('{$smarty.session.jtl_token}');
+
+        function switchAdminLang(tag)
+        {
+            event.target.href = `{strip}
+                benutzerverwaltung.php
+                ?token={$smarty.session.jtl_token}
+                &action=quick_change_language
+                &language=` + tag + `
+                &referer=` + window.location.href{/strip};
+        }
     </script>
 
     <script type="text/javascript"
@@ -46,8 +56,11 @@
     {getCurrentPage assign='currentPage'}
     <div class="spinner"></div>
     <div id="page-wrapper" class="backend-wrapper hidden disable-transitions{if $currentPage === 'index' || $currentPage === 'status'} dashboard{/if}">
+        {if !$hasPendingUpdates}
         {include file='tpl_inc/backend_sidebar.tpl'}
+        {/if}
         <div class="backend-main sidebar-offset">
+            {if !$hasPendingUpdates}
             <div id="topbar" class="backend-navbar row mx-0 align-items-center topbar flex-nowrap">
                 <div class="col search">
                     {include file='tpl_inc/backend_search.tpl'}
@@ -89,10 +102,7 @@
                             <div class="dropdown-menu dropdown-menu-right">
                                 {foreach $languages as $tag => $langName}
                                     {if $language !== $tag}
-                                        <a class="dropdown-item" href="{strip}benutzerverwaltung.php
-                                                ?token={$smarty.session.jtl_token}
-                                                &action=quick_change_language
-                                                &language={$tag}{/strip}">
+                                        <a class="dropdown-item" onclick="switchAdminLang('{$tag}')" href="#">
                                             {$langName}
                                         </a>
                                     {/if}
@@ -104,7 +114,7 @@
                 <div class="col-auto border-left border-dark-gray">
                     <div class="dropdown avatar">
                         <button class="btn btn-link text-decoration-none dropdown-toggle p-0" data-toggle="dropdown">
-                            <img src="{gravatarImage email=$account->cMail}" class="img-circle">
+                            <img src="{getAvatar account=$account}" class="img-circle">
                         </button>
                         <div class="dropdown-menu dropdown-menu-right">
                             <a class="dropdown-item link-shop" href="{$URL_SHOP}" title="Zum Shop">
@@ -119,6 +129,7 @@
                 </div>
                 <div class="opaque-background"></div>
             </div>
+            {/if}
             <div class="backend-content" id="content_wrapper">
 
             {include file='snippets/alert_list.tpl'}

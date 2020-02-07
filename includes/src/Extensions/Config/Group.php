@@ -9,6 +9,8 @@ namespace JTL\Extensions\Config;
 use JsonSerializable;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
+use JTL\Media\Image;
+use JTL\Media\MultiSizeImage;
 use JTL\Nice;
 use JTL\Shop;
 
@@ -18,6 +20,8 @@ use JTL\Shop;
  */
 class Group implements JsonSerializable
 {
+    use MultiSizeImage;
+
     /**
      * @var int
      */
@@ -70,6 +74,7 @@ class Group implements JsonSerializable
      */
     public function __construct(int $id = 0, int $languageID = 0)
     {
+        $this->setImageType(Image::TYPE_CONFIGGROUP);
         $this->kKonfiggruppe = $id;
         if ($this->kKonfiggruppe > 0) {
             $this->loadFromDB($this->kKonfiggruppe, $languageID);
@@ -136,6 +141,7 @@ class Group implements JsonSerializable
             $this->oSprache      = new GroupLocalization($this->kKonfiggruppe, $languageID);
             $this->oItem_arr     = Item::fetchAll($this->kKonfiggruppe);
         }
+        $this->generateAllImageSizes(true, 1, $this->cBildPfad);
 
         return $this;
     }
@@ -207,6 +213,14 @@ class Group implements JsonSerializable
      * @return int|null
      */
     public function getKonfiggruppe(): ?int
+    {
+        return $this->kKonfiggruppe;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getID()
     {
         return $this->kKonfiggruppe;
     }

@@ -2,7 +2,7 @@
 /**
  * Add NL cron setting
  *
- * @author Clemens Rudolph
+ * @author cr
  * @created Wed, 05 Jun 2019 08:17:05 +0200
  */
 
@@ -14,7 +14,7 @@ use JTL\Update\Migration;
  */
 class Migration_20190605081705 extends Migration implements IMigration
 {
-    protected $author = 'Clemens Rudolph';
+    protected $author = 'cr';
     protected $description = 'Add NL cron setting';
 
     public function up()

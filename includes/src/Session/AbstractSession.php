@@ -6,9 +6,9 @@
 
 namespace JTL\Session;
 
-use JTL\Language\LanguageHelper;
 use JTL\Session\Handler\JTLHandlerInterface;
 use JTL\Shop;
+use function Functional\last;
 
 /**
  * Class AbstractSession
@@ -47,78 +47,79 @@ abstract class AbstractSession
      */
     protected function initCookie(array $conf, bool $start = true): bool
     {
-        $cookieDefaults                 = \session_get_cookie_params();
-        $lifetime                       = $cookieDefaults['lifetime'] ?? 0;
-        $path                           = $cookieDefaults['path'] ?? '';
-        $domain                         = $cookieDefaults['domain'] ?? '';
-        $secure                         = $cookieDefaults['secure'] ?? false;
-        $httpOnly                       = $cookieDefaults['httponly'] ?? false;
-        $conf['global_cookie_secure']   = $conf['global_cookie_secure'] ?? 'S';
-        $conf['global_cookie_httponly'] = $conf['global_cookie_httponly'] ?? 'S';
-        $conf['global_cookie_domain']   = $conf['global_cookie_domain'] ?? '';
-        $conf['global_cookie_lifetime'] = $conf['global_cookie_lifetime'] ?? 0;
-        if ($conf['global_cookie_secure'] !== 'S') {
-            $secure = $conf['global_cookie_secure'] === 'Y';
-        }
-        if ($conf['global_cookie_httponly'] !== 'S') {
-            $httpOnly = $conf['global_cookie_httponly'] === 'Y';
-        }
-        if ($conf['global_cookie_domain'] !== '') {
-            $domain = $this->experimentalMultiLangDomain($conf['global_cookie_domain']);
-        }
-        if (\is_numeric($conf['global_cookie_lifetime']) && (int)$conf['global_cookie_lifetime'] > 0) {
-            $lifetime = (int)$conf['global_cookie_lifetime'];
-        }
-        if (!empty($conf['global_cookie_path'])) {
-            $path = $conf['global_cookie_path'];
-        }
-        $secure = $secure && ($conf['kaufabwicklung_ssl_nutzen'] === 'P' || \mb_strpos(\URL_SHOP, 'https://') === 0);
+        $cookieConfig = new CookieConfig($conf);
         if ($start) {
-            \session_start([
-                'use_cookies'     => '1',
-                'cookie_domain'   => $domain,
-                'cookie_secure'   => $secure,
-                'cookie_lifetime' => $lifetime,
-                'cookie_path'     => $path,
-                'cookie_httponly' => $httpOnly
-            ]);
+            $this->start($cookieConfig);
         }
-        \setcookie(
-            \session_name(),
-            \session_id(),
-            ($lifetime === 0) ? 0 : \time() + $lifetime,
-            $path,
-            $domain,
-            $secure,
-            $httpOnly
-        );
+        $this->setCookie($cookieConfig);
+        $this->clearDuplicateCookieHeaders();
 
         return true;
     }
 
     /**
-     * @param string $domain
-     * @return mixed|string
+     * @param CookieConfig $cookieConfig
+     * @return bool
      */
-    private function experimentalMultiLangDomain(string $domain)
+    private function setCookie(CookieConfig $cookieConfig): bool
     {
-        if (!\defined('EXPERIMENTAL_MULTILANG_SHOP')) {
-            return $domain;
-        }
-        foreach (LanguageHelper::getAllLanguages() as $language) {
-            $code = $language->cISO;
-            if (!\defined('URL_SHOP_' . \mb_convert_case($code, \MB_CASE_UPPER))) {
-                continue;
+        if (\PHP_VERSION_ID > 70300) {
+            $config = [
+                'expires'  => ($cookieConfig->getLifetime() === 0) ? 0 : \time() + $cookieConfig->getLifetime(),
+                'path'     => $cookieConfig->getPath(),
+                'domain'   => $cookieConfig->getDomain(),
+                'secure'   => $cookieConfig->isSecure(),
+                'httponly' => $cookieConfig->isHttpOnly(),
+            ];
+            if (\strlen($cookieConfig->getSameSite()) > 2) {
+                $config['samesite'] = $cookieConfig->getSameSite();
             }
-            $shopLangURL = \constant('URL_SHOP_' . \mb_convert_case($code, \MB_CASE_UPPER));
-            if (\mb_strpos($shopLangURL, $_SERVER['HTTP_HOST']) !== false
-                && \defined('COOKIE_DOMAIN_' . \mb_convert_case($code, \MB_CASE_UPPER))
-            ) {
-                return \constant('COOKIE_DOMAIN_' . \mb_convert_case($code, \MB_CASE_UPPER));
-            }
-        }
 
-        return $domain;
+            return \setcookie(
+                \session_name(),
+                \session_id(),
+                $config
+            );
+        }
+        return \setcookie(
+            \session_name(),
+            \session_id(),
+            ($cookieConfig->getLifetime() === 0) ? 0 : \time() + $cookieConfig->getLifetime(),
+            $cookieConfig->getPath(),
+            $cookieConfig->getDomain(),
+            $cookieConfig->isSecure(),
+            $cookieConfig->isHttpOnly()
+        );
+    }
+
+    /**
+     * @param CookieConfig $cookieConfig
+     * @return bool
+     */
+    private function start(CookieConfig $cookieConfig): bool
+    {
+        return \session_start($cookieConfig->getSessionConfigArray());
+    }
+
+    /**
+     * session_start() and setcookie both create Set-Cookie headers
+     */
+    private function clearDuplicateCookieHeaders(): void
+    {
+        if (\headers_sent()) {
+            return;
+        }
+        $cookies = [];
+        foreach (\headers_list() as $header) {
+            // Identify cookie headers
+            if (\strpos($header, 'Set-Cookie:') === 0) {
+                $cookies[] = $header;
+            }
+        }
+        if (\count($cookies) > 1) {
+            \header_remove('Set-Cookie');
+            \header(last($cookies), false);
+        }
     }
 
     /**

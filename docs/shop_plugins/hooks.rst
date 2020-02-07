@@ -1,19 +1,30 @@
 Hooks
 =====
 
-Hooks bieten Plugins die Möglichkeit, an vordefinierten Stellen in die Ausführungslogik des Shops einzugreifen und ggf. übergebene Daten bzw. das Ausgabedokument zu manipulieren.
+.. |br| raw:: html
 
-Möglich ist dies an allen Stellen im Shop-Code, an denen explizit die Funktion ``executeHook(int $nHook, array $args_arr)`` ausgeführt wird. Eine Liste aller verfügbaren Hooks befindet sich im Kapitel :doc:`Liste aller Hooks </shop_plugins/hook_list>`.
+   <br />
 
-Beispiel für das Auführen eines Hooks vor dem Speichern eines News-Kommentars in der Datenbank:
+Hooks bieten Plugins die Möglichkeit, an vordefinierten Stellen in die Ausführungslogik des Shops einzugreifen
+und ggf. übergebene Daten bzw. das Ausgabedokument zu manipulieren. |br|
+Möglich ist dies an allen Stellen im Shop-Code, an denen explizit die Funktion
+``executeHook(int $nHook, array $args_arr)`` ausgeführt wird.
+
+Eine Liste, aller verfügbaren Hooks, finden Sie im Kapitel ":doc:`Liste aller Hooks </shop_plugins/hook_list>`". |br|
+Wie Sie dem Shop mitteilen, welche Hooks Ihr Plugin nutzen möchte, erfahren Sie im Kapitel zur ``info.xml``,
+im Abschnitt ":ref:`label_infoxml_hooks`".
+
+**Beispiel:** für das Ausführen eines Hooks *vor dem Speichern eines News-Kommentars, in der Datenbank*:
 
 .. code-block:: php
 
-    executeHook(HOOK_NEWS_PAGE_NEWSKOMMENTAR_EINTRAGEN, ['comment' => &$oNewsKommentar]);
+    executeHook(\HOOK_NEWS_PAGE_NEWSKOMMENTAR_EINTRAGEN, ['comment' => &$oNewsKommentar]);
 
-Auf diesen Hook registrierte Plugins können in der entsprechenden Hook-Datei das Array ``$args_arr`` nutzen und ggf. modifizieren.
+Auf diesen Hook registrierte Plugins können, in der entsprechenden Hook-Datei, das Array ``$args_arr`` nutzen
+und ggf. modifizieren.
 
-Nutzt ein Plugin z.B. den oben genannten Hook *HOOK_NEWS_PAGE_NEWSKOMMENTAR_EINTRAGEN* (ID 34), so ließe sich der dort übergebene Kommentar verändern.
+Nutzt ein Plugin z.B. den oben genannten Hook ``HOOK_NEWS_PAGE_NEWSKOMMENTAR_EINTRAGEN`` (ID 34), so ließe sich
+zum Beispiel der dort übergebene Kommentar verändern.
 
 .. code-block:: php
 
@@ -23,12 +34,18 @@ Nutzt ein Plugin z.B. den oben genannten Hook *HOOK_NEWS_PAGE_NEWSKOMMENTAR_EINT
         $args_arr['comment'] .= '<br>Dieser Text wird an nicht-leere Kommentare angehängt!';
     }
 
+Ab Shop Version 5.x existiert eine neue Alternative zu den bekannten Hooks im JTL-Shop - der *EventDispatcher*. |br|
+Wie Sie Gebrauch von diesem neuen Feature machen, finden sie im Kapitel "Bootstrapping"
+unter ":ref:`label_bootstrapping_eventdispatcher`".
+
 Manipulation des DOM
 --------------------
 
-Einer der häufigsten Anwendungsfälle ist, eigenen HTML-Code in das Ausgabedokument zu schreiben.
-Hierzu dient der Hook *HOOK_SMARTY_OUTPUTFILTER* (ID 140). Dort kann via PHPQuery beliebiger Inhalt in den DOM eingefügt werden.
-In einem trivialen Beispiel könnte ein Plugin den Inhalt eines Templates via Smarty rendern und an den Body des HTML-Dokuments anhängen:
+Einer der häufigsten Anwendungsfälle ist, eigenen HTML-Code in das Ausgabedokument zu schreiben. |br|
+Hierzu dient der Hook ``HOOK_SMARTY_OUTPUTFILTER`` (ID 140). Dort kann, via PHPQuery, beliebiger Inhalt in den DOM
+eingefügt werden. |br|
+In einem trivialen Beispiel könnte ein Plugin den Inhalt eines Templates via Smarty rendern und
+an den Body des HTML-Dokuments anhängen:
 
 .. code-block:: php
 

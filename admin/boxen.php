@@ -29,7 +29,13 @@ $linkID      = Request::verifyGPCDataInt('linkID');
 $boxID       = Request::verifyGPCDataInt('item');
 $alertHelper = Shop::Container()->getAlertService();
 
-if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::validateToken()) {
+if (Request::postInt('einstellungen') > 0) {
+    $alertHelper->addAlert(
+        Alert::TYPE_SUCCESS,
+        saveAdminSectionSettings(CONF_BOXEN, $_POST),
+        'saveSettings'
+    );
+} elseif (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::validateToken()) {
     switch ($_REQUEST['action']) {
         case 'delete-invisible':
             if (!empty($_POST['kInvisibleBox']) && count($_POST['kInvisibleBox']) > 0) {
@@ -82,7 +88,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
                 $revisionData[$lang->cISO] = $lang;
             }
             $links = Shop::Container()->getLinkService()->getAllLinkGroups()->filter(
-                function (LinkGroupInterface $e) {
+                static function (LinkGroupInterface $e) {
                     return $e->isSpecial() === false;
                 }
             );
@@ -208,10 +214,10 @@ if ($pageID === PAGE_ARTIKELLISTE) { //map category name
     );
 }
 
-$filterMapping = reindex($filterMapping, function ($e) {
+$filterMapping = reindex($filterMapping, static function ($e) {
     return $e->id;
 });
-$filterMapping = map($filterMapping, function ($e) {
+$filterMapping = map($filterMapping, static function ($e) {
     return $e->name;
 });
 $smarty->assign('filterMapping', $filterMapping)
@@ -223,9 +229,9 @@ $smarty->assign('filterMapping', $filterMapping)
     ->assign('oBoxenRight_arr', $boxList['right'] ?? [])
     ->assign('oContainerTop_arr', $boxAdmin->getContainer('top'))
     ->assign('oContainerBottom_arr', $boxAdmin->getContainer('bottom'))
-    ->assign('oSprachen_arr', Shop::Lang()->gibInstallierteSprachen())
     ->assign('oVorlagen_arr', $boxTemplates)
     ->assign('oBoxenContainer', $boxContainer)
     ->assign('nPage', $pageID)
     ->assign('invisibleBoxes', $boxAdmin->getInvisibleBoxes())
+    ->assign('oConfig_arr', getAdminSectionSettings(CONF_BOXEN))
     ->display('boxen.tpl');

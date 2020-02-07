@@ -17,7 +17,6 @@ use JTL\DB\ReturnType;
 use JTL\Extensions\Config\Item;
 use JTL\Extensions\Config\ItemLocalization;
 use JTL\Extensions\Download\Download;
-use JTL\GlobalSetting;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
@@ -107,7 +106,7 @@ class Cart
      */
     public function __sleep()
     {
-        return select(\array_keys(\get_object_vars($this)), function ($e) {
+        return select(\array_keys(\get_object_vars($this)), static function ($e) {
             return $e !== 'config';
         });
     }
@@ -484,7 +483,7 @@ class Cart
                             $oVariationWert  = \current(
                                 \array_filter(
                                     $variation->Werte,
-                                    function ($item) use ($propertyValueID) {
+                                    static function ($item) use ($propertyValueID) {
                                         return $item->kEigenschaftWert === $propertyValueID
                                             && !empty($item->cPfadNormal);
                                     }
@@ -620,17 +619,18 @@ class Cart
     /**
      * erstellt eine Spezialposition im Warenkorb
      *
-     * @param string|array $name          Positionsname
-     * @param string       $qty        Positionsanzahl
-     * @param string       $price         Positionspreis
-     * @param string       $taxClassID Positionsmwst
-     * @param int          $typ           Positionstyp
+     * @param string|array $name
+     * @param string       $qty
+     * @param string       $price
+     * @param int          $taxClassID
+     * @param int          $type
      * @param bool         $delSamePosType
      * @param bool         $grossPrice
      * @param string       $message
      * @param string|bool  $unique
      * @param int          $configItemID
      * @param int          $productID
+     * @param string       $responsibility
      * @return $this
      */
     public function erstelleSpezialPos(
@@ -638,26 +638,28 @@ class Cart
         $qty,
         $price,
         $taxClassID,
-        int $typ,
+        int $type,
         bool $delSamePosType = true,
         bool $grossPrice = true,
         string $message = '',
         $unique = false,
         int $configItemID = 0,
-        int $productID = 0
+        int $productID = 0,
+        string $responsibility = 'core'
     ): self {
         if ($delSamePosType) {
-            $this->loescheSpezialPos($typ);
+            $this->loescheSpezialPos($type);
         }
-        $cartItem                = new CartItem();
-        $cartItem->nAnzahl       = $qty;
-        $cartItem->nAnzahlEinzel = $qty;
-        $cartItem->kArtikel      = 0;
-        $cartItem->kSteuerklasse = $taxClassID;
-        $cartItem->fPreis        = $price;
-        $cartItem->cUnique       = $unique;
-        $cartItem->kKonfigitem   = $configItemID;
-        $cartItem->kArtikel      = $productID;
+        $cartItem                  = new CartItem();
+        $cartItem->nAnzahl         = $qty;
+        $cartItem->nAnzahlEinzel   = $qty;
+        $cartItem->kArtikel        = 0;
+        $cartItem->kSteuerklasse   = $taxClassID;
+        $cartItem->fPreis          = $price;
+        $cartItem->cUnique         = $unique;
+        $cartItem->cResponsibility = $responsibility;
+        $cartItem->kKonfigitem     = $configItemID;
+        $cartItem->kArtikel        = $productID;
         //fixes #4967
         if (\is_object($_SESSION['Kundengruppe']) && Frontend::getCustomerGroup()->isMerchant()) {
             if ($grossPrice) {
@@ -675,7 +677,7 @@ class Cart
         }
 
         $cartItem->fPreisEinzelNetto = $cartItem->fPreis;
-        if ($typ === \C_WARENKORBPOS_TYP_KUPON && isset($name->cName)) {
+        if ($type === \C_WARENKORBPOS_TYP_KUPON && isset($name->cName)) {
             $cartItem->cName = \is_array($name->cName)
                 ? $name->cName
                 : [Shop::getLanguageCode() => $name->cName];
@@ -688,7 +690,7 @@ class Cart
                 ? $name
                 : [Shop::getLanguageCode() => $name];
         }
-        $cartItem->nPosTyp  = $typ;
+        $cartItem->nPosTyp  = $type;
         $cartItem->cHinweis = $message;
         $nOffset            = \array_push($this->PositionenArr, $cartItem);
         $cartItem           = $this->PositionenArr[$nOffset - 1];
@@ -758,6 +760,12 @@ class Cart
             }
         }
         $this->sortShippingPosition();
+
+        \executeHook(\HOOK_WARENKORB_ERSTELLE_SPEZIAL_POS, [
+            'productID'     => $productID,
+            'positionItems' => &$this->PositionenArr,
+            'qty'           => (float)$qty,
+        ]);
 
         return $this;
     }
@@ -885,9 +893,9 @@ class Cart
      * @param int $productID
      * @param int $excludePos
      * @param bool $countParentProducts
-     * @return int
+     * @return int|float
      */
-    public function gibAnzahlEinesArtikels(int $productID, int $excludePos = -1, bool $countParentProducts = false): int
+    public function gibAnzahlEinesArtikels(int $productID, int $excludePos = -1, bool $countParentProducts = false)
     {
         if (!$productID) {
             return 0;
@@ -946,10 +954,7 @@ class Cart
                         }
                     }
                 }
-                if ($product->kVaterArtikel > 0 && GlobalSetting::getInstance()->getValue(
-                    GlobalSetting::CHILD_ITEM_BULK_PRICING,
-                    DEFAULT_GENERAL_CHILD_ITEM_BULK_PRICING
-                )) {
+                if ($product->kVaterArtikel > 0 && $this->config['kaufabwicklung']['general_child_item_bulk_pricing'] === 'Y') {
                     $qty = $this->gibAnzahlEinesArtikels($product->kVaterArtikel, -1, true);
                 } else {
                     $qty = $this->gibAnzahlEinesArtikels($product->kArtikel);
@@ -1300,7 +1305,7 @@ class Cart
      */
     public function posTypEnthalten(int $type): bool
     {
-        return some($this->PositionenArr, function ($e) use ($type) {
+        return some($this->PositionenArr, static function ($e) use ($type) {
             return (int)$e->nPosTyp === $type;
         });
     }
@@ -1841,36 +1846,46 @@ class Cart
         }
 
         $maxPrices       = 0;
+        $itemCount       = 0;
         $totalWeight     = 0;
-        $shippingClasses = [];
+        $shippingClasses = ShippingMethod::getShippingClasses(Frontend::getCart());
 
         foreach ($this->PositionenArr as $item) {
-            $shippingClasses[] = $item->kVersandklasse;
-            $totalWeight      += $item->fGesamtgewicht;
-            $maxPrices        += $item->Artikel->Preise->fVKNetto ?? 0;
+            $totalWeight += $item->fGesamtgewicht;
+            $itemCount   += $item->nAnzahl;
+            $maxPrices   += $item->Artikel->Preise->fVKNetto
+                ? $item->Artikel->Preise->fVKNetto * $item->nAnzahl : 0;
         }
 
         // cheapest shipping except shippings that offer cash payment
-        $shipping = Shop::Container()->getDB()->query(
+        $shipping = Shop::Container()->getDB()->queryPrepared(
             "SELECT va.kVersandart, IF(vas.fPreis IS NOT NULL, vas.fPreis, va.fPreis) AS minPrice, va.nSort
                 FROM tversandart va
                 LEFT JOIN tversandartstaffel vas
                     ON vas.kVersandart = va.kVersandart
                 WHERE cIgnoreShippingProposal != 'Y'
-                AND va.cLaender LIKE '%" . $countryCode . "%'
+                AND va.cLaender LIKE :iso
                 AND (va.cVersandklassen = '-1'
-                    OR va.cVersandklassen IN (" . \implode(',', $shippingClasses) . "))
+                    OR va.cVersandklassen RLIKE :scl)
                 AND (va.cKundengruppen = '-1' " . $customerGroupSQL . ')
                 AND va.kVersandart NOT IN (
                     SELECT vaza.kVersandart
                         FROM tversandartzahlungsart vaza
                         WHERE kZahlungsart = 6)
                 AND (
-                    va.kVersandberechnung = 1 OR va.kVersandberechnung = 4
-                    OR ( va.kVersandberechnung = 2 AND vas.fBis > 0 AND ' . $totalWeight . ' <= vas.fBis )
-                    OR ( va.kVersandberechnung = 3 AND vas.fBis > 0 AND ' . $maxPrices . ' <= vas.fBis )
+                    va.kVersandberechnung = 1 
+                    OR ( va.kVersandberechnung = 4 AND vas.fBis > 0 AND :itemCount <= vas.fBis)
+                    OR ( va.kVersandberechnung = 2 AND vas.fBis > 0 AND :totalWeight <= vas.fBis )
+                    OR ( va.kVersandberechnung = 3 AND vas.fBis > 0 AND :maxPrices <= vas.fBis )
                     )
                 ORDER BY minPrice, nSort ASC LIMIT 1',
+            [
+                'iso'         => '%' . $countryCode . '%',
+                'itemCount'   => $itemCount,
+                'totalWeight' => $totalWeight,
+                'maxPrices'   => $maxPrices,
+                'scl'         => '^([0-9 -]* )?' . $shippingClasses
+            ],
             ReturnType::SINGLE_OBJECT
         );
 
@@ -1880,21 +1895,21 @@ class Cart
             $method->cCountryCode = $countryCode;
 
             if ($method->eSteuer === 'brutto') {
-                $method->cPriceLocalized[0] = Preise::getLocalizedPriceString($method->fPreis);
+                $method->cPriceLocalized[0] = Preise::getLocalizedPriceString($shipping->minPrice);
                 $method->cPriceLocalized[1] = Preise::getLocalizedPriceString(
                     Tax::getNet(
-                        $method->fPreis,
+                        $shipping->minPrice,
                         $_SESSION['Steuersatz'][$this->gibVersandkostenSteuerklasse()]
                     )
                 );
             } else {
                 $method->cPriceLocalized[0] = Preise::getLocalizedPriceString(
                     Tax::getGross(
-                        $method->fPreis,
+                        $shipping->minPrice,
                         $_SESSION['Steuersatz'][$this->gibVersandkostenSteuerklasse()]
                     )
                 );
-                $method->cPriceLocalized[1] = Preise::getLocalizedPriceString($method->fPreis);
+                $method->cPriceLocalized[1] = Preise::getLocalizedPriceString($shipping->minPrice);
             }
             $this->oFavourableShipping = $method;
         }

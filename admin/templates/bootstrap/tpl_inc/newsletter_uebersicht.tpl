@@ -281,7 +281,7 @@
                                 <label class="col col-sm-4 col-form-label text-sm-right" for="kSprache">{__('language')}:</label>
                                 <span class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                     <select class="custom-select" name="kSprache" id="kSprache">
-                                        {foreach $sprachen as $language}
+                                        {foreach $availableLanguages as $language}
                                             <option value="{$language->getId()}">{$language->getLocalizedName()}</option>
                                         {/foreach}
                                     </select>
@@ -340,8 +340,8 @@
                                                     <td>
                                                         {foreach $oNewsletterQueue->cKundengruppe_arr as $cKundengruppe}
                                                             {if $cKundengruppe == '0'}{__('newsletterNoAccount')}{if !$cKundengruppe@last}, {/if}{/if}
-                                                            {foreach $oKundengruppe_arr as $oKundengruppe}
-                                                                {if $cKundengruppe == $oKundengruppe->kKundengruppe}{$oKundengruppe->cName}{if !$oKundengruppe@last}, {/if}{/if}
+                                                            {foreach $customerGroups as $customerGroup}
+                                                                {if $cKundengruppe == $customerGroup->getID()}{$customerGroup->getName()}{if !$customerGroup@last}, {/if}{/if}
                                                             {/foreach}
                                                         {/foreach}
                                                     </td>

@@ -9,8 +9,8 @@ namespace JTL\Cron\Job;
 use JTL\Cron\Job;
 use JTL\Cron\JobInterface;
 use JTL\Cron\QueueEntry;
-use JTL\Media\Image;
-use JTL\Media\MediaImage;
+use JTL\Media\IMedia;
+use JTL\Media\Media;
 
 /**
  * Class ImageCache
@@ -38,27 +38,27 @@ final class ImageCache extends Job
 
     /**
      * @param int    $index
-     * @param string $type
+     * @param IMedia $instance
      * @return bool
      * @throws \Exception
      */
-    private function generateImageCache(int $index, string $type = Image::TYPE_PRODUCT): bool
+    private function generateImageCache(int $index, IMedia $instance): bool
     {
         $rendered = 0;
-        $total    = MediaImage::getUncachedProductImageCount();
-        $images   = MediaImage::getImages($type, true, $index, $this->getLimit());
-        $totalAll = MediaImage::getProductImageCount();
+        $total    = $instance::getUncachedImageCount();
+        $images   = $instance::getImages(true, $index, $this->getLimit());
+        $totalAll = $instance::getTotalImageCount();
         $this->logger->debug('Uncached images: ' . $total . '/' . $totalAll);
         if ($index >= $totalAll) {
             $index  = 0;
-            $images = MediaImage::getImages($type, true, $index, $this->getLimit());
+            $images = $instance::getImages(true, $index, $this->getLimit());
         }
         while (\count($images) === 0 && $index < $totalAll) {
             $index += $this->getLimit();
-            $images = MediaImage::getImages($type, true, $index, $this->getLimit());
+            $images = $instance::getImages(true, $index, $this->getLimit());
         }
         foreach ($images as $image) {
-            MediaImage::cacheImage($image);
+            $instance::cacheImage($image);
             ++$index;
             ++$rendered;
         }
@@ -75,7 +75,11 @@ final class ImageCache extends Job
     {
         parent::start($queueEntry);
         $this->logger->debug('Generating image cache - max. ' . $this->getLimit());
-        $res                       = $this->generateImageCache($queueEntry->tasksExecuted);
+        $media = Media::getInstance();
+        $res   = true;
+        foreach ($media->getRegisteredClasses() as $type) {
+            $res = $this->generateImageCache($queueEntry->tasksExecuted, $type) && $res;
+        }
         $queueEntry->tasksExecuted = $this->nextIndex;
         $this->setFinished($res);
 

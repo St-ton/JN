@@ -8,9 +8,9 @@ namespace JTL\Backend;
 
 use Exception;
 use JTL\Filesystem\Filesystem;
-use JTL\Filesystem\LocalFilesystem;
 use JTL\Shop;
 use JTLShop\SemVer\Version;
+use stdClass;
 use Symfony\Component\Finder\Finder;
 use function Functional\map;
 
@@ -44,7 +44,7 @@ class FileCheck
             return self::ERROR_INPUT_FILE_MISSING;
         }
         $hashes = \file_get_contents($hashFile);
-        if (mb_strlen($hashes) === 0) {
+        if (\mb_strlen($hashes) === 0) {
             return self::ERROR_NO_HASHES_FOUND;
         }
         $shopFiles = \explode("\n", $hashes);
@@ -52,13 +52,16 @@ class FileCheck
             $errors = 0;
             \array_multisort($shopFiles);
             foreach ($shopFiles as $shopFile) {
-                if (mb_strlen($shopFile) === 0) {
+                if (\mb_strlen($shopFile) === 0) {
                     continue;
                 }
                 if (\count(\explode(';', $shopFile)) === 1) {
                     if (\file_exists($prefix . $shopFile)) {
-                        $result[] = $shopFile;
-
+                        $mtime    = \filemtime($prefix . $shopFile);
+                        $result[] = (object)[
+                            'name'         => $shopFile,
+                            'lastModified' => \date('d.m.Y H:i:s', $mtime)
+                        ];
                         $errors++;
                     }
                 } else {
@@ -109,19 +112,18 @@ class FileCheck
     public function deleteOrphanedFiles(array &$orphanedFiles, string $backupFile): int
     {
         $count  = 0;
-        $fs     = new Filesystem(new LocalFilesystem(['root' => \PFAD_ROOT]));
+        $fs     = Shop::Container()->get(Filesystem::class);
         $finder = new Finder();
-        $finder->append(map($orphanedFiles, function ($e) {
-            return \PFAD_ROOT . $e;
+        $finder->append(map($orphanedFiles, static function (stdClass $e) {
+            return \PFAD_ROOT . $e->name;
         }));
-
         try {
             $fs->zip($finder, $backupFile);
         } catch (Exception $e) {
             return -1;
         }
         foreach ($orphanedFiles as $i => $file) {
-            if ($fs->delete($file)) {
+            if ($fs->delete($file->name)) {
                 unset($orphanedFiles[$i]);
                 ++$count;
             }

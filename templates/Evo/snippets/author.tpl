@@ -12,7 +12,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header v-wrap">
-                    {if !empty($oAuthor->cAvatarImgSrc)}
+                    {if !empty($oAuthor->cAvatarImgSrcFull)}
                         <img alt="{$oAuthor->cName}" src="{$oAuthor->cAvatarImgSrcFull}" height="80" class="img-circle" />
                         <meta itemprop="image" content="{$oAuthor->cAvatarImgSrcFull}">
                     {/if}
@@ -21,11 +21,6 @@
                 {if !empty($oAuthor->cVitaShort)}
                     <div itemprop="description" class="modal-body">
                         {$oAuthor->cVitaShort}
-                    </div>
-                {/if}
-                {if !empty($oAuthor->cGplusProfile)}
-                    <div class="modal-footer">
-                        <a itemprop="url" href="{$oAuthor->cGplusProfile}?rel=author" title="{$oAuthor->cName}">Google+</a>
                     </div>
                 {/if}
             </div>

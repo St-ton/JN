@@ -2,7 +2,7 @@
 /**
  * update admin menu
  *
- * @author andy
+ * @author aj
  * @created Fri, 10 Jun 2016 16:37:10 +0200
  */
 
@@ -14,7 +14,7 @@ use JTL\Update\Migration;
  */
 class Migration_20160610163710 extends Migration implements IMigration
 {
-    protected $author = 'andy';
+    protected $author = 'aj';
 
     public function up()
     {

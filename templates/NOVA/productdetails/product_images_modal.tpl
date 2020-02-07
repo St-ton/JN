@@ -1,0 +1,37 @@
+{**
+* @copyright (c) JTL-Software-GmbH
+* @license https://jtl-url.de/jtlshoplicense
+*}
+<div class="modal modal-fullview fade" id="productImagesModal" tabindex="-1" role="dialog" aria-labelledby="productImagesModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header p-0 border-0">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" class="fas fa-times"></span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                {foreach $images as $image}
+                    <div class="productbox-image-wrapper">
+                        <div class="productbox-image-wrapper-inner">
+                            {image alt=$image->cAltAttribut|escape:'html'
+                                class="product-image"
+                                fluid=true
+                                lazy=true
+                                webp=true
+                                src="{$Artikel->Bilder[0]->cURLNormal}"
+                                srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                    {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                    {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
+                                                    {$image->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
+                                sizes="auto"
+                                data=["list"=>"{$image->galleryJSON|escape:"html"}", "index"=>$image@index]
+                            }
+                        </div>
+                    </div>
+                {/foreach}
+            </div>
+        </div>
+    </div>
+</div>

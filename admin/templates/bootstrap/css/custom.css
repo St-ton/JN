@@ -517,16 +517,13 @@ label .fillout {
   position: sticky;
   padding: 1.5rem 1.5rem;
   background: #fff;
+  box-shadow: 0px -2px 16px 0px rgba(0, 0, 0, 0.06);
   text-align: right;
   margin: 20px 0;
   z-index: 10;
 }
 .save-wrapper .row {
   align-items: center;
-}
-.tab-content .save-wrapper,
-.card .save-wrapper:not(.card-footer) {
-  padding: 1.5rem 0;
 }
 .pages .pageinfo {
   float: left;
@@ -789,20 +786,10 @@ ul.linklist li a {
   width: 100%;
 }
 .vertical-center {
-  height: 100%;
-  width: 100%;
-  text-align: center;
-}
-.vertical-center:before {
-  content: " ";
-  display: inline-block;
-  vertical-align: middle;
-  height: 100%;
-}
-.vertical-center > .container {
-  max-width: 100%;
-  display: inline-block;
-  vertical-align: middle;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100vh;
 }
 #login_wrapper {
   max-width: 290px;
@@ -1390,9 +1377,6 @@ span.success {
 #widget-Shopinfo .widget-head .widget-title::before {
   content: "\f07a";
 }
-#widget-Duk .widget-head .widget-title::before {
-  content: "\f0eb";
-}
 #widget-LastOrders .widget-head .widget-title::before {
   content: "\f022";
 }
@@ -1623,7 +1607,6 @@ tr.text-vtop > th {
   min-width: 85px;
 }
 .alert a:not(.btn) {
-  color: #000;
   text-decoration: none;
   border-bottom: 1px dashed rgba(0, 0, 0, 0.25);
 }
@@ -2001,7 +1984,7 @@ pre#debug b {
   padding: 0;
 }
 .dropdown.avatar img {
-  max-height: 34px;
+  height: 34px;
   margin: 8px;
   border-radius: 50%;
 }
@@ -2209,22 +2192,6 @@ td.nowrap {
 }
 .alert-xs {
   padding: 5px 10px;
-}
-.alert-success {
-  color: #fff;
-  background-color: #3c763d;
-}
-.alert-info {
-  color: #fff;
-  background-color: #31708f;
-}
-.alert-warning {
-  color: #fff;
-  background-color: #f3940e;
-}
-.alert-danger {
-  color: #fff;
-  background-color: #a94442;
 }
 .widget-content .alert {
   margin-bottom: 0;
@@ -2573,9 +2540,6 @@ div.markdown thead tr td {
   padding: 0;
   border: 2px solid transparent;
 }
-.modal-header {
-  flex-direction: row-reverse;
-}
 #articlePicker-result-list .list-group-item {
   padding: 0.5rem;
 }
@@ -2684,5 +2648,11 @@ input[type=number] {
 }
 .save-wrapper .row > div {
   margin-bottom: 8px;
+}
+.typeahead-spinner {
+  position: absolute;
+  right: 42px;
+  top: 12px;
+  display: none;
 }
 /*# sourceMappingURL=custom.css.map */

@@ -6,11 +6,10 @@
  * @package Minify
  */
 
-
 /**
  * Enable the static serving feature
  */
-$min_enableStatic = false;
+$min_enableStatic = true;
 
 
 /**
@@ -38,7 +37,6 @@ $min_builderPassword = 'admin';
  */
 $min_errorLogger = false;
 
-
 /**
  * To allow debug mode output, you must set this option to true.
  *
@@ -61,7 +59,10 @@ $min_allowDebugFlag = false;
 //$min_cachePath = 'c:\\WINDOWS\\Temp';
 //$min_cachePath = '/tmp';
 //$min_cachePath = preg_replace('/^\\d+;/', '', session_save_path());
+$min_cachePath = PFAD_ROOT . PFAD_COMPILEDIR;
 
+$min_factories = [];
+$min_envArgs   = null;
 
 /**
  * To use APC/Memcache/ZendPlatform for cache storage, require the class and
@@ -80,7 +81,7 @@ $min_allowDebugFlag = false;
  * If /min/ is directly inside your document root, just uncomment the
  * second line. The third line might work on some Apache servers.
  */
-$min_documentRoot = '';
+$min_documentRoot = PFAD_ROOT;
 //$min_documentRoot = dirname(dirname(__DIR__));
 //$min_documentRoot = substr(__FILE__, 0, -15);
 //$min_documentRoot = $_SERVER['SUBDOMAIN_DOCUMENT_ROOT'];

@@ -6,6 +6,7 @@
 
 use JTL\Alert\Alert;
 use JTL\Checkout\Kupon;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
@@ -30,7 +31,7 @@ $tab         = Kupon::TYPE_STANDARD;
 $languages   = LanguageHelper::getAllLanguages();
 $coupon      = null;
 $alertHelper = Shop::Container()->getAlertService();
-$res         = handleCsvImportAction('kupon', function ($obj, &$importDeleteDone, $importType = 2) {
+$res         = handleCsvImportAction('kupon', static function ($obj, &$importDeleteDone, $importType = 2) {
     $db = Shop::Container()->getDB();
     if ($importType === 0 && $importDeleteDone === false) {
         $db->query('TRUNCATE TABLE tkupon', ReturnType::AFFECTED_ROWS);
@@ -134,19 +135,15 @@ if ($action === 'bearbeiten') {
     }
 }
 if ($action === 'bearbeiten') {
-    $taxClasses     = Shop::Container()->getDB()->query(
+    $taxClasses    = Shop::Container()->getDB()->query(
         'SELECT kSteuerklasse, cName FROM tsteuerklasse',
         ReturnType::ARRAY_OF_OBJECTS
     );
-    $customerGroups = Shop::Container()->getDB()->query(
-        'SELECT kKundengruppe, cName FROM tkundengruppe',
-        ReturnType::ARRAY_OF_OBJECTS
-    );
-    $manufacturers  = getManufacturers($coupon->cHersteller);
-    $categories     = getCategories($coupon->cKategorien);
-    $customerIDs    = array_filter(
+    $manufacturers = getManufacturers($coupon->cHersteller);
+    $categories    = getCategories($coupon->cKategorien);
+    $customerIDs   = array_filter(
         Text::parseSSKint($coupon->cKunden),
-        function ($customerID) {
+        static function ($customerID) {
             return (int)$customerID > 0;
         }
     );
@@ -162,12 +159,12 @@ if ($action === 'bearbeiten') {
         }
     }
 
-    $smarty->assign('oSteuerklasse_arr', $taxClasses)
-        ->assign('oKundengruppe_arr', $customerGroups)
-        ->assign('oHersteller_arr', $manufacturers)
-        ->assign('oKategorie_arr', $categories)
-        ->assign('kKunde_arr', $customerIDs)
-        ->assign('oKuponName_arr', $names)
+    $smarty->assign('taxClasses', $taxClasses)
+        ->assign('customerGroups', CustomerGroup::getGroups())
+        ->assign('manufacturers', $manufacturers)
+        ->assign('categories', $categories)
+        ->assign('customerIDs', $customerIDs)
+        ->assign('couponNames', $names)
         ->assign('oKupon', $coupon);
 } else {
     // Seite: Uebersicht
@@ -224,7 +221,7 @@ if ($action === 'bearbeiten') {
     handleCsvExportAction(
         Kupon::TYPE_STANDARD,
         Kupon::TYPE_STANDARD . '.csv',
-        function () use ($filterStandard) {
+        static function () use ($filterStandard) {
             return getExportableCoupons(Kupon::TYPE_STANDARD, $filterStandard->getWhereSQL());
         },
         [],
@@ -233,7 +230,7 @@ if ($action === 'bearbeiten') {
     handleCsvExportAction(
         Kupon::TYPE_SHIPPING,
         Kupon::TYPE_SHIPPING . '.csv',
-        function () use ($filterVersand) {
+        static function () use ($filterVersand) {
             return getExportableCoupons(Kupon::TYPE_SHIPPING, $filterVersand->getWhereSQL());
         },
         [],
@@ -242,7 +239,7 @@ if ($action === 'bearbeiten') {
     handleCsvExportAction(
         Kupon::TYPE_NEWCUSTOMER,
         Kupon::TYPE_NEWCUSTOMER . '.csv',
-        function () use ($filterNeukunden) {
+        static function () use ($filterNeukunden) {
             return getExportableCoupons(Kupon::TYPE_NEWCUSTOMER, $filterNeukunden->getWhereSQL());
         },
         [],

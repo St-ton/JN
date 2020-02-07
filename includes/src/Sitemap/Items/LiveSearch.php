@@ -28,8 +28,8 @@ final class LiveSearch extends AbstractItem
     public function generateData($data, array $languages): void
     {
         $this->setData($data);
-        $this->setPrimaryKeyID($data->kSuchanfrage);
-        $this->setLanguageData($languages, $data->langID);
+        $this->setPrimaryKeyID((int)$data->kSuchanfrage);
+        $this->setLanguageData($languages, (int)$data->langID);
         $this->setLocation($this->baseURL . $data->cSeo);
         $this->setChangeFreq(\FREQ_WEEKLY);
         $this->setPriority(\PRIO_NORMAL);

@@ -113,6 +113,9 @@ class Helper
      */
     public static function getPluginById(string $pluginID): ?PluginInterface
     {
+        if (\SAFE_MODE === true) {
+            return null;
+        }
         $db      = Shop::Container()->getDB();
         $cache   = Shop::Container()->getCache();
         $langID  = Shop::getLanguageID();
@@ -430,9 +433,9 @@ class Helper
     /**
      * @param int             $id
      * @param LoaderInterface $loader
-     * @return mixed|null
+     * @return BootstrapperInterface|null
      */
-    public static function bootstrap(int $id, LoaderInterface $loader)
+    public static function bootstrap(int $id, LoaderInterface $loader): ?BootstrapperInterface
     {
         if (!isset(self::$bootstrapper[$id])) {
             $plugin = $loader->init($id);

@@ -17,6 +17,7 @@ use JTL\Filter\StateSQL;
 use JTL\Helpers\Request;
 use JTL\Helpers\Seo;
 use JTL\MagicCompatibilityTrait;
+use JTL\Shop;
 use stdClass;
 
 /**
@@ -67,6 +68,8 @@ class Search extends AbstractFilter
     {
         parent::__construct($productFilter);
         $this->setIsCustom(false)
+             ->setVisibility($this->getConfig('navigationsfilter')['suchtrefferfilter_nutzen'])
+             ->setFrontendName(Shop::Lang()->get('searchFilter'))
              ->setUrlParam('sf');
     }
 
@@ -358,7 +361,7 @@ class Search extends AbstractFilter
         $searchFilter = $this->productFilter->getSearchFilter();
         if (\is_array($searchFilter)) {
             $count       = \count($searchFilter);
-            $searchCache = \array_map(function ($f) {
+            $searchCache = \array_map(static function ($f) {
                 /** @var Search $f */
                 return $f->getValue();
             }, $searchFilter);
@@ -503,7 +506,7 @@ class Search extends AbstractFilter
             ? ($searchFilters[0]->nAnzahl - $searchFilters[$count - 1]->nAnzahl) / 9
             : 0;
         $activeValues     = \array_map(
-            function ($f) {
+            static function ($f) {
                 // @todo: create method for this logic
                 /** @var Search $f */
                 return $f->getValue();

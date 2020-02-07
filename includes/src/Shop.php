@@ -27,6 +27,9 @@ use JTL\DB\Services\GcServiceInterface;
 use JTL\Debug\JTLDebugBar;
 use JTL\Events\Dispatcher;
 use JTL\Events\Event;
+use JTL\Filesystem\AdapterFactory;
+use JTL\Filesystem\Factory;
+use JTL\Filesystem\Filesystem;
 use JTL\Filter\Config;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\ProductFilter;
@@ -91,6 +94,7 @@ use Monolog\Processor\PsrLogMessageProcessor;
 use Psr\Log\LoggerInterface;
 use stdClass;
 use function Functional\first;
+use function Functional\map;
 use function Functional\tail;
 
 /**
@@ -181,11 +185,6 @@ final class Shop
      * @var int
      */
     public static $kNewsKategorie;
-
-    /**
-     * @var int
-     */
-    public static $kUmfrage;
 
     /**
      * @var int
@@ -384,9 +383,19 @@ final class Shop
     private $registry = [];
 
     /**
-     * @var bool
+     * @var null|bool
      */
     private static $logged;
+
+    /**
+     * @var null|bool
+     */
+    private static $adminToken;
+
+    /**
+     * @var null|string
+     */
+    private static $adminLangTag;
 
     /**
      * @var array
@@ -842,11 +851,14 @@ final class Shop
     public static function bootstrap(bool $isFrontend = true): void
     {
         self::$isFrontend = $isFrontend;
-        $db               = self::Container()->getDB();
-        $cache            = self::Container()->getCache();
-        $cacheID          = 'plgnbtsrp';
+        if (\SAFE_MODE === true) {
+            return;
+        }
+        $db      = self::Container()->getDB();
+        $cache   = self::Container()->getCache();
+        $cacheID = 'plgnbtsrp';
         if (($plugins = $cache->get($cacheID)) === false) {
-            $plugins = $db->queryPrepared(
+            $plugins = map($db->queryPrepared(
                 'SELECT kPlugin, bBootstrap, bExtension
                     FROM tplugin
                     WHERE nStatus = :state
@@ -854,16 +866,23 @@ final class Shop
                     ORDER BY nPrio ASC',
                 ['state' => State::ACTIVATED],
                 ReturnType::ARRAY_OF_OBJECTS
-            ) ?: [];
+            ) ?: [], static function ($e) {
+                $e->kPlugin    = (int)$e->kPlugin;
+                $e->bBootstrap = (int)$e->bBootstrap;
+                $e->bExtension = (int)$e->bExtension;
+
+                return $e;
+            });
             $cache->set($cacheID, $plugins, [\CACHING_GROUP_PLUGIN]);
         }
         $dispatcher      = Dispatcher::getInstance();
         $extensionLoader = new PluginLoader($db, $cache);
         $pluginLoader    = new LegacyPluginLoader($db, $cache);
         foreach ($plugins as $plugin) {
-            $loader = isset($plugin->bExtension) && (int)$plugin->bExtension === 1 ? $extensionLoader : $pluginLoader;
+            $loader = $plugin->bExtension === 1 ? $extensionLoader : $pluginLoader;
             if (($p = PluginHelper::bootstrap($plugin->kPlugin, $loader)) !== null) {
                 $p->boot($dispatcher);
+                $p->loaded();
             }
         }
     }
@@ -874,6 +893,14 @@ final class Shop
     public static function isFrontend(): bool
     {
         return self::$isFrontend === true;
+    }
+
+    /**
+     * @param bool $isFrontend
+     */
+    public static function setIsFrontend(bool $isFrontend): void
+    {
+        self::$isFrontend = $isFrontend;
     }
 
     /**
@@ -894,7 +921,6 @@ final class Shop
         self::$kNews                  = Request::verifyGPCDataInt('n');
         self::$kNewsMonatsUebersicht  = Request::verifyGPCDataInt('nm');
         self::$kNewsKategorie         = Request::verifyGPCDataInt('nk');
-        self::$kUmfrage               = Request::verifyGPCDataInt('u');
         self::$nBewertungSterneFilter = Request::verifyGPCDataInt('bf');
         self::$cPreisspannenFilter    = Request::verifyGPDataString('pf');
         self::$kHerstellerFilter      = Request::verifyGPCDataInt('hf');
@@ -931,10 +957,6 @@ final class Shop
             self::$cSuche = Text::xssClean(Request::verifyGPDataString('suchausdruck'));
         } else {
             self::$cSuche = Text::xssClean(Request::verifyGPDataString('suche'));
-        }
-        // avoid redirect loops for surveys that require logged in customers
-        if (self::$kUmfrage > 0 && empty($_SESSION['Kunde']->kKunde) && Request::verifyGPCDataInt('r') !== 0) {
-            self::$kUmfrage = 0;
         }
 
         self::$nArtikelProSeite = Request::verifyGPCDataInt('af');
@@ -996,7 +1018,7 @@ final class Shop
         Dispatcher::getInstance()->fire(Event::RUN);
 
         self::$productFilter->initStates(self::getParameters());
-        $starterFactory = new StarterFactory(self::getConfig([\CONF_CRON])['cron']);
+        $starterFactory = new StarterFactory(self::getConfig([\CONF_CRON])['cron'] ?? []);
         $starterFactory->getStarter()->start();
 
         return self::$productFilter;
@@ -1033,7 +1055,6 @@ final class Shop
             'kNews'                  => self::$kNews,
             'kNewsMonatsUebersicht'  => self::$kNewsMonatsUebersicht,
             'kNewsKategorie'         => self::$kNewsKategorie,
-            'kUmfrage'               => self::$kUmfrage,
             'kKategorieFilter'       => self::$kKategorieFilter,
             'kHerstellerFilter'      => self::$kHerstellerFilter,
             'nBewertungSterneFilter' => self::$nBewertungSterneFilter,
@@ -1294,7 +1315,7 @@ final class Shop
                 } elseif ($results === 0) {
                     self::$bHerstellerFilterNotFound = true;
                 } else {
-                    self::$kHerstellerFilter = \array_map(function ($e) {
+                    self::$kHerstellerFilter = \array_map(static function ($e) {
                         return (int)$e->kKey;
                     }, $oSeo);
                 }
@@ -1344,7 +1365,11 @@ final class Shop
             }
             // mainwords
             if (isset($oSeo->kKey) && \strcasecmp($oSeo->cSeo, $seo) === 0) {
-                // canonical
+                if ($seo !== $oSeo->cSeo) {
+                    \http_response_code(301);
+                    \header('Location: ' . self::getURL() . '/' . $oSeo->cSeo);
+                    exit;
+                }
                 self::$cCanonicalURL = self::getURL() . '/' . $oSeo->cSeo;
                 $oSeo->kKey          = (int)$oSeo->kKey;
                 switch ($oSeo->cKey) {
@@ -1386,10 +1411,6 @@ final class Shop
 
                     case 'kNewsKategorie':
                         self::$kNewsKategorie = $oSeo->kKey;
-                        break;
-
-                    case 'kUmfrage':
-                        self::$kUmfrage = $oSeo->kKey;
                         break;
                 }
             }
@@ -1475,15 +1496,12 @@ final class Shop
         } elseif (self::$kNews > 0 || self::$kNewsMonatsUebersicht > 0 || self::$kNewsKategorie > 0) {
             self::$fileName = 'news.php';
             self::setPageType(\PAGE_NEWS);
-        } elseif (self::$kUmfrage > 0) {
-            self::$fileName = 'umfrage.php';
-            self::setPageType(\PAGE_UMFRAGE);
         } elseif (!empty(self::$cSuche)) {
             self::$fileName = 'filter.php';
             self::setPageType(\PAGE_ARTIKELLISTE);
         } elseif (!self::$kLink) {
             //check path
-            $path        = self::getRequestUri();
+            $path        = self::getRequestUri(true);
             $requestFile = '/' . \ltrim($path, '/');
             if ($requestFile === '/index.php') {
                 // special case: /index.php shall be redirected to Shop-URL
@@ -1573,9 +1591,6 @@ final class Shop
                         break;
                     case 'registrieren.php':
                         self::setPageType(\PAGE_REGISTRIERUNG);
-                        break;
-                    case 'umfrage.php':
-                        self::setPageType(\PAGE_UMFRAGE);
                         break;
                     case 'warenkorb.php':
                         self::setPageType(\PAGE_WARENKORB);
@@ -1867,9 +1882,10 @@ final class Shop
     }
 
     /**
+     * @param bool $decoded - true to decode %-sequences in the URI, false to leave them unchanged
      * @return string
      */
-    public static function getRequestUri(): string
+    public static function getRequestUri(bool $decoded = false): string
     {
         $uri         = $_SERVER['HTTP_X_REWRITE_URL'] ?? $_SERVER['REQUEST_URI'];
         $shopURLdata = \parse_url(self::getURL());
@@ -1879,9 +1895,15 @@ final class Shop
             $shopURLdata['path'] = '/';
         }
 
-        return isset($baseURLdata['path'])
+        $uri = isset($baseURLdata['path'])
             ? \mb_substr($baseURLdata['path'], \mb_strlen($shopURLdata['path']))
             : '';
+
+        if ($decoded) {
+            $uri = \rawurldecode($uri);
+        }
+
+        return $uri;
     }
 
     /**
@@ -1893,24 +1915,36 @@ final class Shop
         if (\is_bool(self::$logged)) {
             return self::$logged;
         }
-        $result   = false;
-        $isLogged = function () {
+
+        $result       = false;
+        $adminToken   = null;
+        $adminLangTag = null;
+
+        $isLogged = static function () {
             return self::Container()->getAdminAccount()->logged();
         };
+
         if (isset($_COOKIE['eSIdAdm'])) {
             if (\session_name() !== 'eSIdAdm') {
                 $oldID = \session_id();
                 \session_write_close();
                 \session_id($_COOKIE['eSIdAdm']);
-                $result = $isLogged();
+                $result       = $isLogged();
+                $adminToken   = $_SESSION['jtl_token'];
+                $adminLangTag = $_SESSION['AdminAccount']->language;
                 \session_write_close();
                 \session_id($oldID);
                 new Session\Frontend();
             } else {
-                $result = $isLogged();
+                $result       = $isLogged();
+                $adminToken   = $_SESSION['jtl_token'];
+                $adminLangTag = $_SESSION['AdminAccount']->language;
             }
         }
-        self::$logged = $result;
+
+        self::$logged       = $result;
+        self::$adminToken   = $adminToken;
+        self::$adminLangTag = $adminLangTag;
 
         return $result;
     }
@@ -1921,20 +1955,24 @@ final class Shop
      */
     public static function getAdminSessionToken(): ?string
     {
-        if (!self::isAdmin()) {
-            return null;
+        if (self::isAdmin()) {
+            return self::$adminToken;
         }
 
-        $oldID = \session_id();
-        \session_write_close();
-        \session_id($_COOKIE['eSIdAdm']);
-        \session_start();
-        $adminToken = $_SESSION['jtl_token'];
-        \session_write_close();
-        \session_id($oldID);
-        \session_start();
+        return null;
+    }
 
-        return $adminToken;
+    /**
+     * @return string|null
+     * @throws Exception
+     */
+    public static function getCurAdminLangTag(): ?string
+    {
+        if (self::isAdmin()) {
+            return self::$adminLangTag;
+        }
+
+        return null;
     }
 
     /**
@@ -1977,7 +2015,7 @@ final class Shop
         $container         = new Services\Container();
         static::$container = $container;
 
-        $container->singleton(DbInterface::class, function () {
+        $container->singleton(DbInterface::class, static function () {
             return new NiceDB(\DB_HOST, \DB_USER, \DB_PASS, \DB_NAME);
         });
 
@@ -1995,11 +2033,11 @@ final class Shop
 
         $container->singleton(CountryServiceInterface::class, CountryService::class);
 
-        $container->singleton(JTLDebugBar::class, function (Container $container) {
+        $container->singleton(JTLDebugBar::class, static function (Container $container) {
             return new JTLDebugBar($container->getDB()->getPDO(), Shopsetting::getInstance()->getAll());
         });
 
-        $container->singleton('BackendAuthLogger', function (Container $container) {
+        $container->singleton('BackendAuthLogger', static function (Container $container) {
             $loggingConf = self::getConfig([\CONF_GLOBAL])['global']['admin_login_logger_mode'] ?? [];
             $handlers    = [];
             foreach ($loggingConf as $value) {
@@ -2015,7 +2053,7 @@ final class Shop
             return new Logger('auth', $handlers, [new PsrLogMessageProcessor()]);
         });
 
-        $container->singleton(LoggerInterface::class, function (Container $container) {
+        $container->singleton(LoggerInterface::class, static function (Container $container) {
             $handler = (new NiceDBHandler($container->getDB(), self::getConfigValue(\CONF_GLOBAL, 'systemlog_flag')))
                 ->setFormatter(new LineFormatter('%message%', null, true, true));
 
@@ -2024,14 +2062,14 @@ final class Shop
 
         $container->alias(LoggerInterface::class, 'Logger');
 
-        $container->singleton(ValidationServiceInterface::class, function () {
+        $container->singleton(ValidationServiceInterface::class, static function () {
             $vs = new ValidationService($_GET, $_POST, $_COOKIE);
             $vs->setRuleSet('identity', (new RuleSet())->integer()->gt(0));
 
             return $vs;
         });
 
-        $container->bind(JTLApi::class, function (Container $container) {
+        $container->bind(JTLApi::class, static function () {
             // return new JTLApi($_SESSION, $container->make(Nice::class));
             return new JTLApi($_SESSION, Nice::getInstance());
         });
@@ -2048,11 +2086,11 @@ final class Shop
 
         $container->singleton(Locker::class);
 
-        $container->bind(BoxFactoryInterface::class, function () {
+        $container->bind(BoxFactoryInterface::class, static function () {
             return new BoxFactory(Shopsetting::getInstance()->getAll());
         });
 
-        $container->singleton(BoxServiceInterface::class, function (Container $container) {
+        $container->singleton(BoxServiceInterface::class, static function (Container $container) {
             $smarty = self::Smarty();
 
             return new BoxService(
@@ -2065,7 +2103,7 @@ final class Shop
             );
         });
 
-        $container->singleton(CaptchaServiceInterface::class, function () {
+        $container->singleton(CaptchaServiceInterface::class, static function () {
             return new CaptchaService(new SimpleCaptchaService(
                 !(Frontend::get('bAnti_spam_already_checked', false) || Frontend::getCustomer()->isLoggedIn())
             ));
@@ -2073,7 +2111,7 @@ final class Shop
 
         $container->singleton(GetText::class);
 
-        $container->singleton(AdminAccount::class, function (Container $container) {
+        $container->singleton(AdminAccount::class, static function (Container $container) {
             return new AdminAccount(
                 $container->getDB(),
                 $container->getBackendLogService(),
@@ -2083,7 +2121,13 @@ final class Shop
             );
         });
 
-        $container->bind(Mailer::class, function (Container $container) {
+        $container->singleton(Filesystem::class, static function () {
+            $factory = new AdapterFactory(self::getConfig([\CONF_FS])['fs']);
+
+            return new Filesystem($factory->getAdapter());
+        });
+
+        $container->bind(Mailer::class, static function (Container $container) {
             $db        = $container->getDB();
             $settings  = Shopsetting::getInstance();
             $smarty    = new SmartyRenderer(new MailSmarty($db));

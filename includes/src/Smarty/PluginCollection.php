@@ -188,11 +188,10 @@ class PluginCollection
      */
     public function inlineScript(array $params, $content): string
     {
-        $content = \trim($content);
-        if (empty($content)) {
-            return $content;
+        if ($content === null || empty(\trim($content))) {
+            return '';
         }
-        $content = \preg_replace('/^<script(.*?)>/', '', $content);
+        $content = \preg_replace('/^<script(.*?)>/', '', \trim($content));
         $content = \preg_replace('/<\/script>$/', '', $content);
 
         return '<script defer src="data:text/javascript;base64,' . \base64_encode($content) . '"></script>';

@@ -102,7 +102,7 @@ final class Controller
             $plausi->cPost_arr['captcha']   = isset($_POST['captcha'])
                 ? Text::htmlentities(Text::filterXSS($_POST['captcha']))
                 : null;
-            if (!$validate || count($plausi->nPlausi_arr) === 0) {
+            if (!$validate || \count($plausi->nPlausi_arr) === 0) {
                 $recipient = $this->db->select(
                     'tnewsletterempfaenger',
                     'cEmail',
@@ -119,7 +119,7 @@ final class Controller
                         (int)$_SESSION['Kunde']->kKunde
                     );
                 }
-                if ((isset($recipient->cEmail) && mb_strlen($recipient->cEmail) > 0)
+                if ((isset($recipient->cEmail) && \mb_strlen($recipient->cEmail) > 0)
                     || (isset($nlCustomer->kKunde) && $nlCustomer->kKunde > 0)
                 ) {
                     $alertHelper->addAlert(

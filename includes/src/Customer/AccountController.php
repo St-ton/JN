@@ -8,6 +8,7 @@ namespace JTL\Customer;
 
 use Exception;
 use JTL\Alert\Alert;
+use JTL\Campaign;
 use JTL\Cart\CartHelper;
 use JTL\Cart\PersistentCart;
 use JTL\Cart\PersistentCartItem;
@@ -30,7 +31,6 @@ use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
-use JTL\Campaign;
 use JTL\Language\LanguageHelper;
 use JTL\Pagination\Pagination;
 use JTL\Services\JTL\AlertServiceInterface;
@@ -408,6 +408,7 @@ class AccountController
         }
         $this->checkCoupons($coupons);
         $this->updateCustomerLanguage($customer->kSprache);
+        Shop::Container()->getLinkService()->reset();
     }
 
     /**
@@ -569,7 +570,8 @@ class AccountController
                     '',
                     $item->cUnique,
                     $item->kKonfigitem,
-                    $item->kArtikel
+                    $item->kArtikel,
+                    $item->cResponsibility
                 );
             } else {
                 CartHelper::addProductIDToCart(
@@ -814,16 +816,6 @@ class AccountController
                     '&n=' . Request::verifyGPCDataInt('n');
                 $redir->cName            = Shop::Lang()->get('news', 'redirect');
                 break;
-            case \R_LOGIN_UMFRAGE:
-                $redir->oParameter_arr   = [];
-                $tmp                     = new stdClass();
-                $tmp->Name               = 'u';
-                $tmp->Wert               = Request::verifyGPCDataInt('u');
-                $redir->oParameter_arr[] = $tmp;
-                $redir->nRedirect        = \R_LOGIN_UMFRAGE;
-                $redir->cURL             = '?u=' . Request::verifyGPCDataInt('u');
-                $redir->cName            = Shop::Lang()->get('poll', 'redirect');
-                break;
             default:
                 break;
         }
@@ -1062,7 +1054,7 @@ class AccountController
         );
         $currencies = [];
         foreach ($orders as $order) {
-            $order->bDownload   = some($downloads, function ($dl) use ($order) {
+            $order->bDownload   = some($downloads, static function ($dl) use ($order) {
                 return $dl->kBestellung === $order->kBestellung;
             });
             $order->kBestellung = (int)$order->kBestellung;

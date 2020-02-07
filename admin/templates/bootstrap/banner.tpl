@@ -78,7 +78,7 @@
             {$jtl_token}
             <input type="hidden" name="action" value="{$action}" />
             {if $action === 'edit'}
-                <input type="hidden" name="kImageMap" value="{$oBanner->kImageMap}" />
+                <input type="hidden" name="kImageMap" value="{$banner->kImageMap}" />
             {/if}
 
             <div class="card">
@@ -90,7 +90,7 @@
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="cName">{__('internalName')} *:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <input class="form-control" type="text" name="cName" id="cName" value="{if isset($cName)}{$cName}{elseif isset($oBanner->cTitel)}{$oBanner->cTitel}{/if}" />
+                            <input class="form-control" type="text" name="cName" id="cName" value="{if isset($cName)}{$cName}{elseif isset($banner->cTitel)}{$banner->cTitel}{/if}" />
                         </div>
                     </div>
                     <div class="form-group form-row align-items-center file-input">
@@ -107,15 +107,15 @@
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="cPath">&raquo; {__('chooseAvailableFile')}:</label>
                         <span class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                        {if $cBannerFile_arr|@count > 0}
+                        {if $bannerFiles|@count > 0}
                             <select id="cPath" name="cPath" class="custom-select">
                                 <option value="">{__('chooseBanner')}</option>
-                                {foreach $cBannerFile_arr as $cBannerFile}
-                                    <option value="{$cBannerFile}" {if (isset($oBanner->cBildPfad) && $cBannerFile == $oBanner->cBildPfad) || (isset($oBanner->cBild) && $cBannerFile == $oBanner->cBild)}selected="selected"{/if}>{$cBannerFile}</option>
+                                {foreach $bannerFiles as $file}
+                                    <option value="{$file}" {if (isset($banner->cBildPfad) && $file === $banner->cBildPfad) || (isset($banner->cBild) && $file === $banner->cBild)}selected="selected"{/if}>{$file}</option>
                                 {/foreach}
                             </select>
                         {else}
-                            {{__('warningNoBannerInDir')}|sprintf:{$cBannerLocation}}
+                            {{__('warningNoBannerInDir')}|sprintf:{$smarty.const.PFAD_BILDER_BANNER}}
                         {/if}
                         </span>
                     </div>
@@ -127,7 +127,7 @@
                         {include
                             file="snippets/daterange_picker.tpl"
                             datepickerID="#vDatum"
-                            currentDate="{if isset($vDatum) && $vDatum > 0}{$vDatum|date_format:'%d.%m.%Y'}{elseif isset($oBanner->vDatum) && $oBanner->vDatum > 0}{$oBanner->vDatum|date_format:'%d.%m.%Y'}{/if}"
+                            currentDate="{if isset($vDatum) && $vDatum > 0}{$vDatum|date_format:'%d.%m.%Y'}{elseif isset($banner->vDatum) && $banner->vDatum > 0}{$banner->vDatum|date_format:'%d.%m.%Y'}{/if}"
                             format="DD.MM.YYYY"
                             separator="{__('datepickerSeparator')}"
                             single=true
@@ -141,7 +141,7 @@
                         {include
                             file="snippets/daterange_picker.tpl"
                             datepickerID="#bDatum"
-                            currentDate="{if isset($bDatum) && $bDatum > 0}{$bDatum|date_format:'%d.%m.%Y'}{elseif isset($oBanner->bDatum) && $oBanner->bDatum > 0}{$oBanner->bDatum|date_format:'%d.%m.%Y'}{/if}"
+                            currentDate="{if isset($bDatum) && $bDatum > 0}{$bDatum|date_format:'%d.%m.%Y'}{elseif isset($banner->bDatum) && $banner->bDatum > 0}{$banner->bDatum|date_format:'%d.%m.%Y'}{/if}"
                             format="DD.MM.YYYY"
                             separator="{__('datepickerSeparator')}"
                             single=true
@@ -163,7 +163,7 @@
                         <span class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <select class="custom-select" id="kSprache" name="kSprache">
                                 <option value="0">{__('all')}</option>
-                                {foreach $oSprachen_arr as $language}
+                                {foreach $availableLanguages as $language}
                                     <option value="{$language->getId()}" {if isset($kSprache) && $kSprache === $language->getId()}selected="selected" {elseif isset($oExtension->kSprache) && (int)$oExtension->kSprache === $language->getId()}selected="selected"{/if}>{$language->getLocalizedName()}</option>
                                 {/foreach}
                             </select>
@@ -174,11 +174,11 @@
                         <span class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <select class="custom-select" id="kKundengruppe" name="kKundengruppe">
                                 <option value="0">{__('all')}</option>
-                                {foreach $oKundengruppe_arr as $oKundengruppe}
-                                    <option value="{$oKundengruppe->getID()}"
-                                            {if isset($kKundengruppe) && $kKundengruppe == $oKundengruppe->getID()}selected="selected"
-                                            {elseif isset($oExtension->kKundengruppe) && $oExtension->kKundengruppe == $oKundengruppe->getID()}selected="selected"{/if}
-                                    >{$oKundengruppe->getName()}</option>
+                                {foreach $customerGroups as $customerGroup}
+                                    <option value="{$customerGroup->getID()}"
+                                            {if isset($kKundengruppe) && $kKundengruppe == $customerGroup->getID()}selected="selected"
+                                            {elseif isset($oExtension->kKundengruppe) && $oExtension->kKundengruppe == $customerGroup->getID()}selected="selected"{/if}
+                                    >{$customerGroup->getName()}</option>
                                 {/foreach}
                             </select>
                         </span>
@@ -228,13 +228,14 @@
                                 <input type="hidden" name="article_key" id="article_key"
                                        value="{if (isset($cKey) && $cKey === 'kArtikel') || (isset($oExtension->cKey) && $oExtension->cKey === 'kArtikel')}{$oExtension->cValue}{/if}">
                                 <input class="form-control" type="text" name="article_name" id="article_name">
+                                <i class="fas fa-spinner fa-pulse typeahead-spinner"></i>
                             </div>
                             <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('typeAheadProduct')}</div>
                             <script>
                                 enableTypeahead('#article_name', 'getProducts', 'cName', null, function(e, item) {
                                     $('#article_name').val(item.cName);
                                     $('#article_key').val(item.kArtikel);
-                                });
+                                }, $('#keykArtikel .fa-spinner'));
                                 {if (isset($cKey) && $cKey === 'kArtikel') || (isset($oExtension->cKey) && $oExtension->cKey === 'kArtikel')}
                                     ioCall('getProducts', [[$('#article_key').val()]], function (data) {
                                         $('#article_name').val(data[0].cName);
@@ -248,13 +249,14 @@
                                 <input type="hidden" name="link_key" id="link_key"
                                        value="{if (isset($cKey) && $cKey === 'kLink') || (isset($oExtension->cKey) && $oExtension->cKey === 'kLink')}{$oExtension->cValue}{/if}">
                                 <input class="form-control" type="text" name="link_name" id="link_name">
+                                <i class="fas fa-spinner fa-pulse typeahead-spinner"></i>
                             </div>
                             <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('typeAheadPage')}</div>
                             <script>
                                 enableTypeahead('#link_name', 'getPages', 'cName', null, function(e, item) {
                                     $('#link_name').val(item.cName);
                                     $('#link_key').val(item.kLink);
-                                });
+                                }, $('#keykLink .fa-spinner'));
                                 {if (isset($cKey) && $cKey === 'kLink') || (isset($oExtension->cKey) && $oExtension->cKey === 'kLink')}
                                     ioCall('getPages', [[$('#link_key').val()]], function (data) {
                                         $('#link_name').val(data[0].cName);
@@ -268,13 +270,14 @@
                                 <input type="hidden" name="attribute_key" id="attribute_key"
                                        value="{if (isset($cKey) && $cKey === 'kMerkmalWert') || (isset($oExtension->cKey) && $oExtension->cKey === 'kMerkmalWert')}{$oExtension->cValue}{/if}">
                                 <input class="form-control" type="text" name="attribute_name" id="attribute_name">
+                                <i class="fas fa-spinner fa-pulse typeahead-spinner"></i>
                             </div>
                             <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('typeAheadAttribute')}</div>
                             <script>
                                 enableTypeahead('#attribute_name', 'getAttributes', 'cWert', null, function(e, item) {
                                     $('#attribute_name').val(item.cWert);
                                     $('#attribute_key').val(item.kMerkmalWert);
-                                });
+                                }, $('#keykMerkmalWert .fa-spinner'));
                                 {if (isset($cKey) && $cKey === 'kMerkmalWert') || (isset($oExtension->cKey) && $oExtension->cKey === 'kMerkmalWert')}
                                     ioCall('getAttributes', [[$('#attribute_key').val()]], function (data) {
                                         $('#attribute_name').val(data[0].cWert);
@@ -288,6 +291,7 @@
                                 <input type="hidden" name="categories_key" id="categories_key"
                                        value="{if (isset($cKey) && $cKey === 'kKategorie') || (isset($oExtension->cKey) && $oExtension->cKey === 'kKategorie')}{$oExtension->cValue}{/if}">
                                 <input class="form-control" type="text" name="categories_name" id="categories_name">
+                                <i class="fas fa-spinner fa-pulse typeahead-spinner"></i>
                             </div>
                             <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('typeAheadCategory')}</div>
                             <script>
@@ -300,7 +304,7 @@
                                     }, null, function(e, item) {
                                     $('#categories_name').val(item.cName);
                                     $('#categories_key').val(item.kKategorie);
-                                });
+                                }, $('#keykKategorie .fa-spinner'));
                                 {if (isset($cKey) && $cKey === 'kKategorie') || (isset($oExtension->cKey) && $oExtension->cKey === 'kKategorie')}
                                     ioCall('getCategories', [[$('#categories_key').val()]], function (data) {
                                         $('#categories_name').val(data[0].cName);
@@ -314,13 +318,14 @@
                                 <input type="hidden" name="manufacturer_key" id="manufacturer_key"
                                        value="{if (isset($cKey) && $cKey === 'kHersteller') || (isset($oExtension->cKey) && $oExtension->cKey === 'kHersteller')}{$oExtension->cValue}{/if}">
                                 <input class="form-control" type="text" name="manufacturer_name" id="manufacturer_name">
+                                <i class="fas fa-spinner fa-pulse typeahead-spinner"></i>
                             </div>
                             <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('typeAheadManufacturer')}</div>
                             <script>
                                 enableTypeahead('#manufacturer_name', 'getManufacturers', 'cName', null, function(e, item) {
                                     $('#manufacturer_name').val(item.cName);
                                     $('#manufacturer_key').val(item.kHersteller);
-                                });
+                                }, $('#keykHersteller .fa-spinner'));
                                 {if (isset($cKey) && $cKey === 'kHersteller') || (isset($oExtension->cKey) && $oExtension->cKey === 'kHersteller')}
                                     ioCall('getManufacturers', [[$('#manufacturer_key').val()]], function (data) {
                                         $('#manufacturer_name').val(data[0].cName);
@@ -359,7 +364,6 @@
         </form>
     </div>
     {elseif $action === 'area'}
-    <script type="text/javascript" src="{$shopURL}/includes/libs/flashchart/js/json/json2.js"></script>
     <script type="text/javascript" src="{$templateBaseURL}js/clickareas.js"></script>
     <link rel="stylesheet" href="{$templateBaseURL}css/clickareas.css" type="text/css" media="screen" />
     <script type="text/javascript">
@@ -370,7 +374,7 @@
                 'save': '#area_save',
                 'add': '#area_new',
                 'info': '#area_info',
-                'data': {$oBanner|@json_encode nofilter}
+                'data': {$banner|@json_encode nofilter}
             {rdelim});
         {rdelim});
     </script>
@@ -423,7 +427,7 @@
                     <span class="input-group-addon">
                         <label for="article_name">{__('product')}</label>
                     </span>
-                    <input type="hidden" name="article" id="article" value="{if isset($oBanner->kArtikel)}{$oBanner->kArtikel}{/if}" />
+                    <input type="hidden" name="article" id="article" value="{if isset($banner->kArtikel)}{$banner->kArtikel}{/if}" />
                     <input type="text" name="article_name" id="article_name" value="" class="form-control">
                     <input type="hidden" name="article_id" id="article_id" value="">
                     <script>
@@ -442,7 +446,7 @@
             </div>
         </div>
         <div id="area_wrapper">
-            <img class="img-fluid" src="{$oBanner->cBildPfad}" title="" id="clickarea" />
+            <img class="img-fluid" src="{$banner->cBildPfad}" title="" id="clickarea" />
         </div>
     </div>
     <div class="save-wrapper">
@@ -484,30 +488,30 @@
                             </tr>
                             </thead>
                             <tbody>
-                            {foreach $oBanner_arr as $oBanner}
+                            {foreach $banners as $banner}
                                 <tr>
                                     <td class="text-left">
-                                        {$oBanner->cTitel}
+                                        {$banner->cTitel}
                                     </td>
                                     <td class="text-center">
-                                        {if (int)$oBanner->active === 1}
+                                        {if (int)$banner->active === 1}
                                             <i class="fal fa-check text-success"></i>
                                         {else}
                                             <i class="fal fa-times text-danger"></i>
                                         {/if}
                                     </td>
                                     <td>
-                                        {if $oBanner->vDatum !== null}
-                                            {$oBanner->vDatum|date_format:'%d.%m.%Y'}
+                                        {if $banner->vDatum !== null}
+                                            {$banner->vDatum|date_format:'%d.%m.%Y'}
                                         {/if} -
-                                        {if $oBanner->bDatum !== null}
-                                            {$oBanner->bDatum|date_format:'%d.%m.%Y'}
+                                        {if $banner->bDatum !== null}
+                                            {$banner->bDatum|date_format:'%d.%m.%Y'}
                                         {/if}
                                     </td>
                                     <td class="text-center">
                                         <form action="banner.php" method="post">
                                             {$jtl_token}
-                                            <input type="hidden" name="id" value="{$oBanner->kImageMap}" />
+                                            <input type="hidden" name="id" value="{$banner->kImageMap}" />
                                             <div class="btn-group">
                                                 <button class="btn btn-link px-2" name="action" value="delete" title="{__('delete')}" data-toggle="tooltip">
                                                     <span class="icon-hover">
@@ -535,7 +539,7 @@
                             </tbody>
                         </table>
                     </div>
-                {if $oBanner_arr|@count === 0}
+                {if $banners|@count === 0}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
                 </div>

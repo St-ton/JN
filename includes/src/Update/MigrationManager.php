@@ -24,7 +24,7 @@ class MigrationManager
     /**
      * @var IMigration[]
      */
-    protected static $migrations;
+    protected static $migrations = [];
 
     /**
      * @var array
@@ -43,7 +43,6 @@ class MigrationManager
     public function __construct(DbInterface $db)
     {
         $this->db = $db;
-        static::$migrations = [];
     }
 
     /**
@@ -273,17 +272,23 @@ class MigrationManager
     }
 
     /**
+     * @param bool $force
      * @return array
      * @throws Exception
      */
-    public function getPendingMigrations(): array
+    public function getPendingMigrations(bool $force = false): array
     {
-        $executed   = $this->getExecutedMigrations();
-        $migrations = \array_keys($this->getMigrations());
+        static $pending = null;
 
-        return \array_udiff($migrations, $executed, function ($a, $b) {
-            return \strcmp((string)$a, (string)$b);
-        });
+        if ($force || $pending === null) {
+            $executed   = $this->getExecutedMigrations();
+            $migrations = \array_keys($this->getMigrations());
+            $pending    = \array_udiff($migrations, $executed, static function ($a, $b) {
+                return \strcmp((string)$a, (string)$b);
+            });
+        }
+
+        return $pending;
     }
 
     /**

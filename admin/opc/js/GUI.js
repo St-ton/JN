@@ -1,11 +1,12 @@
 class GUI
 {
-    constructor(io, page)
+    constructor(io, page, messages)
     {
         bindProtoOnHandlers(this);
 
         this.io            = io;
         this.page          = page;
+        this.messages      = messages;
         this.configSaveCb  = noop;
         this.imageSelectCB = noop;
         this.iconPickerCB  = noop;
@@ -22,25 +23,26 @@ class GUI
         installGuiElements(this, [
             'opcSidebar',
             'opcHeader',
+            'btnPagetree',
             'iframePanel',
             'previewPanel',
             'loaderModal',
             'errorModal',
             'errorAlert',
+            'messageboxModal',
+            'messageboxAlert',
             'configModal',
             'configModalTitle',
+            'configPortletName',
             'configModalBody',
             'configForm',
             'stdConfigButtons',
             'missingConfigButtons',
             'blueprintModal',
-            'blueprintForm',
             'blueprintName',
             'blueprintDeleteModal',
             'blueprintDeleteId',
-            'blueprintDeleteForm',
             'publishModal',
-            'publishForm',
             'draftName',
             'checkPublishNot',
             'checkPublishNow',
@@ -48,13 +50,6 @@ class GUI
             'checkPublishInfinite',
             'publishFrom',
             'publishTo',
-            'btnImport',
-            'btnExport',
-            'btnHelp',
-            'btnPublish',
-            'btnClose',
-            'btnImportBlueprint',
-            'btnNoRestoreUnsaved',
             'revisionList',
             'revisionBtnBlueprint',
             'unsavedRevision',
@@ -63,12 +58,6 @@ class GUI
             'portletButton',
             'portletGroupBtn',
             'restoreUnsavedModal',
-            'restoreUnsavedForm',
-            'btnDisplayWidthXS',
-            'btnDisplayWidthSM',
-            'btnDisplayWidthMD',
-            'btnDisplayWidthLG',
-            'btnDisplayWidthXL',
             'unsavedState',
             'iconpicker',
             'disableVeil',
@@ -163,6 +152,13 @@ class GUI
         return Promise.reject(msg);
     }
 
+    showMessageBox(msg, title)
+    {
+        this.messageboxAlert.html(msg);
+        this.messageboxModal.find('.modal-title').html(title);
+        this.messageboxModal.modal('show');
+    }
+
     updateBlueprintList()
     {
         this.io.getBlueprints().then(blueprints => {
@@ -210,6 +206,15 @@ class GUI
         });
     }
 
+    updatePagetreeBtn()
+    {
+        if (this.page.offscreenAreas.length) {
+            this.btnPagetree.addClass('has-unmapped');
+        } else {
+            this.btnPagetree.removeClass('has-unmapped');
+        }
+    }
+
     updateDynamicGui()
     {
         installGuiElements(this, [
@@ -220,19 +225,46 @@ class GUI
         ]);
     }
 
-    onBtnImport()
+    importDraft()
     {
         this.page.loadFromImport()
             .catch(er => this.showError('Could not import OPC page JSON: ' + er.error.message))
-            .then(this.iframe.onPageLoad);
+            .then(this.iframe.onPageLoad)
+            .then(() => {
+                let unmappedCount = this.page.offscreenAreas.length;
+
+                if (unmappedCount === 0) {
+                    this.showMessageBox(
+                        this.messages.opcImportSuccess,
+                        this.messages.opcImportSuccessTitle,
+                    );
+                } else {
+                    if (unmappedCount === 1) {
+                        this.showMessageBox(
+                            this.messages.opcImportSuccess + '<br><br>' + this.messages.opcImportUnmappedS,
+                            this.messages.opcImportSuccessTitle,
+                        );
+                    } else {
+                        this.showMessageBox(
+                            this.messages.opcImportSuccess + '<br><br>' +
+                            this.messages.opcImportUnmappedP.replace('%s', unmappedCount),
+                            this.messages.opcImportSuccessTitle,
+                        );
+                    }
+
+                    $('[href="#pagetree"]').click();
+                    this.updatePagetreeBtn();
+                    this.setUnsaved(true, true);
+                }
+            });
     }
 
-    onBtnExport()
+    exportDraft()
     {
         this.page.exportAsDownload();
     }
 
-    onBtnHelp(e)
+    startHelp(e)
     {
         this.tutorial.start();
     }
@@ -290,7 +322,7 @@ class GUI
         return this.unsavedState.css('display') !== 'none';
     }
 
-    onBtnClose(e)
+    closeEditor(e)
     {
         this.page.unlock().then(() => {
             window.location = this.page.fullUrl;
@@ -349,6 +381,7 @@ class GUI
             .then(this.iframe.onPageLoad)
             .then(() => {
                 this.iframe.loadMissingPortletPreviewStyles();
+                this.updatePagetreeBtn();
             });
 
         this.setUnsaved(revId !== 0);
@@ -377,38 +410,42 @@ class GUI
             }
 
             this.configModalBody.html(html);
-            this.configModalTitle[0].innerText = portletData.title + ' bearbeiten';
+            this.configPortletName[0].textContent = portletData.title;
             this.configModal.modal('show');
         });
 
     }
 
-    onConfigForm(e)
+    saveConfig()
     {
-        e.preventDefault();
+        event.preventDefault();
 
         this.configSaveCb();
 
-        var portletData  = this.page.portletToJSON(this.curPortlet);
-        var configObject = this.configForm.serializeControls();
+        let portletData  = this.page.portletToJSON(this.curPortlet);
+        let configObject = $(event.target).serializeControls();
 
-        for(var propname in configObject) {
-            var propval   = configObject[propname];
-            var propInput = $('#config-' + propname);
+        for(let propname in configObject) {
+            if(configObject.hasOwnProperty(propname)) {
+                let propval   = configObject[propname];
+                let propInput = $('#config-' + propname);
 
-            if (propInput.length > 0) {
-                var propType = propInput.data('prop-type');
+                if (propInput.length > 0) {
+                    let propType = propInput.data('prop-type');
 
-                if (propType === 'json') {
-                    propval = JSON.parse(propval);
-                } else if (propInput[0].type === 'checkbox') {
-                    propval = propval === '1';
-                } else if (propInput[0].type === 'number') {
-                    propval = parseInt(propval);
+                    if (propType === 'json') {
+                        propval = JSON.parse(propval);
+                    } else if (propType === 'datetime') {
+                        propval = this.page.encodeDate(propval);
+                    } else if (propInput[0].type === 'checkbox') {
+                        propval = propval === '1';
+                    } else if (propInput[0].type === 'number') {
+                        propval = parseInt(propval);
+                    }
                 }
-            }
 
-            configObject[propname] = propval;
+                configObject[propname] = propval;
+            }
         }
 
         portletData.properties = configObject;
@@ -422,12 +459,13 @@ class GUI
                 this.iframe.replaceSelectedPortletHtml(preview);
                 this.configModal.modal('hide');
                 this.page.updateFlipcards();
+                this.iframe.disableLinks();
             });
     }
 
-    onBlueprintForm(e)
+    createBlueprint()
     {
-        e.preventDefault();
+        event.preventDefault();
 
         if(this.selectedElm !== null) {
             var blueprintName = this.blueprintName.val();
@@ -461,7 +499,7 @@ class GUI
         });
     }
 
-    onBtnImportBlueprint()
+    importBlueprint()
     {
         $('<input type="file" accept=".json">')
             .on(
@@ -479,17 +517,17 @@ class GUI
             .click();
     }
 
-    onBlueprintDeleteForm (e)
+    deleteBlueprint()
     {
         var blueprintId = this.blueprintDeleteId.val();
 
         this.io.deleteBlueprint(blueprintId).then(() => this.updateBlueprintList());
         this.blueprintDeleteModal.modal('hide');
 
-        e.preventDefault();
+        event.preventDefault();
     }
 
-    onBtnPublish(e)
+    publishDraft()
     {
         if(typeof this.page.publishFrom === 'string' && this.page.publishFrom.length > 0) {
             this.setPublishSchedule();
@@ -574,9 +612,9 @@ class GUI
         this.publishTo.val(moment(this.publishFrom.val(), localDateFormat).add(1, 'M').format(localDateFormat));
     }
 
-    onPublishForm (e)
+    publish()
     {
-        e.preventDefault();
+        event.preventDefault();
 
         this.page.name = this.draftName.val();
         $('#footerDraftName span').text(this.page.name);
@@ -641,9 +679,9 @@ class GUI
         openElFinder(callback, type);
     }
 
-    onRestoreUnsavedForm (e)
+    restoreUnsaved()
     {
-        e.preventDefault();
+        event.preventDefault();
 
         this.unsavedRevision.click();
         this.restoreUnsavedModal.modal('hide');
@@ -664,50 +702,41 @@ class GUI
         this.iconPickerCB = callback;
     }
 
-    onBtnDisplayWidthXS(e)
+    setDisplayFrameWidth(btn, value)
     {
-        this.iframe.iframe.width('375px');
-        this.previewFrame.previewFrame.width('375px');
+        this.iframe.iframe.width(value);
+        this.previewFrame.previewFrame.width(value);
         $('#displayWidths .active').removeClass('active');
-        this.btnDisplayWidthXS.parent().addClass('active');
+        $(btn).addClass('active');
     }
 
-    onBtnDisplayWidthSM(e)
+    setDisplayWidthXS()
     {
-        this.iframe.iframe.width('577px');
-        this.previewFrame.previewFrame.width('577px');
-        $('#displayWidths .active').removeClass('active');
-        this.btnDisplayWidthSM.parent().addClass('active');
+        this.setDisplayFrameWidth(event.currentTarget, '375px');
     }
 
-    onBtnDisplayWidthMD(e)
+    setDisplayWidthSM()
     {
-        this.iframe.iframe.width('769px');
-        this.previewFrame.previewFrame.width('769px');
-        $('#displayWidths .active').removeClass('active');
-        this.btnDisplayWidthMD.parent().addClass('active');
+        this.setDisplayFrameWidth(event.currentTarget, '577px');
     }
 
-    onBtnDisplayWidthLG(e)
+    setDisplayWidthMD()
     {
-        this.iframe.iframe.width('993px');
-        this.previewFrame.previewFrame.width('993px');
-        $('#displayWidths .active').removeClass('active');
-        this.btnDisplayWidthLG.parent().addClass('active');
+        this.setDisplayFrameWidth(event.currentTarget, '769px');
     }
 
-    onBtnDisplayWidthXL(e)
+    setDisplayWidthLG()
     {
-        this.iframe.iframe.width('100%');
-        this.previewFrame.previewFrame.width('100%');
-        $('#displayWidths .active').removeClass('active');
-        this.btnDisplayWidthXL.parent().addClass('active');
+        this.setDisplayFrameWidth(event.currentTarget, '993px');
+    }
+
+    setDisplayWidthXL()
+    {
+        this.setDisplayFrameWidth(event.currentTarget, '100%');
     }
 
     onBeginEditDraftName()
     {
-        let draftName = $('#footerDraftName span').text();
-
         $('#footerDraftName').hide();
         $('#footerDraftNameInput').val(this.page.name).show();
     }
@@ -742,8 +771,8 @@ class GUI
         }
     }
 
-    onBtnNoRestoreUnsaved()
+    noRestoreUnsaved()
     {
-        this.page.clearPageWebStorage();
+        this.setUnsaved(false, true);
     }
 }

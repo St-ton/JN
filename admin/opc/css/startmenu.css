@@ -304,6 +304,21 @@
   border-color: #435A6B;
   color: #435A6B;
 }
+#opc .nav-tabs #btnPagetree.has-unmapped .nav-link {
+  position: relative;
+  color: #f68b25;
+}
+#opc .nav-tabs #btnPagetree.has-unmapped .nav-link:after {
+  display: block;
+  position: absolute;
+  content: "";
+  background-color: #f68b25;
+  width: 8px;
+  height: 8px;
+  right: -6px;
+  top: 12px;
+  border-radius: 100%;
+}
 
 #opc #opc-startmenu {
   position: fixed;

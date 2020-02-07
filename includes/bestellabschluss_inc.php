@@ -5,6 +5,7 @@
  */
 
 use JTL\Cart\CartItem;
+use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\EigenschaftWert;
 use JTL\Catalog\Wishlist\Wishlist;
@@ -116,10 +117,14 @@ function bestellungInDB($cleared = 0, $orderNo = '')
             $customer->cPasswort    = md5($customer->cPasswort);
         }
         $cart->kKunde = $customer->insertInDB();
-
+        if (Frontend::get('customerAttributes') !== null) {
+            $customerAttributes->assign(Frontend::get('customerAttributes'));
+        }
         $customer->kKunde = $cart->kKunde;
         $customer->cLand  = $customer->pruefeLandISO($customer->cLand);
+        $customerAttributes->setCustomerID($customer->kKunde);
         $customerAttributes->save();
+        Frontend::set('customerAttributes', null);
 
         if (!empty($customer->cPasswort)) {
             $customer->cPasswortKlartext = $cPasswortKlartext;
@@ -148,8 +153,16 @@ function bestellungInDB($cleared = 0, $orderNo = '')
         && !$deliveryAddress->kLieferadresse
     ) {
         $deliveryAddress->kKunde = $cart->kKunde;
-        $cart->kLieferadresse    = $deliveryAddress->insertInDB();
+        executeHook(
+            HOOK_BESTELLABSCHLUSS_INC_BESTELLUNGINDB_LIEFERADRESSE_NEU,
+            ['deliveryAddress' => $deliveryAddress]
+        );
+        $cart->kLieferadresse = $deliveryAddress->insertInDB();
     } elseif (isset($_SESSION['Bestellung']->kLieferadresse) && $_SESSION['Bestellung']->kLieferadresse > 0) {
+        executeHook(
+            HOOK_BESTELLABSCHLUSS_INC_BESTELLUNGINDB_LIEFERADRESSE_ALT,
+            ['deliveryAddressID' => (int)$_SESSION['Bestellung']->kLieferadresse]
+        );
         $cart->kLieferadresse = $_SESSION['Bestellung']->kLieferadresse;
     }
     $conf = Shop::getSettings([CONF_GLOBAL]);
@@ -263,7 +276,7 @@ function bestellungInDB($cleared = 0, $orderNo = '')
     $billingAddress->cWWW          = $customer->cWWW;
     $billingAddress->cMail         = $customer->cMail;
 
-    executeHook(HOOK_BESTELLABSCHLUSS_INC_BESTELLUNGINDB_RECHNUNGSADRESSE);
+    executeHook(HOOK_BESTELLABSCHLUSS_INC_BESTELLUNGINDB_RECHNUNGSADRESSE, ['billingAddress' => $billingAddress]);
 
     $billingAddressID = $billingAddress->insertInDB();
     if (isset($_POST['kommentar'])) {
@@ -443,10 +456,14 @@ function speicherKundenKontodaten($paymentInfo): void
  */
 function unhtmlSession(): void
 {
-    $customer        = new Customer();
-    $sessionCustomer = Frontend::getCustomer();
+    $customer           = new Customer();
+    $sessionCustomer    = Frontend::getCustomer();
+    $customerAttributes = Frontend::get('customerAttributes');
     if ($sessionCustomer->kKunde > 0) {
         $customer->kKunde = $sessionCustomer->kKunde;
+        $customer->getCustomerAttributes()->load($customer->getID());
+    } elseif ($customerAttributes !== null) {
+        $customer->getCustomerAttributes()->assign($customerAttributes);
     }
     $customer->kKundengruppe = Frontend::getCustomerGroup()->getID();
     if ($sessionCustomer->kKundengruppe > 0) {
@@ -500,7 +517,6 @@ function unhtmlSession(): void
     $customer->cUSTID        = Text::unhtmlentities($sessionCustomer->cUSTID);
     $customer->dGeburtstag   = Text::unhtmlentities($sessionCustomer->dGeburtstag);
     $customer->cBundesland   = Text::unhtmlentities($sessionCustomer->cBundesland);
-    $customer->getCustomerAttributes()->load($customer->getID());
 
     $_SESSION['Kunde'] = $customer;
 
@@ -1014,7 +1030,8 @@ function setzeSmartyWeiterleitung(Bestellung $order): void
             $paymentMethod           = new $className($moduleID);
             $paymentMethod->cModulId = $moduleID;
             $paymentMethod->preparePaymentProcess($order);
-            Shop::Smarty()->assign('oPlugin', $plugin);
+            Shop::Smarty()->assign('oPlugin', $plugin)
+                ->assign('plugin', $plugin);
         }
     } elseif ($moduleID === 'za_kreditkarte_jtl' || $moduleID === 'za_lastschrift_jtl') {
         Shop::Smarty()->assign('abschlussseite', 1);
@@ -1057,7 +1074,9 @@ function fakeBestellung()
     $order->dErstellt        = 'NOW()';
     $order->Zahlungsart      = $_SESSION['Zahlungsart'];
     $order->Positionen       = [];
-    $order->Waehrung         = $_SESSION['Waehrung']; // @todo - check if this matches the new Currency class
+    $order->Waehrung         = ($_SESSION['Waehrung'] instanceof Currency)
+        ? $_SESSION['Waehrung']
+        : new Currency($order->kWaehrung);
     $order->kWaehrung        = Frontend::getCurrency()->getID();
     $order->fWaehrungsFaktor = Frontend::getCurrency()->getConversionFactor();
 

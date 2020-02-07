@@ -11,6 +11,7 @@ use JTL\DB\ReturnType;
 use JTL\Helpers\SearchSpecial;
 use JTL\Session\Frontend;
 use JTL\Shop;
+use function Functional\map;
 
 /**
  * Class TopOffers
@@ -30,7 +31,7 @@ final class TopOffers extends AbstractBox
         if ($customerGroupID > 0 && Frontend::getCustomerGroup()->mayViewCategories()) {
             $cacheTags      = [\CACHING_GROUP_BOX, \CACHING_GROUP_ARTICLE];
             $cached         = true;
-            $limit          = $config['boxen']['box_topangebot_anzahl_anzeige'];
+            $limit          = $config['boxen']['box_topangebot_anzahl_basis'];
             $stockFilterSQL = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $parentSQL      = ' AND tartikel.kVaterArtikel = 0';
             $cacheID        = 'box_top_offer_' . $customerGroupID . '_' .
@@ -47,19 +48,24 @@ final class TopOffers extends AbstractBox
                             AND tartikel.cTopArtikel = 'Y' " .
                         $stockFilterSQL .
                         $parentSQL . '
-                        ORDER BY RAND() LIMIT ' . $limit,
+                        LIMIT ' . $limit,
                     ['cid' => $customerGroupID],
                     ReturnType::ARRAY_OF_OBJECTS
                 );
-                $productIDs = \array_map(function ($e) {
-                    return (int)$e->kArtikel;
-                }, $productIDs);
                 Shop::Container()->getCache()->set($cacheID, $productIDs, $cacheTags);
             }
-            if (\count($productIDs) > 0) {
+            \shuffle($productIDs);
+            $res = map(
+                \array_slice($productIDs, 0, $config['boxen']['box_topangebot_anzahl_anzeige']),
+                static function ($productID) {
+                    return (int)$productID->kArtikel;
+                }
+            );
+
+            if (\count($res) > 0) {
                 $this->setShow(true);
                 $products = new ArtikelListe();
-                $products->getArtikelByKeys($productIDs, 0, \count($productIDs));
+                $products->getArtikelByKeys($res, 0, \count($res));
                 $this->setProducts($products);
                 $this->setURL(SearchSpecial::buildURL(\SEARCHSPECIALS_TOPOFFERS));
                 \executeHook(\HOOK_BOXEN_INC_TOPANGEBOTE, [

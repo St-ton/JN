@@ -8,6 +8,7 @@ namespace JTL\Helpers;
 
 use Illuminate\Support\Collection;
 use JTL\Alert\Alert;
+use JTL\Campaign;
 use JTL\Cart\CartHelper;
 use JTL\Cart\CartItem;
 use JTL\Catalog\Product\Artikel;
@@ -19,7 +20,6 @@ use JTL\DB\ReturnType;
 use JTL\Extensions\Config\Configurator;
 use JTL\Extensions\Config\Group;
 use JTL\Extensions\Config\Item;
-use JTL\Campaign;
 use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
@@ -193,7 +193,7 @@ class Product
         $cGroupBy = $group ? 'GROUP BY teigenschaftkombiwert.kEigenschaftWert ' : '';
 
         return \array_map(
-            function ($e) {
+            static function ($e) {
                 $e->kEigenschaft      = (int)$e->kEigenschaft;
                 $e->kEigenschaftKombi = (int)$e->kEigenschaftKombi;
                 $e->kEigenschaftWert  = (int)$e->kEigenschaftWert;
@@ -636,7 +636,7 @@ class Product
     public static function addVariationPictures(Artikel $product, $variationPicturesArr): void
     {
         if (\is_array($variationPicturesArr) && \count($variationPicturesArr) > 0) {
-            $product->Bilder = \array_filter($product->Bilder, function ($item) {
+            $product->Bilder = \array_filter($product->Bilder, static function ($item) {
                 return !(isset($item->isVariation) && $item->isVariation);
             });
             if (\count($variationPicturesArr) === 1) {
@@ -916,18 +916,17 @@ class Product
                 ReturnType::ARRAY_OF_OBJECTS
             );
             if (\count($xsell) > 0) {
-                $xsellgruppen   = group($xsell, function ($e) {
+                $xsellgruppen = group($xsell, static function ($e) {
                     return $e->kXSellGruppe;
                 });
-                $defaultOptions = Artikel::getDefaultOptions();
                 foreach ($xsellgruppen as $groupID => $products) {
                     $group          = new stdClass();
                     $group->Artikel = [];
                     foreach ($products as $xs) {
                         $group->Name         = $xs->cName;
                         $group->Beschreibung = $xs->cBeschreibung;
-                        $product             = (new Artikel())->fuelleArtikel((int)$xs->kXSellArtikel, $defaultOptions);
-                        if ($product !== null && $product->kArtikel > 0 && $product->aufLagerSichtbarkeit()) {
+                        $product             = (new Artikel())->fuelleArtikel((int)$xs->kXSellArtikel);
+                        if ($product !== null && (int)$product->kArtikel > 0 && $product->aufLagerSichtbarkeit()) {
                             $group->Artikel[] = $product;
                         }
                     }

@@ -26,7 +26,7 @@
                             <input type="text" name="cTemplatename" id="cTemplatename" class="form-control{if isset($xPlausiVar_arr.cTemplatename)} fieldfillout{/if}" value="{if isset($xPostVar_arr.cTemplatename)}{$xPostVar_arr.cTemplatename}{elseif $linkGroup !== null}{$linkGroup->getTemplate()}{/if}" />
                         </div>
                     </div>
-                    {foreach $sprachen as $language}
+                    {foreach $availableLanguages as $language}
                         {assign var=cISO value=$language->getIso()}
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="cName_{$cISO}">{__('showedName')} ({$language->getLocalizedName()}):</label>

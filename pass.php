@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -31,7 +31,7 @@ if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwor
     );
     if (isset($kunde->kKunde) && $kunde->kKunde > 0 && $kunde->cSperre !== 'Y') {
         $step     = 'passwort versenden';
-        $customer = new Customer($kunde->kKunde);
+        $customer = new Customer((int)$kunde->kKunde);
         $customer->prepareResetPassword();
 
         $smarty->assign('Kunde', $customer);
@@ -46,7 +46,7 @@ if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwor
         if ($resetItem) {
             $dateExpires = new DateTime($resetItem->dExpires);
             if ($dateExpires >= new DateTime()) {
-                $customer = new Customer($resetItem->kKunde);
+                $customer = new Customer((int)$resetItem->kKunde);
                 if ($customer && $customer->cSperre !== 'Y') {
                     $customer->updatePassword($_POST['pw_new']);
                     Shop::Container()->getDB()->delete('tpasswordreset', 'kKunde', $customer->kKunde);

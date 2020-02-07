@@ -5,29 +5,39 @@
 {block name='snippets-author'}
     {block name='snippets-author-content'}
         <div itemprop="author" itemscope itemtype="https://schema.org/Person">
-            {link
-                itemprop="name"
-                href="#"
-                title=$oAuthor->cName
-                data=["toggle"=>"modal",
-                    "target"=>"#author-{$oAuthor->kContentAuthor}"]
-            }
-                {$oAuthor->cName}
-            {/link}&nbsp;&ndash;&nbsp;
-            {if isset($cDate)}
-                <span class="creation-date">{$cDate}</span>
-            {/if}
-            {modal
-                id="author-{$oAuthor->kContentAuthor}"
-                title="<img alt='{$oAuthor->cName}' src='{$oAuthor->cAvatarImgSrcFull}' height='80' class='rounded-circle' /><span itemprop='name' class='ml-3'>{$oAuthor->cName}</span>"
-                footer="{if !empty($oAuthor->cGplusProfile)}<a itemprop='url' href='{$oAuthor->cGplusProfile}?rel=author' title='{$oAuthor->cName}'>Google+</a>{/if}"}
-                {if !empty($oAuthor->cVitaShort)}
-                    <meta itemprop="image" content="{$oAuthor->cAvatarImgSrcFull}">
-                    <div itemprop="description">
-                        {$oAuthor->cVitaShort}
-                    </div>
+            {block name='snippets-author-title'}
+                {link
+                    class="author-modal"
+                    itemprop="name"
+                    href="#"
+                    title=$oAuthor->cName
+                    data=["target"=>"#author-{$oAuthor->kContentAuthor}"]
+                }
+                    {$oAuthor->cName}
+                {/link}&nbsp;&ndash;&nbsp;
+                {if isset($cDate)}
+                    <span class="creation-date">{$cDate}</span>
                 {/if}
-            {/modal}
+            {/block}
+            {block name='snippets-author-modal'}
+                {if !empty($oAuthor->cAvatarImgSrcFull)}
+                    {$title = "<img alt='{$oAuthor->cName}' src='{$oAuthor->cAvatarImgSrcFull}' height='80' class='rounded-circle' /><span itemprop='name' class='ml-3'>{$oAuthor->cName}</span>"}
+                {else}
+                    {$title = "<span itemprop='name' class='ml-3'>"|cat:$oAuthor->cName|cat:'</span>'}
+                {/if}
+                <div id="author-{$oAuthor->kContentAuthor}" title="{$title}" class="d-none">
+                    {block name='snippets-author-modal-content'}
+                        {if !empty($oAuthor->cVitaShort)}
+                            {if !empty($oAuthor->cAvatarImgSrcFull)}
+                                <meta itemprop="image" content="{$oAuthor->cAvatarImgSrcFull}">
+                            {/if}
+                            <div itemprop="description">
+                                {$oAuthor->cVitaShort}
+                            </div>
+                        {/if}
+                    {/block}
+                </div>
+            {/block}
         </div>
     {/block}
     {block name='snippets-author-publisher'}

@@ -4,6 +4,7 @@
  *}
 {block name='snippets-pagination'}
     {assign var=cParam_arr value=$cParam_arr|default:[]}
+    {assign var=noWrapper value=$noWrapper|default:false}
     {assign var=cUrlAppend value=$cParam_arr|http_build_query}
     {* parts list to display: label, pagination, items-per-page-options, sort-options *}
     {assign var=parts value=$parts|default:['label','pagi','count','sort']}
@@ -22,72 +23,105 @@
     {assign var=cThisUrl value=$cThisUrl|default:''}
 
     {get_static_route id=$cThisUrl assign=cThisUrl}
-
-    {row class="pagination-wrapper clearfix mb-3 align-items-end"}
-        {col cols="auto" class="ml-auto"}
-            {row class="align-items-center"}
-                {if $oPagination->getPageCount() > 1}
-                    {if in_array('label', $parts) || in_array('pagi', $parts)}
+    {block name='snippets-pagination-content'}
+        {row class="{if $noWrapper === true}border-0 py-0{/if} pagination-wrapper clearfix mb-3 align-items-center"}
+            {if $oPagination->getPageCount() > 1}
+                {if in_array('label', $parts) || in_array('pagi', $parts)}
+                    {block name='snippets-pagination-page-count-multiple'}
                         {if in_array('label', $parts)}
-                            {col cols="auto" class="ml-auto border-right"}
+                            {col cols="auto" class="font-weight-bold"}
                                 {lang key='paginationEntryPagination' printf={$oPagination->getFirstPageItem() + 1}|cat:':::'|cat:{$oPagination->getFirstPageItem() + $oPagination->getPageItemCount()}|cat:':::'|cat:{$oPagination->getItemCount()}}
                             {/col}
                         {/if}
-                        {col cols="auto {if $showFilter === true && (in_array('count', $parts) || in_array('sort', $parts))}border-right{/if}"}
-                            {buttongroup class="pagination-group"}
+                        {col cols="auto" class="ml-auto {if $showFilter === true && (in_array('count', $parts) || in_array('sort', $parts))}border-md-right{/if}"}
+                            {nav tag='nav' aria=["label"=>"pagination"]}
+                            <ul class="pagination mb-0">
                                 {if in_array('pagi', $parts)}
                                     {if $oPagination->getPage() > 0}
-                                        {link class="btn btn-link" href="{$cThisUrl}?{$oPagination->getId()}_nPage={$oPagination->getPrevPage()}{$cUrlAppend}{$cAnchor}"}
-                                            <i class="far fa-long-arrow-left"></i>
-                                        {/link}
+                                        {block name='snippets-pagination-page-link-previous'}
+                                            <li class="page-item">
+                                                {link class="page-link"
+                                                    href="{$cThisUrl}?{$oPagination->getId()}_nPage={$oPagination->getPrevPage()}{$cUrlAppend}{$cAnchor}"
+                                                    aria=["label"=>{lang key='previous'}]
+                                                }
+                                                    <i class="fas fa-long-arrow-alt-left"></i>
+                                                {/link}
+                                            </li>
+                                        {/block}
                                     {/if}
                                     {if $oPagination->getLeftRangePage() > 0}
-                                        {link class="page-link"  href="{$cThisUrl}?{$oPagination->getId()}_nPage=0{$cUrlAppend}{$cAnchor}"}
-                                            1
-                                        {/link}
+                                        <li class="page-item">
+                                            {link class="page-link"  href="{$cThisUrl}?{$oPagination->getId()}_nPage=0{$cUrlAppend}{$cAnchor}"}
+                                                1
+                                            {/link}
+                                        </li>
                                     {/if}
                                     {if $oPagination->getLeftRangePage() > 1}
-                                        {button variant="link" href="#" disabled=true}&hellip;{/button}
+                                        <li class="page-item">
+                                            <span class="page-text">&hellip;</span>
+                                        </li>
                                     {/if}
                                     {for $i=$oPagination->getLeftRangePage() to $oPagination->getRightRangePage()}
-                                        {link class="page-link {if $oPagination->getPage() === $i}active{elseif $i > 0 && $i < $oPagination->getPageCount() - 1}d-none d-sm-block{/if}" href="{$cThisUrl}?{$oPagination->getId()}_nPage={$i}{$cUrlAppend}{$cAnchor}"}
-                                            {$i+1}
-                                        {/link}
+                                        <li class="page-item {if $oPagination->getPage() === $i}active{/if}">
+                                            {link class="page-link {if $oPagination->getPage() === $i}active{elseif $i > 0 && $i < $oPagination->getPageCount() - 1}d-none d-sm-block{/if}" href="{$cThisUrl}?{$oPagination->getId()}_nPage={$i}{$cUrlAppend}{$cAnchor}"}
+                                                {$i+1}
+                                            {/link}
+                                        </li>
                                     {/for}
                                     {if $oPagination->getRightRangePage() < $oPagination->getPageCount() - 2}
-                                        {button variant="link" href="#" disabled=true}&hellip;{/button}
+                                        <li class="page-item">
+                                            <span class="page-text">&hellip;</span>
+                                        </li>
                                     {/if}
                                     {if $oPagination->getRightRangePage() < $oPagination->getPageCount() - 1}
-                                        {link class="page-link" href="{$cThisUrl}?{$oPagination->getId()}_nPage={$oPagination->getPageCount() - 1}{$cUrlAppend}{$cAnchor}"}
-                                            {$oPagination->getPageCount()}
-                                        {/link}
+                                        <li class="page-item">
+                                            {link class="page-link" href="{$cThisUrl}?{$oPagination->getId()}_nPage={$oPagination->getPageCount() - 1}{$cUrlAppend}{$cAnchor}"}
+                                                {$oPagination->getPageCount()}
+                                            {/link}
+                                        </li>
                                     {/if}
                                     {if $oPagination->getPage() < $oPagination->getPageCount() - 1}
-                                        {link class="btn btn-link" href="{$cThisUrl}?{$oPagination->getId()}_nPage={$oPagination->getNextPage()}{$cUrlAppend}{$cAnchor}"}
-                                            <i class="far fa-long-arrow-left"></i>
-                                        {/link}
+                                        <li class="page-item">
+                                            {block name='snippets-pagination-page-link-next'}
+                                                {link class="page-link"
+                                                    href="{$cThisUrl}?{$oPagination->getId()}_nPage={$oPagination->getNextPage()}{$cUrlAppend}{$cAnchor}"
+                                                    aria=["label"=>{lang key='next'}]
+                                                }
+                                                    <i class="fas fa-long-arrow-alt-right"></i>
+                                                {/link}
+                                            {/block}
+                                        </li>
                                     {/if}
                                 {/if}
-                            {/buttongroup}
+                            </ul>
+                            {/nav}
                         {/col}
-                    {/if}
-                {else}
-                    {col cols="auto" class="ml-auto {if $showFilter === true && (in_array('count', $parts) || in_array('sort', $parts))}border-right{/if}"}
+                    {/block}
+                {/if}
+            {else}
+                {block name='snippets-pagination-page-count-one'}
+                    {col cols="auto" class="font-weight-bold mb-3 mb-md-0"}
                         {lang key='paginationTotalEntries'} {$oPagination->getItemCount()}
                     {/col}
-                {/if}
+                {/block}
+            {/if}
 
-                {if $showFilter === true && (in_array('count', $parts) || in_array('sort', $parts))}
-                    {block name='snippets-pagination-form'}
-                        {col cols="auto" class="ml-auto pl-0"}
-                            {form action="{$cThisUrl}{$cAnchor}" method="get" class="form-inline float-right"}
-                                {block name='snippets-pagination-form-content'}
+            {if $showFilter === true && (in_array('count', $parts) || in_array('sort', $parts))}
+                {block name='snippets-pagination-form'}
+                    {col cols="12" md="auto" class="ml-md-0 ml-auto mt-3 mt-md-0"}
+                        {form action="{$cThisUrl}{$cAnchor}" method="get"}
+                            {block name='snippets-pagination-form-content'}
+                                {row}
+                                {block name='snippets-pagination-form-hidden'}
                                     {foreach $cParam_arr as $cParamName => $cParamValue}
                                         {input type="hidden" name=$cParamName value=$cParamValue}
                                     {/foreach}
-                                    {if in_array('count', $parts)}
-                                        {formgroup class="items-per-page-group ml-3"}
-                                            {select name="{$oPagination->getId()}_nItemsPerPage"
+                                {/block}
+                                {if in_array('count', $parts)}
+                                    {col cols=12 md='auto'}
+                                        {block name='snippets-pagination-form-items-pre-page'}
+                                            {select class="custom-select mr-md-3 mb-3 mb-md-0"
+                                                    name="{$oPagination->getId()}_nItemsPerPage"
                                                     id="{$oPagination->getId()}_nItemsPerPage"
                                                     title="{lang key='paginationEntriesPerPage'}"}
                                                 <option disabled>{lang key='paginationEntriesPerPage'}</option>
@@ -100,11 +134,14 @@
                                                     {lang key='showAll'}
                                                 </option>
                                             {/select}
-                                        {/formgroup}
-                                    {/if}
-                                    {if $oPagination->getSortByOptions()|@count > 0 && in_array('sort', $parts)}
-                                        {formgroup class="filter-group ml-3"}
-                                            {select name="{$oPagination->getId()}_nSortByDir"
+                                        {/block}
+                                    {/col}
+                                {/if}
+                                {if $oPagination->getSortByOptions()|@count > 0 && in_array('sort', $parts)}
+                                    {col cols=12 md='auto'}
+                                        {block name='snippets-pagination-form-sort'}
+                                            {select class="custom-select col-md-auto "
+                                                    name="{$oPagination->getId()}_nSortByDir"
                                                     id="{$oPagination->getId()}_nSortByDir"
                                                     title="{lang key='sorting' section='productOverview'}"}
                                                 <option disabled>{lang key='sorting' section='productOverview'}</option>
@@ -119,16 +156,17 @@
                                                     </option>
                                                 {/foreach}
                                             {/select}
-                                        {/formgroup}
-                                    {/if}
-                                {/block}
-                            {/form}
-                        {/col}
-                    {/block}
-                {/if}
-            {/row}
-        {/col}
-    {/row}
+                                        {/block}
+                                    {/col}
+                                {/if}
+                                {/row}
+                            {/block}
+                        {/form}
+                    {/col}
+                {/block}
+            {/if}
+        {/row}
+    {/block}
     {block name='snippets-pagination-script'}
         {inline_script}<script>
             $('.pagination-wrapper select').on('change', function () {

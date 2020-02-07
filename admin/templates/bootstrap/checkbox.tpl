@@ -188,8 +188,8 @@
                                     </div>
                                     <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('hintCheckboxName')}</div>
                                 </div>
-                                {if $sprachen|@count > 0}
-                                    {foreach $sprachen as $language}
+                                {if $availableLanguages|@count > 0}
+                                    {foreach $availableLanguages as $language}
                                         {assign var=cISO value=$language->getCode()}
                                         {assign var=kSprache value=$language->getId()}
                                         {assign var=cISOText value="cText_$cISO"}
@@ -202,7 +202,7 @@
                                         </div>
                                     {/foreach}
 
-                                    {foreach $sprachen as $language}
+                                    {foreach $availableLanguages as $language}
                                         {assign var=cISO value=$language->getCode()}
                                         {assign var=kSprache value=$language->getId()}
                                         {assign var=cISOBeschreibung value="cBeschreibung_$cISO"}
@@ -348,7 +348,7 @@
                                     </div>
                                 {/if}
 
-                                {if isset($oKundengruppe_arr) && $oKundengruppe_arr|@count > 0}
+                                {if $customerGroups|@count > 0}
                                     <div class="form-group form-row align-items-center{if isset($cPlausi_arr.kKundengruppe)} error{/if}">
                                         <label class="col col-sm-4 col-form-label text-sm-right" for="kKundengruppe">{__('customerGroup')}{if isset($cPlausi_arr.kKundengruppe)} <span class="fillout">{__('FillOut')}</span>{/if}:</label>
                                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
@@ -359,24 +359,24 @@
                                                     data-selected-text-format="count > 2"
                                                     data-size="7"
                                                     data-actions-box="true">
-                                            {foreach name=kundengruppen from=$oKundengruppe_arr key=key item=oKundengruppe}
+                                            {foreach name=kundengruppen from=$customerGroups key=key item=customerGroup}
                                                 {assign var=bKGSelect value=false}
-                                                {if !isset($cPost_arr.kKundengruppe) && !isset($cPlausi_arr.kKundengruppe) && !isset($oCheckBox->kKundengruppe_arr) && $oKundengruppe->cStandard === 'Y'}
+                                                {if !isset($cPost_arr.kKundengruppe) && !isset($cPlausi_arr.kKundengruppe) && !isset($oCheckBox->kKundengruppe_arr) && $customerGroup->isDefault()}
                                                     {assign var=bKGSelect value=true}
                                                 {elseif isset($oCheckBox->kKundengruppe_arr) && $oCheckBox->kKundengruppe_arr|@count > 0}
                                                     {foreach $oCheckBox->kKundengruppe_arr as $kKundengruppe}
-                                                        {if $kKundengruppe == $oKundengruppe->kKundengruppe}
+                                                        {if $kKundengruppe == $customerGroup->getID()}
                                                             {assign var=bKGSelect value=true}
                                                         {/if}
                                                     {/foreach}
                                                 {elseif isset($cPost_arr.kKundengruppe) && $cPost_arr.kKundengruppe|@count > 0}
                                                     {foreach $cPost_arr.kKundengruppe as $kKundengruppe}
-                                                        {if $kKundengruppe == $oKundengruppe->kKundengruppe}
+                                                        {if $kKundengruppe == $customerGroup->getID()}
                                                             {assign var=bKGSelect value=true}
                                                         {/if}
                                                     {/foreach}
                                                 {/if}
-                                                <option value="{$oKundengruppe->kKundengruppe}"{if $bKGSelect} selected{/if}>{$oKundengruppe->cName}</option>
+                                                <option value="{$customerGroup->getID()}"{if $bKGSelect} selected{/if}>{$customerGroup->getName()}</option>
                                             {/foreach}
                                             </select>
                                         </div>

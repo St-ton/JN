@@ -17,7 +17,6 @@
         "ext-libxml": "*",
         "ext-mbstring": "*",
         "ext-pdo": "*",
-        "ext-posix": "*",
         "ext-simplexml": "*",
         "ext-soap": "*",
         "ext-xml": "*",
@@ -26,9 +25,11 @@
         "intervention/image": "^2.4",
         "ifsnop/mysqldump-php": "^2.1",
         "symfony/var-dumper": "^4.2",
-        "jtlshop/systemcheck": "^1.2",
+        "jtlshop/shop5-systemcheck": "dev-master",
         "jtlshop/sccbs3": "dev-master",
         "jtlshop/scc": "dev-master",
+        "jtlshop/phpquery": "dev-master",
+        "jtlshop/xtea": "dev-master",
         "smarty/smarty": "~3.1",
         "jdorn/sql-formatter": "^1.2",
         "phpmyadmin/sql-parser": "^3.4",
@@ -52,7 +53,10 @@
         "illuminate/container": "^5.7",
         "symfony/console": "^4.2",
         "symfony/finder": "^4.2",
-        "mobiledetect/mobiledetectlib": "^2.8"
+        "mobiledetect/mobiledetectlib": "^2.8",
+        "league/flysystem": "^1.0",
+        "league/flysystem-sftp": "^1.0",
+        "league/flysystem-ziparchive": "^1.0"
     },
     "require-dev": {
         "phpunit/php-token-stream": "^3.0",
@@ -69,16 +73,8 @@
     },
     "repositories": [
         {
-            "type": "package",
-            "package": {
-                "name": "jtlshop/systemcheck",
-                "version": "1.2.0",
-                "source": {
-                    "url": "https://gitlab.com/jtl-software/jtl-shop/tools/systemcheck.git",
-                    "type": "git",
-                    "reference": "1.2.0"
-                }
-            }
+            "type": "vcs",
+            "url": "https://gitlab.com/jtl-software/jtl-shop/tools/shop5-systemcheck.git"
         },
         {
             "type": "vcs",
@@ -95,11 +91,18 @@
         {
             "type": "vcs",
             "url": "https://gitlab.com/jtl-software/oauth2/client.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://gitlab.com/jtl-software/jtl-shop/tools/phpquery.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://gitlab.com/jtl-software/jtl-shop/tools/xtea.git"
         }
 
     ],
     "autoload": {
-        "files": [ "vendor/jtlshop/systemcheck/lib/bootstrap.php" ],
         "psr-4": {
             "JTL\\": ["src/"],
             "Plugin\\": ["../plugins/"]

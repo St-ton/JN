@@ -20,6 +20,4 @@
     }
         <span class="far fa-list-alt"></span>
     {/button}
-    <div class="action-tip-animation">{lang key='onComparelist'}</div>
-    <div class="action-tip-animation">{lang key='notOnComparelist'}</div>
 {/block}

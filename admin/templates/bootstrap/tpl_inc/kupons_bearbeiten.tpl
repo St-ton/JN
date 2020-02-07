@@ -11,9 +11,7 @@
 {elseif $oKupon->cKuponTyp === $couponTypes.newCustomer}
     {assign var=cTitel value="$cTitel : {__('newCustomerCoupon')}"}
 {/if}
-
 {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=__('couponsDesc') cDokuURL=__('couponsURL')}
-
 <script>
     $(function () {
         {if $oKupon->cKuponTyp == $couponTypes.standard || $oKupon->cKuponTyp == $couponTypes.newCustomer}
@@ -55,7 +53,7 @@
                         <input type="text" class="form-control" name="cName" id="cName" value="{$oKupon->cName}">
                     </div>
                 </div>
-                {foreach $sprachen as $language}
+                {foreach $availableLanguages as $language}
                     {assign var=langCode value=$language->getIso()}
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="cName_{$langCode}">{__('showedName')} ({$language->getLocalizedName()}):</label>
@@ -63,7 +61,7 @@
                             <input
                                 type="text" class="form-control" name="cName_{$langCode}"
                                 id="cName_{$langCode}"
-                                value="{if isset($oKuponName_arr[$langCode])}{$oKuponName_arr[$langCode]}{/if}">
+                                value="{$couponNames[$langCode]|default:''}">
                         </div>
                     </div>
                 {/foreach}
@@ -209,9 +207,9 @@
                         <label class="col col-sm-4 col-form-label text-sm-right" for="kSteuerklasse">{__('taxClass')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <select name="kSteuerklasse" id="kSteuerklasse" class="custom-select combo">
-                                {foreach $oSteuerklasse_arr as $oSteuerklasse}
-                                    <option value="{$oSteuerklasse->kSteuerklasse}"{if $oKupon->kSteuerklasse == $oSteuerklasse->kSteuerklasse} selected{/if}>
-                                        {$oSteuerklasse->cName}
+                                {foreach $taxClasses as $taxClass}
+                                    <option value="{$taxClass->kSteuerklasse}"{if (int)$oKupon->kSteuerklasse === (int)$taxClass->kSteuerklasse} selected{/if}>
+                                        {$taxClass->cName}
                                     </option>
                                 {/foreach}
                             </select>
@@ -412,9 +410,9 @@
                                 {__('all')}
                             </option>
                             <option data-divider="true"></option>
-                            {foreach $oHersteller_arr as $oHersteller}
-                                <option value="{$oHersteller->kHersteller}"{if $oHersteller->selected == 1} selected{/if}>
-                                    {$oHersteller->cName}
+                            {foreach $manufacturers as $manufacturer}
+                                <option value="{$manufacturer->kHersteller}"{if $manufacturer->selected === true} selected{/if}>
+                                    {$manufacturer->cName}
                                 </option>
                             {/foreach}
                         </select>
@@ -428,9 +426,9 @@
                             <option value="-1"{if $oKupon->kKundengruppe == -1} selected{/if}>
                                 {__('allCustomerGroups')}
                             </option>
-                            {foreach $oKundengruppe_arr as $oKundengruppe}
-                                <option value="{$oKundengruppe->kKundengruppe}"{if $oKupon->kKundengruppe == $oKundengruppe->kKundengruppe} selected{/if}>
-                                    {$oKundengruppe->cName}
+                            {foreach $customerGroups as $customerGroup}
+                                <option value="{$customerGroup->getID()}"{if (int)$oKupon->kKundengruppe === $customerGroup->getID()} selected{/if}>
+                                    {$customerGroup->getName()}
                                 </option>
                             {/foreach}
                         </select>
@@ -460,9 +458,9 @@
                                 {__('all')}
                             </option>
                             <option data-divider="true"></option>
-                            {foreach $oKategorie_arr as $oKategorie}
-                                <option value="{$oKategorie->kKategorie}"{if $oKategorie->selected == 1} selected{/if}>
-                                    {$oKategorie->cName}
+                            {foreach $categories as $category}
+                                <option value="{$category->kKategorie}"{if $category->selected === true} selected{/if}>
+                                    {$category->cName}
                                 </option>
                             {/foreach}
                         </select>
@@ -483,7 +481,7 @@
                                 keyName:           'kKunde',
                                 renderItemCb:      renderCustomerItem,
                                 onApply:           onApplySelectedCustomers,
-                                selectedKeysInit:  [{foreach $kKunde_arr as $kKunde}'{$kKunde}',{/foreach}]
+                                selectedKeysInit:  [{$customerIDs|implode:','}]
                             });
                             onApplySelectedCustomers(customerPicker.getSelection());
                         });

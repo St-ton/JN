@@ -11,6 +11,7 @@ use JTL\DB\ReturnType;
 use JTL\Helpers\SearchSpecial;
 use JTL\Session\Frontend;
 use JTL\Shop;
+use function Functional\map;
 
 /**
  * Class UpcomingProducts
@@ -32,7 +33,7 @@ final class UpcomingProducts extends AbstractBox
             $cacheTags      = [\CACHING_GROUP_BOX, \CACHING_GROUP_ARTICLE];
             $stockFilterSQL = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $parentSQL      = ' AND tartikel.kVaterArtikel = 0';
-            $limit          = (int)$config['boxen']['box_erscheinende_anzahl_anzeige'];
+            $limit          = (int)$config['boxen']['box_erscheinende_anzahl_basis'];
             $cacheID        = 'box_ikv_' . $customerGroupID . '_' . $limit . \md5($stockFilterSQL . $parentSQL);
             if (($productIDs = Shop::Container()->getCache()->get($cacheID)) === false) {
                 $productIDs = Shop::Container()->getDB()->queryPrepared(
@@ -45,19 +46,24 @@ final class UpcomingProducts extends AbstractBox
                             $stockFilterSQL . ' ' .
                             $parentSQL . '
                             AND NOW() < tartikel.dErscheinungsdatum
-                        ORDER BY RAND() LIMIT :lmt',
+                        LIMIT :lmt',
                     ['cid' => $customerGroupID, 'lmt' => $limit],
                     ReturnType::ARRAY_OF_OBJECTS
                 );
-                $productIDs = \array_map(function ($e) {
-                    return (int)$e->kArtikel;
-                }, $productIDs);
                 Shop::Container()->getCache()->set($cacheID, $productIDs, $cacheTags);
             }
-            if (\count($productIDs) > 0) {
+            \shuffle($productIDs);
+            $res = map(
+                \array_slice($productIDs, 0, $config['boxen']['box_erscheinende_anzahl_anzeige']),
+                static function ($productID) {
+                    return (int)$productID->kArtikel;
+                }
+            );
+
+            if (\count($res) > 0) {
                 $this->setShow(true);
                 $products = new ArtikelListe();
-                $products->getArtikelByKeys($productIDs, 0, \count($productIDs));
+                $products->getArtikelByKeys($res, 0, \count($res));
                 $this->setProducts($products);
                 $this->setURL(SearchSpecial::buildURL(\SEARCHSPECIALS_UPCOMINGPRODUCTS));
                 \executeHook(\HOOK_BOXEN_INC_ERSCHEINENDEPRODUKTE, [

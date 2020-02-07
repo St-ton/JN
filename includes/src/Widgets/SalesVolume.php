@@ -6,6 +6,7 @@
 
 namespace JTL\Widgets;
 
+use DateTime;
 use JTL\Catalog\Product\Preise;
 use JTL\Linechart;
 
@@ -26,7 +27,6 @@ class SalesVolume extends AbstractWidget
     public function init()
     {
         require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'statistik_inc.php';
-        require_once \PFAD_ROOT . \PFAD_FLASHCHART . 'php-ofc-library/open-flash-chart.php';
         $this->oWaehrung = $this->oDB->select('twaehrung', 'cStandard', 'Y');
     }
 
@@ -56,7 +56,7 @@ class SalesVolume extends AbstractWidget
      */
     public function getJSON(): Linechart
     {
-        $dateLastMonth = new \DateTime();
+        $dateLastMonth = new DateTime();
         $dateLastMonth->modify('-1 month');
         $dateLastMonth = (int)$dateLastMonth->format('U');
         $currentMonth  = $this->calcVolumeOfMonth((int)\date('n'), (int)\date('Y'));

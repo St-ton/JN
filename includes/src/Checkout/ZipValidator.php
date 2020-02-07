@@ -260,7 +260,7 @@ class ZipValidator
     {
         return \preg_replace_callback(
             '/' . $pattern . '/',
-            function ($hit) {
+            static function ($hit) {
                 return '<span class="alert-danger">' . $hit[0] . '</span>';
             },
             $zipCode,

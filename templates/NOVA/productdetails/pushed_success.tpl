@@ -11,7 +11,7 @@
         {/if}
         {assign var=showXSellingCart value=isset($Xselling->Kauf) && count($Xselling->Kauf->Artikel) > 0}
         {if $card}
-            <div class="text-center card-header bg-success alert-success">
+            <div class="text-center card-header alert-success">
                 {if isset($cartNote)}
                     {block name='productdetails-pushed-success-cart-note-heading'}
                         {$cartNote}
@@ -35,10 +35,16 @@
                                 {col cols=4}
                                     {block name='productdetails-pushed-success-product-cell-image'}
                                         {counter assign=imgcounter print=0}
-                                        {image src=$pushedArtikel->Bilder[0]->cURLNormal
-                                             alt="{if isset($pushedArtikel->Bilder[0]->cAltAttribut)}{$pushedArtikel->Bilder[0]->cAltAttribut|strip_tags|truncate:60|escape:'html'}{else}{$pushedArtikel->cName}{/if}"
-                                             id="image{$pushedArtikel->kArtikel}_{$imgcounter}"
-                                             class="image mb-3" fluid=true}
+                                        {image lazy=true webp=true
+                                            src=$pushedArtikel->getImage(\JTL\Media\Image::SIZE_XS)
+                                            srcset="{$pushedArtikel->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                {$pushedArtikel->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                {$pushedArtikel->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                            alt="{if isset($pushedArtikel->Bilder[0]->cAltAttribut)}{$pushedArtikel->Bilder[0]->cAltAttribut|strip_tags|truncate:60|escape:'html'}{else}{$pushedArtikel->cName}{/if}"
+                                            id="image{$pushedArtikel->kArtikel}_{$imgcounter}"
+                                            sizes="auto"
+                                            class="image mb-3" fluid=true
+                                        }
                                     {/block}
                                 {/col}
                                 {col}
@@ -90,12 +96,12 @@
                     {/block}
                     {block name='productdetails-pushed-success-product-cell-links'}
                         {row}
-                            {col cols=6}
-                                {link href="{get_static_route id='warenkorb.php'}" class="btn btn-secondary btn-basket btn-block"}
+                            {col cols=12 md=6}
+                                {link href="{get_static_route id='warenkorb.php'}" class="btn btn-outline-primary btn-basket btn-block mb-3"}
                                     <i class="fas fa-shopping-cart"></i> {lang key='gotoBasket'}
                                 {/link}
                             {/col}
-                            {col cols=6}
+                            {col cols=12 md=6}
                                 {link href=$pushedArtikel->cURLFull
                                     class="btn btn-primary btn-block"
                                     data=["dismiss"=>"{if !$card}modal{else}alert{/if}"]

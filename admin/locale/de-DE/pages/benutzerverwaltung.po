@@ -213,188 +213,11 @@ msgstr "Plugins"
 msgid "Statistik"
 msgstr "Statistik"
 
-msgid "permission_ORDER_VIEW"
-msgstr "Bestellhistorie"
-
-msgid "permission_BOXES_VIEW"
-msgstr "Boxenverwaltung"
-
-msgid "permission_CHECKBOXES_VIEW"
-msgstr "Checkboxenverwaltung"
-
-msgid "permission_EMAIL_REPORTS_VIEW"
-msgstr "E-Mail-Berichte"
-
-msgid "permission_UNLOCK_CENTRAL_VIEW"
-msgstr "Freischaltzentrale"
-
-msgid "permission_RESET_SHOP_VIEW"
-msgstr "Shop zurücksetzen"
-
-msgid "permission_SHOP_UPDATE_VIEW"
-msgstr "Shop-Update"
-
-msgid "permission_LANGUAGE_VIEW"
-msgstr "Sprachverwaltung"
-
-msgid "permission_SETTINGS_ARTICLEDETAILS_VIEW"
-msgstr "Artikeldetails"
-
-msgid "permission_SETTINGS_ARTICLEOVERVIEW_VIEW"
-msgstr "Artikelübersicht / Suche"
-
-msgid "permission_SETTINGS_SPECIALPRODUCTS_VIEW"
-msgstr "Besondere Artikel"
-
-msgid "permission_SETTINGS_IMAGES_VIEW"
-msgstr "Bilder"
-
-msgid "permission_SETTINGS_BOXES_VIEW"
-msgstr "Boxen"
-
-msgid "permission_SETTINGS_EMAIL_BLACKLIST_VIEW"
-msgstr "E-Mail-Blacklist"
-
-msgid "permission_SETTINGS_EMAILS_VIEW"
-msgstr "E-Mails"
-
-msgid "permission_SETTINGS_GLOBAL_VIEW"
-msgstr "Globale Einstellungen"
-
-msgid "permission_SETTINGS_GLOBAL_META_VIEW"
-msgstr "Globale Metadaten"
-
-msgid "permission_SETTINGS_CONTACTFORM_VIEW"
-msgstr "Kontaktformular"
-
 msgid "permission_SETTINGS_META_KEYWORD_BLACKLIST_VIEW"
 msgstr "Blacklist für Meta-Keywords"
 
-msgid "permission_SETTINGS_NAVIGATION_FILTER_VIEW"
-msgstr "Navigationsfilter"
-
-msgid "permission_SETTINGS_SITEMAP_VIEW"
-msgstr "Sitemap-Aufbau"
-
-msgid "permission_SETTINGS_STARTPAGE_VIEW"
-msgstr "Startseite"
-
-msgid "permission_SETTINGS_BASKET_VIEW"
-msgstr "Warenkorb / Kaufabwicklung"
-
-msgid "permission_DISPLAY_ARTICLEOVERLAYS_VIEW"
-msgstr "Artikel-Overlays"
-
-msgid "permission_DISPLAY_OWN_LOGO_VIEW"
-msgstr "Eigenes Logo"
-
-msgid "permission_DISPLAY_TEMPLATE_VIEW"
-msgstr "Template"
-
-msgid "permission_DISPLAY_BRANDING_VIEW"
-msgstr "Wasserzeichen / Branding"
-
-msgid "permission_CONTENT_PAGE_VIEW"
-msgstr "CMS (eigene Seite)"
-
-msgid "permission_CONTENT_EMAIL_TEMPLATE_VIEW"
-msgstr "E-Mail-Vorlagen"
-
-msgid "permission_CONTENT_NEWS_SYSTEM_VIEW"
-msgstr "News- / Blogsystem"
-
-msgid "permission_ORDER_AGB_WRB_VIEW"
-msgstr "AGB / Widerrufsbelehrung"
-
-msgid "permission_ORDER_COUPON_VIEW"
-msgstr "Coupon"
-
-msgid "permission_ORDER_CUSTOMERFIELDS_VIEW"
-msgstr "selbstdef. Kundenfelder"
-
-msgid "permission_ORDER_SHIPMENT_VIEW"
-msgstr "Versandarten"
-
-msgid "permission_ORDER_PAYMENT_VIEW"
-msgstr "Zahlungsarten"
-
-msgid "permission_ORDER_PACKAGE_VIEW"
-msgstr "Zusatzverpackung"
-
-msgid "permission_MODULE_VOTESYSTEM_VIEW"
-msgstr "Bewertungssystem"
-
-msgid "permission_MODULE_SAVED_BASKETS_VIEW"
-msgstr "Gespeicherte Warenkörbe"
-
-msgid "permission_MODULE_GIFT_VIEW"
-msgstr "Gratisgeschenk"
-
-msgid "permission_MODULE_CAC_VIEW"
-msgstr "Kunden werben Kunden"
-
-msgid "permission_MODULE_LIVESEARCH_VIEW"
-msgstr "Live-Suche"
-
-msgid "permission_MODULE_NEWSLETTER_VIEW"
-msgstr "Newsletter"
-
-msgid "permission_MODULE_PRICECHART_VIEW"
-msgstr "Preisverlauf"
-
-msgid "permission_MODULE_PRODUCTTAGS_VIEW"
-msgstr "Artikel-Tags"
-
-msgid "permission_MODULE_COMPARELIST_VIEW"
-msgstr "Vergleichsliste"
-
-msgid "permission_MODULE_WISHLIST_VIEW"
-msgstr "Wunschzettel"
-
-msgid "permission_EXPORT_SCHEDULE_VIEW"
-msgstr "Aufgabenplaner für Exporte"
-
-msgid "permission_EXPORT_FORMATS_VIEW"
-msgstr "Exportformate"
-
-msgid "permission_IMPORT_NEWSLETTER_RECEIVER_VIEW"
-msgstr "Import Newsletter-Empfänger"
-
-msgid "permission_IMPORT_CUSTOMER_VIEW"
-msgstr "Kundenimport"
-
-msgid "permission_EXPORT_RSSFEED_VIEW"
-msgstr "RSS-Feed"
-
 msgid "permission_EXPORT_SHOPINFO_VIEW"
 msgstr "Exportdatei shopinfo.xml (elm@ar)"
-
-msgid "permission_EXPORT_SITEMAP_VIEW"
-msgstr "Sitemap für Suchmaschinen"
-
-msgid "permission_EXTENSION_VOTE_VIEW"
-msgstr "Umfragesystem"
-
-msgid "permission_PLUGIN_ADMIN_VIEW"
-msgstr "Plugin-Verwaltung"
-
-msgid "permission_SETTINGS_CUSTOMERFORM_VIEW"
-msgstr "Kunden / Formulare"
-
-msgid "permission_STATS_VISITOR_VIEW"
-msgstr "Besucher"
-
-msgid "permission_STATS_VISITOR_LOCATION_VIEW"
-msgstr "Kundenherkunft"
-
-msgid "permission_STATS_CRAWLER_VIEW"
-msgstr "Suchmaschinen"
-
-msgid "permission_STATS_EXCHANGE_VIEW"
-msgstr "Umsätze"
-
-msgid "permission_ACCOUNT_VIEW"
-msgstr "Benutzerverwaltung"
 
 msgid "permission_DASHBOARD_VIEW"
 msgstr "Dashboard"
@@ -405,63 +228,30 @@ msgstr "Einstellungen durchsuchen"
 msgid "permission_FILECHECK_VIEW"
 msgstr "Shopdatei-Check"
 
-msgid "permission_EXTENSION_SELECTIONWIZARD_VIEW"
-msgstr "Auswahlassistent"
-
-msgid "permission_SYSTEMLOG_VIEW"
-msgstr "System-Log"
-
-msgid "permission_SETTINGS_SEPARATOR_VIEW"
-msgstr "Zahlenformate"
-
-msgid "permission_RMA_VIEW"
-msgstr "Warenrücksendung"
-
-msgid "permission_STATS_COUPON_VIEW"
-msgstr "Coupons"
-
 msgid "permission_DBCHECK_VIEW"
 msgstr "Datenbank-Check"
-
-msgid "permission_DISPLAY_BANNER_VIEW"
-msgstr "Banner"
-
-msgid "permission_REDIRECT_VIEW"
-msgstr "Weiterleitung"
-
-msgid "permission_EMAILHISTORY_VIEW"
-msgstr "E-Mail-Historie"
-
-msgid "permission_SLIDER_VIEW"
-msgstr "Slider"
-
-msgid "permission_WAREHOUSE_VIEW"
-msgstr "Warenlager"
 
 msgid "permission_PERMISSIONCHECK_VIEW"
 msgstr "Verzeichnis-Check"
 
-msgid "permission_OBJECTCACHE_VIEW"
-msgstr "Objekt-Cache"
-
-msgid "permission_PROFILER_VIEW"
-msgstr "Plugin-Profiler"
-
-msgid "permission_WAWI_SYNC_VIEW"
-msgstr "Synchronisierung mit JTL-Wawi"
-
-msgid "permission_DISPLAY_IMAGES_VIEW"
-msgstr "Bilderverwaltung"
-
-msgid "permission_STATS_LANDINGPAGES_VIEW"
-msgstr "Einstiegsseiten"
-
-msgid "permission_PLZ_ORT_IMPORT_VIEW"
-msgstr "PLZ-Import"
-
-msgid "permission_STATS_CAMPAIGN_VIEW"
-msgstr "Kampagnen"
-
 # description of admin group (tadminlogingruppe)
 msgid "Voller Zugriff auf den Administrationsbereich."
 msgstr "Voller Zugriff auf den Administrationsbereich."
+
+msgid "resume"
+msgstr "Vita"
+
+msgid "personalInformation"
+msgstr "Persönliche Angaben"
+
+msgid "avatar"
+msgstr "Benutzerbild"
+
+msgid "errorImageMissing"
+msgstr "Bitte geben Sie ein Bild an."
+
+msgid "errorImageUpload"
+msgstr "Fehler beim Bildupload."
+
+msgid "noMenuItem"
+msgstr "Ohne Menüpunkt"

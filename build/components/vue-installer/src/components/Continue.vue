@@ -3,11 +3,11 @@
         <hr>
         <div class="row">
             <div class="col btn-group">
-                <b-btn size="lg" variant="warning" @click="setStep(step - 1)" v-if="step > 0 && disableBack === false">
-                    <icon name="arrow-left"></icon> Zurück
+                <b-btn size="lg" variant="warning" @click="setStep(istep - 1)" v-if="istep > 0 && disableBack === false">
+                    <icon name="arrow-left"></icon> {{ $t('back') }}
                 </b-btn>
-                <b-btn size="lg" variant="primary" @click="continueInstallation(step + 1)" :class="{'pulse-button': disable !== true, disabled: disable === true}" v-if="step + 1 < steps.length">
-                    <icon name="share"></icon> Weiter zu Schritt {{ step + 1}} - {{ steps[step + 1] }}
+                <b-btn size="lg" variant="primary" @click="continueInstallation(istep + 1)" :class="{'pulse-button': disable !== true, disabled: disable === true}" v-if="istep + 1 < isteps.length">
+                    <icon name="share"></icon> {{ $t('continueToStep') }} {{ istep + 1}} - {{ $t(isteps[istep + 1]) }}
                 </b-btn>
             </div>
         </div>
@@ -19,13 +19,44 @@ export default {
     name:    'continueinstallation',
     props:   ['disable', 'disableBack', 'cb'],
     methods: {
-        continueInstallation(step) {
+        continueInstallation(istep) {
             if (typeof this.disable === 'undefined' || this.disable === false) {
                 if (typeof this.cb === 'undefined' || (typeof this.cb === 'function' && this.cb() === true)) {
-                    this.setStep(step);
+                    this.setStep(istep);
                 }
             }
         }
+    },
+    data() {
+        const messages = {
+            de: {
+                continueToStep: 'Weiter zu Schritt',
+                back:           'Zurück',
+                step1:          'Hallo',
+                step2:          'Vorige Installation prüfen',
+                step3:          'Dateirechte',
+                step4:          'Systemcheck',
+                step5:          'Datenbankdaten',
+                step6:          'Adminnutzer',
+                step7:          'Schema',
+                step8:          'Abschluss'
+            },
+            en: {
+                continueToStep: 'Continue to step',
+                back:           'Back',
+                step1:          'Hello',
+                step2:          'Check for previous installation',
+                step3:          'Permission check',
+                step4:          'System check',
+                step5:          'Database',
+                step6:          'Admin user',
+                step7:          'Scheme',
+                step8:          'Summary'
+            }
+        };
+        this.$i18n.add('en', messages.en);
+        this.$i18n.add('de', messages.de);
+        return { };
     }
 };
 </script>

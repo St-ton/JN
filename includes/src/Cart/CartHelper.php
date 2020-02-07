@@ -7,11 +7,13 @@
 namespace JTL\Cart;
 
 use JTL\Alert\Alert;
+use JTL\Campaign;
+use JTL\Catalog\ComparisonList;
 use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\EigenschaftWert;
 use JTL\Catalog\Product\Preise;
-use JTL\Catalog\ComparisonList;
+use JTL\Catalog\Product\VariationValue;
 use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Checkout\Kupon;
 use JTL\Checkout\Lieferadresse;
@@ -26,7 +28,7 @@ use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
-use JTL\Campaign;
+use JTL\Media\Image;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
@@ -175,7 +177,7 @@ class CartHelper
             $info->discount[self::GROSS] +
             $info->surcharge[self::GROSS];
 
-        $formatter = function ($prop) use ($decimals) {
+        $formatter = static function ($prop) use ($decimals) {
             return [
                 self::NET   => \number_format($prop[self::NET], $decimals, '.', ''),
                 self::GROSS => \number_format($prop[self::GROSS], $decimals, '.', ''),
@@ -262,11 +264,10 @@ class CartHelper
     }
 
     /**
-     * @param CartItem $item
-     * @param object   $variation
-     * @return void
+     * @param CartItem       $item
+     * @param VariationValue $variation
      */
-    public static function setVariationPicture(CartItem $item, $variation): void
+    public static function setVariationPicture(CartItem $item, VariationValue $variation): void
     {
         if ($item->variationPicturesArr === null) {
             $item->variationPicturesArr = [];
@@ -274,14 +275,14 @@ class CartHelper
         $imageBaseURL       = Shop::getImageBaseURL();
         $image              = (object)[
             'isVariation'  => true,
-            'cPfadMini'    => $variation->cPfadMini,
-            'cPfadKlein'   => $variation->cPfadKlein,
-            'cPfadNormal'  => $variation->cPfadNormal,
-            'cPfadGross'   => $variation->cPfadGross,
-            'cURLMini'     => $imageBaseURL . $variation->cPfadMini,
-            'cURLKlein'    => $imageBaseURL . $variation->cPfadKlein,
-            'cURLNormal'   => $imageBaseURL . $variation->cPfadNormal,
-            'cURLGross'    => $imageBaseURL . $variation->cPfadGross,
+            'cPfadMini'    => \str_replace($imageBaseURL, '', $variation->getImage(Image::SIZE_XS)),
+            'cPfadKlein'   => \str_replace($imageBaseURL, '', $variation->getImage(Image::SIZE_SM)),
+            'cPfadNormal'  => \str_replace($imageBaseURL, '', $variation->getImage(Image::SIZE_MD)),
+            'cPfadGross'   => \str_replace($imageBaseURL, '', $variation->getImage(Image::SIZE_LG)),
+            'cURLMini'     => $variation->getImage(Image::SIZE_XS),
+            'cURLKlein'    => $variation->getImage(Image::SIZE_SM),
+            'cURLNormal'   => $variation->getImage(Image::SIZE_MD),
+            'cURLGross'    => $variation->getImage(Image::SIZE_LG),
             'nNr'          => \count($item->variationPicturesArr) + 1,
             'cAltAttribut' => \str_replace(['"', "'"], '', $item->Artikel->cName . ' - ' . $variation->cName),
         ];
@@ -1237,7 +1238,7 @@ class CartHelper
                 $_SESSION['variBoxAnzahl_arr'][$key] = $variKombi;
                 $attributes[$key]                    = new stdClass();
                 $attributes[$key]->kArtikel          = $productID;
-                $attributes[$key]->oEigenschaft_arr  = \array_map(function ($a) use ($properties) {
+                $attributes[$key]->oEigenschaft_arr  = \array_map(static function ($a) use ($properties) {
                     return (object)[
                         'kEigenschaft'     => $a,
                         'kEigenschaftWert' => $properties[$a],
@@ -1772,12 +1773,15 @@ class CartHelper
             );
         }
         if (isset($productData->kArtikel) && $productData->kArtikel > 0) {
-            $product = (new Artikel())->fuelleArtikel($productData->kArtikel, Artikel::getDefaultOptions());
-            if ($product !== null && $product->kArtikel > 0 && self::addProductIDToCart(
-                $productData->kArtikel,
-                1,
-                Product::getSelectedPropertiesForArticle($productData->kArtikel)
-            )) {
+            $product = (new Artikel())->fuelleArtikel($productData->kArtikel);
+            if ($product !== null
+                && (int)$product->kArtikel > 0
+                && self::addProductIDToCart(
+                    $productData->kArtikel,
+                    1,
+                    Product::getSelectedPropertiesForArticle($productData->kArtikel)
+                )
+            ) {
                 $msg = $productData->cName . ' ' . Shop::Lang()->get('productAddedToCart');
             }
         }
@@ -1838,10 +1842,10 @@ class CartHelper
             return $xSelling;
         }
         $productIDs = map(
-            filter($cartItems, function ($p) {
+            filter($cartItems, static function ($p) {
                 return isset($p->Artikel->kArtikel);
             }),
-            function ($p) {
+            static function ($p) {
                 return (int)$p->Artikel->kArtikel;
             }
         );
@@ -1863,7 +1867,9 @@ class CartHelper
                 $options                 = Artikel::getDefaultOptions();
                 foreach ($xsellData as $item) {
                     $product = (new Artikel())->fuelleArtikel((int)$item->kXSellArtikel, $options);
-                    if ($product !== null && $product->kArtikel > 0 && $product->aufLagerSichtbarkeit()) {
+                    if ($product !== null
+                        && (int)$product->kArtikel > 0
+                        && $product->aufLagerSichtbarkeit()) {
                         $xSelling->Kauf->Artikel[] = $product;
                     }
                 }
@@ -1909,6 +1915,7 @@ class CartHelper
             foreach ($giftsTmp as $gift) {
                 $product = (new Artikel())->fuelleArtikel((int)$gift->kArtikel, Artikel::getDefaultOptions());
                 if ($product !== null
+                    && (int)$product->kArtikel > 0
                     && ($product->kEigenschaftKombi > 0
                         || !\is_array($product->Variationen)
                         || \count($product->Variationen) === 0)

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -6,6 +6,7 @@
 
 namespace JTL\OPC;
 
+use Exception;
 use JTL\Backend\AdminIO;
 use JTL\Filter\AbstractFilter;
 use JTL\Filter\Config;
@@ -16,7 +17,7 @@ use JTL\Filter\ProductFilter;
 use JTL\Filter\Type;
 use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
-use JTL\OPC\Portlets\MissingPortlet;
+use JTL\OPC\Portlets\MissingPortlet\MissingPortlet;
 use JTL\Shop;
 
 /**
@@ -48,7 +49,9 @@ class Service
     {
         $this->db = $db;
 
-        Shop::Container()->getGetText()->loadAdminLocale('pages/opc');
+        Shop::Container()->getGetText()
+            ->setLanguage(Shop::getCurAdminLangTag())
+            ->loadAdminLocale('pages/opc');
     }
 
     /**
@@ -74,15 +77,32 @@ class Service
     }
 
     /**
+     * @return string[]
+     */
+    public function getEditorMessageNames(): array
+    {
+        return [
+            'opcImportSuccessTitle',
+            'opcImportSuccess',
+            'opcImportUnmappedS',
+            'opcImportUnmappedP',
+            'btnTitleCopyArea',
+            'offscreenAreasDivider',
+            'yesDeleteArea',
+            'Cancel',
+        ];
+    }
+
+    /**
      * @param AdminIO $io
-     * @throws \Exception
+     * @throws Exception
      */
     public function registerAdminIOFunctions(AdminIO $io): void
     {
         $adminAccount = $io->getAccount();
 
         if ($adminAccount === null) {
-            throw new \Exception('Admin account was not set on AdminIO.');
+            throw new Exception('Admin account was not set on AdminIO.');
         }
 
         $this->adminName = $adminAccount->account()->cLogin;
@@ -95,7 +115,7 @@ class Service
 
     /**
      * @return null|string
-     * @throws \Exception
+     * @throws Exception
      */
     public function getAdminSessionToken(): ?string
     {
@@ -105,7 +125,7 @@ class Service
     /**
      * @param bool $withInactive
      * @return PortletGroup[]
-     * @throws \Exception
+     * @throws Exception
      */
     public function getPortletGroups(bool $withInactive = false): array
     {
@@ -115,7 +135,7 @@ class Service
     /**
      * @param bool $withInactive
      * @return Portlet[]
-     * @throws \Exception
+     * @throws Exception
      */
     public function getAllPortlets(bool $withInactive = false): array
     {
@@ -124,17 +144,15 @@ class Service
 
     /**
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
-    public function getPortletInitScriptUrls()
+    public function getPortletInitScriptUrls(): array
     {
         $scripts = [];
-
         foreach ($this->getAllPortlets() as $portlet) {
             foreach ($portlet->getEditorInitScripts() as $script) {
                 $path = $portlet->getBasePath() . $script;
                 $url  = $portlet->getBaseUrl() . $script;
-
                 if (!\array_key_exists($url, $scripts) && \file_exists($path)) {
                     $scripts[$url] = $url;
                 }
@@ -147,7 +165,7 @@ class Service
     /**
      * @param bool $withInactive
      * @return Blueprint[]
-     * @throws \Exception
+     * @throws Exception
      */
     public function getBlueprints(bool $withInactive = false): array
     {
@@ -162,7 +180,7 @@ class Service
     /**
      * @param int $id
      * @return Blueprint
-     * @throws \Exception
+     * @throws Exception
      */
     public function getBlueprint(int $id): Blueprint
     {
@@ -175,7 +193,7 @@ class Service
     /**
      * @param int $id
      * @return PortletInstance
-     * @throws \Exception
+     * @throws Exception
      */
     public function getBlueprintInstance(int $id): PortletInstance
     {
@@ -185,7 +203,7 @@ class Service
     /**
      * @param int $id
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function getBlueprintPreview(int $id): string
     {
@@ -195,7 +213,7 @@ class Service
     /**
      * @param string $name
      * @param array $data
-     * @throws \Exception
+     * @throws Exception
      */
     public function saveBlueprint($name, $data): void
     {
@@ -206,7 +224,7 @@ class Service
     /**
      * @param int $id
      */
-    public function deleteBlueprint($id): void
+    public function deleteBlueprint(int $id): void
     {
         $blueprint = (new Blueprint())->setId($id);
         $this->db->deleteBlueprint($blueprint);
@@ -215,7 +233,7 @@ class Service
     /**
      * @param string $class
      * @return PortletInstance
-     * @throws \Exception
+     * @throws Exception
      */
     public function createPortletInstance($class): PortletInstance
     {
@@ -231,7 +249,7 @@ class Service
     /**
      * @param array $data
      * @return PortletInstance
-     * @throws \Exception
+     * @throws Exception
      */
     public function getPortletInstance($data): PortletInstance
     {
@@ -247,7 +265,7 @@ class Service
     /**
      * @param array $data
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function getPortletPreviewHtml($data): string
     {
@@ -259,7 +277,7 @@ class Service
      * @param string $missingClass
      * @param array $props
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function getConfigPanelHtml($portletClass, $missingClass, $props): string
     {
@@ -315,7 +333,7 @@ class Service
         $html    = $smarty
             ->assign('propname', $propname)
             ->assign('filters', $filters)
-            ->fetch(PFAD_ROOT . \PFAD_ADMIN . 'opc/tpl/config/filter-list.tpl');
+            ->fetch(\PFAD_ROOT . \PFAD_ADMIN . 'opc/tpl/config/filter-list.tpl');
 
         return $html;
     }

@@ -8,8 +8,7 @@ namespace JTL\dbeS\Sync;
 
 use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
-use JTL\Media\Image;
-use JTL\Media\MediaImage;
+use JTL\Media\Image\Product;
 use SimpleXMLElement;
 use function Functional\flatten;
 use function Functional\map;
@@ -36,10 +35,8 @@ final class ImageLink extends AbstractSync
             }
         }
         $productIDs = \array_unique(flatten($productIDs));
-        foreach ($productIDs as $pid) {
-            MediaImage::clearCache(Image::TYPE_PRODUCT, $pid);
-        }
-        $this->cache->flushTags(map($productIDs, function ($pid) {
+        Product::clearCache($productIDs);
+        $this->cache->flushTags(map($productIDs, static function ($pid) {
             return \CACHING_GROUP_ARTICLE . '_' . $pid;
         }));
 

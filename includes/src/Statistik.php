@@ -241,22 +241,20 @@ class Statistik
             $dateSQL = $this->baueDatumSQL('dZeit');
 
             return Shop::Container()->getDB()->query(
-                "SELECT *, SUM(t.nCount) AS nCount
+                'SELECT *, SUM(t.nCount) AS nCount
                     FROM
                     (
                         SELECT cEinstiegsseite, COUNT(dZeit) AS nCount
-                        FROM tbesucher
-                        {$dateSQL->cWhere}
+                        FROM tbesucher ' .  $dateSQL->cWhere . '
                             AND kBesucherBot = 0
                         GROUP BY cEinstiegsseite
                         UNION SELECT cEinstiegsseite, COUNT(dZeit) AS nCount
-                        FROM tbesucherarchiv
-                        {$dateSQL->cWhere}
+                        FROM tbesucherarchiv ' . $dateSQL->cWhere . '
                             AND kBesucherBot = 0
                         GROUP BY cEinstiegsseite
                     ) AS t
                     GROUP BY t.cEinstiegsseite
-                    ORDER BY nCount DESC",
+                    ORDER BY nCount DESC',
                 ReturnType::ARRAY_OF_OBJECTS
             );
         }
@@ -398,9 +396,9 @@ class Statistik
                         0,
                         0,
                         0,
-                        \date('m', $this->nStampVon),
-                        \date('d', $this->nStampVon) + $i,
-                        \date('Y', $this->nStampVon)
+                        (int)\date('m', $this->nStampVon),
+                        (int)\date('d', $this->nStampVon) + $i,
+                        (int)\date('Y', $this->nStampVon)
                     );
                     $oStat->nCount = 0;
                     $stats[]       = $oStat;
@@ -414,9 +412,9 @@ class Statistik
                         0,
                         0,
                         0,
-                        \date('m', $this->nStampVon) + $i,
-                        \date('d', $this->nStampVon),
-                        \date('Y', $this->nStampVon)
+                        (int)\date('m', $this->nStampVon) + $i,
+                        (int)\date('d', $this->nStampVon),
+                        (int)\date('Y', $this->nStampVon)
                     );
                     $oStat->nCount = 0;
                     $stats[]       = $oStat;
@@ -425,11 +423,11 @@ class Statistik
 
             case 4:    // Jahre
                 if (\count($this->cDatumVon_arr) > 0 && \count($this->cDatumBis_arr) > 0) {
-                    $nYearFrom = \date('Y', \strtotime($this->cDatumVon_arr['cDatum']));
-                    $nYearTo   = \date('Y', \strtotime($this->cDatumBis_arr['cDatum']));
+                    $nYearFrom = (int)\date('Y', \strtotime($this->cDatumVon_arr['cDatum']));
+                    $nYearTo   = (int)\date('Y', \strtotime($this->cDatumBis_arr['cDatum']));
                 } elseif ($this->nStampVon > 0 && $this->nStampBis > 0) {
-                    $nYearFrom = \date('Y', $this->nStampVon);
-                    $nYearTo   = \date('Y', $this->nStampBis);
+                    $nYearFrom = (int)\date('Y', $this->nStampVon);
+                    $nYearTo   = (int)\date('Y', $this->nStampBis);
                 } else {
                     $nYearFrom = (int)\date('Y') - 1;
                     $nYearTo   = (int)\date('Y') + 10;
@@ -468,9 +466,9 @@ class Statistik
                         23,
                         59,
                         59,
-                        \date('m', $this->nStampBis),
-                        \date('d', $this->nStampBis),
-                        \date('Y', $this->nStampBis)
+                        (int)\date('m', $this->nStampBis),
+                        (int)\date('d', $this->nStampBis),
+                        (int)\date('Y', $this->nStampBis)
                     );
                     break;
 
@@ -479,28 +477,28 @@ class Statistik
                         0,
                         0,
                         0,
-                        \date('m', $this->nStampVon),
-                        \date('d', $this->nStampVon),
-                        \date('Y', $this->nStampVon)
+                        (int)\date('m', $this->nStampVon),
+                        (int)\date('d', $this->nStampVon),
+                        (int)\date('Y', $this->nStampVon)
                     );
                     $end   = \mktime(
                         23,
                         59,
                         59,
-                        \date('m', $this->nStampBis),
-                        \date('d', $this->nStampBis),
-                        \date('Y', $this->nStampBis)
+                        (int)\date('m', $this->nStampBis),
+                        (int)\date('d', $this->nStampBis),
+                        (int)\date('Y', $this->nStampBis)
                     );
                     break;
 
                 case 3: // Monate
-                    $start = \mktime(0, 0, 0, \date('m', $this->nStampVon), 1, \date('Y', $this->nStampVon));
-                    $end   = \mktime(23, 59, 59, \date('m', $this->nStampBis), 31, \date('Y', $this->nStampBis));
+                    $start = \mktime(0, 0, 0, (int)\date('m', $this->nStampVon), 1, (int)\date('Y', $this->nStampVon));
+                    $end   = \mktime(23, 59, 59, (int)\date('m', $this->nStampBis), 31, (int)\date('Y', $this->nStampBis));
                     break;
 
                 case 4:    // Jahre
-                    $start = \mktime(0, 0, 0, 1, 1, \date('Y', $this->nStampVon));
-                    $end   = \mktime(23, 59, 59, 12, 31, \date('Y', $this->nStampBis));
+                    $start = \mktime(0, 0, 0, 1, 1, (int)\date('Y', $this->nStampVon));
+                    $end   = \mktime(23, 59, 59, 12, 31, (int)\date('Y', $this->nStampBis));
                     break;
 
                 default:

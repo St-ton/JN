@@ -2,7 +2,7 @@
 /**
  * add lang key redeemed coupons
  *
- * @author Mirko Schmidt
+ * @author msc
  * @created Wed, 01 Feb 2017 15:36:18 +0100
  */
 
@@ -14,7 +14,7 @@ use JTL\Update\Migration;
  */
 class Migration_20170201153618 extends Migration implements IMigration
 {
-    protected $author      = 'Mirko Schmidt';
+    protected $author      = 'msc';
     protected $description = 'add lang key redeemed coupons';
 
     public function up()

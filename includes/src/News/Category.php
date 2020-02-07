@@ -11,6 +11,8 @@ use Illuminate\Support\Collection;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\MagicCompatibilityTrait;
+use JTL\Media\Image;
+use JTL\Media\MultiSizeImage;
 use JTL\Shop;
 use stdClass;
 use function Functional\flatten;
@@ -22,7 +24,8 @@ use function Functional\map;
  */
 class Category implements CategoryInterface
 {
-    use MagicCompatibilityTrait;
+    use MagicCompatibilityTrait,
+        MultiSizeImage;
 
     /**
      * @var array
@@ -152,6 +155,7 @@ class Category implements CategoryInterface
         $this->items            = new Collection();
         $this->children         = new Collection();
         $this->dateLastModified = \date_create();
+        $this->setImageType(Image::TYPE_NEWSCATEGORY);
     }
 
     /**
@@ -205,8 +209,10 @@ class Category implements CategoryInterface
             $this->level                     = (int)$groupLanguage->lvl;
             $this->lft                       = (int)$groupLanguage->lft;
             $this->rght                      = (int)$groupLanguage->rght;
-
-            $this->seo[$langID] = $groupLanguage->cSeo;
+            $this->seo[$langID]              = $groupLanguage->cSeo;
+        }
+        if (($preview = $this->getPreviewImage()) !== '') {
+            $this->generateAllImageSizes(true, 1, \str_replace(\PFAD_NEWSKATEGORIEBILDER, '', $preview));
         }
         $this->items = (new ItemList($this->db))->createItems(map(flatten($this->db->queryPrepared(
             'SELECT kNews
@@ -214,7 +220,7 @@ class Category implements CategoryInterface
                 WHERE kNewsKategorie = :cid',
             ['cid' => $this->id],
             ReturnType::ARRAY_OF_ASSOC_ARRAYS
-        )), function ($e) {
+        )), static function ($e) {
             return (int)$e;
         }));
 
@@ -265,7 +271,7 @@ class Category implements CategoryInterface
                 'yr'   => (int)$overview->nJahr
             ],
             ReturnType::ARRAY_OF_ASSOC_ARRAYS
-        )), function ($e) {
+        )), static function ($e) {
             return (int)$e;
         }));
 
@@ -291,7 +297,7 @@ class Category implements CategoryInterface
             WHERE tnewskategorie.nAktiv = 1' . $filterSQL->cNewsKatSQL . $filterSQL->cDatumSQL,
             ['cid' => $this->id],
             ReturnType::ARRAY_OF_ASSOC_ARRAYS
-        )), function ($e) {
+        )), static function ($e) {
             return (int)$e;
         }));
 
@@ -305,7 +311,7 @@ class Category implements CategoryInterface
     {
         return \implode(
             ',',
-            \array_filter($this->items->slice(0, \min($this->items->count(), 6))->map(function (Item $i) {
+            \array_filter($this->items->slice(0, \min($this->items->count(), 6))->map(static function (Item $i) {
                 return $i->getMetaKeyword();
             })->all())
         );
@@ -346,16 +352,16 @@ class Category implements CategoryInterface
                 $dir   = 'asc';
                 break;
         }
-        $cb = function (Item $e) use ($order) {
+        $cb = static function (Item $e) use ($order) {
             return $e->$order();
         };
         if ($customerGroupID > 0) {
-            $this->items = $this->items->filter(function (Item $i) use ($customerGroupID) {
+            $this->items = $this->items->filter(static function (Item $i) use ($customerGroupID) {
                 return $i->checkVisibility($customerGroupID);
             });
         }
         if ($languageID > 0) {
-            $this->items = $this->items->filter(function (Item $i) use ($languageID) {
+            $this->items = $this->items->filter(static function (Item $i) use ($languageID) {
                 return $i->getTitle($languageID) !== '';
             });
         }

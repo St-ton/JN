@@ -10,10 +10,11 @@
     {block name='basket-index-content'}
         {container}
             {row}
-                {col cols=12 md=8}
+                {block name='basket-index-main'}
+                {col cols=12 lg="{if ($Warenkorb->PositionenArr|@count > 0)}7{else}12{/if}"}
+                    {opcMountPoint id='opc_before_heading'}
                     {block name='basket-index-heading'}
-                        {opcMountPoint id='opc_before_heading'}
-                        <h1>{lang key='basket'} ({count($smarty.session.Warenkorb->PositionenArr)} {lang key='products'})</h1>
+                        <h1 class="h2 mb-5">{lang key='basket'} ({count($smarty.session.Warenkorb->PositionenArr)} {lang key='products'})</h1>
                     {/block}
                     {block name='basket-index-include-extension'}
                         {include file='snippets/extension.tpl'}
@@ -25,11 +26,11 @@
                             <div class="basket_wrapper">
                                 {block name='basket-index-basket-items'}
                                     {block name='basket-index-form-cart'}
-                                        {form id="cart-form" method="post" action="{get_static_route id='warenkorb.php'}" class="evo-validate"}
+                                        {form id="cart-form" method="post" action="{get_static_route id='warenkorb.php'}" class="jtl-validate"}
                                             {input type="hidden" name="wka" value="1"}
                                             <div class="mb-7">
                                                 {block name='basket-index-include-order-items'}
-                                                    {include file='checkout/inc_order_items.tpl' tplscope='cart'}
+                                                    {include file='basket/cart_items.tpl'}
                                                 {/block}
                                             </div>
                                             {block name='basket-index-include-uploads'}
@@ -41,7 +42,7 @@
                                     {if $Einstellungen.kaufabwicklung.warenkorb_versandermittlung_anzeigen === 'Y'}
                                         {block name='basket-index-form-shipping-calc'}
                                             {opcMountPoint id='opc_before_shipping_calculator'}
-                                            {form id="basket-shipping-estimate-form" method="post" action="{get_static_route id='warenkorb.php'}"}
+                                            {form id="basket-shipping-estimate-form" method="post" class="label-slide" action="{get_static_route id='warenkorb.php'}#basket-shipping-estimate-form"}
                                                 {block name='basket-index-include-shipping-calculator'}
                                                     {include file='snippets/shipping_calculator.tpl' checkout=true}
                                                 {/block}
@@ -58,9 +59,9 @@
                                             {/foreach}
                                             {row id="freegift"}
                                                 {col cols=12}
-                                                    <p>
-                                                        <strong class="mb-2">{lang key='freeGiftFromOrderValueBasket'}</strong>
-                                                    </p>
+                                                    {block name='basket-index-freegifts-heading'}
+                                                        <h3 class="mb-4">{lang key='freeGiftFromOrderValueBasket'}</h3>
+                                                    {/block}
                                                 {/col}
                                                 {col cols=12}
                                                     {block name='basket-index-form-freegift'}
@@ -74,7 +75,11 @@
                                                                                     <input class="custom-control-input " type="radio" id="gift{$oArtikelGeschenk->kArtikel}" name="gratisgeschenk" value="{$oArtikelGeschenk->kArtikel}" onclick="submit();">
                                                                                     <label for="gift{$oArtikelGeschenk->kArtikel}" class="p-3 custom-control-label {if $selectedFreegift===$oArtikelGeschenk->kArtikel}badge-check{/if}">
                                                                                         {if $selectedFreegift===$oArtikelGeschenk->kArtikel}{badge class="badge-circle"}<i class="fas fa-check mx-auto"></i>{/badge}{/if}
-                                                                                        {image src=$oArtikelGeschenk->Bilder[0]->cURLKlein class="image" fluid=true alt=$oArtikelGeschenk->cName}
+                                                                                        {image lazy=true webp=true
+                                                                                            src=$oArtikelGeschenk->Bilder[0]->cURLKlein
+                                                                                            fluid=true
+                                                                                            alt=$oArtikelGeschenk->cName
+                                                                                        }
                                                                                         <div class="caption">
                                                                                             <p class="small text-muted">{lang key='freeGiftFrom1'} {$oArtikelGeschenk->cBestellwert} {lang key='freeGiftFrom2'}</p>
                                                                                             <p>{$oArtikelGeschenk->cName}</p>
@@ -120,34 +125,38 @@
                                             {lang key='emptybasket' section='checkout'}
                                         {/alert}
                                     {/block}
-                                    {link href=$ShopURL class="btn btn-primary"}{lang key='continueShopping' section='checkout'}{/link}
+                                    {block name='basket-index-empty-continue-shopping'}
+                                        {link href=$ShopURL class="btn btn-primary"}{lang key='continueShopping' section='checkout'}{/link}
+                                    {/block}
                                 {/col}
                             {/row}
                         {/block}
                     {/if}
                 {/col}
+                {/block}
                 {if ($Warenkorb->PositionenArr|@count > 0)}
-                    {col cols=12 md=4}
+                    {block name='basket-index-side'}
+                    {col class='ml-auto' cols=12 lg=4}
                         <div class="sticky-top cart-summary">
-                            <div class="h1 mb-4">{lang key="orderOverview" section="account data"}</div>
+                            {block name='basket-index-side-heading'}
+                                <div class="h2 mb-5">{lang key="orderOverview" section="account data"}</div>
+                            {/block}
                             {if $Einstellungen.kaufabwicklung.warenkorb_kupon_anzeigen === 'Y' && $KuponMoeglich == 1}
                                 {block name='basket-index-coupon'}
-                                    {card no-body=true}
-                                        {cardheader class="h6 mb-0" data=["toggle" => "collapse", "target"=>"#coupon-form"]}
+                                    {card class='card-gray' no-body=true}
+                                        {cardheader}
                                         {block name='basket-index-coupon-heading'}
-                                            {lang key='useCoupon' section='checkout'} <i class="fa fa-chevron-down float-right"></i>
+                                            <span class="font-weight-bold font-size-lg" data-toggle="collapse" data-target="#coupon-form">{lang key='useCoupon' section='checkout'}</span>
                                         {/block}
                                         {/cardheader}
                                         {collapse id="coupon-form"}
-                                            {cardbody class="bg-info"}
+                                            {cardbody}
                                             {block name='basket-index-coupon-form'}
-                                                {form class="form-inline evo-validate" id="basket-coupon-form" method="post" action="{get_static_route id='warenkorb.php'}"}
-                                                    {formgroup class="mw-100{if !empty($invalidCouponCode)} has-error{/if}"}
-                                                    {inputgroup}
-                                                        {input aria=["label"=>"{lang key='couponCode' section='account data'}"] type="text" name="Kuponcode" id="couponCode" maxlength="32" placeholder="{lang key='couponCode' section='account data'}" required=true}
-                                                        {button type="submit" value=1}{lang key='useCoupon' section='checkout'}{/button}
-                                                    {/inputgroup}
+                                                {form class="label-slide jtl-validate" id="basket-coupon-form" method="post" action="{get_static_route id='warenkorb.php'}"}
+                                                    {formgroup label-for="couponCode" label={lang key='couponCode' section='account data'} class="mw-100{if !empty($invalidCouponCode)} has-error{/if}"}
+                                                        {input aria=["label"=>"{lang key='couponCode' section='account data'}"] type="text" name="Kuponcode" id="couponCode" maxlength="32" placeholder=" " required=true}
                                                     {/formgroup}
+                                                    {button type="submit" value=1 variant="outline-primary" block=true}{lang key='useCoupon' section='checkout'}{/button}
                                                 {/form}
                                             {/block}
                                             {/cardbody}
@@ -155,10 +164,10 @@
                                     {/card}
                                 {/block}
                             {/if}
-                            {card class="bg-info mt-4"}
-                                {block name='baske-index-price-tax'}
+                            {card class="card-gray mt-4"}
+                                {block name='basket-index-price-tax'}
                                     {if $NettoPreise}
-                                        {block name='baske-index-price-net'}
+                                        {block name='basket-index-price-net'}
                                             {row class="total-net"}
                                                 {col class="text-left" cols=7}
                                                     <span class="price_label"><strong>{lang key='totalSum'} ({lang key='net'}):</strong></span>
@@ -171,7 +180,7 @@
                                     {/if}
 
                                     {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N' && $Steuerpositionen|@count > 0}
-                                        {block name='baske-index-tax'}
+                                        {block name='basket-index-tax'}
                                             {foreach $Steuerpositionen as $Steuerposition}
                                                 {row class="tax"}
                                                     {col class="text-left" cols=7}
@@ -186,7 +195,7 @@
                                     {/if}
 
                                     {if isset($smarty.session.Bestellung->GuthabenNutzen) && $smarty.session.Bestellung->GuthabenNutzen == 1}
-                                        {block name='baske-index-credit'}
+                                        {block name='basket-index-credit'}
                                             {row class="customer-credit"}
                                                 {col class="text-left" cols=7}
                                                     {lang key='useCredit' section='account data'}
@@ -197,18 +206,18 @@
                                             {/row}
                                         {/block}
                                     {/if}
-                                    {block name='baske-index-price-sticky'}
-                                        {row class="total bg-info border-top mt-3 pt-3"}
+                                    {block name='basket-index-price-sticky'}
+                                        {row class="total border-top mt-3 pt-3 font-size-lg"}
                                             {col class="text-left" cols=7}
-                                                <span class="price_label"><strong>{lang key='totalSum'}:</strong></span>
+                                                <span class="price_label">{lang key='totalSum'}:</span>
                                             {/col}
                                             {col class="text-right price-col" cols=5}
-                                                <strong class="price total-sum">{$WarensummeLocalized[0]}</strong>
+                                                <strong class="total-sum">{$WarensummeLocalized[0]}</strong>
                                             {/col}
                                         {/row}
                                     {/block}
                                 {/block}
-                                {block name='baske-index-shipping'}
+                                {block name='basket-index-shipping'}
                                     {if isset($FavourableShipping)}
                                         {if $NettoPreise}
                                             {$shippingCosts = "`$FavourableShipping->cPriceLocalized[$NettoPreise]` {lang key='plus' section='basket'} {lang key='vat' section='productDetails'}"}
@@ -242,6 +251,7 @@
                             {/if}
                         </div>
                     {/col}
+                    {/block}
                 {/if}
             {/row}
         {/container}

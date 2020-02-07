@@ -7,6 +7,7 @@
 namespace JTL\Helpers;
 
 use JTL\Checkout\Zahlungsart;
+use JTL\Plugin\Payment\LegacyMethod;
 use JTL\Session\Frontend;
 use JTL\Shop;
 
@@ -109,10 +110,9 @@ class PaymentMethod
             case 'za_null_jtl':
                 break;
             default:
-                require_once \PFAD_ROOT . \PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
-                $paymentMethod = \PaymentMethod::create($paymentMethod->cModulId);
-                if ($paymentMethod !== null) {
-                    return $paymentMethod->isValid($_SESSION['Kunde'] ?? null, Frontend::getCart());
+                $payMethod = LegacyMethod::create($paymentMethod->cModulId);
+                if ($payMethod !== null) {
+                    return $payMethod->isValidIntern([Frontend::getCustomer(), Frontend::getCart()]);
                 }
                 break;
         }
@@ -125,14 +125,13 @@ class PaymentMethod
      */
     public static function checkPaymentMethodAvailability(): void
     {
-        foreach (Shop::Container()->getDB()->selectAll('tzahlungsart', 'nActive', 1) as $paymentMethod) {
-            // Bei SOAP oder CURL => versuche die Zahlungsart auf nNutzbar = 1 zu stellen, falls nicht schon geschehen
-            if ((int)$paymentMethod->nSOAP === 1
-                || (int)$paymentMethod->nCURL === 1
-                || (int)$paymentMethod->nSOCKETS === 1
-            ) {
-                self::activatePaymentMethod($paymentMethod);
-            }
+        foreach (Shop::Container()->getDB()->selectAll(
+            'tzahlungsart',
+            'nActive',
+            1,
+            'kZahlungsart, nSOAP, nCURL, nSOCKETS, nNutzbar'
+        ) as $paymentMethod) {
+            self::activatePaymentMethod($paymentMethod);
         }
     }
 
@@ -146,25 +145,30 @@ class PaymentMethod
     public static function activatePaymentMethod($paymentMethod): bool
     {
         if ($paymentMethod->kZahlungsart > 0) {
-            $kZahlungsart = (int)$paymentMethod->kZahlungsart;
-            $nNutzbar     = 0;
-            if (!empty($paymentMethod->nSOAP)) {
-                $nNutzbar = PHPSettings::checkSOAP() ? 1 : 0;
-            }
-            if (!empty($paymentMethod->nCURL)) {
-                $nNutzbar = PHPSettings::checkCURL() ? 1 : 0;
-            }
-            if (!empty($paymentMethod->nSOCKETS)) {
-                $nNutzbar = PHPSettings::checkSockets() ? 1 : 0;
-            }
-            Shop::Container()->getDB()->update(
-                'tzahlungsart',
-                'kZahlungsart',
-                $kZahlungsart,
-                (object)['nNutzbar' => $nNutzbar]
-            );
+            $paymentID = (int)$paymentMethod->kZahlungsart;
 
-            return true;
+            if (empty($paymentMethod->nSOAP) && empty($paymentMethod->nCURL) && empty($paymentMethod->nSOCKETS)) {
+                $isUsable = 1;
+            } elseif (!empty($paymentMethod->nSOAP) && PHPSettings::checkSOAP()) {
+                $isUsable = 1;
+            } elseif (!empty($paymentMethod->nCURL) && PHPSettings::checkCURL()) {
+                $isUsable = 1;
+            } elseif (!empty($paymentMethod->nSOCKETS) && PHPSettings::checkSockets()) {
+                $isUsable = 1;
+            } else {
+                $isUsable = 0;
+            }
+
+            if (!isset($paymentMethod->nNutzbar) || (int)$paymentMethod->nNutzbar !== $isUsable) {
+                Shop::Container()->getDB()->update(
+                    'tzahlungsart',
+                    'kZahlungsart',
+                    $paymentID,
+                    (object)['nNutzbar' => $isUsable]
+                );
+            }
+
+            return $isUsable > 0;
         }
 
         return false;

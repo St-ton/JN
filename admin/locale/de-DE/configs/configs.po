@@ -222,7 +222,7 @@ msgid "wartungsmodus_aktiviert_name"
 msgstr "Wartungsmodus aktivieren"
 
 msgid "wartungsmodus_aktiviert_desc"
-msgstr "Hier aktivieren Sie den Wartungsmodus von JTL-Shop. Im Wartungsmodus werden keine Inhalte von JTL-Shop angezeigt. So können Sie zum Beispiel ohne Probleme Wartungsarbeiten wie Updates durchführen oder Backups einspielen."
+msgstr "Der Besucher des Onlineshops sieht einen Infotext zur laufenden Wartung. Dieser Text wird über die Sprachvariable „maintenanceModeActive“ gesteuert. Wechseln Sie in die Sprachverwaltung, um den Text für diese Sprachvariable zu ändern."
 
 msgid "global_versandermittlung_anzeigen_name"
 msgstr "Versandkostenermittlung anzeigen"
@@ -277,6 +277,12 @@ msgstr "HTTPONLY"
 
 msgid "global_cookie_httponly_desc"
 msgstr "Hier legen Sie fest, ob PHP versuchen soll, das HTTPONLY-Flag zu senden."
+
+msgid "global_cookie_samesite_name"
+msgstr "SameSite"
+
+msgid "global_cookie_samesite_desc"
+msgstr "Hier legen Sie fest, ob PHP versuchen soll, das SameSite-Flag zu senden."
 
 msgid "startseite_neuimsortiment_anzahl_name"
 msgstr "„Neu im Sortiment“: Anzahl Artikel"
@@ -656,12 +662,6 @@ msgstr "Abnahmeintervall anzeigen"
 msgid "artikeluebersicht_artikelintervall_anzeigen_desc"
 msgstr "Hier legen Sie fest, ob ein eventuell vorhandenes Abnahmeintervall angezeigt werden soll."
 
-msgid "artikeluebersicht_finanzierung_anzeigen_name"
-msgstr "Finanzierungsvorschlag anzeigen"
-
-msgid "artikeluebersicht_finanzierung_anzeigen_desc"
-msgstr "Hier legen Sie fest, ob bei jedem Artikel ein Finanzierungsvorschlag angezeigt werden soll."
-
 msgid "livesuche_max_ip_count_name"
 msgstr "Maximale Einträge pro Besucher und Stunde"
 
@@ -669,10 +669,10 @@ msgid "livesuche_max_ip_count_desc"
 msgstr "Hier legen Sie fest, wie viele Einträge maximal pro Besucher und Stunde in der Live-Suche gespeichert werden. So können Sie die Manipulation der Live-Suche verhindern."
 
 msgid "suchfilter_anzeigen_ab_name"
-msgstr "„Suche verfeinern“ anzeigen ab"
+msgstr "Suchfilter anzeigen ab"
 
 msgid "suchfilter_anzeigen_ab_desc"
-msgstr "Hier legen Sie fest, wie viele Artikel in den Suchergebnissen mindestens angezeigt werden müssen, damit weitere Suchfilter angeboten werden."
+msgstr "Hier legen Sie fest, wie viele Artikel in den Suchergebnissen mindestens angezeigt werden müssen, damit Suchfilter angeboten werden."
 
 msgid "artikeluebersicht_erw_darstellung_name"
 msgstr "Erweiterte Darstellung für Artikelübersicht nutzen"
@@ -684,7 +684,7 @@ msgid "artikeluebersicht_erw_darstellung_stdansicht_name"
 msgstr "Standard-Darstellung für Artikelübersicht"
 
 msgid "artikeluebersicht_erw_darstellung_stdansicht_desc"
-msgstr "Hier legen Sie fest, welche Ansichtsoption der Artikelübersicht Ihren Kunden standardmäßig angezeigt wird. Mit dem Standard-EVO-Template von JTL-Shop können Sie nur die Optionen Galerie und Liste verwenden."
+msgstr "Hier legen Sie fest, welche Ansichtsoption der Artikelübersicht Ihren Kunden standardmäßig angezeigt wird."
 
 msgid "artikeluebersicht_anzahl_darstellung1_name"
 msgstr "Artikelanzahl in Listendarstellung"
@@ -709,12 +709,6 @@ msgstr "Artikel-Auswahloptionen pro Seite in Galerieansicht"
 
 msgid "products_per_page_gallery_desc"
 msgstr "Hier legen Sie fest, wie viele Auswahloptionen für Artikel pro Seite zur Verfügung stehen sollen. Setzen Sie den Wert -1 für alle."
-
-msgid "artikeluebersicht_anzahl_darstellung3_name"
-msgstr "Artikelanzahl in Mosaikdarstellung"
-
-msgid "artikeluebersicht_anzahl_darstellung3_desc"
-msgstr "Hier legen Sie fest, wie viele Artikel jeweils in der Mosaikdarstellung angezeigt werden."
 
 msgid "artikeldetails_xselling_standard_anzeigen_name"
 msgstr "Standard-Cross-Selling anzeigen"
@@ -1394,12 +1388,6 @@ msgstr "Abschluss-Seite nach externer Bezahlung"
 msgid "bestellabschluss_abschlussseite_desc"
 msgstr "Hier legen Sie fest, welche Seite nach einer externen Bezahlung angezeigt werden soll."
 
-msgid "box_bestseller_scrollen_name"
-msgstr "Scrolling benutzen"
-
-msgid "box_bestseller_scrollen_desc"
-msgstr "Hier legen Sie fest, ob es möglich ist, durch die Artikel zu blättern (Ja), oder ob nur die vorgegebene Anzahl an Artikeln angezeigt wird"
-
 msgid "box_bestseller_anzahl_anzeige_name"
 msgstr "Anzahl angezeigter Artikel"
 
@@ -1412,23 +1400,17 @@ msgstr "Basisanzahl Artikel"
 msgid "box_bestseller_anzahl_basis_desc"
 msgstr "Hier legen Sie fest, aus wie vielen Artikeln die anzuzeigenden Artikel ausgesucht werden sollen."
 
-msgid "box_sonderangebote_scrollen_name"
-msgstr "Scrolling benutzen"
-
-msgid "box_sonderangebote_scrollen_desc"
-msgstr "Hier legen Sie fest, ob es möglich ist, durch die Artikel zu blättern (Ja), oder ob nur die vorgegebene Anzahl an Artikeln angezeigt wird"
-
 msgid "box_sonderangebote_anzahl_anzeige_name"
 msgstr "Anzahl angezeigter Artikel"
 
 msgid "box_sonderangebote_anzahl_anzeige_desc"
 msgstr "Hier legen Sie fest, wie viele Artikel in der Box angezeigt werden."
 
-msgid "box_neuimsortiment_scrollen_name"
-msgstr "Scrolling benutzen"
+msgid "box_sonderangebote_anzahl_basis_name"
+msgstr "Basisanzahl Artikel"
 
-msgid "box_neuimsortiment_scrollen_desc"
-msgstr "Hier legen Sie fest, ob es möglich ist, durch die Artikel zu blättern (Ja), oder ob nur die vorgegebene Anzahl an Artikeln angezeigt wird"
+msgid "box_sonderangebote_anzahl_basis_desc"
+msgstr "Hier legen Sie fest, aus wie vielen Artikeln die anzuzeigenden Artikel ausgesucht werden sollen."
 
 msgid "box_neuimsortiment_anzahl_anzeige_name"
 msgstr "Anzahl angezeigter Artikel"
@@ -1442,11 +1424,11 @@ msgstr "Maximales Artikelalter in Tagen"
 msgid "box_neuimsortiment_alter_tage_desc"
 msgstr "Hier legen Sie fest, wie viele Tage lang Artikel als „Neu im Sortiment“ markiert werden."
 
-msgid "box_topangebot_scrollen_name"
-msgstr "Scrolling benutzen"
+msgid "box_neuimsortiment_anzahl_basis_name"
+msgstr "Basisanzahl Artikel"
 
-msgid "box_topangebot_scrollen_desc"
-msgstr "Hier legen Sie fest, ob es möglich ist, durch die Artikel zu blättern (Ja), oder ob nur die vorgegebene Anzahl an Artikeln angezeigt wird"
+msgid "box_neuimsortiment_anzahl_basis_desc"
+msgstr "Hier legen Sie fest, aus wie vielen Artikeln die anzuzeigenden Artikel ausgesucht werden sollen."
 
 msgid "box_topangebot_anzahl_anzeige_name"
 msgstr "Anzahl angezeigter Artikel"
@@ -1454,23 +1436,29 @@ msgstr "Anzahl angezeigter Artikel"
 msgid "box_topangebot_anzahl_anzeige_desc"
 msgstr "Hier legen Sie fest, wie viele Artikel in der Box angezeigt werden."
 
+msgid "box_topangebot_anzahl_basis_name"
+msgstr "Basisanzahl Artikel"
+
+msgid "box_topangebot_anzahl_basis_desc"
+msgstr "Hier legen Sie fest, aus wie vielen Artikeln die anzuzeigenden Artikel ausgesucht werden sollen."
+
 msgid "box_zuletztangesehen_anzahl_name"
 msgstr "Anzahl angezeigter Artikel"
 
 msgid "box_zuletztangesehen_anzahl_desc"
 msgstr "Hier legen Sie fest, wie viele Artikel in der Box angezeigt werden."
 
-msgid "box_erscheinende_scrollen_name"
-msgstr "Scrolling benutzen"
-
-msgid "box_erscheinende_scrollen_desc"
-msgstr "Hier legen Sie fest, ob es möglich ist, durch die Artikel zu blättern (Ja), oder ob nur die vorgegebene Anzahl an Artikeln angezeigt wird"
-
 msgid "box_erscheinende_anzahl_anzeige_name"
 msgstr "Anzahl angezeigter Artikel"
 
 msgid "box_erscheinende_anzahl_anzeige_desc"
 msgstr "Hier legen Sie fest, wie viele Artikel in der Box angezeigt werden."
+
+msgid "box_erscheinende_anzahl_basis_name"
+msgstr "Basisanzahl Artikel"
+
+msgid "box_erscheinende_anzahl_basis_desc"
+msgstr "Hier legen Sie fest, aus wie vielen Artikeln die anzuzeigenden Artikel ausgesucht werden sollen."
 
 msgid "boxen_livesuche_anzeigen_name"
 msgstr "Box anzeigen"
@@ -1502,12 +1490,6 @@ msgstr "Vergleichsliste anzeigen"
 msgid "boxen_vergleichsliste_anzeigen_desc"
 msgstr "Hier legen Sie fest, ob die Vergleichsliste in einer Box angezeigt werden soll."
 
-msgid "boxen_topbewertet_scrollbar_name"
-msgstr "Scrolling nutzen"
-
-msgid "boxen_topbewertet_scrollbar_desc"
-msgstr "Hier legen Sie fest, ob es möglich ist, durch die Artikel zu blättern (Ja), oder ob nur die vorgegebene Anzahl an Artikeln angezeigt wird"
-
 msgid "boxen_topbewertet_anzahl_name"
 msgstr "Anzahl angezeigter Artikel"
 
@@ -1525,24 +1507,6 @@ msgstr "Top bewertet ab welcher Durchschnittsbewertung"
 
 msgid "boxen_topbewertet_minsterne_desc"
 msgstr "Hier legen Sie fest, mit wie vielen Sternen ein Artikel mindestens im Durchschnitt bewertet sein muss, um als „Top bewertet“ zu gelten."
-
-msgid "boxen_preisradar_scrollbar_name"
-msgstr "Scrolling nutzen"
-
-msgid "boxen_preisradar_scrollbar_desc"
-msgstr "Hier legen Sie fest, ob es möglich ist, durch die Artikel zu blättern (Ja), oder ob nur die vorgegebene Anzahl an Artikeln angezeigt wird"
-
-msgid "boxen_preisradar_anzahl_name"
-msgstr "Anzahl angezeigter Artikel"
-
-msgid "boxen_preisradar_anzahl_desc"
-msgstr "Hier legen Sie fest, wie viele Artikel in der Box angezeigt werden."
-
-msgid "boxen_preisradar_anzahltage_name"
-msgstr "Anzahl berücksichtigter Tage"
-
-msgid "boxen_preisradar_anzahltage_desc"
-msgstr "Hier legen Sie fest, wie viele Tage rückwirkend für den Preisverlauf berücksichtigt werden sollen."
 
 msgid "bilder_kategorien_breite_name"
 msgstr "Kategoriebilder Breite"
@@ -1747,6 +1711,24 @@ msgstr "Bildnamen von Variationsbildern"
 
 msgid "bilder_variation_namen_desc"
 msgstr "Hier legen Sie fest, wie der Name der Bilddateien für Variationen erzeugt werden soll."
+
+msgid "bilder_hersteller_namen_name"
+msgstr "Bildnamen von Herstellerbildern"
+
+msgid "bilder_hersteller_namen_desc"
+msgstr "Hier legen Sie fest, wie der Name der Bilddateien für Hersteller erzeugt werden soll."
+
+msgid "bilder_merkmal_namen_name"
+msgstr "Bildnamen von Merkmalbildern"
+
+msgid "bilder_merkmal_namen_desc"
+msgstr "Hier legen Sie fest, wie der Name der Bilddateien für Merkmale erzeugt werden soll."
+
+msgid "bilder_merkmalwert_namen_name"
+msgstr "Bildnamen von Merkmalwertbildern"
+
+msgid "bilder_merkmalwert_namen_desc"
+msgstr "Hier legen Sie fest, wie der Name der Bilddateien für Merkmalwerte erzeugt werden soll."
 
 msgid "bilder_externe_bildschnittstelle_name"
 msgstr "Externe Bildschnittstelle aktivieren"
@@ -2756,24 +2738,6 @@ msgstr "Sitemap nach Export an Google und Bing übermitteln"
 msgid "sitemap_google_ping_desc"
 msgstr "Hier legen Sie fest, ob nach dem Export der Dateien sitemap.xml und sitemap_index.xml eine Mitteilung an Google und Bing erfolgt, damit diese die Sitemap erneut einlesen."
 
-msgid "umfrage_nutzen_name"
-msgstr "Umfragesystem benutzen"
-
-msgid "umfrage_nutzen_desc"
-msgstr "Hier legen Sie fest, ob Sie das Umfragesystem in Ihrem JTL-Shop einbinden möchten."
-
-msgid "umfrage_einloggen_name"
-msgstr "Anmeldung erforderlich"
-
-msgid "umfrage_einloggen_desc"
-msgstr "Hier legen Sie fest, ob nur angemeldete Benutzer mit Kundenkonto an Umfragen teilnehmen können."
-
-msgid "umfrage_box_anzahl_name"
-msgstr "Anzahl angezeigter Umfragen"
-
-msgid "umfrage_box_anzahl_desc"
-msgstr "Hier legen Sie fest, wie viele Umfragen in der Box angezeigt werden, wenn Sie diese über die Boxenverwaltung zu einer Seite hinzufügen."
-
 msgid "kwk_nutzen_name"
 msgstr "„Kunden werben Kunden“ aktivieren"
 
@@ -3032,6 +2996,42 @@ msgstr "Verschlüsselt (SSL)"
 msgid "ftp_path_name"
 msgstr "Pfad zum Shop"
 
+msgid "sftp_hostname_name"
+msgstr "Hostname"
+
+msgid "sftp_port_name"
+msgstr "Port"
+
+msgid "sftp_user_name"
+msgstr "Benutzername"
+
+msgid "sftp_pass_name"
+msgstr "Passwort"
+
+msgid "sftp_privkey_name"
+msgstr "Private key-Pfad"
+
+msgid "sftp_path_name"
+msgstr "Pfad zum Shop"
+
+msgid "fs_timeout_name"
+msgstr "Timeout (Sekunden)"
+
+msgid "fs_adapter_name"
+msgstr "Adapter"
+
+msgid "fs_adapter_value(local)"
+msgstr "Lokal"
+
+msgid "fs_adapter_value(ftp)"
+msgstr "FTP"
+
+msgid "fs_adapter_value(sftp)"
+msgstr "SFTP"
+
+msgid "methodTest"
+msgstr "Testen"
+
 msgid "cron_type_name"
 msgstr "Pseudo-Cron-Methode"
 
@@ -3049,3 +3049,9 @@ msgstr "Hersteller anzeigen als"
 
 msgid "hersteller_anzeigen_als_desc"
 msgstr "Hier legen Sie fest, wie die Hersteller angezeigt werden sollen."
+
+msgid "general_child_item_bulk_pricing_name"
+msgstr "Variationsübergreifende Staffelpreise"
+
+msgid "general_child_item_bulk_pricing_desc"
+msgstr "Für Staffelpreisgrenzen im Warenkorb zählen alle Kindartikel einer VarKombi."

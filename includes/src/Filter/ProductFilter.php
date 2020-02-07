@@ -6,7 +6,6 @@
 
 namespace JTL\Filter;
 
-use Detection\MobileDetect;
 use Illuminate\Support\Collection;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Catalog\Category\Kategorie;
@@ -34,6 +33,7 @@ use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\MagicCompatibilityTrait;
 use JTL\Mapper\SortingType;
+use JTL\Template;
 use stdClass;
 use function Functional\first;
 use function Functional\flatten;
@@ -543,7 +543,6 @@ class ProductFilter
             'kSuchanfrage'           => 0,
             'kMerkmalWert'           => 0,
             'kSuchspecial'           => 0,
-            'kUmfrage'               => 0,
             'kKategorieFilter'       => 0,
             'kHerstellerFilter'      => 0,
             'nBewertungSterneFilter' => 0,
@@ -614,6 +613,7 @@ class ProductFilter
         $this->filters[] = $this->searchSpecialFilter;
         $this->filters[] = $this->priceRangeFilter;
         $this->filters[] = $this->ratingFilter;
+        $this->filters[] = $this->search;
 
         $this->sorting = new Sort($this);
         $this->limits  = new Limit($this);
@@ -880,7 +880,7 @@ class ProductFilter
     {
         return \array_reduce(
             $this->activeFilters,
-            function ($carry, $item) use ($filterClassName) {
+            static function ($carry, $item) use ($filterClassName) {
                 /** @var FilterInterface $item */
                 return $carry ?? ($item->getClassName() === $filterClassName
                         ? $item->getValue()
@@ -906,7 +906,7 @@ class ProductFilter
     {
         $filter = \array_filter(
             $this->filters,
-            function ($f) use ($filterClassName) {
+            static function ($f) use ($filterClassName) {
                 /** @var FilterInterface $f */
                 return $f->getClassName() === $filterClassName;
             }
@@ -923,7 +923,7 @@ class ProductFilter
     {
         $filter = \array_filter(
             $this->activeFilters,
-            function ($f) use ($filterClassName) {
+            static function ($f) use ($filterClassName) {
                 /** @var FilterInterface $f */
                 return $f->getClassName() === $filterClassName;
             }
@@ -939,7 +939,7 @@ class ProductFilter
     {
         return \array_filter(
             $this->filters,
-            function ($e) {
+            static function ($e) {
                 /** @var FilterInterface $e */
                 return $e->isCustom();
             }
@@ -974,12 +974,14 @@ class ProductFilter
     {
         return \array_filter(
             $this->filters,
-            function ($f) {
-                $device = new MobileDetect();
+            static function ($f) {
+                $templateSettings = Template::getInstance()->getConfig();
                 /** @var FilterInterface $f */
                 return $f->getVisibility() === Visibility::SHOW_ALWAYS
                     || $f->getVisibility() === Visibility::SHOW_CONTENT
-                    || ($device->isMobile() && !$device->isTablet() && $f->getVisibility() !== Visibility::SHOW_NEVER());
+                    || ($f->getClassName() === PriceRange::class
+                        && isset($templateSettings['sidebar_settings'])
+                        && $templateSettings['sidebar_settings']['always_show_price_range'] ?? 'N' === 'Y');
             }
         );
     }
@@ -1548,7 +1550,7 @@ class ProductFilter
         $sql->setGroupBy(['tartikel.kArtikel']);
         $qry         = $this->getFilterSQL()->getBaseQuery($sql, 'listing');
         $productKeys = \collect(\array_map(
-            function ($e) {
+            static function ($e) {
                 return (int)$e->kArtikel;
             },
             $this->db->query($qry, ReturnType::ARRAY_OF_OBJECTS)
@@ -1711,13 +1713,13 @@ class ProductFilter
      */
     public function getActiveFilters(bool $byType = false, string $ignore = null): array
     {
-        $activeFilters = select($this->activeFilters, function (FilterInterface $f) use ($ignore) {
+        $activeFilters = select($this->activeFilters, static function (FilterInterface $f) use ($ignore) {
             return $ignore === null || $f->getClassName() !== $ignore;
         });
         if ($byType === false) {
             return $activeFilters;
         }
-        $grouped = group($activeFilters, function (FilterInterface $f) {
+        $grouped = group($activeFilters, static function (FilterInterface $f) {
             if ($f->isCustom()) {
                 return 'custom';
             }
@@ -1737,7 +1739,7 @@ class ProductFilter
             'bf'     => [],
             'custom' => [],
             'misc'   => []
-        ], map($grouped, function ($e) {
+        ], map($grouped, static function ($e) {
             return \array_values($e);
         }));
     }
@@ -1765,7 +1767,7 @@ class ProductFilter
         /** @var FilterInterface $filter */
         foreach ($this->getActiveFilters(true, $ignore) as $type => $active) {
             if ($type !== 'misc' && $type !== 'custom' && \count($active) > 1) {
-                $orFilters = select($active, function (FilterInterface $f) {
+                $orFilters = select($active, static function (FilterInterface $f) {
                     return $f->getType() === Type::OR;
                 });
                 /** @var AbstractFilter $filter */
@@ -1803,7 +1805,7 @@ class ProductFilter
      */
     private function extractConditionsFromORFilters(array $filters, array $conditions): array
     {
-        $groupedOrFilters = group($filters, function (FilterInterface $f) {
+        $groupedOrFilters = group($filters, static function (FilterInterface $f) {
             return $f->getClassName() === Characteristic::class
                 ? $f->getID()
                 : $f->getPrimaryKeyRow();
@@ -1812,7 +1814,7 @@ class ProductFilter
             /** @var FilterInterface[] $orFilters */
             $values        = \implode(
                 ',',
-                \array_map(function ($f) {
+                \array_map(static function ($f) {
                     /** @var FilterInterface $f */
                     $val = $f->getValue();
 

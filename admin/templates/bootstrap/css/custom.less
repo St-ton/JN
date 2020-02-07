@@ -599,17 +599,13 @@ label .fillout {
     position: sticky;
     padding: 1.5rem 1.5rem;
     background: #fff;
-    //border: 1px solid #eee;
+    box-shadow: 0px -2px 16px 0px rgba(0, 0, 0, 0.06);
     text-align: right;
     margin: 20px 0;
     z-index: 10;
     .row {
         align-items: center;
     }
-}
-.tab-content .save-wrapper,
-.card .save-wrapper:not(.card-footer) {
-    padding: 1.5rem 0;
 }
 
 .pages .pageinfo {
@@ -945,22 +941,10 @@ ul.linklist li a {
 }
 
 .vertical-center {
-    height: 100%;
-    width: 100%;
-    text-align: center;
-}
-
-.vertical-center:before {
-    content: " ";
-    display: inline-block;
-    vertical-align: middle;
-    height: 100%;
-}
-
-.vertical-center > .container {
-    max-width: 100%;
-    display: inline-block;
-    vertical-align: middle;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100vh;
 }
 
 #login_wrapper {
@@ -1671,10 +1655,6 @@ span.success {
     content: "\f07a";
 }
 
-#widget-Duk .widget-head .widget-title::before {
-    content: "\f0eb";
-}
-
 #widget-LastOrders .widget-head .widget-title::before {
     content: "\f022";
 }
@@ -1957,7 +1937,6 @@ tr.text-vtop > td,tr.text-vtop > th {
 }
 
 .alert a:not(.btn) {
-    color: #000;
     text-decoration: none;
     border-bottom: 1px dashed rgba(0,0,0,0.25);
 }
@@ -2413,7 +2392,7 @@ pre#debug b {
 }
 
 .dropdown.avatar img {
-    max-height: 34px;
+    height: 34px;
     margin: 8px;
     border-radius: 50%;
 }
@@ -2660,26 +2639,6 @@ h2 .btn-group {
 
 .alert-xs {
     padding: 5px 10px;
-}
-
-.alert-success {
-    color: #fff;
-    background-color: #3c763d;
-}
-
-.alert-info {
-    color: #fff;
-    background-color: #31708f;
-}
-
-.alert-warning {
-    color: #fff;
-    background-color: #f3940e;
-}
-
-.alert-danger {
-    color: #fff;
-    background-color: #a94442;
 }
 
 .widget-content .alert {
@@ -3100,9 +3059,6 @@ div.markdown thead tr td {
         border: 2px solid transparent;
     }
 }
-.modal-header {
-    flex-direction: row-reverse;
-}
 #articlePicker-result-list .list-group-item {
   padding: 0.5rem;
 }
@@ -3224,4 +3180,11 @@ input[type=number] {
 }
 .save-wrapper .row > div {
     margin-bottom: 8px;
+}
+
+.typeahead-spinner {
+    position: absolute;
+    right: 42px;
+    top: 12px;
+    display: none;
 }

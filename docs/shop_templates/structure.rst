@@ -1,69 +1,118 @@
 Struktur
 ========
 
-*****************************************
- Allgemeines zum JTL-Shop Template System
-*****************************************
+.. |br| raw:: html
 
-JTL-Shop nutzt das Templatesystem `Smarty <http://www.smarty.net/>`_, welches die serverseitige Anwendungslogik von der Präsentation (dem Template) trennt.
+    <br />
 
-Standardmäßig wird der JTL-Shop mit einem modernen CSS/LESS-Template mit dem Namen ``JTL-Shop-Evo`` ausgeliefert.
-Das Template beinhaltet 15 verschiedene Design-Themen (im folgenden ``Themes`` genannt), welche die Präsentation des Shops beeinflussen.
-Das Evo-Template beinhaltet alle Themes von https://bootswatch.com. Dort finden Sie auch eine Übersicht aller integrierten Themes.
+Allgemeines zum Template-System von JTL-Shop
+--------------------------------------------
 
-Im Admin-Backend unter ``Templates -> JTL-Shop-Evo -> Einstellungen`` bestimmt der Shop-Betreiber ein Standard-Theme, welches im Shop aktiv ist.
+JTL-Shop nutzt das Template-System `Smarty <https://www.smarty.net/>`_, welches die serverseitige Anwendungslogik
+von der Präsentation (dem Template) trennt. |br|
+Das EVO-Template nutzt zur Darstellung die bekannte Technologie CSS/LESS. |br|
+Im NOVA-Template gehen wir noch einen Schritt weiter und setzen anstelle von CSS/LESS das modernere SCSS ein.
 
-Alle folgenden Erläuterungen und Anleitungen auf diesen Seiten beziehen sich auf das Standard-Template des JTL-Shop "JTL-Shop-Evo".
+Das EVO-Template beinhaltet 16 verschiedene Design-Themen (im Folgenden "*Themes*" genannt), welche die Darstellung
+des Shops beeinflussen. Im NOVA-Template gibt es aktuell das Standard-Theme. |br|
+Diese *Themes* sind freie Designvorlagen von https://bootswatch.com. Dort finden Sie auch zusätzliche Informationen
+zu allen im Shop integrierten Themes. |br|
+Im Admin-Backend unter "*[Templates|Template-Einstellungen] -> [Template-Name] -> Einstellungen*" bestimmt der
+Shop-Betreiber ein Standard-Theme, welches im Shop aktiv ist.
 
-***************
- Ordnerstruktur
-***************
+.. note::
 
-.. image:: /_images/template_tree.png
+    Alle Erläuterungen und Anleitungen der folgenden Seiten beziehen sich auf die JTL-Standard-Templates. |br|
+    (Gelegentlich wird examplarisch nur das EVO-Template als Bezugspunkt aufgelistet. Besonderheiten
+    des NOVA-Templates finden sich dann im Text.)
 
-Das JTL-Shop-Evo Template liegt im Ordner ``<Shop-Root>/templates/Evo/``.
+Ordnerstruktur
+--------------
 
-*************
- template.xml
-*************
+Alle JTL-Shop-Templates befinden sich im Ordner ``<Shop-Root>/templates/``.
 
-Weiterhin finden Sie im Stammverzeichnis des Evo-Templates die Datei ``template.xml``.
-In dieser Datei werden template-spezifische Einstellungen definiert. Diese Einstellungen werden vom Shop automatisch eingelesen und werden im Admin-Backend unter ``Templates -> JTL-Shop-Evo -> Einstellungen`` aufgelistet. In der ``template.xml`` werden nur die verfügbaren Template-Einstellungen definiert, die zugehörigen Einstellungswerte werden in der Shop-Datenbank gespeichert.
+.. code-block:: console
 
-.. note:: Template-spezifische Tags:
+    templates/Evo/
+    ├── account/
+    ├── basket/
+    ├── blog/
+    ├── boxes/
+    ├── checkout/
+    ├── comparelist/
+    ├── contact/
+    ├── fonts/
+    ├── js/
+    ├── layout/
+    ├── newsletter/
+    ├── page/
+    ├── php/
+    ├── poll/
+    ├── productdetails/
+    ├── productlist/
+    ├── productwizard/
+    ├── register/
+    ├── selectionwizard/
+    ├── snippets/
+    ├── themes/
+    └── template.xml
 
-    =========== ============
-    Tag         Beschreibung
-    =========== ============
-    Name        Name des Templates
 
-                -> wird unter ``Templates`` als Name verwendet
-    Author      Template-Autor
+In jedem Template-Ordner muss zwingen eine ``template.xml`` vorhanden sein.
 
-                -> wird unter ``Templates`` als Autor verwendet
-    URL         Autor-URL
+Ordner: snippets
+""""""""""""""""
 
-                -> wird unter ``Templates`` für die verlinkung des Autors verwendet
-    Version     Template-Version
-    ShopVersion Shop-Version
-    Preview     Pfad zum Vorschaubild ausgehend vom aktuellen Verzeichnis des Templates
-    DokuURL     URL zur Template-Dokumentation
+Die Template-Dateien im Stammverzeichnis eines JTL-Shop-Templates inkludieren (per Smarty-Include-Funktion) unter
+anderem auch die Template-Dateien im Verzeichnis ``snippets/``. |br|
+An dieser Stelle haben Sie die Möglichkeit, verschiedene Template-Teile ("Schnipsel") unterzubringen und von hieraus
+in Ihr Template zu inkludieren, die sonst nicht eindeutig thematisch zuzuordnen sind.
 
-                -> wird unter ``Templates -> TemplateName -> Einstellungen`` als Link zur ``Dokumentation zu Einstellungen`` verwendet
-    =========== ============
+Ordner: themes
+""""""""""""""
 
-Neben template-spezifischen Einstellungen werden in der ``template.xml`` auch die verfügbaren Themes und die zu inkludierenden CSS/JS-Dateien definiert. Eine Anleitung zum Einbau eines eigenen Themes finden Sie unter :doc:`/shop_templates/eigenes_theme`.
+Ein Theme im JTL-Shop-Template definiert per CSS und Hintergrundgrafiken das Design des Shop-Templates. |br|
+(Im EVO-Template wird dieses CSS aus LESS erzeugt und im neuen NOVA-Template geschieht dies aus SCSS heraus.)
 
-*****************
- Ordner: snippets
-*****************
+Themes liegen in Unterordnern im Verzeichnis ``templates/[Template-Name]/themes/``. |br|
+Weitere Informationen zur Theme-Struktur und Theme-Anpassung finden Sie unter ":doc:`/shop_templates/eigenes_theme`".
 
-Die Template-Dateien im Stammverzeichnis JTL-Shop-Evo Template inkludieren per Smarty-Include-Funktion andere Template-Dateien, die im Verzeichnis ``snippets`` liegen.
+Die ``template.xml``
+--------------------
 
-***************
- Ordner: themes
-***************
+Jedes Template verfügt über eine Datei namens ``template.xml``, welche die grundlegenden Einstellungen des jeweiligen
+Templates beinhaltet. |br|
+Diese Einstellungen werden vom Shop automatisch eingelesen und im Admin-Backend
+unter "*Templates|Template-Einstellungen -> [Template-Name] -> Einstellungen*" aufgelistet.
 
-Ein Theme im JTL-Shop-Evo Template definiert per CSS/LESS und Hintergrundgrafiken das Design des Shop-Templates. Themes liegen in Unterordnern im Verzeichnis Evo/themes/.
+In der ``template.xml`` werden nur die verfügbaren Template-Einstellungen definiert. Die zugehörigen Einstellungswerte
+werden in der Shop-Datenbank gespeichert.
 
-Unter :doc:`/shop_templates/eigenes_theme` finden Sie nähere Informationen zur Theme-Struktur und Theme-Anpassung.
+Diese Tags sollten immer gefüllt sein:
+
++-------------------+-------------------------------------------------------------------------+
+| Tag               | Beschreibung                                                            |
++===================+=========================================================================+
+| ``<Name>``        | Name des Templates                                                      |
+|                   | (wird unter "*Templates*" als Name des Templates angezeigt)             |
++-------------------+-------------------------------------------------------------------------+
+| ``<Author>``      | Name des Autors                                                         |
+|                   | (wird unter "*Templates*" als Name des Autors angezeigt)                |
++-------------------+-------------------------------------------------------------------------+
+| ``<URL>``         | Autor-URL                                                               |
+|                   | (wird unter "*Templates*" als Verlinkung zum Autor angezeigt)           |
++-------------------+-------------------------------------------------------------------------+
+| ``<Version>``     | Template-Version                                                        |
++-------------------+-------------------------------------------------------------------------+
+| ``<ShopVersion>`` | Shop-Version                                                            |
++-------------------+-------------------------------------------------------------------------+
+| ``<Preview>``     | Pfad zum Vorschaubild ausgehend vom aktuellen Verzeichnis des Templates |
++-------------------+-------------------------------------------------------------------------+
+| ``<Descrption>``  | Kurzbeschreibung des Templates                                          |
+|                   | (wird unterhalb des Template-Namens unter "*Templates*" angezeigt)      |
++-------------------+-------------------------------------------------------------------------+
+
+Neben template-spezifischen Einstellungen werden in der ``template.xml`` auch die verfügbaren Themes und die zu
+inkludierenden CSS/JS-Dateien definiert. |br|
+Eine Anleitung zum Erstellen eines eigenen Themes finden Sie im Abschnitt ":doc:`/shop_templates/eigenes_theme`".
+

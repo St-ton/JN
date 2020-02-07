@@ -13,6 +13,7 @@ use JTL\DB\ReturnType;
 use JTL\Plugin\Data\AdminMenu;
 use JTL\Plugin\Data\Cache;
 use JTL\Plugin\Data\Config;
+use JTL\Plugin\Data\Hook;
 use JTL\Plugin\Data\License;
 use JTL\Plugin\Data\Links;
 use JTL\Plugin\Data\Localization;
@@ -109,7 +110,7 @@ abstract class AbstractLoader implements LoaderInterface
     {
         $data         = $this->db->queryPrepared(
             'SELECT l.kPluginSprachvariable, l.kPlugin, l.cName, l.cBeschreibung, o.cISO,
-                COALESCE(c.cName, o.cName) AS customValue
+                COALESCE(c.cName, o.cName) AS customValue, l.type
             FROM tpluginsprachvariable AS l
             JOIN tpluginsprachvariablesprache AS o
                 ON o.kPluginSprachvariable = l.kPluginSprachvariable
@@ -167,6 +168,23 @@ abstract class AbstractLoader implements LoaderInterface
     }
 
     /**
+     * @param int $id
+     * @return array
+     */
+    protected function loadHooks(int $id): array
+    {
+        return \array_map(static function ($data) {
+            $hook = new Hook();
+            $hook->setPriority((int)$data->nPriority);
+            $hook->setFile($data->cDateiname);
+            $hook->setID((int)$data->nHook);
+            $hook->setPluginID((int)$data->kPlugin);
+
+            return $hook;
+        }, $this->db->selectAll('tpluginhook', 'kPlugin', $id));
+    }
+
+    /**
      * @param string $pluginDir
      * @return Paths
      */
@@ -202,7 +220,8 @@ abstract class AbstractLoader implements LoaderInterface
     {
         $license = new License();
         if (\strlen($data->cLizenzKlasse) > 0 && \strpos($data->cLizenzKlasse, 'Plugin\\') !== 0) {
-            $data->cLizenzKlasse = 'Plugin\\' . $data->cLizenzKlasse;
+            $namespace           = $data->cPluginID . '\\' . \trim(\PFAD_PLUGIN_LICENCE, '\\/');
+            $data->cLizenzKlasse = \sprintf('Plugin\\%s\\%s', $namespace, $data->cLizenzKlasse);
         }
         $license->setClass($data->cLizenzKlasse);
         $license->setClassName($data->cLizenzKlasseName);
@@ -231,7 +250,7 @@ abstract class AbstractLoader implements LoaderInterface
     protected function loadAdminMenu(PluginInterface $plugin): AdminMenu
     {
         $i     = -1;
-        $menus = \array_map(function ($menu) use (&$i) {
+        $menus = \array_map(static function ($menu) use (&$i) {
             $menu->name             = $menu->cName;
             $menu->cName            = __($menu->cName);
             $menu->displayName      = $menu->cName;

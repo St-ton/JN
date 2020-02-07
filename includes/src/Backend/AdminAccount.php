@@ -21,6 +21,7 @@ use JTL\Session\Backend;
 use JTL\Shop;
 use Psr\Log\LoggerInterface;
 use stdClass;
+use function Functional\reindex;
 
 /**
  * Class AdminAccount
@@ -101,12 +102,13 @@ class AdminAccount
     {
         if (!isset($_SESSION['AdminAccount'])) {
             $adminAccount              = new stdClass();
-            $adminAccount->language    = $this->getText->getDefaultLanguage();
+            $adminAccount->language    = $this->getText->getLanguage();
             $adminAccount->kAdminlogin = null;
             $adminAccount->oGroup      = null;
             $adminAccount->cLogin      = null;
             $adminAccount->cMail       = null;
             $adminAccount->cPass       = null;
+            $adminAccount->attributes  = null;
             $_SESSION['AdminAccount']  = $adminAccount;
         }
     }
@@ -301,7 +303,8 @@ class AdminAccount
             if (!isset($admin->kSprache)) {
                 $admin->kSprache = Shop::getLanguage();
             }
-            $admin->cISO = Shop::Lang()->getIsoFromLangID($admin->kSprache)->cISO;
+            $admin->cISO       = Shop::Lang()->getIsoFromLangID($admin->kSprache)->cISO;
+            $admin->attributes = $this->getAttributes($admin->kAdminlogin);
             $this->toSession($admin);
             $this->checkAndUpdateHash($cPass);
             if (!$this->getIsTwoFaAuthenticated()) {
@@ -315,6 +318,38 @@ class AdminAccount
         $this->setRetryCount($admin->cLogin);
 
         return $this->handleLoginResult(AdminLoginStatus::ERROR_INVALID_PASSWORD, $cLogin);
+    }
+
+    /**
+     * @param int $userID
+     * @return mixed
+     */
+    private function getAttributes(int $userID)
+    {
+        $attributes = reindex($this->db->queryPrepared(
+            'SELECT cName, cAttribText, cAttribValue FROM tadminloginattribut
+                WHERE kAdminlogin = :userID',
+            ['userID' => $userID],
+            ReturnType::ARRAY_OF_OBJECTS
+        ), static function ($e) {
+            return $e->cName;
+        });
+        if (!empty($attributes) && isset($attributes['useAvatarUpload'])) {
+            $attributes['useAvatarUpload']->cAttribValue = Shop::getImageBaseURL() .
+                \ltrim($attributes['useAvatarUpload']->cAttribValue, '/');
+        }
+        return $attributes;
+    }
+
+    /**
+     * @return void
+     */
+    public function refreshAttributes(): void
+    {
+        $account = $this->account();
+        if ($account !== false) {
+            $account->attributes = $this->getAttributes($account->kAdminlogin);
+        }
     }
 
     /**
@@ -498,7 +533,8 @@ class AdminAccount
             $_SESSION['AdminAccount']->cLogin      = $admin->cLogin;
             $_SESSION['AdminAccount']->cMail       = $admin->cMail;
             $_SESSION['AdminAccount']->cPass       = $admin->cPass;
-            $_SESSION['AdminAccount']->language    = $admin->language;
+            $_SESSION['AdminAccount']->language    = $admin->language ?? 'de-DE';
+            $_SESSION['AdminAccount']->attributes  = $admin->attributes;
 
             if (!\is_object($group)) {
                 $group                    = new stdClass();

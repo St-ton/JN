@@ -277,9 +277,9 @@ class Redirect
         $item = Shop::Container()->getDB()->executeQueryPrepared(
             "SELECT tartikel.kArtikel, tseo.cSeo
                 FROM tartikel
-                LEFT JOIN tsprache 
+                LEFT JOIN tsprache
                     ON tsprache.cISO = :iso
-                LEFT JOIN tseo 
+                LEFT JOIN tseo
                     ON tseo.kKey = tartikel.kArtikel
                     AND tseo.cKey = 'kArtikel'
                     AND tseo.kSprache = tsprache.kSprache
@@ -410,7 +410,7 @@ class Redirect
             $entry = Shop::Container()->getDB()->queryPrepared(
                 'SELECT *
                     FROM tredirectreferer tr
-                    LEFT JOIN tredirect t 
+                    LEFT JOIN tredirect t
                         ON t.kRedirect = tr.kRedirect
                     WHERE tr.cIP = :ip
                     AND t.cFromUrl = :frm LIMIT 1',
@@ -571,6 +571,8 @@ class Redirect
             ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($redirects as $redirect) {
+            $redirect->kRedirect            = (int)$redirect->kRedirect;
+            $redirect->nCount               = (int)$redirect->nCount;
             $redirect->oRedirectReferer_arr = self::getReferers($redirect->kRedirect);
         }
 
@@ -618,7 +620,7 @@ class Redirect
     public static function getTotalRedirectCount(): int
     {
         return (int)Shop::Container()->getDB()->query(
-            'SELECT COUNT(kRedirect) AS nCount 
+            'SELECT COUNT(kRedirect) AS nCount
                 FROM tredirect',
             ReturnType::SINGLE_OBJECT
         )->nCount;
@@ -691,7 +693,7 @@ class Redirect
         return Shop::Container()->getDB()->query(
             "DELETE tredirect, tredirectreferer
                 FROM tredirect
-                LEFT JOIN tredirectreferer 
+                LEFT JOIN tredirectreferer
                     ON tredirect.kRedirect = tredirectreferer.kRedirect
                 WHERE tredirect.cToUrl = ''",
             ReturnType::AFFECTED_ROWS
@@ -705,7 +707,8 @@ class Redirect
      */
     public static function urlNotFoundRedirect(array $hookInfos = null, bool $forceExit = false): array
     {
-        $url         = $_SERVER['REQUEST_URI'];
+        $shopSubPath = \parse_url(Shop::getURL(), PHP_URL_PATH);
+        $url         = \preg_replace('/^' . \preg_quote($shopSubPath, '/') . '/', '', $_SERVER['REQUEST_URI'], 1);
         $redirect    = new self;
         $redirectUrl = $redirect->test($url);
         if ($redirectUrl !== false && $redirectUrl !== $url && '/' . $redirectUrl !== $url) {

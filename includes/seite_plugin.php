@@ -18,7 +18,8 @@ if ($kLink !== null && $kLink > 0) {
         $loader   = Helper::getLoaderByPluginID($pluginID);
         $plugin   = $loader->init($pluginID);
         $oPlugin  = $plugin;
-        $smarty->assign('oPlugin', $plugin);
+        $smarty->assign('oPlugin', $plugin)
+            ->assign('plugin', $plugin);
         if (mb_strlen($linkFile->cTemplate) > 0) {
             $smarty->assign('cPluginTemplate', $plugin->getPaths()->getFrontendPath() .
                 PFAD_PLUGIN_TEMPLATE . $linkFile->cTemplate)

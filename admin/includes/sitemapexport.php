@@ -16,7 +16,7 @@ use JTL\Helpers\Text;
 use JTL\Helpers\URL;
 use JTL\Language\LanguageHelper;
 use JTL\Media\Image;
-use JTL\Media\MediaImage;
+use JTL\Media\Image\Product;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
@@ -263,9 +263,6 @@ function generateSitemapXML()
                 case ERWDARSTELLUNG_ANSICHT_GALERIE:
                     $nArtikelProSeite = (int)$conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2'];
                     break;
-                case ERWDARSTELLUNG_ANSICHT_MOSAIK:
-                    $nArtikelProSeite = (int)$conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung3'];
-                    break;
             }
         }
     }
@@ -327,9 +324,9 @@ function generateSitemapXML()
         // GoogleImages einbinden?
         $image = '';
         if ($conf['sitemap']['sitemap_googleimage_anzeigen'] === 'Y'
-            && ($number = MediaImage::getPrimaryNumber(Image::TYPE_PRODUCT, $product->kArtikel)) !== null
+            && ($number = Product::getPrimaryNumber(Image::TYPE_PRODUCT, $product->kArtikel)) !== null
         ) {
-            $image = MediaImage::getThumb(
+            $image = Product::getThumb(
                 Image::TYPE_PRODUCT,
                 $product->kArtikel,
                 $product,
@@ -395,9 +392,9 @@ function generateSitemapXML()
             }
             $image = '';
             if ($conf['sitemap']['sitemap_googleimage_anzeigen'] === 'Y'
-                && ($number = MediaImage::getPrimaryNumber(Image::TYPE_PRODUCT, $product->kArtikel)) !== null
+                && ($number = Product::getPrimaryNumber(Image::TYPE_PRODUCT, $product->kArtikel)) !== null
             ) {
-                $image = MediaImage::getThumb(
+                $image = Product::getThumb(
                     Image::TYPE_PRODUCT,
                     $product->kArtikel,
                     $product,

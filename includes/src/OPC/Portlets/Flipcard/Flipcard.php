@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -24,11 +24,22 @@ class Flipcard extends Portlet
             'flip-dir' => [
                 'type'    => InputType::RADIO,
                 'label'   => __('flipcardOrientation'),
+                'width'   => 50,
                 'options' => [
-                    'flipcard-v' => __('vertical'),
-                    'flipcard-h' => __('horizontal'),
+                    'v' => __('vertical'),
+                    'h' => __('horizontal'),
                 ],
-                'default' => 'flipcard-v',
+                'default' => 'v',
+            ],
+            'flip-trigger' => [
+                'type'    => InputType::RADIO,
+                'label'   => __('flipTrigger'),
+                'width'   => 50,
+                'options' => [
+                    'click' => __('onClick'),
+                    'hover' => __('onHover'),
+                ],
+                'default' => 'click',
             ],
         ];
     }

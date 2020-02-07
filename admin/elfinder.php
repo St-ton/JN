@@ -18,27 +18,14 @@ $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'elfinder_inc.php';
 
 if (Form::validateToken()) {
-    $mediafilesSubdir = 'Bilder';
+    $mediafilesSubdir = STORAGE_OPC;
     $mediafilesType   = Request::verifyGPDataString('mediafilesType');
     $elfinderCommand  = Request::verifyGPDataString('cmd');
     $isCKEditor       = Request::verifyGPDataString('ckeditor') === '1';
     $CKEditorFuncNum  = Request::verifyGPDataString('CKEditorFuncNum');
 
-    switch ($mediafilesType) {
-        case 'image':
-            $mediafilesSubdir = 'Bilder';
-            break;
-        case 'video':
-            $mediafilesSubdir = 'Videos';
-            break;
-        case 'music':
-            $mediafilesSubdir = 'Musik';
-            break;
-        case 'misc':
-            $mediafilesSubdir = 'Sonstiges';
-            break;
-        default:
-            break;
+    if ($mediafilesType === 'video') {
+        $mediafilesSubdir = PFAD_MEDIA_VIDEO;
     }
 
     if (!empty($elfinderCommand)) {
@@ -47,19 +34,24 @@ if (Form::validateToken()) {
         // run elFinder
         $connector = new elFinderConnector(new elFinder([
             'bind'  => [
-                'rm rename' => function ($cmd, &$result, $args, $elfinder, $volume) use ($mediafilesSubdir) {
+                'rm rename' => static function ($cmd, &$result, $args, $elfinder, $volume) {
                     $sizes = ['xs', 'sm', 'md', 'lg', 'xl'];
+
+                    foreach ($result['added'] as &$item) {
+                        $item['name'] = mb_strtolower($item['name']);
+                    }
 
                     foreach ($result['removed'] as $filename) {
                         foreach ($sizes as $size) {
-                            $scaledFile = PFAD_ROOT . PFAD_MEDIAFILES
-                                . "$mediafilesSubdir/.$size/{$filename['name']}";
-
+                            $scaledFile = PFAD_ROOT . PFAD_MEDIA_IMAGE . 'opc/' . $size . '/' . $filename['name'];
                             if (file_exists($scaledFile)) {
                                 @unlink($scaledFile);
                             }
                         }
                     }
+                },
+                'upload.presave' => static function (&$path, &$name, $tmpname, $_this, $volume) {
+                    $name = mb_strtolower($name);
                 },
             ],
             'roots' => [
@@ -68,10 +60,10 @@ if (Form::validateToken()) {
                     // driver for accessing file system (REQUIRED)
                     'driver'        => 'LocalFileSystem',
                     // path to files (REQUIRED)
-                    'path'          => PFAD_ROOT . PFAD_MEDIAFILES . $mediafilesSubdir,
+                    'path'          => PFAD_ROOT . $mediafilesSubdir,
                     // URL to files (REQUIRED)
                     'URL'           => parse_url(
-                        URL_SHOP . '/' . PFAD_MEDIAFILES . $mediafilesSubdir,
+                        URL_SHOP . '/' . $mediafilesSubdir,
                         PHP_URL_PATH
                     ),
                     // to make hash same to Linux one on windows too
@@ -79,7 +71,17 @@ if (Form::validateToken()) {
                     // All Mimetypes not allowed to upload
                     'uploadDeny'    => ['all'],
                     // Mimetype `image` and `text/plain` allowed to upload
-                    'uploadAllow'   => ['image', 'text/plain', 'video'],
+                    'uploadAllow'   => ['image',
+                                        'video',
+                                        'text/plain',
+                                        'application/pdf',
+                                        'application/msword',
+                                        'application/excel',
+                                        'application/vnd.ms-excel',
+                                        'application/x-excel',
+                                        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                    ],
                     // allowed Mimetype `image` and `text/plain` only
                     'uploadOrder'   => ['deny', 'allow'],
                     // disable and hide dot starting files (OPTIONAL)

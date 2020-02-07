@@ -47,27 +47,12 @@ class LegacyPlugin extends PluginBC
     /**
      * @var string
      */
-    public $pluginCacheID;
-
-    /**
-     * @var string
-     */
-    public $pluginCacheGroup;
-
-    /**
-     * @var int
-     */
-    public $bBootstrap;
+    public $cFehler = '';
 
     /**
      * @var int
      */
     public $nCalledHook;
-
-    /**
-     * @var string
-     */
-    public $cFehler = '';
 
     /**
      * LegacyPlugin constructor.
@@ -187,7 +172,7 @@ class LegacyPlugin extends PluginBC
     }
 
     /**
-     * @return Version
+     * @inheritdoc
      */
     public function getCurrentVersion(): Version
     {

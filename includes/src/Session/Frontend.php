@@ -6,10 +6,11 @@
 
 namespace JTL\Session;
 
+use JTL\Campaign;
 use JTL\Cart\Cart;
 use JTL\Cart\PersistentCart;
-use JTL\Catalog\Currency;
 use JTL\Catalog\ComparisonList;
+use JTL\Catalog\Currency;
 use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Checkout\Lieferadresse;
 use JTL\Customer\Customer;
@@ -20,7 +21,6 @@ use JTL\Helpers\Manufacturer;
 use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
-use JTL\Campaign;
 use JTL\Language\LanguageHelper;
 use JTL\Language\LanguageModel;
 use JTL\Link\LinkGroupCollection;
@@ -145,7 +145,11 @@ class Frontend extends AbstractSession
             ReturnType::SINGLE_OBJECT
         );
         if (isset($data->kKunde) && $data->kKunde > 0) {
-            $this->setCustomer(new Customer($_SESSION['Kunde']->kKunde));
+            Shop::setLanguage(
+                $_SESSION['kSprache'] ?? $_SESSION['Kunde']->kSprache ?? 0,
+                $_SESSION['cISOSprache'] ?? null
+            );
+            $this->setCustomer(new Customer((int)$_SESSION['Kunde']->kKunde));
             $_SESSION['kundendaten_aktualisiert'] = 1;
         }
 
@@ -204,7 +208,7 @@ class Frontend extends AbstractSession
         if (!isset($_SESSION['jtl_token'])) {
             $_SESSION['jtl_token'] = Shop::Container()->getCryptoService()->randomString(32);
         }
-        \array_map(function ($lang) {
+        \array_map(static function ($lang) {
             $lang->kSprache = (int)$lang->kSprache;
 
             return $lang;
@@ -429,8 +433,8 @@ class Frontend extends AbstractSession
         $_SESSION['Kunde']         = $customer;
         $_SESSION['Kundengruppe']  = new CustomerGroup((int)$customer->kKundengruppe);
         $_SESSION['Kundengruppe']->setMayViewCategories(1)
-                                     ->setMayViewPrices(1)
-                                     ->initAttributes();
+            ->setMayViewPrices(1)
+            ->initAttributes();
         self::getCart()->setzePositionsPreise();
         Tax::setTaxRates();
         self::setSpecialLinks();
@@ -655,7 +659,7 @@ class Frontend extends AbstractSession
                 $_SESSION['oKategorie_arr']     = [];
                 $_SESSION['oKategorie_arr_new'] = [];
             }
-            $lang = first(LanguageHelper::getAllLanguages(), function ($l) use ($langISO) {
+            $lang = first(LanguageHelper::getAllLanguages(), static function ($l) use ($langISO) {
                 return $l->cISO === $langISO;
             });
             if ($lang === null) {
@@ -679,7 +683,7 @@ class Frontend extends AbstractSession
         $currencyCode = Request::verifyGPDataString('curr');
         if ($currencyCode) {
             $cart     = self::getCart();
-            $currency = first(self::getCurrencies(), function (Currency $c) use ($currencyCode) {
+            $currency = first(self::getCurrencies(), static function (Currency $c) use ($currencyCode) {
                 return $c->getCode() === $currencyCode;
             });
             if ($currency !== null) {
@@ -712,7 +716,6 @@ class Frontend extends AbstractSession
         $kNews                 = Request::verifyGPCDataInt('n');
         $kNewsMonatsUebersicht = Request::verifyGPCDataInt('nm');
         $kNewsKategorie        = Request::verifyGPCDataInt('nk');
-        $surveyID              = Request::verifyGPCDataInt('u');
         $key                   = 'kArtikel';
         $val                   = 0;
         \http_response_code(301);
@@ -749,15 +752,12 @@ class Frontend extends AbstractSession
         } elseif ($kNewsKategorie > 0) {
             $key = 'kNewsKategorie';
             $val = $kNewsKategorie;
-        } elseif ($surveyID > 0) {
-            $key = 'kUmfrage';
-            $val = $surveyID;
         }
         $dbRes = Shop::Container()->getDB()->select(
             'tseo',
             'cKey',
-            'kUmfrage',
             $key,
+            'kKey',
             $val,
             'kSprache',
             Shop::getLanguageID()

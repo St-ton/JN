@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -23,12 +23,11 @@ class Image extends Portlet
     public function getRoundedProp(PortletInstance $instance)
     {
         switch ($instance->getProperty('shape')) {
-            case 'normal':
-                return false;
             case 'rounded':
                 return true;
             case 'circle':
                 return 'circle';
+            case 'normal':
             default:
                 return false;
         }

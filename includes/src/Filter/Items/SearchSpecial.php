@@ -80,7 +80,6 @@ class SearchSpecial extends AbstractFilter
         return \is_array($this->value) ? $this->value[0] : $this->value;
     }
 
-
     /**
      * @inheritdoc
      */
@@ -213,7 +212,7 @@ class SearchSpecial extends AbstractFilter
                     break;
             }
         }
-        $conditions = \array_map(function ($e) {
+        $conditions = \array_map(static function ($e) {
             return '(' . $e . ')';
         }, $conditions);
 

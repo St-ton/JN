@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -8,7 +8,7 @@ namespace JTL\Console\Command\Cache;
 
 use JTL\Console\Command\Command;
 use JTL\Filesystem\Filesystem;
-use JTL\Filesystem\LocalFilesystem;
+use League\Flysystem\Adapter\Local;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -21,25 +21,21 @@ class DbesTmpCommand extends Command
     /**
      * @inheritDoc
      */
-    protected function configure()
+    protected function configure(): void
     {
-        $this
-            ->setName('cache:dbes:delete')
+        $this->setName('cache:dbes:delete')
             ->setDescription('Delete dbeS cache');
     }
 
     /**
-     * @param InputInterface  $input
-     * @param OutputInterface $output
+     * @inheritDoc
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $io                       = $this->getIO();
-        $localFileSystem          = new Filesystem(new LocalFilesystem(['root' => \PFAD_ROOT]));
-        $standardTplCacheResponse = $localFileSystem->deleteDirectory('dbeS/tmp/', true);
-
-        if ($standardTplCacheResponse) {
-            $io->success('DbeS tmp cache deleted.');
+        $io = $this->getIO();
+        $fs = new Filesystem(new Local(\PFAD_ROOT));
+        if ($fs->deleteDir('dbeS/tmp/')) {
+            $io->success('dbeS tmp cache deleted.');
         } else {
             $io->warning('Nothind to delete.');
         }

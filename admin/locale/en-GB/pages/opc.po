@@ -32,7 +32,7 @@ msgid "Revisions"
 msgstr "Versions"
 
 msgid "Page structure"
-msgstr "Page structure"
+msgstr "Page Structure"
 
 msgid "Import blueprint"
 msgstr "Import template"
@@ -46,8 +46,11 @@ msgstr "Current revision"
 msgid "Please wait..."
 msgstr "Please wait…"
 
-msgid "Edit Portlet"
-msgstr "Edit portlet"
+msgid "editPortletPrefix"
+msgstr "Edit "
+
+msgid "editPortletPostfix"
+msgstr " "
 
 msgid "Save this Portlet as a blueprint"
 msgstr "Save portlet as template"
@@ -68,7 +71,7 @@ msgstr "Animation"
 
 # Styles tab
 
-msgid "Font color"
+msgid "Font colour"
 msgstr "Font colour"
 
 msgid "Visibility"
@@ -77,11 +80,23 @@ msgstr "Visible for"
 msgid "hide"
 msgstr "hide"
 
-msgid "Background color"
+msgid "Background colour"
 msgstr "Background colour"
 
 msgid "Font size"
 msgstr "Font size"
+
+msgid "Default colour"
+msgstr "Default colour"
+
+msgid "Border style"
+msgstr "Border style"
+
+msgid "Border colour"
+msgstr "Border colour"
+
+msgid "Border radius"
+msgstr "Border radius"
 
 # Animations tab
 
@@ -203,7 +218,7 @@ msgid "imageSelect"
 msgstr "Select image"
 
 msgid "alternativeText"
-msgstr "Alternativ text"
+msgstr "Alternative text"
 
 msgid "imageAdd"
 msgstr "Add image"
@@ -287,31 +302,31 @@ msgid "label"
 msgstr "Label"
 
 msgid "style"
-msgstr "Stil"
+msgstr "Style"
 
 msgid "stylePrimary"
-msgstr "Primär"
+msgstr "Primary"
 
 msgid "styleSuccess"
-msgstr "Erfolg"
+msgstr "Success"
 
 msgid "styleInfo"
 msgstr "Info"
 
 msgid "styleWarning"
-msgstr "Warnung"
+msgstr "Warning"
 
 msgid "styleDanger"
-msgstr "Gefahr"
+msgstr "Danger"
 
 msgid "Icon"
 msgstr "Icon"
 
 msgid "background"
-msgstr "Hintergrund"
+msgstr "Background"
 
 msgid "backgroundImage"
-msgstr "Hintergrundbild"
+msgstr "Background image"
 
 msgid "video"
 msgstr "Video"
@@ -323,13 +338,13 @@ msgid "horizontal"
 msgstr "horizontal"
 
 msgid "grid"
-msgstr "Gitter"
+msgstr "Grid"
 
 msgid "alternate"
-msgstr "Abwechselnd"
+msgstr "Alternating"
 
 msgid "columns"
-msgstr "Spalten"
+msgstr "Columns"
 
 msgid "noAction"
 msgstr "No Action"
@@ -357,13 +372,13 @@ msgid "active"
 msgstr "active"
 
 msgid "planned"
-msgstr "geplant"
+msgstr "planned"
 
 msgid "draft"
-msgstr "Entwurf"
+msgstr "planned"
 
 msgid "past"
-msgstr "vergangen"
+msgstr "past"
 
 msgid "activeSince"
 msgstr "active since"
@@ -382,3 +397,29 @@ msgstr "expired on"
 
 msgid "dropPortletHere"
 msgstr "Drop Portlet here"
+
+# Messages
+
+msgid "opcImportSuccess"
+msgstr "The draft has been imported successfully!"
+
+msgid "opcImportUnmappedS"
+msgstr "One area could not be mapped because its ID was not found on the current page."
+
+msgid "opcImportUnmappedP"
+msgstr "%s areas could not be mapped because their IDs were not found on the current page."
+
+msgid "opcImportSuccessTitle"
+msgstr "Draft imported successfully"
+
+msgid "btnTitleCopyArea"
+msgstr "Transfer content to visible area"
+
+msgid "offscreenAreasDivider"
+msgstr "Unmapped Areas"
+
+msgid "yesDeleteArea"
+msgstr "Discard this area"
+
+msgid "Cancel"
+msgstr "Cancel"

@@ -9,6 +9,7 @@ namespace JTL\Catalog\Wishlist;
 use Exception;
 use Illuminate\Support\Collection;
 use JTL\Alert\Alert;
+use JTL\Campaign;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Customer\Customer;
@@ -16,7 +17,6 @@ use JTL\DB\ReturnType;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
-use JTL\Campaign;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Session\Frontend;
@@ -775,14 +775,16 @@ class Wishlist
 
     /**
      * @param int $id
+     * @param array|null $post
      * @return string
      */
-    public static function update(int $id): string
+    public static function update(int $id, array $post = null): string
     {
-        $db = Shop::Container()->getDB();
+        $post = $post ?? $_POST;
+        $db   = Shop::Container()->getDB();
         foreach (['wishlistName', 'WunschlisteName'] as $wishlistName) {
             if (Request::postVar($wishlistName, '') !== '') {
-                $name = Text::htmlentities(Text::filterXSS(\mb_substr($_POST[$wishlistName], 0, 254)));
+                $name = Text::htmlentities(Text::filterXSS(\mb_substr($post[$wishlistName], 0, 254)));
                 $db->update('twunschliste', 'kWunschliste', $id, (object)['cName' => $name]);
             }
         }
@@ -799,15 +801,15 @@ class Wishlist
         foreach ($items as $item) {
             $id  = (int)$item->kWunschlistePos;
             $idx = 'Kommentar_' . $id;
-            if (!isset($_POST[$idx])) {
-                break;
+            if (isset($post[$idx])) {
+                $upd             = new stdClass();
+                $upd->cKommentar = Text::htmlentities(Text::filterXSS($db->escape(\mb_substr($post[$idx], 0, 254))));
+                $db->update('twunschlistepos', 'kWunschlistePos', $id, $upd);
             }
-            $upd             = new stdClass();
-            $upd->cKommentar = Text::htmlentities(Text::filterXSS($db->escape(\mb_substr($_POST[$idx], 0, 254))));
-            $db->update('twunschlistepos', 'kWunschlistePos', $id, $upd);
+
             $idx = 'Anzahl_' . $id;
-            if (isset($_POST[$idx])) {
-                $quantity = \str_replace(',', '.', $_POST[$idx]);
+            if (isset($post[$idx])) {
+                $quantity = \str_replace(',', '.', $post[$idx]);
                 if ((float)$quantity > 0) {
                     $db->update(
                         'twunschlistepos',
@@ -990,24 +992,27 @@ class Wishlist
      */
     public static function getWishListPositionDataByID(int $itemID)
     {
-        if ($itemID > 0) {
-            $item = Shop::Container()->getDB()->select('twunschlistepos', 'kWunschlistePos', $itemID);
-            if (!empty($item->kWunschliste)) {
-                $product = new Artikel();
-                try {
-                    $product->fuelleArtikel($item->kArtikel, Artikel::getDefaultOptions());
-                } catch (Exception $e) {
-                    return false;
-                }
-                if ($product->kArtikel > 0) {
-                    $item->bKonfig = $product->bHasKonfig;
-                }
-
-                return $item;
-            }
+        if ($itemID <= 0) {
+            return false;
+        }
+        $item = Shop::Container()->getDB()->select('twunschlistepos', 'kWunschlistePos', $itemID);
+        if ($item === null) {
+            return false;
+        }
+        $item->kWunschlistePos = (int)$item->kWunschlistePos;
+        $item->kWunschliste    = (int)$item->kWunschliste;
+        $item->kArtikel        = (int)$item->kArtikel;
+        $product               = new Artikel();
+        try {
+            $product->fuelleArtikel($item->kArtikel, Artikel::getDefaultOptions());
+        } catch (Exception $e) {
+            return false;
+        }
+        if ($product->kArtikel > 0) {
+            $item->bKonfig = $product->bHasKonfig;
         }
 
-        return false;
+        return $item;
     }
 
     /**
@@ -1027,10 +1032,16 @@ class Wishlist
                 ReturnType::SINGLE_OBJECT
             );
         }
+        if (isset($wishlist->kWunschliste) && $wishlist->kWunschliste > 0) {
+            $wishlist->kWunschliste = (int)$wishlist->kWunschliste;
+            $wishlist->kKunde       = (int)$wishlist->kKunde;
+            $wishlist->nStandard    = (int)$wishlist->nStandard;
+            $wishlist->nOeffentlich = (int)$wishlist->nOeffentlich;
 
-        return (isset($wishlist->kWunschliste) && $wishlist->kWunschliste > 0)
-            ? $wishlist
-            : false;
+            return $wishlist;
+        }
+
+        return false;
     }
 
     /**
@@ -1099,8 +1110,11 @@ class Wishlist
         $this->dErstellt_DE = $record->dErstellt_DE ?? \DateTime::createFromFormat('Y-m-d H:i:s', $record->dErstellt)
                 ->format('d.m.Y H:i');
         if ($this->kKunde > 0) {
-            $this->oKunde = new Customer($this->kKunde);
-            unset($this->oKunde->cPasswort, $this->oKunde->fRabatt, $this->oKunde->fGuthaben, $this->oKunde->cUSTID);
+            $this->oKunde            = new Customer($this->kKunde);
+            $this->oKunde->cPasswort = null;
+            $this->oKunde->fRabatt   = null;
+            $this->oKunde->fGuthaben = null;
+            $this->oKunde->cUSTID    = null;
         }
         $db             = Shop::Container()->getDB();
         $langID         = Shop::getLanguageID();

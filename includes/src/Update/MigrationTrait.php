@@ -42,7 +42,7 @@ trait MigrationTrait
     /**
      * @return DbInterface
      */
-    protected function getDB(): DbInterface
+    public function getDB(): DbInterface
     {
         return $this->db;
     }
@@ -50,7 +50,7 @@ trait MigrationTrait
     /**
      * @param DbInterface $db
      */
-    protected function setDB(DbInterface $db): void
+    public function setDB(DbInterface $db): void
     {
         $this->db = $db;
     }

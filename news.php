@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -44,6 +44,7 @@ switch ($controller->getPageType($params)) {
         $newsItemID = $params['kNews'];
         $newsItem   = new Item($db);
         $newsItem->load($newsItemID);
+        $newsItem->checkVisibility(Frontend::getCustomer()->getGroupID());
 
         $cMetaTitle       = $newsItem->getMetaTitle();
         $cMetaDescription = $newsItem->getMetaDescription();
@@ -88,8 +89,8 @@ switch ($controller->getPageType($params)) {
         $overview       = $controller->displayOverview($pagination, 0, $id, $customerGroupID);
         $cCanonicalURL  = $overview->getURL();
         $breadCrumbURL  = $cCanonicalURL;
-        $breadCrumbName = $overview->getName();
         $cMetaTitle     = $overview->getMetaTitle();
+        $breadCrumbName = !empty($overview->getName()) ? $overview->getName() : $cMetaTitle;
         $smarty->assign('robotsContent', 'noindex, follow');
         break;
     case ViewType::NEWS_DISABLED:

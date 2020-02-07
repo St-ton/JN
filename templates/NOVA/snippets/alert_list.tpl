@@ -4,7 +4,7 @@
  *}
 {block name='snippets-alert-list'}
     {if !empty($alertList->getAlertlist())}
-        <div id="alert-list">
+        <div id="alert-list" class="{if $container|default:true}container{/if}">
             {foreach $alertList->getAlertlist() as $alert}
                 {if $alert->getShowInAlertListTemplate()}
                     {$alert->display()}

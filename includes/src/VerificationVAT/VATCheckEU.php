@@ -7,6 +7,7 @@
 namespace JTL\VerificationVAT;
 
 use JTL\Shop;
+use SoapClient;
 
 /**
  * Class VATCheckEU
@@ -67,12 +68,12 @@ class VATCheckEU extends AbstractVATCheck
                 'success'   => false,
                 'errortype' => 'parse',
                 'errorcode' => $vatParser->getErrorCode(),
-                'errorinfo' => '' !== ($errorInfo = $vatParser->getErrorInfo()) ? $errorInfo : ''
+                'errorinfo' => ($errorInfo = $vatParser->getErrorInfo()) !== '' ? $errorInfo : ''
             ];
         }
         // asking the remote service if the VAT-office is reachable
         if ($this->downTimes->isDown($countryCode) === false) {
-            $soap   = new \SoapClient($this->viesWSDL);
+            $soap   = new SoapClient($this->viesWSDL);
             $result = null;
             try {
                 $result = $soap->checkVat(['countryCode' => $countryCode, 'vatNumber' => $vatNumber]);

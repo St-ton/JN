@@ -14,7 +14,7 @@
                 <label class="btn-block" for="checkout_create_account_unreg" data-toggle="collapse"
                     data-target="#create_account_data">
                     <input id="checkout_create_account_unreg" class="radio-checkbox" type="checkbox" name="unreg_form"
-                        value="0" />
+                        value="0" {if $unregForm !== 1 && !empty($fehlendeAngaben)}checked="checked"{/if}"/>
                     <span class="control-label label-default">
                         {lang key='createNewAccount' section='account data'}
                     </span>
@@ -25,13 +25,17 @@
         {/if}
         <div id="create_account_data" class="row collapse collapse-non-validate {if empty($checkout)
                         || $smarty.session.Warenkorb->hasDigitalProducts()
-                        || $Einstellungen.kaufabwicklung.bestellvorgang_unregistriert === 'N'}in{else}hidden{/if}" aria-expanded="true">
+                        || $Einstellungen.kaufabwicklung.bestellvorgang_unregistriert === 'N'
+                        || ($unregForm !== 1 && !empty($fehlendeAngaben))}in{else}hidden{/if}" aria-expanded="true">
             <div class="col-xs-6">
                 <div class="form-group float-label-control{if isset($fehlendeAngaben.pass_zu_kurz) || isset($fehlendeAngaben.pass_ungleich)} has-error{/if}">
                     <label for="password" class="control-label">{lang key='password' section='account data'}</label>
                     <input type="password" name="pass" maxlength="20" id="password" class="form-control" placeholder="{lang key='password' section='account data'}" required autocomplete="off" aria-autocomplete="none" {if $unregForm === 1}disabled="disabled"{/if}>
                     {if isset($fehlendeAngaben.pass_zu_kurz)}
-                        <div class="form-error-msg text-danger"><i class="fa fa-warning"></i> {$warning_passwortlaenge}</div>
+                        <div class="form-error-msg text-danger">
+                            <i class="fa fa-warning"></i>
+                            {lang key='passwordTooShort' section='login' printf=$Einstellungen.kunden.kundenregistrierung_passwortlaenge}
+                        </div>
                     {/if}
                 </div>
             </div>

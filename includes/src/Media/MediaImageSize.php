@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -25,23 +25,31 @@ class MediaImageSize
     /**
      * @var string
      */
-    private $type;
+    private $size;
 
     /**
-     * @param string $type
+     * @var string
      */
-    public function __construct($type)
+    private $imageType;
+
+    /**
+     * MediaImageSize constructor.
+     * @param string $size
+     * @param string $imageType
+     */
+    public function __construct(string $size, string $imageType = Image::TYPE_PRODUCT)
     {
-        $this->type = $type;
+        $this->size      = $size;
+        $this->imageType = $imageType;
     }
 
     /**
      * @return int
      */
-    public function getWidth()
+    public function getWidth(): int
     {
         if ($this->width === null) {
-            $this->width = $this->getSize('width');
+            $this->width = $this->getConfiguredSize('width');
         }
 
         return $this->width;
@@ -50,10 +58,10 @@ class MediaImageSize
     /**
      * @return int
      */
-    public function getHeight()
+    public function getHeight(): int
     {
         if ($this->height === null) {
-            $this->height = $this->getSize('height');
+            $this->height = $this->getConfiguredSize('height');
         }
 
         return $this->height;
@@ -62,20 +70,28 @@ class MediaImageSize
     /**
      * @return string
      */
-    public function getType()
+    public function getImageType(): string
     {
-        return $this->type;
+        return $this->imageType;
     }
 
     /**
-     * @param string $type
+     * @return string
+     */
+    public function getSize(): string
+    {
+        return $this->size;
+    }
+
+    /**
+     * @param string $dimension
      * @return mixed
      */
-    private function getSize($type)
+    public function getConfiguredSize(string $dimension)
     {
         $settings = Image::getSettings();
 
-        return $settings['size'][$this->type][$type];
+        return (int)($settings[$this->imageType ?? 'size'][$this->size][$dimension] ?? -1);
     }
 
     /**
@@ -83,6 +99,6 @@ class MediaImageSize
      */
     public function __toString()
     {
-        return \sprintf('%s', $this->getType());
+        return \sprintf('%s', $this->getSize());
     }
 }

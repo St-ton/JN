@@ -1,8 +1,9 @@
 {$uid = $instance->getUid()}
+{$trigger = $instance->getProperty('flip-trigger')}
 
 <div id="{$uid}" {if $isPreview}{$instance->getDataAttributeString()}{/if}
      {$instance->getAnimationDataAttributeString()}
-     class="flipcard opc-Flipcard {$instance->getProperty('flip-dir')} {$instance->getAnimationClass()}"
+     class="opc-Flipcard opc-Flipcard-{$instance->getProperty('flip-dir')} {$instance->getAnimationClass()}"
      style="{$instance->getStyleString()}">
     {if $isPreview}
         <a href="#" class="opc-Flipcard-flip-btn">
@@ -11,8 +12,8 @@
             <span class="opc-Flipcard-label opc-Flipcard-label-back">Rückseite</span>
         </a>
     {/if}
-    <div class="flipcard-inner">
-        <div class="flipcard-face flipcard-front {if $isPreview}opc-area{/if}"
+    <div class="opc-Flipcard-inner">
+        <div class="opc-Flipcard-face opc-Flipcard-front {if $isPreview}opc-area{/if}"
              {if $isPreview}data-area-id="front"{/if}>
             {if $isPreview}
                 {$instance->getSubareaPreviewHtml("front")}
@@ -20,7 +21,7 @@
                 {$instance->getSubareaFinalHtml("front")}
             {/if}
         </div>
-        <div class="flipcard-face flipcard-back {if $isPreview}opc-area{/if}"
+        <div class="opc-Flipcard-face opc-Flipcard-back {if $isPreview}opc-area{/if}"
              {if $isPreview}data-area-id="back"{/if}>
             {if $isPreview}
                 {$instance->getSubareaPreviewHtml("back")}
@@ -35,37 +36,50 @@
         function initFlipcard_{$uid}()
         {
             var flipcard      = $('#{$uid}');
-            var flipcardInner = flipcard.find('.flipcard-inner');
+            var flipcardInner = flipcard.find('.opc-Flipcard-inner');
 
             {if $isPreview}
                 flipcard.find('.opc-Flipcard-flip-btn').click(flipCard);
             {else}
-                flipcard.click(flipCard);
+                {if $trigger === 'click'}
+                    flipcard.click(flipCard);
+                {else}
+                    flipcard.hover(flipCard);
+                {/if}
             {/if}
 
             setTimeout(() => updateHeight_{$uid}());
 
             function flipCard(e)
             {
-                flipcardInner.toggleClass('flipped');
-                flipcard.find('.opc-Flipcard-label-front').toggleClass('active');
-                flipcard.find('.opc-Flipcard-label-back').toggleClass('active');
-                updateHeight_{$uid}();
-                e.preventDefault();
+                {if $trigger === 'click'}
+                    let isLink = e.target.tagName === 'A' && typeof e.target.href === 'string'
+                        || e.target.tagName === 'BUTTON';
+
+                    if(!isLink) {
+                {/if}
+                        flipcardInner.toggleClass('opc-Flipcard-flipped');
+                        flipcard.find('.opc-Flipcard-label-front').toggleClass('active');
+                        flipcard.find('.opc-Flipcard-label-back').toggleClass('active');
+                        updateHeight_{$uid}();
+                        e.preventDefault();
+                {if $trigger === 'click'}
+                    }
+                {/if}
             }
         }
 
         function updateHeight_{$uid}()
         {
             var flipcard      = $('#{$uid}');
-            var flipcardInner = flipcard.find('.flipcard-inner');
-            var flipcardFaces = flipcardInner.find('.flipcard-face');
+            var flipcardInner = flipcard.find('.opc-Flipcard-inner');
+            var flipcardFaces = flipcardInner.find('.opc-Flipcard-face');
             var height        = 0;
 
             flipcardInner.css('height', 'auto');
             flipcardFaces.css('height', 'auto');
 
-            flipcardInner.find('.flipcard-face').each(function(i, elm) {
+            flipcardInner.find('.opc-Flipcard-face').each(function(i, elm) {
                 height = Math.max(height, $(elm).height());
             });
 

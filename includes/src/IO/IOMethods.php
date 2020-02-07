@@ -10,6 +10,7 @@ use Exception;
 use JTL\Alert\Alert;
 use JTL\Boxes\Factory;
 use JTL\Boxes\Renderer\DefaultRenderer;
+use JTL\Campaign;
 use JTL\Cart\Cart;
 use JTL\Cart\CartHelper;
 use JTL\Cart\PersistentCart;
@@ -30,7 +31,6 @@ use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Helpers\URL;
-use JTL\Campaign;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
@@ -87,7 +87,8 @@ class IOMethods
                         ->register('setSelectionWizardAnswers', [$this, 'setSelectionWizardAnswers'])
                         ->register('getCitiesByZip', [$this, 'getCitiesByZip'])
                         ->register('getOpcDraftsHtml', [$this, 'getOpcDraftsHtml'])
-                        ->register('setWishlistVisibility', [$this, 'setWishlistVisibility']);
+                        ->register('setWishlistVisibility', [$this, 'setWishlistVisibility'])
+                        ->register('updateWishlistItem', [$this, 'updateWishlistItem']);
     }
 
     /**
@@ -590,7 +591,7 @@ class IOMethods
                 $smarty->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
                        ->assign('Warensumme', $cart->gibGesamtsummeWaren())
                        ->assign('Steuerpositionen', $cart->gibSteuerpositionen())
-                       ->assign('Einstellungen', Shop::getSettings([\CONF_GLOBAL]))
+                       ->assign('Einstellungen', Shop::getSettings([\CONF_GLOBAL, \CONF_BILDER]))
                        ->assign('WarenkorbArtikelPositionenanzahl', $qty)
                        ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
                        ->assign('WarenkorbGesamtgewicht', $cart->getWeight())
@@ -1290,6 +1291,24 @@ class IOMethods
         $response->wlID  = $wlID;
         $response->state = $state;
         $response->url   = Wishlist::instanceByID($wlID)->cURLID;
+
+        $objResponse->script('this.response = ' . \json_encode($response) . ';');
+
+        return $objResponse;
+    }
+
+    /**
+     * @param int $wlID
+     * @param array $formData
+     * @return IOResponse
+     */
+    public function updateWishlistItem(int $wlID, array $formData): IOResponse
+    {
+        Wishlist::update($wlID, $formData);
+
+        $objResponse    = new IOResponse();
+        $response       = new stdClass();
+        $response->wlID = $wlID;
 
         $objResponse->script('this.response = ' . \json_encode($response) . ';');
 

@@ -27,7 +27,7 @@ class Referral
     public $kKundenWerbenKunden;
 
     /**
-     * @var string
+     * @var int
      */
     public $kKunde;
 
@@ -98,18 +98,22 @@ class Referral
      */
     private function loadFromDB(string $email): self
     {
-        if (\mb_strlen($email) > 0) {
-            $email = Text::filterXSS($email);
-            $oKwK  = Shop::Container()->getDB()->select('tkundenwerbenkunden', 'cEmail', $email);
-            if (isset($oKwK->kKundenWerbenKunden) && $oKwK->kKundenWerbenKunden > 0) {
-                foreach (\array_keys(\get_object_vars($oKwK)) as $member) {
-                    $this->$member = $oKwK->$member;
+        if (\mb_strlen($email) === 0) {
+            return $this;
+        }
+        $email = Text::filterXSS($email);
+        $data  = Shop::Container()->getDB()->select('tkundenwerbenkunden', 'cEmail', $email);
+        if (isset($data->kKundenWerbenKunden) && $data->kKundenWerbenKunden > 0) {
+            foreach (\array_keys(\get_object_vars($data)) as $member) {
+                if (\in_array($member, ['kKunde', 'kKundenWerbenKunden'], true)) {
+                    $data->$member = (int)$data->$member;
                 }
-                $tmpCustomer              = new Customer();
-                $this->fGuthabenLocalized = Preise::getLocalizedPriceString($this->fGuthaben);
-                $this->oNeukunde          = $tmpCustomer->holRegKundeViaEmail($this->cEmail);
-                $this->oBestandskunde     = new Customer($this->kKunde);
+                $this->$member = $data->$member;
             }
+            $tmpCustomer              = new Customer();
+            $this->fGuthabenLocalized = Preise::getLocalizedPriceString($this->fGuthaben);
+            $this->oNeukunde          = $tmpCustomer->holRegKundeViaEmail($this->cEmail);
+            $this->oBestandskunde     = new Customer($this->kKunde);
         }
 
         return $this;

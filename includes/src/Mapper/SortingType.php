@@ -81,41 +81,29 @@ class SortingType
             case \SEARCH_SORT_CRITERION_NAME:
             case \SEARCH_SORT_CRITERION_NAME_ASC:
                 return \SEARCH_SORT_NAME_ASC;
-
             case \SEARCH_SORT_CRITERION_NAME_DESC:
                 return \SEARCH_SORT_NAME_DESC;
-
             case \SEARCH_SORT_CRITERION_PRODUCTNO:
                 return \SEARCH_SORT_PRODUCTNO;
-
             case \SEARCH_SORT_CRITERION_AVAILABILITY:
                 return \SEARCH_SORT_AVAILABILITY;
-
             case \SEARCH_SORT_CRITERION_WEIGHT:
                 return \SEARCH_SORT_WEIGHT;
-
             case \SEARCH_SORT_CRITERION_PRICE_ASC:
             case \SEARCH_SORT_CRITERION_PRICE:
                 return \SEARCH_SORT_PRICE_ASC;
-
             case \SEARCH_SORT_CRITERION_PRICE_DESC:
                 return \SEARCH_SORT_PRICE_DESC;
-
             case \SEARCH_SORT_CRITERION_EAN:
                 return \SEARCH_SORT_EAN;
-
             case \SEARCH_SORT_CRITERION_NEWEST_FIRST:
                 return \SEARCH_SORT_NEWEST_FIRST;
-
             case \SEARCH_SORT_CRITERION_DATEOFISSUE:
                 return \SEARCH_SORT_DATEOFISSUE;
-
             case \SEARCH_SORT_CRITERION_BESTSELLER:
                 return \SEARCH_SORT_BESTSELLER;
-
             case \SEARCH_SORT_CRITERION_RATING:
                 return \SEARCH_SORT_RATING;
-
             default:
                 return \SEARCH_SORT_STANDARD;
         }

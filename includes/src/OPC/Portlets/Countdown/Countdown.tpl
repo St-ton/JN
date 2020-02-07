@@ -1,7 +1,7 @@
 {$uid = $instance->getUid()}
 
 <div id="{$uid}"
-     class="countdown {$instance->getAnimationClass()}"
+     class="opc-Countdown {$instance->getAnimationClass()}"
      style="{$instance->getStyleString()}"
      {$instance->getAnimationDataAttributeString()}
      {if $isPreview}{$instance->getDataAttributeString()}{/if}
@@ -42,44 +42,32 @@
         {/if}
     </div>
     {inline_script}<script>
-        function countdown_{$uid}()
-        {
-            let date = "{$instance->getProperty('date')} {$instance->getProperty('time')}";
-            // Set the date we're counting down to
-            let countDownDate = new Date(date).getTime();
-            // Update the count down every 1 second
-            let x = setInterval(function() {
+        $(() => {
+            let until = new Date("{$instance->getProperty('until')}");
+            let countDownDate = until.getTime();
 
-                // Get todays date and time
-                let now = new Date().getTime();
-
-                // Find the distance between now an the count down date
+            let timeout = setInterval(() => {
+                let now      = new Date().getTime();
                 let distance = countDownDate - now;
+                let days     = Math.floor(distance / (1000 * 60 * 60 * 24));
+                let hours    = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                let minutes  = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                let seconds  = Math.floor((distance % (1000 * 60)) / 1000);
 
-                // Time calculations for days, hours, minutes and seconds
-                let days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                let seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-                // If the count down is finished, write some text
-                if (distance < 0) {
-                    clearInterval(x);
-                    days = 0;
-                    hours = 0;
+                if (distance <= 0) {
+                    clearInterval(timeout);
+                    days    = 0;
+                    hours   = 0;
                     minutes = 0;
                     seconds = 0;
                     $("#{$uid} .expired").show();
                 }
 
-                // Display the result
                 $("#{$uid} .days .cntdwn-item").html(days);
                 $("#{$uid} .hours .cntdwn-item").html(hours);
                 $("#{$uid} .minutes .cntdwn-item").html(minutes);
                 $("#{$uid} .seconds .cntdwn-item").html(seconds);
             }, 1000);
-        }
-
-        $(countdown_{$uid});
+        });
     </script>{/inline_script}
 </div>

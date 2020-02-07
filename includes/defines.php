@@ -20,11 +20,13 @@ ifndef('SHOP_LOG_LEVEL', E_ERROR | E_PARSE);
 ifndef('SMARTY_LOG_LEVEL', E_ERROR | E_PARSE);
 error_reporting(SHOP_LOG_LEVEL);
 ifndef('TEMPLATE_COMPATIBILITY', false);
+ifndef('EVO_COMPATIBILITY', true);
 // Image compatibility level 0 => disabled, 1 => referenced in history table, 2 => automatic detection
 ifndef('IMAGE_COMPATIBILITY_LEVEL', 1);
 ifndef('KEEP_SYNC_FILES', false);
 ifndef('PROFILE_PLUGINS', false);
 ifndef('PROFILE_SHOP', false);
+ifndef('PLUGIN_DEV_MODE', false);
 /**
  * Lieferschwellen-Option: Gleichbleibende Bruttopreise (SHOP-2633)
  * @since 5.0.0
@@ -70,6 +72,7 @@ ifndef('PFAD_CONFIG', 'config/');
 ifndef('PFAD_INCLUDES', 'includes/');
 ifndef('PFAD_TEMPLATES', 'templates/');
 ifndef('PFAD_COMPILEDIR', 'templates_c/');
+ifndef('PATH_STATIC_MINIFY', PFAD_COMPILEDIR . 'min/');
 ifndef('PFAD_EMAILPDFS', 'emailpdfs/');
 ifndef('PFAD_NEWSLETTERBILDER', 'newsletter/');
 ifndef('PFAD_LINKBILDER', 'links/');
@@ -85,14 +88,10 @@ ifndef('SMARTY_DIR', PFAD_ROOT . PFAD_SMARTY);
 /**
  * @deprecated since Shop 5
  */
-ifndef('PFAD_XAJAX', PFAD_INCLUDES_LIBS . 'xajax_0.5_standard/');
-ifndef('PFAD_FLASHCHART', PFAD_INCLUDES_LIBS . 'flashchart/');
-ifndef('PFAD_PHPQUERY', PFAD_INCLUDES_LIBS . 'phpQuery/');
+ifndef('PFAD_PHPQUERY', PFAD_INCLUDES . 'vendor/jtlshop/phpquery/src/');
 ifndef('PFAD_PCLZIP', PFAD_INCLUDES . 'vendor/pclzip/pclzip/');
 ifndef('PFAD_PHPMAILER', PFAD_INCLUDES . 'vendor/phpmailer/phpmailer/');
-ifndef('PFAD_GRAPHCLASS', PFAD_INCLUDES_LIBS . 'graph-2005-08-28/');
-ifndef('PFAD_BLOWFISH', PFAD_INCLUDES_LIBS . 'xtea/');
-ifndef('PFAD_FLASHPLAYER', PFAD_INCLUDES_LIBS . 'flashplayer/'); // DEPRECATED in Shop 5
+ifndef('PFAD_BLOWFISH', PFAD_INCLUDES_LIBS . 'vendor/jtlshop/xtea/');
 ifndef('PFAD_CLASSES_CORE', PFAD_CLASSES . 'core/');  // DEPRECATED
 ifndef('PFAD_OBJECT_CACHING', 'caching/');
 ifndef('PFAD_GFX', 'gfx/');
@@ -150,7 +149,6 @@ ifndef('PFAD_WIDGETS', 'widgets/');
 ifndef('PFAD_PORTLETS', 'portlets/');
 ifndef('PFAD_INSTALL', 'install/');
 ifndef('PFAD_SHOPMD5', 'shopmd5files/');
-ifndef('PFAD_NUSOAP', 'nusoap/');
 ifndef('PFAD_UPLOADS', PFAD_ROOT . 'uploads/');
 ifndef('PFAD_DOWNLOADS_REL', 'downloads/');
 ifndef('PFAD_DOWNLOADS_PREVIEW_REL', PFAD_DOWNLOADS_REL . 'vorschau/');
@@ -159,8 +157,16 @@ ifndef('PFAD_DOWNLOADS_PREVIEW', PFAD_ROOT . PFAD_DOWNLOADS_PREVIEW_REL);
 ifndef('PFAD_UPLOAD_CALLBACK', PFAD_INCLUDES_EXT . 'uploads_cb.php');
 ifndef('PFAD_IMAGEMAP', PFAD_BILDER . 'banner/');
 ifndef('PFAD_EMAILTEMPLATES', 'templates_mail/');
+ifndef('PFAD_MEDIA_VIDEO', 'media/video/');
 ifndef('PFAD_MEDIA_IMAGE', 'media/image/');
 ifndef('PFAD_MEDIA_IMAGE_STORAGE', PFAD_MEDIA_IMAGE . 'storage/');
+ifndef('STORAGE_VARIATIONS', PFAD_MEDIA_IMAGE_STORAGE . 'variations/');
+ifndef('STORAGE_CONFIGGROUPS', PFAD_MEDIA_IMAGE_STORAGE . 'configgroups/');
+ifndef('STORAGE_MANUFACTURERS', PFAD_MEDIA_IMAGE_STORAGE . 'manufacturers/');
+ifndef('STORAGE_CATEGORIES', PFAD_MEDIA_IMAGE_STORAGE . 'categories/');
+ifndef('STORAGE_CHARACTERISTICS', PFAD_MEDIA_IMAGE_STORAGE . 'characteristics/');
+ifndef('STORAGE_CHARACTERISTIC_VALUES', PFAD_MEDIA_IMAGE_STORAGE . 'characteristicvalues/');
+ifndef('STORAGE_OPC', PFAD_MEDIA_IMAGE_STORAGE . 'opc/');
 // Plugins
 ifndef('PFAD_PLUGIN', PFAD_INCLUDES . 'plugins/');
 // dbeS
@@ -178,9 +184,9 @@ ifndef('BILD_KEIN_MERKMALBILD_VORHANDEN', PFAD_GFX . 'keinBild.gif');
 ifndef('BILD_KEIN_MERKMALWERTBILD_VORHANDEN', PFAD_GFX . 'keinBild_kl.gif');
 ifndef('BILD_UPLOAD_ZUGRIFF_VERWEIGERT', PFAD_GFX . 'keinBild.gif');
 //MediaImage Regex
-ifndef('MEDIAIMAGE_REGEX', '/^media\/image\/(?P<type>product|category|variation|manufacturer)' .
-    '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg)\/(?P<name>[a-zA-Z0-9\-_]+)' .
-    '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif)$/');
+ifndef('MEDIAIMAGE_REGEX', '/^media\/image\/(?P<type>product)' .
+    '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|xl|os)\/(?P<name>[a-zA-Z0-9\-_]+)' .
+    '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/');
 // Suchcache Lebensdauer in Minuten nach letzter Artikeländerung durch JTL-Wawi
 ifndef('SUCHCACHE_LEBENSDAUER', 60);
 // Steuersatz Standardland OVERRIDE - setzt ein anderes Steuerland, als im Shop angegeben (upper case, ISO 3166-2)
@@ -265,8 +271,7 @@ ifndef('SHOW_TEMPLATE_HINTS', 0);
 
 ifndef('SEO_SLUG_LOWERCASE', true);
 
-// true - child products are grouped by parent for bulk price calculation
-ifndef('DEFAULT_GENERAL_CHILD_ITEM_BULK_PRICING', false);
+ifndef('SAFE_MODE', false);
 
 /**
  * @param string     $constant

@@ -56,7 +56,7 @@ class ContentAuthor
      * @param string $realm
      * @param int    $contentID
      * @param bool   $activeOnly
-     * @return object
+     * @return object|bool
      */
     public function getAuthor(string $realm, int $contentID, bool $activeOnly = false)
     {
@@ -77,15 +77,19 @@ class ContentAuthor
             ReturnType::SINGLE_OBJECT
         );
         if (isset($author->kAdminlogin) && (int)$author->kAdminlogin > 0) {
-            $attribs            = Shop::Container()->getDB()->query(
+            $attribs                = Shop::Container()->getDB()->query(
                 'SELECT tadminloginattribut.kAttribut, tadminloginattribut.cName, 
                     tadminloginattribut.cAttribValue, tadminloginattribut.cAttribText
                     FROM tadminloginattribut
                     WHERE tadminloginattribut.kAdminlogin = ' . (int)$author->kAdminlogin,
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            $author->extAttribs = [];
+            $author->extAttribs     = [];
+            $author->kContentId     = (int)$author->kContentId;
+            $author->kContentAuthor = (int)$author->kContentAuthor;
+            $author->kAdminlogin    = (int)$author->kAdminlogin;
             foreach ($attribs as $attrib) {
+                $attrib->kAttribut                  = (int)$attrib->kAttribut;
                 $author->extAttribs[$attrib->cName] = $attrib;
             }
         }

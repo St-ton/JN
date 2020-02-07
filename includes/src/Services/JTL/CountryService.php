@@ -65,7 +65,7 @@ class CountryService implements CountryServiceInterface
             $this->getCountryList()->push($countryTMP);
         }
 
-        $this->countryList = $this->getCountryList()->sortBy(function (Country $country) {
+        $this->countryList = $this->getCountryList()->sortBy(static function (Country $country) {
             return $country->getName();
         });
 
@@ -86,7 +86,7 @@ class CountryService implements CountryServiceInterface
      */
     public function getCountry(string $ISO): ?Country
     {
-        return $this->getCountryList()->filter(function (Country $country) use ($ISO) {
+        return $this->getCountryList()->filter(static function (Country $country) use ($ISO) {
             return $country->getISO() === \strtoupper($ISO);
         })->pop();
     }
@@ -103,7 +103,7 @@ class CountryService implements CountryServiceInterface
         }
         $filterItems = \array_map('\strtoupper', $ISOToFilter);
 
-        return $this->getCountryList()->filter(function (Country $country) use ($filterItems) {
+        return $this->getCountryList()->filter(static function (Country $country) use ($filterItems) {
             return \in_array($country->getISO(), $filterItems, true);
         });
     }
@@ -115,7 +115,7 @@ class CountryService implements CountryServiceInterface
     public function getIsoByCountryName(string $countryName): ?string
     {
         $countryName  = \strtolower($countryName);
-        $countryMatch = $this->getCountryList()->filter(function (Country $country) use ($countryName) {
+        $countryMatch = $this->getCountryList()->filter(static function (Country $country) use ($countryName) {
             if (\strtolower($country->getNameDE()) === $countryName
                 || \strtolower($country->getNameEN()) === $countryName
             ) {
@@ -168,10 +168,44 @@ class CountryService implements CountryServiceInterface
                 'name'                   => $continent,
                 'countries'              => $countries,
                 'countriesCount'         => \count($countries),
-                'countriesSelectedCount' => \count($continentsSelectedCountryTMP[$continent] ?? [])
+                'countriesSelectedCount' => \count($continentsSelectedCountryTMP[$continent] ?? []),
+                'sort'                   => $this->getContinentSort($continent)
             ];
         }
+        \usort($continents, static function ($a, $b) {
+            return $a->sort > $b->sort;
+        });
 
         return $continents;
+    }
+
+    /**
+     * @param string $continent
+     * @return int
+     */
+    public function getContinentSort(string $continent): int
+    {
+        switch ($continent) {
+            case __('Europa'):
+                return 1;
+            case __('europeanUnion'):
+                return 2;
+            case __('notEuropeanUnionEurope'):
+                return 3;
+            case __('Asien'):
+                return 4;
+            case __('Afrika'):
+                return 5;
+            case __('Nordamerika'):
+                return 6;
+            case __('Suedamerika'):
+                return 7;
+            case __('Ozeanien'):
+                return 8;
+            case __('Antarktis'):
+                return 9;
+            default:
+                return 0;
+        }
     }
 }

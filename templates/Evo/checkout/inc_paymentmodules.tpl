@@ -3,9 +3,8 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {if !isset($abschlussseite) || $abschlussseite !== 1}
-    {assign var=cModulId value=$Bestellung->Zahlungsart->cModulId}
     {if $oPlugin !== null && $oPlugin instanceof JTL\Plugin\PluginInterface}
-        {$method = $oPlugin->getPaymentMethods()->getMethodByID($cModulId)}
+        {$method = $oPlugin->getPaymentMethods()->getMethodByID($Bestellung->Zahlungsart->cModulId)}
     {else}
         {$method = null}
     {/if}
@@ -25,15 +24,7 @@
         </div>
     {/if}
     <div class="payment-method-inner">
-        {if $Bestellung->Zahlungsart->cModulId === 'za_rechnung_jtl'}
-            {lang key='invoiceDesc' section='checkout'}
-        {elseif $Bestellung->Zahlungsart->cModulId === 'za_lastschrift_jtl'}
-            {lang key='banktransferDesc' section='checkout'}
-        {elseif $Bestellung->Zahlungsart->cModulId === 'za_nachnahme_jtl'}
-            {lang key='banktransferDesc' section='checkout'}
-        {elseif $Bestellung->Zahlungsart->cModulId === 'za_barzahlung_jtl'}
-            {lang key='cashOnPickupDesc' section='checkout'}
-        {elseif $Bestellung->Zahlungsart->cModulId === 'za_paypal_jtl'}
+        {if $Bestellung->Zahlungsart->cModulId === 'za_paypal_jtl'}
             {include file='checkout/modules/paypal/bestellabschluss.tpl'}
         {elseif $Bestellung->Zahlungsart->cModulId === 'za_kreditkarte_jtl'}
             {include file='account/retrospective_payment.tpl'}

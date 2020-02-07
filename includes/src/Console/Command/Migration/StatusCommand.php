@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -21,17 +21,14 @@ class StatusCommand extends Command
     /**
      * @inheritDoc
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('migrate:status')
             ->setDescription('Show the status of each migration');
     }
 
     /**
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     * @return int|null|void
-     * @throws \Exception
+     * @inheritDoc
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -52,19 +49,17 @@ class StatusCommand extends Command
     }
 
     /**
-     * @param $list
+     * @param array $list
      */
-    protected function printMigrationTable($list): void
+    protected function printMigrationTable(array $list): void
     {
         if (\count($list) === 0) {
             $this->getIO()->note('No migration found.');
 
             return;
         }
-
         $rows    = [];
         $headers = ['Migration', 'Description', 'Author', ''];
-
         foreach ($list as $item) {
             $rows[] = [$item->id, $item->description, $item->author,
                 $item->executed ? '<info> ✔ </info>' : '<comment> • </comment>',];

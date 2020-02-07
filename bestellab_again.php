@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -8,6 +8,7 @@ use JTL\Checkout\Bestellung;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Plugin\Helper;
+use JTL\Plugin\Payment\LegacyMethod;
 use JTL\Session\Frontend;
 use JTL\Shop;
 
@@ -40,10 +41,12 @@ if ($bestellid->cId) {
 $obj              = new stdClass();
 $obj->tkunde      = $_SESSION['Kunde'];
 $obj->tbestellung = $order;
-Shop::Smarty()->assign('Bestellung', $order);
+$moduleID         = $order->Zahlungsart->cModulId;
+Shop::Smarty()->assign('Bestellung', $order)
+    ->assign('oPlugin', null)
+    ->assign('plugin', null);
 if (Request::verifyGPCDataInt('zusatzschritt') === 1) {
     $hasAdditionalInformation = false;
-    $moduleID                 = $order->Zahlungsart->cModulId;
     switch ($moduleID) {
         case 'za_kreditkarte_jtl':
             if ($_POST['kreditkartennr']
@@ -114,16 +117,17 @@ if ($pluginID > 0) {
     $loader = Helper::getLoaderByPluginID($pluginID, $db);
     $plugin = $loader->init($pluginID);
     if ($plugin !== null) {
-        $pluginPaymentMethod = $plugin->getPaymentMethods()->getMethodByID($moduleID);
-        if ($pluginPaymentMethod === null) {
-            return false;
+        $paymentMethod = LegacyMethod::create($moduleID, 1);
+        if ($paymentMethod !== null) {
+            if ($paymentMethod->validateAdditional()) {
+                $paymentMethod->preparePaymentProcess($order);
+            } elseif (!$paymentMethod->handleAdditional($_POST)) {
+                $order->Zahlungsart = gibZahlungsart($order->kZahlungsart);
+            }
         }
-        $className = $pluginPaymentMethod->getClassName();
-        /** @var PaymentMethod $paymentMethod */
-        $paymentMethod           = new $className($moduleID);
-        $paymentMethod->cModulId = $moduleID;
-        $paymentMethod->preparePaymentProcess($order);
-        Shop::Smarty()->assign('oPlugin', $plugin);
+
+        Shop::Smarty()->assign('oPlugin', $plugin)
+            ->assign('plugin', $plugin);
     }
 } elseif ($moduleID === 'za_lastschrift_jtl') {
     $customerAccountData = gibKundenKontodaten(Frontend::getCustomer()->getID());

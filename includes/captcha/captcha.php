@@ -39,7 +39,7 @@ function erstelleCaptcha($font, $text, $sec)
         40,
         imagecolorallocate($im, rand(0, 215), rand(0, 215), rand(0, 215)),
         $font,
-        $text{0}
+        $text[0]
     );
     imagettftext(
         $im,
@@ -49,7 +49,7 @@ function erstelleCaptcha($font, $text, $sec)
         40,
         imagecolorallocate($im, rand(0, 215), rand(0, 215), rand(0, 215)),
         $font,
-        $text{1}
+        $text[1]
     );
     imagettftext(
         $im,
@@ -59,7 +59,7 @@ function erstelleCaptcha($font, $text, $sec)
         40,
         imagecolorallocate($im, rand(0, 215), rand(0, 215), rand(0, 215)),
         $font,
-        $text{2}
+        $text[2]
     );
     imagettftext(
         $im,
@@ -69,7 +69,7 @@ function erstelleCaptcha($font, $text, $sec)
         40,
         imagecolorallocate($im, rand(0, 215), rand(0, 215), rand(0, 215)),
         $font,
-        $text{3}
+        $text[3]
     );
 
     if ($sec >= 3) {

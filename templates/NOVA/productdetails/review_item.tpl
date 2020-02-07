@@ -28,56 +28,68 @@
                 {row class="mt-1" itemprop="review" itemscope=true itemtype="http://schema.org/Review"}
                     <span itemprop="name" class="d-none">{$oBewertung->cTitel}</span>
                     {block name='productdetails-review-item-review'}
-                        {col cols=12 md=3 class="text-md-center" itemprop="reviewRating" itemscope=true itemtype="http://schema.org/Rating"}
-                            {row}
-                                {block name='productdetails-review-item-rating'}
-                                    {col cols=6 md=12 class="mb-3"}
-                                        {block name='productdetails-review-item-include-rating'}
-                                            {include file='productdetails/rating.tpl' stars=$oBewertung->nSterne}
-                                        {/block}
-                                        <small class="hide">
-                                            <span itemprop="ratingValue">{$oBewertung->nSterne}</span> {lang key='from'}
-                                            <span itemprop="bestRating">5</span>
-                                            <meta itemprop="worstRating" content="1">
-                                        </small>
-                                    {/col}
+                        {col class="col-auto text-center" itemprop="reviewRating" itemscope=true itemtype="http://schema.org/Rating"}
+                            {block name='productdetails-review-item-rating'}
+                                {block name='productdetails-review-item-include-rating'}
+                                    {include file='productdetails/rating.tpl' stars=$oBewertung->nSterne}
                                 {/block}
-                                {if $Einstellungen.bewertung.bewertung_hilfreich_anzeigen === 'Y'}
-                                    {if isset($smarty.session.Kunde) && $smarty.session.Kunde->kKunde > 0 && $smarty.session.Kunde->kKunde != $oBewertung->kKunde}
-                                        {block name='productdetails-review-item-buttons'}
-                                            {col cols=6 md=12 class="review-helpful text-right text-md-center" id="help{$oBewertung->kBewertung}"}
-                                                {button size="sm" class="helpful" title="{lang key='yes'}" name="hilfreich_{$oBewertung->kBewertung}" type="submit"}
+                                <small class="d-none">
+                                    <span itemprop="ratingValue">{$oBewertung->nSterne}</span> {lang key='from'}
+                                    <span itemprop="bestRating">5</span>
+                                    <meta itemprop="worstRating" content="1">
+                                </small>
+                            {/block}
+                            {if $Einstellungen.bewertung.bewertung_hilfreich_anzeigen === 'Y'}
+                                {if isset($smarty.session.Kunde) && $smarty.session.Kunde->kKunde > 0 && $smarty.session.Kunde->kKunde != $oBewertung->kKunde}
+                                    {block name='productdetails-review-item-buttons'}
+                                        {formrow class="review-helpful mt-3 mb-5 mg-lg-0" id="help{$oBewertung->kBewertung}"}
+                                            {col class='col-auto ml-auto'}
+                                                {button size="sm"
+                                                    class="btn-icon btn-icon-primary"
+                                                    title="{lang key='yes'}"
+                                                    name="hilfreich_{$oBewertung->kBewertung}"
+                                                    type="submit"
+                                                    variant="icon-primary"}
                                                     <i class="far fa-thumbs-up"></i>
                                                 {/button}
-                                                <sup class="badge badge-light"><b>{$oBewertung->nHilfreich}</b></sup>
-                                                {button size="sm" class="not_helpful ml-2" title="{lang key='no'}" name="nichthilfreich_{$oBewertung->kBewertung}" type="submit"}
+                                                <span class="d-block"><b>{$oBewertung->nHilfreich}</b></span>
+                                            {/col}
+                                            {col class='col-auto mr-auto'}
+                                                {button size="sm"
+                                                    class="btn-icon"
+                                                    title="{lang key='no'}"
+                                                    name="nichthilfreich_{$oBewertung->kBewertung}"
+                                                    type="submit"
+                                                    variant="icon-primary"}
                                                     <i class="far fa-thumbs-down"></i>
                                                 {/button}
-                                                <sup class="badge badge-light"><b>{$oBewertung->nNichtHilfreich}</b></sup>
+                                                <span class="d-block"><b>{$oBewertung->nNichtHilfreich}</b></span>
                                             {/col}
-                                        {/block}
-                                    {/if}
+                                        {/formrow}
+                                    {/block}
                                 {/if}
-                            {/row}
+                            {/if}
                         {/col}
                     {/block}
                     {block name='productdetails-review-item-details'}
-                        {col cols=12 md=9}
-                            <strong class="mb-3">{$oBewertung->cTitel}</strong>
+                        {col class='col-lg'}
                             <blockquote>
-                                <p itemprop="reviewBody">{$oBewertung->cText|nl2br}</p><br>
-                                - <span itemprop="author" itemscope=true itemtype="http://schema.org/Person"><span itemprop="name">{$oBewertung->cName}</span></span>,
-                                    <small>
-                                        <meta itemprop="datePublished" content="{$oBewertung->dDatum}" />{$oBewertung->Datum}
-                                    </small>
+                                <span class="subheadline">{$oBewertung->cTitel}</span>
+                                <p itemprop="reviewBody">{$oBewertung->cText|nl2br}</p>
+                                <div class="blockquote-footer">
+                                    <span itemprop="author" itemscope=true itemtype="http://schema.org/Person">
+                                        <span itemprop="name">{$oBewertung->cName}</span>
+                                    </span>,
+                                    <meta itemprop="datePublished" content="{$oBewertung->dDatum}" />{$oBewertung->Datum}
+                                </div>
                             </blockquote>
                             <meta itemprop="thumbnailURL" content="{$Artikel->cVorschaubildURL}">
                             {if !empty($oBewertung->cAntwort)}
-                                <div class="review-reply">
-                                    <strong>{lang key='reply' section='product rating'} {$cShopName}:</strong>
+                                <div class="review-reply ml-3">
+                                    <span class="subheadline">{lang key='reply' section='product rating'} {$cShopName}:</span>
                                     <blockquote>
-                                        <p>{$oBewertung->cAntwort}</p><br>
-                                        <small>{$oBewertung->AntwortDatum}</small>
+                                        <p>{$oBewertung->cAntwort}</p>
+                                        <div class="blockquote-footer">{$oBewertung->AntwortDatum}</div>
                                     </blockquote>
                                 </div>
                             {/if}

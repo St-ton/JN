@@ -11,7 +11,6 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Language\LanguageHelper;
 use JTL\Plugin\Data\Config;
-use JTL\Plugin\Data\Hook;
 use JTL\Plugin\Data\License;
 use JTL\Plugin\Data\Links;
 use JTL\Plugin\Data\Paths;
@@ -60,7 +59,7 @@ class LegacyPluginLoader extends AbstractLoader
     /**
      * @inheritdoc
      */
-    public function init(int $id, bool $invalidateCache = false, int $languageID = null)
+    public function init(int $id, bool $invalidateCache = false, int $languageID = null): PluginInterface
     {
         if (($languageID = $languageID ?? Shop::getLanguageID()) === 0) {
             $languageID = Shop::Lang()::getDefaultLanguage()->kSprache;
@@ -103,10 +102,10 @@ class LegacyPluginLoader extends AbstractLoader
     /**
      * @inheritdoc
      */
-    public function saveToCache(PluginInterface $extension): bool
+    public function saveToCache(PluginInterface $plugin): bool
     {
         return $this->cacheID !== null
-            ? $this->cache->set($this->cacheID, $extension, [\CACHING_GROUP_PLUGIN, $extension->getCache()->getGroup()])
+            ? $this->cache->set($this->cacheID, $plugin, [\CACHING_GROUP_PLUGIN, $plugin->getCache()->getGroup()])
             : false;
     }
 
@@ -121,7 +120,7 @@ class LegacyPluginLoader extends AbstractLoader
     /**
      * @inheritdoc
      */
-    public function loadFromObject($obj, string $currentLanguageCode): LegacyPlugin
+    public function loadFromObject($obj, string $currentLanguageCode): PluginInterface
     {
         $currentLanguageCode = $currentLanguageCode
             ?? Shop::getLanguageCode()
@@ -176,25 +175,6 @@ class LegacyPluginLoader extends AbstractLoader
             );
         }
         return $widgets;
-    }
-
-    /**
-     * @param int $id
-     * @return array
-     */
-    protected function loadHooks(int $id): array
-    {
-        $hooks = \array_map(function ($data) {
-            $hook = new Hook();
-            $hook->setPriority((int)$data->nPriority);
-            $hook->setFile($data->cDateiname);
-            $hook->setID((int)$data->nHook);
-            $hook->setPluginID((int)$data->kPlugin);
-
-            return $hook;
-        }, $this->db->selectAll('tpluginhook', 'kPlugin', $id));
-
-        return $hooks;
     }
 
     /**

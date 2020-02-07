@@ -82,7 +82,14 @@
         {assign var=hasError value=false}
     {/if}
 
-    {formgroup label-for=$inputId label="{$label}{if !$isRequired}<span class='optional'> - {lang key='optional'}</span>{/if}" }
+    {formgroup label-for=$inputId
+        label="{$label}{if !$isRequired}<span class='optional'> - {lang key='optional'}</span>{/if}"
+        class="{if $hasError}has-error{/if}"}
+        {block name='snippets-form-group-simple-error'}
+            {if $hasError}
+                <div class="form-error-msg text-danger">{$invalidReason}</div>
+            {/if}
+        {/block}
         {if isset($inputType) && $inputType === 'number'}
             {block name='snippets-form-group-simple-input-number'}
                 {inputgroup}
@@ -108,16 +115,11 @@
                     name=$inputName
                     value="{if isset($inputValue)}{$inputValue}{/if}"
                     id=$inputId
-                    placeholder="{if isset($placeholder)}{$placeholder}{else}{$label}{/if}"
+                    placeholder="{if isset($placeholder)}{$placeholder}{else} {/if}"
                     required=$isRequired
                     autocomplete="{if !empty($autocomplete)}{$autocomplete}{/if}"
                 }
             {/block}
         {/if}
-        {block name='snippets-form-group-simple-error'}
-            {if isset($invalidReason) && $invalidReason|strlen > 0}
-                <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i> {$invalidReason}</div>
-            {/if}
-        {/block}
     {/formgroup}
 {/block}

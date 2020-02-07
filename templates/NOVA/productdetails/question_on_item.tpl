@@ -3,6 +3,9 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='productdetails-question-on-item'}
+    {if isset($fehlendeAngaben_fragezumprodukt)}
+        {$fehlendeAngaben = $fehlendeAngaben_fragezumprodukt}
+    {/if}
     {if isset($position) && $position === 'popup'}
         {if count($Artikelhinweise) > 0}
             {block name='productdetails-question-on-item-alert'}
@@ -18,22 +21,22 @@
     {form action="{if !empty($Artikel->cURLFull)}{$Artikel->cURLFull}{if $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'Y'}#tab-productquestion{/if}{else}{$ShopURL}/{/if}"
         method="post"
         id="article_question"
-        class="evo-validate label-slide"
+        class="jtl-validate label-slide"
     }
         {block name='productdetails-question-on-item-form-fieldset-contact'}
             <fieldset>
                 {block name='productdetails-question-on-item-form-legend-contact'}
                     <legend>{lang key='contact'}</legend>
                 {/block}
-                {if $Einstellungen.artikeldetails.produktfrage_abfragen_anrede !== 'N'}
-                    {block name='productdetails-question-on-item-form-salutation'}
-                        {row}
-                            {col md=6}
+                {row}
+                    {if $Einstellungen.artikeldetails.produktfrage_abfragen_anrede !== 'N'}
+                        {block name='productdetails-question-on-item-form-salutation'}
+                            {col cols=12 md=6}
                                 {formgroup
                                     label-for="salutation"
                                     label="{lang key='salutation' section='account data'}{if $Einstellungen.artikeldetails.produktfrage_abfragen_anrede === 'O'}<span class='optional'> - {lang key='optional'}</span>{/if}"
                                 }
-                                    {select name="anrede" id="salutation" placeholder="{lang key='emailadress'}" autocomplete="honorific-prefix" required=($Einstellungen.artikeldetails.produktfrage_abfragen_anrede === 'Y')}
+                                    {select class='custom-select' name="anrede" id="salutation" placeholder="{lang key='emailadress'}" autocomplete="honorific-prefix" required=($Einstellungen.artikeldetails.produktfrage_abfragen_anrede === 'Y')}
                                         <option value="" {if $Einstellungen.artikeldetails.produktfrage_abfragen_anrede === 'Y'}disabled{/if} selected>
                                             {if $Einstellungen.artikeldetails.produktfrage_abfragen_anrede === 'Y'}{lang key='salutation' section='account data'}{else}{lang key='noSalutation'}{/if}
                                         </option>
@@ -42,15 +45,14 @@
                                     {/select}
                                 {/formgroup}
                             {/col}
-                        {/row}
-                    {/block}
-                {/if}
+                        {/block}
+                        <div class="w-100"></div>
+                    {/if}
 
-                {if $Einstellungen.artikeldetails.produktfrage_abfragen_vorname !== 'N' || $Einstellungen.artikeldetails.produktfrage_abfragen_nachname !== 'N'}
-                    {block name='productdetails-question-on-item-form-name'}
-                        {row}
+                    {if $Einstellungen.artikeldetails.produktfrage_abfragen_vorname !== 'N' || $Einstellungen.artikeldetails.produktfrage_abfragen_nachname !== 'N'}
+                        {block name='productdetails-question-on-item-form-name'}
                             {if $Einstellungen.artikeldetails.produktfrage_abfragen_vorname !== 'N'}
-                                {col md=6}
+                                {col cols=12 md=6}
                                     {include file='snippets/form_group_simple.tpl'
                                         options=[
                                             'text', 'firstName', 'vorname',
@@ -62,7 +64,7 @@
                             {/if}
 
                             {if $Einstellungen.artikeldetails.produktfrage_abfragen_nachname !== 'N'}
-                                {col md=6}
+                                {col cols=12 md=6}
                                     {include file='snippets/form_group_simple.tpl'
                                         options=[
                                             'text', 'lastName', 'nachname',
@@ -72,14 +74,13 @@
                                     }
                                 {/col}
                             {/if}
-                        {/row}
-                    {/block}
-                {/if}
+                        {/block}
+                        <div class="w-100"></div>
+                    {/if}
 
-                {if $Einstellungen.artikeldetails.produktfrage_abfragen_firma !== 'N'}
-                    {block name='productdetails-question-on-item-form-firm'}
-                        {row}
-                            {col md=6}
+                    {if $Einstellungen.artikeldetails.produktfrage_abfragen_firma !== 'N'}
+                        {block name='productdetails-question-on-item-form-firm'}
+                            {col cols=12 md=6}
                                 {include file='snippets/form_group_simple.tpl'
                                     options=[
                                         'text', 'company', 'firma',
@@ -88,68 +89,62 @@
                                     ]
                                 }
                             {/col}
-                        {/row}
-                    {/block}
-                {/if}
+                        {/block}
+                    {/if}
 
-                {block name='productdetails-question-on-item-form-email'}
-                    {row}
-                        {col md=6}
+                    {block name='productdetails-question-on-item-form-email'}
+                        {col cols=12}
                             {include file='snippets/form_group_simple.tpl'
                                 options=[
                                     'email', 'question_email', 'email',
                                     {$Anfrage->cMail|default:null}, {lang key='email' section='account data'},
-                                    true, $fehlendeAngaben_fragezumprodukt.email|default:null, 'email'
+                                    true, null, 'email'
                                 ]
                             }
                         {/col}
-                    {/row}
-                {/block}
-                {if $Einstellungen.artikeldetails.produktfrage_abfragen_tel !== 'N' || $Einstellungen.artikeldetails.produktfrage_abfragen_mobil !== 'N'}
-                    {block name='productdetails-question-on-item-form-mobil'}
-                        {row}
+                    {/block}
+                    {if $Einstellungen.artikeldetails.produktfrage_abfragen_tel !== 'N' || $Einstellungen.artikeldetails.produktfrage_abfragen_mobil !== 'N'}
+                        {block name='productdetails-question-on-item-form-mobil'}
                             {if $Einstellungen.artikeldetails.produktfrage_abfragen_tel !== 'N'}
-                                {col md=6}
+                                {col cols=12 md=6}
                                     {include file='snippets/form_group_simple.tpl'
                                         options=[
                                             'tel', 'tel', 'tel',
                                             {$Anfrage->cTel|default:null}, {lang key='tel' section='account data'},
-                                            $Einstellungen.artikeldetails.produktfrage_abfragen_tel, $fehlendeAngaben_fragezumprodukt.tel|default:null, 'home tel'
+                                            $Einstellungen.artikeldetails.produktfrage_abfragen_tel, null, 'home tel'
                                         ]
                                     }
                                 {/col}
                             {/if}
 
                             {if $Einstellungen.artikeldetails.produktfrage_abfragen_mobil !== 'N'}
-                                {col md=6}
+                                {col cols=12 md=6}
                                     {include file='snippets/form_group_simple.tpl'
                                         options=[
                                             'tel', 'mobile', 'mobil',
                                             {$Anfrage->cMobil|default:null}, {lang key='mobile' section='account data'},
-                                            $Einstellungen.artikeldetails.produktfrage_abfragen_mobil, $fehlendeAngaben_fragezumprodukt.mobil|default:null, 'mobile tel'
+                                            $Einstellungen.artikeldetails.produktfrage_abfragen_mobil, null, 'mobile tel'
                                         ]
                                     }
                                 {/col}
                             {/if}
-                        {/row}
                     {/block}
-                {/if}
+                    {/if}
 
-                {if $Einstellungen.artikeldetails.produktfrage_abfragen_fax !== 'N'}
-                    {block name='productdetails-question-on-item-form-fax'}
-                        {row}
+                    {if $Einstellungen.artikeldetails.produktfrage_abfragen_fax !== 'N'}
+                        {block name='productdetails-question-on-item-form-fax'}
                             {col md=6}
                                 {include file='snippets/form_group_simple.tpl'
                                     options=[
                                         'tel', 'fax', 'fax',
                                         {$Anfrage->cMobil|default:null}, {lang key='fax' section='account data'},
-                                        $Einstellungen.artikeldetails.produktfrage_abfragen_fax, $fehlendeAngaben_fragezumprodukt.fax|default:null, 'fax tel'
+                                        $Einstellungen.artikeldetails.produktfrage_abfragen_fax, null, 'fax tel'
                                     ]
                                 }
                             {/col}
-                        {/row}
-                    {/block}
-                {/if}
+                        {/block}
+                    {/if}
+                {/row}
             </fieldset>
         {/block}
         {block name='productdetails-question-on-item-form-fieldset-product-question'}
@@ -159,7 +154,7 @@
             {/block}
             {block name='productdetails-question-on-item-form-textarea'}
                 {formgroup label-for="question" label="{lang key='question' section='productDetails'}"}
-                    {textarea name="nachricht" id="question" rows="8" required=true class="{if isset($fehlendeAngaben_fragezumprodukt.nachricht) && $fehlendeAngaben_fragezumprodukt.nachricht > 0}has-error{/if}"}{if isset($Anfrage)}{$Anfrage->cNachricht}{/if}{/textarea}
+                    {textarea name="nachricht" id="question" rows="8" required=true placeholder=" " class="{if isset($fehlendeAngaben_fragezumprodukt.nachricht) && $fehlendeAngaben_fragezumprodukt.nachricht > 0}has-error{/if}"}{if isset($Anfrage)}{$Anfrage->cNachricht}{/if}{/textarea}
                     {if isset($fehlendeAngaben_fragezumprodukt.nachricht) && $fehlendeAngaben_fragezumprodukt.nachricht > 0}
                         <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i> {if $fehlendeAngaben_fragezumprodukt.nachricht > 0}{lang key='fillOut'}{/if}</div>
                     {/if}
@@ -200,9 +195,13 @@
             {input type="hidden" name="a" value=$Artikel->kArtikel}
             {input type="hidden" name="show" value="1"}
             {input type="hidden" name="fragezumprodukt" value="1"}
-            {button type="submit" value="1" variant="primary" class="w-auto"}
-                {lang key='sendQuestion' section='productDetails'}
-            {/button}
+            {row}
+                {col md='auto' class="ml-auto"}
+                    {button type="submit" value="1" variant="primary" block=true}
+                        {lang key='sendQuestion' section='productDetails'}
+                    {/button}
+                {/col}
+            {/row}
         {/block}
     {/form}
     {/block}

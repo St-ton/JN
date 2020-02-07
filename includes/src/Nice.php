@@ -127,7 +127,6 @@ class Nice
     private function initConstants(): self
     {
         \ifndef('SHOP_ERWEITERUNG_SEO', 8001);
-        \ifndef('SHOP_ERWEITERUNG_UMFRAGE', 8021);
         \ifndef('SHOP_ERWEITERUNG_AUSWAHLASSISTENT', 8031);
         \ifndef('SHOP_ERWEITERUNG_UPLOADS', 8041);
         \ifndef('SHOP_ERWEITERUNG_DOWNLOADS', 8051);
@@ -149,12 +148,6 @@ class Nice
         if (!\defined(\SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             $this->initConstants();
         }
-        $module           = new stdClass();
-        $module->kModulId = \SHOP_ERWEITERUNG_UMFRAGE;
-        $module->cName    = __('moduleSurvey');
-        $module->cDefine  = 'SHOP_ERWEITERUNG_UMFRAGE';
-        $module->cURL     = 'https://jtl-url.de/ykepb';
-        $modules[]        = $module;
         $module           = new stdClass();
         $module->kModulId = \SHOP_ERWEITERUNG_AUSWAHLASSISTENT;
         $module->cName    = __('moduleSelectionWizard');

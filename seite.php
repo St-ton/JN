@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -10,6 +10,7 @@ use JTL\Extensions\SelectionWizard\Wizard;
 use JTL\Helpers\CMS;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\URL;
+use JTL\Plugin\Helper as PluginHelper;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
@@ -24,6 +25,8 @@ $smarty      = Shop::Smarty();
 $conf        = Shopsetting::getInstance()->getAll();
 $linkHelper  = Shop::Container()->getLinkService();
 $alertHelper = Shop::Container()->getAlertService();
+$db          = Shop::Container()->getDB();
+$cache       = Shop::Container()->getCache();
 $link        = null;
 if (Shop::$isInitialized === true) {
     $kLink = Shop::$kLink;
@@ -85,10 +88,10 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
     $smarty->assign('oNewsletterHistory_arr', CMS::getNewsletterHistory());
 } elseif ($link->getLinkType() === LINKTYP_SITEMAP) {
     Shop::setPageType(PAGE_SITEMAP);
-    $sitemap = new Sitemap(Shop::Container()->getDB(), Shop::Container()->getCache(), $conf);
+    $sitemap = new Sitemap($db, $cache, $conf);
     $sitemap->assignData($smarty);
 } elseif ($link->getLinkType() === LINKTYP_404) {
-    $sitemap = new Sitemap(Shop::Container()->getDB(), Shop::Container()->getCache(), $conf);
+    $sitemap = new Sitemap($db, $cache, $conf);
     $sitemap->assignData($smarty);
     Shop::setPageType(PAGE_404);
     $alertHelper->addAlert(Alert::TYPE_DANGER, Shop::Lang()->get('pageNotFound'), 'pageNotFound');
@@ -113,8 +116,13 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
         $smarty
     );
 }
-
-executeHook(HOOK_SEITE_PAGE_IF_LINKART);
+if (($pluginID = $link->getPluginID()) > 0 && $link->getPluginEnabled() === true) {
+    Shop::setPageType(PAGE_PLUGIN);
+    $loader = PluginHelper::getLoaderByPluginID($pluginID, $db, $cache);
+    if (!PluginHelper::bootstrap($pluginID, $loader)->prepareFrontend($link, $smarty)) {
+        executeHook(HOOK_SEITE_PAGE_IF_LINKART);
+    }
+}
 require_once PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 $smarty->assign('Link', $link)
        ->assign('bSeiteNichtGefunden', Shop::getPageType() === PAGE_404)

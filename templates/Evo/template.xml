@@ -3,7 +3,7 @@
     <Name>Evo</Name>
     <Author>JTL-Software-GmbH</Author>
     <URL>https://www.jtl-software.de</URL>
-    <Version>5.0.0</Version>
+    <ShopVersion>5.0.0</ShopVersion>
     <Preview>preview.png</Preview>
     <Description>JTL-Shop Responsive-Template</Description>
     <Settings>
@@ -120,6 +120,10 @@
             </Setting>
         </Section>
         <Section Name="Listen- und Gallerieansicht" Key="productlist">
+            <Setting Description="aus der Liste heraus einkaufen? (&lt;small&gt;zeigt den Warenkorb-Button in den Artikellisten an&lt;/small&gt;)" Key="buy_productlist" Type="select" Value="Y">
+                <Option Value="Y">Ja</Option>
+                <Option Value="N">Nein</Option>
+            </Setting>
             <Setting Description="Hovereffekt für Zusatzinfos (&lt;small&gt;zeigt Details zum Artikel in einer Hover-Box oder per Tap auf Touchdisplays&lt;/small&gt;)" Key="hover_productlist" Type="select" Value="N">
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
@@ -166,7 +170,6 @@
             </Setting>
             <Setting Description="Facebook-Link" Key="facebook" Type="text" Value=""/>
             <Setting Description="Twitter-Link" Key="twitter" Type="text" Value=""/>
-            <Setting Description="GooglePlus-Link" Key="googleplus" Type="text" Value=""/>
             <Setting Description="YouTube-Link" Key="youtube" Type="text" Value=""/>
             <Setting Description="Xing-Link" Key="xing" Type="text" Value=""/>
             <Setting Description="LinkedIn-Link" Key="linkedin" Type="text" Value=""/>

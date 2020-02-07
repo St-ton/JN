@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -21,24 +21,21 @@ class CreateCommand extends Command
     /**
      * @inheritDoc
      */
-    protected function configure()
+    protected function configure(): void
     {
-        $this
-            ->setName('migrate:create')
+        $this->setName('migrate:create')
             ->setDescription('Create a new migration')
             ->addArgument('description', InputArgument::REQUIRED, 'Short migration description')
             ->addArgument('author', InputArgument::REQUIRED, 'Author');
     }
 
     /**
-     * @param InputInterface  $input
-     * @param OutputInterface $output
+     * @inheritDoc
      */
-    protected function interact(InputInterface $input, OutputInterface $output)
+    protected function interact(InputInterface $input, OutputInterface $output): void
     {
-        $description = \trim($input->getArgument('description'));
-        $author      = \trim($input->getArgument('author'));
-
+        $description = \trim($input->getArgument('description') ?? '');
+        $author      = \trim($input->getArgument('author') ?? '');
         if (\strlen($description) < 5) {
             $description = $this->getIO()->ask('Short migration description');
             $input->setArgument('description', $description);
@@ -50,16 +47,12 @@ class CreateCommand extends Command
     }
 
     /**
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     *
-     * @return int|null|void
-     * @throws \Exception
+     * @inheritDoc
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $description   = \trim($input->getArgument('description'));
-        $author        = \trim($input->getArgument('author'));
+        $description   = \trim($input->getArgument('description') ?? '');
+        $author        = \trim($input->getArgument('author') ?? '');
         $migrationPath = MigrationHelper::create($description, $author);
 
         $output->writeln("<info>Created Migration:</info> <comment>'" . $migrationPath . "'</comment>");

@@ -150,7 +150,7 @@ class WishlistItem
     {
         return some(
             $this->CWunschlistePosEigenschaft_arr,
-            function ($e) use ($propertyID, $propertyValueID) {
+            static function ($e) use ($propertyID, $propertyValueID) {
                 return (int)$e->kEigenschaft === $propertyID && (int)$e->kEigenschaftWert === $propertyValueID;
             }
         );

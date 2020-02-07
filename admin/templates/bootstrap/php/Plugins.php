@@ -147,11 +147,11 @@ class Plugins
     public function SmartyConvertDate(array $params, $smarty)
     {
         if (isset($params['date']) && \mb_strlen($params['date']) > 0) {
-            $oDateTime = new DateTime($params['date']);
+            $dateTime = new DateTime($params['date']);
             if (isset($params['format']) && \mb_strlen($params['format']) > 1) {
-                $cDate = $oDateTime->format($params['format']);
+                $cDate = $dateTime->format($params['format']);
             } else {
-                $cDate = $oDateTime->format('d.m.Y H:i:s');
+                $cDate = $dateTime->format('d.m.Y H:i:s');
             }
 
             if (isset($params['assign'])) {
@@ -206,32 +206,15 @@ class Plugins
     }
 
     /**
-     * Get either a Gravatar URL or complete image tag for a specified email address.
-     *
-     * @param array     $params
-     *
-     * array['email'] - The email address
-     * array['s']     - Size in pixels, defaults to 80px [ 1 - 2048 ]
-     * array['d']     - Default imageset to use [ 404 | mm | identicon | monsterid | wavatar ]
-     * array['r']     - Maximum rating (inclusive) [ g | pg | r | x ]
-     *
-     * @source https://gravatar.com/site/implement/images/php/
+     * @param array $params
      * @return string
      */
-    public function gravatarImage(array $params): string
+    public function getAvatar(array $params): string
     {
-        $email = $params['email'] ?? null;
-        if ($email === null) {
-            $email = \JTLSUPPORT_EMAIL;
-        } else {
-            unset($params['email']);
-        }
-
-        $params = \array_merge(['email' => null, 's' => 80, 'd' => 'mm', 'r' => 'g'], $params);
-
-        $url  = 'https://www.gravatar.com/avatar/';
-        $url .= \md5(\mb_convert_case(\trim($email), \MB_CASE_LOWER));
-        $url .= '?' . \http_build_query($params, '', '&');
+        $url = isset($params['account']->attributes['useAvatar']) &&
+            $params['account']->attributes['useAvatar']->cAttribValue === 'U' ?
+            $params['account']->attributes['useAvatarUpload']->cAttribValue
+            : 'templates/bootstrap/gfx/avatar-default.svg';
 
         \executeHook(\HOOK_BACKEND_FUNCTIONS_GRAVATAR, [
             'url'          => &$url,

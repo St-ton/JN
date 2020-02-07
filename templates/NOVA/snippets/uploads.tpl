@@ -3,6 +3,7 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='snippets-uploads'}
+    {getUploaderLang iso=$smarty.session.currentLanguage->cISO639|default:'' assign='uploaderLang'}
     {if !empty($oUploadSchema_arr)}
         {if $tplscope === 'product'}
             {block name='snippets-uploads-subheading-product'}
@@ -28,6 +29,7 @@
                                 {/col}
                             {/block}
                         {/if}
+
                         {block name='snippets-uploads-scheme-product-data-main'}
                             {col cols=12}
                                 {block name='snippets-uploads-scheme-product-input'}

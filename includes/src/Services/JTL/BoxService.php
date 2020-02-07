@@ -353,8 +353,7 @@ class BoxService implements BoxServiceInterface
                 AND tboxen.ePosition IN (' . \implode(',', $visiblePositions) . ')'
             : '';
         $plgnSQL    = $activeOnly
-            ? ' AND (tplugin.nStatus IS NULL OR tplugin.nStatus = ' .
-            State::ACTIVATED . "  OR (tboxvorlage.eTyp != '" . Type::PLUGIN .
+            ? ' AND (tplugin.nStatus = ' . State::ACTIVATED . "  OR (tboxvorlage.eTyp != '" . Type::PLUGIN .
             "' AND tboxvorlage.eTyp != '" . Type::EXTENSION . "'))"
             : '';
         if (($grouped = $this->cache->get($cacheID)) === false) {
@@ -384,24 +383,25 @@ class BoxService implements BoxServiceInterface
                 ReturnType::ARRAY_OF_OBJECTS
             );
             if (isset($_SESSION['AdminAccount'])) {
-                $boxData = map($boxData, function ($box) {
+                $boxData = map($boxData, static function ($box) {
                     $box->cName = __($box->cName);
 
                     return $box;
                 });
             }
-            $boxData = map($boxData, function ($box) {
-                $box->kBox        = (int)$box->kBox;
-                $box->kBoxvorlage = (int)$box->kBoxvorlage;
-                $box->kCustomID   = (int)$box->kCustomID;
-                $box->kContainer  = (int)$box->kContainer;
-                $box->kSeite      = (int)$box->kSeite;
-                $box->nSort       = (int)$box->nSort;
-                $box->kSprache    = $box->kSprache === null ? null : (int)$box->kSprache;
+            $boxData = map($boxData, static function ($box) {
+                $box->kBox         = (int)$box->kBox;
+                $box->kBoxvorlage  = (int)$box->kBoxvorlage;
+                $box->kCustomID    = (int)$box->kCustomID;
+                $box->kContainer   = (int)$box->kContainer;
+                $box->kSeite       = (int)$box->kSeite;
+                $box->nSort        = (int)$box->nSort;
+                $box->kSprache     = $box->kSprache === null ? null : (int)$box->kSprache;
+                $box->pluginStatus = $box->pluginStatus === null ? null : (int)$box->pluginStatus;
 
                 return $box;
             });
-            $grouped = group($boxData, function ($e) {
+            $grouped = group($boxData, static function ($e) {
                 return (int)$e->kBox;
             });
             $this->cache->set($cacheID, $grouped, [\CACHING_GROUP_OBJECT, \CACHING_GROUP_BOX, 'boxes']);
@@ -477,7 +477,7 @@ class BoxService implements BoxServiceInterface
             }
             $result[] = $box;
         }
-        $this->boxes = group($result, function (BoxInterface $e) {
+        $this->boxes = group($result, static function (BoxInterface $e) {
             return $e->getPosition();
         });
 

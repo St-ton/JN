@@ -86,8 +86,8 @@ function kundeSpeichern(array $post)
 
         if ($edit && $_SESSION['Kunde']->kKunde > 0) {
             $knd->cAbgeholt = 'N';
-            unset($knd->cPasswort);
             $knd->updateInDB();
+            $knd->cPasswort = null;
             // Kundendatenhistory
             DataHistory::saveHistory($_SESSION['Kunde'], $knd, DataHistory::QUELLE_BESTELLUNG);
 
@@ -144,6 +144,7 @@ function kundeSpeichern(array $post)
                 Campaign::setCampaignAction(KAMPAGNE_DEF_ANMELDUNG, $knd->kKunde, 1.0); // Anmeldung
             }
             // Insert Kundenattribute
+            $customerAttributes->setCustomerID((int)$knd->kKunde);
             $customerAttributes->save();
             if ($conf['global']['global_kundenkonto_aktiv'] !== 'A') {
                 $_SESSION['Kunde'] = new Customer($knd->kKunde);

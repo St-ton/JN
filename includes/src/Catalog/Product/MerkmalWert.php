@@ -9,6 +9,8 @@ namespace JTL\Catalog\Product;
 use JTL\DB\ReturnType;
 use JTL\Helpers\URL;
 use JTL\Language\LanguageHelper;
+use JTL\Media\Image;
+use JTL\Media\MultiSizeImage;
 use JTL\Shop;
 
 /**
@@ -17,6 +19,8 @@ use JTL\Shop;
  */
 class MerkmalWert
 {
+    use MultiSizeImage;
+
     /**
      * @var int
      */
@@ -119,6 +123,7 @@ class MerkmalWert
      */
     public function __construct(int $id = 0, int $languageID = 0)
     {
+        $this->setImageType(Image::TYPE_CHARACTERISTIC_VALUE);
         if ($id > 0) {
             $this->loadFromDB($id, $languageID);
         }
@@ -163,10 +168,9 @@ class MerkmalWert
                             AND tmerkmalwertsprache.kSprache = ' . $languageID;
         }
         $data = Shop::Container()->getDB()->query(
-            "SELECT tmerkmalwert.*, {$selectSQL}
-                FROM tmerkmalwert
-                {$joinSQL}
-                WHERE tmerkmalwert.kMerkmalWert = {$id}",
+            'SELECT tmerkmalwert.*, ' . $selectSQL . '
+                FROM tmerkmalwert ' .  $joinSQL . '
+                WHERE tmerkmalwert.kMerkmalWert = ' . $id,
             ReturnType::SINGLE_OBJECT
         );
         if (isset($data->kMerkmalWert) && $data->kMerkmalWert > 0) {
@@ -196,6 +200,7 @@ class MerkmalWert
                 $this->cBildpfadNormal      = \PFAD_MERKMALWERTBILDER_NORMAL . $this->cBildpfad;
                 $this->nBildNormalVorhanden = 1;
             }
+            $this->generateAllImageSizes(true, 1, $this->cBildpfad);
         }
         $this->cBildURLKlein  = $imageBaseURL . $this->cBildpfadKlein;
         $this->cBildURLNormal = $imageBaseURL . $this->cBildpfadNormal;
@@ -205,64 +210,10 @@ class MerkmalWert
     }
 
     /**
-     * @param int $characteristicValueID
-     * @return array
+     * @return int|null
      */
-    public function holeAlleMerkmalWerte(int $characteristicValueID): array
+    public function getID(): ?int
     {
-        if ($characteristicValueID <= 0) {
-            return [];
-        }
-        $languageID      = Shop::getLanguage();
-        $defaultLanguage = LanguageHelper::getDefaultLanguage();
-        if (!$languageID) {
-            $languageID = (int)$defaultLanguage->kSprache;
-        }
-        $defaultLanguageID = $defaultLanguage->kSprache;
-        if ($languageID !== $defaultLanguageID) {
-            $selectSQL = 'COALESCE(fremdSprache.kSprache, standardSprache.kSprache) AS kSprache, 
-                        COALESCE(fremdSprache.cWert, standardSprache.cWert) AS cWert,
-                        COALESCE(fremdSprache.cMetaTitle, standardSprache.cMetaTitle) AS cMetaTitle, 
-                        COALESCE(fremdSprache.cMetaKeywords, standardSprache.cMetaKeywords) AS cMetaKeywords,
-                        COALESCE(fremdSprache.cMetaDescription, standardSprache.cMetaDescription) AS cMetaDescription, 
-                        COALESCE(fremdSprache.cBeschreibung, standardSprache.cBeschreibung) AS cBeschreibung,
-                        COALESCE(fremdSprache.cSeo, standardSprache.cSeo) AS cSeo';
-            $joinSQL   = 'INNER JOIN tmerkmalwertsprache AS standardSprache 
-                            ON standardSprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
-                            AND standardSprache.kSprache = ' . $defaultLanguageID . '
-                    LEFT JOIN tmerkmalwertsprache AS fremdSprache 
-                        ON fremdSprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
-                        AND fremdSprache.kSprache = ' . $languageID;
-        } else {
-            $selectSQL = 'tmerkmalwertsprache.kSprache, tmerkmalwertsprache.cWert, tmerkmalwertsprache.cMetaTitle,
-                    tmerkmalwertsprache.cMetaKeywords, tmerkmalwertsprache.cMetaDescription,
-                    tmerkmalwertsprache.cBeschreibung, tmerkmalwertsprache.cSeo';
-            $joinSQL   = 'INNER JOIN tmerkmalwertsprache ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
-                            AND tmerkmalwertsprache.kSprache = ' . $languageID;
-        }
-        $data         = Shop::Container()->getDB()->query(
-            "SELECT tmerkmalwert.*, {$selectSQL}
-                FROM tmerkmalwert
-                {$joinSQL}
-                WHERE tmerkmalwert.kMerkmal = " . $characteristicValueID . '
-                ORDER BY tmerkmalwert.nSort',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-        $imageBaseURL = Shop::getImageBaseURL();
-        foreach ($data as $value) {
-            $value->cURL     = URL::buildURL($value, \URLART_MERKMAL);
-            $value->cURLFull = URL::buildURL($value, \URLART_MERKMAL, true);
-            if (isset($value->cBildpfad) && \mb_strlen($value->cBildpfad) > 0) {
-                $value->cBildpfadKlein  = \PFAD_MERKMALWERTBILDER_KLEIN . $value->cBildpfad;
-                $value->cBildpfadNormal = \PFAD_MERKMALWERTBILDER_NORMAL . $value->cBildpfad;
-            } else {
-                $value->cBildpfadKlein  = \BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
-                $value->cBildpfadNormal = \BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
-            }
-            $value->cBildURLKlein   = $imageBaseURL . $value->cBildpfadKlein;
-            $value->cBildpURLNormal = $imageBaseURL . $value->cBildpfadNormal;
-        }
-
-        return $data;
+        return $this->kMerkmalWert;
     }
 }

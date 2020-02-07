@@ -6,6 +6,7 @@
 
 namespace JTL\dbeS\Sync;
 
+use JTL\Checkout\Adresse;
 use JTL\Checkout\Bestellung;
 use JTL\Checkout\Lieferadresse;
 use JTL\Checkout\Lieferschein;
@@ -17,6 +18,7 @@ use JTL\dbeS\Starter;
 use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
+use JTL\Plugin\Payment\LegacyMethod;
 use JTL\Shop;
 use stdClass;
 
@@ -94,7 +96,7 @@ final class Orders extends AbstractSync
             ReturnType::SINGLE_OBJECT
         );
 
-        return $order ? \PaymentMethod::create($order->cModulId) : false;
+        return empty($order->cModulId) ? false : LegacyMethod::create($order->cModulId);
     }
 
     /**
@@ -315,6 +317,8 @@ final class Orders extends AbstractSync
         }
         // Hausnummer extrahieren
         $this->extractStreet($deliveryAddress);
+        // Workaround for WAWI-39370
+        $deliveryAddress->cLand = Adresse::checkISOCountryCode($deliveryAddress->cLand);
         // lieferadresse ungleich rechungsadresse?
         if ($deliveryAddress->cVorname !== $billingAddress->cVorname
             || $deliveryAddress->cNachname !== $billingAddress->cNachname
@@ -418,6 +422,8 @@ final class Orders extends AbstractSync
             $billingAddress->cAnrede = $this->mapSalutation($billingAddress->cAnrede);
         }
         $this->extractStreet($billingAddress);
+        // Workaround for WAWI-39370
+        $billingAddress->cLand = Adresse::checkISOCountryCode($billingAddress->cLand);
         if (!$billingAddress->cNachname && !$billingAddress->cFirma && !$billingAddress->cStrasse) {
             \syncException(
                 'Error Bestellung Update. Rechnungsadresse enthält keinen Nachnamen, Firma und Strasse! XML:' .

@@ -55,8 +55,6 @@ class PageTypeToLinkType
                 return \LINKTYP_NEWS;
             case \PAGE_SITEMAP:
                 return \LINKTYP_SITEMAP;
-            case \PAGE_UMFRAGE:
-                return \LINKTYP_UMFRAGE;
             case \PAGE_GRATISGESCHENK:
                 return \LINKTYP_GRATISGESCHENK;
             case \PAGE_WRB:

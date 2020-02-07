@@ -27,7 +27,7 @@
                 {block name='productdetails-info-manufacturer-wrapper'}
                 {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'N' && isset($Artikel->cHersteller)}
                     {block name='product-info-manufacturer'}
-                    <div class="manufacturer-row text-right small" itemprop="manufacturer" itemscope itemtype="http://schema.org/Organization">
+                    <div class="manufacturer-row text-right small" itemprop="brand" itemscope itemtype="http://schema.org/Organization">
                         <a href="{$Artikel->cHerstellerSeo}"{if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'B'} data-toggle="tooltip" data-placement="left" title="{$Artikel->cHersteller}"{/if} itemprop="url">
                             {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'Y' && (!empty($Artikel->cBildpfad_thersteller) || $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'B') && isset($Artikel->cHerstellerBildKlein)}
                                 <img src="{$Artikel->cHerstellerBildURLKlein}" alt="{$Artikel->cHersteller}" class="img-sm">
@@ -61,11 +61,16 @@
                                 {/if}
                             </div>
                         {/if}
+                        {if !empty($Artikel->cBarcode)}
+                            <div class="col-xs-8">
+                                <p class="text-muted">{lang key='ean'}: <span itemprop="{if $Artikel->cBarcode|count_characters === 8}gtin8{else}gtin13{/if}">{$Artikel->cBarcode}</span></p>
+                            </div>
+                        {/if}
                         {if !empty($Artikel->cISBN)
                             && ($Einstellungen.artikeldetails.isbn_display === 'D'
                                 || $Einstellungen.artikeldetails.isbn_display === 'DL')}
                             <div class="col-xs-8">
-                                <p class="text-muted">{lang key='isbn'}: <span>{$Artikel->cISBN}</span></p>
+                                <p class="text-muted">{lang key='isbn'}: <span itemprop="gtin13">{$Artikel->cISBN}</span></p>
                             </div>
                         {/if}
                         {if !empty($Artikel->cUNNummer) && !empty($Artikel->cGefahrnr)
@@ -129,12 +134,13 @@
                 {/if}
                 {/block}
 
-                <div class="product-offer" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
-                    <link itemprop="businessFunction" href="http://purl.org/goodrelations/v1#Sell" />
+                <div class="product-offer"{if !($Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N')} itemprop="offers" itemscope itemtype="http://schema.org/Offer"{/if}>
                     {block name='productdetails-info-hidden'}
-                    {if !($Artikel->nIstVater)}
-                        <link itemprop="url" href="{$Artikel->cURLFull}" />
+                    {if !($Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N')}
+                        <meta itemprop="url" content="{$Artikel->cURLFull}">
+                        <link itemprop="businessFunction" href="http://purl.org/goodrelations/v1#Sell" />
                     {/if}
+
                     <input type="submit" name="inWarenkorb" value="1" class="hidden" />
                     {if $Artikel->kArtikelVariKombi > 0}
                         <input type="hidden" name="aK" value="{$Artikel->kArtikelVariKombi}" />

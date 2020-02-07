@@ -80,9 +80,6 @@ msgstr "For more details, please see <a href=\"statistik.php?s=3\">Reports</a>"
 msgid "noStatisticsFound"
 msgstr "No reports found."
 
-msgid "moduleSurvey"
-msgstr "Survey Module"
-
 msgid "moduleSelectionWizard"
 msgstr "Selection Wizard Module"
 

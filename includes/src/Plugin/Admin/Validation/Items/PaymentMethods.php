@@ -6,6 +6,7 @@
 
 namespace JTL\Plugin\Admin\Validation\Items;
 
+use JTL\Helpers\GeneralObject;
 use JTL\Plugin\Admin\InputType;
 use JTL\Plugin\InstallCode;
 
@@ -20,9 +21,9 @@ final class PaymentMethods extends AbstractItem
      */
     public function validate(): int
     {
-        $node = $this->getInstallNode();
+        $node = $this->getInstallNode()['PaymentMethod'][0]['Method'] ?? null;
         $dir  = $this->getDir();
-        if (!isset($node['PaymentMethod'][0]['Method']) || !\is_array($node['PaymentMethod'][0]['Method'])) {
+        if (!GeneralObject::isCountable($node)) {
             return InstallCode::OK;
         }
         $tsCodes = [
@@ -44,7 +45,7 @@ final class PaymentMethods extends AbstractItem
             'DIRECT_E_BANKING',
             'OTHER'
         ];
-        foreach ($node['PaymentMethod'][0]['Method'] as $i => $method) {
+        foreach ($node as $i => $method) {
             if (!\is_array($method)) {
                 continue;
             }
@@ -56,7 +57,7 @@ final class PaymentMethods extends AbstractItem
                 continue;
             }
             \preg_match(
-                '/[a-zA-Z0-9äÄöÖüÜß' . "\.\,\!\"\§\$\%\&\/\(\)\=\`\´\+\~\*\'\;\-\_\?\{\}\[\] ]+/",
+                '/[\w.,!"§$%&\/()=`´+~*\';\-?{}\[\] ]+/u',
                 $method['Name'],
                 $hits1
             );
@@ -67,7 +68,7 @@ final class PaymentMethods extends AbstractItem
             if (!isset($hits1[0]) || \mb_strlen($hits1[0]) !== \mb_strlen($method['Sort'])) {
                 return InstallCode::INVALID_PAYMENT_METHOD_SORT;
             }
-            \preg_match('/[0-1]{1}/', $method['SendMail'], $hits1);
+            \preg_match('/[0-1]/', $method['SendMail'], $hits1);
             if (!isset($hits1[0]) || \mb_strlen($hits1[0]) !== \mb_strlen($method['SendMail'])) {
                 return InstallCode::INVALID_PAYMENT_METHOD_MAIL;
             }
@@ -79,19 +80,19 @@ final class PaymentMethods extends AbstractItem
             } else {
                 return InstallCode::INVALID_PAYMENT_METHOD_TSCODE;
             }
-            \preg_match('/[0-1]{1}/', $method['PreOrder'], $hits1);
+            \preg_match('/[0-1]/', $method['PreOrder'], $hits1);
             if (!isset($hits1[0]) || \mb_strlen($hits1[0]) !== \mb_strlen($method['PreOrder'])) {
                 return InstallCode::INVALID_PAYMENT_METHOD_PRE_ORDER;
             }
-            \preg_match('/[0-1]{1}/', $method['Soap'], $hits1);
+            \preg_match('/[0-1]/', $method['Soap'], $hits1);
             if (!isset($hits1[0]) || \mb_strlen($hits1[0]) !== \mb_strlen($method['Soap'])) {
                 return InstallCode::INVALID_PAYMENT_METHOD_SOAP;
             }
-            \preg_match('/[0-1]{1}/', $method['Curl'], $hits1);
+            \preg_match('/[0-1]/', $method['Curl'], $hits1);
             if (!isset($hits1[0]) || \mb_strlen($hits1[0]) !== \mb_strlen($method['Curl'])) {
                 return InstallCode::INVALID_PAYMENT_METHOD_CURL;
             }
-            \preg_match('/[0-1]{1}/', $method['Sockets'], $hits1);
+            \preg_match('/[0-1]/', $method['Sockets'], $hits1);
             if (!isset($hits1[0]) || \mb_strlen($hits1[0]) !== \mb_strlen($method['Sockets'])) {
                 return InstallCode::INVALID_PAYMENT_METHOD_SOCKETS;
             }
@@ -171,7 +172,7 @@ final class PaymentMethods extends AbstractItem
                     return InstallCode::INVALID_PAYMENT_METHOD_NAME_LOCALIZED;
                 }
                 \preg_match(
-                    '/[a-zA-Z0-9äÄöÖüÜß' . "\.\,\!\"\§\$\%\&\/\(\)\=\`\´\+\~\*\'\;\-\_\?\{\}\[\] ]+/",
+                    '/[\w.,!"§$%&\/()=`´+~*\';\-?{}\[\] ]+/u',
                     $localized['Name'],
                     $hits1
                 );
@@ -182,7 +183,7 @@ final class PaymentMethods extends AbstractItem
                     return InstallCode::INVALID_PAYMENT_METHOD_CHARGE_NAME;
                 }
                 \preg_match(
-                    '/[a-zA-Z0-9äÄöÖüÜß' . "\.\,\!\"\§\$\%\&\/\(\)\=\`\´\+\~\*\'\;\-\_\?\{\}\[\] ]+/",
+                    '/[\w.,!"§$%&\/()=`´+~*\';\-?{}\[\] ]+/u',
                     $localized['ChargeName'],
                     $hits1
                 );
@@ -190,14 +191,6 @@ final class PaymentMethods extends AbstractItem
                     return InstallCode::INVALID_PAYMENT_METHOD_CHARGE_NAME;
                 }
                 if (!isset($localized['InfoText'])) {
-                    return InstallCode::INVALID_PAYMENT_METHOD_INFO_TEXT;
-                }
-                \preg_match(
-                    '/[a-zA-Z0-9äÄöÖüÜß' . "\.\,\!\"\§\$\%\&\/\(\)\=\`\´\+\~\*\'\;\-\_\?\{\}\[\] ]+/",
-                    $localized['InfoText'],
-                    $hits1
-                );
-                if (isset($hits1[0]) && \mb_strlen($hits1[0]) !== \mb_strlen($localized['InfoText'])) {
                     return InstallCode::INVALID_PAYMENT_METHOD_INFO_TEXT;
                 }
             }

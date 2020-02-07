@@ -9,17 +9,9 @@
     {/if}
     {if $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'P'}
         {block name='productdetails-popups-include-question-on-item'}
-            <div id="popupz{$kArtikel}" class="d-none">
+            {modal id="question-popup-{$kArtikel}" title={lang key='productQuestion' section='productDetails'}}
                 {include file='productdetails/question_on_item.tpl' position='popup'}
-            </div>
-        {/block}
-    {/if}
-
-    {if $verfuegbarkeitsBenachrichtigung == 2 || $verfuegbarkeitsBenachrichtigung == 3}
-        {block name='productdetails-popups-include-availability-notification-form'}
-            <div id="popupn{$kArtikel}" class="d-none">
-                {include file='productdetails/availability_notification_form.tpl' position='popup' tplscope='artikeldetails'}
-            </div>
+            {/modal}
         {/block}
     {/if}
 
@@ -44,7 +36,7 @@
                 {/if}
 
                 {if isset($fehlendeAngaben_fragezumprodukt) && $fehlendeAngaben_fragezumprodukt|@count > 0 && $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'P'}
-                    show_popup('z{$kArtikel}', '{lang key='productQuestion' section='productDetails'}');
+                    $('#question-popup-{$kArtikel}').modal('show');
                 {/if}
             });
 

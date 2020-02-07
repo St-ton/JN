@@ -24,7 +24,7 @@ final class NewsItem extends AbstractFactory
      */
     public function getCollection(array $languages, array $customerGroups): Generator
     {
-        $languageIDs = map($languages, function ($e) {
+        $languageIDs = map($languages, static function ($e) {
             return (int)$e->kSprache;
         });
         $res         = $this->db->query(
@@ -46,9 +46,7 @@ final class NewsItem extends AbstractFactory
             ReturnType::QUERYSINGLE
         );
         while (($ni = $res->fetch(PDO::FETCH_OBJ)) !== false) {
-            $ni->langID = (int)$ni->langID;
-            $ni->kNews  = (int)$ni->kNews;
-            $item       = new Item($this->config, $this->baseURL, $this->baseImageURL);
+            $item = new Item($this->config, $this->baseURL, $this->baseImageURL);
             $item->generateData($ni, $languages);
             yield $item;
         }

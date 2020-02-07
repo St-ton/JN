@@ -21,20 +21,30 @@ if (file_exists(__DIR__ . '/config.JTL-Shop.ini.php')) {
     require_once __DIR__ . '/config.JTL-Shop.ini.php';
 }
 
+/**
+ * @param string $message
+ */
+function handleFatal(string $message): void
+{
+    header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+    header('Cache-Control: post-check=0, pre-check=0', false);
+    header('Pragma: no-cache', true, 500);
+    die($message);
+}
+
 if (defined('PFAD_ROOT')) {
     require_once PFAD_ROOT . 'includes/defines.php';
 } else {
-    die('Die Konfigurationsdatei des Shops konnte nicht geladen werden! ' .
+    handleFatal('Die Konfigurationsdatei des Shops konnte nicht geladen werden! ' .
         'Bei einer Neuinstallation bitte <a href="install/">hier</a> klicken.');
 }
 
-require_once PFAD_ROOT . PFAD_INCLUDES . 'error_handler.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
-// existiert Konfiguration?
-defined('DB_HOST') || die('Kein MySql-Datenbank Host angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
-defined('DB_NAME') || die('Kein MySql Datenbanknamen angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
-defined('DB_USER') || die('Kein MySql-Datenbank Benutzer angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
-defined('DB_PASS') || die('Kein MySql-Datenbank Passwort angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
+
+defined('DB_HOST') || handleFatal('Kein MySql-Datenbank Host angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
+defined('DB_NAME') || handleFatal('Kein MySql Datenbanknamen angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
+defined('DB_USER') || handleFatal('Kein MySql-Datenbank Benutzer angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
+defined('DB_PASS') || handleFatal('Kein MySql-Datenbank Passwort angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
 
 define(
     'JTL_VERSION',
@@ -54,7 +64,7 @@ if (!function_exists('Shop')) {
     /**
      * @return Shop
      */
-    function Shop()
+    function Shop(): Shop
     {
         return Shop::getInstance();
     }
@@ -65,18 +75,19 @@ if (!PHPSettings::getInstance()->hasMinLimit(64 * 1024 * 1024)) {
 }
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
-require_once PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
 
 try {
     $db = Shop::Container()->getDB();
 } catch (Exception $exc) {
-    die($exc->getMessage());
+    handleFatal($exc->getMessage());
 }
 require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
-$cache = Shop::Container()->getCache();
-$cache->setJtlCacheConfig($db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING));
-$config = Shop::getSettings([CONF_GLOBAL])['global'];
-$lang   = LanguageHelper::getInstance($db, $cache);
+if (!defined('CLI_BATCHRUN')) {
+    $cache = Shop::Container()->getCache();
+    $cache->setJtlCacheConfig($db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING));
+    $config = Shop::getSettings([CONF_GLOBAL])['global'];
+    $lang   = LanguageHelper::getInstance($db, $cache);
+}
 if (PHP_SAPI !== 'cli'
     && $config['kaufabwicklung_ssl_nutzen'] === 'P'
     && (!isset($_SERVER['HTTPS'])
@@ -98,8 +109,7 @@ if (PHP_SAPI !== 'cli'
         exit();
     }
 }
-
-if (!JTL_INCLUDE_ONLY_DB) {
+if (!JTL_INCLUDE_ONLY_DB && !defined('CLI_BATCHRUN')) {
     $debugbar = Shop::Container()->getDebugBar();
 
     require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';

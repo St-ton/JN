@@ -7,6 +7,8 @@
 namespace JTL\Events;
 
 use JTL\SingletonTrait;
+use stdClass;
+use function Functional\pluck;
 
 /**
  * Class Dispatcher
@@ -36,7 +38,7 @@ final class Dispatcher
      * @param string $eventName
      * @return bool
      */
-    public function hasListeners($eventName): bool
+    public function hasListeners(string $eventName): bool
     {
         return isset($this->listeners[$eventName]) || isset($this->wildcards[$eventName]);
     }
@@ -45,15 +47,17 @@ final class Dispatcher
      * Register an event listener with the dispatcher.
      *
      * @param string|array $eventNames
-     * @param callable $listener
+     * @param callable     $listener
+     * @param int          $priority
      */
-    public function listen($eventNames, $listener): void
+    public function listen($eventNames, callable $listener, int $priority = 5): void
     {
         foreach ((array)$eventNames as $event) {
+            $item = (object)['listener' => $listener, 'priority' => $priority];
             if (\mb_strpos($event, '*') !== false) {
-                $this->wildcards[$event][] = $listener;
+                $this->wildcards[$event][] = $item;
             } else {
-                $this->listeners[$event][] = $listener;
+                $this->listeners[$event][] = $item;
             }
         }
     }
@@ -64,7 +68,7 @@ final class Dispatcher
      * @param string|object $eventName
      * @param array|object $arguments
      */
-    public function fire($eventName, $arguments = []): void
+    public function fire(string $eventName, $arguments = []): void
     {
         foreach ($this->getListeners($eventName) as $listener) {
             $listener($arguments);
@@ -77,7 +81,7 @@ final class Dispatcher
      * @param string $eventName
      * @return void
      */
-    public function forget($eventName): void
+    public function forget(string $eventName): void
     {
         if (\mb_strpos($eventName, '*') !== false) {
             if (isset($this->wildcards[$eventName])) {
@@ -94,14 +98,25 @@ final class Dispatcher
      * @param string $eventName
      * @return array
      */
-    public function getListeners($eventName): array
+    public function getListeners(string $eventName): array
     {
         $listeners = $this->getWildcardListeners($eventName);
         if (isset($this->listeners[$eventName])) {
             $listeners = \array_merge($listeners, $this->listeners[$eventName]);
         }
+        \usort($listeners, [$this, 'sortByPriority']);
 
-        return $listeners;
+        return pluck($listeners, 'listener');
+    }
+
+    /**
+     * @param stdClass $a
+     * @param stdClass $b
+     * @return int
+     */
+    private function sortByPriority(stdClass $a, stdClass $b): int
+    {
+        return $a->priority <=> $b->priority;
     }
 
     /**
@@ -110,7 +125,7 @@ final class Dispatcher
      * @param  string  $eventName
      * @return array
      */
-    private function getWildcardListeners($eventName): array
+    private function getWildcardListeners(string $eventName): array
     {
         $wildcards = [];
         foreach ($this->wildcards as $key => $listeners) {

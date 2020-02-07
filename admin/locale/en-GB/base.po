@@ -362,6 +362,15 @@ msgstr "Search for categories"
 msgid "category"
 msgstr "Category"
 
+msgid "characteristic"
+msgstr "Characteristic"
+
+msgid "characteristic value"
+msgstr "Characteristic value"
+
+msgid "variation"
+msgstr "Variation"
+
 msgid "showQuestions"
 msgstr "Show questions"
 
@@ -1055,6 +1064,9 @@ msgstr "Mobile device"
 msgid "version"
 msgstr "Version"
 
+msgid "shopversion"
+msgstr "Shop version"
+
 msgid "create"
 msgstr "Create"
 
@@ -1394,9 +1406,6 @@ msgstr "Contact"
 msgid "news"
 msgstr "News"
 
-msgid "poll"
-msgstr "Survey"
-
 msgid "mapping"
 msgstr "Mapping"
 
@@ -1550,10 +1559,6 @@ msgstr "News category"
 
 msgid "pageNewsDetail"
 msgstr "Detailed news posting page"
-
-# page type (tspezialseite)
-msgid "Umfrage"
-msgstr "Survey"
 
 msgid "pagePlugin"
 msgstr "Plug-in"

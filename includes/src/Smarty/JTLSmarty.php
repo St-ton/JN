@@ -10,6 +10,7 @@ use JTL\Backend\AdminTemplate;
 use JTL\Events\Dispatcher;
 use JTL\Helpers\GeneralObject;
 use JTL\Language\LanguageHelper;
+use JTL\phpQuery\phpQuery;
 use JTL\Plugin\Helper;
 use JTL\Shop;
 use JTL\Template;
@@ -209,9 +210,8 @@ class JTLSmarty extends \SmartyBC
         if (GeneralObject::hasCount(\HOOK_SMARTY_OUTPUTFILTER, $hookList)
             || \count(Dispatcher::getInstance()->getListeners('shop.hook.' . \HOOK_SMARTY_OUTPUTFILTER)) > 0
         ) {
-            require_once \PFAD_ROOT . \PFAD_PHPQUERY . 'phpquery.class.php';
             $this->unregisterFilter('output', [$this, 'outputFilter']);
-            $doc = \phpQuery::newDocumentHTML($tplOutput, \JTL_CHARSET);
+            $doc = phpQuery::newDocumentHTML($tplOutput, \JTL_CHARSET);
             \executeHook(\HOOK_SMARTY_OUTPUTFILTER, ['smarty' => $this, 'document' => $doc]);
             $tplOutput = $doc->htmlOuter();
         }
@@ -274,7 +274,7 @@ class JTLSmarty extends \SmartyBC
     {
         $options = [];
         if ($minifyCSS === true) {
-            $options['cssMinifier'] = [\Minify_CSS::class, 'minify'];
+            $options['cssMinifier'] = [\Minify_CSSmin::class, 'minify'];
         }
         if ($minifyJS === true) {
             $options['jsMinifier'] = [\JSMin\JSMin::class, 'minify'];

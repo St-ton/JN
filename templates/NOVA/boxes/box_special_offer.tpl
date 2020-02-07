@@ -3,7 +3,7 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='boxes-box-special-offer'}
-    {assign var=moreLink value=$oBox->getURL())}
+    {assign var=moreLink value=$oBox->getURL()}
     {lang key='showAllSpecialOffers' assign='moreTitle'}
     {assign var=specialOfferArticles value=$oBox->getProducts()->elemente}
     {if $specialOfferArticles|@count > 1}

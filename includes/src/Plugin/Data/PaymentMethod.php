@@ -8,7 +8,6 @@ namespace JTL\Plugin\Data;
 
 use JTL\MagicCompatibilityTrait;
 use JTL\Plugin\PluginInterface;
-use JTL\Shop;
 use stdClass;
 
 /**
@@ -180,7 +179,7 @@ class PaymentMethod
      */
     public function __construct(stdClass $data = null, PluginInterface $plugin = null)
     {
-        if ($data !== null) {
+        if ($data !== null && \SAFE_MODE === false) {
             $this->mapData($data, $plugin);
         }
     }

@@ -267,7 +267,7 @@ class Text
         // replace numeric entities
         $input = \preg_replace_callback(
             '~&#x([0-9a-fA-F]+);~i',
-            function ($x) {
+            static function ($x) {
                 return \chr(\hexdec($x[1]));
             },
             $input
@@ -275,7 +275,7 @@ class Text
 
         return self::htmlentitydecode(\preg_replace_callback(
             '~&#([0-9]+);~',
-            function ($x) {
+            static function ($x) {
                 return \chr($x[1]);
             },
             $input
@@ -550,9 +550,9 @@ class Text
     public static function parseSSKint($ssk): array
     {
         return \is_string($ssk)
-            ? \array_map(function ($e) {
+            ? \array_map(static function ($e) {
                 return (int)\trim($e);
-            }, \array_filter(\explode(';', $ssk), function ($e) {
+            }, \array_filter(\explode(';', $ssk), static function ($e) {
                 return $e !== '' && $e !== null;
             }))
             : [];
@@ -672,9 +672,12 @@ class Text
      */
     public static function parseNewsText($text)
     {
+        if (empty($text)) {
+            return $text;
+        }
         \preg_match_all(
-            '/\${1}\#{1}[akhmntl]{1}:[0-9]+\:{0,1}' .
-            '[a-zA-Z0-9äÄöÖüÜß\.\,\!\"\§\$\%\&\/\(\)\=\`\´\+\~\*\'\;\-\_\?\{\}\[\]\ ]{0,}\#{1}\${1}/',
+            '/\${1}\#{1}[akhmnl]{1}:[0-9]+\:{0,1}' .
+            '[\w\.\,\!\"\§\$\%\&\/\(\)\=\`\´\+\~\*\'\;\-\_\?\{\}\[\]\ ]{0,}\#{1}\${1}/',
             $text,
             $hits
         );
@@ -722,15 +725,16 @@ class Text
                         $locSQL = ' AND tartikelsprache.kSprache = ' . Shop::getLanguageID();
                     }
                     $data = Shop::Container()->getDB()->query(
-                        "SELECT {$table}.kArtikel, {$table}.cName, tseo.cSeo
-                            FROM {$table}
+                        'SELECT ' . $table . '.kArtikel, ' . $table . '.cName, tseo.cSeo
+                            FROM ' . $table . "
                             LEFT JOIN tseo
                                 ON tseo.cKey = 'kArtikel'
-                                AND tseo.kKey = {$table}.kArtikel
-                                AND tseo.kSprache = {$languageID}
-                            WHERE {$table}.kArtikel = " . (int)$keyName . $locSQL,
+                                AND tseo.kKey = " . $table . '.kArtikel
+                                AND tseo.kSprache = ' . $languageID . '
+                            WHERE ' . $table . '.kArtikel = ' . (int)$keyName . $locSQL,
                         ReturnType::SINGLE_OBJECT
                     );
+
 
                     if (isset($data->kArtikel) && $data->kArtikel > 0) {
                         $exists      = true;
@@ -830,27 +834,6 @@ class Text
                         $exists      = true;
                         $item->cSeo  = $data->cSeo;
                         $item->cName = empty($data->title) ? 'Link' : $data->title;
-                    }
-                    break;
-
-                case \URLART_UMFRAGE:
-                    $item->kNews = (int)$keyName;
-                    $item->cKey  = 'kUmfrage';
-                    $data        = Shop::Container()->getDB()->query(
-                        "SELECT tumfrage.kUmfrage, tumfrage.cName, tseo.cSeo
-                            FROM tumfrage
-                            LEFT JOIN tseo
-                                ON tseo.cKey = 'kUmfrage'
-                                AND tseo.kKey = tumfrage.kUmfrage
-                                AND tseo.kSprache = " . $languageID . '
-                            WHERE tumfrage.kUmfrage = ' . (int)$keyName,
-                        ReturnType::SINGLE_OBJECT
-                    );
-
-                    if (isset($data->kUmfrage) && $data->kUmfrage > 0) {
-                        $exists      = true;
-                        $item->cSeo  = $data->cSeo;
-                        $item->cName = !empty($data->cName) ? $data->cName : 'Link';
                     }
                     break;
 

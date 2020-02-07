@@ -460,16 +460,15 @@ class Warehouse extends MainModel
                     $config = (int)$config;
                     $select = ', IF (twarenlagersprache.cName IS NOT NULL, 
                     twarenlagersprache.cName, twarenlager.cName) AS cName';
-                    $join   = 'LEFT JOIN twarenlagersprache 
-                                        ON twarenlagersprache.kWarenlager = twarenlager.kWarenlager
-                                        AND twarenlagersprache.kSprache = ' . $config;
+                    $join   = ' LEFT JOIN twarenlagersprache 
+                                    ON twarenlagersprache.kWarenlager = twarenlager.kWarenlager
+                                    AND twarenlagersprache.kSprache = ' . $config;
                 }
 
                 $data = Shop::Container()->getDB()->query(
-                    "SELECT twarenlager.* {$select}
-                         FROM twarenlager
-                         {$join}
-                         WHERE twarenlager.kWarenlager = {$id}",
+                    'SELECT twarenlager.* ' . $select . '
+                         FROM twarenlager' . $join . '
+                         WHERE twarenlager.kWarenlager = ' . $id,
                     ReturnType::SINGLE_OBJECT
                 );
             }
@@ -613,12 +612,11 @@ class Warehouse extends MainModel
         if ($productID > 0) {
             $sql  = $active ? ' AND twarenlager.nAktiv = 1' : '';
             $data = Shop::Container()->getDB()->queryPrepared(
-                "SELECT tartikelwarenlager.*
+                'SELECT tartikelwarenlager.*
                     FROM tartikelwarenlager
                     JOIN twarenlager 
-                        ON twarenlager.kWarenlager = tartikelwarenlager.kWarenlager
-                       {$sql}
-                    WHERE tartikelwarenlager.kArtikel = :articleID",
+                        ON twarenlager.kWarenlager = tartikelwarenlager.kWarenlager' . $sql . '
+                    WHERE tartikelwarenlager.kArtikel = :articleID',
                 ['articleID' => $productID],
                 ReturnType::ARRAY_OF_OBJECTS
             );
@@ -627,7 +625,7 @@ class Warehouse extends MainModel
                 $warehouse->fBestand     = $item->fBestand;
                 $warehouse->fZulauf      = $item->fZulauf;
                 $warehouse->dZulaufDatum = $item->dZulaufDatum;
-                if (\mb_strlen($warehouse->dZulaufDatum) > 1) {
+                if ($warehouse->dZulaufDatum !== null && \mb_strlen($warehouse->dZulaufDatum) > 1) {
                     try {
                         $warehouse->dZulaufDatum_de = (new DateTime($item->dZulaufDatum))->format('d.m.Y');
                     } catch (Exception $exc) {

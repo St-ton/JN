@@ -9,6 +9,7 @@ namespace JTL\dbeS\Sync;
 use DateTime;
 use Exception;
 use JTL\Cache\JTLCacheInterface;
+use JTL\Campaign;
 use JTL\Catalog\Product\Artikel;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
@@ -19,7 +20,6 @@ use JTL\Exceptions\EmptyResultSetException;
 use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Text;
-use JTL\Campaign;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Optin\Optin;
@@ -539,7 +539,7 @@ abstract class AbstractSync
         );
         // Handle price details from xml...
         foreach ($prices as $i => $price) {
-            $this->handlePriceFormat($price->kArtikel, $price->kKundenGruppe, (int)$price->kKunde);
+            $this->handlePriceFormat((int)$price->kArtikel, (int)$price->kKundenGruppe, (int)$price->kKunde);
             $details = empty($xml['tpreis'][$i])
                 ? $this->mapper->mapArray($xml['tpreis'], 'tpreisdetail', 'mPreisDetail')
                 : $this->mapper->mapArray($xml['tpreis'][$i], 'tpreisdetail', 'mPreisDetail');
@@ -558,7 +558,7 @@ abstract class AbstractSync
                         'countingFrom'  => $preisdetail->nAnzahlAb,
                         'nettoPrice'    => $preisdetail->fNettoPreis,
                         'productID'     => $productID,
-                        'customerGroup' => $price->kKundenGruppe,
+                        'customerGroup' => (int)$price->kKundenGruppe,
                         'customerPrice' => (int)$price->kKunde,
                     ],
                     ReturnType::DEFAULT
@@ -637,14 +637,13 @@ abstract class AbstractSync
     protected function buildAttributes(&$arr, $excludes = []): array
     {
         $attributes = [];
-        if (\is_array($arr)) {
-            $keys     = \array_keys($arr);
-            $keyCount = \count($keys);
-            for ($i = 0; $i < $keyCount; $i++) {
-                if (!\in_array($keys[$i], $excludes, true) && $keys[$i]{0} === 'k') {
-                    $attributes[$keys[$i]] = $arr[$keys[$i]];
-                    unset($arr[$keys[$i]]);
-                }
+        if (!\is_array($arr)) {
+            return $attributes;
+        }
+        foreach (\array_keys($arr) as $key) {
+            if (!\in_array($key, $excludes, true) && $key[0] === 'k') {
+                $attributes[$key] = $arr[$key];
+                unset($arr[$key]);
             }
         }
 

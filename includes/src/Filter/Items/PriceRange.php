@@ -304,7 +304,7 @@ class PriceRange extends AbstractFilter
 
         return \array_filter(
             $options,
-            function ($e) {
+            static function ($e) {
                 /** @var Option $e */
                 return $e->getCount() > 0;
             }

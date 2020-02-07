@@ -12,10 +12,19 @@
     {block name='account-delete-account-form'}
         {form id="delete_account" action="{get_static_route id='jtl.php'}" method="post"}
             {block name='account-delete-account-form-submit'}
-            {input type="hidden" name="del_acc" value="1"}
-            {button type="submit" value="1" class="w-auto" variant="danger"}
-                {lang key='deleteAccount' section='login'}
-            {/button}
+                {input type="hidden" name="del_acc" value="1"}
+                {row}
+                    {col md=3 cols=12}
+                        {link class="btn btn-outline-primary btn-block mb-3" href="{get_static_route id='jtl.php'}"}
+                            {lang key='back'}
+                        {/link}
+                    {/col}
+                    {col class='ml-auto col-md-auto'}
+                        {button type="submit" value="1" block=true variant="danger"}
+                            {lang key='deleteAccount' section='login'}
+                        {/button}
+                    {/col}
+                {/row}
             {/block}
         {/form}
     {/block}

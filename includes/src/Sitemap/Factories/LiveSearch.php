@@ -23,7 +23,7 @@ final class LiveSearch extends AbstractFactory
      */
     public function getCollection(array $languages, array $customerGroups): Generator
     {
-        $languageIDs = map($languages, function ($e) {
+        $languageIDs = map($languages, static function ($e) {
             return (int)$e->kSprache;
         });
         $res         = $this->db->query(
@@ -39,9 +39,7 @@ final class LiveSearch extends AbstractFactory
             ReturnType::QUERYSINGLE
         );
         while (($ls = $res->fetch(PDO::FETCH_OBJ)) !== false) {
-            $ls->kSuchanfrage = (int)$ls->kSuchanfrage;
-            $ls->langID       = (int)$ls->langID;
-            $item             = new Item($this->config, $this->baseURL, $this->baseImageURL);
+            $item = new Item($this->config, $this->baseURL, $this->baseImageURL);
             $item->generateData($ls, $languages);
             yield $item;
         }

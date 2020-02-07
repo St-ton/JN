@@ -17,7 +17,7 @@
     {block name='productdetails-availability-notification-form-form'}
         {form action="{if !empty($Artikel->cURLFull)}{$Artikel->cURLFull}{else}{$ShopURL}/{/if}"
             method="post" id="article_availability{$Artikel->kArtikel}"
-            class="evo-validate label-slide"
+            class="jtl-validate label-slide"
         }
             {block name='productdetails-availability-notification-form-fieldset-contact'}
                 <fieldset>
@@ -91,9 +91,13 @@
                 {input type="hidden" name="a" value="{if $Artikel->kVariKindArtikel}{$Artikel->kVariKindArtikel}{else}{$Artikel->kArtikel}{/if}"}
                 {input type="hidden" name="show" value="1"}
                 {input type="hidden" name="benachrichtigung_verfuegbarkeit" value="1"}
-                {button type="submit" value="1" variant="primary" class="w-auto"}
-                    {lang key='requestNotification'}
-                {/button}
+                {row}
+                    {col cols=12 md="auto"}
+                        {button type="submit" value="1" variant="primary" block=true}
+                            {lang key='requestNotification'}
+                        {/button}
+                    {/col}
+                {/row}
             {/block}
         {/form}
     {/block}

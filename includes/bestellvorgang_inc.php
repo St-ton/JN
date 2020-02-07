@@ -27,6 +27,7 @@ use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Plugin\Helper as PluginHelper;
+use JTL\Plugin\Payment\LegacyMethod;
 use JTL\Plugin\PluginInterface;
 use JTL\Plugin\State;
 use JTL\Session\Frontend;
@@ -103,6 +104,7 @@ function pruefeUnregistriertBestellen($post): int
     ));
 
     $Kunde->getCustomerAttributes()->assign($customerAttributes);
+    Frontend::set('customerAttributes', $customerAttributes);
     if (isset($post['shipping_address'])) {
         if ((int)$post['shipping_address'] === 0) {
             $post['kLieferadresse'] = 0;
@@ -220,7 +222,7 @@ function pruefeLieferdaten($post, &$missingData = null): void
         }
     } elseif ((int)$post['kLieferadresse'] === 0 && isset($_SESSION['Kunde'])) {
         // lieferadresse gleich rechnungsadresse
-        setzeLieferadresseAusRechnungsadresse();
+        setzeLieferadresseAusRechnungsadresse($post);
 
         executeHook(HOOK_BESTELLVORGANG_PAGE_STEPLIEFERADRESSE_RECHNUNGLIEFERADRESSE);
     }
@@ -261,6 +263,9 @@ function plausiGuthaben($post): void
     if ((isset($_SESSION['Bestellung']->GuthabenNutzen) && (int)$_SESSION['Bestellung']->GuthabenNutzen === 1)
         || (isset($post['guthabenVerrechnen']) && (int)$post['guthabenVerrechnen'] === 1)
     ) {
+        if (!isset($_SESSION['Bestellung'])) {
+            $_SESSION['Bestellung'] = new stdClass();
+        }
         $_SESSION['Bestellung']->GuthabenNutzen   = 1;
         $_SESSION['Bestellung']->fGuthabenGenutzt = min(
             Frontend::getCustomer()->fGuthaben,
@@ -320,7 +325,7 @@ function pruefeBestaetigungStep(): void
     if (isset($_SESSION['Zahlungsart'], $_SESSION['Zahlungsart']->cZusatzschrittTemplate)
         && mb_strlen($_SESSION['Zahlungsart']->cZusatzschrittTemplate) > 0
     ) {
-        $paymentMethod = PaymentMethod::create($_SESSION['Zahlungsart']->cModulId);
+        $paymentMethod = LegacyMethod::create($_SESSION['Zahlungsart']->cModulId);
         if (is_object($paymentMethod) && !$paymentMethod->validateAdditional()) {
             $step = 'Zahlung';
         }
@@ -372,16 +377,18 @@ function pruefeRechnungsadresseStep($get): void
             unset($_SESSION['checkout.fehlendeAngaben']);
         }
         if (isset($_SESSION['checkout.cPost_arr'])) {
-            $Kunde = getKundendaten($_SESSION['checkout.cPost_arr'], 0, 0);
-            $Kunde->getCustomerAttributes()->assign(getKundenattribute($_SESSION['checkout.cPost_arr']));
+            $Kunde              = getKundendaten($_SESSION['checkout.cPost_arr'], 0, 0);
+            $customerAttributes = getKundenattribute($_SESSION['checkout.cPost_arr']);
+            $Kunde->getCustomerAttributes()->assign($customerAttributes);
+            Frontend::set('customerAttributes', $customerAttributes);
             Shop::Smarty()->assign('Kunde', $Kunde)
-                ->assign('cPost_var', $_SESSION['checkout.cPost_arr']);
+                ->assign('cPost_var', Text::filterXSS($_SESSION['checkout.cPost_arr']));
 
             if (isset($_SESSION['Lieferadresse']) && (int)$_SESSION['checkout.cPost_arr']['shipping_address'] !== 0) {
                 Shop::Smarty()->assign('Lieferadresse', $_SESSION['Lieferadresse']);
             }
 
-            $_POST = array_merge($_POST, $_SESSION['checkout.cPost_arr']);
+            $_POST = Text::filterXSS(array_merge($_POST, $_SESSION['checkout.cPost_arr']));
             unset($_SESSION['checkout.cPost_arr']);
         }
         unset($_SESSION['checkout.register']);
@@ -496,9 +503,14 @@ function pruefeZahlungsartwahlStep($post)
 {
     global $zahlungsangaben, $step;
     if (!isset($post['zahlungsartwahl']) || (int)$post['zahlungsartwahl'] !== 1) {
-        return null;
+        if (isset($_SESSION['Zahlungsart'])) {
+            $zahlungsangaben = zahlungsartKorrekt((int)$_SESSION['Zahlungsart']->kZahlungsart);
+        } else {
+            return null;
+        }
+    } else {
+        $zahlungsangaben = zahlungsartKorrekt($post['Zahlungsart']);
     }
-    $zahlungsangaben = zahlungsartKorrekt($post['Zahlungsart']);
     executeHook(HOOK_BESTELLVORGANG_PAGE_STEPZAHLUNG_PLAUSI);
 
     switch ($zahlungsangaben) {
@@ -565,7 +577,11 @@ function gibStepAccountwahl(): void
 {
     // Einstellung global_kundenkonto_aktiv ist auf 'A'
     // und Kunde wurde nach der Registrierung zurück zur Accountwahl geleitet
-    if (isset($_REQUEST['reg']) && (int)$_REQUEST['reg'] === 1) {
+    if (isset($_REQUEST['reg'])
+        && (int)$_REQUEST['reg'] === 1
+        && Shop::getSettingValue(CONF_GLOBAL, 'global_kundenkonto_aktiv') === 'A'
+        && empty(Shop::Smarty()->getTemplateVars('fehlendeAngaben'))
+    ) {
         Shop::Container()->getAlertService()->addAlert(
             Alert::TYPE_NOTE,
             Shop::Lang()->get('accountCreated') . '. ' . Shop::Lang()->get('activateAccountDesc'),
@@ -598,6 +614,15 @@ function gibStepUnregistriertBestellen(): void
         ReturnType::ARRAY_OF_OBJECTS
     );
     $customerGroupID = Frontend::getCustomerGroup()->getID();
+    if ($Kunde !== null) {
+        $customerAttributes = $Kunde->getCustomerAttributes();
+
+        if ($Kunde->getID() === 0) {
+            $customerAttributes->assign(Frontend::get('customerAttributes') ?? new CustomerAttributes());
+        }
+    } else {
+        $customerAttributes = getKundenattribute($_POST);
+    }
     Shop::Smarty()->assign('untertitel', Shop::Lang()->get('fillUnregForm', 'checkout'))
         ->assign('herkunfte', $origins)
         ->assign('Kunde', $Kunde ?? null)
@@ -606,7 +631,7 @@ function gibStepUnregistriertBestellen(): void
         ->assign('oKundenfeld_arr', new CustomerFields(Shop::getLanguageID()))
         ->assign('nAnzeigeOrt', CHECKBOX_ORT_REGISTRIERUNG)
         ->assign('code_registrieren', false)
-        ->assign('customerAttributes', $Kunde !== null ? $Kunde->getCustomerAttributes() : getKundenattribute($_POST));
+        ->assign('customerAttributes', $customerAttributes);
 
     executeHook(HOOK_BESTELLVORGANG_PAGE_STEPUNREGISTRIERTBESTELLEN);
 }
@@ -709,20 +734,33 @@ function gibStepZahlung()
         if (!is_array($paymentMethods) || count($paymentMethods) === 0) {
             Shop::Container()->getLogService()->error(
                 'Es konnte keine Zahlungsart für folgende Daten gefunden werden: Versandart: ' .
-                $_SESSION['Versandart']->kVersandart .
-                ', Kundengruppe: ' . $customerGroupID
+                $shippingMethod . ', Kundengruppe: ' . $customerGroupID
             );
+            $paymentMethod  = null;
+            $paymentMethods = [];
+        } else {
+            $paymentMethod = gibAktiveZahlungsart($paymentMethods);
         }
 
-        $packaging     = gibAktiveVerpackung($packagings);
-        $paymentMethod = gibAktiveZahlungsart($paymentMethods);
+        $packaging = gibAktiveVerpackung($packagings);
         if (!isset($_SESSION['Versandart']) && !empty($shippingMethod)) {
             // dieser Workaround verhindert die Anzeige der Standardzahlungsarten wenn ein Zahlungsplugin aktiv ist
             $_SESSION['Versandart'] = (object)[
                 'kVersandart' => $shippingMethod,
             ];
         }
-        $smarty->assign('Zahlungsarten', $paymentMethods)
+        $selectablePayments = \array_filter(
+            $paymentMethods,
+            function ($method) {
+                $paymentMethod = LegacyMethod::create($method->cModulId);
+                if ($paymentMethod !== null) {
+                    return $paymentMethod->isSelectable();
+                }
+
+                return true;
+            }
+        );
+        $smarty->assign('Zahlungsarten', $selectablePayments)
                ->assign('Versandarten', $shippingMethods)
                ->assign('Verpackungsarten', $packagings)
                ->assign('AktiveVersandart', $shippingMethod)
@@ -754,7 +792,8 @@ function gibStepZahlung()
  */
 function gibStepZahlungZusatzschritt($post): void
 {
-    $paymentMethod = gibZahlungsart((int)$post['Zahlungsart']);
+    $paymentID     = $post['Zahlungsart'] ?? $_SESSION['Zahlungsart']->kZahlungsart;
+    $paymentMethod = gibZahlungsart((int)$paymentID);
     $smarty        = Shop::Smarty();
     // Wenn Zahlungsart = Lastschrift ist => versuche Kundenkontodaten zu holen
     $customerAccountData = gibKundenKontodaten(Frontend::getCustomer()->getID());
@@ -1049,13 +1088,13 @@ function plausiIban($iban)
     }
     $iban  = str_replace(' ', '', $iban);
     $iban1 = mb_substr($iban, 4)
-        . (string)(mb_ord($iban{0}) - 55)
-        . (string)(mb_ord($iban{1}) - 55)
+        . (string)(mb_ord($iban[0]) - 55)
+        . (string)(mb_ord($iban[1]) - 55)
         . mb_substr($iban, 2, 2);
     $len   = mb_strlen($iban1);
     for ($i = 0; $i < $len; $i++) {
-        if (mb_ord($iban1{$i}) > 64 && mb_ord($iban1{$i}) < 91) {
-            $iban1 = mb_substr($iban1, 0, $i) . (string)(mb_ord($iban1{$i}) - 55) . mb_substr($iban1, $i + 1);
+        if (mb_ord($iban1[$i]) > 64 && mb_ord($iban1[$i]) < 91) {
+            $iban1 = mb_substr($iban1, 0, $i) . (string)(mb_ord($iban1[$i]) - 55) . mb_substr($iban1, $i + 1);
         }
     }
 
@@ -1066,13 +1105,9 @@ function plausiIban($iban)
         $rest = (int)$part % 97;
     }
 
-    $pz = sprintf('%02d', 98 - $rest);
-
-    if (mb_substr($iban, 2, 2) == '00') {
-        return substr_replace($iban, $pz, 2, 2);
-    }
-
-    return $rest == 1;
+    return mb_substr($iban, 2, 2) === '00'
+        ? substr_replace($iban, sprintf('%02d', 98 - $rest), 2, 2)
+        : $rest === 1;
 }
 
 /**
@@ -1278,7 +1313,7 @@ function zahlungsartKorrekt(int $paymentMethodID): int
                 default:
                     // Plugin-Zusatzschritt
                     $additionalInfoExists = true;
-                    $paymentMethod        = PaymentMethod::create($paymentMethod->cModulId);
+                    $paymentMethod        = LegacyMethod::create($paymentMethod->cModulId);
                     if ($paymentMethod && !$paymentMethod->handleAdditional($_POST)) {
                         $additionalInfoExists = false;
                     }
@@ -1301,7 +1336,7 @@ function zahlungsartKorrekt(int $paymentMethodID): int
  */
 function getPaymentSurchageDiscount($paymentMethod)
 {
-    if ($paymentMethod->fAufpreis == 0) {
+    if (!isset($paymentMethod->fAufpreis) || $paymentMethod->fAufpreis == 0) {
         return;
     }
     $cart = Frontend::getCart();
@@ -1582,10 +1617,16 @@ function gibAktiveVersandart($shippingMethods)
         if (array_reduce($shippingMethods, function ($carry, $item) use ($active) {
             return (int)$item->kVersandart === $active ? (int)$item->kVersandart : $carry;
         }, 0) !== (int)$_SESSION['AktiveVersandart']) {
-            $_SESSION['AktiveVersandart'] = $shippingMethods[0]->kVersandart;
+            $_SESSION['AktiveVersandart'] = ShippingMethod::getFirstShippingMethod(
+                $shippingMethods,
+                $_SESSION['Zahlungsart']->kZahlungsart ?? 0
+            )->kVersandart ?? 0;
         }
     } else {
-        $_SESSION['AktiveVersandart'] = $shippingMethods[0]->kVersandart ?? 0;
+        $_SESSION['AktiveVersandart'] = ShippingMethod::getFirstShippingMethod(
+            $shippingMethods,
+            $_SESSION['Zahlungsart']->kZahlungsart ?? 0
+        )->kVersandart ?? 0;
     }
 
     return $_SESSION['AktiveVersandart'];
@@ -1657,21 +1698,16 @@ function zahlungsartGueltig($paymentMethod): bool
         if ($plugin === null || $plugin->getState() !== State::ACTIVATED) {
             return false;
         }
+        if (!PluginHelper::licenseCheck($plugin, ['cModulId' => $moduleID])) {
+            return false;
+        }
         global $oPlugin;
         $oPlugin = $plugin;
+    }
 
-        $pluginPaymentMethod = $plugin->getPaymentMethods()->getMethodByID($moduleID);
-        if ($pluginPaymentMethod === null) {
-            return false;
-        }
-        $className        = $pluginPaymentMethod->getClassName();
-        $method           = new $className($moduleID);
-        $method->cModulId = $moduleID;
-        /** @var PaymentMethod $method */
-        if ($method && $method->isSelectable() === false) {
-            return false;
-        }
-        if ($method && !$method->isValidIntern()) {
+    $method = LegacyMethod::create($moduleID);
+    if ($method !== null) {
+        if (!$method->isValid(Frontend::getCustomer(), Frontend::getCart())) {
             Shop::Container()->getLogService()->withName('cModulId')->debug(
                 'Die Zahlungsartprüfung (' . $moduleID . ') wurde nicht erfolgreich validiert (isValidIntern).',
                 [$moduleID]
@@ -1679,24 +1715,8 @@ function zahlungsartGueltig($paymentMethod): bool
 
             return false;
         }
-        if (!PluginHelper::licenseCheck($plugin, ['cModulId' => $moduleID])) {
-            return false;
-        }
 
-        return $method->isValid(Frontend::getCustomer(), Frontend::getCart());
-    }
-    $instance = new PaymentMethod($moduleID);
-    $method   = $instance::create($moduleID);
-    if ($method && $method->isSelectable() === false) {
-        return false;
-    }
-    if ($method && !$method->isValidIntern()) {
-        Shop::Container()->getLogService()->withName('cModulId')->debug(
-            'Die Zahlungsartprüfung (' . $moduleID . ') wurde nicht erfolgreich validiert (isValidIntern).',
-            [$moduleID]
-        );
-
-        return false;
+        return true;
     }
 
     return Helper::shippingMethodWithValidPaymentMethod($paymentMethod);
@@ -1791,7 +1811,7 @@ function versandartKorrekt(int $shippingMethodID, $formValues = 0)
     $cart                   = Frontend::getCart();
     $packagingIDs           = GeneralObject::hasCount('kVerpackung', $_POST)
         ? $_POST['kVerpackung']
-        : $formValues['kVerpackung'];
+        : ($formValues['kVerpackung'] ?? []);
     $cartTotal              = $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true);
     $_SESSION['Verpackung'] = [];
     if (GeneralObject::hasCount($packagingIDs)) {
@@ -2131,13 +2151,14 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
             }
         }
     }
-    if (isset($data['geburtstag'])
-        && ($errCode = Text::checkDate(
-            $data['geburtstag'],
+    if (isset($data['geburtstag'])) {
+        $enDate = \DateTime::createFromFormat('Y-m-d', $data['geburtstag']);
+        if (($errCode = Text::checkDate(
+            $enDate === false ? $data['geburtstag'] : $enDate->format('d.m.Y'),
             $conf['kunden']['kundenregistrierung_abfragen_geburtstag'] === 'Y'
-        )) > 0
-    ) {
-        $ret['geburtstag'] = $errCode;
+        )) > 0) {
+            $ret['geburtstag'] = $errCode;
+        }
     }
     if ($kundenaccount === 1) {
         if ($checkpass) {
@@ -2638,11 +2659,12 @@ function gibBestellschritt(string $step)
 }
 
 /**
+ * @param array|null $post
  * @return Lieferadresse
  */
-function setzeLieferadresseAusRechnungsadresse(): Lieferadresse
+function setzeLieferadresseAusRechnungsadresse(?array $post = null): Lieferadresse
 {
-    $customer                         = Frontend::getCustomer();
+    $customer                         = $post !== null ? getKundendaten($post, 0) : Frontend::getCustomer();
     $shippingAddress                  = new Lieferadresse();
     $shippingAddress->kKunde          = $customer->kKunde;
     $shippingAddress->cAnrede         = $customer->cAnrede;

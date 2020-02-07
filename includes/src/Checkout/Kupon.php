@@ -166,10 +166,17 @@ class Kupon
         $couponResult = Shop::Container()->getDB()->select('tkupon', 'kKupon', $id);
 
         if ($couponResult !== null && $couponResult->kKupon > 0) {
-            $couponResult->translationList = $this->getTranslation($couponResult->kKupon);
+            $couponResult->translationList = $this->getTranslation((int)$couponResult->kKupon);
             foreach (\array_keys(\get_object_vars($couponResult)) as $member) {
                 $this->$member = $couponResult->$member;
             }
+            $this->kKupon                = (int)$this->kKupon;
+            $this->kKundengruppe         = (int)$this->kKundengruppe;
+            $this->kSteuerklasse         = (int)$this->kSteuerklasse;
+            $this->nVerwendungen         = (int)$this->nVerwendungen;
+            $this->nVerwendungenBisher   = (int)$this->nVerwendungenBisher;
+            $this->nVerwendungenProKunde = (int)$this->nVerwendungenProKunde;
+            $this->nGanzenWKRabattieren  = (int)$this->nGanzenWKRabattieren;
 
             return $this;
         }
@@ -685,18 +692,14 @@ class Kupon
      */
     public function getByCode($code = '')
     {
-        $item = Shop::Container()->getDB()->select('tkupon', 'cCode', $code);
-
-        if (isset($item->kKupon) && $item->kKupon > 0) {
-            $item->translationList = $this->getTranslation($item->kKupon);
-            foreach (\array_keys(\get_object_vars($item)) as $member) {
-                $this->$member = $item->$member;
-            }
-
-            return $this;
-        }
-
-        return false;
+        return Shop::Container()->getDB()->queryPrepared(
+            'SELECT kKupon AS id 
+                FROM tkupon
+                WHERE cCode = :code
+                LIMIT 1',
+            ['code' => $code],
+            ReturnType::COLLECTION
+        )->pluck('id')->transform('\intval')->mapInto(self::class)->first() ?? false;
     }
 
     /**
@@ -706,21 +709,19 @@ class Kupon
     public function getTranslation(int $id = 0): array
     {
         $translationList = [];
-        if (isset($_SESSION['Sprachen'])) {
-            foreach ($_SESSION['Sprachen'] as $language) {
-                $localized                        = Shop::Container()->getDB()->select(
-                    'tkuponsprache',
-                    'kKupon',
-                    $id,
-                    'cISOSprache',
-                    $language->cISO,
-                    null,
-                    null,
-                    false,
-                    'cName'
-                );
-                $translationList[$language->cISO] = $localized->cName ?? '';
-            }
+        foreach ($_SESSION['Sprachen'] ?? [] as $language) {
+            $localized                        = Shop::Container()->getDB()->select(
+                'tkuponsprache',
+                'kKupon',
+                $id,
+                'cISOSprache',
+                $language->cISO,
+                null,
+                null,
+                false,
+                'cName'
+            );
+            $translationList[$language->cISO] = $localized->cName ?? '';
         }
 
         return $translationList;

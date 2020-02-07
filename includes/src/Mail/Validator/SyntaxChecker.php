@@ -90,16 +90,21 @@ final class SyntaxChecker
         }
 
         foreach (LanguageHelper::getAllLanguages() as $lang) {
-            $template->load($lang->kSprache, 1);
+            $template->load($lang->getId(), 1);
             $model = $template->getModel();
             if ($model === null) {
                 continue;
             }
             try {
                 $this->hydrator->hydrate(null, $lang);
-                $id = $model->getID() . '_' . $lang->kSprache;
-                $this->renderer->renderHTML($id);
-                $this->renderer->renderText($id);
+                $id   = $model->getID() . '_' . $lang->getId();
+                $html = $this->renderer->renderHTML($id);
+                $text = $this->renderer->renderText($id);
+                if ((\mb_strlen($html) === 0 || \mb_strlen($text) === 0)
+                    && !\in_array($model->getModuleID(), ['core_jtl_footer', 'core_jtl_header'], true)
+                ) {
+                    return __('Empty mail body');
+                }
             } catch (Exception $e) {
                 $model->setHasError(true);
                 $model->setActive(false);

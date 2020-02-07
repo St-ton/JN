@@ -9,28 +9,25 @@
 
     {block name='account-password-content'}
         {block name='account-password-include-extension'}
-            {container}
-                {include file='snippets/extension.tpl'}
-            {/container}
+            {include file='snippets/extension.tpl'}
         {/block}
         {block name='account-password-heading'}
             {container}
                 <h1>{lang key='forgotPassword' section='global'}</h1>
             {/container}
         {/block}
-        {if $step === 'formular'}
-            {block name='account-password-alert'}
-                {$alertList->displayAlertByKey('forgotPasswordDesc')}
-            {/block}
-
-            {container}
+        {container}
+            {if $step === 'formular'}
                 {row}
-                    {col cols=12 md=8 md-offset=2}
+                    {col cols=12 lg=8}
+                        {block name='account-password-alert'}
+                            {$alertList->displayAlertByKey('forgotPasswordDesc')}
+                        {/block}
                         {block name='account-password-form-password-reset'}
                             {form id="passwort_vergessen"
                                 action="{get_static_route id='pass.php'}{if $bExclusive === true}?exclusive_content=1{/if}"
                                 method="post"
-                                class="evo-validate label-slide"
+                                class="jtl-validate label-slide"
                             }
                                 {block name='account-password-form-password-reset-content'}
                                     <fieldset>
@@ -41,15 +38,17 @@
                                             ]
                                         }
                                         {block name='account-password-form-reset-submit'}
-                                            {formgroup}
-                                                {if $bExclusive === true}
-                                                  {input type="hidden" name="exclusive_content" value="1"}
-                                                {/if}
-                                                {input type="hidden" name="passwort_vergessen" value="1"}
-                                                {button type="submit" value="1" block=true class="submit_once" variant="primary"}
-                                                    {lang key='createNewPassword' section='forgot password'}
-                                                {/button}
-                                            {/formgroup}
+                                            {row}
+                                                {col class='col-md-auto ml-md-auto'}
+                                                    {if $bExclusive === true}
+                                                      {input type="hidden" name="exclusive_content" value="1"}
+                                                    {/if}
+                                                    {input type="hidden" name="passwort_vergessen" value="1"}
+                                                    {button type="submit" value="1" block=true class="submit_once" variant="primary"}
+                                                        {lang key='createNewPassword' section='forgot password'}
+                                                    {/button}
+                                                {/col}
+                                            {/row}
                                         {/block}
                                     </fieldset>
                                 {/block}
@@ -57,26 +56,24 @@
                         {/block}
                     {/col}
                 {/row}
-            {/container}
-        {elseif $step === 'confirm'}
-            {container}
+            {elseif $step === 'confirm'}
                 {row}
                     {col cols=12 md=8 md-offset=2}
                         {block name='account-password-form-password-reset-confirm'}
                             <div class="h3">{block name='account-password-password-reset-confirm-title'}{lang key='customerInformation' section='global'}{/block}</div>
-                            {form id="passwort_vergessen" action="{get_static_route id='pass.php'}{if $bExclusive === true}?exclusive_content=1{/if}" method="post" class="evo-validate"}
+                            {form id="passwort_vergessen" action="{get_static_route id='pass.php'}{if $bExclusive === true}?exclusive_content=1{/if}" method="post" class="jtl-validate label-slide"}
                                 {block name='account-password-form-password-reset-confirm-content'}
                                     <fieldset>
                                         {include file='snippets/form_group_simple.tpl'
                                             options=[
                                                 "password", "pw_new", "pw_new", null,
-                                                {lang key='password' section='account data'}, true
+                                                {lang key='password' section='account data'}, true, null, "new-password"
                                             ]
                                         }
                                         {include file='snippets/form_group_simple.tpl'
                                             options=[
                                                 "password", "pw_new_confirm", "pw_new_confirm", null,
-                                                {lang key='passwordRepeat' section='account data'}, true
+                                                {lang key='passwordRepeat' section='account data'}, true, null, "new-password"
                                             ]
                                         }
                                         {block name='account-password-form-confirm-submit'}
@@ -96,14 +93,12 @@
                         {/block}
                     {/col}
                 {/row}
-            {/container}
-        {else}
-            {block name='account-password-alert-success'}
-                {container}
+            {else}
+                {block name='account-password-alert-success'}
                     {alert variant="success"}{lang key='newPasswortWasGenerated' section='forgot password'}{/alert}
-                {/container}
-            {/block}
-        {/if}
+                {/block}
+            {/if}
+        {/container}
     {/block}
 
     {block name='account-password-include-footer'}

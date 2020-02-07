@@ -570,6 +570,14 @@ final class Model
     }
 
     /**
+     * @param int $languageID
+     */
+    public function removeAttachments(int $languageID): void
+    {
+        $this->attachments[$languageID] = null;
+    }
+
+    /**
      * @param string|array|null $attachments
      * @param int               $languageID
      */
@@ -738,7 +746,7 @@ final class Model
             ? null
             : map(
                 $data,
-                function ($e) {
+                static function ($e) {
                     $e->kSprache      = (int)$e->kSprache;
                     $e->kPlugin       = (int)$e->kPlugin;
                     $e->kEmailvorlage = (int)$e->id;

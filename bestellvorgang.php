@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -15,6 +15,7 @@ use JTL\Extensions\Upload\Upload;
 use JTL\Helpers\Order;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
+use JTL\Plugin\Payment\LegacyMethod;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
@@ -22,7 +23,6 @@ use JTL\Shopsetting;
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'registrieren_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'jtl_inc.php';
 
@@ -77,7 +77,7 @@ if (Request::postInt('unreg_form') === 1 && $conf['kaufabwicklung']['bestellvorg
 }
 if (isset($_GET['editLieferadresse'])) {
     // Shipping address and customer address are now on same site
-    $_GET['editRechnungsadresse'] = $_GET['editLieferadresse'];
+    $_GET['editRechnungsadresse'] = Request::getInt($_GET['editLieferadresse']);
 }
 if (Request::postInt('unreg_form', -1) === 0) {
     $_POST['checkout'] = 1;
@@ -155,14 +155,14 @@ pruefeZahlungStep();
 // autom. step ermitteln
 pruefeBestaetigungStep();
 // sondersteps Rechnungsadresse aendern
-pruefeRechnungsadresseStep($_GET);
+pruefeRechnungsadresseStep(StringHandler::filterXSS($_GET));
 // sondersteps Lieferadresse aendern
-pruefeLieferadresseStep($_GET);
+pruefeLieferadresseStep(StringHandler::filterXSS($_GET));
 // sondersteps Versandart aendern
-pruefeVersandartStep($_GET);
+pruefeVersandartStep(StringHandler::filterXSS($_GET));
 // sondersteps Zahlungsart aendern
-pruefeZahlungsartStep($_GET);
-pruefeZahlungsartwahlStep($_POST);
+pruefeZahlungsartStep(StringHandler::filterXSS($_GET));
+pruefeZahlungsartwahlStep(StringHandler::filterXSS($_POST));
 
 if ($step === 'accountwahl') {
     gibStepAccountwahl();
@@ -192,13 +192,13 @@ if ($step === 'Bestaetigung') {
     pruefeGuthabenNutzen();
     // Eventuellen Zahlungsarten Aufpreis/Rabatt neusetzen
     getPaymentSurchageDiscount($_SESSION['Zahlungsart']);
-    gibStepBestaetigung($_GET);
+    gibStepBestaetigung(StringHandler::filterXSS($_GET));
     $cart->cEstimatedDelivery = $cart->getEstimatedDeliveryTime();
     Cart::refreshChecksum($cart);
 }
 if ($step === 'Bestaetigung' && $cart->gibGesamtsummeWaren(true) === 0.0) {
     $savedPayment   = $_SESSION['AktiveZahlungsart'];
-    $oPaymentMethod = PaymentMethod::create('za_null_jtl');
+    $oPaymentMethod = LegacyMethod::create('za_null_jtl');
     zahlungsartKorrekt($oPaymentMethod->kZahlungsart);
 
     if ((isset($_SESSION['Bestellung']->GuthabenNutzen) && (int)$_SESSION['Bestellung']->GuthabenNutzen === 1)

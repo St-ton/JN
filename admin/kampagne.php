@@ -5,12 +5,11 @@
  */
 
 use JTL\Alert\Alert;
+use JTL\Campaign;
 use JTL\DB\ReturnType;
-use JTL\Helpers\Date;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
-use JTL\Campaign;
 use JTL\Pagination\Pagination;
 use JTL\Shop;
 
@@ -192,7 +191,7 @@ if ($step === 'kampagne_uebersicht') {
             'SELECT kKampagne, kKampagneDef, kKey ' . $select . '
                 FROM tkampagnevorgang
                 ' . $where . '
-                    AND kKampagne = ' . (int)$campaignID . '
+                    AND kKampagne = ' . $campaignID . '
                     AND kKampagneDef = ' . (int)$definition->kKampagneDef,
             ReturnType::ARRAY_OF_OBJECTS
         );

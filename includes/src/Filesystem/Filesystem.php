@@ -7,8 +7,18 @@
 namespace JTL\Filesystem;
 
 use Exception;
-use Generator;
 use JTL\Path;
+use League\Flysystem\Adapter\Local;
+use League\Flysystem\AdapterInterface;
+use League\Flysystem\FileExistsException;
+use League\Flysystem\FileNotFoundException;
+use League\Flysystem\FilesystemInterface;
+use League\Flysystem\MountManager;
+use League\Flysystem\Plugin\GetWithMetadata;
+use League\Flysystem\Plugin\ListFiles;
+use League\Flysystem\Plugin\ListPaths;
+use League\Flysystem\ZipArchive\ZipArchiveAdapter;
+use SplFileInfo;
 use Symfony\Component\Finder\Finder;
 use ZipArchive;
 
@@ -16,319 +26,41 @@ use ZipArchive;
  * Class Filesystem
  * @package JTL\Filesystem
  */
-class Filesystem implements IFilesystem
+class Filesystem extends \League\Flysystem\Filesystem
 {
     /**
-     * @var IFilesystem
+     * @var FilesystemInterface
      */
     protected $adapter;
 
     /**
-     * Constructor.
-     *
-     * @param IFilesystem $adapter
+     * @inheritDoc
      */
-    public function __construct(IFilesystem $adapter)
+    public function __construct(AdapterInterface $adapter, $config = null)
     {
         $this->adapter = $adapter;
+        parent::__construct($adapter, $config);
+        $this->addPlugin(new ListFiles());
+        $this->addPlugin(new ListPaths());
+        $this->addPlugin(new GetWithMetadata());
     }
 
     /**
-     * Get the Adapter.
-     *
-     * @return IFilesystem adapter
-     */
-    public function getAdapter()
-    {
-        return $this->adapter;
-    }
-
-    /**
-     * @param $path
-     * @return FileInfo
-     */
-    public function getMeta($path) : FileInfo
-    {
-        $path = Path::clean($path);
-
-        return $this->getAdapter()->getMeta($path);
-    }
-
-    /**
-     * @param      $path
-     * @param null $mode
-     * @return string|null
-     */
-    public function get($path, $mode = null) :? string
-    {
-        $path = Path::clean($path);
-        $mode = $mode ?: IFilesystem::FILE_PERM;
-
-        return $this->getAdapter()->get($path, $mode);
-    }
-
-    /**
-     * @param      $path
-     * @param      $contents
-     * @param null $mode
+     * @param string $directory
+     * @param string $path
      * @return bool
-     */
-    public function put($path, $contents, $mode = null) : bool
-    {
-        $path = Path::clean($path);
-        $mode = $mode ?: IFilesystem::FILE_PERM;
-
-        return $this->getAdapter()->put($path, $contents, $mode);
-    }
-
-    /**
-     * @param $path
-     * @param $owner
-     * @return bool
-     */
-    public function chown($path, $owner) : bool
-    {
-        $path = Path::clean($path);
-
-        return $this->getAdapter()->chown($path, $owner);
-    }
-
-    /**
-     * @return string|null
-     */
-    public function cwd() :? string
-    {
-        $cwd = $this->getAdapter()->cwd();
-
-        return Path::clean($cwd);
-    }
-
-    /**
-     * @param $path
-     * @return bool
-     */
-    public function chdir($path) : bool
-    {
-        $path = Path::clean($path);
-
-        return $this->getAdapter()->chdir($path);
-    }
-
-    /**
-     * @param $path
-     * @param $group
-     * @return bool
-     */
-    public function chgrp($path, $group) : bool
-    {
-        $path = Path::clean($path);
-
-        return $this->getAdapter()->chgrp($path, $group);
-    }
-
-    /**
-     * @param      $path
-     * @param null $mode
-     * @return bool
-     */
-    public function chmod($path, $mode = null) : bool
-    {
-        $path = Path::clean($path);
-
-        // TODO: Check path type [dir/file]
-        $mode = $mode ?: IFilesystem::FILE_PERM;
-
-        return $this->getAdapter()->chmod($path, $mode);
-    }
-
-    /**
-     * @param $path
-     * @param $target
-     * @return bool
-     */
-    public function copy($path, $target) : bool
-    {
-        $path = Path::clean($path);
-
-        return $this->getAdapter()->copy($path, $target);
-    }
-
-    /**
-     * @param $path
-     * @param $target
-     * @return bool
-     */
-    public function move($path, $target) : bool
-    {
-        $path = Path::clean($path);
-
-        return $this->getAdapter()->move($path, $target);
-    }
-
-    /**
-     * @param $path
-     * @return bool
-     */
-    public function delete($path) : bool
-    {
-        $path = Path::clean($path);
-
-        return $this->getAdapter()->delete($path);
-    }
-
-    /**
-     * @param $path
-     * @return bool
-     */
-    public function exists($path) : bool
-    {
-        $path = Path::clean($path);
-
-        return $this->getAdapter()->exists($path);
-    }
-
-    /**
-     * @param      $directory
-     * @param bool $recursive
-     * @return Generator
-     */
-    public function listContents($directory, $recursive = false) : Generator
-    {
-        $directory = Path::clean($directory);
-
-        return $this->getAdapter()->listContents($directory, $recursive);
-    }
-
-    /**
-     * @param      $path
-     * @param null $mode
-     * @param bool $recursive
-     * @return bool
-     */
-    public function makeDirectory($path, $mode = null, $recursive = false) : bool
-    {
-        $path = Path::clean($path);
-        $mode = $mode ?: IFilesystem::DIR_PERM;
-
-        return $this->getAdapter()->makeDirectory($path, $mode, $recursive);
-    }
-
-    /**
-     * @param      $from
-     * @param      $to
-     * @param bool $overwrite
-     * @return bool
-     */
-    public function moveDirectory($from, $to, $overwrite = false) : bool
-    {
-        $from = Path::clean($from);
-        $to   = Path::clean($to);
-
-        return $this->getAdapter()->moveDirectory($from, $to, $overwrite);
-    }
-
-    /**
-     * @param      $from
-     * @param      $to
-     * @param null $mode
-     * @return bool
-     */
-    public function copyDirectory($from, $to, $mode = null) : bool
-    {
-        $from = Path::clean($from);
-        $to   = Path::clean($to);
-        $mode = $mode ?: IFilesystem::DIR_PERM;
-
-        return $this->getAdapter()->copyDirectory($from, $to, $mode);
-    }
-
-    /**
-     * @param      $directory
-     * @param bool $preserve
-     * @return bool
-     */
-    public function deleteDirectory($directory, $preserve = false) : bool
-    {
-        $directory = Path::clean($directory);
-
-        return $this->getAdapter()->deleteDirectory($directory, $preserve);
-    }
-
-    /**
-     * @param      $directory
-     * @param bool $recursive
-     * @return array|Generator
-     */
-    public function listFiles($directory, $recursive = false)
-    {
-        $list = $this->listContents($directory, $recursive);
-
-        return \array_filter(
-            $list,
-            function ($item) {
-                return $item['type'] === 'file';
-            }
-        );
-    }
-
-    /**
-     * @param      $directory
-     * @param bool $recursive
-     * @return array|Generator
-     */
-    public function listDirectories($directory, $recursive = false)
-    {
-        $list = $this->listContents($directory, $recursive);
-
-        return \array_filter(
-            $list,
-            function ($item) {
-                return $item['type'] === 'dir';
-            }
-        );
-    }
-
-    /**
-     * Extract the archive contents.
-     *
-     * 1. Collect all directories
-     * 2.
-     *
-     * @param $directory
-     * @param $path
-     *
-     * @return bool
-     *
      * @throws Exception
      */
-    public function unzip($directory, $path)
+    public function unzip(string $directory, string $path): bool
     {
-        $directory = Path::clean($directory);
-        $location  = Path::clean($path, true);
-
-        $zipArchive = new ZipArchive();
-
+        $directory    = Path::clean($directory);
+        $location     = Path::clean($path, true);
+        $zipArchive   = new ZipArchive();
+        $directories  = [];
+        $archive_size = 0;
         if (($code = $zipArchive->open($directory, ZipArchive::CHECKCONS)) !== true) {
             throw new Exception('Incompatible Archive.', $code);
         }
-
-        $directories  = [];
-        $archive_size = 0;
-
-        /*
-        if (!$this->getMeta($location)->isDir()) {
-            $path = \preg_split('![/\\\]!', Path::removeTrailingSlash($location));
-            for ($i = \count($path); $i >= 0; $i--) {
-                if (empty($path[$i]))
-                    continue;
-                $dir = \implode('/', \array_slice($path, 0, $i+1));
-                if ($this->getMeta($dir)->isDir())
-                    break;
-                $dirs[] = $dir;
-            }
-        }
-        */
-
         // Collect all directories to create
         for ($index = 0; $index < $zipArchive->numFiles; ++$index) {
             if (!$info = $zipArchive->statIndex($index)) {
@@ -358,23 +90,13 @@ class Filesystem implements IFilesystem
         $directories = \array_flip($directories);
 
         // Create location where to extract the archive
-        if (!$this->makeDirectory($location, null, true)) {
+        if (!$this->createDir($location)) {
             throw new Exception(\sprintf('Could not create directory "%s"', $location));
         }
-
-        // Check available disk space
-        // Extracted archive + overwritten files + 10MB buffer
-        if ($disk_free_size = @\disk_free_space($location)) {
-            $required_size = $archive_size * 2 + 1024 * 1024 * 10;
-            if ($disk_free_size && $required_size > $disk_free_size) {
-                throw new Exception('Not enough disk space available');
-            }
-        }
-
         // Create required directories
         foreach ($directories as $dir) {
             $dir = Path::combine($location, $dir);
-            if (!$this->makeDirectory($dir, null, true) && !$this->getMeta($dir)->isDir()) {
+            if (!$this->createDir($dir)) {
                 throw new Exception(\sprintf('Could not create directory "%s"', $dir));
             }
         }
@@ -391,20 +113,15 @@ class Filesystem implements IFilesystem
             if (\substr($info['name'], -1) === '/') {
                 continue;
             }
-
             $contents = $zipArchive->getFromIndex($index);
-
             if ($contents === false) {
                 throw new Exception('Could not extract file from archive.');
             }
-
             $file = Path::combine($location, $info['name']);
-
             if ($this->put($file, $contents) === false) {
                 throw new Exception(\sprintf('Could not copy file "%s" (%d)', $file, \strlen($contents)));
             }
         }
-
         $zipArchive->close();
 
         return true;
@@ -412,46 +129,65 @@ class Filesystem implements IFilesystem
 
     /**
      * @param Finder        $finder
-     * @param string        $archivePath
+     * @param string        $archive
      * @param callable|null $callback
      * @return bool
+     * @throws FileExistsException
      */
-    public function zip(Finder $finder, string $archivePath, callable $callback = null): bool
+    public function zip(Finder $finder, string $archive, callable $callback = null): bool
     {
-        return $this->getAdapter()->zip($finder, $archivePath, $callback);
+        $root    = new Filesystem(new Local(\PFAD_ROOT));
+        $zip     = new Filesystem(new ZipArchiveAdapter($archive));
+        $manager = new MountManager(['root' => $root, 'zip' => $zip]);
+        $count   = $finder->count();
+        $index   = 0;
+        foreach ($finder->files() as $file) {
+            /** @var SplFileInfo $file */
+            $path = $file->getPathname();
+            $pos  = \strpos($path, \PFAD_ROOT);
+            if ($pos === 0) {
+                $path = \substr_replace($path, '', $pos, \strlen(\PFAD_ROOT));
+            }
+            try {
+                if ($file->getType() === 'dir') {
+                    $manager->createDir('zip://' . $path);
+                } else {
+                    $manager->copy('root://' . $path, 'zip://' . $path);
+                }
+            } catch (FileNotFoundException $e) {
+            }
+            if (\is_callable($callback)) {
+                $callback($count, $index);
+                ++$index;
+            }
+        }
+
+        return $zip->getAdapter()->getArchive()->close();
     }
 
     /**
-     * @param $identity
-     * @return array|null
+     * @param string $source
+     * @param string $archive
+     * @return bool
+     * @throws FileExistsException
      */
-    public function getOwner($identity)
+    public function zipDir(string $source, string $archive): bool
     {
-        if (\is_numeric($identity)) {
-            if (\function_exists('posix_getpwuid')) {
-                return \posix_getpwuid((int)$identity);
+        $realSource = \realpath($source);
+        if ($realSource === false || \strpos($realSource, \PFAD_ROOT) !== 0 || \strpos($archive, '.zip') === false) {
+            return false;
+        }
+        $root    = new Filesystem(new Local($realSource));
+        $zip     = new Filesystem(new ZipArchiveAdapter($archive));
+        $manager = new MountManager(['root' => $root, 'zip' => $zip]);
+        foreach ($manager->listContents('root:///', true) as $item) {
+            if ($item['type'] === 'dir') {
+                $manager->createDir('zip://' . $item['path']);
+            } else {
+                $manager->copy('root://' . $item['path'], 'zip://' . $item['path']);
             }
-        } elseif (\function_exists('posix_getpwnam')) {
-            return \posix_getpwnam($identity);
         }
 
-        return null;
-    }
-
-    /**
-     * @param $identity
-     * @return array|null
-     */
-    public function getGroup($identity)
-    {
-        if (\is_numeric($identity)) {
-            if (\function_exists('posix_getgrgid')) {
-                return \posix_getgrgid((int)$identity);
-            }
-        } elseif (\function_exists('posix_getgrnam')) {
-            return \posix_getgrnam($identity);
-        }
-
-        return null;
+        return $zip->getAdapter()->getArchive()->close();
     }
 }

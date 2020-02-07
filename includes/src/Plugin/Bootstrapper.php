@@ -11,7 +11,12 @@ use JTL\Backend\NotificationEntry;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Events\Dispatcher;
+use JTL\Link\LinkInterface;
+use JTL\Plugin\Admin\StateChanger;
+use JTL\Plugin\Admin\Validation\LegacyPluginValidator;
+use JTL\Plugin\Admin\Validation\PluginValidator;
 use JTL\Smarty\JTLSmarty;
+use JTL\XMLParser;
 
 /**
  * Class Bootstrapper
@@ -74,7 +79,7 @@ abstract class Bootstrapper implements BootstrapperInterface
     /**
      * @inheritdoc
      */
-    final public function addNotify($type, $title, $description = null)
+    final public function addNotify($type, $title, $description = null): void
     {
         $this->notifications[] = (new NotificationEntry($type, $title, $description))->setPluginId($this->pluginId);
     }
@@ -89,7 +94,7 @@ abstract class Bootstrapper implements BootstrapperInterface
     /**
      * @inheritdoc
      */
-    public function uninstalled()
+    public function uninstalled(bool $deleteData = true)
     {
     }
 
@@ -160,5 +165,37 @@ abstract class Bootstrapper implements BootstrapperInterface
     public function renderAdminMenuTab(string $tabName, int $menuID, JTLSmarty $smarty): string
     {
         return '';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function prepareFrontend(LinkInterface $link, JTLSmarty $smarty): bool
+    {
+        $smarty->assign(
+            'cPluginTemplate',
+            $this->getPlugin()->getPaths()->getFrontendPath() . \PFAD_PLUGIN_TEMPLATE . $link->getTemplate()
+        );
+
+        return false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function loaded(): int
+    {
+        if (\PLUGIN_DEV_MODE !== true || $this->plugin === null) {
+            return -1;
+        }
+        $parser       = $parser = new XMLParser();
+        $stateChanger = new StateChanger(
+            $this->db,
+            $this->cache,
+            new LegacyPluginValidator($this->db, $parser),
+            new PluginValidator($this->db, $parser)
+        );
+
+        return $stateChanger->reload($this->plugin);
     }
 }

@@ -32,7 +32,7 @@
                     label="{lang key='bankname' section='shipping payment'}{if $Einstellungen.zahlungsarten.zahlungsart_lastschrift_kreditinstitut_abfrage !== 'Y'}<span class='optional'> - {lang key='optional'}</span>{/if}"
                     label-for="inp_bankname"
                 }
-                    {input id="inp_bankname" type="text" name="bankname" size="20" maxlength="90"
+                    {input id="inp_bankname" type="text" name="bankname" size="20" maxlength="90" placeholder=" "
                         value="{if isset($ZahlungsInfo->cBankName) && $ZahlungsInfo->cBankName|count_characters > 0}{$ZahlungsInfo->cBankName}{elseif isset($oKundenKontodaten->cBankName)}{$oKundenKontodaten->cBankName}{/if}"
                         required=($Einstellungen.zahlungsarten.zahlungsart_lastschrift_kreditinstitut_abfrage === 'Y')}
                    {if isset($fehlendeAngaben.bankname) && $fehlendeAngaben.bankname > 0}
@@ -50,7 +50,7 @@
                     label="{lang key='iban' section='shipping payment'}"
                     label-for="inp_iban"
                 }
-                    {input id="inp_iban" type="text" name="iban" maxlength="32" size="20"
+                    {input id="inp_iban" type="text" name="iban" maxlength="32" size="20" placeholder=" "
                         value="{if isset($ZahlungsInfo->cIBAN) && $ZahlungsInfo->cIBAN|count_characters > 0}{$ZahlungsInfo->cIBAN}{elseif isset($oKundenKontodaten->cIBAN)}{$oKundenKontodaten->cIBAN}{/if}"
                         required=true}
                     {if isset($fehlendeAngaben.iban)}
@@ -70,7 +70,7 @@
                     label="{lang key='bic' section='shipping payment'}{if $Einstellungen.zahlungsarten.zahlungsart_lastschrift_bic_abfrage !== 'Y'}<span class='optional'> - {lang key='optional'}</span>{/if}"
                     label-for="inp_bic"
                 }
-                    {input id="inp_bic" type="text" name="bic" maxlength="32" size="20"
+                    {input id="inp_bic" type="text" name="bic" maxlength="32" size="20" placeholder=" "
                         value="{if isset($ZahlungsInfo->cBIC) && $ZahlungsInfo->cBIC|count_characters > 0}{$ZahlungsInfo->cBIC}{elseif isset($oKundenKontodaten->cBIC)}{$oKundenKontodaten->cBIC}{/if}"
                         required=($Einstellungen.zahlungsarten.zahlungsart_lastschrift_bic_abfrage === 'Y')}
                     {if isset($fehlendeAngaben.bic)}

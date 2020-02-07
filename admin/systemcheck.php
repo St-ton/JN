@@ -3,6 +3,11 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\phpQuery\phpQuery;
+use Systemcheck\Environment;
+use Systemcheck\Platform\Hosting;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->redirectOnFailure();
@@ -17,16 +22,15 @@ if (isset($_GET['phpinfo'])) {
     phpinfo();
     $content = ob_get_contents();
     ob_end_clean();
-    require_once PFAD_ROOT . PFAD_PHPQUERY . 'phpquery.class.php';
 
     $doc     = phpQuery::newDocumentHTML($content, JTL_CHARSET);
     $phpInfo = pq('body', $doc)->html();
 }
 
-$systemcheck = new Systemcheck_Environment();
-$platform    = new Systemcheck_Platform_Hosting();
+$systemcheck = new Environment();
+$platform    = new Hosting();
 
-$smarty->assign('tests', $systemcheck->executeTestGroup('Shop4'))
+$smarty->assign('tests', $systemcheck->executeTestGroup('Shop5'))
        ->assign('platform', $platform)
        ->assign('passed', $systemcheck->getIsPassed())
        ->assign('phpinfo', $phpInfo)

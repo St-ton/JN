@@ -222,7 +222,7 @@ msgid "wartungsmodus_aktiviert_name"
 msgstr "Enable maintenance mode"
 
 msgid "wartungsmodus_aktiviert_desc"
-msgstr "Here you can activate the maintenance mode of JTL-Shop. JTL-Shop contents are not displayed in maintenance mode. In this mode, you can easily perform maintenance work such as updates or backups."
+msgstr "The visitor sees a message saying that the online shop is undergoing maintenance. The text of this message is managed via the language variable \"maintenanceModeActive\". Go to the Language administration to edit the info message text."
 
 msgid "global_versandermittlung_anzeigen_name"
 msgstr "Show shipping cost determination"
@@ -277,6 +277,12 @@ msgstr "HTTPONLY"
 
 msgid "global_cookie_httponly_desc"
 msgstr "Specify whether PHP should attempt to send the HTTPONLY flag."
+
+msgid "global_cookie_samesite_name"
+msgstr "SameSite"
+
+msgid "global_cookie_samesite_desc"
+msgstr "Specify whether PHP should attempt to send the SameSite flag."
 
 msgid "startseite_neuimsortiment_anzahl_name"
 msgstr "\"New in product range\": Number of items"
@@ -656,12 +662,6 @@ msgstr "Show permissible order quantity"
 msgid "artikeluebersicht_artikelintervall_anzeigen_desc"
 msgstr "Specify whether to display the permissible order quantity (if applicable)."
 
-msgid "artikeluebersicht_finanzierung_anzeigen_name"
-msgstr "Show financing proposal"
-
-msgid "artikeluebersicht_finanzierung_anzeigen_desc"
-msgstr "Specify whether to display a financing proposal for each item."
-
 msgid "livesuche_max_ip_count_name"
 msgstr "Maximum entries per visitor per hour"
 
@@ -669,10 +669,10 @@ msgid "livesuche_max_ip_count_desc"
 msgstr "Specify the maximum number of entries per visitor and hour saved in the live search. This allows you to prevent manipulation of the live search."
 
 msgid "suchfilter_anzeigen_ab_name"
-msgstr "Show \"Refine search\" from"
+msgstr "Show search filters from"
 
 msgid "suchfilter_anzeigen_ab_desc"
-msgstr "Specify the minimum number of items that must be displayed in the search results for further search filters to be available for selection."
+msgstr "Specify the minimum number of items that must be displayed in the search results for search filters to be available for selection."
 
 msgid "artikeluebersicht_erw_darstellung_name"
 msgstr "Use expanded item overview"
@@ -684,7 +684,7 @@ msgid "artikeluebersicht_erw_darstellung_stdansicht_name"
 msgstr "Default design option for item overview"
 
 msgid "artikeluebersicht_erw_darstellung_stdansicht_desc"
-msgstr "Specify the default display option that your customers will be shown. With the JTL-Shop default template EVO, you can only use the options \"Gallery\" and \"List\"."
+msgstr "Specify the default display option that your customers will be shown."
 
 msgid "artikeluebersicht_anzahl_darstellung1_name"
 msgstr "Number of items in list view"
@@ -709,12 +709,6 @@ msgstr "Item selection options per page in gallery view"
 
 msgid "products_per_page_gallery_desc"
 msgstr "Specify how many item selection options are available per page. Set this value to -1 to display all."
-
-msgid "artikeluebersicht_anzahl_darstellung3_name"
-msgstr "Number of items in mosaic view"
-
-msgid "artikeluebersicht_anzahl_darstellung3_desc"
-msgstr "Specify how many items are to be displayed in the mosaic view."
 
 msgid "artikeldetails_xselling_standard_anzeigen_name"
 msgstr "Show default cross-selling"
@@ -1394,12 +1388,6 @@ msgstr "Completion page after external payment"
 msgid "bestellabschluss_abschlussseite_desc"
 msgstr "Specify what page will be displayed after an external payment."
 
-msgid "box_bestseller_scrollen_name"
-msgstr "Use scrolling"
-
-msgid "box_bestseller_scrollen_desc"
-msgstr "Specify whether it is possible to scroll through the items (Yes) or whether to display only the specified number of items."
-
 msgid "box_bestseller_anzahl_anzeige_name"
 msgstr "Number of displayed items"
 
@@ -1412,23 +1400,17 @@ msgstr "Base number of items"
 msgid "box_bestseller_anzahl_basis_desc"
 msgstr "Specify the number of items from which the items to be displayed are to be selected."
 
-msgid "box_sonderangebote_scrollen_name"
-msgstr "Use scrolling"
-
-msgid "box_sonderangebote_scrollen_desc"
-msgstr "Specify whether it is possible to scroll through the items (Yes) or whether to display only the specified number of items."
-
 msgid "box_sonderangebote_anzahl_anzeige_name"
 msgstr "Number of displayed items"
 
 msgid "box_sonderangebote_anzahl_anzeige_desc"
 msgstr "Specify how many items are to be displayed in the box."
 
-msgid "box_neuimsortiment_scrollen_name"
-msgstr "Use scrolling"
+msgid "box_sonderangebote_anzahl_basis_name"
+msgstr "Base number of items"
 
-msgid "box_neuimsortiment_scrollen_desc"
-msgstr "Specify whether it is possible to scroll through the items (Yes) or whether to display only the specified number of items."
+msgid "box_sonderangebote_anzahl_basis_desc"
+msgstr "Specify the number of items from which the items to be displayed are to be selected."
 
 msgid "box_neuimsortiment_anzahl_anzeige_name"
 msgstr "Number of displayed items"
@@ -1442,11 +1424,11 @@ msgstr "Maximum age of items in days"
 msgid "box_neuimsortiment_alter_tage_desc"
 msgstr "Specify how many days an item is marked as \"New in product range\"."
 
-msgid "box_topangebot_scrollen_name"
-msgstr "Use scrolling"
+msgid "box_neuimsortiment_anzahl_basis_name"
+msgstr "Base number of items"
 
-msgid "box_topangebot_scrollen_desc"
-msgstr "Specify whether it is possible to scroll through the items (Yes) or whether to display only the specified number of items."
+msgid "box_neuimsortiment_anzahl_basis_desc"
+msgstr "Specify the number of items from which the items to be displayed are to be selected."
 
 msgid "box_topangebot_anzahl_anzeige_name"
 msgstr "Number of displayed items"
@@ -1454,23 +1436,29 @@ msgstr "Number of displayed items"
 msgid "box_topangebot_anzahl_anzeige_desc"
 msgstr "Specify how many items are to be displayed in the box."
 
+msgid "box_topangebot_anzahl_basis_name"
+msgstr "Base number of items"
+
+msgid "box_topangebot_anzahl_basis_desc"
+msgstr "Specify the number of items from which the items to be displayed are to be selected."
+
 msgid "box_zuletztangesehen_anzahl_name"
 msgstr "Number of displayed items"
 
 msgid "box_zuletztangesehen_anzahl_desc"
 msgstr "Specify how many items are to be displayed in the box."
 
-msgid "box_erscheinende_scrollen_name"
-msgstr "Use scrolling"
-
-msgid "box_erscheinende_scrollen_desc"
-msgstr "Specify whether it is possible to scroll through the items (Yes) or whether to display only the specified number of items."
-
 msgid "box_erscheinende_anzahl_anzeige_name"
 msgstr "Number of displayed items"
 
 msgid "box_erscheinende_anzahl_anzeige_desc"
 msgstr "Specify how many items are to be displayed in the box."
+
+msgid "box_erscheinende_anzahl_basis_name"
+msgstr "Base number of items"
+
+msgid "box_erscheinende_anzahl_basis_desc"
+msgstr "Specify the number of items from which the items to be displayed are to be selected."
 
 msgid "boxen_livesuche_anzeigen_name"
 msgstr "Show box"
@@ -1502,12 +1490,6 @@ msgstr "Show comparison list"
 msgid "boxen_vergleichsliste_anzeigen_desc"
 msgstr "Specify whether to display the comparison list in a box."
 
-msgid "boxen_topbewertet_scrollbar_name"
-msgstr "Use scrolling"
-
-msgid "boxen_topbewertet_scrollbar_desc"
-msgstr "Specify whether it is possible to scroll through the items (Yes) or whether to display only the specified number of items."
-
 msgid "boxen_topbewertet_anzahl_name"
 msgstr "Number of displayed items"
 
@@ -1525,24 +1507,6 @@ msgstr "\"Top rated\" applies as of the following average rating"
 
 msgid "boxen_topbewertet_minsterne_desc"
 msgstr "Specify the minimum number of stars with which an item must be rated on average to be considered as \"Top rated\"."
-
-msgid "boxen_preisradar_scrollbar_name"
-msgstr "Use scrolling"
-
-msgid "boxen_preisradar_scrollbar_desc"
-msgstr "Specify whether it is possible to scroll through the items (Yes) or whether to display only the specified number of items."
-
-msgid "boxen_preisradar_anzahl_name"
-msgstr "Number of displayed items"
-
-msgid "boxen_preisradar_anzahl_desc"
-msgstr "Specify how many items are to be displayed in the box."
-
-msgid "boxen_preisradar_anzahltage_name"
-msgstr "Number of considered days"
-
-msgid "boxen_preisradar_anzahltage_desc"
-msgstr "Specify how many days are to be taken into account for the price history."
 
 msgid "bilder_kategorien_breite_name"
 msgstr "Category images: width"
@@ -1747,6 +1711,24 @@ msgstr "Image name of variation images"
 
 msgid "bilder_variation_namen_desc"
 msgstr "Specify how to generate the name of image files for variations."
+
+msgid "bilder_hersteller_namen_name"
+msgstr "Image name of manufacturer images"
+
+msgid "bilder_hersteller_namen_desc"
+msgstr "Specify how to generate the name of image files for manufacturers."
+
+msgid "bilder_merkmal_namen_name"
+msgstr "Image name of characteristic images"
+
+msgid "bilder_merkmal_namen_desc"
+msgstr "Specify how to generate the name of image files for characteristics."
+
+msgid "bilder_merkmalwert_namen_name"
+msgstr "Image name of characteristic value images"
+
+msgid "bilder_merkmalwert_namen_desc"
+msgstr "Specify how to generate the name of image files for characteristic values."
 
 msgid "bilder_externe_bildschnittstelle_name"
 msgstr "Enable external image interface"
@@ -2756,24 +2738,6 @@ msgstr "Submit sitemap to Google and Bing after export"
 msgid "sitemap_google_ping_desc"
 msgstr "Specify whether a notification is sent to Google and Bing after the files sitemap.xml and sitemap_index.xml have been exported so that they can recrawl the sitemap."
 
-msgid "umfrage_nutzen_name"
-msgstr "Use survey system"
-
-msgid "umfrage_nutzen_desc"
-msgstr "Specify whether to integrate the survey system into your JTL-Shop."
-
-msgid "umfrage_einloggen_name"
-msgstr "Login required"
-
-msgid "umfrage_einloggen_desc"
-msgstr "Specify whether only registered users with customer accounts can take part in surveys."
-
-msgid "umfrage_box_anzahl_name"
-msgstr "Number of displayed surveys"
-
-msgid "umfrage_box_anzahl_desc"
-msgstr "Specify how many surveys are to be displayed in the box when you add it to a page using the box management."
-
 msgid "kwk_nutzen_name"
 msgstr "Activate customer referral programme"
 
@@ -3032,6 +2996,42 @@ msgstr "Encrypted (SSL)"
 msgid "ftp_path_name"
 msgstr "Path to shop"
 
+msgid "sftp_hostname_name"
+msgstr "Hostname"
+
+msgid "sftp_port_name"
+msgstr "Port"
+
+msgid "sftp_user_name"
+msgstr "Username"
+
+msgid "sftp_pass_name"
+msgstr "Password"
+
+msgid "sftp_privkey_name"
+msgstr "Private key path"
+
+msgid "sftp_path_name"
+msgstr "Path to shop"
+
+msgid "fs_timeout_name"
+msgstr "Timeout (seconds)"
+
+msgid "fs_adapter_name"
+msgstr "Adapter"
+
+msgid "fs_adapter_value(local)"
+msgstr "Local"
+
+msgid "fs_adapter_value(ftp)"
+msgstr "FTP"
+
+msgid "fs_adapter_value(sftp)"
+msgstr "SFTP"
+
+msgid "methodTest"
+msgstr "Test"
+
 msgid "cron_type_name"
 msgstr "Pseudo Cron Method"
 
@@ -3049,4 +3049,10 @@ msgstr "Show manufacturers as"
 
 msgid "hersteller_anzeigen_als_desc"
 msgstr "Specify how to display the manufacturers."
+
+msgid "general_child_item_bulk_pricing_name"
+msgstr "Scale prices across variations"
+
+msgid "general_child_item_bulk_pricing_desc"
+msgstr "Scale prices across variations"
 

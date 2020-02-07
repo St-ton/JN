@@ -8,7 +8,7 @@
             {input type="text"
                 name="email"
                 id="login_email"
-                placeholder="{lang key='email' section='account data'}"
+                placeholder=" "
                 required=true
                 autocomplete="email"
                 value=""
@@ -20,7 +20,7 @@
             {input type="password"
                 name="passwort"
                 id="login_password"
-                placeholder="{lang key='password' section='account data'}"
+                placeholder=" "
                 required=true
                 autocomplete="current-password"
                 value=""
@@ -46,18 +46,22 @@
                 {input type="hidden" name="r" value=$oRedirect->nRedirect}
                 {input type="hidden" name="cURL" value=$oRedirect->cURL}
             {/if}
-            {row}
-                {col lg=6}
-                    {button type="submit" variant="primary" block=true}
-                        {lang key='login' section='checkout'}
-                    {/button}
+            {formrow}
+                {col cols=12 lg=6}
+                    {block name='register-form-customer-submit'}
+                        {button type="submit" variant="primary" block=true}
+                            {lang key='login' section='checkout'}
+                        {/button}
+                    {/block}
                 {/col}
-                {col lg=6}
-                    {link class="btn btn-link btn-block text-decoration-underline" href="{get_static_route id='pass.php'}"}
-                        {lang key='forgotPassword'}
-                    {/link}
+                {col cols=12 lg=6}
+                    {block name='register-form-customer-forgot'}
+                        {link class="btn btn-link btn-block text-decoration-underline" href="{get_static_route id='pass.php'}"}
+                            {lang key='forgotPassword'}
+                        {/link}
+                    {/block}
                 {/col}
-            {/row}
+            {/formrow}
         {/formgroup}
     {/block}
 {/block}

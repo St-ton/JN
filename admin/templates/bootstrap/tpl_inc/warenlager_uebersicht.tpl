@@ -15,7 +15,7 @@
 {/literal}
 
 <div id="content">
-    {if $oWarenlager_arr|@count > 0}
+    {if $warehouses|@count > 0}
         <form method="post" action="warenlager.php">
             {$jtl_token}
             <input name="a" type="hidden" value="update" />
@@ -36,21 +36,21 @@
                             </tr>
                             </thead>
                             <tbody>
-                            {foreach $oWarenlager_arr as $oWarenlager}
+                            {foreach $warehouses as $warehouse}
                                 <tr>
                                     <td class="checkext">
                                         <div class="custom-control custom-checkbox">
-                                            <input class="custom-control-input" name="kWarenlager[]" type="checkbox" id="store-id-{$oWarenlager->kWarenlager}" value="{$oWarenlager->kWarenlager}"{if $oWarenlager->nAktiv == 1} checked{/if} />
-                                            <label class="custom-control-label" for="store-id-{$oWarenlager->kWarenlager}"></label>
+                                            <input class="custom-control-input" name="kWarenlager[]" type="checkbox" id="store-id-{$warehouse->kWarenlager}" value="{$warehouse->kWarenlager}"{if $warehouse->nAktiv == 1} checked{/if} />
+                                            <label class="custom-control-label" for="store-id-{$warehouse->kWarenlager}"></label>
                                         </div>
                                     </td>
-                                    <td class="large">{$oWarenlager->cName}</td>
-                                    <td>{$oWarenlager->cBeschreibung}</td>
+                                    <td class="large">{$warehouse->cName}</td>
+                                    <td>{$warehouse->cBeschreibung}</td>
                                     <td class="text-center">
                                         <div class="btn-group">
                                             <a class="btn btn-link px-2"
                                                data-toggle="collapse"
-                                               href="#collapse-{$oWarenlager->kWarenlager}"
+                                               href="#collapse-{$warehouse->kWarenlager}"
                                                title="{__('edit')}"
                                                aria-expanded="false">
                                                 <span class="fal fa-chevron-circle-down rotate-180 font-size-lg"></span>
@@ -58,17 +58,17 @@
                                         </div>
                                     </td>
                                 </tr>
-                                <tr class="collapse" id="collapse-{$oWarenlager->kWarenlager}">
+                                <tr class="collapse" id="collapse-{$warehouse->kWarenlager}">
                                     <td colspan="4" class="border-top-0">
-                                    {foreach $sprachen as $language}
+                                    {foreach $availableLanguages as $language}
                                         {assign var=kSprache value=$language->getId()}
                                         <div class="form-group form-row align-items-center mb-5 mb-md-3">
-                                            <label class="col col-sm-4 col-form-label text-sm-right order-1" for="cNameSprache[{$oWarenlager->kWarenlager}][{$kSprache}]">{$language->getLocalizedName()}:</label>
+                                            <label class="col col-sm-4 col-form-label text-sm-right order-1" for="cNameSprache[{$warehouse->kWarenlager}][{$kSprache}]">{$language->getLocalizedName()}:</label>
                                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                                <input id="cNameSprache[{$oWarenlager->kWarenlager}][{$kSprache}]"
-                                                       name="cNameSprache[{$oWarenlager->kWarenlager}][{$kSprache}]"
+                                                <input id="cNameSprache[{$warehouse->kWarenlager}][{$kSprache}]"
+                                                       name="cNameSprache[{$warehouse->kWarenlager}][{$kSprache}]"
                                                        type="text"
-                                                       value="{if isset($oWarenlager->cSpracheAssoc_arr[$kSprache])}{$oWarenlager->cSpracheAssoc_arr[$kSprache]}{/if}"
+                                                       value="{if isset($warehouse->cSpracheAssoc_arr[$kSprache])}{$warehouse->cSpracheAssoc_arr[$kSprache]}{/if}"
                                                        class="form-control large" />
                                             </div>
                                         </div>

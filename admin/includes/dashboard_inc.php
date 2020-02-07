@@ -14,6 +14,7 @@ use JTL\Plugin\State;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
+use JTL\Widgets\AbstractWidget;
 
 /**
  * @param bool $bActive
@@ -49,7 +50,7 @@ function getWidgets(bool $bActive = true)
         $widget->bExtension = (int)$widget->bExtension;
         $widget->plugin     = null;
 
-        if ($widget->cPluginID !== null) {
+        if ($widget->cPluginID !== null && SAFE_MODE === false) {
             if (array_key_exists($widget->cPluginID, $plugins)) {
                 $widget->plugin = $plugins[$widget->cPluginID];
             } else {
@@ -93,7 +94,7 @@ function getWidgets(bool $bActive = true)
             $className        = '\JTL\Widgets\\' . $widget->cClass;
             $classPath        = null;
 
-            if ($widget->kPlugin > 0) {
+            if ($widget->plugin !== null) {
                 $hit = $widget->plugin->getWidgets()->getWidgetByID($widget->kWidget);
 
                 if ($hit !== null) {
@@ -107,7 +108,7 @@ function getWidgets(bool $bActive = true)
             }
 
             if (class_exists($className)) {
-                /** @var \JTL\Widgets\AbstractWidget $instance */
+                /** @var AbstractWidget $instance */
                 $instance         = new $className($smarty, $db, $widget->plugin);
                 $widget->cContent = $instance->getContent();
                 $widget->hasBody  = $instance->hasBody;
@@ -205,7 +206,7 @@ function getRemoteDataIO($url, $dataName, $tpl, $wrapperID, $post = null, $callb
 {
     Shop::Container()->getGetText()->loadAdminLocale('widgets');
     $response    = new IOResponse();
-    $urlsToCache = ['oNews_arr', 'oMarketplace_arr', 'oMarketplaceUpdates_arr', 'oPatch_arr', 'oDuk', 'oHelp_arr'];
+    $urlsToCache = ['oNews_arr', 'oMarketplace_arr', 'oMarketplaceUpdates_arr', 'oPatch_arr', 'oHelp_arr'];
     if (in_array($dataName, $urlsToCache, true)) {
         $cacheID = str_replace('/', '_', $dataName . '_' . $tpl . '_' . md5($wrapperID . $url));
         if (($remoteData = Shop::Container()->getCache()->get($cacheID)) === false) {

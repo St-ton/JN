@@ -13,7 +13,7 @@ use JTL\MagicCompatibilityTrait;
  * Class PluginBC
  * @package JTL\Plugin
  */
-class PluginBC extends AbstractPlugin
+abstract class PluginBC extends AbstractPlugin
 {
     use MagicCompatibilityTrait;
 
@@ -65,7 +65,6 @@ class PluginBC extends AbstractPlugin
         'pluginCacheGroup'                => ['getCache', 'Group'],
         'cIcon'                           => ['getMeta', 'Icon'],
         'bBootstrap'                      => 'CompatBootstrap',
-        'nCalledHook'                     => 'CalledHook',
         'cTextReadmePath'                 => ['getMeta', 'ReadmeMD'],
         'cTextLicensePath'                => ['getMeta', 'LicenseMD'],
         'changelogPath'                   => ['getMeta', 'ChangelogMD']

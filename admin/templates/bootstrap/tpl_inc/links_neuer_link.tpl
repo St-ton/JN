@@ -110,7 +110,7 @@
                                 <input type="radio" id="nLink3" name="nLinkart" checked="checked" disabled="disabled" />
                                 <label for="nLink3">{__('linkToSpecalPage')}:</label>
                                 <select class="custom-select" id="specialLinkType" name="nSpezialseite" disabled="disabled">
-                                    <option selected="selected">{__('plugin')}</option>
+                                    <option selected="selected" value="0">{__('plugin')}</option>
                                 </select>
                             </p>
                         {else}
@@ -243,7 +243,7 @@
                         <label class="col col-sm-4 col-form-label text-sm-right" for="lang">{__('language')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <select class="custom-select" name="cISO" id="lang">
-                                {foreach $sprachen as $language}
+                                {foreach $availableLanguages as $language}
                                     <option value="{$language->getIso()}" {if $language->getShopDefault() === 'Y'}selected="selected"{/if}>{$language->getLocalizedName()} {if $language->getShopDefault() === 'Y'}({__('standard')}){/if}</option>
                                 {/foreach}
                             </select>
@@ -252,7 +252,7 @@
                 </div>
             </div>
 
-            {foreach $sprachen as $language}
+            {foreach $availableLanguages as $language}
                 {assign var=cISO value=$language->getIso()}
                 {assign var=langID value=$language->getId()}
                 <div id="iso_{$cISO}" class="iso_wrapper{if !$language->isShopDefault()} hidden-soft{/if}">

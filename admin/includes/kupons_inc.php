@@ -78,7 +78,7 @@ function getManufacturers($selectedManufacturers = '')
         $item->kHersteller = (int)$item->kHersteller;
         $manufacturer      = new Hersteller($item->kHersteller);
         $item->cName       = $manufacturer->cName;
-        $item->selected    = (int)in_array($item->kHersteller, $selected, true);
+        $item->selected    = in_array($item->kHersteller, $selected, true);
         unset($manufacturer);
     }
 
@@ -106,12 +106,9 @@ function getCategories($selectedCategories = '', int $categoryID = 0, int $depth
         for ($i = 0; $i < $depth; $i++) {
             $item->cName = '--' . $item->cName;
         }
-        $item->selected = 0;
-        if (in_array($item->kKategorie, $selected, true)) {
-            $item->selected = 1;
-        }
-        $arr[] = $item;
-        $arr   = array_merge($arr, getCategories($selectedCategories, $item->kKategorie, $depth + 1));
+        $item->selected = in_array($item->kKategorie, $selected, true);
+        $arr[]          = $item;
+        $arr            = array_merge($arr, getCategories($selectedCategories, $item->kKategorie, $depth + 1));
     }
 
     return $arr;
@@ -639,7 +636,7 @@ function informCouponCustomers($coupon)
     $productIDs   = [];
     $itemNumbers  = Text::parseSSK($coupon->cArtikel);
     if (count($itemNumbers) > 0) {
-        $itemNumbers = array_map(function ($e) {
+        $itemNumbers = array_map(static function ($e) {
             return '"' . $e . '"';
         }, $itemNumbers);
         $productData = $db->query(
@@ -648,7 +645,7 @@ function informCouponCustomers($coupon)
                 WHERE cArtNr IN (' . implode(',', $itemNumbers) . ')',
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $productIDs  = array_map(function ($e) {
+        $productIDs  = array_map(static function ($e) {
             return (int)$e->kArtikel;
         }, $productData);
     }

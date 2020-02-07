@@ -1,9 +1,10 @@
 class Page
 {
-    constructor(io, shopUrl, key)
+    constructor(opc, io, shopUrl, key)
     {
         bindProtoOnHandlers(this);
 
+        this.opc            = opc;
         this.io             = io;
         this.shopUrl        = shopUrl;
         this.key            = key;
@@ -53,7 +54,9 @@ class Page
         this.jq        = jq;
         this.rootAreas = this.jq('.opc-rootarea');
 
-        return this.loadDraftPreview();
+        let preview = this.loadDraftPreview();
+        this.opc.emit('page.initIframe', preview);
+        return preview;
     }
 
     loadDraft()
@@ -88,12 +91,14 @@ class Page
 
     loadFromData(data)
     {
+        this.opc.emit('page.loadFromData', data);
         return this.io.createPagePreview({areas: data.areas})
             .then(this.onLoad);
     }
 
     loadFromJSON(json)
     {
+        this.opc.emit('page.loadFromJSON', json);
         try {
             var data = JSON.parse(json);
         } catch (e) {
@@ -157,6 +162,8 @@ class Page
     onLoad(preview)
     {
         let areas = this.rootAreas;
+
+        this.opc.emit('page.onLoad', preview);
 
         this.clear();
 

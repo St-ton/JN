@@ -9,9 +9,9 @@ class OPC extends Emitter
         installJqueryFixes();
 
         this.error        = env.error;
-        this.io           = new IO();
-        this.page         = new Page(this.io, env.shopUrl, env.pageKey);
-        this.gui          = new GUI(this.io, this.page, env.messages);
+        this.io           = new IO(this);
+        this.page         = new Page(this, this.io, env.shopUrl, env.pageKey);
+        this.gui          = new GUI(this, this.io, this.page, env.messages);
         this.iframe       = new Iframe(this, this.io, this.gui, this.page, env.shopUrl, env.templateUrl);
         this.tutorial     = new Tutorial(this.gui, this.iframe);
         this.pagetree     = new PageTree(this.page, this.iframe, this.gui);

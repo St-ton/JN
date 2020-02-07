@@ -78,6 +78,9 @@ class Iframe
                 .then(this.onPageLoad)
                 .then(() => {
                     this.gui.updatePagetreeBtn();
+                })
+                .then(() => {
+                    this.opc.emit('iframe.init', this);
                 });
         })
     }
@@ -490,9 +493,10 @@ class Iframe
     {
         if(this.selectedElm !== null) {
             let data = this.page.portletToJSON(this.selectedElm);
-            this.opc.emit('clone-portlet', data);
+            this.opc.emit('iframe.clonePortlet', data);
             this.io.getPortletPreviewHtml(data)
                 .then(html => {
+                    this.opc.emit('iframe.clonePortletHtml', html);
                     let copiedElm = this.createPortletElm(html);
                     copiedElm.insertAfter(this.selectedElm);
                     let area = copiedElm.parent();

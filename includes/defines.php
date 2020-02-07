@@ -72,6 +72,7 @@ ifndef('PFAD_CONFIG', 'config/');
 ifndef('PFAD_INCLUDES', 'includes/');
 ifndef('PFAD_TEMPLATES', 'templates/');
 ifndef('PFAD_COMPILEDIR', 'templates_c/');
+ifndef('PATH_STATIC_MINIFY', PFAD_COMPILEDIR . 'min/');
 ifndef('PFAD_EMAILPDFS', 'emailpdfs/');
 ifndef('PFAD_NEWSLETTERBILDER', 'newsletter/');
 ifndef('PFAD_LINKBILDER', 'links/');

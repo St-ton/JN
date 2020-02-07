@@ -1340,8 +1340,9 @@ class IOMethods
         $response->review = flatten(filter(
             (new Artikel())->fuelleArtikel(Shop::$kArtikel, Artikel::getDetailOptions())->Bewertungen->oBewertung_arr,
             static function ($e) use ($formData) {
-                return (int)$e->kBewertung === (int)$formData['reviewID'];
-        }))[0];
+                    return (int)$e->kBewertung === (int)$formData['reviewID'];
+            }
+        ))[0];
 
         $objResponse->script('this.response = ' . \json_encode($response) . ';');
 

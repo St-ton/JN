@@ -418,12 +418,11 @@ class GUI
 
     saveConfig()
     {
-        event.preventDefault();
 
         this.configSaveCb();
 
         let portletData  = this.page.portletToJSON(this.curPortlet);
-        let configObject = $(event.target).serializeControls();
+        let configObject = this.configForm.serializeControls();
 
         for(let propname in configObject) {
             if(configObject.hasOwnProperty(propname)) {
@@ -465,8 +464,6 @@ class GUI
 
     createBlueprint()
     {
-        event.preventDefault();
-
         if(this.selectedElm !== null) {
             var blueprintName = this.blueprintName.val();
             var blueprintData = this.page.portletToJSON(this.iframe.selectedElm);
@@ -523,8 +520,6 @@ class GUI
 
         this.io.deleteBlueprint(blueprintId).then(() => this.updateBlueprintList());
         this.blueprintDeleteModal.modal('hide');
-
-        event.preventDefault();
     }
 
     publishDraft()
@@ -614,8 +609,6 @@ class GUI
 
     publish()
     {
-        event.preventDefault();
-
         this.page.name = this.draftName.val();
         $('#footerDraftName span').text(this.page.name);
 
@@ -681,8 +674,6 @@ class GUI
 
     restoreUnsaved()
     {
-        event.preventDefault();
-
         this.unsavedRevision.click();
         this.restoreUnsavedModal.modal('hide');
     }

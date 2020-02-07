@@ -306,7 +306,7 @@ class ReviewController extends BaseController
         /** @var $helpfulReview ReviewHelpfulModel */
         $baseURL = $this->getProductURL($productID) . 'bewertung_anzeigen=1&btgseite=' . $page . '&btgsterne=' . $stars;
         // Hat der Kunde für diese Bewertung noch keine hilfreich flag gesetzt?
-        if ($helpfulReview->getId() === null) {
+        if ($helpfulReview->getId() === 0) {
             $helpfulReview->setReviewID($reviewID);
             $helpfulReview->setCustomerID($customerID);
             $helpfulReview->setRating(0);

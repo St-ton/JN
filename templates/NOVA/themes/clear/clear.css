@@ -19294,6 +19294,11 @@ aside .last-seen-link {
 .badge-circle-1::before {
   display: none;
 }
+.badge-circle-1.badge-circle-no-sizes {
+  width: unset;
+  height: unset;
+  min-width: unset;
+}
 .badge-circle-1.circle-small {
   width: 36px;
   height: 36px;

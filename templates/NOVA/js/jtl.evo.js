@@ -810,6 +810,8 @@
                     }
                     let review = data.response.review;
 
+                    $('[data-review-id="' + review.kBewertung + '"]').removeClass('on-list');
+                    item.addClass('on-list');
                     $('[data-review-count-id="hilfreich_' + review.kBewertung + '"]').html(review.nHilfreich);
                     $('[data-review-count-id="nichthilfreich_' + review.kBewertung + '"]').html(review.nNichtHilfreich);
                 });

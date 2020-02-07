@@ -110,7 +110,9 @@ if (!$hasPendingUpdates) {
                         'cURL'      => $secondEntry->link,
                         'cRecht'    => $secondEntry->permissions,
                     ];
-                    if (strpos($curScriptFileNameWithRequest, $linkGruppe->oLink_arr->cURL) === 0) {
+                    if (Request::urlHasEqualRequestParameter($linkGruppe->oLink_arr->cURL, 'kSektion')
+                        && strpos($curScriptFileNameWithRequest, $linkGruppe->oLink_arr->cURL) === 0
+                    ) {
                         $currentToplevel    = $mainGroup->key;
                         $currentSecondLevel = $linkGruppe->key;
                     }
@@ -145,7 +147,9 @@ if (!$hasPendingUpdates) {
                             mb_parse_str($urlParts['query'], $urlParts['query']);
                         }
 
-                        if (strpos($curScriptFileNameWithRequest, explode('#', $link->cURL)[0]) === 0) {
+                        if (Request::urlHasEqualRequestParameter($link->cURL, 'kSektion')
+                            && strpos($curScriptFileNameWithRequest, explode('#', $link->cURL)[0]) === 0
+                        ) {
                             $currentToplevel    = $mainGroup->key;
                             $currentSecondLevel = $linkGruppe->key;
                             $currentThirdLevel  = $link->key;

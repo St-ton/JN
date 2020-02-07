@@ -155,7 +155,7 @@ class PageTree
     {
         let portlets = area.children('[data-portlet]');
         let jq       = area.constructor;
-        let data     = area.data('area-id');
+        let data     = area.data('title') || area.data('area-id');
         let ul       = $('<ul>');
         let li       = this.renderBaseItem('' + data + '', null, 'area-item', area, offscreenArea);
 
@@ -183,7 +183,7 @@ class PageTree
         let data     = portlet.data('portlet');
         let ul       = $('<ul>');
 
-        let li = this.renderBaseItem(data.class, () => {
+        let li = this.renderBaseItem(data.title || data.class, () => {
             this.iframe.setSelected(portlet);
         }, 'portlet-item');
 

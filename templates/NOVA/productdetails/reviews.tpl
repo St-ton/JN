@@ -78,7 +78,7 @@
                     {form method="post" action="{get_static_route id='bewertung.php'}#tab-votes" id="article_rating"}
                         <div class="subheadline">
                             {if $Artikel->Bewertungen->oBewertungGesamt->nAnzahl == 0}
-                                <p>{lang key='firstReview'} </p>
+                                <p>{lang key='firstReview'}</p>
                             {else}
                                 <p>{lang key='shareYourExperience' section='product rating'}</p>
                             {/if}

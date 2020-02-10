@@ -451,3 +451,6 @@ msgstr "Diesen Bereich verwerfen"
 
 msgid "Cancel"
 msgstr "Abbrechen"
+
+msgid "opcPageLocked"
+msgstr "Ein anderer Nutzer bearbeitet gerade diesen Entwurf. Leider ist der Zugriff für sie gesperrt."

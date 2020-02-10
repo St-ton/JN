@@ -9,6 +9,7 @@ class OPC extends Emitter
         installJqueryFixes();
 
         this.error        = env.error;
+        this.messages     = env.messages;
         this.io           = new IO();
         this.page         = new Page(this.io, env.shopUrl, env.pageKey);
         this.gui          = new GUI(this.io, this.page, env.messages);
@@ -26,10 +27,13 @@ class OPC extends Emitter
                 this.tutorial.init();
                 this.pagetree.init();
                 this.previewFrame.init();
-                return this.page.lock()
-                    .catch(er => this.gui.showError(
-                        'Die Seite wird derzeit bearbeitet und kann von Ihnen nicht bearbeitet werden.'
-                    ));
+                return this.page.lock(er => {
+                    if(er === 1) {
+                        this.gui.showError(this.messages.opcPageLocked);
+                    } else if(er === 2) {
+                        this.gui.showError(this.messages.dbUpdateNeeded);
+                    }
+                });
             })
             .then(() => this.page.loadDraft())
             .then(() => this.iframe.init(this.pagetree))

@@ -427,3 +427,6 @@ msgstr "Discard this area"
 
 msgid "Cancel"
 msgstr "Cancel"
+
+msgid "opcPageLocked"
+msgstr "Another user is currently editing this draft. Unfortunately the access is blocked for you."

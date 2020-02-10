@@ -45,6 +45,7 @@ class Service
     /**
      * Service constructor.
      * @param DB $db
+     * @throws Exception
      */
     public function __construct(DB $db)
     {
@@ -91,6 +92,8 @@ class Service
             'offscreenAreasDivider',
             'yesDeleteArea',
             'Cancel',
+            'opcPageLocked',
+            'dbUpdateNeeded',
         ];
     }
 

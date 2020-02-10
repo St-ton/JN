@@ -223,6 +223,11 @@
                         {/container}
                     </div>
                 {/block}
+                {block name='layout-footer-scroll-top'}
+                    {if $Einstellungen.template.theme.button_scroll_top === 'Y'}
+                        {include file='snippets/scroll_top.tpl'}
+                    {/if}
+                {/block}
             </footer>
         {/if}
     {/block}

@@ -325,7 +325,7 @@
 
                                 {*categories*}
                                 {block name='layout-header-include-categories-mega'}
-                                    <div id="mainNavigation" class="collapse navbar-collapse nav-scrollbar mr-lg-5">
+                                    <div id="mainNavigation" class="collapse navbar-collapse nav-scrollbar mr-lg-3">
                                         <div class="nav-mobile-header px-3 d-lg-none">
                                             {row class="align-items-center"}
                                                 {col}

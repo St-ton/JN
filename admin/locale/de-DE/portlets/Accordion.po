@@ -9,4 +9,4 @@ msgid "groupName"
 msgstr "Gruppenname"
 
 msgid "unfoldFirstGroup"
-msgstr "Erste Gruppe bereits aufklappen?"
+msgstr "Erste Gruppe bereits aufklappen"

@@ -126,37 +126,37 @@ msgid "errorPluginNotFound"
 msgstr "Das Plugin konnte nicht in der Datenbank gefunden werden. Bitte installieren Sie es erneut."
 
 msgid "successPluginActivate"
-msgstr "Die ausgewählten Plugins wurden erfolgreich aktiviert."
+msgstr "Ausgewählte Plugins wurden erfolgreich aktiviert."
 
 msgid "errorAtLeastOnePlugin"
 msgstr "Bitte wählen Sie mindestens ein Plugin aus."
 
 msgid "successPluginDeactivate"
-msgstr "Die ausgewählten Plugins wurden erfolgreich deaktiviert."
+msgstr "Ausgewählte Plugins wurden erfolgreich deaktiviert."
 
 msgid "errorPluginDeleteSQL"
 msgstr "Das Plugin konnte aufgrund eines SQL-Fehlers nicht deinstalliert werden. Bitte sehen Sie sich die Log-Datei an."
 
 msgid "successPluginDelete"
-msgstr "Die ausgewählten Plugins wurden erfolgreich deinstalliert."
+msgstr "Ausgewählte Plugins wurden erfolgreich deinstalliert."
 
 msgid "errorPluginNotFoundMultiple"
 msgstr "Ein oder mehrere Plugins konnten nicht in der Datenbank gefunden werden. Bitte installieren Sie das/die Plugin(s) erneut."
 
 msgid "successPluginRefresh"
-msgstr "Die ausgewählten Plugins wurden erfolgreich aktualisiert."
+msgstr "Ausgewählte Plugins wurden erfolgreich aktualisiert."
 
 msgid "errorPluginRefresh"
 msgstr "Ein Plugin konnte nicht aktualisiert werden. Bitte installieren Sie das Plugin erneut."
 
 msgid "successPluginUpdate"
-msgstr "Das Plugin wurde erfolgreich aktualisiert."
+msgstr "Plugin wurde erfolgreich aktualisiert."
 
 msgid "errorPluginUpdate"
-msgstr "Die Aktualisierung konnte nicht durchgeführt werden. Fehlercode: "
+msgstr "Aktualisierung konnte nicht durchgeführt werden. Fehlercode: "
 
 msgid "successPluginInstall"
-msgstr "Die ausgewählten Plugins wurden erfolgreich installiert."
+msgstr "Ausgewählte Plugins wurden erfolgreich installiert."
 
 msgid "errorPluginInstall"
 msgstr "Bei der Installation ist ein Fehler aufgetreten. Fehlercode: "
@@ -231,7 +231,7 @@ msgid "INFO_XML_MISSING"
 msgstr "Die Datei „info.xml“ existiert nicht."
 
 msgid "NO_PLUGIN_FOUND"
-msgstr "Das ausgewählte Plugin wurde nicht in der Datenbank gefunden."
+msgstr "Ausgewähltes Plugin wurde nicht in der Datenbank gefunden."
 
 msgid "INVALID_NAME"
 msgstr "Der Plugin-Name entspricht nicht der Konvention."
@@ -633,10 +633,10 @@ msgid "INVALID_BLUEPRINT_FILE"
 msgstr "Die Datei für den Blueprint existiert nicht."
 
 msgid "EXT_MUST_NOT_HAVE_UNINSTALLER"
-msgstr "Extension darf keinen Uninstaller definieren."
+msgstr "Plugin darf keinen Uninstaller definieren."
 
 msgid "WRONG_EXT_DIR"
-msgstr "Extension wurde in falschem Ordner installiert."
+msgstr "Plugin wurde in falschem Ordner installiert."
 
 msgid "unknownError"
 msgstr "Unbekannter Fehler."

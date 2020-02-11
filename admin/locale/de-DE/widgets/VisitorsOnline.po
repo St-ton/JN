@@ -6,4 +6,4 @@ msgid "VisitorsOnline_title"
 msgstr "Besucher (online)"
 
 msgid "VisitorsOnline_desc"
-msgstr "Besucher, die aktuell im Shop online sind"
+msgstr "Besucher, die aktuell online sind"

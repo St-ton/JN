@@ -3,7 +3,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "livesearch"
-msgstr "Live-Suche"
+msgstr "Suchanfragen"
 
 msgid "livesucheURL"
 msgstr "https://jtl-url.de/uxd87"
@@ -54,16 +54,16 @@ msgid "errorSearchTermMissing"
 msgstr "Bitte geben Sie einen Suchbegriff ein."
 
 msgid "successSearchMap"
-msgstr "Die Suchanfrage %s wurde erfolgreich mit %s verknüpft."
+msgstr "Suchanfrage %s wurde erfolgreich mit %s verknüpft."
 
 msgid "errorSearchMapSelf"
 msgstr "Die Suchanfrage %s kann nicht mit dem gleichen Suchbegriff verknüpft werden."
 
 msgid "successSearchRefresh"
-msgstr "Die Suchanfragen wurden erfolgreich aktualisiert."
+msgstr "Suchanfragen wurden erfolgreich aktualisiert."
 
 msgid "successSearchMapMultiple"
-msgstr "Ihre markierten Suchanfragen wurden erfolgreich mit %s verknüpft."
+msgstr "Markierte Suchanfragen wurden erfolgreich mit %s verknüpft."
 
 msgid "errorSearchMapToNotExist"
 msgstr "Die zweite Suchanfrage, mit der die erste Suchanfrage verknüpft werden soll, existiert nicht."
@@ -78,22 +78,22 @@ msgid "errorMapNameMissing"
 msgstr "Bitte geben Sie einen Namen für die Verknüpfung an."
 
 msgid "successSearchDelete"
-msgstr "Die Suchanfrage %s wurde erfolgreich gelöscht."
+msgstr "Suchanfrage %s wurde erfolgreich gelöscht."
 
 msgid "successSearchBlacklist"
-msgstr "Die Suchanfrage %s wurde der Blacklist erfolgreich hinzugefügt."
+msgstr "Suchanfrage %s wurde der Blacklist erfolgreich hinzugefügt."
 
 msgid "errorSearchMapLoop"
 msgstr "Die Verknüpfung von %s mit %s würde eine Schleife verursachen."
 
 msgid "successSearchDeleteMultiple"
-msgstr "Ihre markierten Suchanfragen wurden erfolgreich gelöscht."
+msgstr "Markierte Suchanfragen wurden erfolgreich gelöscht."
 
 msgid "successBlacklistRefresh"
-msgstr "Die Blacklist wurde erfolgreich aktualisiert."
+msgstr "Blacklist wurde erfolgreich aktualisiert."
 
 msgid "successSearchMapDelete"
-msgstr "Die Verknüpfung %s wurde erfolgreich gelöscht."
+msgstr "Verknüpfung %s wurde erfolgreich gelöscht."
 
 msgid "errorSearchMapNotFound"
 msgstr "Es wurde keine Verknüpfung mit der ID %s gefunden."

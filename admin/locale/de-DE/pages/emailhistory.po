@@ -30,7 +30,7 @@ msgid "errorHistoryDelete"
 msgstr "E-Mail-Logbuch konnte nicht gelöscht werden."
 
 msgid "successHistoryDelete"
-msgstr "Die markierten Logbucheinträge wurden erfolgreich gelöscht."
+msgstr "Markierte Logbucheinträge wurden erfolgreich gelöscht."
 
 msgid "errorSelectEntry"
 msgstr "Bitte markieren Sie mindestens einen Logbucheintrag."

@@ -15,19 +15,19 @@ msgid "filtering"
 msgstr "Filtern"
 
 msgid "countUsedCoupons"
-msgstr "Summe verwendeter Coupons (% der Bestellungen)"
+msgstr "Summe verwendeter Coupons (% aller Bestellungen)"
 
 msgid "countOrders"
-msgstr "Bestellungen gesamt"
+msgstr "Anzahl aller Bestellungen, bei denen Coupons verwendet wurden"
 
 msgid "countCustomers"
-msgstr "Anzahl der Kunden"
+msgstr "Anzahl der Kunden, die Coupons verwendet haben"
 
 msgid "couponAmountAll"
-msgstr "Gesamtwert aller verwendeten Coupons:"
+msgstr "Gesamtwert aller verwendeten Coupons"
 
 msgid "shoppingCartAmountAll"
-msgstr "Gesamtwert aller Bestellungen, bei denen Coupons verwendet wurden:"
+msgstr "Gesamtwert aller Bestellungen, bei denen Coupons verwendet wurden"
 
 msgid "couponValue"
 msgstr "Couponwert"

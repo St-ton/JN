@@ -3,13 +3,13 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "Button"
-msgstr "Button"
+msgstr "Schaltfläche"
 
 msgid "defaultText"
-msgstr "Hey there!"
+msgstr "Klick mich!"
 
 msgid "openInNewTab"
-msgstr "In neuem Tab öffnen"
+msgstr "In neuer Registerkarte öffnen"
 
 msgid "linkTitle"
 msgstr "Linktitel"
@@ -21,7 +21,7 @@ msgid "useFullWidth"
 msgstr "gesamte Breite nutzen"
 
 msgid "iconForButton"
-msgstr "Button mit Icon versehen"
+msgstr "Schaltfläche mit Icon versehen"
 
 msgid "iconAlignment"
-msgstr "Iconausrichtung"
+msgstr "Ausrichtung"

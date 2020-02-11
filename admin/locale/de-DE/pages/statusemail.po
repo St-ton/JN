@@ -74,12 +74,6 @@ msgstr "Anzahl nicht freigeschalteter Bewertungen"
 msgid "contentTypeCountRatingDepositPayed"
 msgstr "Anzahl gewährter Bewertungsguthaben"
 
-msgid "contentTypeCountTags"
-msgstr "Anzahl Tags"
-
-msgid "contentTypeCountTagsLocked"
-msgstr "Anzahl nicht freigeschalteter Tags"
-
 msgid "contentTypeCountCustomerRecruited"
 msgstr "Anzahl geworbener Kunden"
 
@@ -90,10 +84,10 @@ msgid "contentTypeCountSentWishlists"
 msgstr "Anzahl versendeter Wunschzettel"
 
 msgid "contentTypeCountNewsComments"
-msgstr "Anzahl neuer Newskommentare"
+msgstr "Anzahl neuer Blogkommentare"
 
 msgid "contentTypeCountNewsCommentsLocked"
-msgstr "Anzahl nicht freigeschalteter Newskommentare"
+msgstr "Anzahl nicht freigeschalteter Blogkommentare"
 
 msgid "contentTypeCountProductQuestion"
 msgstr "Anzahl neuer Fragen zum Artikel"

@@ -161,14 +161,14 @@ class Page
 
     onLoad(preview)
     {
+        this.opc.emit('page.onLoad:start', preview);
+
         let areas = this.rootAreas;
-
-        this.opc.emit('page.onLoad', preview);
-
         this.clear();
 
         areas.each((i, area) => {
             area = this.jq(area);
+            if (area.data('area-foreign')) return;
             let areaId = area.data('area-id');
             area.html(preview[areaId]);
             delete preview[areaId];
@@ -181,6 +181,8 @@ class Page
                 .html(areaContent);
             this.offscreenAreas = this.offscreenAreas.add(area);
         });
+
+        this.opc.emit('page.onLoad:end', preview);
     }
 
     save()
@@ -212,7 +214,7 @@ class Page
 
     clear()
     {
-        this.rootAreas.empty();
+        this.rootAreas.not('[data-area-foreign]').empty();
     }
 
     toJSON(withDom)

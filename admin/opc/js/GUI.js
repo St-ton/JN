@@ -30,6 +30,7 @@ class GUI
             'loaderModal',
             'errorModal',
             'errorAlert',
+            'errorTitle',
             'messageboxModal',
             'messageboxAlert',
             'configModal',
@@ -66,8 +67,12 @@ class GUI
 
         this.missingConfigButtons.hide();
 
-        if(typeof error === 'string' && error.length > 0) {
-            return this.showError(error);
+        if(error) {
+            if(typeof error === 'string' && error.length > 0) {
+                return this.showError(error);
+            } else if(typeof error === 'object' && error.desc.length > 0) {
+                return this.showError(error.desc, error.heading);
+            }
         } else {
             this.showLoader();
             this.initDateTimePicker(this.publishFrom);
@@ -145,8 +150,12 @@ class GUI
         this.restoreUnsavedModal.modal('show');
     }
 
-    showError(msg)
+    showError(msg, heading)
     {
+        if(heading) {
+            this.errorTitle.html(heading);
+        }
+
         this.loaderModal.modal('hide');
         this.errorAlert.html(msg);
         this.errorModal.modal('show');

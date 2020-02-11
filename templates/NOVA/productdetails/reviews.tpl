@@ -78,9 +78,9 @@
                     {form method="post" action="{get_static_route id='bewertung.php'}#tab-votes" id="article_rating"}
                         <div class="subheadline">
                             {if $Artikel->Bewertungen->oBewertungGesamt->nAnzahl == 0}
-                                <p>{lang key='firstReview'}: </p>
+                                <p>{lang key='firstReview'}</p>
                             {else}
-                                <p>{lang key='shareYourExperience' section='product rating'}: </p>
+                                <p>{lang key='shareYourExperience' section='product rating'}</p>
                             {/if}
                         </div>
                         {input type="hidden" name="bfa" value="1"}
@@ -141,7 +141,7 @@
                 {include file='snippets/pagination.tpl' oPagination=$ratingPagination cThisUrl=$Artikel->cURLFull cAnchor='tab-votes'}
             {/block}
             {block name='productdetails-reviews-form'}
-                {form method="post" action="{get_static_route id='bewertung.php'}#tab-votes" class="reviews-list"}
+                {form id="reviews-list" method="post" action="{get_static_route id='bewertung.php'}#tab-votes" class="reviews-list"}
                     {input type="hidden" name="bhjn" value="1"}
                     {input type="hidden" name="a" value=$Artikel->kArtikel}
                     {input type="hidden" name="btgsterne" value=$BlaetterNavi->nSterne}
@@ -160,4 +160,12 @@
             {/block}
         {/if}
     </div>
+{/block}
+{block name='productdetails-reviews-scripts'}
+    {inline_script}<script>
+        $('.js-helpful').on('click', function (e) {
+            e.preventDefault();
+            $.evo.extended().updateReviewHelpful($(this));
+        });
+    </script>{/inline_script}
 {/block}

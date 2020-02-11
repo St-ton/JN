@@ -30,7 +30,7 @@ msgid "configgroup_1_admin_area"
 msgstr "Admin-Bereich"
 
 msgid "configgroup_1_cookies"
-msgstr "Cookie-Einstellungen (Achtung: nur ändern, wenn Sie genau wissen, was Sie tun!)"
+msgstr "Cookie-Einstellungen"
 
 msgid "configgroup_2_general"
 msgstr "Allgemein"
@@ -42,13 +42,13 @@ msgid "configgroup_4_search"
 msgstr "Suche"
 
 msgid "configgroup_4_livesearch"
-msgstr "Live-Suche"
+msgstr "Suchanfragen"
 
 msgid "configgroup_4_extended_view"
 msgstr "Erweiterte Darstellung"
 
 msgid "configgroup_5_cross_sell"
-msgstr "Cross-Selling (Standard)"
+msgstr "Cross-Selling (manuelle Einstellung in JTL-Wawi)"
 
 msgid "configgroup_5_cross_sell_xy"
 msgstr "Cross-Selling (Kunden kauften dazu folgende Artikel)"
@@ -60,7 +60,7 @@ msgid "configgroup_5_product_question"
 msgstr "Frage zum Artikel"
 
 msgid "configgroup_5_product_available"
-msgstr "E-Mail-Benachrichtigung, wenn Artikel wieder verfügbar"
+msgstr "Verfügbarkeitsanfragen"
 
 msgid "configgroup_5_comparelist"
 msgstr "Vergleichsliste"
@@ -75,7 +75,7 @@ msgid "configgroup_5_part_list"
 msgstr "Stückliste"
 
 msgid "configgroup_5_tab_description"
-msgstr "Beschreibungs-Tab"
+msgstr "Beschreibungs-Registerkarte"
 
 msgid "configgroup_6_account_register"
 msgstr "Kundenkontoerstellung / Unregistriert bestellen"
@@ -125,14 +125,11 @@ msgstr "Vergleichsliste"
 msgid "configgroup_8_box_top_rated"
 msgstr "Box: Top bewertet"
 
-msgid "configgroup_8_box_priceradar"
-msgstr "Box: Preisradar"
-
 msgid "configgroup_9_image_settings"
 msgstr "Bildeinstellungen"
 
 msgid "configgroup_10_livesearch_overview"
-msgstr "Live-Suche-Übersicht"
+msgstr "Suchanfragen-Übersicht"
 
 msgid "configgroup_10_gifts"
 msgstr "Gratisgeschenk"
@@ -213,7 +210,7 @@ msgid "configgroup_112_meta"
 msgstr "Metadaten"
 
 msgid "configgroup_113_news"
-msgstr "News-System"
+msgstr "Blog"
 
 msgid "configgroup_114_sitemap_settings"
 msgstr "Sitemap-Einstellungen"
@@ -226,9 +223,6 @@ msgstr "Standardsortierung für Besondere Artikel"
 
 msgid "configgroup_122_returns"
 msgstr "Warenrücksendung"
-
-msgid "rma_receiver_head"
-msgstr "Empfängeranschrift für die Warenrücksendung"
 
 msgid "ftp_header"
 msgstr "FTP-Verbindung"

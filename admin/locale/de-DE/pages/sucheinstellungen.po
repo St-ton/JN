@@ -9,10 +9,10 @@ msgid "errorIndexInvalid"
 msgstr "Ungültiger Index. Bitte geben Sie einen gültigen Index an (tartikel oder tartikelsprache)."
 
 msgid "successIndexCreate"
-msgstr "Der Volltextindex für %s wurde erfolgreich angelegt."
+msgstr "Volltextindex für %s wurde erfolgreich angelegt."
 
 msgid "successIndexDelete"
-msgstr "Der Volltextindex für %s wurde erfolgreich gelöscht."
+msgstr "Volltextindex für %s wurde erfolgreich gelöscht."
 
 msgid "errorFulltextSearchMYSQL"
 msgstr "Die Volltextsuche erfordert MySQL ab Version 5.6."
@@ -27,10 +27,10 @@ msgid "indexCreate"
 msgstr "Der Volltextindex wird erstellt…"
 
 msgid "errorCreateTime"
-msgstr "Der Volltextindex ist nicht vorhanden. Die Erstellung des Index kann einige Zeit in Anspruch nehmen."
+msgstr "Volltextindex ist nicht vorhanden. Die Erstellung des Index kann einige Zeit in Anspruch nehmen."
 
 msgid "successSearchCacheDelete"
-msgstr "Der Such-Cache wurde erfolgreich gelöscht."
+msgstr "Such-Cache wurde erfolgreich gelöscht."
 
 msgid "searchSettingsChange"
 msgstr "Sucheinstellungen ändern"

@@ -64,10 +64,10 @@ msgstr "Vorlage löschen?"
 # Config Tabs
 
 msgid "Styles"
-msgstr "Stile"
+msgstr "Layout"
 
 msgid "Animation"
-msgstr "Animation" 
+msgstr "Animation"
 
 # Styles tab
 
@@ -116,7 +116,7 @@ msgid "Iteration"
 msgstr "Wiederholung"
 
 msgid "Change the animation duration (e.g. 2s)"
-msgstr "Dauer der Animation (z.&nbsp;B. 2 s)"
+msgstr "Dauer der Animation (z.&nbsp;B. 2&nbsp;s)"
 
 msgid "Delay before the animation starts"
 msgstr "Wartezeit, bis die Animation beginnt"
@@ -137,7 +137,7 @@ msgid "somethingHappend"
 msgstr "Es ist ein unbekannter Fehler aufgetreten."
 
 msgid "noteInfoInGuide"
-msgstr "Sie finden neben den nachfolgend aufgelisteten Touren auch ausführliche Informationen in unserem <a href=\"https://guide.jtl-software.de\" target=\"_blank\"><i class=\"fa fa-external-link\"></i> Guide</a>."
+msgstr "Sie finden neben den nachfolgend aufgelisteten Touren auch ausführliche Informationen in unserem &lt;a href=\"https://guide.jtl-software.de\" target=\"_blank\"&gt;&lt;i class=\"fa fa-external-link\"&gt;&lt;/i&gt; Guide&lt;/a&gt;."
 
 msgid "generalIntroduction"
 msgstr "Allgemeine Einführung"
@@ -173,7 +173,7 @@ msgid "restoreChanges"
 msgstr "Lokale Änderungen wiederherstellen"
 
 msgid "restoreUnsaved"
-msgstr "Dieser Entwurf wurde während der letzten Sitzung nicht gespeichert. Letzte Änderungen weiter bearbeiten?"
+msgstr "Dieser Entwurf wurde während der letzten Sitzung nicht gespeichert. Letzte Änderung weiter bearbeiten?"
 
 msgid "noCurrent"
 msgstr "Nein, Änderungen verwerfen"
@@ -233,7 +233,7 @@ msgid "zoneDelete"
 msgstr "Zone löschen"
 
 msgid "templateDeleteSure"
-msgstr "Wollen Sie diese Vorlage wirklich löschen?"
+msgstr "Vorlage wirklich löschen?"
 
 msgid "publishNot"
 msgstr "Nicht veröffentlichen"
@@ -269,7 +269,7 @@ msgid "plannedFrom"
 msgstr "geplant ab"
 
 msgid "publicFrom"
-msgstr "ab"
+msgstr "von"
 
 msgid "publicTill"
 msgstr "bis"
@@ -281,7 +281,7 @@ msgid "duplicate"
 msgstr "Duplizieren"
 
 msgid "useForOtherLang"
-msgstr "Für andere Sprache übernehmen"
+msgstr "Für andere Sprachen übernehmen"
 
 msgid "editPage"
 msgstr "Seite bearbeiten"
@@ -296,13 +296,13 @@ msgid "deleteDraftsContinue"
 msgstr "Entwürfe werden gelöscht! Fortfahren?"
 
 msgid "draftDeleteSure"
-msgstr "Wollen Sie diesen Entwurf wirklich löschen?"
+msgstr "Möchten Sie diesen Entwurf wirklich löschen?"
 
 msgid "label"
-msgstr "Label"
+msgstr "Beschriftung"
 
 msgid "style"
-msgstr "Stil"
+msgstr "Farbschema"
 
 msgid "stylePrimary"
 msgstr "Primär"
@@ -447,3 +447,6 @@ msgstr "Diesen Bereich verwerfen"
 
 msgid "Cancel"
 msgstr "Abbrechen"
+
+msgid "opcPageLocked"
+msgstr "Ein anderer Nutzer bearbeitet gerade diesen Entwurf. Leider ist der Zugriff für sie gesperrt."

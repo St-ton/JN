@@ -44,13 +44,13 @@
                             </td>
                             <td class="text-center action-buttons">
                                 <a class="btn btn-outline-primary btn-sm mb-2" href="#" data-callback="flush" data-type="{$item->type}">
-                                    <i class="fas fa-trash-alt"></i>{__('deleteCachedPics')}
+                                    <i class="fas fa-trash-alt"></i> {__('deleteCachedPics')}
                                 </a>
                                 <a class="btn btn-outline-primary btn-sm mb-2" href="#" data-callback="cleanup" data-type="{$item->type}">
-                                    <i class="fas fa-trash"></i>{__('cleanup')}
+                                    <i class="fas fa-trash"></i> {__('cleanup')}
                                 </a>
                                 <a class="btn btn-primary btn-sm" href="#" data-callback="generate" data-type="{$item->type}">
-                                    <i class="fa fa-cog"></i>{__('generatePics')}
+                                    <i class="fa fa-cog"></i> {__('generatePics')}
                                 </a>
                             </td>
                         </tr>

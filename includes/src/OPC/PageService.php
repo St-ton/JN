@@ -414,14 +414,21 @@ class PageService
 
     /**
      * @param int $key
-     * @return bool true if the draft could be locked, false if it is still locked by some other user
+     * @return int
+     *      0 if the draft could be locked
+     *      1 if it is still locked by some other user
+     *      2 if the Shop has pending database updates
      * @throws \Exception
      */
-    public function lockDraft(int $key): bool
+    public function lockDraft(int $key): int
     {
+        if ($this->pageDB->shopHasPendingUpdates()) {
+            return 2;
+        }
+
         $draft = $this->getDraft($key);
 
-        return $this->locker->lock($this->adminName, $draft);
+        return $this->locker->lock($this->adminName, $draft) ? 0 : 1;
     }
 
     /**

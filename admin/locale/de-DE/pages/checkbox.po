@@ -3,7 +3,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "checkbox"
-msgstr "Checkboxenverwaltung"
+msgstr "Checkboxen"
 
 msgid "checkboxDesc"
 msgstr " "
@@ -24,16 +24,16 @@ msgid "checkboxFunction"
 msgstr "Spezialfunktion"
 
 msgid "successCheckboxActivate"
-msgstr "Ihre markierten Checkboxen wurden erfolgreich aktiviert."
+msgstr "Markierte Checkboxen wurden erfolgreich aktiviert."
 
 msgid "successCheckboxDeactivate"
-msgstr "Ihre markierten Checkboxen wurden erfolgreich deaktiviert."
+msgstr "Markierte Checkboxen wurden erfolgreich deaktiviert."
 
 msgid "successCheckboxDelete"
-msgstr "Ihre markierten Checkboxen wurden erfolgreich gelöscht."
+msgstr "Markierte Checkboxen wurden erfolgreich gelöscht."
 
 msgid "successCheckboxCreate"
-msgstr "Ihre Checkbox wurde erfolgreich erstellt."
+msgstr "Checkbox wurde erfolgreich erstellt."
 
 msgid "availableCheckboxes"
 msgstr "Vorhandene Checkboxen"
@@ -42,16 +42,16 @@ msgid "checkboxCreate"
 msgstr "Neue Checkbox erstellen"
 
 msgid "internalLink"
-msgstr "Interner Link"
+msgstr "Ja"
 
 msgid "noLink"
-msgstr "Kein Link"
+msgstr "Nein"
 
 msgid "hintInternalPage"
-msgstr "Hier können Sie optional eine eigene Seite neben der Checkbox verlinken lassen."
+msgstr "Hier können Sie optional eine eigene Seite neben der Checkbox verlinken."
 
 msgid "hintPlaceToShowCheckbox"
-msgstr "Hier legen Sie die Stelle fest, an der die Checkbox angezeigt werden soll. Diese und die Einstellung \"Spezielle Shop-Funktion\" dürfen nicht die gleiche Auswahl enthalten."
+msgstr "Hier legen Sie die Stelle fest, an der die Checkbox angezeigt werden soll. Diese und die Einstellung „Spezielle Shop-Funktion“ dürfen nicht die gleiche Auswahl enthalten."
 
 msgid "hintCheckCheckboxActivation"
 msgstr "Hier legen Sie fest, ob die Checkbox aktiviert werden muss oder optional ist."
@@ -69,7 +69,7 @@ msgid "sortHigherBottom"
 msgstr "Sortierung"
 
 msgid "specialShopFunction"
-msgstr "Spezielle Shop-Funktion"
+msgstr "Spezialfunktion im Onlineshop"
 
 msgid "hintCheckboxFunction"
 msgstr "Hier legen Sie fest, ob eine spezielle Funktion von JTL-Shop ausgeführt werden soll, wenn die Checkbox aktiviert wurde."
@@ -81,19 +81,19 @@ msgid "hintCheckboxText"
 msgstr "Hier geben Sie für jede Sprache die Beschriftung ein, die hinter der Checkbox stehen soll."
 
 msgid "hintCheckboxDescription"
-msgstr "Hier können Sie optional für jede Sprache zusätzlich eine Beschreibung eingeben, die Ihren Kunden bei der Checkbox angezeigt wird."
+msgstr "Hier können Sie optional für jede Sprache zusätzlich eine Beschreibung eingeben, die Ihren Kunden als Hilfestellung oder Erklärung zur Checkbox angezeigt wird."
 
 msgid "hintCheckboxOrder"
-msgstr "Hier legen Sie fest, an welcher Stelle die Checkbox stehen soll, falls es mehrere anzuzeigende Checkboxen gibt. Checkboxen mit einer höheren Sortierung stehen weiter unten."
+msgstr "Hier legen Sie fest, an welcher Stelle die Checkbox angezeigt werden soll, falls es mehrere anzuzeigende Checkboxen gibt. Checkboxen mit einer höheren Sortierung stehen weiter unten."
 
 msgid "hintCheckboxCustomerGroup"
-msgstr "Hier legen Sie fest, welche Kundengruppen die Checkbox sehen sollen. Mit gehaltener Strg-Taste können Sie mehrere Kundengruppen auswählen."
+msgstr "Hier legen Sie fest, welchen Kundengruppen die Checkbox angezeigt wird. Mit gehaltener Strg-Taste können Sie mehrere Kundengruppen auswählen."
 
 msgid "Newsletteranmeldung"
 msgstr "Newsletter-Anmeldung"
 
 msgid "Emailbenachrichtigung an Shopbetreiber"
-msgstr "E-Mail-Benachrichtigung an Shopbetreiber"
+msgstr "E-Mail-Benachrichtigung an Onlineshop-Betreiber"
 
 msgid "checkboxPositionRegistration"
 msgstr "Registrierung"
@@ -114,4 +114,4 @@ msgid "checkboxPositionProductQuestion"
 msgstr "Frage zum Artikel"
 
 msgid "checkboxPositionAvailabilityNotification"
-msgstr "Verfügbarkeitsanfrage"
+msgstr "Verfügbarkeitsanfragen"

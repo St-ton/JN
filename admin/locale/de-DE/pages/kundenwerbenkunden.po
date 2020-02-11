@@ -36,7 +36,7 @@ msgid "kundenwerbenkundenDateBoni"
 msgstr "Guthaben erhalten am"
 
 msgid "successNewCustomerDelete"
-msgstr "Die markierten Neukunden wurden erfolgreich gelöscht."
+msgstr "Markierte Neukunden wurden erfolgreich gelöscht."
 
 msgid "errorAtLeastOneNewCustomer"
 msgstr "Bitte markieren Sie mindestens einen Neukunden."

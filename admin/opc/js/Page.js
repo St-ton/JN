@@ -12,12 +12,12 @@ class Page
         this.offscreenAreas = {};
     }
 
-    lock()
+    lock(errorcb)
     {
         return this.io.lockDraft(this.key).then(state => {
-            if (state === true) {
+            if (state === 0) {
                 this.lockTimeout = setTimeout(() => {
-                    this.lock();
+                    this.lock(errorcb);
                 }, 1000 * 60);
 
                 return Promise.resolve();
@@ -27,7 +27,8 @@ class Page
                     this.lockTimeout = null;
                 }
 
-                return Promise.reject();
+                errorcb(state);
+                return Promise.reject(state);
             }
         });
     }

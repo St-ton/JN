@@ -107,12 +107,10 @@ $adminMenu = [
                     'permissions' => 'SETTINGS_ARTICLEDETAILS_VIEW',
                     'section' => CONF_ARTIKELDETAILS,
                 ],
-                __('Question on item')        => (object)[
-                    'link'   => 'einstellungen.php?kSektion=' . CONF_ARTIKELDETAILS .
-                        '&group=configgroup_5_product_question#configgroup_5_product_question',
-                    'permissions' => 'SETTINGS_ARTICLEDETAILS_VIEW',
-                    'excludeFromAccessView' => true,
-                    'section' => CONF_ARTIKELDETAILS,
+                __('Checkout')                => (object)[
+                    'link'   => 'einstellungen.php?kSektion=' . CONF_KAUFABWICKLUNG,
+                    'permissions' => 'SETTINGS_BASKET_VIEW',
+                    'section' => CONF_KAUFABWICKLUNG,
                 ],
                 __('Comparison list')         => (object)[
                     'link'   => 'vergleichsliste.php',
@@ -149,6 +147,20 @@ $adminMenu = [
                     'permissions' => 'MODULE_PRICECHART_VIEW',
                     'section' => CONF_PREISVERLAUF,
                 ],
+                __('Question on item')        => (object)[
+                    'link'   => 'einstellungen.php?kSektion=' . CONF_ARTIKELDETAILS .
+                        '&group=configgroup_5_product_question',
+                    'permissions' => 'SETTINGS_ARTICLEDETAILS_VIEW',
+                    'excludeFromAccessView' => true,
+                    'section' => CONF_ARTIKELDETAILS,
+                ],
+                __('Availability notifications')        => (object)[
+                    'link'   => 'einstellungen.php?kSektion=' . CONF_ARTIKELDETAILS .
+                        '&group=configgroup_5_product_available',
+                    'permissions' => 'SETTINGS_ARTICLEDETAILS_VIEW',
+                    'excludeFromAccessView' => true,
+                    'section' => CONF_ARTIKELDETAILS,
+                ],
                 __('Item badges')            => (object)[
                     'link'   => 'suchspecialoverlay.php',
                     'permissions' => 'DISPLAY_ARTICLEOVERLAYS_VIEW',
@@ -166,19 +178,10 @@ $adminMenu = [
                     'link'   => 'warenlager.php',
                     'permissions' => 'WAREHOUSE_VIEW',
                 ],
-                __('Checkout')                => (object)[
-                    'link'   => 'einstellungen.php?kSektion=' . CONF_KAUFABWICKLUNG,
-                    'permissions' => 'SETTINGS_BASKET_VIEW',
-                    'section' => CONF_KAUFABWICKLUNG,
-                ],
                 __('Reviews')            => (object)[
                     'link'   => 'bewertung.php',
                     'permissions' => 'MODULE_VOTESYSTEM_VIEW',
                     'section' => CONF_BEWERTUNG,
-                ],
-                __('Number formats')          => (object)[
-                    'link'   => 'trennzeichen.php',
-                    'permissions' => 'SETTINGS_SEPARATOR_VIEW',
                 ],
             ],
             __('Custom contents')   => [
@@ -209,7 +212,7 @@ $adminMenu = [
                 ],
             ],
             __('Settings')         => [
-                __('System')            => (object)[
+                __('Global')            => (object)[
                     'link'   => 'einstellungen.php?kSektion=' . CONF_GLOBAL,
                     'permissions' => 'SETTINGS_GLOBAL_VIEW',
                     'section' => CONF_GLOBAL,
@@ -226,6 +229,10 @@ $adminMenu = [
                 __('Watermark')         => (object)[
                     'link'   => 'branding.php',
                     'permissions' => 'DISPLAY_BRANDING_VIEW',
+                ],
+                __('Number formats')          => (object)[
+                    'link'   => 'trennzeichen.php',
+                    'permissions' => 'SETTINGS_SEPARATOR_VIEW',
                 ],
             ]
         ]
@@ -315,7 +322,7 @@ $adminMenu = [
                     'permissions' => 'SETTINGS_EMAILS_VIEW',
                     'section' => CONF_EMAILS,
                 ],
-                __('Templates')     => (object)[
+                __('Email templates')     => (object)[
                     'link'   => 'emailvorlagen.php',
                     'permissions' => 'CONTENT_EMAIL_TEMPLATE_VIEW',
                 ],

@@ -26,6 +26,7 @@ use JTL\Shop;
 use stdClass;
 use function Functional\select;
 use function Functional\some;
+use function Functional\map;
 
 /**
  * Class Warenkorb
@@ -1849,6 +1850,14 @@ class Cart
         $itemCount       = 0;
         $totalWeight     = 0;
         $shippingClasses = ShippingMethod::getShippingClasses(Frontend::getCart());
+        $shippingMethods = map(ShippingMethod::getPossibleShippingMethods(
+            ($_SESSION['Lieferadresse']->cLand ?? $_SESSION['Kunde']->cLand) ?? $_SESSION['cLieferlandISO'],
+            ($_SESSION['Lieferadresse']->cPLZ ?? null) ?? Frontend::getCustomer()->cPLZ,
+            $shippingClasses,
+            $customerGroupID
+        ), static function ($e) {
+            return $e->kVersandart;
+        });
 
         foreach ($this->PositionenArr as $item) {
             $totalWeight += $item->fGesamtgewicht;
@@ -1878,6 +1887,7 @@ class Cart
                     OR ( va.kVersandberechnung = 2 AND vas.fBis > 0 AND :totalWeight <= vas.fBis )
                     OR ( va.kVersandberechnung = 3 AND vas.fBis > 0 AND :maxPrices <= vas.fBis )
                     )
+                AND va.kVersandart IN (' . \implode(', ', $shippingMethods) . ')
                 ORDER BY minPrice, nSort ASC LIMIT 1',
             [
                 'iso'         => '%' . $countryCode . '%',

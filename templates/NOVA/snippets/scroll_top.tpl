@@ -6,7 +6,7 @@
     {block name='snippets-scroll-top-main'}
         <div class="smoothscroll-top">
             <span class="scroll-top-inner">
-                <i class="fa fa-2x fa-arrow-circle-up"></i>
+                <i class="fas fa-2x fa-arrow-circle-up"></i>
             </span>
         </div>
     {/block}
@@ -16,8 +16,8 @@
                 $(function(){
                     let lastScrollTop = 0;
                     $(document).on('scroll', function () {
-                        let st = $(this).scrollTop();
-                        if (st < lastScrollTop){
+                        let newScrollTop = $(this).scrollTop();
+                        if (newScrollTop < lastScrollTop){
                             if ($(window).scrollTop() > 100) {
                                 $('.smoothscroll-top').addClass('show');
                             } else {
@@ -26,17 +26,14 @@
                         } else {
                             $('.smoothscroll-top').removeClass('show');
                         }
-                        lastScrollTop = st;
+                        lastScrollTop = newScrollTop;
                     });
 
                     $('.smoothscroll-top').on('click', scrollToTop);
                 });
 
                 function scrollToTop() {
-                    let element = $('body');
-                    let offset = element.offset();
-                    let offsetTop = offset.top;
-                    $('html, body').animate({scrollTop: offsetTop}, 400, 'linear');
+                    $('html, body').animate({scrollTop: $('body').offset().top}, 400, 'linear');
                 }
             {/literal}
         </script>{/inline_script}

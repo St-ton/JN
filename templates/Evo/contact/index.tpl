@@ -16,7 +16,7 @@
 
     {include file='snippets/extension.tpl'}
 
-    {if isset($step) && ($step === 'formular' || $step === 'nachricht versendet')}
+    {if isset($step)}
         {opcMountPoint id='opc_before_form'}
         {if !empty($Spezialcontent->oben)}
             <div class="custom_content">

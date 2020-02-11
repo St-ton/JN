@@ -22,7 +22,7 @@
         {block name='contact-index-include-extension'}
             {include file='snippets/extension.tpl'}
         {/block}
-        {if isset($step) && ($step === 'formular' || $step === 'nachricht versendet')}
+        {if isset($step)}
             {container}
                 {opcMountPoint id='opc_before_form'}
                 {if !empty($Spezialcontent->oben)}

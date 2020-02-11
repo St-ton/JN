@@ -274,7 +274,7 @@
                     </div>
                 {/if}
             {/block}
-            <header class="d-print-none sticky-top fixed-navbar" id="jtl-nav-wrapper">
+            <header class="d-print-none {if $Einstellungen.template.theme.mobile_search_type !== 'fixed'}sticky-top{/if} fixed-navbar" id="jtl-nav-wrapper">
 
                 {block name='layout-header-container-inner'}
                     <div class="container-fluid container-fluid-xl">
@@ -354,8 +354,61 @@
                         {/navbar}
                     {/block}
                     </div>
+                    {block name='layout-header-search'}
+                        {if $Einstellungen.template.theme.mobile_search_type === 'fixed'}
+                            <div class="container-fluid container-fluid-xl d-lg-none">
+                                {form action='index.php' method='get' class='py-3'}
+                                    {inputgroup}
+                                        {input id="search-header-mobile" name="qs" type="text" class="ac_input" placeholder="{lang key='search'}" autocomplete="off" aria=["label"=>"{lang key='search'}"]}
+                                        {inputgroupaddon append=true}
+                                            {button type="submit" name='search' variant="secondary"}
+                                                <span class="fas fa-search"></span>
+                                            {/button}
+                                        {/inputgroupaddon}
+                                    {/inputgroup}
+                                {/form}
+                            </div>
+                        {/if}
+                    {/block}
                 {/block}
             </header>
+            {block name='layout-header-search-fixed'}
+                {if $Einstellungen.template.theme.mobile_search_type === 'fixed'}
+                    <div class="container-fluid container-fluid-xl fixed-search fixed-top smoothscroll-top d-lg-none d-none">
+                        {form action='index.php' method='get' class='py-3'}
+                            {inputgroup}
+                                {input id="search-header-fixed" name="qs" type="text" class="ac_input" placeholder="{lang key='search'}" autocomplete="off" aria=["label"=>"{lang key='search'}"]}
+                                {inputgroupaddon append=true}
+                                    {button type="submit" name='search' variant="secondary"}
+                                        <span class="fas fa-search"></span>
+                                    {/button}
+                                {/inputgroupaddon}
+                            {/inputgroup}
+                        {/form}
+                    </div>
+
+                    {inline_script}<script>
+                        {literal}
+                        $(function(){
+                            let lastScroll = 0;
+                            $(document).on('scroll', function () {
+                                let newScroll = $(this).scrollTop();
+                                if (newScroll < lastScroll){
+                                    if ($(window).scrollTop() > 100) {
+                                        $('.smoothscroll-top').removeClass('d-none');;
+                                    } else {
+                                        $('.smoothscroll-top').addClass('d-none');
+                                    }
+                                } else {
+                                    $('.smoothscroll-top').addClass('d-none');
+                                }
+                                lastScroll = newScroll;
+                            });
+                        });
+                        {/literal}
+                    </script>{/inline_script}
+                {/if}
+            {/block}
         {/block}
     {/if}
 

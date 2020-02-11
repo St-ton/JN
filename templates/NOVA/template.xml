@@ -27,6 +27,10 @@
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
             </Setting>
+            <Setting Description="Mobile Suche" Key="mobile_search_type" Type="select" Value="fixed">
+                <Option Value="fixed">Fixed</Option>
+                <Option Value="dropdown">Dropdown</Option>
+            </Setting>
             <Setting Description="Sliderposition" Key="slider_full_width" Type="select" Value="N">
                 <Option Value="N">im Contentbereich</Option>
                 <Option Value="Y">zwischen Header und Content</Option>

@@ -23142,6 +23142,10 @@ header .nav-right .dropdown-menu {
   }
 }
 
+.fixed-search {
+  background-color: #ffffff;
+}
+
 /* footer */
 #footer {
   background-color: #f5f7fa;

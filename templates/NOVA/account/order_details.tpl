@@ -337,7 +337,7 @@
         {block name='account-order-details-actions'}
             {row}
                 {col md=3 cols=12}
-                    {link class="btn btn-outline-primary btn-block" href="{get_static_route id='jtl.php'}?bestellungen=1"}
+                    {link class="btn btn-outline-primary btn-block mt-3" href="{get_static_route id='jtl.php'}?bestellungen=1"}
                         {lang key='back'}
                     {/link}
                 {/col}

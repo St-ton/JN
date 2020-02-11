@@ -17,7 +17,7 @@ schau dir doch mal meinen Wunschzettel an {$Firma->cName}.
 
 
 Alle Artikel anschauen >
-{$ShopURL}/index.php?wlid={$CWunschliste->cURLID}
+{$ShopURL}/index.php?wlid={$Wunschliste->cURLID}
 
 Danke.
 {$Kunde->cVorname} {$Kunde->cNachname}

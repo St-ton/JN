@@ -44,11 +44,11 @@ class XML
 
     /**
      * XML constructor.
-     * @param string $cEncoding
+     * @param string $encoding
      */
-    public function __construct($cEncoding)
+    public function __construct($encoding)
     {
-        $this->parser = \xml_parser_create($cEncoding);
+        $this->parser = \xml_parser_create($encoding);
         \xml_parser_set_option($this->parser, \XML_OPTION_CASE_FOLDING, false);
         \xml_parser_set_option($this->parser, \XML_OPTION_TARGET_ENCODING, \JTL_CHARSET);
 

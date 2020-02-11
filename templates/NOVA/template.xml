@@ -10,6 +10,7 @@
         <Section Name="Allgemein" Key="general">
             <Setting Description="Komprimierung von JavaScript- und CSS-Dateien" Key="use_minify" Type="select" Value="N">
                 <Option Value="Y">Ja</Option>
+                <Option Value="static">Ja, statisch</Option>
                 <Option Value="N">Nein</Option>
             </Setting>
             <Setting Description="Aufgabenplaner-Blindgrafik aktivieren?" Key="use_cron" Type="select" Value="Y">
@@ -140,7 +141,7 @@
             <File Path="js/bootstrap-toolkit.js"/>
             <File Path="js/popper.min.js"/>
             <File Path="js/bootstrap.bundle.min.js"/>
-            <File Path="js/slick.js"/>
+            <File Path="js/slick.min.js"/>
             <File Path="js/eModal.min.js"/>
             <File Path="js/jquery.nivo.slider.pack.js"/>
             <File Path="js/bootstrap-select.min.js"/>

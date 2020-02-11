@@ -69,11 +69,7 @@ class Iframe
                 }
             );
 
-            this.jq('a, button')      // disable links and buttons that could change the current iframe page
-                .off('click')
-                .attr('onclick', '')
-                .on('click', e => e.preventDefault());
-
+            this.disableLinks();
             this.portletPreviewLabel.appendTo(this.body);
             this.portletToolbar.appendTo(this.body);
 
@@ -84,6 +80,15 @@ class Iframe
                     this.gui.updatePagetreeBtn();
                 });
         })
+    }
+
+    disableLinks()
+    {
+        // disable links and buttons that could change the current iframe page
+        this.jq('a, button')
+            .off('click')
+            .attr('onclick', '')
+            .on('click', e => e.preventDefault());
     }
 
     getIframePageUrl()
@@ -341,6 +346,7 @@ class Iframe
         this.gui.setUnsaved(true, true);
         this.page.updateFlipcards();
         this.loadMissingPortletPreviewStyles();
+        this.disableLinks();
     }
 
     createPortletElm(html)

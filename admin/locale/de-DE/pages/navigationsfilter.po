@@ -6,7 +6,7 @@ msgid "navigationsfilter"
 msgstr "Artikelfilter"
 
 msgid "navigationsfilterDesc"
-msgstr "Hier stellen Sie die verschiedenen Filtermöglichkeiten in JTL-Shop ein, beispielsweise auf Artikelübersichtsseiten."
+msgstr "Hier stellen Sie die verschiedenen Filtermöglichkeiten auf Artikelübersichtsseiten in JTL-Shop ein."
 
 msgid "navigationsfilterUrl"
 msgstr "https://jtl-url.de/5u1xg"

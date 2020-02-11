@@ -15,7 +15,7 @@ msgid "kampagneSingle"
 msgstr "Kampagne"
 
 msgid "kampagneIntern"
-msgstr "Interne Shop-Kampagnen"
+msgstr "Interne JTL-Shop-Kampagnen"
 
 msgid "kampagneExtern"
 msgstr "Eigene Kampagnen"
@@ -54,7 +54,7 @@ msgid "kampagneView"
 msgstr "Ansicht"
 
 msgid "kampagneDateTill"
-msgstr "bis (einschließlich)"
+msgstr "bis einschließlich"
 
 msgid "kampagneCreate"
 msgstr "Neue Kampagne"
@@ -87,10 +87,10 @@ msgid "kampagnenNLInfo"
 msgstr "Anzahl Aufrufe von Newslettern, welche mit der Kampagne verknüpft sind. Standard: 0, wenn die Kampagne keinem Newsletter zugewiesen ist oder es keine Newsletter-Aufrufe gab"
 
 msgid "successCampaignSave"
-msgstr "Ihre Kampagne wurde erfolgreich gespeichert."
+msgstr "Kampagne wurde erfolgreich gespeichert."
 
 msgid "successCampaignDelete"
-msgstr "Ihre ausgewählten Kampagnen wurden erfolgreich gelöscht."
+msgstr "Ausgewählte Kampagnen wurden erfolgreich gelöscht."
 
 msgid "errorAtLeastOneCampaign"
 msgstr "Bitte markieren Sie mindestens eine Kampagne."

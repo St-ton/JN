@@ -21,7 +21,7 @@ msgid "checkHead"
 msgstr "Kopfzeile wird überprüft…"
 
 msgid "errorFormatUnknown"
-msgstr "Format nicht erkannt!"
+msgstr "Format wurde nicht erkannt!"
 
 msgid "importPending"
 msgstr "Wird importiert…"
@@ -42,4 +42,4 @@ msgid "successImport"
 msgstr "Datensatz OK. Importiere: "
 
 msgid "errorImportRow"
-msgstr "Diese Zeile konnte nicht importiert werden."
+msgstr "Zeile konnte nicht importiert werden."

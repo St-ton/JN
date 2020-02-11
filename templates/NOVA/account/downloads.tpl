@@ -9,7 +9,7 @@
         {/block}
         {block name='account-downloads-order-downloads'}
             {foreach $Bestellung->oDownload_arr as $oDownload}
-                {card no-body=true class="cols-12 col-md-8"}
+                {card no-body=true class="cols-12 col-md-8 mb-3 px-0"}
                     {cardheader id="download-{$oDownload@iteration}" class="p-2 border-top"}
                         {button
                             variant="link"

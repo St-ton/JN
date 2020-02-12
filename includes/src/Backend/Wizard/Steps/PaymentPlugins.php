@@ -29,6 +29,7 @@ final class PaymentPlugins extends AbstractStep
         $this->setDescription(__('stepThreeDesc'));
         $this->setID(3);
 
+        $recommendations = json_decode(file_get_contents(\JTLURL_GET_MP_RECOMMENDATIONS));
 
         $question = new Question($db);
         $question->setID(8);
@@ -37,41 +38,17 @@ final class PaymentPlugins extends AbstractStep
         $question->setSummaryText(__('paymentMethods'));
         $question->setType(QuestionType::PLUGIN);
         $question->setIsFullWidth(true);
-        $option = new SelectOption();
-        $option->setName(__('PayPal 1'));
-        $option->setValue('pluginid PayPal 1');
-        $option->setLogoPath('templates/bootstrap/gfx/shop-logo.png');
-        $option->setDescription('Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod'
-            . ' tempor invidunt');
-        $question->addOption($option);
-        $option = new SelectOption();
-        $option->setName(__('PayPal 2'));
-        $option->setValue('pluginid PayPal 2');
-        $option->setLogoPath('templates/bootstrap/gfx/shop-logo.png');
-        $option->setDescription('Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod'
-            . ' tempor invidunt');
-        $question->addOption($option);
-        $option = new SelectOption();
-        $option->setName(__('PayPal 3'));
-        $option->setValue('pluginid PayPal 3');
-        $option->setLogoPath('templates/bootstrap/gfx/shop-logo.png');
-        $option->setDescription('Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod'
-            . ' tempor invidunt');
-        $question->addOption($option);
-        $option = new SelectOption();
-        $option->setName(__('PayPal 4'));
-        $option->setValue('pluginid PayPal 4');
-        $option->setLogoPath('templates/bootstrap/gfx/shop-logo.png');
-        $option->setDescription('Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod'
-            . ' tempor invidunt');
-        $question->addOption($option);
-        $option = new SelectOption();
-        $option->setName(__('PayPal 5'));
-        $option->setValue('pluginid PayPal 5');
-        $option->setLogoPath('templates/bootstrap/gfx/JTL-Shop-Logo-rgb.png');
-        $option->setDescription('Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod'
-            . ' tempor invidunt');
-        $question->addOption($option);
+
+        foreach ($recommendations->extensions ?? [] as $recommendation) {
+            $option = new SelectOption();
+            $option->setName($recommendation->name);
+            $option->setValue($recommendation->ext_id);
+            $option->setLogoPath($recommendation->logo_url ?? $recommendation->icon_url);
+            $option->setDescription($recommendation->description);
+            $option->setLink($recommendation->store_url);
+            $question->addOption($option);
+        }
+
         $question->setOnSave(function (QuestionInterface $question) {
         });
         $this->addQuestion($question);

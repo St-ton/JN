@@ -56,7 +56,9 @@
                         {/block}
                     {/if}
                     {block name='snippets-product-slider-other-products'}
-                        <div class="mb-4 slick-smooth-loading carousel carousel-arrows-inside {block name='product-slider-class'}{if $tplscope === 'half'}evo-slider-half{else}evo-slider{/if}{/block}">
+                        <div class="mb-4 slick-lazy slick-smooth-loading carousel carousel-arrows-inside slick-type-standard"
+                            data-slick-type="{block name='product-slider-class'}{if $tplscope === 'half'}evo-slider-half{else}evo-slider{/if}{/block}">
+                            {button class="slick-prev slick-arrow initial-arrow" aria=["label"=>{lang key='previous'}]}{lang key='previous'}{/button}
                             {foreach $productlist as $product}
                                 {block name='snippets-product-slider-include-item-slider'}
                                     <div class="product-wrapper{if isset($style)} {$style}{/if}" {if $tplscope !== 'box'}{if isset($Link) && $Link->getLinkType() === $smarty.const.LINKTYP_STARTSEITE || $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE}itemprop="about"{else}itemprop="isRelatedTo"{/if} itemscope itemtype="http://schema.org/Product"{/if}>
@@ -64,6 +66,7 @@
                                     </div>
                                 {/block}
                             {/foreach}
+                            {button class="slick-next slick-arrow initial-arrow" aria=["label"=>{lang key='next'}]}{lang key='next'}{/button}
                         </div>
                     {/block}
                 </div>

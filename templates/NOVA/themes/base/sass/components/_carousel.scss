@@ -3,6 +3,28 @@
 	&.slick-smooth-loading {
 		&:not(.slick-initialized) { opacity: 0; max-height: rem(200px); }
 	}
+	&.slick-lazy {
+		&:not(.slick-initialized) {
+			opacity: 1;
+			flex-wrap: nowrap;
+			display: flex;
+			overflow-x: hidden;
+			max-height: none;
+		}
+	}
+	&.slick-type-standard {
+		&:not(.slick-initialized) {
+			.product-wrapper {
+				@include media-breakpoint-down(md) { width: calc(100%/2); min-width: calc(100%/2);}
+				@include media-breakpoint-up(md) { width: calc(100%/3); min-width: calc(100%/3);}
+				@include media-breakpoint-up(lg) { width: calc(100%/5); min-width: calc(100%/5);}
+				@include media-breakpoint-up(xl) { width: calc(100%/7); min-width: calc(100%/7);}
+				padding: 0 1rem;
+				bottom: 10px;
+			}
+		}
+	}
+
 	&:hover {
 		.slick-arrow { opacity: 1; }
 	}
@@ -62,7 +84,7 @@
 	.slick-arrow { margin-top: 0; }
 }
 
-/* customs */
+/* customs */n
 
 .carousel-thumbnails { margin: 0 -.5rem;
 	.slick-slide { padding: 0 .5rem; }

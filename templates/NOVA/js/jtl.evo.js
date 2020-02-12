@@ -18,192 +18,196 @@
         constructor: EvoClass,
 
         generateSlickSlider: function() {
-            /*
-             * box product slider
-             */
+            let self = this;
+            self.initSlick($('.evo-box-slider:not(.slick-initialized)'), 'evo-box-slider');
+            self.initSlick($('.evo-slider-half:not(.slick-initialized)'), 'evo-slider-half');
+            self.initSlick($('.evo-slider:not(.slick-initialized)'), 'evo-slider');
+            self.initSlick($('.news-slider:not(.slick-initialized)'), 'news-slider');
+            self.initSlick($('#freegift form .row'), 'freegift');
+            self.initSlick($('.evo-box-vertical:not(.slick-initialized)'), 'evo-box-vertical')
+                .on('afterChange', function () {
+                    var heights = [];
+                    $('.evo-box-vertical:not(.eq-height) .product-wrapper').each(function (i, element) {
+                        var $element       = $(element);
+                        var elementHeight;
+                        // Should we include the elements padding in it's height?
+                        var includePadding = ($element.css('box-sizing') === 'border-box')
+                            || ($element.css('-moz-box-sizing') === 'border-box');
 
-            $('.evo-box-slider:not(.slick-initialized)').slick({
-                arrows:         false,
-                lazyLoad:       'ondemand',
-                slidesToShow:   2,
-                swipeToSlide:   true,
-                slidesToScroll: 2,
-                mobileFirst:    true,
-                responsive: [
-                    {
-                        breakpoint: 992, // md
-                        settings: {
-                            arrows: true,
+                        if (includePadding) {
+                            elementHeight = $element.innerHeight();
+                        } else {
+                            elementHeight = $element.height();
                         }
-                    },
-                    {
-                        breakpoint: 1200, // lg
-                        settings: {
-                            slidesToShow: 1,
-                            slidesToScroll: 1,
-                            arrows: true,
-                        }
-                    }
-                ]
+
+                        heights.push(elementHeight);
+                    });
+                    $('.evo-box-vertical.evo-box-vertical:not(.eq-height) .product-wrapper')
+                        .css('height', Math.max.apply(window, heights) + 'px');
+                    $('.evo-box-vertical.evo-box-vertical:not(.eq-height)')
+                        .addClass('eq-height');
             });
 
-            $('.evo-slider-half:not(.slick-initialized)').slick({
-                //dots: true,
-                arrows:       true,
-                lazyLoad:     'ondemand',
-                swipeToSlide:   true,
-                slidesToShow: 3,
-                responsive:   [
-                    {
-                        breakpoint: 992, // md
-                        settings: {
-                            slidesToShow: 1,
-                        }
-                    },
-                    {
-                        breakpoint: 1200, // lg
-                        settings: {
-                            slidesToShow: 2,
-                        }
-                    }
-                ]
+            $('.slick-lazy .slick-arrow').on('click', function (e) {
+                let mainNode = $(this).parent();
+                mainNode.find('.initial-arrow').remove();
+                self.initSlick(mainNode, mainNode.data('slick-type'));
+                mainNode.slick('slickGoTo', 1);
             });
 
-            $('.evo-box-vertical:not(.slick-initialized)').slick({
-                //dots: true,
-                arrows:          true,
-                vertical:        true,
-                adaptiveHeight:  true,
-                swipeToSlide:    true,
-                verticalSwiping: true,
-                prevArrow:       '<button class="slick-up" aria-label="Previous" type="button">' +
+            document.querySelector('.slick-lazy').addEventListener('touchend', function (e) {
+                let mainNode = $(this);
+                mainNode.find('.initial-arrow').remove();
+                self.initSlick(mainNode, mainNode.data('slick-type'));
+                mainNode.slick('slickGoTo', 1);
+            });
+        },
+
+        initSlick: function (node, sliderType) {
+            let sliderOptions = {
+                'evo-box-slider' : {
+                    arrows:         false,
+                    lazyLoad:       'ondemand',
+                    slidesToShow:   2,
+                    swipeToSlide:   true,
+                    slidesToScroll: 2,
+                    mobileFirst:    true,
+                    responsive: [
+                        {
+                            breakpoint: 992, // md
+                            settings: {
+                                arrows: true,
+                            }
+                        },
+                        {
+                            breakpoint: 1200, // lg
+                            settings: {
+                                slidesToShow: 1,
+                                slidesToScroll: 1,
+                                arrows: true,
+                            }
+                        }
+                    ]
+                },
+                'evo-slider-half' : {
+                    arrows:       true,
+                    lazyLoad:     'ondemand',
+                    swipeToSlide: true,
+                    slidesToShow: 3,
+                    responsive:   [
+                        {
+                            breakpoint: 992, // md
+                            settings: {
+                                slidesToShow: 1,
+                            }
+                        },
+                        {
+                            breakpoint: 1200, // lg
+                            settings: {
+                                slidesToShow: 2,
+                            }
+                        }
+                    ]
+                },
+                'evo-box-vertical' : {
+                    arrows:          true,
+                    vertical:        true,
+                    adaptiveHeight:  true,
+                    swipeToSlide:    true,
+                    verticalSwiping: true,
+                    prevArrow:       '<button class="slick-up" aria-label="Previous" type="button">' +
                     '<i class="fa fa-chevron-up"></i></button>',
-                nextArrow:       '<button class="slick-down" aria-label="Next" type="button">' +
+                    nextArrow:       '<button class="slick-down" aria-label="Next" type="button">' +
                     '<i class="fa fa-chevron-down"></i></button>',
-                lazyLoad:        'progressive',
-                slidesToShow:    1,
-            }).on('afterChange', function () {
-                var heights = [];
-                $('.evo-box-vertical:not(.eq-height) .product-wrapper').each(function (i, element) {
-                    var $element       = $(element);
-                    var elementHeight;
-                    // Should we include the elements padding in it's height?
-                    var includePadding = ($element.css('box-sizing') === 'border-box')
-                        || ($element.css('-moz-box-sizing') === 'border-box');
-
-                    if (includePadding) {
-                        elementHeight = $element.innerHeight();
-                    } else {
-                        elementHeight = $element.height();
-                    }
-
-                    heights.push(elementHeight);
-                });
-                $('.evo-box-vertical.evo-box-vertical:not(.eq-height) .product-wrapper')
-                    .css('height', Math.max.apply(window, heights) + 'px');
-                $('.evo-box-vertical.evo-box-vertical:not(.eq-height)')
-                    .addClass('eq-height');
-            });
-
-            /*
-             * responsive slider (content)
-             */
-            var evoSliderOptions = {
-                rows:           0,
-                arrows:         false,
-                lazyLoad:       'ondemand',
-                slidesToShow:   2,
-                slidesToScroll: 2,
-                swipeToSlide:   true,
-                mobileFirst:    true,
-                responsive:     [
-                    {
-                        breakpoint: 768, // xs
-                        settings: {
-                            slidesToShow: 3,
-                            slidesToScroll: 1
+                    lazyLoad:        'progressive',
+                    slidesToShow:    1
+                },
+                'evo-slider' : {
+                    rows:           0,
+                    arrows:         false,
+                    lazyLoad:       'ondemand',
+                    slidesToShow:   2,
+                    slidesToScroll: 2,
+                    swipeToSlide:   true,
+                    mobileFirst:    true,
+                    responsive:     [
+                        {
+                            breakpoint: 768, // xs
+                            settings: {
+                                slidesToShow: 3,
+                                slidesToScroll: 1
+                            }
+                        },
+                        {
+                            breakpoint: 992, // sm
+                            settings: {
+                                slidesToShow:5,
+                                arrows: true,
+                                slidesToScroll: 1
+                            }
+                        },
+                        {
+                            breakpoint: 1300,
+                            settings: {
+                                slidesToShow:7,
+                                arrows: true,
+                                slidesToScroll: 1
+                            }
                         }
-                    },
-                    {
-                        breakpoint: 992, // sm
-                        settings: {
-                            slidesToShow:5,
-                            arrows: true,
-                            slidesToScroll: 1
+                    ]
+                },
+                'news-slider' : {
+                    rows:           0,
+                    slidesToShow:   1,
+                    slidesToScroll: 1,
+                    arrows:         false,
+                    swipeToSlide:   true,
+                    infinite:       false,
+                    lazyLoad:       'ondemand',
+                    mobileFirst:    true,
+                    responsive:     [
+                        {
+                            breakpoint: 768, // xs
+                            settings: {
+                                slidesToShow: 2
+                            }
+                        },
+                        {
+                            breakpoint: 992, // sm
+                            settings: {
+                                slidesToShow:3,
+                                arrows: true
+                            }
+                        },
+                        {
+                            breakpoint: 1300,
+                            settings: {
+                                slidesToShow:4,
+                                arrows: true
+                            }
                         }
-                    },
-                    {
-                        breakpoint: 1300,
-                        settings: {
-                            slidesToShow:7,
-                            arrows: true,
-                            slidesToScroll: 1
+                    ]
+                },
+                'freegift' : {
+                    slidesToShow:   3,
+                    slidesToScroll: 3,
+                    infinite: false,
+                    swipeToSlide:   true,
+                    responsive: [
+                        {
+                            breakpoint: 480,
+                            settings: {
+                                slidesToShow: 2
+                            }
                         }
-                    }
-                ]
-            };
-            $('.evo-slider:not(.slick-initialized)').slick(evoSliderOptions);
-
-            // product list image slider
-            /*$('.product-list .list-gallery:not(.slick-initialized)').slick({
-                lazyLoad: 'ondemand',
-                infinite: false,
-                dots:     false,
-                arrows:   true
-            });*/
-            var optionsNewsSlider = {
-                rows:           0,
-                slidesToShow:   1,
-                slidesToScroll: 1,
-                arrows:         false,
-                swipeToSlide:   true,
-                infinite:       false,
-                lazyLoad:       'ondemand',
-                mobileFirst:    true,
-                responsive:     [
-                    {
-                        breakpoint: 768, // xs
-                        settings: {
-                            slidesToShow: 2
-                        }
-                    },
-                    {
-                        breakpoint: 992, // sm
-                        settings: {
-                            slidesToShow:3,
-                            arrows: true
-                        }
-                    },
-                    {
-                        breakpoint: 1300,
-                        settings: {
-                            slidesToShow:4,
-                            arrows: true
-                        }
-                    }
-                ]
+                    ]
+                }
             };
             if ($('#content').hasClass('col-lg-9')) {
-                optionsNewsSlider.slidesToShow = 2;
+                sliderOptions['news-slider']['slidesToShow'] = 2;
             }
 
-            $('.news-slider:not(.slick-initialized)').slick(optionsNewsSlider);
-
-            // freegift slider at basket
-            $('#freegift form .row').slick({
-                slidesToShow:   3,
-                slidesToScroll: 3,
-                infinite: false,
-                swipeToSlide:   true,
-                responsive: [
-                    {
-                        breakpoint: 480,
-                        settings: {
-                            slidesToShow: 2
-                        }
-                    }
-                ]
-            });
+            return node.slick(sliderOptions[sliderType]);
         },
 
         scrollStuff: function() {

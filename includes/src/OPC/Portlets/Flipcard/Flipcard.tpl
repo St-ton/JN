@@ -1,4 +1,5 @@
 {$uid = $instance->getUid()}
+{$trigger = $instance->getProperty('flip-trigger')}
 
 <div id="{$uid}" {if $isPreview}{$instance->getDataAttributeString()}{/if}
      {$instance->getAnimationDataAttributeString()}
@@ -40,18 +41,31 @@
             {if $isPreview}
                 flipcard.find('.opc-Flipcard-flip-btn').click(flipCard);
             {else}
-                flipcard.click(flipCard);
+                {if $trigger === 'click'}
+                    flipcard.click(flipCard);
+                {else}
+                    flipcard.hover(flipCard);
+                {/if}
             {/if}
 
             setTimeout(() => updateHeight_{$uid}());
 
             function flipCard(e)
             {
-                flipcardInner.toggleClass('opc-Flipcard-flipped');
-                flipcard.find('.opc-Flipcard-label-front').toggleClass('active');
-                flipcard.find('.opc-Flipcard-label-back').toggleClass('active');
-                updateHeight_{$uid}();
-                e.preventDefault();
+                {if $trigger === 'click'}
+                    let isLink = e.target.tagName === 'A' && typeof e.target.href === 'string'
+                        || e.target.tagName === 'BUTTON';
+
+                    if(!isLink) {
+                {/if}
+                        flipcardInner.toggleClass('opc-Flipcard-flipped');
+                        flipcard.find('.opc-Flipcard-label-front').toggleClass('active');
+                        flipcard.find('.opc-Flipcard-label-back').toggleClass('active');
+                        updateHeight_{$uid}();
+                        e.preventDefault();
+                {if $trigger === 'click'}
+                    }
+                {/if}
             }
         }
 

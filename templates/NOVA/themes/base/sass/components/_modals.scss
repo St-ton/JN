@@ -17,3 +17,11 @@
 		.close { position: fixed; top: 1rem; right: 1rem; transform: none; z-index: $zindex-fixed; }
 	}
 }
+
+.modal-dialog {
+	margin-top: $modal-dialog-margin-y-sm-up;
+}
+
+#maintenance button.close{
+	display: none;
+}

@@ -225,7 +225,7 @@ class Status
         $template = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'standard');
         if ($template !== null && isset($template->cTemplate)) {
             $tplData = TemplateHelper::getInstance()->getData($template->cTemplate);
-            if ($tplData->bResponsive) {
+            if ($tplData !== false && $tplData->bResponsive) {
                 $mobileTpl = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'mobil');
                 if ($mobileTpl !== null) {
                     $xmlFile = \PFAD_ROOT . \PFAD_TEMPLATES . $mobileTpl->cTemplate .
@@ -316,34 +316,6 @@ class Status
         }
 
         return $incorrectPaymentMethods;
-    }
-
-    /**
-     * @return bool
-     */
-    protected function hasInvalidPollCoupons(): bool
-    {
-        $pollCoupons         = Shop::Container()->getDB()->selectAll('tumfrage', 'nAktiv', 1);
-        $invalidCouponsFound = false;
-        foreach ($pollCoupons as $coupon) {
-            if ($coupon->kKupon > 0) {
-                $couponID = Shop::Container()->getDB()->select(
-                    'tkupon',
-                    'kKupon',
-                    $coupon->kKupon,
-                    'cAktiv',
-                    'Y',
-                    null,
-                    null,
-                    false,
-                    'kKupon'
-                );
-
-                $invalidCouponsFound = empty($couponID);
-            }
-        }
-
-        return $invalidCouponsFound;
     }
 
     /**

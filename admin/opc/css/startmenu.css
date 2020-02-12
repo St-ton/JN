@@ -304,6 +304,21 @@
   border-color: #435A6B;
   color: #435A6B;
 }
+#opc .nav-tabs #btnPagetree.has-unmapped .nav-link {
+  position: relative;
+  color: #f68b25;
+}
+#opc .nav-tabs #btnPagetree.has-unmapped .nav-link:after {
+  display: block;
+  position: absolute;
+  content: "";
+  background-color: #f68b25;
+  width: 8px;
+  height: 8px;
+  right: -6px;
+  top: 12px;
+  border-radius: 100%;
+}
 
 #opc #opc-startmenu {
   position: fixed;
@@ -352,6 +367,13 @@
 }
 #opc #opcSidebar a:hover {
   text-decoration: underline;
+}
+#opc #opcSidebar .alert-danger {
+  margin: 1em;
+}
+#opc #opcSidebar .alert-danger a {
+  color: #f00;
+  font-weight: bold;
 }
 #opc #opcSidebar.opc-open {
   left: 0;

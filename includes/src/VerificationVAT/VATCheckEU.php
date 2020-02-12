@@ -68,7 +68,7 @@ class VATCheckEU extends AbstractVATCheck
                 'success'   => false,
                 'errortype' => 'parse',
                 'errorcode' => $vatParser->getErrorCode(),
-                'errorinfo' => '' !== ($errorInfo = $vatParser->getErrorInfo()) ? $errorInfo : ''
+                'errorinfo' => ($errorInfo = $vatParser->getErrorInfo()) !== '' ? $errorInfo : ''
             ];
         }
         // asking the remote service if the VAT-office is reachable

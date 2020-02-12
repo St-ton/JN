@@ -4,18 +4,19 @@ class Page
     {
         bindProtoOnHandlers(this);
 
-        this.io           = io;
-        this.shopUrl      = shopUrl;
-        this.key          = key;
-        this.lockTimeout = null;
+        this.io             = io;
+        this.shopUrl        = shopUrl;
+        this.key            = key;
+        this.lockTimeout    = null;
+        this.offscreenAreas = {};
     }
 
-    lock()
+    lock(errorcb)
     {
         return this.io.lockDraft(this.key).then(state => {
-            if (state === true) {
+            if (state === 0) {
                 this.lockTimeout = setTimeout(() => {
-                    this.lock();
+                    this.lock(errorcb);
                 }, 1000 * 60);
 
                 return Promise.resolve();
@@ -25,7 +26,8 @@ class Page
                     this.lockTimeout = null;
                 }
 
-                return Promise.reject();
+                errorcb(state);
+                return Promise.reject(state);
             }
         });
     }
@@ -161,7 +163,17 @@ class Page
 
         areas.each((i, area) => {
             area = this.jq(area);
-            area.html(preview[area.data('area-id')]);
+            let areaId = area.data('area-id');
+            area.html(preview[areaId]);
+            delete preview[areaId];
+        });
+
+        this.offscreenAreas = this.jq([]);
+
+        Object.entries(preview).forEach(([areaId, areaContent]) => {
+            let area = $('<div class="opc-area opc-rootarea" data-area-id="' + areaId + '">')
+                .html(areaContent);
+            this.offscreenAreas = this.offscreenAreas.add(area);
         });
     }
 
@@ -210,11 +222,24 @@ class Page
 
         let areas = this.rootAreas;
 
-        for(var i=0; i<areas.length; i++) {
+        for(let i=0; i<areas.length; i++) {
             let area     = this.jq(areas[i]);
             let areaData = this.areaToJSON(area, withDom);
 
-            result.areas[areaData.id] = areaData;
+            if(areaData.content.length) {
+                result.areas[areaData.id] = areaData;
+            }
+        }
+
+        areas = this.offscreenAreas;
+
+        for(let i=0; i<areas.length; i++) {
+            let area     = this.jq(areas[i]);
+            let areaData = this.areaToJSON(area, withDom);
+
+            if(areaData.content.length) {
+                result.areas[areaData.id] = areaData;
+            }
         }
 
         return result;
@@ -273,7 +298,7 @@ class Page
         var elm             = portlet;
         var widthHeuristics = {xs: null, sm: null, md: null, lg: null};
 
-        while(!elm.is(this.rootAreas)) {
+        while(!elm.is(this.rootAreas) && !elm.is(this.offscreenAreas)) {
             var clsStr = elm.attr('class');
             var cls    = typeof clsStr === 'string' ? clsStr.split(/\s+/) : [];
 
@@ -298,5 +323,12 @@ class Page
         if(widthHeuristics.lg === null) widthHeuristics.lg = widthHeuristics.md;
 
         return widthHeuristics;
+    }
+
+    removeOffscreenArea(area)
+    {
+        this.offscreenAreas = this.offscreenAreas.filter((i,elm) => (
+            elm !== area[0]
+        ));
     }
 }

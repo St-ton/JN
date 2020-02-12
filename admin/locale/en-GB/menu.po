@@ -174,9 +174,6 @@ msgstr "Marketing"
 msgid "Customer loyalty"
 msgstr "Customer loyalty"
 
-msgid "Surveys"
-msgstr "Surveys"
-
 msgid "Recommendations"
 msgstr "Recommendations"
 
@@ -441,9 +438,6 @@ msgstr "Configuration"
 msgid "You've selected Google reCaptcha as spam protection method, but homepage and or secrect key have not been added."
 msgstr "You have chosen Google reCaptcha as your spam protection method but did not indicate a site key and/or a secret key."
 
-msgid "A coupon being used in a survey is not active or does not exist anylonger."
-msgstr "A survey uses a coupon that is inactive or does not exist."
-
 msgid "The full-text index does not exist!"
 msgstr "No full-text index available."
 
@@ -500,3 +494,12 @@ msgstr "System diagnostics"
 
 msgid "Set up"
 msgstr "Set up"
+
+msgid "Email templates"
+msgstr "Templates"
+
+msgid "Global"
+msgstr "Global"
+
+msgid "Availability notifications"
+msgstr "Availability notifications"

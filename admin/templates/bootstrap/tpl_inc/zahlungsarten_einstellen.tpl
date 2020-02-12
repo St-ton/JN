@@ -11,7 +11,7 @@
                 <hr class="mb-n3">
             </div>
             <div class="card-body">
-                {foreach $sprachen as $language}
+                {foreach $availableLanguages as $language}
                     {assign var=cISO value=$language->getIso()}
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="cName_{$cISO}">{__('showedName')} ({$language->getLocalizedName()}):</label>
@@ -27,7 +27,7 @@
                     </div>
                     <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('pictureDesc')}</div>
                 </div>
-                {foreach $sprachen as $language}
+                {foreach $availableLanguages as $language}
                     {assign var=cISO value=$language->getIso()}
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="cGebuehrname_{$cISO}">{__('feeName')} ({$language->getLocalizedName()}):</label>
@@ -67,7 +67,7 @@
                     </div>
                 </div>
 
-                {foreach $sprachen as $language}
+                {foreach $availableLanguages as $language}
                     {assign var=cISO value=$language->getIso()}
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="cHinweisTextShop_{$cISO}">{__('noticeTextShop')} ({$language->getLocalizedName()}):</label>
@@ -77,7 +77,7 @@
                     </div>
                 {/foreach}
 
-                {foreach $sprachen as $language}
+                {foreach $availableLanguages as $language}
                     {assign var=cISO value=$language->getIso()}
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="cHinweisText_{$cISO}">{__('noticeTextEmail')} ({$language->getLocalizedName()}):</label>

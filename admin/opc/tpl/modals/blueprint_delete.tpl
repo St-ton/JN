@@ -8,7 +8,7 @@
                 <p>"<span id="blueprintDeleteTitle">FOO</span>"</p>
                 <p>{__('templateDeleteSure')}</p>
             </div>
-            <form id="blueprintDeleteForm">
+            <form onsubmit="opc.gui.deleteBlueprint()">
                 <div class="modal-footer">
                     <input type="hidden" id="blueprintDeleteId" name="id" value="">
                     <button type="button" class="opc-btn-secondary opc-small-btn" data-dismiss="modal">

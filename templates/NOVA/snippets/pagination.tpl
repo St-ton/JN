@@ -44,7 +44,7 @@
                                                     href="{$cThisUrl}?{$oPagination->getId()}_nPage={$oPagination->getPrevPage()}{$cUrlAppend}{$cAnchor}"
                                                     aria=["label"=>{lang key='previous'}]
                                                 }
-                                                    &#8592;
+                                                    <i class="fas fa-long-arrow-alt-left"></i>
                                                 {/link}
                                             </li>
                                         {/block}
@@ -87,7 +87,7 @@
                                                     href="{$cThisUrl}?{$oPagination->getId()}_nPage={$oPagination->getNextPage()}{$cUrlAppend}{$cAnchor}"
                                                     aria=["label"=>{lang key='next'}]
                                                 }
-                                                    &#8594;
+                                                    <i class="fas fa-long-arrow-alt-right"></i>
                                                 {/link}
                                             {/block}
                                         </li>

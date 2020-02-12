@@ -18,7 +18,7 @@ msgid "hasInstallDirTitle"
 msgstr "System"
 
 msgid "hasInstallDirMessage"
-msgstr "Bitte löschen Sie das Installationsverzeichnis „/install/“ im Shop-Wurzelverzeichnis."
+msgstr "Bitte löschen Sie das Installationsverzeichnis „/install/“ im Wurzelverzeichnis des Onlineshops."
 
 msgid "validDatabaseStructTitle"
 msgstr "Datenbankstruktur"
@@ -56,17 +56,11 @@ msgstr "Plugin"
 msgid "hasNewPluginVersionsMessage"
 msgstr "Es sind neue Plugin-Versionen verfügbar."
 
-msgid "hasInvalidPollCouponsTitle"
-msgstr "Umfrage"
-
-msgid "hasInvalidPollCouponsMessage"
-msgstr "In einer Umfrage wird ein Coupon verwendet, der inaktiv ist oder nicht mehr existiert."
-
 msgid "hasFullTextIndexErrorTitle"
 msgstr "Volltextsuche"
 
 msgid "hasFullTextIndexErrorMessage"
-msgstr "Der Volltextindex ist nicht vorhanden."
+msgstr "Volltextindex ist nicht vorhanden."
 
 msgid "hasInvalidPasswordResetMailTemplateTitle"
 msgstr "Defekte E-Mail-Vorlage"
@@ -78,7 +72,7 @@ msgid "hasInsecureMailConfigTitle"
 msgstr "Unsichere SMTP-Verbindung"
 
 msgid "hasInsecureMailConfigMessage"
-msgstr "Sie haben SMTP gewählt, allerdings keine SMTP-Security-Methode.<br/> Wir empfehlen Ihnen dringend, Ihre E-Mail-Einstellungen anzupassen.<br/> Sie finden die Option unter „System > E-Mails > E-Mail-Einstellungen > SMTP-Security.“"
+msgstr "Sie haben SMTP gewählt, allerdings keine SMTP-Security-Methode.<br/> Wir empfehlen Ihnen dringend, Ihre E-Mail-Einstellungen anzupassen.<br/> Sie finden die Option unter „Administration &gt; E-Mail &gt; Server.“"
 
 msgid "needPasswordRehash2FATryTitle"
 msgstr "Benutzerverwaltung"
@@ -118,3 +112,6 @@ msgstr "Spezialseite mehrmals angelegt"
 
 msgid "duplicateSpecialLinkDesc"
 msgstr "Mindestens eine Spezialseite wurde mehrmals für die gleiche(n) Kundengruppe(n) angelegt."
+
+msgid "Safe mode enabled."
+msgstr "Abgesicherter Modus aktiv. Gewisse Funktionalitäten stehen nicht zur Verfügung."

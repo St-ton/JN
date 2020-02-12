@@ -106,10 +106,10 @@ interface LinkInterface
     public function getNames(): array;
 
     /**
-     * @param string $name
-     * @param int    $idx
+     * @param string   $name
+     * @param int|null $idx
      */
-    public function setName(string $name, int $idx): void;
+    public function setName(string $name, int $idx = null): void;
 
     /**
      * @param array $names
@@ -150,10 +150,10 @@ interface LinkInterface
     public function getURLs(): array;
 
     /**
-     * @param string $url
-     * @param int    $idx
+     * @param string   $url
+     * @param int|null $idx
      */
-    public function setURL(string $url, int $idx): void;
+    public function setURL(string $url, int $idx = null): void;
 
     /**
      * @param array $urls
@@ -175,7 +175,7 @@ interface LinkInterface
      * @param string $title
      * @param int    $idx
      */
-    public function setTitle(string $title, int $idx): void;
+    public function setTitle(string $title, int $idx = null): void;
 
     /**
      * @param array $title
@@ -204,10 +204,10 @@ interface LinkInterface
     public function getLanguageCodes(): array;
 
     /**
-     * @param string $languageCode
-     * @param int    $idx
+     * @param string   $languageCode
+     * @param int|null $idx
      */
-    public function setLanguageCode(string $languageCode, int $idx = 0): void;
+    public function setLanguageCode(string $languageCode, int $idx = null): void;
 
     /**
      * @param array $languageCodes
@@ -295,10 +295,10 @@ interface LinkInterface
     public function setIsFluid(bool $isFluid): void;
 
     /**
-     * @param int $idx
+     * @param int|null $idx
      * @return int
      */
-    public function getLanguageID(int $idx): int;
+    public function getLanguageID(int $idx = null): int;
 
     /**
      * @param int $languageID
@@ -381,10 +381,10 @@ interface LinkInterface
     public function getContents(): array;
 
     /**
-     * @param string $content
-     * @param int    $idx
+     * @param string   $content
+     * @param int|null $idx
      */
-    public function setContent(string $content, int $idx): void;
+    public function setContent(string $content, int $idx = null): void;
 
     /**
      * @param array $contents
@@ -402,10 +402,10 @@ interface LinkInterface
     public function getMetaTitles(): array;
 
     /**
-     * @param string $metaTitle
-     * @param int    $idx
+     * @param string   $metaTitle
+     * @param int|null $idx
      */
-    public function setMetaTitle(string $metaTitle, int $idx): void;
+    public function setMetaTitle(string $metaTitle, int $idx = null): void;
 
     /**
      * @param array $metaTitles
@@ -423,10 +423,10 @@ interface LinkInterface
     public function getMetaKeywords(): array;
 
     /**
-     * @param string $metaKeyword
-     * @param int    $idx
+     * @param string   $metaKeyword
+     * @param int|null $idx
      */
-    public function setMetaKeyword(string $metaKeyword, int $idx): void;
+    public function setMetaKeyword(string $metaKeyword, int $idx = null): void;
 
     /**
      * @param array $metaKeywords
@@ -444,10 +444,10 @@ interface LinkInterface
     public function getMetaDescriptions(): array;
 
     /**
-     * @param string $metaDescription
-     * @param int    $idx
+     * @param string   $metaDescription
+     * @param int|null $idx
      */
-    public function setMetaDescription(string $metaDescription, int $idx): void;
+    public function setMetaDescription(string $metaDescription, int $idx = null): void;
 
     /**
      * @param array $metaDescriptions

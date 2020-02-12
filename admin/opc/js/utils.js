@@ -76,25 +76,21 @@ function noop() {}
 
 function installJqueryFixes()
 {
-    // Fix from: https://stackoverflow.com/questions/22637455/how-to-use-ckeditor-in-a-bootstrap-modal
-    // to enable CKEditor to show popups when used in a bootstrap modals
+    // Fix from: https://gist.github.com/Reinmar/b9df3f30a05786511a42#gistcomment-2897528
+    // to ensure CKEditor text inputs are focused inside bootstrap modals
 
-    $.fn.modal.Constructor.prototype.enforceFocus = function ()
-    {
-        var $modalElement = this.$element;
-
-        $(document).on('focusin.modal', function (e)
-        {
-            var $parent = $(e.target.parentNode);
-
-            if ($modalElement[0] !== e.target &&
-                !$modalElement.has(e.target).length &&
-                !$parent.hasClass('cke_dialog_ui_input_select') &&
-                !$parent.hasClass('cke_dialog_ui_input_text')
-            ) {
-                $modalElement.focus();
-            }
-        });
+    $.fn.modal.Constructor.prototype._enforceFocus = function() {
+        let $element = $(this._element);
+        $(document)
+            .off('focusin.bs.modal')
+            .on('focusin.bs.modal', function(e) {
+                if ($element[0] !== e.target
+                    && !$element.has(e.target).length
+                    && !$(e.target).closest('.cke_dialog, .cke').length
+                ) {
+                    $element.trigger('focus');
+                }
+            });
     };
 
     // Fix from: https://stackoverflow.com/questions/11127227/jquery-serialize-input-with-arrays/35689636

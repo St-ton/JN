@@ -40,9 +40,9 @@ class CreateCommandCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): ?int
     {
-        $pluginID    = \trim($input->getArgument('plugin-id'));
-        $commandName = \trim($input->getArgument('command-name'));
-        $author      = \trim($input->getArgument('author'));
+        $pluginID    = \trim($input->getArgument('plugin-id') ?? '');
+        $commandName = \trim($input->getArgument('command-name') ?? '');
+        $author      = \trim($input->getArgument('author') ?? '');
         try {
             $commandPath = $this->createFile($pluginID, $commandName, $author);
             $output->writeln("<info>Created command:</info> <comment>'" . $commandPath . "'</comment>");

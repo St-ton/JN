@@ -1,4 +1,4 @@
-<div id="configModal" class="modal fade" tabindex="-1">
+<div id="configModal" class="modal fade" tabindex="-1" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -12,7 +12,7 @@
                     <i class="fa fas fa-times"></i>
                 </button>
             </div>
-            <form id="configForm">
+            <form id="configForm" onsubmit="opc.gui.saveConfig()">
                 <div class="modal-body" id="configModalBody"></div>
                 <div class="modal-footer" id="stdConfigButtons">
                     <button type="button" class="opc-btn-secondary opc-small-btn" data-dismiss="modal">

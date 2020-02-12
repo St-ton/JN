@@ -39,7 +39,7 @@ msgid "exportformatExported"
 msgstr "Exportiert"
 
 msgid "exportformatLastStart"
-msgstr "letzter Start"
+msgstr "Letzter Start"
 
 msgid "exportformatNextStart"
 msgstr "Nächster Start (geplant)"
@@ -57,7 +57,7 @@ msgid "errorWrongQueue"
 msgstr "Bitte wählen Sie eine gültige Warteschlange aus."
 
 msgid "successQueueDelete"
-msgstr "Die ausgewählten Warteschlangen wurden erfolgreich gelöscht."
+msgstr "Ausgewählte Warteschlangen wurden erfolgreich gelöscht."
 
 msgid "errorCronStart"
 msgstr "Es wurde kein Cron-Job gestartet."
@@ -78,7 +78,7 @@ msgid "errorFormatInQueue"
 msgstr "Das Exportformat ist bereits in der Warteschlange vorhanden."
 
 msgid "successQueueCreate"
-msgstr "Ihre neue Export-Warteschlange wurde erfolgreich angelegt."
+msgstr "Neue Export-Warteschlange wurde erfolgreich angelegt."
 
 msgid "errorGreaterEqualOne"
 msgstr "Bitte geben Sie einen Wert größer oder gleich 1 ein."

@@ -2,7 +2,11 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
-{if isset($Einstellungen.global.global_versandermittlung_anzeigen) && $Einstellungen.global.global_versandermittlung_anzeigen === 'Y'}
+{if isset($Einstellungen.global.global_versandermittlung_anzeigen)
+    && $Einstellungen.global.global_versandermittlung_anzeigen === 'Y'
+    && (!isset($smarty.get.shipping_calculator)
+        || (isset($smarty.get.shipping_calculator) && $smarty.get.shipping_calculator !== "0")
+    )}
     {opcMountPoint id='opc_before_shipping'}
 
     {if isset($smarty.session.Warenkorb->PositionenArr) && $smarty.session.Warenkorb->PositionenArr|@count > 0}

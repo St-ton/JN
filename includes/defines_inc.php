@@ -36,7 +36,6 @@ define('CONF_EMAILBLACKLIST', 111);
 define('CONF_METAANGABEN', 112);
 define('CONF_NEWS', 113);
 define('CONF_SITEMAP', 114);
-define('CONF_UMFRAGE', 115);
 define('CONF_KUNDENWERBENKUNDEN', 116);
 define('CONF_SUCHSPECIAL', 119);
 define('CONF_CHECKBOX', 120);
@@ -84,7 +83,6 @@ define('URLART_MERKMAL', 7);
 define('URLART_NEWS', 8);
 define('URLART_NEWSMONAT', 9);
 define('URLART_NEWSKATEGORIE', 10);
-define('URLART_UMFRAGE', 11);
 define('URLART_SEARCHSPECIALS', 12);
 // bestellstatus
 define('BESTELLUNG_STATUS_STORNO', -1);
@@ -177,13 +175,15 @@ define('LINKTYP_PASSWORD_VERGESSEN', 10);
 define('LINKTYP_AGB', 11);
 define('LINKTYP_DATENSCHUTZ', 12);
 define('LINKTYP_KONTAKT', 13);
+define('LINKTYP_TAGGING', 14); // @deprecated
 define('LINKTYP_LIVESUCHE', 15);
 define('LINKTYP_HERSTELLER', 16);
 define('LINKTYP_NEWSLETTER', 17);
 define('LINKTYP_NEWSLETTERARCHIV', 18);
 define('LINKTYP_NEWS', 19);
+define('LINKTYP_NEWSARCHIV', 20); // @deprecated
 define('LINKTYP_SITEMAP', 21);
-define('LINKTYP_UMFRAGE', 22);
+define('LINKTYP_UMFRAGE', 22); // @deprecated
 define('LINKTYP_GRATISGESCHENK', 23);
 define('LINKTYP_WRB', 24);
 define('LINKTYP_PLUGIN', 25);
@@ -293,7 +293,6 @@ define('R_MAXBESTELLMENGE', 8);
 define('R_LOGIN_BEWERTUNG', 9);
 define('R_LOGIN_TAG', 10);
 define('R_LOGIN_NEWSCOMMENT', 11);
-define('R_LOGIN_UMFRAGE', 12);
 define('R_ARTIKELABNAHMEINTERVALL', 14);
 define('R_UNVERKAEUFLICH', 15);
 define('R_AUFANFRAGE', 16);
@@ -344,13 +343,14 @@ define('PAGE_ARTIKELLISTE', 2); // Artikelliste
 define('PAGE_WARENKORB', 3); // Warenkorb
 define('PAGE_MEINKONTO', 4); // Mein Konto
 define('PAGE_KONTAKT', 5); // Kontakt
-define('PAGE_UMFRAGE', 6); // Umfrage
+define('PAGE_UMFRAGE', 6); // Umfrage - @deprecated
 define('PAGE_NEWS', 7); // News
 define('PAGE_NEWSLETTER', 8); // Newsletter
 define('PAGE_LOGIN', 9); // Login
 define('PAGE_REGISTRIERUNG', 10); // Registrierung
 define('PAGE_BESTELLVORGANG', 11); // Bestellvorgang
 define('PAGE_BEWERTUNG', 12); // Bewertung [NEIN]
+define('PAGE_DRUCKANSICHT', 13); // Druckansicht @deprecated
 define('PAGE_PASSWORTVERGESSEN', 14); // Passwort vergessen
 define('PAGE_WARTUNG', 15); // Wartung
 define('PAGE_WUNSCHLISTE', 16); // Wunschliste
@@ -359,6 +359,7 @@ define('PAGE_STARTSEITE', 18); // Startseite
 define('PAGE_VERSAND', 19); // Versand
 define('PAGE_AGB', 20); // AGB
 define('PAGE_DATENSCHUTZ', 21); // Datenschutz
+define('PAGE_TAGGING', 22); // Tagging @deprecated
 define('PAGE_LIVESUCHE', 23); // Livesuche
 define('PAGE_HERSTELLER', 24); // Hersteller
 define('PAGE_SITEMAP', 25); // Sitemap
@@ -366,6 +367,7 @@ define('PAGE_GRATISGESCHENK', 26); // Gratis Geschenk
 define('PAGE_WRB', 27); // WRB
 define('PAGE_PLUGIN', 28); // Plugin
 define('PAGE_NEWSLETTERARCHIV', 29); // Newsletterarchiv
+define('PAGE_NEWSARCHIV', 30); // Newsarchiv @deprecated
 define('PAGE_EIGENE', 31); // Eigene Seite
 define('PAGE_AUSWAHLASSISTENT', 32); // Auswahlassistent
 define('PAGE_BESTELLABSCHLUSS', 33); // Bestellabschluss
@@ -398,7 +400,6 @@ define('BOX_TOP_BEWERTET', 16);
 define('BOX_IN_KUERZE_VERFUEGBAR', 19);
 define('BOX_GLOBALE_MERKMALE', 20);
 define('BOX_WARENKORB', 21);
-define('BOX_UMFRAGE', 22);
 define('BOX_LINKGRUPPE', 23);
 define('BOX_FILTER_PREISSPANNE', 25);
 define('BOX_FILTER_BEWERTUNG', 26);
@@ -464,7 +465,6 @@ define('JTL_GENNUMBER_ORDERNUMBER', 1);
 // JTL URLS
 define('JTLURL_BASE', 'https://ext.jtl-software.de/');
 define('JTLURL_HP', 'https://www.jtl-software.de/');
-define('JTLURL_GET_DUK', JTLURL_BASE . 'json_duk.php');
 define('JTLURL_GET_SHOPNEWS', 'https://feed.jtl-software.de/websitenews');
 define('JTLURL_GET_SHOPPATCH', JTLURL_BASE . 'json_patch.php');
 define('JTLURL_GET_SHOPHELP', JTLURL_BASE . 'jtlhelp.php');
@@ -510,3 +510,6 @@ define('PRIO_HIGH', '0.7');
 define('PRIO_NORMAL', '0.5');
 define('PRIO_LOW', '0.3');
 define('PRIO_VERYLOW', '0.0');
+
+define('SPM_PORT', 443);
+define('SPM_TIMEOUT', 30);

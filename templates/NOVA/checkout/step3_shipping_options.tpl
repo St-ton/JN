@@ -11,7 +11,7 @@
                 {/block}
             {else}
                 {block name='checkout-step3-shipping-options-form'}
-                    {form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form evo-validate mb-7"}
+                    {form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form jtl-validate mb-7"}
                         {block name='checkout-step3-shipping-options-fieldset-shipping-payment'}
                             <fieldset id="checkout-shipping-payment" class="mb-7">
                                 {block name='checkout-step3-shipping-options-legend-shipping-options'}
@@ -19,7 +19,7 @@
                                 {/block}
                                 {block name='checkout-step3-shipping-options-shipping-address-link'}
                                     <div class="mb-3">
-                                        {lang key='shippingTo' section='checkout'}: {$Lieferadresse->cStrasse}, {$Lieferadresse->cPLZ} {$Lieferadresse->cOrt}, {$Lieferadresse->cLand}
+                                        {lang key='shippingTo' section='checkout'}: {$Lieferadresse->cStrasse} {$Lieferadresse->cHausnummer}, {$Lieferadresse->cPLZ} {$Lieferadresse->cOrt}, {$Lieferadresse->cLand}
                                         {link href="{get_static_route id='bestellvorgang.php'}?editLieferadresse=1" class="ml-3"}
                                             {lang key='edit' section='global'}
                                         {/link}

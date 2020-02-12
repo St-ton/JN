@@ -816,16 +816,6 @@ class AccountController
                     '&n=' . Request::verifyGPCDataInt('n');
                 $redir->cName            = Shop::Lang()->get('news', 'redirect');
                 break;
-            case \R_LOGIN_UMFRAGE:
-                $redir->oParameter_arr   = [];
-                $tmp                     = new stdClass();
-                $tmp->Name               = 'u';
-                $tmp->Wert               = Request::verifyGPCDataInt('u');
-                $redir->oParameter_arr[] = $tmp;
-                $redir->nRedirect        = \R_LOGIN_UMFRAGE;
-                $redir->cURL             = '?u=' . Request::verifyGPCDataInt('u');
-                $redir->cName            = Shop::Lang()->get('poll', 'redirect');
-                break;
             default:
                 break;
         }

@@ -53,7 +53,7 @@
                         <input type="text" class="form-control" name="cName" id="cName" value="{$oKupon->cName}">
                     </div>
                 </div>
-                {foreach $sprachen as $language}
+                {foreach $availableLanguages as $language}
                     {assign var=langCode value=$language->getIso()}
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="cName_{$langCode}">{__('showedName')} ({$language->getLocalizedName()}):</label>
@@ -73,12 +73,12 @@
                     <div class="subheading1">
                         <label>
                             <div class="custom-control custom-checkbox">
-                                <label class="custom-control-label" for="couponCreation"></label>
                                 <input class="custom-control-input" type="checkbox" name="couponCreation"
                                        id="couponCreation" class="checkfield"{if isset($oKupon->massCreationCoupon->cActiv) && $oKupon->massCreationCoupon->cActiv == 1} checked{/if}
                                        value="1" data-toggle="collapse" data-target="#massCreationCouponsBody"
                                        aria-expanded="{if isset($oKupon->massCreationCoupon->cActiv) && $oKupon->massCreationCoupon->cActiv == 1}true{else}false{/if}"
-                                       aria-controls="massCreationCouponsBody"/>{__('couponsCreation')}
+                                       aria-controls="massCreationCouponsBody"/>
+                                <label class="custom-control-label" for="couponCreation">{__('couponsCreation')}</label>
                             </div>
                         </label>
                     </div>
@@ -207,7 +207,7 @@
                         <label class="col col-sm-4 col-form-label text-sm-right" for="kSteuerklasse">{__('taxClass')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <select name="kSteuerklasse" id="kSteuerklasse" class="custom-select combo">
-                                {foreach $taxClasss as $taxClass}
+                                {foreach $taxClasses as $taxClass}
                                     <option value="{$taxClass->kSteuerklasse}"{if (int)$oKupon->kSteuerklasse === (int)$taxClass->kSteuerklasse} selected{/if}>
                                         {$taxClass->cName}
                                     </option>
@@ -528,6 +528,11 @@
         <div class="card-footer save-wrapper">
             <div class="row">
                 <div class="ml-auto col-sm-6 col-xl-auto">
+                    <a class="btn btn-outline-primary btn-block" href="kupons.php">
+                        {__('cancelWithIcon')}
+                    </a>
+                </div>
+                <div class="col-sm-6 col-xl-auto">
                     <button type="submit" class="btn btn-primary btn-block" name="action" value="speichern">
                         {__('saveWithIcon')}
                     </button>

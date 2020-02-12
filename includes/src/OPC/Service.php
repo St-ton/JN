@@ -8,6 +8,7 @@ namespace JTL\OPC;
 
 use Exception;
 use JTL\Backend\AdminIO;
+use JTL\DB\DbInterface;
 use JTL\Filter\AbstractFilter;
 use JTL\Filter\Config;
 use JTL\Filter\Items\Characteristic;
@@ -32,7 +33,7 @@ class Service
     protected $adminName = '';
 
     /**
-     * @var DB
+     * @var DbInterface
      */
     protected $db;
 
@@ -44,6 +45,7 @@ class Service
     /**
      * Service constructor.
      * @param DB $db
+     * @throws Exception
      */
     public function __construct(DB $db)
     {
@@ -73,6 +75,25 @@ class Service
             'getFilteredProductIds',
             'getFilterOptions',
             'getFilterList',
+        ];
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getEditorMessageNames(): array
+    {
+        return [
+            'opcImportSuccessTitle',
+            'opcImportSuccess',
+            'opcImportUnmappedS',
+            'opcImportUnmappedP',
+            'btnTitleCopyArea',
+            'offscreenAreasDivider',
+            'yesDeleteArea',
+            'Cancel',
+            'opcPageLocked',
+            'dbUpdateNeeded',
         ];
     }
 
@@ -285,6 +306,15 @@ class Service
     public function isOPCInstalled(): bool
     {
         return $this->db->isOPCInstalled();
+    }
+
+    /**
+     * @return bool
+     * @throws Exception
+     */
+    public function shopHasUpdates(): bool
+    {
+        return $this->db->shopHasUpdates();
     }
 
     /**

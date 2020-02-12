@@ -130,7 +130,7 @@
                                             {block name='snippets-categories-mega-manufacturers-link'}
                                                 {link href=$mft->cURLFull title=$mft->cSeo class='submenu-headline submenu-headline-toplevel nav-link '}
                                                     {if $Einstellungen.template.megamenu.show_manufacturer_images !== 'N'
-                                                        && (!$device->isMobile() || $device->isTablet())
+                                                        && (!$isMobile || $isTablet)
                                                         && !empty($mft->getImage(\JTL\Media\Image::SIZE_XS))}
                                                         {image fluid=true lazy=true webp=true
                                                             src=$mft->getImage(\JTL\Media\Image::SIZE_XS)
@@ -161,12 +161,12 @@
         {/block}
     {/if} {* /megamenu-pages*}
 
-    {if $device->isMobile()}
+    {if $isMobile}
         {block name='snippets-categories-mega-top-links-hr'}
             <li class="d-lg-none"><hr></li>
         {/block}
         {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y'}
-            {navitem href="{get_static_route id='wunschliste.php'}"}
+            {navitem href="{get_static_route id='wunschliste.php'}" class="nav-scrollbar-item"}
                 {lang key='wishlist'}
                 {badge id="badge-wl-count" variant="primary" class="text-gray-darker product-count"}
                     {if isset($smarty.session.Wunschliste) && !empty($smarty.session.Wunschliste->CWunschlistePos_arr|count)}
@@ -177,7 +177,7 @@
                 {/badge}
             {/navitem}
         {/if}
-        {navitem href="{get_static_route id='vergleichsliste.php'}"}
+        {navitem href="{get_static_route id='vergleichsliste.php'}" class="nav-scrollbar-item"}
             {lang key='compare'}
             {badge id="comparelist-badge" variant="primary" class="text-gray-darker product-count"}
                 {if !empty($smarty.session.Vergleichsliste->oArtikel_arr)}{$smarty.session.Vergleichsliste->oArtikel_arr|count}{else}0{/if}
@@ -185,7 +185,7 @@
         {/navitem}
         {block name='snippets-categories-mega-top-links'}
             {foreach $linkgroups->getLinkGroupByTemplate('Kopf')->getLinks() as $Link}
-                {navitem active=$Link->getIsActive() href=$Link->getURL() title=$Link->getTitle()}
+                {navitem class="nav-scrollbar-item" active=$Link->getIsActive() href=$Link->getURL() title=$Link->getTitle()}
                     {$Link->getName()}
                 {/navitem}
             {/foreach}

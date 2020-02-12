@@ -5350,7 +5350,7 @@ class Artikel
      */
     private function formatTax($taxRate)
     {
-        if ($taxRate <= 0) {
+        if ($taxRate < 0) {
             return '';
         }
         $mwst2 = \number_format((float)$taxRate, 2, ',', '.');
@@ -5466,8 +5466,8 @@ class Artikel
             ? Frontend::getCustomer()->getGroupID()
             : Frontend::getCustomerGroup()->getID();
         $helper                = ShippingMethod::getInstance();
-        $shippingFreeCountries = isset($this->Preise->fVK[0])
-            ? $helper->getFreeShippingCountries($this->Preise->fVK[0], $customerGroupID, $this->kVersandklasse)
+        $shippingFreeCountries = \is_array($this->Preise->fVK)
+            ? $helper->getFreeShippingCountries($this->Preise->fVK, $customerGroupID, $this->kVersandklasse)
             : '';
         if (empty($shippingFreeCountries)) {
             return $asString ? '' : [];

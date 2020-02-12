@@ -5,6 +5,10 @@ msgstr ""
 msgid "opcNotInstalled"
 msgstr "The OPC update was not installed properly. Please update the migrations."
 
+msgid "dbUpdateNeeded"
+msgstr "A datebase update of your JTL-Shop is required to use the OnPage Composer.<br><br>"
+"Please execute the update in the <a href=\"%s/admin/dbupdater.php\" target=\"_blank\">Admin Backend</a>!"
+
 # OPC GUI
 
 msgid "Import"
@@ -32,7 +36,7 @@ msgid "Revisions"
 msgstr "Versions"
 
 msgid "Page structure"
-msgstr "Page structure"
+msgstr "Page Structure"
 
 msgid "Import blueprint"
 msgstr "Import template"
@@ -397,3 +401,32 @@ msgstr "expired on"
 
 msgid "dropPortletHere"
 msgstr "Drop Portlet here"
+
+# Messages
+
+msgid "opcImportSuccess"
+msgstr "The draft has been imported successfully!"
+
+msgid "opcImportUnmappedS"
+msgstr "One area could not be mapped because its ID was not found on the current page."
+
+msgid "opcImportUnmappedP"
+msgstr "%s areas could not be mapped because their IDs were not found on the current page."
+
+msgid "opcImportSuccessTitle"
+msgstr "Draft imported successfully"
+
+msgid "btnTitleCopyArea"
+msgstr "Transfer content to visible area"
+
+msgid "offscreenAreasDivider"
+msgstr "Unmapped Areas"
+
+msgid "yesDeleteArea"
+msgstr "Discard this area"
+
+msgid "Cancel"
+msgstr "Cancel"
+
+msgid "opcPageLocked"
+msgstr "Another user is currently editing this draft. Unfortunately the access is blocked for you."

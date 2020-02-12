@@ -15,7 +15,7 @@
                     <label class="col col-sm-4 col-form-label text-sm-right" for="kSprache">{__('language')}:</label>
                     <span class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         <select name="kSprache" id="kSprache" class="custom-select combo">
-                            {foreach $sprachen as $language}
+                            {foreach $availableLanguages as $language}
                                 <option value="{$language->getId()}">{$language->getLocalizedName()}</option>
                             {/foreach}
                         </select>

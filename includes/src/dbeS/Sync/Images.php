@@ -13,6 +13,8 @@ use JTL\Media\Image\Category;
 use JTL\Media\Image\Characteristic;
 use JTL\Media\Image\CharacteristicValue;
 use JTL\Media\Image\Manufacturer;
+use JTL\Media\IMedia;
+use JTL\Media\Media;
 use JTL\Shop;
 use stdClass;
 use function Functional\map;
@@ -199,6 +201,11 @@ final class Images extends AbstractSync
                 );
             }
             \unlink($original);
+        }
+        if (\count($images) > 0) {
+            $instance = Media::getClass(Image::TYPE_CONFIGGROUP);
+            /** @var IMedia $instance */
+            $instance::clearCache();
         }
     }
 

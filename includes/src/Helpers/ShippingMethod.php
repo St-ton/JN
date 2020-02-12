@@ -17,6 +17,7 @@ use JTL\Language\LanguageHelper;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
+use function Functional\first;
 use function Functional\map;
 use function Functional\some;
 
@@ -94,12 +95,12 @@ class ShippingMethod
     }
 
     /**
-     * @param float|int $price
-     * @param int       $cgroupID
-     * @param int       $shippingClassID
+     * @param array $prices
+     * @param int $cgroupID
+     * @param int $shippingClassID
      * @return string
      */
-    public function getFreeShippingCountries($price, int $cgroupID, int $shippingClassID = 0): string
+    public function getFreeShippingCountries(array $prices, int $cgroupID, int $shippingClassID = 0): string
     {
         if (!isset($this->countries[$cgroupID][$shippingClassID])) {
             if (!isset($this->countries[$cgroupID])) {
@@ -121,6 +122,7 @@ class ShippingMethod
         }
         $shippingFreeCountries = [];
         foreach ($this->countries[$cgroupID][$shippingClassID] as $_method) {
+            $price = $_method->eSteuer === 'brutto' ? $prices[0] : $prices[1];
             if ((float)$_method->fVersandkostenfreiAbX >= $price) {
                 continue;
             }
@@ -151,6 +153,39 @@ class ShippingMethod
     public static function hasSpecificShippingcosts($country): bool
     {
         return !empty(self::gibArtikelabhaengigeVersandkostenImWK($country, Frontend::getCart()->PositionenArr));
+    }
+
+    /**
+     * @param int $shippingMethodID
+     * @param int $cgroupID
+     * @param int $filterPaymentID
+     * @return array
+     */
+    public static function getPaymentMethods(int $shippingMethodID, int $cgroupID, int $filterPaymentID = 0): ?array
+    {
+        $filterSQL = '';
+        $params    = [
+            'methodID' => $shippingMethodID,
+            'cGroupID' => $cgroupID,
+        ];
+        if ($filterPaymentID > 0) {
+            $filterSQL           = ' AND tzahlungsart.kZahlungsart = :paymentID ';
+            $params['paymentID'] = $filterPaymentID;
+        }
+        return Shop::Container()->getDB()->queryPrepared(
+            'SELECT tversandartzahlungsart.*, tzahlungsart.*
+                     FROM tversandartzahlungsart, tzahlungsart
+                     WHERE tversandartzahlungsart.kVersandart = :methodID
+                         ' . $filterSQL . "
+                         AND tversandartzahlungsart.kZahlungsart = tzahlungsart.kZahlungsart
+                         AND (tzahlungsart.cKundengruppen IS NULL OR tzahlungsart.cKundengruppen = ''
+                            OR FIND_IN_SET(:cGroupID, REPLACE(tzahlungsart.cKundengruppen, ';', ',')) > 0)
+                         AND tzahlungsart.nActive = 1
+                         AND tzahlungsart.nNutzbar = 1
+                     ORDER BY tzahlungsart.nSort",
+            $params,
+            ReturnType::ARRAY_OF_OBJECTS
+        );
     }
 
     /**
@@ -265,23 +300,7 @@ class ShippingMethod
                 }
             }
             // Abfrage ob die Zahlungsart/en zur Versandart gesetzt ist/sind
-            $paymentMethods = $db->queryPrepared(
-                "SELECT tversandartzahlungsart.*, tzahlungsart.*
-                     FROM tversandartzahlungsart, tzahlungsart
-                     WHERE tversandartzahlungsart.kVersandart = :methodID
-                         AND tversandartzahlungsart.kZahlungsart = tzahlungsart.kZahlungsart
-                         AND (tzahlungsart.cKundengruppen IS NULL OR tzahlungsart.cKundengruppen = ''
-                         OR FIND_IN_SET(:cGroupID, REPLACE(tzahlungsart.cKundengruppen, ';', ',')) > 0)
-                         AND tzahlungsart.nActive = 1
-                         AND tzahlungsart.nNutzbar = 1
-                     ORDER BY tzahlungsart.nSort",
-                [
-                    'methodID' => (int)$shippingMethod->kVersandart,
-                    'cGroupID' => $cgroupID
-                ],
-                ReturnType::ARRAY_OF_OBJECTS
-            );
-
+            $paymentMethods        = self::getPaymentMethods((int)$shippingMethod->kVersandart, $cgroupID);
             $shippingMethod->valid = some($paymentMethods, static function ($pmm) {
                 return PaymentMethod::shippingMethodWithValidPaymentMethod($pmm);
             });
@@ -385,13 +404,12 @@ class ShippingMethod
             $productID              = (int)$product['kArtikel'];
             $productIDs[$productID] = isset($productIDs[$productID]) ? 1 : 0;
         }
-        $merge          = false;
-        $defaultOptions = Artikel::getDefaultOptions();
+        $merge = false;
         foreach ($productIDs as $productID => $nArtikelAssoc) {
             if ($nArtikelAssoc !== 1) {
                 continue;
             }
-            $tmpProduct = (new Artikel())->fuelleArtikel($productID, $defaultOptions);
+            $tmpProduct = (new Artikel())->fuelleArtikel($productID);
             // Normaler Variationsartikel
             if ($tmpProduct !== null
                 && $tmpProduct->nIstVater === 0
@@ -1483,5 +1501,47 @@ class ShippingMethod
         }
 
         return $packagings;
+    }
+
+    /**
+     * @param object[]|null $shippingMethods
+     * @param int           $paymentMethodID
+     * @return object|null
+     */
+    public static function getFirstShippingMethod($shippingMethods = null, int $paymentMethodID = 0): ?object
+    {
+        $customer = Frontend::getCustomer();
+
+        if (!\is_array($shippingMethods)) {
+            $country = $_SESSION['Lieferadresse']->cLand ?? $customer->cLand;
+            $zip     = $_SESSION['Lieferadresse']->cPLZ ?? $customer->cPLZ;
+
+            $shippingMethods = self::getPossibleShippingMethods(
+                $country,
+                $zip,
+                self::getShippingClasses(Frontend::getCart()),
+                $customer->getGroupID() ?? Frontend::getCustomerGroup()->getID()
+            );
+        }
+        if ($paymentMethodID === 0) {
+            $paymentMethodID = $_SESSION['Zahlungsart']->kZahlungsart ?? 0;
+        }
+
+        if ($paymentMethodID > 0) {
+            $shippingMethods = \array_filter(
+                $shippingMethods,
+                static function ($method) use ($paymentMethodID, $customer) {
+                    $paymentMethods = self::getPaymentMethods(
+                        (int)$method->kVersandart,
+                        $customer->getGroupID() ?? Frontend::getCustomerGroup()->getID(),
+                        $paymentMethodID
+                    );
+
+                    return count($paymentMethods) > 0;
+                }
+            );
+        }
+
+        return first($shippingMethods);
     }
 }

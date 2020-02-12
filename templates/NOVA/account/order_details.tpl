@@ -23,10 +23,10 @@
                             <span class="far fa-calendar mr-2"></span>{$Bestellung->dErstelldatum_de}
                         </span>
                     {/col}
-                    {col cols=6 class='col-lg-auto'}
+                    {col cols=6 lg='auto'}
                         {lang key='yourOrderId' section='checkout'}: {$Bestellung->cBestellNr}
                     {/col}
-                    {col cols=6 class='col-lg-auto text-right text-lg-left'}
+                    {col cols=6 lg='auto' class='text-right text-lg-left'}
                         {lang key='orderStatus' section='login'}: {$Bestellung->Status}
                     {/col}
                 {/row}
@@ -152,7 +152,7 @@
                     {block name='account-order-details-request-plz'}
                         {row}
                             {col cols=12 md=6}
-                                {form method="post" id='request-plz' action="{get_static_route}" class="evo-validate label-slide"}
+                                {form method="post" id='request-plz' action="{get_static_route}" class="jtl-validate label-slide"}
                                     {input type="hidden" name="uid" value="{$uid}"}
                                     <p>{lang key='enter_plz_for_details' section='account data'}</p>
                                     {formgroup
@@ -337,7 +337,7 @@
         {block name='account-order-details-actions'}
             {row}
                 {col md=3 cols=12}
-                    {link class="btn btn-outline-primary btn-block" href="{get_static_route id='jtl.php'}?bestellungen=1"}
+                    {link class="btn btn-outline-primary btn-block mt-3" href="{get_static_route id='jtl.php'}?bestellungen=1"}
                         {lang key='back'}
                     {/link}
                 {/col}

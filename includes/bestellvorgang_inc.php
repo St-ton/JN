@@ -222,7 +222,7 @@ function pruefeLieferdaten($post, &$missingData = null): void
         }
     } elseif ((int)$post['kLieferadresse'] === 0 && isset($_SESSION['Kunde'])) {
         // lieferadresse gleich rechnungsadresse
-        setzeLieferadresseAusRechnungsadresse();
+        setzeLieferadresseAusRechnungsadresse($post);
 
         executeHook(HOOK_BESTELLVORGANG_PAGE_STEPLIEFERADRESSE_RECHNUNGLIEFERADRESSE);
     }
@@ -382,13 +382,13 @@ function pruefeRechnungsadresseStep($get): void
             $Kunde->getCustomerAttributes()->assign($customerAttributes);
             Frontend::set('customerAttributes', $customerAttributes);
             Shop::Smarty()->assign('Kunde', $Kunde)
-                ->assign('cPost_var', $_SESSION['checkout.cPost_arr']);
+                ->assign('cPost_var', Text::filterXSS($_SESSION['checkout.cPost_arr']));
 
             if (isset($_SESSION['Lieferadresse']) && (int)$_SESSION['checkout.cPost_arr']['shipping_address'] !== 0) {
                 Shop::Smarty()->assign('Lieferadresse', $_SESSION['Lieferadresse']);
             }
 
-            $_POST = array_merge($_POST, $_SESSION['checkout.cPost_arr']);
+            $_POST = Text::filterXSS(array_merge($_POST, $_SESSION['checkout.cPost_arr']));
             unset($_SESSION['checkout.cPost_arr']);
         }
         unset($_SESSION['checkout.register']);
@@ -503,9 +503,14 @@ function pruefeZahlungsartwahlStep($post)
 {
     global $zahlungsangaben, $step;
     if (!isset($post['zahlungsartwahl']) || (int)$post['zahlungsartwahl'] !== 1) {
-        return null;
+        if (isset($_SESSION['Zahlungsart'])) {
+            $zahlungsangaben = zahlungsartKorrekt((int)$_SESSION['Zahlungsart']->kZahlungsart);
+        } else {
+            return null;
+        }
+    } else {
+        $zahlungsangaben = zahlungsartKorrekt($post['Zahlungsart']);
     }
-    $zahlungsangaben = zahlungsartKorrekt($post['Zahlungsart']);
     executeHook(HOOK_BESTELLVORGANG_PAGE_STEPZAHLUNG_PLAUSI);
 
     switch ($zahlungsangaben) {
@@ -787,7 +792,8 @@ function gibStepZahlung()
  */
 function gibStepZahlungZusatzschritt($post): void
 {
-    $paymentMethod = gibZahlungsart((int)$post['Zahlungsart']);
+    $paymentID     = $post['Zahlungsart'] ?? $_SESSION['Zahlungsart']->kZahlungsart;
+    $paymentMethod = gibZahlungsart((int)$paymentID);
     $smarty        = Shop::Smarty();
     // Wenn Zahlungsart = Lastschrift ist => versuche Kundenkontodaten zu holen
     $customerAccountData = gibKundenKontodaten(Frontend::getCustomer()->getID());
@@ -1611,10 +1617,16 @@ function gibAktiveVersandart($shippingMethods)
         if (array_reduce($shippingMethods, function ($carry, $item) use ($active) {
             return (int)$item->kVersandart === $active ? (int)$item->kVersandart : $carry;
         }, 0) !== (int)$_SESSION['AktiveVersandart']) {
-            $_SESSION['AktiveVersandart'] = $shippingMethods[0]->kVersandart;
+            $_SESSION['AktiveVersandart'] = ShippingMethod::getFirstShippingMethod(
+                $shippingMethods,
+                $_SESSION['Zahlungsart']->kZahlungsart ?? 0
+            )->kVersandart ?? 0;
         }
     } else {
-        $_SESSION['AktiveVersandart'] = $shippingMethods[0]->kVersandart ?? 0;
+        $_SESSION['AktiveVersandart'] = ShippingMethod::getFirstShippingMethod(
+            $shippingMethods,
+            $_SESSION['Zahlungsart']->kZahlungsart ?? 0
+        )->kVersandart ?? 0;
     }
 
     return $_SESSION['AktiveVersandart'];
@@ -2647,11 +2659,12 @@ function gibBestellschritt(string $step)
 }
 
 /**
+ * @param array|null $post
  * @return Lieferadresse
  */
-function setzeLieferadresseAusRechnungsadresse(): Lieferadresse
+function setzeLieferadresseAusRechnungsadresse(?array $post = null): Lieferadresse
 {
-    $customer                         = Frontend::getCustomer();
+    $customer                         = $post !== null ? getKundendaten($post, 0) : Frontend::getCustomer();
     $shippingAddress                  = new Lieferadresse();
     $shippingAddress->kKunde          = $customer->kKunde;
     $shippingAddress->cAnrede         = $customer->cAnrede;

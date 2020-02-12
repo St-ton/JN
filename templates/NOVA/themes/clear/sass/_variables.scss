@@ -120,15 +120,17 @@ $headings-color:                    $gray-darker;
 $btn-box-shadow:                    none;
 $btn-active-box-shadow:             none;
 $btn-focus-box-shadow:              none;
+$btn-focus-width:                   0;
 $btn-decoration:                    none;
 $btn-hover-decoration:              none;
 $btn-font-weight:                   $font-weight-semibold;
 
 // transition
 
-$transition-base-duration	: .2s;
-$transition-base-timing 	: ease-in-out;
-$transition-base			: all $transition-base-duration $transition-base-timing;
+$transition-base-duration:          .2s;
+$transition-base-timing:            ease-in-out;
+$transition-base:                   all $transition-base-duration $transition-base-timing;
+$transition-fade:                   opacity .35s linear;
 
 // styles
 
@@ -167,6 +169,7 @@ $searchcloud-font-size-scaling:     30%;
 $navbar-light-color:                $gray-dark;
 
 $input-bg:                          #fff;
+$input-focus-border-color:          $primary;
 $input-focus-box-shadow:            none;
 $list-group-bg:                     #fff;
 $list-group-disabled-bg:            #fff;
@@ -343,7 +346,7 @@ $nav-tabs-link-active-border-color		: $primary;
 
 $modal-inner-padding			: $spacer 0;
 
-$modal-content-padding			: map-get($spacers, 4) map-get($spacers, 5);
+$modal-content-padding			: $spacer map-get($spacers, 5);
 $modal-content-border-width		: 0;
 $modal-content-box-shadow-sm-up	: 0 0 rem(10px) transparentize($black, .9);
 $modal-content-border-radius	: $border-radius;
@@ -380,3 +383,5 @@ $dropdown-link-active-color	: $dropdown-link-hover-color;
 $dropdown-link-active-bg	: $dropdown-link-hover-bg;
 
 $dropdown-padding-y         : 0;
+
+$list-max-img-height        : 300px;

@@ -236,7 +236,7 @@
                             <label class="col col-sm-4 col-form-label text-sm-right" for="lang">{__('language')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <select class="custom-select" name="cISO" id="lang">
-                                    {foreach $sprachen as $language}
+                                    {foreach $availableLanguages as $language}
                                         <option value="{$language->getIso()}" {if $language->getShopDefault() === 'Y'}selected="selected"{/if}>{$language->getLocalizedName()} {if $language->getShopDefault() === 'Y'}({__('standard')}){/if}</option>
                                     {/foreach}
                                 </select>
@@ -245,7 +245,7 @@
                     </div>
                 </div>
             </div>
-            {foreach $sprachen as $language}
+            {foreach $availableLanguages as $language}
                 {assign var=cISO value=$language->getIso()}
                 {assign var=langID value=$language->getId()}
                 <input type="hidden" name="lang_{$cISO}" value="{$langID}">

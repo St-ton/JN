@@ -5,10 +5,10 @@
                 <i class="fa fas fa-ellipsis-v"></i>
             </button>
             <div class="dropdown-menu opc-dropdown-menu">
-                <button type="button" class="opc-dropdown-item" id="btnImport">
+                <button type="button" class="opc-dropdown-item" onclick="opc.gui.importDraft()">
                     <i class="fa fas fa-upload fa-fw"></i> {__('Import')}
                 </button>
-                <button type="button" class="opc-dropdown-item" id="btnExport">
+                <button type="button" class="opc-dropdown-item" onclick="opc.gui.exportDraft()">
                     <i class="fa fas fa-download fa-fw"></i> {__('Export')}
                 </button>
                 {*<button type="button" class="opc-dropdown-item" id="btnHelp">
@@ -19,8 +19,8 @@
         <h1 id="opc-sidebar-title">
             {__('editPage')}
         </h1>
-        <button type="button" id="btnClose" class="opc-float-right opc-header-btn" data-toggle="tooltip"
-                data-placement="bottom" title="{__('Close OnPage-Composer')}">
+        <button type="button" onclick="opc.gui.closeEditor()" class="opc-float-right opc-header-btn"
+                data-toggle="tooltip" data-placement="bottom" title="{__('Close OnPage-Composer')}">
             <i class="fa fas fa-times"></i>
         </button>
     </header>
@@ -35,7 +35,7 @@
         <li class="nav-item">
             <a class="nav-link" href="#revisions" data-toggle="tab">{__('Revisions')}</a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" id="btnPagetree">
             <a class="nav-link" href="#pagetree" data-toggle="tab">{__('Page structure')}</a>
         </li>
     </ul>
@@ -68,7 +68,8 @@
             </div>
             <div class="tab-pane" id="blueprints">
                 <div id="blueprintList"></div>
-                <button type="button" class="opc-btn-secondary opc-small-btn" id="btnImportBlueprint">
+                <button type="button" class="opc-btn-secondary opc-small-btn" onclick="opc.gui.importBlueprint()"
+                        id="btnImportBlueprint">
                     <i class="fa fa-upload"></i> <span>{__('Import blueprint')}</span>
                 </button>
             </div>
@@ -94,18 +95,29 @@
     <div id="sidebarFooter">
         <div id="savePublishPanel">
             <label for="footerDraftNameInput" id="footerDraftName" onclick="opc.gui.onBeginEditDraftName()">
-                <span>{$page->getName()}</span><i class="fas fa-pencil-alt"></i>
+                <span>
+                    {if isset($page)}
+                        {$page->getName()}
+                    {else}
+                        No Page
+                    {/if}
+                </span>
+                <i class="fas fa-pencil-alt"></i>
             </label>
             <input type="text" id="footerDraftNameInput" onblur="opc.gui.onFinishEditDraftName()"
                    onkeydown="opc.gui.onDraftNameInputKeydown()" style="display:none">
             <div class="opc-draft-status" id="opcDraftStatus">
-                {include file="./draftstatus.tpl"}
+                {if isset($page)}
+                    {include file="./draftstatus.tpl"}
+                {else}
+                    No Page
+                {/if}
             </div>
             <div id="savePublishButtons">
                 <button type="button" class="opc-btn-secondary opc-small-btn" onclick="opc.gui.savePage()">
                     {__('save')} <i class="fas fa-asterisk" id="unsavedState" style="display: none"></i>
                 </button>
-                <button type="button" class="opc-btn-primary opc-small-btn" id="btnPublish">
+                <button type="button" class="opc-btn-primary opc-small-btn" onclick="opc.gui.publishDraft()">
                     {__('Publish')}
                 </button>
             </div>
@@ -118,19 +130,21 @@
             </label>
             <ul id="displayWidths">
                 <li>
-                    <button id="btnDisplayWidthXS"><i class="fas fa-mobile-alt"></i></button>
+                    <button onclick="opc.gui.setDisplayWidthXS()"><i class="fas fa-mobile-alt"></i></button>
                 </li>
                 <li>
-                    <button id="btnDisplayWidthSM"><i class="fas fa-tablet-alt"></i></button>
+                    <button onclick="opc.gui.setDisplayWidthSM()"><i class="fas fa-tablet-alt"></i></button>
                 </li>
                 <li>
-                    <button id="btnDisplayWidthMD"><i class="fas fa-laptop"></i></button>
+                    <button onclick="opc.gui.setDisplayWidthMD()"><i class="fas fa-laptop"></i></button>
                 </li>
                 <li>
-                    <button id="btnDisplayWidthLG"><i class="fas fa-desktop"></i></button>
+                    <button onclick="opc.gui.setDisplayWidthLG()"><i class="fas fa-desktop"></i></button>
                 </li>
-                <li class="active">
-                    <button id="btnDisplayWidthXL"><i class="fas fa-expand"></i></button>
+                <li>
+                    <button onclick="opc.gui.setDisplayWidthXL()" class="active">
+                        <i class="fas fa-expand"></i>
+                    </button>
                 </li>
             </ul>
         </div>

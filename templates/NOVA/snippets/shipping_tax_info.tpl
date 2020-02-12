@@ -34,13 +34,13 @@
                                 {lang key='noShippingcostsTo'} {lang key='noShippingCostsAtExtended' section='basket' printf=' ::: '}
                                 {foreach item=country key=cISO from=$taxdata.countries}
                                     <abbr title="{$country}">{$cISO}</abbr>
-                                {/foreach}, {link href="{if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}{/if}" rel="nofollow" class="shipment popup"}
+                                {/foreach}, {link href="{if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}?shipping_calculator=0{/if}" rel="nofollow" class="shipment popup"}
                                     {lang key='shipping' section='basket'}{/link}
                             {/block}
                         {else}
                             {block name='snippets-shipping-tax-info-zzgl-show-shipping-free-free-link'}
                                 {link
-                                    href=$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()
+                                    href="{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}?shipping_calculator=0"
                                     rel="nofollow"
                                     class="shipment popup"
                                     data-toggle="tooltip"
@@ -54,7 +54,8 @@
                     {/block}
                 {elseif isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}
                     {block name='snippets-shipping-tax-info-zzgl-special-page'}
-                        {lang key='plus' section='basket'} {link href=$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() rel="nofollow" class="shipment popup"}
+                        {lang key='plus' section='basket'}
+                        {link href="{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}?shipping_calculator=0" rel="nofollow" class="shipment popup"}
                             {lang key='shipping' section='basket'}
                         {/link}
                     {/block}

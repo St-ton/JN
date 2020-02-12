@@ -9,7 +9,7 @@
         {/block}
         {block name='account-downloads-order-downloads'}
             {foreach $Bestellung->oDownload_arr as $oDownload}
-                {card no-body=true class="cols-12 col-md-8"}
+                {card no-body=true class="cols-12 col-md-8 px-0"}
                     {cardheader id="download-{$oDownload@iteration}" class="p-2 border-top"}
                         {button
                             variant="link"
@@ -28,6 +28,10 @@
                         {cardbody}
                             {block name='account-downloads-order-downloads-item-body'}
                                 {row}
+                                    {col md=4}{lang key='downloadOrderDate'}:{/col}
+                                    {col md=8}{$dErstellt|default:"--"|date_format:"%d.%m.%Y %H:%M"}{/col}
+                                {/row}
+                                {row}
                                     {col md=4}{lang key='downloadLimit'}:{/col}
                                     {col md=8}{$oDownload->cLimit|default:{lang key='unlimited'}}{/col}
                                 {/row}
@@ -39,7 +43,8 @@
                                     {col md=4}{lang key='download'}:{/col}
                                     {col md=8}
                                         {if $Bestellung->cStatus == $smarty.const.BESTELLUNG_STATUS_BEZAHLT
-                                            || $Bestellung->cStatus == $smarty.const.BESTELLUNG_STATUS_VERSANDT}
+                                        || $Bestellung->cStatus == $smarty.const.BESTELLUNG_STATUS_VERSANDT
+                                        || $Bestellung->cStatus == $smarty.const.BESTELLUNG_STATUS_TEILVERSANDT}
                                             {form method="post" action="{get_static_route id='jtl.php'}"}
                                                 {input name="a" type="hidden" value="getdl"}
                                                 {input name="bestellung" type="hidden" value=$Bestellung->kBestellung}
@@ -98,6 +103,17 @@
                                             }
                                                 {cardbody}
                                                     {block name='account-downloads-customer-downloads-item-body'}
+                                                        {assign var=cStatus value=$smarty.const.BESTELLUNG_STATUS_OFFEN}
+                                                        {foreach $Bestellungen as $Bestellung}
+                                                            {if $Bestellung->kBestellung == $oDownload->kBestellung}
+                                                                {assign var=cStatus value=$Bestellung->cStatus}
+                                                                {assign var=dErstellt value=$Bestellung->dErstellt}
+                                                            {/if}
+                                                        {/foreach}
+                                                        {row}
+                                                            {col md=4}{lang key='downloadOrderDate'}:{/col}
+                                                            {col md=8}{$dErstellt|default:"--"|date_format:"%d.%m.%Y %H:%M"}{/col}
+                                                        {/row}
                                                         {row}
                                                             {col md=4}{lang key='downloadLimit'}:{/col}
                                                             {col md=8}{$oDownload->cLimit|default:{lang key='unlimited'}}{/col}
@@ -112,14 +128,9 @@
                                                             {form method="post" action="{get_static_route id='jtl.php'}"}
                                                                 {input name="kBestellung" type="hidden" value=$oDownload->kBestellung}
                                                                 {input name="kKunde" type="hidden" value=$smarty.session.Kunde->kKunde}
-                                                                {assign var=cStatus value=$smarty.const.BESTELLUNG_STATUS_OFFEN}
-                                                                {foreach $Bestellungen as $Bestellung}
-                                                                    {if $Bestellung->kBestellung == $oDownload->kBestellung}
-                                                                        {assign var=cStatus value=$Bestellung->cStatus}
-                                                                    {/if}
-                                                                {/foreach}
                                                                 {if $cStatus == $smarty.const.BESTELLUNG_STATUS_BEZAHLT
-                                                                    || $cStatus == $smarty.const.BESTELLUNG_STATUS_VERSANDT}
+                                                                || $cStatus == $smarty.const.BESTELLUNG_STATUS_VERSANDT
+                                                                || $cStatus == $smarty.const.BESTELLUNG_STATUS_TEILVERSANDT}
                                                                     {input name="dl" type="hidden" value=$oDownload->getDownload()}
                                                                     {block name='account-downloads-customer-downloads-item-download-button'}
                                                                         {button size="sm" type="submit" variant="outline-primary"}

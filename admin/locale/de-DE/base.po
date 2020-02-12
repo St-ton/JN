@@ -234,10 +234,10 @@ msgid "errorFillRequired"
 msgstr "Bitte füllen Sie alle Pflichtfelder korrekt aus."
 
 msgid "successConfigSave"
-msgstr "Ihre Einstellungen wurden erfolgreich gespeichert."
+msgstr "Einstellungen wurden erfolgreich gespeichert."
 
 msgid "errorConfigSave"
-msgstr "Die Einstellungen konnten nicht gespeichert werden."
+msgstr "Einstellungen konnten nicht gespeichert werden."
 
 msgid "errorIsNoDir"
 msgstr " ist kein Verzeichnis"
@@ -306,10 +306,10 @@ msgid "row"
 msgstr "Zeile"
 
 msgid "errorLangVarNotFound"
-msgstr "Die ausgewählte Sprachvariable wurde nicht gefunden."
+msgstr "Ausgewählte Sprachvariable wurde nicht gefunden."
 
 msgid "successChangesSave"
-msgstr "Ihre Änderungen wurden erfolgreich übernommen."
+msgstr "Änderungen wurden erfolgreich übernommen."
 
 msgid "errorChooseOption"
 msgstr "Bitte wählen Sie mindestens eine Option aus."
@@ -330,7 +330,7 @@ msgid "errorPasswordChange"
 msgstr "Passwort konnte nicht geändert werden."
 
 msgid "errorHashInvalid"
-msgstr "Es wurde ein ungültiger Hash übergeben."
+msgstr "Ungültiger Hash wurde übergeben."
 
 msgid "errorPasswordMismatch"
 msgstr "Passwörter stimmen nicht überein."
@@ -1065,7 +1065,7 @@ msgid "version"
 msgstr "Version"
 
 msgid "shopversion"
-msgstr "Shopversion"
+msgstr "Onlineshop-Version"
 
 msgid "create"
 msgstr "Erstellen"
@@ -1404,10 +1404,7 @@ msgid "contact"
 msgstr "Kontakt"
 
 msgid "news"
-msgstr "News"
-
-msgid "poll"
-msgstr "Umfrage"
+msgstr "Blog"
 
 msgid "mapping"
 msgstr "Mapping"
@@ -1470,7 +1467,7 @@ msgid "account"
 msgstr "Konto"
 
 msgid "shop"
-msgstr "Shop"
+msgstr "Onlineshop"
 
 # page type (tspezialseite)
 msgid "Startseite"
@@ -1494,7 +1491,7 @@ msgstr "Tagging"
 
 # page type (tspezialseite)
 msgid "Livesuche"
-msgstr "Live-Suche"
+msgstr "Suchanfragen"
 
 # page type (tspezialseite)
 msgid "Datenschutz"
@@ -1552,20 +1549,16 @@ msgstr "Newsletter-Archiv"
 
 # page type (tspezialseite)
 msgid "News"
-msgstr "News"
+msgstr "Blog"
 
 msgid "pageNewsMonth"
-msgstr "Monatsübersicht der News-Beiträge"
+msgstr "Monatsübersicht der Blogbeiträge"
 
 msgid "pageNewsCategory"
-msgstr "Newskategorie"
+msgstr "Blogkategorie"
 
 msgid "pageNewsDetail"
-msgstr "Detailseite für News-Beitrag"
-
-# page type (tspezialseite)
-msgid "Umfrage"
-msgstr "Umfrage"
+msgstr "Detailseite für Blogbeitrag"
 
 msgid "pagePlugin"
 msgstr "Plugin"
@@ -1657,7 +1650,7 @@ msgid "origin"
 msgstr "Herkunft"
 
 msgid "errorFileUploadGeneral"
-msgstr "Die Datei konnte nicht hochgeladen werden."
+msgstr "Datei konnte nicht hochgeladen werden."
 
 msgid "Europa"
 msgstr "Europa"

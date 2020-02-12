@@ -15,7 +15,6 @@ use JTL\Catalog\Product\MerkmalWert;
 use JTL\Catalog\Product\Preise;
 use JTL\CheckBox;
 use JTL\Checkout\Bestellung;
-use JTL\Checkout\Lieferadresse;
 use JTL\Customer\Customer;
 use JTL\Emailvorlage;
 use JTL\Firma;
@@ -367,30 +366,22 @@ define('HOOK_TOOLSAJAXSERVER_PAGE_TAUSCHEVARIATIONKOMBI', 45);
 define('HOOK_TOOLSAJAXSERVER_PAGE_ARTIKELDETAIL', 46);
 
 /**
- * Kurz vor der Ansicht der Umfrage
- *
- * @file umfrage.php
+ * @removed in 5.0.0
  */
 define('HOOK_UMFRAGE_PAGE', 47);
 
 /**
- * Kurz vor der Ansicht der Umfrageübersicht
- *
- * @file umfrage.php
+ * @removed in 5.0.0
  */
 define('HOOK_UMFRAGE_PAGE_UEBERSICHT', 48);
 
 /**
- * Kurz vor der Ansicht der Umfragedurchführung
- *
- * @file umfrage.php
+ * @removed in 5.0.0
  */
 define('HOOK_UMFRAGE_PAGE_DURCHFUEHRUNG', 49);
 
 /**
- * Kurz vor dem Speichern einer Umfrage
- *
- * @file umfrage.php
+ * @removed in 5.0.0
  */
 define('HOOK_UMFRAGE_PAGE_UMFRAGEERGEBNIS', 50);
 
@@ -558,6 +549,7 @@ define('HOOK_BESTELLABSCHLUSS_INC_BESTELLUNGINDB_NEUKUNDENREGISTRIERUNG', 73);
 /**
  * Kurz vor dem Eintragen der Rechnungsadresse in die Datenbank während des Einfügens einer Bestellung
  *
+ * @param \JTL\Checkout\Rechnungsadresse billingAddress - since 5.0.0
  * @file bestellabschluss_inc.php
  */
 define('HOOK_BESTELLABSCHLUSS_INC_BESTELLUNGINDB_RECHNUNGSADRESSE', 74);
@@ -1929,6 +1921,24 @@ define('HOOK_LINKGROUP_MAPPED', 302);
  * @param \JTL\Link\LinkGroupList list
  */
 define('HOOK_LINKGROUPS_LOADED', 303);
+
+/**
+ * Kurz vor dem Einfügen einer neuen / bisher unbekannten Lieferadresse in die DB, beim Einfügen einer Bestellung in die DB.
+ *
+ * @since 5.0.0
+ * @file bestellabschluss_inc.php
+ * @param JTL\Checkout\Lieferadresse deliveryAddress
+ */
+define('HOOK_BESTELLABSCHLUSS_INC_BESTELLUNGINDB_LIEFERADRESSE_NEU', 304);
+
+/**
+ * Zuordnung einer bekannten Lieferadresse zu der Bestellung, beim Einfügen einer Bestellung in die DB.
+ *
+ * @since 5.0.0
+ * @file bestellabschluss_inc.php
+ * @param int deliveryAddressID - Key der Lieferadresse als Integer
+ */
+define('HOOK_BESTELLABSCHLUSS_INC_BESTELLUNGINDB_LIEFERADRESSE_ALT', 305);
 
 /**
  * @since 5.0.0

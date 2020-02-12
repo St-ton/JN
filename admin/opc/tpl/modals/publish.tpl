@@ -1,4 +1,4 @@
-<div class="modal fade" tabindex="-1" id="publishModal">
+<div class="modal fade" tabindex="-1" id="publishModal" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -8,7 +8,7 @@
                     <i class="fa fas fa-times"></i>
                 </button>
             </div>
-            <form id="publishForm">
+            <form onsubmit="opc.gui.publish()">
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="draftName">{__('draftName')}</label>

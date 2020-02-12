@@ -476,11 +476,6 @@ final class LinkService implements LinkServiceInterface
                             $link->setIsActive(true);
                         }
                         break;
-                    case \PAGE_UMFRAGE:
-                        if ($linkType === \LINKTYP_UMFRAGE) {
-                            $link->setIsActive(true);
-                        }
-                        break;
                     case \PAGE_NEWS:
                         if ($linkType === \LINKTYP_NEWS) {
                             $link->setIsActive(true);

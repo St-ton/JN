@@ -3,9 +3,10 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='boxes-box-filter-characteristics'}
-    {if $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE && (!$device->isMobile() || $device->isTablet())}
+    {if $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE
+        && !($isMobile || $Einstellungen.template.productlist.filter_placement === 'modal')}
         {foreach $oBox->getItems() as $characteristic}
-            <div id="sidebox{$oBox->getID()}-{$characteristic->getID()}" class="box box-filter-characteristics{if $characteristic@last} mb-7{/if}">
+            <div id="sidebox{$oBox->getID()}-{$characteristic->getID()}" class="box box-filter-characteristics{if $characteristic@last} mb-7{/if} d-none d-lg-block">
                 {button
                     variant="link"
                     class="text-decoration-none px-0 text-left dropdown-toggle"
@@ -32,7 +33,6 @@
                     {/if}
                 {/button}
                 {collapse
-                    class="{if $characteristic->getData('cTyp') !== 'SELECTBOX'}overflow-auto{/if}"
                     id="cllps-box{$oBox->getID()}-{$characteristic->getID()}"
                     visible=$characteristic->isActive()
                 }
@@ -47,11 +47,9 @@
                         {/block}
                     {else}
                         {block name='boxes-box-filter-characteristics-link'}
-                            {nav vertical=$characteristic->getData('cTyp') !== 'BILD'}
                             {block name='boxes-box-filter-characteristics-include-characteristics-link'}
                                 {include file='snippets/filter/characteristic.tpl' Merkmal=$characteristic}
                             {/block}
-                            {/nav}
                         {/block}
                     {/if}
                 {/block}

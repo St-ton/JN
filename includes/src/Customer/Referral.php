@@ -27,7 +27,7 @@ class Referral
     public $kKundenWerbenKunden;
 
     /**
-     * @var string
+     * @var int
      */
     public $kKunde;
 
@@ -105,6 +105,9 @@ class Referral
         $data  = Shop::Container()->getDB()->select('tkundenwerbenkunden', 'cEmail', $email);
         if (isset($data->kKundenWerbenKunden) && $data->kKundenWerbenKunden > 0) {
             foreach (\array_keys(\get_object_vars($data)) as $member) {
+                if (\in_array($member, ['kKunde', 'kKundenWerbenKunden'], true)) {
+                    $data->$member = (int)$data->$member;
+                }
                 $this->$member = $data->$member;
             }
             $tmpCustomer              = new Customer();

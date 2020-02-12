@@ -2018,18 +2018,6 @@ msgstr "Yes"
 msgid "sitemap_google_ping_value(N)"
 msgstr "No"
 
-msgid "umfrage_nutzen_value(Y)"
-msgstr "Yes"
-
-msgid "umfrage_nutzen_value(N)"
-msgstr "No"
-
-msgid "umfrage_einloggen_value(Y)"
-msgstr "Yes"
-
-msgid "umfrage_einloggen_value(N)"
-msgstr "No"
-
 msgid "kwk_nutzen_value(Y)"
 msgstr "Yes"
 
@@ -2404,3 +2392,9 @@ msgstr "Image and Text"
 
 msgid "hersteller_anzeigen_als_value(B)"
 msgstr "Image"
+
+msgid "general_child_item_bulk_pricing_value(Y)"
+msgstr "Yes"
+
+msgid "general_child_item_bulk_pricing_value(N)"
+msgstr "No"

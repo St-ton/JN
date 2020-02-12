@@ -56,12 +56,6 @@ msgstr "Plug-in"
 msgid "hasNewPluginVersionsMessage"
 msgstr "There are new plug-in versions available."
 
-msgid "hasInvalidPollCouponsTitle"
-msgstr "Survey"
-
-msgid "hasInvalidPollCouponsMessage"
-msgstr "One survey uses a coupon that is inactive or does not exist."
-
 msgid "hasFullTextIndexErrorTitle"
 msgstr "Full-text search"
 
@@ -118,3 +112,6 @@ msgstr "Special page created multiple times"
 
 msgid "duplicateSpecialLinkDesc"
 msgstr "At least one special page was created several times for the same customer group(s)."
+
+msgid "Safe mode enabled."
+msgstr "Safe mode enabled. Certain functionality will not be available."

@@ -109,6 +109,11 @@
 }
 
 #cfg-container .cfg-group {
+	.hr-sect {
+		&::before {
+			max-width: 2%;
+		}
+	}
 	.h5 {
 		background: $sand;
 	}

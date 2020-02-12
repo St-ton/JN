@@ -22871,6 +22871,9 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   flex-wrap: wrap;
 }
 
+#cfg-container .cfg-group .hr-sect::before {
+  max-width: 2%;
+}
 #cfg-container .cfg-group .h5 {
   background: #ebebeb;
 }

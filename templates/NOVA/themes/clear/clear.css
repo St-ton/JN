@@ -19586,13 +19586,13 @@ aside .last-seen-link {
 }
 
 /* customs */
-n .carousel-thumbnails {
+.carousel-thumbnails {
   margin: 0 -0.5rem;
 }
-n .carousel-thumbnails .slick-slide {
+.carousel-thumbnails .slick-slide {
   padding: 0 0.5rem;
 }
-n .carousel-thumbnails .slick-arrow {
+.carousel-thumbnails .slick-arrow {
   flex: 0 0 auto;
   transform: none;
   position: static;
@@ -19602,19 +19602,19 @@ n .carousel-thumbnails .slick-arrow {
   background: transparent;
   opacity: 1;
 }
-n .carousel-thumbnails .slick-arrow:hover {
+.carousel-thumbnails .slick-arrow:hover {
   background: transparent;
   color: inherit;
 }
-n .carousel-thumbnails .slick-list {
+.carousel-thumbnails .slick-list {
   margin: 0 -0.5rem;
 }
-n .carousel-thumbnails .productbox-image-wrapper {
+.carousel-thumbnails .productbox-image-wrapper {
   border: 1px solid #ebebeb;
   border-radius: 0.125rem;
   overflow: hidden;
 }
-n .carousel-thumbnails .slick-active .productbox-image-wrapper {
+.carousel-thumbnails .slick-active .productbox-image-wrapper {
   border-color: #525252;
 }
 

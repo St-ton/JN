@@ -5,6 +5,10 @@ msgstr ""
 msgid "opcNotInstalled"
 msgstr "The OPC update was not installed properly. Please update the migrations."
 
+msgid "dbUpdateNeeded"
+msgstr "A datebase update of your JTL-Shop is required to use the OnPage Composer.<br><br>"
+"Please execute the update in the <a href=\"%s/admin/dbupdater.php\" target=\"_blank\">Admin Backend</a>!"
+
 # OPC GUI
 
 msgid "Import"
@@ -423,3 +427,6 @@ msgstr "Discard this area"
 
 msgid "Cancel"
 msgstr "Cancel"
+
+msgid "opcPageLocked"
+msgstr "Another user is currently editing this draft. Unfortunately the access is blocked for you."

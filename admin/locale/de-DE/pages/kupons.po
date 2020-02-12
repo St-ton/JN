@@ -39,10 +39,10 @@ msgid "validUntil"
 msgstr "Gültig bis"
 
 msgid "buttonNewCoupon"
-msgstr "Neuen Coupon erstellen"
+msgstr "Neu Coupon erstellen"
 
 msgid "newCouponDesc"
-msgstr "Bitte füllen Sie alle Felder aus, um einen neuen Coupon zu erstellen.<br/>Wird kein Code eingegeben, wird ein Code automatisch erstellt.<br/>Wenn Sie den Coupon auf wenige Artikel beschränken möchten, geben Sie die Artikelnummern semikolongetrennt an.<br/>Soll der Coupon für alle Artikel im Onlineshop gelten, so lassen Sie dieses Feld frei."
+msgstr "Bitte füllen Sie alle Felder aus, um einen neuen Coupon zu erstellen.<br/>Wird kein Code eingegeben, wird automatisch ein Code erstellt.<br/>Wenn Sie den Coupon auf wenige Artikel beschränken möchten, geben Sie die Artikelnummern durch ein Semikolon getrennt an.<br/>Soll der Coupon für alle Artikel im Onlineshop gelten, so lassen Sie dieses Feld frei."
 
 msgid "buttonModifyCoupon"
 msgstr "Coupon ändern"
@@ -60,7 +60,7 @@ msgid "productRestrictions"
 msgstr "Beschränken auf Artikelnummern"
 
 msgid "restrictionToCustomerGroup"
-msgstr "Gilt nur für"
+msgstr "Beschränken auf Kundengruppen:"
 
 msgid "restrictedToManufacturers"
 msgstr "Beschränken auf Hersteller"
@@ -78,7 +78,7 @@ msgid "allCustomers"
 msgstr "Alle Kunden"
 
 msgid "informCustomers"
-msgstr "Markierte Kunden jetzt per E-Mail über Coupon informieren."
+msgstr "Markierte Kunden jetzt per E-Mail über Coupon informieren"
 
 msgid "emailPreview"
 msgstr "E-Mail-Vorschau"
@@ -156,25 +156,25 @@ msgid "validUntilHelp"
 msgstr "Hier legen Sie fest, bis zu welchem Zeitpunkt der Coupon gültig sein soll. Wenn Sie das Feld leer lassen, ist der Coupon entweder unbegrenzt gültig oder es wird die Einstellung „Gültigkeitsdauer (Tage)“ berücksichtigt."
 
 msgid "periodOfValidityHelp"
-msgstr "Hier legen Sie fest, wie lange der Coupon in Tagen gültig ist. Diese Option ist alternativ zur Option „Gültig bis“. Sind beide Felder leer, ist der Coupon unbegrenzt gültig."
+msgstr "Hier legen Sie fest, wie viele Tage der Coupon gültig ist. Diese Option ist alternativ zur Option „Gültig bis“. Sind beide Felder leer, ist der Coupon unbegrenzt gültig."
 
 msgid "errorImportCSV"
-msgstr "Die CSV-Datei konnte nicht vollständig importiert werden."
+msgstr "CSV-Datei konnte nicht vollständig importiert werden."
 
 msgid "successImportCSV"
 msgstr "CSV-Datei wurde erfolgreich importiert."
 
 msgid "errorImportRow"
-msgstr "Zeile(n) sind nicht importierbar."
+msgstr "Zeile(n) können nicht importiert werden."
 
 msgid "successCouponSave"
-msgstr "Der Coupon wurde erfolgreich gespeichert."
+msgstr "Coupon wurde erfolgreich gespeichert."
 
 msgid "errorCouponSave"
-msgstr "Der Coupon konnte nicht gespeichert werden."
+msgstr "Coupon konnte nicht gespeichert werden."
 
 msgid "successCouponDelete"
-msgstr "Die markierten Coupons wurden erfolgreich gelöscht."
+msgstr "Markierte Coupons wurden erfolgreich gelöscht."
 
 msgid "errorCouponDelete"
 msgstr "Einer oder mehrere Coupons konnten nicht gelöscht werden."
@@ -195,13 +195,13 @@ msgid "errorCouponISOMissing"
 msgstr "Bitte geben Sie die Länderkürzel (ISO-Codes) unter „Lieferländer“ an, für die dieser Versandkostenfrei-Coupon gelten soll."
 
 msgid "errorCouponCodeLong"
-msgstr "Der zu generierende Code ist länger als 32 Zeichen. Bitte verringern Sie die Anzahl an Zeichen in Präfix und/oder Suffix oder geben Sie eine kleinere Zahl bei der Länge des Zufallcodes an."
+msgstr "Der zu generierende Code ist länger als 32 Zeichen. Bitte verringern Sie die Anzahl an Zeichen in Präfix und/oder Suffix oder geben Sie eine kleinere Zahl bei der Länge des Zufallscodes an."
 
 msgid "errorCouponCodeShort"
-msgstr "Der zu generierende Code ist kürzer als 2 Zeichen. Bitte vergrößern Sie die Anzahl an Zeichen in Präfix und/oder Suffix oder geben Sie eine größere Zahl bei der Länge des Zufallcodes an."
+msgstr "Der zu generierende Code ist kürzer als 2 Zeichen. Bitte vergrößern Sie die Anzahl an Zeichen in Präfix und/oder Suffix oder geben Sie eine größere Zahl bei der Länge des Zufallscodes an."
 
 msgid "errorCouponCodeOptionSelect"
-msgstr "Bitte wählen Sie für „Zufallscode mit …“ mindestens eine Option aus."
+msgstr "Bitte wählen Sie für „Zufallscode mit …“ mindestens eine Option aus."
 
 msgid "errorCouponCodeDuplicate"
 msgstr "Der angegebene Code wird bereits von einem anderen Coupon verwendet. Bitte wählen Sie einen anderen Code."

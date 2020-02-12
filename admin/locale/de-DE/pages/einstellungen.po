@@ -15,7 +15,7 @@ msgid "backToOverview"
 msgstr "Zurück zur Übersicht"
 
 msgid "settingsSaved"
-msgstr "Die Einstellungen wurden erfolgreich gespeichert."
+msgstr "Einstellungen wurden erfolgreich gespeichert."
 
 msgid "prefDesc5"
 msgstr ""

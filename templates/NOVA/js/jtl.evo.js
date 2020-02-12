@@ -796,6 +796,27 @@
             return baseURL + '?' + newAdditionalURL + temp + param + '=' + paramVal;
         },
 
+        updateReviewHelpful: function(item) {
+            let formData = $.evo.io().getFormValues('reviews-list');
+            formData[item.prop('name')] = '';
+            formData['reviewID'] = item.data('review-id');
+
+            $.evo.io().call(
+                'updateReviewHelpful',
+                [formData],
+                $(this) , function(error, data) {
+                    if (error) {
+                        return;
+                    }
+                    let review = data.response.review;
+
+                    $('[data-review-id="' + review.kBewertung + '"]').removeClass('on-list');
+                    item.addClass('on-list');
+                    $('[data-review-count-id="hilfreich_' + review.kBewertung + '"]').html(review.nHilfreich);
+                    $('[data-review-count-id="nichthilfreich_' + review.kBewertung + '"]').html(review.nNichtHilfreich);
+                });
+        },
+
         /**
          * $.evo.extended() is deprecated, please use $.evo instead
          */

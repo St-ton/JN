@@ -16,7 +16,7 @@
                 <h1>{lang key='productRating' section='product rating'}</h1>
             {/block}
             {block name='productdetails-review-form-form'}
-                {form action="{get_static_route id='bewertung.php'}#tab-votes" class="evo-validate label-slide"}
+                {form action="{get_static_route id='bewertung.php'}#tab-votes" class="jtl-validate label-slide"}
                     {block name='productdetails-review-form-alerts'}
                         {$alertList->displayAlertByKey('productNotBuyed')}
                         {$alertList->displayAlertByKey('loginFirst')}

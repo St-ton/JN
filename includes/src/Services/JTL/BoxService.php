@@ -353,8 +353,7 @@ class BoxService implements BoxServiceInterface
                 AND tboxen.ePosition IN (' . \implode(',', $visiblePositions) . ')'
             : '';
         $plgnSQL    = $activeOnly
-            ? ' AND (tplugin.nStatus IS NULL OR tplugin.nStatus = ' .
-            State::ACTIVATED . "  OR (tboxvorlage.eTyp != '" . Type::PLUGIN .
+            ? ' AND (tplugin.nStatus = ' . State::ACTIVATED . "  OR (tboxvorlage.eTyp != '" . Type::PLUGIN .
             "' AND tboxvorlage.eTyp != '" . Type::EXTENSION . "'))"
             : '';
         if (($grouped = $this->cache->get($cacheID)) === false) {
@@ -391,13 +390,14 @@ class BoxService implements BoxServiceInterface
                 });
             }
             $boxData = map($boxData, static function ($box) {
-                $box->kBox        = (int)$box->kBox;
-                $box->kBoxvorlage = (int)$box->kBoxvorlage;
-                $box->kCustomID   = (int)$box->kCustomID;
-                $box->kContainer  = (int)$box->kContainer;
-                $box->kSeite      = (int)$box->kSeite;
-                $box->nSort       = (int)$box->nSort;
-                $box->kSprache    = $box->kSprache === null ? null : (int)$box->kSprache;
+                $box->kBox         = (int)$box->kBox;
+                $box->kBoxvorlage  = (int)$box->kBoxvorlage;
+                $box->kCustomID    = (int)$box->kCustomID;
+                $box->kContainer   = (int)$box->kContainer;
+                $box->kSeite       = (int)$box->kSeite;
+                $box->nSort        = (int)$box->nSort;
+                $box->kSprache     = $box->kSprache === null ? null : (int)$box->kSprache;
+                $box->pluginStatus = $box->pluginStatus === null ? null : (int)$box->pluginStatus;
 
                 return $box;
             });

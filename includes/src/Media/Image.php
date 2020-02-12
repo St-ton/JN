@@ -67,6 +67,11 @@ class Image
     private static $settings;
 
     /**
+     * @var bool
+     */
+    private static $webPSupport;
+
+    /**
      * @return array
      */
     public static function getAllSizes(): array
@@ -479,8 +484,12 @@ class Image
         if (self::getSettings()['format'] !== 'auto') {
             return false;
         }
-        return self::getImageDriver() === 'imagick'
-            ? \count(Imagick::queryFormats('WEBP')) > 0
-            : \gd_info()['WebP Support'] ?? false;
+        if (self::$webPSupport === null) {
+            self::$webPSupport = self::getImageDriver() === 'imagick'
+                ? \count(Imagick::queryFormats('WEBP')) > 0
+                : \gd_info()['WebP Support'] ?? false;
+        }
+
+        return self::$webPSupport;
     }
 }

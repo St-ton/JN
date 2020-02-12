@@ -21,13 +21,13 @@ msgid "wrbform"
 msgstr "Muster-Widerrufsformular"
 
 msgid "agbWrbInfo"
-msgstr "Hier können Sie eigene Texte für Ihre AGB, eine Widerrufsbelehrung und ein Muster-Widerrufsformular hinterlegen. Bei der Erstellung rechtssicherer Texte können Ihnen unsere Partner helfen. Hier finden Sie alle Partner, die Rechtstexte anbieten: <i class=\"fa fa-external-link\"></i> <a href=\"http://jtl-url.de/rechtstexte\" target=\"_blank\">http://jtl-url.de/rechtstexte</a>."
+msgstr "Hier können Sie eigene Texte für Ihre AGB, Ihre Widerrufsbelehrung, ein Muster-Widerrufsformular und eine Datenschutzerklärung hinterlegen. Bei der Erstellung rechtssicherer Texte können Ihnen unsere Partner helfen. Hier finden Sie alle Partner, die Rechtstexte anbieten: <i class=\"fa fa-external-link\"></i> <a href=\"http://jtl-url.de/rechtstexte\" target=\"_blank\">http://jtl-url.de/rechtstexte</a>."
 
 msgid "errorInvalidCustomerGroup"
 msgstr "Bitte geben Sie eine gültige Kundengruppe an."
 
 msgid "successSave"
-msgstr "Ihre AGB / Widerrufsbelehrung wurde erfolgreich gespeichert."
+msgstr "AGB / Widerrufsbelehrung wurde erfolgreich gespeichert."
 
 msgid "errorSave"
-msgstr "Ihre AGB / Widerrufsbelehrung konnte nicht gespeichert werden."
+msgstr "AGB / Widerrufsbelehrung konnte nicht gespeichert werden."

@@ -17,7 +17,6 @@ use JTL\DB\ReturnType;
 use JTL\Extensions\Config\Item;
 use JTL\Extensions\Config\ItemLocalization;
 use JTL\Extensions\Download\Download;
-use JTL\GlobalSetting;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
@@ -27,6 +26,7 @@ use JTL\Shop;
 use stdClass;
 use function Functional\select;
 use function Functional\some;
+use function Functional\map;
 
 /**
  * Class Warenkorb
@@ -955,10 +955,7 @@ class Cart
                         }
                     }
                 }
-                if ($product->kVaterArtikel > 0 && GlobalSetting::getInstance()->getValue(
-                    GlobalSetting::CHILD_ITEM_BULK_PRICING,
-                    DEFAULT_GENERAL_CHILD_ITEM_BULK_PRICING
-                )) {
+                if ($product->kVaterArtikel > 0 && $this->config['kaufabwicklung']['general_child_item_bulk_pricing'] === 'Y') {
                     $qty = $this->gibAnzahlEinesArtikels($product->kVaterArtikel, -1, true);
                 } else {
                     $qty = $this->gibAnzahlEinesArtikels($product->kArtikel);
@@ -1853,6 +1850,14 @@ class Cart
         $itemCount       = 0;
         $totalWeight     = 0;
         $shippingClasses = ShippingMethod::getShippingClasses(Frontend::getCart());
+        $shippingMethods = map(ShippingMethod::getPossibleShippingMethods(
+            ($_SESSION['Lieferadresse']->cLand ?? $_SESSION['Kunde']->cLand) ?? $_SESSION['cLieferlandISO'],
+            ($_SESSION['Lieferadresse']->cPLZ ?? null) ?? Frontend::getCustomer()->cPLZ,
+            $shippingClasses,
+            $customerGroupID
+        ), static function ($e) {
+            return $e->kVersandart;
+        });
 
         foreach ($this->PositionenArr as $item) {
             $totalWeight += $item->fGesamtgewicht;
@@ -1882,6 +1887,7 @@ class Cart
                     OR ( va.kVersandberechnung = 2 AND vas.fBis > 0 AND :totalWeight <= vas.fBis )
                     OR ( va.kVersandberechnung = 3 AND vas.fBis > 0 AND :maxPrices <= vas.fBis )
                     )
+                AND va.kVersandart IN (' . \implode(', ', $shippingMethods) . ')
                 ORDER BY minPrice, nSort ASC LIMIT 1',
             [
                 'iso'         => '%' . $countryCode . '%',

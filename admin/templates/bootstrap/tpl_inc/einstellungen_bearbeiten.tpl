@@ -1,12 +1,8 @@
 {if isset($Sektion) && $Sektion}
-    {assign var=cTitel value=__('settings')|cat:': '|cat:{__($Sektion->cName)}}
     {if isset($cSearch) && $cSearch|strlen  > 0}
-        {assign var=cTitel value=$cSearch}
+        {assign var=title value=$cSearch}
     {/if}
-    {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=$cPrefDesc cDokuURL=$cPrefURL}
-{/if}
-{if !isset($action) || !$action}
-    {assign var=action value='einstellungen.php'}
+    {include file='tpl_inc/seite_header.tpl' cTitel=$title cBeschreibung=$cPrefDesc cDokuURL=$cPrefURL}
 {/if}
 {$search = isset($cSuche) && !empty($cSuche)}
 
@@ -27,10 +23,9 @@
         });
     </script>
 {/if}
-
 <div id="content">
     <div id="settings">
-        <form name="einstellen" method="post" action="{$action}" class="settings navbar-form">
+        <form name="einstellen" method="post" action="{$action|default:''}" class="settings navbar-form">
             {$jtl_token}
             <input type="hidden" name="einstellungen_bearbeiten" value="1" />
             {if $search}

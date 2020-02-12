@@ -33,12 +33,15 @@ use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Helpers\URL;
+use JTL\Review\ReviewController;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Staat;
 use SmartyException;
 use stdClass;
+use function Functional\filter;
+use function Functional\flatten;
 use function Functional\pluck;
 
 require_once \PFAD_ROOT . \PFAD_INCLUDES . 'artikel_inc.php';
@@ -90,7 +93,8 @@ class IOMethods
                         ->register('getCitiesByZip', [$this, 'getCitiesByZip'])
                         ->register('getOpcDraftsHtml', [$this, 'getOpcDraftsHtml'])
                         ->register('setWishlistVisibility', [$this, 'setWishlistVisibility'])
-                        ->register('updateWishlistItem', [$this, 'updateWishlistItem']);
+                        ->register('updateWishlistItem', [$this, 'updateWishlistItem'])
+                        ->register('updateReviewHelpful', [$this, 'updateReviewHelpful']);
     }
 
     /**
@@ -1388,6 +1392,36 @@ class IOMethods
         $objResponse    = new IOResponse();
         $response       = new stdClass();
         $response->wlID = $wlID;
+
+        $objResponse->script('this.response = ' . \json_encode($response) . ';');
+
+        return $objResponse;
+    }
+
+    /**
+     * @param array $formData
+     * @return IOResponse
+     * @throws Exception
+     */
+    public function updateReviewHelpful(array $formData): IOResponse
+    {
+        $_POST = $formData;
+        Shop::run();
+        $controller = new ReviewController(
+            Shop::Container()->getDB(),
+            Shop::Container()->getCache(),
+            Shop::Container()->getAlertService(),
+            Shop::Smarty()
+        );
+        $controller->handleRequest();
+        $objResponse      = new IOResponse();
+        $response         = new stdClass();
+        $response->review = flatten(filter(
+            (new Artikel())->fuelleArtikel(Shop::$kArtikel, Artikel::getDetailOptions())->Bewertungen->oBewertung_arr,
+            static function ($e) use ($formData) {
+                    return (int)$e->kBewertung === (int)$formData['reviewID'];
+            }
+        ))[0];
 
         $objResponse->script('this.response = ' . \json_encode($response) . ';');
 

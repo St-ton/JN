@@ -4,6 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Minify\MinifyService;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
@@ -27,6 +28,8 @@ $feSmarty = new JTLSmarty(true, ContextType::FRONTEND);
 $feSmarty->clearCompiledTemplate();
 $smarty->clearCompiledTemplate();
 Shop::Container()->getCache()->flushAll();
+$ms = new MinifyService();
+$ms->flushCache();
 
 $fileVersion      = $updater->getCurrentFileVersion();
 $dbVersion        = $updater->getCurrentDatabaseVersion();
@@ -43,6 +46,6 @@ $smarty->assign('updatesAvailable', $updatesAvailable)
        ->assign('hasDifferentVersions', !Version::parse($fileVersion)->equals(Version::parse($fileVersion)))
        ->assign('version', $version)
        ->assign('updateError', $updateError)
-       ->assign('currentTemplateFileVersion', $template->xmlData->cVersion)
+       ->assign('currentTemplateFileVersion', $template->xmlData->cVersion ?? '1.0.0')
        ->assign('currentTemplateDatabaseVersion', $template->version)
        ->display('dbupdater.tpl');

@@ -504,7 +504,7 @@ msgid "Server"
 msgstr "Server"
 
 msgid "Accounts"
-msgstr "Benutzer / Rechte"
+msgstr "Benutzer & Rechte"
 
 msgid "Troubleshooting"
 msgstr "Fehlerbehebung"

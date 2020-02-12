@@ -566,7 +566,12 @@ class Redirect
 
         if (is_array($oRedirect_arr) && count($oRedirect_arr) > 0) {
             foreach ($oRedirect_arr as &$oRedirect) {
+                $oRedirect->cFromUrl             = StringHandler::filterXSS($oRedirect->cFromUrl);
                 $oRedirect->oRedirectReferer_arr = self::getReferers($oRedirect->kRedirect);
+
+                foreach ($oRedirect->oRedirectReferer_arr as $referer) {
+                    $referer->cRefererUrl = StringHandler::filterXSS($referer->cRefererUrl);
+                }
             }
         }
 

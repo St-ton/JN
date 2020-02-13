@@ -97,7 +97,6 @@ class Page
 
     loadFromJSON(json)
     {
-        this.opc.emit('page.loadFromJSON', json);
         try {
             var data = JSON.parse(json);
         } catch (e) {

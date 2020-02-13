@@ -496,7 +496,6 @@ class Iframe
             this.opc.emit('iframe.clonePortlet', data);
             this.io.getPortletPreviewHtml(data)
                 .then(html => {
-                    this.opc.emit('iframe.clonePortletHtml', html);
                     let copiedElm = this.createPortletElm(html);
                     copiedElm.insertAfter(this.selectedElm);
                     let area = copiedElm.parent();

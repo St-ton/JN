@@ -55,9 +55,7 @@ class Page
         this.jq        = jq;
         this.rootAreas = this.jq('.opc-rootarea');
 
-        let preview = this.loadDraftPreview();
-        this.opc.emit('page.initIframe', preview);
-        return preview;
+        return this.loadDraftPreview();
     }
 
     loadDraft()
@@ -162,8 +160,6 @@ class Page
 
     onLoad(preview)
     {
-        this.opc.emit('page.onLoad:start', preview);
-
         let areas = this.rootAreas;
         this.clear();
 
@@ -182,8 +178,6 @@ class Page
                 .html(areaContent);
             this.offscreenAreas = this.offscreenAreas.add(area);
         });
-
-        this.opc.emit('page.onLoad:end', preview);
     }
 
     save()

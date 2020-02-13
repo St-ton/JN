@@ -274,8 +274,7 @@
                     </div>
                 {/if}
             {/block}
-            <header class="d-print-none {if $Einstellungen.template.theme.mobile_search_type !== 'fixed'}sticky-top{/if} fixed-navbar" id="jtl-nav-wrapper">
-
+            <header class="d-print-none {if !$isMobile || $Einstellungen.template.theme.mobile_search_type !== 'fixed'}sticky-top{/if} fixed-navbar" id="jtl-nav-wrapper">
                 {block name='layout-header-container-inner'}
                     <div class="container-fluid container-fluid-xl">
                     {block name='layout-header-category-nav'}
@@ -301,6 +300,14 @@
                                         {/if}
                                     {/link}
                                 </div>
+                            {/block}
+
+                            {block name='layout-header-search'}
+                                {if $Einstellungen.template.theme.mobile_search_type === 'fixed'}
+                                    <div class="d-lg-none{if !$isTablet} container-fluid container-fluid-xl py-2 order-1 bg-white{else} px-4 py-2 flex-grow-1{/if}">
+                                        {include file='snippets/search_form.tpl'}
+                                    </div>
+                                {/if}
                             {/block}
 
                             {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}
@@ -354,37 +361,12 @@
                         {/navbar}
                     {/block}
                     </div>
-                    {block name='layout-header-search'}
-                        {if $Einstellungen.template.theme.mobile_search_type === 'fixed'}
-                            <div class="container-fluid container-fluid-xl d-lg-none">
-                                {form action='index.php' method='get' class='py-3'}
-                                    {inputgroup}
-                                        {input id="search-header-mobile" name="qs" type="text" class="ac_input" placeholder="{lang key='search'}" autocomplete="off" aria=["label"=>"{lang key='search'}"]}
-                                        {inputgroupaddon append=true}
-                                            {button type="submit" name='search' variant="secondary"}
-                                                <span class="fas fa-search"></span>
-                                            {/button}
-                                        {/inputgroupaddon}
-                                    {/inputgroup}
-                                {/form}
-                            </div>
-                        {/if}
-                    {/block}
                 {/block}
             </header>
             {block name='layout-header-search-fixed'}
                 {if $Einstellungen.template.theme.mobile_search_type === 'fixed'}
-                    <div class="container-fluid container-fluid-xl fixed-search fixed-top smoothscroll-top d-lg-none d-none">
-                        {form action='index.php' method='get' class='py-3'}
-                            {inputgroup}
-                                {input id="search-header-fixed" name="qs" type="text" class="ac_input" placeholder="{lang key='search'}" autocomplete="off" aria=["label"=>"{lang key='search'}"]}
-                                {inputgroupaddon append=true}
-                                    {button type="submit" name='search' variant="secondary"}
-                                        <span class="fas fa-search"></span>
-                                    {/button}
-                                {/inputgroupaddon}
-                            {/inputgroup}
-                        {/form}
+                    <div class="container-fluid container-fluid-xl fixed-search py-2 fixed-top smoothscroll-top d-lg-none d-none">
+                        {include file='snippets/search_form.tpl'}
                     </div>
 
                     {inline_script}<script>
@@ -395,7 +377,7 @@
                                 let newScroll = $(this).scrollTop();
                                 if (newScroll < lastScroll){
                                     if ($(window).scrollTop() > 100) {
-                                        $('.smoothscroll-top').removeClass('d-none');;
+                                        $('.smoothscroll-top').removeClass('d-none');
                                     } else {
                                         $('.smoothscroll-top').addClass('d-none');
                                     }

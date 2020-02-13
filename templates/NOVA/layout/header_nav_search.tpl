@@ -25,12 +25,7 @@
                 no-caret=true
                 router-aria=['label'=>{lang key='findProduct'}]}
                 <div class="dropdown-body">
-                    {form action='index.php' method='get'}
-                        {input name="qs" type="text" class="ac_input w-100" placeholder="{lang key='search'}" autocomplete="off" aria=["label"=>"{lang key='search'}"]}
-                        {button class="mt-3" type="submit" size="sm" variant="primary" block=true name="search" id="search-submit-button" aria=["label"=>"{lang key='search'}"]}
-                            {lang key='search'}
-                        {/button}
-                    {/form}
+                    {include file='snippets/search_form.tpl'}
                 </div>
             {/navitemdropdown}
         {/if}

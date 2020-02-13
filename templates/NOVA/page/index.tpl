@@ -53,14 +53,12 @@
                         </div>
                     {/block}
                     {block name='page-index-news'}
-                        <div itemprop="about" itemscope=true itemtype="http://schema.org/Blog" class="slick-smooth-loading carousel news-slider">
-                            {foreach $oNews_arr as $newsItem}
-                                <div>
-                                    {block name='page-index-include-preview'}
-                                        {include file='blog/preview.tpl'}
-                                    {/block}
-                                </div>
-                            {/foreach}
+                        <div itemprop="about"
+                             itemscope=true
+                             itemtype="http://schema.org/Blog"
+                             class="slick-smooth-loading carousel carousel-arrows-inside slick-lazy slick-type-news"
+                             data-slick-type="news-slider">
+                            {include file='snippets/slider_items.tpl' items=$oNews_arr type='news'}
                         </div>
                     {/block}
                 {/container}

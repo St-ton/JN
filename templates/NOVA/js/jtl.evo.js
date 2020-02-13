@@ -19,12 +19,11 @@
 
         generateSlickSlider: function() {
             let self = this;
-            self.initSlick($('.evo-box-slider:not(.slick-initialized)'), 'evo-box-slider');
-            self.initSlick($('.evo-slider-half:not(.slick-initialized)'), 'evo-slider-half');
-            self.initSlick($('.evo-slider:not(.slick-initialized)'), 'evo-slider');
+            self.initSlick($('.evo-box-slider:not(.slick-initialized)'), 'box-slider');
+            self.initSlick($('.evo-slider-half:not(.slick-initialized)'), 'slider-half');
+            self.initSlick($('.evo-slider:not(.slick-initialized)'), 'product-slider');
             self.initSlick($('.news-slider:not(.slick-initialized)'), 'news-slider');
-            self.initSlick($('#freegift form .row'), 'freegift');
-            self.initSlick($('.evo-box-vertical:not(.slick-initialized)'), 'evo-box-vertical')
+            self.initSlick($('.evo-box-vertical:not(.slick-initialized)'), 'box-vertical')
                 .on('afterChange', function () {
                     var heights = [];
                     $('.evo-box-vertical:not(.eq-height) .product-wrapper').each(function (i, element) {
@@ -50,22 +49,27 @@
 
             $('.slick-lazy .slick-arrow').on('click', function (e) {
                 let mainNode = $(this).parent();
-                mainNode.find('.initial-arrow').remove();
+                mainNode.find('.js-initial-arrow').remove();
                 self.initSlick(mainNode, mainNode.data('slick-type'));
-                mainNode.slick('slickGoTo', 1);
+                if(mainNode.slick('getSlick').slideCount > mainNode.slick('slickGetOption', 'slidesToShow')) {
+                    mainNode.slick('slickGoTo', 1);
+                }
             });
 
             document.querySelector('.slick-lazy').addEventListener('touchend', function (e) {
                 let mainNode = $(this);
-                mainNode.find('.initial-arrow').remove();
+                mainNode.find('.js-initial-arrow').remove();
                 self.initSlick(mainNode, mainNode.data('slick-type'));
-                mainNode.slick('slickGoTo', 1);
+                if(mainNode.slick('getSlick').slideCount > mainNode.slick('slickGetOption', 'slidesToShow')) {
+                    mainNode.slick('slickGoTo', 1);
+                }
             });
+
         },
 
         initSlick: function (node, sliderType) {
             let sliderOptions = {
-                'evo-box-slider' : {
+                'box-slider' : {
                     arrows:         false,
                     lazyLoad:       'ondemand',
                     slidesToShow:   2,
@@ -74,13 +78,7 @@
                     mobileFirst:    true,
                     responsive: [
                         {
-                            breakpoint: 992, // md
-                            settings: {
-                                arrows: true,
-                            }
-                        },
-                        {
-                            breakpoint: 1200, // lg
+                            breakpoint: 992,
                             settings: {
                                 slidesToShow: 1,
                                 slidesToScroll: 1,
@@ -89,27 +87,22 @@
                         }
                     ]
                 },
-                'evo-slider-half' : {
+                'slider-half' : {
                     arrows:       true,
                     lazyLoad:     'ondemand',
                     swipeToSlide: true,
-                    slidesToShow: 3,
+                    mobileFirst:    true,
+                    slidesToShow: 2,
                     responsive:   [
                         {
-                            breakpoint: 992, // md
+                            breakpoint: 1300,
                             settings: {
-                                slidesToShow: 1,
-                            }
-                        },
-                        {
-                            breakpoint: 1200, // lg
-                            settings: {
-                                slidesToShow: 2,
+                                slidesToShow: 3,
                             }
                         }
                     ]
                 },
-                'evo-box-vertical' : {
+                'box-vertical' : {
                     arrows:          true,
                     vertical:        true,
                     adaptiveHeight:  true,
@@ -122,7 +115,7 @@
                     lazyLoad:        'progressive',
                     slidesToShow:    1
                 },
-                'evo-slider' : {
+                'product-slider' : {
                     rows:           0,
                     arrows:         false,
                     lazyLoad:       'ondemand',
@@ -132,14 +125,14 @@
                     mobileFirst:    true,
                     responsive:     [
                         {
-                            breakpoint: 768, // xs
+                            breakpoint: 768,
                             settings: {
                                 slidesToShow: 3,
                                 slidesToScroll: 1
                             }
                         },
                         {
-                            breakpoint: 992, // sm
+                            breakpoint: 992,
                             settings: {
                                 slidesToShow:5,
                                 arrows: true,
@@ -167,13 +160,13 @@
                     mobileFirst:    true,
                     responsive:     [
                         {
-                            breakpoint: 768, // xs
+                            breakpoint: 768,
                             settings: {
                                 slidesToShow: 2
                             }
                         },
                         {
-                            breakpoint: 992, // sm
+                            breakpoint: 992,
                             settings: {
                                 slidesToShow:3,
                                 arrows: true
@@ -195,7 +188,7 @@
                     swipeToSlide:   true,
                     responsive: [
                         {
-                            breakpoint: 480,
+                            breakpoint: 768,
                             settings: {
                                 slidesToShow: 2
                             }

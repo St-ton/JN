@@ -19,7 +19,7 @@
                     var toTopbuttonActiveClass = "show";
 
                     function scrolltoTop() {
-                        $('html, body').animate({scrollTop: $('body').offset().top}, 200, 'linear');
+                        $(window).scrollTop(0);
                     }
 
                     function handleVisibilityTopButton() {

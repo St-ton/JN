@@ -56,13 +56,18 @@
                 }
             });
 
-            document.querySelector('.slick-lazy').addEventListener('touchend', function (e) {
-                let mainNode = $(this);
-                mainNode.find('.js-initial-arrow').remove();
-                self.initSlick(mainNode, mainNode.data('slick-type'));
-                if(mainNode.slick('getSlick').slideCount > mainNode.slick('slickGetOption', 'slidesToShow')) {
-                    mainNode.slick('slickGoTo', 1);
-                }
+            document.querySelectorAll('.slick-lazy').forEach(function(slickItem) {
+                slickItem.addEventListener('touchmove', function (e) {
+                    let mainNode = $(this);
+                    if (!mainNode.hasClass('slick-initialized') ) {
+                        mainNode.find('.js-initial-arrow').remove();
+                        mainNode.removeClass('slick-lazy');
+                        self.initSlick(mainNode, mainNode.data('slick-type'));
+                        if(mainNode.slick('getSlick').slideCount > mainNode.slick('slickGetOption', 'slidesToShow')) {
+                            mainNode.slick('slickGoTo', 1);
+                        }
+                    }
+                });
             });
 
         },

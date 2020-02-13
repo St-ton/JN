@@ -402,6 +402,8 @@ class Iframe
     {
         elm = elm || null;
 
+        this.opc.emit('iframe.setSelected', elm);
+
         if(elm === null || !elm.is(this.selectedElm)) {
             if(this.selectedElm !== null) {
                 this.selectedElm.removeClass('opc-selected');

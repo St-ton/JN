@@ -15,7 +15,7 @@ msgid "localVideo"
 msgstr "Lokales Video"
 
 msgid "youtubeNote"
-msgstr "Weisen Sie in Ihrer Datenschutzerklärung auf folgende Punkte hin:<br>- YouTube-Videos werden im "
+msgstr "Weisen Sie in Ihrer Datenschutzerklärung auf folgende Punkte hin:<br>- YouTube-Videos werden im „erweiterten Datenschutzmodus“ in Ihre Seiten eingebettet.<br>- Der Aufruf der Seiten führt zur Verbindungsaufnahme mit YouTube und DoubleClick.<br>- Schon ein Klick auf das Video kann weitere Datenverarbeitungsvorgänge auslösen, auf die der Website-Betreiber keinen Einfluss mehr hat. "
 "„erweiterten Datenschutzmodus“ in Ihre Seiten eingebettet.<br>- Der Aufruf der Seiten führt zur "
 "Verbindungsaufnahme mit YouTube und DoubleClick.<br>- Schon ein Klick auf das Video kann weitere "
 "Datenverarbeitungsvorgänge auslösen, auf die der Website-Betreiber keinen Einfluss mehr hat."
@@ -37,7 +37,7 @@ msgid "playlist"
 msgstr "Video-IDs für Playlist"
 
 msgid "playlistHelp"
-msgstr "Geben Sie die Video-IDs durch Kommas getrennt ein, z. B. xITQHgJ3RRo,sNYv0JgrUlw."
+msgstr "Geben Sie die Video-IDs durch Kommas getrennt ein, z.&nbsp;B. xITQHgJ3RRo,sNYv0JgrUlw."
 
 msgid "videoIDHelpVimeo"
 msgstr "Die Video-ID finden Sie in der Vimeo-URL als letzten Teil nach dem „/“: https://vimeo.com/[Video-ID]."

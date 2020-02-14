@@ -15800,6 +15800,7 @@ select.selectpicker {
 }
 .slick-list.dragging {
   cursor: pointer;
+  cursor: hand;
 }
 
 .slick-slider .slick-track,
@@ -19290,6 +19291,11 @@ aside .last-seen-link {
 .badge-circle-1::before {
   display: none;
 }
+.badge-circle-1.badge-circle-no-sizes {
+  width: unset;
+  height: unset;
+  min-width: unset;
+}
 .badge-circle-1.circle-small {
   width: 36px;
   height: 36px;
@@ -20816,6 +20822,38 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
   margin-left: -2em;
   margin-top: 0.15em;
   float: left;
+  line-height: inherit;
+}
+
+.smoothscroll-top {
+  position: fixed;
+  opacity: 0;
+  visibility: hidden;
+  overflow: hidden;
+  text-align: center;
+  z-index: 1030;
+  width: 47px;
+  height: 44px;
+  line-height: 44px;
+  right: 20px;
+  bottom: -20px;
+  padding-top: 2px;
+  border-radius: 5px;
+  transition: all 0.5s ease-in-out;
+  transition-delay: 0.2s;
+  background: #ffffff;
+  -webkit-box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.2);
+}
+
+.smoothscroll-top.show {
+  visibility: visible;
+  cursor: pointer;
+  opacity: 1;
+  bottom: 20px;
+}
+
+.smoothscroll-top i.fa {
   line-height: inherit;
 }
 

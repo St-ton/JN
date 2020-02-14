@@ -7,6 +7,7 @@
 namespace JTL\Catalog\Product;
 
 use JTL\DB\ReturnType;
+use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
 
@@ -84,15 +85,21 @@ class Bewertung
     {
         $this->oBewertung_arr = [];
         if ($productID > 0 && $languageID > 0) {
-            $data = Shop::Container()->getDB()->query(
-                "SELECT *, DATE_FORMAT(dDatum, '%d.%m.%Y') AS Datum,
-                        DATE_FORMAT(dAntwortDatum, '%d.%m.%Y') AS AntwortDatum
+            $data = Shop::Container()->getDB()->queryPrepared(
+                "SELECT tbewertung.*,
+                        DATE_FORMAT(dDatum, '%d.%m.%Y') AS Datum,
+                        DATE_FORMAT(dAntwortDatum, '%d.%m.%Y') AS AntwortDatum,
+                        tbewertunghilfreich.nBewertung AS rated
                     FROM tbewertung
+                    LEFT JOIN tbewertunghilfreich
+                      ON tbewertung.kBewertung = tbewertunghilfreich.kBewertung
+                      AND tbewertunghilfreich.kKunde = :customerID
                     WHERE kSprache = " . $languageID . '
                         AND kArtikel = ' . $productID . '
                         AND nAktiv = 1
                     ORDER BY nHilfreich DESC
                     LIMIT 1',
+                ['customerID' => Frontend::getCustomer()->getID()],
                 ReturnType::SINGLE_OBJECT
             );
             if (!empty($data)) {
@@ -185,12 +192,18 @@ class Bewertung
                     ? ' LIMIT ' . (($page - 1) * $pageOffset) . ', ' . $pageOffset
                     : ' LIMIT ' . $pageOffset;
             }
-            $this->oBewertung_arr = $db->query(
-                "SELECT *, DATE_FORMAT(dDatum, '%d.%m.%Y') AS Datum,
-                        DATE_FORMAT(dAntwortDatum, '%d.%m.%Y') AS AntwortDatum
+            $this->oBewertung_arr = $db->queryPrepared(
+                "SELECT tbewertung.*,
+                        DATE_FORMAT(dDatum, '%d.%m.%Y') AS Datum,
+                        DATE_FORMAT(dAntwortDatum, '%d.%m.%Y') AS AntwortDatum,
+                        tbewertunghilfreich.nBewertung AS rated
                     FROM tbewertung
+                    LEFT JOIN tbewertunghilfreich
+                      ON tbewertung.kBewertung = tbewertunghilfreich.kBewertung
+                      AND tbewertunghilfreich.kKunde = :customerID
                     WHERE kArtikel = " . $productID . $langSQL . $condSQL . $activateSQL . '
                     ORDER BY' . $orderSQL . $limitSQL,
+                ['customerID' => Frontend::getCustomer()->getID()],
                 ReturnType::ARRAY_OF_OBJECTS
             );
         }

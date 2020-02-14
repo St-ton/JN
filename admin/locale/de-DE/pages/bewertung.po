@@ -14,18 +14,6 @@ msgstr "https://jtl-url.de/vpl3k"
 msgid "votesystemDesc"
 msgstr "Hier legen Sie fest, ob Kunden Ihre Artikel bewerten können. Außerdem können Sie alle bisher abgegebenen aktiven und inaktiven Bewertungen durchsuchen und ggf. bearbeiten."
 
-msgid "bewertungsText1"
-msgstr "Das Bewertungssystem zeigt eine von Ihnen angegebene Anzahl an Bewertungssternen unter den Artikeln in der Detailansicht an. "
-
-msgid "bewertungsText2"
-msgstr "Wir empfehlen bei Änderung der Bewertungsstern-Anzahl auf jeden Fall, auch die Bewertungen zurückzusetzen. Ansonsten kann es zu Rechenfehlern kommen."
-
-msgid "bewertungsText3"
-msgstr "Kommentiert werden darf grundsätzlich nur von eingeloggten Benutzern, egal was unter \"Benutzung nur mit Login\" eingetragen wird.<br/>Wenn angemeldete Benutzer eine Bewertung vornehmen, werden sie auch nicht nach einem Tag zurückgesetzt und können erneut bewerten.<br/>Dies ist nur bei nicht eingeloggten Benutzern so."
-
-msgid "popup"
-msgstr "als Dialogfenster"
-
 msgid "clearVotes"
 msgstr "Alle Bewertungen zurücksetzen"
 
@@ -72,7 +60,7 @@ msgid "ratingLast50"
 msgstr "Aktive Bewertungen"
 
 msgid "successRatingEdit"
-msgstr "Ihre Bewertung wurde erfolgreich bearbeitet."
+msgstr "Bewertung wurde erfolgreich bearbeitet."
 
 msgid "errorCreditUnlock"
 msgstr "Um den Guthabenbonus gewähren zu können, muss die Option „Bewertung freischalten“ aktiviert sein."
@@ -84,7 +72,7 @@ msgid "successRatingDelete"
 msgstr " Bewertung(en) wurde(n) erfolgreich gelöscht."
 
 msgid "successRatingCommentDelete"
-msgstr "Die Antwort wurde erfolgreich gelöscht."
+msgstr "Antwort wurde erfolgreich gelöscht."
 
 msgid "linkItemShop"
-msgstr "Artikel im Shop ansehen."
+msgstr "Artikel im Onlineshop ansehen"

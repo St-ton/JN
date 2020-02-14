@@ -6,4 +6,4 @@ msgid "Text"
 msgstr "Rich Text"
 
 msgid "exampleRichText"
-msgstr "<p>Formatierter Textblock</p>"
+msgstr "<p>Rich Text Content</p>"

@@ -22,7 +22,7 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
 	/* mobile only */
 
 	@include media-breakpoint-down(md) {
-		.navbar { height: rem(50px); padding: 0; }
+		.navbar { /*height: rem(50px); */padding: 0; }
 
 		.dropup, .dropright, .dropdown, .dropleft, .col, [class*='col-'] { position: static; }
 
@@ -124,4 +124,14 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
 			}
 		}
 	}
+}
+
+.fixed-search {
+	background-color: $white;
+	@include box-shadow($popover-box-shadow);
+}
+
+.main-search .twitter-typeahead {
+	display: flex;
+	flex-grow: 1;
 }

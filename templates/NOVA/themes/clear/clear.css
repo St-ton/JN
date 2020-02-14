@@ -18944,10 +18944,6 @@ aside .last-seen-link {
   opacity: 0;
 }
 
-.nav .twitter-typeahead {
-  width: 100%;
-}
-
 .breadcrumb-wrapper {
   margin-bottom: 2rem;
 }
@@ -23008,7 +23004,7 @@ header .nav-right .dropdown-menu {
 }
 @media (max-width: 991.98px) {
   header .navbar {
-    height: 3.125rem;
+    /*height: rem(50px); */
     padding: 0;
   }
   header .dropup, header .dropright, header .dropdown, header .dropleft, header .col, header [class*=col-] {
@@ -23182,6 +23178,17 @@ header .nav-right .dropdown-menu {
   header .submenu-headline-toplevel + .dropdown-menu > .nav {
     flex-direction: column;
   }
+}
+
+.fixed-search {
+  background-color: #ffffff;
+  -webkit-box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.2);
+}
+
+.main-search .twitter-typeahead {
+  display: flex;
+  flex-grow: 1;
 }
 
 /* footer */

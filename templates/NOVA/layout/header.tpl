@@ -274,8 +274,7 @@
                     </div>
                 {/if}
             {/block}
-            <header class="d-print-none sticky-top fixed-navbar" id="jtl-nav-wrapper">
-
+            <header class="d-print-none {if !$isMobile || $Einstellungen.template.theme.mobile_search_type !== 'fixed'}sticky-top{/if} fixed-navbar" id="jtl-nav-wrapper">
                 {block name='layout-header-container-inner'}
                     <div class="container-fluid container-fluid-xl">
                     {block name='layout-header-category-nav'}
@@ -303,6 +302,14 @@
                                 </div>
                             {/block}
 
+                            {block name='layout-header-search'}
+                                {if $Einstellungen.template.theme.mobile_search_type === 'fixed'}
+                                    <div class="d-lg-none{if !$isTablet} container-fluid container-fluid-xl py-2 order-1 bg-white{else} px-4 py-2 flex-grow-1{/if}">
+                                        {include file='snippets/search_form.tpl' id='search-header-mobile-top'}
+                                    </div>
+                                {/if}
+                            {/block}
+
                             {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}
                                 {block name='layout-header-secure-checkout'}
                                     <div class="ml-auto ml-lg-0">
@@ -325,7 +332,7 @@
 
                                 {*categories*}
                                 {block name='layout-header-include-categories-mega'}
-                                    <div id="mainNavigation" class="collapse navbar-collapse nav-scrollbar mr-lg-5">
+                                    <div id="mainNavigation" class="collapse navbar-collapse nav-scrollbar mr-lg-3">
                                         <div class="nav-mobile-header px-3 d-lg-none">
                                             {row class="align-items-center"}
                                                 {col}
@@ -356,6 +363,34 @@
                     </div>
                 {/block}
             </header>
+            {block name='layout-header-search-fixed'}
+                {if $Einstellungen.template.theme.mobile_search_type === 'fixed'}
+                    <div class="container-fluid container-fluid-xl fixed-search py-2 fixed-top smoothscroll-top-search d-lg-none d-none">
+                        {include file='snippets/search_form.tpl' id='search-header-mobile-fixed'}
+                    </div>
+
+                    {inline_script}<script>
+                        {literal}
+                        $(function(){
+                            let lastScroll = 0;
+                            $(document).on('scroll', function () {
+                                let newScroll = $(this).scrollTop();
+                                if (newScroll < lastScroll){
+                                    if ($(window).scrollTop() > 100) {
+                                        $('.smoothscroll-top-search').removeClass('d-none');
+                                    } else {
+                                        $('.smoothscroll-top-search').addClass('d-none');
+                                    }
+                                } else {
+                                    $('.smoothscroll-top-search').addClass('d-none');
+                                }
+                                lastScroll = newScroll;
+                            });
+                        });
+                        {/literal}
+                    </script>{/inline_script}
+                {/if}
+            {/block}
         {/block}
     {/if}
 

@@ -809,6 +809,16 @@
             });
         },
 
+        initFilterEvents: function() {
+            let initiallized = false;
+            $('#js-filters').on('click', function() {
+                if (!initiallized) {
+                    $.evo.initFilters(window.location.href);
+                    initiallized = true;
+                }
+            });
+        },
+
         redirectToNewPriceRange: function (priceRange, redirect, $wrapper) {
             let currentURL  = window.location.href;
             if (!redirect) {
@@ -866,6 +876,29 @@
                 });
         },
 
+        initReviewHelpful: function() {
+            $('.js-helpful').on('click', function (e) {
+                e.preventDefault();
+                $.evo.extended().updateReviewHelpful($(this));
+            });
+        },
+
+        initWishlist: function() {
+            let wlFormID = '#wl-items-form';
+            if ($(wlFormID).length) {
+                $.evo.extended().addInactivityCheck(wlFormID);
+                $('.js-update-wl').on('change', function () {
+                    $.evo.extended().updateWishlistItem($(this).closest('.productbox-inner'));
+                });
+            }
+        },
+
+        initPaginationEvents: function() {
+            $('.pagination-wrapper select').on('change', function () {
+                this.form.submit();
+            });
+        },
+
         /**
          * $.evo.extended() is deprecated, please use $.evo instead
          */
@@ -892,6 +925,10 @@
             this.setWishlistVisibilitySwitches();
             this.initEModals();
             this.initScrollEvents();
+            this.initReviewHelpful();
+            this.initWishlist();
+            this.initPaginationEvents();
+            this.initFilterEvents();
         }
     };
 

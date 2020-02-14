@@ -4,10 +4,11 @@ class Tutorial
     {
         bindProtoOnHandlers(this);
 
-        this.iframe   = iframe;
-        this.tourId   = null;
-        this.stepId   = null;
-        this.handlers = [];
+        this.iframe        = iframe;
+        this.tourId        = null;
+        this.stepId        = null;
+        this.handlers      = [];
+        this.wasUserAction = false;
     }
 
     init()
@@ -74,6 +75,11 @@ class Tutorial
         this.tutboxTitle.html(title);
         this.tutboxContent.html(content);
         this.tutboxPrev.prop('disabled', stepId === 0);
+
+        if(this.wasUserAction) {
+            this.wasUserAction = false;
+            this.tutboxPrev.prop('disabled', true);
+        }
 
         if(opc.messages["tutStepTitle_" + this.tourId + "_" + (stepId + 1)]) {
             this.tutboxNextLabel.show();
@@ -355,6 +361,7 @@ class Tutorial
     {
         this.bindEvent(elm, event, () => this.tutboxNext.click());
         this.tutboxNext.prop('disabled', true);
+        this.wasUserAction = true;
     }
 
     bindResetEvent(elm, event)
@@ -382,7 +389,11 @@ class Tutorial
         if(top)     this.tutBox.offset({top: top});
         if(right)   this.tutBox.css('right', right + 'px');
         if(bottom)  this.tutBox.css('bottom', bottom + 'px');
-        if(disable) this.tutboxNext.prop('disabled', true);
+
+        if(disable) {
+            this.tutboxNext.prop('disabled', true);
+            this.wasUserAction = true;
+        }
     }
 
     makeBackdrop(type, modal)

@@ -305,7 +305,7 @@
                             {block name='layout-header-search'}
                                 {if $Einstellungen.template.theme.mobile_search_type === 'fixed'}
                                     <div class="d-lg-none{if !$isTablet} container-fluid container-fluid-xl py-2 order-1 bg-white{else} px-4 py-2 flex-grow-1{/if}">
-                                        {include file='snippets/search_form.tpl'}
+                                        {include file='snippets/search_form.tpl' id='search-header-mobile-top'}
                                     </div>
                                 {/if}
                             {/block}
@@ -365,8 +365,8 @@
             </header>
             {block name='layout-header-search-fixed'}
                 {if $Einstellungen.template.theme.mobile_search_type === 'fixed'}
-                    <div class="container-fluid container-fluid-xl fixed-search py-2 fixed-top smoothscroll-top d-lg-none d-none">
-                        {include file='snippets/search_form.tpl'}
+                    <div class="container-fluid container-fluid-xl fixed-search py-2 fixed-top smoothscroll-top-search d-lg-none d-none">
+                        {include file='snippets/search_form.tpl' id='search-header-mobile-fixed'}
                     </div>
 
                     {inline_script}<script>
@@ -377,12 +377,12 @@
                                 let newScroll = $(this).scrollTop();
                                 if (newScroll < lastScroll){
                                     if ($(window).scrollTop() > 100) {
-                                        $('.smoothscroll-top').removeClass('d-none');
+                                        $('.smoothscroll-top-search').removeClass('d-none');
                                     } else {
-                                        $('.smoothscroll-top').addClass('d-none');
+                                        $('.smoothscroll-top-search').addClass('d-none');
                                     }
                                 } else {
-                                    $('.smoothscroll-top').addClass('d-none');
+                                    $('.smoothscroll-top-search').addClass('d-none');
                                 }
                                 lastScroll = newScroll;
                             });

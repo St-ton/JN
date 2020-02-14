@@ -25,7 +25,7 @@
                 no-caret=true
                 router-aria=['label'=>{lang key='findProduct'}]}
                 <div class="dropdown-body">
-                    {include file='snippets/search_form.tpl'}
+                    {include file='snippets/search_form.tpl' id='search-header-desktop'}
                 </div>
             {/navitemdropdown}
         {/if}

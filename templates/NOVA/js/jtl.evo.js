@@ -430,6 +430,55 @@
             });
         },
 
+        initScrollEvents: function() {
+            //mobile search
+            let lastScroll       = 0,
+                $scrollTopSearch = $('.smoothscroll-top-search');
+            if ($scrollTopSearch.length) {
+                $(document).on('scroll', function () {
+                    let newScroll = $(this).scrollTop();
+                    if (newScroll < lastScroll) {
+                        if ($(window).scrollTop() > 100) {
+                            $scrollTopSearch.removeClass('d-none');
+                        } else {
+                            $scrollTopSearch.addClass('d-none');
+                        }
+                    } else {
+                        $scrollTopSearch.addClass('d-none');
+                    }
+                    lastScroll = newScroll;
+                });
+            }
+
+            //scroll top button
+            let toTopbuttonVisible     = false,
+                $toTopbutton           = $('.smoothscroll-top'),
+                toTopbuttonActiveClass = 'show';
+
+            function scrolltoTop() {
+                $(window).scrollTop(0);
+            }
+
+            function handleVisibilityTopButton() {
+                let currentPosition = $(window).scrollTop();
+                if (currentPosition > 800) {
+                    if (!toTopbuttonVisible) {
+                        $toTopbutton.addClass(toTopbuttonActiveClass);
+                        toTopbuttonVisible = true;
+                    }
+                } else if (toTopbuttonVisible) {
+                    toTopbuttonVisible = false;
+                    $toTopbutton.removeClass(toTopbuttonActiveClass)
+                }
+            }
+
+            if ($toTopbutton.length) {
+                $(window).on('scroll', handleVisibilityTopButton);
+                $toTopbutton.on('click', scrolltoTop);
+                handleVisibilityTopButton();
+            }
+        },
+
         addCartBtnAnimation: function() {
             var animating = false;
 
@@ -842,6 +891,7 @@
             this.fixStickyElements();
             this.setWishlistVisibilitySwitches();
             this.initEModals();
+            this.initScrollEvents();
         }
     };
 

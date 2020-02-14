@@ -1,3 +1,5 @@
+@import "Container";
+
 .opc-Container {
   padding: 0;
   width: auto;
@@ -8,4 +10,9 @@
     margin-left: auto;
     margin-right: auto;
   }
+}
+
+.opc-Container.container {
+  margin-left: auto!important;
+  margin-right: auto!important;
 }

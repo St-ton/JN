@@ -243,7 +243,7 @@ class Tutorial
                         let toggle = $('#previewToolbar').find('.toggle-switch');
                         this.makeTutbox({left: 32, top: toggle.offset().top - 200});
                         this.highlightElms(toggle);
-                        this.bindNextEvent(toggle.find('.toggle-slider'), 'click');
+                        this.bindNextEvent(toggle, 'click');
                         break;}
                     case 12: {
                         let toggle = $('#previewToolbar').find('.toggle-switch');

@@ -1,6 +1,12 @@
 # JTL-Shop Changelog
 
-## [4.06.16]
+## [4.06.17]
+
+Dieses Update enthält Bugfixes und ein Sicherheitsupdate.
+
+Alle für diese Zielversion gelösten Vorgänge finden Sie unter diesem Link: https://jtl-url.de/cl40617
+
+## [4.06.16] - 2020-02-05
 
 Dieses Update enthält Bugfixes.
 

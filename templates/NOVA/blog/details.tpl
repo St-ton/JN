@@ -209,15 +209,13 @@
             <hr class="my-6">
             {block name='blog-details-latest-news'}
                 <div class="h2">{lang key='news' section='news'}</div>
-                {row itemprop="about" itemscope=true itemtype="http://schema.org/Blog" class="carousel carousel-arrows-inside news-slider mx-0"}
-                {foreach $oNews_arr as $newsItem}
-                    {col}
-                    {block name='page-index-include-preview'}
-                        {include file='blog/preview.tpl'}
-                    {/block}
-                    {/col}
-                {/foreach}
-                {/row}
+                <div itemprop="about"
+                    itemscope=true
+                    itemtype="http://schema.org/Blog"
+                    class="carousel carousel-arrows-inside mx-0 slick-lazy slick-type-news"
+                    data-slick-type="news-slider">
+                    {include file='snippets/slider_items.tpl' items=$oNews_arr type='news'}
+                </div>
             {/block}
         {/block}
     {/if}

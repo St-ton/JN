@@ -7,18 +7,18 @@
     {foreach $items as $item}
         {if $type === 'product'}
             {block name='snippets-slider-items-product'}
-                <div class="product-wrapper{if isset($style)} {$style}{/if}" {if $tplscope !== 'box'}{if isset($Link) && $Link->getLinkType() === $smarty.const.LINKTYP_STARTSEITE || $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE}itemprop="about"{else}itemprop="isRelatedTo"{/if} itemscope itemtype="http://schema.org/Product"{/if}>
+                <div class="product-wrapper{if $item@first} ml-auto {elseif $item@last} mr-auto {/if}{if isset($style)} {$style}{/if}" {if $tplscope !== 'box'}{if isset($Link) && $Link->getLinkType() === $smarty.const.LINKTYP_STARTSEITE || $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE}itemprop="about"{else}itemprop="isRelatedTo"{/if} itemscope itemtype="http://schema.org/Product"{/if}>
                     {include file='productlist/item_slider.tpl' Artikel=$item tplscope=$tplscope class=''}
                 </div>
             {/block}
         {elseif $type === 'news'}
             {block name='snippets-slider-items-news'}
-                <div class="product-wrapper">
+                <div class="product-wrapper {if $item@first} ml-auto {elseif $item@last} mr-auto {/if}">
                     {include file='blog/preview.tpl' newsItem=$item}
                 </div>
             {/block}
         {elseif $type === 'freegift'}
-            <div class="product-wrapper freegift">
+            <div class="product-wrapper {if $item@first} ml-auto {elseif $item@last} mr-auto {/if}freegift">
                 <div class="custom-control custom-radio pl-0">
                     <input class="custom-control-input " type="radio" id="gift{$item->kArtikel}" name="gratisgeschenk" value="{$item->kArtikel}" onclick="submit();">
                     <label for="gift{$item->kArtikel}" class="p-3 custom-control-label {if $selectedFreegift===$item->kArtikel}badge-check{/if}">

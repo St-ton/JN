@@ -270,18 +270,6 @@ class WarenkorbHelper
 
     /**
      * @param float $total
-     * @param Currency $currency
-     * @return float
-     */
-    public static function roundOptionalCurrency($total, Currency $currency = null)
-    {
-        $factor = ($currency ?? Session::Currency())->getConversionFactor();
-
-        return self::roundOptional($total * $factor) / $factor;
-    }
-
-    /**
-     * @param float $total
      * @return float
      */
     public static function roundOptional($total)

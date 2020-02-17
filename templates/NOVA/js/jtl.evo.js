@@ -47,12 +47,10 @@
                         .addClass('eq-height');
             });
 
-            $('.slick-lazy .slick-arrow').on('click', function (e) {
-                let mainNode = $(this).parent();
-                mainNode.find('.js-initial-arrow').remove();
-                self.initSlick(mainNode, mainNode.data('slick-type'));
-                if(mainNode.slick('getSlick').slideCount > mainNode.slick('slickGetOption', 'slidesToShow')) {
-                    mainNode.slick('slickGoTo', 1);
+            $('.slick-lazy').on('mouseenter', function (e) {
+                let mainNode = $(this);
+                if (!mainNode.hasClass('slick-initialized')) {
+                    self.initSlick(mainNode, mainNode.data('slick-type'));
                 }
             });
 
@@ -64,9 +62,8 @@
                 slickItem.addEventListener('touchmove', function (e) {
                     let mainNode = $(this);
                     if (!mainNode.hasClass('slick-initialized')
-                        && Math.abs(startX - e.changedTouches[0].pageX) > 50
+                        && Math.abs(startX - e.changedTouches[0].pageX) > 80
                     ) {
-                        mainNode.find('.js-initial-arrow').remove();
                         mainNode.removeClass('slick-lazy');
                         self.initSlick(mainNode, mainNode.data('slick-type'));
                         if(mainNode.slick('getSlick').slideCount > mainNode.slick('slickGetOption', 'slidesToShow')) {

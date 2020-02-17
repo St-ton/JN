@@ -3,7 +3,6 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='snippets-slider-items'}
-    {button class="slick-prev slick-arrow js-initial-arrow" aria=["label"=>{lang key='previous'}]}{lang key='previous'}{/button}
     {foreach $items as $item}
         {if $type === 'product'}
             {block name='snippets-slider-items-product'}
@@ -37,5 +36,4 @@
             </div>
         {/if}
     {/foreach}
-    {button class="slick-next slick-arrow js-initial-arrow" aria=["label"=>{lang key='next'}]}{lang key='next'}{/button}
 {/block}

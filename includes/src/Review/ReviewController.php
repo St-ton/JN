@@ -306,7 +306,7 @@ class ReviewController extends BaseController
         /** @var $helpfulReview ReviewHelpfulModel */
         $baseURL = $this->getProductURL($productID) . 'bewertung_anzeigen=1&btgseite=' . $page . '&btgsterne=' . $stars;
         // Hat der Kunde für diese Bewertung noch keine hilfreich flag gesetzt?
-        if ($helpfulReview->getId() === null) {
+        if ($helpfulReview->getId() === 0) {
             $helpfulReview->setReviewID($reviewID);
             $helpfulReview->setCustomerID($customerID);
             $helpfulReview->setRating(0);
@@ -325,8 +325,10 @@ class ReviewController extends BaseController
 
             $helpfulReview->save();
             $this->cache->flushTags([\CACHING_GROUP_ARTICLE . '_' . $review->getProductID()]);
-            \header('Location: ' . $baseURL . '&cHinweis=h02', true, 303);
-            exit;
+            if (!Request::isAjaxRequest()) {
+                \header('Location: ' . $baseURL . '&cHinweis=h02', true, 303);
+                exit;
+            }
         }
         // Wenn Hilfreich nicht neu (wechsel) für eine Bewertung eingetragen wird und diese positiv ist
         if ($helpful === 1 && $helpfulReview->getRating() !== $helpful) {
@@ -344,7 +346,9 @@ class ReviewController extends BaseController
         $helpfulReview->customerID = $customerID;
         $helpfulReview->save();
         $this->cache->flushTags([\CACHING_GROUP_ARTICLE . '_' . $review->getProductID()]);
-        \header('Location: ' . $baseURL . '&cHinweis=h03', true, 303);
-        exit;
+        if (!Request::isAjaxRequest()) {
+            \header('Location: ' . $baseURL . '&cHinweis=h03', true, 303);
+            exit;
+        }
     }
 }

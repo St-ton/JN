@@ -605,13 +605,6 @@
         {/container}
     {/block}
 
-    {inline_script}<script>
-        $.evo.extended().addInactivityCheck('#wl-items-form');
-        $('.js-update-wl').on('change', function () {
-            $.evo.extended().updateWishlistItem($(this).closest('.productbox-inner'));
-        });
-    </script>{/inline_script}
-
     {block name='snippets-wishlist-include-footer'}
         {include file='layout/footer.tpl'}
     {/block}

@@ -3,10 +3,10 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "benutzer"
-msgstr "Benutzerverwaltung"
+msgstr "Benutzer und Rechte"
 
 msgid "benutzerDesc"
-msgstr "Hier verwalten Sie Benutzer- und Gruppenberechtigungen für das Backend von JTL-Shop. Sie können neue Benutzer anlegen und diese einer Gruppe zuordnen. In der Registerkarte „Benutzergruppen“ setzen Sie Berechtigungen für bestimmte Bereiche des Backends."
+msgstr "Hier verwalten Sie Benutzer und Gruppenberechtigungen für das Backend von JTL-Shop. Sie können neue Benutzer anlegen und diese einer Gruppe zuordnen. In der Registerkarte „Benutzergruppen“ setzen Sie Berechtigungen für bestimmte Bereiche des Backends."
 
 msgid "benutzerURL"
 msgstr "https://jtl-url.de/2t78f"
@@ -53,9 +53,6 @@ msgstr "Löschen nicht möglich. Die Benutzergruppe hat noch Mitglieder."
 msgid "gruppenTab"
 msgstr "Benutzergruppen"
 
-msgid "gruppenverwaltung"
-msgstr "Benutzergruppenverwaltung"
-
 msgid "gruppenKategorie"
 msgstr "Benutzergruppen verwalten"
 
@@ -90,7 +87,7 @@ msgid "errorAtLeastOneAdmin"
 msgstr "Es muss mindestens ein Administrator im System vorhanden sein."
 
 msgid "successUserSave"
-msgstr "Benutzer wurde erfolgreich gespeichert."
+msgstr "Benutzerdaten wurden erfolgreich bearbeitet."
 
 msgid "errorUserSave"
 msgstr "Benutzer konnte nicht gespeichert werden."
@@ -123,10 +120,10 @@ msgid "successGroupDelete"
 msgstr "Benutzergruppe wurde erfolgreich gelöscht."
 
 msgid "errorGroupDelete"
-msgstr "Benutzergruppe kann nicht gelöscht werden."
+msgstr "Benutzergruppe konnte nicht gelöscht werden."
 
 msgid "errorGroupDeleteCustomer"
-msgstr "Die Benutzergruppe kann nicht gelöscht werden, da sie noch mindestens ein Mitglied hat."
+msgstr "Die Benutzergruppe konnte nicht gelöscht werden, da sie noch mindestens ein Mitglied hat."
 
 msgid "errorKeyChange"
 msgstr " %s konnte nicht geändert werden!"
@@ -141,7 +138,7 @@ msgid "temporaryAccess"
 msgstr "Zeitlich begrenzter Zugriff"
 
 msgid "tillInclusive"
-msgstr "… bis einschließlich"
+msgstr "Bis einschließlich"
 
 msgid "errorUsernameMissing"
 msgstr "Bitte legen Sie zuerst in den Anmeldedaten einen Benutzernamen fest."
@@ -173,46 +170,6 @@ msgstr "Neue Notfall-Codes erzeugen"
 msgid "shopEmergencyCodes"
 msgstr "Notfall-Codes für das JTL-Shop-Backend"
 
-#module name (tadminrechtemodul)
-msgid "Admin"
-msgstr "Administrator"
-
-#module name (tadminrechtemodul)
-msgid "Einstellungen"
-msgstr "Einstellungen"
-
-#module name (tadminrechtemodul)
-msgid "Darstellung"
-msgstr "Darstellung"
-
-#module name (tadminrechtemodul)
-msgid "Inhalt"
-msgstr "Inhalt"
-
-#module name (tadminrechtemodul)
-msgid "Kaufabwicklung"
-msgstr "Kaufabwicklung"
-
-#module name (tadminrechtemodul)
-msgid "Module"
-msgstr "Module"
-
-#module name (tadminrechtemodul)
-msgid "Import / Export"
-msgstr "Import / Export"
-
-#module name (tadminrechtemodul)
-msgid "Erweiterungen"
-msgstr "Erweiterungen"
-
-#module name (tadminrechtemodul)
-msgid "Plugins"
-msgstr "Plugins"
-
-#module name (tadminrechtemodul)
-msgid "Statistik"
-msgstr "Statistik"
-
 msgid "permission_SETTINGS_META_KEYWORD_BLACKLIST_VIEW"
 msgstr "Blacklist für Meta-Keywords"
 
@@ -226,32 +183,32 @@ msgid "permission_SETTINGS_SEARCH_VIEW"
 msgstr "Einstellungen durchsuchen"
 
 msgid "permission_FILECHECK_VIEW"
-msgstr "Shopdatei-Check"
+msgstr "Prüfung der Onlineshop-Dateien"
 
 msgid "permission_DBCHECK_VIEW"
-msgstr "Datenbank-Check"
+msgstr "Datenbankprüfung"
 
 msgid "permission_PERMISSIONCHECK_VIEW"
-msgstr "Verzeichnis-Check"
+msgstr "Verzeichnisprüfung"
 
 # description of admin group (tadminlogingruppe)
 msgid "Voller Zugriff auf den Administrationsbereich."
-msgstr "Voller Zugriff auf den Administrationsbereich."
+msgstr "Voller Zugriff auf den Administrationsbereich"
 
 msgid "resume"
-msgstr "Vita"
+msgstr "Über den Autor (wird z. B. bei Blogbeiträgen angezeigt)"
 
 msgid "personalInformation"
-msgstr "Persönliche Angaben"
+msgstr "Autoreninformationen"
 
 msgid "avatar"
 msgstr "Benutzerbild"
 
 msgid "errorImageMissing"
-msgstr "Bitte geben Sie ein Bild an."
+msgstr "Bitte wählen Sie ein Bild aus."
 
 msgid "errorImageUpload"
-msgstr "Fehler beim Bildupload."
+msgstr "Fehler beim Hochladen des Bildes."
 
 msgid "noMenuItem"
-msgstr "Ohne Menüpunkt"
+msgstr "Sonstiges"

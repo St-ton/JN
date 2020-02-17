@@ -3,13 +3,13 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "news"
-msgstr "News- / Blogsystem"
+msgstr "Blog"
 
 msgid "newsURL"
 msgstr "https://jtl-url.de/2ek6o"
 
 msgid "newsDesc"
-msgstr "Sie können mit dem News- bzw. Blogsystem von JTL-Shop Ihre Kunden auf dem Laufenden halten. Hier erstellen Sie neue Beiträge und legen fest, wie die News-Beiträge dargestellt werden."
+msgstr "Verwenden Sie den Blog von JTL-Shop, um Ihre Kunden auf dem Laufenden zu halten. Erstellen Sie hier neue Blogbeiträge und legen Sie fest, wie die Beiträge dargestellt werden."
 
 msgid "newAdd"
 msgstr "Neuen Beitrag erstellen"
@@ -99,46 +99,46 @@ msgid "newsAlreadyExists"
 msgstr "schon vorhanden"
 
 msgid "newsDeleteCat"
-msgstr "Folgende News-Kategorien und deren Unterkategorien werden gelöscht:"
+msgstr "Folgende Blogkategorien und deren Unterkategorien werden gelöscht:"
 
 msgid "newsDeleteNews"
-msgstr "News löschen"
+msgstr "Blogbeitrag löschen"
 
 msgid "newsDeleteComment"
 msgstr "Kommentar löschen"
 
 msgid "errorNewsCatFirst"
-msgstr "Bitte legen Sie zuerst eine News-Kategorie an."
+msgstr "Bitte legen Sie zuerst eine Blogkategorie an."
 
 msgid "successNewsCommmentEdit"
-msgstr "Der News-Kommentar wurde erfolgreich bearbeitet."
+msgstr "Blogkommentar wurde erfolgreich bearbeitet."
 
 msgid "successNewsDelete"
-msgstr "Die markierten News wurden erfolgreich gelöscht."
+msgstr "Markierte Blogbeiträge wurden erfolgreich gelöscht."
 
 msgid "errorAtLeastOneNews"
-msgstr "Bitte wählen Sie mindestens einen News-Beitrag."
+msgstr "Bitte wählen Sie mindestens einen Blogbeitrag."
 
 msgid "successNewsCatDelete"
-msgstr "Die markierten News-Kategorien wurden erfolgreich gelöscht."
+msgstr "Markierte Blogkategorien wurden erfolgreich gelöscht."
 
 msgid "errorAtLeastOneNewsCat"
-msgstr "Bitte markieren Sie mindestens eine News-Kategorie."
+msgstr "Bitte markieren Sie mindestens eine Blogkategorie."
 
 msgid "successNewsImageDelete"
-msgstr "Das ausgewählte News-Bild wurde erfolgreich gelöscht."
+msgstr "Ausgewähltes Blogbild wurde erfolgreich gelöscht."
 
 msgid "errorNewsImageDelete"
-msgstr "Das ausgewählte News-Bild konnte nicht gelöscht werden."
+msgstr "Ausgewähltes Blogbild konnte nicht gelöscht werden."
 
 msgid "errorNewsCatNotFound"
-msgstr "Die News-Kategorie mit der ID %d konnte nicht gefunden werden."
+msgstr "Blogkategorie mit ID %d konnte nicht gefunden werden."
 
 msgid "successNewsCommentUnlock"
-msgstr "Die markierten News-Kommentare wurden erfolgreich freigeschaltet."
+msgstr "Markierte Blogkommentare wurden erfolgreich freigeschaltet."
 
 msgid "errorAtLeastOneNewsComment"
-msgstr "Bitte markieren Sie mindestens einen News-Kommentar."
+msgstr "Bitte markieren Sie mindestens einen Blogkommentar."
 
 msgid "goOnEdit"
 msgstr " und weiter bearbeiten"
@@ -150,10 +150,10 @@ msgid "deleteComment"
 msgstr "Möchten Sie die Kommentare wirklich löschen?"
 
 msgid "successNewsSave"
-msgstr "News-Beitrag erfolgreich gespeichert"
+msgstr "Blogbeitrag wurde erfolgreich gespeichert."
 
 msgid "successNewsCatSave"
-msgstr "News-Kategorie erfolgreich eingetragen."
+msgstr "Blogkategorie wurde erfolgreich eingetragen."
 
 msgid "successNewsCommentDelete"
-msgstr "Die markierten Kommentare wurden erfolgreich gelöscht."
+msgstr "Markierte Kommentare wurden erfolgreich gelöscht."

@@ -3,7 +3,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "Shopinfo_title"
-msgstr "Shop-Informationen"
+msgstr "Informationen zum Onlineshop"
 
 msgid "Shopinfo_desc"
 msgstr "Informationen zu JTL-Shop"

@@ -57,7 +57,7 @@ msgid "orderIpAddress"
 msgstr "IP-Adresse"
 
 msgid "successOrderReset"
-msgstr "Die markierten Bestellungen wurden erfolgreich zurückgesetzt."
+msgstr "Markierte Bestellungen wurden erfolgreich zurückgesetzt."
 
 msgid "errorAtLeastOneOrder"
 msgstr "Bitte markieren Sie mindestens eine Bestellung."

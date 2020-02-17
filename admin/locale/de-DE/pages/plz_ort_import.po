@@ -3,7 +3,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "plz_ort_import"
-msgstr "Postleitzahlen / Orte importieren"
+msgstr "Postleitzahlen und Orte importieren"
 
 msgid "plz_ort_importDesc"
 msgstr "Auf dieser Seite können Sie aktuelle Daten zu Postleitzahlen und Orten aus OpenGeoDB importieren."
@@ -21,7 +21,7 @@ msgid "plz_ort_import_select"
 msgstr "Import auswählen"
 
 msgid "plz_ort_import_select_failed"
-msgstr "Die Liste der verfügbaren Importe konnte nicht geladen werden."
+msgstr "Liste der verfügbaren Importe konnte nicht geladen werden."
 
 msgid "plz_ort_import_load"
 msgstr "Wird geladen…"
@@ -69,7 +69,7 @@ msgid "successDownload"
 msgstr "%s wurde erfolgreich heruntergeladen."
 
 msgid "errorImportRunning"
-msgstr "Es läuft bereits ein Import. Bitte warten Sie bis dieser abgeschlossen ist."
+msgstr "Es läuft bereits ein Import. Bitte warten Sie, bis dieser abgeschlossen ist."
 
 msgid "errorImportStart"
 msgstr "Der Import kann nicht gestartet werden. Die Sitzung ist abgelaufen. Bitte melden Sie sich erneut an. Sollte der Fehler weiterhin auftreten, wenden Sie sich an den Support."

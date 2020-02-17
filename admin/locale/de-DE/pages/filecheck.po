@@ -3,10 +3,10 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "filecheck"
-msgstr "Shopdateien-Check"
+msgstr "Prüfung der Onlineshop-Dateien"
 
 msgid "filecheckDesc"
-msgstr "Hier können Sie sehen, ob alle Shopdateien korrekt und vollständig hochgeladen wurden. Es wird pro Datei geprüft, ob die Prüfsumme der aktuellen Datei mit der Prüfsumme der Originaldatei übereinstimmt. Ist dies der Fall, so steht unter Status „OK“. Wurde eine Shopdatei geändert, fehlerhaft übertragen oder gelöscht, dann wird dies mit „modifiziert“ kenntlich gemacht."
+msgstr "Hier können Sie prüfen, ob alle Dateien des Onlineshops korrekt und vollständig hochgeladen wurden. Es wird pro Datei geprüft, ob die Prüfsumme der aktuellen Datei mit der Prüfsumme der Originaldatei übereinstimmt. Ist dies der Fall, so steht unter Status „OK“. Wurde eine Datei des Onlineshops geändert, fehlerhaft übertragen oder gelöscht, dann wird dies mit „modifiziert“ kenntlich gemacht."
 
 msgid "filecheckURL"
 msgstr "https://jtl-url.de/o9a4l"
@@ -18,7 +18,7 @@ msgid "fileCheckModifiedFilesHeadline"
 msgstr "Modifizierte Dateien"
 
 msgid "fileCheckModifiedFilesNote"
-msgstr "Die folgenden Dateien sind nicht identisch mit den Dateien der aktuellen Shop-Version."
+msgstr "Die folgenden Dateien sind nicht identisch mit den Dateien der aktuellen Version von JTL-Shop."
 
 msgid "fileCheckOrphanedFilesHeadline"
 msgstr "Verwaiste Dateien"
@@ -33,7 +33,7 @@ msgid "fileCheckNumberOrphanedFiles"
 msgstr "Anzahl verwaister Dateien"
 
 msgid "errorFileNotFound"
-msgstr "Die Datei mit der aktuellen Dateiliste existiert nicht."
+msgstr "Datei mit der aktuellen Dateiliste existiert nicht."
 
 msgid "errorFileListEmpty"
 msgstr "Die Datei mit der aktuellen Dateiliste ist leer."
@@ -42,13 +42,13 @@ msgid "errorNotDeleted"
 msgstr "Es konnten nicht alle Dateien gelöscht werden."
 
 msgid "errorCreatingZipArchive"
-msgstr "Konnte Zip-Archiv %s nicht erstellen."
+msgstr "Zip-Archiv %s konnte nicht erstellt werden."
 
 msgid "confirmDeleteText"
-msgstr "Sind Sie sicher, dass Sie alle genannten Dateien löschen möchten? Stellen Sie sicher, dass Sie zuvor ein Backup erstellt haben!"
+msgstr "Möchten Sie wirklich alle genannten Dateien löschen? Stellen Sie sicher, dass Sie zuvor ein Backup erstellt haben!"
 
 msgid "backupText"
 msgstr "Backup unter %s erstellt und %d Dateien gelöscht."
 
 msgid "showDeleteScript"
-msgstr "Script generieren"
+msgstr "Skript generieren"

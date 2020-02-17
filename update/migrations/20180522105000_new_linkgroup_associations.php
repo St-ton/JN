@@ -136,6 +136,11 @@ class Migration_20180522105000 extends Migration implements IMigration
                 ['parent' => $newID, 'oldParent' => $oldParent],
                 ReturnType::DEFAULT
             );
+            $this->getDB()->queryPrepared(
+                'UPDATE tlinksprache SET kLink = :newID WHERE kLink = :oldID',
+                ['newID' => $newID, 'oldID' => $oldParent],
+                ReturnType::DEFAULT
+            );
         }
         foreach ($oldIDs as $oldID => $newID) {
             $this->getDB()->queryPrepared(

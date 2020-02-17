@@ -12,7 +12,7 @@ msgid "CSS class"
 msgstr "CSS-Klasse"
 
 msgid "Altenativ text"
-msgstr "Altenativtext"
+msgstr "Alternativtext"
 
 msgid "Title"
 msgstr "Titel"

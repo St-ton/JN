@@ -130,7 +130,7 @@
                                             {block name='snippets-categories-mega-manufacturers-link'}
                                                 {link href=$mft->cURLFull title=$mft->cSeo class='submenu-headline submenu-headline-toplevel nav-link '}
                                                     {if $Einstellungen.template.megamenu.show_manufacturer_images !== 'N'
-                                                        && (!$device->isMobile() || $device->isTablet())
+                                                        && (!$isMobile || $isTablet)
                                                         && !empty($mft->getImage(\JTL\Media\Image::SIZE_XS))}
                                                         {image fluid=true lazy=true webp=true
                                                             src=$mft->getImage(\JTL\Media\Image::SIZE_XS)
@@ -161,7 +161,7 @@
         {/block}
     {/if} {* /megamenu-pages*}
 
-    {if $device->isMobile()}
+    {if $isMobile}
         {block name='snippets-categories-mega-top-links-hr'}
             <li class="d-lg-none"><hr></li>
         {/block}

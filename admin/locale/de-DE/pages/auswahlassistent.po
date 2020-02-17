@@ -51,22 +51,22 @@ msgid "aaMerkmalTaken"
 msgstr "Es wurde bereits für eine andere Frage in dieser Gruppe das ausgewählte Merkmal gewählt."
 
 msgid "successGroupSaved"
-msgstr "Ihre Gruppe wurde erfolgreich gespeichert."
+msgstr "Gruppe wurde erfolgreich gespeichert."
 
 msgid "successGroupDeleted"
-msgstr "Die ausgewählten Gruppen wurden erfolgreich gelöscht."
+msgstr "Ausgewählte Gruppen wurden erfolgreich gelöscht."
 
 msgid "errorGroupDeleted"
-msgstr "Die ausgewählten Gruppen konnten nicht gelöscht werden."
+msgstr "Ausgewählte Gruppen konnten nicht gelöscht werden."
 
 msgid "successQuestionSaved"
-msgstr "Ihre Frage wurde erfolgreich gespeichert."
+msgstr "Frage wurde erfolgreich gespeichert."
 
 msgid "successQuestionDeleted"
-msgstr "Die ausgewählte Frage wurde erfolgreich gelöscht."
+msgstr "Ausgewählte Frage wurde erfolgreich gelöscht."
 
 msgid "errorQuestionDeleted"
-msgstr "Die ausgewählte Frage konnte nicht gelöscht werden."
+msgstr "Ausgewählte Frage konnte nicht gelöscht werden."
 
 msgid "hintName"
 msgstr "Hier geben Sie den Namen für die Fragengruppe an. Dieser wird nur intern verwendet."

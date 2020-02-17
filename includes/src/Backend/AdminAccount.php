@@ -533,7 +533,7 @@ class AdminAccount
             $_SESSION['AdminAccount']->cLogin      = $admin->cLogin;
             $_SESSION['AdminAccount']->cMail       = $admin->cMail;
             $_SESSION['AdminAccount']->cPass       = $admin->cPass;
-            $_SESSION['AdminAccount']->language    = $admin->language;
+            $_SESSION['AdminAccount']->language    = $admin->language ?? 'de-DE';
             $_SESSION['AdminAccount']->attributes  = $admin->attributes;
 
             if (!\is_object($group)) {

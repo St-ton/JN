@@ -3,28 +3,28 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "suchspecialoverlay"
-msgstr "Bild-Overlays für besondere Artikel"
+msgstr "Artikelsticker für besondere Artikel"
 
 msgid "suchspecialoverlayDesc"
-msgstr "Besondere Artikel können in JTL-Shop mit einer Overlay-Grafik auf ihrem Artikelbild optisch hervorgehoben werden. Hier stellen Sie die einzelnen Grafiken für die verschiedenen Arten an besonderen Artikeln ein."
+msgstr "Besondere Artikel können in JTL-Shop optisch mit einem Sticker auf ihrem Artikelbild hervorgehoben werden. Hier stellen Sie die einzelnen Sticker für die verschiedenen Arten an besonderen Artikeln ein."
 
 msgid "suchspecialoverlayUrl"
 msgstr "https://jtl-url.de/538df"
 
 msgid "suchspecial"
-msgstr "Overlay für Artikeltyp"
+msgstr "Sticker für Artikeltyp:"
 
 msgid "suchspecialoverlayActive"
-msgstr "Overlay-Funktion aktiv"
+msgstr "Sticker-Funktion aktiv:"
 
 msgid "suchspecialoverlayActiveDesc"
-msgstr "Hier legen Sie fest, ob die Overlay-Grafik für den unter „Overlay für Artikeltyp“ ausgewählten Artikeltyp angezeigt werden soll."
+msgstr "Hier legen Sie fest, ob der Sticker für den unter „Sticker für Artikeltyp“ ausgewählten Artikeltyp angezeigt werden soll."
 
 msgid "suchspecialoverlayFileName"
-msgstr "Overlay-Grafik"
+msgstr "Sticker-Grafik:"
 
 msgid "suchspecialoverlayFileNameDesc"
-msgstr "Hier wählen Sie eine Overlay-Grafik aus."
+msgstr "Hier wählen Sie die Grafik aus, die als Artikelsticker angezeigt werden soll."
 
 msgid "suchspecialoverlayPrio"
 msgstr "Priorität (1 = niedrige Priorität)"
@@ -33,28 +33,28 @@ msgid "suchspecialoverlayMargin"
 msgstr "Randabstand vom Artikelbild"
 
 msgid "suchspecialoverlayMarginDesc"
-msgstr "Hier legen Sie fest, wie viele Pixel der Abstand zwischen der Overlay-Grafik und dem Artikelbild betragen soll."
+msgstr "Hier legen Sie fest, wie viele Pixel der Abstand zwischen dem Sticker und dem Artikelbild betragen soll."
 
 msgid "suchspecialoverlayClarityDesc"
-msgstr "Hier legen Sie fest, mit wie viel Prozent Transparenz das Overlay ausgestattet sein soll. Falls Sie das von JTL-Shop Version 4 mitgelieferte EVO-Template oder das von JTL-Shop 5 mitgelieferte NOVA-Template verwenden, wird diese Einstellung über eine Template-Anpassung realisiert."
+msgstr "Hier legen Sie fest, wie transparent der Sticker sein soll. Die Angabe bezieht sich auf Prozent. Falls Sie das von JTL-Shop 4 mitgelieferte EVO-Template oder das von JTL-Shop 5 mitgelieferte NOVA-Template verwenden, wird diese Einstellung über eine Template-Anpassung realisiert."
 
 msgid "suchspecialoverlaySize"
-msgstr "Größe des Overlays in Pixel (px)"
+msgstr "Größe des Stickers in Pixel (px)"
 
 msgid "suchspecialoverlaySizeDesc"
-msgstr "Hier legen Sie fest, wie groß das Overlay im Vergleich zum Artikelbild sein soll. Falls Sie das von JTL-Shop Version 4 mitgelieferte EVO-Template oder das von JTL-Shop 5 mitgelieferte NOVA-Template verwenden, wird diese Einstellung über eine Template-Anpassung realisiert."
+msgstr "Hier legen Sie fest, wie groß der Sticker im Vergleich zum Artikelbild sein soll. Falls Sie das von JTL-Shop 4 mitgelieferte EVO-Template oder das von JTL-Shop 5 mitgelieferte NOVA-Template verwenden, wird diese Einstellung über eine Template-Anpassung realisiert."
 
 msgid "suchspecialoverlayPositionDesc"
-msgstr "Hier legen Sie fest, wo sich das Bild-Overlay im Artikelbild befinden soll. Falls Sie das von JTL-Shop Version 4 mitgelieferte EVO-Template oder das von JTL-Shop 5 mitgelieferte NOVA-Template verwenden, wird diese Einstellung über eine Template-Anpassung realisiert."
+msgstr "Hier legen Sie fest, wo sich der Sticker im Artikelbild befinden soll. Falls Sie das von JTL-Shop 4 mitgelieferte EVO-Template oder das von JTL-Shop 5 mitgelieferte NOVA-Template verwenden, wird diese Einstellung über eine Template-Anpassung realisiert."
 
 msgid "suchspecialoverlayPrioDesc"
-msgstr "Falls auf einen Artikel mehrere Overlays zutreffen, können Sie hier bestimmen, welches Overlay angezeigt werden soll. Dabei wird das Overlay mit der höchsten Priorität angezeigt."
+msgstr "Falls auf einen Artikel mehrere Sticker zutreffen, können Sie hier bestimmen, welcher Sticker angezeigt werden soll. Dabei wird der Sticker mit der höchsten Priorität angezeigt."
 
 msgid "errorOverlayWritePermissions"
-msgstr "Das Overlay konnte nicht gespeichert werden. Bitte prüfen Sie die Schreibrechte des Ordners „%s“."
+msgstr "Der Sticker konnte nicht gespeichert werden. Bitte prüfen Sie die Schreibrechte des Ordners „%s“."
 
 msgid "invalidOverlay"
-msgstr "Unbekanntes Overlay"
+msgstr "Unbekannter Artikelsticker"
 
 #overlay name (tsuchspecialoverlay)
 msgid "Bestseller"

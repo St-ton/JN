@@ -3,10 +3,10 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "objectcache"
-msgstr "Objekt-Cache"
+msgstr "Cache"
 
 msgid "objectcacheDesc"
-msgstr "Hier stellen Sie den von JTL-Shop genutzten Cache ein. Der Objekt-Cache puffert Daten, damit sie schneller geladen werden. Sie können für jede Objektart festlegen, ob diese im Cache gespeichert werden soll."
+msgstr "Hier stellen Sie den von JTL-Shop genutzten Cache ein. Der Objekt-Cache puffert Daten, damit sie schneller geladen werden. Sie können für jede Objektart aktivieren, ob diese im Cache gespeichert werden soll."
 
 msgid "cacheURL"
 msgstr "https://jtl-url.de/lt1ec"
@@ -39,7 +39,7 @@ msgid "cg_box_description"
 msgstr "Enthält Boxen und deren Einstellungen"
 
 msgid "cg_news_description"
-msgstr "Enthält Newseinträge und -kategorien"
+msgstr "Enthält Blogbeiträge und -kategorien"
 
 msgid "cg_attribute_description"
 msgstr "Enthält Attributdaten"
@@ -60,7 +60,7 @@ msgid "cg_language_nicename"
 msgstr "Sprache"
 
 msgid "cg_template_nicename"
-msgstr "Template"
+msgstr "Templates"
 
 msgid "cg_option_nicename"
 msgstr "Optionen"
@@ -78,7 +78,7 @@ msgid "cg_box_nicename"
 msgstr "Boxen"
 
 msgid "cg_news_nicename"
-msgstr "News"
+msgstr "Blog"
 
 msgid "cg_attribute_nicename"
 msgstr "Attribute"
@@ -122,9 +122,6 @@ msgstr "Gesamten Seiten-Cache leeren"
 msgid "clearTemplateCache"
 msgstr "Gesamten Template-Cache leeren"
 
-msgid "config"
-msgstr "Konfiguration"
-
 msgid "startBenchmark"
 msgstr "Benchmark starten"
 
@@ -135,25 +132,25 @@ msgid "configurationError"
 msgstr "(fehlerhaft konfiguriert)"
 
 msgid "successCacheEmptied"
-msgstr " Caches erfolgreich geleert."
+msgstr " Caches wurden erfolgreich geleert."
 
 msgid "errorNoCacheType"
-msgstr "Es wurde kein Cache-Typ ausgewählt."
+msgstr "Bitte wählen Sie einen Cache-Typ."
 
 msgid "errorCacheTypeDelete"
-msgstr "Der Cache %s konnte nicht geleert werden (evtl. bereits leer)."
+msgstr "Cache %s konnte nicht geleert werden (evtl. bereits leer)."
 
 msgid "successCacheTypeActivate"
-msgstr "Ausgewählte Typen erfolgreich aktiviert."
+msgstr "Ausgewählte wurden Typen erfolgreich aktiviert."
 
 msgid "successCacheTypeDeactivate"
-msgstr "Ausgewählte Typen erfolgreich deaktiviert."
+msgstr "Ausgewählte Typen wurden erfolgreich deaktiviert."
 
 msgid "successCacheDelete"
 msgstr "Object-Cache wurde erfolgreich gelöscht."
 
 msgid "errorCacheDelete"
-msgstr "Der Cache konnte nicht geleert werden."
+msgstr "Cache konnte nicht geleert werden."
 
 msgid "successCacheMethodSave"
 msgstr " wurde als Cache-Methode gespeichert."
@@ -162,19 +159,19 @@ msgid "errorCacheMethodSelect"
 msgstr "Es konnte keine funktionierende Cache-Methode ausgewählt werden."
 
 msgid "errorFileDelete"
-msgstr "Die Datei %s konnte nicht gelöscht werden!"
+msgstr "Datei %s konnte nicht gelöscht werden!"
 
 msgid "errorDirDelete"
-msgstr "Das Verzeichnis %s konnte nicht gelöscht werden!"
+msgstr "Verzeichnis %s konnte nicht gelöscht werden!"
 
 msgid "successTemplateCacheDelete"
-msgstr "Es wurden %d Dateien im Template-Cache gelöscht!"
+msgstr "Es wurden %d Dateien im Template-Cache gelöscht."
 
 msgid "uptime"
 msgstr "Uptime"
 
 msgid "fullSize"
-msgstr "Komplette Größe"
+msgstr "Gesamtgröße"
 
 msgid "entriesCount"
 msgstr "Anzahl Einträge"

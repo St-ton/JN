@@ -24,34 +24,34 @@ msgid "themeDark"
 msgstr "Dunkel"
 
 msgid "sliderAnimationSpeed"
-msgstr "Slidergeschwindigkeit"
+msgstr "Slidergeschwindigkeit (ms)"
 
 msgid "pause"
-msgstr "Pause"
+msgstr "Pause (ms)"
 
 msgid "autoStart"
-msgstr "Autostart?"
+msgstr "Autostart"
 
 msgid "pauseOnHover"
-msgstr "Pause bei \"hover\"?"
+msgstr "Pause bei Hover"
 
 msgid "pauseOnHoverPause"
-msgstr "anhalten"
+msgstr "ja"
 
 msgid "pauseOnHoverContinue"
-msgstr "weitermachen"
+msgstr "nein"
 
 msgid "pointNavigation"
-msgstr "Punktnavigation?"
+msgstr "Punktnavigation"
 
 msgid "useKenBurnsEffect"
-msgstr "Ken-Burns-Effekt nutzen?"
+msgstr "Ken-Burns-Effekt nutzen"
 
 msgid "overridesOtherSettings"
 msgstr "Überschreibt andere Einstellungen"
 
 msgid "showNavigationArrows"
-msgstr "Navipfeile anzeigen?"
+msgstr "Pfeilnavigation"
 
 msgid "randomEffects"
-msgstr "zufällige Effekte?"
+msgstr "Zufällige Effekte"

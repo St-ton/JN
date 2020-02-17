@@ -12,7 +12,7 @@ msgid "sitemapDownload"
 msgstr "Sitemap-Download"
 
 msgid "sitemapExportDesc"
-msgstr "Hier können Sie die zum Shop gehörende Sitemap im Sitemap Protocol 0.9 herunterladen. Sie können die Sitemap in allen Suchmaschinen hochladen, die diesen Standard unterstützen.<br/>Durch einen Abgleich mit JTL-Wawi oder durch das manuelle Herunterladen der Sitemap werden die Datei export/sitemap_index.xml und weitere Inhaltsdateien Ihres Shops neu generiert, so dass auch externe Dienste darauf zugreifen können."
+msgstr "Hier können Sie die zum Onlineshop gehörende Sitemap im Sitemap Protocol 0.9 herunterladen. Sie können die Sitemap in allen Suchmaschinen hochladen, die diesen Standard unterstützen.<br/>Durch einen Abgleich mit JTL-Wawi oder durch das manuelle Herunterladen der Sitemap werden die Datei export/sitemap_index.xml und weitere Inhaltsdateien Ihres Onlineshops neu generiert, so dass auch externe Dienste darauf zugreifen können."
 
 msgid "searchEnginesHint"
 msgstr "Unter anderem unterstützen auch <a class=\"externURL\" href=\"http://www.google.de\" rel=\"external\">Google</a>, <a class=\"externURL\" href=\"http://www.yahoo.de\" rel=\"external\">Yahoo!</a> und <a class=\"externURL\" href=\"http://www.msn.de\" rel=\"external\">Microsoft</a> diesen Standard."
@@ -66,16 +66,16 @@ msgid "successSave"
 msgstr "%s wurde erfolgreich aktualisiert."
 
 msgid "successSitemapDLDelete"
-msgstr "Die markierten Sitemap-Downloads wurden erfolgreich gelöscht."
+msgstr "Markierte Sitemap-Downloads wurden erfolgreich gelöscht."
 
 msgid "successSitemapReportDelete"
-msgstr "Die markierten Sitemap-Reports wurden erfolgreich gelöscht."
+msgstr "Markierte Sitemap-Reports wurden erfolgreich gelöscht."
 
 msgid "successSitemapDLDeleteByYear"
-msgstr "Die markierten Sitemap-Downloads für %s wurden erfolgreich gelöscht."
+msgstr "Markierte Sitemap-Downloads für %s wurden erfolgreich gelöscht."
 
 msgid "successSitemapReportDeleteByYear"
-msgstr "Die Sitemap-Reports für %s wurden erfolgreich gelöscht."
+msgstr "Sitemap-Reports für %s wurden erfolgreich gelöscht."
 
 msgid "sureDeleteEntries"
 msgstr "Möchten Sie wirklich alle Einträge für das ausgewählte Jahr löschen?"

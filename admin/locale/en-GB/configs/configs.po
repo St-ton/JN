@@ -3050,3 +3050,9 @@ msgstr "Show manufacturers as"
 msgid "hersteller_anzeigen_als_desc"
 msgstr "Specify how to display the manufacturers."
 
+msgid "general_child_item_bulk_pricing_name"
+msgstr "Scale prices across variations"
+
+msgid "general_child_item_bulk_pricing_desc"
+msgstr "Scale prices across variations"
+

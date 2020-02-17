@@ -45,25 +45,27 @@
                                         {formrow class="review-helpful mt-3 mb-5 mg-lg-0" id="help{$oBewertung->kBewertung}"}
                                             {col class='col-auto ml-auto'}
                                                 {button size="sm"
-                                                    class="btn-icon btn-icon-primary"
+                                                    class="btn-icon btn-icon-primary js-helpful badge-circle-1 badge-circle-no-sizes {if (int)$oBewertung->rated === 1}on-list{/if}"
                                                     title="{lang key='yes'}"
                                                     name="hilfreich_{$oBewertung->kBewertung}"
                                                     type="submit"
-                                                    variant="icon-primary"}
+                                                    variant="icon-primary"
+                                                    data=["review-id"=>{$oBewertung->kBewertung}]}
                                                     <i class="far fa-thumbs-up"></i>
                                                 {/button}
-                                                <span class="d-block"><b>{$oBewertung->nHilfreich}</b></span>
+                                                <b><span class="d-block" data-review-count-id="hilfreich_{$oBewertung->kBewertung}">{$oBewertung->nHilfreich}</span></b>
                                             {/col}
                                             {col class='col-auto mr-auto'}
                                                 {button size="sm"
-                                                    class="btn-icon"
+                                                    class="btn-icon js-helpful badge-circle-1 badge-circle-no-sizes {if $oBewertung->rated !== null && (int)$oBewertung->rated === 0}on-list{/if}"
                                                     title="{lang key='no'}"
                                                     name="nichthilfreich_{$oBewertung->kBewertung}"
                                                     type="submit"
-                                                    variant="icon-primary"}
+                                                    variant="icon-primary"
+                                                    data=["review-id"=>{$oBewertung->kBewertung}]}
                                                     <i class="far fa-thumbs-down"></i>
                                                 {/button}
-                                                <span class="d-block"><b>{$oBewertung->nNichtHilfreich}</b></span>
+                                                <b><span class="d-block" data-review-count-id="nichthilfreich_{$oBewertung->kBewertung}">{$oBewertung->nNichtHilfreich}</span></b>
                                             {/col}
                                         {/formrow}
                                     {/block}

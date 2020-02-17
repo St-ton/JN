@@ -9,7 +9,7 @@
     {block name='layout-header-nav-icons-include-header-shop-nav-account'}
         {include file='layout/header_shop_nav_account.tpl'}
     {/block}
-    {if !($device->isMobile())}
+    {if !($isMobile)}
         {block name='layout-header-nav-icons-include-header-shop-nav-compare'}
             {include file='layout/header_shop_nav_compare.tpl'}
         {/block}

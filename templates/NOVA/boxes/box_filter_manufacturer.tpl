@@ -4,7 +4,7 @@
  *}
 {block name='boxes-box-filter-manufacturer'}
     {if $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE
-        && !($device->isMobile() || $Einstellungen.template.productlist.filter_placement === 'modal')}
+        && !($isMobile || $Einstellungen.template.productlist.filter_placement === 'modal')}
         <div class="box box-filter-manufacturer d-none d-lg-block" id="sidebox{$oBox->getID()}">
             {button
                 variant="link"

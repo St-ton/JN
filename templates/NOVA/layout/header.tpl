@@ -58,7 +58,7 @@
                 {file_get_contents("{$currentThemeDir}{$Einstellungen.template.theme.theme_default}_crit.min.css")}
             </style>
             {* css *}
-            {if !isset($Einstellungen.template.general.use_minify) || $Einstellungen.template.general.use_minify === 'N'}
+            {if $Einstellungen.template.general.use_minify === 'N'}
                 {foreach $cCSS_arr as $cCSS}
                     <link rel="preload" href="{$ShopURL}/{$cCSS}?v={$nTemplateVersion}" as="style"
                           onload="this.onload=null;this.rel='stylesheet'">
@@ -81,9 +81,9 @@
                     {/if}
                 </noscript>
             {else}
-                <link rel="preload" href="{$ShopURL}/asset/{$Einstellungen.template.theme.theme_default}.css{if isset($cPluginCss_arr) && $cPluginCss_arr|@count > 0},plugin_css{/if}?v={$nTemplateVersion}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+                <link rel="preload" href="{$ShopURL}/{$combinedCSS}" as="style" onload="this.onload=null;this.rel='stylesheet'">
                 <noscript>
-                    <link href="{$ShopURL}/asset/{$Einstellungen.template.theme.theme_default}.css{if isset($cPluginCss_arr) && $cPluginCss_arr|@count > 0},plugin_css{/if}?v={$nTemplateVersion}" rel="stylesheet">
+                    <link href="{$ShopURL}/{$combinedCSS}" rel="stylesheet">
                 </noscript>
             {/if}
 
@@ -211,32 +211,22 @@
 
         <script src="{$ShopURL}/{$templateDir}js/jquery-3.4.1.min.js"></script>
 
-        {if !isset($Einstellungen.template.general.use_minify) || $Einstellungen.template.general.use_minify === 'N'}
+        {if $Einstellungen.template.general.use_minify === 'N'}
             {if isset($cPluginJsHead_arr)}
                 {foreach $cPluginJsHead_arr as $cJS}
                     <script defer src="{$ShopURL}/{$cJS}?v={$nTemplateVersion}"></script>
                 {/foreach}
             {/if}
-        {else}
-            {if isset($cPluginJsHead_arr) && $cPluginJsHead_arr|@count > 0}
-                <script defer src="{$ShopURL}/asset/plugin_js_head?v={$nTemplateVersion}"></script>
-            {/if}
-        {/if}
-
-        {if !isset($Einstellungen.template.general.use_minify) || $Einstellungen.template.general.use_minify === 'N'}
             {foreach $cJS_arr as $cJS}
                 <script defer src="{$ShopURL}/{$cJS}?v={$nTemplateVersion}"></script>
             {/foreach}
-            {if isset($cPluginJsBody_arr)}
-                {foreach $cPluginJsBody_arr as $cJS}
-                    <script defer src="{$ShopURL}/{$cJS}?v={$nTemplateVersion}"></script>
-                {/foreach}
-            {/if}
+            {foreach $cPluginJsBody_arr as $cJS}
+                <script defer src="{$ShopURL}/{$cJS}?v={$nTemplateVersion}"></script>
+            {/foreach}
         {else}
-            <script defer src="{$ShopURL}/asset/jtl3.js?v={$nTemplateVersion}"></script>
-            {if isset($cPluginJsBody_arr) && $cPluginJsBody_arr|@count > 0}
-                <script defer src="{$ShopURL}/asset/plugin_js_body?v={$nTemplateVersion}"></script>
-            {/if}
+            {foreach $minifiedJS as $item}
+                <script defer src="{$ShopURL}/{$item}"></script>
+            {/foreach}
         {/if}
 
         {$customJSPath = $currentTemplateDir|cat:'/js/custom.js'}
@@ -276,7 +266,7 @@
 
         {block name='layout-header-header'}
             {block name='layout-header-branding-top-bar'}
-                {if !$device->isMobile()}
+                {if !$isMobile}
                     <div id="header-top-bar" class="d-none {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex{/if}">
                         <div class="container-fluid container-fluid-xl {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex flex-row-reverse{/if}">
                             {include file='layout/header_top_bar.tpl'}
@@ -284,8 +274,7 @@
                     </div>
                 {/if}
             {/block}
-            <header class="d-print-none sticky-top fixed-navbar" id="jtl-nav-wrapper">
-
+            <header class="d-print-none {if !$isMobile || $Einstellungen.template.theme.mobile_search_type !== 'fixed'}sticky-top{/if} fixed-navbar" id="jtl-nav-wrapper">
                 {block name='layout-header-container-inner'}
                     <div class="container-fluid container-fluid-xl">
                     {block name='layout-header-category-nav'}
@@ -313,6 +302,14 @@
                                 </div>
                             {/block}
 
+                            {block name='layout-header-search'}
+                                {if $Einstellungen.template.theme.mobile_search_type === 'fixed'}
+                                    <div class="d-lg-none{if !$isTablet} container-fluid container-fluid-xl py-2 order-1 bg-white{else} px-4 py-2 flex-grow-1{/if}">
+                                        {include file='snippets/search_form.tpl' id='search-header-mobile-top'}
+                                    </div>
+                                {/if}
+                            {/block}
+
                             {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}
                                 {block name='layout-header-secure-checkout'}
                                     <div class="ml-auto ml-lg-0">
@@ -335,7 +332,7 @@
 
                                 {*categories*}
                                 {block name='layout-header-include-categories-mega'}
-                                    <div id="mainNavigation" class="collapse navbar-collapse nav-scrollbar mr-lg-5">
+                                    <div id="mainNavigation" class="collapse navbar-collapse nav-scrollbar mr-lg-3">
                                         <div class="nav-mobile-header px-3 d-lg-none">
                                             {row class="align-items-center"}
                                                 {col}
@@ -366,6 +363,34 @@
                     </div>
                 {/block}
             </header>
+            {block name='layout-header-search-fixed'}
+                {if $Einstellungen.template.theme.mobile_search_type === 'fixed'}
+                    <div class="container-fluid container-fluid-xl fixed-search py-2 fixed-top smoothscroll-top-search d-lg-none d-none">
+                        {include file='snippets/search_form.tpl' id='search-header-mobile-fixed'}
+                    </div>
+
+                    {inline_script}<script>
+                        {literal}
+                        $(function(){
+                            let lastScroll = 0;
+                            $(document).on('scroll', function () {
+                                let newScroll = $(this).scrollTop();
+                                if (newScroll < lastScroll){
+                                    if ($(window).scrollTop() > 100) {
+                                        $('.smoothscroll-top-search').removeClass('d-none');
+                                    } else {
+                                        $('.smoothscroll-top-search').addClass('d-none');
+                                    }
+                                } else {
+                                    $('.smoothscroll-top-search').addClass('d-none');
+                                }
+                                lastScroll = newScroll;
+                            });
+                        });
+                        {/literal}
+                    </script>{/inline_script}
+                {/if}
+            {/block}
         {/block}
     {/if}
 

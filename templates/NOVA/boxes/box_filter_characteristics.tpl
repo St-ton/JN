@@ -4,7 +4,7 @@
  *}
 {block name='boxes-box-filter-characteristics'}
     {if $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE
-        && !($device->isMobile() || $Einstellungen.template.productlist.filter_placement === 'modal')}
+        && !($isMobile || $Einstellungen.template.productlist.filter_placement === 'modal')}
         {foreach $oBox->getItems() as $characteristic}
             <div id="sidebox{$oBox->getID()}-{$characteristic->getID()}" class="box box-filter-characteristics{if $characteristic@last} mb-7{/if} d-none d-lg-block">
                 {button

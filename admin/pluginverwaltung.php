@@ -11,6 +11,7 @@ use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Mapper\PluginState as StateMapper;
 use JTL\Mapper\PluginValidation as ValidationMapper;
+use JTL\Minify\MinifyService;
 use JTL\Plugin\Admin\Installation\Extractor;
 use JTL\Plugin\Admin\Installation\Installer;
 use JTL\Plugin\Admin\Installation\Uninstaller;
@@ -55,6 +56,7 @@ $installer       = new Installer($db, $uninstaller, $legacyValidator, $pluginVal
 $updater         = new Updater($db, $installer);
 $extractor       = new Extractor($parser);
 $stateChanger    = new StateChanger($db, $cache, $legacyValidator, $pluginValidator);
+$minify          = new MinifyService();
 if (isset($_SESSION['plugin_msg'])) {
     $notice = $_SESSION['plugin_msg'];
     unset($_SESSION['plugin_msg']);
@@ -159,6 +161,7 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                             $notice .= __('successPluginActivate');
                         }
                         $reload = true;
+                        $minify->flushCache();
                         break;
                     case InstallCode::WRONG_PARAM:
                         $errorMsg = __('errorAtLeastOnePlugin');
@@ -183,6 +186,7 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                             $notice .= __('successPluginDeactivate');
                         }
                         $reload = true;
+                        $minify->flushCache();
                         break;
                     case InstallCode::WRONG_PARAM: // $kPlugin wurde nicht uebergeben
                         $errorMsg = __('errorAtLeastOnePlugin');
@@ -262,6 +266,7 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                 if ($res === InstallCode::OK || $res === InstallCode::OK_LEGACY) {
                     $notice = __('successPluginInstall');
                     $reload = true;
+                    $minify->flushCache();
                 } elseif ($res > InstallCode::OK && $res !== InstallCode::OK_LEGACY) {
                     $errorMsg = __('errorPluginInstall') . $res;
                 }

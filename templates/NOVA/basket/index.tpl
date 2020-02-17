@@ -26,7 +26,7 @@
                             <div class="basket_wrapper">
                                 {block name='basket-index-basket-items'}
                                     {block name='basket-index-form-cart'}
-                                        {form id="cart-form" method="post" action="{get_static_route id='warenkorb.php'}" class="evo-validate"}
+                                        {form id="cart-form" method="post" action="{get_static_route id='warenkorb.php'}" class="jtl-validate"}
                                             {input type="hidden" name="wka" value="1"}
                                             <div class="mb-7">
                                                 {block name='basket-index-include-order-items'}
@@ -152,7 +152,7 @@
                                         {collapse id="coupon-form"}
                                             {cardbody}
                                             {block name='basket-index-coupon-form'}
-                                                {form class="label-slide evo-validate" id="basket-coupon-form" method="post" action="{get_static_route id='warenkorb.php'}"}
+                                                {form class="label-slide jtl-validate" id="basket-coupon-form" method="post" action="{get_static_route id='warenkorb.php'}"}
                                                     {formgroup label-for="couponCode" label={lang key='couponCode' section='account data'} class="mw-100{if !empty($invalidCouponCode)} has-error{/if}"}
                                                         {input aria=["label"=>"{lang key='couponCode' section='account data'}"] type="text" name="Kuponcode" id="couponCode" maxlength="32" placeholder=" " required=true}
                                                     {/formgroup}

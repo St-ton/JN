@@ -95,12 +95,23 @@
     <div id="sidebarFooter">
         <div id="savePublishPanel">
             <label for="footerDraftNameInput" id="footerDraftName" onclick="opc.gui.onBeginEditDraftName()">
-                <span>{$page->getName()}</span><i class="fas fa-pencil-alt"></i>
+                <span>
+                    {if isset($page)}
+                        {$page->getName()}
+                    {else}
+                        No Page
+                    {/if}
+                </span>
+                <i class="fas fa-pencil-alt"></i>
             </label>
             <input type="text" id="footerDraftNameInput" onblur="opc.gui.onFinishEditDraftName()"
                    onkeydown="opc.gui.onDraftNameInputKeydown()" style="display:none">
             <div class="opc-draft-status" id="opcDraftStatus">
-                {include file="./draftstatus.tpl"}
+                {if isset($page)}
+                    {include file="./draftstatus.tpl"}
+                {else}
+                    No Page
+                {/if}
             </div>
             <div id="savePublishButtons">
                 <button type="button" class="opc-btn-secondary opc-small-btn" onclick="opc.gui.savePage()">

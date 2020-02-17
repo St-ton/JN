@@ -182,6 +182,11 @@
   border-radius: 50% !important;
   transition: all .2s;
   &::before { display: none; }
+  &.badge-circle-no-sizes {
+    width: unset;
+    height: unset;
+    min-width: unset;
+  }
   &.circle-small {
     width: 36px;
     height: 36px;

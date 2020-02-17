@@ -61,6 +61,7 @@
 }
 #opc button.opc-btn-primary[disabled]:hover, #opc button.opc-btn-secondary[disabled]:hover {
   background-color: #BDBDBD;
+  color: #F5F7FA;
 }
 #opc button.opc-btn-primary:hover {
   background-color: #22a4f3;

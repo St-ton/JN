@@ -1,7 +1,9 @@
 {
     "name": "jtl/shop4",
-    "type": "library",
-    "homepage": "http://www.jtl-software.de",
+    "license": "proprietary",
+    "description": "Das Shopsystem von JTL-Software",
+    "type": "project",
+    "homepage": "https://www.jtl-software.de",
     "require": {
         "php": ">=5.4",
         "imanee/imanee": "dev-master",
@@ -19,7 +21,7 @@
         "paragonie/random_compat": "~2.0",
         "studio-42/elfinder": "^2.1"
     },
-    "require_dev": {
+    "require-dev": {
         "phpunit/php-token-stream": "~1.2",
         "nikic/php-parser": "^2.1",
         "Symfony/Finder": "^2.8"

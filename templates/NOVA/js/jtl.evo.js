@@ -438,6 +438,55 @@
             });
         },
 
+        initScrollEvents: function() {
+            //mobile search
+            let lastScroll       = 0,
+                $scrollTopSearch = $('.smoothscroll-top-search');
+            if ($scrollTopSearch.length) {
+                $(document).on('scroll', function () {
+                    let newScroll = $(this).scrollTop();
+                    if (newScroll < lastScroll) {
+                        if ($(window).scrollTop() > 100) {
+                            $scrollTopSearch.removeClass('d-none');
+                        } else {
+                            $scrollTopSearch.addClass('d-none');
+                        }
+                    } else {
+                        $scrollTopSearch.addClass('d-none');
+                    }
+                    lastScroll = newScroll;
+                });
+            }
+
+            //scroll top button
+            let toTopbuttonVisible     = false,
+                $toTopbutton           = $('.smoothscroll-top'),
+                toTopbuttonActiveClass = 'show';
+
+            function scrolltoTop() {
+                $(window).scrollTop(0);
+            }
+
+            function handleVisibilityTopButton() {
+                let currentPosition = $(window).scrollTop();
+                if (currentPosition > 800) {
+                    if (!toTopbuttonVisible) {
+                        $toTopbutton.addClass(toTopbuttonActiveClass);
+                        toTopbuttonVisible = true;
+                    }
+                } else if (toTopbuttonVisible) {
+                    toTopbuttonVisible = false;
+                    $toTopbutton.removeClass(toTopbuttonActiveClass)
+                }
+            }
+
+            if ($toTopbutton.length) {
+                $(window).on('scroll', handleVisibilityTopButton);
+                $toTopbutton.on('click', scrolltoTop);
+                handleVisibilityTopButton();
+            }
+        },
+
         addCartBtnAnimation: function() {
             var animating = false;
 
@@ -768,6 +817,16 @@
             });
         },
 
+        initFilterEvents: function() {
+            let initiallized = false;
+            $('#js-filters').on('click', function() {
+                if (!initiallized) {
+                    $.evo.initFilters(window.location.href);
+                    initiallized = true;
+                }
+            });
+        },
+
         redirectToNewPriceRange: function (priceRange, redirect, $wrapper) {
             let currentURL  = window.location.href;
             if (!redirect) {
@@ -825,6 +884,29 @@
                 });
         },
 
+        initReviewHelpful: function() {
+            $('.js-helpful').on('click', function (e) {
+                e.preventDefault();
+                $.evo.extended().updateReviewHelpful($(this));
+            });
+        },
+
+        initWishlist: function() {
+            let wlFormID = '#wl-items-form';
+            if ($(wlFormID).length) {
+                $.evo.extended().addInactivityCheck(wlFormID);
+                $('.js-update-wl').on('change', function () {
+                    $.evo.extended().updateWishlistItem($(this).closest('.productbox-inner'));
+                });
+            }
+        },
+
+        initPaginationEvents: function() {
+            $('.pagination-wrapper select').on('change', function () {
+                this.form.submit();
+            });
+        },
+
         /**
          * $.evo.extended() is deprecated, please use $.evo instead
          */
@@ -850,6 +932,11 @@
             this.fixStickyElements();
             this.setWishlistVisibilitySwitches();
             this.initEModals();
+            this.initScrollEvents();
+            this.initReviewHelpful();
+            this.initWishlist();
+            this.initPaginationEvents();
+            this.initFilterEvents();
         }
     };
 

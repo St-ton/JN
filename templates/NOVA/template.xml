@@ -27,6 +27,14 @@
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
             </Setting>
+            <Setting Description="Anzeige der Suche auf mobilen Geräten" Key="mobile_search_type" Type="select" Value="fixed">
+                <Option Value="fixed">Suche beim Hochscrollen einblenden</Option>
+                <Option Value="dropdown">Icon mit Dropdown</Option>
+            </Setting>
+            <Setting Description="'Scroll back to top'-Button anzeigen" Key="button_scroll_top" Type="select" Value="Y">
+                <Option Value="Y">Ja</Option>
+                <Option Value="N">Nein</Option>
+            </Setting>
             <Setting Description="Sliderposition" Key="slider_full_width" Type="select" Value="N">
                 <Option Value="N">im Contentbereich</Option>
                 <Option Value="Y">zwischen Header und Content</Option>

@@ -57,9 +57,15 @@
             });
 
             document.querySelectorAll('.slick-lazy').forEach(function(slickItem) {
+                let startX;
+                slickItem.addEventListener('touchstart', function (e) {
+                    startX = e.changedTouches[0].pageX;
+                });
                 slickItem.addEventListener('touchmove', function (e) {
                     let mainNode = $(this);
-                    if (!mainNode.hasClass('slick-initialized') ) {
+                    if (!mainNode.hasClass('slick-initialized')
+                        && Math.abs(startX - e.changedTouches[0].pageX) > 50
+                    ) {
                         mainNode.find('.js-initial-arrow').remove();
                         mainNode.removeClass('slick-lazy');
                         self.initSlick(mainNode, mainNode.data('slick-type'));

@@ -5,6 +5,7 @@
  */
 
 use JTL\Alert\Alert;
+use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -36,7 +37,7 @@ $edit  = Request::getInt('editRechnungsadresse');
 if (isset($_POST['editRechnungsadresse'])) {
     $edit = (int)$_POST['editRechnungsadresse'];
 }
-if (Request::postInt('form') === 1) {
+if (Form::validateToken() && Request::postInt('form') === 1) {
     kundeSpeichern($_POST);
 }
 if (Request::getInt('editRechnungsadresse') === 1) {

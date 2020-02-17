@@ -19487,7 +19487,6 @@ aside .last-seen-link {
 }
 .carousel:not(.slick-initialized) .product-wrapper {
   padding: 0 1rem;
-  margin-bottom: 10px;
 }
 .carousel:hover .slick-arrow {
   opacity: 1;

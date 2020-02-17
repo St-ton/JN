@@ -6,6 +6,7 @@
 
 use JTL\Alert\Alert;
 use JTL\Customer\Customer;
+use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Newsletter\Helper;
@@ -25,6 +26,7 @@ $smarty      = Shop::Smarty();
 $alertHelper = Shop::Container()->getAlertService();
 $linkHelper  = Shop::Container()->getLinkService();
 $kLink       = $linkHelper->getSpecialPageLinkKey(LINKTYP_NEWSLETTER);
+$valid       = Form::validateToken();
 if ($kLink === false) {
     $oLink               = $db->select('tlink', 'nLinkart', LINKTYP_404);
     $bFileNotFound       = true;
@@ -37,7 +39,7 @@ if ($kLink === false) {
 $link          = $linkHelper->getPageLink($kLink);
 $cCanonicalURL = '';
 $option        = 'eintragen';
-if (Request::verifyGPCDataInt('abonnieren') > 0) {
+if ($valid && Request::verifyGPCDataInt('abonnieren') > 0) {
     $post = Text::filterXSS($_POST);
     if (Text::filterEmailAddress($post['cEmail']) !== false) {
         $refData = (new OptinRefData())
@@ -63,7 +65,7 @@ if (Request::verifyGPCDataInt('abonnieren') > 0) {
         );
     }
     $smarty->assign('cPost_arr', $post);
-} elseif (Request::verifyGPCDataInt('abmelden') === 1) {
+} elseif ($valid && Request::verifyGPCDataInt('abmelden') === 1) {
     if (Text::filterEmailAddress($_POST['cEmail']) !== false) {
         try {
             (new Optin(OptinNewsletter::class))

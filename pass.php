@@ -6,6 +6,7 @@
 
 use JTL\Alert\Alert;
 use JTL\Customer\Customer;
+use JTL\Helpers\Form;
 use JTL\Helpers\Text;
 use JTL\Shop;
 
@@ -17,7 +18,8 @@ $kLink       = $linkHelper->getSpecialPageLinkKey(LINKTYP_PASSWORD_VERGESSEN);
 $step        = 'formular';
 $alertHelper = Shop::Container()->getAlertService();
 $smarty      = Shop::Smarty();
-if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwort_vergessen'] === 1) {
+$valid       = Form::validateToken();
+if ($valid && isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwort_vergessen'] === 1) {
     $kunde = Shop::Container()->getDB()->select(
         'tkunde',
         'cMail',
@@ -40,7 +42,7 @@ if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwor
     } else {
         $alertHelper->addAlert(Alert::TYPE_ERROR, Shop::Lang()->get('incorrectEmail'), 'incorrectEmail');
     }
-} elseif (isset($_POST['pw_new'], $_POST['pw_new_confirm'], $_POST['fpwh'])) {
+} elseif ($valid && isset($_POST['pw_new'], $_POST['pw_new_confirm'], $_POST['fpwh'])) {
     if ($_POST['pw_new'] === $_POST['pw_new_confirm']) {
         $resetItem = Shop::Container()->getDB()->select('tpasswordreset', 'cKey', $_POST['fpwh']);
         if ($resetItem) {

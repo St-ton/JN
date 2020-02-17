@@ -8,6 +8,7 @@ use JTL\Alert\Alert;
 use JTL\Checkout\Bestellung;
 use JTL\Customer\Customer;
 use JTL\DB\ReturnType;
+use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Session\Frontend;
@@ -48,17 +49,19 @@ if (!empty($uid)) {
     $order    = new Bestellung($status->kBestellung, true);
     $plzValid = false;
 
-    if (isset($_POST['plz']) && $order->oRechnungsadresse->cPLZ === Text::filterXSS($_POST['plz'])) {
-        $plzValid = true;
-    } elseif (!empty($_POST['plz'])) {
-        $db->update('tbestellstatus', 'cUID', $uid, (object)[
-            'failedAttempts' => (int)$status->failedAttempts + 1,
-        ]);
-        Shop::Container()->getAlertService()->addAlert(
-            Alert::TYPE_DANGER,
-            Shop::Lang()->get('incorrectLogin'),
-            'statusOrderincorrectLogin'
-        );
+    if (Form::validateToken()) {
+        if (isset($_POST['plz']) && $order->oRechnungsadresse->cPLZ === Text::filterXSS($_POST['plz'])) {
+            $plzValid = true;
+        } elseif (!empty($_POST['plz'])) {
+            $db->update('tbestellstatus', 'cUID', $uid, (object)[
+                'failedAttempts' => (int)$status->failedAttempts + 1,
+            ]);
+            Shop::Container()->getAlertService()->addAlert(
+                Alert::TYPE_DANGER,
+                Shop::Lang()->get('incorrectLogin'),
+                'statusOrderincorrectLogin'
+            );
+        }
     }
 
     $smarty->assign('Bestellung', $order)

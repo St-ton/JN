@@ -368,27 +368,6 @@
                     <div class="container-fluid container-fluid-xl fixed-search py-2 fixed-top smoothscroll-top-search d-lg-none d-none">
                         {include file='snippets/search_form.tpl' id='search-header-mobile-fixed'}
                     </div>
-
-                    {inline_script}<script>
-                        {literal}
-                        $(function(){
-                            let lastScroll = 0;
-                            $(document).on('scroll', function () {
-                                let newScroll = $(this).scrollTop();
-                                if (newScroll < lastScroll){
-                                    if ($(window).scrollTop() > 100) {
-                                        $('.smoothscroll-top-search').removeClass('d-none');
-                                    } else {
-                                        $('.smoothscroll-top-search').addClass('d-none');
-                                    }
-                                } else {
-                                    $('.smoothscroll-top-search').addClass('d-none');
-                                }
-                                lastScroll = newScroll;
-                            });
-                        });
-                        {/literal}
-                    </script>{/inline_script}
                 {/if}
             {/block}
         {/block}

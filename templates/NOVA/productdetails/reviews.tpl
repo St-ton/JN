@@ -161,11 +161,3 @@
         {/if}
     </div>
 {/block}
-{block name='productdetails-reviews-scripts'}
-    {inline_script}<script>
-        $('.js-helpful').on('click', function (e) {
-            e.preventDefault();
-            $.evo.extended().updateReviewHelpful($(this));
-        });
-    </script>{/inline_script}
-{/block}

@@ -22,6 +22,7 @@ class Tutorial
             'tutorials',
             'tutBackdrop',
             'tutBackdrop2',
+            'tutBackdrop3',
             'tutBox',
             'tutboxTitle',
             'tutboxContent',
@@ -60,6 +61,8 @@ class Tutorial
         this.tutBackdrop2.removeClass('active');
         this.tutBackdrop2.css('width', '');
         this.tutBackdrop2.css('height', '');
+        this.tutBackdrop3.removeClass('active');
+        this.tutBackdrop3.appendTo(this.tutorials);
         this.iframe.jq('.hightlighted-element').removeClass('hightlighted-element');
         $('.hightlighted-element').removeClass('hightlighted-element');
         $('.hightlighted-modal').removeClass('hightlighted-modal');
@@ -121,13 +124,12 @@ class Tutorial
                         break;}
                     case 6: {
                         this.makeTutbox({cls: 'c'});
-                        this.highlightModal($('#configModal'));
+                        this.tutBackdrop3.addClass('active');
                         break;}
                     case 7: {
                         let modal = $('#configModal');
                         this.makeTutbox({cls: 'c'});
                         this.makeBackdrop('modal', modal);
-                        this.highlightModal(modal);
                         this.highlightElms($('#config-text'), $('#configSave'));
                         this.bindResetEvent(modal, 'hide.bs.modal');
                         this.bindNextEvent(modal, 'hidden.bs.modal');
@@ -135,6 +137,7 @@ class Tutorial
                     case 8: {
                         this.makeTutbox({cls: 'c', left: this.opcSidebar.width() + 64});
                         this.makeBackdrop('iframe');
+                        this.tutBackdrop3.addClass('active');
                         this.highlightElms(this.iframe.portletToolbar);
                         break;}
                     case 9:{
@@ -149,14 +152,13 @@ class Tutorial
                         let modal  = $('#publishModal');
                         let dialog = modal.find('.modal-dialog');
                         this.makeTutbox({cls: 'h', top: this.elmBottom(dialog, 32)});
-                        this.highlightModal(modal);
+                        this.tutBackdrop3.addClass('active');
                         break;}
                     case 11:{
                         let modal  = $('#publishModal');
                         let dialog = modal.find('.modal-dialog');
                         this.makeTutbox({cls: 'h', top: this.elmBottom(dialog, 32)});
                         this.makeBackdrop('modal', modal);
-                        this.highlightModal(modal);
                         this.highlightElms($('#btnApplyPublish'));
                         this.bindResetEvent(modal, 'hide.bs.modal');
                         this.bindNextEvent(modal, 'hidden.bs.modal');
@@ -180,10 +182,15 @@ class Tutorial
                         this.bindNextEvent($('#configModal'), 'shown.bs.modal');
                         break;}
                     case 2: {
-                        let modal  = $('#configModal');
-                        let dialog = modal.find('.modal-dialog');
+                        let modal        = $('#configModal');
+                        let modalContent = modal.find('.modal-content');
+                        let dialog       = modal.find('.modal-dialog');
+                        let animTab      = $('[href="#conftab3"]');
+                        this.tutBackdrop3.addClass('active');
+                        this.tutBackdrop3.appendTo(modalContent);
+                        this.highlightElms(animTab.closest('.nav-item'));
                         this.makeTutbox({cls: 'h', top: this.elmBottom(dialog, 32)});
-                        this.bindNextEvent($('[href="#conftab3"]'), 'shown.bs.tab');
+                        this.bindNextEvent(animTab, 'shown.bs.tab');
                         break;}
                     case 3: {
                         let modal  = $('#configModal');
@@ -288,9 +295,11 @@ class Tutorial
                         this.bindNextEvent(modal, 'shown.bs.modal');
                         break;}
                     case 3: {
-                        let modal  = $('#blueprintModal');
-                        let dialog = modal.find('.modal-dialog');
+                        let modal        = $('#blueprintModal');
+                        let dialog       = modal.find('.modal-dialog');
+                        this.makeBackdrop('modal', modal);
                         this.makeTutbox({cls: 'h', top: this.elmBottom(dialog, 32)});
+                        this.highlightElms($('#blueprintName'), $('#btnBlueprintSave'));
                         this.bindResetEvent(modal, 'hide.bs.modal');
                         this.bindNextEvent(modal, 'hidden.bs.modal');
                         break;}
@@ -408,7 +417,8 @@ class Tutorial
                 this.tutBackdrop2.addClass('active');
                 break;
             case 'modal':
-                this.tutBackdrop2.appendTo(modal.find('.modal-content'));
+                let modalContent = modal.find('.modal-content');
+                this.tutBackdrop2.appendTo(modalContent);
                 this.tutBackdrop2.addClass('active');
                 break;
         }
@@ -417,10 +427,5 @@ class Tutorial
     highlightElms(...elms)
     {
         elms.forEach(elm => elm.addClass('hightlighted-element'));
-    }
-
-    highlightModal(modal)
-    {
-        modal.addClass('hightlighted-modal');
     }
 }

@@ -18,6 +18,18 @@
   z-index: 9999 !important;
 }
 
+#tutBackdrop3.active {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  opacity: 0;
+  pointer-events: all;
+  z-index: 1051 !important;
+}
+
 #tutorials #tutboxPrev {
   margin-right: 12px;
 }

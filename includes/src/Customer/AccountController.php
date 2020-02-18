@@ -222,7 +222,7 @@ class AccountController
             $step = 'kunden_werben_kunden';
             $this->checkPromotion($_POST);
         }
-        if (Request::postInt('wlh') > 0) {
+        if ($valid && Request::postInt('wlh') > 0) {
             $step = 'mein Konto';
             $name = Text::htmlentities(Text::filterXSS($_POST['cWunschlisteName']));
             $this->alertService->addAlert(Alert::TYPE_NOTE, Wishlist::save($name), 'saveWL');

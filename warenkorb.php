@@ -40,7 +40,9 @@ $link            = $linkHelper->getPageLink($kLink);
 $alertHelper     = Shop::Container()->getAlertService();
 $valid           = Form::validateToken();
 // Warenkorbaktualisierung?
-CartHelper::applyCartChanges();
+if ($valid) {
+    CartHelper::applyCartChanges();
+}
 CartHelper::validateCartConfig();
 pruefeGuthabenNutzen();
 if ($valid && isset($_POST['land'], $_POST['plz'])

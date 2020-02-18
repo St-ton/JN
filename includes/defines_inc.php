@@ -298,6 +298,7 @@ define('R_UNVERKAEUFLICH', 15);
 define('R_AUFANFRAGE', 16);
 define('R_EMPTY_TAG', 17);
 define('R_EMPTY_VARIBOX', 18);
+define('R_MISSING_TOKEN', 19);
 // Kategorietiefe
 // 0 = Aus
 // 1 = Tiefe 0 (Hauptkategorien)

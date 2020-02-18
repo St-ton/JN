@@ -25,6 +25,7 @@ use JTL\Checkout\Kupon;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\ReturnType;
 use JTL\Extensions\SelectionWizard\Wizard;
+use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Product;
 use JTL\Helpers\ShippingMethod;
@@ -173,6 +174,7 @@ class IOMethods
      */
     public function pushToBasket(int $productID, $amount, $properties = ''): IOResponse
     {
+        $_POST = $properties;
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'sprachfunktionen.php';
         $config      = Shopsetting::getInstance()->getAll();
         $smarty      = Shop::Smarty();
@@ -1281,14 +1283,18 @@ class IOMethods
     /**
      * @param int $wlID
      * @param bool $state
+     * @param string $token
      * @return IOResponse
      */
-    public function setWishlistVisibility(int $wlID, bool $state): IOResponse
+    public function setWishlistVisibility(int $wlID, bool $state, string $token): IOResponse
     {
-        if ($state) {
-            Wishlist::setPublic($wlID);
-        } else {
-            Wishlist::setPrivate($wlID);
+        $_POST['jtl_token'] = $token;
+        if (Form::validateToken()) {
+            if ($state) {
+                Wishlist::setPublic($wlID);
+            } else {
+                Wishlist::setPrivate($wlID);
+            }
         }
         $objResponse     = new IOResponse();
         $response        = new stdClass();
@@ -1308,7 +1314,10 @@ class IOMethods
      */
     public function updateWishlistItem(int $wlID, array $formData): IOResponse
     {
-        Wishlist::update($wlID, $formData);
+        $_POST['jtl_token'] = $formData['jtl_token'];
+        if (Form::validateToken()) {
+            Wishlist::update($wlID, $formData);
+        }
 
         $objResponse    = new IOResponse();
         $response       = new stdClass();

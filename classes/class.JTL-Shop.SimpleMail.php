@@ -244,9 +244,7 @@ class SimpleMail
             $oPHPMailer            = new \PHPMailer\PHPMailer\PHPMailer();
             $oPHPMailer->Timeout   = SOCKET_TIMEOUT;
             $oPHPMailer->PluginDir = PFAD_ROOT . PFAD_PHPMAILER;
-            $oPHPMailer->From      = $this->cVerfasserMail;
-            $oPHPMailer->Sender    = $this->cVerfasserMail;
-            $oPHPMailer->FromName  = $this->cVerfasserName;
+            $oPHPMailer->setFrom($this->cVerfasserMail, $this->cVerfasserName);
 
             if (!empty($cEmpfaenger_arr)) {
                 foreach ($cEmpfaenger_arr as $cEmpfaenger) {

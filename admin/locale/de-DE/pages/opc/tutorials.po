@@ -79,8 +79,9 @@ msgid "tutStepTitle_0_11"
 msgstr "Seite Veröffentlichen"
 
 msgid "tutStepText_0_11"
-msgstr "Die Voreinstellung macht den Entwurf ab sofort und bis auf unbestimmte "
-"Zeit sichtbar. Klicke jetzt auf <em>Übernehmen</em> und der Entwurf ist online!"
+msgstr "<p>Die Voreinstellung macht den Entwurf ab sofort und bis auf unbestimmte Zeit sichtbar. "
+"Ein Klick auf <em>Übernehmen</em> und der Entwurf ist online! Diesen Schritt lassen wir jetzt aber aus.</p>"
+"<p>Verlasse das Fenster wieder mit <em>Abbrechen</em>!</p>"
 
 msgid "tutStepTitle_0_12"
 msgstr "Fertig!"

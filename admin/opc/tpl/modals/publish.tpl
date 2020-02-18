@@ -59,7 +59,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="opc-btn-secondary opc-small-btn" data-dismiss="modal">
+                    <button type="button" class="opc-btn-secondary opc-small-btn" data-dismiss="modal"
+                            id="btnCancelPublish">
                         {__('cancel')}
                     </button>
                     <button type="submit" class="opc-btn-primary opc-small-btn" id="btnApplyPublish">

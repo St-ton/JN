@@ -75,8 +75,9 @@ msgid "tutStepTitle_0_11"
 msgstr "Publishing Drafts"
 
 msgid "tutStepText_0_11"
-msgstr "When you first enter this dialog the preselected options will make your draft immediately online and "
-"for an indefinite period of time. Click <em>Apply</em> now and the draft is online!"
+msgstr "<p>When you first enter this dialog the preselected options will make your draft immediately online and "
+"for an indefinite period of time. One click on <em>Apply</em> and the draft is online! But for now we will skip "
+"this step</p><p>Close this dialog again with <em>Cancel</em>!</p>"
 
 msgid "tutStepTitle_0_12"
 msgstr "Done!"

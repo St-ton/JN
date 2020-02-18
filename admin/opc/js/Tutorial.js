@@ -159,7 +159,7 @@ class Tutorial
                         let dialog = modal.find('.modal-dialog');
                         this.makeTutbox({cls: 'h', top: this.elmBottom(dialog, 32)});
                         this.makeBackdrop('modal', modal);
-                        this.highlightElms($('#btnApplyPublish'));
+                        this.highlightElms($('#btnCancelPublish'));
                         this.bindResetEvent(modal, 'hide.bs.modal');
                         this.bindNextEvent(modal, 'hidden.bs.modal');
                         break;}

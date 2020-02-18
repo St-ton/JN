@@ -665,10 +665,8 @@ function verschickeMail($mail)
 
     // EmailBlacklist beachten
     $Emailconfig = Shop::getSettings([CONF_EMAILBLACKLIST]);
-    if ($Emailconfig['emailblacklist']['blacklist_benutzen'] === 'Y') {
-        if (pruefeGlobaleEmailBlacklist($mail->toEmail)) {
-            return;
-        }
+    if ($Emailconfig['emailblacklist']['blacklist_benutzen'] === 'Y' && pruefeGlobaleEmailBlacklist($mail->toEmail)) {
+        return;
     }
     // BodyText encoden
     $mail->bodyText  = StringHandler::htmlentitydecode(str_replace('&euro;', 'EUR', $mail->bodyText), ENT_NOQUOTES);
@@ -692,9 +690,7 @@ function verschickeMail($mail)
         $lang      = ($mail->lang === 'DE' || $mail->lang === 'ger') ? 'de' : 'end';
         $phpmailer->setLanguage($lang, PFAD_ROOT . PFAD_PHPMAILER . 'language/');
         $phpmailer->Timeout  = SOCKET_TIMEOUT;
-        $phpmailer->From     = $mail->fromEmail;
-        $phpmailer->Sender   = $mail->fromEmail;
-        $phpmailer->FromName = $mail->fromName;
+        $phpmailer->setFrom($mail->fromEmail, $mail->fromName);
         $phpmailer->addAddress($mail->toEmail, (!empty($mail->toName) ? $mail->toName : ''));
         $phpmailer->addReplyTo($mail->replyToEmail, $mail->replyToName);
         $phpmailer->Subject = $mail->subject;

@@ -159,6 +159,17 @@ final class Categories extends AbstractSync
             if (!LanguageHelper::isShopLanguage($language->kSprache, $allLanguages)) {
                 continue;
             }
+            $oSeoOld = $this->db->queryPrepared(
+                'SELECT cSeo
+                    FROM tkategoriesprache
+                    WHERE kKategorie = :categoryID
+                        AND kSprache = :langID',
+                [
+                    'categoryID' => $categoryID,
+                    'langID'     => $language->kSprache,
+                ],
+                ReturnType::SINGLE_OBJECT
+            );
             if (!$language->cSeo) {
                 $language->cSeo = $language->cName;
             }
@@ -168,7 +179,10 @@ final class Categories extends AbstractSync
             if (!$language->cSeo) {
                 $language->cSeo = $category->cName;
             }
-            $language->cSeo = Seo::checkSeo(Seo::getSeo($language->cSeo));
+            $language->cSeo = Seo::getSeo($language->cSeo);
+            if (!isset($oSeoOld->cSeo) || $oSeoOld->cSeo !== $language->cSeo) {
+                $language->cSeo = Seo::checkSeo($language->cSeo);
+            }
             $this->insertOnExistUpdate('tkategoriesprache', [$language], ['kKategorie', 'kSprache']);
 
             $ins           = new stdClass();

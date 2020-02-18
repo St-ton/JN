@@ -83,7 +83,7 @@ class Redirect
      */
     public function find($cUrl)
     {
-        return Shop::DB()->select('tredirect', 'cFromUrl', $this->normalize($cUrl));
+        return Shop::DB()->select('tredirect', 'cFromUrl', substr($this->normalize($cUrl), 0, 255));
     }
 
     /**

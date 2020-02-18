@@ -137,7 +137,7 @@
                                                             srcset="{$mft->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_hersteller_mini_breite}w,
                                                                     {$mft->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_hersteller_klein_breite}w,
                                                                     {$mft->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_hersteller_normal_breite}w"
-                                                            sizes="80px"
+                                                            sizes="auto"
                                                             alt=$mft->getName()|escape:'html'
                                                             class="d-none d-md-block mb-3"}
                                                     {/if}

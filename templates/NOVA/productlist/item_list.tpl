@@ -92,7 +92,10 @@
                         {/block}
                     {/if}
                 {/block}
-                {form id="buy_form_{$Artikel->kArtikel}" action=$ShopURL class="form form-basket jtl-validate" data=["toggle" => "basket-add"]}
+                {form id="buy_form_{$Artikel->kArtikel}"
+                    action=$ShopURL class="form form-basket jtl-validate"
+                    data=["toggle" => "basket-add"]
+                    slide=false}
                     {row}
                         {col cols=12 xl=4 class='productbox-details'}
                             {block name='productlist-item-list-details'}

@@ -24,7 +24,7 @@
                         <div class="subheadline mb-5">{$CWunschliste->cName}</div>
                     {/block}
                     {block name='snippets-wishlist-form'}
-                        {form method="post" action="{get_static_route id='wunschliste.php'}" name="Wunschliste"}
+                        {form method="post" action="{get_static_route id='wunschliste.php'}" name="Wunschliste" slide=false}
                         {block name='snippets-wishlist-form-inner'}
                             {block name='snippets-wishlist-form-inputs-hidden'}
                                 {input type="hidden" name="wlvm" value="1"}
@@ -171,7 +171,8 @@
                         <div id="wishlist-search">
                             {form method="post"
                                 action="{get_static_route id='wunschliste.php'}"
-                                name="WunschlisteSuche"}
+                                name="WunschlisteSuche"
+                                slide=false}
                             {block name='snippets-wishlist-search-form-inputs-hidden'}
                                 {if $CWunschliste->nOeffentlich == 1 && !empty($cURLID)}
                                     {input type="hidden" name="wlid" value=$cURLID}
@@ -246,7 +247,7 @@
                 {block name='snippets-wishlist-link'}
                     {row class="mt-3 {if $CWunschliste->nOeffentlich != 1}d-none{/if}" id='wishlist-url-wrapper'}
                         {col cols=12}
-                            {form method="post" action="{get_static_route id='wunschliste.php'}"}
+                            {form method="post" action="{get_static_route id='wunschliste.php'}" slide=false}
                                 {block name='snippets-wishlist-link-inputs-hidden'}
                                     {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
                                 {/block}
@@ -375,7 +376,8 @@
                     action="{get_static_route id='wunschliste.php'}{if $CWunschliste->nStandard != 1}?wl={$CWunschliste->kWunschliste}{/if}"
                     name="Wunschliste"
                     class="basket_wrapper{if $hasItems === true} mt-6{/if}"
-                    id="wl-items-form"}
+                    id="wl-items-form"
+                    slide=false}
                 {block name='snippets-wishlist-form-basket-content'}
                     {block name='snippets-wishlist-form-basket-inputs-hidden'}
                         {input type="hidden" name="wla" value="1"}

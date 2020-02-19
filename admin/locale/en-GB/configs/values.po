@@ -2398,3 +2398,15 @@ msgstr "Yes"
 
 msgid "general_child_item_bulk_pricing_value(N)"
 msgstr "No"
+
+msgid "gtin_display_value(N)"
+msgstr "No"
+
+msgid "gtin_display_value(details)"
+msgstr "Yes, on item detail page"
+
+msgid "gtin_display_value(lists)"
+msgstr "Yes, in lists"
+
+msgid "gtin_display_value(always)"
+msgstr "Yes, on item detail page and in lists"

@@ -3056,3 +3056,8 @@ msgstr "Scale prices across variations"
 msgid "general_child_item_bulk_pricing_desc"
 msgstr "Scale prices across variations"
 
+msgid "gtin_display_name"
+msgstr "Show GTIN"
+
+msgid "gtin_display_desc"
+msgstr "Specify whether to show the GTIN."

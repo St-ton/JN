@@ -99,7 +99,11 @@ class Redirect
      */
     public function find(string $url): ?stdClass
     {
-        return Shop::Container()->getDB()->select('tredirect', 'cFromUrl', $this->normalize($url));
+        return Shop::Container()->getDB()->select(
+            'tredirect',
+            'cFromUrl',
+            \mb_substr($this->normalize($url), 0, 255)
+        );
     }
 
     /**

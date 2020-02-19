@@ -874,7 +874,7 @@ function KuponVerwendungen($oBestellung)
         $KuponKundeBisher          = Shop::DB()->query(
             "SELECT SUM(nVerwendungen) AS nVerwendungen
                 FROM tkuponkunde 
-                WHERE cMail = '{$KuponKunde->cMail}'", 1
+                WHERE cMail = '{$KuponKunde->cMail}' AND kKupon = '{$KuponKunde->kKupon }'", 1
         );
         if (isset($KuponKundeBisher->nVerwendungen) && $KuponKundeBisher->nVerwendungen > 0) {
             $KuponKunde->nVerwendungen += $KuponKundeBisher->nVerwendungen;

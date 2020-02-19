@@ -17,7 +17,7 @@
             {/block}
             {block name='boxes-box-manufacturers-title'}
                 <div class="productlist-filter-headline d-none d-md-flex">
-                    <span>{lang key='manufacturers'}</span>
+                    {lang key='manufacturers'}
                 </div>
             {/block}
             {block name='boxes-box-manufacturers-collapse'}

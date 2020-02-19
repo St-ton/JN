@@ -6,7 +6,7 @@
     {card class="box box-direct-purchase mb-4" id="sidebox{$oBox->getID()}" title=""}
         {block name='boxes-box-direct-purchase-title'}
             <div class="productlist-filter-headline">
-                <span>{lang key='quickBuy'}</span>
+                {lang key='quickBuy'}
             </div>
         {/block}
         {block name='boxes-box-direct-purchase-form'}

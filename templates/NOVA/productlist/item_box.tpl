@@ -18,69 +18,67 @@
                         {else}
                             {assign var=alt value=$Artikel->cName}
                         {/if}
-                        <div class="image-content">
-                            {block name='productlist-item-box-image'}
-                                {counter assign=imgcounter print=0}
-                                {if isset($Artikel->oSuchspecialBild)}
-                                    {block name='productlist-item-box-include-ribbon'}
-                                        {include file='snippets/ribbon.tpl'}
-                                    {/block}
-                                {/if}
-                                <div class="productbox-images list-gallery">
-                                    {link href=$Artikel->cURLFull}
-                                        {block name="productlist-item-list-image"}
-                                            {strip}
-                                                {$image = $Artikel->Bilder[0]}
+                        {block name='productlist-item-box-image'}
+                            {counter assign=imgcounter print=0}
+                            {if isset($Artikel->oSuchspecialBild)}
+                                {block name='productlist-item-box-include-ribbon'}
+                                    {include file='snippets/ribbon.tpl'}
+                                {/block}
+                            {/if}
+                            <div class="productbox-images list-gallery">
+                                {link href=$Artikel->cURLFull}
+                                    {block name="productlist-item-list-image"}
+                                        {strip}
+                                            {$image = $Artikel->Bilder[0]}
+                                            {image alt=$alt fluid=true webp=true lazy=true
+                                                src="{$image->cURLKlein}"
+                                                srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                         {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                         {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                                sizes="auto"
+                                                data=["id"  => $imgcounter]
+                                                class="{if !$isMobile && !empty($Artikel->Bilder[1])} first{/if}"
+                                            }
+                                            {if !$isMobile && !empty($Artikel->Bilder[1])}
+                                                {$image = $Artikel->Bilder[1]}
                                                 {image alt=$alt fluid=true webp=true lazy=true
                                                     src="{$image->cURLKlein}"
                                                     srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                             {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                             {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                                                     {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                                     {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
                                                     sizes="auto"
-                                                    data=["id"  => $imgcounter]
-                                                    class="{if !$isMobile && !empty($Artikel->Bilder[1])} first{/if}"
+                                                    data=["id"  => $imgcounter|cat:"_2nd"]
+                                                    class='second'
                                                 }
-                                                {if !$isMobile && !empty($Artikel->Bilder[1])}
-                                                    {$image = $Artikel->Bilder[1]}
-                                                    {image alt=$alt fluid=true webp=true lazy=true
-                                                        src="{$image->cURLKlein}"
-                                                        srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                                         {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                                         {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
-                                                        sizes="auto"
-                                                        data=["id"  => $imgcounter|cat:"_2nd"]
-                                                        class='second'
-                                                    }
-                                                {/if}
-                                            {/strip}
-                                        {/block}
-                                    {/link}
-                                    {if !empty($Artikel->Bilder[0]->cURLNormal)}
-                                        <meta itemprop="image" content="{$Artikel->Bilder[0]->cURLNormal}">
-                                    {/if}
+                                            {/if}
+                                        {/strip}
+                                    {/block}
+                                {/link}
+                                {if !empty($Artikel->Bilder[0]->cURLNormal)}
+                                    <meta itemprop="image" content="{$Artikel->Bilder[0]->cURLNormal}">
+                                {/if}
+                            </div>
+                        {/block}
+
+                        {if $smarty.session.Kundengruppe->mayViewPrices()
+                            && isset($Artikel->SieSparenX)
+                            && $Artikel->SieSparenX->anzeigen == 1
+                            && $Artikel->SieSparenX->nProzent > 0
+                            && !$NettoPreise
+                            && $Artikel->taxData['tax'] > 0
+                        }
+                            {block name='productlist-item-badge-yousave'}
+                                <div class="productbox-sale-percentage">
+                                    <div class="ribbon ribbon-7 productbox-ribbon">{$Artikel->SieSparenX->nProzent}%</div>
                                 </div>
                             {/block}
+                        {/if}
 
-                            {if $smarty.session.Kundengruppe->mayViewPrices()
-                                && isset($Artikel->SieSparenX)
-                                && $Artikel->SieSparenX->anzeigen == 1
-                                && $Artikel->SieSparenX->nProzent > 0
-                                && !$NettoPreise
-                                && $Artikel->taxData['tax'] > 0
-                            }
-                                {block name='productlist-item-badge-yousave'}
-                                    <div class="productbox-sale-percentage">
-                                        <div class="ribbon ribbon-7 productbox-ribbon">{$Artikel->SieSparenX->nProzent}%</div>
-                                    </div>
-                                {/block}
-                            {/if}
-
-                            {block name='productlist-item-box-include-productlist-actions'}
-                                <div class="productbox-quick-actions productbox-onhover d-none d-md-flex">
-                                    {include file='productlist/productlist_actions.tpl'}
-                                </div>
-                            {/block}
-                        </div>
+                        {block name='productlist-item-box-include-productlist-actions'}
+                            <div class="productbox-quick-actions productbox-onhover d-none d-md-flex">
+                                {include file='productlist/productlist_actions.tpl'}
+                            </div>
+                        {/block}
                     </div>
                 {/col}
                 {col cols=12}

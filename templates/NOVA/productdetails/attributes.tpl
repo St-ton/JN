@@ -16,9 +16,8 @@
                                 {strip}
                                     {foreach $characteristic->oMerkmalWert_arr as $characteristicValue}
                                         {if $characteristic->cTyp === 'TEXT' || $characteristic->cTyp === 'SELECTBOX' || $characteristic->cTyp === ''}
-                                            <span class="value">{link href=$characteristicValue->cURLFull class="badge badge-light"}{$characteristicValue->cWert|escape:'html'}{/link} </span>
+                                            {link href=$characteristicValue->cURLFull class="badge badge-light"}{$characteristicValue->cWert|escape:'html'}{/link}
                                         {else}
-                                            <span class="value">
                                             {link href=$characteristicValue->cURLFull
                                                 class="text-decoration-none"
                                                 data=['toggle'=>'tooltip', 'placement'=>'top', 'boundary'=>'window']
@@ -40,7 +39,6 @@
                                                     {badge variant="light"}{$characteristicValue->cWert|escape:'html'}{/badge}
                                                 {/if}
                                             {/link}
-                                            </span>
                                         {/if}
                                     {/foreach}
                                 {/strip}

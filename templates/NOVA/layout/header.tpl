@@ -292,9 +292,7 @@
                                     <meta itemprop="logo" content="{$ShopLogoURL}">
                                     {link class="navbar-brand mr-lg-6" href=$ShopURL title=$Einstellungen.global.global_shopname}
                                         {if isset($ShopLogoURL)}
-                                            {image src=$ShopLogoURL
-                                            alt=$Einstellungen.global.global_shopname
-                                            height=56}
+                                            {image src=$ShopLogoURL alt=$Einstellungen.global.global_shopname}
                                         {else}
                                             <span class="h1">{$Einstellungen.global.global_shopname}</span>
                                         {/if}

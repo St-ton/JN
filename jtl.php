@@ -876,6 +876,7 @@ $smarty->assign('cHinweis', $cHinweis)
        ->assign('Einstellungen', $Einstellungen)
        ->assign('BESTELLUNG_STATUS_BEZAHLT', BESTELLUNG_STATUS_BEZAHLT)
        ->assign('BESTELLUNG_STATUS_VERSANDT', BESTELLUNG_STATUS_VERSANDT)
+       ->assign('BESTELLUNG_STATUS_TEILVERSANDT', BESTELLUNG_STATUS_TEILVERSANDT)
        ->assign('BESTELLUNG_STATUS_OFFEN', BESTELLUNG_STATUS_OFFEN)
        ->assign('nAnzeigeOrt', CHECKBOX_ORT_KUNDENDATENEDITIEREN);
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';

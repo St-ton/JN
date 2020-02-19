@@ -21077,12 +21077,12 @@ button.bg-info:focus {
 
 :focus, .focus {
   box-shadow: 0;
-  outline: #F8BF00 auto 1px;
+  outline: none;
 }
 
 button:focus {
   box-shadow: 0;
-  outline: #F8BF00 auto 1px;
+  outline: none;
 }
 
 image:focus {
@@ -21545,14 +21545,10 @@ a[data-toggle=collapse][aria-expanded=true] i.fa-chevron-down,
 
 .freegift {
   cursor: pointer;
-  border: 1px solid transparent;
 }
 .freegift .custom-control-label::before,
 .freegift .custom-control-label::after {
   display: none;
-}
-.freegift:hover {
-  border: 1px solid rgba(0, 0, 0, 0.125);
 }
 
 .banner {

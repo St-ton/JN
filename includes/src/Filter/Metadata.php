@@ -310,40 +310,6 @@ class Metadata implements MetadataInterface
     /**
      * @inheritdoc
      */
-    public static function getExcludes(): array
-    {
-        return Shop::Container()->getCache()->get('jtl_glob_excl', static function ($cache, $id, &$content, &$tags) {
-            $keyWords = Shop::Container()->getDB()->query(
-                'SELECT * 
-                    FROM texcludekeywords 
-                    ORDER BY cISOSprache',
-                ReturnType::ARRAY_OF_OBJECTS
-            );
-            $content  = reindex($keyWords, static function ($e) {
-                return $e->cISOSprache;
-            });
-            $tags     = [\CACHING_GROUP_OPTION];
-
-            return true;
-        });
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public static function getFilteredString($cString, array $excludedKeywords): string
-    {
-        return \str_replace(\array_map(
-            static function ($k) {
-                return ' ' . $k . ' ';
-            },
-            $excludedKeywords
-        ), ' ', $cString);
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function getNavigationInfo(Kategorie $category = null, KategorieListe $list = null): MetadataInterface
     {
         if ($category !== null && $this->productFilter->hasCategory()) {
@@ -523,28 +489,8 @@ class Metadata implements MetadataInterface
                 return \strip_tags($category->categoryAttributes['meta_keywords']->cWert);
             }
         }
-        // Keine eingestellten Metas vorhanden => baue Standard Metas
-        $keywordsMeta = '';
-        if (\is_array($products) && \count($products) > 0) {
-            foreach ($products as $product) {
-                $keywordsMeta .= $product->cName . ' ';
-            }
-        } elseif (!empty($category->kKategorie)) {
-            if ($category->bUnterKategorien) {
-                $helper = Category::getInstance();
-                $sub    = $helper->getCategoryById($category->kKategorie);
-                if ($sub !== null && $sub->hasChildren()) {
-                    $catNames     = map($sub->getChildren(), static function (MenuItem $e) {
-                        return \strip_tags($e->getName());
-                    });
-                    $keywordsMeta = \implode(' ', \array_filter($catNames));
-                }
-            } elseif (!empty($category->cBeschreibung)) { // Hat die aktuelle Kategorie eine Beschreibung?
-                $keywordsMeta = $category->cBeschreibung;
-            }
-        }
 
-        return $this::getTopMetaKeywords($keywordsMeta);
+        return '';
     }
 
     /**
@@ -553,6 +499,7 @@ class Metadata implements MetadataInterface
      * @param int $maxWords maximum amount of keywords to return
      * @param boolean $asArray default = false - return concatenated keywords-string. true to return keywords-array
      * @return string|array
+     * @deprecated since 5.0.0
      */
     public static function getTopMetaKeywords(string $text, int $maxWords = 10, bool $asArray = false)
     {

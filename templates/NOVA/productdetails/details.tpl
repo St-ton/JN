@@ -82,7 +82,9 @@
                                             {/if}
                                         {/block}
                                         {block name='productdetails-details-info-gtin'}
-                                            {if !empty($Artikel->cBarcode)}
+                                            {if !empty($Artikel->cBarcode)
+                                            && ($Einstellungen.artikeldetails.gtin_display === 'details'
+                                            || $Einstellungen.artikeldetails.gtin_display === 'always')}
                                                 <li>
                                                     <span class="font-weight-bold">{lang key='ean'}:</span>
                                                     <span itemprop="{if $Artikel->cBarcode|count_characters === 8}gtin8{else}gtin13{/if}">{$Artikel->cBarcode}</span>

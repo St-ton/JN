@@ -10,7 +10,7 @@
                     {inputgroup}
                         {input id="search-header" name="qs" type="text" class="ac_input" placeholder="{lang key='search'}" autocomplete="off" aria=["label"=>"{lang key='search'}"]}
                         {inputgroupaddon append=true}
-                            {button type="submit" name='search' variant="secondary"}<span class="fas fa-search"></span>{/button}
+                            {button type="submit" name='search' variant="secondary" aria=["label"=>{lang key='search'}]}<span class="fas fa-search"></span>{/button}
                         {/inputgroupaddon}
                     {/inputgroup}
                 </div>

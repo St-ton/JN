@@ -21672,12 +21672,6 @@ table caption {
   z-index: 1019;
 }
 
-.selection-wizard-question .selection-wizard-answer {
-  white-space: nowrap;
-  margin: 0 1rem 1rem 0;
-  display: inline-block;
-}
-
 /* wishlist */
 input.form-control[name=wishlist-url] {
   background: #f5f7fa;

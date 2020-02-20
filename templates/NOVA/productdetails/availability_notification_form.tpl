@@ -7,9 +7,9 @@
         {if isset($Artikelhinweise) && count($Artikelhinweise) > 0}
             {block name='productdetails-availability-notification-form-alert'}
                 {alert dismissable=true variant="danger"}
-                {foreach $Artikelhinweise as $Artikelhinweis}
-                    {$Artikelhinweis}
-                {/foreach}
+                    {foreach $Artikelhinweise as $Artikelhinweis}
+                        {$Artikelhinweis}
+                    {/foreach}
                 {/alert}
             {/block}
         {/if}

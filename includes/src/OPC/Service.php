@@ -81,9 +81,9 @@ class Service
     /**
      * @return string[]
      */
-    public function getEditorMessageNames(): array
+    public function getEditorMessages(): array
     {
-        return [
+        $messageNames = [
             'opcImportSuccessTitle',
             'opcImportSuccess',
             'opcImportUnmappedS',
@@ -95,6 +95,19 @@ class Service
             'opcPageLocked',
             'dbUpdateNeeded',
         ];
+
+        foreach ([13,14,7] as $i => $stepcount) {
+            for ($j = 0; $j < $stepcount; $j++) {
+                $messageNames[] = 'tutStepTitle_' . $i . '_' . $j;
+                $messageNames[] = 'tutStepText_' . $i . '_' . $j;
+            }
+        }
+
+        foreach ($messageNames as $name) {
+            $messages[$name] = __($name);
+        }
+
+        return $messages;
     }
 
     /**

@@ -45,6 +45,7 @@ class Container extends Portlet
                 'type'    => InputType::RADIO,
                 'label'   => __('background'),
                 'options' => [
+                    'still' => __('image'),
                     'image' => __('imageParallax'),
                     'video' => __('backgroundVideo'),
                     'false' => __('noBackground'),
@@ -52,6 +53,12 @@ class Container extends Portlet
                 'default' => 'false',
                 'width'   => 50,
                 'childrenFor' => [
+                    'still' => [
+                        'still-src'  => [
+                            'label' => __('backgroundImage'),
+                            'type'  => InputType::IMAGE,
+                        ],
+                    ],
                     'image' => [
                         'src'  => [
                             'label' => __('backgroundImage'),

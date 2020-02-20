@@ -55,6 +55,8 @@ if ($hasUpdates) {
         $error = $e->getMessage();
     }
 
+    Shop::Container()->getGetText()->loadAdminLocale('pages/opc/tutorials');
+
     $smarty->assign('error', $error)
            ->assign('page', $page)
            ->display(PFAD_ROOT . PFAD_ADMIN . '/opc/tpl/editor.tpl');

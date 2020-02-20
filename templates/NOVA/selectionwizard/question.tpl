@@ -26,7 +26,7 @@
                                         {$characteristicValue->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_merkmalwert_klein_breite}w,
                                         {$characteristicValue->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_merkmalwert_normal_breite}w"
                                     alt=$characteristicValue->getValue()|escape:'html'
-                                    sizes="40px"
+                                    sizes="auto"
                                     class="w-100"
                                 }
                             {/if}
@@ -70,7 +70,7 @@
                                                     {$characteristicValue->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_merkmalwert_klein_breite}w,
                                                     {$characteristicValue->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_merkmalwert_normal_breite}w"
                                                 alt=$characteristicValue->getValue()|escape:'html'
-                                                sizes="40px"
+                                                sizes="auto"
                                                 class="w-100"
                                             }
                                         {/if}

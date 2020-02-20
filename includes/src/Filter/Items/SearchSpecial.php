@@ -80,7 +80,6 @@ class SearchSpecial extends AbstractFilter
         return \is_array($this->value) ? $this->value[0] : $this->value;
     }
 
-
     /**
      * @inheritdoc
      */

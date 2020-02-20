@@ -31,7 +31,7 @@
                 <input type="hidden" name="speicher_einstellung" value="1" />
                 <div class="card">
                     <div class="card-header">
-                        <div class="subheading1">{{__('headingEditBrandingForProduct')}|sprintf:{$oBranding->cBildKategorie}}</div>
+                        <div class="subheading1">{{__('headingEditBrandingForProduct')}|sprintf:{__($oBranding->cBildKategorie)}}</div>
                         <hr class="mb-n3">
                     </div>
                     <div class="card-body">
@@ -144,6 +144,7 @@
     $('#cBrandingBild').fileinput({
         showUpload: false,
         showRemove: false,
+        initialPreviewShowDelete: false,
         showCancel: false,
         uploadAsync: false,
         showPreview: true,
@@ -163,12 +164,17 @@
         {if $oBranding->cBrandingBild|strlen > 0}
         initialPreviewConfig: [
             {
-                url: '{$shopURL}/{$PFAD_BRANDINGBILDER}{$oBranding->cBrandingBild}?rnd={$cRnd}',
-                extra: { logo: '{$oBranding->cBrandingBild}' }
+                url: '{$shopURL}/{$PFAD_ADMIN}branding.php',
+                extra: {
+                    action: 'delete',
+                    logo: '{$oBranding->cBrandingBild}',
+                    id: {$oBranding->kBrandingTMP},
+                    jtl_token: '{$smarty.session.jtl_token}'
+                }
             }
         ],
         initialPreview: [
-            '<img src="{$shopURL}/{$PFAD_BRANDINGBILDER}{$oBranding->cBrandingBild}?rnd={$cRnd}" class="file-preview-image img-fluid" alt="branding" title="brnading" />'
+            '<img src="{$shopURL}/{$PFAD_BRANDINGBILDER}{$oBranding->cBrandingBild}?rnd={$cRnd}" class="file-preview-image img-fluid" alt="branding" title="{__('branding')}" />'
         ]
         {/if}
     })

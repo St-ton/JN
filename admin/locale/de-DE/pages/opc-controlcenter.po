@@ -3,10 +3,10 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "opcNoticePageReset"
-msgstr "Der OnPage-Composer-Inhalt für die Seite wurde zurückgesetzt."
+msgstr "Der Inhalt des OnPage Composers für die Seite wurde zurückgesetzt."
 
 msgid "opcNoticeDraftDelete"
-msgstr "Der Entwurf wurde erfolgreich gelöscht."
+msgstr "Entwurf wurde erfolgreich gelöscht."
 
 msgid "opc"
 msgstr "OnPage Composer"

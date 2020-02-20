@@ -66,7 +66,7 @@ msgid "newsletterText"
 msgstr "Inhalt (Text)"
 
 msgid "newsletteroverview"
-msgstr "Newsletter-Übersicht"
+msgstr "Newsletter"
 
 msgid "newsletteroverviewdesc"
 msgstr " "
@@ -84,16 +84,10 @@ msgid "newsletterconfigdesc"
 msgstr "Diese E-Mail-Einstellungen gelten für den Newsletter-Versand."
 
 msgid "newsletterartnr"
-msgstr "Artikelnummer"
-
-msgid "newsletternewartnr"
-msgstr "Weiteres Artikelfeld"
+msgstr "Beworbener Artikel:"
 
 msgid "newslettercustomergrp"
-msgstr "Newsletter versenden für"
-
-msgid "newslettersendtest"
-msgstr "Newsletter testen"
+msgstr "Empfänger"
 
 msgid "newsletterdraftsaveandsend"
 msgstr "Speichern, Newsletter versenden"
@@ -106,9 +100,6 @@ msgstr "Versenden am"
 
 msgid "newsletterdraftformat"
 msgstr "(TT/MM/JJJJ hh:mm)"
-
-msgid "newsletterdraftcal"
-msgstr "Kalender"
 
 msgid "newsletterdesc"
 msgstr "Hier verwalten Sie Ihre Newsletter und Newsletter-Abonnenten. Beachten Sie, dass Newsletter pro Sprache verwaltet werden."
@@ -161,9 +152,6 @@ msgstr "Standardvorlage"
 msgid "newsletterdraftStdUse"
 msgstr "Vorlage benutzen"
 
-msgid "newsletterdraftStdVarSection"
-msgstr "Vorlagenspezifische Variablen"
-
 msgid "newsletterdraftFillOut"
 msgstr "Bitte ausfüllen"
 
@@ -180,13 +168,13 @@ msgid "newsletterOptInDate"
 msgstr "Opt-in-Date"
 
 msgid "successNewsletterAboDelete"
-msgstr "Die markierten Newsletter-Abonnenten wurden erfolgreich gelöscht."
+msgstr "Markierte Newsletter-Abonnenten wurden erfolgreich gelöscht."
 
 msgid "errorAtLeastOneNewsletterAbo"
 msgstr "Bitte markieren Sie mindestens einen Newsletter-Abonnenten."
 
 msgid "successNewsletterAbounlock"
-msgstr "Die markierten Newsletter-Abonnenten wurden erfolgreich freigeschaltet."
+msgstr "Markierte Newsletter-Abonnenten wurden erfolgreich freigeschaltet."
 
 msgid "successNewsletterAboAdd"
 msgstr "Newsletter-Empfänger wurde erfolgreich hinzugefügt."
@@ -195,10 +183,10 @@ msgid "errorFillEmail"
 msgstr "Bitte füllen Sie das Feld „E-Mail“ aus."
 
 msgid "successNewsletterQueueDelete"
-msgstr "Die Newsletter-Queue(s) %s wurde(n) erfolgreich gelöscht."
+msgstr "Newsletter-Queue(s) %s wurde(n) erfolgreich gelöscht."
 
 msgid "successNewsletterHistoryDelete"
-msgstr "Die Newsletter-Historie(n) %s wurde(n) erfolgreich gelöscht."
+msgstr "Newsletter-Historie(n) %s wurde(n) erfolgreich gelöscht."
 
 msgid "errorAtLeastOneNewsletter"
 msgstr "Bitte markieren Sie mindestens einen Newsletter."
@@ -207,16 +195,16 @@ msgid "errorAtLeastOneHistory"
 msgstr "Bitte markieren Sie mindestens eine Historie."
 
 msgid "successNewsletterTemplateEdit"
-msgstr "Die Newsletter-Vorlage %s wurde erfolgreich bearbeitet."
+msgstr "Newsletter-Vorlage %s wurde erfolgreich bearbeitet."
 
 msgid "successNewsletterTemplateSave"
-msgstr "Die Newsletter-Vorlage %s wurde erfolgreich gespeichert."
+msgstr "Newsletter-Vorlage %s wurde erfolgreich gespeichert."
 
 msgid "successNewsletterPrepared"
-msgstr "Der Newsletter %s wurde zum Versenden vorbereitet."
+msgstr "Newsletter %s wurde zum Versenden vorbereitet."
 
 msgid "newsletterCronjobNotFound"
-msgstr "Der Newsletter cron-job wurde nicht gefunden. Es ist kein Newsletterversand möglich."
+msgstr "Der Newsletter-Cron-Job wurde nicht gefunden. Es ist kein Newsletterversand möglich."
 
 msgid "errorTestTemplateEmpty"
 msgstr "Die Empfänger-Adresse für den Test ist leer."
@@ -225,7 +213,7 @@ msgid "successTestEmailTo"
 msgstr "Die Newsletter-Vorlage %s wurde zum Test an %s gesendet."
 
 msgid "successNewsletterTemplateDelete"
-msgstr "Die Newsletter-Vorlage wurde erfolgreich gelöscht."
+msgstr "Newsletter-Vorlage wurde erfolgreich gelöscht."
 
 msgid "availableTemplates"
 msgstr "Vorhandene Vorlagen"

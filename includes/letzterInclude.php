@@ -26,7 +26,7 @@ use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Text;
 use JTL\Campaign;
 use JTL\Link\Link;
-use JTL\MobileDetect\MobileDetect;
+use JTL\Minify\MinifyService;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
@@ -44,17 +44,8 @@ $link       = $linkHelper->getLinkByID(Shop::$kLink ?? 0);
 $themeDir   = empty($conf['template']['theme']['theme_default'])
     ? 'evo'
     : $conf['template']['theme']['theme_default'];
-$minify     = $template->getMinifyArray();
-$css        = $minify[$themeDir . '.css'] ?? [];
-$js         = $minify['jtl3.js'] ?? [];
-executeHook(HOOK_LETZTERINCLUDE_CSS_JS, [
-    'cCSS_arr'          => &$css,
-    'cJS_arr'           => &$js,
-    'cPluginCss_arr'    => &$minify['plugin_css'],
-    'cPluginJsHead_arr' => &$minify['plugin_js_head'],
-    'cPluginJsBody_arr' => &$minify['plugin_js_body']
-]);
-$mobileDetect       = new MobileDetect();
+
+$device             = new Mobile_Detect();
 $expandedCategories = $expandedCategories ?? new KategorieListe();
 $debugbar           = Shop::Container()->getDebugBar();
 $debugbarRenderer   = $debugbar->getJavascriptRenderer();
@@ -84,9 +75,6 @@ if (is_object($globalMetaData)) {
     if (empty($cMetaDescription)) {
         $cMetaDescription = $globalMetaData->Meta_Description;
     }
-    if (empty($cMetaKeywords)) {
-        $cMetaKeywords = $globalMetaData->Meta_Keywords;
-    }
     $cMetaTitle       = Metadata::prepareMeta(
         $cMetaTitle,
         null,
@@ -97,9 +85,6 @@ if (is_object($globalMetaData)) {
         null,
         (int)$conf['metaangaben']['global_meta_maxlaenge_description']
     );
-    if (empty($cMetaKeywords) && $link !== null && !empty($link->getContent())) {
-        $cMetaKeywords = Metadata::getTopMetaKeywords($link->getContent());
-    }
 }
 if (!isset($AktuelleKategorie)) {
     $AktuelleKategorie = new Kategorie(Request::verifyGPCDataInt('kategorie'));
@@ -109,18 +94,15 @@ if (!isset($NaviFilter)) {
     $NaviFilter = Shop::run();
 }
 $linkHelper->activate($pageType);
-$origin = (isset($_SESSION['Kunde']->cLand) && mb_strlen($_SESSION['Kunde']->cLand) > 0)
+$origin  = (isset($_SESSION['Kunde']->cLand) && mb_strlen($_SESSION['Kunde']->cLand) > 0)
     ? $_SESSION['Kunde']->cLand
     : '';
+$service = new MinifyService();
+$service->buildURIs($smarty, $template, $themeDir);
 $smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
        ->assign('NaviFilter', $NaviFilter)
        ->assign('manufacturers', Manufacturer::getInstance()->getManufacturers())
-       ->assign('cPluginCss_arr', $minify['plugin_css'])
        ->assign('oUnterKategorien_arr', Category::getSubcategoryList($AktuelleKategorie->kKategorie ?? -1))
-       ->assign('cPluginJsHead_arr', $minify['plugin_js_head'])
-       ->assign('cPluginJsBody_arr', $minify['plugin_js_body'])
-       ->assign('cCSS_arr', $css)
-       ->assign('cJS_arr', $js)
        ->assign('nTemplateVersion', $template->getVersion())
        ->assign('currentTemplateDir', $tplDir)
        ->assign('currentTemplateDirFull', $shopURL . '/' . $tplDir)
@@ -190,8 +172,9 @@ $smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
        ->assign('shopFaviconURL', Shop::getFaviconURL())
        ->assign('wishlists', Wishlist::getWishlists())
        ->assign('robotsContent', $smarty->get_template_vars('robotsContent'))
-       ->assign('isMobile', $mobileDetect->isMobile())
-       ->assign('isTablet', $mobileDetect->isTablet());
+       ->assign('device', $device)
+       ->assign('isMobile', $device->isMobile())
+       ->assign('isTablet', $device->isTablet());
 
 $nav = new Navigation(Shop::Lang(), Shop::Container()->getLinkService());
 $nav->setPageType(Shop::getPageType());

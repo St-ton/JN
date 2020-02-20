@@ -26,7 +26,7 @@
                             <div class="basket_wrapper">
                                 {block name='basket-index-basket-items'}
                                     {block name='basket-index-form-cart'}
-                                        {form id="cart-form" method="post" action="{get_static_route id='warenkorb.php'}" class="evo-validate"}
+                                        {form id="cart-form" method="post" action="{get_static_route id='warenkorb.php'}" class="jtl-validate"}
                                             {input type="hidden" name="wka" value="1"}
                                             <div class="mb-7">
                                                 {block name='basket-index-include-order-items'}
@@ -66,31 +66,13 @@
                                                 {col cols=12}
                                                     {block name='basket-index-form-freegift'}
                                                         {form method="post" name="freegift" action="{get_static_route id='warenkorb.php'}" class="text-center"}
-                                                            {row}
-                                                                {block name='basket-index-freegifts'}
-                                                                    {foreach $oArtikelGeschenk_arr as $oArtikelGeschenk}
-                                                                        {col cols=12}
-                                                                            <div class="freegift mb-4">
-                                                                                <div class="custom-control custom-radio pl-0">
-                                                                                    <input class="custom-control-input " type="radio" id="gift{$oArtikelGeschenk->kArtikel}" name="gratisgeschenk" value="{$oArtikelGeschenk->kArtikel}" onclick="submit();">
-                                                                                    <label for="gift{$oArtikelGeschenk->kArtikel}" class="p-3 custom-control-label {if $selectedFreegift===$oArtikelGeschenk->kArtikel}badge-check{/if}">
-                                                                                        {if $selectedFreegift===$oArtikelGeschenk->kArtikel}{badge class="badge-circle"}<i class="fas fa-check mx-auto"></i>{/badge}{/if}
-                                                                                        {image lazy=true webp=true
-                                                                                            src=$oArtikelGeschenk->Bilder[0]->cURLKlein
-                                                                                            fluid=true
-                                                                                            alt=$oArtikelGeschenk->cName
-                                                                                        }
-                                                                                        <div class="caption">
-                                                                                            <p class="small text-muted">{lang key='freeGiftFrom1'} {$oArtikelGeschenk->cBestellwert} {lang key='freeGiftFrom2'}</p>
-                                                                                            <p>{$oArtikelGeschenk->cName}</p>
-                                                                                        </div>
-                                                                                    </label>
-                                                                                </div>
-                                                                            </div>
-                                                                        {/col}
-                                                                    {/foreach}
-                                                                {/block}
-                                                            {/row}
+                                                            {block name='basket-index-freegifts'}
+                                                                <div id="freegift"
+                                                                     class="slick-smooth-loading carousel carousel-arrows-inside slick-lazy slick-type-half"
+                                                                     data-slick-type="slider-half">
+                                                                    {include file='snippets/slider_items.tpl' items=$oArtikelGeschenk_arr type='freegift'}
+                                                                </div>
+                                                            {/block}
                                                             {block name='basket-index-freegifts-form-submit'}
                                                                 {input type="hidden" name="gratis_geschenk" value="1"}
                                                                 {input name="gratishinzufuegen" type="hidden" value="{lang key='addToCart'}"}
@@ -107,7 +89,7 @@
                                     {block name='basket-index-basket-xsell'}
                                         {lang key='basketCustomerWhoBoughtXBoughtAlsoY' assign='panelTitle'}
                                         {block name='basket-index-include-product-slider'}
-                                            {include file='snippets/product_slider.tpl' productlist=$xselling->Kauf->Artikel title=$panelTitle}
+                                            {include file='snippets/product_slider.tpl' productlist=$xselling->Kauf->Artikel title=$panelTitle tplscope='half'}
                                         {/block}
                                     {/block}
                                 {/if}
@@ -152,7 +134,7 @@
                                         {collapse id="coupon-form"}
                                             {cardbody}
                                             {block name='basket-index-coupon-form'}
-                                                {form class="label-slide evo-validate" id="basket-coupon-form" method="post" action="{get_static_route id='warenkorb.php'}"}
+                                                {form class="label-slide jtl-validate" id="basket-coupon-form" method="post" action="{get_static_route id='warenkorb.php'}"}
                                                     {formgroup label-for="couponCode" label={lang key='couponCode' section='account data'} class="mw-100{if !empty($invalidCouponCode)} has-error{/if}"}
                                                         {input aria=["label"=>"{lang key='couponCode' section='account data'}"] type="text" name="Kuponcode" id="couponCode" maxlength="32" placeholder=" " required=true}
                                                     {/formgroup}

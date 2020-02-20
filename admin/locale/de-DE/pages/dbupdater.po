@@ -9,7 +9,7 @@ msgid "dbupdaterURL"
 msgstr "https://jtl-url.de/8qef4"
 
 msgid "dbupdaterDesc"
-msgstr "Hier können Sie Ihre JTL-Shop-Datenbank aktualisieren. Die Zielversion für das Datenbank-Update entspricht der derzeit installierten Shop-Version."
+msgstr "Hier können Sie Ihre JTL-Shop-Datenbank aktualisieren. Die Zielversion für das Datenbank-Update entspricht der derzeit installierten Version von JTL-Shop."
 
 msgid "buttonUpdateNow"
 msgstr "Datenbank-Update starten"
@@ -27,7 +27,7 @@ msgid "errorSqlUpdate"
 msgstr "Ein SQL-Befehl im Update konnte nicht ausgeführt werden. Bitte versuchen Sie es erneut."
 
 msgid "successUpdate"
-msgstr "Das Update wurde erfolgreich abgeschlossen."
+msgstr "Update wurde erfolgreich abgeschlossen."
 
 msgid "errorUpdate"
 msgstr "Ein SQL-Befehl im Update konnte 3-mal nicht ausgeführt werden. Das Update wurde abgebrochen. Bitte kontaktieren Sie den Support."
@@ -69,13 +69,13 @@ msgid "successfullMigrations"
 msgstr "Erfolgreiche Migrationen"
 
 msgid "openMigrations"
-msgstr "Nicht-ausgeführte Migrationen"
+msgstr "Nicht ausgeführte Migrationen"
 
 msgid "putOnServer"
 msgstr "Auf Server ablegen"
 
 msgid "infoUpdateNow"
-msgstr "Klicken Sie auf „Datenbank-Update starten“ um die Datenbankaktualisierung durchzuführen."
+msgstr "Klicken Sie auf „Datenbank-Update starten“, um die Datenbankaktualisierung durchzuführen."
 
 msgid "dbUpdate"
 msgstr "Datenbankaktualisierung"
@@ -84,7 +84,7 @@ msgid "required"
 msgstr "erforderlich"
 
 msgid "currentShopVersion"
-msgstr "Ihre aktuelle Shopversion"
+msgstr "Ihre aktuelle Version von JTL-Shop"
 
 msgid "currentTemplateVersion"
 msgstr "Ihre aktuelle Template-Version"

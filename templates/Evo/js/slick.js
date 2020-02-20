@@ -5,7 +5,7 @@
  \__ \ | | (__|   < _ | \__ \
  |___/_|_|\___|_|\_(_)/ |___/
  |__/
- Version: 1.9.0
+ Version: 1.8.1
  Author: Ken Wheeler
  Website: http://kenwheeler.github.io
  Docs: http://kenwheeler.github.io/slick
@@ -2352,7 +2352,7 @@
                 if (index === 0) {
 
                     allSlides
-                        .eq(allSlides.length - 1 - _.options.slidesToShow)
+                        .eq( _.options.slidesToShow + _.slideCount + 1 )
                         .addClass('slick-center');
 
                 } else if (index === _.slideCount - 1) {

@@ -30,7 +30,6 @@
         "jtlshop/scc": "dev-master",
         "jtlshop/phpquery": "dev-master",
         "jtlshop/xtea": "dev-master",
-        "jtlshop/mobiledetect": "dev-master",
         "smarty/smarty": "~3.1",
         "jdorn/sql-formatter": "^1.2",
         "phpmyadmin/sql-parser": "^3.4",
@@ -54,6 +53,7 @@
         "illuminate/container": "^5.7",
         "symfony/console": "^4.2",
         "symfony/finder": "^4.2",
+        "mobiledetect/mobiledetectlib": "^2.8",
         "league/flysystem": "^1.0",
         "league/flysystem-sftp": "^1.0",
         "league/flysystem-ziparchive": "^1.0"
@@ -99,10 +99,6 @@
         {
             "type": "vcs",
             "url": "https://gitlab.com/jtl-software/jtl-shop/tools/xtea.git"
-        },
-        {
-            "type": "vcs",
-            "url": "https://gitlab.com/jtl-software/jtl-shop/tools/mobiledetect.git"
         }
 
     ],

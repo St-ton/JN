@@ -19,7 +19,7 @@
     {block name='productdetails-details-form'}
         {opcMountPoint id='opc_before_buy_form'}
         {container}
-            {form id="buy_form" action=$Artikel->cURLFull class="evo-validate"}
+            {form id="buy_form" action=$Artikel->cURLFull class="jtl-validate"}
                 {row id="product-offer" class="product-detail"}
                     {block name='productdetails-details-include-image'}
                         {col cols=12 lg=6 class="product-gallery"}
@@ -78,15 +78,17 @@
                                             </li>
                                         {/if}
 
-                                        {if !empty($Artikel->cBarcode)}
+                                        {if !empty($Artikel->cBarcode)
+                                            && ($Einstellungen.artikeldetails.gtin_display === 'details'
+                                                || $Einstellungen.artikeldetails.gtin_display === 'always')}
                                             <li>
                                                 <span class="font-weight-bold">{lang key='ean'}:</span>
                                                 <span itemprop="{if $Artikel->cBarcode|count_characters === 8}gtin8{else}gtin13{/if}">{$Artikel->cBarcode}</span>
                                             </li>
                                         {/if}
                                         {if !empty($Artikel->cISBN)
-                                        && ($Einstellungen.artikeldetails.isbn_display === 'D'
-                                        || $Einstellungen.artikeldetails.isbn_display === 'DL')}
+                                            && ($Einstellungen.artikeldetails.isbn_display === 'D'
+                                                || $Einstellungen.artikeldetails.isbn_display === 'DL')}
                                             <li>
                                                 <span class="font-weight-bold">{lang key='isbn'}:</span>
                                                 <span itemprop="gtin13">{$Artikel->cISBN}</span>

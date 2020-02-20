@@ -12,13 +12,10 @@ msgid "paymentmethodName"
 msgstr "Name der Zahlungsart"
 
 msgid "installedPaymentmethods"
-msgstr "Folgende Zahlungsarten sind installiert:"
+msgstr "Hier sehen Sie eine Übersicht der installierten Zahlungsarten."
 
 msgid "name"
 msgstr "Zahlungsart"
-
-msgid "moduleid"
-msgstr "Modul"
 
 msgid "configurePaymentmethod"
 msgstr "Hier können Sie die Einstellungen der Zahlungsart anpassen."
@@ -39,7 +36,7 @@ msgid "noticeText"
 msgstr "Hinweistext"
 
 msgid "noticeTextShop"
-msgstr "Hinweistext (Shop)"
+msgstr "Hinweistext (Onlineshop)"
 
 msgid "noticeTextEmail"
 msgstr "Hinweistext (E-Mail)"
@@ -90,13 +87,13 @@ msgid "paymentsURL"
 msgstr "https://jtl-url.de/covba"
 
 msgid "paymentsDesc"
-msgstr "Hier können Sie alle Zahlungseingänge zu einer gewünschten Zahlungsart und deren Abgleichs-Status zu JTL-Wawi einsehen."
+msgstr "Hier können Sie alle Zahlungseingänge zu einer gewünschten Zahlungsart und deren Abgleichstatus zu JTL-Wawi einsehen."
 
 msgid "successPaymentMethodCheck"
-msgstr "Die Prüfung der Zahlungsarten auf Nutzbarkeit ist abgeschlossen."
+msgstr "Zahlungsarten wurden erfolgreich auf Nutzbarkeit geprüft."
 
 msgid "successLogReset"
-msgstr "Der Fehler-Log von %s wurde erfolgreich zurückgesetzt."
+msgstr "Fehler-Log von %s wurde erfolgreich zurückgesetzt."
 
 msgid "noLogs"
 msgstr "Keine Logs vorhanden."
@@ -105,7 +102,7 @@ msgid "amountPayed"
 msgstr "Gezahlter Betrag"
 
 msgid "syncedWithWawi"
-msgstr "Bereits durch JTL-Wawi abgeholt"
+msgstr "Bereits an JTL-Wawi gesendet"
 
 msgid "wawiSyncReset"
 msgstr "Für den nächsten JTL-Wawi-Abgleich zum erneuten Senden vormerken"
@@ -114,7 +111,7 @@ msgid "installedPaymentTypes"
 msgstr "Installierte Zahlungsarten"
 
 msgid "successPaymentMethodSave"
-msgstr "Die Zahlungsart wurde erfolgreich gespeichert."
+msgstr "Zahlungsart wurde erfolgreich gespeichert."
 
 msgid "errorPaymentMethodNotFound"
 msgstr "Zahlungsart nicht gefunden."

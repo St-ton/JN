@@ -72,6 +72,7 @@ ifndef('PFAD_CONFIG', 'config/');
 ifndef('PFAD_INCLUDES', 'includes/');
 ifndef('PFAD_TEMPLATES', 'templates/');
 ifndef('PFAD_COMPILEDIR', 'templates_c/');
+ifndef('PATH_STATIC_MINIFY', PFAD_COMPILEDIR . 'min/');
 ifndef('PFAD_EMAILPDFS', 'emailpdfs/');
 ifndef('PFAD_NEWSLETTERBILDER', 'newsletter/');
 ifndef('PFAD_LINKBILDER', 'links/');
@@ -269,9 +270,6 @@ ifndef('SECURE_PHP_FUNCTIONS', '
 ifndef('SHOW_TEMPLATE_HINTS', 0);
 
 ifndef('SEO_SLUG_LOWERCASE', true);
-
-// true - child products are grouped by parent for bulk price calculation
-ifndef('DEFAULT_GENERAL_CHILD_ITEM_BULK_PRICING', false);
 
 ifndef('SAFE_MODE', false);
 

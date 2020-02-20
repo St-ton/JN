@@ -167,11 +167,4 @@
             {/if}
         {/row}
     {/block}
-    {block name='snippets-pagination-script'}
-        {inline_script}<script>
-            $('.pagination-wrapper select').on('change', function () {
-                this.form.submit();
-            });
-        </script>{/inline_script}
-    {/block}
 {/block}

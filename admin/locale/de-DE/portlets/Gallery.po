@@ -6,4 +6,4 @@ msgid "Gallery"
 msgstr "Galerie"
 
 msgid "imageList"
-msgstr "Galerie-Bilder"
+msgstr "Galeriebilder"

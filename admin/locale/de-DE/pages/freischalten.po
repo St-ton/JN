@@ -9,7 +9,7 @@ msgid "freischaltenURL"
 msgstr "https://jtl-url.de/ihwlq"
 
 msgid "freischaltenDesc"
-msgstr "Hier können Sie Bewertungen, Live-Suchen, News-Kommentare und Newsletter-Empfänger in der aktuell ausgewählten Sprache freischalten."
+msgstr "Hier können Sie Bewertungen, Suchanfragen, Blogkommentare und Newsletter-Empfänger in der aktuell ausgewählten Sprache freischalten."
 
 msgid "freischaltenActivate"
 msgstr "Freischalten"
@@ -24,7 +24,7 @@ msgid "freischaltenReviewsDate"
 msgstr "Erstellt am"
 
 msgid "freischaltenLivesearch"
-msgstr "Live-Suche"
+msgstr "Suchanfragen"
 
 msgid "freischaltenLivesearchSearch"
 msgstr "Suche"
@@ -39,7 +39,7 @@ msgid "freischaltenLiveseachDate"
 msgstr "Zuletzt gesucht am"
 
 msgid "freischaltenNewsComments"
-msgstr "News-Kommentare"
+msgstr "Blogkommentare"
 
 msgid "freischaltenNewsCommentsHeadline"
 msgstr "Überschrift"
@@ -63,25 +63,25 @@ msgid "freischaltenMappingOnBTN"
 msgstr "Verknüpfen"
 
 msgid "freischaltenMappingDesc"
-msgstr "* Achtung: * Bei einer Verknüpfung werden die Live-Suchen direkt freigeschaltet."
+msgstr "Achtung: Bei einer Verknüpfung werden die Suchanfragen direkt freigeschaltet."
 
 msgid "errorSearchTermMissing"
 msgstr "Bitte geben Sie einen Suchbegriff ein."
 
 msgid "successRatingUnlock"
-msgstr "Ihre markierten Bewertungen wurden erfolgreich freigeschaltet."
+msgstr "Markierte Bewertungen wurden erfolgreich freigeschaltet."
 
 msgid "errorAtLeastOneRating"
 msgstr "Bitte markieren Sie mindestens eine Bewertung."
 
 msgid "successRatingDelete"
-msgstr "Die markierten Bewertungen wurden erfolgreich gelöscht."
+msgstr "Markierte Bewertungen wurden erfolgreich gelöscht."
 
 msgid "successLiveSearchMap"
-msgstr "Die markierten Live-Suchen wurden erfolgreich mit %s verknüpft."
+msgstr "Markierte Suchanfragen wurden erfolgreich mit %s verknüpft."
 
 msgid "errorLiveSearchMapNotUnlock"
-msgstr "Die Live-Suche wurde zwar erfolgreich verknüpft, konnte jedoch aufgrund eines unbekannten Fehlers nicht freigeschaltet werden."
+msgstr "Die Suchanfrage wurde zwar erfolgreich verknüpft, konnte jedoch aufgrund eines unbekannten Fehlers nicht freigeschaltet werden."
 
 msgid "errorMapUnknown"
 msgstr "Verknüpfung konnte aufgrund eines unbekannten Fehlers nicht durchgeführt werden."
@@ -96,40 +96,40 @@ msgid "errorMapToNotExisting"
 msgstr "Die zu verknüpfende Suchanfrage existiert nicht."
 
 msgid "errorMapSelf"
-msgstr "Eine Live-Suche kann nicht mit sich selbst verknüpft werden."
+msgstr "Eine Suchanfrage kann nicht mit sich selbst verknüpft werden."
 
 msgid "errorAtLeastOneLiveSearch"
-msgstr "Bitte markieren Sie mindestens eine Live-Suche."
+msgstr "Bitte markieren Sie mindestens eine Suchanfrage."
 
 msgid "errorMapNameMissing"
 msgstr "Bitte geben Sie einen Namen für die Verknüpfung an."
 
 msgid "successSearchUnlock"
-msgstr "Ihre markierten Suchanfragen wurden erfolgreich freigeschaltet."
+msgstr "Markierte Suchanfragen wurden erfolgreich freigeschaltet."
 
 msgid "errorAtLeastOneSearch"
 msgstr "Bitte markieren Sie mindestens eine Suchanfrage."
 
 msgid "successSearchDelete"
-msgstr "Ihre markierten Suchanfragen wurden erfolgreich gelöscht."
+msgstr "Markierte Suchanfragen wurden erfolgreich gelöscht."
 
 msgid "successNewsCommentUnlock"
-msgstr "Ihre markierten News-Kommentare wurden erfolgreich freigeschaltet."
+msgstr "Markierte Blogkommentare wurden erfolgreich freigeschaltet."
 
 msgid "errorAtLeastOneNewsComment"
-msgstr "Bitte markieren Sie mindestens einen News-Kommentar."
+msgstr "Bitte markieren Sie mindestens einen Blogkommentar."
 
 msgid "successNewsCommentDelete"
-msgstr "Ihre markierten News-Kommentare wurden erfolgreich gelöscht."
+msgstr "Markierte Blogkommentare wurden erfolgreich gelöscht."
 
 msgid "successNewsletterUnlock"
-msgstr "Ihre markierten Newsletter-Empfänger wurden erfolgreich freigeschaltet."
+msgstr "Markierte Newsletter-Empfänger wurden erfolgreich freigeschaltet."
 
 msgid "errorAtLeastOneNewsletter"
 msgstr "Bitte markieren Sie mindestens einen Newsletter-Empfänger."
 
 msgid "successNewsletterDelete"
-msgstr "Ihre markierten Newsletter-Empfänger wurden erfolgreich gelöscht."
+msgstr "Markierte Newsletter-Empfänger wurden erfolgreich gelöscht."
 
 msgid "unlockMarked"
 msgstr "Markierte freischalten"

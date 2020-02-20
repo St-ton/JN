@@ -119,7 +119,7 @@
                                             <div class="h2">{lang key='newsCommentAdd' section='news'}</div>
                                         {/block}
                                         {block name='blog-details-form-comment-form'}
-                                            {form method="post" action="{if !empty($newsItem->getSEO())}{$newsItem->getURL()}{else}{get_static_route id='news.php'}{/if}" class="form evo-validate label-slide" id="news-addcomment"}
+                                            {form method="post" action="{if !empty($newsItem->getSEO())}{$newsItem->getURL()}{else}{get_static_route id='news.php'}{/if}" class="form jtl-validate label-slide" id="news-addcomment"}
                                                 {input type="hidden" name="kNews" value=$newsItem->getID()}
                                                 {input type="hidden" name="kommentar_einfuegen" value="1"}
                                                 {input type="hidden" name="n" value=$newsItem->getID()}
@@ -209,15 +209,13 @@
             <hr class="my-6">
             {block name='blog-details-latest-news'}
                 <div class="h2">{lang key='news' section='news'}</div>
-                {row itemprop="about" itemscope=true itemtype="http://schema.org/Blog" class="carousel carousel-arrows-inside news-slider mx-0"}
-                {foreach $oNews_arr as $newsItem}
-                    {col}
-                    {block name='page-index-include-preview'}
-                        {include file='blog/preview.tpl'}
-                    {/block}
-                    {/col}
-                {/foreach}
-                {/row}
+                <div itemprop="about"
+                    itemscope=true
+                    itemtype="http://schema.org/Blog"
+                    class="carousel carousel-arrows-inside mx-0 slick-lazy slick-type-news"
+                    data-slick-type="news-slider">
+                    {include file='snippets/slider_items.tpl' items=$oNews_arr type='news'}
+                </div>
             {/block}
         {/block}
     {/if}

@@ -51,4 +51,4 @@ msgid "warenkorbpersAction"
 msgstr "Aktion"
 
 msgid "successCartPersPosDelete"
-msgstr "Der markierte Warenkorb wurde erfolgreich gelöscht."
+msgstr "Markierter Warenkorb wurde erfolgreich gelöscht."

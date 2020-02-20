@@ -34,15 +34,7 @@
                             {if $newsItem->getAuthor() !== null}
                                 <div class="d-none d-sm-inline-block align-middle">
                                     {block name='blog-preview-include-author'}
-                                    <div itemprop="author" itemscope itemtype="https://schema.org/Person">
-                                        <span itemprop="name">
-                                            {$newsItem->getAuthor()->cName}
-                                        </span>&nbsp;&ndash;&nbsp;
-                                        {if isset($cDate)}
-                                            <span class="creation-date">{$cDate}</span>
-                                        {/if}
-                                        {*{include file='snippets/author.tpl' oAuthor=$newsItem->getAuthor()}*}
-                                    </div>
+                                        {include file='snippets/author.tpl' oAuthor=$newsItem->getAuthor() showModal=false}
                                     {/block}
                                 </div>
                             {else}

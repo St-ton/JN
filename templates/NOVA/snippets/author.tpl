@@ -6,37 +6,45 @@
     {block name='snippets-author-content'}
         <div itemprop="author" itemscope itemtype="https://schema.org/Person">
             {block name='snippets-author-title'}
-                {link
-                    class="author-modal"
-                    itemprop="name"
-                    href="#"
-                    title=$oAuthor->cName
-                    data=["target"=>"#author-{$oAuthor->kContentAuthor}"]
-                }
-                    {$oAuthor->cName}
-                {/link}&nbsp;&ndash;&nbsp;
+                {if $showModal|default:true}
+                    {link class="author-modal"
+                        itemprop="name"
+                        href="#"
+                        title=$oAuthor->cName
+                        data=["target"=>"#author-{$oAuthor->kContentAuthor}"]
+                    }
+                        {$oAuthor->cName}
+                    {/link}
+                {else}
+                    <span itemprop="name">
+                        {$oAuthor->cName}
+                    </span>
+                {/if}
+                &nbsp;&ndash;&nbsp;
                 {if isset($cDate)}
                     <span class="creation-date">{$cDate}</span>
                 {/if}
             {/block}
             {block name='snippets-author-modal'}
-                {if !empty($oAuthor->cAvatarImgSrcFull)}
-                    {$title = "<img alt='{$oAuthor->cName}' src='{$oAuthor->cAvatarImgSrcFull}' height='80' class='rounded-circle' /><span itemprop='name' class='ml-3'>{$oAuthor->cName}</span>"}
-                {else}
-                    {$title = "<span itemprop='name' class='ml-3'>"|cat:$oAuthor->cName|cat:'</span>'}
-                {/if}
-                <div id="author-{$oAuthor->kContentAuthor}" title="{$title}" class="d-none">
-                    {block name='snippets-author-modal-content'}
-                        {if !empty($oAuthor->cVitaShort)}
-                            {if !empty($oAuthor->cAvatarImgSrcFull)}
-                                <meta itemprop="image" content="{$oAuthor->cAvatarImgSrcFull}">
+                {if $showModal|default:true}
+                    {if !empty($oAuthor->cAvatarImgSrcFull)}
+                        {$title = "<img alt='{$oAuthor->cName}' src='{$oAuthor->cAvatarImgSrcFull}' height='80' class='rounded-circle' /><span itemprop='name' class='ml-3'>{$oAuthor->cName}</span>"}
+                    {else}
+                        {$title = "<span itemprop='name' class='ml-3'>"|cat:$oAuthor->cName|cat:'</span>'}
+                    {/if}
+                    <div id="author-{$oAuthor->kContentAuthor}" title="{$title}" class="d-none">
+                        {block name='snippets-author-modal-content'}
+                            {if !empty($oAuthor->cVitaShort)}
+                                {if !empty($oAuthor->cAvatarImgSrcFull)}
+                                    <meta itemprop="image" content="{$oAuthor->cAvatarImgSrcFull}">
+                                {/if}
+                                <div itemprop="description">
+                                    {$oAuthor->cVitaShort}
+                                </div>
                             {/if}
-                            <div itemprop="description">
-                                {$oAuthor->cVitaShort}
-                            </div>
-                        {/if}
-                    {/block}
-                </div>
+                        {/block}
+                    </div>
+                {/if}
             {/block}
         </div>
     {/block}

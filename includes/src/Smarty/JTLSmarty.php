@@ -241,7 +241,7 @@ class JTLSmarty extends \SmartyBC
     }
 
     /**
-     * @param bool $mode
+     * @param int $mode
      * @return $this
      */
     public function setCaching($mode): self

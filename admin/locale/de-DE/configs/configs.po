@@ -3016,3 +3016,9 @@ msgstr "Variationsübergreifende Staffelpreise"
 
 msgid "general_child_item_bulk_pricing_desc"
 msgstr "Für Staffelpreisgrenzen im Warenkorb zählen alle Kindartikel einer VarKombi."
+
+msgid "gtin_display_name"
+msgstr "GTIN anzeigen"
+
+msgid "gtin_display_desc"
+msgstr "Hier legen Sie fest, ob die GTIN angezeigt wird."

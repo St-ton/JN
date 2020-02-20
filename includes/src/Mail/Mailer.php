@@ -274,7 +274,6 @@ class Mailer
         $phpmailer->setLanguage($mail->getLanguage()->getIso639());
         $phpmailer->CharSet = \JTL_CHARSET;
         $phpmailer->Timeout = \SOCKET_TIMEOUT;
-        $phpmailer->Sender  = $mail->getFromMail();
         $phpmailer->setFrom($mail->getFromMail(), $mail->getFromName());
         $phpmailer->addAddress($mail->getToMail(), $mail->getToName());
         $phpmailer->addReplyTo($mail->getReplyToMail(), $mail->getReplyToName());

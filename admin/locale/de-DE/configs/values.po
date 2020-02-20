@@ -2392,3 +2392,15 @@ msgstr "Ja"
 
 msgid "general_child_item_bulk_pricing_value(N)"
 msgstr "Nein"
+
+msgid "gtin_display_value(N)"
+msgstr "Nein"
+
+msgid "gtin_display_value(details)"
+msgstr "Ja, auf der Artikeldetailseite"
+
+msgid "gtin_display_value(lists)"
+msgstr "Ja, in Listen"
+
+msgid "gtin_display_value(always)"
+msgstr "Ja, auf der Artikeldetailseite und in den Listen"

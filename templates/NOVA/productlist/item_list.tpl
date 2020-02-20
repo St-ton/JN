@@ -117,6 +117,14 @@
                                             {/col}
                                         {/block}
                                     {/if}
+                                    {if !empty($Artikel->cBarcode)
+                                        && ($Einstellungen.artikeldetails.gtin_display === 'lists'
+                                            || $Einstellungen.artikeldetails.gtin_display === 'always')}
+                                        {block name='productlist-item-list-details-gtin'}
+                                            {col tag='dt' cols=6}{lang key='ean'}:{/col}
+                                            {col tag='dd' cols=6}{$Artikel->cBarcode}{/col}
+                                        {/block}
+                                    {/if}
                                     {if !empty($Artikel->cISBN)
                                         && ($Einstellungen.artikeldetails.isbn_display === 'L'
                                             || $Einstellungen.artikeldetails.isbn_display === 'DL')}
@@ -161,7 +169,16 @@
                                             || $Einstellungen.artikeldetails.adr_hazard_display === 'DL')}
                                         {block name='productlist-item-list-details-hazard'}
                                             {col tag='dt' cols=6}{lang key='adrHazardSign'}:{/col}
-                                            {col tag='dd' cols=6}{$Artikel->cGefahrnr}<br>{$Artikel->cUNNummer}{/col}
+                                            {col tag='dd' cols=6}
+                                                <table class="adr-table">
+                                                    <tr>
+                                                        <td>{$Artikel->cGefahrnr}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>{$Artikel->cUNNummer}</td>
+                                                    </tr>
+                                                </table>
+                                            {/col}
                                         {/block}
                                     {/if}
                                     {if isset($Artikel->dMHD) && isset($Artikel->dMHD_de)}

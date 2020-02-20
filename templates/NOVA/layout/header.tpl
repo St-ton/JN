@@ -295,8 +295,9 @@
                                     {link class="navbar-brand mr-lg-6" href=$ShopURL title=$Einstellungen.global.global_shopname}
                                         {if isset($ShopLogoURL)}
                                             {image src=$ShopLogoURL
-                                            alt=$Einstellungen.global.global_shopname
-                                            height=56}
+                                                alt=$Einstellungen.global.global_shopname
+                                                style="{if $ShopLogoURL|strpos:'.svg' !== false}height: 100px;{/if}"
+                                            }
                                         {else}
                                             <span class="h1">{$Einstellungen.global.global_shopname}</span>
                                         {/if}

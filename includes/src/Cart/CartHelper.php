@@ -871,7 +871,7 @@ class CartHelper
                 break;
             }
         }
-        if (!Form::validateToken()) {
+        if (!Form::validateToken($attributes['jtl_token'] ?? null)) {
             $redirectParam[] = \R_MISSING_TOKEN;
         }
         \executeHook(\HOOK_ADD_TO_CART_CHECK, [

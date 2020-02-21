@@ -174,7 +174,6 @@ class IOMethods
      */
     public function pushToBasket(int $productID, $amount, $properties = ''): IOResponse
     {
-        $_POST = $properties;
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'sprachfunktionen.php';
         $config      = Shopsetting::getInstance()->getAll();
         $smarty      = Shop::Smarty();
@@ -1288,8 +1287,7 @@ class IOMethods
      */
     public function setWishlistVisibility(int $wlID, bool $state, string $token): IOResponse
     {
-        $_POST['jtl_token'] = $token;
-        if (Form::validateToken()) {
+        if (Form::validateToken($token)) {
             if ($state) {
                 Wishlist::setPublic($wlID);
             } else {
@@ -1314,8 +1312,7 @@ class IOMethods
      */
     public function updateWishlistItem(int $wlID, array $formData): IOResponse
     {
-        $_POST['jtl_token'] = $formData['jtl_token'];
-        if (Form::validateToken()) {
+        if (Form::validateToken($formData['jtl_token'])) {
             Wishlist::update($wlID, $formData);
         }
 

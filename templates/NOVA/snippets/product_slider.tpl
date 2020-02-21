@@ -51,10 +51,10 @@
                         {/block}
                     {/if}
                     {block name='snippets-product-slider-other-products'}
-                        <div class="mb-4 row slick-lazy slick-smooth-loading carousel carousel-arrows-inside {if $tplscope === 'half'}slick-type-half{else}slick-type-product{/if}"
-                            data-slick-type="{block name='product-slider-class'}{if $tplscope === 'half'}slider-half{else}product-slider{/if}{/block}">
+                        {row class="mb-4 slick-lazy slick-smooth-loading carousel carousel-arrows-inside {if $tplscope === 'half'}slick-type-half{else}slick-type-product{/if}"
+                            data=["slick-type"=>"{block name='product-slider-class'}{if $tplscope === 'half'}slider-half{else}product-slider{/if}{/block}"]}
                             {include file='snippets/slider_items.tpl' items=$productlist type='product'}
-                        </div>
+                        {/row}
                     {/block}
                 </div>
             {/block}

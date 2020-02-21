@@ -1,5 +1,5 @@
 
-.carousel { transition: opacity $transition-base-duration; margin: 0 $grid-gutter-width / -2;
+.carousel { transition: opacity $transition-base-duration;
 	&:not(.slick-initialized) {
 		&.slick-smooth-loading {
 		 	opacity: 0; max-height: rem(200px);
@@ -10,6 +10,7 @@
 			display: flex;
 			overflow-x: hidden;
 			max-height: none;
+			padding-right: 50px;
 		}
 		&.slick-type-product {
 			.product-wrapper {
@@ -123,3 +124,8 @@
 	.productbox-image-wrapper { border: $border-width solid $border-color; border-radius: $border-radius; overflow: hidden; }
 	.slick-active .productbox-image-wrapper { border-color: $secondary; }
 }
+
+.slick-list {
+	padding-right: 50px;
+}
+

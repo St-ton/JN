@@ -27,18 +27,16 @@
         {/block}
         {block name='productlist-item-slider-caption'}
             <div class="text-center">
-                <div class="productbox-title">
-                    {block name='productlist-item-slider-caption-short-desc'}
-                        <span class="text-clamp-2">
-                            {if isset($showPartsList) && $showPartsList === true && isset($Artikel->fAnzahl_stueckliste)}
-                                {block name='productlist-item-slider-caption-bundle'}
-                                    {$Artikel->fAnzahl_stueckliste}x
-                                {/block}
-                            {/if}
-                            <span {if $tplscope !== 'box'}itemprop="name"{/if}>{$Artikel->cKurzbezeichnung}</span>
-                        </span>
-                    {/block}
-                </div>
+                {block name='productlist-item-slider-caption-short-desc'}
+                    <span class="text-clamp-2 d-block">
+                        {if isset($showPartsList) && $showPartsList === true && isset($Artikel->fAnzahl_stueckliste)}
+                            {block name='productlist-item-slider-caption-bundle'}
+                                {$Artikel->fAnzahl_stueckliste}x
+                            {/block}
+                        {/if}
+                        <span {if $tplscope !== 'box'}itemprop="name"{/if}>{$Artikel->cKurzbezeichnung}</span>
+                    </span>
+                {/block}
                 {if $tplscope === 'box'}
                     {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->fDurchschnittsBewertung > 0}
                         {block name='productlist-item-slider-include-rating'}

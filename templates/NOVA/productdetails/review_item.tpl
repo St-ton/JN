@@ -4,8 +4,8 @@
  *}
 {block name='productdetails-review-item'}
     {row id="comment{$oBewertung->kBewertung}" class="review-comment {if $Einstellungen.bewertung.bewertung_hilfreich_anzeigen === 'Y' && isset($smarty.session.Kunde->kKunde) && $smarty.session.Kunde->kKunde > 0 && $smarty.session.Kunde->kKunde != $oBewertung->kKunde}use_helpful{/if} {if isset($bMostUseful) && $bMostUseful}most_useful{/if}"}
-        {if $oBewertung->nHilfreich > 0}
-            {block name='productdetails-review-itme-helpful'}
+        {block name='productdetails-review-itme-helpful'}
+            {if $oBewertung->nHilfreich > 0}
             {col cols=12 class="review-helpful-total"}
                 <small class="text-muted">
                     {if $oBewertung->nHilfreich > 0}
@@ -21,12 +21,14 @@
                     {/if}
                 </small>
             {/col}
-            {/block}
-        {/if}
+            {/if}
+        {/block}
         {block name='productdetails-review-item-content'}
             {col cols=12}
                 {row class="mt-1" itemprop="review" itemscope=true itemtype="http://schema.org/Review"}
-                    <span itemprop="name" class="d-none">{$oBewertung->cTitel}</span>
+                    {block name='productdetails-review-item-title'}
+                        <span itemprop="name" class="d-none">{$oBewertung->cTitel}</span>
+                    {/block}
                     {block name='productdetails-review-item-review'}
                         {col class="col-auto text-center" itemprop="reviewRating" itemscope=true itemtype="http://schema.org/Rating"}
                             {block name='productdetails-review-item-rating'}

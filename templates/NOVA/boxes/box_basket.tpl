@@ -8,7 +8,7 @@
             {block name='boxes-box-basket-content'}
                 {block name='boxes-box-basket-title'}
                     <div class="productlist-filter-headline align-items-center d-flex">
-                        <span>{lang key='yourBasket'}</span>
+                        {lang key='yourBasket'}
                         <span id='basket_loader'></span>
                     </div>
                 {/block}

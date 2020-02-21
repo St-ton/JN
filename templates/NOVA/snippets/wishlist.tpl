@@ -184,7 +184,7 @@
                                     {input name="cSuche" size="35" type="text" value=$wlsearch placeholder="{lang key='wishlistSearch' section='login'}" aria=["label"=>"{lang key='wishlistSearch' section='login'}"]}
                                     {inputgroupaddon append=true}
                                     {block name='snippets-wishlist-search-form-submit'}
-                                        {button name="action" value="search" type="submit" variant="outline-primary"}
+                                        {button name="action" value="search" type="submit" variant="outline-primary" aria=["label"=>{lang key='wishlistSearchBTN' section='login'}]}
                                             <i class="fa fa-search"></i>
                                             <span class="d-none d-md-inline-block">{lang key='wishlistSearchBTN' section='login'}</span>
                                         {/button}
@@ -193,9 +193,9 @@
                                     {if !empty($wlsearch)}
                                         {block name='snippets-wishlist-search-form-remove-search'}
                                             {inputgroupaddon append=true}
-                                            {button type="submit" name="cSuche" value="" variant="outline-primary"}
-                                                <i class="fa fa-undo"></i> {lang key='wishlistRemoveSearch' section='login'}
-                                            {/button}
+                                                {button type="submit" name="cSuche" value="" variant="outline-primary"}
+                                                    <i class="fa fa-undo"></i> {lang key='wishlistRemoveSearch' section='login'}
+                                                {/button}
                                             {/inputgroupaddon}
                                         {/block}
                                     {/if}
@@ -487,6 +487,7 @@
                                                                     rows="5"
                                                                     name="Kommentar_{$wlPosition->kWunschlistePos}"
                                                                     class="my-3 js-update-wl"
+                                                                    aria=["label"=>"{lang key='wishlistComment' section='login'} {$wlPosition->cArtikelName}"]
                                                                 }{$wlPosition->cKommentar}{/textarea}
                                                             {/block}
                                                             {if !($wlPosition->Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N')}

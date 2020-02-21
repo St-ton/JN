@@ -12,7 +12,9 @@
         {block name='layout-header-head-meta'}
             <meta http-equiv="content-type" content="text/html; charset={$smarty.const.JTL_CHARSET}">
             <meta name="description" itemprop="description" content={block name='layout-header-head-meta-description'}"{$meta_description|truncate:1000:"":true}{/block}">
-            <meta name="keywords" itemprop="keywords" content="{block name='layout-header-head-meta-keywords'}{$meta_keywords|truncate:255:"":true}{/block}">
+            {if !empty($meta_keywords)}
+                <meta name="keywords" itemprop="keywords" content="{block name='layout-header-head-meta-keywords'}{$meta_keywords|truncate:255:'':true}{/block}">
+            {/if}
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <meta http-equiv="X-UA-Compatible" content="IE=edge">
             <meta name="robots" content="{if $robotsContent}{$robotsContent}{elseif $bNoIndex === true  || (isset($Link) && $Link->getNoFollow() === true)}noindex{else}index, follow{/if}">
@@ -293,8 +295,9 @@
                                     {link class="navbar-brand mr-lg-6" href=$ShopURL title=$Einstellungen.global.global_shopname}
                                         {if isset($ShopLogoURL)}
                                             {image src=$ShopLogoURL
-                                            alt=$Einstellungen.global.global_shopname
-                                            height=56}
+                                                alt=$Einstellungen.global.global_shopname
+                                                style="{if $ShopLogoURL|strpos:'.svg' !== false}height: 100px;{/if}"
+                                            }
                                         {else}
                                             <span class="h1">{$Einstellungen.global.global_shopname}</span>
                                         {/if}

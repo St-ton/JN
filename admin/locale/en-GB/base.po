@@ -105,7 +105,7 @@ msgid "changeLanguage"
 msgstr "Language"
 
 msgid "goBack"
-msgstr "« Back"
+msgstr "Back"
 
 msgid "enterResult"
 msgstr "Enter displayed text"

@@ -175,15 +175,24 @@ define('LINKTYP_PASSWORD_VERGESSEN', 10);
 define('LINKTYP_AGB', 11);
 define('LINKTYP_DATENSCHUTZ', 12);
 define('LINKTYP_KONTAKT', 13);
-define('LINKTYP_TAGGING', 14); // @deprecated
+/**
+ * @deprecated
+ */
+define('LINKTYP_TAGGING', 14);
 define('LINKTYP_LIVESUCHE', 15);
 define('LINKTYP_HERSTELLER', 16);
 define('LINKTYP_NEWSLETTER', 17);
 define('LINKTYP_NEWSLETTERARCHIV', 18);
 define('LINKTYP_NEWS', 19);
-define('LINKTYP_NEWSARCHIV', 20); // @deprecated
+/**
+ * @deprecated
+ */
+define('LINKTYP_NEWSARCHIV', 20);
 define('LINKTYP_SITEMAP', 21);
-define('LINKTYP_UMFRAGE', 22); // @deprecated
+/**
+ * @deprecated
+ */
+define('LINKTYP_UMFRAGE', 22);
 define('LINKTYP_GRATISGESCHENK', 23);
 define('LINKTYP_WRB', 24);
 define('LINKTYP_PLUGIN', 25);
@@ -239,7 +248,10 @@ define('FKT_ATTRIBUT_ATTRIBUTEANHAENGEN', 'attribute anhaengen');
 define('FKT_ATTRIBUT_STUECKLISTENKOMPONENTEN', 'stuecklistenkomponenten');
 define('FKT_ATTRIBUT_INHALT', 'inhalt');
 define('FKT_ATTRIBUT_CANONICALURL_VARKOMBI', 'varkombi_canonicalurl');
-define('FKT_ATTRIBUT_KONFIG_MAX_ITEMS', 'konfig_max_items'); // deprecated? not in use anywhere
+/**
+ * @deprecated
+ */
+define('FKT_ATTRIBUT_KONFIG_MAX_ITEMS', 'konfig_max_items');
 // Special Content
 define('SC_KONTAKTFORMULAR', '1');
 // Suchspecials
@@ -344,14 +356,20 @@ define('PAGE_ARTIKELLISTE', 2); // Artikelliste
 define('PAGE_WARENKORB', 3); // Warenkorb
 define('PAGE_MEINKONTO', 4); // Mein Konto
 define('PAGE_KONTAKT', 5); // Kontakt
-define('PAGE_UMFRAGE', 6); // Umfrage - @deprecated
+/**
+ * @deprecated
+ */
+define('PAGE_UMFRAGE', 6); // Umfrage
 define('PAGE_NEWS', 7); // News
 define('PAGE_NEWSLETTER', 8); // Newsletter
 define('PAGE_LOGIN', 9); // Login
 define('PAGE_REGISTRIERUNG', 10); // Registrierung
 define('PAGE_BESTELLVORGANG', 11); // Bestellvorgang
 define('PAGE_BEWERTUNG', 12); // Bewertung [NEIN]
-define('PAGE_DRUCKANSICHT', 13); // Druckansicht @deprecated
+/**
+ * @deprecated
+ */
+define('PAGE_DRUCKANSICHT', 13); // Druckansicht
 define('PAGE_PASSWORTVERGESSEN', 14); // Passwort vergessen
 define('PAGE_WARTUNG', 15); // Wartung
 define('PAGE_WUNSCHLISTE', 16); // Wunschliste
@@ -360,7 +378,10 @@ define('PAGE_STARTSEITE', 18); // Startseite
 define('PAGE_VERSAND', 19); // Versand
 define('PAGE_AGB', 20); // AGB
 define('PAGE_DATENSCHUTZ', 21); // Datenschutz
-define('PAGE_TAGGING', 22); // Tagging @deprecated
+/**
+ * @deprecated
+ */
+define('PAGE_TAGGING', 22); // Tagging
 define('PAGE_LIVESUCHE', 23); // Livesuche
 define('PAGE_HERSTELLER', 24); // Hersteller
 define('PAGE_SITEMAP', 25); // Sitemap
@@ -368,7 +389,10 @@ define('PAGE_GRATISGESCHENK', 26); // Gratis Geschenk
 define('PAGE_WRB', 27); // WRB
 define('PAGE_PLUGIN', 28); // Plugin
 define('PAGE_NEWSLETTERARCHIV', 29); // Newsletterarchiv
-define('PAGE_NEWSARCHIV', 30); // Newsarchiv @deprecated
+/**
+ * @deprecated
+ */
+define('PAGE_NEWSARCHIV', 30); // Newsarchiv
 define('PAGE_EIGENE', 31); // Eigene Seite
 define('PAGE_AUSWAHLASSISTENT', 32); // Auswahlassistent
 define('PAGE_BESTELLABSCHLUSS', 33); // Bestellabschluss

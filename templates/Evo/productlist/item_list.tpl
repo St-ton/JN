@@ -81,6 +81,13 @@
                         <li class="item row attr-sku">
                             <span class="attr-label col-sm-5">{lang key='productNo'}: </span> <span class="value col-sm-7" itemprop="sku">{$Artikel->cArtNr}</span>
                         </li>
+                        {if !empty($Artikel->cBarcode)
+                            && ($Einstellungen.artikeldetails.gtin_display === 'lists'
+                                || $Einstellungen.artikeldetails.gtin_display === 'always')}
+                            <li class="item row">
+                                <span class="attr-label col-sm-5">{lang key='ean'}: </span> <span class="value col-sm-7">{$Artikel->cBarcode}</span>
+                            </li>
+                        {/if}
                         {if !empty($Artikel->cISBN)
                             && ($Einstellungen.artikeldetails.isbn_display === 'L'
                                 || $Einstellungen.artikeldetails.isbn_display === 'DL')}

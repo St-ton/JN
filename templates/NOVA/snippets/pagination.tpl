@@ -109,7 +109,7 @@
             {if $showFilter === true && (in_array('count', $parts) || in_array('sort', $parts))}
                 {block name='snippets-pagination-form'}
                     {col cols="12" md="auto" class="ml-md-0 ml-auto mt-3 mt-md-0"}
-                        {form action="{$cThisUrl}{$cAnchor}" method="get"}
+                        {form action="{$cThisUrl}{$cAnchor}" method="get" slide=false}
                             {block name='snippets-pagination-form-content'}
                                 {row}
                                 {block name='snippets-pagination-form-hidden'}

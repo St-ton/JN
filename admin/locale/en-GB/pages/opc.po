@@ -177,13 +177,13 @@ msgid "restoreChanges"
 msgstr "Restoring local changes"
 
 msgid "restoreUnsaved"
-msgstr "This draft contains unsaved local changes. Would you like to restore the changes?"
+msgstr "This draft hasn't been saved at the last session. Continue working on the latest changes?"
 
 msgid "noCurrent"
-msgstr "No, edit current version"
+msgstr "No, discard changes"
 
 msgid "yesRestore"
-msgstr "Yes, restore changes"
+msgstr "Yes, continue editing"
 
 msgid "editSettings"
 msgstr "Edit settings"
@@ -430,3 +430,12 @@ msgstr "Cancel"
 
 msgid "opcPageLocked"
 msgstr "Another user is currently editing this draft. Unfortunately the access is blocked for you."
+
+msgid "Next"
+msgstr "Next"
+
+msgid "Back"
+msgstr "Back"
+
+msgid "Done"
+msgstr "Done"

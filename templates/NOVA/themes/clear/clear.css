@@ -19413,7 +19413,11 @@ aside .last-seen-link {
   display: flex;
   overflow-x: hidden;
   max-height: none;
-  padding-right: 50px;
+}
+@media (max-width: 991.98px) {
+  .carousel:not(.slick-initialized).slick-lazy {
+    padding-right: 50px;
+  }
 }
 @media (max-width: 767.98px) {
   .carousel:not(.slick-initialized).slick-type-product .product-wrapper {
@@ -19662,8 +19666,10 @@ aside .last-seen-link {
   border-color: #525252;
 }
 
-.slick-list {
-  padding-right: 50px;
+@media (max-width: 991.98px) {
+  .slick-list {
+    padding-right: 50px;
+  }
 }
 
 .swatches {

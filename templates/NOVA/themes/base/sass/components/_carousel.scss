@@ -10,7 +10,9 @@
 			display: flex;
 			overflow-x: hidden;
 			max-height: none;
-			padding-right: 50px;
+			@include media-breakpoint-down(md) {
+				padding-right: 50px;
+			}
 		}
 		&.slick-type-product {
 			.product-wrapper {
@@ -126,6 +128,7 @@
 }
 
 .slick-list {
-	padding-right: 50px;
+	@include media-breakpoint-down(md) {
+		padding-right: 50px;
+	}
 }
-

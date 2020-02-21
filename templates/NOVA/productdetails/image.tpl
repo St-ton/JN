@@ -30,6 +30,7 @@
                     </div>
                 {/block}
             {/if}
+            {block name='productdetails-image-images-wrapper'}
                 <div id="gallery_wrapper" class="clearfix">
                     <div id="gallery" class="product-images slick-smooth-loading carousel">
                         {block name='productdetails-image-images'}
@@ -54,6 +55,7 @@
                         {/block}
                     </div>
                 </div>
+            {/block}
             {/col}
         {/block}
         {block name='productdetails-image-preview'}

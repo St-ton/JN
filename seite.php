@@ -52,15 +52,15 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
            ->assign('oNews_arr', $conf['news']['news_benutzen'] === 'Y'
                ? CMS::getHomeNews($conf)
                : []);
-    Wizard::startIfRequired(AUSWAHLASSISTENT_ORT_STARTSEITE, 1, Shop::getLanguage(), $smarty);
+    Wizard::startIfRequired(AUSWAHLASSISTENT_ORT_STARTSEITE, 1, Shop::getLanguageID(), $smarty);
 } elseif ($link->getLinkType() === LINKTYP_AGB) {
     $smarty->assign('AGB', Shop::Container()->getLinkService()->getAGBWRB(
-        Shop::getLanguage(),
+        Shop::getLanguageID(),
         Frontend::getCustomerGroup()->getID()
     ));
 } elseif (\in_array($link->getLinkType(), [LINKTYP_WRB, LINKTYP_WRB_FORMULAR, LINKTYP_DATENSCHUTZ], true)) {
     $smarty->assign('WRB', Shop::Container()->getLinkService()->getAGBWRB(
-        Shop::getLanguage(),
+        Shop::getLanguageID(),
         Frontend::getCustomerGroup()->getID()
     ));
 } elseif ($link->getLinkType() === LINKTYP_VERSAND) {

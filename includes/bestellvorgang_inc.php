@@ -2179,7 +2179,7 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
     }
     // Selbstdef. Kundenfelder
     if (isset($conf['kundenfeld']['kundenfeld_anzeigen']) && $conf['kundenfeld']['kundenfeld_anzeigen'] === 'Y') {
-        $customerFields = new CustomerFields(Shop::getLanguage());
+        $customerFields = new CustomerFields(Shop::getLanguageID());
         /** @var CustomerField $customerField */
         foreach ($customerFields as $customerField) {
             // Kundendaten ändern?

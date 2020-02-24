@@ -764,11 +764,11 @@ final class JTLCache implements JTLCacheInterface
         // add language ID
         if ($languageID === true) {
             $baseID .= '_lid';
-            $lang    = Shop::getLanguage();
+            $lang    = Shop::getLanguageID();
             if ($lang > 0) {
                 $baseID .= $lang;
-            } elseif (Shop::getLanguage() > 0) {
-                $baseID .= Shop::getLanguage();
+            } elseif (Shop::getLanguageID() > 0) {
+                $baseID .= Shop::getLanguageID();
             } else {
                 $baseID .= '0';
             }

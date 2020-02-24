@@ -115,7 +115,7 @@ function kundeSpeichern(array $post)
             }
 
             $knd->kKundengruppe     = $customerGroupID;
-            $knd->kSprache          = Shop::getLanguage();
+            $knd->kSprache          = Shop::getLanguageID();
             $knd->cAbgeholt         = 'N';
             $knd->cSperre           = 'N';
             $knd->cAktiv            = $conf['global']['global_kundenkonto_aktiv'] === 'A'

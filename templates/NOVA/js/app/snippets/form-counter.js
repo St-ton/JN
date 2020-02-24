@@ -42,7 +42,7 @@ window.initNumberInput = function () {
 		let max = parseInt(this.max);
 		let value = parseInt(this.value);
 
-		if(value < min || isNaN(value)) this.value = min;
+		if(value < min) this.value = min;
 		if(value > max) this.value = max;
 	})
 };

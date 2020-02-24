@@ -494,57 +494,6 @@ class Metadata implements MetadataInterface
     }
 
     /**
-     * Get the most frequent keywords from a given text
-     * @param string $text the text to analyze
-     * @param int $maxWords maximum amount of keywords to return
-     * @param boolean $asArray default = false - return concatenated keywords-string. true to return keywords-array
-     * @return string|array
-     * @deprecated since 5.0.0
-     */
-    public static function getTopMetaKeywords(string $text, int $maxWords = 10, bool $asArray = false)
-    {
-        // remove text-format-clutter
-        $text = \str_replace(['<br>', '<br />', '</p>', '</li>', "\n", "\r", '.', '"'], ' ', $text);
-        // sanitize and lowercase text
-        $text = \StringHandler::removeDoubleSpaces(
-            \preg_replace(
-                '/[^[:alpha:]\d\-]/u',
-                ' ',
-                \StringHandler::htmlentitydecode(\strtolower(\strip_tags($text)))
-            )
-        );
-        // text to array
-        $wordsArray = \explode(' ', $text);
-        // minimum word length
-        $minimumWordLength = (int)Shop::getSettingValue(\CONF_METAANGABEN, 'global_meta_keywords_laenge');
-
-        $wordsArray = \array_filter($wordsArray, static function ($value) use ($minimumWordLength) {
-            return \strlen($value) >= $minimumWordLength;
-        });
-        // filter keywords from global keywords blacklist
-        $excludes     = self::getExcludes();
-        $excludeWords = \explode(' ', $excludes[Shop::getLanguageCode()]->cKeywords ?? '');
-        $wordsArray   = \array_udiff($wordsArray, $excludeWords, 'strcasecmp');
-        $keywords     = [];
-        // count word occurrences
-        while (($c_word = \array_shift($wordsArray)) !== null) {
-            if (\array_key_exists($c_word, $keywords)) {
-                $keywords[$c_word]++;
-            } else {
-                $keywords[$c_word] = 1;
-            }
-        }
-        // sort by occurrences and build final keywords array
-        \arsort($keywords);
-        $finalKeywordsArray = \array_slice(\array_keys($keywords), 0, $maxWords);
-        if ($asArray) {
-            return $finalKeywordsArray;
-        }
-
-        return \implode(',', $finalKeywordsArray);
-    }
-
-    /**
      * @inheritdoc
      */
     public function generateMetaTitle($searchResults, $globalMeta, Kategorie $category = null): string
@@ -832,6 +781,9 @@ class Metadata implements MetadataInterface
      */
     public function checkNoIndex(): bool
     {
+        if (!isset($_SERVER['SCRIPT_NAME'])) {
+            return false;
+        }
         $noIndex = false;
         switch (\basename($_SERVER['SCRIPT_NAME'])) {
             case 'wartung.php':

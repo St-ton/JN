@@ -11,8 +11,7 @@ use JTL\IO\IOError;
 
 /**
  * Class AdminIO
- *
- * @package Backend
+ * @package JTL\Backend
  */
 class AdminIO extends IO
 {
@@ -48,7 +47,7 @@ class AdminIO extends IO
      * @return $this
      * @throws \Exception
      */
-    public function register($name, $function = null, $include = null, $permission = null)
+    public function register(string $name, $function = null, $include = null, $permission = null): self
     {
         parent::register($name, $function, $include);
         $this->functions[$name][] = $permission;

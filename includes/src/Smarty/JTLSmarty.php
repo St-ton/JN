@@ -6,6 +6,8 @@
 
 namespace JTL\Smarty;
 
+use JSMin\JSMin;
+use JSMin\UnterminatedStringException;
 use JTL\Backend\AdminTemplate;
 use JTL\Events\Dispatcher;
 use JTL\Helpers\GeneralObject;
@@ -277,11 +279,11 @@ class JTLSmarty extends \SmartyBC
             $options['cssMinifier'] = [\Minify_CSSmin::class, 'minify'];
         }
         if ($minifyJS === true) {
-            $options['jsMinifier'] = [\JSMin\JSMin::class, 'minify'];
+            $options['jsMinifier'] = [JSMin::class, 'minify'];
         }
         try {
             $res = (new \Minify_HTML($html, $options))->process();
-        } catch (\JSMin\UnterminatedStringException $e) {
+        } catch (UnterminatedStringException $e) {
             $res = $html;
         }
 

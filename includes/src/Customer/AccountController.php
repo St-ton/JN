@@ -41,7 +41,6 @@ use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\SimpleMail;
 use JTL\Smarty\JTLSmarty;
-use Session;
 use stdClass;
 use function Functional\some;
 
@@ -846,7 +845,7 @@ class AccountController
             $params['httponly']
         );
         \session_destroy();
-        new Session();
+        new Frontend();
         \session_regenerate_id(true);
 
         $_SESSION['kSprache']    = $languageID;

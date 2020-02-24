@@ -658,6 +658,7 @@ class Statusmail
         if (!\is_array($statusMail->nInhalt_arr)
             || empty($dateStart)
             || empty($dateEnd)
+            || empty($statusMail->nAktiv)
             || \count($statusMail->nInhalt_arr) === 0
         ) {
             return false;

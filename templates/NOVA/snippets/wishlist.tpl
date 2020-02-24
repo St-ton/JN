@@ -154,8 +154,11 @@
                         {/col}
                     {/block}
                     {block name='snippets-wishlist-wishlists'}
-                        {col class="col-auto"}
-                            {dropdown id='wlName' variant='outline-secondary' text=$CWunschliste->cName}
+                        {col class="col-md-auto"}
+                            {dropdown id='wlName'
+                                variant='outline-secondary'
+                                text=$CWunschliste->cName
+                                toggle-class='w-100'}
                             {foreach $oWunschliste_arr as $wishlist}
                                 {dropdownitem href="{get_static_route id='wunschliste.php'}{if $wishlist->nStandard != 1}?wl={$wishlist->kWunschliste}{/if}" rel="nofollow" }
                                     {$wishlist->cName}

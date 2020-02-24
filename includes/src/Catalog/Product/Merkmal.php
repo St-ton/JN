@@ -218,7 +218,7 @@ class Merkmal
     /**
      * @return int|null
      */
-    public function getID(): ?int
+    public function getID()
     {
         return $this->kMerkmal;
     }

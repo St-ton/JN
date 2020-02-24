@@ -406,11 +406,11 @@ class Request
      */
     public static function urlHasEqualRequestParameter(string $url, string $parameterToCheck): bool
     {
-        $urlParts = parse_url($url);
+        $urlParts = \parse_url($url);
         if (empty($urlParts['query'])) {
             $urlParts['query'] = [];
         } else {
-            parse_str($urlParts['query'], $urlParts['query']);
+            \parse_str($urlParts['query'], $urlParts['query']);
         }
 
         return self::verifyGPDataString($parameterToCheck) === ''

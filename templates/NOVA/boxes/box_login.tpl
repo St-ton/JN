@@ -10,7 +10,7 @@
         {block name='boxes-box-login-content'}
             {block name='boxes-box-login-title'}
                 <div class="productlist-filter-headline">
-                    <span>{if empty($smarty.session.Kunde)}{lang key='login'}{else}{lang key='hello'}, {$smarty.session.Kunde->cVorname} {$smarty.session.Kunde->cNachname}{/if}</span>
+                    {if empty($smarty.session.Kunde)}{lang key='login'}{else}{lang key='hello'}, {$smarty.session.Kunde->cVorname} {$smarty.session.Kunde->cNachname}{/if}
                 </div>
             {/block}
             {if empty($smarty.session.Kunde->kKunde)}

@@ -128,7 +128,7 @@
                                     }
                                 {/col}
                             {/if}
-                    {/block}
+                        {/block}
                     {/if}
 
                     {if $Einstellungen.artikeldetails.produktfrage_abfragen_fax !== 'N'}

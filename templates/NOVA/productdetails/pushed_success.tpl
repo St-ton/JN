@@ -11,13 +11,13 @@
         {/if}
         {assign var=showXSellingCart value=isset($Xselling->Kauf) && count($Xselling->Kauf->Artikel) > 0}
         {if $card}
-            <div class="text-center card-header alert-success">
-                {if isset($cartNote)}
-                    {block name='productdetails-pushed-success-cart-note-heading'}
+            {block name='productdetails-pushed-success-cart-note-heading'}
+                <div class="text-center card-header alert-success">
+                    {if isset($cartNote)}
                         {$cartNote}
-                    {/block}
-                {/if}
-            </div>
+                    {/if}
+                </div>
+            {/block}
             <div class="card-body">
         {/if}
 
@@ -61,11 +61,13 @@
                                                     {if !empty($pushedArtikel->oMerkmale_arr)}
                                                         <dt class="col-6">{lang key='variationsIn' section='productOverview'}:</dt>
                                                         <dd class="col-6 attr-characteristic">
-                                                            {foreach $pushedArtikel->oMerkmale_arr as $oMerkmal}
-                                                                {$oMerkmal->cName}
-                                                                {if $oMerkmal@index === 10 && !$oMerkmal@last}&hellip;{break}{/if}
-                                                                {if !$oMerkmal@last}, {/if}
-                                                            {/foreach}
+                                                            {block name='productdetails-pushed-success-characteristics'}
+                                                                {foreach $pushedArtikel->oMerkmale_arr as $oMerkmal}
+                                                                    {$oMerkmal->cName}
+                                                                    {if $oMerkmal@index === 10 && !$oMerkmal@last}&hellip;{break}{/if}
+                                                                    {if !$oMerkmal@last}, {/if}
+                                                                {/foreach}
+                                                            {/block}
                                                         </dd>
                                                     {/if}
                                                     {if isset($pushedArtikel->dMHD) && isset($pushedArtikel->dMHD_de)}
@@ -83,7 +85,9 @@
                                                     {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y' && (int)$pushedArtikel->fDurchschnittsBewertung !== 0}
                                                         <dt class="col-6">{lang key='ratingAverage'}:</dt>
                                                         <dd class="col-6">
-                                                            {include file='productdetails/rating.tpl' stars=$pushedArtikel->fDurchschnittsBewertung}
+                                                            {block name='productdetails-pushed-success-include-rating'}
+                                                                {include file='productdetails/rating.tpl' stars=$pushedArtikel->fDurchschnittsBewertung}
+                                                            {/block}
                                                         </dd>
                                                     {/if}
                                                 </dl>

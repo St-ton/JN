@@ -11,9 +11,9 @@
                 <button type="button" class="opc-dropdown-item" onclick="opc.gui.exportDraft()">
                     <i class="fa fas fa-download fa-fw"></i> {__('Export')}
                 </button>
-                {*<button type="button" class="opc-dropdown-item" id="btnHelp">
+                <button type="button" class="opc-dropdown-item" id="btnHelp" onclick="opc.tutorial.start()" ">
                     <i class="fa fas fa-question-circle fa-fw"></i> {__('help')}
-                </button>*}
+                </button>
             </div>
         </div>
         <h1 id="opc-sidebar-title">
@@ -117,7 +117,8 @@
                 <button type="button" class="opc-btn-secondary opc-small-btn" onclick="opc.gui.savePage()">
                     {__('save')} <i class="fas fa-asterisk" id="unsavedState" style="display: none"></i>
                 </button>
-                <button type="button" class="opc-btn-primary opc-small-btn" onclick="opc.gui.publishDraft()">
+                <button type="button" class="opc-btn-primary opc-small-btn" onclick="opc.gui.publishDraft()"
+                        id="btnPublishDraft">
                     {__('Publish')}
                 </button>
             </div>

@@ -92,7 +92,7 @@
                         <tr class="attr-dimensions">
                             <td class="h6">{lang key='dimensions' section='productDetails'}
                                 ({foreach $dimensionArr as $dimkey => $dim}
-                                    {$dimkey}{if $dim@last}{else} &times; {/if}
+                                    {$dimkey}{if !$dim@last} &times; {/if}
                                 {/foreach}):
                             </td>
                             <td class="attr-value">

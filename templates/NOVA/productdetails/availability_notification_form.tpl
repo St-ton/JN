@@ -17,7 +17,7 @@
     {block name='productdetails-availability-notification-form-form'}
         {form action="{if !empty($Artikel->cURLFull)}{$Artikel->cURLFull}{else}{$ShopURL}/{/if}"
             method="post" id="article_availability{$Artikel->kArtikel}"
-            class="jtl-validate label-slide"
+            class="jtl-validate"
         }
             {block name='productdetails-availability-notification-form-fieldset-contact'}
                 <fieldset>

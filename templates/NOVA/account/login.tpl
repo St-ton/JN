@@ -32,7 +32,7 @@
         {opcMountPoint id='opc_before_login'}
         {row}
             {col sm=8 lg=6}
-                {form id="login_form" action="{get_static_route id='jtl.php'}" method="post" role="form" class="jtl-validate label-slide"}
+                {form id="login_form" action="{get_static_route id='jtl.php'}" method="post" role="form" class="jtl-validate"}
                     <fieldset>
                         {block name='account-login-form-submit-legend-login'}
                             <legend>

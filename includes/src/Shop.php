@@ -28,7 +28,6 @@ use JTL\Debug\JTLDebugBar;
 use JTL\Events\Dispatcher;
 use JTL\Events\Event;
 use JTL\Filesystem\AdapterFactory;
-use JTL\Filesystem\Factory;
 use JTL\Filesystem\Filesystem;
 use JTL\Filter\Config;
 use JTL\Filter\FilterInterface;

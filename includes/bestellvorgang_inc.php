@@ -751,7 +751,7 @@ function gibStepZahlung()
         }
         $selectablePayments = \array_filter(
             $paymentMethods,
-            function ($method) {
+            static function ($method) {
                 $paymentMethod = LegacyMethod::create($method->cModulId);
                 if ($paymentMethod !== null) {
                     return $paymentMethod->isSelectable();

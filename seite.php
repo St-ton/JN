@@ -9,6 +9,7 @@ use JTL\Catalog\Hersteller;
 use JTL\Extensions\SelectionWizard\Wizard;
 use JTL\Helpers\CMS;
 use JTL\Helpers\ShippingMethod;
+use JTL\Helpers\Text;
 use JTL\Helpers\URL;
 use JTL\Plugin\Helper as PluginHelper;
 use JTL\Session\Frontend;
@@ -127,7 +128,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 $smarty->assign('Link', $link)
        ->assign('bSeiteNichtGefunden', Shop::getPageType() === PAGE_404)
        ->assign('cFehler', !empty($cFehler) ? $cFehler : null)
-       ->assign('meta_language', StringHandler::convertISO2ISO639(Shop::getLanguageCode()));
+       ->assign('meta_language', Text::convertISO2ISO639(Shop::getLanguageCode()));
 
 executeHook(HOOK_SEITE_PAGE);
 

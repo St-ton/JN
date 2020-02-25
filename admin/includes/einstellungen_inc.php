@@ -335,11 +335,10 @@ function filteredConfData(array $confData, string $filter): array
         return filter($confData, static function ($e) use ($keysToFilter) {
             return \in_array($e->cWertName, $keysToFilter, true);
         });
-    } else {
-        $keysToFilter = flatten($keys);
-
-        return filter($confData, static function ($e) use ($keysToFilter) {
-            return !\in_array($e->cWertName, $keysToFilter, true);
-        });
     }
+    $keysToFilter = flatten($keys);
+
+    return filter($confData, static function ($e) use ($keysToFilter) {
+        return !\in_array($e->cWertName, $keysToFilter, true);
+    });
 }

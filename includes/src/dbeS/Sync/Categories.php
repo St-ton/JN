@@ -138,7 +138,7 @@ final class Categories extends AbstractSync
         $this->setCustomerGroups($xml, $category->kKategorie);
         $this->setCategoryDiscount($category->kKategorie);
         foreach ($this->getLinkedDiscountCategories($category->kKategorie) as $linkedCategory) {
-            $this->setCategoryDiscount($linkedCategory->kKategorie);
+            $this->setCategoryDiscount((int)$linkedCategory->kKategorie);
         }
         $this->setVisibility($xml, $category->kKategorie);
         $this->setAttributes($xml, $category->kKategorie);

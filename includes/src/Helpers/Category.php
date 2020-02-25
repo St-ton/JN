@@ -217,10 +217,13 @@ class Category
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                     AND tartikelsichtbarkeit.kKundengruppe = ' . self::$customerGroupID;
         } elseif ($filterEmpty === true) {
-            $countSelect    = ', COUNT(tkategorieartikel.kArtikel) AS cnt';
+            $countSelect    = ', COUNT(tartikel.kArtikel) AS cnt';
             $visibilityJoin = ' LEFT JOIN tartikelsichtbarkeit
                     ON tkategorieartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = ' . self::$customerGroupID;
+                    AND tartikelsichtbarkeit.kKundengruppe = ' . self::$customerGroupID .
+                    ' LEFT JOIN tartikel
+                        ON tkategorieartikel.kArtikel = tartikel.kArtikel
+                            AND tartikel.kVaterArtikel = 0 ';
         } else {
             // if we want to display all categories without filtering out empty ones, we don't have to check the
             // product count. this saves a very expensive join - cnt will be always -1

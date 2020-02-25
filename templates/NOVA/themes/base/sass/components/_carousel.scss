@@ -1,5 +1,5 @@
 
-.carousel { transition: opacity $transition-base-duration; margin: 0 $grid-gutter-width / -2;
+.carousel { transition: opacity $transition-base-duration;
 	&:not(.slick-initialized) {
 		&.slick-smooth-loading {
 		 	opacity: 0; max-height: rem(200px);

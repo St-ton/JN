@@ -19402,7 +19402,6 @@ aside .last-seen-link {
 
 .carousel {
   transition: opacity 0.2s;
-  margin: 0 -1rem;
 }
 .carousel:not(.slick-initialized).slick-smooth-loading {
   opacity: 0;

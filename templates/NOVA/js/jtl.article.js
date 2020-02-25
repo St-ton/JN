@@ -949,7 +949,8 @@
                     container = $('#cfg-container'),
                     sidebar   = $('#cfg-sticky-sidebar'),
                     width,
-                    form;
+                    form,
+                    $spinner = $.evo.extended().spinner(container.get(0));
 
                 if (container.length === 0) {
                     return;
@@ -966,6 +967,8 @@
 
                 form = $.evo.io().getFormValues('buy_form');
 
+
+                container.addClass('loading');
                 $.evo.io().call('buildConfiguration', [form], that, function (error, data) {
                     var result,
                         i,
@@ -986,12 +989,16 @@
                             $(this).find('.js-group-badge-checked')
                                 .removeClass('alert-success')
                                 .addClass('alert-danger');
+                            $(this).find('.js-cfg-next').prop('disabled', true);
                         } else {
-                            iconChecked.removeClass('d-none');
-                            iconChecked.next().addClass('d-none');
+                            if ($(this).hasClass('visited')) {
+                                iconChecked.removeClass('d-none');
+                                iconChecked.next().addClass('d-none');
+                            }
                             $(this).find('.js-group-badge-checked')
                                 .addClass('alert-success')
                                 .removeClass('alert-danger');
+                            $(this).find('.js-cfg-next').prop('disabled', false);
                         }
                     });
                     $('.js-cfg-group-error').addClass('d-none').html('');
@@ -1000,9 +1007,15 @@
                     });
                     if (data.response.valid) {
                         $('.js-cfg-validate').prop('disabled', false);
+                        $('#cfg-tab-summary-finish').children().removeClass('disabled');
+                        $('#cfg-tab-summary-finish').removeClass('disabled');
                     } else {
                         $('.js-cfg-validate').prop('disabled', true);
+                        $('#cfg-tab-summary-finish').children().addClass('disabled');
+                        $('#cfg-tab-summary-finish').addClass('disabled');
                     }
+                    $spinner.stop();
+                    container.removeClass('loading');
                     if (error) {
                         $.evo.error(data);
                         return;
@@ -1028,8 +1041,8 @@
         },
 
         initConfigListeners: function () {
+            let that   = this;
             $('.js-cfg-group').on('click', function () {
-                $(this).addClass('visited');
                 let self = $(this);
                 setTimeout(function() {
                     $(this).closest('.tab-content').animate({
@@ -1037,11 +1050,24 @@
                     }, 500);
                 }, 200);
             });
-            $('#cfg-accordion .collapse').on('shown.bs.collapse', function () {
+            $('#cfg-accordion .js-cfg-group-collapse').on('shown.bs.collapse', function () {
                 $(this).prev()[0].scrollIntoView({
                     behavior: 'smooth',
                     block: 'start'
                 });
+            });
+            $('.js-cfg-next').on('click', function () {
+                $('button[data-target="' +  $(this).data('target') + '"]')
+                    .prop('disabled', false)
+                    .closest('.js-cfg-group').addClass('visited');
+                that.configurator();
+            });
+            $('#cfg-tab-summary-finish').on('click', function () {
+                if (!$(this).hasClass('disabled')) {
+                    $('#cfg-modal-tabs').find('.nav-link').removeClass('active');
+                    $('#cfg-tab-summary').children().addClass('active');
+                    $(this).children().removeClass('active');
+                }
             });
         },
 

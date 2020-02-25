@@ -12,18 +12,23 @@
                 <div class="cfg-group js-cfg-group {if $oGruppe@first}visited{/if}" data-id="{$kKonfiggruppe}">
                     <div class="hr-sect mb-0">
                         <span class="d-none js-group-checked"><i class="far fa-check-square"></i></span>
-                        <span class="d-none"><i class="far fa-square"></i></span>
+                        <span><i class="far fa-square"></i></span>
                         {button
                             id="crd-hdr-{$oGruppe@iteration}"
                             variant="link"
-                            data=["toggle"=>"collapse","target"=>"#cfg-grp-cllps-{$kKonfiggruppe}"]
+                            data=["toggle"=>"collapse","target"=>"#cfg-grp-cllps-{$oGruppe@iteration}"]
                             class="text-left text-decoration-none"
+                            disabled=!$oGruppe@first
                         }
                             {$configLocalization->getName()}
                         {/button}
                     </div>
 
-                    {collapse visible=$oGruppe@first id="cfg-grp-cllps-{$kKonfiggruppe}" aria=["labelledby"=>"crd-hdr-{$oGruppe@iteration}"] data=["parent"=>"#cfg-accordion"]}
+                    {collapse visible=$oGruppe@first
+                        id="cfg-grp-cllps-{$oGruppe@iteration}"
+                        aria=["labelledby"=>"crd-hdr-{$oGruppe@iteration}"]
+                        data=["parent"=>"#cfg-accordion"]
+                        class="js-cfg-group-collapse"}
                         <div class="text-center mb-5 sticky-top">
                             {if !empty($oGruppe->getMin()) || !empty($oGruppe->getMax())}
                                 {badge variant="info" class="js-group-badge-checked"}
@@ -403,6 +408,31 @@
                         {/if}
                         {/row}
                     {/block}
+                        <div class="sticky-bottom">
+                            {if $oGruppe@last}
+                                {nav}
+                                    {navitem id="cfg-tab-summary-finish"
+                                        class="m-auto"
+                                        href="#cfg-tab-pane-summary"
+                                        role="tab"
+                                        router-data=["toggle"=>"pill"]
+                                        router-aria=["controls"=>"cfg-tab-pane-summary", "selected"=>"false"]
+                                        router-class="btn btn-secondary btn-sm"
+                                        disabled=true
+                                    }
+                                        {lang key='finishConfiguration' section='productDetails'}
+                                    {/navitem}
+                                {/nav}
+                            {else}
+                                {button
+                                    size="sm"
+                                    variant="secondary"
+                                    data=["toggle"=>"collapse","target"=>"#cfg-grp-cllps-{$oGruppe@iteration + 1}"]
+                                    class="m-auto js-cfg-next no-caret"}
+                                    {lang key='nextConfigurationGroup' section='productDetails'} <i class="fas fa-arrow-right"></i>
+                                {/button}
+                            {/if}
+                        </div>
                     {/collapse}
                 </div>
             {/if}

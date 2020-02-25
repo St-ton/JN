@@ -25,11 +25,19 @@ class Migration_20200123122500 extends Migration implements IMigration
 
         $this->setLocalization('ger', 'productDetails', 'saveConfiguration', 'Speichern');
         $this->setLocalization('eng', 'productDetails', 'saveConfiguration', 'Save');
+
+        $this->setLocalization('ger', 'productDetails', 'finishConfiguration', 'Konfiguration abschließen');
+        $this->setLocalization('eng', 'productDetails', 'finishConfiguration', 'Finish configuration');
+
+        $this->setLocalization('ger', 'productDetails', 'nextConfigurationGroup', 'Nächste Konfigurationsgruppe');
+        $this->setLocalization('eng', 'productDetails', 'nextConfigurationGroup', 'Next configuration group');
     }
 
     public function down()
     {
         $this->removeLocalization('applyConfiguration');
         $this->removeLocalization('saveConfiguration');
+        $this->removeLocalization('finishConfiguration');
+        $this->removeLocalization('nextConfigurationGroup');
     }
 }

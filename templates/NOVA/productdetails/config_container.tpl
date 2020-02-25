@@ -22,7 +22,7 @@
             </div>
 
 
-            {nav pills=true fill=true class="mt-auto" role="tablist"}
+            {nav id="cfg-modal-tabs" pills=true fill=true class="mt-auto" role="tablist"}
                 {navitem id="cfg-tab-options" active=true
                     href="#cfg-tab-pane-options" role="tab" router-data=["toggle"=>"pill"]
                     router-aria=["controls"=>"cfg-tab-pane-options", "selected"=>"true"]

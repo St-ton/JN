@@ -669,6 +669,31 @@ function fuelleArtikelKategorieRabatt($oArtikel, $oKundengruppe_arr)
 }
 
 /**
+ * @param int $categoryID
+ * @return array|int|object
+ */
+function getLinkedDiscountCategories($categoryID)
+{
+    return Shop::DB()->queryPrepared(
+        'SELECT DISTINCT tkgrp_b.kKategorie
+            FROM tkategorieartikel tart_a
+            INNER JOIN tkategorieartikel tart_b ON tart_a.kArtikel = tart_b.kArtikel
+                AND tart_a.kKategorie != tart_b.kKategorie
+            INNER JOIN tkategoriekundengruppe tkgrp_b ON tart_b.kKategorie = tkgrp_b.kKategorie
+            LEFT JOIN tkategoriekundengruppe tkgrp_a ON tkgrp_a.kKategorie = tart_a.kKategorie
+            LEFT JOIN tkategoriesichtbarkeit tsicht ON tsicht.kKategorie = tkgrp_b.kKategorie
+                AND tsicht.kKundengruppe = tkgrp_b.kKundengruppe
+            WHERE tart_a.kKategorie = :categoryID
+                AND tkgrp_b.fRabatt > COALESCE(tkgrp_a.fRabatt, 0)
+                AND tsicht.kKategorie IS NULL',
+        [
+            'categoryID' => (int)$categoryID
+        ],
+        2
+    );
+}
+
+/**
  * @param int $kKategorie
  */
 function fuelleKategorieRabatt($kKategorie)

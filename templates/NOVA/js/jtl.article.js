@@ -982,13 +982,17 @@
                         nNetto,
                         quantityInput;
                     $('.js-cfg-group').each(function (i, item) {
-                        let iconChecked = $(this).find('.js-group-checked');
+                        let iconChecked     = $(this).find('.js-group-checked'),
+                            badgeInfoDanger = 'alert-info';
                         if (data.response.invalidGroups && data.response.invalidGroups.includes($(this).data('id'))) {
                             iconChecked.addClass('d-none');
                             iconChecked.next().removeClass('d-none');
+                            if ($(this).find('.js-cfg-group-collapse').hasClass('visited')) {
+                                badgeInfoDanger = 'alert-danger';
+                            }
                             $(this).find('.js-group-badge-checked')
-                                .removeClass('alert-success')
-                                .addClass('alert-danger');
+                                .removeClass('alert-success alert-info')
+                                .addClass(badgeInfoDanger);
                             $(this).find('.js-cfg-next').prop('disabled', true);
                         } else {
                             if ($(this).hasClass('visited')) {
@@ -997,7 +1001,7 @@
                             }
                             $(this).find('.js-group-badge-checked')
                                 .addClass('alert-success')
-                                .removeClass('alert-danger');
+                                .removeClass('alert-danger alert-info');
                             $(this).find('.js-cfg-next').prop('disabled', false);
                         }
                     });
@@ -1068,6 +1072,9 @@
                     $('#cfg-tab-summary').children().addClass('active');
                     $(this).children().removeClass('active');
                 }
+            });
+            $('.js-cfg-group-collapse').on('click', function () {
+                $(this).addClass('visited');
             });
         },
 

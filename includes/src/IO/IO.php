@@ -60,7 +60,7 @@ class IO
      * @return $this
      * @throws Exception
      */
-    public function register(string $name, $function = null, $include = null): self
+    public function register(string $name, $function = null, $include = null)
     {
         if ($this->exists($name)) {
             throw new Exception('Function already registered');

@@ -91,7 +91,7 @@
                         {else}
                             <div class="input-group">
                                 <div class="input-group-prepend"><span class="input-group-text"><i class="fa fa-user"></i></span></div>
-                                <input class="form-control" type="text" placeholder="{__('username')}" name="benutzer" id="user_login" value="" size="20" tabindex="10" />
+                                <input class="form-control" type="text" placeholder="{__('username')}" name="benutzer" id="user_login" value="" size="20" tabindex="10" autocomplete="username" />
                             </div>
                             <div class="input-group mt-2">
                                 <div class="input-group-prepend"><span class="input-group-text"><i class="fa fa-lock"></i></span></div>

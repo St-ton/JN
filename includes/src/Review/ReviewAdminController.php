@@ -18,7 +18,7 @@ use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
-use JTLSmarty;
+use JTL\Smarty\JTLSmarty;
 use function Functional\map;
 
 /**

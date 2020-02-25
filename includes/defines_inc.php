@@ -537,3 +537,19 @@ define('PRIO_VERYLOW', '0.0');
 
 define('SPM_PORT', 443);
 define('SPM_TIMEOUT', 30);
+
+define('CACHING_GROUP_ARTICLE', 'art');
+define('CACHING_GROUP_PRODUCT', 'art');
+define('CACHING_GROUP_CATEGORY', 'cat');
+define('CACHING_GROUP_LANGUAGE', 'lang');
+define('CACHING_GROUP_TEMPLATE', 'tpl');
+define('CACHING_GROUP_OPTION', 'opt');
+define('CACHING_GROUP_PLUGIN', 'plgn');
+define('CACHING_GROUP_CORE', 'core');
+define('CACHING_GROUP_OBJECT', 'obj');
+define('CACHING_GROUP_BOX', 'bx');
+define('CACHING_GROUP_NEWS', 'nws');
+define('CACHING_GROUP_ATTRIBUTE', 'attr');
+define('CACHING_GROUP_MANUFACTURER', 'mnf');
+define('CACHING_GROUP_FILTER', 'fltr');
+define('CACHING_GROUP_FILTER_CHARACTERISTIC', 'fltrchr');

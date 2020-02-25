@@ -238,7 +238,7 @@ function baueArtikelExportSQL(&$export)
     if (empty($export->kExportformat)) {
         return $sql;
     }
-    $conf = getEinstellungenExport($export->kExportformat);
+    $conf = getEinstellungenExport((int)$export->kExportformat);
 
     switch ($export->nVarKombiOption) {
         case 2:

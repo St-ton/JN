@@ -15,6 +15,7 @@ use JTL\Extensions\Upload\Upload;
 use JTL\Helpers\Order;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
+use JTL\Helpers\Text;
 use JTL\Plugin\Payment\LegacyMethod;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -155,14 +156,14 @@ pruefeZahlungStep();
 // autom. step ermitteln
 pruefeBestaetigungStep();
 // sondersteps Rechnungsadresse aendern
-pruefeRechnungsadresseStep(StringHandler::filterXSS($_GET));
+pruefeRechnungsadresseStep(Text::filterXSS($_GET));
 // sondersteps Lieferadresse aendern
-pruefeLieferadresseStep(StringHandler::filterXSS($_GET));
+pruefeLieferadresseStep(Text::filterXSS($_GET));
 // sondersteps Versandart aendern
-pruefeVersandartStep(StringHandler::filterXSS($_GET));
+pruefeVersandartStep(Text::filterXSS($_GET));
 // sondersteps Zahlungsart aendern
-pruefeZahlungsartStep(StringHandler::filterXSS($_GET));
-pruefeZahlungsartwahlStep(StringHandler::filterXSS($_POST));
+pruefeZahlungsartStep(Text::filterXSS($_GET));
+pruefeZahlungsartwahlStep(Text::filterXSS($_POST));
 
 if ($step === 'accountwahl') {
     gibStepAccountwahl();
@@ -192,7 +193,7 @@ if ($step === 'Bestaetigung') {
     pruefeGuthabenNutzen();
     // Eventuellen Zahlungsarten Aufpreis/Rabatt neusetzen
     getPaymentSurchageDiscount($_SESSION['Zahlungsart']);
-    gibStepBestaetigung(StringHandler::filterXSS($_GET));
+    gibStepBestaetigung(Text::filterXSS($_GET));
     $cart->cEstimatedDelivery = $cart->getEstimatedDeliveryTime();
     Cart::refreshChecksum($cart);
 }

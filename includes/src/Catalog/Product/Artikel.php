@@ -5562,31 +5562,17 @@ class Artikel
      */
     public function getMetaKeywords(): string
     {
+        $keyWords = '';
         if (!empty($this->AttributeAssoc[\ART_ATTRIBUT_METAKEYWORDS])) {
-            return $this->AttributeAssoc[\ART_ATTRIBUT_METAKEYWORDS];
+            $keyWords = $this->AttributeAssoc[\ART_ATTRIBUT_METAKEYWORDS];
+        } elseif (!empty($this->FunktionsAttribute[\ART_ATTRIBUT_METAKEYWORDS])) {
+            $keyWords = $this->FunktionsAttribute[\ART_ATTRIBUT_METAKEYWORDS];
+        } elseif (!empty($this->metaKeywords)) {
+            $keyWords = $this->metaKeywords;
         }
-        if (!empty($this->FunktionsAttribute[\ART_ATTRIBUT_METAKEYWORDS])) {
-            return $this->FunktionsAttribute[\ART_ATTRIBUT_METAKEYWORDS];
-        }
-        if (!empty($this->metaKeywords)) {
-            return $this->metaKeywords;
-        }
+        \executeHook(\HOOK_ARTIKEL_INC_METAKEYWORDS, ['keywords' => &$keyWords]);
 
-        $description = $this->cBeschreibung;
-        if (empty($description)) {
-            $description = $this->cKurzBeschreibung;
-        }
-        if (empty($description)) {
-            $expandedCategories = new KategorieListe();
-            $expandedCategories->getOpenCategories(new Kategorie($this->gibKategorie()));
-            $description = $this->getMetaDescription($expandedCategories);
-        }
-
-        $metaKeywords = Metadata::getTopMetaKeywords($description);
-
-        \executeHook(\HOOK_ARTIKEL_INC_METAKEYWORDS, ['keywords' => $metaKeywords]);
-
-        return $metaKeywords;
+        return $keyWords;
     }
 
     /**

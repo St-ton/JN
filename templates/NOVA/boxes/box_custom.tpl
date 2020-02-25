@@ -6,7 +6,7 @@
     {card class="box box-custom mb-4" id="sidebox{$oBox->getID()}"}
         {block name='boxes-box-custom-title'}
             <div class="productlist-filter-headline">
-                <span>{$oBox->getTitle()}</span>
+                {$oBox->getTitle()}
             </div>
         {/block}
         {eval var=$oBox->getContent()}

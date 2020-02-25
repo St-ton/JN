@@ -130,6 +130,14 @@ abstract class Bootstrapper implements BootstrapperInterface
     /**
      * @inheritdoc
      */
+    public function setPlugin(PluginInterface $plugin): void
+    {
+        $this->plugin = $plugin;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getDB(): DbInterface
     {
         return $this->db;

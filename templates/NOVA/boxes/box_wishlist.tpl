@@ -19,7 +19,7 @@
                 {block name='boxes-box-wishlist-title'}
                     <div class="productlist-filter-headline align-items-center d-none d-md-flex">
                         <i class='fa fa-heart mr-2'></i>
-                        <span>{lang key='wishlist'}</span>
+                        {lang key='wishlist'}
                     </div>
                 {/block}
                 {block name='boxes-box-wishlist-collapse'}

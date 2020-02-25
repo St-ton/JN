@@ -129,38 +129,42 @@
                                     <div class="bulk-price mt-3">
                                         <table class="table table-sm table-hover">
                                             <thead>
-                                                <tr>
-                                                    <th>
-                                                        {lang key='fromDifferential' section='productOverview'}
-                                                    </th>
-                                                    <th>{lang key='pricePerUnit' section='productDetails'}{if $Artikel->cEinheit} / {$Artikel->cEinheit}{/if}
-                                                        {if isset($Artikel->cMasseinheitName) && isset($Artikel->fMassMenge) && $Artikel->fMassMenge > 0 && $Artikel->cTeilbar !== 'Y' && ($Artikel->fAbnahmeintervall == 0 || $Artikel->fAbnahmeintervall == 1) && isset($Artikel->cMassMenge)}
-                                                            ({$Artikel->cMassMenge} {$Artikel->cMasseinheitName})
+                                                {block name='productdetails-price-detail-bulk-price-head'}
+                                                    <tr>
+                                                        <th>
+                                                            {lang key='fromDifferential' section='productOverview'}
+                                                        </th>
+                                                        <th>{lang key='pricePerUnit' section='productDetails'}{if $Artikel->cEinheit} / {$Artikel->cEinheit}{/if}
+                                                            {if isset($Artikel->cMasseinheitName) && isset($Artikel->fMassMenge) && $Artikel->fMassMenge > 0 && $Artikel->cTeilbar !== 'Y' && ($Artikel->fAbnahmeintervall == 0 || $Artikel->fAbnahmeintervall == 1) && isset($Artikel->cMassMenge)}
+                                                                ({$Artikel->cMassMenge} {$Artikel->cMasseinheitName})
+                                                            {/if}
+                                                        </th>
+                                                        {if !empty($Artikel->staffelPreis_arr[0].cBasePriceLocalized)}
+                                                        <th>
+                                                            {lang key='basePrice'}
+                                                        </th>
                                                         {/if}
-                                                    </th>
-                                                    {if !empty($Artikel->staffelPreis_arr[0].cBasePriceLocalized)}
-                                                    <th>
-                                                        {lang key='basePrice'}
-                                                    </th>
-                                                    {/if}
-                                                </tr>
+                                                    </tr>
+                                                {/block}
                                             </thead>
                                             <tbody>
-                                                {foreach $Artikel->staffelPreis_arr as $bulkPrice}
-                                                    {if $bulkPrice.nAnzahl > 0}
-                                                        <tr class="bulk-price-{$bulkPrice.nAnzahl}">
-                                                            <td>{$bulkPrice.nAnzahl}</td>
-                                                            <td class="bulk-price">
-                                                                {$bulkPrice.cPreisLocalized[$NettoPreise]} <span class="footnote-reference">*</span>
-                                                            </td>
-                                                            {if !empty($bulkPrice.cBasePriceLocalized)}
-                                                                <td class="bulk-base-price">
-                                                                    {$bulkPrice.cBasePriceLocalized[$NettoPreise]}
+                                                {block name='productdetails-price-detail-bulk-price-body'}
+                                                    {foreach $Artikel->staffelPreis_arr as $bulkPrice}
+                                                        {if $bulkPrice.nAnzahl > 0}
+                                                            <tr class="bulk-price-{$bulkPrice.nAnzahl}">
+                                                                <td>{$bulkPrice.nAnzahl}</td>
+                                                                <td class="bulk-price">
+                                                                    {$bulkPrice.cPreisLocalized[$NettoPreise]} <span class="footnote-reference">*</span>
                                                                 </td>
-                                                            {/if}
-                                                        </tr>
-                                                    {/if}
-                                                {/foreach}
+                                                                {if !empty($bulkPrice.cBasePriceLocalized)}
+                                                                    <td class="bulk-base-price">
+                                                                        {$bulkPrice.cBasePriceLocalized[$NettoPreise]}
+                                                                    </td>
+                                                                {/if}
+                                                            </tr>
+                                                        {/if}
+                                                    {/foreach}
+                                                {/block}
                                             </tbody>
                                         </table>
                                     </div>{* /bulk-price *}
@@ -169,6 +173,7 @@
                         </div>{* /price-note *}
                     {/block}
                 {else}{* scope productlist *}
+                    {block name='productdetails-price-price-note'}
                     <div class="price-note">
                         {* Grundpreis *}
                         {if !empty($Artikel->cLocalizedVPE)}
@@ -212,6 +217,7 @@
                             {/if}
                         {/block}
                     </div>
+                    {/block}
                 {/if}
             {/if}
             {/block}

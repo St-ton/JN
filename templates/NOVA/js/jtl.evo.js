@@ -18,192 +18,197 @@
         constructor: EvoClass,
 
         generateSlickSlider: function() {
-            /*
-             * box product slider
-             */
+            let self = this;
+            self.initSlick($('.evo-box-slider:not(.slick-initialized)'), 'box-slider');
+            self.initSlick($('.evo-slider-half:not(.slick-initialized)'), 'slider-half');
+            self.initSlick($('.evo-slider:not(.slick-initialized)'), 'product-slider');
+            self.initSlick($('.news-slider:not(.slick-initialized)'), 'news-slider');
+            self.initSlick($('.evo-box-vertical:not(.slick-initialized)'), 'box-vertical')
+                .on('afterChange', function () {
+                    var heights = [];
+                    $('.evo-box-vertical:not(.eq-height) .product-wrapper').each(function (i, element) {
+                        var $element       = $(element);
+                        var elementHeight;
+                        // Should we include the elements padding in it's height?
+                        var includePadding = ($element.css('box-sizing') === 'border-box')
+                            || ($element.css('-moz-box-sizing') === 'border-box');
 
-            $('.evo-box-slider:not(.slick-initialized)').slick({
-                arrows:         false,
-                lazyLoad:       'ondemand',
-                slidesToShow:   2,
-                swipeToSlide:   true,
-                slidesToScroll: 2,
-                mobileFirst:    true,
-                responsive: [
-                    {
-                        breakpoint: 992, // md
-                        settings: {
-                            arrows: true,
+                        if (includePadding) {
+                            elementHeight = $element.innerHeight();
+                        } else {
+                            elementHeight = $element.height();
                         }
-                    },
-                    {
-                        breakpoint: 1200, // lg
-                        settings: {
-                            slidesToShow: 1,
-                            slidesToScroll: 1,
-                            arrows: true,
-                        }
-                    }
-                ]
+
+                        heights.push(elementHeight);
+                    });
+                    $('.evo-box-vertical.evo-box-vertical:not(.eq-height) .product-wrapper')
+                        .css('height', Math.max.apply(window, heights) + 'px');
+                    $('.evo-box-vertical.evo-box-vertical:not(.eq-height)')
+                        .addClass('eq-height');
             });
 
-            $('.evo-slider-half:not(.slick-initialized)').slick({
-                //dots: true,
-                arrows:       true,
-                lazyLoad:     'ondemand',
-                swipeToSlide:   true,
-                slidesToShow: 3,
-                responsive:   [
-                    {
-                        breakpoint: 992, // md
-                        settings: {
-                            slidesToShow: 1,
-                        }
-                    },
-                    {
-                        breakpoint: 1200, // lg
-                        settings: {
-                            slidesToShow: 2,
-                        }
-                    }
-                ]
+            $('.slick-lazy').on('mouseenter', function (e) {
+                let mainNode = $(this);
+                if (!mainNode.hasClass('slick-initialized')) {
+                    self.initSlick(mainNode, mainNode.data('slick-type'));
+                }
             });
 
-            $('.evo-box-vertical:not(.slick-initialized)').slick({
-                //dots: true,
-                arrows:          true,
-                vertical:        true,
-                adaptiveHeight:  true,
-                swipeToSlide:    true,
-                verticalSwiping: true,
-                prevArrow:       '<button class="slick-up" aria-label="Previous" type="button">' +
-                    '<i class="fa fa-chevron-up"></i></button>',
-                nextArrow:       '<button class="slick-down" aria-label="Next" type="button">' +
-                    '<i class="fa fa-chevron-down"></i></button>',
-                lazyLoad:        'progressive',
-                slidesToShow:    1,
-            }).on('afterChange', function () {
-                var heights = [];
-                $('.evo-box-vertical:not(.eq-height) .product-wrapper').each(function (i, element) {
-                    var $element       = $(element);
-                    var elementHeight;
-                    // Should we include the elements padding in it's height?
-                    var includePadding = ($element.css('box-sizing') === 'border-box')
-                        || ($element.css('-moz-box-sizing') === 'border-box');
-
-                    if (includePadding) {
-                        elementHeight = $element.innerHeight();
-                    } else {
-                        elementHeight = $element.height();
-                    }
-
-                    heights.push(elementHeight);
+            document.querySelectorAll('.slick-lazy').forEach(function(slickItem) {
+                let startX;
+                slickItem.addEventListener('touchstart', function (e) {
+                    startX = e.changedTouches[0].pageX;
                 });
-                $('.evo-box-vertical.evo-box-vertical:not(.eq-height) .product-wrapper')
-                    .css('height', Math.max.apply(window, heights) + 'px');
-                $('.evo-box-vertical.evo-box-vertical:not(.eq-height)')
-                    .addClass('eq-height');
+                slickItem.addEventListener('touchmove', function (e) {
+                    let mainNode = $(this);
+                    if (!mainNode.hasClass('slick-initialized')
+                        && Math.abs(startX - e.changedTouches[0].pageX) > 80
+                    ) {
+                        mainNode.removeClass('slick-lazy');
+                        self.initSlick(mainNode, mainNode.data('slick-type'));
+                        if(mainNode.slick('getSlick').slideCount > mainNode.slick('slickGetOption', 'slidesToShow')) {
+                            mainNode.slick('slickGoTo', 1);
+                        }
+                    }
+                });
             });
 
-            /*
-             * responsive slider (content)
-             */
-            var evoSliderOptions = {
-                rows:           0,
-                arrows:         false,
-                lazyLoad:       'ondemand',
-                slidesToShow:   2,
-                slidesToScroll: 2,
-                swipeToSlide:   true,
-                mobileFirst:    true,
-                responsive:     [
-                    {
-                        breakpoint: 768, // xs
-                        settings: {
-                            slidesToShow: 3,
-                            slidesToScroll: 1
-                        }
-                    },
-                    {
-                        breakpoint: 992, // sm
-                        settings: {
-                            slidesToShow:5,
-                            arrows: true,
-                            slidesToScroll: 1
-                        }
-                    },
-                    {
-                        breakpoint: 1300,
-                        settings: {
-                            slidesToShow:7,
-                            arrows: true,
-                            slidesToScroll: 1
-                        }
-                    }
-                ]
-            };
-            $('.evo-slider:not(.slick-initialized)').slick(evoSliderOptions);
+        },
 
-            // product list image slider
-            /*$('.product-list .list-gallery:not(.slick-initialized)').slick({
-                lazyLoad: 'ondemand',
-                infinite: false,
-                dots:     false,
-                arrows:   true
-            });*/
-            var optionsNewsSlider = {
-                rows:           0,
-                slidesToShow:   1,
-                slidesToScroll: 1,
-                arrows:         false,
-                swipeToSlide:   true,
-                infinite:       false,
-                lazyLoad:       'ondemand',
-                mobileFirst:    true,
-                responsive:     [
-                    {
-                        breakpoint: 768, // xs
-                        settings: {
-                            slidesToShow: 2
+        initSlick: function (node, sliderType) {
+            let sliderOptions = {
+                'box-slider' : {
+                    arrows:         false,
+                    lazyLoad:       'ondemand',
+                    slidesToShow:   2,
+                    swipeToSlide:   true,
+                    slidesToScroll: 2,
+                    mobileFirst:    true,
+                    responsive: [
+                        {
+                            breakpoint: 992,
+                            settings: {
+                                slidesToShow: 1,
+                                slidesToScroll: 1,
+                                arrows: true,
+                            }
                         }
-                    },
-                    {
-                        breakpoint: 992, // sm
-                        settings: {
-                            slidesToShow:3,
-                            arrows: true
+                    ]
+                },
+                'slider-half' : {
+                    arrows:       true,
+                    lazyLoad:     'ondemand',
+                    swipeToSlide: true,
+                    mobileFirst:    true,
+                    slidesToShow: 2,
+                    responsive:   [
+                        {
+                            breakpoint: 1300,
+                            settings: {
+                                slidesToShow: 3,
+                            }
                         }
-                    },
-                    {
-                        breakpoint: 1300,
-                        settings: {
-                            slidesToShow:4,
-                            arrows: true
+                    ]
+                },
+                'box-vertical' : {
+                    arrows:          true,
+                    vertical:        true,
+                    adaptiveHeight:  true,
+                    swipeToSlide:    true,
+                    verticalSwiping: true,
+                    prevArrow:       '<button class="slick-up" aria-label="Previous" type="button">' +
+                    '<i class="fa fa-chevron-up"></i></button>',
+                    nextArrow:       '<button class="slick-down" aria-label="Next" type="button">' +
+                    '<i class="fa fa-chevron-down"></i></button>',
+                    lazyLoad:        'progressive',
+                    slidesToShow:    1
+                },
+                'product-slider' : {
+                    rows:           0,
+                    arrows:         false,
+                    lazyLoad:       'ondemand',
+                    slidesToShow:   2,
+                    slidesToScroll: 2,
+                    swipeToSlide:   true,
+                    mobileFirst:    true,
+                    responsive:     [
+                        {
+                            breakpoint: 768,
+                            settings: {
+                                slidesToShow: 3,
+                                slidesToScroll: 1
+                            }
+                        },
+                        {
+                            breakpoint: 992,
+                            settings: {
+                                slidesToShow:5,
+                                arrows: true,
+                                slidesToScroll: 1
+                            }
+                        },
+                        {
+                            breakpoint: 1300,
+                            settings: {
+                                slidesToShow:7,
+                                arrows: true,
+                                slidesToScroll: 1
+                            }
                         }
-                    }
-                ]
+                    ]
+                },
+                'news-slider' : {
+                    rows:           0,
+                    slidesToShow:   1,
+                    slidesToScroll: 1,
+                    arrows:         false,
+                    swipeToSlide:   true,
+                    infinite:       false,
+                    lazyLoad:       'ondemand',
+                    mobileFirst:    true,
+                    responsive:     [
+                        {
+                            breakpoint: 768,
+                            settings: {
+                                slidesToShow: 2
+                            }
+                        },
+                        {
+                            breakpoint: 992,
+                            settings: {
+                                slidesToShow:3,
+                                arrows: true
+                            }
+                        },
+                        {
+                            breakpoint: 1300,
+                            settings: {
+                                slidesToShow:4,
+                                arrows: true
+                            }
+                        }
+                    ]
+                },
+                'freegift' : {
+                    slidesToShow:   3,
+                    slidesToScroll: 3,
+                    infinite: false,
+                    swipeToSlide:   true,
+                    responsive: [
+                        {
+                            breakpoint: 768,
+                            settings: {
+                                slidesToShow: 2
+                            }
+                        }
+                    ]
+                }
             };
             if ($('#content').hasClass('col-lg-9')) {
-                optionsNewsSlider.slidesToShow = 2;
+                sliderOptions['news-slider']['slidesToShow'] = 2;
             }
 
-            $('.news-slider:not(.slick-initialized)').slick(optionsNewsSlider);
-
-            // freegift slider at basket
-            $('#freegift form .row').slick({
-                slidesToShow:   3,
-                slidesToScroll: 3,
-                infinite: false,
-                swipeToSlide:   true,
-                responsive: [
-                    {
-                        breakpoint: 480,
-                        settings: {
-                            slidesToShow: 2
-                        }
-                    }
-                ]
-            });
+            return node.slick(sliderOptions[sliderType]);
         },
 
         scrollStuff: function() {
@@ -266,9 +271,9 @@
                     }],
                 }
             };
-            if ($('#tab-link-tb-prcFlw').length) {
+            if ($('#tab-link-tab-priceFlow').length) {
                 // using tabs
-                $('#tab-link-tb-prcFlw').on('shown.bs.tab', function () {
+                $('#tab-link-tab-priceFlow').on('shown.bs.tab', function () {
                     if (typeof window.priceHistoryChart !== 'undefined' && window.priceHistoryChart === null) {
                         window.priceHistoryChart = new Chart(window.ctx, {
                             type: 'line',
@@ -428,6 +433,55 @@
                     }
                 }
             });
+        },
+
+        initScrollEvents: function() {
+            //mobile search
+            let lastScroll       = 0,
+                $scrollTopSearch = $('.smoothscroll-top-search');
+            if ($scrollTopSearch.length) {
+                $(document).on('scroll', function () {
+                    let newScroll = $(this).scrollTop();
+                    if (newScroll < lastScroll) {
+                        if ($(window).scrollTop() > 100) {
+                            $scrollTopSearch.removeClass('d-none');
+                        } else {
+                            $scrollTopSearch.addClass('d-none');
+                        }
+                    } else {
+                        $scrollTopSearch.addClass('d-none');
+                    }
+                    lastScroll = newScroll;
+                });
+            }
+
+            //scroll top button
+            let toTopbuttonVisible     = false,
+                $toTopbutton           = $('.smoothscroll-top'),
+                toTopbuttonActiveClass = 'show';
+
+            function scrolltoTop() {
+                $(window).scrollTop(0);
+            }
+
+            function handleVisibilityTopButton() {
+                let currentPosition = $(window).scrollTop();
+                if (currentPosition > 800) {
+                    if (!toTopbuttonVisible) {
+                        $toTopbutton.addClass(toTopbuttonActiveClass);
+                        toTopbuttonVisible = true;
+                    }
+                } else if (toTopbuttonVisible) {
+                    toTopbuttonVisible = false;
+                    $toTopbutton.removeClass(toTopbuttonActiveClass)
+                }
+            }
+
+            if ($toTopbutton.length) {
+                $(window).on('scroll', handleVisibilityTopButton);
+                $toTopbutton.on('click', scrolltoTop);
+                handleVisibilityTopButton();
+            }
         },
 
         addCartBtnAnimation: function() {
@@ -760,6 +814,16 @@
             });
         },
 
+        initFilterEvents: function() {
+            let initiallized = false;
+            $('#js-filters').on('click', function() {
+                if (!initiallized) {
+                    $.evo.initFilters(window.location.href);
+                    initiallized = true;
+                }
+            });
+        },
+
         redirectToNewPriceRange: function (priceRange, redirect, $wrapper) {
             let currentURL  = window.location.href;
             if (!redirect) {
@@ -817,6 +881,29 @@
                 });
         },
 
+        initReviewHelpful: function() {
+            $('.js-helpful').on('click', function (e) {
+                e.preventDefault();
+                $.evo.extended().updateReviewHelpful($(this));
+            });
+        },
+
+        initWishlist: function() {
+            let wlFormID = '#wl-items-form';
+            if ($(wlFormID).length) {
+                $.evo.extended().addInactivityCheck(wlFormID);
+                $('.js-update-wl').on('change', function () {
+                    $.evo.extended().updateWishlistItem($(this).closest('.productbox-inner'));
+                });
+            }
+        },
+
+        initPaginationEvents: function() {
+            $('.pagination-wrapper select').on('change', function () {
+                this.form.submit();
+            });
+        },
+
         /**
          * $.evo.extended() is deprecated, please use $.evo instead
          */
@@ -843,6 +930,11 @@
             this.setWishlistVisibilitySwitches();
             this.initEModals();
             $.evo.article().initConfigListeners();
+            this.initScrollEvents();
+            this.initReviewHelpful();
+            this.initWishlist();
+            this.initPaginationEvents();
+            this.initFilterEvents();
         }
     };
 

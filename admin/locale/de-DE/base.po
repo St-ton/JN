@@ -105,7 +105,7 @@ msgid "changeLanguage"
 msgstr "Sprache"
 
 msgid "goBack"
-msgstr "« Zurück"
+msgstr "Zurück"
 
 msgid "enterResult"
 msgstr "Lösung eingeben"

@@ -78,9 +78,9 @@
                     {form method="post" action="{get_static_route id='bewertung.php'}#tab-votes" id="article_rating"}
                         <div class="subheadline">
                             {if $Artikel->Bewertungen->oBewertungGesamt->nAnzahl == 0}
-                                <p>{lang key='firstReview'}</p>
+                                {lang key='firstReview'}
                             {else}
-                                <p>{lang key='shareYourExperience' section='product rating'}</p>
+                                {lang key='shareYourExperience' section='product rating'}
                             {/if}
                         </div>
                         {input type="hidden" name="bfa" value="1"}
@@ -111,27 +111,31 @@
         }
             {block name='productdetails-reviews-form-most-useful'}
                 {card class="reviews-mosthelpful mb-3" no-body=true}
-                    {cardheader}
-                        <span class="h3 mb-0">
-                            {lang key='theMostUsefulRating' section='product rating'}
-                        </span>
-                    {/cardheader}
-                    {form method="post" action="{get_static_route id='bewertung.php'}#tab-votes"}
-                        {block name='productdetails-reviews-most-helpful'}
+                    {block name='productdetails-reviews-most-helpful-header'}
+                        {cardheader}
+                            <span class="h3 mb-0">
+                                {lang key='theMostUsefulRating' section='product rating'}
+                            </span>
+                        {/cardheader}
+                    {/block}
+                    {block name='productdetails-reviews-most-helpful'}
+                        {form method="post" action="{get_static_route id='bewertung.php'}#tab-votes"}
                             {input type="hidden" name="bhjn" value="1"}
                             {input type="hidden" name="a" value=$Artikel->kArtikel}
                             {input type="hidden" name="btgsterne" value=$BlaetterNavi->nSterne}
                             {input type="hidden" name="btgseite" value=$BlaetterNavi->nAktuelleSeite}
 
-                            {cardbody class="review"}
-                                {foreach $Artikel->HilfreichsteBewertung->oBewertung_arr as $oBewertung}
-                                    {block name='productdetails-reviews-form-most-useful-include-review-item'}
-                                        {include file='productdetails/review_item.tpl' oBewertung=$oBewertung bMostUseful=true}
-                                    {/block}
-                                {/foreach}
-                            {/cardbody}
-                        {/block}
-                    {/form}
+                            {block name='productdetails-reviews-most-helpful-body'}
+                                {cardbody class="review"}
+                                    {foreach $Artikel->HilfreichsteBewertung->oBewertung_arr as $oBewertung}
+                                        {block name='productdetails-reviews-form-most-useful-include-review-item'}
+                                            {include file='productdetails/review_item.tpl' oBewertung=$oBewertung bMostUseful=true}
+                                        {/block}
+                                    {/foreach}
+                                {/cardbody}
+                            {/block}
+                        {/form}
+                    {/block}
                 {/card}
             {/block}
         {/if}
@@ -147,11 +151,11 @@
                     {input type="hidden" name="btgsterne" value=$BlaetterNavi->nSterne}
                     {input type="hidden" name="btgseite" value=$BlaetterNavi->nAktuelleSeite}
                     {foreach $ratingPagination->getPageItems() as $oBewertung}
-                        {card class="review mb-3 {if $oBewertung@last}last{/if}"}
-                            {block name='productdetails-reviews-form-include-review-item'}
+                        {block name='productdetails-reviews-form-include-review-item'}
+                            {card class="review mb-3 {if $oBewertung@last}last{/if}"}
                                 {include file='productdetails/review_item.tpl' oBewertung=$oBewertung}
-                            {/block}
-                        {/card}
+                            {/card}
+                        {/block}
                     {/foreach}
                 {/form}
             {/block}
@@ -160,12 +164,4 @@
             {/block}
         {/if}
     </div>
-{/block}
-{block name='productdetails-reviews-scripts'}
-    {inline_script}<script>
-        $('.js-helpful').on('click', function (e) {
-            e.preventDefault();
-            $.evo.extended().updateReviewHelpful($(this));
-        });
-    </script>{/inline_script}
 {/block}

@@ -1851,7 +1851,7 @@ class Cart
         $totalWeight     = 0;
         $shippingClasses = ShippingMethod::getShippingClasses(Frontend::getCart());
         $shippingMethods = map(ShippingMethod::getPossibleShippingMethods(
-            ($_SESSION['Lieferadresse']->cLand ?? $_SESSION['Kunde']->cLand) ?? $_SESSION['cLieferlandISO'],
+            ($_SESSION['Lieferadresse']->cLand ?? ($_SESSION['Kunde']->cLand ?? null)) ?? $_SESSION['cLieferlandISO'],
             ($_SESSION['Lieferadresse']->cPLZ ?? null) ?? Frontend::getCustomer()->cPLZ,
             $shippingClasses,
             $customerGroupID

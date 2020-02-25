@@ -14,7 +14,7 @@
                     srcset="{$mainCategory->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_kategorien_mini_breite}w,
                             {$mainCategory->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_kategorien_klein_breite}w,
                             {$mainCategory->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_kategorien_breite}w"
-                sizes="80px"
+                sizes="auto"
                 alt=$mainCategory->getName()|escape:'html'
                 class="d-none d-md-block mb-3"}
             {/if}

@@ -215,6 +215,9 @@ function bearbeiteInsert($xml)
             $pkValues['kKundengruppe']
         );
         fuelleKategorieRabatt($kategorie_arr[0]->kKategorie);
+        foreach (getLinkedDiscountCategories($kategorie_arr[0]->kKategorie) as $linkedCategory) {
+            fuelleKategorieRabatt((int)$linkedCategory->kKategorie);
+        }
 
         $pkValues = insertOnExistsUpdateXMLinDB(
             $xml['tkategorie'],

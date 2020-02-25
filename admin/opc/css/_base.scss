@@ -56,6 +56,17 @@
       &.opc-full-width {
         width: 100%;
       }
+
+      &[disabled] {
+        background-color: $muted-text;
+        color: $light-bg;
+        border: 1px solid $muted-text;
+
+        &:hover {
+          background-color: $muted-text;
+          color: $light-bg;
+        }
+      }
     }
 
     &.opc-btn-primary {
@@ -72,6 +83,10 @@
       &:hover {
         color: $primary-darker;
       }
+    }
+
+    &.opc-mini-btn {
+      padding: 6px 12px;
     }
 
     &.opc-small-btn {
@@ -192,6 +207,7 @@
 
   .toggle-switch {
     cursor: pointer;
+    background-color: inherit;
 
     input {
       display: none;
@@ -334,6 +350,7 @@
 
     .nav-item {
       margin: 0;
+      background-color: inherit;
 
       .nav-link {
         border: none;
@@ -343,7 +360,7 @@
         margin: 0 14px;
         margin-right: 8px;
         color: $muted-text;
-        background: none;
+        background-color: inherit;
 
         &:hover {
           color: $text-color;

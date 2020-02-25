@@ -54,6 +54,15 @@
 #opc button.opc-btn-primary.opc-full-width, #opc button.opc-btn-secondary.opc-full-width {
   width: 100%;
 }
+#opc button.opc-btn-primary[disabled], #opc button.opc-btn-secondary[disabled] {
+  background-color: #BDBDBD;
+  color: #F5F7FA;
+  border: 1px solid #BDBDBD;
+}
+#opc button.opc-btn-primary[disabled]:hover, #opc button.opc-btn-secondary[disabled]:hover {
+  background-color: #BDBDBD;
+  color: #F5F7FA;
+}
 #opc button.opc-btn-primary:hover {
   background-color: #22a4f3;
 }
@@ -64,6 +73,9 @@
 }
 #opc button.opc-btn-secondary:hover {
   color: #22a4f3;
+}
+#opc button.opc-mini-btn {
+  padding: 6px 12px;
 }
 #opc button.opc-small-btn {
   padding: 8px 10px;
@@ -166,6 +178,7 @@
 }
 #opc .toggle-switch {
   cursor: pointer;
+  background-color: inherit;
 }
 #opc .toggle-switch input {
   display: none;
@@ -286,6 +299,7 @@
 }
 #opc .nav-tabs .nav-item {
   margin: 0;
+  background-color: inherit;
 }
 #opc .nav-tabs .nav-item .nav-link {
   border: none;
@@ -295,7 +309,7 @@
   margin: 0 14px;
   margin-right: 8px;
   color: #BDBDBD;
-  background: none;
+  background-color: inherit;
 }
 #opc .nav-tabs .nav-item .nav-link:hover {
   color: #435A6B;

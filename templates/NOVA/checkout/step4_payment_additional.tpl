@@ -3,7 +3,7 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='checkout-step4-payment-additional'}
-    {form id="form_payment_extra" class="form payment_extra label-slide" method="post" action="{get_static_route id='bestellvorgang.php'}"}
+    {form id="form_payment_extra" class="form payment_extra" method="post" action="{get_static_route id='bestellvorgang.php'}"}
         {block name='checkout-step4-payment-additional-form-content'}
             <div id="order-additional-payment" class="mb-3 form-group">
                 {block name='checkout-step4-payment-include-additional-steps'}

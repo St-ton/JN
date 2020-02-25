@@ -96,26 +96,24 @@
             {row class="row-eq-height content-cats-small clearfix"}
                 {foreach $oUnterKategorien_arr as $subCategory}
                     {col cols=12 md=4 lg=3}
-                        {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'Y'}
-                            {block name='productlist-header-subcategories-image'}
-                                {link href=$subCategory->getURL() class='d-none d-md-block'}
+                        {link href=$subCategory->getURL()}
+                            {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'Y'}
+                                {block name='productlist-header-subcategories-image'}
                                     {image fluid-grow=true lazy=true webp=true
                                         src=$subCategory->getImage()
                                         alt=$subCategory->getName()
-                                        class="mb-2"
+                                        class="mb-2 d-none d-md-block"
                                     }
-                                {/link}
-                            {/block}
-                        {/if}
-                        {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'B'}
-                            {block name='productlist-header-subcategories-link'}
-                                <div class="caption text-md-center mb-2">
-                                    {link href=$subCategory->getURL()}
+                                {/block}
+                            {/if}
+                            {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'B'}
+                                {block name='productlist-header-subcategories-link'}
+                                    <div class="caption text-md-center mb-2">
                                         {$subCategory->getName()}
-                                    {/link}
-                                </div>
-                            {/block}
-                        {/if}
+                                    </div>
+                                {/block}
+                            {/if}
+                        {/link}
                         {if $Einstellungen.navigationsfilter.unterkategorien_beschreibung_anzeigen === 'Y' && !empty($subCategory->getDescription())}
                             {block name='productlist-header-subcategories-description'}
                                 <p class="item_desc small text-muted d-none d-md-block">{$subCategory->getDescription()|strip_tags|truncate:68}</p>

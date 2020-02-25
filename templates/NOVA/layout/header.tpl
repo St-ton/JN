@@ -367,7 +367,7 @@
                 {/block}
             </header>
             {block name='layout-header-search-fixed'}
-                {if $Einstellungen.template.theme.mobile_search_type === 'fixed'}
+                {if $Einstellungen.template.theme.mobile_search_type === 'fixed' && $isMobile}
                     <div class="container-fluid container-fluid-xl fixed-search py-2 fixed-top smoothscroll-top-search d-lg-none d-none">
                         {include file='snippets/search_form.tpl' id='search-header-mobile-fixed'}
                     </div>

@@ -816,7 +816,6 @@ function gibStepZahlungZusatzschritt($post): void
 
 /**
  * @param array $get
- * @return string
  */
 function gibStepBestaetigung($get)
 {
@@ -1614,7 +1613,7 @@ function gibAktiveVersandart($shippingMethods)
         $_SESSION['AktiveVersandart'] = $_SESSION['Versandart']->kVersandart;
     } elseif (!empty($_SESSION['AktiveVersandart']) && GeneralObject::hasCount($shippingMethods)) {
         $active = (int)$_SESSION['AktiveVersandart'];
-        if (array_reduce($shippingMethods, function ($carry, $item) use ($active) {
+        if (array_reduce($shippingMethods, static function ($carry, $item) use ($active) {
             return (int)$item->kVersandart === $active ? (int)$item->kVersandart : $carry;
         }, 0) !== (int)$_SESSION['AktiveVersandart']) {
             $_SESSION['AktiveVersandart'] = ShippingMethod::getFirstShippingMethod(
@@ -1642,7 +1641,7 @@ function gibAktiveZahlungsart($shippingMethods)
         $_SESSION['AktiveZahlungsart'] = $_SESSION['Zahlungsart']->kZahlungsart;
     } elseif (!empty($_SESSION['AktiveZahlungsart']) && GeneralObject::hasCount($shippingMethods)) {
         $active = (int)$_SESSION['AktiveZahlungsart'];
-        if (array_reduce($shippingMethods, function ($carry, $item) use ($active) {
+        if (array_reduce($shippingMethods, static function ($carry, $item) use ($active) {
             return (int)$item->kZahlungsart === $active ? (int)$item->kZahlungsart : $carry;
         }, 0) !== (int)$_SESSION['AktiveZahlungsart']) {
             $_SESSION['AktiveZahlungsart'] = $shippingMethods[0]->kZahlungsart;
@@ -1667,7 +1666,7 @@ function gibAktiveVerpackung(array $packagings): array
         }
     } elseif (!empty($_SESSION['AktiveVerpackung']) && count($packagings) > 0) {
         foreach (array_keys($_SESSION['AktiveVerpackung']) as $active) {
-            if (array_reduce($packagings, function ($carry, $item) use ($active) {
+            if (array_reduce($packagings, static function ($carry, $item) use ($active) {
                 $kVerpackung = (int)$item->kVerpackung;
                 return $kVerpackung === $active ? $kVerpackung : $carry;
             }, 0) === 0) {
@@ -1994,7 +1993,7 @@ function versandartKorrekt(int $shippingMethodID, $formValues = 0)
  */
 function angabenKorrekt(array $missingData): int
 {
-    return (int)none($missingData, function ($e) {
+    return (int)none($missingData, static function ($e) {
         return $e > 0;
     });
 }

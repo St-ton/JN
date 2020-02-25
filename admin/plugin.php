@@ -145,7 +145,7 @@ if ($step === 'plugin_uebersicht' && $pluginID > 0) {
             } elseif ($menu->configurable === false) {
                 if (SAFE_MODE) {
                     $menu->html = __('Safe mode enabled.');
-                } else if ($menu->file !== '' && file_exists($plugin->getPaths()->getAdminPath() . $menu->file)) {
+                } elseif ($menu->file !== '' && file_exists($plugin->getPaths()->getAdminPath() . $menu->file)) {
                     ob_start();
                     require $plugin->getPaths()->getAdminPath() . $menu->file;
                     $menu->html = ob_get_clean();

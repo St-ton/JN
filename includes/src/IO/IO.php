@@ -45,7 +45,7 @@ class IO
     /**
      * @return static
      */
-    public static function getInstance()
+    public static function getInstance(): IO
     {
         return static::$instance ?? (static::$instance = new static());
     }
@@ -60,7 +60,7 @@ class IO
      * @return $this
      * @throws Exception
      */
-    public function register($name, $function = null, $include = null)
+    public function register(string $name, $function = null, $include = null)
     {
         if ($this->exists($name)) {
             throw new Exception('Function already registered');
@@ -135,7 +135,7 @@ class IO
      * @param string $name
      * @return bool
      */
-    public function exists($name): bool
+    public function exists(string $name): bool
     {
         return isset($this->functions[$name]);
     }
@@ -148,7 +148,7 @@ class IO
      * @return mixed
      * @throws Exception
      */
-    public function execute($name, $params)
+    public function execute(string $name, $params)
     {
         if (!$this->exists($name)) {
             return new IOError('Function not registered');
@@ -182,7 +182,7 @@ class IO
      * @param string $filename
      * @param string $mimetype
      */
-    protected function pushFile($filename, $mimetype)
+    protected function pushFile(string $filename, string $mimetype): void
     {
         $userAgent    = $_SERVER['HTTP_USER_AGENT'] ?? '';
         $browserAgent = '';

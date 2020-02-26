@@ -593,7 +593,7 @@ class CheckBox
             ->setFirstName($customer->cVorname)
             ->setLastName($customer->cNachname)
             ->setEmail($customer->cMail)
-            ->setLanguageID(Shop::getLanguage())
+            ->setLanguageID(Shop::getLanguageID())
             ->setRealIP(Request::getRealIP());
         try {
             (new Optin(OptinNewsletter::class))

@@ -34,15 +34,16 @@
                                 {badge variant="info" class="js-group-badge-checked"}
                                     {if $oGruppe->getMin() === 1 && $oGruppe->getMax() === 1}
                                         {lang key='configChooseOneComponent' section='productDetails'}
-                                    {else}
-                                        {if !empty($oGruppe->getMin())}
+                                    {elseif $oGruppe->getMin() === $oGruppe->getMax()}
+                                        {lang key='configChooseNumberComponents' section='productDetails' printf=$oGruppe->getMin()}
+                                    {elseif !empty($oGruppe->getMin()) && $oGruppe->getMax()<$oGruppe->getItemCount()}
+                                        {lang key='configChooseMinMaxComponents' section='productDetails' printf=$oGruppe->getMin()|cat:':::'|cat:$oGruppe->getMax()}
+                                    {elseif !empty($oGruppe->getMin())}
                                             {lang key='configChooseMinComponents' section='productDetails' printf=$oGruppe->getMin()}
-                                        {else}
-                                            {lang key='optional'}
-                                        {/if}
-                                        {if $oGruppe->getMax()<$oGruppe->getItemCount()}
-                                            {lang key='configChooseMaxComponents' section='productDetails' printf=$oGruppe->getMax()}
-                                        {/if}
+                                    {elseif $oGruppe->getMax()<$oGruppe->getItemCount()}
+                                        {lang key='configChooseMaxComponents' section='productDetails' printf=$oGruppe->getMax()}
+                                    {else}
+                                        {lang key='optional'}
                                     {/if}
                                 {/badge}
                             {elseif $oGruppe->getMin() == 0}
@@ -120,26 +121,23 @@
                                                 required=$oItem@first && $oGruppe->getMin() > 0
                                             }
                                                 <div data-id="{$oItem->getKonfigitem()}" class="config-item text-center mb-5{if $oItem->getEmpfohlen()} bg-info{/if}{if empty($bSelectable)} disabled{/if}{if $checkboxActive} active{/if}">
-
                                                     {if isset($aKonfigitemerror_arr[$kKonfigitem]) && $aKonfigitemerror_arr[$kKonfigitem]}
                                                         <p class="box_error alert alert-danger">{$aKonfigitemerror_arr[$kKonfigitem]}</p>
                                                     {/if}
                                                     {badge class="badge-circle circle-small"}<i class="fas fa-check mx-auto"></i>{/badge}
                                                     {if !empty($oItem->getArtikel()->Bilder[0]->cURLNormal)}
-                                                        <p>
-                                                            {$productImage = $oItem->getArtikel()->Bilder[0]}
-                                                            {image fluid-grow=true webp=true lazy=true
-                                                                src=$productImage->cURLMini
-                                                                srcset="{$productImage->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                                    {$productImage->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                                    {$productImage->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
-                                                                    {$productImage->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
-                                                                sizes="255px"
-                                                                alt=$oItem->getName()
-                                                            }
-                                                        </p>
+                                                        {$productImage = $oItem->getArtikel()->Bilder[0]}
+                                                        {image fluid-grow=true webp=true lazy=true
+                                                            src=$productImage->cURLMini
+                                                            srcset="{$productImage->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                                {$productImage->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                                {$productImage->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
+                                                                {$productImage->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
+                                                            sizes="255px"
+                                                            alt=$oItem->getName()
+                                                        }
                                                     {/if}
-                                                    <p class="mb-2 cfg-item-description">
+                                                    <p class="my-2 cfg-item-description">
                                                         {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
                                                         {if $smarty.session.Kundengruppe->mayViewPrices()}
                                                             {badge variant="light"}

@@ -222,7 +222,7 @@
             var that   = this,
                 config = $('#product-configurator')
                     .closest('form')
-                    .find('input[type="radio"], input[type="checkbox"], input[type="number"], select'),
+                    .find('input[type="radio"], input[type="text"], input[type="checkbox"], input[type="number"], select'),
                 dropdown = $('#product-configurator')
                     .closest('form')
                     .find('select');

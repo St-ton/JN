@@ -225,8 +225,7 @@ if ($conf['artikeluebersicht']['suche_fulltext'] !== 'N'
     );
 }
 
-$smarty->configLoad('german.conf', 'einstellungen')
-       ->assign('action', 'sucheinstellungen.php')
+$smarty->assign('action', 'sucheinstellungen.php')
        ->assign('kEinstellungenSektion', $kSektion)
        ->assign('Sektion', $section)
        ->assign('Conf', getAdminSectionSettings(CONF_ARTIKELUEBERSICHT))

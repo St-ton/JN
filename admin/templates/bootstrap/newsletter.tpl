@@ -1,7 +1,6 @@
 {if $step !== 'vorlage_vorschau'}
     {include file='tpl_inc/header.tpl'}
 {/if}
-{config_load file="$lang.conf" section='newsletter'}
 {if $step === 'uebersicht'}
     {include file='tpl_inc/newsletter_uebersicht.tpl'}
 {elseif $step === 'vorlage_erstellen'}

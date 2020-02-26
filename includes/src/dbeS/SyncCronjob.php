@@ -25,19 +25,19 @@ class SyncCronjob extends NetSyncHandler
                 require_once \PFAD_ROOT . \PFAD_INCLUDES . 'cron_inc.php';
                 $exports = \holeExportformatCron();
                 if (\is_array($exports)) {
-                    foreach ($exports as &$oExport) {
-                        $oExport = new CronjobStatus(
-                            $oExport->kCron,
-                            $oExport->cName,
-                            $oExport->dStart_de,
-                            $oExport->nAlleXStd,
-                            (int)$oExport->oJobQueue->nLimitN,
-                            (int)$oExport->nAnzahlArtikel->nAnzahl,
-                            $oExport->dLetzterStart_de,
-                            $oExport->dNaechsterStart_de
+                    foreach ($exports as &$job) {
+                        $job = new CronjobStatus(
+                            $job->kCron,
+                            $job->cName,
+                            $job->dStart_de,
+                            $job->nAlleXStd,
+                            (int)$job->oJobQueue->nLimitN,
+                            (int)$job->nAnzahlArtikel->nAnzahl,
+                            $job->dLetzterStart_de,
+                            $job->dNaechsterStart_de
                         );
                     }
-                    unset($oExport);
+                    unset($job);
                 }
 
                 self::throwResponse(NetSyncResponse::OK, $exports);
@@ -46,15 +46,15 @@ class SyncCronjob extends NetSyncHandler
             case NetSyncRequest::CRONJOBHISTORY:
                 $exports = \holeExportformatQueueBearbeitet(24 * 7);
                 if (\is_array($exports)) {
-                    foreach ($exports as &$oExport) {
-                        $oExport = new CronjobHistory(
-                            $oExport->cName,
-                            $oExport->cDateiname,
-                            $oExport->nLimitN,
-                            $oExport->dZuletztGelaufen_DE
+                    foreach ($exports as &$job) {
+                        $job = new CronjobHistory(
+                            $job->cName,
+                            $job->cDateiname,
+                            $job->nLimitN,
+                            $job->dZuletztGelaufen_DE
                         );
                     }
-                    unset($oExport);
+                    unset($job);
                 }
 
                 self::throwResponse(NetSyncResponse::OK, $exports);

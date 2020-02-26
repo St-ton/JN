@@ -1,4 +1,3 @@
-{config_load file="$lang.conf" section='statistics'}
 {include file='tpl_inc/header.tpl'}
 
 <script type="text/javascript">

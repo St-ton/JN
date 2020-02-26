@@ -1,5 +1,5 @@
 {include file='tpl_inc/header.tpl'}
-{include file='tpl_inc/einstellungen_bearbeiten.tpl'}
+{include file='tpl_inc/einstellungen_bearbeiten.tpl' title=__('Sucheinstellungen')}
 {if $createIndex !== false}
     <script type="text/javascript">
         var createIndex = '{$createIndex}';

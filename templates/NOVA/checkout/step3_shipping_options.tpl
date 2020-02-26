@@ -11,7 +11,7 @@
                 {/block}
             {else}
                 {block name='checkout-step3-shipping-options-form'}
-                    {form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form jtl-validate mb-7"}
+                    {form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form jtl-validate mb-7" slide=false}
                         {block name='checkout-step3-shipping-options-fieldset-shipping-payment'}
                             <fieldset id="checkout-shipping-payment" class="mb-7">
                                 {block name='checkout-step3-shipping-options-legend-shipping-options'}

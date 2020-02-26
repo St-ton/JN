@@ -1,6 +1,4 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section='login'}
-{config_load file="$lang.conf" section='shopupdate'}
 
 {if 'DASHBOARD_VIEW'|permission}
     <script type="text/javascript" src="{$templateBaseURL}js/html.sortable.js"></script>

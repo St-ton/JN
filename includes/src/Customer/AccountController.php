@@ -12,6 +12,7 @@ use JTL\Campaign;
 use JTL\Cart\CartHelper;
 use JTL\Cart\PersistentCart;
 use JTL\Cart\PersistentCartItem;
+use JTL\Catalog\ComparisonList;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Catalog\Wishlist\Wishlist;
@@ -40,9 +41,7 @@ use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\SimpleMail;
 use JTL\Smarty\JTLSmarty;
-use Session;
 use stdClass;
-use Vergleichsliste;
 use function Functional\some;
 
 /**
@@ -279,7 +278,7 @@ class AccountController
             }
             \executeHook(\HOOK_JTL_PAGE_MEINKKONTO, ['deliveryAddresses' => &$deliveryAddresses]);
             $this->smarty->assign('Lieferadressen', $deliveryAddresses)
-                ->assign('compareList', new Vergleichsliste());
+                ->assign('compareList', new ComparisonList());
         }
         if ($step === 'rechnungsdaten') {
             $this->getCustomerFields();
@@ -846,7 +845,7 @@ class AccountController
             $params['httponly']
         );
         \session_destroy();
-        new Session();
+        new Frontend();
         \session_regenerate_id(true);
 
         $_SESSION['kSprache']    = $languageID;

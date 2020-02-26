@@ -141,13 +141,13 @@ final class Controller
 
                     $instance                      = new Newsletter($this->db, []);
                     $recipient                     = new stdClass();
-                    $recipient->kSprache           = Shop::getLanguage();
+                    $recipient->kSprache           = Shop::getLanguageID();
                     $recipient->kKunde             = isset($_SESSION['Kunde']->kKunde)
                         ? (int)$_SESSION['Kunde']->kKunde
                         : 0;
                     $recipient->nAktiv             = isset($_SESSION['Kunde']->kKunde)
-                    && $_SESSION['Kunde']->kKunde > 0
-                    && $this->config['newsletter']['newsletter_doubleopt'] === 'U' ? 1 : 0;
+                        && $_SESSION['Kunde']->kKunde > 0
+                        && $this->config['newsletter']['newsletter_doubleopt'] === 'U' ? 1 : 0;
                     $recipient->cAnrede            = $customer->cAnrede;
                     $recipient->cVorname           = $customer->cVorname;
                     $recipient->cNachname          = $customer->cNachname;
@@ -163,7 +163,7 @@ final class Controller
 
                     $this->db->insert('tnewsletterempfaenger', $recipient);
                     $history               = new stdClass();
-                    $history->kSprache     = Shop::getLanguage();
+                    $history->kSprache     = Shop::getLanguageID();
                     $history->kKunde       = (int)($_SESSION['Kunde']->kKunde ?? 0);
                     $history->cAnrede      = $customer->cAnrede;
                     $history->cVorname     = $customer->cVorname;

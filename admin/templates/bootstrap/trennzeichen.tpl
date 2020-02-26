@@ -1,5 +1,4 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section='trennzeichen'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('Trennzeichen') cBeschreibung=__('trennzeichenDesc') cDokuURL=__('trennzeichenURL')}
 <div id="content">
     <div class="card">

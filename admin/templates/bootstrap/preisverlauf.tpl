@@ -1,5 +1,4 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section='preisverlauf'}
 {include file='tpl_inc/seite_header.tpl'
         cTitel=__('configurePriceFlow')
         cBeschreibung=__('configurePriceFlowDesc')

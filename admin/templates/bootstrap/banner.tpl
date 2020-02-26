@@ -1,5 +1,4 @@
 {include file='tpl_inc/header.tpl' bForceFluid=($action === 'area')}
-{config_load file="$lang.conf" section='banner'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('banner') cBeschreibung=__('bannerDesc') cDokuURL=__('bannerURL')}
 
 <div id="content">

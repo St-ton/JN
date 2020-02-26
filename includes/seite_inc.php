@@ -199,7 +199,7 @@ function pruefeSpezialseite(int $nLinkart)
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $specialPages = Shop::Container()->getLinkService()->getLinkGroupByName('specialpages');
     if ($nLinkart > 0 && $specialPages !== null) {
-        $res = $specialPages->getLinks()->first(function (LinkInterface $l) use ($nLinkart) {
+        $res = $specialPages->getLinks()->first(static function (LinkInterface $l) use ($nLinkart) {
             return $l->getLinkType() === $nLinkart;
         });
         /** @var LinkInterface $res */

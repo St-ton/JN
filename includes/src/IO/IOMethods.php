@@ -108,7 +108,7 @@ class IOMethods
             return $results;
         }
         $smarty     = Shop::Smarty();
-        $language   = Shop::getLanguage();
+        $language   = Shop::getLanguageID();
         $maxResults = ($cnt = Shop::getSettingValue(\CONF_ARTIKELUEBERSICHT, 'suche_ajax_anzahl')) > 0
             ? $cnt
             : 10;
@@ -776,12 +776,12 @@ class IOMethods
         }
         $weightTotal        = Separator::getUnit(
             \JTL_SEPARATOR_WEIGHT,
-            Shop::getLanguage(),
+            Shop::getLanguageID(),
             $product->fGewicht + $weightDiff
         );
         $weightProductTotal = Separator::getUnit(
             \JTL_SEPARATOR_WEIGHT,
-            Shop::getLanguage(),
+            Shop::getLanguageID(),
             $product->fArtikelgewicht + $weightDiff
         );
         $cUnitWeightLabel   = Shop::Lang()->get('weightUnit');

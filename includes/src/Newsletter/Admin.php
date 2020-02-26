@@ -481,7 +481,7 @@ final class Admin
     public function saveTemplate($post)
     {
         foreach (['cName', 'cBetreff', 'cHtml', 'cText'] as $key) {
-            $post[$key] = trim($post[$key]);
+            $post[$key] = \trim($post[$key]);
         }
 
         $alertHelper = Shop::Container()->getAlertService();

@@ -47,7 +47,7 @@ if ($valid && Request::verifyGPCDataInt('abonnieren') > 0) {
             ->setFirstName($post['cVorname'] ?? '')
             ->setLastName($post['cNachname'] ?? '')
             ->setEmail($post['cEmail'] ?? '')
-            ->setLanguageID(Shop::getLanguage())
+            ->setLanguageID(Shop::getLanguageID())
             ->setRealIP(Request::getRealIP());
         try {
             (new Optin(OptinNewsletter::class))

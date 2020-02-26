@@ -14,7 +14,7 @@ use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
-use JTLSmarty;
+use JTL\Smarty\JTLSmarty;
 use stdClass;
 
 /**

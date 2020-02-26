@@ -23014,7 +23014,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 @media (max-width: 767.98px) {
   #cfg-container-tab-panes {
-    padding-right: 6px;
+    height: calc((var(--vh, 1vh) * 87) - 3rem);
   }
 }
 
@@ -23066,6 +23066,28 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 .cfg-group.visited .js-group-checked {
   color: #1C871E;
+}
+
+@media (max-width: 767.98px) {
+  #product-configurator .modal-dialog {
+    margin: 0;
+  }
+  #product-configurator .modal-dialog .modal-header {
+    padding: 0;
+  }
+  #product-configurator .modal-dialog .modal-header .close {
+    right: 0;
+    transform: none;
+    background-color: transparent;
+    font-size: 2rem;
+    top: 8px;
+  }
+  #product-configurator .modal-dialog .hr-sect::before {
+    margin: 0px 10px 0px 0px;
+  }
+  #product-configurator .modal-dialog .btn-sm, #product-configurator .modal-dialog .btn-group-sm > .btn {
+    padding: 0.2rem 0.5rem;
+  }
 }
 
 /* header */

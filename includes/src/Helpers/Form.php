@@ -61,11 +61,11 @@ class Form
     /**
      * validate token from POST/GET
      *
-     * @param string $token
+     * @param null|string $token
      * @return bool
      * @since 5.0.0
      */
-    public static function validateToken(string $token = null): bool
+    public static function validateToken(?string $token = null): bool
     {
         if (!isset($_SESSION['jtl_token'])) {
             return false;

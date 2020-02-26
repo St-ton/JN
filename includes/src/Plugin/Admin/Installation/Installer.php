@@ -693,14 +693,6 @@ final class Installer
                 )',
             ReturnType::DEFAULT
         );
-        $this->db->query(
-            'DELETE FROM tpluginemailvorlagesprache
-                WHERE NOT EXISTS (
-                    SELECT 1 FROM temailvorlage
-                    WHERE temailvorlage.kEmailvorlage = tpluginemailvorlagesprache.kEmailvorlage
-                )',
-            ReturnType::DEFAULT
-        );
     }
 
     /**
@@ -723,6 +715,14 @@ final class Installer
             ['newID' => 'kPlugin_' . $oldPluginID . '_%'],
             ReturnType::ARRAY_OF_OBJECTS
         );
+        $newPaymentMethods = $this->db->queryPrepared(
+            'SELECT kZahlungsart, cModulId, cName
+                FROM tzahlungsart
+                WHERE cModulId LIKE :newID',
+            ['newID' => 'kPlugin_' . $pluginID . '_%'],
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+        $updatedMethods    = [];
         foreach ($oldPaymentMethods as $method) {
             $oldModuleID      = \str_replace(
                 'kPlugin_' . $oldPluginID . '_',
@@ -746,12 +746,10 @@ final class Installer
                         WHERE tzahlungsart.kZahlungsart = ' . $method->kZahlungsart,
                     ReturnType::AFFECTED_ROWS
                 );
-
                 $setSQL = ' , kZahlungsart = ' . $method->kZahlungsart;
                 $upd    = (object)['kZahlungsart' => $method->kZahlungsart];
                 $this->db->update('tzahlungsartsprache', 'kZahlungsart', $newPaymentMethod->kZahlungsart, $upd);
             }
-
             $this->db->queryPrepared(
                 'UPDATE tzahlungsart
                     SET cModulId = :newID ' . $setSQL . '
@@ -759,6 +757,22 @@ final class Installer
                 ['oldID' => $oldModuleID, 'newID' => $method->cModulId],
                 ReturnType::AFFECTED_ROWS
             );
+        }
+        foreach ($newPaymentMethods as $method) {
+            $newModuleID      = Helper::getModuleIDByPluginID($oldPluginID, $method->cName);
+            $updatedMethods[] = $newModuleID;
+            $this->db->queryPrepared(
+                'UPDATE tzahlungsart
+                    SET cModulId = :newID
+                    WHERE kZahlungsart = :pmid',
+                ['pmid' => $method->kZahlungsart, 'newID' => $newModuleID],
+                ReturnType::AFFECTED_ROWS
+            );
+        }
+        foreach ($oldPaymentMethods as $method) {
+            if (!\in_array($method->cModulId, $updatedMethods, true)) {
+                $this->db->delete('tzahlungsart', 'kZahlungsart', $method->kZahlungsart);
+            }
         }
     }
 }

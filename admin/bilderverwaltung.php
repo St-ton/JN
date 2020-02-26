@@ -15,7 +15,6 @@ $oAccount->permission('DISPLAY_IMAGES_VIEW', true, true);
 Shop::Container()->getGetText()->loadAdminLocale('pages/bilderverwaltung');
 $manager = new Manager();
 
-$smarty->configLoad('german.conf', 'bilderverwaltung')
-       ->assign('items', $manager->getItems())
+$smarty->assign('items', $manager->getItems())
        ->assign('corruptedImagesByType', $manager->getCorruptedImages(Image::TYPE_PRODUCT, 50))
        ->display('bilderverwaltung.tpl');

@@ -1,4 +1,3 @@
-{config_load file="$lang.conf" section='shoplogouploader'}
 {include file='tpl_inc/header.tpl'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('shoplogouploader') cBeschreibung=__('shoplogouploaderDesc') cDokuURL=__('shoplogouploaderURL')}
 <div id="content">

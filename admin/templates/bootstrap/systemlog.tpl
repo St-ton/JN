@@ -1,5 +1,4 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section='systemlog'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('systemlog') cBeschreibung=__('systemlogDesc') cDokuURL=__('systemlogURL')}
 {assign var=cTab value=$cTab|default:'log'}
 <div class="tabs">

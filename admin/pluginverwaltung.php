@@ -92,8 +92,7 @@ $pluginsErroneous = $pluginsAll->filter(static function (ListingItem $item) {
     return $item->isHasError() === true && $item->isInstalled() === false;
 });
 if ($pluginUploaded === true) {
-    $smarty->configLoad('german.conf', 'pluginverwaltung')
-        ->assign('pluginsDisabled', $pluginsDisabled)
+    $smarty->assign('pluginsDisabled', $pluginsDisabled)
         ->assign('pluginsInstalled', $pluginsInstalled)
         ->assign('pluginsProblematic', $pluginsProblematic)
         ->assign('pluginsAvailable', $pluginsAvailable)

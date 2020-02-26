@@ -1,5 +1,4 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section='vergleichsliste'}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('configureComparelist') cBeschreibung=__('configureComparelistDesc') cDokuURL=__('configureComparelistURL')}
 <div id="content">

@@ -125,8 +125,7 @@ class JTLSmarty extends \SmartyBC
                  ->setTemplateDir([$this->context => \PFAD_ROOT . \PFAD_ADMIN . \PFAD_TEMPLATES . $tplDir])
                  ->setCompileDir($compileDir)
                  ->setConfigDir(\PFAD_ROOT . \PFAD_ADMIN . \PFAD_TEMPLATES . $tplDir . '/lang/')
-                 ->setPluginsDir(\SMARTY_PLUGINS_DIR)
-                 ->configLoad('german.conf', 'global');
+                 ->setPluginsDir(\SMARTY_PLUGINS_DIR);
         }
 
         return $parent;

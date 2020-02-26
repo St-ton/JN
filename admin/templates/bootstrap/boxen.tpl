@@ -1,4 +1,3 @@
-{config_load file="$lang.conf" section='boxen'}
 {include file='tpl_inc/header.tpl'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('boxen') cBeschreibung=__('boxenDesc') cDokuURL=__('boxenURL')}
 

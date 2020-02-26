@@ -1,5 +1,4 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section='emailvorlagen'}
 {if $step === 'uebersicht'}
     {include file='tpl_inc/emailvorlagen_uebersicht.tpl'}
 {elseif $step === 'bearbeiten'}

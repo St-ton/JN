@@ -275,8 +275,7 @@ if ($step === 'einstellungen bearbeiten') {
            ->assign('oSections', $oSections);
 }
 
-$smarty->configLoad('german.conf', 'einstellungen')
-       ->assign('cPrefDesc', $smarty->getConfigVars('prefDesc' . $sectionID))
+$smarty->assign('cPrefDesc', $smarty->getConfigVars('prefDesc' . $sectionID))
        ->assign('cPrefURL', $smarty->getConfigVars('prefURL' . $sectionID))
        ->assign('step', $step)
        ->assign('waehrung', $defaultCurrency->cName)

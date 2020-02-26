@@ -1,5 +1,4 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section='shoptemplate'}
 {assign var=cBeschreibung value=__('shoptemplatesDesc')}
 {if isset($oEinstellungenXML) && $oEinstellungenXML}
     {assign var=cTitel value={__('settings')}|cat:': '|cat:$oTemplate->cName}

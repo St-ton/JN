@@ -774,5 +774,12 @@ final class Installer
                 $this->db->delete('tzahlungsart', 'kZahlungsart', $method->kZahlungsart);
             }
         }
+        $this->db->query(
+            'DELETE FROM tzahlungsartsprache 
+                WHERE kZahlungsart NOT IN (
+                    SELECT kZahlungsart FROM tzahlungsart
+                )',
+            ReturnType::DEFAULT
+        );
     }
 }

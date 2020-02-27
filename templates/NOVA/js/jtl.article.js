@@ -779,7 +779,7 @@
             }
             if (productId > 0) {
                 var that = this;
-                $.evo.io().call('pushToWishlist', [productId, qty], that, function(error, data) {
+                $.evo.io().call('pushToWishlist', [productId, qty, data], that, function(error, data) {
                     if (error) {
                         return;
                     }
@@ -1386,7 +1386,17 @@
             }
 
             args.wrapper = wrapper;
-            io.call('checkDependencies', [args], null, function (error, data) {
+            io.call('checkDependencies', [args], $(this), function (error, data) {
+                let $action = $('button[data-product-id-wl="' + data.response.itemID + '"]');
+                if (data.response.check > 0) {
+                    $action.attr('data-wl-pos', data.response.check);
+                    $action.data('wl-pos', data.response.check);
+                    $action.closest('form').find('input[name="wlPos"]').val(data.response.check)
+                    $action.addClass('on-list');
+                } else {
+                    $action.removeClass('on-list');
+                }
+
                 $wrapper.removeClass('loading');
                 if (animation) {
                     $spinner.stop();

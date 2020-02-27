@@ -1267,4 +1267,28 @@ class Wishlist
             return $list;
         });
     }
+
+    /**
+     * @param int $product
+     * @param array $params
+     * @return int
+     */
+    public static function checkVariOnList(int $product, array $params): int
+    {
+        $variToCheck = json_encode($params);
+        $wishlist    = Frontend::getWishList();
+        foreach ($wishlist->CWunschlistePos_arr as $item) {
+            if ($product === $item->kArtikel) {
+                $vari = [];
+                foreach ($item->CWunschlistePosEigenschaft_arr as $param) {
+                    $vari[$param->kEigenschaft] = (string)$param->kEigenschaftWert;
+                }
+                if ($variToCheck === json_encode($vari)) {
+                    return $item->kWunschlistePos;
+                }
+            }
+        }
+
+        return 0;
+    }
 }

@@ -421,12 +421,14 @@ class IOMethods
 
     /**
      * @param int $productID
-     * @param int $qty
+     * @param $qty
+     * @param $data
      * @return IOResponse
      * @throws SmartyException
      */
-    public function pushToWishlist(int $productID, $qty): IOResponse
+    public function pushToWishlist(int $productID, $qty, $data): IOResponse
     {
+        $_POST       = $data;
         $conf        = Shopsetting::getInstance()->getAll();
         $response    = new stdClass();
         $objResponse = new IOResponse();
@@ -443,7 +445,7 @@ class IOMethods
             return $objResponse;
         }
         $vals = Shop::Container()->getDB()->selectAll('teigenschaft', 'kArtikel', $productID);
-        if (!empty($vals) && !Product::isParent($productID)) {
+        if (!empty($vals) && empty($_POST['eigenschaftwert']) && !Product::isParent($productID)) {
             // Falls die Wunschliste aus der Artikelübersicht ausgewählt wurde,
             // muss zum Artikel weitergeleitet werden um Variationen zu wählen
             $response->nType     = 1;
@@ -869,6 +871,11 @@ class IOMethods
         if (!empty($newProductNr)) {
             $objResponse->jsfunc('$.evo.article().setProductNumber', $newProductNr, $wrapper);
         }
+        $response         = new stdClass();
+        $response->check  = Wishlist::checkVariOnList($kVaterArtikel, $valueIDs);
+        $response->itemID = $kVaterArtikel;
+
+        $objResponse->script('this.response = ' . \json_encode($response) . ';');
 
         return $objResponse;
     }

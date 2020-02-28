@@ -3560,6 +3560,12 @@ function syncPluginUpdate($kPlugin, $oPluginOld, $nXMLVersion)
             if (!\in_array($method->cModulId, $updatedMethods, true)) {
                 Shop::DB()->delete('tzahlungsart', 'kZahlungsart', $method->kZahlungsart);
                 Shop::DB()->delete('tzahlungsartsprache', 'kZahlungsart', $method->kZahlungsart);
+                Shop::DB()->queryPrepared(
+                    'DELETE FROM tplugineinstellungen
+                        WHERE kPlugin = :pid AND cName LIKE :nm',
+                    ['pid' => $kPluginOld, 'nm' => $method->cModulId . '_%'],
+                    3
+                );
             }
         }
 

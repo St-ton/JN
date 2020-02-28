@@ -207,7 +207,6 @@ class Container extends ContainerBase implements DefaultServicesInterface
         return $this->get(JTLDebugBar::class);
     }
 
-
     /**
      * @inheritdoc
      */

@@ -137,6 +137,9 @@ final class Categories extends AbstractSync
         $this->setLanguages($xml, $category->kKategorie, $categories[0]);
         $this->setCustomerGroups($xml, $category->kKategorie);
         $this->setCategoryDiscount($category->kKategorie);
+        foreach ($this->getLinkedDiscountCategories($category->kKategorie) as $linkedCategory) {
+            $this->setCategoryDiscount((int)$linkedCategory->kKategorie);
+        }
         $this->setVisibility($xml, $category->kKategorie);
         $this->setAttributes($xml, $category->kKategorie);
 
@@ -159,6 +162,17 @@ final class Categories extends AbstractSync
             if (!LanguageHelper::isShopLanguage($language->kSprache, $allLanguages)) {
                 continue;
             }
+            $oSeoOld = $this->db->queryPrepared(
+                'SELECT cSeo
+                    FROM tkategoriesprache
+                    WHERE kKategorie = :categoryID
+                        AND kSprache = :langID',
+                [
+                    'categoryID' => $categoryID,
+                    'langID'     => $language->kSprache,
+                ],
+                ReturnType::SINGLE_OBJECT
+            );
             if (!$language->cSeo) {
                 $language->cSeo = $language->cName;
             }
@@ -168,7 +182,10 @@ final class Categories extends AbstractSync
             if (!$language->cSeo) {
                 $language->cSeo = $category->cName;
             }
-            $language->cSeo = Seo::checkSeo(Seo::getSeo($language->cSeo));
+            $language->cSeo = Seo::getSeo($language->cSeo);
+            if (!isset($oSeoOld->cSeo) || $oSeoOld->cSeo !== $language->cSeo) {
+                $language->cSeo = Seo::checkSeo($language->cSeo);
+            }
             $this->insertOnExistUpdate('tkategoriesprache', [$language], ['kKategorie', 'kSprache']);
 
             $ins           = new stdClass();
@@ -350,6 +367,31 @@ final class Categories extends AbstractSync
                         tartikelkategorierabatt.fRabatt)',
             ['categoryID' => $categoryID],
             ReturnType::DEFAULT
+        );
+    }
+
+    /**
+     * @param int $categoryID
+     * @return array
+     */
+    private function getLinkedDiscountCategories(int $categoryID): array
+    {
+        return $this->db->queryPrepared(
+            'SELECT DISTINCT tkgrp_b.kKategorie
+                FROM tkategorieartikel tart_a
+                INNER JOIN tkategorieartikel tart_b ON tart_a.kArtikel = tart_b.kArtikel
+                    AND tart_a.kKategorie != tart_b.kKategorie
+                INNER JOIN tkategoriekundengruppe tkgrp_b ON tart_b.kKategorie = tkgrp_b.kKategorie
+                LEFT JOIN tkategoriekundengruppe tkgrp_a ON tkgrp_a.kKategorie = tart_a.kKategorie
+                LEFT JOIN tkategoriesichtbarkeit tsicht ON tsicht.kKategorie = tkgrp_b.kKategorie
+                    AND tsicht.kKundengruppe = tkgrp_b.kKundengruppe
+                WHERE tart_a.kKategorie = :categoryID
+                    AND tkgrp_b.fRabatt > COALESCE(tkgrp_a.fRabatt, 0)
+                    AND tsicht.kKategorie IS NULL',
+            [
+                'categoryID' => $categoryID
+            ],
+            ReturnType::ARRAY_OF_OBJECTS
         );
     }
 }

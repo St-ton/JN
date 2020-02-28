@@ -8,13 +8,14 @@ class OPC extends Emitter
         setJtlToken(env.jtlToken);
         installJqueryFixes();
 
+        this.messages     = env.messages;
         this.error        = env.error;
         this.messages = env.messages;
         this.io           = new IO(this);
         this.page         = new Page(this, this.io, env.shopUrl, env.pageKey);
         this.gui          = new GUI(this, this.io, this.page, env.messages);
         this.iframe       = new Iframe(this, this.io, this.gui, this.page, env.shopUrl, env.templateUrl);
-        this.tutorial     = new Tutorial(this.gui, this.iframe);
+        this.tutorial     = new Tutorial(this.iframe);
         this.pagetree     = new PageTree(this.page, this.iframe, this.gui);
         this.previewFrame = new PreviewFrame();
     }

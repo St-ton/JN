@@ -21,6 +21,11 @@
   }
 }
 
-#freegift .slick-list{
-  padding-top: 25px;
+#freegift {
+  &:not(.slick-initialized) {
+    padding-top: 25px;
+  }
+  .slick-list{
+    padding-top: 25px;
+  }
 }

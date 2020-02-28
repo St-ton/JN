@@ -16,7 +16,7 @@
                     <button type="button" class="opc-btn-secondary opc-small-btn" data-dismiss="modal">
                         {__('cancel')}
                     </button>
-                    <button type="submit" class="opc-btn-primary opc-small-btn">
+                    <button type="submit" class="opc-btn-primary opc-small-btn" id="btnBlueprintSave">
                         {__('Save')}
                     </button>
                 </div>

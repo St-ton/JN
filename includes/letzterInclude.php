@@ -75,9 +75,6 @@ if (is_object($globalMetaData)) {
     if (empty($cMetaDescription)) {
         $cMetaDescription = $globalMetaData->Meta_Description;
     }
-    if (empty($cMetaKeywords)) {
-        $cMetaKeywords = $globalMetaData->Meta_Keywords;
-    }
     $cMetaTitle       = Metadata::prepareMeta(
         $cMetaTitle,
         null,
@@ -88,9 +85,6 @@ if (is_object($globalMetaData)) {
         null,
         (int)$conf['metaangaben']['global_meta_maxlaenge_description']
     );
-    if (empty($cMetaKeywords) && $link !== null && !empty($link->getContent())) {
-        $cMetaKeywords = Metadata::getTopMetaKeywords($link->getContent());
-    }
 }
 if (!isset($AktuelleKategorie)) {
     $AktuelleKategorie = new Kategorie(Request::verifyGPCDataInt('kategorie'));

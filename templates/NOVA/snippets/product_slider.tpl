@@ -25,14 +25,9 @@
                         {/block}
                     {/if}
                     {block name='snippets-product-slider-box-products'}
-                        <div class="mb-4 slick-smooth-loading carousel carousel-arrows-inside {block name='product-box-slider-class'}evo-box-slider{/block}">
-                            {foreach $productlist as $product}
-                                {block name='snippets-product-slider-include-item-slider-box'}
-                                    <div class="product-wrapper{if isset($style)} {$style}{/if}" {if $tplscope !== 'box'}{if isset($Link) && $Link->getLinkType() === $smarty.const.LINKTYP_STARTSEITE || $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE}itemprop="about"{else}itemprop="isRelatedTo"{/if} itemscope itemtype="http://schema.org/Product"{/if}>
-                                        {include file='productlist/item_slider.tpl' Artikel=$product tplscope=$tplscope class=''}
-                                    </div>
-                                {/block}
-                            {/foreach}
+                        <div class="mb-4 slick-smooth-loading carousel carousel-arrows-inside slick-lazy slick-type-box"
+                            data-slick-type="{block name='product-box-slider-class'}box-slider{/block}">
+                            {include file='snippets/slider_items.tpl' items=$productlist type='product'}
                         </div>
                     {/block}
                 {/card}
@@ -56,14 +51,9 @@
                         {/block}
                     {/if}
                     {block name='snippets-product-slider-other-products'}
-                        <div class="mb-4 slick-smooth-loading carousel carousel-arrows-inside {block name='product-slider-class'}{if $tplscope === 'half'}evo-slider-half{else}evo-slider{/if}{/block}">
-                            {foreach $productlist as $product}
-                                {block name='snippets-product-slider-include-item-slider'}
-                                    <div class="product-wrapper{if isset($style)} {$style}{/if}" {if $tplscope !== 'box'}{if isset($Link) && $Link->getLinkType() === $smarty.const.LINKTYP_STARTSEITE || $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE}itemprop="about"{else}itemprop="isRelatedTo"{/if} itemscope itemtype="http://schema.org/Product"{/if}>
-                                        {include file='productlist/item_slider.tpl' Artikel=$product tplscope=$tplscope class=''}
-                                    </div>
-                                {/block}
-                            {/foreach}
+                        <div class="mb-4 slick-lazy slick-smooth-loading carousel carousel-arrows-inside {if $tplscope === 'half'}slick-type-half{else}slick-type-product{/if}"
+                            data-slick-type="{block name='product-slider-class'}{if $tplscope === 'half'}slider-half{else}product-slider{/if}{/block}">
+                            {include file='snippets/slider_items.tpl' items=$productlist type='product'}
                         </div>
                     {/block}
                 </div>

@@ -7,8 +7,8 @@
 namespace JTL;
 
 use JTL\DB\ReturnType;
+use JTL\xtea\XTEA;
 use stdClass;
-use XTEA;
 
 /**
  * Class Nice

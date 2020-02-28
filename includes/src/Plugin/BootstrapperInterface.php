@@ -59,6 +59,11 @@ interface BootstrapperInterface
     public function addNotify($type, $title, $description = null): void;
 
     /**
+     * @param PluginInterface $plugin
+     */
+    public function setPlugin(PluginInterface $plugin): void;
+
+    /**
      * @return PluginInterface
      */
     public function getPlugin(): PluginInterface;

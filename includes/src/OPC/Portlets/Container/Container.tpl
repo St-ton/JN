@@ -7,7 +7,11 @@
     {$data = $data|array_merge:['portlet' => $instance->getDataAttribute()]}
 {/if}
 
-{if $instance->getProperty('background-flag') === 'image' && !empty($instance->getProperty('src'))}
+{if $instance->getProperty('background-flag') === 'still' && !empty($instance->getProperty('still-src'))}
+    {$name = basename($instance->getProperty('still-src'))}
+    {$imgAttribs = $instance->getImageAttributes()}
+    {$style = "{$style} background-image:url('{$imgAttribs.src}');"}
+{elseif $instance->getProperty('background-flag') === 'image' && !empty($instance->getProperty('src'))}
     {$name = basename($instance->getProperty('src'))}
     {$class = "{$class} parallax-window"}
     {$imgAttribs = $instance->getImageAttributes()}
@@ -26,7 +30,7 @@
     {$imgAttribs     = $instance->getImageAttributes($instance->getProperty('video-poster'))}
     {$videoPosterUrl = $imgAttribs.src}
     {$name           = basename($instance->getProperty('video-src'))}
-    {$videoSrcUrl    = "{Shop::getURL()}/{\PFAD_MEDIA_VIDEO}{$name}"}
+    {$videoSrcUrl    = "{Shop::getURL()}/{$smarty.const.PFAD_MEDIA_VIDEO}{$name}"}
 {/if}
 
 {container style=$style class=$class data=$data fluid=$fluid}

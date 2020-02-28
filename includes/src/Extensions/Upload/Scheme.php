@@ -157,7 +157,7 @@ final class Scheme
                     ON tuploadschemasprache.kArtikelUpload = tuploadschema.kUploadSchema
                     AND tuploadschemasprache.kSprache = :lid
                 WHERE nTyp = :tpe' . $sql,
-            ['tpe' => $type, 'lid' => Shop::getLanguage()],
+            ['tpe' => $type, 'lid' => Shop::getLanguageID()],
             ReturnType::ARRAY_OF_OBJECTS
         );
     }

@@ -175,7 +175,7 @@ class GUI
             this.blueprintList.empty();
 
             blueprints.forEach(blueprint => {
-                var newBtn = this.blueprintBtnBlueprint.clone()
+                let newBtn = this.blueprintBtnBlueprint.clone()
                     .attr('id', null)
                     .attr('data-blueprint-id', blueprint.id)
                     .show()
@@ -368,7 +368,7 @@ class GUI
     {
         initDragStart(e);
 
-        var blueprintBtn = $(e.target).closest('.blueprintButton');
+        let blueprintBtn = $(e.target).closest('.blueprintButton');
 
         this.iframe.dragNewBlueprint(blueprintBtn.data('blueprint-id'));
     }
@@ -381,8 +381,8 @@ class GUI
 
     onRevisionBtn(e)
     {
-        var elm   = $(e.target).closest('a');
-        var revId = elm.data('revision-id');
+        let elm   = $(e.target).closest('a');
+        let revId = elm.data('revision-id');
 
         this.showLoader();
 
@@ -399,7 +399,7 @@ class GUI
 
     openConfigurator(portlet)
     {
-        var portletData = portlet.data('portlet');
+        let portletData = portlet.data('portlet');
 
         this.setConfigSaveCallback(noop);
         this.setImageSelectCallback(noop);
@@ -475,8 +475,8 @@ class GUI
     createBlueprint()
     {
         if(this.selectedElm !== null) {
-            var blueprintName = this.blueprintName.val();
-            var blueprintData = this.page.portletToJSON(this.iframe.selectedElm);
+            let blueprintName = this.blueprintName.val();
+            let blueprintData = this.page.portletToJSON(this.iframe.selectedElm);
 
             this.io.saveBlueprint(blueprintName, blueprintData).then(() => {
                 this.updateBlueprintList();
@@ -498,8 +498,8 @@ class GUI
 
     onBlueprintExport(e)
     {
-        var elm         = $(e.target).closest('.blueprintExport');
-        var blueprintId = elm.data('blueprint-id');
+        let elm         = $(e.target).closest('.blueprintExport');
+        let blueprintId = elm.data('blueprint-id');
 
         this.io.getBlueprint(blueprintId).then(blueprint => {
             download(JSON.stringify(blueprint), blueprint.name + '.json', 'application/json');
@@ -526,7 +526,7 @@ class GUI
 
     deleteBlueprint()
     {
-        var blueprintId = this.blueprintDeleteId.val();
+        let blueprintId = this.blueprintDeleteId.val();
 
         this.io.deleteBlueprint(blueprintId).then(() => this.updateBlueprintList());
         this.blueprintDeleteModal.modal('hide');

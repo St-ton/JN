@@ -760,6 +760,12 @@ class IOMethods
         $weightDiff   = 0;
         $newProductNr = '';
 
+        $response         = new stdClass();
+        $response->check  = Wishlist::checkVariOnList($kVaterArtikel, $valueIDs);
+        $response->itemID = $kVaterArtikel;
+
+        $objResponse->script('this.response = ' . \json_encode($response) . ';');
+
         // Alle Variationen ohne Freifeld
         $keyValueVariations = $product->keyValueVariations($product->VariationenOhneFreifeld);
         foreach ($valueIDs as $index => $value) {
@@ -871,11 +877,6 @@ class IOMethods
         if (!empty($newProductNr)) {
             $objResponse->jsfunc('$.evo.article().setProductNumber', $newProductNr, $wrapper);
         }
-        $response         = new stdClass();
-        $response->check  = Wishlist::checkVariOnList($kVaterArtikel, $valueIDs);
-        $response->itemID = $kVaterArtikel;
-
-        $objResponse->script('this.response = ' . \json_encode($response) . ';');
 
         return $objResponse;
     }

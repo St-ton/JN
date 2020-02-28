@@ -527,13 +527,14 @@ class Product
                         '&r=' . \R_VARWAEHLEN, true, 302);
                     exit();
                 }
-                $val                = new stdClass();
-                $val->cFreifeldWert = $db->escape(
+                $val                   = new stdClass();
+                $val->cFreifeldWert    = $db->escape(
                     Text::filterXSS(self::getSelectedVariationValue($prop->kEigenschaft))
                 );
-                $val->kEigenschaft  = $prop->kEigenschaft;
-                $val->cTyp          = $prop->cTyp;
-                $properties[]       = $val;
+                $val->kEigenschaft     = $prop->kEigenschaft;
+                $val->kEigenschaftWert = null;
+                $val->cTyp             = $prop->cTyp;
+                $properties[]          = $val;
             }
         }
 

@@ -1275,15 +1275,19 @@ class Wishlist
      */
     public static function checkVariOnList(int $product, array $params): int
     {
-        $variToCheck = json_encode($params);
-        $wishlist    = Frontend::getWishList();
+        $variationCount = \count($params);
+        $wishlist       = Frontend::getWishList();
         foreach ($wishlist->CWunschlistePos_arr as $item) {
             if ($product === $item->kArtikel) {
-                $vari = [];
-                foreach ($item->CWunschlistePosEigenschaft_arr as $param) {
-                    $vari[$param->kEigenschaft] = (string)$param->kEigenschaftWert;
+                $variCountTMP = 0;
+                foreach ($item->CWunschlistePosEigenschaft_arr as $itemAttribute) {
+                    if ((string)$itemAttribute->kEigenschaftWert === $params[$itemAttribute->kEigenschaft]
+                        || (string)$itemAttribute->cFreifeldWert === $params[$itemAttribute->kEigenschaft]
+                    ) {
+                        $variCountTMP++;
+                    }
                 }
-                if ($variToCheck === json_encode($vari)) {
+                if ($variCountTMP === $variationCount) {
                     return $item->kWunschlistePos;
                 }
             }

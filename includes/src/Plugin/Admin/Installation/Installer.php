@@ -332,7 +332,8 @@ final class Installer
             && $this->plugin->getLicense()->hasLicense()
         ) {
             require_once $licenceClassFile;
-            $pluginLicence = new $plugin->cLizenzKlasse();
+            $licenceClass  = $this->plugin->getLicense()->getClass();
+            $pluginLicence = new $licenceClass();
             $licenceMethod = \PLUGIN_LICENCE_METHODE;
             if ($pluginLicence->$licenceMethod($this->plugin->getLicense()->getKey())) {
                 $plugin->cLizenz = $this->plugin->getLicense()->getKey();
@@ -693,14 +694,6 @@ final class Installer
                 )',
             ReturnType::DEFAULT
         );
-        $this->db->query(
-            'DELETE FROM tpluginemailvorlagesprache
-                WHERE NOT EXISTS (
-                    SELECT 1 FROM temailvorlage
-                    WHERE temailvorlage.kEmailvorlage = tpluginemailvorlagesprache.kEmailvorlage
-                )',
-            ReturnType::DEFAULT
-        );
     }
 
     /**
@@ -720,13 +713,21 @@ final class Installer
             'SELECT kZahlungsart, cModulId
                 FROM tzahlungsart
                 WHERE cModulId LIKE :newID',
-            ['newID' => 'kPlugin_' . $oldPluginID . '_%'],
+            ['newID' => 'kPlugin\_' . $oldPluginID . '\_%'],
             ReturnType::ARRAY_OF_OBJECTS
         );
+        $newPaymentMethods = $this->db->queryPrepared(
+            'SELECT kZahlungsart, cModulId, cName
+                FROM tzahlungsart
+                WHERE cModulId LIKE :newID',
+            ['newID' => 'kPlugin\_' . $pluginID . '\_%'],
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+        $updatedMethods    = [];
         foreach ($oldPaymentMethods as $method) {
             $oldModuleID      = \str_replace(
-                'kPlugin_' . $oldPluginID . '_',
-                'kPlugin_' . $pluginID . '_',
+                'kPlugin\_' . $oldPluginID . '\_',
+                'kPlugin\_' . $pluginID . '\_',
                 $method->cModulId
             );
             $newPaymentMethod = $this->db->queryPrepared(
@@ -746,12 +747,10 @@ final class Installer
                         WHERE tzahlungsart.kZahlungsart = ' . $method->kZahlungsart,
                     ReturnType::AFFECTED_ROWS
                 );
-
                 $setSQL = ' , kZahlungsart = ' . $method->kZahlungsart;
                 $upd    = (object)['kZahlungsart' => $method->kZahlungsart];
                 $this->db->update('tzahlungsartsprache', 'kZahlungsart', $newPaymentMethod->kZahlungsart, $upd);
             }
-
             $this->db->queryPrepared(
                 'UPDATE tzahlungsart
                     SET cModulId = :newID ' . $setSQL . '
@@ -760,5 +759,34 @@ final class Installer
                 ReturnType::AFFECTED_ROWS
             );
         }
+        foreach ($newPaymentMethods as $method) {
+            $newModuleID      = Helper::getModuleIDByPluginID($oldPluginID, $method->cName);
+            $updatedMethods[] = $newModuleID;
+            $this->db->queryPrepared(
+                'UPDATE tzahlungsart
+                    SET cModulId = :newID
+                    WHERE kZahlungsart = :pmid',
+                ['pmid' => $method->kZahlungsart, 'newID' => $newModuleID],
+                ReturnType::AFFECTED_ROWS
+            );
+        }
+        foreach ($oldPaymentMethods as $method) {
+            if (!\in_array($method->cModulId, $updatedMethods, true)) {
+                $this->db->delete('tzahlungsart', 'kZahlungsart', $method->kZahlungsart);
+                $this->db->queryPrepared(
+                    'DELETE FROM tplugineinstellungen
+                        WHERE kPlugin = :pid AND cName LIKE :nm',
+                    ['pid' => $oldPluginID, 'nm' => str_replace('_', '\_', $method->cModulId) . '\_%'],
+                    ReturnType::DEFAULT
+                );
+            }
+        }
+        $this->db->query(
+            'DELETE FROM tzahlungsartsprache 
+                WHERE kZahlungsart NOT IN (
+                    SELECT kZahlungsart FROM tzahlungsart
+                )',
+            ReturnType::DEFAULT
+        );
     }
 }

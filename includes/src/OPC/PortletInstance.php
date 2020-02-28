@@ -104,7 +104,7 @@ class PortletInstance implements \JsonSerializable
     {
         $result = $this->portlet->getPreviewHtml($this);
         $dom    = new \DOMDocument('1.0', 'utf-8');
-        $dom->loadHTML($result);
+        $dom->loadHTML('<?xml encoding="utf-8" ?>' . $result);
         /** @var \DOMElement $root */
         $root = $dom->getElementsByTagName('body')[0]->firstChild;
         $root->setAttribute('data-portlet', \json_encode($this->getData()));

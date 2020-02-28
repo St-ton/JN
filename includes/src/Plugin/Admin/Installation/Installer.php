@@ -713,21 +713,21 @@ final class Installer
             'SELECT kZahlungsart, cModulId
                 FROM tzahlungsart
                 WHERE cModulId LIKE :newID',
-            ['newID' => 'kPlugin_' . $oldPluginID . '_%'],
+            ['newID' => 'kPlugin\_' . $oldPluginID . '\_%'],
             ReturnType::ARRAY_OF_OBJECTS
         );
         $newPaymentMethods = $this->db->queryPrepared(
             'SELECT kZahlungsart, cModulId, cName
                 FROM tzahlungsart
                 WHERE cModulId LIKE :newID',
-            ['newID' => 'kPlugin_' . $pluginID . '_%'],
+            ['newID' => 'kPlugin\_' . $pluginID . '\_%'],
             ReturnType::ARRAY_OF_OBJECTS
         );
         $updatedMethods    = [];
         foreach ($oldPaymentMethods as $method) {
             $oldModuleID      = \str_replace(
-                'kPlugin_' . $oldPluginID . '_',
-                'kPlugin_' . $pluginID . '_',
+                'kPlugin\_' . $oldPluginID . '\_',
+                'kPlugin\_' . $pluginID . '\_',
                 $method->cModulId
             );
             $newPaymentMethod = $this->db->queryPrepared(
@@ -776,7 +776,7 @@ final class Installer
                 $this->db->queryPrepared(
                     'DELETE FROM tplugineinstellungen
                         WHERE kPlugin = :pid AND cName LIKE :nm',
-                    ['pid' => $oldPluginID, 'nm' => $method->cModulId . '_%'],
+                    ['pid' => $oldPluginID, 'nm' => str_replace('_', '\_', $method->cModulId) . '\_%'],
                     ReturnType::DEFAULT
                 );
             }

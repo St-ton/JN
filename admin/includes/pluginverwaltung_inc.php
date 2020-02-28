@@ -3504,12 +3504,17 @@ function syncPluginUpdate($kPlugin, $oPluginOld, $nXMLVersion)
         $oZahlungsartOld_arr = Shop::DB()->query("
             SELECT kZahlungsart, cModulId 
                 FROM tzahlungsart 
-                WHERE cModulId LIKE 'kPlugin_{$kPluginOld}_%'", 2
+                WHERE cModulId LIKE 'kPlugin\_{$kPluginOld}\_%'", 2
         );
-
+        $oZahlungsartNew_arr = Shop::DB()->query("
+            SELECT kZahlungsart, cModulId 
+                FROM tzahlungsart 
+                WHERE cModulId LIKE 'kPlugin\_{$kPlugin}\_%'", 2
+        );
+        $updatedMethods      = [];
         if (is_array($oZahlungsartOld_arr) && count($oZahlungsartOld_arr) > 0) {
             foreach ($oZahlungsartOld_arr as $oZahlungsartOld) {
-                $cModulIdNew     = str_replace("kPlugin_{$kPluginOld}_", "kPlugin_{$kPlugin}_", $oZahlungsartOld->cModulId);
+                $cModulIdNew     = str_replace("kPlugin_{$kPluginOld}_", "kPlugin\_{$kPlugin}\_", $oZahlungsartOld->cModulId);
                 $oZahlungsartNew = Shop::DB()->query("
                       SELECT kZahlungsart 
                           FROM tzahlungsart 
@@ -3536,6 +3541,30 @@ function syncPluginUpdate($kPlugin, $oPluginOld, $nXMLVersion)
                         SET cModulId = '{$oZahlungsartOld->cModulId}'
                         " . $cNewSetSQL . "
                         WHERE cModulId LIKE '{$cModulIdNew}'", 3
+                );
+            }
+        }
+
+        if (is_array($oZahlungsartNew_arr) && count($oZahlungsartNew_arr) > 0) {
+            foreach ($oZahlungsartNew_arr as $oZahlungsart) {
+                $cModulIdNew      = str_replace("kPlugin_{$kPlugin}_", "kPlugin_{$kPluginOld}_", $oZahlungsart->cModulId);
+                $updatedMethods[] = $cModulIdNew;
+                Shop::DB()->query(
+                    "UPDATE tzahlungsart
+                        SET cModulId = '{$cModulIdNew}'
+                        WHERE kZahlungsart = " . $oZahlungsart->kZahlungsart, 3
+                );
+            }
+        }
+        foreach ($oZahlungsartOld_arr as $method) {
+            if (!\in_array($method->cModulId, $updatedMethods, true)) {
+                Shop::DB()->delete('tzahlungsart', 'kZahlungsart', $method->kZahlungsart);
+                Shop::DB()->delete('tzahlungsartsprache', 'kZahlungsart', $method->kZahlungsart);
+                Shop::DB()->queryPrepared(
+                    'DELETE FROM tplugineinstellungen
+                        WHERE kPlugin = :pid AND cName LIKE :nm',
+                    ['pid' => $kPluginOld, 'nm' => str_replace('_', '\_', $method->cModulId) . '\_%'],
+                    3
                 );
             }
         }
@@ -3635,7 +3664,7 @@ function doSQLDelete($kPlugin, $bUpdate, $kPluginNew = null)
                 FROM tzahlungsart
                 LEFT JOIN tzahlungsartsprache 
                     ON tzahlungsartsprache.kZahlungsart = tzahlungsart.kZahlungsart
-                WHERE tzahlungsart.cModulId LIKE 'kPlugin_" . $kPlugin . "_%'", 3
+                WHERE tzahlungsart.cModulId LIKE 'kPlugin\_" . $kPlugin . "\_%'", 3
         );
 
         Shop::DB()->query(
@@ -3902,11 +3931,11 @@ function makeXMLToObj($XML)
         $oObj->cAuthor         = $XML['jtlshop3plugin'][0]['Author'];
         $oObj->cPluginID       = $XML['jtlshop3plugin'][0]['PluginID'];
         $oObj->cIcon           = isset($XML['jtlshop3plugin'][0]['Icon'])
-            ? $XML['jtlshop3plugin'][0]['Icon'] 
+            ? $XML['jtlshop3plugin'][0]['Icon']
             : null;
         $oObj->cVerzeichnis    = $XML['cVerzeichnis'];
-        $oObj->shop4compatible = (!empty($XML['shop4compatible'])) 
-            ? $XML['shop4compatible'] 
+        $oObj->shop4compatible = (!empty($XML['shop4compatible']))
+            ? $XML['shop4compatible']
             : false;
         $oObj->nVersion        = (int)$XML['jtlshop3plugin'][0]['Install'][0]['Version'][$nLastVersionKey . ' attr']['nr'];
         $oObj->cVersion        = number_format($oObj->nVersion / 100, 2);
@@ -4025,8 +4054,8 @@ function removeNumerousWhitespaces($cStr)
  */
 function parseSQLDatei($cSQLDatei, $cVerzeichnis, $nVersion)
 {
-    $cSQLDateiPfad = PFAD_ROOT . PFAD_PLUGIN . $cVerzeichnis . '/' . 
-        PFAD_PLUGIN_VERSION . $nVersion . '/' . 
+    $cSQLDateiPfad = PFAD_ROOT . PFAD_PLUGIN . $cVerzeichnis . '/' .
+        PFAD_PLUGIN_VERSION . $nVersion . '/' .
         PFAD_PLUGIN_SQL;
 
     if (file_exists($cSQLDateiPfad . $cSQLDatei)) {
@@ -4179,25 +4208,25 @@ function gibSprachVariablenALT($kPlugin)
                 // Hole Custom Variablen
                 $oPluginSprachvariableCustomSprache_arr = Shop::DB()->selectAll(
                     'tpluginsprachvariablecustomsprache',
-                    'cSprachvariable', 
-                    $oPluginSprachvariable->cName, 
+                    'cSprachvariable',
+                    $oPluginSprachvariable->cName,
                     'kPlugin, cSprachvariable, cISO, cName AS cNameSprache'
                 );
                 if (count($oPluginSprachvariableCustomSprache_arr) > 0) {
                     foreach ($oPluginSprachvariableCustomSprache_arr as $oPluginSprachvariableCustomSprache) {
-                        $lvArr[$i]->oPluginSprachvariableSprache_arr[$oPluginSprachvariableCustomSprache->cISO] = 
+                        $lvArr[$i]->oPluginSprachvariableSprache_arr[$oPluginSprachvariableCustomSprache->cISO] =
                             $oPluginSprachvariableCustomSprache->cNameSprache;
                     }
                 } else {
                     $oPluginSprachvariableSprache_arr = Shop::DB()->selectAll(
-                        'tpluginsprachvariablesprache', 
-                        'kPluginSprachvariable', 
-                        (int)$oPluginSprachvariable->kPluginSprachvariable, 
+                        'tpluginsprachvariablesprache',
+                        'kPluginSprachvariable',
+                        (int)$oPluginSprachvariable->kPluginSprachvariable,
                         'cISO, cName AS cNameSprache'
                     );
                     if (count($oPluginSprachvariableSprache_arr) > 0) {
                         foreach ($oPluginSprachvariableSprache_arr as $oPluginSprachvariableSprache) {
-                            $lvArr[$i]->oPluginSprachvariableSprache_arr[$oPluginSprachvariableSprache->cISO] = 
+                            $lvArr[$i]->oPluginSprachvariableSprache_arr[$oPluginSprachvariableSprache->cISO] =
                                 $oPluginSprachvariableSprache->cNameSprache;
                         }
                     }

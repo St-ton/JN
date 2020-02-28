@@ -3504,17 +3504,17 @@ function syncPluginUpdate($kPlugin, $oPluginOld, $nXMLVersion)
         $oZahlungsartOld_arr = Shop::DB()->query("
             SELECT kZahlungsart, cModulId 
                 FROM tzahlungsart 
-                WHERE cModulId LIKE 'kPlugin_{$kPluginOld}_%'", 2
+                WHERE cModulId LIKE 'kPlugin\_{$kPluginOld}\_%'", 2
         );
         $oZahlungsartNew_arr = Shop::DB()->query("
             SELECT kZahlungsart, cModulId 
                 FROM tzahlungsart 
-                WHERE cModulId LIKE 'kPlugin_{$kPlugin}_%'", 2
+                WHERE cModulId LIKE 'kPlugin\_{$kPlugin}\_%'", 2
         );
         $updatedMethods      = [];
         if (is_array($oZahlungsartOld_arr) && count($oZahlungsartOld_arr) > 0) {
             foreach ($oZahlungsartOld_arr as $oZahlungsartOld) {
-                $cModulIdNew     = str_replace("kPlugin_{$kPluginOld}_", "kPlugin_{$kPlugin}_", $oZahlungsartOld->cModulId);
+                $cModulIdNew     = str_replace("kPlugin_{$kPluginOld}_", "kPlugin\_{$kPlugin}\_", $oZahlungsartOld->cModulId);
                 $oZahlungsartNew = Shop::DB()->query("
                       SELECT kZahlungsart 
                           FROM tzahlungsart 
@@ -3563,7 +3563,7 @@ function syncPluginUpdate($kPlugin, $oPluginOld, $nXMLVersion)
                 Shop::DB()->queryPrepared(
                     'DELETE FROM tplugineinstellungen
                         WHERE kPlugin = :pid AND cName LIKE :nm',
-                    ['pid' => $kPluginOld, 'nm' => $method->cModulId . '_%'],
+                    ['pid' => $kPluginOld, 'nm' => str_replace('_', '\_', $method->cModulId) . '\_%'],
                     3
                 );
             }
@@ -3664,7 +3664,7 @@ function doSQLDelete($kPlugin, $bUpdate, $kPluginNew = null)
                 FROM tzahlungsart
                 LEFT JOIN tzahlungsartsprache 
                     ON tzahlungsartsprache.kZahlungsart = tzahlungsart.kZahlungsart
-                WHERE tzahlungsart.cModulId LIKE 'kPlugin_" . $kPlugin . "_%'", 3
+                WHERE tzahlungsart.cModulId LIKE 'kPlugin\_" . $kPlugin . "\_%'", 3
         );
 
         Shop::DB()->query(

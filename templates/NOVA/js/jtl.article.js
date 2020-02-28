@@ -267,13 +267,27 @@
                     $(this).closest(".swatches").addClass("radio-selected");
                 });
 
-            $('.simple-variations input[type="radio"], .simple-variations input[type="text"], .simple-variations select', $wrapper)
+            $('.simple-variations input[type="radio"], .simple-variations select', $wrapper)
                 .each(function(i, item) {
                     var $item   = $(item),
                         wrapper = '#' + $item.closest('form').closest('div[data-wrapper="true"]').attr('id');
 
                     $item.on('change', function () {
                         that.variationPrice($(this), true, wrapper);
+                    });
+                });
+            $('.simple-variations input[type="text"]', $wrapper)
+                .each(function(i, item) {
+                    let $item   = $(item),
+                        wrapper = '#' + $item.closest('form').closest('div[data-wrapper="true"]').attr('id'),
+                        timeout = null;
+                    $item.on('keyup', function (e) {
+                        clearTimeout(timeout);
+                        let self = $(this);
+
+                        timeout = setTimeout(function () {
+                            that.variationPrice(self, true, wrapper);
+                        }, 500);
                     });
                 });
         },

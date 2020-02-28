@@ -267,7 +267,7 @@
                     $(this).closest(".swatches").addClass("radio-selected");
                 });
 
-            $('.simple-variations input[type="radio"], .simple-variations select', $wrapper)
+            $('.simple-variations input[type="radio"], .simple-variations input[type="text"], .simple-variations select', $wrapper)
                 .each(function(i, item) {
                     var $item   = $(item),
                         wrapper = '#' + $item.closest('form').closest('div[data-wrapper="true"]').attr('id');
@@ -770,7 +770,7 @@
             }
         },
 
-        addToWishlist: function(data) {
+        addToWishlist: function(data, $action) {
             var productId = parseInt(data[this.options.input.id]);
             var childId = parseInt(data[this.options.input.childId]);
             var qty =  parseInt(data[this.options.input.quantity]);
@@ -781,9 +781,14 @@
                 var that = this;
                 $.evo.io().call('pushToWishlist', [productId, qty, data], that, function(error, data) {
                     if (error) {
+                        $action.closest('form')[0].reportValidity();
                         return;
                     }
-
+                    if ($action.hasClass('action-tip-animation-b')) {
+                        $action.addClass("on-list");
+                        $action.next().addClass("press");
+                        $action.next().next().removeClass("press");
+                    }
                     var response = data.response;
 
                     if (response) {
@@ -920,21 +925,14 @@
                     return this.removeFromCompareList(data);
                 case this.options.action.wishList:
                     data[this.options.input.quantity] = $('#buy_form_'+data.a+' '+this.options.selector.quantity).val();
-                    if ($action.hasClass('action-tip-animation-b')) {
-                        if ($action.hasClass('on-list')) {
-                            $action.removeClass("on-list");
-                            $action.next().removeClass("press");
-                            $action.next().next().addClass("press");
-                            data.a = data.wlPos;
-                            return this.removeFromWishList(data);
-                        } else {
-                            $action.addClass("on-list");
-                            $action.next().addClass("press");
-                            $action.next().next().removeClass("press");
-                            return this.addToWishlist(data);
-                        }
+                    if ($action.hasClass('on-list')) {
+                        $action.removeClass("on-list");
+                        $action.next().removeClass("press");
+                        $action.next().next().addClass("press");
+                        data.a = data.wlPos;
+                        return this.removeFromWishList(data);
                     } else {
-                        return this.addToWishlist(data);
+                        return this.addToWishlist(data, $action);
                     }
                 case this.options.action.wishListRemove:
                     return this.removeFromWishList(data);

@@ -496,7 +496,7 @@ class Product
                         ReturnType::SINGLE_OBJECT
                     );
 
-                    if ($propExists->kEigenschaftWert) {
+                    if (isset($propExists->kEigenschaftWert)) {
                         $val                       = new stdClass();
                         $val->kEigenschaftWert     = (int)self::getSelectedVariationValue($prop->kEigenschaft);
                         $val->kEigenschaft         = $prop->kEigenschaft;

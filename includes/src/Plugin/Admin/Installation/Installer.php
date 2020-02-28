@@ -332,7 +332,8 @@ final class Installer
             && $this->plugin->getLicense()->hasLicense()
         ) {
             require_once $licenceClassFile;
-            $pluginLicence = new $plugin->cLizenzKlasse();
+            $licenceClass  = $this->plugin->getLicense()->getClass();
+            $pluginLicence = new $licenceClass();
             $licenceMethod = \PLUGIN_LICENCE_METHODE;
             if ($pluginLicence->$licenceMethod($this->plugin->getLicense()->getKey())) {
                 $plugin->cLizenz = $this->plugin->getLicense()->getKey();

@@ -774,8 +774,7 @@ final class Installer
             if (!\in_array($method->cModulId, $updatedMethods, true)) {
                 $this->db->delete('tzahlungsart', 'kZahlungsart', $method->kZahlungsart);
                 $this->db->queryPrepared(
-                    '
-                    DELETE FROM tplugineinstellungen
+                    'DELETE FROM tplugineinstellungen
                         WHERE kPlugin = :pid AND cName LIKE :nm',
                     ['pid' => $oldPluginID, 'nm' => $method->cModulId . '_%'],
                     ReturnType::DEFAULT

@@ -5,19 +5,20 @@ Die Shop-Klasse
 
    <br />
 
-Ab Shop Version 4.x kommt der Klasse ``Shop`` eine zentrale Bedeutung zu. |br|
+Ab JTL-Shop Version 4.x kommt der Klasse ``Shop`` eine zentrale Bedeutung zu. |br|
 Sie dient in erster Linie als zentrale Registry für ehemals ausschließlich globale Variablen wie die *NiceDB* oder
 *Smarty*, dient aber auch der Erzeugung und Ausgabe von Instanzen für den neuen Objektcache.
 
-Während vor Shop Version 4.x Konstrukte wie
+Vor JTL-Shop 4.x waren Konstrukte wie das Folgende nötig, um SQL-Abfragen auszuführen:
 
 .. code-block:: php
 
-    $Article = $GLOBALS['DB']->executeQuery('SELECT * FROM tartikel WHERE kArtikel = 2344', 1);  // veraltet!
+    // veraltet!
+    //
+    $Article = $GLOBALS['DB']->executeQuery('SELECT * FROM tartikel WHERE kArtikel = 2344', 1);
 
 
-nötig waren, um SQL-Abfragen auszuführen |br|
-oder Templates via
+Templates wurden wie folgt gerendert: |br|
 
 .. code-block:: php
 
@@ -28,16 +29,16 @@ oder Templates via
     $smarty->assign('myothervar', 'foobar');
     $smarty->display('mytemplate.tpl');
 
-gerendert wurden, können und sollten nun Klasseninstanzen von *NiceDB* und *Smarty* über die ``Shop``-Klasse bezogen
+In JTL-Shop 5.x können und sollten nun Klasseninstanzen von *NiceDB* und *Smarty* über die ``Shop``-Klasse bezogen
 werden.
 
-Für Shop Version 4.x gilt folgende Vorgehensweise als bevorzugt:
+Für JTL-Shop 4.x gilt folgende Vorgehensweise als bevorzugt:
 
 .. code-block:: php
 
     $Article = Shop::DB()->query('SELECT * FROM tartikel WHERE kArtikel = 2344', 1);
 
-bzw. ab Shop Version 5.0:
+Ab JTL-Shop 5.0 wird folgende Vorgehensweise bevorzugt:
 
 .. code-block:: php
 
@@ -46,7 +47,7 @@ bzw. ab Shop Version 5.0:
        ['artID' => $articleID],
        ReturnType::SINGLE_OBJECT);
 
-und für Smarty (in beiden Versionen von JTL-Shop):
+Für Smarty wird sowohl in JTL-Shop 4.x als auch JTL-Shop 5.0 diese Vorgehensweise bevorzugt:
 
 .. code-block:: php
 
@@ -55,8 +56,8 @@ und für Smarty (in beiden Versionen von JTL-Shop):
         ->assign('myothervar', 'foobar')
         ->display('mytemplate.tpl');
 
-Die Methode ``JTLSmarty::assign(string $tpl_var, mixed $value)`` wurde ab Shop 4.x nun "*chainable*" gemacht, um die
-Übersichtlichkeit im Code zu erhöhen.  |br|
+Die Methode ``JTLSmarty::assign(string $tpl_var, mixed $value)`` wurde ab JTL-Shop 4.x nun "*chainable*" gemacht, um
+die Übersichtlichkeit im Code zu erhöhen.  |br|
 Zudem wurden die Funktionsnamen der *NiceDB*-Klasse etwas vereinfacht und über ein Mapping auch *statisch* verfügbar
 gemacht (vgl. Funktion ``NiceDB::map(string $method)``).
 
@@ -65,7 +66,7 @@ Sprachfunktionen
 
 Auch *Sprachfunktionen* sollten nun über die *Shop*-Klasse genutzt werden.
 
-In JTL-Shop vor Version 4.x war diese Vorgehensweise üblich:
+In Versionen vor JTL-Shop 4.x war diese Vorgehensweise üblich:
 
 .. code-block:: php
 
@@ -83,14 +84,15 @@ Caching
 Die Nutzung des *Caches* erfolgt analog den Sprachfunktionen und wird im Kapitel ":doc:`Cache </shop_plugins/cache>`"
 näher erläutert.
 
-Shop-URL
---------
+Onlineshop-URL
+--------------
 
-Um die URL des Shops zu beziehen, wurde die Methode ``Shop::getURL([bool $bForceSSL = false]) : string`` eingeführt.
+Um die URL des Onlineshops zu beziehen, wurde die Methode ``Shop::getURL([bool $bForceSSL = false]) : string``
+eingeführt.
 
 .. attention::
 
-    Wir empfehlen dringend, diese Variante zu nutzen, anstelle der veralteten Konstante ``URL_SHOP``, |br|
+    Wir empfehlen dringend, diese Variante anstelle der veralteten Konstante ``URL_SHOP`` zu nutzen, |br|
     da ``Shop::getURL()`` auch eine eventuelle Konfiguration von *SSL* berücksichtigt. |br|
 
 Die Ausgabe erfolgt stets **ohne abschließenden Slash**.
@@ -108,8 +110,8 @@ Debugging
 
 Die Funktion ``Shop::dbg(mixed $content[, bool $die, string $prepend]) : void`` erlaubt "quick-and-dirty" *Debugging*.
 
-Als ersten Parameter erhält sie beliebigen Inhalt zur Ausgabe. Über den zweiten Parameter kann - wenn dieser auf
-``true`` gesetzt wird - die weitere Ausführung des Codes unterbunden werden und der dritte Parameter kann einen Text
+Als ersten Parameter erhält sie beliebigen Inhalt zur Ausgabe. Wird der zweite Parameter auf
+``true`` gesetzt, kann die weitere Ausführung des Codes unterbunden werden. Der dritte Parameter kann einen Text
 beinhalten, der vor der Debug-Ausgabe als Erläuterung erscheinen soll. |br|
 Dies entspricht im Wesentlichen einem von ``<pre>``-Tags umhüllten ``var_dump()`` mit ggf. anschließendem ``die()``.
 

@@ -41,11 +41,14 @@ Hook-Liste
         .wy-table-responsive {
             overflow: visible !important;
         }
+        .wy-nav-content {
+            overflow: auto;
+        }
 	</style>
 
 .. hint::
 
-    In der rechten Seiten-Navigation finden Sie ein alphabetische Liste aller Hooks, die die folgende Tabelle nach ID sortiert wiedergibt.
+    In der rechten Seiten-Navigation finden Sie eine alphabetische Liste aller Hooks, die die folgende Tabelle nach ID sortiert wiedergibt.
 
 
 +--------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----+---------------------------------------------------------------------------+---------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+

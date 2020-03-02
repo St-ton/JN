@@ -15,7 +15,7 @@ Im Backend lassen sich über den Menüpunkt "*Plugin Profiler*" (URL ``/admin/pr
 Sie werden pro Durchlauf als Highcharts-Donut-Grafik aufbereitet, die im inneren Ring die Laufzeiten pro Hook und im
 Äußeren die Laufzeit pro aufgerufener Plugin-Datei anzeigt.
 
-Auf diese Weise können, bei Performance-Problemen, schnell die Auslöser gefunden werden, so es sich denn um
+Auf diese Weise können bei Performance-Problemen schnell die Auslöser gefunden werden, falls es sich tatsächlich um
 Plugin-Probleme handeln sollte.
 
 Weitere Profiling-Möglichkeiten: :doc:`MySQL </shop_programming_tips/profiling>`, :doc:`XHProf </shop_programming_tips/profiling>`

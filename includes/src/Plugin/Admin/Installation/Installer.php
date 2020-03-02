@@ -726,7 +726,7 @@ final class Installer
         $updatedMethods    = [];
         foreach ($oldPaymentMethods as $method) {
             $oldModuleID      = \str_replace(
-                'kPlugin\_' . $oldPluginID . '\_',
+                'kPlugin_' . $oldPluginID . '_',
                 'kPlugin\_' . $pluginID . '\_',
                 $method->cModulId
             );

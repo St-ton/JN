@@ -20,7 +20,7 @@ Shop::setPageType(PAGE_KONTAKT);
 $smarty         = Shop::Smarty();
 $conf           = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_KONTAKTFORMULAR]);
 $linkHelper     = Shop::Container()->getLinkService();
-$kLink          = $linkHelper->getSpecialPageLinkKey(LINKTYP_KONTAKT);
+$kLink          = $linkHelper->getSpecialPageID(LINKTYP_KONTAKT);
 $link           = $linkHelper->getPageLink($kLink);
 $cCanonicalURL  = '';
 $specialContent = new stdClass();

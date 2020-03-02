@@ -485,6 +485,14 @@ class Mail implements MailInterface
     /**
      * @inheritdoc
      */
+    public function addAttachment(Attachment $attachment): void
+    {
+        $this->attachments[] = $attachment;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getPdfAttachments(): array
     {
         return $this->pdfAttachments;

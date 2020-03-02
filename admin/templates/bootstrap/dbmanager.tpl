@@ -1,5 +1,4 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section='dbcheck'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('dbManager') cBeschreibung="<kbd>{__('tableViews')}({$tables|@count})</kbd>" cDokuURL=__('dbcheckURL')}
 
 {function table_scope_header table=null}

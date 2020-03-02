@@ -301,7 +301,7 @@ class AdminAccount
                 }
             }
             if (!isset($admin->kSprache)) {
-                $admin->kSprache = Shop::getLanguage();
+                $admin->kSprache = Shop::getLanguageID();
             }
             $admin->cISO       = Shop::Lang()->getIsoFromLangID($admin->kSprache)->cISO;
             $admin->attributes = $this->getAttributes($admin->kAdminlogin);

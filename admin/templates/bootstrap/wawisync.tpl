@@ -1,5 +1,4 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section='wawisync'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('wawisync') cBeschreibung=__('wawisyncDesc') cDokuURL=__('wawisyncURL')}
 <div id="content">
     <form action="wawisync.php" method="post">

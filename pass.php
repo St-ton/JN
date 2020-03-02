@@ -13,7 +13,7 @@ require_once __DIR__ . '/includes/globalinclude.php';
 
 Shop::setPageType(PAGE_PASSWORTVERGESSEN);
 $linkHelper  = Shop::Container()->getLinkService();
-$kLink       = $linkHelper->getSpecialPageLinkKey(LINKTYP_PASSWORD_VERGESSEN);
+$kLink       = $linkHelper->getSpecialPageID(LINKTYP_PASSWORD_VERGESSEN);
 $step        = 'formular';
 $alertHelper = Shop::Container()->getAlertService();
 $smarty      = Shop::Smarty();

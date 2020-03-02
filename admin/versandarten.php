@@ -171,9 +171,8 @@ if (Form::validateToken()) {
                 $staffelDa = true;
             }
             //preisstaffel beachten
-            if (!isset($_POST['bis'][0])
+            if (!isset($_POST['bis'][0], $_POST['preis'][0])
                 || mb_strlen($_POST['bis'][0]) === 0
-                || !isset($_POST['preis'][0])
                 || mb_strlen($_POST['preis'][0]) === 0
             ) {
                 $staffelDa = false;

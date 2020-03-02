@@ -280,7 +280,7 @@ class CMS
         $history = Shop::Container()->getDB()->selectAll(
             'tnewsletterhistory',
             'kSprache',
-            Shop::getLanguage(),
+            Shop::getLanguageID(),
             'kNewsletterHistory, cBetreff, DATE_FORMAT(dStart, \'%d.%m.%Y %H:%i\') AS Datum, cHTMLStatic',
             'dStart DESC'
         );

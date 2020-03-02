@@ -53,7 +53,7 @@ function ladeAjaxEinKlick(): void
     gibStepBestaetigung($aFormValues);
 
     Shop::Smarty()->assign('AGB', Shop::Container()->getLinkService()->getAGBWRB(
-        Shop::getLanguage(),
+        Shop::getLanguageID(),
         Frontend::getCustomerGroup()->getID()
     ))
         ->assign('WarensummeLocalized', Frontend::getCart()->gibGesamtsummeWarenLocalized())
@@ -553,7 +553,7 @@ function setzeSmartyBestaetigung()
     Shop::Smarty()->assign('Kunde', Frontend::getCustomer())
         ->assign('Lieferadresse', $_SESSION['Lieferadresse'])
         ->assign('AGB', Shop::Container()->getLinkService()->getAGBWRB(
-            Shop::getLanguage(),
+            Shop::getLanguageID(),
             Frontend::getCustomerGroup()->getID()
         ))
         ->assign('WarensummeLocalized', Frontend::getCart()->gibGesamtsummeWarenLocalized())

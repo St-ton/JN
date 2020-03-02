@@ -285,7 +285,7 @@ class Product
 
         $attributes       = [];
         $attributeValues  = [];
-        $langID           = Shop::getLanguage();
+        $langID           = Shop::getLanguageID();
         $attr             = new stdClass();
         $attr->cSELECT    = '';
         $attr->cJOIN      = '';
@@ -1196,7 +1196,7 @@ class Product
         $mailer->send($mail);
 
         $history             = new stdClass();
-        $history->kSprache   = Shop::getLanguage();
+        $history->kSprache   = Shop::getLanguageID();
         $history->kArtikel   = Shop::$kArtikel;
         $history->cAnrede    = $data->tnachricht->cAnrede;
         $history->cVorname   = $data->tnachricht->cVorname;
@@ -1275,7 +1275,7 @@ class Product
                     ->setLastName('')
                     ->setProductId(Request::postInt('a'))
                     ->setEmail(Text::filterXSS($dbHandler->escape(\strip_tags($_POST['email']))) ?: '')
-                    ->setLanguageID(Shop::getLanguage())
+                    ->setLanguageID(Shop::getLanguageID())
                     ->setRealIP(Request::getRealIP());
                 try {
                     (new Optin(OptinAvailAgain::class))

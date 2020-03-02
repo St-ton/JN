@@ -1,4 +1,3 @@
-{config_load file="$lang.conf" section='pluginverwaltung'}
 {include file='tpl_inc/header.tpl'}
 {if $step === 'pluginverwaltung_uebersicht'}
     {include file='tpl_inc/pluginverwaltung_uebersicht.tpl'}

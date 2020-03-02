@@ -5,7 +5,7 @@ Alerts
 
    <br />
 
-Alle Alerts (Meldungen wie z.B. Fehler/Hinweise) werden ab Shop 5.0 mit dem Alert-Service erzeugt.
+Alle Alerts (Meldungen wie z. B. Fehler/Hinweise) werden ab JTL-Shop 5.0 mit dem Alert-Service erzeugt.
 
 Den *Alert*-Service beziehen Sie über die Shop-Klasse:
 
@@ -78,27 +78,27 @@ Mit der Option *dismissable* kann z. B. erzwungen werden, das *Alert* erst durch
 
 Alle möglichen Optionen:
 
-+-----------------------------+--------+---------+------------------------------------------------------------------+
-| Option                      | Typ    | Default | Beschreibung                                                     |
-+=============================+========+=========+==================================================================+
-| ``dismissable``             | bool   | false   | Alert wegklickbar                                                |
-+-----------------------------+--------+---------+------------------------------------------------------------------+
-| ``fadeOut``                 | int    |  0      | Fadeout Timer (z. B. per Konstante: ``Alert::FADE_SLOW`` =9000,  |
-|                             |        |         | was 9 Sekunden entspricht, oder direkt einen Integer eingeben)   |
-+-----------------------------+--------+---------+------------------------------------------------------------------+
-| ``showInAlertListTemplate`` | bool   | true    | Alert an zentraler Stelle im header ausgeben                     |
-+-----------------------------+--------+---------+------------------------------------------------------------------+
-| ``saveInSession``           | bool   | false   | Alert in der *SESSION* speichern (z.B. für Redirects)            |
-+-----------------------------+--------+---------+------------------------------------------------------------------+
-| ``linkHref``                | string |         | Ganzes Alert als Link                                            |
-+-----------------------------+--------+---------+------------------------------------------------------------------+
-| ``linkText``                | string |         | Wenn ``linkHref`` und ``linkText`` gesetzt sind, wird            |
-|                             |        |         | an die Message der Text als Link angehängt                       |
-+-----------------------------+--------+---------+------------------------------------------------------------------+
-| ``icon``                    | string |         | *Fontawesome*-Icon                                               |
-+-----------------------------+--------+---------+------------------------------------------------------------------+
-| ``id``                      | string |         | Fügt dem HTML den Wert der ``id`` hinzu                          |
-+-----------------------------+--------+---------+------------------------------------------------------------------+
++-----------------------------+--------+---------+-----------------------------------------------------------------+
+| Option                      | Typ    | Default | Beschreibung                                                    |
++=============================+========+=========+=================================================================+
+| ``dismissable``             | bool   | false   | Alert wegklickbar                                               |
++-----------------------------+--------+---------+-----------------------------------------------------------------+
+| ``fadeOut``                 | int    |  0      | Fadeout Timer (z. B. per Konstante: ``Alert::FADE_SLOW`` =9000, |
+|                             |        |         | was 9 Sekunden entspricht, oder direkt einen Integer eingeben)  |
++-----------------------------+--------+---------+-----------------------------------------------------------------+
+| ``showInAlertListTemplate`` | bool   | true    | Alert an zentraler Stelle im Header ausgeben                    |
++-----------------------------+--------+---------+-----------------------------------------------------------------+
+| ``saveInSession``           | bool   | false   | Alert in der *SESSION* speichern (z. B. für Redirects)          |
++-----------------------------+--------+---------+-----------------------------------------------------------------+
+| ``linkHref``                | string |         | Ganzes Alert als Link                                           |
++-----------------------------+--------+---------+-----------------------------------------------------------------+
+| ``linkText``                | string |         | Wenn ``linkHref`` und ``linkText`` gesetzt sind, wird           |
+|                             |        |         | an die Message der Text als Link angehängt                      |
++-----------------------------+--------+---------+-----------------------------------------------------------------+
+| ``icon``                    | string |         | *Fontawesome*-Icon                                              |
++-----------------------------+--------+---------+-----------------------------------------------------------------+
+| ``id``                      | string |         | Fügt dem HTML den Wert der ``id`` hinzu                         |
++-----------------------------+--------+---------+-----------------------------------------------------------------+
 
 Anzeige im Frontend
 -------------------
@@ -110,7 +110,7 @@ Die Alerts werden in der Smarty-Variable ``alertList`` als Collection gespeicher
 
     {include file='snippets/alert_list.tpl'}
 
-Falls Sie ein Alert an einer speziellen Stelle in einem Template ausgeben lassen wollen, anstatt allgemein im Header,
+Falls Sie ein Alert statt im Header an einer speziellen Stelle in einem Template ausgeben lassen wollen,
 dann setzen Sie die Option ``showInAlertListTemplate`` auf ``false``. Geben Sie dann das *Alert* an gewünschter Stelle
 wie folgt aus:
 

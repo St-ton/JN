@@ -24,11 +24,10 @@ $db          = Shop::Container()->getDB();
 $smarty      = Shop::Smarty();
 $alertHelper = Shop::Container()->getAlertService();
 $linkHelper  = Shop::Container()->getLinkService();
-$kLink       = $linkHelper->getSpecialPageLinkKey(LINKTYP_NEWSLETTER);
+$kLink       = $linkHelper->getSpecialPageID(LINKTYP_NEWSLETTER, false);
 if ($kLink === false) {
-    $oLink               = $db->select('tlink', 'nLinkart', LINKTYP_404);
     $bFileNotFound       = true;
-    Shop::$kLink         = (int)$oLink->kLink;
+    Shop::$kLink         = $linkHelper->getSpecialPageID(LINKTYP_404);
     Shop::$bFileNotFound = true;
     Shop::$is404         = true;
 
@@ -45,7 +44,7 @@ if (Request::verifyGPCDataInt('abonnieren') > 0) {
             ->setFirstName($post['cVorname'] ?? '')
             ->setLastName($post['cNachname'] ?? '')
             ->setEmail($post['cEmail'] ?? '')
-            ->setLanguageID(Shop::getLanguage())
+            ->setLanguageID(Shop::getLanguageID())
             ->setRealIP(Request::getRealIP());
         try {
             (new Optin(OptinNewsletter::class))

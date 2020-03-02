@@ -23,7 +23,7 @@ $nice        = Nice::getInstance();
 $tab         = 'uebersicht';
 $alertHelper = Shop::Container()->getAlertService();
 
-JTL\Shop::Container()->getGetText()->loadConfigLocales();
+Shop::Container()->getGetText()->loadConfigLocales();
 
 if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
     $group    = new Group();

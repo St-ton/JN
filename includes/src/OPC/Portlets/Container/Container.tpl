@@ -9,7 +9,7 @@
 
 {if $instance->getProperty('background-flag') === 'still' && !empty($instance->getProperty('still-src'))}
     {$name = basename($instance->getProperty('still-src'))}
-    {$imgAttribs = $instance->getImageAttributes()}
+    {$imgAttribs = $instance->getImageAttributes($instance->getProperty('still-src'))}
     {$style = "{$style} background-image:url('{$imgAttribs.src}');"}
 {elseif $instance->getProperty('background-flag') === 'image' && !empty($instance->getProperty('src'))}
     {$name = basename($instance->getProperty('src'))}

@@ -504,8 +504,8 @@ function pruefeZahlungsartwahlStep($post)
     global $zahlungsangaben, $step;
     if (!isset($post['zahlungsartwahl']) || (int)$post['zahlungsartwahl'] !== 1) {
         if (isset($_SESSION['Zahlungsart'])
-            && (int)($_GET['editRechnungsadresse'] ?? '') !== 1
-            && (int)($_GET['editLieferadresse'] ?? '') !== 1
+            && Request::getInt('editRechnungsadresse') !== 1
+            && Request::getInt('editLieferadresse') !== 1
         ) {
             $zahlungsangaben = zahlungsartKorrekt((int)$_SESSION['Zahlungsart']->kZahlungsart);
         } else {

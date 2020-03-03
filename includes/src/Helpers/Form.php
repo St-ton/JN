@@ -103,38 +103,38 @@ class Form
     {
         $ret  = [];
         $conf = Shop::getSettings([\CONF_KONTAKTFORMULAR, \CONF_GLOBAL]);
-        if (!$_POST['nachricht']) {
+        if (empty($_POST['nachricht'])) {
             $ret['nachricht'] = 1;
         }
-        if (!$_POST['email']) {
+        if (empty($_POST['email'])) {
             $ret['email'] = 1;
         }
-        if (!$_POST['subject']) {
+        if (empty($_POST['subject'])) {
             $ret['subject'] = 1;
         }
-        if (Text::filterEmailAddress($_POST['email']) === false) {
+        if (Text::filterEmailAddress($_POST['email'] ?? '') === false) {
             $ret['email'] = 2;
         }
-        if (SimpleMail::checkBlacklist($_POST['email'])) {
+        if (SimpleMail::checkBlacklist($_POST['email'] ?? '')) {
             $ret['email'] = 3;
         }
-        if (!$_POST['vorname'] && $conf['kontakt']['kontakt_abfragen_vorname'] === 'Y') {
+        if ($conf['kontakt']['kontakt_abfragen_vorname'] === 'Y' && empty($_POST['vorname'])) {
             $ret['vorname'] = 1;
         }
-        if (!$_POST['nachname'] && $conf['kontakt']['kontakt_abfragen_nachname'] === 'Y') {
+        if ($conf['kontakt']['kontakt_abfragen_nachname'] === 'Y' && empty($_POST['nachname'])) {
             $ret['nachname'] = 1;
         }
-        if (!$_POST['firma'] && $conf['kontakt']['kontakt_abfragen_firma'] === 'Y') {
+        if ($conf['kontakt']['kontakt_abfragen_firma'] === 'Y' && empty($_POST['firma'])) {
             $ret['firma'] = 1;
         }
         if ($conf['kontakt']['kontakt_abfragen_fax'] === 'Y') {
-            $ret['fax'] = Text::checkPhoneNumber($_POST['fax']);
+            $ret['fax'] = Text::checkPhoneNumber($_POST['fax'] ?? '');
         }
         if ($conf['kontakt']['kontakt_abfragen_tel'] === 'Y') {
-            $ret['tel'] = Text::checkPhoneNumber($_POST['tel']);
+            $ret['tel'] = Text::checkPhoneNumber($_POST['tel'] ?? '');
         }
         if ($conf['kontakt']['kontakt_abfragen_mobil'] === 'Y') {
-            $ret['mobil'] = Text::checkPhoneNumber($_POST['mobil']);
+            $ret['mobil'] = Text::checkPhoneNumber($_POST['mobil'] ?? '');
         }
         if ($conf['kontakt']['kontakt_abfragen_captcha'] !== 'N' && !self::validateCaptcha($_POST)) {
             $ret['captcha'] = 2;

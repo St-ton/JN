@@ -35,7 +35,7 @@ Shop::setPageType(PAGE_WARENKORB);
 $linkHelper      = Shop::Container()->getLinkService();
 $couponCodeValid = true;
 $cart            = Frontend::getCart();
-$kLink           = $linkHelper->getSpecialPageLinkKey(LINKTYP_WARENKORB);
+$kLink           = $linkHelper->getSpecialPageID(LINKTYP_WARENKORB);
 $link            = $linkHelper->getPageLink($kLink);
 $alertHelper     = Shop::Container()->getAlertService();
 $valid           = Form::validateToken();

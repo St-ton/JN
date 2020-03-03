@@ -29,7 +29,7 @@ $conf  = Shop::getSettings([
     CONF_KUNDENWERBENKUNDEN,
     CONF_NEWSLETTER
 ]);
-$kLink = $linkHelper->getSpecialPageLinkKey(LINKTYP_REGISTRIEREN);
+$kLink = $linkHelper->getSpecialPageID(LINKTYP_REGISTRIEREN);
 $link  = $linkHelper->getPageLink($kLink);
 $step  = 'formular';
 $titel = Shop::Lang()->get('newAccount', 'login');

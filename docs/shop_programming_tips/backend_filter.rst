@@ -6,11 +6,12 @@ Backend-Filter
    <br />
 
 Filter ermöglichen es, mit einer konfigurierbaren Menge von Textfeldern, Selectboxen oder Date-Range-Pickern Einträge
-einer Tabellenübersicht im Backend einzugrenzen. Einsatzbeispiele finden Sie unter Anderem in der *Kuponübersicht*,
-unter Weiterleitungen und in der *Zahlungsübersicht* unter Zahlungsarten.
+einer Tabellenübersicht im Backend einzugrenzen. Einsatzbeispiele finden Sie unter anderem unter
+*Aktionen -> Coupons* (in JTL-Shop 4.x unter *Kaufabwicklung -> Kupons*) oder unter *SEO -> Weiterleitungen* (in
+JTL-Shop 4.x unter *Globale Einstellungen -> Weiterleitungen*).
 
 Ein Filter besteht aus einer Sammlung von Filterfeldern unterschiedlichen Typs (Freitext, Auswahl, Date-Range). |br|
-Alle diese Filterfelder werden mit dem Template auf der gewünschten Seite zum Suchen und Filtern angeboten.
+Diese Filterfelder werden mit dem Template auf der gewünschten Seite zum Suchen und Filtern angeboten.
 Die Bedingungen, die jedes Feld erzeugt, werden konjunktiv (UND) verknüpft und für eine anschließende Datenbankabfrage
 als ``WHERE``-Klausel zur Verfügung gestellt. |br|
 Das bedeutet, dass jedes Filterfeld, falls es definiert ist, die Ergebnismenge weiter einschränkt.
@@ -18,7 +19,7 @@ Das bedeutet, dass jedes Filterfeld, falls es definiert ist, die Ergebnismenge w
 Dateien der *Backend-Filter*
 ----------------------------
 
-Alle Klassen, die zu den Backend-Filtern gehören, befinden sich im Verzeichnise ``includes/src/Pagination/``,
+Alle Klassen, die zu den Backend-Filtern gehören, befinden sich im Verzeichnis ``includes/src/Pagination/``,
 die Template-Datei entsprechend im ``tpl_inc/``-Verzeichnis.
 
 +-------------------------------------------------------+------------------------------------------------+
@@ -34,7 +35,7 @@ die Template-Datei entsprechend im ``tpl_inc/``-Verzeichnis.
 +-------------------------------------------------------+------------------------------------------------+
 | ``FilterSelectOption.php``                            | Optionsklasse für ein Selectbox-Filterfeld     |
 +-------------------------------------------------------+------------------------------------------------+
-| ``FilterDateRangeField.php``                          | Date-Range-Picker-Filterfeld-Klasse            |
+| ``FilterDateRangeField.php``                          | Klasse des Filterfeldes "Date-Range-Picker"    |
 +-------------------------------------------------------+------------------------------------------------+
 | ``admin/templates/bootstrap/tpl_inc/filtertools.tpl`` | Template für das Backend                       |
 +-------------------------------------------------------+------------------------------------------------+
@@ -42,8 +43,8 @@ die Template-Datei entsprechend im ``tpl_inc/``-Verzeichnis.
 Quick-Start
 -----------
 
-Erzeugen Sie als erstes eine Instanz des Filters und weisen Sie ihm einen ID-String zu, mit dem er und seine
-in der Session gespeicherten Einstellungen von denen anderer Instanzen unterschieden werden kann:
+Erzeugen Sie als erstes eine Instanz des Filters und weisen Sie ihm einen ID-String zu. Mit diesem ID-String können
+der Filter und seine in der Session gespeicherten Einstellungen von denen anderer Instanzen unterschieden werden:
 
 .. code-block:: php
 
@@ -77,8 +78,8 @@ Die Methode ``addSelectOption($cTitle, $cValue, $nTestOp = 0)`` fügt eine weite
 hinzu. |br|
 Diese Option erhält als Beschriftung den ersten Parameter (hier ``$cTitle``) und als zugehörigen Wert
 den zweiten Parameter (hier ``$cValue``). Der dritte Parameter bestimmt die *Vergleichsmethode* beim Suchen in der
-Tabellenspalte. Hier kann man sich entscheiden ob der Wert exakt übereinstimmen muss, als Prä- oder Postfix vorkommen
-muss, numerisch größer oder kleiner sein soll, etc. |br|
+Tabellenspalte. Hier können Sie entscheiden ob der Wert exakt übereinstimmen muss, als Prä- oder Postfix vorkommen
+muss, numerisch größer oder kleiner sein soll etc. |br|
 
 
 .. _label_backend_filter_compare_const:
@@ -110,7 +111,7 @@ Alle möglichen Werte für die *Vergleichsmethode* sind in der folgenden Tabelle
 | ``Operation::NOT_EQUAL``          | 9    | ``!=``                                           |
 +-----------------------------------+------+--------------------------------------------------+
 
-Der Wert ``0`` (oder ``Operation::CUSTOM``) erzeugt eine Auswahloption mit leerer Filterbedingung, d.h. diese Option
+Der Wert ``0`` (oder ``Operation::CUSTOM``) erzeugt eine Auswahloption mit leerer Filterbedingung, d. h. diese Option
 schränkt die Ergebnismenge nicht weiter ein.
 
 Nun kann der Filter mit ``assemble()`` fertiggestellt werden.
@@ -119,8 +120,8 @@ Nun kann der Filter mit ``assemble()`` fertiggestellt werden.
 
    $oFilterStandard->assemble();
 
-Ab jetzt sind die gesetzten Filterparametern in der *SESSION* gespeichert und eine SQL ``WHERE``-Klausel wurde
-erstellt, welche Sie mit ``getWhereSQL()`` abrufen und in Ihrer eigenen SQL-Abfrage einsetzten können.
+Ab jetzt sind die gesetzten Filterparameter in der *SESSION* gespeichert und eine SQL ``WHERE``-Klausel wurde
+erstellt, welche Sie mit ``getWhereSQL()`` abrufen und in Ihrer eigenen SQL-Abfrage einsetzen können.
 
 .. code-block:: php
    :emphasize-lines: 1,6
@@ -155,8 +156,8 @@ Methoden des Filterobjekts
 
 Mit dieser Methode können Sie ein neues Textfeld zum Filterobjekt mit der Beschriftung ``$cTitle`` hinzufügen, welches
 mit der Tabellenspalte ``$cColumn`` verglichen wird. |br|
-``$cTitle`` kann anstatt eines Strings auch ein Paar, bestehend aus 2 Strings, enthalten, z. B. der einfachen
-Beschriftung und einem längerem Text, welcher als Tooltip angezeigt wird:
+``$cTitle`` kann anstatt eines Strings auch ein Paar aus 2 Strings enthalten, das z. B. aus einer einfachen
+Beschriftung und einem längerem Text, welcher als Tooltip angezeigt wird, besteht:
 
 .. code-block:: php
 
@@ -165,20 +166,20 @@ Beschriftung und einem längerem Text, welcher als Tooltip angezeigt wird:
 ``$nTestOp`` legt die Vergleichsmethode fest. |br| Dabei sind alle Werte möglich, die
 unter :ref:`Vergleichsmethoden <label_backend_filter_compare_const>` gelistet sind.
 
-Mit dem vierten Parameter ``$nDataType`` können Sie angeben ob das Textfeld einen String (``0``) enthält oder einen
+Mit dem vierten Parameter ``$nDataType`` können Sie angeben, ob das Textfeld einen String (``0``) enthält oder einen
 skalaren Wert (``1``). |br|
 Dementsprechend werden für ``$nDataType = 0`` die Vergleichsmethoden 5 bis 8 ausgeblendet und für ``$nDataType = 0``
 werden die Methoden 1 bis 3 ausgeblendet.
 
-Die Methode gibt dann ein ``FilterTextField``-Objekt zurück, was dem hinzugefügte Textfeld-Objekt entspricht.
+Die Methode gibt dann ein ``FilterTextField``-Objekt zurück, das dem hinzugefügten Textfeld-Objekt entspricht.
 
 ``addSelectfield($cTitle, $cColumn)``
 """""""""""""""""""""""""""""""""""""
 
-Diese Methode ermöglicht es Ihnen, ein neues Dropdown-Auswahlfeld zum Filterobjekt mit der Beschriftung ``$cTitle``
-hinzuzufügen, welches mit der Tabellenspalte ``$cColumn`` verglichen wird und dieses neue Auswahlfeld zurückgibt.
+Diese Methode ermöglicht es Ihnen, ein neues Dropdown-Auswahlfeld zum Filterobjekt hinzuzufügen, welches die
+Beschriftung ``$cTitle`` trägt und mit der Tabellenspalte ``$cColumn`` verglichen wird.
 
-Weiter Optionen können Sie dem Feld mit ``addSelectOption()`` hinzufügen
+Weitere Optionen können Sie dem Feld mit ``addSelectOption()`` hinzufügen
 (siehe: :ref:`label_backend_filter_select_field`).
 
 Der Rückgabewert dieser Methode ist ein ``FilterSelectField``-Objekt, welches dem hinzugefügten Auswahlfeld-Objekt
@@ -188,16 +189,17 @@ entspricht.
 """"""""""""""""""""""""""""""""""""""""
 
 Mithilfe dieser Methode fügen Sie dem Filterobjekt einen neuen Date-Range-Picker mit der Beschriftung ``$cTitle`` hinzu.
-Die Tabellenspalte ``$cColumn`` enthält dass Datum, welches im gewählten Bereich liegen muss.
+Die Tabellenspalte ``$cColumn`` enthält das Datum, welches im gewählten Bereich liegen muss.
 
-Das Template ``filtertools.tpl`` stellt dazu einen DateRange-Picker zur Verfügung.
+Das Template ``filtertools.tpl`` stellt dazu einen Date-Range-Picker zur Verfügung.
 (siehe auch: :ref:`label_backend_filter_template`)
 
 ``assemble()``
 """"""""""""""
 
 ``assemble()`` stellt den Filter fertig. |br|
-Sie setzt eine SQL ``WHERE``-Klausel zusammen und speichert die getroffenen Filtereinstellungen in der *SESSION*.
+Diese Methode setzt eine SQL ``WHERE``-Klausel zusammen und speichert die getroffenen Filtereinstellungen in
+der *SESSION*.
 
 Rufen Sie diese Funktion auf, nachdem Sie alle Filterfelder konfiguriert haben.
 
@@ -219,7 +221,7 @@ eingebunden werden:
         ]}
 
 +---------------------------+----------------------------------------------------------------------------------------------+
-| Paramter                  | Bedeutung                                                                                    |
+| Parameter                 | Bedeutung                                                                                    |
 +===========================+==============================================================================================+
 | ``oFilter``               | das Filterobjekt                                                                             |
 +---------------------------+----------------------------------------------------------------------------------------------+

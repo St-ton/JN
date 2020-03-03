@@ -219,7 +219,7 @@ if ($step === 'Bestaetigung' && $cart->gibGesamtsummeWaren(true) === 0.0) {
     Cart::refreshChecksum($cart);
     $_SESSION['AktiveZahlungsart'] = $savedPayment;
 }
-$kLink = $linkService->getSpecialPageLinkKey(LINKTYP_BESTELLVORGANG);
+$kLink = $linkService->getSpecialPageID(LINKTYP_BESTELLVORGANG);
 $link  = $linkService->getPageLink($kLink);
 CartHelper::addVariationPictures($cart);
 Shop::Smarty()->assign(

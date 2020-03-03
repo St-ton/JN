@@ -119,7 +119,11 @@
                                             <div class="h2">{lang key='newsCommentAdd' section='news'}</div>
                                         {/block}
                                         {block name='blog-details-form-comment-form'}
-                                            {form method="post" action="{if !empty($newsItem->getSEO())}{$newsItem->getURL()}{else}{get_static_route id='news.php'}{/if}" class="form jtl-validate" id="news-addcomment"}
+                                            {form method="post"
+                                                action="{if !empty($newsItem->getSEO())}{$newsItem->getURL()}{else}{get_static_route id='news.php'}{/if}"
+                                                class="form jtl-validate"
+                                                id="news-addcomment"
+                                                slide=true}
                                                 {input type="hidden" name="kNews" value=$newsItem->getID()}
                                                 {input type="hidden" name="kommentar_einfuegen" value="1"}
                                                 {input type="hidden" name="n" value=$newsItem->getID()}

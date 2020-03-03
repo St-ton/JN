@@ -53,11 +53,10 @@ class Filesystem extends \League\Flysystem\Filesystem
      */
     public function unzip(string $directory, string $path): bool
     {
-        $directory    = Path::clean($directory);
-        $location     = Path::clean($path, true);
-        $zipArchive   = new ZipArchive();
-        $directories  = [];
-        $archive_size = 0;
+        $directory   = Path::clean($directory);
+        $location    = Path::clean($path, true);
+        $zipArchive  = new ZipArchive();
+        $directories = [];
         if (($code = $zipArchive->open($directory, ZipArchive::CHECKCONS)) !== true) {
             throw new Exception('Incompatible Archive.', $code);
         }
@@ -66,15 +65,11 @@ class Filesystem extends \League\Flysystem\Filesystem
             if (!$info = $zipArchive->statIndex($index)) {
                 throw new Exception('Could not retrieve file from archive.');
             }
-
-            $archive_size += $info['size'];
-
             if (\substr($info['name'], -1) === \DIRECTORY_SEPARATOR) {
                 $directory = Path::removeTrailingSlash($info['name']);
             } elseif ($dirName = \dirname($info['name'])) {
                 $directory = Path::removeTrailingSlash($dirName);
             }
-
             $directories[$directory] = $index;
         }
 

@@ -9,7 +9,6 @@ namespace JTL\Media;
 use DirectoryIterator;
 use Exception;
 use FilesystemIterator;
-use Image;
 use JTL\Helpers\URL;
 use JTL\IO\IOError;
 use JTL\Media\Image\Category;

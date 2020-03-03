@@ -6,6 +6,8 @@
 
 namespace JTL\Smarty;
 
+use JSMin\JSMin;
+use JSMin\UnterminatedStringException;
 use JTL\Backend\AdminTemplate;
 use JTL\Events\Dispatcher;
 use JTL\Helpers\GeneralObject;
@@ -123,8 +125,7 @@ class JTLSmarty extends \SmartyBC
                  ->setTemplateDir([$this->context => \PFAD_ROOT . \PFAD_ADMIN . \PFAD_TEMPLATES . $tplDir])
                  ->setCompileDir($compileDir)
                  ->setConfigDir(\PFAD_ROOT . \PFAD_ADMIN . \PFAD_TEMPLATES . $tplDir . '/lang/')
-                 ->setPluginsDir(\SMARTY_PLUGINS_DIR)
-                 ->configLoad('german.conf', 'global');
+                 ->setPluginsDir(\SMARTY_PLUGINS_DIR);
         }
 
         return $parent;
@@ -277,11 +278,11 @@ class JTLSmarty extends \SmartyBC
             $options['cssMinifier'] = [\Minify_CSSmin::class, 'minify'];
         }
         if ($minifyJS === true) {
-            $options['jsMinifier'] = [\JSMin\JSMin::class, 'minify'];
+            $options['jsMinifier'] = [JSMin::class, 'minify'];
         }
         try {
             $res = (new \Minify_HTML($html, $options))->process();
-        } catch (\JSMin\UnterminatedStringException $e) {
+        } catch (UnterminatedStringException $e) {
             $res = $html;
         }
 

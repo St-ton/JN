@@ -8,7 +8,7 @@ Hinweise, Tipps & Tricks
 .. role:: strike
    :class: strike
 
-Seit Version 4.00 gibt es einige Möglichkeiten, um die Entwicklung von Plugins für den JTL-Shop einfacher zu machen.
+Seit JTL-Shop 4.0 gibt es einige Möglichkeiten, um die Entwicklung von Plugins für den JTL-Shop zu vereinfachen.
 
 Konstanten
 ----------
@@ -41,10 +41,10 @@ Im ersten Schritt können in der ``[Shop-Root]/includes/config.JTL-Shop.ini.php`
     //Fallbacks für alte Templates deaktivieren
     define('TEMPLATE_COMPATIBILITY', false);
 
-Wawi-Abgleich
-"""""""""""""
+Abgleich mit JTL-Wawi
+"""""""""""""""""""""
 
-Falls, zu debug-Zwecken, der Wawi-Abgleich näher untersucht werden soll, lässt sich das Löschen der übertragenen
+Falls zu Debug-Zwecken der Abgeich mit JTL-Wawi näher untersucht werden soll, lässt sich das Löschen der übertragenen
 XML-Dateien folgendermaßen verhindern:
 
 .. code-block:: php
@@ -60,9 +60,9 @@ Darüber hinaus können eventuelle Performance-Probleme mit Plugins anhand des P
 
     define('PROFILE_PLUGINS', true);
 
-Sobald eine Seite im Frontend aufgerufen wird, findet sich im Backend unter "System -> Profiler" (bis Shop Version 4.x),
-bzw. "Plugin Profiler" (ab Shop Version 5.x), im Tab "*Plugins*" eine genauere Analyse der ausgeführten Plugins und
-deren Hooks.
+Sobald eine Seite im Frontend aufgerufen wird, findet sich im Backend unter "System -> Profiler" (bis JTL-Shop 4.x)
+bzw. "Fehlerbehebung -> Plugin-Profiler" (ab JTL-Shop 5.x) im Tab "*Plugins*" eine genauere Analyse der ausgeführten
+Plugins und deren Hooks.
 
 XHProf / Tideways
 """""""""""""""""
@@ -73,7 +73,7 @@ Falls *XHProf* oder *Tideways* auf dem Server installiert sind, kann über die K
 
     define('PROFILE_SHOP', true);
 
-auch der gesamte Shopcode analysiert werden.
+auch der gesamte Code des Onlineshops analysiert werden.
 
 SQL-Queries
 """""""""""
@@ -85,7 +85,7 @@ Sämtliche über die NiceDB-Klasse ausgeführten SQL-Queries können via
     define('PROFILE_QUERIES', true);
 
 im Profiler gespeichert werden. |br|
-Unter "System -> Profiler" (bis Shop Version 4.x), bzw. "Plugin Profile" (ab Shop Version 5.x), sind sie anschließend
+Unter "System -> Profiler" (bis JTL-Shop 4.x), bzw. "Plugin-Profiler" (ab JTL-Shop 5.x) sind sie anschließend
 im Tab "*SQL*" zu sehen.
 
 Alternativ lassen sie sich via
@@ -105,13 +105,17 @@ In beiden Fällen kann der Informationsgehalt über
 
 gesteuert werden. Je höher der Wert, desto mehr Informationen werden gespeichert bzw. ausgegeben.
 
-Breaking Changes
-----------------
 
-Mit der Version 4.05 des Shop4 wurde im Warenkorb eine Checksumme zur Prüfung auf Konsistenz eingeführt. |br|
+.. _label_hinweise_wkchecksum:
+
+Checksumme für den Warenkorb
+----------------------------
+
+Mit der Version 4.05 von JTL-Shop wurde im Warenkorb eine Checksumme zur Prüfung auf Konsistenz eingeführt
+("Breaking Change"). |br|
 Mit dieser Prüfung soll verhindert werden, dass während der Anzeige der Bestellzusammenfassung für den Kunden im
-Hintergrund Änderungen an den gekauften Artikeln (z.B. Preisänderungen durch Wawi-Abgleich oder parallele Abverkäufe)
-durchgeführt werden, die dem Kunden nicht angezeigt werden. |br|
+Hintergrund Änderungen an den gekauften Artikeln durchgeführt werden, die dem Kunden nicht angezeigt werden. Solche
+Änderungen könnten z. B. Preisänderungen durch einen Abgleich mit JTL-Wawi oder parallele Abverkäufe sein. |br|
 
 Eine solche Änderung wird durch den Vergleich der Prüfsumme direkt vor dem Speichern der Bestellung
 mit der Meldung quittiert:
@@ -125,10 +129,11 @@ Der Kunde wird dann zurück zum Warenkorb geleitet.
 
 .. important::
 
-    Ein Plugin das direkt den Warenkorb manipuliert (um z.B. einen speziellen Rabatt einzufügen) muß dann selbst dafür
-    sorgen, die Prüfsumme nach den eigenen Änderungen zu aktualisieren, damit die Bestellung nicht in einer Schleife endet.
+    Ein Plugin, das direkt den Warenkorb manipuliert (um z. B. einen speziellen Rabatt einzufügen), muss selbst dafür
+    sorgen, die Prüfsumme nach den eigenen Änderungen zu aktualisieren, damit die Bestellung nicht in einer Schleife
+    endet.
 
-Die Aktualisierung erfolgt durch den statischen Aufruf der Methode ``refreshChecksum()`` der Klasse ``Warenkorb``,
+Die Aktualisierung erfolgt durch den statischen Aufruf der Methode ``refreshChecksum()`` der Klasse ``Warenkorb``
 mit dem aktuellen Warenkorb als Parameter.
 
 .. code-block:: php
@@ -138,7 +143,8 @@ mit dem aktuellen Warenkorb als Parameter.
 Kompatibilität
 --------------
 
-Soll ein Plugin sowohl für Shop3.x als auch 4.x genutzt werden können, bietet es sich an, die aktuelle Version z.B. via
+Soll ein Plugin sowohl für JTL-Shop 3.x als auch 4.x genutzt werden können, bietet es sich an, die aktuelle Version
+z. B. via
 
 .. code-block:: php
 
@@ -151,7 +157,7 @@ Dabei ist zu bedenken, dass nur wenn diese Variable *TRUE* ist, die Klasse ``Sho
 Registry
 --------
 
-Eine simple *Registry* zum Speichern von beliebigen Werten, innerhalb eines Requests, kann über die Shop-Klasse erreicht
+Eine simple *Registry* zum Speichern von beliebigen Werten innerhalb eines Requests kann über die Shop-Klasse erreicht
 werden. |br|
 Hierfür sind die Funktionen ``Shop Shop::get(string $key)`` zum Auslesen, ``bool Shop::has(string $key)`` zum
 Prüfen sowie ``mixed Shop::set(string $key, mixed $value)`` zum Setzen vorhanden.
@@ -171,12 +177,12 @@ Beispiel:
 SQL
 ---
 
-Shop4 vereinfacht einige häufige Aufrufe der NiceDB-Klasse, sodass nicht mehr auf das globale NiceDB-Objekt
+JTL-Shop 4 vereinfacht einige häufige Aufrufe der NiceDB-Klasse, sodass nicht mehr auf das globale NiceDB-Objekt
 zugegriffen werden muss und die Methoden-Namen leichter zu merken sind. Die Parameter sind dabei unverändert geblieben.
 Eine Übersicht findet sich in der folgenden Tabelle.
 
 +-------------------------------------------+--------------------------+
-| Shop3                                     | Shop4                    |
+| Shop 3                                    | Shop 4                   |
 +===========================================+==========================+
 | ``$GLOBALS['NiceDB']->executeQuery()``    | ``Shop::DB()->query()``  |
 +-------------------------------------------+--------------------------+
@@ -189,12 +195,12 @@ Eine Übersicht findet sich in der folgenden Tabelle.
 | ``$GLOBALS['NiceDB']->updateRow()``       | ``Shop::DB()->update()`` |
 +-------------------------------------------+--------------------------+
 
-Inbesondere ab Version 4.00 wird dringend geraten, die Funktionen ``NiceDB::insert()``, ``NiceDB::delete()`` und
-``NiceDB::update()`` zu nutzen, anstelle von ``NiceDB::executeQuery()``. |br|
+Inbesondere ab Version 4.0 wird dringend geraten, die Funktionen ``NiceDB::insert()``, ``NiceDB::delete()`` und
+``NiceDB::update()`` anstelle von ``NiceDB::executeQuery()`` zu nutzen. |br|
 Nur diese Varianten nutzen *Prepared Statements*!
 
-Ab Shop Version 5.x, und besonders im Object-Kontext, wird auf diese Methoden nicht mehr direkt und statisch
-zugegriffen, sondern via *Dependency Injection Container*, beispielsweise derart:
+Ab JTL-Shop Version 5.x, und besonders im Object-Kontext, wird auf diese Methoden nicht mehr direkt und statisch
+zugegriffen, sondern via *Dependency Injection Container*. Ein Beispiel sehen Sie hier:
 
 .. code-block:: php
    :emphasize-lines: 7
@@ -228,6 +234,8 @@ Der präferierte Weg wäre jedoch die Nutzung der Methode ``NiceDB::selectSingle
 
 Das obige "Negativ-Beispiel" ließe sich damit wie folgt umschreiben:
 
+**Positiv-Beispiel:**
+
 .. code-block:: php
 
     $result = Shop::DB()->select('my_table', 'id', (int)$_POST['id']);
@@ -242,7 +250,7 @@ Das obige "Negativ-Beispiel" ließe sich damit wie folgt umschreiben:
 Einfügen von Zeilen
 """""""""""""""""""
 
-Analog zum Selektieren, ein Beispiel mit einem *Insert*:
+Analog zum Selektieren ein Beispiel mit einem *Insert*:
 
 **Unsichere Variante:**
 
@@ -282,7 +290,7 @@ Löschen von Zeilen
 
     Shop::DB()->delete('my_table', 'id', (int) $_POST['id']);
 
-Bei erweiterten WHERE-Klauseln mit *AND*-Bedingung können zwei Arrays, mit jeweils allen Keys und allen Values,
+Bei erweiterten WHERE-Klauseln mit *AND*-Bedingung können zwei Arrays mit jeweils allen Keys und allen Values
 übergeben werden:
 
 .. code-block:: php
@@ -318,12 +326,12 @@ Aktualisieren von Zeilen
 .. important::
 
     Sollte es nicht möglich sein, die beschriebenen Methoden zu nutzen, so sollten sämtliche potentiell
-    gefährlichen Werte über ``Shop::DB()->escape()`` zuvor escapet, bzw. im Fall von Numeralen gecastet, werden.
+    gefährlichen Werte über ``Shop::DB()->escape()`` zuvor maskiert, bzw. im Fall von Numeralen konvertiert, werden.
 
-Änderungen von Shop Version 3.x zu Version 4.x
-----------------------------------------------
+Änderungen von JTL-Shop 3.x zu JTL-Shop 4.x
+-------------------------------------------
 
-Eine kurze Übersicht von Änderungen in Shop 4:
+Eine kurze Übersicht von Änderungen in JTL-Shop 4:
 
 * ``smarty->assign()`` kann nun *gechaint* werden:
 

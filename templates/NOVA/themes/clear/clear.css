@@ -19850,7 +19850,7 @@ aside .last-seen-link {
   transform: translateY(-50%);
   transition: all 0.2s ease-in-out;
   left: 0.9375rem;
-  z-index: 1;
+  z-index: 10;
   line-height: 1.3;
   pointer-events: none;
   text-overflow: ellipsis;
@@ -19890,6 +19890,9 @@ aside .last-seen-link {
 .label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) .form-control:placeholder-shown:not(:focus).form-control-lg ~ label {
   top: calc((1.5em + 1rem + 2px) / 2);
   font-size: 1rem;
+}
+.label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) .input-group-prepend + input + label {
+  left: 3.5rem;
 }
 .label-slide .form-group ~ .valid-feedback,
 .label-slide .form-group ~ .valid-tooltip {

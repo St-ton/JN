@@ -22,7 +22,7 @@
         method="post"
         id="article_question"
         class="jtl-validate"
-    }
+        slide=true}
         {block name='productdetails-question-on-item-form-fieldset-contact'}
             <fieldset>
                 {block name='productdetails-question-on-item-form-legend-contact'}

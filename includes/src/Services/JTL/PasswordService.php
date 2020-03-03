@@ -105,7 +105,7 @@ class PasswordService implements PasswordServiceInterface
      */
     public function hasOnlyValidCharacters(string $pass, string $validCharRegex = ''): bool
     {
-        return !preg_match(
+        return !\preg_match(
             $validCharRegex ?: '/[^A-Za-z0-9\!"\#\$%&\'\(\)\*\+,-\.\/:;\=\>\?@\[\\\\\]\^_`\|\}~]/',
             $pass
         );

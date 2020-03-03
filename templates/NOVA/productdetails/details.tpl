@@ -19,7 +19,7 @@
     {block name='productdetails-details-form'}
         {opcMountPoint id='opc_before_buy_form'}
         {container}
-            {form id="buy_form" action=$Artikel->cURLFull class="jtl-validate" slide=false}
+            {form id="buy_form" action=$Artikel->cURLFull class="jtl-validate"}
                 {row id="product-offer" class="product-detail"}
                     {block name='productdetails-details-include-image'}
                         {col cols=12 lg=6 class="product-gallery"}

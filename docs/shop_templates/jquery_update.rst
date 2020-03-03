@@ -1,5 +1,5 @@
-Update auf jQuery 3.x (ab 5.0)
-==============================
+Update auf jQuery 3.x (ab JTL-Shop 5.0)
+=======================================
 
 .. |br| raw:: html
 

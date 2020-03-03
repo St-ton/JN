@@ -5,7 +5,7 @@
 .form-group:not(.exclude-from-label-slide):not(.checkbox) {
 	position: relative;
 
-	label { background: $white; position: absolute; cursor: text; top: 0; font-size: $input-font-size * .86; margin: 0; padding: 0 rem(5px); transform: translateY(-50%); transition: $transition-base; left: $input-padding-x; z-index: 1; line-height: 1.3; pointer-events: none; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; max-width: calc(100% - (2 * #{$input-padding-x}));
+	label { background: $white; position: absolute; cursor: text; top: 0; font-size: $input-font-size * .86; margin: 0; padding: 0 rem(5px); transform: translateY(-50%); transition: $transition-base; left: $input-padding-x; z-index: 10; line-height: 1.3; pointer-events: none; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; max-width: calc(100% - (2 * #{$input-padding-x}));
 		&:after { content: " "; display: block; position: absolute; background: $white; height: rem(2px); top: 45%; left: -3em; right: -3em; z-index: -1; }
 	}
 
@@ -22,6 +22,10 @@
 				&.form-control-lg ~ label { top: calc((#{$input-line-height-lg * 1em} + #{$input-btn-padding-y-lg * 2} + #{$input-height-border}) / 2); font-size: $input-font-size-lg; }
 			}
 		}
+	}
+
+	.input-group-prepend + input + label{
+		left: 3.5rem;
 	}
 }
 

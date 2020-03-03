@@ -202,8 +202,7 @@ class Statusmail
      */
     private function getProductCountPerCustomerGroup(): array
     {
-        $products = [];
-        // Hole alle Kundengruppen im Shop
+        $products       = [];
         $customerGroups = $this->db->query(
             'SELECT kKundengruppe, cName FROM tkundengruppe',
             ReturnType::ARRAY_OF_OBJECTS
@@ -273,8 +272,6 @@ class Statusmail
     }
 
     /**
-     * Holt die Anzahl an Bestellungen für einen bestimmten Zeitraum
-     *
      * @return int
      */
     private function getOrderCount(): int
@@ -293,8 +290,6 @@ class Statusmail
     }
 
     /**
-     * Holt die Anzahl an Bestellungen für einen bestimmten Zeitraum von Neukunden
-     *
      * @return int
      */
     private function getOrderCountForNewCustomers(): int
@@ -316,8 +311,6 @@ class Statusmail
     }
 
     /**
-     * Anzahl Zahlungseingänge zu Bestellungen
-     *
      * @return int
      */
     private function getIncomingPaymentsCount(): int
@@ -337,8 +330,6 @@ class Statusmail
     }
 
     /**
-     * Anzahl versendeter Bestellungen
-     *
      * @return int
      */
     private function getShippedOrdersCount(): int
@@ -358,8 +349,6 @@ class Statusmail
     }
 
     /**
-     * Holt die Anzahl von Besucher für einen bestimmten Zeitraum
-     *
      * @return int
      */
     private function getVisitorCount(): int
@@ -379,8 +368,6 @@ class Statusmail
     }
 
     /**
-     * Holt die Anzahl von Besucher für einen bestimmten Zeitraum die von Suchmaschinen kamen
-     *
      * @return int
      */
     private function getBotVisitCount(): int
@@ -400,8 +387,6 @@ class Statusmail
     }
 
     /**
-     * Holt die Anzahl von Bewertungen für einen bestimmten Zeitraum
-     *
      * @return int
      */
     private function getRatingsCount(): int
@@ -421,8 +406,6 @@ class Statusmail
     }
 
     /**
-     * Holt die Anzahl von Bewertungen für einen bestimmten Zeitraum die nicht freigeschaltet wurden
-     *
      * @return int
      */
     private function getNonApprovedRatingsCount(): int
@@ -442,8 +425,6 @@ class Statusmail
     }
 
     /**
-     * Holt die Anzahl von gezahlten Guthaben für einen bestimmten Zeitraum
-     *
      * @return stdClass
      */
     private function getRatingCreditsCount(): stdClass
@@ -468,8 +449,6 @@ class Statusmail
     }
 
     /**
-     * Holt die Anzahl Kunden die geworben wurden für einen bestimmten Zeitraum
-     *
      * @return int
      */
     private function getNewCustomerPromotionsCount(): int
@@ -488,8 +467,6 @@ class Statusmail
     }
 
     /**
-     * Holt die Anzahl Kunden die erfolgreich geworben wurden für einen bestimmten Zeitraum
-     *
      * @return int
      */
     private function getSuccessfulNewCustomerPromotionsCount(): int
@@ -510,8 +487,6 @@ class Statusmail
     }
 
     /**
-     * Holt die Anzahl von versendeten Wunschlisten für einen bestimmten Zeitraum
-     *
      * @return int
      */
     private function getSentWishlistCount(): int
@@ -530,8 +505,6 @@ class Statusmail
     }
 
     /**
-     * Holt die Anzahl an Newskommentare für einen bestimmten Zeitraum
-     *
      * @return int
      */
     private function getNewsCommentsCount(): int
@@ -551,8 +524,6 @@ class Statusmail
     }
 
     /**
-     * Holt die Anzahl an Newskommentare nicht freigeschaltet für einen bestimmten Zeitraum
-     *
      * @return int
      */
     private function getNonApprovedCommentsCount(): int
@@ -572,8 +543,6 @@ class Statusmail
     }
 
     /**
-     * Holt die Anzahl an Produktanfragen zur Verfügbarkeit für einen bestimmten Zeitraum
-     *
      * @return int
      */
     private function getAvailabilityNotificationsCount(): int
@@ -592,8 +561,6 @@ class Statusmail
     }
 
     /**
-     * Holt die Anzahl an Produktanfragen zum Artikel für einen bestimmten Zeitraum
-     *
      * @return int
      */
     private function getProductInquriesCount(): int
@@ -612,8 +579,6 @@ class Statusmail
     }
 
     /**
-     * Holt die Anzahl von Vergleichen für einen bestimmten Zeitraum
-     *
      * @return int
      */
     private function getComparisonsCount(): int
@@ -632,8 +597,6 @@ class Statusmail
     }
 
     /**
-     * Holt die Anzahl von genutzten Kupons für einen bestimmten Zeitraum
-     *
      * @return int
      */
     private function getCouponUsageCount(): int
@@ -695,6 +658,7 @@ class Statusmail
         if (!\is_array($statusMail->nInhalt_arr)
             || empty($dateStart)
             || empty($dateEnd)
+            || empty($statusMail->nAktiv)
             || \count($statusMail->nInhalt_arr) === 0
         ) {
             return false;
@@ -847,7 +811,6 @@ class Statusmail
             \fclose($fileStream);
             $mail->mail->attachment = $attachment;
         }
-
         $mail->mail->toEmail = $statusMail->cEmail;
 
         return $mail;
@@ -859,9 +822,8 @@ class Statusmail
      */
     public function sendAllActiveStatusMails(): bool
     {
-        $ok          = true;
-        $statusMails = $this->db->selectAll('tstatusemail', 'nAktiv', 1);
-        foreach ($statusMails as $statusMail) {
+        $ok = true;
+        foreach ($this->db->selectAll('tstatusemail', 'nAktiv', 1) as $statusMail) {
             $ok = $ok && $this->send($statusMail);
         }
 
@@ -869,19 +831,16 @@ class Statusmail
     }
 
     /**
-     * @param stdClass|null $statusMail
+     * @param stdClass $statusMail
      * @return bool
      * @throws SmartyException
      */
-    public function send($statusMail = null): bool
+    public function send($statusMail): bool
     {
-        $sent = false;
-        if ($statusMail === null) {
-            $statusMail = $this->db->select('tstatusemail', 'nAktiv', 1);
-        }
+        $sent                    = false;
         $statusMail->nInhalt_arr = Text::parseSSKint($statusMail->cInhalt);
-        $nIntervall              = (int)$statusMail->nInterval;
-        switch ($nIntervall) {
+        $intervall               = (int)$statusMail->nInterval;
+        switch ($intervall) {
             case 1:
                 $startDate   = \date('Y-m-d', \strtotime('yesterday'));
                 $endDate     = \date('Y-m-d', \strtotime('today'));
@@ -898,10 +857,9 @@ class Statusmail
                 $intervalLoc = 'Monatliche';
                 break;
             default:
-                throw new InvalidArgumentException('Invalid interval type: ' . $nIntervall);
+                throw new InvalidArgumentException('Invalid interval type: ' . $intervall);
                 break;
         }
-
         $data = $this->generate($statusMail, $startDate, $endDate);
         if ($data) {
             $data->cIntervall = $intervalLoc . ' Status-Email';
@@ -914,7 +872,6 @@ class Statusmail
                 $mail->setAttachments([$data->mail->attachment]);
             }
             $sent = $mailer->send($mail);
-
             foreach ($mail->getAttachments() as $attachment) {
                 \unlink($attachment->getFullPath());
             }

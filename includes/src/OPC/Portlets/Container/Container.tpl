@@ -30,7 +30,7 @@
     {$imgAttribs     = $instance->getImageAttributes($instance->getProperty('video-poster'))}
     {$videoPosterUrl = $imgAttribs.src}
     {$name           = basename($instance->getProperty('video-src'))}
-    {$videoSrcUrl    = "{Shop::getURL()}/{\PFAD_MEDIA_VIDEO}{$name}"}
+    {$videoSrcUrl    = "{Shop::getURL()}/{$smarty.const.PFAD_MEDIA_VIDEO}{$name}"}
 {/if}
 
 {container style=$style class=$class data=$data fluid=$fluid}

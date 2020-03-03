@@ -180,7 +180,7 @@
         {/block}
 
         {block name='checkout-step5-confirmation-form'}
-            {form method="post" name="agbform" id="complete_order" action="{get_static_route id='bestellabschluss.php'}" class="jtl-validate" slide=false}
+            {form method="post" name="agbform" id="complete_order" action="{get_static_route id='bestellabschluss.php'}" class="jtl-validate"}
                 {block name='checkout-step5-confirmation-form-content'}
                     {lang key='agb' assign='agb'}
                     {if isset($AGB->kLinkAGB) && $AGB->kLinkAGB > 0}

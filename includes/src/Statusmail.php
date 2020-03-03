@@ -113,7 +113,7 @@ class Statusmail
         $d->setTime(0, 0);
         Shop::Container()->getAlertService()->addAlert(
             Alert::TYPE_INFO,
-            \sprintf(__('nextStatusMail'), $types[$frequency]['name'], $d->format('Y-m-d')),
+            \sprintf(__('nextStatusMail'), $types[$frequency]['name'], $d->format('d.m.Y')),
             'nextStatusMail' . $frequency
         );
         $cron = new LegacyCron(

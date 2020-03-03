@@ -8,11 +8,11 @@ Plugin "JTL-Debug"
 
    <br />
 
-*JTL Debug* ist ein, in JTL-Shop integriertes, Plugin zur Ausgabe von Template- und Shop-Informationen zur
+*JTL Debug* ist ein in JTL-Shop integriertes Plugin zur Ausgabe von Template- und Onlineshop-Informationen zur
 Unterstützung der Template- und Plugin-Entwicklung.  |br|
-Mit diesem Plugin können Sie sich, zur Laufzeit des Shops, verschiedene Template-Informationen anzeigen lassen:
+Mit diesem Plugin können Sie sich zur Laufzeit des Onlineshops verschiedene Template-Informationen anzeigen lassen:
 
-* Smartyvariablen
+* Smarty-Variablen
 * aktive Hooks
 * PHP-Fehler
 * Session
@@ -47,7 +47,7 @@ Unter dem Punkt "Ausgabe" können Sie angeben, welche Informationen Ihnen *JTL D
 Frontend
 """"""""
 
-Wenn Sie in Ihrem Shop-Frontend nun ``[STRG]+[Enter]`` drücken, öffnet sich die Debug-Ausgabe. |br|
+Wenn Sie im Frontend Ihres Onlineshops nun ``[STRG]+[Enter]`` drücken, öffnet sich die Debug-Ausgabe. |br|
 Hier können Sie bequem über die eingebaute Suchfunktion nach Variablen und Werten suchen.
 
 .. image:: /_images/debug_plugin.png
@@ -57,9 +57,9 @@ Hier können Sie bequem über die eingebaute Suchfunktion nach Variablen und Wer
 Frontend Debug-Bar
 ------------------
 
-Als weitere Debug-Möglichkeit stellt der Shop den `PHP Debug Bar <https://github.com/maximebf/php-debugbar>`_ bereit,
+Als weitere Debug-Möglichkeit stellt JTL-Shop die `PHP Debug Bar <https://github.com/maximebf/php-debugbar>`_ bereit,
 welcher über die Konstante ``SHOW_DEBUG_BAR`` aktiviert werden kann. |br|
-Setzen Sie diese Konstante in der Shop-config auf ``true``, um im unteren Bildschirmbereich ebenfalls
-Debug-Informationen angezeigt zu bekommen:
+Setzen Sie diese Konstante in der Shop-Config (``includes/config.JTL-Shop.ini.php``) auf ``true``, um im unteren
+Bildschirmbereich ebenfalls Debug-Informationen angezeigt zu bekommen:
 
 .. image:: /_images/php_debug_bar.png

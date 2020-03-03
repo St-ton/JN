@@ -352,6 +352,9 @@ Probieren Sie es aus!
     LESS-Dateien müssen **nicht** in die ``template.xml`` eingefügt werden. Der Theme-Editor erkennt LESS-Files
     automatisch.
 
+
+.. _label_eigenestheme_kompilieren:
+
 Eigenes Theme mit dem Theme-Editor kompilieren
 ----------------------------------------------
 

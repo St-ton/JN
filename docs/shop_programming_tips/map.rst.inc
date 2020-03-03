@@ -21,3 +21,6 @@
 
 :doc:`/shop_programming_tips/config_tips`
     Konstanten der ``config.JTL-Shop.ini.php``
+
+:doc:`/shop_programming_tips/breaking_changes`
+    Upgrade Guidelines

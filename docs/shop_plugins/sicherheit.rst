@@ -5,22 +5,22 @@ Sichere Plugins schreiben
 
    <br />
 
-Plugins haben vollständigen Zugriff auf den Shop. |br|
-Es ist daher unerlässlich, dass jeder Pluginentwickler größten Wert auf die Sicherheit der eigenen Plugins legt.
+Plugins haben vollständigen Zugriff auf den Onlineshop. |br|
+Es ist daher unerlässlich, dass jeder Plugin-Entwickler größten Wert auf die Sicherheit der eigenen Plugins legt.
 
-Dieser Guide soll Pluginentwicklern dabei helfen, ihre Plugins gemäß den gängigen Sicherheitsstandards zu entwickeln
-und die Sicherheit des gesamten JTL-Shop Ökosystems zu stärken.
+Dieser Guide soll Plugin-Entwicklern dabei helfen, ihre Plugins gemäß den gängigen Sicherheitsstandards zu entwickeln
+und die Sicherheit des gesamten Ökosystems von JTL-Shop zu stärken.
 
 Validierung
 -----------
 
 Zunächst sollten sämtliche Eingabewerte für SQL-Queries validiert werden. |br|
-Eine Validierung der Daten ist ein erster Schritt in die richtige Richtung, um *SQL-Injections* (allgemeine Hinweise
-dazu sind z.B. unter
+Eine Validierung der Daten ist ein erster Schritt in die richtige Richtung, um *SQL-Injections* und andere Probleme
+zu vermeiden. Allgemeine Hinweise dazu sind z. B. unter
 "`Testing for SQL Injection (OTG-INPVAL-005) <https://www.owasp.org/index.php/Testing_for_SQL_Injection_(OTG-INPVAL-005)>`_"
-zu finden) und andere Probleme zu vermeiden.
+zu finden.
 
-Als gutes Beispiel könnten die, von PHP bereitgestellten, Validierungsfunktionen genutzt werden:
+Als gutes Beispiel könnten die von PHP bereitgestellten Validierungsfunktionen genutzt werden:
 
 .. code-block:: php
 
@@ -37,14 +37,14 @@ Als gutes Beispiel könnten die, von PHP bereitgestellten, Validierungsfunktione
 Prepared Statements
 -------------------
 
-Die einzig wirklich sichere Variante um *SQL-Injections* zu verhindern ist es, ausschließlich *Prepared Statements* zur
-Parametrisierung von SQL-Queries zu verwenden. |br|
-Bei der Verwendung von *Prepared Statements* ist es unmöglich, eine *SQL-Injection* zu erzeugen. Wenn man sich nur
-auf die Validierung der Daten verlässt, vergiss man früher oder später, einen Wert ausreichend zu validieren. Zudem
-können Freitextfelder gar nicht entsprechend validiert werden.
+Die einzig wirklich sichere Variante zur Verhinderung von *SQL-Injections* ist es, ausschließlich *Prepared Statements*
+zur Parametrisierung von SQL-Queries zu verwenden. |br|
+Bei der Verwendung von *Prepared Statements* ist es unmöglich, eine *SQL-Injection* zu erzeugen. Wenn Sie sich nur
+auf die Validierung der Daten verlassen, vergessen Sie früher oder später, einen Wert ausreichend zu validieren.
+Zudem können Freitextfelder gar nicht entsprechend validiert werden.
 
-Der JTL-Shop stellt eine einfache Möglichkeit bereit, *Prepared Statements* auszuführen: |br|
-(empfohlene Variante)
+JTL-Shop stellt eine einfache Möglichkeit bereit, *Prepared Statements* auszuführen. |br|
+Empfohlene Variante:
 
 .. code-block:: php
 
@@ -70,8 +70,8 @@ Der JTL-Shop stellt eine einfache Möglichkeit bereit, *Prepared Statements* aus
         JTL\DB\ReturnType::ARRAY_OF_OBJECTS
     );
 
-Hinweis zu Pluginzertifizierungen
----------------------------------
+Hinweis zu Plugin-Zertifizierungen
+----------------------------------
 
 .. important::
 

@@ -18,7 +18,7 @@ use JTL\Helpers\Text;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTLSmarty;
+use JTL\Smarty\JTLSmarty;
 
 /**
  * Class ReviewController

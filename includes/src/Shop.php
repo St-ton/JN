@@ -28,7 +28,6 @@ use JTL\Debug\JTLDebugBar;
 use JTL\Events\Dispatcher;
 use JTL\Events\Event;
 use JTL\Filesystem\AdapterFactory;
-use JTL\Filesystem\Factory;
 use JTL\Filesystem\Filesystem;
 use JTL\Filter\Config;
 use JTL\Filter\FilterInterface;
@@ -1090,7 +1089,7 @@ final class Shop
      */
     public static function seoCheck(): void
     {
-        $uri                             = $_SERVER['HTTP_X_REWRITE_URL'] ?? $_SERVER['REQUEST_URI'];
+        $uri                             = $_SERVER['HTTP_X_REWRITE_URL'] ?? $_SERVER['REQUEST_URI'] ?? '';
         self::$uri                       = $uri;
         self::$bSEOMerkmalNotFound       = false;
         self::$bKatFilterNotFound        = false;
@@ -1528,7 +1527,7 @@ final class Shop
                 }
                 self::$kLink = isset($link->kLink)
                     ? (int)$link->kLink
-                    : self::Container()->getLinkService()->getSpecialPageLinkKey(\LINKTYP_STARTSEITE);
+                    : self::Container()->getLinkService()->getSpecialPageID(\LINKTYP_STARTSEITE);
             } elseif (Media::getInstance()->isValidRequest($path)) {
                 Media::getInstance()->handleRequest($path);
             } else {
@@ -1654,7 +1653,7 @@ final class Shop
             $kLink         = $hookInfos['value'];
             $bFileNotFound = $hookInfos['isFileNotFound'];
             if (!$kLink) {
-                self::$kLink = self::Container()->getLinkService()->getSpecialPageLinkKey(\LINKTYP_404);
+                self::$kLink = self::Container()->getLinkService()->getSpecialPageID(\LINKTYP_404);
             }
         }
 

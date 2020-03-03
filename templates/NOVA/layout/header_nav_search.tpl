@@ -5,7 +5,7 @@
 {block name='layout-header-nav-search'}
     {block name='layout-header-nav-search-search'}
         <li class="nav-item d-none d-lg-block mr-3">
-            {form action='index.php' method='get' slide=false}
+            {form action='index.php' method='get'}
                 <div class="form-icon">
                     {inputgroup}
                         {input id="search-header" name="qs" type="text" class="ac_input" placeholder="{lang key='search'}" autocomplete="off" aria=["label"=>"{lang key='search'}"]}

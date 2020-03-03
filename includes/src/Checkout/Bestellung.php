@@ -551,7 +551,7 @@ class Bestellung
         $this->fWarensummeNetto   = 0;
         $this->fVersandNetto      = 0;
         $defaultOptions           = Artikel::getDefaultOptions();
-        $languageID               = Shop::getLanguage();
+        $languageID               = Shop::getLanguageID();
         if (!$languageID) {
             $language             = LanguageHelper::getDefaultLanguage();
             $languageID           = (int)$language->kSprache;

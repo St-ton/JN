@@ -291,7 +291,7 @@ function bestellungInDB($cleared = 0, $orderNo = '')
     $order->kRechnungsadresse = $billingAddressID;
     $order->kZahlungsart      = $_SESSION['Zahlungsart']->kZahlungsart;
     $order->kVersandart       = $_SESSION['Versandart']->kVersandart;
-    $order->kSprache          = Shop::getLanguage();
+    $order->kSprache          = Shop::getLanguageID();
     $order->kWaehrung         = Frontend::getCurrency()->getID();
     $order->fGesamtsumme      = Frontend::getCart()->gibGesamtsummeWaren(true);
     $order->cVersandartName   = $_SESSION['Versandart']->angezeigterName[$_SESSION['cISOSprache']];
@@ -469,7 +469,7 @@ function unhtmlSession(): void
     if ($sessionCustomer->kKundengruppe > 0) {
         $customer->kKundengruppe = $sessionCustomer->kKundengruppe;
     }
-    $customer->kSprache = Shop::getLanguage();
+    $customer->kSprache = Shop::getLanguageID();
     if ($sessionCustomer->kSprache > 0) {
         $customer->kSprache = $sessionCustomer->kSprache;
     }

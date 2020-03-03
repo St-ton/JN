@@ -1,5 +1,4 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section='shopzuruecksetzen'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('shopResetTitle') cBeschreibung=__('shopResetDesc') cDokuURL=__('shopResetURL')}
 {literal}
     <script>

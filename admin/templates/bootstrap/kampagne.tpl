@@ -1,5 +1,4 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section='kampagne'}
 {if $step === 'kampagne_uebersicht'}
     {include file='tpl_inc/kampagne_uebersicht.tpl'}
 {elseif $step === 'kampagne_detail'}

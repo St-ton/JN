@@ -32,7 +32,7 @@ class License
      */
     public function hasLicenseCheck(): bool
     {
-        return !empty($this->class) && !empty($this->class);
+        return !empty($this->class) && !empty($this->className);
     }
 
     /**

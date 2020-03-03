@@ -10,7 +10,7 @@
             </div>
         {/block}
         {block name='boxes-box-direct-purchase-form'}
-            {form action="{get_static_route id='warenkorb.php'}" method="post"}
+            {form action="{get_static_route id='warenkorb.php'}" method="post" slide=true}
                 {input type="hidden" name="schnellkauf" value="1"}
                 {inputgroup}
                     {input aria=["label"=>"{lang key='quickBuy'}"] type="text" placeholder="{lang key='productNoEAN'}"

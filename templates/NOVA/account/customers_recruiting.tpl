@@ -9,7 +9,7 @@
     {block name='account-customers-recruiting-form'}
         {row}
             {col md=6}
-                {form id="kwk" action="{get_static_route id='jtl.php'}" method="post" class="jtl-validate"}
+                {form id="kwk" action="{get_static_route id='jtl.php'}" method="post" class="jtl-validate" slide=true}
                     {include file='snippets/form_group_simple.tpl'
                         options=[
                             'text', 'kwkFirstName', 'cVorname', null,

@@ -1831,9 +1831,11 @@ class Artikel
         if (!isset($mediaFile->cURL)) {
             return $this;
         }
-        if (\mb_strpos($mediaFile->cURL, 'youtube') !== false) {
+        if (\mb_strpos($mediaFile->cURL, 'youtube') !== false || \mb_strpos($mediaFile->cURL, 'youtu.be') !== false) {
             $mediaFile->oEmbed = new stdClass();
-            if (\mb_strpos($mediaFile->cURL, 'watch?v=') !== false) {
+            if (\mb_strpos($mediaFile->cURL, 'embed') !== false) {
+                $mediaFile->oEmbed->code = $mediaFile->cURL;
+            } else {
                 $height     = 'auto';
                 $width      = '100%';
                 $related    = '?rel=0';
@@ -1851,48 +1853,12 @@ class Artikel
                         }
                     }
                 }
-                $search                     = ['https://', 'watch?v='];
-                $replace                    = ['//', 'embed/'];
+                $search                     = ['https://', 'youtu.be/', 'watch?v='];
+                $replace                    = ['//', 'youtube.com/embed/', 'embed/'];
                 $embedURL                   = \str_replace($search, $replace, $mediaFile->cURL) . $related;
-                $mediaFile->oEmbed->code    = '<iframe class="youtube" width="' . $width . '" height="' . $height
-                    . '" src="' . $embedURL . '" frameborder="0"' . $fullscreen . '></iframe>';
-                $mediaFile->oEmbed->options = [
-                    'height'     => $height,
-                    'width'      => $width,
-                    'related'    => $related,
-                    'fullscreen' => $fullscreen
-                ];
-            } elseif (\mb_strpos($mediaFile->cURL, 'embed') !== false) {
-                $mediaFile->oEmbed->code = $mediaFile->cURL;
-            }
-        } elseif (\mb_strpos($mediaFile->cURL, 'youtu.be') !== false) {
-            $mediaFile->oEmbed = new stdClass();
-            if (\mb_strpos($mediaFile->cURL, 'embed') !== false) {
-                $mediaFile->oEmbed->code = $mediaFile->cURL;
-            } else {
-                $height     = 'auto';
-                $width      = '100%';
-                $related    = '?rel=0';
-                $fullscreen = ' allowfullscreen';
-                if (isset($mediaFile->oMedienDateiAttribut_arr) && \count($mediaFile->oMedienDateiAttribut_arr) > 0) {
-                    foreach ($mediaFile->oMedienDateiAttribut_arr as $attr) {
-                        if ($attr->cName === 'related' && $attr->cWert === '1') {
-                            $related = '';
-                        } elseif ($attr->cName === 'width' && \is_numeric($attr->cWert)) {
-                            $width = $attr->cWert;
-                        } elseif ($attr->cName === 'height' && \is_numeric($attr->cWert)) {
-                            $height = $attr->cWert;
-                        } elseif ($attr->cName === 'fullscreen' && ($attr->cWert === '0'
-                                || $attr->cWert === 'false')) {
-                            $fullscreen = '';
-                        }
-                    }
-                }
-                $search                     = ['https://', 'youtu.be/'];
-                $replace                    = ['//', 'youtube.com/embed/'];
-                $embedURL                   = \str_replace($search, $replace, $mediaFile->cURL) . $related;
-                $mediaFile->oEmbed->code    = '<iframe class="youtube" width="' . $width . '" height="' . $height
-                    . '" src="' . $embedURL . '" frameborder="0"' . $fullscreen . '></iframe>';
+                $mediaFile->oEmbed->code    = '<a href="#" class="trigger give-consent" data-consent="youtube">Youtube Consent geben</a><br>' .
+                    '<iframe class="needs-consent youtube" data-consent="youtube" width="' . $width . '" height="' . $height
+                    . '" data-src="' . $embedURL . '" frameborder="0"' . $fullscreen . '></iframe>';
                 $mediaFile->oEmbed->options = [
                     'height'     => $height,
                     'width'      => $width,

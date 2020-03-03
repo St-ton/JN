@@ -233,7 +233,7 @@ if (isset($hinweis)) {
     trigger_error('global $hinweis is deprecated.', \E_USER_DEPRECATED);
 }
 $consentItems = [];
-$item = new Item();
+$item         = new Item();
 $item->setName('YouTube');
 $item->setID('youtube');
 $item->setDescription('Für das Hosting von Videos nutzen wir die Videoplattform YouTube von Google. ' .

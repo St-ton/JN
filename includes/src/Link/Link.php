@@ -52,52 +52,52 @@ final class Link extends AbstractLink
     protected $linkType = -1;
 
     /**
-     * @var array
+     * @var int[]
      */
     protected $linkGroups = [];
 
     /**
-     * @var array
+     * @var string[]
      */
     protected $names = [];
 
     /**
-     * @var array
+     * @var string[]
      */
     protected $urls = [];
 
     /**
-     * @var array
+     * @var string[]
      */
     protected $seo = [];
 
     /**
-     * @var array
+     * @var string[]
      */
     protected $titles = [];
 
     /**
-     * @var array
+     * @var string[]
      */
     protected $contents = [];
 
     /**
-     * @var array
+     * @var string[]
      */
     protected $metaTitles = [];
 
     /**
-     * @var array
+     * @var string[]
      */
     protected $metaKeywords = [];
 
     /**
-     * @var array
+     * @var string[]
      */
     protected $metaDescriptions = [];
 
     /**
-     * @var array
+     * @var int[]
      */
     protected $customerGroups = [];
 
@@ -451,7 +451,7 @@ final class Link extends AbstractLink
     }
 
     /**
-     * @return array
+     * @return int[]
      */
     public function getLinkGroups(): array
     {

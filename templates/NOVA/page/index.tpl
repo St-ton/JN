@@ -62,7 +62,7 @@
                         {row itemprop="about"
                              itemscope=true
                              itemtype="http://schema.org/Blog"
-                             class="row slick-smooth-loading carousel carousel-arrows-inside slick-lazy slick-type-news"
+                             class="slick-smooth-loading carousel carousel-arrows-inside slick-lazy slick-type-news"
                              data=["slick-type"=>"news-slider"]}
                             {include file='snippets/slider_items.tpl' items=$oNews_arr type='news'}
                         {/row}

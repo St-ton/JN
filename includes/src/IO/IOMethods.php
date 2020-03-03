@@ -421,18 +421,18 @@ class IOMethods
 
     /**
      * @param int $productID
-     * @param $qty
-     * @param $data
+     * @param int $qty
+     * @param array $data
      * @return IOResponse
      * @throws SmartyException
      */
-    public function pushToWishlist(int $productID, $qty, $data): IOResponse
+    public function pushToWishlist(int $productID, int $qty, array $data): IOResponse
     {
         $_POST       = $data;
         $conf        = Shopsetting::getInstance()->getAll();
         $response    = new stdClass();
         $objResponse = new IOResponse();
-        $qty         = (int)$qty === 0 ? 1 : (int)$qty;
+        $qty         = $qty === 0 ? 1 : $qty;
         $smarty      = Shop::Smarty();
         if (Frontend::getCustomer()->getID() === 0) {
             $response->nType     = 1;
@@ -459,7 +459,7 @@ class IOMethods
 
         $_POST['Wunschliste'] = 1;
         $_POST['a']           = $productID;
-        $_POST['n']           = (int)$qty;
+        $_POST['n']           = $qty;
 
         CartHelper::checkAdditions();
 

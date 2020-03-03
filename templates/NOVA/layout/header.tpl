@@ -350,7 +350,6 @@
                                                         <span>{lang key='back'}</span>
                                                     {/link}
                                                 {/col}
-
                                             {/row}
                                             <hr class="my-0" />
                                         </div>

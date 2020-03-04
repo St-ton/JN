@@ -58,7 +58,8 @@ class Statusmail
      */
     public function updateConfig(): bool
     {
-        if (Request::postInt('nAktiv') === 0
+        $active = Request::postInt('nAktiv') === 1;
+        if (!$active
             || (Text::filterEmailAddress($_POST['cEmail']) !== false
                 && \is_array($_POST['cIntervall_arr'])
                 && \count($_POST['cIntervall_arr']) > 0
@@ -84,7 +85,7 @@ class Statusmail
                 $statusMail->dLastSent = 'NOW()';
 
                 $id = $this->db->insert('tstatusemail', $statusMail);
-                if ($statusMail->nAktiv) {
+                if ($active) {
                     $this->createCronJob($id, $interval * 24);
                 }
             }

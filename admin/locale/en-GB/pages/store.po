@@ -1,8 +1,12 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "store"
 msgstr "JTL-Store"
 
 msgid "storeDesc"
-msgstr "In order to access content of JTL-Store, connect your JTL account to the marketplace first."
+msgstr "In order to access the contents of JTL-Store, connect your JTL account to the marketplace first."
 
 msgid "storeURL"
 msgstr ""

@@ -3,10 +3,10 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "dbcheck"
-msgstr "Database review"
+msgstr "Database check"
 
 msgid "dbcheckDesc"
-msgstr "With the database review you can check the consistency of your online shop database."
+msgstr "Use the database check to verify the consistency of your online shop database."
 
 msgid "dbcheckURL"
 msgstr "https://jtl-url.de/nv3x4"
@@ -51,13 +51,13 @@ msgid "migrationCancel"
 msgstr "Cancel migration"
 
 msgid "errorMigrationTable"
-msgstr "Table %s could not be migrated!"
+msgstr "Migration error for table %s!"
 
 msgid "errorMigrationTableContinue"
-msgstr "Table %s could not be migrated! Continue?"
+msgstr "Migration error for table %s! Continue?"
 
 msgid "migrationOf"
-msgstr "Running migration of %s - step %s"
+msgstr "Migration of %s – Step %s"
 
 msgid "structureMigrationNeeded"
 msgstr "Structure migration required!"
@@ -69,13 +69,13 @@ msgid "warningOldDBVersion"
 msgstr "Outdated database version"
 
 msgid "warningOldDBVersionLong"
-msgstr "The used database version %s does not support all possibilities of this shop version. Therefore, some functions will not be available after the migration."
+msgstr "The used database version %s does not support all possibilities of this version of JTL-Shop. Therefore, some functions will not be available after the migration."
 
 msgid "fullTextDeactivate"
 msgstr "The full-text search will be disabled."
 
 msgid "fullTextDelete"
-msgstr "Full text %s for %s will be deleted."
+msgstr "Full text index %s for %s will be deleted."
 
 msgid "notEnoughTableSpace"
 msgstr "Not enough space in InnoDB tablespace."
@@ -108,7 +108,7 @@ msgid "notePatienceOne"
 msgstr "Please wait. %s tables and a data volume of approx. %s are being"
 
 msgid "notePatienceTwo"
-msgstr " migrated. During the migration process, important tables of the shop will be locked. This might lead to significant limitations in the front end. We therefore recommend activating the <a title=\"Global settings - Maintenance mode\" href=\"%s/%s/einstellungen.php?kSektion=1#wartungsmodus_aktiviert\">Maintenance mode</a> while performing the migration.<br/> Every table is migrated in two individual steps. The first step consists of moving the InnoDB tablespace. The second step consists of the conversion of data into the character set UTF-8."
+msgstr " migrated. During the migration process, important tables of the online shop will be locked. This might lead to significant limitations in the front end. We therefore recommend activating the <a title=\"Global settings - Maintenance mode\" href=\"%s/%s/einstellungen.php?kSektion=1#wartungsmodus_aktiviert\">Maintenance mode</a> while performing the migration.<br/> Every table is migrated in two individual steps. The first step consists of moving the InnoDB tablespace. The second step consists of the conversion of data into the character set UTF-8."
 
 msgid "lessThanOneMinute"
 msgstr "less than one minute"
@@ -141,13 +141,13 @@ msgid "noteMigrationScript"
 msgstr "The migration via script using the MySQL Console is recommended if you have administrative access to your database server and want to migrate a great amount of data."
 
 msgid "noteMigrationScriptClick"
-msgstr "By clicking on \"Create script\" you can generate a script for carrying out the required migration. You can then run this script entirely or partly on the console of your database server. For this you require administrative access (e.g. via SSH) to your database server (e.g. via SSH). A web interface such as phpMyAdmin is <strong>not</strong> suitable for running this script."
+msgstr "By clicking on \"Create script\" you can generate a script for carrying out the required migration. This script can then be executed or completely or in part on the console of your database server. For this you require administrative access (e.g. via SSH) to your database server. A web interface such as phpMyAdmin is <strong>not</strong> suited for running the script."
 
 msgid "noteMigrationScriptDesc"
 msgstr "The script is based on the current situation and contains only changes that are necessary for this JTL-Shop. You cannot use the script to perform a migration for a different JTL-Shop."
 
 msgid "noteMigrationScriptMaintenance"
-msgstr "Please note that it might take some time to perform a complete run of the script. During that time, important tables in the shop remain inaccessible. We therefore recommend activating the <a title=\"Global settings - Maintenance mode\" href=\"%s/%s/einstellungen.php?kSektion=1#wartungsmodus_aktiviert\">Maintenance mode</a> while performing the migration."
+msgstr "Please note that it might take some time to perform a complete run of the script. During that time, important tables in the online shop remain inaccessible. We therefore recommend activating the <a title=\"Global settings - Maintenance mode\" href=\"%s/%s/einstellungen.php?kSektion=1#wartungsmodus_aktiviert\">Maintenance mode</a> while performing the migration."
 
 msgid "warningDoBackupScript"
 msgstr "<strong>BEFORE</strong> running the script, you absolutely need to create a backup of the entire database."
@@ -183,7 +183,7 @@ msgid "errorNoInnoDBSupportDesc"
 msgstr "Your current database version %s does not support InnoDB tables—a structure migration is not possible.<br/> Please contact the database administrator or host to activate the InnoDB support."
 
 msgid "errorNoUTF8SupportDesc"
-msgstr "Your current database version {$DB_Version-&gt;server} does not support collation \"utf8_unicode_ci\"—a structure migration is not possible.<br/> Please contact the database administrator or host to activate collation \"utf8_unicode_ci\"."
+msgstr "Your current database version {$DB_Version->server} does not support collation \"utf8_unicode_ci\"—a structure migration is not possible.<br/> Please contact the database administrator or host to activate collation \"utf8_unicode_ci\"."
 
 msgid "startAutomaticMigration"
 msgstr "Starting automatic migration…"
@@ -192,4 +192,4 @@ msgid "clearCache"
 msgstr "Clearing cache…"
 
 msgid "errorTableInUse"
-msgstr " is currently being used and cannot be migrated! Would you like to continue?"
+msgstr " is currently being used and cannot be migrated! Continue?"

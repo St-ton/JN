@@ -18,7 +18,7 @@ msgid "testmailsGoToEmail"
 msgstr "Test-E-Mails werden an folgende Adresse gesendet: "
 
 msgid "noMasterEmailSpecified"
-msgstr "Keine Master-E-Mail-Adresse hinterlegt. Bitte tragen Sie eine Master-E-Mail-Adresse für den Absender unter Inhalte &gt; E-Mails &gt; Einstellungen ein."
+msgstr "Keine Master-E-Mail-Adresse hinterlegt. Bitte tragen Sie eine Master-E-Mail-Adresse für den Absender unter Inhalte > E-Mails > Einstellungen ein."
 
 msgid "emailTemplateModifyHint"
 msgstr "Hier bearbeiten Sie den Inhalt einer E-Mail-Vorlage in jeder in JTL-Shop gepflegten Sprache. Sie können außerdem festlegen, von welcher Adresse aus die E-Mail versendet werden soll, und ob bestimmte Anhänge standardmäßig mitgesendet werden sollen."

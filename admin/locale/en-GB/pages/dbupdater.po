@@ -9,7 +9,7 @@ msgid "dbupdaterURL"
 msgstr "https://jtl-url.de/3ajp1"
 
 msgid "dbupdaterDesc"
-msgstr "Here you can update the database of your JTL-Shop. The target version of the database update corresponds to the currently installed shop version."
+msgstr "Here you can update the database of your JTL-Shop. The target version of the database update corresponds to the currently installed version of JTL-Shop."
 
 msgid "buttonUpdateNow"
 msgstr "Start database update"
@@ -53,8 +53,8 @@ msgstr "Migrations completed successfully."
 msgid "successMigration"
 msgstr "Migration completed successfully."
 
-msgid "updateToSuccessfull"
-msgstr "Update to %s completed successfully."
+msgid "updateTosuccessfull"
+msgstr "Successfully updated to %s."
 
 msgid "sessionExpired"
 msgstr "Session expired."

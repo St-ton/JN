@@ -72,7 +72,7 @@ msgid "hasInsecureMailConfigTitle"
 msgstr "Unsichere SMTP-Verbindung"
 
 msgid "hasInsecureMailConfigMessage"
-msgstr "Sie haben SMTP gewählt, allerdings keine SMTP-Security-Methode.<br/> Wir empfehlen Ihnen dringend, Ihre E-Mail-Einstellungen anzupassen.<br/> Sie finden die Option unter „Administration &gt; E-Mail &gt; Server.“"
+msgstr "Sie haben SMTP gewählt, allerdings keine SMTP-Security-Methode.<br/> Wir empfehlen Ihnen dringend, Ihre E-Mail-Einstellungen anzupassen.<br/> Sie finden die Option unter „Administration > E-Mail > Server.“"
 
 msgid "needPasswordRehash2FATryTitle"
 msgstr "Benutzerverwaltung"

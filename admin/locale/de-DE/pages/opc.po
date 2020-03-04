@@ -425,7 +425,7 @@ msgstr "Portlet hier einfügen"
 # Messages
 
 msgid "opcImportSuccess"
-msgstr "Entwurf wurde erfolgreich importiert! "
+msgstr "Der Entwurf wurde erfolgreich importiert."
 
 msgid "opcImportUnmappedS"
 msgstr "Ein Bereich konnte nicht abgebildet werden, da dessen ID auf der aktuellen Seite nicht auftaucht."
@@ -434,7 +434,7 @@ msgid "opcImportUnmappedP"
 msgstr "%s Bereiche konnten nicht abgebildet werden, da deren IDs auf der aktuellen Seite nicht auftauchen."
 
 msgid "opcImportSuccessTitle"
-msgstr "Entwurf erfolgreich importiert"
+msgstr "Import erfolgreich"
 
 msgid "btnTitleCopyArea"
 msgstr "Inhalt in sichtbaren Bereich übertragen"
@@ -449,7 +449,7 @@ msgid "Cancel"
 msgstr "Abbrechen"
 
 msgid "opcPageLocked"
-msgstr "Ein anderer Nutzer bearbeitet gerade diesen Entwurf. Leider ist der Zugriff für sie gesperrt."
+msgstr "Dieser Entwurf ist zurzeit durch einen anderen Benutzer für die Bearbeitung gesperrt."
 
 msgid "Next"
 msgstr "Weiter"

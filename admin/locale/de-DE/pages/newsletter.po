@@ -15,7 +15,7 @@ msgid "newsletterqueuedate"
 msgstr "Start"
 
 msgid "newsletterdraft"
-msgstr "Vorlage"
+msgstr "Eigene Vorlagen"
 
 msgid "newsletterlastsubscriber"
 msgstr "Letzte 20 Newsletter-Abonnenten"
@@ -84,7 +84,7 @@ msgid "newsletterconfigdesc"
 msgstr "Diese E-Mail-Einstellungen gelten für den Newsletter-Versand."
 
 msgid "newsletterartnr"
-msgstr "Beworbener Artikel:"
+msgstr "Beworbener Artikel"
 
 msgid "newslettercustomergrp"
 msgstr "Empfänger"

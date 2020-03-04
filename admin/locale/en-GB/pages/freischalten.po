@@ -3,16 +3,16 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "freischalten"
-msgstr "Approvals"
+msgstr "Activation manager"
 
 msgid "freischaltenURL"
 msgstr "https://jtl-url.de/z3qa0"
 
 msgid "freischaltenDesc"
-msgstr "Here you approve customer reviews, live searches, news comments and the recipients of newsletters in the currently selected language."
+msgstr "Here you activate customer reviews, search queries, blog post comments and the recipients of newsletters in the currently selected language."
 
 msgid "freischaltenActivate"
-msgstr "Approve"
+msgstr "Activate"
 
 msgid "freischaltenReviewsCustomer"
 msgstr "Customer name"
@@ -24,7 +24,7 @@ msgid "freischaltenReviewsDate"
 msgstr "Created on"
 
 msgid "freischaltenLivesearch"
-msgstr "Live search"
+msgstr "Search queries"
 
 msgid "freischaltenLivesearchSearch"
 msgstr "Search"
@@ -39,7 +39,7 @@ msgid "freischaltenLiveseachDate"
 msgstr "Last searched on"
 
 msgid "freischaltenNewsComments"
-msgstr "News comments"
+msgstr "Blog comments"
 
 msgid "freischaltenNewsCommentsHeadline"
 msgstr "Headline"
@@ -63,13 +63,13 @@ msgid "freischaltenMappingOnBTN"
 msgstr "Link"
 
 msgid "freischaltenMappingDesc"
-msgstr "* Warning: * When a link exists, live searches are approved immediately."
+msgstr "Warning: When a link exists, search queries are activated immediately."
 
 msgid "errorSearchTermMissing"
 msgstr "Please enter a search term."
 
 msgid "successRatingUnlock"
-msgstr "Selected reviews approved successfully."
+msgstr "Selected reviews activated successfully."
 
 msgid "errorAtLeastOneRating"
 msgstr "Please select at least one review."
@@ -78,10 +78,10 @@ msgid "successRatingDelete"
 msgstr "Selected reviews deleted successfully."
 
 msgid "successLiveSearchMap"
-msgstr "Selected live searches linked with %s successfully."
+msgstr "Selected search queries successfully linked with %s."
 
 msgid "errorLiveSearchMapNotUnlock"
-msgstr "The live search was linked successfully but could not be approved due to an unknown error."
+msgstr "The search query was linked successfully but could not be activated due to an unknown error."
 
 msgid "errorMapUnknown"
 msgstr "Could not perform linking due to an unknown error."
@@ -96,16 +96,16 @@ msgid "errorMapToNotExisting"
 msgstr "The search query to be linked does not exist."
 
 msgid "errorMapSelf"
-msgstr "A live search cannot be linked with itself."
+msgstr "A search query cannot be linked with itself."
 
 msgid "errorAtLeastOneLiveSearch"
-msgstr "Please select at least one live search."
+msgstr "Please select at least one search query."
 
 msgid "errorMapNameMissing"
 msgstr "Please enter a name for the link."
 
 msgid "successSearchUnlock"
-msgstr "Selected search queries approved successfully."
+msgstr "Selected search queries activated successfully."
 
 msgid "errorAtLeastOneSearch"
 msgstr "Please select at least one search query."
@@ -114,16 +114,16 @@ msgid "successSearchDelete"
 msgstr "Selected search queries deleted successfully."
 
 msgid "successNewsCommentUnlock"
-msgstr "Selected news comments approved successfully."
+msgstr "Selected blog comments activated successfully."
 
 msgid "errorAtLeastOneNewsComment"
-msgstr "Please select at least one news comment."
+msgstr "Please select at least one blog comment."
 
 msgid "successNewsCommentDelete"
-msgstr "Selected news comments deleted successfully."
+msgstr "Selected blog comments deleted successfully."
 
 msgid "successNewsletterUnlock"
-msgstr "Selected newsletter recipients approved successfully."
+msgstr "Selected newsletter recipients activated successfully."
 
 msgid "errorAtLeastOneNewsletter"
 msgstr "Please select at least one newsletter recipient."
@@ -132,7 +132,7 @@ msgid "successNewsletterDelete"
 msgstr "Selected newsletter recipients deleted successfully."
 
 msgid "unlockMarked"
-msgstr "Approve selected"
+msgstr "Activate selected"
 
 msgid "linkMarked"
-msgstr "Link approved with"
+msgstr "Link selected with"

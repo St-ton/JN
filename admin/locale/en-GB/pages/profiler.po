@@ -6,7 +6,7 @@ msgid "pluginprofiler"
 msgstr "Plug-in profiler"
 
 msgid "pluginprofilerDesc"
-msgstr "If you are a plugin developer, here is where you can find profiling data for plug-ins."
+msgstr "If you are a plug-in developer, here is where you can find profiling data for plug-ins."
 
 msgid "pluginprofilerURL"
 msgstr "https://jtl-url.de/fr8i2"

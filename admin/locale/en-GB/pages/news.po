@@ -3,19 +3,19 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "news"
-msgstr "News and blog system"
+msgstr "Blog"
 
 msgid "newsURL"
 msgstr "https://jtl-url.de/7vfnm"
 
 msgid "newsDesc"
-msgstr "With the news and blog system of JTL-Shop, you can keep your customers in the loop at all times. Create new entries and specify how news entries are to be displayed."
+msgstr "Use the JTL-Shop blog to keep your customers up to date. Create new blog posts and specify how posts are to be displayed."
 
 msgid "newAdd"
-msgstr "Create news posting"
+msgstr "Create new post"
 
 msgid "newEdit"
-msgstr "Edit news posting"
+msgstr "Edit post"
 
 msgid "newsPreviewText"
 msgstr "Preview text"
@@ -30,7 +30,7 @@ msgid "newsArchive"
 msgstr "Archive"
 
 msgid "newsArchiveLast"
-msgstr "Archived postings"
+msgstr "Archived posts"
 
 msgid "newsPicAdd"
 msgstr "Add another image"
@@ -39,10 +39,10 @@ msgid "newsPics"
 msgstr "Available images"
 
 msgid "newsActivate"
-msgstr "Approve"
+msgstr "Activate"
 
 msgid "newsCommentActivate"
-msgstr "Unapproved comments"
+msgstr "Unactivated comments"
 
 msgid "newsComments"
 msgstr "Comments"
@@ -69,7 +69,7 @@ msgid "newsCatLastUpdate"
 msgstr "Last update"
 
 msgid "newsOverview"
-msgstr "News postings"
+msgstr "Posts"
 
 msgid "newsCatOverview"
 msgstr "Categories"
@@ -99,43 +99,43 @@ msgid "newsAlreadyExists"
 msgstr "already exists."
 
 msgid "newsDeleteCat"
-msgstr "The following news categories and their subcategories will be deleted:"
+msgstr "The following blog categories and their subcategories will be deleted:"
 
 msgid "newsDeleteNews"
-msgstr "Delete news"
+msgstr "Delete blog post"
 
 msgid "newsDeleteComment"
 msgstr "Delete comment"
 
 msgid "errorNewsCatFirst"
-msgstr "Please enter a news category first."
+msgstr "Please enter a blog category first."
 
 msgid "successNewsCommmentEdit"
-msgstr "News comment edited successfully."
+msgstr "Blog comment edited successfully."
 
 msgid "successNewsDelete"
-msgstr "Selected news postings deleted successfully."
+msgstr "Selected blog posts deleted successfully."
 
 msgid "errorAtLeastOneNews"
-msgstr "Please select at least one news posting."
+msgstr "Please select at least one blog post."
 
 msgid "successNewsCatDelete"
-msgstr "Selected news categories deleted successfully."
+msgstr "Selected blog categories deleted successfully."
 
 msgid "errorAtLeastOneNewsCat"
-msgstr "Please select at least one news category."
+msgstr "Please select at least one blog category."
 
 msgid "successNewsImageDelete"
-msgstr "Selected news image deleted successfully."
+msgstr "Selected blog image deleted successfully."
 
 msgid "errorNewsImageDelete"
-msgstr "Could not delete selected news image."
+msgstr "Could not delete selected blog image."
 
 msgid "errorNewsCatNotFound"
-msgstr "Could not find news category with ID %d."
+msgstr "Could not find blog category with ID %d."
 
 msgid "successNewsCommentUnlock"
-msgstr "Selected news comments approved successfully."
+msgstr "Selected blog comments activated successfully."
 
 msgid "goOnEdit"
 msgstr " and continue editing"
@@ -144,16 +144,13 @@ msgid "mainCategory"
 msgstr "Main category"
 
 msgid "deleteComment"
-msgstr "Are you sure you want to delete the comments?"
+msgstr "Delete comments?"
 
 msgid "successNewsSave"
-msgstr "News posting saved successfully."
+msgstr "Blog post saved successfully."
 
 msgid "successNewsCatSave"
-msgstr "News category entered successfully."
+msgstr "Blog category added successfully."
 
 msgid "successNewsCommentDelete"
-msgstr "Selected comments deleted successfully."
-
-msgid "errorAtLeastOneNewsComment"
-msgstr "Please select at least one news comment."
+msgstr "Selected blog comments deleted successfully."

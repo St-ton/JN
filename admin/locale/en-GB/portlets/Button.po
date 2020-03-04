@@ -18,10 +18,10 @@ msgid "alignment"
 msgstr "Alignment"
 
 msgid "useFullWidth"
-msgstr "Use full width"
+msgstr "full width"
 
 msgid "iconForButton"
 msgstr "Add icon to button"
 
 msgid "iconAlignment"
-msgstr "Icon alignment"
+msgstr "Alignment"

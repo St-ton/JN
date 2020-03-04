@@ -1,4 +1,3 @@
-{config_load file="$lang.conf" section='branding'}
 {include file='tpl_inc/header.tpl'}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('branding') cBeschreibung=__('brandingDesc') cDokuURL=__('brandingUrl')}

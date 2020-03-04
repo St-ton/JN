@@ -27,7 +27,7 @@
             </div>
             <div>
                 {block name='checkout-modules-paypal-bestellabschluss-form'}
-                    {form method="post" action=$url id="paypal_checkout" slide=false}
+                    {form method="post" action=$url id="paypal_checkout"}
                         {foreach $fields as $value}
                             {input type="hidden" name=$name value=$value|escape:'html'}
                         {/foreach}

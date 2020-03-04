@@ -64,9 +64,8 @@ function handleCsvExportAction(
 
         foreach ($arr as $elem) {
             $csvRow = [];
-
             foreach ($fields as $field) {
-                $csvRow[] = (string)$elem->$field;
+                $csvRow[] = (string)($elem->$field ?? '');
             }
 
             fputcsv($fs, $csvRow, $delim);

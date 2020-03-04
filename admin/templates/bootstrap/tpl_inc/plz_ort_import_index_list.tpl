@@ -1,5 +1,3 @@
-{config_load file="$lang.conf" section='plz_ort_import'}
-
 <div class="table-responsive">
 <table class="table">
     <thead>

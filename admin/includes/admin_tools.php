@@ -309,6 +309,7 @@ function getArrangedArray($xml, int $level = 1)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $parser = new XMLParser();
+
     return $parser->getArrangedArray($xml, $level);
 }
 
@@ -354,9 +355,9 @@ function firstDayOfMonth(int $month = -1, int $year = -1)
         0,
         0,
         0,
-        $month > -1 ? $month : date('m'),
+        $month > -1 ? $month : (int)date('m'),
         1,
-        $year > -1 ? $year : date('Y')
+        $year > -1 ? $year : (int)date('Y')
     );
 }
 
@@ -371,9 +372,9 @@ function lastDayOfMonth(int $month = -1, int $year = -1)
         23,
         59,
         59,
-        $month > -1 ? $month : date('m'),
-        date('t', firstDayOfMonth($month, $year)),
-        $year > -1 ? $year : date('Y')
+        $month > -1 ? $month : (int)date('m'),
+        (int)date('t', firstDayOfMonth($month, $year)),
+        $year > -1 ? $year : (int)date('Y')
     );
 }
 
@@ -412,12 +413,12 @@ function ermittleDatumWoche(string $dateString)
             ++$year;
         }
 
-        $daysPerMonth = date('t', mktime(0, 0, 0, $month, 1, $year));
+        $daysPerMonth = (int)date('t', mktime(0, 0, 0, $month, 1, $year));
         $day          = $daysPerMonth - $weekDay + $dayOld;
     }
     $stampStart   = mktime(0, 0, 0, $month, $day, $year);
     $days         = 6;
-    $daysPerMonth = date('t', mktime(0, 0, 0, $month, 1, $year));
+    $daysPerMonth = (int)date('t', mktime(0, 0, 0, $month, 1, $year));
     $day         += $days;
     if ($day > $daysPerMonth) {
         $day -= $daysPerMonth;
@@ -590,7 +591,7 @@ function getFrontendSmarty()
 
     if ($frontendSmarty === null) {
         $frontendSmarty = new JTLSmarty();
-        $frontendSmarty->assign('imageBaseURL', \Shop::getImageBaseURL())
+        $frontendSmarty->assign('imageBaseURL', Shop::getImageBaseURL())
             ->assign('NettoPreise', Frontend::getCustomerGroup()->getIsMerchant())
             ->assign('ShopURL', Shop::getURL())
             ->assign('Suchergebnisse', new SearchResults())

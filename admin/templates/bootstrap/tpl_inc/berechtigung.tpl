@@ -1,4 +1,3 @@
-{config_load file="$lang.conf" section='bestellungen'}
 {include file='tpl_inc/header.tpl'}
 
 <h1>{__('permissionDenied')}</h1>

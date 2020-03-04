@@ -150,7 +150,6 @@ interface DefaultServicesInterface extends ContainerInterface
      */
     public function getDebugBar(): JTLDebugBar;
 
-
     /**
      * @return CountryServiceInterface
      */

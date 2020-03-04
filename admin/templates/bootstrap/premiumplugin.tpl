@@ -1,5 +1,4 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section='agbwrb'}
 <style type="text/css">
     .cr {
         color: #f0f0f0;

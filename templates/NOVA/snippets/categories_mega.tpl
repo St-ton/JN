@@ -78,8 +78,7 @@
                     {block name='snippets-categories-mega-category-no-child'}
                         {navitem href=$category->getURL() title=$category->getName()
                             class="nav-scrollbar-item {if $category->getID() === $activeId}active{/if}"}
-                            <span class="text-truncate d-block pr-3 pr-lg-0">{$category->getShortName()}</span>
-                            <span class="badge text-gray-dark product-count">{$category->getProductCount()}</span>
+                            <span class="text-truncate d-block">{$category->getShortName()}</span>
                         {/navitem}
                     {/block}
                 {/if}

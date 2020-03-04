@@ -57,6 +57,9 @@
 </head>
 <body>
 {if $account !== false && isset($smarty.session.loginIsValid) && true ===  $smarty.session.loginIsValid }
+    <script>
+        var jtlToken = '{$smarty.session.jtl_token}';
+    </script>
     {if permission('SETTINGS_SEARCH_VIEW')}
         <div id="main-search" class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
@@ -71,8 +74,7 @@
             </div>
         </div>
         <script>
-        var $grid    = null;
-        var jtlToken = '{$smarty.session.jtl_token}';
+        var $grid = null;
 
         $(function () {
             var lastQuery = null;

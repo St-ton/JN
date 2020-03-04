@@ -271,9 +271,9 @@
                     }],
                 }
             };
-            if ($('#tab-link-tab-priceFlow').length) {
+            if ($('#tab-link-priceFlow').length) {
                 // using tabs
-                $('#tab-link-tab-priceFlow').on('shown.bs.tab', function () {
+                $('#tab-link-priceFlow').on('shown.bs.tab', function () {
                     if (typeof window.priceHistoryChart !== 'undefined' && window.priceHistoryChart === null) {
                         window.priceHistoryChart = new Chart(window.ctx, {
                             type: 'line',

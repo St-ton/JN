@@ -49,6 +49,7 @@
 
             $('.slick-lazy').on('mouseenter', function (e) {
                 let mainNode = $(this);
+                mainNode.removeClass('slick-lazy');
                 if (!mainNode.hasClass('slick-initialized')) {
                     self.initSlick(mainNode, mainNode.data('slick-type'));
                 }

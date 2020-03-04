@@ -108,7 +108,7 @@ msgid "resetEmailTemplate"
 msgstr "Die E-Mail-Vorlage wird zurückgesetzt."
 
 msgid "sureResetEmailTemplate"
-msgstr "Sie die E-Mail-Vorlage „<b>%s</b>“ wirklich zurücksetzen?"
+msgstr "Möchten Sie die E-Mail-Vorlage „<b>%s</b>“ wirklich zurücksetzen?"
 
 msgid "pluginTemplates"
 msgstr "Plugin-Vorlagen"

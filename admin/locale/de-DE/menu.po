@@ -513,7 +513,7 @@ msgid "System diagnostics"
 msgstr "Diagnose"
 
 msgid "Email templates"
-msgstr "Vorlage"
+msgstr "Vorlagen"
 
 msgid "Global"
 msgstr "Global"

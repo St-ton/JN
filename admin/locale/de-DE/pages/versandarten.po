@@ -310,7 +310,7 @@ msgid "shippingType_vm_versandberechnung_gewicht_jtl"
 msgstr "Versandkosten nach Gewicht und Lieferland"
 
 msgid "surchargeListFor"
-msgstr "Zuschlagliste für "
+msgstr "Zuschlagsliste für "
 
 msgid "surchargeList"
 msgstr "Zuschlagsliste"

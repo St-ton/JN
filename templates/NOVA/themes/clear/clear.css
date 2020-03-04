@@ -19402,7 +19402,6 @@ aside .last-seen-link {
 
 .carousel {
   transition: opacity 0.2s;
-  margin: 0 -1rem;
 }
 .carousel:not(.slick-initialized).slick-smooth-loading {
   opacity: 0;
@@ -19414,6 +19413,11 @@ aside .last-seen-link {
   display: flex;
   overflow-x: hidden;
   max-height: none;
+}
+@media (max-width: 991.98px) {
+  .carousel:not(.slick-initialized).slick-lazy {
+    padding-right: 50px;
+  }
 }
 @media (max-width: 767.98px) {
   .carousel:not(.slick-initialized).slick-type-product .product-wrapper {
@@ -19660,6 +19664,12 @@ aside .last-seen-link {
 }
 .carousel-thumbnails .slick-active .productbox-image-wrapper {
   border-color: #525252;
+}
+
+@media (max-width: 991.98px) {
+  .slick-list {
+    padding-right: 50px;
+  }
 }
 
 .swatches {

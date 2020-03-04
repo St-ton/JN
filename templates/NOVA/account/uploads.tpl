@@ -37,7 +37,7 @@
                                                 </span>
                                             </td>
                                             <td class="text-center">
-                                                {form method="post" action="{get_static_route id='jtl.php'}"}
+                                                {form method="post" action="{get_static_route id='jtl.php'}" slide=true}
                                                     {input name="kUpload" type="hidden" value=$oUpload->kUpload}
                                                     {block name='account-uploads-uploads-button'}
                                                         {button type="submit" size="sm" variant="outline-primary" name=$oUpload->cName}

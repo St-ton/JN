@@ -5,7 +5,7 @@
 {block name='productdetails-bundle'}
     {if !empty($Products)}
         {block name='productdetails-bundle-form'}
-            {form action="{if !empty($ProductMain->cURLFull)}{$ProductMain->cURLFull}{else}index.php{/if}" method="post" id="form_bundles" class="jtl-validate" slide=false}
+            {form action="{if !empty($ProductMain->cURLFull)}{$ProductMain->cURLFull}{else}index.php{/if}" method="post" id="form_bundles" class="jtl-validate"}
             {block name='productdetails-bundle-hidden-inputs'}
                 {input type="hidden" name="a" value=$ProductMain->kArtikel}
                 {input type="hidden" name="addproductbundle" value="1"}

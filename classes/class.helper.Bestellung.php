@@ -44,6 +44,15 @@ class BestellungHelper extends WarenkorbHelper
 
         foreach ($order->Positionen as $oPosition) {
             $amountItem  = $oPosition->fPreisEinzelNetto;
+            if (isset($oPosition->WarenkorbPosEigenschaftArr) && is_array($oPosition->WarenkorbPosEigenschaftArr) &&
+                (!isset($oPosition->Artikel->kVaterArtikel) || (int)$oPosition->Artikel->kVaterArtikel === 0)
+            ) {
+                foreach ($oPosition->WarenkorbPosEigenschaftArr as $oWarenkorbPosEigenschaft) {
+                    if ($oWarenkorbPosEigenschaft->fAufpreis !== 0) {
+                        $amountItem += $oWarenkorbPosEigenschaft->fAufpreis;
+                    }
+                }
+            }
             $amount      = $amountItem; /* $order->fWaehrungsFaktor;*/
             $amountGross = $amount + ($amount * $oPosition->fMwSt / 100);
             // floating-point precission bug

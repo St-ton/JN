@@ -196,7 +196,29 @@
                                     {include file='productdetails/variation.tpl' simple=$Artikel->isSimpleVariation showMatrix=$showMatrix}
                                 {/block}
 
-                                {row}
+                                {if $Artikel->bHasKonfig}
+                                    {row class="mb-4"}
+                                        {col cols=12 sm=6}
+                                            {button type="button"
+                                                value="{lang key='configure'}"
+                                                block=true
+                                                data=["toggle"=>"modal", "target"=>"#cfg-container"]
+                                            }
+                                                <span class="mr-1">{lang key='configure'}</span> <i class="fas fa-cogs"></i>
+                                            {/button}
+                                        {/col}
+                                    {/row}
+
+                                    {block name='productdetails-details-include-config-container'}
+                                        {col}
+                                            {row id="product-configurator"}
+                                                {include file='productdetails/config_container.tpl'}
+                                            {/row}
+                                        {/col}
+                                    {/block}
+                                {/if}
+
+                                {row class="mb-4"}
                                     {block name='productdetails-details-include-price'}
                                         {col}
                                             {include file='productdetails/price.tpl' Artikel=$Artikel tplscope='detail' priceLarge=true}
@@ -204,7 +226,7 @@
                                     {/block}
                                     {block name='productdetails-details-stock'}
                                         {col cols=12}
-                                            {row class="border-top border-bottom align-items-end no-gutters {if !isset($availability) && !isset($shippingTime)}py-3 mt-5 px-lg-3{/if}"}
+                                            {row class="border-top border-bottom align-items-end no-gutters {if !isset($availability) && !isset($shippingTime)}py-3 px-lg-3{/if}"}
                                                 {col}
                                                     {block name='productdetails-details-include-stock'}
                                                         {include file='productdetails/stock.tpl'}
@@ -236,25 +258,14 @@
                                     {include file="snippets/uploads.tpl" tplscope='product'}
                                 {/block}
                                 {*WARENKORB anzeigen wenn keine variationen mehr auf lager sind?!*}
-                                {if !$Artikel->bHasKonfig}
-                                    {block name='productdetails-details-include-basket'}
-                                        {include file='productdetails/basket.tpl'}
-                                    {/block}
-                                {/if}
+                                {block name='productdetails-details-include-basket'}
+                                    {include file='productdetails/basket.tpl'}
+                                {/block}
                             </div>
                         </div>{* /product-info-inner *}
                         {/block}{* productdetails-info *}
                         {opcMountPoint id='opc_after_product_info'}
                     {/col}
-                    {if $Artikel->bHasKonfig}
-                        {block name='productdetails-details-include-config-container'}
-                            {col}
-                                {row id="product-configurator"}
-                                    {include file='productdetails/config_container.tpl'}
-                                {/row}
-                            {/col}
-                        {/block}
-                    {/if}
                 {/row}
                 {block name='productdetails-details-include-matrix'}
                     {include file='productdetails/matrix.tpl'}

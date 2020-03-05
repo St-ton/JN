@@ -24,7 +24,10 @@ use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Checkout\Kupon;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\ReturnType;
+use JTL\Extensions\Config\Configurator;
+use JTL\Extensions\Config\Item;
 use JTL\Extensions\SelectionWizard\Wizard;
+use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Product;
 use JTL\Helpers\ShippingMethod;
@@ -638,6 +641,7 @@ class IOMethods
         $itemQuantities  = $aValues['item_quantity'] ?? [];
         $variationValues = $aValues['eigenschaftwert'] ?? [];
         $amount          = $aValues['anzahl'] ?? 1;
+        $invalidGroups   = [];
         $config          = Product::buildConfig(
             $productID,
             $amount,
@@ -659,6 +663,82 @@ class IOMethods
             1 => Preise::getLocalizedPriceString($fVK[1])
         ];
 
+        $configGroups      = $items;
+        $configGroupCounts = $quantities;
+        $configItemCounts  = $itemQuantities;
+        foreach ($configGroups as $itemList) {
+            foreach ($itemList as $configItemID) {
+                $configItemID = (int)$configItemID;
+                // Falls ungültig, ignorieren
+                if ($configItemID <= 0) {
+                    continue;
+                }
+                $configItem          = new Item($configItemID);
+                $configItem->fAnzahl = (float)($configItemCounts[$configItemID]
+                    ?? $configGroupCounts[$configItem->getKonfiggruppe()] ?? $configItem->getInitial());
+                if ($configItemCounts && isset($configItemCounts[$configItem->getKonfigitem()])) {
+                    $configItem->fAnzahl = (float)$configItemCounts[$configItem->getKonfigitem()];
+                }
+                if ($configItem->fAnzahl < 1) {
+                    $configItem->fAnzahl = 1;
+                }
+                $count                 = \max($amount, 1);
+                $configItem->fAnzahlWK = $configItem->fAnzahl;
+                if (!$configItem->ignoreMultiplier()) {
+                    $configItem->fAnzahlWK *= $count;
+                }
+                $configItems[] = $configItem;
+                // Alle Artikel können in den WK gelegt werden?
+                if ($configItem->getPosTyp() === \KONFIG_ITEM_TYP_ARTIKEL) {
+                    // Varikombi
+                    /** @var Artikel $tmpProduct */
+                    $configItem->oEigenschaftwerte_arr = [];
+                    $tmpProduct                        = $configItem->getArtikel();
+
+                    if ($tmpProduct !== null
+                        && $tmpProduct->kVaterArtikel > 0
+                        && isset($tmpProduct->kEigenschaftKombi)
+                        && $tmpProduct->kEigenschaftKombi > 0
+                    ) {
+                        $configItem->oEigenschaftwerte_arr =
+                            Product::getVarCombiAttributeValues($tmpProduct->kArtikel, false);
+                    }
+                    if ($tmpProduct->cTeilbar !== 'Y' && (int)$count != $count) {
+                        $count = (int)$count;
+                    }
+                    $tmpProduct->isKonfigItem = true;
+                    $redirectParam            = CartHelper::addToCartCheck(
+                        $tmpProduct,
+                        $configItem->fAnzahlWK,
+                        $configItem->oEigenschaftwerte_arr
+                    );
+                    if (\count($redirectParam) > 0) {
+                        $valid           = false;
+                        $productMessages = Product::getProductMessages(
+                            $redirectParam,
+                            true,
+                            $configItem->getArtikel(),
+                            $configItem->fAnzahlWK,
+                            $configItem->getKonfigitem()
+                        );
+
+                        $itemErrors[$configItem->getKonfigitem()] = (object)[
+                            'message' => $productMessages[0],
+                            'group'   => $configItem->getKonfiggruppe()
+                        ];
+                        $invalidGroups[]                          = $configItem->getKonfiggruppe();
+                    }
+                }
+            }
+        }
+
+        $errors                = Configurator::validateCart($productID, $configItems ?? []);
+        $config->invalidGroups = \array_unique(\array_merge(
+            $invalidGroups,
+            \array_keys(\is_array($errors) ? $errors : [])
+        ));
+        $config->errorMessages = $itemErrors ?? [];
+        $config->valid         = empty($config->invalidGroups) && empty($config->errorMessages);
         $smarty->assign('oKonfig', $config)
                ->assign('NettoPreise', $net)
                ->assign('Artikel', $product);
@@ -1281,14 +1361,17 @@ class IOMethods
     /**
      * @param int $wlID
      * @param bool $state
+     * @param string $token
      * @return IOResponse
      */
-    public function setWishlistVisibility(int $wlID, bool $state): IOResponse
+    public function setWishlistVisibility(int $wlID, bool $state, string $token): IOResponse
     {
-        if ($state) {
-            Wishlist::setPublic($wlID);
-        } else {
-            Wishlist::setPrivate($wlID);
+        if (Form::validateToken($token)) {
+            if ($state) {
+                Wishlist::setPublic($wlID);
+            } else {
+                Wishlist::setPrivate($wlID);
+            }
         }
         $objResponse     = new IOResponse();
         $response        = new stdClass();
@@ -1308,7 +1391,9 @@ class IOMethods
      */
     public function updateWishlistItem(int $wlID, array $formData): IOResponse
     {
-        Wishlist::update($wlID, $formData);
+        if (Form::validateToken($formData['jtl_token'])) {
+            Wishlist::update($wlID, $formData);
+        }
 
         $objResponse    = new IOResponse();
         $response       = new stdClass();

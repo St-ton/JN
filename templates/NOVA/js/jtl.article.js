@@ -222,7 +222,7 @@
             var that   = this,
                 config = $('#product-configurator')
                     .closest('form')
-                    .find('input[type="radio"], input[type="checkbox"], input[type="number"], select'),
+                    .find('input[type="radio"], input[type="text"], input[type="checkbox"], input[type="number"], select'),
                 dropdown = $('#product-configurator')
                     .closest('form')
                     .find('select');
@@ -949,7 +949,8 @@
                     container = $('#cfg-container'),
                     sidebar   = $('#cfg-sticky-sidebar'),
                     width,
-                    form;
+                    form,
+                    $spinner = $.evo.extended().spinner(container.get(0));
 
                 if (container.length === 0) {
                     return;
@@ -966,6 +967,8 @@
 
                 form = $.evo.io().getFormValues('buy_form');
 
+
+                container.addClass('loading');
                 $.evo.io().call('buildConfiguration', [form], that, function (error, data) {
                     var result,
                         i,
@@ -978,6 +981,45 @@
                         enableQuantity,
                         nNetto,
                         quantityInput;
+                    $('.js-cfg-group').each(function (i, item) {
+                        let iconChecked     = $(this).find('.js-group-checked'),
+                            badgeInfoDanger = 'alert-info';
+                        if (data.response.invalidGroups && data.response.invalidGroups.includes($(this).data('id'))) {
+                            iconChecked.addClass('d-none');
+                            iconChecked.next().removeClass('d-none');
+                            if ($(this).find('.js-cfg-group-collapse').hasClass('visited')) {
+                                badgeInfoDanger = 'alert-danger';
+                            }
+                            $(this).find('.js-group-badge-checked')
+                                .removeClass('alert-success alert-info')
+                                .addClass(badgeInfoDanger);
+                            $(this).find('.js-cfg-next').prop('disabled', true);
+                        } else {
+                            if ($(this).hasClass('visited')) {
+                                iconChecked.removeClass('d-none');
+                                iconChecked.next().addClass('d-none');
+                            }
+                            $(this).find('.js-group-badge-checked')
+                                .addClass('alert-success')
+                                .removeClass('alert-danger alert-info');
+                            $(this).find('.js-cfg-next').prop('disabled', false);
+                        }
+                    });
+                    $('.js-cfg-group-error').addClass('d-none').html('');
+                    $.each(data.response.errorMessages, function (i, item) {
+                        $('.js-cfg-group-error[data-id="' + item.group + '"]').removeClass('d-none').html(item.message);
+                    });
+                    if (data.response.valid) {
+                        $('.js-cfg-validate').prop('disabled', false);
+                        $('#cfg-tab-summary-finish').children().removeClass('disabled');
+                        $('#cfg-tab-summary-finish').removeClass('disabled');
+                    } else {
+                        $('.js-cfg-validate').prop('disabled', true);
+                        $('#cfg-tab-summary-finish').children().addClass('disabled');
+                        $('#cfg-tab-summary-finish').addClass('disabled');
+                    }
+                    $spinner.stop();
+                    container.removeClass('loading');
                     if (error) {
                         $.evo.error(data);
                         return;
@@ -1000,6 +1042,40 @@
                         .trigger('priceChanged', result);
                 });
             }
+        },
+
+        initConfigListeners: function () {
+            let that   = this;
+            $('.js-cfg-group').on('click', function () {
+                let self = $(this);
+                setTimeout(function() {
+                    $(this).closest('.tab-content').animate({
+                        scrollTop: self.offset().top
+                    }, 500);
+                }, 200);
+            });
+            $('#cfg-accordion .js-cfg-group-collapse').on('shown.bs.collapse', function () {
+                $(this).prev()[0].scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            });
+            $('.js-cfg-next').on('click', function () {
+                $('button[data-target="' +  $(this).data('target') + '"]')
+                    .prop('disabled', false)
+                    .closest('.js-cfg-group').addClass('visited');
+                that.configurator();
+            });
+            $('#cfg-tab-summary-finish').on('click', function () {
+                if (!$(this).hasClass('disabled')) {
+                    $('#cfg-modal-tabs').find('.nav-link').removeClass('active');
+                    $('#cfg-tab-summary').children().addClass('active');
+                    $(this).children().removeClass('active');
+                }
+            });
+            $('.js-cfg-group-collapse').on('click', function () {
+                $(this).addClass('visited');
+            });
         },
 
         variationRefreshAll: function($wrapper) {

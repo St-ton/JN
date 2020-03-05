@@ -11,6 +11,7 @@ use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Catalog\Product\Preisverlauf;
 use JTL\Extensions\Upload\Upload;
+use JTL\Helpers\Form;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -34,6 +35,7 @@ $nonAllowed     = [];
 $conf           = Shopsetting::getInstance()->getAll();
 $shopURL        = Shop::getURL() . '/';
 $alertHelper    = Shop::Container()->getAlertService();
+$valid          = Form::validateToken();
 if ($productNote = Product::mapErrorCode(
     Request::verifyGPDataString('cHinweis'),
     ((float)Request::getVar('fB', 0) > 0) ? (float)$_GET['fB'] : 0.0
@@ -43,7 +45,7 @@ if ($productNote = Product::mapErrorCode(
 if ($productError = Product::mapErrorCode(Request::verifyGPDataString('cFehler'))) {
     $alertHelper->addAlert(Alert::TYPE_ERROR, $productError, 'productError');
 }
-if (isset($_POST['a'])
+if ($valid && isset($_POST['a'])
     && Request::verifyGPCDataInt('addproductbundle') === 1
     && Product::addProductBundleToCart(Request::verifyGPCDataInt('a'))
 ) {
@@ -114,9 +116,9 @@ if (empty($cCanonicalURL)) {
 $AktuellerArtikel->berechneSieSparenX($conf['artikeldetails']['sie_sparen_x_anzeigen']);
 $productNotices = Product::getProductMessages();
 
-if (Request::postInt('fragezumprodukt') === 1) {
+if ($valid && Request::postInt('fragezumprodukt') === 1) {
     $productNotices = Product::checkProductQuestion($productNotices, $conf);
-} elseif (Request::postInt('benachrichtigung_verfuegbarkeit') === 1) {
+} elseif ($valid && Request::postInt('benachrichtigung_verfuegbarkeit') === 1) {
     $productNotices = Product::checkAvailabilityMessage($productNotices);
 }
 foreach ($productNotices as $productNoticeKey => $productNotice) {

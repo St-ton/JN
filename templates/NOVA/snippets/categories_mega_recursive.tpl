@@ -18,8 +18,7 @@
                 alt=$mainCategory->getName()|escape:'html'
                 class="d-none d-md-block mb-3"}
             {/if}
-            <span class="text-truncate d-block pr-3 pr-lg-0">{$mainCategory->getName()}</span>
-            <span class="badge text-gray-dark product-count">{$mainCategory->getProductCount()}</span>
+            <span class="text-truncate d-block">{$mainCategory->getName()}</span>
         {/link}
     {/block}
     {if $mainCategory->hasChildren() && $Einstellungen.template.megamenu.show_subcategories !== 'N'}
@@ -46,8 +45,7 @@
                             {else}
                                 {block name='snippets-categories-mega-recursivechild-category-no-child'}
                                     {navitem href=$category->getURL()}
-                                            <span class="text-truncate d-block pr-3 pr-lg-0">{$category->getName()}</span>
-                                            <span class="badge text-gray-dark product-count">{$category->getProductCount()}</span>
+                                            <span class="text-truncate d-block">{$category->getName()}</span>
                                     {/navitem}
                                 {/block}
                             {/if}

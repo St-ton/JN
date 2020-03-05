@@ -6,7 +6,7 @@ msgid "couponstatisticsURL"
 msgstr "https://jtl-url.de/6kyun"
 
 msgid "couponStatistic"
-msgstr "Coupon reports"
+msgstr "Coupon statistics"
 
 msgid "fromUntilDate"
 msgstr "Date (from/to)"
@@ -18,19 +18,19 @@ msgid "countUsedCoupons"
 msgstr "All used coupons (% of orders)"
 
 msgid "countOrders"
-msgstr "All orders"
+msgstr "Number of all orders for which coupons were used"
 
 msgid "countCustomers"
-msgstr "Number of customers"
+msgstr "Number of customers who used coupons"
 
 msgid "couponAmountAll"
-msgstr "Total value of all used coupons:"
+msgstr "Total value of all used coupons"
 
 msgid "shoppingCartAmountAll"
-msgstr "Total value of all orders for which coupons were used:"
+msgstr "Total value of all orders for which coupons were used"
 
 msgid "couponValue"
 msgstr "Coupon value"
 
 msgid "orderPosition"
-msgstr "Purchase order line item"
+msgstr "Order line item"

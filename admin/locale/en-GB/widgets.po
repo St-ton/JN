@@ -15,13 +15,13 @@ msgid "noPatchesATM"
 msgstr "There are no patches currently available."
 
 msgid "noStatisticsThisMonth"
-msgstr "No reports available for the current month."
+msgstr "No statistics available for the current month."
 
 msgid "phpVersion"
 msgstr "PHP version"
 
 msgid "mysqlStatistic"
-msgstr "MySQL reports"
+msgstr "MySQL statistics"
 
 msgid "mysqlVersion"
 msgstr "MySQL version"
@@ -75,10 +75,10 @@ msgid "newsletterSubscriber"
 msgstr "Newsletter subscription"
 
 msgid "moreDetailsStatistics"
-msgstr "For more details, please see <a href=\"statistik.php?s=3\">Reports</a>"
+msgstr "For more details, please see the <a href=\"statistik.php?s=3\">Statistics</a>"
 
 msgid "noStatisticsFound"
-msgstr "No reports found."
+msgstr "No statistics found."
 
 msgid "moduleSelectionWizard"
 msgstr "Selection Wizard Module"

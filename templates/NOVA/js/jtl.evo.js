@@ -49,6 +49,7 @@
 
             $('.slick-lazy').on('mouseenter', function (e) {
                 let mainNode = $(this);
+                mainNode.removeClass('slick-lazy');
                 if (!mainNode.hasClass('slick-initialized')) {
                     self.initSlick(mainNode, mainNode.data('slick-type'));
                 }
@@ -718,7 +719,11 @@
 
         setWishlistVisibilitySwitches: function() {
             $('.wl-visibility-switch').on('change', function () {
-                $.evo.io().call('setWishlistVisibility', [$(this).data('wl-id'), $(this).is(":checked")], $(this), function(error, data) {
+                $.evo.io().call(
+                    'setWishlistVisibility',
+                    [$(this).data('wl-id'), $(this).is(":checked"), $('.jtl_token').val()],
+                    $(this),
+                    function(error, data) {
                     if (error) {
                         return;
                     }
@@ -929,6 +934,7 @@
             this.fixStickyElements();
             this.setWishlistVisibilitySwitches();
             this.initEModals();
+            $.evo.article().initConfigListeners();
             this.initScrollEvents();
             this.initReviewHelpful();
             this.initWishlist();

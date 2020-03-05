@@ -61,22 +61,23 @@ class Form
     /**
      * validate token from POST/GET
      *
+     * @param null|string $token
      * @return bool
      * @since 5.0.0
      */
-    public static function validateToken(): bool
+    public static function validateToken(?string $token = null): bool
     {
         if (!isset($_SESSION['jtl_token'])) {
             return false;
         }
 
-        $token = $_POST['jtl_token'] ?? $_GET['token'] ?? null;
+        $tokenTMP = $token ?? $_POST['jtl_token'] ?? $_GET['token'] ?? null;
 
-        if ($token === null) {
+        if ($tokenTMP === null) {
             return false;
         }
 
-        return Shop::Container()->getCryptoService()->stableStringEquals($_SESSION['jtl_token'], $token);
+        return Shop::Container()->getCryptoService()->stableStringEquals($_SESSION['jtl_token'], $tokenTMP);
     }
 
     /**

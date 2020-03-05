@@ -27,7 +27,7 @@ msgid "wishlistPosTop100"
 msgstr "Items on wish lists"
 
 msgid "wishlistPosName"
-msgstr "Item"
+msgstr "Items"
 
 msgid "wishlisteSave"
 msgstr "Save"

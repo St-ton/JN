@@ -155,46 +155,10 @@ ul.partlist-items {
     }
 }
 
-#cfg-sticky-sidebar{
-  z-index: $zindex-sticky - 1;
-  top: ($nav-link-height + $highlight-border-size + $navbar-padding-y);
-}
-
-#product-configuration-sidebar {
-  border: 2px solid $primary;
-  @include border-radius($dropdown-border-radius);
-  .cfg-toggle{
-    &::before {
-      display: inline-block;
-      font-family: "Font Awesome 5 Free", Arial, sans-serif;
-      font-style: normal;
-      font-weight: 900;
-      content: "\f078";
-      border: 2px solid $primary;
-      border-bottom: 0;
-      background: #fff;
-      vertical-align: baseline;
-      width: initial;
-      height: initial;
-      margin-left: -18px;
-      padding: 0 14px;
-      top: -20px;
-      position: absolute;
-    }
-    &[aria-expanded=true]:before {
-      content: "\f077";
-    }
-  }
-}
-
 .btn[data-toggle="collapse"][aria-expanded=true] {
   i.fa-chevron-down {
     transform: rotate(180deg);
   }
-}
-
-#cfg-container .btn[data-toggle="collapse"][aria-expanded=false] .fa-minus:before {
-  content: "\f067";
 }
 
 .badge-not-available{
@@ -459,15 +423,6 @@ ul.partlist-items {
   }
 }
 
-#cfg-container .cfg-group {
-  .h5 {
-    background: $sand;
-  }
-  .list-group-item {
-    border: 0;
-  }
-}
-
 #tabAccordion > .card {
   border: 0;
 }
@@ -710,51 +665,6 @@ input.form-control[name="wishlist-url"] {
 #filter-checkboxes .custom-checkbox label,
 #filter-checkboxes .custom-checkbox ::after {
   cursor: pointer;
-}
-
-.cfg-group {
-  .config-item {
-    padding: $alert-padding-y;
-    border: 2px solid $cool-white;
-    @include border-radius($dropdown-border-radius);
-    .badge-circle{
-      display: none;
-    }
-  }
-
-  .cfg-swatch{
-    ~ .custom-control-label::before,
-    ~ .custom-control-label::after {
-      display: none;
-    }
-    &:disabled ~ .custom-control-label .config-item {
-      background: $cool-white;
-      color: $gray-light;
-    }
-  }
-
-  .custom-control {
-    margin-right: 0;
-    padding-left: 0;
-  }
-
-  .cfg-swatch:checked ~ .custom-control-label .config-item {
-    border-color: $primary;
-    .badge-circle{
-      display: flex;
-      background-color: $primary;
-      border-color: $primary;
-      color: #fff;
-      opacity: 1;
-      align-items: center;
-      position: absolute;
-      top: -20px;
-      right: -22px;
-    }
-  }
-  .drpdwn_qnt{
-    display: none;
-  }
 }
 
 /* Action buttons */

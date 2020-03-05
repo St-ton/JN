@@ -3,13 +3,13 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "shoptemplates"
-msgstr "Online shop templates"
+msgstr "Templates for JTL-Shop"
 
 msgid "shoptemplateURL"
 msgstr "https://jtl-url.de/4t1so"
 
 msgid "shoptemplatesDesc"
-msgstr "This page contains all templates included in the folder \"/templates/\" of the online shop root directory. If you have a new template and want to use it, use <abbr title=\"FTP (File Transfer Protocol) is a data transfer protocol\">FTP</abbr> to move it to this directory first. You can only activate one normal and one mobile template for JTL-Shop at the same time. Use the button \"Settings\" to configure the activated template."
+msgstr "This page contains all templates included in the folder \"/templates/\" of the JTL-Shop root directory. If you have a new template and want to use it, use <abbr title=\"FTP (File Transfer Protocol) is a data transfer protocol\">FTP</abbr> to move it to this directory first. You can only activate one normal and one mobile template for JTL-Shop at the same time. Use the button \"Settings\" to configure the activated template."
 
 msgid "templateName"
 msgstr "Template name"
@@ -63,4 +63,4 @@ msgid "parentTemplateMissing"
 msgstr "Missing parent template"
 
 msgid "errorOverlayWritePermissions"
-msgstr "Could not create overlays. Please check the write access of the folder \"%s\" and re-enable the template."
+msgstr "Could not create item badges. Please check the write access of the folder \"%s\" and re-enable the template."

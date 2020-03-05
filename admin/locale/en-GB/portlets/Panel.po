@@ -6,7 +6,7 @@ msgid "Panel"
 msgstr "Panel"
 
 msgid "showHeader"
-msgstr "Kopf anzeigen?"
+msgstr "Show header"
 
 msgid "showFooter"
-msgstr "Fuß anzeigen?"
+msgstr "Show footer"

@@ -632,6 +632,8 @@ class IOMethods
      */
     public function buildConfiguration($aValues): IOResponse
     {
+        $_POST['jtl_token'] = $aValues['jtl_token'];
+
         $smarty          = Shop::Smarty();
         $response        = new IOResponse();
         $product         = new Artikel();

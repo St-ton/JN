@@ -894,6 +894,7 @@ class Product
         if ($productID <= 0) {
             return null;
         }
+        $defaultOptions                   = Artikel::getDefaultOptions();
         $xSelling                         = new stdClass();
         $xSelling->Standard               = new stdClass();
         $xSelling->Kauf                   = new stdClass();
@@ -925,7 +926,7 @@ class Product
                     foreach ($products as $xs) {
                         $group->Name         = $xs->cName;
                         $group->Beschreibung = $xs->cBeschreibung;
-                        $product             = (new Artikel())->fuelleArtikel((int)$xs->kXSellArtikel);
+                        $product             = (new Artikel())->fuelleArtikel((int)$xs->kXSellArtikel, $defaultOptions);
                         if ($product !== null && (int)$product->kArtikel > 0 && $product->aufLagerSichtbarkeit()) {
                             $group->Artikel[] = $product;
                         }
@@ -988,14 +989,13 @@ class Product
                     'txsellkauf',
                     'kArtikel',
                     $productID,
-                    '*',
+                    'kXSellArtikel',
                     'nAnzahl DESC',
                     $limit
                 );
             }
             $xsellCount2 = \is_array($xsell) ? \count($xsell) : 0;
             if ($xsellCount2 > 0) {
-                $defaultOptions = Artikel::getDefaultOptions();
                 foreach ($xsell as $xs) {
                     $product = new Artikel();
                     $product->fuelleArtikel((int)$xs->kXSellArtikel, $defaultOptions);

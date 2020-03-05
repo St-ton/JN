@@ -934,6 +934,7 @@
             this.fixStickyElements();
             this.setWishlistVisibilitySwitches();
             this.initEModals();
+            $.evo.article().initConfigListeners();
             this.initScrollEvents();
             this.initReviewHelpful();
             this.initWishlist();

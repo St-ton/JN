@@ -22,6 +22,7 @@ const updateCount = function(increase = false) {
 
 	try {
 		input[stepDirection]()
+		$input.trigger('change')
 	} catch(e) {
 		let step = input.step > 0 ? parseFloat(input.step) : 1;
 

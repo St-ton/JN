@@ -100,3 +100,128 @@
 		}
 	}
 }
+
+.cfg-item-description {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
+}
+
+#cfg-container .cfg-group {
+	.hr-sect {
+		&::before {
+			max-width: 2%;
+		}
+	}
+	.h5 {
+		background: $sand;
+	}
+	.list-group-item {
+		border: 0;
+	}
+	.custom-control-inline {
+		width: 100%;
+		.custom-control-label {
+			width: 100%;
+		}
+	}
+}
+
+.modal-body .tab-content {
+	margin-top: 0;
+	margin-bottom: 1rem;
+}
+
+#cfg-container .nav.nav-pills {
+	margin-bottom: -1rem;
+}
+
+#cfg-container-tab-panes {
+	height: calc((var(--vh, 1vh) * 78) - 3rem);
+	overflow-x: auto;
+	padding-right: 16px;
+	border-bottom: 2px solid $border-color;
+	@include media-breakpoint-down(sm) {
+		height: calc((var(--vh, 1vh) * 87) - 3rem);
+	}
+}
+
+.cfg-group {
+	.config-item {
+		padding: $alert-padding-y;
+		border: 2px solid $cool-white;
+		@include border-radius($dropdown-border-radius);
+		.badge-circle{
+			display: none;
+		}
+		@include media-breakpoint-down(sm) {
+			padding: map_get($spacers, 2);
+		}
+	}
+
+	.cfg-swatch{
+		~ .custom-control-label::before,
+		~ .custom-control-label::after {
+			display: none;
+		}
+		&:disabled ~ .custom-control-label .config-item {
+			background: $cool-white;
+			color: $gray-light;
+		}
+	}
+
+	.custom-control {
+		margin-right: 0;
+		padding-left: 0;
+	}
+
+	.cfg-swatch:checked ~ .custom-control-label .config-item {
+		border-color: $primary;
+		.badge-circle{
+			display: flex;
+			background-color: $primary;
+			border-color: $primary;
+			color: #fff;
+			opacity: 1;
+			align-items: center;
+			position: absolute;
+			top: -20px;
+			right: -22px;
+			&.circle-small{
+				top: -12px;
+				right: -14px;
+			}
+		}
+	}
+	.drpdwn_qnt{
+		display: none;
+	}
+	&.visited {
+		.js-group-checked {
+			color: $success;
+		}
+	}
+}
+
+#product-configurator .modal-dialog {
+	@include media-breakpoint-down(sm) {
+		margin: 0;
+		.modal-header {
+			padding: 0;
+			.close {
+				right: 0;
+				transform: none;
+				background-color: transparent;
+				font-size: 2rem;
+				top: 8px;
+			}
+		}
+		.hr-sect::before {
+			margin: 0px 10px 0px 0px;
+		}
+		.btn-sm {
+			padding: 0.2rem 0.5rem;
+		}
+	}
+}

@@ -117,10 +117,11 @@
                                             {link href="{if $manufacturerOverview !== null}{$manufacturerOverview->getURL()}{else}#{/if}" class="nav-link font-size-base" rel="nofollow"}
                                                 <span class="text-truncate font-weight-bold d-block pr-3 pr-lg-0">
                                                     {if $manufacturerOverview !== null && !empty($manufacturerOverview->getName())}
-                                                        {$manufacturerOverview->getName()}
+                                                        {$manufacturerTitle = $manufacturerOverview->getName()}
                                                     {else}
-                                                        {lang key='manufacturers'}
+                                                        {$manufacturerTitle = {lang key='manufacturers'}}
                                                     {/if}
+                                                    {lang key='menuShow' printf=$manufacturerTitle}
                                                 </span>
                                             {/link}
                                         {/block}

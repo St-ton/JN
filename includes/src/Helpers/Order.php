@@ -53,7 +53,7 @@ class Order extends CartHelper
         $info->items     = [];
         $info->currency  = $order->Waehrung;
         foreach ($order->Positionen as $orderItem) {
-            $amountItem  = $orderItem->fPreisEinzelNetto;
+            $amountItem = $orderItem->fPreisEinzelNetto;
             if (GeneralObject::isCountable('WarenkorbPosEigenschaftArr', $orderItem)
                 && (!isset($orderItem->Artikel->kVaterArtikel) || (int)$orderItem->Artikel->kVaterArtikel === 0)
             ) {

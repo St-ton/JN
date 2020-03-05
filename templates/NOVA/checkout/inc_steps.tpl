@@ -7,7 +7,7 @@
     {assign var=step2_active value=($bestellschritt[3] == 1 || $bestellschritt[4] == 1)}
     {assign var=step3_active value=($bestellschritt[5] == 1)}
     {if $bestellschritt[1] != 3}
-        {nav class='stepper mb-4' tag='nav' aria=["label"=>"{lang key='secureCheckout' section='checkout'}"]}
+        {nav class='stepper mb-6' tag='nav' aria=["label"=>"{lang key='secureCheckout' section='checkout'}"]}
             {col lg=4 class="nav-item step step-active {if $step1_active}step-current{else}col-auto{/if}"}
                 {block name='checkout-inc-steps-first'}
                     {link href="{get_static_route id='bestellvorgang.php'}?editRechnungsadresse=1"

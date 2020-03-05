@@ -53,6 +53,38 @@ class DataAttribute
     public $dynamic = false;
 
     /**
+     * @var InputConfig
+     */
+    public $inputConfig;
+
+    /**
+     * DataAttribute constructor.
+     */
+    public function __construct()
+    {
+        $this->inputConfig = new InputConfig();
+    }
+
+    /**
+     * @return InputConfig
+     */
+    public function getInputConfig(): InputConfig
+    {
+        return $this->inputConfig;
+    }
+
+    /**
+     * @param InputConfig $inputConfig
+     * @return DataAttribute
+     */
+    public function setInputConfig(InputConfig $inputConfig): DataAttribute
+    {
+        $this->inputConfig = $inputConfig;
+
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getName(): string
@@ -201,13 +233,6 @@ class DataAttribute
         $this->dynamic = $dynamic;
 
         return $this;
-    }
-
-    /**
-     * DataAttribute constructor.
-     */
-    public function __construct()
-    {
     }
 
     /**

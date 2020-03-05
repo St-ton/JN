@@ -6,13 +6,13 @@ Cache
    <br />
 
 Über die Klasse ``JTLCache`` bzw. ``JTL\Cache\JTLCache`` sowie die zugehörigen Backend-Klassen
-in ``<Shop-Root>/classes/CachingMethods/`` bzw. ``<Shop-Root>/includes/src/Cache/Methods/`` wird seit Shop 4 ein Objektcache bereitgestellt,
-welcher auch in Plugins genutzt werden kann.
+in ``<Shop-Root>/classes/CachingMethods/`` bzw. ``<Shop-Root>/includes/src/Cache/Methods/`` wird seit JTL-Shop 4 ein
+Objektcache bereitgestellt, welcher auch in Plugins genutzt werden kann.
 
-Die Konfiguration erfolgt im Backend über den Menüpunkt "*System -> Cache*" (Shop bis Version 4.x) und
-"*Einstellungen -> Cache*" (ab Shop Version 5.x).
+Die Konfiguration erfolgt im Backend über den Menüpunkt "*System -> Wartung -> Cache*" (bis JTL-Shop 4.x) und
+"*System -> Cache*" (ab JTL-Shop 5.x).
 
-Standardmäßig unterstützt der Shop die folgenden Caching-Mechanismen:
+Standardmäßig unterstützt JTL-Shop die folgenden Caching-Methoden:
 
 * Redis
 * Memcache(d)
@@ -37,13 +37,13 @@ Die zur Verfügung stehenden Standard-Gruppen lauten:
 +--------------------------------+--------------------------------+
 | ``CACHING_GROUP_TEMPLATE``     | Templates und Templateoptionen |
 +--------------------------------+--------------------------------+
-| ``CACHING_GROUP_OPTION``       | allgemeine Optionen            |
+| ``CACHING_GROUP_OPTION``       | Allgemeine Optionen            |
 +--------------------------------+--------------------------------+
 | ``CACHING_GROUP_PLUGIN``       | Plugins und Optionen           |
 +--------------------------------+--------------------------------+
-| ``CACHING_GROUP_CORE``         | wichtige Core-Daten            |
+| ``CACHING_GROUP_CORE``         | Wichtige Core-Daten            |
 +--------------------------------+--------------------------------+
-| ``CACHING_GROUP_OBJECT``       | allgemeine Objekte             |
+| ``CACHING_GROUP_OBJECT``       | Allgemeine Objekte             |
 +--------------------------------+--------------------------------+
 | ``CACHING_GROUP_BOX``          | Boxen                          |
 +--------------------------------+--------------------------------+
@@ -61,13 +61,13 @@ Wenn ein beliebiges Datum unter einer eindeutigen ID gespeichert wird, ist es sc
 invalidieren.
 
 Entweder müsste dazu die genaue ID bekannt sein oder es müssten sämtliche Einträge auf einmal gelöscht werden.
-Letzteres würde zu einem sehr häufigen Neuaufbau des Caches führen. Andererseit müssen Cache-IDs aber so genau wie
+Letzteres würde zu einem sehr häufigen Neuaufbau des Caches führen. Andererseits müssen Cache-IDs aber so genau wie
 möglich sein. Falls beispielsweise eine Produktobjekt im Cache gespeichert werden soll, hängen dessen Daten von
 verschiedenen Faktoren wie aktueller Sprache, Kundengruppe etc. ab.
 
-Haben sich, z.B. durch Synchronisation mit der Wawi, Produktdaten geändert, muss dieser Eintrag nun aber invalidiert
-werden. Entweder, indem alle Cache-IDs gelöscht werden, oder indem alle zulässigen Werte einzeln gelöscht werden.
-So müsste man also für alle Sprachen und alle Kundengruppen Cache-IDs generieren und anschließend alle löschen.
+Haben sich z. B. durch die Synchronisation mit JTL-Wawi Produktdaten geändert, muss dieser Eintrag nun aber invalidiert
+werden. Entweder indem alle Cache-IDs gelöscht werden, oder indem alle zulässigen Werte einzeln gelöscht werden.
+So müssten also für alle Sprachen und alle Kundengruppen Cache-IDs generiert und anschließend alle gelöscht werden.
 
 Einfacher ist dies mit Tags:
 
@@ -81,22 +81,22 @@ Das Verfahren mit Kategorien ist analog.
 
 Ähnlich ist es beim Speichern von Optionen im Backend: |br|
 Sobald der Nutzer dort auf "*Speichern*" klickt, werden alle mit dem Cache-Tag ``CACHING_GROUP_OPTION`` versehenen
-Einträge gelöscht. Und das Speichern von Plugin-Optionen invalidiert automatisch die
+Einträge gelöscht. Das Speichern von Plugin-Optionen invalidiert automatisch die
 Gruppe ``CACHING_GROUP_PLUGIN_$kPlugin``.
 
-Ein weiterer Vorteil der Tags ist die Möglichkeit, dass der Nutzer einzelne Bereiche des Shopsystems gezielt vom
+Ein weiterer Vorteil der Tags ist die Möglichkeit, dass der Nutzer einzelne Bereiche von JTL-Shop gezielt vom
 Caching ausnehmen kann. |br|
 Über das Backend sind daher alle Standard-Tags jeweils einzeln deaktivierbar, sodass Schreibversuche in diesen Gruppen
 nicht mehr möglich sind und Leseoperationen stets *FALSE* zurückgeben.
 
 Generelles Vorgehen beim Lesen/Speichern
 
-    1. Klasseninstanz holen, via ``Shop::Cache()``
+    1. Klasseninstanz holen via ``Shop::Cache()``
     2. CacheID generieren
     3. mit ``mixed|bool JTLCache::get(string $cacheID [,callable $callback = null, mixed $customData = null])``
        im Cache nach entsprechendem Eintrag suchen
     4. bei *Hit* direkt zurückgeben
-    5. bei *Miss* Daten berechnen und
+    5. bei *Miss* Daten berechnen
     6. Daten im Cache über
        ``bool JTLCache::set(string $cacheID, mixed $content [, array $tags = null, int $expiration = null])`` speichern
        und dabei mit Tags versehen
@@ -149,8 +149,8 @@ Generelles Invalidieren
 
 .. important::
 
-    Falls sich betroffene Daten ändern -- bei Wawi-Abgleich oder durch Nutzerinteraktion -- müssen die Caches
-    (repräsentiert durch die *CacheID*) gelöscht werden.
+    Falls sich betroffene Daten ändern, z. B. beim Abgleich mit JTL-Wawi oder durch Nutzerinteraktion, müssen
+    die Caches (repräsentiert durch die *CacheID*) gelöscht werden.
 
 Hierzu kann via ``$cache->flush($cacheID)``, bzw. der Kurzform ``Shop::Cache()->delete(string $cacheID)``,
 die ID gelöscht werden oder via ``$cache->flushTags(array $tags)`` bzw. ``Shop::Cache()->flushTags(array $tags)``
@@ -176,12 +176,12 @@ ganze Tags gelöscht werden.
 Generierung von IDs
 -------------------
 
-*Cache-IDs* sollten natürlich möglichst einzigartig sein, gleichzeitig aber auch in Ihrer Berechnung nicht zu komplex,
+*Cache-IDs* sollten möglichst einzigartig sein, gleichzeitig aber auch in ihrer Berechnung nicht zu komplex,
 um den Geschwindigkeitsvorteil des Caches nicht wieder zu verspielen.
 
 Generell sollten alle Faktoren, die die Berechnung eines Wertes beeinflussen, in die ID mit einbezogen werden. |br|
-Dies betrifft im Shop häufig die aktuelle Sprache (``$_SESSION['kSprache']`` bzw. ``Shop::$kSprache``), die
-Kundengruppe (``$_SESSION['Kunde']->kKundengruppe`` oder die Währung (``$_SESSION['Waehrung']->kWaehrung``).
+Dies betrifft bei JTL-Shop häufig die aktuelle Sprache (``$_SESSION['kSprache']`` bzw. ``Shop::$kSprache``), die
+Kundengruppe (``$_SESSION['Kunde']->kKundengruppe``) oder die Währung (``$_SESSION['Waehrung']->kWaehrung``).
 
 Die Funktion ``JTLCache::getBaseID()`` versucht, die gängigsten Einflussfaktoren zu bedenken und so eine Basis-ID
 zu generieren, die als Teil der CacheID verwendet werden kann. |br|
@@ -191,12 +191,12 @@ Ihre Signatur sieht wie folgt aus:
 
     string JTLCache::getBaseID([bool $hash = false, bool $customerID = false, bool $customerGroup = true, bool $currencyID = true, bool $sslStatus = true])
 
-Der erste Parameter gibt dabei an, ob ein *md5-Hash* generiert werden soll und die weiteren,
+Der erste Parameter gibt dabei an, ob ein *md5-Hash* generiert werden soll. Die weiteren Parameter geben an,
 welche Faktoren bedachte werden sollen.
 
 Zweckmäßig wäre es beispielsweise, diese *Basis-ID* mit einer Abkürzung des Funktionsnamens zu kombinieren,
-in der die ID erstellt wird - wie ``$cacheID = 'mft_' . Shop::Cache()->getBaseID()``, wenn die entsprechende Zeile
-beispielsweise in einer Funktion namens "*myFunctionTest*" steht.
+wie beispielsweise ``$cacheID = 'mft_' . Shop::Cache()->getBaseID()``, wenn die entsprechende Zeile
+in einer Funktion namens "*myFunctionTest*" steht.
 
 CacheIDs und Tags in Plugins
 ----------------------------
@@ -224,11 +224,11 @@ fehlgeschlagenen Lesevorgang zu unterscheiden.
         //Cache miss - JTLCache::RES_FAIL
     }
 
-Mehrere Werte Setzen/Lesen
----------------------------
+Mehrere Werte setzen/lesen
+--------------------------
 
-Über ``JTLCache::getMulti(array $cacheIDs)`` können mehrere Werte gleichzeitig ausgelesen,
-sowie über ``JTLCache::setMulti(array $keyValue, array|null $tags[, int|null $expiration])`` gesetzt werden.
+Über ``JTLCache::getMulti(array $cacheIDs)`` können mehrere Werte gleichzeitig ausgelesen
+und über ``JTLCache::setMulti(array $keyValue, array|null $tags[, int|null $expiration])`` gesetzt werden.
 
 **Beispiel:**
 
@@ -257,7 +257,7 @@ sowie über ``JTLCache::setMulti(array $keyValue, array|null $tags[, int|null $e
 Hooking
 -------
 
-Caching hat auch den Vorteil, dass gewisse Hooks nicht häufiger ausgeführt werden müssen als nötig - wie z.B.
+Caching hat auch den Vorteil, dass gewisse Hooks nicht häufiger ausgeführt werden müssen als nötig - wie z. B.
 Hook ``HOOK_ARTIKEL_CLASS_FUELLEARTIKEL`` (110). |br|
 Um Plugins die Möglichkeit zu geben, auch eigene Cache-Tags
 hinzufügen zu lassen, ist es angebracht, die vorgesehenen Tags ebenfalls an den Hook zu übergeben.
@@ -279,26 +279,26 @@ Aufgrund vielfacher Wünsche von Entwicklern wird der *Hook 110* nun bei einem C
 Der übergebene Parameter ``cached`` ist in diesem Fall auf *TRUE* gesetzt. Falls Sie ein Plugin programmieren, welches
 einmalig Eigenschaften eines Artikels modifiziert, achten Sie bitte darauf, komplexe Logik nur auszuführen,
 wenn der Parameter *FALSE* ist. |br|
-Anschließend werden Ihre Änderungen automatisch im Cache gespeichert und brauchen **nicht** erneut
-durchgeführt zu werden.
+Anschließend werden Ihre Änderungen automatisch im Cache gespeichert und müssen **nicht** erneut
+durchgeführt werden.
 
 Auf diese Weise kann ein Plugin einen eigenen Tag hinzufügen und beispielsweise bei Änderungen
 an den Plugin-Optionen reagieren und die betroffenen Caches leeren
 (vgl. `jtl_example_plugin <https://gitlab.com/jtl-software/jtl-shop/plugins/jtl_test>`_).
 
-Dabei ist die Reihenfolge wichtig:
+Beachten Sie dabei die Reigenfolge:
 
-    1. Erst Standard-Cache-Tags definieren,
-    2. Dann Hook mit Daten und Tags ausführen,
-    3. Anschließend Daten speichern.
+    1. Standard-Cache-Tags definieren
+    2. Hook mit Daten und Tags ausführen
+    3. Daten speichern.
 
 Nur so können die durch ein Plugin evtl. modifizierten Daten auch im Cache gespeichert und von diesem
 invalidiert werden.
 
-Welcher Mechanismus?
---------------------
+Welche Caching-Methode?
+-----------------------
 
-Generell sind alle implementierten Mechanismen funktional, aufgrund ihrer Eigenheiten aber nur bedingt für alle
+Generell sind alle implementierten Caching-Methoden funktional, aufgrund ihrer Eigenheiten aber nur bedingt für alle
 Szenarien zu empfehlen.
 
 Dateien-Cache
@@ -312,32 +312,32 @@ deutlich beschleunigt werden.
 Dateien(erweitert)-Cache
 """"""""""""""""""""""""
 
-Die, seit Version 4.05 enthaltene, Methode *Dateien (erweitert)* versucht, diese Nachteile durch
+Die seit JTL-Shop 4.05 enthaltene Methode *Dateien (erweitert)* versucht, diese Nachteile durch
 `Symlinks <https://de.wikipedia.org/wiki/Symbolische_Verkn%C3%BCpfung>`_ zu umgehen. |br|
-Hierbei werden im Ordner ``templates_c/filecache/``, für jeden Tag, Unterordner angelegt, die Symlinks zu den
+Hierbei werden im Ordner ``templates_c/filecache/`` für jeden Tag Unterordner angelegt, die Symlinks zu den
 einzelnen Cache-Einträgen enthalten. Hierdurch kann eine bessere Parallelität beim Schreiben von neuen Einträgen
 erreicht werden. |br|
 Unter bislang ungeklärten Umständen kann es jedoch vorkommen, dass fehlerhafte Links erstellt werden, sodass der
-Cache-Ordner nicht mehr geleert werden kann. Dies wird aktuell (Stand: Februar 2017) noch untersucht.
+Cache-Ordner nicht mehr geleert werden kann. Dies wird aktuell (Stand: Februar 2020) noch untersucht.
 
 APC-Cache
 """""""""
 
 *APC* ist die schnellste Variante, hat im Praxistest bei hoher Belastung und vielen Einträgen aber
-Skalierungsprobleme. Zumindest im Bereich von ca. 3-4GB Daten wird er außerdem stark fragmentiert und die Leistung
+Skalierungsprobleme. Zumindest im Bereich von ca. 3-4 GB Daten wird er außerdem stark fragmentiert und die Leistung
 kann einbrechen.
 
 Redis-Cache
 """""""""""
 
-Die für große Datenmengen am besten geeignet Variante ist *Redis*. |br|
+Die für große Datenmengen am besten geeignete Variante ist *Redis*. |br|
 Auch im Bereich von mehreren Gigabyte arbeitet sie schnell und kann außerdem
 auch `als Session-Handler genutzt werden <https://github.com/phpredis/phpredis#php-session-handler>`_.
 
 Memcache(d)-Cache
 """""""""""""""""
 
-Für *memcache(d)* gilt prinzipiell dasselbe, wie für *Redis*, allerdings ist es weniger getestet.
+Für *memcache(d)* gilt prinzipiell dasselbe wie für *Redis*, allerdings ist es weniger getestet.
 
 XCache-Cache
 """"""""""""

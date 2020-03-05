@@ -66,7 +66,7 @@ msgid "global_versandkostenfrei_darstellung_value(M)"
 msgstr "Mouseover shows countries"
 
 msgid "global_versandkostenfrei_darstellung_value(D)"
-msgstr "Countries directly visible"
+msgstr "Countries visible immediately"
 
 msgid "kategorien_anzeigefilter_value(1)"
 msgstr "Show all categories"
@@ -105,7 +105,7 @@ msgid "kaufabwicklung_ssl_nutzen_value(P)"
 msgstr "Automatic redirection to https"
 
 msgid "global_versandhinweis_value(zzgl)"
-msgstr "+ shipping costs"
+msgstr "Plus Shipments"
 
 msgid "global_versandhinweis_value(inkl)"
 msgstr "includes shipping costs"
@@ -150,7 +150,7 @@ msgid "redirect_save_404_value(N)"
 msgstr "No"
 
 msgid "global_ust_auszeichnung_value(auto)"
-msgstr "insert note \"incl./excl. VAT\" automatically"
+msgstr "insert \"incl./excl. VAT\" automatically"
 
 msgid "global_ust_auszeichnung_value(endpreis)"
 msgstr "Insert \"final price*\""
@@ -288,13 +288,13 @@ msgid "suche_fulltext_value(B)"
 msgstr "Full-text search (Boolean mode)"
 
 msgid "artikeluebersicht_lagerbestandsanzeige_value(verfuegbarkeit)"
-msgstr "Show only if available "
+msgstr "Show only if available"
 
 msgid "artikeluebersicht_lagerbestandsanzeige_value(genau)"
 msgstr "Show exact stock level"
 
 msgid "artikeluebersicht_lagerbestandsanzeige_value(ampel)"
-msgstr "Use coloured stock level indicator"
+msgstr "Stock level indicator in green, yellow and red"
 
 msgid "artikeluebersicht_lagerbestandsanzeige_value(nichts)"
 msgstr "Do not show stock level"
@@ -342,10 +342,10 @@ msgid "artikeluebersicht_artikelsortierung_value(4)"
 msgstr "Price high to low"
 
 msgid "artikeluebersicht_artikelsortierung_value(5)"
-msgstr "EAN"
+msgstr "GTIN"
 
 msgid "artikeluebersicht_artikelsortierung_value(6)"
-msgstr "Newest first"
+msgstr "Most recent first"
 
 msgid "artikeluebersicht_artikelsortierung_value(7)"
 msgstr "SKU"
@@ -402,7 +402,7 @@ msgid "artikeluebersicht_sonderpreisanzeige_value(1)"
 msgstr "Show only special price"
 
 msgid "artikeluebersicht_sonderpreisanzeige_value(2)"
-msgstr "Show also old price"
+msgstr "Also show old price"
 
 msgid "topbest_anzeigen_value(Top)"
 msgstr "Show only top items"
@@ -450,7 +450,7 @@ msgid "artikeluebersicht_anzahl_pfeile_value(Y)"
 msgstr "Always"
 
 msgid "artikeluebersicht_anzahl_pfeile_value(I)"
-msgstr "If permissible order quantity exits"
+msgstr "If permissible order quantity exists"
 
 msgid "artikeluebersicht_anzahl_pfeile_value(N)"
 msgstr "Hide"
@@ -507,7 +507,7 @@ msgid "artikel_lagerbestandsanzeige_value(genau)"
 msgstr "Show exact stock level"
 
 msgid "artikel_lagerbestandsanzeige_value(ampel)"
-msgstr "Use coloured stock level indicator"
+msgstr "Stock level indicator in green, yellow and red"
 
 msgid "artikel_lagerbestandsanzeige_value(nichts)"
 msgstr "Do not show stock level"
@@ -615,7 +615,7 @@ msgid "artikeldetails_anzahl_pfeile_value(Y)"
 msgstr "Always"
 
 msgid "artikeldetails_anzahl_pfeile_value(I)"
-msgstr "\"If permissible order quantity exits\""
+msgstr "If permissible order quantity exists"
 
 msgid "artikeldetails_anzahl_pfeile_value(N)"
 msgstr "Hide"
@@ -1062,10 +1062,10 @@ msgid "lieferadresse_abfragen_email_value(O)"
 msgstr "Yes, optional"
 
 msgid "lieferadresse_abfragen_email_value(Y)"
-msgstr "Yes, required"
+msgstr "Yes, mandatory"
 
 msgid "lieferadresse_abfragen_mobil_value(Y)"
-msgstr "Yes, required"
+msgstr "Yes, mandatory"
 
 msgid "lieferadresse_abfragen_email_value(N)"
 msgstr "No"
@@ -1251,7 +1251,7 @@ msgid "bilder_artikel_namen_value(3)"
 msgstr "SKU_Item name (URL path)"
 
 msgid "bilder_artikel_namen_value(4)"
-msgstr "EAN"
+msgstr "GTIN"
 
 msgid "bilder_kategorie_namen_value(0)"
 msgstr "Primary key (default by JTL-Wawi)"
@@ -1269,34 +1269,34 @@ msgid "bilder_variation_namen_value(2)"
 msgstr "SKU(item)_SKU(VariationValue)"
 
 msgid "bilder_variation_namen_value(3)"
-msgstr "Item name_VariationName_VariationValue"
+msgstr "Item name_VariationName_VariationValueName"
 
 msgid "bilder_hersteller_namen_value(0)"
 msgstr "Primary key (default by JTL-Wawi)"
 
 msgid "bilder_hersteller_namen_value(1)"
-msgstr "Manufacturer name (URL path)"
+msgstr "Manufacturer name (URL path) (if no manufacturer name exists, use primary key)"
 
 msgid "bilder_hersteller_namen_value(2)"
-msgstr "Filename sent by JTL-Wawi"
+msgstr "File name in JTL-Wawi"
 
 msgid "bilder_merkmal_namen_value(0)"
 msgstr "Primary key (default by JTL-Wawi)"
 
 msgid "bilder_merkmal_namen_value(1)"
-msgstr "Characteristic name"
+msgstr "SKU (if no SKU exists, use primary key)"
 
 msgid "bilder_merkmal_namen_value(2)"
-msgstr "Filename sent by JTL-Wawi"
+msgstr "File name in JTL-Wawi"
 
 msgid "bilder_merkmalwert_namen_value(0)"
 msgstr "Primary key (default by JTL-Wawi)"
 
 msgid "bilder_merkmalwert_namen_value(1)"
-msgstr "Characteristic value name (URL path)"
+msgstr "Characteristic value name (URL path) (if no name exists, use primary key)"
 
 msgid "bilder_merkmalwert_namen_value(2)"
-msgstr "Filename sent by JTL-Wawi"
+msgstr "File name in JTL-Wawi"
 
 msgid "bilder_externe_bildschnittstelle_value(A)"
 msgstr "No access limitation"
@@ -2040,10 +2040,10 @@ msgid "suchspecials_sortierung_bestseller_value(4)"
 msgstr "Price high to low"
 
 msgid "suchspecials_sortierung_bestseller_value(5)"
-msgstr "EAN"
+msgstr "GTIN"
 
 msgid "suchspecials_sortierung_bestseller_value(6)"
-msgstr "Newest first"
+msgstr "Most recent first"
 
 msgid "suchspecials_sortierung_bestseller_value(7)"
 msgstr "SKU"
@@ -2079,10 +2079,10 @@ msgid "suchspecials_sortierung_sonderangebote_value(4)"
 msgstr "Price high to low"
 
 msgid "suchspecials_sortierung_sonderangebote_value(5)"
-msgstr "EAN"
+msgstr "GTIN"
 
 msgid "suchspecials_sortierung_sonderangebote_value(6)"
-msgstr "Newest first"
+msgstr "Most recent first"
 
 msgid "suchspecials_sortierung_sonderangebote_value(7)"
 msgstr "SKU"
@@ -2118,10 +2118,10 @@ msgid "suchspecials_sortierung_neuimsortiment_value(4)"
 msgstr "Price high to low"
 
 msgid "suchspecials_sortierung_neuimsortiment_value(5)"
-msgstr "EAN"
+msgstr "GTIN"
 
 msgid "suchspecials_sortierung_neuimsortiment_value(6)"
-msgstr "Newest first"
+msgstr "Most recent first"
 
 msgid "suchspecials_sortierung_neuimsortiment_value(7)"
 msgstr "SKU"
@@ -2157,10 +2157,10 @@ msgid "suchspecials_sortierung_topangebote_value(4)"
 msgstr "Price high to low"
 
 msgid "suchspecials_sortierung_topangebote_value(5)"
-msgstr "EAN"
+msgstr "GTIN"
 
 msgid "suchspecials_sortierung_topangebote_value(6)"
-msgstr "Newest first"
+msgstr "Most recent first"
 
 msgid "suchspecials_sortierung_topangebote_value(7)"
 msgstr "SKU"
@@ -2196,10 +2196,10 @@ msgid "suchspecials_sortierung_inkuerzeverfuegbar_value(4)"
 msgstr "Price high to low"
 
 msgid "suchspecials_sortierung_inkuerzeverfuegbar_value(5)"
-msgstr "EAN"
+msgstr "GTIN"
 
 msgid "suchspecials_sortierung_inkuerzeverfuegbar_value(6)"
-msgstr "Newest first"
+msgstr "Most recent first"
 
 msgid "suchspecials_sortierung_inkuerzeverfuegbar_value(7)"
 msgstr "SKU"
@@ -2235,10 +2235,10 @@ msgid "suchspecials_sortierung_topbewertet_value(4)"
 msgstr "Price high to low"
 
 msgid "suchspecials_sortierung_topbewertet_value(5)"
-msgstr "EAN"
+msgstr "GTIN"
 
 msgid "suchspecials_sortierung_topbewertet_value(6)"
-msgstr "Newest first"
+msgstr "Most recent first"
 
 msgid "suchspecials_sortierung_topbewertet_value(7)"
 msgstr "SKU"
@@ -2295,7 +2295,7 @@ msgid "rma_number_gen_value(K)"
 msgstr "Customer ID - Date - Consecutive number"
 
 msgid "rma_number_gen_value(B)"
-msgstr "Purchase order ID - consecutive number"
+msgstr "Order ID – consecutive number"
 
 msgid "caching_activated_value(N)"
 msgstr "No"
@@ -2388,7 +2388,7 @@ msgid "hersteller_anzeigen_als_value(T)"
 msgstr "Text"
 
 msgid "hersteller_anzeigen_als_value(BT)"
-msgstr "Image and Text"
+msgstr "Image and text"
 
 msgid "hersteller_anzeigen_als_value(B)"
 msgstr "Image"

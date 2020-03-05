@@ -3,13 +3,13 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "kundenfeld"
-msgstr "Custom form fields"
+msgstr "Extended customer data"
 
 msgid "kundenfeldURL"
 msgstr "https://jtl-url.de/xnm6c"
 
 msgid "kundenfeldDesc"
-msgstr "Here you can define custom form fields for the creation of customer accounts and the order process."
+msgstr "Here you can define custom form fields. These fields can be used to ask for specific customer information during the creation of customer accounts and the order process."
 
 msgid "kundenfeldExistingDesc"
 msgstr "Custom form fields:"
@@ -18,7 +18,7 @@ msgid "kundenfeldName"
 msgstr "Name of field in JTL-Shop"
 
 msgid "kundenfeldNameShort"
-msgstr "Attribute name"
+msgstr "Name of field in JTL-Shop"
 
 msgid "kundenfeldPflicht"
 msgstr "Mandatory field"

@@ -9,7 +9,7 @@ msgid "kundenfeldURL"
 msgstr "https://jtl-url.de/nsmuy"
 
 msgid "kundenfeldDesc"
-msgstr "Hier können Sie eigene Formularfelder definieren, mit der Sie bei der Erstellung von Kundenkonten und im Bestellvorgang weitere Kundendaten abfragen können."
+msgstr "Hier können Sie eigene Formularfelder definieren, mit denen Sie bei der Erstellung von Kundenkonten und im Bestellvorgang weitere Kundendaten abfragen können."
 
 msgid "kundenfeldExistingDesc"
 msgstr "Ihre eigenen Formularfelder:"

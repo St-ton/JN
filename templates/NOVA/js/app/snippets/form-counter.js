@@ -22,6 +22,7 @@ const updateCount = function(increase = false) {
 
 	try {
 		input[stepDirection]()
+		$input.trigger('change')
 	} catch(e) {
 		let step = input.step > 0 ? parseFloat(input.step) : 1;
 
@@ -42,7 +43,7 @@ window.initNumberInput = function () {
 		let max = parseInt(this.max);
 		let value = parseInt(this.value);
 
-		if(value < min || isNaN(value)) this.value = min;
+		if(value < min) this.value = min;
 		if(value > max) this.value = max;
 	})
 };

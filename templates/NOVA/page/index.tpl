@@ -32,7 +32,13 @@
                     {assign var=moreLink value=$Box->cURL}
                     {block name='page-index-include-product-slider'}
                         {container fluid=true}
-                            {include file='snippets/product_slider.tpl' productlist=$Box->Artikel->elemente title=$title hideOverlays=true moreLink=$moreLink moreTitle=$moreTitle}
+                            {include file='snippets/product_slider.tpl'
+                                productlist=$Box->Artikel->elemente
+                                title=$title
+                                hideOverlays=true
+                                moreLink=$moreLink
+                                moreTitle=$moreTitle
+                                titleContainer=true}
                         {/container}
                     {/block}
                 {/if}
@@ -53,13 +59,13 @@
                         </div>
                     {/block}
                     {block name='page-index-news'}
-                        <div itemprop="about"
+                        {row itemprop="about"
                              itemscope=true
                              itemtype="http://schema.org/Blog"
                              class="slick-smooth-loading carousel carousel-arrows-inside slick-lazy slick-type-news"
-                             data-slick-type="news-slider">
+                             data=["slick-type"=>"news-slider"]}
                             {include file='snippets/slider_items.tpl' items=$oNews_arr type='news'}
-                        </div>
+                        {/row}
                     {/block}
                 {/container}
             </section>

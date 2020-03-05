@@ -5,16 +5,16 @@ Container
 
    <br />
 
-Seit Shop 5.0.0 steht im JTL-Shop ein sogenannter "*Dependency Injection Container*" zur Verfügung. |br|
-In Zukunft wird ein Großteil aller JTL-Shop-Komponenten über diesen Container bereit gestellt. Zudem kann das
-Verhalten des Shops über die im Container registrierten Komponenten von Plugins modifiziert oder erweitert werden.
+Seit JTL-Shop 5.0.0 steht im JTL-Shop ein sogenannter "*Dependency Injection Container*" zur Verfügung. |br|
+In Zukunft wird ein Großteil aller JTL-Shop-Komponenten über diesen Container bereitgestellt. Zudem kann das
+Verhalten des Onlineshops über die im Container registrierten Komponenten von Plugins modifiziert oder erweitert werden.
 
 SOLID & Dependency Inversion
 ----------------------------
 
-Der Container dient der Umsetzung des "*Dependency Inversion Principles*".  |br|
+Der Container dient der Umsetzung des "*Dependency Inversion Principle*".  |br|
 Zu diesem Themenkomplex gibt es viele Erklärungen im Internet. Wir empfehlen Entwicklern daher zunächst, sich mit
-*SOLID* und im Besonderen mit *Dependeny Inversion* vertraut zu machen.
+*SOLID* und im Besonderen mit *Dependency Inversion* vertraut zu machen.
 
 Container / Komponente holen
 ----------------------------
@@ -30,9 +30,9 @@ Container / Komponente holen
     $passwordService = $container->get(PasswordServiceInterface::class);
     $randomPassword  = $passwordService->generate(12);
 
-Wie hier zu sehen ist, können über den Container Dienste und andere Komponenten vom JTL-Shop bezogen werden. |br|
-Der Container ist hierbei gemäß PSR-11 von der PHP-FIG entworfen. (https://www.php-fig.org/psr/psr-11/)
-Für den Fall, dass Sie eine IDE mit *IntelliSense* verwenden, haben wir zudem für alle, vom JTL-Shop bereit gestellten,
+Wie hier zu sehen ist, können über den Container Dienste und andere Komponenten von JTL-Shop bezogen werden. |br|
+Der Container ist hierbei gemäß PSR-11 von der PHP-FIG entworfen (https://www.php-fig.org/psr/psr-11/).
+Für den Fall, dass Sie eine IDE mit *IntelliSense* verwenden, haben wir zudem für alle von JTL-Shop bereitgestellten
 Komponenten eine Methode zum Container hinzugefügt.
 
 .. code-block:: php
@@ -52,8 +52,8 @@ Welche Komponenten vom JTL-Shop bereitgestellt werden, können Sie anhand der ve
 Existenz prüfen
 """""""""""""""
 
-Sollten Sie prüfen wollen, ob eine Komponente bereit steht, können Sie dies wie folgt tun. |br|
-(Hinweis: Alle in ``DefaultServicesInterface`` definierten Komponenten sind immer verfügbar).
+Wenn Sie prüfen wollen, ob eine Komponente bereitsteht, können Sie dies wie folgt tun. |br|
+(Hinweis: Alle in ``DefaultServicesInterface`` definierten Komponenten sind immer verfügbar.)
 
 .. code-block:: php
 
@@ -69,9 +69,9 @@ Sollten Sie prüfen wollen, ob eine Komponente bereit steht, können Sie dies wi
 Eigenen Komponente registrieren
 -------------------------------
 
-Sie haben die Möglichkeit eigene Komponenten im Container zu registrieren. |br|
+Sie haben die Möglichkeit, eigene Komponenten im Container zu registrieren. |br|
 Hierzu benötigen Sie zunächst eine Klasse, die Sie bereitstellen wollen. Wir empfehlen, für jede Komponente ein
-Interface oder eine Abstrakte Klasse zu erstellen. Nur so kann das *Decorator-Pattern* eingesetzt werden (Siehe unten).
+Interface oder eine abstrakte Klasse zu erstellen. Nur so kann das *Decorator Pattern* eingesetzt werden (siehe unten).
 
 .. code-block:: php
 
@@ -101,7 +101,7 @@ Nun können Sie die entsprechende Komponente im Container registrieren:
         return new HelloWorldGenerator();
     });
 
-Nun steht ihre Komponente über den Container bereit und kann wie folgt abgerufen werden:
+Nun steht die Komponente über den Container bereit und kann wie folgt abgerufen werden:
 
 .. code-block:: php
 
@@ -115,11 +115,11 @@ Komponenten überschreiben
 -------------------------
 
 Sie können alle im Container registrierten Komponenten ersetzen. |br|
-Voraussetzung hierfür ist, dass Sie das genutzte Interface implementieren oder, im Falle einer Abstrakten Klasse, von
+Voraussetzung hierfür ist, dass Sie das genutzte Interface implementieren oder, im Falle einer abstrakten Klasse, von
 dieser erben. |br|
 
 .. attention::
-    Wenn Sie Komponenten überschreiben, gilt dies für den gesamten Shop! |br|
+    Wenn Sie Komponenten überschreiben, gilt dies für den gesamten Onlineshop! |br|
     Seien Sie also bitte vorsichtig und überschreiben Sie nur dann Komponenten, wenn Ihre Implementation zuverlässig
     funktioniert.
 
@@ -143,10 +143,10 @@ dieser erben. |br|
 Komponenten erweitern (*Decorator Pattern*)
 -------------------------------------------
 
-Sie können sämtliche über den Container bereitstehenden Komponenten (falls eine Abstrakte Klasse oder ein Interface
-bereit steht) mit Hilfe des *Decorator Patterns* erweitern.
+Sie können sämtliche über den Container bereitstehenden Komponenten (falls eine abstrakte Klasse oder ein Interface
+bereitsteht) mit Hilfe des *Decorator Pattern* erweitern.
 
-Hierzu ein Beispiel, dass den "*HelloWorldContainer*" erweitert:
+Hierzu ein Beispiel, das den "*HelloWorldContainer*" erweitert:
 
 .. code-block:: php
 
@@ -186,7 +186,7 @@ Hierzu ein Beispiel, dass den "*HelloWorldContainer*" erweitert:
 Factory oder Singleton
 ----------------------
 
-Wenn man eine Komponente im Container registriert, hat man die Möglichkeit zwischen einer *Factory* und
+Wenn Sie eine Komponente im Container registrieren, haben Sie die Möglichkeit, zwischen einer *Factory* und
 einem *Singleton* zu wählen.
 
 .. code-block:: php
@@ -199,8 +199,8 @@ einem *Singleton* zu wählen.
     $container->setFactory(HelloWorldGeneratorInterface::class, function() { ... });
 
 Nicht zu verwechseln ist dies mit der sogenannten "*Factory Method*"! |br|
-Sowohl ein *Singleton*, als auch eine *Factory* benötigen eine *Factory Method*, welche die Erzeugung des jeweiligen
-Objektes übernimmt. Die *Factory-Method* kann sowohl für ein *Singleton* als auch für eine *Factory* auf die gleiche
+Sowohl ein *Singleton* als auch eine *Factory* benötigen eine *Factory Method*, welche die Erzeugung des jeweiligen
+Objektes übernimmt. Die *Factory Method* kann sowohl für ein *Singleton* als auch für eine *Factory* auf die gleiche
 Weise geholt werden:
 
 .. code-block:: php
@@ -209,8 +209,8 @@ Weise geholt werden:
     $container = Shop::Container();
     $factoryMethod = $container->getFactoryMethod(HelloWorldGeneratorInterface::class);
 
-Bei einem *Singleton* wird die *Factory-Method* nur ein einziges Mal abgerufen und nur ein einziges Objekt existiert
-applikationsweit. Bei einer *Factory*, wird die *Factory-Method* bei jedem Abruf erneut aufgerufen und ein neues Objekt
+Bei einem *Singleton* wird die *Factory Method* nur ein einziges Mal abgerufen und nur ein einziges Objekt existiert
+applikationsweit. Bei einer *Factory* wird die *Factory Method* bei jedem Abruf erneut aufgerufen und ein neues Objekt
 erzeugt.
 
 Hook zum Registrieren, Erweitern oder Überschreiben von Komponenten

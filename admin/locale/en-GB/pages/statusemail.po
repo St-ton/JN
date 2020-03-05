@@ -9,7 +9,7 @@ msgid "statusemailURL"
 msgstr "https://jtl-url.de/4oqs8"
 
 msgid "statusemailDesc"
-msgstr "You can have reports containing information on all online shop activities emailed to you on a regular basis. The reports can be sent to you daily, weekly and/or monthly."
+msgstr "You can have reports containing information on all online shop activities emailed to you on a regular basis."
 
 msgid "statusemailUse"
 msgstr "Use email reports"
@@ -45,10 +45,10 @@ msgid "contentTypeCountNewCustomer"
 msgstr "Number of new customers"
 
 msgid "contentTypeCountNewCustomerOrdered"
-msgstr "Number of new customers who purchased something"
+msgstr "Number of new customers who made a purchase"
 
 msgid "contentTypeCountOrders"
-msgstr "Number of purchase orders"
+msgstr "Number of orders"
 
 msgid "contentTypeCountOrdersNewCustomers"
 msgstr "Number of orders by new customers"
@@ -69,31 +69,25 @@ msgid "contentTypeCountRatings"
 msgstr "Number of customer reviews"
 
 msgid "contentTypeCountRatingsLocked"
-msgstr "Number of unapproved reviews"
+msgstr "Number of unactivated reviews"
 
 msgid "contentTypeCountRatingDepositPayed"
 msgstr "Number of granted review credits"
-
-msgid "contentTypeCountTags"
-msgstr "Number of tags"
-
-msgid "contentTypeCountTagsLocked"
-msgstr "Number of unapproved tags"
 
 msgid "contentTypeCountCustomerRecruited"
 msgstr "Number of acquired customers"
 
 msgid "contentTypeCountCustomerRecruitedOrdered"
-msgstr "Number of acquired customers who purchased something"
+msgstr "Number of acquired customers who made a purchase"
 
 msgid "contentTypeCountSentWishlists"
 msgstr "Number of sent wish lists"
 
 msgid "contentTypeCountNewsComments"
-msgstr "Number of new news comments"
+msgstr "Number of new blog comments"
 
 msgid "contentTypeCountNewsCommentsLocked"
-msgstr "Number of unapproved news comments"
+msgstr "Number of unactivated blog comments"
 
 msgid "contentTypeCountProductQuestion"
 msgstr "Number of new questions about item"

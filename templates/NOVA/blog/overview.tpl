@@ -20,7 +20,7 @@
                 {col cols=12 class='col-xl'}
                     {get_static_route id='news.php' assign=routeURL}
                     {block name='blog-overview-form'}
-                        {form id="frm_filter" name="frm_filter" action=$cCanonicalURL|default:$routeURL}
+                        {form id="frm_filter" name="frm_filter" action=$cCanonicalURL|default:$routeURL slide=true}
                             {formgroup}
                                 {formrow}
                                     {col cols=12 sm=4 lg='auto'}

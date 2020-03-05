@@ -15,7 +15,7 @@ msgid "newsletterqueuedate"
 msgstr "Start"
 
 msgid "newsletterdraft"
-msgstr "Template"
+msgstr "Custom templates"
 
 msgid "newsletterlastsubscriber"
 msgstr "Last 20 newsletter subscribers"
@@ -66,7 +66,7 @@ msgid "newsletterText"
 msgstr "Content (text)"
 
 msgid "newsletteroverview"
-msgstr "Newsletter overview"
+msgstr "Newsletter"
 
 msgid "newsletteroverviewdesc"
 msgstr " "
@@ -84,16 +84,10 @@ msgid "newsletterconfigdesc"
 msgstr "These email settings are valid for sending newsletters."
 
 msgid "newsletterartnr"
-msgstr "SKU"
-
-msgid "newsletternewartnr"
-msgstr "Additional item field"
+msgstr "Promoted item"
 
 msgid "newslettercustomergrp"
-msgstr "Send newsletters to"
-
-msgid "newslettersendtest"
-msgstr "Test newsletter"
+msgstr "Recipients"
 
 msgid "newsletterdraftsaveandsend"
 msgstr "Save and send newsletter"
@@ -106,9 +100,6 @@ msgstr "Send on"
 
 msgid "newsletterdraftformat"
 msgstr "(DD/MM/YYYY hh:mm)"
-
-msgid "newsletterdraftcal"
-msgstr "Calendar"
 
 msgid "newsletterdesc"
 msgstr "Manage your newsletters and subscribers. Please note that newsletters are managed separately for each language."
@@ -147,10 +138,10 @@ msgid "newsletterSendAuthentication"
 msgstr "Send newsletter?"
 
 msgid "newsletterSearchBTN"
-msgstr "Search"
+msgstr "Find"
 
 msgid "newsletterUnlock"
-msgstr "Approve"
+msgstr "Activate"
 
 msgid "newsletterdraftStd"
 msgstr "Standard templates"
@@ -160,9 +151,6 @@ msgstr "Standard template"
 
 msgid "newsletterdraftStdUse"
 msgstr "Use template"
-
-msgid "newsletterdraftStdVarSection"
-msgstr "Template-specific variables"
 
 msgid "newsletterdraftFillOut"
 msgstr "Please complete"
@@ -216,7 +204,7 @@ msgid "successNewsletterPrepared"
 msgstr "Newsletter %s is ready to be sent."
 
 msgid "newsletterCronjobNotFound"
-msgstr "Newsletter cron job not found! Sending of newsletters is not possible."
+msgstr "Could not find newsletter cron job. Newsletter cannot be sent."
 
 msgid "errorTestTemplateEmpty"
 msgstr "Empty recipient address for the trial newsletter."

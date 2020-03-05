@@ -3,10 +3,10 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "objectcache"
-msgstr "Object cache"
+msgstr "Cache"
 
 msgid "objectcacheDesc"
-msgstr "Here you can set the cache used by JTL-Shop. The object cache buffers data to allow for faster loading times. You can specify for each type of object whether it is to be saved in the cache."
+msgstr "Here you can set the cache used by JTL-Shop. The object cache buffers data to allow for faster loading times. For each type of object, you can enable or disable it being saved in the cache."
 
 msgid "cacheURL"
 msgstr "https://jtl-url.de/r-j4i"
@@ -39,7 +39,7 @@ msgid "cg_box_description"
 msgstr "Contains boxes and their settings"
 
 msgid "cg_news_description"
-msgstr "Contains news entries and categories"
+msgstr "Contains blog posts and categories"
 
 msgid "cg_attribute_description"
 msgstr "Contains attribute data"
@@ -51,7 +51,7 @@ msgid "cg_filter_description"
 msgstr "Contains filter data"
 
 msgid "cg_article_nicename"
-msgstr "Items"
+msgstr "Item"
 
 msgid "cg_category_nicename"
 msgstr "Categories"
@@ -60,7 +60,7 @@ msgid "cg_language_nicename"
 msgstr "Language"
 
 msgid "cg_template_nicename"
-msgstr "Template"
+msgstr "Templates"
 
 msgid "cg_option_nicename"
 msgstr "Options"
@@ -78,13 +78,13 @@ msgid "cg_box_nicename"
 msgstr "Boxes"
 
 msgid "cg_news_nicename"
-msgstr "News"
+msgstr "Blog"
 
 msgid "cg_attribute_nicename"
 msgstr "Attributes"
 
 msgid "cg_manufacturer_nicename"
-msgstr "Manufacturers"
+msgstr "Manufacturer"
 
 msgid "cg_filter_nicename"
 msgstr "Item filters"
@@ -96,7 +96,7 @@ msgid "management"
 msgstr "Administration"
 
 msgid "stats"
-msgstr "Reports"
+msgstr "Statistics"
 
 msgid "benchmark"
 msgstr "Benchmark"
@@ -122,9 +122,6 @@ msgstr "Empty whole page cache"
 msgid "clearTemplateCache"
 msgstr "Empty whole template cache"
 
-msgid "config"
-msgstr "Configuration"
-
 msgid "startBenchmark"
 msgstr "Start benchmark"
 
@@ -138,7 +135,7 @@ msgid "successCacheEmptied"
 msgstr " Caches emptied successfully."
 
 msgid "errorNoCacheType"
-msgstr "No cache type selected."
+msgstr "Please select a cache type."
 
 msgid "errorCacheTypeDelete"
 msgstr "Could not empty cache %s (might already be empty)."

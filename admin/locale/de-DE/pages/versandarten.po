@@ -45,7 +45,7 @@ msgid "taxshippingcosts"
 msgstr "Steuerberechnung für Versandkosten und Versandkostenfrei-Grenze"
 
 msgid "taxshippingcostsDesc"
-msgstr "Hier legen Sie fest, ob die Versandkosten als fester Brutto-Preis angegeben werden sollen. Wenn die Option „Brutto (fixer Versandkostenpreis)“ gewählt wird, bleiben die Versandkosten für den Kunden immer gleich, da sich unterschiedliche Umsatzsteuersätze nicht auf die Gesamtkosten für den Versand auswirken. Außerdem wird bei der Grenze für kostenfreien Versand der Brutto-Warenkorbwert berücksichtigt.&lt;br&gt; Wenn Sie als Option „Netto (automatischer USt-Aufschlag)“ wählen, wird der jeweils geltende Umsatzsteuersatz des Warenkorbs auf die Netto-Versandkosten aufgeschlagen, sodass es für den Kunden je nach Steuersatz zu unterschiedlichen Versandkosten kommen kann. Außerdem wird bei der Grenze für kostenfreien Versand der Netto-Warenkorbwert berücksichtigt."
+msgstr "Hier legen Sie fest, ob die Versandkosten als fester Brutto-Preis angegeben werden sollen. Wenn die Option „Brutto (fixer Versandkostenpreis)“ gewählt wird, bleiben die Versandkosten für den Kunden immer gleich, da sich unterschiedliche Umsatzsteuersätze nicht auf die Gesamtkosten für den Versand auswirken. Außerdem wird bei der Grenze für kostenfreien Versand der Brutto-Warenkorbwert berücksichtigt.<br> Wenn Sie als Option „Netto (automatischer USt-Aufschlag)“ wählen, wird der jeweils geltende Umsatzsteuersatz des Warenkorbs auf die Netto-Versandkosten aufgeschlagen, sodass es für den Kunden je nach Steuersatz zu unterschiedlichen Versandkosten kommen kann. Außerdem wird bei der Grenze für kostenfreien Versand der Netto-Warenkorbwert berücksichtigt."
 
 msgid "net"
 msgstr "Netto (automatischer USt-Aufschlag)"
@@ -63,7 +63,7 @@ msgid "excludeShippingProposal"
 msgstr "Für Kalkulation der günstigsten Versandkosten ignorieren"
 
 msgid "excludeShippingProposalDesc"
-msgstr "Hier legen Sie fest, ob diese Versandart für die Berechnung der günstigsten Versandkosten übersprungen werden soll.&lt;br&gt; Unabhängig von dieser Einstellung wird die Versandart im Bestellvorgang und in der Warenkorb-Versandkostenermittlung als Option angeboten, sofern die sonstigen Kriterien erfüllt sind."
+msgstr "Hier legen Sie fest, ob diese Versandart für die Berechnung der günstigsten Versandkosten übersprungen werden soll.<br> Unabhängig von dieser Einstellung wird die Versandart im Bestellvorgang und in der Warenkorb-Versandkostenermittlung als Option angeboten, sofern die sonstigen Kriterien erfüllt sind."
 
 msgid "tax"
 msgstr "USt."
@@ -310,7 +310,7 @@ msgid "shippingType_vm_versandberechnung_gewicht_jtl"
 msgstr "Versandkosten nach Gewicht und Lieferland"
 
 msgid "surchargeListFor"
-msgstr "Zuschlagliste für "
+msgstr "Zuschlagsliste für "
 
 msgid "surchargeList"
 msgstr "Zuschlagsliste"

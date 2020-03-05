@@ -3,27 +3,23 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='productlist-item-slider'}
-    {link class="image-wrapper" href=$Artikel->cURLFull}
+    {link href=$Artikel->cURLFull}
         {block name='productlist-item-slider-link'}
             {if isset($Artikel->Bilder[0]->cAltAttribut)}
                 {assign var=alt value=$Artikel->Bilder[0]->cAltAttribut|strip_tags|truncate:60|escape:'html'}
             {else}
                 {assign var=alt value=$Artikel->cName}
             {/if}
-            <div class="productbox-image-wrapper mb-3">
-                <div class="productbox-image-wrapper-inner">
-                {block name='productlist-item-slider-image'}
-                    {image fluid-grow=true webp=true lazy=true
-                        alt=$Artikel->cName
-                        src=$Artikel->Bilder[0]->cURLKlein
-                        srcset="{$Artikel->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                            {$Artikel->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                            {$Artikel->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
-                        sizes="auto"
-                        class="product-image"}
-                {/block}
-                </div>
-            </div>
+            {block name='productlist-item-slider-image'}
+                {image fluid-grow=true webp=true lazy=true
+                    alt=$Artikel->cName
+                    src=$Artikel->Bilder[0]->cURLKlein
+                    srcset="{$Artikel->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                        {$Artikel->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                        {$Artikel->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                    sizes="auto"
+                    class="product-image"}
+            {/block}
             {if $tplscope !== 'box'}
                 <meta itemprop="image" content="{$Artikel->Bilder[0]->cURLNormal}">
                 <meta itemprop="url" content="{$Artikel->cURLFull}">
@@ -31,18 +27,16 @@
         {/block}
         {block name='productlist-item-slider-caption'}
             <div class="text-center">
-                <div class="productbox-title">
-                    {block name='productlist-item-slider-caption-short-desc'}
-                            <span class="text-clamp-2">
-                                {if isset($showPartsList) && $showPartsList === true && isset($Artikel->fAnzahl_stueckliste)}
-                                    {block name='productlist-item-slider-caption-bundle'}
-                                        {$Artikel->fAnzahl_stueckliste}x
-                                    {/block}
-                                {/if}
-                                <span {if $tplscope !== 'box'}itemprop="name"{/if}>{$Artikel->cKurzbezeichnung}</span>
-                            </span>
-                    {/block}
-                </div>
+                {block name='productlist-item-slider-caption-short-desc'}
+                    <span class="text-clamp-2 d-block">
+                        {if isset($showPartsList) && $showPartsList === true && isset($Artikel->fAnzahl_stueckliste)}
+                            {block name='productlist-item-slider-caption-bundle'}
+                                {$Artikel->fAnzahl_stueckliste}x
+                            {/block}
+                        {/if}
+                        <span {if $tplscope !== 'box'}itemprop="name"{/if}>{$Artikel->cKurzbezeichnung}</span>
+                    </span>
+                {/block}
                 {if $tplscope === 'box'}
                     {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->fDurchschnittsBewertung > 0}
                         {block name='productlist-item-slider-include-rating'}

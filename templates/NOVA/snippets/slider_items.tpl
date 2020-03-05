@@ -20,7 +20,7 @@
             <div class="product-wrapper {if $item@first && $item@last} m-auto{elseif $item@first} ml-auto {elseif $item@last} mr-auto {/if}freegift">
                 <div class="custom-control custom-radio pl-0">
                     <input class="custom-control-input " type="radio" id="gift{$item->kArtikel}" name="gratisgeschenk" value="{$item->kArtikel}" onclick="submit();">
-                    <label for="gift{$item->kArtikel}" class="p-3 custom-control-label {if $selectedFreegift===$item->kArtikel}badge-check{/if}">
+                    <label for="gift{$item->kArtikel}" class="custom-control-label {if $selectedFreegift===$item->kArtikel}badge-check{/if}">
                         {if $selectedFreegift===$item->kArtikel}{badge class="badge-circle"}<i class="fas fa-check mx-auto"></i>{/badge}{/if}
                         {image lazy=true webp=true
                         src=$item->Bilder[0]->cURLKlein

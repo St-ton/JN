@@ -12,4 +12,4 @@ msgid "wawisyncURL"
 msgstr "https://jtl-url.de/vdh3z"
 
 msgid "errorInvalidPassword"
-msgstr "User name and password must only contain uppercase and lowercase letters, numbers, and the following special characters: !\"#$%&'()*+,-./:;=>?@[\\]^_`|}~"
+msgstr "User name and password may contain uppercase and lowercase letters, numbers, and the following special characters: !\"#$%&'()*+,-./:;=>?@[\\]^_`|}~"

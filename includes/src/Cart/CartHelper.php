@@ -23,6 +23,7 @@ use JTL\DB\ReturnType;
 use JTL\Extensions\Config\Configurator;
 use JTL\Extensions\Config\Item;
 use JTL\Extensions\Upload\Upload;
+use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
@@ -869,6 +870,9 @@ class CartHelper
                 $redirectParam[] = \R_VARWAEHLEN;
                 break;
             }
+        }
+        if (!Form::validateToken($attributes['jtl_token'] ?? null)) {
+            $redirectParam[] = \R_MISSING_TOKEN;
         }
         \executeHook(\HOOK_ADD_TO_CART_CHECK, [
             'product'       => $product,

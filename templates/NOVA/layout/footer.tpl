@@ -93,7 +93,7 @@
                                 {/col}
                                 {col cols=12 lg=6}
                                     {block name='layout-footer-form'}
-                                        {form methopd="post" action="{get_static_route id='newsletter.php'}" slide=false}
+                                        {form methopd="post" action="{get_static_route id='newsletter.php'}"}
                                             {block name='layout-footer-form-content'}
                                                 {input type="hidden" name="abonnieren" value="2"}
                                                 {formgroup label-sr-only="{lang key='emailadress'}" class="mb-0"}

@@ -18,40 +18,40 @@ msgid "themeBar"
 msgstr "Bar"
 
 msgid "themeBright"
-msgstr "Bright"
+msgstr "Light"
 
 msgid "themeDark"
 msgstr "Dark"
 
 msgid "sliderAnimationSpeed"
-msgstr "Animation speed"
+msgstr "Slider speed (ms)"
 
 msgid "pause"
-msgstr "Pause"
+msgstr "Pause (ms)"
 
 msgid "autoStart"
-msgstr "Start automatically?"
+msgstr "Autostart"
 
 msgid "pauseOnHover"
-msgstr "Pause on \"hover\"?"
+msgstr "Pause when hovering"
 
 msgid "pauseOnHoverPause"
-msgstr "Pause"
+msgstr "yes"
 
 msgid "pauseOnHoverContinue"
-msgstr "Continue"
+msgstr "no"
 
 msgid "pointNavigation"
-msgstr "Dot navigation?"
+msgstr "Dot navigation"
 
 msgid "useKenBurnsEffect"
-msgstr "Use Ken Burns' effect?"
+msgstr "Use Ken Burns effect"
 
 msgid "overridesOtherSettings"
-msgstr "overrides other settings"
+msgstr "Overwrites other settings"
 
 msgid "showNavigationArrows"
-msgstr "Show navigation arrows?"
+msgstr "Arrow navigation"
 
 msgid "randomEffects"
-msgstr "Random effects?"
+msgstr "Random effects"

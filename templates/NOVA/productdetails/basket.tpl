@@ -62,7 +62,13 @@
                             {/block}
                             {block name='productdetails-basket-add-to-cart'}
                                 {col cols=12 sm=6}
-                                    {button aria=["label"=>"{lang key='addToCart'}"] block=true name="inWarenkorb" type="submit" value="{lang key='addToCart'}" variant="primary"}
+                                    {button aria=["label"=>"{lang key='addToCart'}"]
+                                        block=true name="inWarenkorb"
+                                        type="submit"
+                                        value="{lang key='addToCart'}"
+                                        variant="primary"
+                                        disabled=$Artikel->bHasKonfig && !$isConfigCorrect|default:false
+                                        class="js-cfg-validate"}
                                         <span class="btn-basket-check">
                                             <span class="d-none d-sm-inline-block mr-1">{lang key='addToCart'}</span> <i class="fas fa-shopping-cart"></i>
                                         </span>

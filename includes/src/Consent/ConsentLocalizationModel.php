@@ -87,7 +87,7 @@ final class ConsentLocalizationModel extends DataModel
             $langID->getInputConfig()->setInputType(InputType::NUMBER);
             $attributes['languageID'] = $langID;
             $attributes['tos']        = DataAttribute::create('tos', 'varchar', null, false);
-            $attributes['name']    = DataAttribute::create('name', 'varchar', null, false);
+            $attributes['name']       = DataAttribute::create('name', 'varchar', null, false);
             $description              = DataAttribute::create('description', 'text', null, false);
             $description->getInputConfig()->setInputType(InputType::TEXTAREA);
             $attributes['description'] = $description;

@@ -111,7 +111,6 @@ final class ConsentModel extends DataModel
                         }
                     }
                 }
-
             }
 
             return $res;
@@ -168,7 +167,7 @@ final class ConsentModel extends DataModel
     {
         $this->currentLocalization = $this->getLocalization()->first(static function (ConsentLocalizationModel $e) use ($languageID) {
                 return $e->getLanguageID() === $languageID;
-            }) ?? $this->getLocalization()->first();
+        }) ?? $this->getLocalization()->first();
 
         return $this->currentLocalization !== null;
     }

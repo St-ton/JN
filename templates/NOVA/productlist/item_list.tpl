@@ -24,6 +24,11 @@
                                 {include file='snippets/ribbon.tpl'}
                             {/block}
                         {/if}
+                        {block name='productlist-item-box-include-productlist-actions'}
+                            <div class="productbox-quick-actions productbox-onhover d-none d-md-flex">
+                                {include file='productlist/productlist_actions.tpl'}
+                            </div>
+                        {/block}
                         {block name="productlist-item-list-images"}
                             <div class="productbox-images">
                                 {link href=$Artikel->cURLFull}

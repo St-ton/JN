@@ -515,7 +515,11 @@
 
         registerFinish: function($wrapper) {
             $('#jump-to-votes-tab', $wrapper).on('click', function () {
-                $('#content a[href="#tab-votes"]').tab('show');
+                let $tabID = $('#content a[href="#tab-votes"]');
+                $tabID.tab('show');
+                $([document.documentElement, document.body]).animate({
+                    scrollTop: $tabID.offset().top
+                }, 200);
             });
 
             if (this.isSingleArticle()) {

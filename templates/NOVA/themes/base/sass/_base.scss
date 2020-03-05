@@ -614,12 +614,6 @@ table caption {
   z-index: $zindex-sticky - 1;
 }
 
-.selection-wizard-question .selection-wizard-answer {
-  white-space: nowrap;
-  margin: 0 $spacer $spacer 0;
-  display: inline-block;
-}
-
 /* wishlist */
 input.form-control[name="wishlist-url"] {
   background: $gray-lighter;

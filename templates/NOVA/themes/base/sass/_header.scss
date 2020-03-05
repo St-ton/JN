@@ -16,7 +16,10 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
 	.navbar-toggler { color: $gray-darker; }
 
 	.nav-right {
-		.dropdown-menu { margin-top: rem(-.5px); }
+		.dropdown-menu {
+			margin-top: rem(-.5px);
+			@include box-shadow(inset 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94));
+		}
 	}
 
 	/* mobile only */

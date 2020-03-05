@@ -34,8 +34,8 @@ if ($action === 'detail' && $itemID !== null) {
 function updateFromPost(DataModelInterface $model, array $post)
 {
     foreach ($model->getAttributes() as $attr) {
-        $name = $attr->getName();
-        $type = $attr->getDataType();
+        $name         = $attr->getName();
+        $type         = $attr->getDataType();
         $isChildModel = strpos($type, '\\') !== false && class_exists($type);
 //        Shop::dbg($isChildModel, false, 'is child ' . $name . '?');
         if ($isChildModel) {
@@ -45,9 +45,9 @@ function updateFromPost(DataModelInterface $model, array $post)
                 $res = [];
                 foreach ($test as $key => $values) {
                     foreach ($values as $idx => $value) {
-                        $item = $res[$idx] ?? [];
+                        $item       = $res[$idx] ?? [];
                         $item[$key] = $value;
-                        $res[$idx] = $item;
+                        $res[$idx]  = $item;
                     }
                 }
                 Shop::dbg($res, true, 'RES:');

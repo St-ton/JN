@@ -6,6 +6,8 @@
 
 namespace JTL\Consent;
 
+use Illuminate\Support\Collection;
+
 /**
  * Interface ManagerInterface
  * @package JTL\Consent
@@ -26,5 +28,11 @@ interface ManagerInterface
     /**
      * @param ItemInterface $item
      */
-    public function revokeConset(ItemInterface $item): void;
+    public function revokeConsent(ItemInterface $item): void;
+
+    /**
+     * @param int $languageID
+     * @return Collection
+     */
+    public function getActiveItems(int $languageID): Collection;
 }

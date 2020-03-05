@@ -103,6 +103,12 @@ class PortletInstance implements \JsonSerializable
     public function getPreviewHtml(): string
     {
         $result = $this->portlet->getPreviewHtml($this);
+        $dom    = new \DOMDocument('1.0', 'utf-8');
+        $dom->loadHTML('<?xml encoding="utf-8" ?>' . $result);
+        /** @var \DOMElement $root */
+        $root = $dom->getElementsByTagName('body')[0]->firstChild;
+        $root->setAttribute('data-portlet', \json_encode($this->getData()));
+        $result = $dom->saveHTML($root);
 
         Shop::fire('shop.OPC.PortletInstance.getPreviewHtml', [
             'portletInstance' => $this,

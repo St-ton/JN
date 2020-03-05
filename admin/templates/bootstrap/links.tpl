@@ -1,5 +1,4 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section='links'}
 {if $step === 'uebersicht'}
     {include file='tpl_inc/links_uebersicht.tpl'}
 {elseif $step === 'neue Linkgruppe'}

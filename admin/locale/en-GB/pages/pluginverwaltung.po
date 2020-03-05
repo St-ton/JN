@@ -3,7 +3,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "pluginverwaltung"
-msgstr "Plug-in Manager"
+msgstr "Plug-in manager"
 
 msgid "pluginverwaltungLocales"
 msgstr "Language variables"
@@ -15,7 +15,7 @@ msgid "pluginverwaltungLicenceKey"
 msgstr "Licence key"
 
 msgid "pluginverwaltungDesc"
-msgstr "Plug-ins extend the functionality of JTL-Shop without changing its core. Active plug-ins can be deactivated or uninstalled at any time. Please do not install any plug-ins from unknown sources. <br/><strong>Security note: Plug-ins have access to the entire database of JTL-Shop.</strong>"
+msgstr "Plug-ins extend the functionality of JTL-Shop without changing its core. Active plug-ins can be deactivated or uninstalled at any time. Please do not install any updates from unknown sources. <br/><strong>Security note: Plug-ins have access to the entire database of JTL-Shop.</strong>"
 
 msgid "pluginverwaltungURL"
 msgstr "https://jtl-url.de/gfso0"
@@ -72,7 +72,7 @@ msgid "statusInstalled"
 msgstr "Installed"
 
 msgid "statusDeactive"
-msgstr "Deactivated"
+msgstr "Disabled"
 
 msgid "statusNotInstalled"
 msgstr "Not installed"
@@ -120,10 +120,10 @@ msgid "successPluginKeySave"
 msgstr "Licence key for plug-in saved successfully."
 
 msgid "errorPluginKeyInvalid"
-msgstr "Invalid licence key. Please check the licence key for potential typing errors and contact the Support team if necessary."
+msgstr "Invalid licence key! Please check the licence key for potential typing errors and contact the Support team if necessary."
 
 msgid "errorPluginNotFound"
-msgstr "Could not find the plug-ins in the database. Please install it again."
+msgstr "Could not find the plug-in in the database. Please install it again."
 
 msgid "successPluginActivate"
 msgstr "Selected plug-ins activated successfully."
@@ -147,7 +147,7 @@ msgid "successPluginRefresh"
 msgstr "Selected plug-ins updated successfully."
 
 msgid "errorPluginRefresh"
-msgstr "Could not upload one plug-in. Please install the plug-in again."
+msgstr "Could not update one plug-in. Please install the plug-in again."
 
 msgid "successPluginUpdate"
 msgstr "Plug-in updated successfully."
@@ -201,7 +201,7 @@ msgid "storeListUpdates"
 msgstr "View updates"
 
 msgid "storePlugins"
-msgstr "Licensed plug-ins"
+msgstr "Licenced plug-ins"
 
 msgid "storeListAll"
 msgstr "View all"
@@ -633,10 +633,10 @@ msgid "INVALID_BLUEPRINT_FILE"
 msgstr "Blueprint file not available."
 
 msgid "EXT_MUST_NOT_HAVE_UNINSTALLER"
-msgstr "Extension must not define an uninstaller."
+msgstr "Plug-in must not define an uninstaller."
 
 msgid "WRONG_EXT_DIR"
-msgstr "Extension installed in incorrect folder."
+msgstr "Plug-in installed in incorrect folder."
 
 msgid "unknownError"
 msgstr "Unknown error."

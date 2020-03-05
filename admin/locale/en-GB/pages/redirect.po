@@ -24,7 +24,7 @@ msgid "redirectTo"
 msgstr "Target URL"
 
 msgid "redirectRefererCount"
-msgstr "References"
+msgstr "Calls"
 
 msgid "redirectReferer"
 msgstr "Reference"

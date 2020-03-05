@@ -5,17 +5,17 @@ Mails
 
    <br />
 
-Dieser Abschnitt soll einen kurzen Überblick über die Möglichkeiten zum Versenden von Emails via Plugins geben und
-erläutert die Unterschiede zwischen JTL-Shop3/4 und 5.x.
+Dieser Abschnitt soll einen kurzen Überblick über die Möglichkeiten zum Versenden von E-Mails über Plugins geben und
+erläutert die Unterschiede zwischen JTL-Shop 3, 4 und 5.x.
 
-Wie Sie neue Email-Templates in der ``info.xml`` Ihres Plugins definieren, finden Sie
+Wie Sie neue E-Mail-Templates in der ``info.xml`` Ihres Plugins definieren, finden Sie
 im Abschnitt ":ref:`label_infoxml_email`".
 
-Shop 3.x/4.x
-------------
+JTL-Shop 3.x/4.x
+----------------
 
-Die in der ``info.xml`` definierten Mailtemplates eines Plugins können bis einschließlich Shop 4 über die Methode
-``sendeMail()`` aus der ``includes/mailTools.php`` versendet werden.
+Die in der ``info.xml`` definierten E-Mail-Templates eines Plugins können bis einschließlich JTL-Shop 4 über die
+Methode ``sendeMail()`` aus der ``includes/mailTools.php`` versendet werden.
 
 .. note::
 
@@ -32,7 +32,7 @@ weiteren ``_`` sowie der in der ``info.xml`` definierten ``ModulId``.
 
 Als weiteren Parameter akzeptiert die Funktion ein *stdClass*-Objekt, das im Smarty-Template anschließend als
 Variable ``$oPluginMail`` bereitgestellt wird. Befindet sich in diesem Objekt eine Eigenschaft mit dem
-Namen ``tkunde``, so wird versucht, die Mail an die im Kundenkonto hinterlegte Email-Adresse zu versenden.
+Namen ``tkunde``, so wird versucht, die E-Mail an die im Kundenkonto hinterlegte E-Mail-Adresse zu versenden.
 
 **Beispiel:**
 
@@ -44,11 +44,11 @@ Namen ``tkunde``, so wird versucht, die Mail an die im Kundenkonto hinterlegte E
     sendeMail('kPlugin_' . $plugin->kPlugin . '_mymailmoduleid', $data);
 
 
-Shop 5.x
---------
+JTL-Shop 5.x
+------------
 
-Das Grundprinzip in Shop 5 ist ähnlich, funktioniert nun aber über den Service ``JTL\Mail\Mailer``. |br|
-Darüber hinaus ermöglicht die neue Klasse ``JTL\Mail\Mail`` eine flexiblere Konfiguration der zu versendenden Email.
+Das Grundprinzip in JTL-Shop 5 ist ähnlich, funktioniert nun aber über den Service ``JTL\Mail\Mailer``. |br|
+Darüber hinaus ermöglicht die neue Klasse ``JTL\Mail\Mail`` eine flexiblere Konfiguration der zu versendenden E-Mail.
 
 Um ein Plugin-Template analog dem o.g. Beispiel zu versenden, könnte der entsprechende Code so aussehen:
 
@@ -66,7 +66,7 @@ Um ein Plugin-Template analog dem o.g. Beispiel zu versenden, könnte der entspr
     $mail = $mail->createFromTemplateID('kPlugin_' . $this->getPlugin()->getID() . '_mymailmoduleid', $data);
     $mailer->send($mail);
 
-Alternativ lassen sich Emails aber auch ohne Vorlage versenden:
+Alternativ lassen sich E-Mails aber auch ohne Vorlage versenden:
 
 .. code-block:: php
 

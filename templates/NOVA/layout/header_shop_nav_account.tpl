@@ -12,7 +12,7 @@
         {if empty($smarty.session.Kunde->kKunde)}
             {block name='layout-header-shop-nav-account-logged-out'}
                 <div class="dropdown-body lg-min-w-lg">
-                    {form action="{get_static_route id='jtl.php' secure=true}" method="post" class="jtl-validate"}
+                    {form action="{get_static_route id='jtl.php' secure=true}" method="post" class="jtl-validate" slide=true}
                         {block name='layout-header-shop-nav-account-form-content'}
                             <fieldset id="quick-login">
                                 {block name='layout-header-nav-account-form-email'}

@@ -3,10 +3,10 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "filecheck"
-msgstr "Shop file check"
+msgstr "Check of online shop files"
 
 msgid "filecheckDesc"
-msgstr "Here you can review all shop files to check whether they have been uploaded correctly. The files are checked for discrepancies between the checksum of the original files and the checksum of the current file. If no discrepancies are found, the status is \"OK\". If a shop file has been changed, transferred with errors or deleted, the status is \"modified\"."
+msgstr "Here you can review all online shop files to check whether they have been uploaded correctly. The files are checked for discrepancies between the checksum of the original files and the checksum of the current file. If no discrepancies are found, the status is \"OK\". If an online shop file has been changed, transferred with errors or deleted, the status is \"modified\"."
 
 msgid "filecheckURL"
 msgstr "https://jtl-url.de/bhzcm"
@@ -18,7 +18,7 @@ msgid "fileCheckModifiedFilesHeadline"
 msgstr "Modified files"
 
 msgid "fileCheckModifiedFilesNote"
-msgstr "The following files are not identical to the files of the current online shop version."
+msgstr "The following files are not identical to the files of the version of JTL-Shop."
 
 msgid "fileCheckOrphanedFilesHeadline"
 msgstr "Orphaned files"
@@ -45,10 +45,10 @@ msgid "errorCreatingZipArchive"
 msgstr "Could not create zip archive %s."
 
 msgid "confirmDeleteText"
-msgstr "Are you sure you want to delete all files? Please make sure you have a backup!"
+msgstr "Delete all listed files? You should only do this if you have created a backup."
 
 msgid "backupText"
-msgstr "Created backup file %s and deleted %d files"
+msgstr "Created backup in %s and deleted %d files."
 
 msgid "showDeleteScript"
 msgstr "Generate script"

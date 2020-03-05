@@ -18,7 +18,7 @@
         {col cols=12 id="existing-customer" lg=4 class="mb-3"}
             {block name='checkout-step0-login-or-register-form-login'}
                 {card class='card-gray'}
-                    {form method="post" action="{get_static_route id='bestellvorgang.php'}" class="jtl-validate" id="order_register_or_login"}
+                    {form method="post" action="{get_static_route id='bestellvorgang.php'}" class="jtl-validate" id="order_register_or_login" slide=true}
                         {block name='checkout-step0-login-or-register-fieldset-form-login-content'}
                             <fieldset>
                                 {block name='checkout-step0-login-or-register-headline-form-login-content'}
@@ -40,7 +40,7 @@
         {/col}
         {col cols=12 id="customer" lg=8}
             {block name='checkout-step0-login-or-register-form'}
-                {form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form jtl-validate py-3" id="form-register"}
+                {form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form jtl-validate py-3" id="form-register" slide=true}
                     {block name='checkout-step0-login-or-register-include-customer-account'}
                         {include file='register/form/customer_account.tpl' checkout=1 step="formular"}
                         <hr class="my-4">

@@ -30,7 +30,7 @@ msgid "errorHistoryDelete"
 msgstr "Could not delete email log."
 
 msgid "successHistoryDelete"
-msgstr "The selected log entries were deleted successfully."
+msgstr "Selected log entries deleted successfully."
 
 msgid "errorSelectEntry"
 msgstr "Please select at least one log entry."

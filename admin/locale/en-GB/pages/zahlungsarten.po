@@ -12,13 +12,10 @@ msgid "paymentmethodName"
 msgstr "Name of the payment method"
 
 msgid "installedPaymentmethods"
-msgstr "The following payment methods are installed:"
+msgstr "Here you can see an overview of all installed payment methods."
 
 msgid "name"
 msgstr "Payment method"
-
-msgid "moduleid"
-msgstr "Module"
 
 msgid "configurePaymentmethod"
 msgstr "Here you can adjust the settings for this payment method."
@@ -93,7 +90,7 @@ msgid "paymentsDesc"
 msgstr "Here you can view the payments received for a specific payment method and its synchronisation status with JTL-Wawi."
 
 msgid "successPaymentMethodCheck"
-msgstr "Payment methods tested for operational readiness."
+msgstr "All payment methods are operable."
 
 msgid "successLogReset"
 msgstr "Error log for %s reset successfully."
@@ -105,10 +102,10 @@ msgid "amountPayed"
 msgstr "Amount paid"
 
 msgid "syncedWithWawi"
-msgstr "Already transferred to JTL-Wawi"
+msgstr "Already sent to JTL-Wawi"
 
 msgid "wawiSyncReset"
-msgstr "Put down for transfer to JTL-Wawi during next synchronisation"
+msgstr "Schedule new transfer to JTL-Wawi during next synchronisation"
 
 msgid "installedPaymentTypes"
 msgstr "Installed payment methods"

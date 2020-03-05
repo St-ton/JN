@@ -17,9 +17,6 @@ msgstr "Free from"
 msgid "zusatzverpackungTaxClass"
 msgstr "Tax class"
 
-msgid "zusatzverpackungSave"
-msgstr "Save additional packaging"
-
 msgid "zusatzverpackungAutoTax"
 msgstr "Calculate automatically"
 
@@ -28,9 +25,6 @@ msgstr "Create additional packaging"
 
 msgid "zusatzverpackungEdit"
 msgstr "Edit additional packaging"
-
-msgid "zusatzverpackungAdded"
-msgstr "Available additional packaging"
 
 msgid "zusatzverpackungAddedNone"
 msgstr "No additional packaging available yet"

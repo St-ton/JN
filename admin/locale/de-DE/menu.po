@@ -438,7 +438,7 @@ msgid "There are errors within the database structure."
 msgstr "Es liegen Fehler in der Datenbankstruktur vor."
 
 msgid "Your template version differs from your shop version.<br />For additional help about template updates go to <i class='fa fa-external-link'></i> Wiki"
-msgstr "Ihre Template-Version unterscheidet sich von der Version Ihres Onlineshops.<br/>Weitere Hilfe zu Template-Anpassungen finden Sie im &lt;i class=\"fa fa-external-link\"&gt;</i> JTL-Guide."
+msgstr "Ihre Template-Version unterscheidet sich von der Version Ihres Onlineshops.<br/>Weitere Hilfe zu Template-Anpassungen finden Sie im <i class=\"fa fa-external-link\"></i> JTL-Guide."
 
 msgid "You are using a full responsive template. The activation of a separate mobile template is not necessary in this case."
 msgstr "Sie nutzen ein Full-Responsive-Template. Die Aktivierung eines separaten Mobile-Templates ist in diesem Fall nicht notwendig."
@@ -471,7 +471,7 @@ msgid "Insecure SMTP connection"
 msgstr "Unsichere SMTP-Verbindung"
 
 msgid "You have selected SMTP as mail-method, but no encryption method has been chosen. We recommend you urgently to adjust your mail settings. You can find these options at 'System > E-Mails > Emaileinstellungen > SMTP Security'"
-msgstr "Sie haben SMTP gewählt, allerdings keine SMTP-Security-Methode. Wir empfehlen Ihnen dringend, Ihre E-Mail-Einstellungen anzupassen. Sie finden die Option unter „Administration &gt; E-Mail &gt; Server.“"
+msgstr "Sie haben SMTP gewählt, allerdings keine SMTP-Security-Methode. Wir empfehlen Ihnen dringend, Ihre E-Mail-Einstellungen anzupassen. Sie finden die Option unter „Administration > E-Mail > Server.“"
 
 msgid "User management"
 msgstr "Benutzerverwaltung"
@@ -513,7 +513,7 @@ msgid "System diagnostics"
 msgstr "Diagnose"
 
 msgid "Email templates"
-msgstr "Vorlage"
+msgstr "Vorlagen"
 
 msgid "Global"
 msgstr "Global"

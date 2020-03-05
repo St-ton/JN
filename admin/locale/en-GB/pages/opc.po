@@ -3,7 +3,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "opcNotInstalled"
-msgstr "The OPC update was not installed properly. Please update the migrations."
+msgstr "Could not properly install the OnPage Composer update. Please update the migrations."
 
 msgid "dbUpdateNeeded"
 msgstr "A datebase update of your JTL-Shop is required to use the OnPage Composer.<br><br>"
@@ -36,7 +36,7 @@ msgid "Revisions"
 msgstr "Versions"
 
 msgid "Page structure"
-msgstr "Page Structure"
+msgstr "Page structure"
 
 msgid "Import blueprint"
 msgstr "Import template"
@@ -45,7 +45,7 @@ msgid "Unsaved revision"
 msgstr "Unsaved version"
 
 msgid "Current revision"
-msgstr "Current revision"
+msgstr "Current version"
 
 msgid "Please wait..."
 msgstr "Please wait…"
@@ -68,7 +68,7 @@ msgstr "Delete template?"
 # Config Tabs
 
 msgid "Styles"
-msgstr "Styles"
+msgstr "Layout"
 
 msgid "Animation"
 msgstr "Animation"
@@ -100,7 +100,7 @@ msgid "Border colour"
 msgstr "Border colour"
 
 msgid "Border radius"
-msgstr "Border radius"
+msgstr "Border rounding"
 
 # Animations tab
 
@@ -120,7 +120,7 @@ msgid "Iteration"
 msgstr "Repetition"
 
 msgid "Change the animation duration (e.g. 2s)"
-msgstr "Duration of the animation (e.g. 2 s)"
+msgstr "Duration of the animation (e.g. 2&nbsp;s)"
 
 msgid "Delay before the animation starts"
 msgstr "Time until animation begins"
@@ -177,13 +177,13 @@ msgid "restoreChanges"
 msgstr "Restoring local changes"
 
 msgid "restoreUnsaved"
-msgstr "This draft hasn't been saved at the last session. Continue working on the latest changes?"
+msgstr "This draft was not saved in the last session. Keep last changes?"
 
 msgid "noCurrent"
 msgstr "No, discard changes"
 
 msgid "yesRestore"
-msgstr "Yes, continue editing"
+msgstr "Yes, keep changes"
 
 msgid "editSettings"
 msgstr "Edit settings"
@@ -192,7 +192,7 @@ msgid "copySelect"
 msgstr "Copy selection"
 
 msgid "saveTemplate"
-msgstr "Save selection as a template"
+msgstr "Save selection as template"
 
 msgid "goUp"
 msgstr "Select next higher level"
@@ -210,7 +210,7 @@ msgid "activeFilters"
 msgstr "Active filters"
 
 msgid "noMoreFilters"
-msgstr "No more filters available."
+msgstr "No other filters available."
 
 msgid "entryMove"
 msgstr "Move entry"
@@ -231,25 +231,25 @@ msgid "videoTagNotSupported"
 msgstr "Your browser does not support the video tag."
 
 msgid "zoneNew"
-msgstr "New area"
+msgstr "New section"
 
 msgid "zoneDelete"
-msgstr "Delete area"
+msgstr "Delete section"
 
 msgid "templateDeleteSure"
-msgstr "Are you sure to delete the template?"
+msgstr "Delete selected template?"
 
 msgid "publishNot"
 msgstr "Do not publish"
 
 msgid "publishImmediately"
-msgstr "Publish immediately"
+msgstr "Publish now"
 
 msgid "selectDate"
-msgstr "Select date"
+msgstr "Select period"
 
 msgid "indefinitePeriodOfTime"
-msgstr "For an indefinite period of time"
+msgstr "For indefinite period"
 
 msgid "draftUpper"
 msgstr "DRAFT"
@@ -258,34 +258,34 @@ msgid "publicUpper"
 msgstr "PUBLIC"
 
 msgid "plannedUpper"
-msgstr "PLANNED"
+msgstr "SCHEDULED"
 
 msgid "pastUpper"
 msgstr "PAST"
 
 msgid "publicSince"
-msgstr "published since"
+msgstr "published on"
 
 msgid "publicUntil"
 msgstr "public until"
 
 msgid "publicFrom"
-msgstr "Public from:"
+msgstr "from"
 
 msgid "publicTill"
-msgstr "Public until:"
+msgstr "until"
 
 msgid "plannedFrom"
 msgstr "public from"
 
 msgid "noPublicationPlanned"
-msgstr "no pulication planned"
+msgstr "no publication scheduled"
 
 msgid "duplicate"
 msgstr "Duplicate"
 
 msgid "useForOtherLang"
-msgstr "Use for other languages"
+msgstr "Apply to other languages"
 
 msgid "editPage"
 msgstr "Edit page"
@@ -297,16 +297,16 @@ msgid "allDrafts"
 msgstr "All drafts"
 
 msgid "deleteDraftsContinue"
-msgstr "drafts are deleted! Continue?"
+msgstr "Drafts will be deleted. Continue?"
 
 msgid "draftDeleteSure"
-msgstr "Wollen Sie diesen Entwurf wirklich löschen?"
+msgstr "Delete this draft?"
 
 msgid "label"
-msgstr "Label"
+msgstr "Labelling"
 
 msgid "style"
-msgstr "Style"
+msgstr "Colour scheme"
 
 msgid "stylePrimary"
 msgstr "Primary"
@@ -330,7 +330,7 @@ msgid "background"
 msgstr "Background"
 
 msgid "backgroundImage"
-msgstr "Background image"
+msgstr "Wallpaper"
 
 msgid "video"
 msgstr "Video"
@@ -345,13 +345,13 @@ msgid "grid"
 msgstr "Grid"
 
 msgid "alternate"
-msgstr "Alternating"
+msgstr "Alternate"
 
 msgid "columns"
 msgstr "Columns"
 
 msgid "noAction"
-msgstr "No Action"
+msgstr "No action"
 
 msgid "lightbox"
 msgstr "Lightbox"
@@ -369,67 +369,67 @@ msgid "desktopMD"
 msgstr "Desktop (MD)"
 
 msgid "desktopLG"
-msgstr "Large Desktop (LG)"
+msgstr "Large desktop (LG)"
 
 
 msgid "active"
 msgstr "active"
 
 msgid "planned"
-msgstr "planned"
+msgstr "scheduled"
 
 msgid "draft"
-msgstr "planned"
+msgstr "Draft"
 
 msgid "past"
-msgstr "past"
+msgstr "Past"
 
 msgid "activeSince"
-msgstr "active since"
+msgstr "Active from"
 
 msgid "activeUntil"
-msgstr "active until"
+msgstr "Active until"
 
 msgid "scheduledFor"
-msgstr "scheduled for"
+msgstr "Planned from"
 
 msgid "notScheduled"
-msgstr "not scheduled"
+msgstr "Unpublished"
 
 msgid "expiredOn"
-msgstr "expired on"
+msgstr "Expired on"
 
 msgid "dropPortletHere"
-msgstr "Drop Portlet here"
+msgstr "Insert portlet here"
 
 # Messages
 
 msgid "opcImportSuccess"
-msgstr "The draft has been imported successfully!"
+msgstr "The draft was imported successfully. "
 
 msgid "opcImportUnmappedS"
-msgstr "One area could not be mapped because its ID was not found on the current page."
+msgstr "One section could not be displayed. Its ID is not present on the current page."
 
 msgid "opcImportUnmappedP"
-msgstr "%s areas could not be mapped because their IDs were not found on the current page."
+msgstr "%s sections could not be displayed. Their Ids are not present on the current page."
 
 msgid "opcImportSuccessTitle"
-msgstr "Draft imported successfully"
+msgstr "Successful import"
 
 msgid "btnTitleCopyArea"
-msgstr "Transfer content to visible area"
+msgstr "Add content to visible section"
 
 msgid "offscreenAreasDivider"
-msgstr "Unmapped Areas"
+msgstr "Sections not displayed"
 
 msgid "yesDeleteArea"
-msgstr "Discard this area"
+msgstr "Discard this section"
 
 msgid "Cancel"
 msgstr "Cancel"
 
 msgid "opcPageLocked"
-msgstr "Another user is currently editing this draft. Unfortunately the access is blocked for you."
+msgstr "This draft is currently locked for editing by"
 
 msgid "Next"
 msgstr "Next"

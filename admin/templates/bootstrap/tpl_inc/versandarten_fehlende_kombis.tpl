@@ -1,5 +1,3 @@
-{config_load file="$lang.conf" section='versandarten'}
-
 {if $missingShippingClassCombis === -1}
     <p>
         {__('coverageShippingClassCombination')}

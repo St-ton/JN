@@ -1,5 +1,4 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section='slider'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('slider') cBeschreibung=__('sliderDesc') cDokuURL=__('sliderURL')}
 
 <script src="{$templateBaseURL}js/slider.js" type="text/javascript"></script>

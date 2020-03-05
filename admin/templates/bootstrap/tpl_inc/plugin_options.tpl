@@ -1,4 +1,3 @@
-{config_load file="$lang.conf" section='plugin'}
 {if $oPlugin !== null}
     <div class="settings-content">
         <form method="post" action="plugin.php?kPlugin={$oPlugin->getID()}" class="navbar-form">

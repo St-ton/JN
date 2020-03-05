@@ -1527,7 +1527,7 @@ final class Shop
                 }
                 self::$kLink = isset($link->kLink)
                     ? (int)$link->kLink
-                    : self::Container()->getLinkService()->getSpecialPageLinkKey(\LINKTYP_STARTSEITE);
+                    : self::Container()->getLinkService()->getSpecialPageID(\LINKTYP_STARTSEITE);
             } elseif (Media::getInstance()->isValidRequest($path)) {
                 Media::getInstance()->handleRequest($path);
             } else {
@@ -1653,7 +1653,7 @@ final class Shop
             $kLink         = $hookInfos['value'];
             $bFileNotFound = $hookInfos['isFileNotFound'];
             if (!$kLink) {
-                self::$kLink = self::Container()->getLinkService()->getSpecialPageLinkKey(\LINKTYP_404);
+                self::$kLink = self::Container()->getLinkService()->getSpecialPageID(\LINKTYP_404);
             }
         }
 

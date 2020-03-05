@@ -24,11 +24,10 @@ $db          = Shop::Container()->getDB();
 $smarty      = Shop::Smarty();
 $alertHelper = Shop::Container()->getAlertService();
 $linkHelper  = Shop::Container()->getLinkService();
-$kLink       = $linkHelper->getSpecialPageLinkKey(LINKTYP_NEWSLETTER);
+$kLink       = $linkHelper->getSpecialPageID(LINKTYP_NEWSLETTER, false);
 if ($kLink === false) {
-    $oLink               = $db->select('tlink', 'nLinkart', LINKTYP_404);
     $bFileNotFound       = true;
-    Shop::$kLink         = (int)$oLink->kLink;
+    Shop::$kLink         = $linkHelper->getSpecialPageID(LINKTYP_404);
     Shop::$bFileNotFound = true;
     Shop::$is404         = true;
 

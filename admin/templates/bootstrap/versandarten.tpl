@@ -1,5 +1,4 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section='versandarten'}
 {if $step === 'uebersicht'}
     {include file='tpl_inc/versandarten_uebersicht.tpl'}
 {elseif $step === 'neue Versandart'}

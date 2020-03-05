@@ -28,7 +28,7 @@ class Migration_20200305191200 extends Migration implements IMigration
           `pluginID` int(11) NOT NULL DEFAULT 0,
           `active` tinyint(4) NOT NULL DEFAULT 1,
           PRIMARY KEY (`id`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;'
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;'
         );
         $this->execute('CREATE TABLE IF NOT EXISTS `tconsentlocalization` (
           `id` int(11) NOT NULL AUTO_INCREMENT,

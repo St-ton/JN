@@ -53,7 +53,7 @@ class WishlistItemProperty
     /**
      * WishlistItemProperty constructor.
      * @param int    $propertyID
-     * @param int    $propertyValueID
+     * @param null|int    $propertyValueID
      * @param string $freeText
      * @param string $propertyName
      * @param string $propertyValueName
@@ -61,7 +61,7 @@ class WishlistItemProperty
      */
     public function __construct(
         int $propertyID,
-        int $propertyValueID,
+        ?int $propertyValueID,
         $freeText,
         $propertyName,
         $propertyValueName,

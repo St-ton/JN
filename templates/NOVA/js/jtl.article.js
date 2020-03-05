@@ -276,6 +276,20 @@
                         that.variationPrice($(this), true, wrapper);
                     });
                 });
+            $('.simple-variations input[type="text"]', $wrapper)
+                .each(function(i, item) {
+                    let $item   = $(item),
+                        wrapper = '#' + $item.closest('form').closest('div[data-wrapper="true"]').attr('id'),
+                        timeout = null;
+                    $item.on('keyup', function (e) {
+                        clearTimeout(timeout);
+                        let self = $(this);
+
+                        timeout = setTimeout(function () {
+                            that.variationPrice(self, true, wrapper);
+                        }, 500);
+                    });
+                });
         },
 
         registerBulkPrices: function($wrapper) {
@@ -770,20 +784,28 @@
             }
         },
 
-        addToWishlist: function(data) {
-            var productId = parseInt(data[this.options.input.id]);
-            var childId = parseInt(data[this.options.input.childId]);
-            var qty =  parseInt(data[this.options.input.quantity]);
+        addToWishlist: function(data, $action) {
+            let productId = parseInt(data[this.options.input.id]),
+                childId = parseInt(data[this.options.input.childId]),
+                qty =  parseInt(data[this.options.input.quantity]);
             if (childId > 0) {
                 productId = childId;
             }
+            if (isNaN(qty)) {
+                qty = 1;
+            }
             if (productId > 0) {
                 var that = this;
-                $.evo.io().call('pushToWishlist', [productId, qty], that, function(error, data) {
+                $.evo.io().call('pushToWishlist', [productId, qty, data], that, function(error, data) {
                     if (error) {
+                        $action.closest('form')[0].reportValidity();
                         return;
                     }
-
+                    if ($action.hasClass('action-tip-animation-b')) {
+                        $action.addClass("on-list");
+                        $action.next().addClass("press");
+                        $action.next().next().removeClass("press");
+                    }
                     var response = data.response;
 
                     if (response) {
@@ -920,21 +942,14 @@
                     return this.removeFromCompareList(data);
                 case this.options.action.wishList:
                     data[this.options.input.quantity] = $('#buy_form_'+data.a+' '+this.options.selector.quantity).val();
-                    if ($action.hasClass('action-tip-animation-b')) {
-                        if ($action.hasClass('on-list')) {
-                            $action.removeClass("on-list");
-                            $action.next().removeClass("press");
-                            $action.next().next().addClass("press");
-                            data.a = data.wlPos;
-                            return this.removeFromWishList(data);
-                        } else {
-                            $action.addClass("on-list");
-                            $action.next().addClass("press");
-                            $action.next().next().removeClass("press");
-                            return this.addToWishlist(data);
-                        }
+                    if ($action.hasClass('on-list')) {
+                        $action.removeClass("on-list");
+                        $action.next().removeClass("press");
+                        $action.next().next().addClass("press");
+                        data.a = data.wlPos;
+                        return this.removeFromWishList(data);
                     } else {
-                        return this.addToWishlist(data);
+                        return this.addToWishlist(data, $action);
                     }
                 case this.options.action.wishListRemove:
                     return this.removeFromWishList(data);
@@ -1462,7 +1477,17 @@
             }
 
             args.wrapper = wrapper;
-            io.call('checkDependencies', [args], null, function (error, data) {
+            io.call('checkDependencies', [args], $(this), function (error, data) {
+                let $action = $('button[data-product-id-wl="' + data.response.itemID + '"]');
+                if (data.response.check > 0) {
+                    $action.attr('data-wl-pos', data.response.check);
+                    $action.data('wl-pos', data.response.check);
+                    $action.closest('form').find('input[name="wlPos"]').val(data.response.check)
+                    $action.addClass('on-list');
+                } else {
+                    $action.removeClass('on-list');
+                }
+
                 $wrapper.removeClass('loading');
                 if (animation) {
                     $spinner.stop();

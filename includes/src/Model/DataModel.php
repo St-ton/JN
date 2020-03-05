@@ -575,10 +575,11 @@ abstract class DataModel implements DataModelInterface, Iterator
         }
         // hack to allow updating tables like "tkategoriesprache" where no single primary key is present
         if (\count($allKeyNames) > 1) {
-            $keyValue = null;
+            $keyValue = [];
             $keyName  = [];
             foreach ($allKeyNames as $name) {
-                $keyName[$name] = (int)$this->getAttribValue($name);
+                $keyName[]  = $name;
+                $keyValue[] = (int)$this->getAttribValue($name);
             }
         }
         $res = $this->db->update($this->getTableName(), $keyName, $keyValue, $members) >= 0;
@@ -976,7 +977,7 @@ abstract class DataModel implements DataModelInterface, Iterator
     /**
      * @return DataModelInterface[]
      */
-    protected function getChildModels(): array
+    public function getChildModels(): array
     {
         $result = [];
         foreach ($this->getAttributes() as $name => $attribute) {

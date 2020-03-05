@@ -12,6 +12,7 @@ use JTL\Checkout\Kupon;
 use JTL\Customer\AccountController;
 use JTL\Extensions\Download\Download;
 use JTL\Extensions\Upload\Upload;
+use JTL\Helpers\Form;
 use JTL\Helpers\Order;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
@@ -34,6 +35,7 @@ $cart         = Frontend::getCart();
 $alertService = Shop::Container()->getAlertService();
 $linkService  = Shop::Container()->getLinkService();
 $controller   = new AccountController(Shop::Container()->getDB(), $alertService, $linkService, $smarty);
+$valid        = Form::validateToken();
 
 unset($_SESSION['ajaxcheckout']);
 if (Request::postInt('login') === 1) {
@@ -73,7 +75,10 @@ if ($conf['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'NO'
 if (Request::verifyGPCDataInt('wk') === 1) {
     Kupon::resetNewCustomerCoupon();
 }
-if (Request::postInt('unreg_form') === 1 && $conf['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y') {
+if ($valid
+    && Request::postInt('unreg_form') === 1
+    && $conf['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y'
+) {
     pruefeUnregistriertBestellen($_POST);
 }
 if (isset($_GET['editLieferadresse'])) {

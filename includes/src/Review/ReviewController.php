@@ -13,6 +13,7 @@ use JTL\Catalog\Product\Artikel;
 use JTL\Customer\Customer;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Services\JTL\AlertServiceInterface;
@@ -51,6 +52,9 @@ class ReviewController extends BaseController
      */
     public function handleRequest()
     {
+        if (!Form::validateToken()) {
+            return false;
+        }
         $this->checkRedirect();
         $params   = Shop::getParameters();
         $customer = Frontend::getCustomer();

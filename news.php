@@ -5,6 +5,7 @@
  */
 
 use JTL\Alert\Alert;
+use JTL\Helpers\Form;
 use JTL\Helpers\URL;
 use JTL\News\Category;
 use JTL\News\Controller;
@@ -49,7 +50,7 @@ switch ($controller->getPageType($params)) {
         $cMetaTitle       = $newsItem->getMetaTitle();
         $cMetaDescription = $newsItem->getMetaDescription();
         $cMetaKeywords    = $newsItem->getMetaKeyword();
-        if ((int)($_POST['kommentar_einfuegen'] ?? 0) > 0) {
+        if ((int)($_POST['kommentar_einfuegen'] ?? 0) > 0 && Form::validateToken()) {
             $result = $controller->addComment($newsItemID, $_POST);
         }
 

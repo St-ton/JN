@@ -13,7 +13,7 @@ use JTL\Catalog\NavigationEntry;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Catalog\Wishlist\Wishlist;
-use JTL\Consent\Item;
+use JTL\Consent\Manager;
 use JTL\DB\ReturnType;
 use JTL\ExtensionPoint;
 use JTL\Filter\Metadata;
@@ -232,27 +232,13 @@ if (isset($hinweis)) {
     $alertHelper->addAlert(Alert::TYPE_NOTE, $hinweis, 'miscHinweis');
     trigger_error('global $hinweis is deprecated.', \E_USER_DEPRECATED);
 }
-$consentItems = [];
-$item         = new Item();
-$item->setName('YouTube');
-$item->setID('youtube');
-$item->setDescription('Für das Hosting von Videos nutzen wir die Videoplattform YouTube von Google. ' .
-    'Durch das Abspielen von Videos bauen unsere Webseiten eine Verbindung zu den Servern von YouTube auf. ' .
-    'In diesen Fällen erkennt der YouTube-Server, welche Seite unserer Internetpräsenzen Sie besucht haben. '
-    . 'Wenn Sie zeitgleich in Ihrem YouTube-Account eingeloggt sind, kann YouTube Ihr Surfverhalten Ihrem ' .
-    'persönlichen Profil zuzuordnen. Wenn Sie YouTube auf unseren Webseiten nutzen möchten, stimmen sie dieser ' .
-    '<a href="https://policies.google.com/privacy" target="_blank">Nutzungbestimmung</a> von Google zu.');
-$item->setPurpose('Das Plugin YouTube spielt Videos ab, die auf der Plattform YouTube gehostet werden.');
-$item->setTos('https://policies.google.com/privacy');
-$item->setCompany('Google Inc., San Bruno/Kalifornien, USA');
-$consentItems[] = $item;
-executeHook(444, ['items' => &$consentItems]);
+$manager = new Manager();
 
 $smarty->assign('bCookieErlaubt', isset($_COOKIE['JTLSHOP']))
        ->assign('Brotnavi', $nav->createNavigation())
        ->assign('nIsSSL', Request::checkSSL())
        ->assign('boxes', $boxesToShow)
-       ->assign('consentItems', $consentItems)
+       ->assign('consentItems', $manager->getActiveItems(\Shop::getLanguageID()))
        ->assign('nZeitGebraucht', isset($nStartzeit) ? (microtime(true) - $nStartzeit) : 0)
        ->assign('Besucherzaehler', $visitorCount)
        ->assign('alertList', Shop::Container()->getAlertService())

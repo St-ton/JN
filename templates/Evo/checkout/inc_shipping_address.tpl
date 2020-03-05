@@ -7,7 +7,7 @@
 {else}
     {assign var="fehlendeAngabenShipping" value=null}
 {/if}
-{assign var="showShippingAddress" value=($smarty.get.editLieferadresse || isset($Lieferadresse) || !empty($kLieferadresse) || isset($forceDeliveryAddress))}
+{assign var="showShippingAddress" value=(isset($Lieferadresse) || !empty($kLieferadresse) || isset($forceDeliveryAddress))}
 <div class="form-group checkbox control-toggle">
     <input type="hidden" name="shipping_address" value="1">
     <label for="checkout_register_shipping_address" class="btn-block{if isset($forceDeliveryAddress)} hidden{/if}" data-toggle="collapse" data-target="#select_shipping_address">
@@ -67,7 +67,7 @@
     <script type="text/javascript">
         $(window).on('load', function () {
             $('#checkout_register_shipping_address').prop('checked', false);
-            $('#select_shipping_address').addClass('in');
+            $('#select_shipping_address').addClass('in').removeClass('hidden');
             $.evo.extended().smoothScrollToAnchor('#checkout_register_shipping_address');
         });
     </script>

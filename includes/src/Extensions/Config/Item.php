@@ -280,11 +280,8 @@ class Item implements JsonSerializable
      */
     private function addProduct(int $customerGroupID, int $languageID): void
     {
-        $options                             = new stdClass();
-        $options->nAttribute                 = 1;
-        $options->nArtikelAttribute          = 1;
+        $options                             = Artikel::getExportOptions();
         $options->nKeineSichtbarkeitBeachten = 1;
-        $options->nVariationen               = 0;
 
         $this->oArtikel = new Artikel();
         $this->oArtikel->fuelleArtikel($this->kArtikel, $options, $customerGroupID, $languageID);

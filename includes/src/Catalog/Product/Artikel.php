@@ -1646,8 +1646,8 @@ class Artikel
             $options->nStueckliste               = 1;
             $this->oProduktBundleMain->fuelleArtikel((int)$main->kArtikel, $options);
 
-            $currency = Frontend::getCurrency();
-            $bundles  = Shop::Container()->getDB()->selectAll(
+            $currency                            = Frontend::getCurrency();
+            $bundles                             = Shop::Container()->getDB()->selectAll(
                 'tstueckliste',
                 'kStueckliste',
                 $main->kStueckliste,
@@ -2776,11 +2776,11 @@ class Artikel
 
         // Preise holen bzw. Artikel
         if (\is_array($varCombChildren) && ($cnt = \count($varCombChildren)) > 0 && $cnt <= \ART_MATRIX_MAX) {
-            $tmp      = [];
-            $per      = ' ' . Shop::Lang()->get('vpePer') . ' ';
-            $taxRate  = $_SESSION['Steuersatz'][$this->kSteuerklasse];
-            $currency = Frontend::getCurrency();
-            $options  = self::getDefaultOptions();
+            $tmp                                = [];
+            $per                                = ' ' . Shop::Lang()->get('vpePer') . ' ';
+            $taxRate                            = $_SESSION['Steuersatz'][$this->kSteuerklasse];
+            $currency                           = Frontend::getCurrency();
+            $options                            = self::getDefaultOptions();
             $options->nKeinLagerbestandBeachten = 1;
             foreach ($varCombChildren as $i => $productID) {
                 if (isset($tmp[$productID])) {

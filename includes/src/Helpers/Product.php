@@ -913,7 +913,7 @@ class Product
                 ReturnType::ARRAY_OF_OBJECTS
             );
             if (\count($xsell) > 0) {
-                $xsellgruppen = group($xsell, static function ($e) {
+                $xsellgruppen   = group($xsell, static function ($e) {
                     return $e->kXSellGruppe;
                 });
                 $defaultOptions = Artikel::getDefaultOptions();
@@ -1729,22 +1729,22 @@ class Product
      */
     public static function combineParentAndChild($parent, $child)
     {
-        $product                                   = $child;
-        $kVariKindArtikel                          = (int)$child->kArtikel;
-        $product->kArtikel                         = (int)$parent->kArtikel;
-        $product->kVariKindArtikel                 = $kVariKindArtikel;
-        $product->nIstVater                        = 1;
-        $product->kVaterArtikel                    = (int)$parent->kArtikel;
-        $product->kEigenschaftKombi                = $parent->kEigenschaftKombi;
-        $product->kEigenschaftKombi_arr            = $parent->kEigenschaftKombi_arr;
-        $product->fDurchschnittsBewertung          = $parent->fDurchschnittsBewertung;
-        $product->Bewertungen                      = $parent->Bewertungen ?? null;
-        $product->HilfreichsteBewertung            = $parent->HilfreichsteBewertung ?? null;
-        $product->oVariationKombiVorschau_arr      = $parent->oVariationKombiVorschau_arr ?? [];
-        $product->oVariationDetailPreis_arr        = $parent->oVariationDetailPreis_arr;
-        $product->oVariationKombiVorschauText      = $parent->oVariationKombiVorschauText ?? null;
-        $product->cVaterURL                        = $parent->cURL;
-        $product->VaterFunktionsAttribute          = $parent->FunktionsAttribute;
+        $product                              = $child;
+        $kVariKindArtikel                     = (int)$child->kArtikel;
+        $product->kArtikel                    = (int)$parent->kArtikel;
+        $product->kVariKindArtikel            = $kVariKindArtikel;
+        $product->nIstVater                   = 1;
+        $product->kVaterArtikel               = (int)$parent->kArtikel;
+        $product->kEigenschaftKombi           = $parent->kEigenschaftKombi;
+        $product->kEigenschaftKombi_arr       = $parent->kEigenschaftKombi_arr;
+        $product->fDurchschnittsBewertung     = $parent->fDurchschnittsBewertung;
+        $product->Bewertungen                 = $parent->Bewertungen ?? null;
+        $product->HilfreichsteBewertung       = $parent->HilfreichsteBewertung ?? null;
+        $product->oVariationKombiVorschau_arr = $parent->oVariationKombiVorschau_arr ?? [];
+        $product->oVariationDetailPreis_arr   = $parent->oVariationDetailPreis_arr;
+        $product->oVariationKombiVorschauText = $parent->oVariationKombiVorschauText ?? null;
+        $product->cVaterURL                   = $parent->cURL;
+        $product->VaterFunktionsAttribute     = $parent->FunktionsAttribute;
 
         \executeHook(\HOOK_ARTIKEL_INC_FASSEVARIVATERUNDKINDZUSAMMEN, ['article' => $product]);
 

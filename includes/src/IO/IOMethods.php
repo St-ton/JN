@@ -635,18 +635,17 @@ class IOMethods
     public function buildConfiguration($aValues): IOResponse
     {
         $_POST['jtl_token'] = $aValues['jtl_token'];
-
-        $smarty          = Shop::Smarty();
-        $response        = new IOResponse();
-        $product         = new Artikel();
-        $productID       = (int)($aValues['VariKindArtikel'] ?? $aValues['a']);
-        $items           = $aValues['item'] ?? [];
-        $quantities      = $aValues['quantity'] ?? [];
-        $itemQuantities  = $aValues['item_quantity'] ?? [];
-        $variationValues = $aValues['eigenschaftwert'] ?? [];
-        $amount          = $aValues['anzahl'] ?? 1;
-        $invalidGroups   = [];
-        $config          = Product::buildConfig(
+        $smarty             = Shop::Smarty();
+        $response           = new IOResponse();
+        $product            = new Artikel();
+        $productID          = (int)($aValues['VariKindArtikel'] ?? $aValues['a']);
+        $items              = $aValues['item'] ?? [];
+        $quantities         = $aValues['quantity'] ?? [];
+        $itemQuantities     = $aValues['item_quantity'] ?? [];
+        $variationValues    = $aValues['eigenschaftwert'] ?? [];
+        $amount             = $aValues['anzahl'] ?? 1;
+        $invalidGroups      = [];
+        $config             = Product::buildConfig(
             $productID,
             $amount,
             $variationValues,
@@ -655,7 +654,7 @@ class IOMethods
             $itemQuantities,
             true
         );
-        $net             = Frontend::getCustomerGroup()->getIsMerchant();
+        $net                = Frontend::getCustomerGroup()->getIsMerchant();
         $product->fuelleArtikel($productID);
         $fVKNetto                      = $product->gibPreis($amount, [], Frontend::getCustomerGroup()->getID());
         $fVK                           = [

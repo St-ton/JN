@@ -573,6 +573,7 @@ table caption {
 
 .hr-sect {
   display: flex;
+  justify-content: center;
   flex-basis: 100%;
   align-items: center;
   color: $headings-color;

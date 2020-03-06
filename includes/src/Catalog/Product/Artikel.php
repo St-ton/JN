@@ -1042,11 +1042,6 @@ class Artikel
     private $options;
 
     /**
-     * @var bool
-     */
-    public $compressed = false;
-
-    /**
      *
      */
     public function __wakeup()
@@ -1056,12 +1051,6 @@ class Artikel
         }
         $this->conf    = $this->getConfig();
         $this->taxData = $this->getShippingAndTaxData();
-//        if ($this->bHasKonfig && Configurator::validateKonfig($this->kArtikel)) {
-//            $this->oKonfig_arr = Configurator::getKonfig($this->kArtikel, $this->kSprache);
-//        }
-//        if ($this->compressed === true) {
-//            $this->cBeschreibung = \gzuncompress($this->cBeschreibung);
-//        }
     }
 
     /**
@@ -3121,7 +3110,7 @@ class Artikel
      * @param stdClass $options
      * @return string
      */
-    public function getOptionsHash($options): string
+    private function getOptionsHash($options): string
     {
         if (!\is_object($options)) {
             $options = self::getDefaultOptions();
@@ -3410,9 +3399,6 @@ class Artikel
             $toSave                                 = clone $this;
             $toSave->oVariationKombiKinderAssoc_arr = null;
             $toSave->Preise                         = $basePrice;
-//            $toSave->oKonfig_arr                    = null;
-//            $toSave->cBeschreibung                  = \gzcompress($this->cBeschreibung);
-//            $toSave->compressed = true;
             Shop::Container()->getCache()->set($this->cacheID, $toSave, $cacheTags);
         }
 

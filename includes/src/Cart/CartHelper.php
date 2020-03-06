@@ -749,7 +749,7 @@ class CartHelper
         $productID     = (int)$product->kArtikel; // relevant für die Berechnung von Artikelsummen im Warenkorb
         $redirectParam = [];
         $conf          = Shop::getSettings([\CONF_GLOBAL]);
-        if ($product->fAbnahmeintervall > 0 && !self::isMultiple($qty, $product->fAbnahmeintervall)) {
+        if ($product->fAbnahmeintervall > 0 && !self::isMultiple($qty, (float)$product->fAbnahmeintervall)) {
             $redirectParam[] = \R_ARTIKELABNAHMEINTERVALL;
         }
         if ((int)$qty != $qty && $product->cTeilbar !== 'Y') {

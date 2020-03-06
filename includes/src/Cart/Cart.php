@@ -1901,7 +1901,7 @@ class Cart
 
         $this->oFavourableShipping = null;
         if (isset($shipping->kVersandart)) {
-            $method               = new Versandart($shipping->kVersandart);
+            $method               = new Versandart((int)$shipping->kVersandart);
             $method->cCountryCode = $countryCode;
 
             if ($method->eSteuer === 'brutto') {

@@ -20,7 +20,7 @@
                                     <div class="area-desc">
                                         {block name='snippets-banner-map-area-image'}
                                             <div class="text-center mb-3">
-                                                {if $oImageMapArea->oArtikel}
+                                                {if $oArtikel !== null}
                                                     {image fluid=true webp=true
                                                         src=$oArtikel->Bilder[0]->cURLMini
                                                         srcset="{$oArtikel->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
@@ -32,7 +32,7 @@
                                                     }
                                                 {/if}
                                             </div>
-                                            {*{if $oImageMapArea->oArtikel}
+                                            {*{if $oArtikel !== null}
                                                 {include file='productdetails/price.tpl' Artikel=$oArtikel tplscope='box'}
                                             {/if}*}
                                             {if $oImageMapArea->cBeschreibung|@strlen > 0}

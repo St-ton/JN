@@ -1555,13 +1555,8 @@ class Exportformat
             ReturnType::SINGLE_OBJECT
         );
         if (!empty($productData->kArtikel)) {
-            $options                            = Artikel::getDefaultOptions();
-            $options->nKategorie                = 1;
-            $options->nKeinLagerbestandBeachten = 1;
-            $options->nMedienDatei              = 1;
-
             $product = new Artikel();
-            $product->fuelleArtikel($productData->kArtikel, $options);
+            $product->fuelleArtikel($productData->kArtikel, Artikel::getExportOptions());
             $product->cDeeplink             = '';
             $product->Artikelbild           = '';
             $product->Lieferbar             = '';

@@ -173,7 +173,7 @@
                 {/block}
             {else}
                 {block name='productdetails-tabs-no-tabs'}
-                    {container}
+                    {container class="mb-7"}
                         <div class="accordion" id="tabAccordion">
                             {if $useDescription}
                                 {block name='productdetails-tabs-description'}

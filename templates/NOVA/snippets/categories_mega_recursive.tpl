@@ -26,11 +26,13 @@
             <div class="dropdown-menu">
                 {nav}
                     {block name='snippets-categories-mega-recursive-child-header'}
-                        {navitem class="dropdown d-lg-none" href=$mainCategory->getURL() nofollow=true}
-                            <span class="text-truncate font-weight-bold d-block pr-3 pr-lg-0">
-                                {lang key='menuShow' printf=$mainCategory->getName()}
-                            </span>
-                        {/navitem}
+                        <li class="nav-item d-lg-none">
+                            {link href=$mainCategory->getURL() nofollow=true}
+                                <span class="text-truncate font-weight-bold d-block pr-3 pr-lg-0">
+                                    {lang key='menuShow' printf=$mainCategory->getName()}
+                                </span>
+                            {/link}
+                        </li>
                     {/block}
                     {block name='snippets-categories-mega-recursive-child-categories'}
                         {foreach $mainCategory->getChildren() as $category}

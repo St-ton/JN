@@ -21611,6 +21611,7 @@ table caption {
 
 .hr-sect {
   display: flex;
+  justify-content: center;
   flex-basis: 100%;
   align-items: center;
   color: #525252;
@@ -21627,7 +21628,7 @@ table caption {
 .hr-sect::before, .hr-sect::after {
   content: "";
   flex-grow: 1;
-  background: #ebebeb;
+  background: rgba(0, 0, 0, 0.1);
   height: 1px;
   font-size: 0px;
   line-height: 0px;
@@ -21636,6 +21637,23 @@ table caption {
   text-decoration: none;
   border-bottom: 0.375rem solid transparent;
   font-weight: 700;
+}
+@media (max-width: 991.98px) {
+  .hr-sect {
+    text-align: center;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 15px 0px;
+    margin: 15px 0px;
+  }
+  .hr-sect::before, .hr-sect::after {
+    margin: 0;
+    flex-grow: unset;
+  }
+  .hr-sect a {
+    border-bottom: none;
+    margin: auto;
+  }
 }
 
 .cart-summary {

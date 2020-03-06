@@ -1862,7 +1862,7 @@ class Cart
         foreach ($this->PositionenArr as $item) {
             $totalWeight += $item->fGesamtgewicht;
             $itemCount   += $item->nAnzahl;
-            $maxPrices   += $item->Artikel->Preise->fVKNetto
+            $maxPrices   += isset($item->Artikel->Preise->fVKNetto)
                 ? $item->Artikel->Preise->fVKNetto * $item->nAnzahl : 0;
         }
 

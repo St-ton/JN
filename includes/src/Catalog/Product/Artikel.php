@@ -1052,6 +1052,11 @@ class Artikel
     private $options;
 
     /**
+     * @var bool
+     */
+    public $compressed = false;
+
+    /**
      *
      */
     public function __wakeup()
@@ -1061,6 +1066,12 @@ class Artikel
         }
         $this->conf    = $this->getConfig();
         $this->taxData = $this->getShippingAndTaxData();
+//        if ($this->bHasKonfig && Configurator::validateKonfig($this->kArtikel)) {
+//            $this->oKonfig_arr = Configurator::getKonfig($this->kArtikel, $this->kSprache);
+//        }
+//        if ($this->compressed === true) {
+//            $this->cBeschreibung = \gzuncompress($this->cBeschreibung);
+//        }
     }
 
     /**
@@ -3418,14 +3429,13 @@ class Artikel
         if ($noCache === false) {
             // oVariationKombiKinderAssoc_arr can contain a lot of article objects, prices may depend on customers
             // so do not save to cache
-            $newPrice                             = $this->Preise;
-            $children                             = $this->oVariationKombiKinderAssoc_arr;
-            $this->oVariationKombiKinderAssoc_arr = null;
-            $this->Preise                         = $basePrice;
-            Shop::Container()->getCache()->set($this->cacheID, $this, $cacheTags);
-            // restore oVariationKombiKinderAssoc_arr and Preise to class instance
-            $this->oVariationKombiKinderAssoc_arr = $children;
-            $this->Preise                         = $newPrice;
+            $toSave                                 = clone $this;
+            $toSave->oVariationKombiKinderAssoc_arr = null;
+            $toSave->Preise                         = $basePrice;
+//            $toSave->oKonfig_arr                    = null;
+//            $toSave->cBeschreibung                  = \gzcompress($this->cBeschreibung);
+//            $toSave->compressed = true;
+            Shop::Container()->getCache()->set($this->cacheID, $toSave, $cacheTags);
         }
 
         return $this;

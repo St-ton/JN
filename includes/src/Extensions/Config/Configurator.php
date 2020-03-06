@@ -34,31 +34,43 @@ class Configurator
     }
 
     /**
+     * @return array[]
+     */
+    public static function getGroups(): array
+    {
+        return self::$groups;
+    }
+
+    /**
      * @param int $productID
      * @param int $languageID
      * @return Group[]
      */
     public static function getKonfig(int $productID, int $languageID = 0): array
     {
-        if (isset(self::$groups[$productID])) {
-            return self::$groups[$productID];
-        }
+        Shop::dbg($productID, false, '$productID:');
         $groups = [];
         $data   = Shop::Container()->getDB()->selectAll(
             'tartikelkonfiggruppe',
             'kArtikel',
             $productID,
-            'kArtikel, kKonfigGruppe',
+            'kKonfigGruppe',
             'nSort ASC'
         );
         if (!\is_array($data) || \count($data) === 0 || !self::checkLicense()) {
             return [];
         }
         $languageID = $languageID ?: Shop::getLanguageID();
-        foreach ($data as $item) {
-            $groups[] = new Group((int)$item->kKonfigGruppe, $languageID);
+        if (!isset(self::$groups[$languageID])) {
+            self::$groups[$languageID] = [];
         }
-        self::$groups[$productID] = $groups;
+        foreach ($data as $item) {
+            $id                             = (int)$item->kKonfigGruppe;
+            Shop::dbg($id, false, 'new konfiggruppe:');
+            $group                          = self::$groups[$languageID][$id] ?? new Group($id, $languageID);
+            $groups[]                       = $group;
+            self::$groups[$languageID][$id] = $group;
+        }
 
         return $groups;
     }

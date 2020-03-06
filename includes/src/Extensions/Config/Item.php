@@ -17,6 +17,7 @@ use JTL\Nice;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
+use function Functional\select;
 
 /**
  * Class Item
@@ -158,6 +159,26 @@ class Item implements JsonSerializable
     }
 
     /**
+     * @return array
+     */
+    public function __sleep()
+    {
+        return select(\array_keys(\get_object_vars($this)), static function ($e) {
+            return $e !== 'oArtikel';
+        });
+    }
+
+    /**
+     *
+     */
+    public function __wakeup()
+    {
+        if ($this->kArtikel > 0) {
+            $this->addProduct($this->kKundengruppe, $this->kSprache);
+        }
+    }
+
+    /**
      * @return bool
      */
     public static function checkLicense(): bool
@@ -246,20 +267,29 @@ class Item implements JsonSerializable
             $this->oPreis            = new ItemPrice($this->kKonfigitem, $customerGroupID);
             $this->oArtikel          = null;
             if ($this->kArtikel > 0) {
-                $options                             = new stdClass();
-                $options->nAttribute                 = 1;
-                $options->nArtikelAttribute          = 1;
-                $options->nVariationKombi            = 1;
-                $options->nVariationKombiKinder      = 1;
-                $options->nKeineSichtbarkeitBeachten = 1;
-                $options->nVariationen               = 0;
-
-                $this->oArtikel = new Artikel();
-                $this->oArtikel->fuelleArtikel($this->kArtikel, $options, $customerGroupID, $languageID);
+                $this->addProduct($customerGroupID, $languageID);
             }
         }
 
         return $this;
+    }
+
+    /**
+     * @param int $customerGroupID
+     * @param int $languageID
+     */
+    private function addProduct(int $customerGroupID, int $languageID): void
+    {
+        $options                             = new stdClass();
+        $options->nAttribute                 = 1;
+        $options->nArtikelAttribute          = 1;
+        $options->nVariationKombi            = 1;
+        $options->nVariationKombiKinder      = 1;
+        $options->nKeineSichtbarkeitBeachten = 1;
+        $options->nVariationen               = 0;
+
+        $this->oArtikel = new Artikel();
+        $this->oArtikel->fuelleArtikel($this->kArtikel, $options, $customerGroupID, $languageID);
     }
 
     /**

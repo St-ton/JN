@@ -48,7 +48,6 @@ class Configurator
      */
     public static function getKonfig(int $productID, int $languageID = 0): array
     {
-        Shop::dbg($productID, false, '$productID:');
         $groups = [];
         $data   = Shop::Container()->getDB()->selectAll(
             'tartikelkonfiggruppe',
@@ -66,7 +65,6 @@ class Configurator
         }
         foreach ($data as $item) {
             $id                             = (int)$item->kKonfigGruppe;
-            Shop::dbg($id, false, 'new konfiggruppe:');
             $group                          = self::$groups[$languageID][$id] ?? new Group($id, $languageID);
             $groups[]                       = $group;
             self::$groups[$languageID][$id] = $group;

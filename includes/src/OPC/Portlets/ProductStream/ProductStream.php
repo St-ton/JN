@@ -97,13 +97,10 @@ class ProductStream extends Portlet
      */
     public function getFilteredProducts(PortletInstance $instance): array
     {
-        $products = [];
-        $options  = Artikel::getDefaultOptions();
-
+        $products       = [];
+        $defaultOptions = Artikel::getDefaultOptions();
         foreach ($this->getFilteredProductIds($instance) as $productID) {
-            $product = new Artikel();
-            $product->fuelleArtikel($productID, $options);
-            $products[] = $product;
+            $products[] = (new Artikel())->fuelleArtikel($productID, $defaultOptions);
         }
 
         return $products;

@@ -283,8 +283,6 @@ class Item implements JsonSerializable
         $options                             = new stdClass();
         $options->nAttribute                 = 1;
         $options->nArtikelAttribute          = 1;
-        $options->nVariationKombi            = 1;
-        $options->nVariationKombiKinder      = 1;
         $options->nKeineSichtbarkeitBeachten = 1;
         $options->nVariationen               = 0;
 

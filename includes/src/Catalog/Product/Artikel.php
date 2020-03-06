@@ -519,11 +519,6 @@ class Artikel
     /**
      * @var array
      */
-    public $nVariationKombiNichtMoeglich_arr = [];
-
-    /**
-     * @var array
-     */
     public $oVariBoxMatrixBild_arr;
 
     /**
@@ -690,11 +685,6 @@ class Artikel
      * @var array
      */
     public $oStueckliste_arr = [];
-
-    /**
-     * @var array
-     */
-    public $nVariationKombiUnique_arr = [];
 
     /**
      * @var int
@@ -1662,10 +1652,7 @@ class Artikel
             ReturnType::SINGLE_OBJECT
         );
         if (isset($main->kArtikel, $main->kStueckliste) && $main->kArtikel > 0 && $main->kStueckliste > 0) {
-            $options                             = new stdClass();
-            $options->nMerkmale                  = 1;
-            $options->nAttribute                 = 1;
-            $options->nArtikelAttribute          = 1;
+            $options                             = self::getDefaultOptions();
             $options->nKeineSichtbarkeitBeachten = 1;
             $options->nStueckliste               = 1;
             $this->oProduktBundleMain->fuelleArtikel((int)$main->kArtikel, $options);
@@ -1677,9 +1664,9 @@ class Artikel
                 $main->kStueckliste,
                 'kArtikel, fAnzahl'
             );
+            $options->nKeineSichtbarkeitBeachten = 0;
             foreach ($bundles as $bundle) {
-                $options->nKeineSichtbarkeitBeachten = 0;
-                $product                             = new self();
+                $product = new self();
                 $product->fuelleArtikel((int)$bundle->kArtikel, $options);
 
                 $this->oProduktBundle_arr[]           = $product;
@@ -2804,15 +2791,13 @@ class Artikel
             $per      = ' ' . Shop::Lang()->get('vpePer') . ' ';
             $taxRate  = $_SESSION['Steuersatz'][$this->kSteuerklasse];
             $currency = Frontend::getCurrency();
+            $options  = self::getDefaultOptions();
+            $options->nKeinLagerbestandBeachten = 1;
             foreach ($varCombChildren as $i => $productID) {
                 if (isset($tmp[$productID])) {
                     $varCombChildren[$i] = $tmp[$productID];
                 } else {
-                    $options                            = new stdClass();
-                    $options->nKeinLagerbestandBeachten = 1;
-                    $options->nArtikelAttribute         = 1;
-                    $options->nVariationen              = 0;
-                    $product                            = new self();
+                    $product = new self();
                     $product->fuelleArtikel($productID, $options);
 
                     $tmp[$productID]     = $product;
@@ -3112,8 +3097,6 @@ class Artikel
             'nAttribute',
             'nArtikelAttribute',
             'nMedienDatei',
-            'nVariationKombi',
-            'nVariationKombiKinder',
             'nVariationDetailPreis',
             'nWarenkorbmatrix',
             'nStueckliste',
@@ -3127,7 +3110,6 @@ class Artikel
             'nWarenlager',
             'bSimilar',
             'nRatings',
-            'nLanguageURLs',
             'nVariationen',
         ];
     }
@@ -3139,7 +3121,7 @@ class Artikel
      * @param stdClass $options
      * @return string
      */
-    private function getOptionsHash($options): string
+    public function getOptionsHash($options): string
     {
         if (!\is_object($options)) {
             $options = self::getDefaultOptions();
@@ -3147,7 +3129,7 @@ class Artikel
         $given = \get_object_vars($options);
         $mask  = '';
         if (isset($options->nDownload) && $options->nDownload === 1 && !Download::checkLicense()) {
-            //unset download-option if there is no license for the download module
+            // unset download-option if there is no license for the download module
             $options->nDownload = 0;
         }
         foreach (self::getAllOptions() as $_opt) {
@@ -3170,8 +3152,6 @@ class Artikel
         $options->nArtikelAttribute     = 1;
         $options->nMedienDatei          = 1;
         $options->nVariationen          = 1;
-        $options->nVariationKombi       = 1;
-        $options->nVariationKombiKinder = 1;
         $options->nWarenlager           = 1;
         $options->nVariationDetailPreis = 1;
         $options->nRatings              = 1;
@@ -3182,7 +3162,6 @@ class Artikel
         $options->nKonfig               = 1;
         $options->nMain                 = 1;
         $options->bSimilar              = true;
-        $options->nLanguageURLs         = 1;
 
         return $options;
     }
@@ -3216,7 +3195,6 @@ class Artikel
         $options->nKeinLagerbestandBeachten = 1;
         $options->nMedienDatei              = 1;
         $options->nVariationen              = 1;
-        $options->nVariationKombi           = 0;
 
         return $options;
     }

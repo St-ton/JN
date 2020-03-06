@@ -50,11 +50,11 @@ class ComparisonList
     {
         $compareList = Frontend::get('Vergleichsliste');
         if ($compareList !== null) {
-            $options = Artikel::getDefaultOptions();
-            $baseURL = Shop::Container()->getLinkService()->getStaticRoute('vergleichsliste.php');
+            $defaultOptions = Artikel::getDefaultOptions();
+            $baseURL        = Shop::Container()->getLinkService()->getStaticRoute('vergleichsliste.php');
             foreach ($compareList->oArtikel_arr as $item) {
                 $product = new Artikel();
-                $product->fuelleArtikel($item->kArtikel, $options);
+                $product->fuelleArtikel($item->kArtikel, $defaultOptions);
                 $product->cURLDEL = $baseURL . '?vlplo=' . $item->kArtikel;
                 if (isset($item->oVariationen_arr) && \count($item->oVariationen_arr) > 0) {
                     $product->Variationen = $item->oVariationen_arr;
@@ -69,8 +69,8 @@ class ComparisonList
      */
     public function umgebungsWechsel(): self
     {
-        $options     = Artikel::getDefaultOptions();
-        $compareList = Frontend::get('Vergleichsliste');
+        $defaultOptions = Artikel::getDefaultOptions();
+        $compareList    = Frontend::get('Vergleichsliste');
         if ($compareList === null) {
             return $this;
         }
@@ -78,7 +78,7 @@ class ComparisonList
             $product    = new stdClass();
             $tmpProduct = new Artikel();
             try {
-                $tmpProduct->fuelleArtikel($item->kArtikel, $options);
+                $tmpProduct->fuelleArtikel($item->kArtikel, $defaultOptions);
             } catch (Exception $e) {
                 continue;
             }
@@ -99,7 +99,7 @@ class ComparisonList
     public function addProduct(int $productID, array $variations = []): self
     {
         $product           = new stdClass();
-        $tmpProduct        = (new Artikel())->fuelleArtikel($productID);
+        $tmpProduct        = (new Artikel())->fuelleArtikel($productID, Artikel::getDefaultOptions());
         $product->kArtikel = $productID;
         $product->cName    = $tmpProduct !== null ? $tmpProduct->cName : '';
         $product->cURLFull = $tmpProduct !== null ? $tmpProduct->cURLFull : '';

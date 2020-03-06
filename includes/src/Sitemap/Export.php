@@ -130,7 +130,7 @@ final class Export
     }
 
     /**
-     * @param array              $customerGroupIDs
+     * @param int[]              $customerGroupIDs
      * @param LanguageModel[]    $languages
      * @param FactoryInterface[] $factories
      */

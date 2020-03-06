@@ -798,12 +798,8 @@ class Product
         if ($productID <= 0 || !self::isVariChild($productID)) {
             return $attributeValues;
         }
-        $product                           = new Artikel();
-        $productOptions                    = new stdClass();
-        $productOptions->nMerkmale         = 0;
-        $productOptions->nAttribute        = 0;
-        $productOptions->nArtikelAttribute = 0;
-        $productOptions->nVariationKombi   = 1;
+        $product        = new Artikel();
+        $productOptions = new stdClass();
         if (!$visibility) {
             $productOptions->nKeineSichtbarkeitBeachten = 1;
         }
@@ -920,13 +916,14 @@ class Product
                 $xsellgruppen = group($xsell, static function ($e) {
                     return $e->kXSellGruppe;
                 });
+                $defaultOptions = Artikel::getDefaultOptions();
                 foreach ($xsellgruppen as $groupID => $products) {
                     $group          = new stdClass();
                     $group->Artikel = [];
                     foreach ($products as $xs) {
                         $group->Name         = $xs->cName;
                         $group->Beschreibung = $xs->cBeschreibung;
-                        $product             = (new Artikel())->fuelleArtikel((int)$xs->kXSellArtikel);
+                        $product             = (new Artikel())->fuelleArtikel((int)$xs->kXSellArtikel, $defaultOptions);
                         if ($product !== null && (int)$product->kArtikel > 0 && $product->aufLagerSichtbarkeit()) {
                             $group->Artikel[] = $product;
                         }
@@ -1745,7 +1742,6 @@ class Product
         $product->HilfreichsteBewertung            = $parent->HilfreichsteBewertung ?? null;
         $product->oVariationKombiVorschau_arr      = $parent->oVariationKombiVorschau_arr ?? [];
         $product->oVariationDetailPreis_arr        = $parent->oVariationDetailPreis_arr;
-        $product->nVariationKombiNichtMoeglich_arr = $parent->nVariationKombiNichtMoeglich_arr;
         $product->oVariationKombiVorschauText      = $parent->oVariationKombiVorschauText ?? null;
         $product->cVaterURL                        = $parent->cURL;
         $product->VaterFunktionsAttribute          = $parent->FunktionsAttribute;
@@ -1900,10 +1896,7 @@ class Product
         if ($productID <= 0) {
             return false;
         }
-        $options                             = new stdClass();
-        $options->nMerkmale                  = 1;
-        $options->nAttribute                 = 1;
-        $options->nArtikelAttribute          = 1;
+        $options                             = Artikel::getDefaultOptions();
         $options->nKeineSichtbarkeitBeachten = 1;
 
         return CartHelper::addProductIDToCart($productID, 1, [], 0, false, 0, $options);
@@ -1947,15 +1940,8 @@ class Product
         } else {
             $selectedProperties = self::getSelectedPropertiesForArticle($productID, false);
         }
-
-        $product                               = new Artikel();
-        $productOptions                        = new stdClass();
-        $productOptions->nKonfig               = 1;
-        $productOptions->nAttribute            = 1;
-        $productOptions->nArtikelAttribute     = 1;
-        $productOptions->nVariationKombi       = 1;
-        $productOptions->nVariationKombiKinder = 1;
-        $product->fuelleArtikel($productID, $productOptions);
+        $product = new Artikel();
+        $product->fuelleArtikel($productID, Artikel::getDefaultOptions());
 
         $config->nMinDeliveryDays      = $product->nMinDeliveryDays;
         $config->nMaxDeliveryDays      = $product->nMaxDeliveryDays;

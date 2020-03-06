@@ -74,7 +74,6 @@ class Group implements JsonSerializable
      */
     public function __construct(int $id = 0, int $languageID = 0)
     {
-        Shop::dbg($id, false, 'new group:');
         $this->setImageType(Image::TYPE_CONFIGGROUP);
         $this->kKonfiggruppe = $id;
         if ($this->kKonfiggruppe > 0) {

@@ -1555,10 +1555,7 @@ class Exportformat
             ReturnType::SINGLE_OBJECT
         );
         if (!empty($productData->kArtikel)) {
-            $options                            = new stdClass();
-            $options->nMerkmale                 = 1;
-            $options->nAttribute                = 1;
-            $options->nArtikelAttribute         = 1;
+            $options                            = Artikel::getDefaultOptions();
             $options->nKategorie                = 1;
             $options->nKeinLagerbestandBeachten = 1;
             $options->nMedienDatei              = 1;

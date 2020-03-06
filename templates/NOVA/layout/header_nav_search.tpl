@@ -4,7 +4,7 @@
  *}
 {block name='layout-header-nav-search'}
     {block name='layout-header-nav-search-search'}
-        <li class="nav-item d-none d-lg-block">
+        <li class="nav-item d-none d-lg-block mr-3">
             {form action='index.php' method='get'}
                 <div class="form-icon">
                     {inputgroup}

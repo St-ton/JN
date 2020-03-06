@@ -143,10 +143,10 @@ class WishlistItem
 
     /**
      * @param int $propertyID
-     * @param int $propertyValueID
+     * @param null|int $propertyValueID
      * @return bool
      */
-    public function istEigenschaftEnthalten(int $propertyID, int $propertyValueID): bool
+    public function istEigenschaftEnthalten(int $propertyID, ?int $propertyValueID): bool
     {
         return some(
             $this->CWunschlistePosEigenschaft_arr,

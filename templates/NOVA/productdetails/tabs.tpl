@@ -80,7 +80,7 @@
                         {tabs id="product-tabs"}
                         {if $useDescription}
                             {block name='productdetails-tabs-tab-description'}
-                                {tab title="{lang key="description" section="productDetails"}" active=$setActiveClass.description id="tab-description"}
+                                {tab title="{lang key="description" section="productDetails"}" active=$setActiveClass.description id="description"}
                                     {block name='productdetails-tabs-tab-content'}
                                         {block name='tab-description-media-types'}
                                             {opcMountPoint id='opc_before_desc'}
@@ -109,7 +109,7 @@
 
                         {if $useDownloads}
                             {block name='productdetails-tabs-tab-downloads'}
-                                {tab title="{lang section="productDownloads" key="downloadSection"}" active=$setActiveClass.downloads id="tab-downloads"}
+                                {tab title="{lang section="productDownloads" key="downloadSection"}" active=$setActiveClass.downloads id="downloads"}
                                     {include file='productdetails/download.tpl'}
                                 {/tab}
                             {/block}
@@ -118,7 +118,7 @@
                         {if !empty($separatedTabs)}
                             {block name='productdetails-tabs-tab-separated-tabs'}
                                 {foreach $separatedTabs as $separatedTab}
-                                    {tab title=$separatedTab.name active=$setActiveClass.separatedTabs && $separatedTab@first id="tab-{$separatedTab.id}"}
+                                    {tab title=$separatedTab.name active=$setActiveClass.separatedTabs && $separatedTab@first id="{$separatedTab.id}"}
                                         {$separatedTab.content}
                                     {/tab}
                                 {/foreach}
@@ -127,7 +127,7 @@
 
                         {if $useVotes}
                             {block name='productdetails-tabs-tab-votes'}
-                                {tab title="{lang key='Votes'}" active=$setActiveClass.votes id="tab-votes"}
+                                {tab title="{lang key='Votes'}" active=$setActiveClass.votes id="votes"}
                                     {include file='productdetails/reviews.tpl' stars=$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt}
                                 {/tab}
                             {/block}
@@ -135,7 +135,7 @@
 
                         {if $useQuestionOnItem}
                             {block name='productdetails-tabs-tab-question-on-item'}
-                                {tab title="{lang key="productQuestion" section="productDetails"}" active=$setActiveClass.questionOnItem id="tab-questionOnItem"}
+                                {tab title="{lang key="productQuestion" section="productDetails"}" active=$setActiveClass.questionOnItem id="questionOnItem"}
                                     {include file='productdetails/question_on_item.tpl' position="tab"}
                                 {/tab}
                             {/block}
@@ -143,7 +143,7 @@
 
                         {if $usePriceFlow}
                             {block name='productdetails-tabs-tab-price-flow'}
-                                {tab title="{lang key='priceFlow' section='productDetails'}" active=$setActiveClass.priceFlow id="tab-priceFlow"}
+                                {tab title="{lang key='priceFlow' section='productDetails'}" active=$setActiveClass.priceFlow id="priceFlow"}
                                     {include file='productdetails/price_history.tpl'}
                                 {/tab}
                             {/block}
@@ -161,7 +161,7 @@
                             {block name='productdetails-tabs-tab-mediagroup'}
                                 {foreach $Artikel->getMediaTypes() as $mediaType}
                                     {$cMedienTypId = $mediaType->name|@seofy}
-                                    {tab title="{$mediaType->name} ({$mediaType->count})" active=$setActiveClass.mediaGroup && $mediaType@first id="tab-{$cMedienTypId}"}
+                                    {tab title="{$mediaType->name} ({$mediaType->count})" active=$setActiveClass.mediaGroup && $mediaType@first id="{$cMedienTypId}"}
                                         {include file='productdetails/mediafile.tpl'}
                                     {/tab}
                                 {/foreach}

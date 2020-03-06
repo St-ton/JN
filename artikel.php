@@ -47,7 +47,7 @@ if ($productError = Product::mapErrorCode(Request::verifyGPDataString('cFehler')
 }
 if ($valid && isset($_POST['a'])
     && Request::verifyGPCDataInt('addproductbundle') === 1
-    && Product::addProductBundleToCart($_POST['a'])
+    && Product::addProductBundleToCart(Request::verifyGPCDataInt('a'))
 ) {
     $alertHelper->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('basketAllAdded', 'messages'), 'allAdded');
     Shop::$kArtikel = Request::postInt('aBundle');

@@ -11,7 +11,7 @@
     <div id="result-wrapper_buy_form_{$Artikel->kArtikel}" data-wrapper="true" class="productbox productbox-row productbox-show-variations {if $Einstellungen.template.productlist.hover_productlist === 'Y'} productbox-hover{/if}{if isset($listStyle) && $listStyle === 'list'} active{/if}">
         <div class="productbox-inner">
         {row}
-            {col cols=12 md=4 lg=3}
+            {col cols=12 md=4 lg=6 xl=3}
                 {block name='productlist-item-list-image'}
                     <div class="productbox-image">
                         {if isset($Artikel->Bilder[0]->cAltAttribut)}
@@ -24,6 +24,11 @@
                                 {include file='snippets/ribbon.tpl'}
                             {/block}
                         {/if}
+                        {block name='productlist-item-box-include-productlist-actions'}
+                            <div class="productbox-quick-actions productbox-onhover d-none d-md-flex">
+                                {include file='productlist/productlist_actions.tpl'}
+                            </div>
+                        {/block}
                         {block name="productlist-item-list-images"}
                             <div class="productbox-images">
                                 {link href=$Artikel->cURLFull}

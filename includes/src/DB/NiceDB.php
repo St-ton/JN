@@ -240,7 +240,10 @@ class NiceDB implements DbInterface
         array $named = null,
         float $time = 0
     ): DbInterface {
-        if ($this->debug !== true || \mb_strpos($stmt, 'tprofiler') !== false) {
+        if ($this->debug !== true
+            || \mb_strpos($stmt, 'tprofiler') !== false
+            || \mb_stripos($stmt, 'create table') !== false
+        ) {
             return $this;
         }
         $backtrace = $this->debugLevel > 2 ? \debug_backtrace() : null;

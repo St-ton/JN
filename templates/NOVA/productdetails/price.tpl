@@ -4,7 +4,7 @@
  *}
 {block name='productdetails-price'}
     {if $smarty.session.Kundengruppe->mayViewPrices()}
-        <div class="price_wrapper">
+        <div class="price_wrapper mb-4">
             {block name='productdetails-price-wrapper'}
             {if $Artikel->getOption('nShowOnlyOnSEORequest', 0) === 1}
                 {block name='productdetails-price-out-of-stock'}
@@ -27,7 +27,7 @@
                         <span class="price_label nowonly">{lang key='nowOnly'} </span>
                     {/if}
                 {/block}
-                <div class="price d-inline-block {if $priceLarge|default:false}h1{else}productbox-price{/if} text-nowrap{if isset($Artikel->Preise->Sonderpreis_aktiv) && $Artikel->Preise->Sonderpreis_aktiv} special-price{/if}">
+                <div class="price d-inline-block {if $priceLarge|default:false}h1{else}productbox-price{/if} {if isset($Artikel->Preise->Sonderpreis_aktiv) && $Artikel->Preise->Sonderpreis_aktiv} special-price{/if}">
                     {block name='productdetails-range'}
                         <span{if $Artikel->Preise->oPriceRange->isRange() && $tplscope !== 'box'} itemprop="priceSpecification" itemscope itemtype="http://schema.org/UnitPriceSpecification"{/if}>
                         {if $tplscope !== 'detail' && $Artikel->Preise->oPriceRange->isRange()}

@@ -24,6 +24,8 @@ use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Checkout\Kupon;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\ReturnType;
+use JTL\Extensions\Config\Configurator;
+use JTL\Extensions\Config\Item;
 use JTL\Extensions\SelectionWizard\Wizard;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
@@ -423,15 +425,17 @@ class IOMethods
     /**
      * @param int $productID
      * @param int $qty
+     * @param array $data
      * @return IOResponse
      * @throws SmartyException
      */
-    public function pushToWishlist(int $productID, $qty): IOResponse
+    public function pushToWishlist(int $productID, int $qty, array $data): IOResponse
     {
+        $_POST       = $data;
         $conf        = Shopsetting::getInstance()->getAll();
         $response    = new stdClass();
         $objResponse = new IOResponse();
-        $qty         = (int)$qty === 0 ? 1 : (int)$qty;
+        $qty         = $qty === 0 ? 1 : $qty;
         $smarty      = Shop::Smarty();
         if (Frontend::getCustomer()->getID() === 0) {
             $response->nType     = 1;
@@ -444,7 +448,7 @@ class IOMethods
             return $objResponse;
         }
         $vals = Shop::Container()->getDB()->selectAll('teigenschaft', 'kArtikel', $productID);
-        if (!empty($vals) && !Product::isParent($productID)) {
+        if (!empty($vals) && empty($_POST['eigenschaftwert']) && !Product::isParent($productID)) {
             // Falls die Wunschliste aus der Artikelübersicht ausgewählt wurde,
             // muss zum Artikel weitergeleitet werden um Variationen zu wählen
             $response->nType     = 1;
@@ -458,7 +462,7 @@ class IOMethods
 
         $_POST['Wunschliste'] = 1;
         $_POST['a']           = $productID;
-        $_POST['n']           = (int)$qty;
+        $_POST['n']           = $qty;
 
         CartHelper::checkAdditions();
 
@@ -630,16 +634,18 @@ class IOMethods
      */
     public function buildConfiguration($aValues): IOResponse
     {
-        $smarty          = Shop::Smarty();
-        $response        = new IOResponse();
-        $product         = new Artikel();
-        $productID       = (int)($aValues['VariKindArtikel'] ?? $aValues['a']);
-        $items           = $aValues['item'] ?? [];
-        $quantities      = $aValues['quantity'] ?? [];
-        $itemQuantities  = $aValues['item_quantity'] ?? [];
-        $variationValues = $aValues['eigenschaftwert'] ?? [];
-        $amount          = $aValues['anzahl'] ?? 1;
-        $config          = Product::buildConfig(
+        $_POST['jtl_token'] = $aValues['jtl_token'];
+        $smarty             = Shop::Smarty();
+        $response           = new IOResponse();
+        $product            = new Artikel();
+        $productID          = (int)($aValues['VariKindArtikel'] ?? $aValues['a']);
+        $items              = $aValues['item'] ?? [];
+        $quantities         = $aValues['quantity'] ?? [];
+        $itemQuantities     = $aValues['item_quantity'] ?? [];
+        $variationValues    = $aValues['eigenschaftwert'] ?? [];
+        $amount             = $aValues['anzahl'] ?? 1;
+        $invalidGroups      = [];
+        $config             = Product::buildConfig(
             $productID,
             $amount,
             $variationValues,
@@ -648,7 +654,7 @@ class IOMethods
             $itemQuantities,
             true
         );
-        $net             = Frontend::getCustomerGroup()->getIsMerchant();
+        $net                = Frontend::getCustomerGroup()->getIsMerchant();
         $product->fuelleArtikel($productID);
         $fVKNetto                      = $product->gibPreis($amount, [], Frontend::getCustomerGroup()->getID());
         $fVK                           = [
@@ -660,6 +666,82 @@ class IOMethods
             1 => Preise::getLocalizedPriceString($fVK[1])
         ];
 
+        $configGroups      = $items;
+        $configGroupCounts = $quantities;
+        $configItemCounts  = $itemQuantities;
+        foreach ($configGroups as $itemList) {
+            foreach ($itemList as $configItemID) {
+                $configItemID = (int)$configItemID;
+                // Falls ungültig, ignorieren
+                if ($configItemID <= 0) {
+                    continue;
+                }
+                $configItem          = new Item($configItemID);
+                $configItem->fAnzahl = (float)($configItemCounts[$configItemID]
+                    ?? $configGroupCounts[$configItem->getKonfiggruppe()] ?? $configItem->getInitial());
+                if ($configItemCounts && isset($configItemCounts[$configItem->getKonfigitem()])) {
+                    $configItem->fAnzahl = (float)$configItemCounts[$configItem->getKonfigitem()];
+                }
+                if ($configItem->fAnzahl < 1) {
+                    $configItem->fAnzahl = 1;
+                }
+                $count                 = \max($amount, 1);
+                $configItem->fAnzahlWK = $configItem->fAnzahl;
+                if (!$configItem->ignoreMultiplier()) {
+                    $configItem->fAnzahlWK *= $count;
+                }
+                $configItems[] = $configItem;
+                // Alle Artikel können in den WK gelegt werden?
+                if ($configItem->getPosTyp() === \KONFIG_ITEM_TYP_ARTIKEL) {
+                    // Varikombi
+                    /** @var Artikel $tmpProduct */
+                    $configItem->oEigenschaftwerte_arr = [];
+                    $tmpProduct                        = $configItem->getArtikel();
+
+                    if ($tmpProduct !== null
+                        && $tmpProduct->kVaterArtikel > 0
+                        && isset($tmpProduct->kEigenschaftKombi)
+                        && $tmpProduct->kEigenschaftKombi > 0
+                    ) {
+                        $configItem->oEigenschaftwerte_arr =
+                            Product::getVarCombiAttributeValues($tmpProduct->kArtikel, false);
+                    }
+                    if ($tmpProduct->cTeilbar !== 'Y' && (int)$count != $count) {
+                        $count = (int)$count;
+                    }
+                    $tmpProduct->isKonfigItem = true;
+                    $redirectParam            = CartHelper::addToCartCheck(
+                        $tmpProduct,
+                        $configItem->fAnzahlWK,
+                        $configItem->oEigenschaftwerte_arr
+                    );
+                    if (\count($redirectParam) > 0) {
+                        $valid           = false;
+                        $productMessages = Product::getProductMessages(
+                            $redirectParam,
+                            true,
+                            $configItem->getArtikel(),
+                            $configItem->fAnzahlWK,
+                            $configItem->getKonfigitem()
+                        );
+
+                        $itemErrors[$configItem->getKonfigitem()] = (object)[
+                            'message' => $productMessages[0],
+                            'group'   => $configItem->getKonfiggruppe()
+                        ];
+                        $invalidGroups[]                          = $configItem->getKonfiggruppe();
+                    }
+                }
+            }
+        }
+
+        $errors                = Configurator::validateCart($productID, $configItems ?? []);
+        $config->invalidGroups = \array_unique(\array_merge(
+            $invalidGroups,
+            \array_keys(\is_array($errors) ? $errors : [])
+        ));
+        $config->errorMessages = $itemErrors ?? [];
+        $config->valid         = empty($config->invalidGroups) && empty($config->errorMessages);
         $smarty->assign('oKonfig', $config)
                ->assign('NettoPreise', $net)
                ->assign('Artikel', $product);
@@ -758,6 +840,12 @@ class IOMethods
         $product->fuelleArtikel($kVaterArtikel, $options, Frontend::getCustomerGroup()->getID());
         $weightDiff   = 0;
         $newProductNr = '';
+
+        $response         = new stdClass();
+        $response->check  = Wishlist::checkVariOnList($kVaterArtikel, $valueIDs);
+        $response->itemID = $kVaterArtikel;
+
+        $objResponse->script('this.response = ' . \json_encode($response) . ';');
 
         // Alle Variationen ohne Freifeld
         $keyValueVariations = $product->keyValueVariations($product->VariationenOhneFreifeld);

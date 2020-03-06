@@ -1248,7 +1248,7 @@ den Block ``<FrontendLink>`` komplett weglassen. |br|
 
 In Versionen bis JTL-Shop 4.x werden Links in *Linkgruppen-Verwaltung* unter CMS ("Seiten -> Eigene Seiten") angelegt.
 Dort können durch Plugins angelegte Links im Nachhinein verwaltet werden. |br|
-Ab JTL-Shop 5.x werden neue *Frontend-Links*, unter "Eigenen Inhalte" -> "Seiten", der Linkgruppe "Hidden" zugewiesen.
+Ab JTL-Shop 5.x werden neue *Frontend-Links*, unter "Eigene Inhalte" -> "Seiten", der Linkgruppe "Hidden" zugewiesen.
 
 Um nun beispielsweise den Frontend-Link "JTL Test Page" des JTL-Plugins
 "`Demo Plugin <https://gitlab.com/jtl-software/jtl-shop/plugins/jtl_test>`_" in Ihrem Onlineshop sichtbar zu

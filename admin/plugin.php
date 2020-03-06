@@ -145,15 +145,13 @@ if ($step === 'plugin_uebersicht' && $pluginID > 0) {
             } elseif ($menu->configurable === false) {
                 if (SAFE_MODE) {
                     $menu->html = __('Safe mode enabled.');
-                } else {
-                    if ($menu->file !== '' && file_exists($plugin->getPaths()->getAdminPath() . $menu->file)) {
-                        ob_start();
-                        require $plugin->getPaths()->getAdminPath() . $menu->file;
-                        $menu->html = ob_get_clean();
-                    } elseif ($plugin->isBootstrap() === true) {
-                        $menu->html = PluginHelper::bootstrap($pluginID, $loader)
-                            ->renderAdminMenuTab($menu->name, $menu->id, $smarty);
-                    }
+                } elseif ($menu->file !== '' && file_exists($plugin->getPaths()->getAdminPath() . $menu->file)) {
+                    ob_start();
+                    require $plugin->getPaths()->getAdminPath() . $menu->file;
+                    $menu->html = ob_get_clean();
+                } elseif ($plugin->isBootstrap() === true) {
+                    $menu->html = PluginHelper::bootstrap($pluginID, $loader)
+                        ->renderAdminMenuTab($menu->name, $menu->id, $smarty);
                 }
             } elseif ($menu->configurable === true) {
                 $smarty->assign('oPluginAdminMenu', $menu);

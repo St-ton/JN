@@ -17,4 +17,4 @@ msgid "fsValidConnection"
 msgstr "Connection successful."
 
 msgid "fsInvalidShopRoot"
-msgstr "Could not find a valid shop installation. Please check the path."
+msgstr "Could not find a valid online shop installation. Please check the path."

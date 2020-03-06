@@ -21,7 +21,7 @@ msgid "checkHead"
 msgstr "Checking header…"
 
 msgid "errorFormatUnknown"
-msgstr "Format not recognised!"
+msgstr "Format not recognised."
 
 msgid "importPending"
 msgstr "Importing…"

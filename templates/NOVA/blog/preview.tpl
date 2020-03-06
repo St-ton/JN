@@ -28,13 +28,13 @@
         {block name='blog-preview-news-body'}
             <div class="newsbox-body">
                 {row}
-                    {col cols=6}
+                    {col cols=8}
                         {assign var=dDate value=$newsItem->getDateValidFrom()->format('Y-m-d')}
                         {block name='blog-preview-author'}
                             {if $newsItem->getAuthor() !== null}
                                 <div class="d-none d-sm-inline-block align-middle">
                                     {block name='blog-preview-include-author'}
-                                        {include file='snippets/author.tpl' oAuthor=$newsItem->getAuthor()}
+                                        {include file='snippets/author.tpl' oAuthor=$newsItem->getAuthor() showModal=false}
                                     {/block}
                                 </div>
                             {else}
@@ -52,17 +52,15 @@
                     {col cols="auto" class="ml-auto"}
                         {if isset($Einstellungen.news.news_kommentare_nutzen) && $Einstellungen.news.news_kommentare_nutzen === 'Y'}
                             {block name='blog-preview-comments'}
-                                {link class="align-middle no-deco" href="{$newsItem->getURL()}#comments" title="{lang key='readComments' section='news'}"}
-                                    <span class="fas fa-comments"></span>
-                                    <span class="sr-only">
-                                            {if $newsItem->getCommentCount() === 1}
-                                                {lang key='newsComment' section='news'}
-                                            {else}
-                                                {lang key='newsComments' section='news'}
-                                            {/if}
-                                        </span>
-                                    <span itemprop="commentCount">{$newsItem->getCommentCount()}</span>
-                                {/link}
+                                <span class="fas fa-comments"></span>
+                                <span class="sr-only">
+                                        {if $newsItem->getCommentCount() === 1}
+                                            {lang key='newsComment' section='news'}
+                                        {else}
+                                            {lang key='newsComments' section='news'}
+                                        {/if}
+                                    </span>
+                                <span itemprop="commentCount">{$newsItem->getCommentCount()}</span>
                             {/block}
                         {/if}
                     {/col}

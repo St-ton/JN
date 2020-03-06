@@ -5,6 +5,7 @@
  */
 
 use JTL\Alert\Alert;
+use JTL\Helpers\Form;
 use JTL\Helpers\URL;
 use JTL\News\Category;
 use JTL\News\Controller;
@@ -32,7 +33,7 @@ $cMetaKeywords    = '';
 $conf             = Shopsetting::getInstance()->getAll();
 $customerGroupID  = Frontend::getCustomerGroup()->getID();
 $linkService      = Shop::Container()->getLinkService();
-$link             = $linkService->getPageLink($linkService->getSpecialPageLinkKey(LINKTYP_NEWS));
+$link             = $linkService->getPageLink($linkService->getSpecialPageID(LINKTYP_NEWS));
 $controller       = new Controller($db, $conf, $smarty);
 $alertHelper      = Shop::Container()->getAlertService();
 $smarty           = Shop::Smarty();
@@ -49,7 +50,7 @@ switch ($controller->getPageType($params)) {
         $cMetaTitle       = $newsItem->getMetaTitle();
         $cMetaDescription = $newsItem->getMetaDescription();
         $cMetaKeywords    = $newsItem->getMetaKeyword();
-        if ((int)($_POST['kommentar_einfuegen'] ?? 0) > 0) {
+        if ((int)($_POST['kommentar_einfuegen'] ?? 0) > 0 && Form::validateToken()) {
             $result = $controller->addComment($newsItemID, $_POST);
         }
 

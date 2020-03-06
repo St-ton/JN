@@ -394,7 +394,7 @@ class Redirect
                     && (!isset($conf['global']['redirect_save_404']) || $conf['global']['redirect_save_404'] === 'Y')
                 ) {
                     $item           = new self();
-                    $item->cFromUrl = $url;
+                    $item->cFromUrl = $url . (!empty($queryString) ? '?' . $queryString : '');
                     $item->cToUrl   = '';
                     unset($item->kRedirect);
                     $item->kRedirect = Shop::Container()->getDB()->insert('tredirect', $item);
@@ -431,6 +431,7 @@ class Redirect
                 $ins->cIP          = $ip;
                 $ins->dDate        = \time();
                 Shop::Container()->getDB()->insert('tredirectreferer', $ins);
+                // this counts only how many different referrers are hitting that url
                 if ($item !== null) {
                     ++$item->nCount;
                     Shop::Container()->getDB()->update('tredirect', 'kRedirect', $item->kRedirect, $item);

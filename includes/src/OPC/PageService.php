@@ -257,7 +257,7 @@ class PageService
     public function createCurrentPageId(int $langId = 0): string
     {
         if ($langId === 0) {
-            $langId = \Shop::getLanguageID();
+            $langId = Shop::getLanguageID();
         }
 
         $params    = Shop::getParameters();

@@ -17,23 +17,31 @@
                         {block name='productdetails-download-preview'}
                             {col cols=12}
                                 {if $oDownload->getPreviewType() === 'music'}
-                                    <audio controls controlsList="nodownload" preload="none">
-                                        <source src="{PFAD_DOWNLOADS_PREVIEW_REL}{$oDownload->cPfadVorschau}" >
-                                        Your browser does not support the audio element.
-                                    </audio>
+                                    {block name='productdetails-download-preview-music'}
+                                        <audio controls controlsList="nodownload" preload="none">
+                                            <source src="{PFAD_DOWNLOADS_PREVIEW_REL}{$oDownload->cPfadVorschau}" >
+                                            Your browser does not support the audio element.
+                                        </audio>
+                                    {/block}
                                 {elseif $oDownload->getPreviewType() === 'video'}
-                                    <video width="320" height="240" controls controlsList="nodownload" preload="none">
-                                        <source src="{PFAD_DOWNLOADS_PREVIEW_REL}{$oDownload->cPfadVorschau}" >
-                                        Your browser does not support the video tag.
-                                    </video>
+                                    {block name='productdetails-download-preview-video'}
+                                        <video width="320" height="240" controls controlsList="nodownload" preload="none">
+                                            <source src="{PFAD_DOWNLOADS_PREVIEW_REL}{$oDownload->cPfadVorschau}" >
+                                            Your browser does not support the video tag.
+                                        </video>
+                                    {/block}
                                 {elseif $oDownload->getPreviewType() === 'image'}
-                                    {image src="{PFAD_DOWNLOADS_PREVIEW_REL}{$oDownload->cPfadVorschau}"
-                                         fluid=true alt=$oDownload->oDownloadSprache->getBeschreibung()|strip_tags}
+                                    {block name='productdetails-download-preview-image'}
+                                        {image src="{PFAD_DOWNLOADS_PREVIEW_REL}{$oDownload->cPfadVorschau}"
+                                             fluid=true alt=$oDownload->oDownloadSprache->getBeschreibung()|strip_tags}
+                                    {/block}
                                 {else}
-                                    {link href="{PFAD_DOWNLOADS_PREVIEW_REL}{$oDownload->cPfadVorschau}"
-                                       title="{$oDownload->oDownloadSprache->getName()}" target="_blank"}
-                                        {$oDownload->oDownloadSprache->getName()}
-                                    {/link}
+                                    {block name='productdetails-download-preview-misc'}
+                                        {link href="{PFAD_DOWNLOADS_PREVIEW_REL}{$oDownload->cPfadVorschau}"
+                                           title="{$oDownload->oDownloadSprache->getName()}" target="_blank"}
+                                            {$oDownload->oDownloadSprache->getName()}
+                                        {/link}
+                                    {/block}
                                 {/if}
                             {/col}
                         {/block}

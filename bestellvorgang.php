@@ -12,9 +12,11 @@ use JTL\Checkout\Kupon;
 use JTL\Customer\AccountController;
 use JTL\Extensions\Download\Download;
 use JTL\Extensions\Upload\Upload;
+use JTL\Helpers\Form;
 use JTL\Helpers\Order;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
+use JTL\Helpers\Text;
 use JTL\Plugin\Payment\LegacyMethod;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -33,6 +35,7 @@ $cart         = Frontend::getCart();
 $alertService = Shop::Container()->getAlertService();
 $linkService  = Shop::Container()->getLinkService();
 $controller   = new AccountController(Shop::Container()->getDB(), $alertService, $linkService, $smarty);
+$valid        = Form::validateToken();
 
 unset($_SESSION['ajaxcheckout']);
 if (Request::postInt('login') === 1) {
@@ -72,7 +75,10 @@ if ($conf['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'NO'
 if (Request::verifyGPCDataInt('wk') === 1) {
     Kupon::resetNewCustomerCoupon();
 }
-if (Request::postInt('unreg_form') === 1 && $conf['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y') {
+if ($valid
+    && Request::postInt('unreg_form') === 1
+    && $conf['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y'
+) {
     pruefeUnregistriertBestellen($_POST);
 }
 if (isset($_GET['editLieferadresse'])) {
@@ -155,14 +161,14 @@ pruefeZahlungStep();
 // autom. step ermitteln
 pruefeBestaetigungStep();
 // sondersteps Rechnungsadresse aendern
-pruefeRechnungsadresseStep(StringHandler::filterXSS($_GET));
+pruefeRechnungsadresseStep(Text::filterXSS($_GET));
 // sondersteps Lieferadresse aendern
-pruefeLieferadresseStep(StringHandler::filterXSS($_GET));
+pruefeLieferadresseStep(Text::filterXSS($_GET));
 // sondersteps Versandart aendern
-pruefeVersandartStep(StringHandler::filterXSS($_GET));
+pruefeVersandartStep(Text::filterXSS($_GET));
 // sondersteps Zahlungsart aendern
-pruefeZahlungsartStep(StringHandler::filterXSS($_GET));
-pruefeZahlungsartwahlStep(StringHandler::filterXSS($_POST));
+pruefeZahlungsartStep(Text::filterXSS($_GET));
+pruefeZahlungsartwahlStep(Text::filterXSS($_POST));
 
 if ($step === 'accountwahl') {
     gibStepAccountwahl();
@@ -192,7 +198,7 @@ if ($step === 'Bestaetigung') {
     pruefeGuthabenNutzen();
     // Eventuellen Zahlungsarten Aufpreis/Rabatt neusetzen
     getPaymentSurchageDiscount($_SESSION['Zahlungsart']);
-    gibStepBestaetigung(StringHandler::filterXSS($_GET));
+    gibStepBestaetigung(Text::filterXSS($_GET));
     $cart->cEstimatedDelivery = $cart->getEstimatedDeliveryTime();
     Cart::refreshChecksum($cart);
 }
@@ -213,7 +219,7 @@ if ($step === 'Bestaetigung' && $cart->gibGesamtsummeWaren(true) === 0.0) {
     Cart::refreshChecksum($cart);
     $_SESSION['AktiveZahlungsart'] = $savedPayment;
 }
-$kLink = $linkService->getSpecialPageLinkKey(LINKTYP_BESTELLVORGANG);
+$kLink = $linkService->getSpecialPageID(LINKTYP_BESTELLVORGANG);
 $link  = $linkService->getPageLink($kLink);
 CartHelper::addVariationPictures($cart);
 Shop::Smarty()->assign(

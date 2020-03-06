@@ -612,7 +612,7 @@
             var qty =  parseInt(data[this.options.input.quantity]);
             if (productId > 0) {
                 var that = this;
-                $.evo.io().call('pushToWishlist', [productId, qty], that, function(error, data) {
+                $.evo.io().call('pushToWishlist', [productId, qty, data], that, function(error, data) {
                     if (error) {
                         return;
                     }
@@ -1278,7 +1278,7 @@
 
             args.wrapper = wrapper;
 
-            io.call('checkDependencies', [args], null, function (error, data) {
+            io.call('checkDependencies', [args], $(this), function (error, data) {
                 $wrapper.removeClass('loading');
                 if (animation) {
                     $spinner.stop();

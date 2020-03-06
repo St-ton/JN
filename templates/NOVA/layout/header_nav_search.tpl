@@ -4,13 +4,13 @@
  *}
 {block name='layout-header-nav-search'}
     {block name='layout-header-nav-search-search'}
-        <li class="nav-item d-none d-lg-block">
+        <li class="nav-item d-none d-lg-block mr-3">
             {form action='index.php' method='get'}
                 <div class="form-icon">
                     {inputgroup}
                         {input id="search-header" name="qs" type="text" class="ac_input" placeholder="{lang key='search'}" autocomplete="off" aria=["label"=>"{lang key='search'}"]}
                         {inputgroupaddon append=true}
-                            {button type="submit" name='search' variant="secondary"}<span class="fas fa-search"></span>{/button}
+                            {button type="submit" name='search' variant="secondary" aria=["label"=>{lang key='search'}]}<span class="fas fa-search"></span>{/button}
                         {/inputgroupaddon}
                     {/inputgroup}
                 </div>

@@ -1,4 +1,3 @@
-{config_load file="$lang.conf" section='kundenwerbenkunden'}
 {include file='tpl_inc/header.tpl'}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('kundenwerbenkunden') cBeschreibung=__('kundenwerbenkundenDesc') cDokuURL=__('kundenwerbenkundenURL')}

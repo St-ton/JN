@@ -295,8 +295,9 @@
                                     {link class="navbar-brand mr-lg-6" href=$ShopURL title=$Einstellungen.global.global_shopname}
                                         {if isset($ShopLogoURL)}
                                             {image src=$ShopLogoURL
-                                            alt=$Einstellungen.global.global_shopname
-                                            height=56}
+                                                alt=$Einstellungen.global.global_shopname
+                                                style="{if $ShopLogoURL|strpos:'.svg' !== false}height: 100px;{/if}"
+                                            }
                                         {else}
                                             <span class="h1">{$Einstellungen.global.global_shopname}</span>
                                         {/if}
@@ -338,16 +339,16 @@
                                         <div class="nav-mobile-header px-3 d-lg-none">
                                             {row class="align-items-center"}
                                                 {col}
+                                                    <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#mainNavigation" aria-controls="mainNavigation" aria-expanded="false" aria-label="Toggle navigation">
+                                                        <span class="navbar-toggler-icon"></span>
+                                                    </button>
+                                                {/col}
+                                                {col class="col-auto ml-auto"}
                                                     <span class="nav-offcanvas-title">{lang key='menuName'}</span>
                                                     {link href="#" class="nav-offcanvas-title d-none" data=["menu-back"=>""]}
                                                         <span class="fas fa-chevron-left mr-2"></span>
                                                         <span>{lang key='back'}</span>
                                                     {/link}
-                                                {/col}
-                                                {col class="col-auto ml-auto"}
-                                                    <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#mainNavigation" aria-controls="mainNavigation" aria-expanded="false" aria-label="Toggle navigation">
-                                                        <span class="navbar-toggler-icon"></span>
-                                                    </button>
                                                 {/col}
                                             {/row}
                                             <hr class="my-0" />
@@ -366,7 +367,7 @@
                 {/block}
             </header>
             {block name='layout-header-search-fixed'}
-                {if $Einstellungen.template.theme.mobile_search_type === 'fixed'}
+                {if $Einstellungen.template.theme.mobile_search_type === 'fixed' && $isMobile}
                     <div class="container-fluid container-fluid-xl fixed-search py-2 fixed-top smoothscroll-top-search d-lg-none d-none">
                         {include file='snippets/search_form.tpl' id='search-header-mobile-fixed'}
                     </div>
@@ -400,7 +401,7 @@
             <div id="content-wrapper"
                  class="{if $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}
                             container-fluid container-fluid-xl
-                        {/if} mt-0 {if $isFluidBanner || $isFluidSlider}pt-3{else}pt-5 pt-lg-7{/if}">
+                        {/if} mt-0 {if $isFluidBanner || $isFluidSlider}pt-3{else}pt-sm-3 pt-5 pt-lg-7{/if}">
         {/block}
 
         {block name='layout-header-breadcrumb'}

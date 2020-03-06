@@ -12,6 +12,7 @@ use JTL\Campaign;
 use JTL\Cart\CartHelper;
 use JTL\Cart\PersistentCart;
 use JTL\Cart\PersistentCartItem;
+use JTL\Catalog\ComparisonList;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Catalog\Wishlist\Wishlist;
@@ -40,9 +41,7 @@ use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\SimpleMail;
 use JTL\Smarty\JTLSmarty;
-use Session;
 use stdClass;
-use Vergleichsliste;
 use function Functional\some;
 
 /**
@@ -160,7 +159,6 @@ class AccountController
     {
         Shop::setPageType(\PAGE_MEINKONTO);
         $ratings = [];
-        $linkID  = $this->linkService->getSpecialPageLinkKey(\LINKTYP_LOGIN);
         $step    = 'mein Konto';
         $valid   = Form::validateToken();
         if (Request::verifyGPCDataInt('logout') === 1) {
@@ -222,7 +220,7 @@ class AccountController
             $step = 'kunden_werben_kunden';
             $this->checkPromotion($_POST);
         }
-        if (Request::postInt('wlh') > 0) {
+        if ($valid && Request::postInt('wlh') > 0) {
             $step = 'mein Konto';
             $name = Text::htmlentities(Text::filterXSS($_POST['cWunschlisteName']));
             $this->alertService->addAlert(Alert::TYPE_NOTE, Wishlist::save($name), 'saveWL');
@@ -279,7 +277,7 @@ class AccountController
             }
             \executeHook(\HOOK_JTL_PAGE_MEINKKONTO, ['deliveryAddresses' => &$deliveryAddresses]);
             $this->smarty->assign('Lieferadressen', $deliveryAddresses)
-                ->assign('compareList', new Vergleichsliste());
+                ->assign('compareList', new ComparisonList());
         }
         if ($step === 'rechnungsdaten') {
             $this->getCustomerFields();
@@ -300,7 +298,7 @@ class AccountController
         $this->smarty->assign('Kunde', $_SESSION['Kunde'])
             ->assign('customerAttributes', $_SESSION['Kunde']->getCustomerAttributes())
             ->assign('bewertungen', $ratings)
-            ->assign('Link', $this->linkService->getPageLink($linkID))
+            ->assign('Link', $this->linkService->getSpecialPage(\LINKTYP_LOGIN))
             ->assign('BESTELLUNG_STATUS_BEZAHLT', \BESTELLUNG_STATUS_BEZAHLT)
             ->assign('BESTELLUNG_STATUS_VERSANDT', \BESTELLUNG_STATUS_VERSANDT)
             ->assign('BESTELLUNG_STATUS_OFFEN', \BESTELLUNG_STATUS_OFFEN)
@@ -846,7 +844,7 @@ class AccountController
             $params['httponly']
         );
         \session_destroy();
-        new Session();
+        new Frontend();
         \session_regenerate_id(true);
 
         $_SESSION['kSprache']    = $languageID;

@@ -27,8 +27,8 @@
                             {form id="passwort_vergessen"
                                 action="{get_static_route id='pass.php'}{if $bExclusive === true}?exclusive_content=1{/if}"
                                 method="post"
-                                class="jtl-validate label-slide"
-                            }
+                                class="jtl-validate"
+                                slide=true}
                                 {block name='account-password-form-password-reset-content'}
                                     <fieldset>
                                         {include file='snippets/form_group_simple.tpl'
@@ -61,7 +61,7 @@
                     {col cols=12 md=8 md-offset=2}
                         {block name='account-password-form-password-reset-confirm'}
                             <div class="h3">{block name='account-password-password-reset-confirm-title'}{lang key='customerInformation' section='global'}{/block}</div>
-                            {form id="passwort_vergessen" action="{get_static_route id='pass.php'}{if $bExclusive === true}?exclusive_content=1{/if}" method="post" class="jtl-validate label-slide"}
+                            {form id="passwort_vergessen" action="{get_static_route id='pass.php'}{if $bExclusive === true}?exclusive_content=1{/if}" method="post" class="jtl-validate" slide=true}
                                 {block name='account-password-form-password-reset-confirm-content'}
                                     <fieldset>
                                         {include file='snippets/form_group_simple.tpl'

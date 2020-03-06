@@ -147,7 +147,7 @@ function fuegeNewsletterEmpfaengerEin($customer, $validate = false): stdClass
                 $checkBox->checkLogging(CHECKBOX_ORT_NEWSLETTERANMELDUNG, $customerGroupID, $_POST, true);
                 unset($recipient);
                 $recipient                     = new stdClass();
-                $recipient->kSprache           = Shop::getLanguage();
+                $recipient->kSprache           = Shop::getLanguageID();
                 $recipient->kKunde             = isset($_SESSION['Kunde']->kKunde)
                     ? (int)$_SESSION['Kunde']->kKunde
                     : 0;
@@ -169,7 +169,7 @@ function fuegeNewsletterEmpfaengerEin($customer, $validate = false): stdClass
 
                 Shop::Container()->getDB()->insert('tnewsletterempfaenger', $recipient);
                 $history               = new stdClass();
-                $history->kSprache     = Shop::getLanguage();
+                $history->kSprache     = Shop::getLanguageID();
                 $history->kKunde       = (int)($_SESSION['Kunde']->kKunde ?? 0);
                 $history->cAnrede      = $customer->cAnrede;
                 $history->cVorname     = $customer->cVorname;

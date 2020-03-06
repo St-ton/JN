@@ -42,7 +42,7 @@ msgid "plz_ort_import_reset_desc"
 msgstr "Reset to state before update"
 
 msgid "plz_ort_import_help"
-msgstr "By selecting „Import new files“, you can directly download a data file from <i>%s</i> and install it automatically.<br/>If no direct download is possible or if a direct download is cancelled due to a timeout, load the respective file into the <i>/uploads</i> directory of your web server using FTP. You can then import the file via the <i class=\"fa fa-download\"></i> symbol in the overview.<br/>Before the import, a backup is performed that can be restored if needed."
+msgstr "By selecting \"Import new files\", you can directly download a data file from <i>%s</i> and install it automatically.<br/>If no direct download is possible or if a direct download is cancelled due to a timeout, load the respective file into the <i>/uploads</i> directory of your web server using FTP. You can then import the file via the <i class=\"fa fa-download\"></i> symbol in the overview.<br/>Before the import, a backup is performed that can be restored if needed."
 
 msgid "errorImportInvalid"
 msgstr "Cannot read import file for %s!"
@@ -72,10 +72,10 @@ msgid "errorImportRunning"
 msgstr "Already running an import. Please wait until the import is finished."
 
 msgid "errorImportStart"
-msgstr "Cannot start import because of session timeout. Please log on again. If the error persists, please contact the Support team."
+msgstr "Cannot start import. Session expired. Please sign in again. In case the error occurs again, please contact the support team."
 
 msgid "successImportTempDelete"
 msgstr "Temporary import deleted successfully."
 
 msgid "importCancel"
-msgstr "Import has been cancelled."
+msgstr "Import was cancelled."

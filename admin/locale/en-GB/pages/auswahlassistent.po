@@ -57,7 +57,7 @@ msgid "successGroupDeleted"
 msgstr "Selected groups deleted successfully."
 
 msgid "errorGroupDeleted"
-msgstr "Could not delete the selected groups."
+msgstr "Could not delete selected groups."
 
 msgid "successQuestionSaved"
 msgstr "Question saved successfully."
@@ -69,7 +69,7 @@ msgid "errorQuestionDeleted"
 msgstr "Could not delete the selected question."
 
 msgid "hintName"
-msgstr "Please enter the name of the question group. This is only for internal usage."
+msgstr "Enter the name of the question group. It is only used internally."
 
 msgid "hintDesc"
 msgstr "Here you can enter a description for a question group, which will be shown above the group."

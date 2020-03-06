@@ -49,6 +49,7 @@
 
             $('.slick-lazy').on('mouseenter', function (e) {
                 let mainNode = $(this);
+                mainNode.removeClass('slick-lazy');
                 if (!mainNode.hasClass('slick-initialized')) {
                     self.initSlick(mainNode, mainNode.data('slick-type'));
                 }
@@ -271,9 +272,9 @@
                     }],
                 }
             };
-            if ($('#tab-link-tb-prcFlw').length) {
+            if ($('#tab-link-priceFlow').length) {
                 // using tabs
-                $('#tab-link-tb-prcFlw').on('shown.bs.tab', function () {
+                $('#tab-link-priceFlow').on('shown.bs.tab', function () {
                     if (typeof window.priceHistoryChart !== 'undefined' && window.priceHistoryChart === null) {
                         window.priceHistoryChart = new Chart(window.ctx, {
                             type: 'line',
@@ -718,7 +719,11 @@
 
         setWishlistVisibilitySwitches: function() {
             $('.wl-visibility-switch').on('change', function () {
-                $.evo.io().call('setWishlistVisibility', [$(this).data('wl-id'), $(this).is(":checked")], $(this), function(error, data) {
+                $.evo.io().call(
+                    'setWishlistVisibility',
+                    [$(this).data('wl-id'), $(this).is(":checked"), $('.jtl_token').val()],
+                    $(this),
+                    function(error, data) {
                     if (error) {
                         return;
                     }
@@ -779,12 +784,12 @@
                 },
                 step: 1
             });
-            $priceSlider.noUiSlider.on('end', function (values, handle) {
-                $.evo.redirectToNewPriceRange(values[0] + '_' + values[1], redirect, $wrapper);
-            });
-            $priceSlider.noUiSlider.on('slide', function (values, handle) {
+            $priceSlider.noUiSlider.on('change', function (values, handle) {
                 $priceRangeFrom.val(values[0]);
                 $priceRangeTo.val(values[1]);
+                setTimeout(function(){
+                    $.evo.redirectToNewPriceRange(values[0] + '_' + values[1], redirect, $wrapper);
+                },0);
             });
             $('.price-range-input').change(function () {
                 let prFrom = $priceRangeFrom.val(),
@@ -929,6 +934,7 @@
             this.fixStickyElements();
             this.setWishlistVisibilitySwitches();
             this.initEModals();
+            $.evo.article().initConfigListeners();
             this.initScrollEvents();
             this.initReviewHelpful();
             this.initWishlist();

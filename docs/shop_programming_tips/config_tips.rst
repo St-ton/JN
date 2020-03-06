@@ -36,9 +36,9 @@ bearbeiten:
 | ``SMARTY_USE_SUB_DIRS``                 | kann die Verwendung von Unterordnern für kompilierte Smarty-Templates                         |
 |                                         | aktivieren                                                                                    |
 +-----------------------------------------+-----------------------------------------------------------------------------------------------+
-| ``JOBQUEUE_LIMIT_M_EXPORTE``            | konfiguriert die Exporte, wichtig wenn Cronjob genutzt wird                                   |
+| ``JOBQUEUE_LIMIT_M_EXPORTE``            | konfiguriert die Exporte - wichtig, wenn Cronjob genutzt wird                                 |
 +-----------------------------------------+-----------------------------------------------------------------------------------------------+
-| ``JOBQUEUE_LIMIT_JOBS``                 | konfiguriert die Exporte, wichtig wenn Cronjob genutzt wird                                   |
+| ``JOBQUEUE_LIMIT_JOBS``                 | konfiguriert die Exporte - wichtig, wenn Cronjob genutzt wird                                 |
 +-----------------------------------------+-----------------------------------------------------------------------------------------------+
 | ``SAVE_BOT_SESSION``                    | erstellt neue Sessions pro Bot-Aufruf                                                         |
 |                                         | (siehe auch: :doc:`botsessions` )                                                             |
@@ -54,24 +54,24 @@ bearbeiten:
 +-----------------------------------------+-----------------------------------------------------------------------------------------------+
 | ``ADMIN_MIGRATION``                     | ermöglicht die Anzeige aller DB-Migrationen im Backend                                        |
 +-----------------------------------------+-----------------------------------------------------------------------------------------------+
-| ``NICEDB_DEBUG_STMT_LEN``               | legt die Länge der, mit ``PROFILE_QUERIES`` ausgegebenen, SQL-Queries fest |br|               |
+| ``NICEDB_DEBUG_STMT_LEN``               | legt die Länge der mit ``PROFILE_QUERIES`` ausgegebenen SQL-Queries fest |br|                 |
 |                                         | (default: 500 Zeichen)                                                                        |
 +-----------------------------------------+-----------------------------------------------------------------------------------------------+
-| ``KEEP_SYNC_FILES``                     | vom letzten WaWi-Sync gesendete Dateien werden nicht gelöscht                                 |
+| ``KEEP_SYNC_FILES``                     | vom letzten Wawi-Sync gesendete Dateien werden nicht gelöscht                                 |
 +-----------------------------------------+-----------------------------------------------------------------------------------------------+
-| ``SHOW_DEBUG_BAR``                      | blendet im Frontend den PHP-Debug-Bar ein (siehe auch: Abschnitt :ref:`label_debugbar` )      |
+| ``SHOW_DEBUG_BAR``                      | blendet im Frontend die PHP-Debug-Bar ein (siehe auch: Abschnitt :ref:`label_debugbar` )      |
 +-----------------------------------------+-----------------------------------------------------------------------------------------------+
-| ``SAFE_MODE``                           | deaktiviert alle Plugins und aus Plugins stammende Elemente (Portlets, Widgets, Payment, etc.)|
+| ``SAFE_MODE``                           | deaktiviert alle Plugins und aus Plugins stammende Elemente (Portlets, Widgets, Payment etc.) |
 +-----------------------------------------+-----------------------------------------------------------------------------------------------+
 
 **Komplettes Beispiel:**
 
-Im folgenden Beipiel sind **ALLE** möglichen Konstanten aufgelistet, um zu veranschaulichen, welche Werte sie
+Im folgenden Beispiel sind **ALLE** möglichen Konstanten aufgelistet, um zu veranschaulichen, welche Werte sie
 annehmen können.
 
 .. caution::
 
-    Dieses Beispiel ist nicht dazu gedacht, unangepaßt in einen laufenden Shop übernommen zu werden! |br|
+    Dieses Beispiel ist nicht dazu gedacht, unangepasst in einen laufenden Onlineshop übernommen zu werden! |br|
     Bitte verfahren Sie mit diesen Konstanten sehr vorsichtig, da hier mitunter sehr viele Daten ausgegeben werden!
 
 .. code-block:: php

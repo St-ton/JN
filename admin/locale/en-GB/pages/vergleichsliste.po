@@ -9,7 +9,7 @@ msgid "configureComparelistURL"
 msgstr "https://jtl-url.de/8g6qc"
 
 msgid "configureComparelistDesc"
-msgstr "You customers can use the comparison list to view similar items side by side. You can adjust how the comparison list is displayed and view which items were compared by your customers."
+msgstr "Your customers can use the comparison list to view similar items side by side. You can adjust how the comparison list is displayed and view which items were compared by your customers."
 
 msgid "last20Compares"
 msgstr "All comparisons"

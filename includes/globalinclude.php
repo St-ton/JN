@@ -98,7 +98,7 @@ if (PHP_SAPI !== 'cli'
         || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
         || (isset($_SERVER['HTTP_X_FORWARDED_HOST']) && preg_match('/^ssl/', $_SERVER['HTTP_X_FORWARDED_HOST']))
     );
-    if (!$https) {
+    if (!$https && isset($_SERVER['SERVER_NAME'], $_SERVER['REQUEST_URI'])) {
         $lang = '';
         if (!LanguageHelper::isDefaultLanguageActive(true)) {
             $lang = mb_strpos($_SERVER['REQUEST_URI'], '?')

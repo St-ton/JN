@@ -9,20 +9,29 @@
    position: relative;
 }
 
-#area_editor {
-   position: absolute;
-   top: 10px;
-   left: 10px;
-   min-width: 350px;
-   text-align: left;
-   display: none;
-   z-index: 3;
-   border: 1px solid #ccc;
+#area_editor .row {
+   margin: 0 -8px;
 }
 
-#area_editor #settings .elem div.for input[type="text"], #area_editor #settings .elem div.for input[type="password"], #area_editor #settings .item div.for input[type="text"], #area_editor #settings .item div.for input[type="password"], #area_editor textarea {
+#area_editor .col {
+   padding: 8px;
+}
+
+#area_editor #settings .elem div.for input[type="text"],
+#area_editor #settings .elem div.for input[type="password"],
+#area_editor #settings .item div.for input[type="text"],
+#area_editor #settings .item div.for input[type="password"],
+#area_editor textarea {
    min-width: 100px;
-   width: 95%;
+   margin-top: 8px;
+}
+
+#area_editor #settings .form-control {
+   border-radius: 0.25rem;
+}
+
+#area_editor #settings .form-control[disabled] {
+   background-color: #e9ecef!important;
 }
 
 #area_info {  
@@ -33,7 +42,6 @@
    border-radius: 3px;
    -moz-border-radius: 3px;
    -webkit-border-radius: 3px;
-   -khtml-border-radius: 3px;
 }
 
 #area_info {  
@@ -49,7 +57,6 @@
 }
 
 #area_wrapper img {
-   /*position: absolute;*/
    top: 0; left: 0;
    z-index: 1;
    max-width: 100%;
@@ -68,7 +75,6 @@
 
 #area_wrapper div.area.selected {
    background-color: #FFC299;
-   /*border-color: #E05B02;*/
 }
 
 

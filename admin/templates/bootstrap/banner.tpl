@@ -2,7 +2,7 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('banner') cBeschreibung=__('bannerDesc') cDokuURL=__('bannerURL')}
 
 <div id="content">
-    {if $action === 'edit' || $action === 'new'}
+{if $action === 'edit' || $action === 'new'}
     <script type="text/javascript">
         var file2large = false;
 
@@ -121,7 +121,7 @@
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="vDatum">{__('activeFrom')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <input class="form-control" type="text" name="vDatum" id="vDatum"/>
+                            <input class="form-control" type="text" name="vDatum" id="vDatum" autocomplete="off">
                         </div>
                         {include
                             file="snippets/daterange_picker.tpl"
@@ -135,7 +135,7 @@
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="bDatum">{__('activeTo')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <input class="form-control" type="text" name="bDatum" id="bDatum"  />
+                            <input class="form-control" type="text" name="bDatum" id="bDatum" autocomplete="off">
                         </div>
                         {include
                             file="snippets/daterange_picker.tpl"
@@ -362,90 +362,78 @@
 
         </form>
     </div>
-    {elseif $action === 'area'}
-    <script type="text/javascript" src="{$templateBaseURL}js/clickareas.js"></script>
-    <link rel="stylesheet" href="{$templateBaseURL}css/clickareas.css" type="text/css" media="screen" />
-    <script type="text/javascript">
-        $(function () {ldelim}
-            $.clickareas({ldelim}
+{elseif $action === 'area'}
+    <script src="{$templateBaseURL}js/clickareas.js"></script>
+    <link rel="stylesheet" href="{$templateBaseURL}css/clickareas.css" type="text/css" media="screen">
+    <script>
+        $(() => {
+            $.clickareas({
                 'id': '#area_wrapper',
                 'editor': '#area_editor',
                 'save': '#area_save',
                 'add': '#area_new',
                 'info': '#area_info',
                 'data': {$banner|@json_encode nofilter}
-            {rdelim});
-        {rdelim});
-    </script>
-    <script type="text/javascript">
-        {literal}
-        $(document).ready(function () {
-            $('#article_unlink').on('click', function () {
+            });
+
+            $('#article_unlink').on('click', () => {
                 $('#article_id').val(0);
                 $('#article_name').val('');
                 return false;
             });
         });
-        {/literal}
     </script>
     <div class="category clearall">
         <div class="left">{__('zones')}</div>
         <div class="right" id="area_info"></div>
     </div>
     <div id="area_container">
-        <div id="area_editor" class="card">
-            <div class="category first card-header">
-                <div class="subheading1">{__('settings')}</div>
-            </div>
-            <div id="settings" class="card-body">
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <label for="title">{__('title')}</label>
-                    </span>
-                    <input class="form-control" type="text" id="title" name="title" />
-                </div>
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <label for="desc">{__('description')}</label>
-                    </span>
-                    <textarea class="form-control" id="desc" name="desc"></textarea>
-                </div>
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <label for="url">{__('url')}</label>
-                    </span>
-                    <input class="form-control" type="text" id="url" name="url" />
-                </div>
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <label for="style">{__('cssClass')}</label>
-                    </span>
-                    <input class="form-control" type="text" id="style" name="style" />
-                </div>
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <label for="article_name">{__('product')}</label>
-                    </span>
-                    <input type="hidden" name="article" id="article" value="{if isset($banner->kArtikel)}{$banner->kArtikel}{/if}" />
-                    <input type="text" name="article_name" id="article_name" value="" class="form-control">
-                    <input type="hidden" name="article_id" id="article_id" value="">
-                    <script>
-                        enableTypeahead('#article_name', 'getProducts', 'cName', null, function (e, item) {
-                            $('#article_name').val(item.cName);
-                            $('#article_id').val(item.kArtikel);
-                        });
-                    </script>
-                </div>
-                <input type="hidden" name="id" id="id" />
-                <div class="save-wrapper btn-group">
-                    <a href="#" class="btn btn-default" id="article_browser">{__('chooseProduct')}</a>
-                    <a href="#" class="btn btn-default" id="article_unlink">{__('deleteProduct')}</a>
-                    <button type="button" class="btn btn-danger" id="remove"><i class="fas fa-trash-alt"></i> {__('zone')} {__('delete')}</button>
-                </div>
-            </div>
-        </div>
         <div id="area_wrapper">
-            <img class="img-fluid" src="{$banner->cBildPfad}" title="" id="clickarea" />
+            <img class="img-fluid" src="{$banner->cBildPfad}" title="" id="clickarea" alt="Banner">
+        </div>
+        <div id="area_editor" class="card">
+            <div id="settings" class="card-body">
+                <div class="save-wrapper btn-group">
+                    <a href="#" class="btn btn-default" id="article_unlink">{__('deleteProduct')}</a>
+                    <a href="#" class="btn btn-default" id="area_new">
+                        <i class="fa fa-share"></i> {__('newZone')}
+                    </a>
+                    <button type="button" class="btn btn-danger" id="remove">
+                        <i class="fas fa-trash-alt"></i> {__('deleteZone')}
+                    </button>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <input class="form-control" type="text" id="title" name="title" placeholder="{__('title')}">
+                    </div>
+                    <div class="col">
+                        <input class="form-control" type="text" id="url" name="url" placeholder="{__('url')}">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <input class="form-control" type="text" id="style" name="style" placeholder="{__('cssClass')}">
+                    </div>
+                    <div class="col">
+                        <div class="input-group">
+                            <input type="hidden" name="article" id="article"
+                                   value="{if isset($banner->kArtikel)}{$banner->kArtikel}{/if}" />
+                            <input type="text" name="article_name" id="article_name" value=""
+                                   class="form-control" placeholder="{__('product')}">
+                            <input type="hidden" name="article_id" id="article_id" value="">
+                            <script>
+                                enableTypeahead('#article_name', 'getProducts', 'cName', null, (e, item) => {
+                                    $('#article_name').val(item.cName);
+                                    $('#article_id').val(item.kArtikel);
+                                });
+                            </script>
+                        </div>
+                    </div>
+                </div>
+                <textarea class="form-control" id="desc" name="desc"
+                          placeholder="{__('description')}"></textarea>
+                <input type="hidden" name="id" id="id" />
+            </div>
         </div>
     </div>
     <div class="save-wrapper">
@@ -456,18 +444,13 @@
                 </a>
             </div>
             <div class="col-sm-6 col-xl-auto">
-                <a class="btn btn-outline-primary btn-block" href="#" id="area_new">
-                    <i class="fa fa-share"></i> {__('new')} {__('zone')}
-                </a>
-            </div>
-            <div class="col-sm-6 col-xl-auto">
                 <a class="btn btn-primary btn-block" href="#" id="area_save">
-                    <i class="fa fa-save"></i> {__('zones')} {__('save')}
+                    <i class="fa fa-save"></i> {__('saveZones')}
                 </a>
             </div>
         </div>
     </div>
-    {else}
+{else}
         <div id="settings">
             <div class="card">
                 <div class="card-header">
@@ -553,6 +536,7 @@
                 </div>
             </div>
         </div>
-    {/if}
+{/if}
 </div>
+
 {include file='tpl_inc/footer.tpl'}

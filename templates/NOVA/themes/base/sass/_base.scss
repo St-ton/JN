@@ -581,7 +581,7 @@ table caption {
   font-family: $headings-font-family;
 
   &::before{
-      margin: 0px 30px 0px 0px;
+    margin: 0px 30px 0px 0px;
   }
   &::after {
     margin: 0px 0px 0px 30px;
@@ -591,15 +591,35 @@ table caption {
   &::after {
     content: "";
     flex-grow: 1;
-    background: $sand;
+    background: $hr-border-color;
     height: 1px;
     font-size: 0px;
     line-height: 0px;
   }
+
   a {
     text-decoration: none;
     border-bottom: $highlight-border-size solid transparent;
     font-weight: $font-weight-bold;
+  }
+
+  @include media-breakpoint-down(md) {
+    text-align: center;
+    border-top: 1px solid $hr-border-color;
+    border-bottom: 1px solid $hr-border-color;
+    padding: 15px 0px;
+    margin: 15px 0px;
+
+    &::before,
+    &::after{
+      margin: 0;
+      flex-grow: unset;
+    }
+
+    a {
+      border-bottom: none;
+      margin: auto;
+    }
   }
 }
 

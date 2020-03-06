@@ -37,7 +37,7 @@
                 <div class="mb-5{if isset($class) && $class|strlen > 0} {$class}{/if}"{if isset($id) && $id|strlen > 0} id="{$id}"{/if}>
                     {if !empty($title)}
                         {block name='snippets-product-slider-other-title'}
-                            {if $titleContainer|default:false}<div class="container">{/if}
+                            {if $titleContainer|default:false}<div class="container px-0 px-md-3">{/if}
                                 <div class="hr-sect h2 mb-5">
                                     {if !empty($moreLink)}
                                         {link class="text-decoration-none" href=$moreLink title=$moreTitle data-toggle="tooltip" data=["placement"=>"auto right"] aria=["label"=>$moreTitle]}

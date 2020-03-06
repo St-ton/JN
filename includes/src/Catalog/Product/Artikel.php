@@ -719,11 +719,6 @@ class Artikel
     /**
      * @var float
      */
-    public $fMaxRabatt;
-
-    /**
-     * @var float
-     */
     public $fNettoPreis;
 
     /**
@@ -765,11 +760,6 @@ class Artikel
      * @var string
      */
     public $cBildpfad_thersteller;
-
-    /**
-     * @var int
-     */
-    public $nMindestbestellmenge;
 
     /**
      * @var string
@@ -987,21 +977,6 @@ class Artikel
     public $cMassMenge = '';
 
     /**
-     * @var string
-     */
-    public $cLaenge = '';
-
-    /**
-     * @var string
-     */
-    public $cBreite = '';
-
-    /**
-     * @var string
-     */
-    public $cHoehe = '';
-
-    /**
      * @var bool
      */
     public $cacheHit = false;
@@ -1020,11 +995,6 @@ class Artikel
      * @var string
      */
     public $originalSeo = '';
-
-    /**
-     * @var array
-     */
-    public $languageURLs = [];
 
     /**
      * @var int

@@ -339,9 +339,8 @@ function pruefeRechnungsadresseStep($get): void
 {
     global $step, $Kunde;
     //sondersteps Rechnungsadresse ändern
-    if (isset($get['editRechnungsadresse'])
-        && (int)$get['editRechnungsadresse'] === 1
-        && !empty(Frontend::getCustomer()->cOrt)
+    if (!empty(Frontend::getCustomer()->cOrt)
+        && (Request::getInt('editRechnungsadresse') === 1 || Request::getInt('editLieferadresse') === 1)
     ) {
         Kupon::resetNewCustomerCoupon();
         $Kunde = Frontend::getCustomer();
@@ -2666,7 +2665,7 @@ function gibBestellschritt(string $step)
  */
 function setzeLieferadresseAusRechnungsadresse(?array $post = null): Lieferadresse
 {
-    $customer                         = $post !== null ? getKundendaten($post, 0) : Frontend::getCustomer();
+    $customer                         = isset($post['kKunde']) ? getKundendaten($post, 0) : Frontend::getCustomer();
     $shippingAddress                  = new Lieferadresse();
     $shippingAddress->kKunde          = $customer->kKunde;
     $shippingAddress->cAnrede         = $customer->cAnrede;

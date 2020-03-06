@@ -102,8 +102,7 @@
         {block name='checkout-inc-shipping-address-script-show-shipping-address'}
             {inline_script}<script>
                 $(window).on('load', function () {
-                    $('#checkout_register_shipping_address').prop('checked', false);
-                    $('#select_shipping_address').addClass('show').removeClass('hidden');
+                    $('#checkout_register_shipping_address').prop('checked', false).click();
                     $.evo.extended().smoothScrollToAnchor('#checkout_register_shipping_address');
                 });
             </script>{/inline_script}

@@ -23034,7 +23034,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 #cfg-container-tab-panes {
   height: calc((var(--vh, 1vh) * 78) - 3rem);
   overflow-x: auto;
-  padding-right: 16px;
+  padding-right: 17px;
   border-bottom: 2px solid #ebebeb;
 }
 @media (max-width: 767.98px) {

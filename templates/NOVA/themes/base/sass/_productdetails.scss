@@ -140,7 +140,7 @@
 #cfg-container-tab-panes {
 	height: calc((var(--vh, 1vh) * 78) - 3rem);
 	overflow-x: auto;
-	padding-right: 16px;
+	padding-right: 17px;
 	border-bottom: 2px solid $border-color;
 	@include media-breakpoint-down(sm) {
 		height: calc((var(--vh, 1vh) * 87) - 3rem);

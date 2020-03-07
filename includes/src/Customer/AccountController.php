@@ -229,7 +229,9 @@ class AccountController
         if ($wishlistID > 0) {
             $step = $this->modifyWishlist($customerID, $wishlistID);
         }
-        if (Request::verifyGPCDataInt('editRechnungsadresse') > 0) {
+        if (Request::verifyGPCDataInt('editRechnungsadresse') > 0
+            || Request::verifyGPCDataInt('editLieferadresse') > 0
+        ) {
             $step = 'rechnungsdaten';
         }
         if (Request::getInt('pass') === 1) {

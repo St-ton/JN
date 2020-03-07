@@ -142,3 +142,17 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
 	display: flex;
 	flex-grow: 1;
 }
+
+.form-clear {
+	align-items: center;
+	bottom: 8px;
+	color: rgba(0, 0, 0, .54);
+	cursor: pointer;
+	display: flex;
+	height: 24px;
+	justify-content: center;
+	position: absolute;
+	right: 52px;
+	width: 24px;
+	z-index: 10;
+}

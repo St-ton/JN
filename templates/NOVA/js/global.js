@@ -359,7 +359,8 @@ $(document).ready(function () {
             }
         });
 
-        $('input[name="qs"]').typeahead(
+        let $searchInput = $('input[name="qs"]');
+        $searchInput.typeahead(
             {
                 highlight: true
             },
@@ -374,6 +375,17 @@ $(document).ready(function () {
                 }
             }
         );
+        $searchInput.on('keydown keyup blur', function () {
+            if ($(this).val().length === 0) {
+                $(this).closest('form').find('.form-clear').addClass('d-none');
+            } else {
+                $(this).closest('form').find('.form-clear').removeClass('d-none');
+            }
+        });
+        $('.form-clear').on('click', function() {
+            $searchInput.typeahead('val', '');
+            $(this).addClass('d-none');
+        });
     }
 
     var citySuggestion = new Bloodhound({

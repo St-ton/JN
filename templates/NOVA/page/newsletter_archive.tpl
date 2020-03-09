@@ -17,7 +17,7 @@
                 {foreach $oNewsletterHistory_arr as $oNewsletterHistory}
                     {row class="content_{$oNewsletterHistory@iteration % 2}"}
                         {col cols=7}
-                            {link href="{get_static_route id='newsletter.php'}?show={$oNewsletterHistory->kNewsletterHistory}"}{$oNewsletterHistory->cBetreff}{/link}
+                            {link href="{$oNewsletterHistory->cURLFull}"}{$oNewsletterHistory->cBetreff}{/link}
                         {/col}
                         {col cols=5}{$oNewsletterHistory->Datum}{/col}
                     {/row}

@@ -1400,6 +1400,9 @@ function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $n
             }
         }
     }
+    if (!validateToken()) {
+        $redirectParam[] = R_MISSING_TOKEN;
+    }
 
     return $redirectParam;
 }

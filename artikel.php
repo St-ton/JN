@@ -40,9 +40,10 @@ if (empty($cFehler)) {
     $cFehler = mappingFehlerCode(verifyGPDataString('cFehler'));
 }
 // Product Bundle in WK?
-if (isset($_POST['a']) &&
-    verifyGPCDataInteger('addproductbundle') === 1 &&
-    ProductBundleWK($_POST['a'])
+if (isset($_POST['a'])
+    && verifyGPCDataInteger('addproductbundle') === 1
+    && ProductBundleWK($_POST['a'])
+    && validateToken()
 ) {
     $cHinweis       = Shop::Lang()->get('basketAllAdded', 'messages');
     Shop::$kArtikel = (int)$_POST['aBundle'];
@@ -150,10 +151,12 @@ $Artikelhinweise  = [];
 $PositiveFeedback = [];
 baueArtikelhinweise();
 
-if (isset($_POST['fragezumprodukt']) && (int)$_POST['fragezumprodukt'] === 1) {
-    bearbeiteFrageZumProdukt();
-} elseif (isset($_POST['benachrichtigung_verfuegbarkeit']) && (int)$_POST['benachrichtigung_verfuegbarkeit'] === 1) {
-    bearbeiteBenachrichtigung();
+if (validateToken()) {
+    if (isset($_POST['fragezumprodukt']) && (int)$_POST['fragezumprodukt'] === 1) {
+        bearbeiteFrageZumProdukt();
+    } elseif (isset($_POST['benachrichtigung_verfuegbarkeit']) && (int)$_POST['benachrichtigung_verfuegbarkeit'] === 1) {
+        bearbeiteBenachrichtigung();
+    }
 }
 // url
 $requestURL = baueURL($AktuellerArtikel, URLART_ARTIKEL);

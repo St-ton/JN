@@ -233,12 +233,13 @@ $document.on('mouseenter', `${mainNavigation} .navbar-nav > .dropdown`, onDeskto
 
     let delay = delayDropdownFadeIn
 
-    if($activeDropdown !== null) {
-        hideDropdown()
-        delay = delayActiveDropdownFadeIn
-    }
+
 
     dropdownInTo = setTimeout(() => {
+        if($activeDropdown !== null) {
+            hideDropdown()
+            delay = delayActiveDropdownFadeIn
+        }
         showDropdown($(e.currentTarget).find('> .dropdown-toggle'))
         $backdropDropdowns.insertBefore($header).addClass('show zindex-dropdown')
     }, delay)

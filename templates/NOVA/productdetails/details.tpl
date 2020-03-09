@@ -196,28 +196,6 @@
                                     {include file='productdetails/variation.tpl' simple=$Artikel->isSimpleVariation showMatrix=$showMatrix}
                                 {/block}
 
-                                {if $Artikel->bHasKonfig}
-                                    {row class="mb-4"}
-                                        {col cols=12 sm=6}
-                                            {button type="button"
-                                                value="{lang key='configure'}"
-                                                block=true
-                                                data=["toggle"=>"modal", "target"=>"#cfg-container"]
-                                            }
-                                                <span class="mr-1">{lang key='configure'}</span> <i class="fas fa-cogs"></i>
-                                            {/button}
-                                        {/col}
-                                    {/row}
-
-                                    {block name='productdetails-details-include-config-container'}
-                                        {col}
-                                            {row id="product-configurator"}
-                                                {include file='productdetails/config_container.tpl'}
-                                            {/row}
-                                        {/col}
-                                    {/block}
-                                {/if}
-
                                 {row class="mb-4"}
                                     {block name='productdetails-details-include-price'}
                                         {col}
@@ -258,9 +236,31 @@
                                     {include file="snippets/uploads.tpl" tplscope='product'}
                                 {/block}
                                 {*WARENKORB anzeigen wenn keine variationen mehr auf lager sind?!*}
-                                {block name='productdetails-details-include-basket'}
-                                    {include file='productdetails/basket.tpl'}
-                                {/block}
+                                {if $Artikel->bHasKonfig}
+                                    {row class="mb-4"}
+                                        {col cols=12 sm=6}
+                                            {button type="button"
+                                                value="{lang key='configure'}"
+                                                block=true
+                                                data=["toggle"=>"modal", "target"=>"#cfg-container"]
+                                            }
+                                                <span class="mr-1">{lang key='configure'}</span> <i class="fas fa-cogs"></i>
+                                            {/button}
+                                        {/col}
+                                    {/row}
+
+                                    {block name='productdetails-details-include-config-container'}
+                                        {col}
+                                            {row id="product-configurator"}
+                                                {include file='productdetails/config_container.tpl'}
+                                            {/row}
+                                        {/col}
+                                    {/block}
+                                {else}
+                                    {block name='productdetails-details-include-basket'}
+                                        {include file='productdetails/basket.tpl'}
+                                    {/block}
+                                {/if}
                             </div>
                         </div>{* /product-info-inner *}
                         {/block}{* productdetails-info *}

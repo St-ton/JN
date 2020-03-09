@@ -82,22 +82,22 @@
             {if !empty($NavigationBlaettern)}
                 {block name='layout-header-product-pagination'}
                     {if isset($NavigationBlaettern->naechsterArtikel->kArtikel)}
-                        {link class="btn btn-default float-right"
+                        {button variant="link" class="float-right"
                             href=$NavigationBlaettern->naechsterArtikel->cURLFull
                             title=$NavigationBlaettern->naechsterArtikel->cName
                             aria=["label"=>"{lang section='productDetails' key='nextProduct'}: {$NavigationBlaettern->naechsterArtikel->cName}"]
                         }
                             <span class="fa fa-chevron-right"></span>
-                        {/link}
+                        {/button}
                     {/if}
                     {if isset($NavigationBlaettern->vorherigerArtikel->kArtikel)}
-                        {link class="btn btn-default float-right"
+                        {button variant="link" class="float-right"
                             href=$NavigationBlaettern->vorherigerArtikel->cURLFull
                             title=$NavigationBlaettern->vorherigerArtikel->cName
                             aria=["label"=>"{lang section='productDetails' key='previousProduct'}: {$NavigationBlaettern->vorherigerArtikel->cName}"]
                         }
                             <span class="fa fa-chevron-left"></span>
-                        {/link}
+                        {/button}
                     {/if}
                 {/block}
             {/if}

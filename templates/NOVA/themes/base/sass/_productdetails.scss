@@ -149,6 +149,7 @@
 
 .cfg-group {
 	.config-item {
+        cursor: pointer;
 		padding: $alert-padding-y;
 		border: 2px solid $cool-white;
 		@include border-radius($dropdown-border-radius);
@@ -166,6 +167,7 @@
 			display: none;
 		}
 		&:disabled ~ .custom-control-label .config-item {
+          cursor: default;
 			background: $cool-white;
 			color: $gray-light;
 		}

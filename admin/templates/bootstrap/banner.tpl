@@ -4,37 +4,11 @@
 <div id="content">
 {if $action === 'edit' || $action === 'new'}
     <script type="text/javascript">
-        var file2large = false;
-
-        function checkfile(e){
-            e.preventDefault();
-            if (!file2large){
-                document.banner.submit();
-            }
-        }
-
         $(document).ready(function () {
             $('#nSeitenTyp').on('change', filterConfigUpdate);
             $('#cKey').on('change', filterConfigUpdate);
 
             filterConfigUpdate();
-
-            $('form #oFile').on('change', function(e){
-                $('form div.alert').slideUp();
-                var filesize     = this.files[0].size;
-                var maxsize      = {$nMaxFileSize};
-                var errorMaxSize = "{__('errorUploadSizeLimit')}";
-                if (filesize >= maxsize) {
-                    $('.input-group.file-input')
-                        .after('<div class="alert alert-danger"><i class="fal fa-exclamation-triangle"></i> ' + errorMaxSize + '</div>')
-                        .slideDown();
-                    file2large = true;
-                } else {
-                    $('form div.alert').slideUp();
-                    file2large = false;
-                }
-            });
-
         });
 
         function filterConfigUpdate()
@@ -73,7 +47,7 @@
         }
     </script>
     <div id="settings">
-        <form name="banner" action="banner.php" method="post" enctype="multipart/form-data" onsubmit="checkfile(event);">
+        <form name="banner" action="banner.php" method="post" enctype="multipart/form-data">
             {$jtl_token}
             <input type="hidden" name="action" value="{$action}" />
             {if $action === 'edit'}

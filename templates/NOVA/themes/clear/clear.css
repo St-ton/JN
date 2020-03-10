@@ -18656,6 +18656,11 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
   right: -22px;
 }
 
+.variation .badge {
+  display: inline-flex;
+  align-items: center;
+}
+
 aside h4 {
   margin-bottom: 1rem;
 }

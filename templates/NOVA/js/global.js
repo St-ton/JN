@@ -461,6 +461,7 @@ $(document).ready(function () {
         placement: 'bottom',
         trigger:   'hover',
         container: 'body',
+        sanitize: false,
         template:  	'<div class="popover popover-min-width" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>',
         content:   function () {
             return $(this).children('.area-desc').html()

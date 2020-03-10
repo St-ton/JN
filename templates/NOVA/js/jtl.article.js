@@ -1334,7 +1334,6 @@
             var $wrapper = this.getWrapper(wrapper),
                 $item    = $('[data-value="' + value + '"].variation', $wrapper);
             $item.addClass('active')
-                .removeClass('loading')
                 .find('input')
                 .prop('checked', true)
                 .end()
@@ -1449,7 +1448,7 @@
                     $('.updatingStockInfo', $wrapper).show();
                 }
 
-                $current.addClass('loading');
+                $('.tooltip.show').remove();
                 args.wrapper = wrapper;
 
                 $.evo.article()

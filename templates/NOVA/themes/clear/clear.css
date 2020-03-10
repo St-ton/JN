@@ -19693,7 +19693,7 @@ aside .last-seen-link {
   display: inline-block;
 }
 .swatches .variation.not-available {
-  border: dashed #b90000;
+  border: dashed 1px #b90000;
 }
 .swatches .variation.not-available .label-variation {
   opacity: 0.5;

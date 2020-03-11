@@ -3307,17 +3307,15 @@ class Artikel
         if ($this->getOption('nDownload', 0) === 1) {
             $this->oDownload_arr = Download::getDownloads(['kArtikel' => $this->kArtikel], $langID);
         }
-        if (Configurator::checkLicense()) {
-            $this->bHasKonfig = Configurator::hasKonfig($this->kArtikel);
-            if ($this->bHasKonfig && $this->getOption('nKonfig', 0) === 1) {
-                if (Configurator::validateKonfig($this->kArtikel)) {
-                    $this->oKonfig_arr = Configurator::getKonfig($this->kArtikel, $langID);
-                } else {
-                    Shop::Container()->getLogService()->error(
-                        'Konfigurator für Artikel (Art.Nr.: ' .
-                        $this->cArtNr . ') konnte nicht geladen werden.'
-                    );
-                }
+        $this->bHasKonfig = Configurator::hasKonfig($this->kArtikel);
+        if ($this->bHasKonfig && $this->getOption('nKonfig', 0) === 1) {
+            if (Configurator::validateKonfig($this->kArtikel)) {
+                $this->oKonfig_arr = Configurator::getKonfig($this->kArtikel, $langID);
+            } else {
+                Shop::Container()->getLogService()->error(
+                    'Konfigurator für Artikel (Art.Nr.: ' .
+                    $this->cArtNr . ') konnte nicht geladen werden.'
+                );
             }
         }
         $this->checkCanBePurchased();

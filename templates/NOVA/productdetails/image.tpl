@@ -32,11 +32,13 @@
             {/if}
             {block name='productdetails-image-images-wrapper'}
                 <div id="gallery_wrapper" class="clearfix">
-                    <div id="gallery" class="product-images slick-smooth-loading carousel">
+                    <div id="gallery"
+                         class="product-images slick-smooth-loading carousel slick-lazy"
+                         data-slick-type="gallery">
                         {block name='productdetails-image-images'}
                             {foreach $Artikel->Bilder as $image}
                                 {strip}
-                                    <div>
+                                    <div class="js-gallery-images {if !$image@first}d-none{/if}">
                                         {image alt=$image->cAltAttribut|escape:'html'
                                             class="product-image"
                                             fluid=true
@@ -54,6 +56,13 @@
                             {/foreach}
                         {/block}
                     </div>
+                    <ul class="slick-dots initial-slick-dots d-lg-none" style="" role="tablist">
+                        {foreach $Artikel->Bilder as $image}
+                            <li class="{if $image@first}slick-active{/if}" role="presentation">
+                                {button}{/button}
+                            </li>
+                        {/foreach}
+                    </ul>
                 </div>
             {/block}
             {/col}
@@ -62,11 +71,14 @@
             {col cols=12 align-self='end' class='product-detail-image-preview-bar'}
             {if $Artikel->Bilder|@count > 1}
                 <div id="gallery_preview_wrapper" class="mx-auto mt-4">
-                    <div id="gallery_preview" class="product-thumbnails slick-smooth-loading carousel carousel-thumbnails mb-5 mb-lg-0 d-none d-lg-flex mx-0">
+                    <div id="gallery_preview"
+                         class="product-thumbnails slick-smooth-loading carousel carousel-thumbnails mb-5 mb-lg-0 d-none d-lg-flex mx-0 slick-lazy"
+                         data-slick-type="gallery_preview">
+                        <button class="slick-prev slick-arrow slick-inital-arrow" aria-label="Previous" type="button" style="">Previous</button>
                         {block name='productdetails-image-preview-images'}
                             {foreach $Artikel->Bilder as $image}
                                 {strip}
-                                    <div>
+                                    <div class="js-gallery-images {if $image@first}preview-first{elseif $image@index >= 5}d-none{/if}">
                                         {image alt=$image->cAltAttribut|escape:'html'
                                             class="product-image"
                                             fluid=true
@@ -78,6 +90,7 @@
                                 {/strip}
                             {/foreach}
                         {/block}
+                        <button class="slick-next slick-arrow slick-inital-arrow" aria-label="Next" type="button" style="">Next</button>
                     </div>
                 </div>
             {/if}

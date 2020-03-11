@@ -426,7 +426,7 @@ msgid "chooseProduct"
 msgstr "Select items"
 
 msgid "deleteProduct"
-msgstr "Delete items"
+msgstr "Delete item"
 
 msgid "filter"
 msgstr "Filters"
@@ -442,6 +442,15 @@ msgstr "Zones"
 
 msgid "zone"
 msgstr "Zone"
+
+msgid "newZone"
+msgstr "New Zone"
+
+msgid "saveZones"
+msgstr "Save Zones"
+
+msgid "deleteZone"
+msgstr "Delete Zone"
 
 msgid "title"
 msgstr "Name"

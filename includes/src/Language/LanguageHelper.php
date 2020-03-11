@@ -1051,7 +1051,14 @@ class LanguageHelper
                 $langID  = $lang->getId();
                 $langISO = $lang->getIso();
                 if (isset($AktuellerArtikel->cSprachURL_arr[$langISO])) {
-                    $lang->setUrl($shopURL . $AktuellerArtikel->cSprachURL_arr[$langISO]);
+                    $lang->setUrl(Shop::getURL(false, $langID)  . '/'. $AktuellerArtikel->cSprachURL_arr[$langISO]);
+                } elseif ($page !== null) {
+                    $url = $page->getURL($langID);
+                    if (\mb_strpos($url, '/?s=') !== false) {
+                        $lang->setUrl(\rtrim($shopURL, '/') . $url);
+                    } else {
+                        $lang->setUrl($url);
+                    }
                 } elseif ($specialPage !== null) {
                     if (Shop::getPageType() === \PAGE_STARTSEITE) {
                         $url = $shopURL . '?lang=' . $langISO;
@@ -1079,18 +1086,16 @@ class LanguageHelper
                     }
                     $lang->setUrl($url);
                     \executeHook(\HOOK_TOOLSGLOBAL_INC_SWITCH_SETZESPRACHEUNDWAEHRUNG_SPRACHE);
-                } elseif ($page !== null) {
-                    $url = $page->getURL($langID);
-                    if (\mb_strpos($url, '/?s=') !== false) {
-                        $lang->setUrl(\rtrim($shopURL, '/') . $url);
-                    } else {
-                        $lang->setUrl($url);
-                    }
                 } else {
-                    $originalLanguage = $productFilter->getFilterConfig()->getLanguageID();
-                    $productFilter->getFilterConfig()->setLanguageID($langID);
+                    $config           = $productFilter->getFilterConfig();
+                    $originalLanguage = $config->getLanguageID();
+                    $originalBase     = $config->getBaseURL();
+                    $config->setLanguageID($langID);
+                    $config->setBaseURL(Shop::getURL(false, $langID) . '/');
                     $url = $productFilter->getFilterURL()->getURL($oZusatzFilter);
-                    $productFilter->getFilterConfig()->setLanguageID($originalLanguage);
+                    // reset
+                    $config->setLanguageID($originalLanguage);
+                    $config->setBaseURL($originalBase);
                     if ($productFilter->getPage() > 1) {
                         if (\mb_strpos($url, '?') !== false || \mb_strpos($url, 'navi.php') !== false) {
                             $url .= '&amp;seite=' . $productFilter->getPage();

@@ -288,7 +288,7 @@ class Kupon
      */
     public function setName($name): self
     {
-        $this->cName = Shop::Container()->getDB()->escape($name);
+        $this->cName = $name;
 
         return $this;
     }
@@ -310,7 +310,7 @@ class Kupon
      */
     public function setWertTyp($cWertTyp): self
     {
-        $this->cWertTyp = Shop::Container()->getDB()->escape($cWertTyp);
+        $this->cWertTyp = $cWertTyp;
 
         return $this;
     }
@@ -321,7 +321,7 @@ class Kupon
      */
     public function setGueltigAb($dGueltigAb): self
     {
-        $this->dGueltigAb = Shop::Container()->getDB()->escape($dGueltigAb);
+        $this->dGueltigAb = $dGueltigAb;
 
         return $this;
     }
@@ -332,7 +332,7 @@ class Kupon
      */
     public function setGueltigBis($dGueltigBis): self
     {
-        $this->dGueltigBis = Shop::Container()->getDB()->escape($dGueltigBis);
+        $this->dGueltigBis = $dGueltigBis;
 
         return $this;
     }
@@ -349,12 +349,12 @@ class Kupon
     }
 
     /**
-     * @param string $cCode
+     * @param string $code
      * @return $this
      */
-    public function setCode($cCode): self
+    public function setCode($code): self
     {
-        $this->cCode = Shop::Container()->getDB()->escape($cCode);
+        $this->cCode = $code;
 
         return $this;
     }
@@ -398,7 +398,7 @@ class Kupon
      */
     public function setArtikel($cArtikel): self
     {
-        $this->cArtikel = Shop::Container()->getDB()->escape($cArtikel);
+        $this->cArtikel = $cArtikel;
 
         return $this;
     }
@@ -409,7 +409,7 @@ class Kupon
      */
     public function setHersteller($cHersteller): self
     {
-        $this->cHersteller = Shop::Container()->getDB()->escape($cHersteller);
+        $this->cHersteller = $cHersteller;
 
         return $this;
     }
@@ -420,7 +420,7 @@ class Kupon
      */
     public function setKategorien($cKategorien): self
     {
-        $this->cKategorien = Shop::Container()->getDB()->escape($cKategorien);
+        $this->cKategorien = $cKategorien;
 
         return $this;
     }
@@ -431,7 +431,7 @@ class Kupon
      */
     public function setKunden($cKunden): self
     {
-        $this->cKunden = Shop::Container()->getDB()->escape($cKunden);
+        $this->cKunden = $cKunden;
 
         return $this;
     }
@@ -442,7 +442,7 @@ class Kupon
      */
     public function setKuponTyp($cKuponTyp): self
     {
-        $this->cKuponTyp = Shop::Container()->getDB()->escape($cKuponTyp);
+        $this->cKuponTyp = $cKuponTyp;
 
         return $this;
     }
@@ -453,7 +453,7 @@ class Kupon
      */
     public function setLieferlaender($cLieferlaender): self
     {
-        $this->cLieferlaender = Shop::Container()->getDB()->escape($cLieferlaender);
+        $this->cLieferlaender = $cLieferlaender;
 
         return $this;
     }
@@ -464,7 +464,7 @@ class Kupon
      */
     public function setZusatzgebuehren($cZusatzgebuehren): self
     {
-        $this->cZusatzgebuehren = Shop::Container()->getDB()->escape($cZusatzgebuehren);
+        $this->cZusatzgebuehren = $cZusatzgebuehren;
 
         return $this;
     }
@@ -475,7 +475,7 @@ class Kupon
      */
     public function setAktiv($cAktiv): self
     {
-        $this->cAktiv = Shop::Container()->getDB()->escape($cAktiv);
+        $this->cAktiv = $cAktiv;
 
         return $this;
     }
@@ -486,7 +486,7 @@ class Kupon
      */
     public function setErstellt($dErstellt): self
     {
-        $this->dErstellt = Shop::Container()->getDB()->escape($dErstellt);
+        $this->dErstellt = $dErstellt;
 
         return $this;
     }
@@ -709,8 +709,9 @@ class Kupon
     public function getTranslation(int $id = 0): array
     {
         $translationList = [];
+        $db              = Shop::Container()->getDB();
         foreach ($_SESSION['Sprachen'] ?? [] as $language) {
-            $localized                        = Shop::Container()->getDB()->select(
+            $localized                        = $db->select(
                 'tkuponsprache',
                 'kKupon',
                 $id,
@@ -772,22 +773,23 @@ class Kupon
         $lowerString   = $lower ? 'abcdefghijklmnopqrstuvwxyz' : null;
         $upperString   = $upper ? 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' : null;
         $numbersString = $numbers ? '0123456789' : null;
-        $cCode         = '';
-        $count         = (int)Shop::Container()->getDB()->query(
+        $code          = '';
+        $db            = Shop::Container()->getDB();
+        $count         = (int)$db->query(
             'SELECT COUNT(*) AS cnt 
                 FROM tkupon',
             ReturnType::SINGLE_OBJECT
         )->cnt;
-        while (empty($cCode) || ($count === 0
-                ? empty($cCode)
-                : Shop::Container()->getDB()->select('tkupon', 'cCode', $cCode))) {
-            $cCode = $prefix . \mb_substr(\str_shuffle(\str_repeat(
+        while (empty($code) || ($count === 0
+                ? empty($code)
+                : $db->select('tkupon', 'cCode', $code))) {
+            $code = $prefix . \mb_substr(\str_shuffle(\str_repeat(
                 $lowerString . $upperString . $numbersString,
                 $len
             )), 0, $len) . $suffix;
         }
 
-        return $cCode;
+        return $code;
     }
 
     /**
@@ -822,15 +824,16 @@ class Kupon
         if (isset($_SESSION['NeukundenKuponAngenommen']) && $_SESSION['NeukundenKuponAngenommen']) {
             return 0;
         }
+        $db = Shop::Container()->getDB();
         foreach ($cart->PositionenArr as $item) {
             if (isset($item->Artikel->cArtNr) && \mb_strlen($item->Artikel->cArtNr) > 0) {
                 $productQry .= " OR FIND_IN_SET('" .
-                    \str_replace('%', '\%', Shop::Container()->getDB()->escape($item->Artikel->cArtNr))
+                    \str_replace('%', '\%', $db->escape($item->Artikel->cArtNr))
                     . "', REPLACE(cArtikel, ';', ',')) > 0";
             }
             if (isset($item->Artikel->cHersteller) && \mb_strlen($item->Artikel->cHersteller) > 0) {
                 $manufQry .= " OR FIND_IN_SET('" .
-                    \str_replace('%', '\%', Shop::Container()->getDB()->escape($item->Artikel->kHersteller))
+                    \str_replace('%', '\%', $db->escape($item->Artikel->kHersteller))
                     . "', REPLACE(cHersteller, ';', ',')) > 0";
             }
             if ($item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL
@@ -842,7 +845,7 @@ class Kupon
                 if (Product::isVariChild($productID)) {
                     $productID = Product::getParent($productID);
                 }
-                $categoryIDs = Shop::Container()->getDB()->selectAll(
+                $categoryIDs = $db->selectAll(
                     'tkategorieartikel',
                     'kArtikel',
                     $productID,
@@ -863,7 +866,7 @@ class Kupon
         if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             $customerQry = " OR FIND_IN_SET('" . $_SESSION['Kunde']->kKunde . "', REPLACE(cKunden, ';', ',')) > 0";
         }
-        $ok = Shop::Container()->getDB()->query(
+        $ok = $db->query(
             "SELECT * FROM tkupon
                 WHERE cAktiv = 'Y'
                     AND dGueltigAb <= NOW()
@@ -961,7 +964,7 @@ class Kupon
                 $ret['ungueltig'] = 11;
             } elseif (!empty($coupon->nVerwendungenProKunde) && $coupon->nVerwendungenProKunde > 0) {
                 //check if max usage of coupon is reached for cutomer
-                $countCouponUsed = Shop::Container()->getDB()->executeQueryPrepared(
+                $countCouponUsed = Shop::Container()->getDB()->queryPrepared(
                     'SELECT nVerwendungen
                       FROM tkuponkunde
                       WHERE kKupon = :coupon

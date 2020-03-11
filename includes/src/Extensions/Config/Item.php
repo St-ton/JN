@@ -193,24 +193,22 @@ class Item implements JsonSerializable
      */
     public function jsonSerialize(): array
     {
-        $cKurzBeschreibung = $this->getKurzBeschreibung();
-        $virtual           = [
-            'bAktiv' => $this->bAktiv
-        ];
-        $override          = [
-            'kKonfigitem'       => $this->getKonfigitem(),
-            'cName'             => $this->getName(),
-            'kArtikel'          => $this->getArtikelKey(),
-            'cBeschreibung'     => !empty($cKurzBeschreibung)
-                ? $this->getKurzBeschreibung()
+        $shortDescription = $this->getKurzBeschreibung();
+        $virtual          = ['bAktiv' => $this->bAktiv];
+        $override         = [
+            'kKonfigitem'   => $this->getKonfigitem(),
+            'cName'         => $this->getName(),
+            'kArtikel'      => $this->getArtikelKey(),
+            'cBeschreibung' => !empty($shortDescription)
+                ? $shortDescription
                 : $this->getBeschreibung(),
 
-            'bAnzahl'           => $this->getMin() != $this->getMax(),
-            'fInitial'          => (float)$this->getInitial(),
-            'fMin'              => (float)$this->getMin(),
-            'fMax'              => (float)$this->getMax(),
-            'cBildPfad'         => $this->getBildPfad(),
-            'fPreis'            => [
+            'bAnzahl'         => $this->getMin() != $this->getMax(),
+            'fInitial'        => (float)$this->getInitial(),
+            'fMin'            => (float)$this->getMin(),
+            'fMax'            => (float)$this->getMax(),
+            'cBildPfad'       => $this->getBildPfad(),
+            'fPreis'          => [
                 (float)$this->getPreis(),
                 (float)$this->getPreis(true)
             ],
@@ -219,9 +217,8 @@ class Item implements JsonSerializable
                 Preise::getLocalizedPriceString($this->getPreis(true))
             ]
         ];
-        $result            = \array_merge($override, $virtual);
 
-        return Text::utf8_convert_recursive($result);
+        return Text::utf8_convert_recursive(\array_merge($override, $virtual));
     }
 
     /**
@@ -340,9 +337,8 @@ class Item implements JsonSerializable
             ['groupID' => $groupID],
             ReturnType::ARRAY_OF_OBJECTS
         );
-        foreach ($data as &$item) {
-            $id   = (int)$item->kKonfigitem;
-            $item = new self($id);
+        foreach ($data as $id) {
+            $item = new self((int)$id->kKonfigitem);
             if ($item->isValid()) {
                 $items[] = $item;
             }
@@ -626,24 +622,24 @@ class Item implements JsonSerializable
     }
 
     /**
-     * @param bool $bHTML
+     * @param bool $html
      * @return string
      */
-    public function getRabattLocalized(bool $bHTML = true): string
+    public function getRabattLocalized(bool $html = true): string
     {
         return $this->oPreis->getTyp() === 0
-            ? Preise::getLocalizedPriceString($this->getRabatt(), null, $bHTML)
+            ? Preise::getLocalizedPriceString($this->getRabatt(), null, $html)
             : $this->getRabatt() . '%';
     }
 
     /**
-     * @param bool $bHTML
+     * @param bool $html
      * @return string
      */
-    public function getZuschlagLocalized(bool $bHTML = true): string
+    public function getZuschlagLocalized(bool $html = true): string
     {
         return $this->oPreis->getTyp() === 0
-            ? Preise::getLocalizedPriceString($this->getZuschlag(), null, $bHTML)
+            ? Preise::getLocalizedPriceString($this->getZuschlag(), null, $html)
             : $this->getZuschlag() . '%';
     }
 
@@ -663,15 +659,15 @@ class Item implements JsonSerializable
     }
 
     /**
-     * @param bool $bHTML
-     * @param bool $bSigned
+     * @param bool $html
+     * @param bool $signed
      * @param bool $bForceNetto
      * @return string
      */
-    public function getPreisLocalized(bool $bHTML = true, bool $bSigned = true, bool $bForceNetto = false): string
+    public function getPreisLocalized(bool $html = true, bool $signed = true, bool $bForceNetto = false): string
     {
-        $cLocalized = Preise::getLocalizedPriceString($this->getPreis($bForceNetto), false, $bHTML);
-        if ($bSigned && $this->getPreis() > 0) {
+        $cLocalized = Preise::getLocalizedPriceString($this->getPreis($bForceNetto), false, $html);
+        if ($signed && $this->getPreis() > 0) {
             $cLocalized = '+' . $cLocalized;
         }
 
@@ -679,14 +675,14 @@ class Item implements JsonSerializable
     }
 
     /**
-     * @param bool $bHTML
-     * @param bool $bForceNetto
-     * @param int $totalAmount
+     * @param bool $html
+     * @param bool $forceNet
+     * @param int  $totalAmount
      * @return string
      */
-    public function getFullPriceLocalized(bool $bHTML = true, bool $bForceNetto = false, $totalAmount = 1): string
+    public function getFullPriceLocalized(bool $html = true, bool $forceNet = false, $totalAmount = 1): string
     {
-        return Preise::getLocalizedPriceString($this->getFullPrice($bForceNetto, false, $totalAmount), 0, $bHTML);
+        return Preise::getLocalizedPriceString($this->getFullPrice($forceNet, false, $totalAmount), 0, $html);
     }
 
     /**
@@ -770,7 +766,7 @@ class Item implements JsonSerializable
     {
         $tmpPro = $this->getArtikel();
 
-        return empty($this->kArtikel)
+        return $this->kArtikel === null
             || (!($tmpPro->cLagerBeachten === 'Y'
                 && $tmpPro->cLagerKleinerNull === 'N'
                 && (float)$tmpPro->fLagerbestand < $this->fMin));

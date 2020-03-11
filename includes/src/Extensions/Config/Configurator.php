@@ -64,10 +64,12 @@ class Configurator
             self::$groups[$languageID] = [];
         }
         foreach ($data as $item) {
-            $id                             = (int)$item->kKonfigGruppe;
-            $group                          = self::$groups[$languageID][$id] ?? new Group($id, $languageID);
-            $groups[]                       = $group;
-            self::$groups[$languageID][$id] = $group;
+            $id    = (int)$item->kKonfigGruppe;
+            $group = self::$groups[$languageID][$id] ?? new Group($id, $languageID);
+            if (\count($group->oItem_arr) > 0) {
+                $groups[]                       = $group;
+                self::$groups[$languageID][$id] = $group;
+            }
         }
 
         return $groups;
@@ -83,13 +85,16 @@ class Configurator
             return false;
         }
 
-        return (int)Shop::Container()->getDB()->queryPrepared(
-            'SELECT COUNT(*) AS cnt
+        return Shop::Container()->getDB()->queryPrepared(
+            'SELECT tartikelkonfiggruppe.kKonfiggruppe
                  FROM tartikelkonfiggruppe
-                 WHERE tartikelkonfiggruppe.kArtikel = :pid',
+                 JOIN tkonfigitem
+                    ON tkonfigitem.kKonfiggruppe = tartikelkonfiggruppe.kKonfiggruppe
+                 WHERE tartikelkonfiggruppe.kArtikel = :pid
+                 GROUP BY tkonfigitem.kKonfiggruppe',
             ['pid' => $productID],
             ReturnType::SINGLE_OBJECT
-        )->cnt > 0;
+        ) !== false;
     }
 
     /**

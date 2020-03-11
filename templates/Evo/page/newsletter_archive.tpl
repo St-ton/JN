@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {opcMountPoint id='opc_before_newsletter'}
 
 <div id="toptags">{lang key='newsletterhistory' section='global'}</div>

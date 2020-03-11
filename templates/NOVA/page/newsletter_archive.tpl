@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='page-newsletter-archive'}
     {opcMountPoint id='opc_before_newsletter'}
     {container}

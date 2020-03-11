@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {if $oBox->getItems()|count > 0}
     <section class="panel panel-default box box-wishlist" id="sidebox{$oBox->getID()}">
         <div class="panel-heading">

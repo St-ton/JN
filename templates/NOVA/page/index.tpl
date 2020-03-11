@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='page-index'}
     {block name='page-index-include-selection-wizard'}
         {include file='selectionwizard/index.tpl'}

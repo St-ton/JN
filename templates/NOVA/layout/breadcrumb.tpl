@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='layout-breadcrumb'}
     {strip}
     {has_boxes position='left' assign='hasLeftBox'}

@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productdetails-price'}
     {if $smarty.session.Kundengruppe->mayViewPrices()}
         <div class="price_wrapper mb-4">

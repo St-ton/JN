@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productdetails-config-options'}
     <div id="cfg-accordion" class="accordion">
         {foreach $Artikel->oKonfig_arr as $configGroup}

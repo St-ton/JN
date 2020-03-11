@@ -2,8 +2,6 @@
 {$prefix = $prefix|default:''}
 {$isChild = $isChild|default:false}
 
-
-Prefix: {$prefix}<br>
 {foreach $item->getAttributes() as $attr}
     {$name = $attr->getName()}
 	{$inputName = $name}
@@ -47,7 +45,6 @@ Prefix: {$prefix}<br>
 	    {else}
 			<label class="col col-sm-4 col-form-label text-sm-right" for="{$name}{$postfix}">{__({$name})}:</label>
 			<div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-{*				<input{if $inputConfig->isModifyable() === false} readonly{/if} class="form-control" type="text" name="{$name}" id="{$name}" value="{$item->getAttribValue($name)}" />*}
 				{input readonly=!$inputConfig->isModifyable() type=$inputType value=$item->getAttribValue($name) name=$inputName id=$name|cat:$postfix}
 			</div>
 	    {/if}

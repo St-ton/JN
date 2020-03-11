@@ -6,46 +6,46 @@ msgid "docURL"
 msgstr ""
 
 msgid "pageTitle"
-msgstr "Consent-Manager"
+msgstr "Consent manager"
 
 msgid "pageDesc"
-msgstr "Hier können Sie Einstellungen zu nötigen Consents vornehmen."
+msgstr "Manage texts for conset items"
 
 msgid "itemID"
 msgstr "ID"
 
 msgid "company"
-msgstr "Firma"
+msgstr "Company"
 
 msgid "pluginID"
-msgstr "Plugin-ID"
+msgstr "Plugin ID"
 
 msgid "languageID"
-msgstr "Sprach-ID"
+msgstr "Language ID"
 
 msgid "tos"
-msgstr "Datenschutzerklärung"
+msgstr "Terms of service"
 
 msgid "description"
-msgstr "Beschreibung"
+msgstr "Description"
 
 msgid "purpose"
-msgstr "Zweck"
+msgstr "Purpose"
 
 msgid "disable"
-msgstr "deaktivieren"
+msgstr "disable"
 
 msgid "enable"
-msgstr "aktivieren"
+msgstr "enable"
 
 msgid "saveAndContinue"
-msgstr "Speichern und weiter bearbeiten"
+msgstr "Save and continue"
 
 msgid "modelHeader"
 msgstr "Consent"
 
 msgid "childHeading"
-msgstr "Lokalisierungen"
+msgstr "Localizations"
 
 msgid "generalHeading"
-msgstr "Allgemein"
+msgstr "General"

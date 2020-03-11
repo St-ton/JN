@@ -3,7 +3,7 @@
 {$action = $action|default:($shopURL|cat:$smarty.server.PHP_SELF)}
 {$method = $method|default:'post'}
 
-{include file='tpl_inc/seite_header.tpl' cTitel=__('HEADER') cBeschreibung=$description}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('pageTitle') cBeschreibung=$description}
 
 <div id="content">
 	<div id="settings">
@@ -21,13 +21,18 @@
 			</div>
 			<div class="card-footer save-wrapper">
 				<div class="row">
+					<div class="ml-4">
+						<button type="submit" name="go-back" value="1" class="btn btn-outline-info btn-block" id="go-back">
+                            {__('cancelWithIcon')}
+						</button>
+					</div>
 					<div class="ml-auto col-sm-6 col-xl-auto">
-						<button type="submit" name="continue" value="1" class="btn btn-outline-primary btn-block" id="save-and-continue">
+						<button type="submit" name="save-model-continue" value="1" class="btn btn-outline-primary btn-block" id="save-and-continue">
 							<i class="fal fa-save"></i> {__('saveAndContinue')}
 						</button>
 					</div>
 					<div class="col-sm-6 col-xl-auto">
-						<button type="submit" value="{__('save')}" class="btn btn-primary btn-block">
+						<button type="submit" value="1" name="save-model" class="btn btn-primary btn-block">
 							<i class="far fa-save"></i> {__('save')}
 						</button>
 					</div>

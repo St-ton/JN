@@ -1,4 +1,4 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=__('order') cBeschreibung=__('pageDesc') cDokuURL=__('docURL')}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('pageTitle') cBeschreibung=__('pageDesc') cDokuURL=__('docURL')}
 {$select = $select|default:true}
 {$edit = $edit|default:true}
 {$delete = $delete|default:false}
@@ -118,35 +118,35 @@
 							{/if}
                             {if $delete === true}
 								<div class="ml-auto col-sm-6 col-xl-auto">
-									<button name="delete" type="submit" value="{__('delete')}" class="btn btn-danger btn-block">
+									<button name="model-delete" type="submit" value="1" class="btn btn-danger btn-block">
 										<i class="fas fa-trash-alt"></i> {__('delete')}
 									</button>
 								</div>
 							{/if}
                             {if $activate === true}
 								<div class="ml-auto col-sm-6 col-xl-auto">
-									<button name="activate" type="submit" value="{__('activate')}" class="btn btn-primary btn-block">
+									<button name="model-activate" type="submit" value="{__('activate')}" class="btn btn-primary btn-block">
 										<i class="fas fa-thumbs-up"></i> {__('activate')}
 									</button>
 								</div>
 							{/if}
                             {if $save === true}
 								<div class="ml-auto col-sm-6 col-xl-auto">
-									<button name="save" type="submit" value="{__('save')}" class="btn btn-primary btn-block">
+									<button name="model-save" type="submit" value="{__('save')}" class="btn btn-primary btn-block">
 										<i class="fal fa-save"></i> {__('save')}
 									</button>
 								</div>
 							{/if}
                             {if $disable === true}
 								<div class="ml-auto col-sm-6 col-xl-auto">
-									<button name="disable" type="submit" value="{__('disable')}" class="btn btn-warning btn-block">
+									<button name="model-disable" type="submit" value="{__('disable')}" class="btn btn-warning btn-block">
 										<i class="fa fa-close"></i> {__('disable')}
 									</button>
 								</div>
 							{/if}
                             {if $enable === true}
 								<div class="ml-auto col-sm-6 col-xl-auto">
-									<button name="enable" type="submit" value="{__('enable')}" class="btn btn-primary btn-block">
+									<button name="model-enable" type="submit" value="{__('enable')}" class="btn btn-primary btn-block">
 										<i class="fa fa-check"></i> {__('enable')}
 									</button>
 								</div>

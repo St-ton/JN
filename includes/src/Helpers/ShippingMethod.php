@@ -1536,7 +1536,7 @@ class ShippingMethod
                         $paymentMethodID
                     );
 
-                    return count($paymentMethods) > 0;
+                    return \count($paymentMethods) > 0;
                 }
             );
         }

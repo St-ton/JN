@@ -276,7 +276,7 @@ class Text
         return self::htmlentitydecode(\preg_replace_callback(
             '~&#([0-9]+);~',
             static function ($x) {
-                return \chr($x[1]);
+                return \chr((int)$x[1]);
             },
             $input
         ));
@@ -334,6 +334,7 @@ class Text
 
             return $input;
         }
+        $input  = (string)$input;
         $string = \trim(\strip_tags($input));
         $string = $search === 1
             ? \str_replace(['\\\'', '\\'], '', $string)

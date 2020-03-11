@@ -248,8 +248,18 @@ class Exportformat
             if (!$this->getKundengruppe()) {
                 $this->setKundengruppe(CustomerGroup::getDefaultGroupID());
             }
-            $this->isOk         = true;
-            $this->tempFileName = 'tmp_' . $this->cDateiname;
+            $this->isOk            = true;
+            $this->tempFileName    = 'tmp_' . $this->cDateiname;
+            $this->kWaehrung       = (int)$this->kWaehrung;
+            $this->kSprache        = (int)$this->kSprache;
+            $this->kKundengruppe   = (int)$this->kKundengruppe;
+            $this->kPlugin         = (int)$this->kPlugin;
+            $this->kExportformat   = (int)$this->kExportformat;
+            $this->kKampagne       = (int)$this->kKampagne;
+            $this->nSpecial        = (int)$this->nSpecial;
+            $this->nSplitgroesse   = (int)$this->nSplitgroesse;
+            $this->nUseCache       = (int)$this->nUseCache;
+            $this->nVarKombiOption = (int)$this->nVarKombiOption;
         }
 
         return $this;
@@ -775,7 +785,7 @@ class Exportformat
         $_SESSION['Kundengruppe']  = (new CustomerGroup($this->getKundengruppe()))
             ->setMayViewPrices(1)
             ->setMayViewCategories(1)
-            ->setIsMerchant($net !== null ? $net->nNettoPreise : 0);
+            ->setIsMerchant((int)($net->nNettoPreise ?? 0));
         $_SESSION['kKundengruppe'] = $this->getKundengruppe();
         $_SESSION['kSprache']      = $this->getSprache();
         $_SESSION['Sprachen']      = $languages;
@@ -1268,7 +1278,7 @@ class Exportformat
         ) as $productData) {
             $product = new Artikel();
             $product->fuelleArtikel(
-                $productData['kArtikel'],
+                (int)$productData['kArtikel'],
                 $options,
                 $this->kKundengruppe,
                 $this->kSprache,

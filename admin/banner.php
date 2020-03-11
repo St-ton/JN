@@ -36,7 +36,7 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
         $bannerPath = $_FILES['oFile']['name'];
     }
     if ($bannerPath === null) {
-        $checks['oFile'] = 1;
+        $checks['oFile'] = $_FILES['oFile']['error'];
     }
     $dateFrom  = null;
     $dateUntil = null;

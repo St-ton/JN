@@ -20045,6 +20045,11 @@ label {
     padding: 1rem;
   }
 }
+@media (max-width: 991.98px) {
+  .modal-content {
+    height: 100%;
+  }
+}
 
 .modal-title {
   font-size: 1.25rem;
@@ -20103,6 +20108,11 @@ label {
 }
 .modal-dialog {
   margin-top: 1.75rem;
+}
+@media (max-width: 991.98px) {
+  .modal-dialog {
+    height: 100%;
+  }
 }
 
 #maintenance button.close {
@@ -21656,6 +21666,35 @@ table caption {
   }
 }
 
+@media (max-width: 991.98px) {
+  #cfg-container .hr-sect {
+    text-align: initial;
+    border-top: 0;
+    border-bottom: 0;
+    padding: initial;
+    margin: initial;
+  }
+  #cfg-container .hr-sect::before {
+    margin: 0px 30px 0px 0px;
+  }
+  #cfg-container .hr-sect::after {
+    margin: 0px 0px 0px 30px;
+  }
+  #cfg-container .hr-sect::before, #cfg-container .hr-sect::after {
+    content: "";
+    flex-grow: 1;
+    background: rgba(0, 0, 0, 0.1);
+    height: 1px;
+    font-size: 0px;
+    line-height: 0px;
+  }
+  #cfg-container .hr-sect a {
+    text-decoration: none;
+    border-bottom: 0.375rem solid transparent;
+    font-weight: 700;
+  }
+}
+
 .cart-summary {
   z-index: 999;
 }
@@ -23034,7 +23073,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 #cfg-container-tab-panes {
   height: calc((var(--vh, 1vh) * 78) - 3rem);
   overflow-x: auto;
-  padding-right: 16px;
+  padding-right: 17px;
   border-bottom: 2px solid #ebebeb;
 }
 @media (max-width: 767.98px) {
@@ -23044,6 +23083,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 
 .cfg-group .config-item {
+  cursor: pointer;
   padding: 0.75rem;
   border: 2px solid #f8f8f8;
   border-radius: 0;
@@ -23061,6 +23101,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   display: none;
 }
 .cfg-group .cfg-swatch:disabled ~ .custom-control-label .config-item {
+  cursor: default;
   background: #f8f8f8;
   color: #9b9b9b;
 }
@@ -23343,6 +23384,20 @@ header .nav-right .dropdown-menu {
 .main-search .twitter-typeahead {
   display: flex;
   flex-grow: 1;
+}
+
+.form-clear {
+  align-items: center;
+  bottom: 8px;
+  color: rgba(0, 0, 0, 0.54);
+  cursor: pointer;
+  display: flex;
+  height: 24px;
+  justify-content: center;
+  position: absolute;
+  right: 52px;
+  width: 24px;
+  z-index: 10;
 }
 
 /* footer */

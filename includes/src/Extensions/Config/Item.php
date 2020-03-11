@@ -766,7 +766,7 @@ class Item implements JsonSerializable
     {
         $tmpPro = $this->getArtikel();
 
-        return $this->kArtikel === null
+        return empty($this->kArtikel)
             || (!($tmpPro->cLagerBeachten === 'Y'
                 && $tmpPro->cLagerKleinerNull === 'N'
                 && (float)$tmpPro->fLagerbestand < $this->fMin));

@@ -3,7 +3,6 @@
 {$edit = $edit|default:true}
 {$delete = $delete|default:false}
 {$save = $save|default:false}
-{$activate = $activate|default:false}
 {$enable = $enable|default:false}
 {$disable = $disable|default:false}
 {$action = $action|default:($shopURL|cat:$smarty.server.PHP_SELF)}
@@ -45,8 +44,9 @@
 				{if $pagination !== null}
                     {include file='tpl_inc/pagination.tpl' pagination=$pagination cParam_arr=$params}
                 {/if}
-				<form name="modelform" method="{$method}" action="{$action}">
+				<form name="modelform" id="modelform" method="{$method}" action="{$action}">
                     {$jtl_token}
+					<input type="hidden" name="id" id="modelid" />
                     {if $search !== null}
 						<input type="hidden" name="cSuche" value="{$search}" />
                     {/if}
@@ -89,8 +89,8 @@
 	                                {if $edit === true}
 										<td class="text-center">
 											<div class="btn-group">
-												<a href="{$action}?action=detail&id={$item->getId()}&token={$smarty.session.jtl_token}"
-												   class="btn btn-link px-2"
+												<a href="{$action}?action=detail&id={$item->getId()}"
+												   class="btn-prg btn btn-link px-2"
 												   title="{__('modify')}"
 												   data-toggle="tooltip">
 	                                                            <span class="icon-hover">
@@ -120,13 +120,6 @@
 								<div class="ml-auto col-sm-6 col-xl-auto">
 									<button name="model-delete" type="submit" value="1" class="btn btn-danger btn-block">
 										<i class="fas fa-trash-alt"></i> {__('delete')}
-									</button>
-								</div>
-							{/if}
-                            {if $activate === true}
-								<div class="ml-auto col-sm-6 col-xl-auto">
-									<button name="model-activate" type="submit" value="{__('activate')}" class="btn btn-primary btn-block">
-										<i class="fas fa-thumbs-up"></i> {__('activate')}
 									</button>
 								</div>
 							{/if}

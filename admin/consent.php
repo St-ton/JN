@@ -21,20 +21,33 @@ $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 $db           = Shop::Container()->getDB();
 $alertService = Shop::Container()->getAlertService();
 
-$item = new ConsentModel($db);
-
-$step     = 'overview';
+$item     = new ConsentModel($db);
+$step     = $_SESSION['step'] ?? 'overview';
 $valid    = Form::validateToken();
 $action   = Request::postVar('action') ?? Request::getVar('action');
-$itemID   = Request::postInt('id', null) ?? Request::getInt('id', null);
-$continue = Request::postInt('save-model-continue') === 1;
+$itemID   = $_SESSION['modelid'] ?? Request::postInt('id', null) ?? Request::getInt('id', null);
+$continue = $_SESSION['continue'] ?? Request::postInt('save-model-continue') === 1;
 $save     = $valid && ($continue || Request::postInt('save-model') === 1);
 $cancel   = Request::postInt('go-back') === 1;
 $delete   = $valid && Request::postInt('model-delete') === 1 && count(Request::postVar('mid')) > 0;
-
-if ($cancel === false && $itemID !== null) {
+if ($cancel) {
+    modelPRG();
+}
+if ($continue === false) {
+    unset($_SESSION['modelid']);
+}
+if ($action === 'detail') {
     $step = 'detail';
+}
+if ($itemID > 0) {
     $item = ConsentModel::load(['id' => $itemID], $db);
+}
+unset($_SESSION['step'], $_SESSION['continue']);
+
+function modelPRG(): void
+{
+    header('Location: ' . Shop::getAdminURL() . '/consent.php', true, 303);
+    exit;
 }
 
 /**
@@ -92,34 +105,39 @@ function deleteFromPost(array $ids): bool
 
 if ($save === true && $cancel === false) {
     if (updateFromPost($item, $_POST) === true) {
-        $alertService->addAlert(
-            Alert::TYPE_SUCCESS,
-            sprintf(__('successSave')),
-            'successSaveModel'
-        );
-        $step = $continue ? 'detail' : 'overview';
+        $_SESSION['modelid']    = $itemID;
+        $_SESSION['successMsg'] = sprintf(__('successSave'));
+        $_SESSION['step']       = $continue ? 'detail' : 'overview';
     } else {
-        $alertService->addAlert(
-            Alert::TYPE_ERROR,
-            sprintf(__('errorSave')),
-            'errorSaveModel'
-        );
+        $_SESSION['errorMsg'] = sprintf(__('errorSave'));
     }
+    $_SESSION['continue'] = $continue;
+    modelPRG();
 } elseif ($delete === true) {
     if (deleteFromPost(Request::postVar('mid')) === true) {
-        $alertService->addAlert(
-            Alert::TYPE_SUCCESS,
-            sprintf(__('successDelete')),
-            'successDeleteModel'
-        );
-        $step = $continue ? 'detail' : 'overview';
+        $_SESSION['successMsg'] = sprintf(__('successDelete'));
+        $_SESSION['step']       = $continue ? 'detail' : 'overview';
     } else {
-        $alertService->addAlert(
-            Alert::TYPE_ERROR,
-            sprintf(__('errorDelete')),
-            'errorDeleteModel'
-        );
+        $_SESSION['errorMsg'] = sprintf(__('errorDelete'));
     }
+    modelPRG();
+}
+
+if (isset($_SESSION['successMsg'])) {
+    $alertService->addAlert(
+        Alert::TYPE_SUCCESS,
+        $_SESSION['successMsg'],
+        'successModel'
+    );
+    unset($_SESSION['successMsg']);
+}
+if (isset($_SESSION['errorMsg'])) {
+    $alertService->addAlert(
+        Alert::TYPE_ERROR,
+        $_SESSION['errorMsg'],
+        'errorModel'
+    );
+    unset($_SESSION['errorMsg']);
 }
 
 $consents   = ConsentModel::loadAll($db, [], []);

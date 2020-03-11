@@ -69,16 +69,23 @@
         {/block}
         {block name='productdetails-image-preview'}
             {col cols=12 align-self='end' class='product-detail-image-preview-bar'}
-            {if $Artikel->Bilder|@count > 1}
+            {$imageCount = $Artikel->Bilder|@count}
+            {$imageCountDefault = 5}
+            {if $imageCount > 1}
                 <div id="gallery_preview_wrapper" class="mx-auto mt-4">
                     <div id="gallery_preview"
-                         class="product-thumbnails slick-smooth-loading carousel carousel-thumbnails mb-5 mb-lg-0 d-none d-lg-flex mx-0 slick-lazy"
+                         class="product-thumbnails slick-smooth-loading carousel carousel-thumbnails mb-5 mb-lg-0 d-none d-lg-flex mx-0 slick-lazy {if $imageCount <= $imageCountDefault}slick-count-default{/if}"
                          data-slick-type="gallery_preview">
-                        <button class="slick-prev slick-arrow slick-inital-arrow" aria-label="Previous" type="button" style="">Previous</button>
+                        {if $imageCount > $imageCountDefault}
+                            <button class="slick-prev slick-arrow slick-inital-arrow" aria-label="Previous" type="button" style="">Previous</button>
+                        {/if}
                         {block name='productdetails-image-preview-images'}
                             {foreach $Artikel->Bilder as $image}
                                 {strip}
-                                    <div class="js-gallery-images {if $image@first}preview-first{elseif $image@index >= 5}d-none{/if}">
+                                    <div class="js-gallery-images
+                                    {if $image@first} preview-first {if $imageCount <= $imageCountDefault} ml-auto{/if}
+                                    {elseif $image@index >= $imageCountDefault}d-none{/if}
+                                    {if $image@last && $imageCount <= $imageCountDefault} mr-auto{/if}">
                                         {image alt=$image->cAltAttribut|escape:'html'
                                             class="product-image"
                                             fluid=true
@@ -90,7 +97,9 @@
                                 {/strip}
                             {/foreach}
                         {/block}
-                        <button class="slick-next slick-arrow slick-inital-arrow" aria-label="Next" type="button" style="">Next</button>
+                        {if $imageCount > $imageCountDefault}
+                            <button class="slick-next slick-arrow slick-inital-arrow" aria-label="Next" type="button" style="">Next</button>
+                        {/if}
                     </div>
                 </div>
             {/if}

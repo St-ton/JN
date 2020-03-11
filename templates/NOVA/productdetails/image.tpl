@@ -103,16 +103,18 @@
                 {foreach name=Variationen from=$Artikel->$VariationsSource key=i item=Variation}
                     {foreach name=Variationswerte from=$Variation->Werte key=y item=Variationswert}
                         {if $Variationswert->getImage() !== null}
-                            {image fluid=true webp=true lazy=true
-                                class="variation-image-preview d-none fade vt{$Variationswert->kEigenschaftWert}"
-                                src=$Variationswert->getImage(\JTL\Media\Image::SIZE_XS)
-                                srcset="{$Variationswert->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_variationen_mini_breite}w,
-                                    {$Variationswert->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_variationen_klein_breite}w,
-                                    {$Variationswert->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_variationen_breite}w,
-                                    {$Variationswert->getImage(\JTL\Media\Image::SIZE_LG)} {$Einstellungen.bilder.bilder_variationen_gross_breite}w,"
-                                sizes="50vw"
-                                alt=$Variationswert->cName|escape:'quotes'
-                            }
+                            <div class="variation-image-preview d-none fade vt{$Variationswert->kEigenschaftWert}">
+                                {image fluid=true webp=true lazy=true
+                                    class=""
+                                    src=$Variationswert->getImage(\JTL\Media\Image::SIZE_XS)
+                                    srcset="{$Variationswert->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_variationen_mini_breite}w,
+                                        {$Variationswert->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_variationen_klein_breite}w,
+                                        {$Variationswert->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_variationen_breite}w,
+                                        {$Variationswert->getImage(\JTL\Media\Image::SIZE_LG)} {$Einstellungen.bilder.bilder_variationen_gross_breite}w,"
+                                    sizes="50vw"
+                                    alt=$Variationswert->cName|escape:'quotes'
+                                }
+                            </div>
                         {/if}
                     {/foreach}
                 {/foreach}

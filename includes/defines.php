@@ -79,7 +79,7 @@ ifndef('PFAD_LINKBILDER', 'links/');
 ifndef('PFAD_INCLUDES_LIBS', PFAD_INCLUDES . 'libs/');
 ifndef('PFAD_MINIFY', PFAD_INCLUDES . 'vendor/mrclay/minify');
 ifndef('PFAD_CKEDITOR', PFAD_INCLUDES_LIBS . 'ckeditor/');
-ifndef('PFAD_CODEMIRROR', PFAD_INCLUDES_LIBS . 'codemirror-5.52.0/');
+ifndef('PFAD_CODEMIRROR', PFAD_INCLUDES_LIBS . 'codemirror/');
 ifndef('PFAD_INCLUDES_TOOLS', PFAD_INCLUDES . 'tools/');
 ifndef('PFAD_INCLUDES_EXT', PFAD_INCLUDES . 'ext/');
 ifndef('PFAD_INCLUDES_MODULES', PFAD_INCLUDES . 'modules/');

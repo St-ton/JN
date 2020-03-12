@@ -6,7 +6,7 @@
  */
 
 use JTL\Alert\Alert;
-use JTL\Consent\ConsentModel;
+use JTL\Consent\ConsentModel as Model;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Model\DataModelInterface;
@@ -21,7 +21,7 @@ $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 $db           = Shop::Container()->getDB();
 $alertService = Shop::Container()->getAlertService();
 
-$item     = new ConsentModel($db);
+$item     = new Model($db);
 $step     = $_SESSION['step'] ?? 'overview';
 $valid    = Form::validateToken();
 $action   = Request::postVar('action') ?? Request::getVar('action');
@@ -40,7 +40,7 @@ if ($action === 'detail') {
     $step = 'detail';
 }
 if ($itemID > 0) {
-    $item = ConsentModel::load(['id' => $itemID], $db);
+    $item = Model::load(['id' => $itemID], $db);
 }
 unset($_SESSION['step'], $_SESSION['continue']);
 
@@ -92,7 +92,7 @@ function deleteFromPost(array $ids): bool
 
     return every(map($ids, static function ($id) use ($db) {
         try {
-            $model = ConsentModel::load(['id' => (int)$id], $db, DataModelInterface::ON_NOTEXISTS_FAIL);
+            $model = Model::load(['id' => (int)$id], $db, DataModelInterface::ON_NOTEXISTS_FAIL);
         } catch (Exception $e) {
             return false;
         }
@@ -140,7 +140,7 @@ if (isset($_SESSION['errorMsg'])) {
     unset($_SESSION['errorMsg']);
 }
 
-$consents   = ConsentModel::loadAll($db, [], []);
+$consents   = Model::loadAll($db, [], []);
 $pagination = (new Pagination('consents'))
     ->setItemCount($consents->count())
     ->assemble();

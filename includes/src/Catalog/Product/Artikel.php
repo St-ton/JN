@@ -1856,8 +1856,10 @@ class Artikel
                 $search                     = ['https://', 'youtu.be/', 'watch?v='];
                 $replace                    = ['//', 'youtube.com/embed/', 'embed/'];
                 $embedURL                   = \str_replace($search, $replace, $mediaFile->cURL) . $related;
-                $mediaFile->oEmbed->code    = '<a href="#" class="trigger give-consent" data-consent="youtube">Youtube Consent geben</a><br>' .
-                    '<iframe class="needs-consent youtube" data-consent="youtube" width="' . $width . '" height="' . $height
+                $mediaFile->oEmbed->code    = '<a href="#" class="trigger give-consent" data-consent="youtube">'
+                    . 'Youtube Consent geben</a><br>'
+                    . '<iframe class="needs-consent youtube" data-consent="youtube" '
+                    . 'width="' . $width . '" height="' . $height
                     . '" data-src="' . $embedURL . '" frameborder="0"' . $fullscreen . '></iframe>';
                 $mediaFile->oEmbed->options = [
                     'height'     => $height,

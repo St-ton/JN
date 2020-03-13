@@ -968,16 +968,13 @@
                     container = $('#cfg-container'),
                     sidebar   = $('#cfg-sticky-sidebar'),
                     width,
-                    form,
-                    $spinner = $.evo.extended().spinner(container.get(0));
+                    form;
 
                 if (container.length === 0) {
                     return;
                 }
 
-                if (init) {
-
-                }
+                let $spinner = $.evo.extended().spinner(container.get(0));
 
                 $('#buy_form').find('*[data-selected="true"]')
                     .attr('checked', true)
@@ -985,7 +982,6 @@
                     .attr('data-selected', null);
 
                 form = $.evo.io().getFormValues('buy_form');
-
 
                 container.addClass('loading');
                 $.evo.io().call('buildConfiguration', [form], that, function (error, data) {
@@ -1334,7 +1330,6 @@
             var $wrapper = this.getWrapper(wrapper),
                 $item    = $('[data-value="' + value + '"].variation', $wrapper);
             $item.addClass('active')
-                .removeClass('loading')
                 .find('input')
                 .prop('checked', true)
                 .end()
@@ -1449,7 +1444,7 @@
                     $('.updatingStockInfo', $wrapper).show();
                 }
 
-                $current.addClass('loading');
+                $('.tooltip.show').remove();
                 args.wrapper = wrapper;
 
                 $.evo.article()

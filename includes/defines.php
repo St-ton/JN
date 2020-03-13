@@ -271,6 +271,8 @@ ifndef('SHOW_TEMPLATE_HINTS', 0);
 
 ifndef('SEO_SLUG_LOWERCASE', false);
 
+ifndef('COMPRESS_DESCRIPTION', false);
+
 ifndef('SAFE_MODE', false);
 
 /**

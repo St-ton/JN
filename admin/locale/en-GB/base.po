@@ -1918,3 +1918,24 @@ msgstr "Close"
 
 msgid "none"
 msgstr "None"
+
+msgid "filterManufacturers"
+msgstr "Manufacturers"
+
+msgid "filterPriceRange"
+msgstr "Price range"
+
+msgid "filterRatings"
+msgstr "Reviews"
+
+msgid "filterSearch"
+msgstr "Search filter"
+
+msgid "filterSearchSpecial"
+msgstr "Special items"
+
+msgid "filterCategory"
+msgstr "Categories"
+
+msgid "filterCharacteristics"
+msgstr "Characteristics"

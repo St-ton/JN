@@ -42,7 +42,7 @@ class Rating extends AbstractFilter
         $this->setIsCustom(false)
              ->setUrlParam('bf')
              ->setVisibility($this->getConfig('navigationsfilter')['bewertungsfilter_benutzen'])
-             ->setFrontendName(Shop::Lang()->get('Votes'));
+             ->setFrontendName(Shop::isAdmin() ? __('filterRatings') : Shop::Lang()->get('Votes'));
     }
 
     /**

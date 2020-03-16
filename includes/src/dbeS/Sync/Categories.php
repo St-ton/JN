@@ -92,26 +92,24 @@ final class Categories extends AbstractSync
             return 0;
         }
         // Altes SEO merken => falls sich es bei der aktualisierten Kategorie ändert => Eintrag in tredirect
-        $oldData    = $this->db->queryPrepared(
+        $oldData = $this->db->queryPrepared(
             'SELECT cSeo, lft, rght, nLevel
                 FROM tkategorie
                 WHERE kKategorie = :categoryID',
             ['categoryID' => $category->kKategorie],
             ReturnType::SINGLE_OBJECT
         );
+        $this->db->delete('tseo', ['kKey', 'cKey'], [$category->kKategorie, 'kKategorie']);
         $categories = $this->mapper->mapArray($xml, 'tkategorie', 'mKategorie');
         if ($categories[0]->kKategorie > 0) {
             if (!$categories[0]->cSeo) {
                 $categories[0]->cSeo = Seo::getFlatSeoPath($categories[0]->cName);
             }
-            $categories[0]->cSeo                  = Seo::getSeo($categories[0]->cSeo);
+            $categories[0]->cSeo                  = Seo::checkSeo(Seo::getSeo($categories[0]->cSeo));
             $categories[0]->dLetzteAktualisierung = 'NOW()';
             $categories[0]->lft                   = $oldData->lft ?? 0;
             $categories[0]->rght                  = $oldData->rght ?? 0;
             $categories[0]->nLevel                = $oldData->nLevel ?? 0;
-            if (!isset($oldData->cSeo) || $oldData->cSeo !== $categories[0]->cSeo) {
-                $categories[0]->cSeo = Seo::checkSeo($categories[0]->cSeo);
-            }
             $this->insertOnExistUpdate('tkategorie', $categories, ['kKategorie']);
             if (isset($oldData->cSeo)) {
                 $this->checkDbeSXmlRedirect($oldData->cSeo, $categories[0]->cSeo);
@@ -162,17 +160,6 @@ final class Categories extends AbstractSync
             if (!LanguageHelper::isShopLanguage($language->kSprache, $allLanguages)) {
                 continue;
             }
-            $oSeoOld = $this->db->queryPrepared(
-                'SELECT cSeo
-                    FROM tkategoriesprache
-                    WHERE kKategorie = :categoryID
-                        AND kSprache = :langID',
-                [
-                    'categoryID' => $categoryID,
-                    'langID'     => $language->kSprache,
-                ],
-                ReturnType::SINGLE_OBJECT
-            );
             if (!$language->cSeo) {
                 $language->cSeo = $language->cName;
             }
@@ -182,10 +169,7 @@ final class Categories extends AbstractSync
             if (!$language->cSeo) {
                 $language->cSeo = $category->cName;
             }
-            $language->cSeo = Seo::getSeo($language->cSeo);
-            if (!isset($oSeoOld->cSeo) || $oSeoOld->cSeo !== $language->cSeo) {
-                $language->cSeo = Seo::checkSeo($language->cSeo);
-            }
+            $language->cSeo = Seo::checkSeo(Seo::getSeo($language->cSeo));
             $this->insertOnExistUpdate('tkategoriesprache', [$language], ['kKategorie', 'kSprache']);
 
             $ins           = new stdClass();

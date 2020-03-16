@@ -43,8 +43,12 @@
 	@include media-breakpoint-down(md) {
 		max-height: 300px;
 		th {
+			z-index: 1;
 			position: sticky;
 			top: 0;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
 		}
 	}
 }

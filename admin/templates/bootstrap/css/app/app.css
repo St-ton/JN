@@ -12696,8 +12696,12 @@ ul li:last-child, ol li:last-child {
     max-height: 300px;
   }
   .table-responsive th {
+    z-index: 1;
     position: sticky;
     top: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 

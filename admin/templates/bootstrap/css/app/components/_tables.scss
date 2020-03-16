@@ -38,3 +38,13 @@
 		}
 	}
 }
+
+.table-responsive {
+	@include media-breakpoint-down(md) {
+		max-height: 300px;
+		th {
+			position: sticky;
+			top: 0;
+		}
+	}
+}

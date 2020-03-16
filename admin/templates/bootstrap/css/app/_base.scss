@@ -54,3 +54,9 @@ body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; 
 		}
 	}
 }
+
+.dashboard-col {
+	@include media-breakpoint-down(md) {
+		padding-right: 0;
+	}
+}

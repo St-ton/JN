@@ -22913,7 +22913,6 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 
 .list-gallery {
   display: flex;
-  align-items: center;
   flex-direction: column;
 }
 .list-gallery img {

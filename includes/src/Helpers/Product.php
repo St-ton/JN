@@ -285,7 +285,7 @@ class Product
 
         $attributes       = [];
         $attributeValues  = [];
-        $langID           = Shop::getLanguage();
+        $langID           = Shop::getLanguageID();
         $attr             = new stdClass();
         $attr->cSELECT    = '';
         $attr->cJOIN      = '';
@@ -496,7 +496,7 @@ class Product
                         ReturnType::SINGLE_OBJECT
                     );
 
-                    if ($propExists->kEigenschaftWert) {
+                    if (isset($propExists->kEigenschaftWert)) {
                         $val                       = new stdClass();
                         $val->kEigenschaftWert     = (int)self::getSelectedVariationValue($prop->kEigenschaft);
                         $val->kEigenschaft         = $prop->kEigenschaft;
@@ -527,13 +527,14 @@ class Product
                         '&r=' . \R_VARWAEHLEN, true, 302);
                     exit();
                 }
-                $val                = new stdClass();
-                $val->cFreifeldWert = $db->escape(
+                $val                   = new stdClass();
+                $val->cFreifeldWert    = $db->escape(
                     Text::filterXSS(self::getSelectedVariationValue($prop->kEigenschaft))
                 );
-                $val->kEigenschaft  = $prop->kEigenschaft;
-                $val->cTyp          = $prop->cTyp;
-                $properties[]       = $val;
+                $val->kEigenschaft     = $prop->kEigenschaft;
+                $val->kEigenschaftWert = null;
+                $val->cTyp             = $prop->cTyp;
+                $properties[]          = $val;
             }
         }
 
@@ -1196,7 +1197,7 @@ class Product
         $mailer->send($mail);
 
         $history             = new stdClass();
-        $history->kSprache   = Shop::getLanguage();
+        $history->kSprache   = Shop::getLanguageID();
         $history->kArtikel   = Shop::$kArtikel;
         $history->cAnrede    = $data->tnachricht->cAnrede;
         $history->cVorname   = $data->tnachricht->cVorname;
@@ -1275,7 +1276,7 @@ class Product
                     ->setLastName('')
                     ->setProductId(Request::postInt('a'))
                     ->setEmail(Text::filterXSS($dbHandler->escape(\strip_tags($_POST['email']))) ?: '')
-                    ->setLanguageID(Shop::getLanguage())
+                    ->setLanguageID(Shop::getLanguageID())
                     ->setRealIP(Request::getRealIP());
                 try {
                     (new Optin(OptinAvailAgain::class))

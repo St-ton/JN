@@ -79,7 +79,7 @@ ifndef('PFAD_LINKBILDER', 'links/');
 ifndef('PFAD_INCLUDES_LIBS', PFAD_INCLUDES . 'libs/');
 ifndef('PFAD_MINIFY', PFAD_INCLUDES . 'vendor/mrclay/minify');
 ifndef('PFAD_CKEDITOR', PFAD_INCLUDES_LIBS . 'ckeditor/');
-ifndef('PFAD_CODEMIRROR', PFAD_INCLUDES_LIBS . 'codemirror-5.18.2/');
+ifndef('PFAD_CODEMIRROR', PFAD_INCLUDES_LIBS . 'codemirror/');
 ifndef('PFAD_INCLUDES_TOOLS', PFAD_INCLUDES . 'tools/');
 ifndef('PFAD_INCLUDES_EXT', PFAD_INCLUDES . 'ext/');
 ifndef('PFAD_INCLUDES_MODULES', PFAD_INCLUDES . 'modules/');
@@ -269,7 +269,7 @@ ifndef('SECURE_PHP_FUNCTIONS', '
 // 0 => off, 1 => html comments, 2 => static badges, 3 => scrolling badges with borders
 ifndef('SHOW_TEMPLATE_HINTS', 0);
 
-ifndef('SEO_SLUG_LOWERCASE', true);
+ifndef('SEO_SLUG_LOWERCASE', false);
 
 ifndef('SAFE_MODE', false);
 

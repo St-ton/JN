@@ -13,7 +13,7 @@
         {row}
             {col md=5 lg=4}
                 {block name='account-change-password-form-password'}
-                    {form id="password" action="{get_static_route id='jtl.php'}" method="post" class="jtl-validate label-slide"}
+                    {form id="password" action="{get_static_route id='jtl.php'}" method="post" class="jtl-validate" slide=true}
                         {block name='account-change-password-form-password-content'}
                             {include file='snippets/form_group_simple.tpl'
                                 options=[

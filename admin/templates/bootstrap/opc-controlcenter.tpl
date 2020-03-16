@@ -1,5 +1,4 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section='opc'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('opc') cBeschreibung=__('opcDesc') cDokuURL=__('opcUrl')}
 
 <div class="tabs">

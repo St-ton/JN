@@ -20,7 +20,7 @@ Shop::setPageType(PAGE_KONTAKT);
 $smarty         = Shop::Smarty();
 $conf           = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_KONTAKTFORMULAR]);
 $linkHelper     = Shop::Container()->getLinkService();
-$kLink          = $linkHelper->getSpecialPageLinkKey(LINKTYP_KONTAKT);
+$kLink          = $linkHelper->getSpecialPageID(LINKTYP_KONTAKT);
 $link           = $linkHelper->getPageLink($kLink);
 $cCanonicalURL  = '';
 $specialContent = new stdClass();
@@ -29,7 +29,7 @@ $lang           = Shop::getLanguageCode();
 if (Form::checkSubject()) {
     $step        = 'formular';
     $missingData = [];
-    if (Request::postInt('kontakt') === 1) {
+    if (Request::postInt('kontakt') === 1 && Form::validateToken()) {
         $missingData     = Form::getMissingContactFormData();
         $customerGroupID = Frontend::getCustomerGroup()->getID();
         $checkBox        = new CheckBox();
@@ -66,13 +66,13 @@ if (Form::checkSubject()) {
     foreach ($contents as $content) {
         $specialContent->{$content->cTyp} = $content->cContent;
     }
-    $subjects = Shop::Container()->getDB()->query(
+    $subjects = Shop::Container()->getDB()->queryPrepared(
         "SELECT *
             FROM tkontaktbetreff
             WHERE (cKundengruppen = 0
-            OR FIND_IN_SET('" . Frontend::getCustomerGroup()->getID()
-        . "', REPLACE(cKundengruppen, ';', ',')) > 0)
+            OR FIND_IN_SET(:customerGroupID, REPLACE(cKundengruppen, ';', ',')) > 0)
             ORDER BY nSort",
+        ['customerGroupID' => Frontend::getCustomerGroup()->getID()],
         ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($subjects as $subject) {

@@ -32,7 +32,13 @@
                     {assign var=moreLink value=$Box->cURL}
                     {block name='page-index-include-product-slider'}
                         {container fluid=true}
-                            {include file='snippets/product_slider.tpl' productlist=$Box->Artikel->elemente title=$title hideOverlays=true moreLink=$moreLink moreTitle=$moreTitle}
+                            {include file='snippets/product_slider.tpl'
+                                productlist=$Box->Artikel->elemente
+                                title=$title
+                                hideOverlays=true
+                                moreLink=$moreLink
+                                moreTitle=$moreTitle
+                                titleContainer=true}
                         {/container}
                     {/block}
                 {/if}
@@ -53,15 +59,13 @@
                         </div>
                     {/block}
                     {block name='page-index-news'}
-                        <div itemprop="about" itemscope=true itemtype="http://schema.org/Blog" class="slick-smooth-loading carousel news-slider">
-                            {foreach $oNews_arr as $newsItem}
-                                <div>
-                                    {block name='page-index-include-preview'}
-                                        {include file='blog/preview.tpl'}
-                                    {/block}
-                                </div>
-                            {/foreach}
-                        </div>
+                        {row itemprop="about"
+                             itemscope=true
+                             itemtype="http://schema.org/Blog"
+                             class="slick-smooth-loading carousel carousel-arrows-inside slick-lazy slick-type-news"
+                             data=["slick-type"=>"news-slider"]}
+                            {include file='snippets/slider_items.tpl' items=$oNews_arr type='news'}
+                        {/row}
                     {/block}
                 {/container}
             </section>

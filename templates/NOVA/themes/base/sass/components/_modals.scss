@@ -1,4 +1,11 @@
-.modal-content { padding: $modal-content-padding; }
+.modal-content { padding: $modal-content-padding;
+	@include media-breakpoint-down(sm) {
+		padding: $modal-content-padding-sm
+	}
+	@include media-breakpoint-down(md) {
+		height: 100%;
+	}
+}
 
 .modal-title { @include font-size($font-size-base * (20 / $font-size-base)); }
 
@@ -20,6 +27,9 @@
 
 .modal-dialog {
 	margin-top: $modal-dialog-margin-y-sm-up;
+	@include media-breakpoint-down(md) {
+		height: 100%;
+	}
 }
 
 #maintenance button.close{

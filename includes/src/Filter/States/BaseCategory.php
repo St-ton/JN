@@ -108,7 +108,7 @@ class BaseCategory extends AbstractFilter
                 }
             }
             foreach ($seoData as $item) {
-                if ((int)$item->kSprache === Shop::getLanguage()) {
+                if ((int)$item->kSprache === Shop::getLanguageID()) {
                     if (!empty($item->cName)) {
                         $this->setName($item->cName);
                     } elseif (!empty($item->cKatName)) {

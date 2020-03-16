@@ -12,7 +12,9 @@
         {block name='layout-header-head-meta'}
             <meta http-equiv="content-type" content="text/html; charset={$smarty.const.JTL_CHARSET}">
             <meta name="description" itemprop="description" content={block name='layout-header-head-meta-description'}"{$meta_description|truncate:1000:"":true}{/block}">
-            <meta name="keywords" itemprop="keywords" content="{block name='layout-header-head-meta-keywords'}{$meta_keywords|truncate:255:"":true}{/block}">
+            {if !empty($meta_keywords)}
+                <meta name="keywords" itemprop="keywords" content="{block name='layout-header-head-meta-keywords'}{$meta_keywords|truncate:255:'':true}{/block}">
+            {/if}
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <meta http-equiv="X-UA-Compatible" content="IE=edge">
             <meta name="robots" content="{if $robotsContent}{$robotsContent}{elseif $bNoIndex === true  || (isset($Link) && $Link->getNoFollow() === true)}noindex{else}index, follow{/if}">
@@ -274,8 +276,7 @@
                     </div>
                 {/if}
             {/block}
-            <header class="d-print-none sticky-top fixed-navbar" id="jtl-nav-wrapper">
-
+            <header class="d-print-none {if !$isMobile || $Einstellungen.template.theme.mobile_search_type !== 'fixed'}sticky-top{/if} fixed-navbar" id="jtl-nav-wrapper">
                 {block name='layout-header-container-inner'}
                     <div class="container-fluid container-fluid-xl">
                     {block name='layout-header-category-nav'}
@@ -294,13 +295,22 @@
                                     {link class="navbar-brand mr-lg-6" href=$ShopURL title=$Einstellungen.global.global_shopname}
                                         {if isset($ShopLogoURL)}
                                             {image src=$ShopLogoURL
-                                            alt=$Einstellungen.global.global_shopname
-                                            height=56}
+                                                alt=$Einstellungen.global.global_shopname
+                                                style="{if $ShopLogoURL|strpos:'.svg' !== false}height: 100px;{/if}"
+                                            }
                                         {else}
                                             <span class="h1">{$Einstellungen.global.global_shopname}</span>
                                         {/if}
                                     {/link}
                                 </div>
+                            {/block}
+
+                            {block name='layout-header-search'}
+                                {if $Einstellungen.template.theme.mobile_search_type === 'fixed'}
+                                    <div class="d-lg-none{if !$isTablet} container-fluid container-fluid-xl py-2 order-1 bg-white{else} px-4 py-2 flex-grow-1{/if}">
+                                        {include file='snippets/search_form.tpl' id='search-header-mobile-top'}
+                                    </div>
+                                {/if}
                             {/block}
 
                             {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}
@@ -325,20 +335,20 @@
 
                                 {*categories*}
                                 {block name='layout-header-include-categories-mega'}
-                                    <div id="mainNavigation" class="collapse navbar-collapse nav-scrollbar mr-lg-5">
+                                    <div id="mainNavigation" class="collapse navbar-collapse nav-scrollbar mr-lg-3">
                                         <div class="nav-mobile-header px-3 d-lg-none">
                                             {row class="align-items-center"}
                                                 {col}
+                                                    <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#mainNavigation" aria-controls="mainNavigation" aria-expanded="false" aria-label="Toggle navigation">
+                                                        <span class="navbar-toggler-icon"></span>
+                                                    </button>
+                                                {/col}
+                                                {col class="col-auto ml-auto"}
                                                     <span class="nav-offcanvas-title">{lang key='menuName'}</span>
                                                     {link href="#" class="nav-offcanvas-title d-none" data=["menu-back"=>""]}
                                                         <span class="fas fa-chevron-left mr-2"></span>
                                                         <span>{lang key='back'}</span>
                                                     {/link}
-                                                {/col}
-                                                {col class="col-auto ml-auto"}
-                                                    <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#mainNavigation" aria-controls="mainNavigation" aria-expanded="false" aria-label="Toggle navigation">
-                                                        <span class="navbar-toggler-icon"></span>
-                                                    </button>
                                                 {/col}
                                             {/row}
                                             <hr class="my-0" />
@@ -356,6 +366,13 @@
                     </div>
                 {/block}
             </header>
+            {block name='layout-header-search-fixed'}
+                {if $Einstellungen.template.theme.mobile_search_type === 'fixed' && $isMobile}
+                    <div class="container-fluid container-fluid-xl fixed-search py-2 fixed-top smoothscroll-top-search d-lg-none d-none">
+                        {include file='snippets/search_form.tpl' id='search-header-mobile-fixed'}
+                    </div>
+                {/if}
+            {/block}
         {/block}
     {/if}
 
@@ -384,7 +401,7 @@
             <div id="content-wrapper"
                  class="{if $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}
                             container-fluid container-fluid-xl
-                        {/if} mt-0 {if $isFluidBanner || $isFluidSlider}pt-3{else}pt-5 pt-lg-7{/if}">
+                        {/if} mt-0 {if $isFluidBanner || $isFluidSlider}pt-3{else}pt-sm-3 pt-5 pt-lg-7{/if}">
         {/block}
 
         {block name='layout-header-breadcrumb'}

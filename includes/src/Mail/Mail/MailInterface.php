@@ -176,6 +176,11 @@ interface MailInterface
     public function setAttachments(array $attachments): self;
 
     /**
+     * @param Attachment $attachment
+     */
+    public function addAttachment(Attachment $attachment): void;
+
+    /**
      * @return Attachment[]
      */
     public function getPdfAttachments(): array;

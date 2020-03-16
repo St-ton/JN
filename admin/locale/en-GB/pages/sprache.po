@@ -3,19 +3,19 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "lang"
-msgstr "Language administration"
+msgstr "Language variables and text blocks"
 
 msgid "langURL"
 msgstr "https://jtl-url.de/br78w"
 
 msgid "langDesc"
-msgstr "Edit the standard text blocks of the online shops. All texts are defined on the basis of a specific language. You can also use the language administration to export and reimport text blocks for individual languages."
+msgstr "Edit the standard text blocks of the online shop. All texts are defined on the basis of a specific language. You can also export and import text blocks for every language."
 
 msgid "langVars"
 msgstr "Language variables"
 
 msgid "notFoundVars"
-msgstr "Not found variables"
+msgstr "Variables not found"
 
 msgid "section"
 msgstr "Section"
@@ -57,7 +57,7 @@ msgid "errorVarExistsForLang"
 msgstr "The variable already exists for the following languages: %s. Please select which version you want to overwrite."
 
 msgid "successVarChange"
-msgstr "Variables changed successfully: "
+msgstr "Variables changed successfully. "
 
 msgid "errorVarChangeNone"
 msgstr "No variables changed."
@@ -66,7 +66,7 @@ msgid "successListReset"
 msgstr "List reset successfully."
 
 msgid "searchInContentAndVarName"
-msgstr "Search variable names and contents"
+msgstr "Searches variable names and contents"
 
 msgid "systemOwn"
 msgstr "System/Custom"

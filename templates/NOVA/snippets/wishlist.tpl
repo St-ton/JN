@@ -110,7 +110,7 @@
                                 {/dropdownitem}
                                 {dropdownitem class="text-center position-relative"}
                                 {block name='snippets-wishlist-actions-delete-wl'}
-                                    {form method="post" action="{get_static_route id='wunschliste.php'}"}
+                                    {form method="post" action="{get_static_route id='wunschliste.php'}" slide=true}
                                         {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
                                         {input type="hidden" name="kWunschlisteTarget" value=$CWunschliste->kWunschliste}
                                         {input type="hidden" name="action" value="delete"}
@@ -123,7 +123,7 @@
                                 {if $CWunschliste->nStandard != 1}
                                     {dropdownitem class="text-center position-relative"}
                                     {block name='snippets-wishlist-actions-set-active'}
-                                        {form method="post" action="{get_static_route id='wunschliste.php'}"}
+                                        {form method="post" action="{get_static_route id='wunschliste.php'}" slide=true}
                                             {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
                                             {input type="hidden" name="kWunschlisteTarget" value=$CWunschliste->kWunschliste}
                                             {input type="hidden" name="action" value="setAsDefault"}
@@ -154,8 +154,11 @@
                         {/col}
                     {/block}
                     {block name='snippets-wishlist-wishlists'}
-                        {col class="col-auto"}
-                            {dropdown id='wlName' variant='outline-secondary' text=$CWunschliste->cName}
+                        {col class="col-md-auto"}
+                            {dropdown id='wlName'
+                                variant='outline-secondary'
+                                text=$CWunschliste->cName
+                                toggle-class='w-100'}
                             {foreach $oWunschliste_arr as $wishlist}
                                 {dropdownitem href="{get_static_route id='wunschliste.php'}{if $wishlist->nStandard != 1}?wl={$wishlist->kWunschliste}{/if}" rel="nofollow" }
                                     {$wishlist->cName}
@@ -184,7 +187,7 @@
                                     {input name="cSuche" size="35" type="text" value=$wlsearch placeholder="{lang key='wishlistSearch' section='login'}" aria=["label"=>"{lang key='wishlistSearch' section='login'}"]}
                                     {inputgroupaddon append=true}
                                     {block name='snippets-wishlist-search-form-submit'}
-                                        {button name="action" value="search" type="submit" variant="outline-primary"}
+                                        {button name="action" value="search" type="submit" variant="outline-primary" aria=["label"=>{lang key='wishlistSearchBTN' section='login'}]}
                                             <i class="fa fa-search"></i>
                                             <span class="d-none d-md-inline-block">{lang key='wishlistSearchBTN' section='login'}</span>
                                         {/button}
@@ -193,9 +196,9 @@
                                     {if !empty($wlsearch)}
                                         {block name='snippets-wishlist-search-form-remove-search'}
                                             {inputgroupaddon append=true}
-                                            {button type="submit" name="cSuche" value="" variant="outline-primary"}
-                                                <i class="fa fa-undo"></i> {lang key='wishlistRemoveSearch' section='login'}
-                                            {/button}
+                                                {button type="submit" name="cSuche" value="" variant="outline-primary"}
+                                                    <i class="fa fa-undo"></i> {lang key='wishlistRemoveSearch' section='login'}
+                                                {/button}
                                             {/inputgroupaddon}
                                         {/block}
                                     {/if}
@@ -340,7 +343,7 @@
                     {row}
                         {col cols=12}
                             {collapse id="create-new-wishlist" visible=($newWL === 1) class='mb-3'}
-                                {form method="post" action="{get_static_route id='wunschliste.php'}"}
+                                {form method="post" action="{get_static_route id='wunschliste.php'}" slide=true}
                                     {block name='snippets-wishlist-form-content-new'}
                                         {block name='snippets-wishlist-form-content-new-inputs-hidden'}
                                             {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
@@ -487,6 +490,7 @@
                                                                     rows="5"
                                                                     name="Kommentar_{$wlPosition->kWunschlistePos}"
                                                                     class="my-3 js-update-wl"
+                                                                    aria=["label"=>"{lang key='wishlistComment' section='login'} {$wlPosition->cArtikelName}"]
                                                                 }{$wlPosition->cKommentar}{/textarea}
                                                             {/block}
                                                             {if !($wlPosition->Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N')}
@@ -604,13 +608,6 @@
         {/if}
         {/container}
     {/block}
-
-    {inline_script}<script>
-        $.evo.extended().addInactivityCheck('#wl-items-form');
-        $('.js-update-wl').on('change', function () {
-            $.evo.extended().updateWishlistItem($(this).closest('.productbox-inner'));
-        });
-    </script>{/inline_script}
 
     {block name='snippets-wishlist-include-footer'}
         {include file='layout/footer.tpl'}

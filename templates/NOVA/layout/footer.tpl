@@ -215,13 +215,18 @@
                                     {/if}
                                 {/col}
                                 {if !$isBrandFree}
-                                    {col class="col-auto ml-auto" id="system-credits"}
+                                    {col class="col-auto ml-auto{if $Einstellungen.template.theme.button_scroll_top === 'Y'} pr-8{/if}" id="system-credits"}
                                         Powered by {link href="https://jtl-url.de/jtlshop" class="text-white text-decoration-underline" title="JTL-Shop" target="_blank" rel="noopener nofollow"}JTL-Shop{/link}
                                     {/col}
                                 {/if}
                             {/row}
                         {/container}
                     </div>
+                {/block}
+                {block name='layout-footer-scroll-top'}
+                    {if $Einstellungen.template.theme.button_scroll_top === 'Y'}
+                        {include file='snippets/scroll_top.tpl'}
+                    {/if}
                 {/block}
             </footer>
         {/if}

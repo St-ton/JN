@@ -9,7 +9,7 @@ msgid "emailTemplateURL"
 msgstr "https://jtl-url.de/wjkma"
 
 msgid "emailTemplatesHint"
-msgstr "Hier können die Vorlagen für alle E-Mails angepasst werden, die JTL-Shop verschicken kann. Diese Vorlagen werden mithilfe der Smarty Template Engine bearbeitet. Wenn Sie eine Test-E-Mail anfordern, erhalten Sie diese in jeder im Shop verfügbaren Sprache."
+msgstr "Hier können die Vorlagen für alle E-Mails angepasst werden, die JTL-Shop verschicken kann. Diese Vorlagen werden mithilfe der Smarty Template Engine bearbeitet. Wenn Sie eine Test-E-Mail anfordern, erhalten Sie diese in jeder im Onlineshop verfügbaren Sprache."
 
 msgid "testmail"
 msgstr "Test-E-Mail anfordern"
@@ -18,7 +18,7 @@ msgid "testmailsGoToEmail"
 msgstr "Test-E-Mails werden an folgende Adresse gesendet: "
 
 msgid "noMasterEmailSpecified"
-msgstr "Keine Master-E-Mail-Adresse hinterlegt. Bitte tragen Sie eine Master-E-Mail-Adresse für den Absender unter Inhalte &gt; E-Mails &gt; Einstellungen ein."
+msgstr "Keine Master-E-Mail-Adresse hinterlegt. Bitte tragen Sie eine Master-E-Mail-Adresse für den Absender unter Inhalte > E-Mails > Einstellungen ein."
 
 msgid "emailTemplateModifyHint"
 msgstr "Hier bearbeiten Sie den Inhalt einer E-Mail-Vorlage in jeder in JTL-Shop gepflegten Sprache. Sie können außerdem festlegen, von welcher Adresse aus die E-Mail versendet werden soll, und ob bestimmte Anhänge standardmäßig mitgesendet werden sollen."
@@ -69,7 +69,7 @@ msgid "errorTemplate"
 msgstr "Die E-Mail-Vorlage ist fehlerhaft."
 
 msgid "successTemplateReset"
-msgstr "Die markierte E-Mail-Vorlage wurde erfolgreich zurückgesetzt."
+msgstr "Markierte E-Mail-Vorlage wurde erfolgreich zurückgesetzt."
 
 msgid "errorTemplateMissing"
 msgstr "Es existiert keine E-Mail-Vorlage: "
@@ -84,7 +84,7 @@ msgid "errorFileName"
 msgstr "Der Dateiname %s enthält unzulässige Zeichen (erlaubt sind A–Z, a–z, 0–9, _ und -)."
 
 msgid "errorFileSave"
-msgstr "Die Dateien konnten nicht geschrieben werden. Prüfen Sie bitte, ob für das PDF-Verzeichnis Schreibrechte gesetzt sind."
+msgstr "Dateien konnten nicht geschrieben werden. Prüfen Sie bitte, ob für das PDF-Verzeichnis Schreibrechte gesetzt sind."
 
 msgid "errorFileNameMissing"
 msgstr "Bitte geben Sie zu jeder Datei auch einen Dateinamen ein."
@@ -96,10 +96,10 @@ msgid "errorFileNamePdfMissing"
 msgstr "Sie haben zu einem PDF keinen Dateinamen angegeben."
 
 msgid "successTemplateEdit"
-msgstr "E-Mail-Vorlage erfolgreich geändert."
+msgstr "E-Mail-Vorlage wurde erfolgreich geändert."
 
 msgid "successFileAppendixDelete"
-msgstr "Die Dateianhänge für die gewählte Sprache wurden erfolgreich gelöscht."
+msgstr "Dateianhänge für die gewählte Sprache wurden erfolgreich gelöscht."
 
 msgid "multipleDividedColon"
 msgstr "(mehrere Empfänger durch Semikolon trennen)"
@@ -135,7 +135,7 @@ msgstr "Neukundenregistrierung"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_accounterstellung_durch_betreiber"
-msgstr "Erstellung eines Benutzerkontos durch Shopbetreiber"
+msgstr "Erstellung eines Benutzerkontos durch den Onlineshop-Betreiber"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_bestellung_bezahlt"
@@ -151,7 +151,7 @@ msgstr "Löschung eines Benutzerkontos"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_kdgrp_zuweisung"
-msgstr "Kundengruppenzuweisung durch Shopbetreiber"
+msgstr "Kundengruppenzuweisung durch Onlineshop-Betreiber"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_kontaktformular"

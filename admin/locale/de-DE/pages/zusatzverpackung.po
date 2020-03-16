@@ -17,9 +17,6 @@ msgstr "Kostenfrei ab"
 msgid "zusatzverpackungTaxClass"
 msgstr "Steuerklasse"
 
-msgid "zusatzverpackungSave"
-msgstr "Zusatzverpackung speichern"
-
 msgid "zusatzverpackungAutoTax"
 msgstr "Automatisch berechnen"
 
@@ -28,9 +25,6 @@ msgstr "Zusatzverpackung anlegen"
 
 msgid "zusatzverpackungEdit"
 msgstr "Zusatzverpackung bearbeiten"
-
-msgid "zusatzverpackungAdded"
-msgstr "Angelegte Zusatzverpackungen"
 
 msgid "zusatzverpackungAddedNone"
 msgstr "Keine Zusatzverpackung angelegt"
@@ -42,13 +36,13 @@ msgid "errorCustomerGroupMissing"
 msgstr "Bitte wählen Sie mindestens eine Kundengruppe aus."
 
 msgid "successPackagingSave"
-msgstr "Die Verpackung %s wurde erfolgreich gespeichert."
+msgstr "Verpackung %s wurde erfolgreich gespeichert."
 
 msgid "successPackagingDelete"
-msgstr "Die markierten Verpackungen wurden erfolgreich gelöscht."
+msgstr "Markierte Verpackungen wurden erfolgreich gelöscht."
 
 msgid "errorAtLeastOnePackaging"
 msgstr "Bitte markieren Sie mindestens eine Verpackung."
 
 msgid "successPackagingSaveMultiple"
-msgstr "Die markierten Verpackungen wurden erfolgreich aktualisiert."
+msgstr "Markierte Verpackungen wurden erfolgreich aktualisiert."

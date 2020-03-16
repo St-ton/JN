@@ -11,9 +11,6 @@ msgstr "https://jtl-url.de/ycaxd"
 msgid "exportformatsDesc"
 msgstr "Hier können Sie Formate zum Exportieren Ihrer Artikeldaten definieren."
 
-msgid "languageCurrencyCustGrp"
-msgstr "Sprache/Währung/Kundengruppe"
-
 msgid "campaigns"
 msgstr "Kampagne"
 
@@ -42,13 +39,13 @@ msgid "modifyExportformatSave"
 msgstr "Überarbeitetes Exportformat speichern"
 
 msgid "onlyIfNeeded"
-msgstr "Nur ausfüllen, wenn Exportdatei die Kopfzeile enthalten soll"
+msgstr "Nur ausfüllen, wenn Exportdatei die Kopfzeile enthalten soll."
 
 msgid "template"
 msgstr "Exportvorlage"
 
 msgid "smartyRules"
-msgstr "Smarty wird genutzt Achtung: PHP-Tags und Inhalte sind nicht erlaubt."
+msgstr "Smarty wird genutzt. Achtung: PHP-Tags und -Inhalte sind nicht erlaubt."
 
 msgid "download"
 msgstr "Datei herunterladen"
@@ -81,22 +78,22 @@ msgid "splitSize"
 msgstr "Größe pro Datei (MB)"
 
 msgid "successFormatEdit"
-msgstr "Das Exportformat %s wurde erfolgreich geändert."
+msgstr "Exportformat %s wurde erfolgreich geändert."
 
 msgid "successFormatCreate"
-msgstr "Das Exportformat %s wurde erfolgreich erstellt."
+msgstr "Exportformat %s wurde erfolgreich erstellt."
 
 msgid "successFormatDelete"
-msgstr "Exportformat erfolgreich gelöscht."
+msgstr "Exportformat wurde erfolgreich gelöscht."
 
 msgid "errorFormatDelete"
 msgstr "Exportformat konnte nicht gelöscht werden."
 
 msgid "errorFormatCreate"
-msgstr "Das Exportformat %s konnte nicht erstellt werden. Überprüfen Sie die Schreibrechte."
+msgstr "Exportformat %s konnte nicht erstellt werden. Überprüfen Sie die Schreibrechte."
 
 msgid "errorExport"
-msgstr "Die Exportdatei konnte nicht erstellt werden."
+msgstr "Exportdatei konnte nicht erstellt werden."
 
 msgid "availableFormats"
 msgstr "Vorhandene Exportformate"

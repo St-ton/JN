@@ -1,5 +1,4 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section='kundenimport'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('customerImport') cBeschreibung=__('customerImportDesc') cDokuURL=__('customerImportURL')}
 <div id="content">
     <form name="kundenimporter" method="post" action="kundenimport.php" enctype="multipart/form-data">

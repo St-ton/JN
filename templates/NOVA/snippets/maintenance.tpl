@@ -19,11 +19,9 @@
                 </p>
             {/card}
         {/modal}
-        {inline_script}
-            <script>
+        {inline_script}<script>
                 $('#maintenance').modal('show');
-            </script>
-        {/inline_script}
+        </script>{/inline_script}
     {/block}
 
     {block name='snippets-maintenance-include-footer'}

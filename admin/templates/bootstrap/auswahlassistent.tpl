@@ -1,7 +1,4 @@
 {include file='tpl_inc/header.tpl'}
-
-{config_load file="$lang.conf" section='auswahlassistent'}
-
 {if $step === 'edit-group'}
     {include file='tpl_inc/auswahlassistent_gruppe.tpl'}
 {elseif $step === 'edit-question'}

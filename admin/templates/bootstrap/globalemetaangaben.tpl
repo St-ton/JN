@@ -1,4 +1,3 @@
-{config_load file="$lang.conf" section='globalemetaangaben'}
 {include file='tpl_inc/header.tpl'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('globalemetaangaben') cBeschreibung=__('globalemetaangabenDesc') cDokuURL=__('globalemetaangabenUrl')}
 {assign var=currentLanguage value=''}
@@ -29,25 +28,10 @@
                             <input type="text" class="form-control" id="Meta_Description" name="Meta_Description" value="{if isset($oMetaangaben_arr.Meta_Description)}{$oMetaangaben_arr.Meta_Description}{/if}" tabindex="1" />
                         </div>
                     </div>
-
-                    <div class="form-group form-row align-items-center">
-                        <label class="col col-sm-4 text-sm-right" for="Meta_Keywords">{__('globalemetaangabenKeywords')}:</label>
-                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <input type="text" class="form-control" id="Meta_Keywords" name="Meta_Keywords" value="{if isset($oMetaangaben_arr.Meta_Keywords)}{$oMetaangaben_arr.Meta_Keywords}{/if}" tabindex="1" />
-                        </div>
-                    </div>
-
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 text-sm-right" for="Meta_Description_Praefix">{__('globalemetaangabenMetaDescPraefix')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <input type="text" class="form-control" id="Meta_Description_Praefix" name="Meta_Description_Praefix" value="{if isset($oMetaangaben_arr.Meta_Description_Praefix)}{$oMetaangaben_arr.Meta_Description_Praefix}{/if}" tabindex="1" />
-                        </div>
-                    </div>
-
-                    <div class="form-group form-row align-items-center">
-                        <label class="col col-sm-4 text-sm-right" for="keywords">{__('excludeKeywords')} ({__('spaceSeparated')}):</label>
-                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <textarea class="form-control" id="keywords" name="keywords">{if isset($keywords->cKeywords)}{$keywords->cKeywords}{/if}</textarea>
                         </div>
                     </div>
                 </div>

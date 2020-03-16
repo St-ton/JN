@@ -1,4 +1,3 @@
-{config_load file="$lang.conf" section='benutzer'}
 {include file='tpl_inc/header.tpl'}
 
 {if $action == '' || $action === 'account_view' || $action === 'group_view'}

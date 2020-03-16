@@ -13,8 +13,10 @@
             {if isset($smarty.session.Warenkorb->PositionenArr) && $smarty.session.Warenkorb->PositionenArr|@count > 0}
                 {block name='page-shipping-form'}
                     {form method="post"
-                          action="{if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}{else}index.php{/if}{if $bExclusive}?exclusive_content=1{/if}"
-                          class="jtl-validate label-slide" id="shipping-calculator-form"}
+                        action="{if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}{else}index.php{/if}{if $bExclusive}?exclusive_content=1{/if}"
+                        class="jtl-validate"
+                        id="shipping-calculator-form"
+                        slide=true}
                         {input type="hidden" name="s" value=$Link->getID()}
                         {block name='page-shipping-include-shipping-calculator'}
                             {include file='snippets/shipping_calculator.tpl' checkout=false}

@@ -13,12 +13,12 @@
                 {$jtl_token}
                 {include file='snippets/form_group_simple.tpl'
                     options=[
-                        'email', 'email-box-login', 'email', null,{lang key='emailadress'}, true
+                        'email', "email-box-login-{$oBox->getID()}", 'email', null,{lang key='emailadress'}, true
                     ]
                 }
                 {include file='snippets/form_group_simple.tpl'
                     options=[
-                        'password', 'password-box-login', 'passwort', null,{lang key='password' section='account data'}, true
+                        'password', "password-box-login-{$oBox->getID()}", 'passwort', null,{lang key='password' section='account data'}, true
                     ]
                 }
                 {if isset($showLoginCaptcha) && $showLoginCaptcha}

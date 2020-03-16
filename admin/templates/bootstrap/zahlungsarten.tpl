@@ -1,5 +1,4 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section='zahlungsarten'}
 {if $step === 'uebersicht'}
     {include file='tpl_inc/zahlungsarten_uebersicht.tpl'}
 {elseif $step === 'einstellen'}

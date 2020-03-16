@@ -1,5 +1,4 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section='checkbox'}
 
 <script type='text/javascript'>
     {literal}

@@ -294,7 +294,7 @@ msgid "artikeluebersicht_lagerbestandsanzeige_value(genau)"
 msgstr "Genauen Lagerbestand anzeigen"
 
 msgid "artikeluebersicht_lagerbestandsanzeige_value(ampel)"
-msgstr "Lagerbestandsampel verwenden"
+msgstr "Lagerbestandsanzeige in grün, gelb und rot"
 
 msgid "artikeluebersicht_lagerbestandsanzeige_value(nichts)"
 msgstr "Keine Lagerbestandsanzeige"
@@ -342,7 +342,7 @@ msgid "artikeluebersicht_artikelsortierung_value(4)"
 msgstr "Preis absteigend"
 
 msgid "artikeluebersicht_artikelsortierung_value(5)"
-msgstr "EAN"
+msgstr "GTIN"
 
 msgid "artikeluebersicht_artikelsortierung_value(6)"
 msgstr "Neueste zuerst"
@@ -507,7 +507,7 @@ msgid "artikel_lagerbestandsanzeige_value(genau)"
 msgstr "Genauen Lagerbestand anzeigen"
 
 msgid "artikel_lagerbestandsanzeige_value(ampel)"
-msgstr "Lagerbestandsampel verwenden"
+msgstr "Lagerbestandsanzeige in grün, gelb und rot"
 
 msgid "artikel_lagerbestandsanzeige_value(nichts)"
 msgstr "Keine Lagerbestandsanzeige"
@@ -615,7 +615,7 @@ msgid "artikeldetails_anzahl_pfeile_value(Y)"
 msgstr "Immer"
 
 msgid "artikeldetails_anzahl_pfeile_value(I)"
-msgstr "„Wenn Abnahmeintervall vorhanden“"
+msgstr "Wenn Abnahmeintervall vorhanden"
 
 msgid "artikeldetails_anzahl_pfeile_value(N)"
 msgstr "Nicht anzeigen"
@@ -1251,7 +1251,7 @@ msgid "bilder_artikel_namen_value(3)"
 msgstr "Artikelnummer_Artikelname (URL-Pfad)"
 
 msgid "bilder_artikel_namen_value(4)"
-msgstr "EAN"
+msgstr "GTIN"
 
 msgid "bilder_kategorie_namen_value(0)"
 msgstr "Primärschlüssel (Vorgabe von JTL-Wawi)"
@@ -2034,7 +2034,7 @@ msgid "suchspecials_sortierung_bestseller_value(4)"
 msgstr "Preis absteigend"
 
 msgid "suchspecials_sortierung_bestseller_value(5)"
-msgstr "EAN"
+msgstr "GTIN"
 
 msgid "suchspecials_sortierung_bestseller_value(6)"
 msgstr "Neueste zuerst"
@@ -2073,7 +2073,7 @@ msgid "suchspecials_sortierung_sonderangebote_value(4)"
 msgstr "Preis absteigend"
 
 msgid "suchspecials_sortierung_sonderangebote_value(5)"
-msgstr "EAN"
+msgstr "GTIN"
 
 msgid "suchspecials_sortierung_sonderangebote_value(6)"
 msgstr "Neueste zuerst"
@@ -2112,7 +2112,7 @@ msgid "suchspecials_sortierung_neuimsortiment_value(4)"
 msgstr "Preis absteigend"
 
 msgid "suchspecials_sortierung_neuimsortiment_value(5)"
-msgstr "EAN"
+msgstr "GTIN"
 
 msgid "suchspecials_sortierung_neuimsortiment_value(6)"
 msgstr "Neueste zuerst"
@@ -2151,7 +2151,7 @@ msgid "suchspecials_sortierung_topangebote_value(4)"
 msgstr "Preis absteigend"
 
 msgid "suchspecials_sortierung_topangebote_value(5)"
-msgstr "EAN"
+msgstr "GTIN"
 
 msgid "suchspecials_sortierung_topangebote_value(6)"
 msgstr "Neueste zuerst"
@@ -2190,7 +2190,7 @@ msgid "suchspecials_sortierung_inkuerzeverfuegbar_value(4)"
 msgstr "Preis absteigend"
 
 msgid "suchspecials_sortierung_inkuerzeverfuegbar_value(5)"
-msgstr "EAN"
+msgstr "GTIN"
 
 msgid "suchspecials_sortierung_inkuerzeverfuegbar_value(6)"
 msgstr "Neueste zuerst"
@@ -2229,7 +2229,7 @@ msgid "suchspecials_sortierung_topbewertet_value(4)"
 msgstr "Preis absteigend"
 
 msgid "suchspecials_sortierung_topbewertet_value(5)"
-msgstr "EAN"
+msgstr "GTIN"
 
 msgid "suchspecials_sortierung_topbewertet_value(6)"
 msgstr "Neueste zuerst"
@@ -2392,3 +2392,15 @@ msgstr "Ja"
 
 msgid "general_child_item_bulk_pricing_value(N)"
 msgstr "Nein"
+
+msgid "gtin_display_value(N)"
+msgstr "Nein"
+
+msgid "gtin_display_value(details)"
+msgstr "Ja, auf der Artikeldetailseite"
+
+msgid "gtin_display_value(lists)"
+msgstr "Ja, in Listen"
+
+msgid "gtin_display_value(always)"
+msgstr "Ja, auf der Artikeldetailseite und in den Listen"

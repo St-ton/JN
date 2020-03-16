@@ -24,50 +24,60 @@
             {elseif $Artikel->inWarenkorbLegbar == 1 }
                 {if !$showMatrix}
                     {block name='productdetails-basket-form-inline'}
-                        {row class="align-items-center"}
-                            {col cols=12 sm=6 class="mb-3 mb-sm-0"}
-                                {inputgroup id="quantity-grp" class="form-counter choose_quantity"}
-                                    {inputgroupprepend}
-                                        {button variant=""
-                                            data=["count-down"=>""]
-                                            aria=["label"=>{lang key='decreaseQuantity' section='aria'}]}
-                                            <span class="fas fa-minus"></span>
-                                        {/button}
-                                    {/inputgroupprepend}
-                                    {input type="{if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}text{else}number{/if}"
-                                        min="{if $Artikel->fMindestbestellmenge}{$Artikel->fMindestbestellmenge}{else}0{/if}"
-                                        max=$Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE]|default:''
-                                        required=($Artikel->fAbnahmeintervall > 0)
-                                        step="{if $Artikel->fAbnahmeintervall > 0}{$Artikel->fAbnahmeintervall}{/if}"
-                                        id="quantity" class="quantity" name="anzahl"
-                                        aria=["label"=>"{lang key='quantity'}"]
-                                        value="{if $Artikel->fAbnahmeintervall > 0 || $Artikel->fMindestbestellmenge > 1}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}"
-                                        data=["decimals"=>{getDecimalLength quantity=$Artikel->fAbnahmeintervall}]
-                                    }
-                                    {inputgroupappend}
-                                        {if $Artikel->cEinheit}
-                                            {inputgrouptext class="unit form-control"}
-                                                {$Artikel->cEinheit}
-                                            {/inputgrouptext}
-                                        {/if}
-                                        {button variant=""
-                                            data=["count-up"=>""]
-                                            aria=["label"=>{lang key='increaseQuantity' section='aria'}]}
-                                            <span class="fas fa-plus"></span>
-                                        {/button}
-                                    {/inputgroupappend}
-                                {/inputgroup}
-                            {/col}
-                            {col cols=12 sm=6}
-                                {button aria=["label"=>"{lang key='addToCart'}"] block=true name="inWarenkorb" type="submit" value="{lang key='addToCart'}" variant="primary"}
-                                    <span class="btn-basket-check">
-                                        <span class="d-none d-sm-inline-block mr-1">{lang key='addToCart'}</span> <i class="fas fa-shopping-cart"></i>
-                                    </span>
-                                    <svg x="0px" y="0px" width="32px" height="32px" viewBox="0 0 32 32">
-                                        <path stroke-dasharray="19.79 19.79" stroke-dashoffset="19.79" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" d="M9,17l3.9,3.9c0.1,0.1,0.2,0.1,0.3,0L23,11"/>
-                                    </svg>
-                                {/button}
-                            {/col}
+                        {row class="align-items-center mb-3"}
+                            {block name='productdetails-basket-quantity'}
+                                {col cols=12 sm=6 class="mb-3 mb-sm-0"}
+                                    {inputgroup id="quantity-grp" class="form-counter choose_quantity"}
+                                        {inputgroupprepend}
+                                            {button variant=""
+                                                data=["count-down"=>""]
+                                                aria=["label"=>{lang key='decreaseQuantity' section='aria'}]}
+                                                <span class="fas fa-minus"></span>
+                                            {/button}
+                                        {/inputgroupprepend}
+                                        {input type="{if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}text{else}number{/if}"
+                                            min="{if $Artikel->fMindestbestellmenge}{$Artikel->fMindestbestellmenge}{else}0{/if}"
+                                            max=$Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE]|default:''
+                                            required=($Artikel->fAbnahmeintervall > 0)
+                                            step="{if $Artikel->fAbnahmeintervall > 0}{$Artikel->fAbnahmeintervall}{/if}"
+                                            id="quantity" class="quantity" name="anzahl"
+                                            aria=["label"=>"{lang key='quantity'}"]
+                                            value="{if $Artikel->fAbnahmeintervall > 0 || $Artikel->fMindestbestellmenge > 1}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}"
+                                            data=["decimals"=>{getDecimalLength quantity=$Artikel->fAbnahmeintervall}]
+                                        }
+                                        {inputgroupappend}
+                                            {if $Artikel->cEinheit}
+                                                {inputgrouptext class="unit form-control"}
+                                                    {$Artikel->cEinheit}
+                                                {/inputgrouptext}
+                                            {/if}
+                                            {button variant=""
+                                                data=["count-up"=>""]
+                                                aria=["label"=>{lang key='increaseQuantity' section='aria'}]}
+                                                <span class="fas fa-plus"></span>
+                                            {/button}
+                                        {/inputgroupappend}
+                                    {/inputgroup}
+                                {/col}
+                            {/block}
+                            {block name='productdetails-basket-add-to-cart'}
+                                {col cols=12 sm=6}
+                                    {button aria=["label"=>"{lang key='addToCart'}"]
+                                        block=true name="inWarenkorb"
+                                        type="submit"
+                                        value="{lang key='addToCart'}"
+                                        variant="primary"
+                                        disabled=$Artikel->bHasKonfig && !$isConfigCorrect|default:false
+                                        class="js-cfg-validate"}
+                                        <span class="btn-basket-check">
+                                            <span class="d-none d-sm-inline-block mr-1">{lang key='addToCart'}</span> <i class="fas fa-shopping-cart"></i>
+                                        </span>
+                                        <svg x="0px" y="0px" width="32px" height="32px" viewBox="0 0 32 32">
+                                            <path stroke-dasharray="19.79 19.79" stroke-dashoffset="19.79" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" d="M9,17l3.9,3.9c0.1,0.1,0.2,0.1,0.3,0L23,11"/>
+                                        </svg>
+                                    {/button}
+                                {/col}
+                            {/block}
                         {/row}
                     {/block}
                 {/if}

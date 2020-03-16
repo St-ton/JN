@@ -1,4 +1,3 @@
-{config_load file="$lang.conf" section='branding'}
 {include file='tpl_inc/header.tpl'}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('branding') cBeschreibung=__('brandingDesc') cDokuURL=__('brandingUrl')}
@@ -31,7 +30,7 @@
                 <input type="hidden" name="speicher_einstellung" value="1" />
                 <div class="card">
                     <div class="card-header">
-                        <div class="subheading1">{{__('headingEditBrandingForProduct')}|sprintf:{$oBranding->cBildKategorie}}</div>
+                        <div class="subheading1">{{__('headingEditBrandingForProduct')}|sprintf:{__($oBranding->cBildKategorie)}}</div>
                         <hr class="mb-n3">
                     </div>
                     <div class="card-body">
@@ -174,7 +173,7 @@
             }
         ],
         initialPreview: [
-            '<img src="{$shopURL}/{$PFAD_BRANDINGBILDER}{$oBranding->cBrandingBild}?rnd={$cRnd}" class="file-preview-image img-fluid" alt="branding" title="brnading" />'
+            '<img src="{$shopURL}/{$PFAD_BRANDINGBILDER}{$oBranding->cBrandingBild}?rnd={$cRnd}" class="file-preview-image img-fluid" alt="branding" title="{__('branding')}" />'
         ]
         {/if}
     })

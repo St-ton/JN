@@ -6,13 +6,13 @@ msgid "Flipcard"
 msgstr "Flipcard"
 
 msgid "flipcardOrientation"
-msgstr "Orientation"
+msgstr "Direction"
 
 msgid "flipTrigger"
-msgstr "Flip Trigger"
+msgstr "Flip trigger"
 
 msgid "onClick"
-msgstr "click"
+msgstr "Click"
 
 msgid "onHover"
-msgstr "hover"
+msgstr "Hover"

@@ -9,7 +9,7 @@ msgid "suchspecialURL"
 msgstr "https://jtl-url.de/u38fa"
 
 msgid "suchspecialsDesc"
-msgstr "Hier können Sie angeben, wie die Links zu Übersichten besonderer Artikel lauten sollen. Diese werden an Ihre Shop-URL angehängt."
+msgstr "Hier können Sie angeben, wie die Links zu Übersichten besonderer Artikel lauten sollen. Diese werden an die URL Ihres Onlineshops angehängt."
 
 msgid "specialOffers"
 msgstr "Sonderangebote"
@@ -45,4 +45,4 @@ msgid "errorTopRatingExistRename"
 msgstr "Die Top-Bewertet-Seite %s war bereits vorhanden und wurde in %s umbenannt."
 
 msgid "successSeoSave"
-msgstr "Die Seitennamen wurden erfolgreich gespeichert bzw. aktualisiert."
+msgstr "Seitennamen wurden erfolgreich gespeichert bzw. aktualisiert."

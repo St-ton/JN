@@ -9,7 +9,7 @@ msgid "suchspecialURL"
 msgstr "https://jtl-url.de/3ys8a"
 
 msgid "suchspecialsDesc"
-msgstr "Specify the structure of links to special item overviews. The links are added to the end of the online shop URL."
+msgstr "Specify the structure of links to special item overviews. These will be added to the URL of your online shop."
 
 msgid "specialOffers"
 msgstr "Special offers"

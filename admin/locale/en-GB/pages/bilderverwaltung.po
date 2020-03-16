@@ -3,13 +3,13 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "bilderverwaltung"
-msgstr "Image administration"
+msgstr "Images"
 
 msgid "bilderverwaltungURL"
 msgstr "https://jtl-url.de/v4jwa"
 
 msgid "bilderverwaltungDesc"
-msgstr "This is an overview of all existing item images and, if applicable, errors. The different sizes of the item images in JTL-Shop are only generated when the images are opened in the front end for the first time. This may lead to longer loading times in some cases. By selecting \"Generate\", you create all images that have not yet been generated. By selecting \"Empty cache\", you delete all existing images."
+msgstr "This is an overview of all existing images and, if applicable, errors. The different sizes of the images in JTL-Shop are only generated when the images are opened in the front end for the first time. This may lead to longer loading times in some cases. By selecting \"Generate\", you create all images that have not yet been generated. \"Empty cache\" deletes all image sizes created from th original image. \"Clear\" deletes faulty original images."
 
 msgid "headlineTyp"
 msgstr "Type"
@@ -30,16 +30,13 @@ msgid "generatePics"
 msgstr " Generate"
 
 msgid "currentCorruptedPics"
-msgstr "Currently faulty images:"
+msgstr "Currently faulty images"
 
 msgid "articlenr"
 msgstr "SKU"
 
 msgid "articlePic"
-msgstr "Product image"
-
-msgid "product"
-msgstr "Product"
+msgstr "Item image"
 
 msgid "corruptedPicsNote"
 msgstr "Faulty images are images with an entry in the database for which no file exists on the server. A maximum of 50 results is shown."
@@ -63,16 +60,16 @@ msgid "pendingImageDelete"
 msgstr "Deleting images…"
 
 msgid "pendingStatisticCalc"
-msgstr "Calculating reports…"
+msgstr "Calculating statistics…"
 
 msgid "pendingImageGenerate"
 msgstr "Generating images…"
 
 msgid "newscategory"
-msgstr "News category"
+msgstr "Blog category"
 
 msgid "configgroup"
-msgstr "Config group"
+msgstr "Configuration group"
 
 msgid "cleanup"
-msgstr "Clean up"
+msgstr "Clear"

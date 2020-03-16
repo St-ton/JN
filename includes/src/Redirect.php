@@ -573,11 +573,11 @@ class Redirect
         foreach ($redirects as $redirect) {
             $redirect->kRedirect            = (int)$redirect->kRedirect;
             $redirect->nCount               = (int)$redirect->nCount;
-            $redirect->cFromUrl             = \StringHandler::filterXSS($redirect->cFromUrl);
+            $redirect->cFromUrl             = Text::filterXSS($redirect->cFromUrl);
             $redirect->oRedirectReferer_arr = self::getReferers($redirect->kRedirect);
 
             foreach ($redirect->oRedirectReferer_arr as $referer) {
-                $referer->cRefererUrl = \StringHandler::filterXSS($referer->cRefererUrl);
+                $referer->cRefererUrl = Text::filterXSS($referer->cRefererUrl);
             }
         }
 

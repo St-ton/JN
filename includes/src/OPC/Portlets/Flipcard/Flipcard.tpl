@@ -6,7 +6,7 @@
      class="opc-Flipcard opc-Flipcard-{$instance->getProperty('flip-dir')} {$instance->getAnimationClass()}"
      style="{$instance->getStyleString()}">
     {if $isPreview}
-        <a href="#" class="opc-Flipcard-flip-btn">
+        <a href="#" class="opc-Flipcard-flip-btn opc-no-disable">
             <span class="opc-Flipcard-label opc-Flipcard-label-front active">Vorderseite</span>
             <i class="fas fa-exchange-alt"></i>
             <span class="opc-Flipcard-label opc-Flipcard-label-back">Rückseite</span>

@@ -1143,7 +1143,8 @@ function handleNewPriceFormat($xml)
             );
             $customerGroupHandled = [];
             foreach ($preise as $i => $preis) {
-                $kPreis = handlePriceFormat($preis->kArtikel, $preis->kKundenGruppe, $preis->kKunde);
+                $preis->kKunde = isset($preis->kKunde) ? (int)$preis->kKunde : null;
+                $kPreis        = handlePriceFormat($preis->kArtikel, $preis->kKundenGruppe, $preis->kKunde);
                 if (!empty($xml['tpreis'][$i])) {
                     $preisdetails = mapArray($xml['tpreis'][$i], 'tpreisdetail', $GLOBALS['mPreisDetail']);
                 } else {

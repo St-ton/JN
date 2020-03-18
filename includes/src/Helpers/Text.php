@@ -209,6 +209,27 @@ class Text
     ];
 
     /**
+     * @param string $haystack
+     * @param string $needle
+     * @return bool
+     */
+    public static function startsWith(string $haystack, string $needle)
+    {
+        return \mb_substr($haystack, 0, \mb_strlen($needle)) === $needle;
+    }
+
+    /**
+     * @param string $haystack
+     * @param string $needle
+     * @return bool
+     */
+    public static function endsWith(string $haystack, string $needle)
+    {
+        $length = \mb_strlen($needle);
+        return \mb_substr($haystack, -$length, $length) === $needle;
+    }
+
+    /**
      * @param string $input
      * @param int    $flags
      * @param string $enc

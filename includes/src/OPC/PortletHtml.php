@@ -246,6 +246,14 @@ trait PortletHtml
     /**
      * @return string
      */
+    final protected function getCommonResource($name)
+    {
+        return Shop::getURL() . '/' . \PFAD_INCLUDES . 'src/OPC/Portlets/common/' . $name;
+    }
+
+    /**
+     * @return string
+     */
     final public function getDefaultPreviewImageUrl(): string
     {
         return Shop::getURL() . '/' . \BILD_KEIN_KATEGORIEBILD_VORHANDEN;

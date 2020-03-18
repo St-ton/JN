@@ -1,0 +1,12 @@
+$font-size-base: 1rem;
+$font-size-sm: 1rem;
+$font-size-lg: 1rem;
+@import "../../../../../templates/NOVA/themes/base/bootstrap/scss/functions";
+@import "../../../../../templates/NOVA/themes/base/bootstrap/scss/variables";
+@import "../../../../../templates/NOVA/themes/base/bootstrap/scss/mixins";
+
+@each $breakpoint in map-keys($grid-breakpoints) {
+  @include media-breakpoint-only($breakpoint) {
+    .opc-hidden-#{$breakpoint} { display: none !important; }
+  }
+}

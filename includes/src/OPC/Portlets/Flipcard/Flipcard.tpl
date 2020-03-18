@@ -2,7 +2,8 @@
 {$trigger = $instance->getProperty('flip-trigger')}
 
 <div id="{$uid}" {$instance->getAnimationDataAttributeString()}
-     class="opc-Flipcard opc-Flipcard-{$instance->getProperty('flip-dir')} {$instance->getAnimationClass()}"
+     class="opc-Flipcard opc-Flipcard-{$instance->getProperty('flip-dir')}
+            {$instance->getAnimationClass()} {$instance->getStyleClasses()}"
      style="{$instance->getStyleString()}">
     {if $isPreview}
         <a href="#" class="opc-Flipcard-flip-btn">

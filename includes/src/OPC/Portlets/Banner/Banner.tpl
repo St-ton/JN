@@ -1,7 +1,7 @@
 {$imgAttribs = $instance->getImageAttributes(null, null, null, 1, $portlet->getPlaceholderImgUrl())}
 
 <div style="{$instance->getStyleString()}"
-     class="banner {$instance->getAnimationClass()}"
+     class="banner {$instance->getAnimationClass()} {$instance->getStyleClasses()}"
      {$instance->getAnimationDataAttributeString()}>
     {image
         src=$imgAttribs.src

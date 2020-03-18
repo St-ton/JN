@@ -13,7 +13,7 @@
 {else}
     {$uid = $instance->getUid()}
 
-    <div style="{$instance->getStyleString()}">
+    <div style="{$instance->getStyleString()}" class="{$instance->getStyleClasses()}">
         {if $instance->getProperty('slides')|count > 0}
             <div class="theme-{$instance->getProperty('slider-theme')}">
                 <div id="{$uid}" class="nivoSlider">

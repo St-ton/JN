@@ -33,7 +33,7 @@
         {/if}
     </div>
 {else}
-    <div id="{$instance->getUid()}" {$instance->getAttributeString()}>
+    <div id="{$instance->getUid()}" {$instance->getAttributeString()} class="{$instance->getStyleClasses()}">
         {if !empty($instance->getProperty('video-title'))}
             <label>{$instance->getProperty('video-title')}</label>
         {/if}

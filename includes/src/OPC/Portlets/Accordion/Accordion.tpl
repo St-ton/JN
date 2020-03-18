@@ -1,6 +1,6 @@
 {$uid = $instance->getUid()}
 
-{accordion id=$uid style=$instance->getStyleString()}
+{accordion id=$uid style=$instance->getStyleString() class=$instance->getStyleClasses()}
     {foreach $instance->getProperty('groups') as $i => $group}
         {$groupId = $uid|cat:'-'|cat:$i}
         {$areaId = 'group-'|cat:$i}

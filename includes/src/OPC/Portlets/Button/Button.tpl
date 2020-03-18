@@ -24,7 +24,7 @@
             block=$block|default:false
             variant=$instance->getProperty('style')
             title=$instance->getProperty('link-title')|default:null
-            class=$instance->getAnimationClass()
+            class=$instance->getAnimationClass()|cat:' '|cat:$instance->getStyleClasses()
             data=$instance->getAnimationData()
             style=$instance->getStyleString()
     }

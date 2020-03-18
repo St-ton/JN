@@ -18,6 +18,7 @@
             style=$instance->getStyleString()|cat:' display: block; width: 100%'
             rounded=$portlet->getRoundedProp($instance)
             thumbnail=$portlet->getThumbnailProp($instance)
+            class=$instance->getStyleClasses()
         }
     {if $isPreview}</div>{/if}
 {/if}

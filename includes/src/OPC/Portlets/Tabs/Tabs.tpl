@@ -1,4 +1,4 @@
-<div {$instance->getAttributeString()} class="opc-Tabs">
+<div {$instance->getAttributeString()} class="opc-Tabs {$instance->getStyleClasses()}">
     {tabs}
         {foreach $instance->getProperty('tabs') as $i => $tabTitle}
             {$tabId = $instance->getUid()|cat:'-'|cat:$i}

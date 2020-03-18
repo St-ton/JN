@@ -9,7 +9,8 @@
         </div>
     </div>
 {elseif $galleryStyle === 'columns'}
-    <div class="opc-Gallery-columns" id="{$instance->getUid()}" style="{$instance->getStyleString()}">
+    <div class="opc-Gallery-columns {$instance->getStyleClasses()}"
+         id="{$instance->getUid()}" style="{$instance->getStyleString()}">
         {foreach $images as $key => $image}
             {$imgAttribs = $instance->getImageAttributes($image.url, $image.alt, '')}
             <a {if $isPreview === false}

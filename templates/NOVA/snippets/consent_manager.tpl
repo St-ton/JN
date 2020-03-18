@@ -59,7 +59,7 @@
 						<span class="consent-display-3 consent-no-space">Verarbeitende Firma:</span>
 						<p>{$item->getCompany()}</p>
 						<span class="consent-display-3 consent-no-space">Nutzungsbedingungen:</span>
-						<a href="{$item->getTos()}" target="_blank">Link</a>
+						<a href="{$item->getPrivacyPolicy()}" target="_blank">Link</a>
 					</div>
 				</div>
 

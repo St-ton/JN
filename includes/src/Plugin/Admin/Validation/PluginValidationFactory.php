@@ -10,6 +10,7 @@ use JTL\Plugin\Admin\Validation\Items\Author;
 use JTL\Plugin\Admin\Validation\Items\Blueprints;
 use JTL\Plugin\Admin\Validation\Items\Boxes;
 use JTL\Plugin\Admin\Validation\Items\Checkboxes;
+use JTL\Plugin\Admin\Validation\Items\Consent;
 use JTL\Plugin\Admin\Validation\Items\DateCreated;
 use JTL\Plugin\Admin\Validation\Items\Exports;
 use JTL\Plugin\Admin\Validation\Items\ExtendedTemplates;
@@ -53,6 +54,7 @@ class PluginValidationFactory
         $validation[] = new DateCreated($node, $dir, $version, $pluginID);
         $validation[] = new PluginID($node, $dir, $version, $pluginID);
         $validation[] = new Installation($node, $dir, $version, $pluginID);
+        $validation[] = new Consent($node, $dir, $version, $pluginID);
         $validation[] = new Author($node, $dir, $version, $pluginID);
         $validation[] = new LicenceExtension($node, $dir, $version, $pluginID);
         $validation[] = new Hooks($node, $dir, $version, $pluginID);

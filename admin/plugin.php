@@ -154,6 +154,17 @@ if ($step === 'plugin_uebersicht' && $pluginID > 0) {
                         ->renderAdminMenuTab($menu->name, $menu->id, $smarty);
                 }
             } elseif ($menu->configurable === true) {
+                $hidden = true;
+                foreach ($plugin->getConfig()->getOptions() as $confItem) {
+                    if ($confItem->inputType !== InputType::NONE) {
+                        $hidden = false;
+                        break;
+                    }
+                }
+                if ($hidden) {
+                    $plugin->getAdminMenu()->removeItem($menu->kPluginAdminMenu);
+                    continue;
+                }
                 $smarty->assign('oPluginAdminMenu', $menu);
                 $menu->html = $smarty->fetch('tpl_inc/plugin_options.tpl');
             }

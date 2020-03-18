@@ -129,9 +129,9 @@ final class ConsentModel extends DataModel
      * @param int|null $idx
      * @return string
      */
-    public function getTos(int $idx = null): string
+    public function getPrivacyPolicy(int $idx = null): string
     {
-        return $this->getCurrentLocalization()->getTos();
+        return $this->getCurrentLocalization()->getPrivacyPolicy();
     }
 
     /**

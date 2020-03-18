@@ -80,7 +80,7 @@ interface ItemInterface
      * @param string   $tos
      * @param int|null $idx
      */
-    public function setTOS(string $tos, int $idx = null): void;
+    public function setPrivacyPolicy(string $tos, int $idx = null): void;
 
     /**
      * @return int

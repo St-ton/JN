@@ -42,7 +42,7 @@ class Item implements ItemInterface
     /**
      * @var string[]
      */
-    private $tos;
+    private $privacyPolicy;
 
     /**
      * @var int
@@ -140,17 +140,17 @@ class Item implements ItemInterface
     /**
      * @inheritDoc
      */
-    public function getTos(int $idx = null): string
+    public function getPrivacyPolicy(int $idx = null): string
     {
-        return $this->tos[$idx ?? $this->currentLanguageID] ?? '';
+        return $this->privacyPolicy[$idx ?? $this->currentLanguageID] ?? '';
     }
 
     /**
      * @inheritDoc
      */
-    public function setTos(string $tos, int $idx = null): void
+    public function setPrivacyPolicy(string $tos, int $idx = null): void
     {
-        $this->tos[$idx ?? $this->currentLanguageID] = $tos;
+        $this->privacyPolicy[$idx ?? $this->currentLanguageID] = $tos;
     }
 
     /**

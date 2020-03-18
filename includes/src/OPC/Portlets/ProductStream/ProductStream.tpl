@@ -1,7 +1,7 @@
 {$style = $instance->getProperty('listStyle')}
 
 {if $isPreview}
-    <div {$instance->getDataAttributeString()} class="opc-ProductStream">
+    <div class="opc-ProductStream">
         {image alt='ProductStream' src=$portlet->getBaseUrl()|cat:'preview.'|cat:$style|cat:'.png'}
     </div>
 {else}
@@ -30,8 +30,10 @@
             {/foreach}
         {/row}
     {elseif $style === 'simpleSlider'}
-        <div id="{$instance->getUid()}" class="carousel carousel-arrows-inside slick-lazy opc-ProductStream opc-ProductStream-slider slick-type-product"
-            data-slick-type="product-slider">
+        <div id="{$instance->getUid()}"
+             class="carousel carousel-arrows-inside slick-lazy
+                    opc-ProductStream opc-ProductStream-slider slick-type-product"
+             data-slick-type="product-slider">
             {foreach $productlist as $Artikel}
                 <div class="product-wrapper">
                     <a href="{$Artikel->cURLFull}">

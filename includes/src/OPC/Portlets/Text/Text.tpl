@@ -1,4 +1,3 @@
-<div {$instance->getAttributeString()}
-     {if $isPreview}{$instance->getDataAttributeString()}{/if}>
+<div {$instance->getAttributeString()}>
     {$instance->getProperty('text')}
 </div>

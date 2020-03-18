@@ -1,14 +1,14 @@
 {$imgAttribs = $instance->getImageAttributes()}
 
 {if $isPreview && empty($imgAttribs.src)}
-    <div {$instance->getDataAttributeString()} class="opc-Image" style="{$instance->getStyleString()}">
+    <div class="opc-Image" style="{$instance->getStyleString()}">
         <div>
             <i class="far fa-image"></i>
             <span>{__('Image')}</span>
         </div>
     </div>
 {elseif !empty($imgAttribs.src)}
-    {if $isPreview}<div data-portlet="{$instance->getDataAttribute()}" class="opc-Image-with-image">{/if}
+    {if $isPreview}<div class="opc-Image-with-image">{/if}
         {image
             src=$imgAttribs.src
             srcset=$imgAttribs.srcset

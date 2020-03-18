@@ -1,7 +1,6 @@
 {$data = $instance->getAnimationData()}
 
 {if $isPreview}
-    {$data = $data|array_merge:['portlet' => $instance->getDataAttribute()]}
     {$areaClass = 'opc-area'}
 {/if}
 

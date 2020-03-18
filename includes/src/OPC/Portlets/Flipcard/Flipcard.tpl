@@ -1,8 +1,7 @@
 {$uid = $instance->getUid()}
 {$trigger = $instance->getProperty('flip-trigger')}
 
-<div id="{$uid}" {if $isPreview}{$instance->getDataAttributeString()}{/if}
-     {$instance->getAnimationDataAttributeString()}
+<div id="{$uid}" {$instance->getAnimationDataAttributeString()}
      class="opc-Flipcard opc-Flipcard-{$instance->getProperty('flip-dir')} {$instance->getAnimationClass()}"
      style="{$instance->getStyleString()}">
     {if $isPreview}

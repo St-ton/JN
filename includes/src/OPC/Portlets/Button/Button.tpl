@@ -14,8 +14,7 @@
     {$target = '_blank'}
 {/if}
 
-<div {if $isPreview}data-portlet="{$instance->getDataAttribute()}"{/if}
-        class="opc-Button"
+<div class="opc-Button"
         {if $instance->getProperty('align') !== 'block'}
             style="text-align: {$instance->getProperty('align')}"
         {/if}>

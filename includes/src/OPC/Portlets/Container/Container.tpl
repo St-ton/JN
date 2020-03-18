@@ -3,10 +3,6 @@
 {$data  = $instance->getAnimationData()}
 {$fluid = $instance->getProperty('boxed') === false}
 
-{if $isPreview}
-    {$data = $data|array_merge:['portlet' => $instance->getDataAttribute()]}
-{/if}
-
 {if $instance->getProperty('background-flag') === 'still' && !empty($instance->getProperty('still-src'))}
     {$name = basename($instance->getProperty('still-src'))}
     {$imgAttribs = $instance->getImageAttributes($instance->getProperty('still-src'))}

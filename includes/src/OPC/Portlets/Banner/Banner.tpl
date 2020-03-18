@@ -2,7 +2,6 @@
 
 <div style="{$instance->getStyleString()}"
      class="banner {$instance->getAnimationClass()}"
-     {if $isPreview}data-portlet="{$instance->getDataAttribute()}"{/if}
      {$instance->getAnimationDataAttributeString()}>
     {image
         src=$imgAttribs.src

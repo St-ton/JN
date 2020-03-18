@@ -12703,6 +12703,9 @@ ul li:last-child, ol li:last-child {
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+  .table-responsive td {
+    padding: 0.5rem;
+  }
 }
 
 .tooltip-inner {

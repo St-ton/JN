@@ -34,7 +34,7 @@ class Migration_20200305191200 extends Migration implements IMigration
           `id` int(11) NOT NULL AUTO_INCREMENT,
           `consentID` int(11) NOT NULL,
           `languageID` int(11) NOT NULL,
-          `tos` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+          `privacyPolicy` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
           `description` text COLLATE utf8_unicode_ci NOT NULL,
           `purpose` text COLLATE utf8_unicode_ci NOT NULL,
           `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,

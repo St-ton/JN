@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Consent;
 
@@ -13,15 +9,14 @@ use JTL\Plugin\Admin\InputType;
 
 /**
  * Class ConsentLocalizationModel
- *
- * @package JTL\ChangeMe
+ * @package JTL\Consent
  * @property int    $id
  * @property int    $languageID
  * @method int getLanguageID()
  * @method void setLanguageID(int $value)
- * @property string $tos
- * @method string getTos()
- * @method void setTos(string $value)
+ * @property string $privacyPolicy
+ * @method string getPrivacyPolicy()
+ * @method void setPrivacyPolicy(string $value)
  * @property string $name
  * @method string getName()
  * @method void setName(string $value)
@@ -85,10 +80,10 @@ final class ConsentLocalizationModel extends DataModel
             $langID           = DataAttribute::create('languageID', 'int', null, false);
             $langID->getInputConfig()->setModifyable(false);
             $langID->getInputConfig()->setInputType(InputType::NUMBER);
-            $attributes['languageID'] = $langID;
-            $attributes['tos']        = DataAttribute::create('tos', 'varchar', null, false);
-            $attributes['name']       = DataAttribute::create('name', 'varchar', null, false);
-            $description              = DataAttribute::create('description', 'text', null, false);
+            $attributes['languageID']    = $langID;
+            $attributes['privacyPolicy'] = DataAttribute::create('privacyPolicy', 'varchar', null, false);
+            $attributes['name']          = DataAttribute::create('name', 'varchar', null, false);
+            $description                 = DataAttribute::create('description', 'text', null, false);
             $description->getInputConfig()->setInputType(InputType::TEXTAREA);
             $attributes['description'] = $description;
             $purpose                   = DataAttribute::create('purpose', 'text', null, false);

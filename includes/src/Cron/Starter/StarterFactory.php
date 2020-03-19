@@ -45,7 +45,6 @@ class StarterFactory
                 $this->starter->setURL(Shop::getURL() . '/' . \PFAD_INCLUDES . 'cron_inc.php');
                 break;
             case 'N':
-            case 'tpl':
             default:
                 $this->starter = new DummyStarter();
                 break;

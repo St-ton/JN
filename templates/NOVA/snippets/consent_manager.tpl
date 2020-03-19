@@ -41,8 +41,8 @@
 
 			<hr />
 
-            {foreach $consentItems as $item}
-	            {$id = $item->getID()}
+			{foreach $consentItems as $item}
+				{$id = $item->getID()}
 				<div class="consent-switch">
 					<input type="checkbox" class="consent-input" id="consent-{$id}" name="consent-{$id}" data-storage-key="{$item->getItemID()}">
 					<label class="consent-label" for="consent-{$id}">{$item->getName()}</label>
@@ -64,7 +64,7 @@
 				</div>
 
 				<hr />
-            {/foreach}
+			{/foreach}
 
 			<div class="consent-switch">
 				<input type="checkbox" class="consent-input" id="consent-all-2" name="consent-all-2" data-toggle="consent-all">
@@ -101,7 +101,7 @@
 				<span class="consent-display-2" id="consent-confirm-info-headline">{{headline}}</span>
 				<span class="consent-help" id="consent-confirm-info-help">{{description}}</span>
 				<div class="consent-help consent-more-description consent-hidden" id="consent-confirm-info-description"></div>
-                {/literal}
+				{/literal}
 			</div>
 
 			<div class="consent-btn-helper">

@@ -87,7 +87,7 @@
                                                         </div>
                                                         {if $oGruppe->getAnzeigeTyp() == $smarty.const.KONFIG_ANZEIGE_TYP_CHECKBOX}
                                                             {assign var=itemQuantity value=$oItem->getInitial()}
-                                                            {if isset($nKonfigitemAnzahl_arr) && array_key_exists($oItem->getKonfigitem(), $nKonfiggruppeAnzahl_arr)}
+                                                            {if !empty($nKonfigitemAnzahl_arr[$oItem->getKonfigitem()])}
                                                                 {assign var=itemQuantity value=$nKonfigitemAnzahl_arr[$oItem->getKonfigitem()]}
                                                             {/if}
                                                             {if $oItem->getMin() === $oItem->getMax()}

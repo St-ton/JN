@@ -93,10 +93,19 @@ trait MigrationTableTrait
 
     /**
      * @param string $key
+     * @param string|null $section
      */
-    public function removeLocalization($key): void
+    public function removeLocalization($key, $section = null): void
     {
-        $this->execute("DELETE FROM tsprachwerte WHERE cName = '{$key}'");
+        if ($section) {
+            $this->execute(
+                "DELETE tsprachwerte
+                    FROM tsprachwerte
+                    INNER JOIN tsprachsektion USING(kSprachsektion)
+                    WHERE tsprachwerte.cName = '{$key}' AND tsprachsektion.cName = '{$section}';");
+        } else {
+            $this->execute("DELETE FROM tsprachwerte WHERE cName = '{$key}'");
+        }
     }
 
     /**

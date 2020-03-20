@@ -73,7 +73,7 @@ class cache_redis implements ICachingMethod
                     $res = $redis->select((int)$database);
                 }
             } catch (RedisException $e) {
-                Jtllog::writeLog('RedisException: ' . $e->getMessage(), JTLLOG_LEVEL_ERROR);
+                Jtllog::writeLog('RedisException: ' . $e->getMessage(), JTLLOG_LEVEL_ERROR, true);
 
                 return false;
             }

@@ -51,7 +51,8 @@ switch ($action) {
 
             $redirectUrl = sprintf(
                 '%s?%s',
-                'https://auth.jtl-test.de/link',
+                //'https://auth.jtl-test.de/link',
+                'https://oauth2.api.jtl-software.com/link',
                 http_build_query($query, '', '&')
             );
 

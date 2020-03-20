@@ -1454,7 +1454,7 @@ class Artikel
                 'height' => $height
             ],
             'type' => $type,
-            'alt'  => $image->cAltAttribut
+            'alt'  => htmlspecialchars($image->cAltAttribut, ENT_COMPAT | ENT_HTML401, JTL_CHARSET)
         ];
     }
 

@@ -120,14 +120,14 @@ class Bewertung
      */
     public function sanitizeRatingData(stdClass $item): void
     {
-        $item->kBewertung       = (int)$item->kBewertung;
-        $item->kArtikel         = (int)$item->kArtikel;
-        $item->kKunde           = (int)$item->kKunde;
-        $item->kSprache         = (int)$item->kSprache;
-        $item->nHilfreich       = (int)$item->nHilfreich;
-        $item->nNichtHilfreich  = (int)$item->nNichtHilfreich;
-        $item->nSterne          = (int)$item->nSterne;
-        $item->nAktiv           = (int)$item->nAktiv;
+        $item->kBewertung      = (int)$item->kBewertung;
+        $item->kArtikel        = (int)$item->kArtikel;
+        $item->kKunde          = (int)$item->kKunde;
+        $item->kSprache        = (int)$item->kSprache;
+        $item->nHilfreich      = (int)$item->nHilfreich;
+        $item->nNichtHilfreich = (int)$item->nNichtHilfreich;
+        $item->nSterne         = (int)$item->nSterne;
+        $item->nAktiv          = (int)$item->nAktiv;
     }
 
     /**

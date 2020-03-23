@@ -34,7 +34,7 @@ class Manager implements ManagerInterface
      */
     public function itemRevokeConsent(ItemInterface $item): void
     {
-        $consents = $this->getConsents();
+        $consents                     = $this->getConsents();
         $consents[$item->getItemID()] = false;
         Frontend::set('consents', $consents);
     }
@@ -44,7 +44,7 @@ class Manager implements ManagerInterface
      */
     public function itemGiveConsent(ItemInterface $item): void
     {
-        $consents = $this->getConsents();
+        $consents                     = $this->getConsents();
         $consents[$item->getItemID()] = true;
         Frontend::set('consents', $consents);
     }

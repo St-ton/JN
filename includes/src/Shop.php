@@ -17,6 +17,8 @@ use JTL\Cache\JTLCache;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Wishlist\Wishlist;
+use JTL\Consent\Manager;
+use JTL\Consent\ManagerInterface;
 use JTL\Cron\Admin\Controller as CronController;
 use JTL\Cron\Starter\StarterFactory;
 use JTL\DB\DbInterface;
@@ -32,6 +34,7 @@ use JTL\Filesystem\Filesystem;
 use JTL\Filter\Config;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\ProductFilter;
+use JTL\Helpers\Form;
 use JTL\Helpers\PHPSettings;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
@@ -907,6 +910,10 @@ final class Shop
      */
     public static function run(): ProductFilter
     {
+        if (Request::postVar('action') === 'updateconsent' && Form::validateToken()) {
+            $manager = new Manager();
+            die(\json_encode((object)['status' => 'OK', 'data' => $manager->save(Request::postVar('data'))]));
+        }
         self::$kKonfigPos             = Request::verifyGPCDataInt('ek');
         self::$kKategorie             = Request::verifyGPCDataInt('k');
         self::$kArtikel               = Request::verifyGPCDataInt('a');
@@ -1005,6 +1012,7 @@ final class Shop
             \header('Location: ' . LinkService::getInstance()->getStaticRoute('jtl.php') . '?li=1', true, 303);
             exit;
         }
+        self::Container()->get(ManagerInterface::class)->initActiveItems(self::$kSprache);
         $conf = new Config();
         $conf->setLanguageID(self::$kSprache);
         $conf->setLanguages(self::Lang()->getLangArray());
@@ -2154,6 +2162,10 @@ final class Shop
             $validator = new MailValidator($db, $settings->getAll());
 
             return new Mailer($hydrator, $smarty, $settings, $validator);
+        });
+
+        $container->singleton(ManagerInterface::class, static function () {
+            return new Manager();
         });
 
         $container->bind(CronController::class);

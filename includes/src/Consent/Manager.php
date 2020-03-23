@@ -7,32 +7,105 @@
 namespace JTL\Consent;
 
 use Illuminate\Support\Collection;
+use JTL\Session\Frontend;
 use JTL\Shop;
 
+/**
+ * Class Manager
+ * @package JTL\Consent
+ */
 class Manager implements ManagerInterface
 {
-    public function revokeConsent(ItemInterface $item): void
+    /**
+     * @var Collection
+     */
+    private $activeItems;
+
+    /**
+     * @inheritDoc
+     */
+    public function getConsents(): array
     {
-        // TODO: Implement revokeConset() method.
+        return Frontend::get('consents') ?? [];
     }
 
-    public function giveConsent(ItemInterface $item): void
+    /**
+     * @inheritDoc
+     */
+    public function itemRevokeConsent(ItemInterface $item): void
     {
-        // TODO: Implement giveConsent() method.
+        $consents = $this->getConsents();
+        $consents[$item->getItemID()] = false;
+        Frontend::set('consents', $consents);
     }
 
-    public function hasConsent(ItemInterface $item): bool
+    /**
+     * @inheritDoc
+     */
+    public function itemGiveConsent(ItemInterface $item): void
     {
-        // TODO: Implement hasConsent() method.
-        return false;
+        $consents = $this->getConsents();
+        $consents[$item->getItemID()] = true;
+        Frontend::set('consents', $consents);
     }
 
+    /**
+     * @inheritDoc
+     */
+    public function itemHasConsent(ItemInterface $item): bool
+    {
+        return $this->hasConsent($item->getItemID());
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function hasConsent(string $itemID): bool
+    {
+        return (($this->getConsents())[$itemID]) ?? false;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function save($data): ?array
+    {
+        if (!\is_array($data)) {
+            return [];
+        }
+        $consents = [];
+        foreach ($data as $item => $value) {
+            if (!\is_string($item) || !\in_array($value, ['true', 'false'], true)) {
+                continue;
+            }
+            $consents[$item] = $value === 'true';
+        }
+        Frontend::set('consents', $consents);
+
+        return Frontend::get('consents');
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function initActiveItems(int $languageID): Collection
+    {
+        $models = ConsentModel::loadAll(Shop::Container()->getDB(), 'active', 1)->map(
+            static function (ConsentModel $model) use ($languageID) {
+                return (new Item($languageID))->loadFromModel($model);
+            }
+        );
+        \executeHook(CONSENT_MANAGER_GET_ACTIVE_ITEMS, ['items' => $models]);
+        $this->activeItems = $models;
+
+        return $this->activeItems;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getActiveItems(int $languageID): Collection
     {
-        $all = ConsentModel::loadAll(Shop::Container()->getDB(), 'active', 1);
-
-        return $all->filter(static function (ConsentModel $model) use ($languageID) {
-            return $model->initFrontend($languageID) === true;
-        });
+        return $this->activeItems ?? $this->initActiveItems($languageID);
     }
 }

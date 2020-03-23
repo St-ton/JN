@@ -9,6 +9,7 @@ namespace JTL\Services;
 use JTL\Backend\AdminAccount;
 use JTL\Boxes\FactoryInterface;
 use JTL\Cache\JTLCacheInterface;
+use JTL\Consent\ManagerInterface;
 use JTL\DB\DbInterface;
 use JTL\DB\Services\GcServiceInterface;
 use JTL\Debug\JTLDebugBar;
@@ -181,6 +182,14 @@ class Container extends ContainerBase implements DefaultServicesInterface
     public function getAlertService(): AlertServiceInterface
     {
         return $this->get(AlertServiceInterface::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getConsentManager(): ManagerInterface
+    {
+        return $this->get(ManagerInterface::class);
     }
 
     /**

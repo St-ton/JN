@@ -14,6 +14,7 @@ use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Consent\Manager;
+use JTL\Consent\ManagerInterface;
 use JTL\DB\ReturnType;
 use JTL\ExtensionPoint;
 use JTL\Filter\Metadata;
@@ -232,13 +233,11 @@ if (isset($hinweis)) {
     $alertHelper->addAlert(Alert::TYPE_NOTE, $hinweis, 'miscHinweis');
     trigger_error('global $hinweis is deprecated.', \E_USER_DEPRECATED);
 }
-$manager = new Manager();
-
 $smarty->assign('bCookieErlaubt', isset($_COOKIE['JTLSHOP']))
        ->assign('Brotnavi', $nav->createNavigation())
        ->assign('nIsSSL', Request::checkSSL())
        ->assign('boxes', $boxesToShow)
-       ->assign('consentItems', $manager->getActiveItems(\Shop::getLanguageID()))
+       ->assign('consentItems', Shop::Container()->getConsentManager()->getActiveItems(Shop::getLanguageID()))
        ->assign('nZeitGebraucht', isset($nStartzeit) ? (microtime(true) - $nStartzeit) : 0)
        ->assign('Besucherzaehler', $visitorCount)
        ->assign('alertList', Shop::Container()->getAlertService())

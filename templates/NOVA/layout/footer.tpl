@@ -22,14 +22,19 @@
                     data.settings[type] = true;
                     document.dispatchEvent(new CustomEvent('consent.updated', { detail: data.settings }));
                 });
-            } else {
-                console.log('Erlaubnis erteilt')
             }
-
         }
         for(let i = 0; i < trigger.length; ++i) {
             trigger[i].addEventListener('click', triggerCall)
         }
+        document.addEventListener('consent.updated', function(e) {
+            $.post('/', {
+                    'action': 'updateconsent',
+                    'jtl_token': '{$smarty.session.jtl_token}',
+                    'data': e.detail
+                }
+            );
+        });
         </script>
     {/inline_script}
 {/block}

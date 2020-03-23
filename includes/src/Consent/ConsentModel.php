@@ -8,6 +8,7 @@ namespace JTL\Consent;
 
 use Exception;
 use Illuminate\Support\Collection;
+use JTL\DB\DbInterface;
 use JTL\Model\DataAttribute;
 use JTL\Model\DataModel;
 use JTL\Plugin\Admin\InputType;
@@ -18,6 +19,8 @@ use JTL\Plugin\Admin\InputType;
  * @package JTL\Consent
  * @property int    $id
  * @property string $itemID
+ * @method int getId()
+ * @method void setId(int $id)
  * @method string getItemID()
  * @method void setItemID(string $value)
  * @property string $company
@@ -33,12 +36,6 @@ use JTL\Plugin\Admin\InputType;
  */
 final class ConsentModel extends DataModel
 {
-
-    /**
-     * @var ConsentLocalizationModel
-     */
-    private $currentLocalization;
-
     /**
      * @inheritdoc
      */
@@ -55,22 +52,6 @@ final class ConsentModel extends DataModel
     public function setKeyName($keyName): void
     {
         throw new Exception(__METHOD__ . ': setting of keyname is not supported', self::ERR_DATABASE);
-    }
-
-    /**
-     * @return int
-     */
-    public function getID(): int
-    {
-        return $this->id;
-    }
-
-    /**
-     * @param int $id
-     */
-    public function setID(int $id): void
-    {
-        $this->id = $id;
     }
 
     /**
@@ -115,61 +96,6 @@ final class ConsentModel extends DataModel
 
             return $res;
         });
-    }
-
-    /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return $this->getCurrentLocalization()->getName();
-    }
-
-    /**
-     * @param int|null $idx
-     * @return string
-     */
-    public function getPrivacyPolicy(int $idx = null): string
-    {
-        return $this->getCurrentLocalization()->getPrivacyPolicy();
-    }
-
-    /**
-     * @return string
-     */
-    public function getPurpose(): string
-    {
-        return $this->getCurrentLocalization()->getPurpose();
-    }
-
-    /**
-     * @return string
-     */
-    public function getDescription(): string
-    {
-        return $this->getCurrentLocalization()->getDescription();
-    }
-
-    /**
-     * @param int|null $languageID
-     * @return ConsentLocalizationModel
-     */
-    public function getCurrentLocalization(int $languageID = null): ConsentLocalizationModel
-    {
-        return $this->currentLocalization;
-    }
-
-    /**
-     * @param int $languageID
-     * @return bool
-     */
-    public function initFrontend(int $languageID): bool
-    {
-        $this->currentLocalization = $this->getLocalization()->first(static function (ConsentLocalizationModel $e) use ($languageID) {
-                return $e->getLanguageID() === $languageID;
-        }) ?? $this->getLocalization()->first();
-
-        return $this->currentLocalization !== null;
     }
 
     /**

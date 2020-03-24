@@ -13,6 +13,9 @@ $fileInitialPreviewConfig      |         | array with json - config of initial p
 $fileInitialPreview            |         | array with html of the preview images
 $fileUploadAsync               | false   | upload file asynchronously
 $fileBrowseClear               | false   | clear file when browsing for new file
+$fileShowUpload                | false   | show upload button
+$fileShowRemove                | false   | show remove button
+$fileShowCancel                | false   | show cancel button
 $fileOverwriteInitial          | true    | override initial file
 $fileDefaultBrowseEvent        | true    | set false and created a custom .on("filebrowse") event
 $fileDefaultBatchSelectedEvent | true    | set false and created a custom .on("filebatchselected") event
@@ -29,9 +32,9 @@ $fileDefaultUploadErrorEvent   | true    | set false and created a custom .on("f
         deleteUrl: '{$fileDeleteUrl}',
         {/if}
         autoOrientImage: false,
-        showUpload: false,
-        showRemove: false,
-        showCancel: false,
+        showUpload: {$fileShowUpload|default:'false'},
+        showRemove: {$fileShowRemove|default:'false'},
+        showCancel: {$fileShowCancel|default:'false'},
         uploadAsync: {$fileUploadAsync|default:'false'},
         showPreview: {$filePreview|default:'false'},
         initialPreviewShowDelete: false,
@@ -72,7 +75,7 @@ $fileDefaultUploadErrorEvent   | true    | set false and created a custom .on("f
                 $('{$fileID}').fileinput('clear');
             {/if}
             $('{$fileID}-upload-success').hide().addClass('hidden');
-            $('{$fileID}-upload-error').hide().addClass('hidden');
+            $('{$fileID}-upload-error').html('').hide().addClass('hidden');
         });
     {/if}
     {if $fileDefaultBatchSelectedEvent|default:true}

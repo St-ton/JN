@@ -125,16 +125,16 @@
                         fileAllowedExtensions="['zip']"
                         fileMaxSize=100000
                         fileOverwriteInitial='false'
-                        fileDefaultUploadErrorEvent=false
+                        fileShowUpload=true
+                        fileShowRemove=true
+                        fileShowCancel=true
                         fileDefaultBatchSelectedEvent=false
                     }
                     <script>
                         let defaultError = '{__('errorPluginUpload')}',
                             $fi          = $('#plugin-install-upload');
                         {literal}
-                        $fi.on('fileuploaderror', function(event, data, msg) {
-                            $('#plugin-upload-error').html(msg).show().removeClass('hidden');
-                        }).on('fileuploaded', function(event, data, previewId, index) {
+                        $fi.on('fileuploaded', function(event, data, previewId, index) {
                             var response = data.response,
                                 alert = $('#plugin-upload-error');
                             if (response.status === 'OK') {
@@ -166,8 +166,8 @@
                         });
                         {/literal}
                     </script>
-                    <div id="plugin-upload-success" class="alert alert-info hidden">{__('successPluginUpload')}</div>
-                    <div id="plugin-upload-error" class="alert alert-danger hidden"></div>
+                    <div id="plugin-install-upload-upload-success" class="alert alert-info hidden">{__('successPluginUpload')}</div>
+                    <div id="plugin-install-upload-upload-error" class="alert alert-danger hidden"></div>
                 </div>
             </div>
         </div>

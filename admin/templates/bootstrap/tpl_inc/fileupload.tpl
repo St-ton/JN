@@ -1,6 +1,6 @@
 {*
 -----------------------------------------------------------------------------------
-variable name             | default | description
+variable name                  | default | description
 -----------------------------------------------------------------------------------
 $fileID                        |         | id of file input
 $fileAllowedExtensions         | ----->  | default: ['jpg', 'jpeg', 'jpe', 'gif', 'png', 'bmp', 'svg']
@@ -21,8 +21,11 @@ $fileDefaultBrowseEvent        | true    | set false and created a custom .on("f
 $fileDefaultBatchSelectedEvent | true    | set false and created a custom .on("filebatchselected") event
 $fileDefaultUploadSuccessEvent | true    | set false and created a custom .on("filebatchuploadsuccess") event
 $fileDefaultUploadErrorEvent   | true    | set false and created a custom .on("fileuploaderror") event
+$fileSuccessMsg                | false   | success message after upload
+$fileErrorMsg                  | false   | error message while uploading - automatically generated
 -----------------------------------------------------------------------------------
 *}
+{$fileIDNoHashtag = substr($fileID,1)}
 <script>
     $('{$fileID}').fileinput({
         {if isset($fileUploadUrl)}
@@ -35,6 +38,9 @@ $fileDefaultUploadErrorEvent   | true    | set false and created a custom .on("f
         showUpload: {$fileShowUpload|default:'false'},
         showRemove: {$fileShowRemove|default:'false'},
         showCancel: {$fileShowCancel|default:'false'},
+        cancelClass: 'btn btn-outline-primary',
+        uploadClass: 'btn btn-outline-primary',
+        removeClass: 'btn btn-outline-primary',
         uploadAsync: {$fileUploadAsync|default:'false'},
         showPreview: {$filePreview|default:'false'},
         initialPreviewShowDelete: false,
@@ -95,7 +101,18 @@ $fileDefaultUploadErrorEvent   | true    | set false and created a custom .on("f
     {if $fileDefaultUploadErrorEvent|default:true}
         $('{$fileID}').on('fileuploaderror', function(event, data, msg) {
             $('{$fileID}-upload-error').show().removeClass('hidden');
-            $('{$fileID}-upload-error').append('<p style="margin-top:20px">'+msg+'</p>')
+            $('{$fileID}-upload-error').append('<p style="margin-top:20px">' + msg + '</p>')
         });
     {/if}
 </script>
+
+{if $fileSuccessMsg|default:false}
+    <div id="{$fileIDNoHashtag}-upload-success" class="alert alert-success hidden mt-3">
+        {$fileSuccessMsg}
+    </div>
+{/if}
+{if $fileErrorMsg|default:false}
+    <div id="{$fileIDNoHashtag}-upload-error" class="alert alert-danger hidden mt-3">
+        {$fileErrorMsg|default:''}
+    </div>
+{/if}

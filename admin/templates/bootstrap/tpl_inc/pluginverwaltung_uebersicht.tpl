@@ -127,8 +127,9 @@
                         fileOverwriteInitial='false'
                         fileShowUpload=true
                         fileShowRemove=true
-                        fileShowCancel=true
                         fileDefaultBatchSelectedEvent=false
+                        fileSuccessMsg="{__('successPluginUpload')}"
+                        fileErrorMsg=true
                     }
                     <script>
                         let defaultError = '{__('errorPluginUpload')}',
@@ -136,7 +137,7 @@
                         {literal}
                         $fi.on('fileuploaded', function(event, data, previewId, index) {
                             var response = data.response,
-                                alert = $('#plugin-upload-error');
+                                alert = $('#plugin-install-upload-upload-error');
                             if (response.status === 'OK') {
                                 alert.hide();
                                 var wasActiveVerfuegbar = $('#verfuegbar').hasClass('active'),
@@ -145,7 +146,7 @@
                                 $('#fehlerhaft').replaceWith(response.html.erroneous);
                                 $('a[href="#fehlerhaft"]').find('.badge').html(response.html.erroneous_count);
                                 $('a[href="#verfuegbar"]').find('.badge').html(response.html.available_count);
-                                $('#plugin-upload-success').show().removeClass('hidden');
+                                $('#plugin-install-upload-upload-success').show().removeClass('hidden');
                                 if (wasActiveFehlerhaft) {
                                     $('#fehlerhaft').addClass('active show');
                                 } else if (wasActiveVerfuegbar) {
@@ -166,8 +167,6 @@
                         });
                         {/literal}
                     </script>
-                    <div id="plugin-install-upload-upload-success" class="alert alert-info hidden">{__('successPluginUpload')}</div>
-                    <div id="plugin-install-upload-upload-error" class="alert alert-danger hidden"></div>
                 </div>
             </div>
         </div>

@@ -17,6 +17,8 @@
                     fileDeleteUrl="{$shopURL}/{$PFAD_ADMIN}shoplogouploader.php?token={$smarty.session.jtl_token}"
                     filePreview=$ShopLogo|strlen > 0
                     fileBrowseClear=true
+                    fileSuccessMsg="{__('successLogoUpload')}"
+                    fileErrorMsg="{{__('errorLogoUpload')}|sprintf:{$smarty.const.PFAD_SHOPLOGO}}"
                     fileInitialPreview="[
                             '<img src=\"{$ShopLogoURL}\" class=\"file-preview-image img-fluid\" alt=\"Logo\" title=\"Logo\" />'
                         ]"
@@ -31,10 +33,6 @@
                             }
                         ]"
                     }
-                    <div class="mt-3">
-                        <div id="shoplogo-upload-upload-success" class="alert alert-info hidden">{__('successLogoUpload')}</div>
-                        <div id="shoplogo-upload-upload-error" class="alert alert-danger hidden">{{__('errorLogoUpload')}|sprintf:{$smarty.const.PFAD_SHOPLOGO}}</div>
-                    </div>
                 </div>
             </div>
         </div>

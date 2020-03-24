@@ -117,29 +117,23 @@
                         </div>
                         <hr>
                     </form>
+                    {include file='tpl_inc/fileupload.tpl'
+                        fileID='#plugin-install-upload'
+                        fileUploadUrl="{$shopURL}/{$PFAD_ADMIN}pluginverwaltung.php"
+                        fileBrowseClear=true
+                        fileUploadAsync=true
+                        fileAllowedExtensions="['zip']"
+                        fileMaxSize=100000
+                        fileOverwriteInitial='false'
+                        fileDefaultUploadErrorEvent=false
+                        fileDefaultBatchSelectedEvent=false
+                    }
                     <script>
-                        var uploadURL = '{$shopURL}/{$PFAD_ADMIN}pluginverwaltung.php',
-                            lang = '{$language|mb_substr:0:2}',
-                            defaultError = '{__('errorPluginUpload')}';
+                        let defaultError = '{__('errorPluginUpload')}',
+                            $fi          = $('#plugin-install-upload');
                         {literal}
-                        $('#plugin-install-upload').fileinput({
-                            uploadUrl: uploadURL,
-                            allowedFileExtensions : ['zip'],
-                            overwriteInitial: false,
-                            showPreview: false,
-                            cancelClass: 'btn btn-outline-primary',
-                            language: lang,
-                            maxFileSize: 100000,
-                            maxFilesNum: 1
-                        }).on('fileuploaderror', function(event, data, msg) {
-                            var response = data.response,
-                                alert = $('#plugin-upload-error');
-                            if (response.error.length > 0) {
-                                alert.html(defaultError + ': ' + response.error);
-                            } else {
-                                alert.html(defaultError);
-                            }
-                            alert.show().removeClass('hidden');
+                        $fi.on('fileuploaderror', function(event, data, msg) {
+                            $('#plugin-upload-error').html(msg).show().removeClass('hidden');
                         }).on('fileuploaded', function(event, data, previewId, index) {
                             var response = data.response,
                                 alert = $('#plugin-upload-error');
@@ -165,11 +159,10 @@
                                 }
                                 alert.show().removeClass('hidden');
                             }
-                            var fi = $('#plugin-install-upload');
-                            fi.fileinput('reset');
-                            fi.fileinput('clear');
-                            fi.fileinput('refresh');
-                            fi.fileinput('enable');
+                            $fi.fileinput('reset');
+                            $fi.fileinput('clear');
+                            $fi.fileinput('refresh');
+                            $fi.fileinput('enable');
                         });
                         {/literal}
                     </script>

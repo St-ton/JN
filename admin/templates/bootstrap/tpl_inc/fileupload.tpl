@@ -13,6 +13,7 @@ $fileInitialPreviewConfig      |         | array with json - config of initial p
 $fileInitialPreview            |         | array with html of the preview images
 $fileUploadAsync               | false   | upload file asynchronously
 $fileBrowseClear               | false   | clear file when browsing for new file
+$fileOverwriteInitial          | true    | override initial file
 $fileDefaultBrowseEvent        | true    | set false and created a custom .on("filebrowse") event
 $fileDefaultBatchSelectedEvent | true    | set false and created a custom .on("filebatchselected") event
 $fileDefaultUploadSuccessEvent | true    | set false and created a custom .on("filebatchuploadsuccess") event
@@ -48,7 +49,7 @@ $fileDefaultUploadErrorEvent   | true    | set false and created a custom .on("f
             {else}
                 {$fileAllowedExtensions}
             {/if},
-        overwriteInitial: true,
+        overwriteInitial: {$fileOverwriteInitial|default:'true'},
         {if $fileIsSingle|default:true}
         initialPreviewCount: 1,
         {/if}

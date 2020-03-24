@@ -151,22 +151,22 @@
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <input class="form-control-upload" name="previewImage" id="previewImage" type="file"/>
                                 {include file='tpl_inc/fileupload.tpl'
-                                fileID='#previewImage'
-                                filePreview=true
-                                fileMaxSize={$nMaxFileSize}
-                                fileInitialPreview="[
-                                        {if !empty($oNews->getPreviewImage())}
-                                        '<img src=\"{$shopURL}/{$oNews->getPreviewImage()}\" class=\"preview-image\"/>',
-                                        {/if}
-                                    ]"
-                                fileInitialPreviewConfig="[
-                                        {if !empty($oNews->getPreviewImage())}
-                                        {
-                                            caption: '{__('preview')}',
-                                            width:   '120px'
-                                        }
-                                        {/if}
-                                    ]"
+                                    fileID='#previewImage'
+                                    filePreview=true
+                                    fileMaxSize={$nMaxFileSize}
+                                    fileInitialPreview="[
+                                            {if !empty($oNews->getPreviewImage())}
+                                            '<img src=\"{$shopURL}/{$oNews->getPreviewImage()}\" class=\"preview-image\"/>',
+                                            {/if}
+                                        ]"
+                                    fileInitialPreviewConfig="[
+                                            {if !empty($oNews->getPreviewImage())}
+                                            {
+                                                caption: '{__('preview')}',
+                                                width:   '120px'
+                                            }
+                                            {/if}
+                                        ]"
                                 }
                             </div>
                         </div>

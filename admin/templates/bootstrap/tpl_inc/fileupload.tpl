@@ -113,6 +113,6 @@ $fileErrorMsg                  | false   | error message while uploading - autom
 {/if}
 {if $fileErrorMsg|default:false}
     <div id="{$fileIDNoHashtag}-upload-error" class="alert alert-danger hidden mt-3">
-        {$fileErrorMsg|default:''}
+        {$fileErrorMsg}
     </div>
 {/if}

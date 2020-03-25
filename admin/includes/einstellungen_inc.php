@@ -298,36 +298,39 @@ function sortiereEinstellungen($config)
 /**
  * @param array $confData
  * @param string $filter
+ * @param array $keys
  * @return array
  */
-function filteredConfData(array $confData, string $filter): array
+function filteredConfData(array $confData, string $filter, array $keys = []): array
 {
-    $keys = [
-        'configgroup_5_product_question' => [
-            'configgroup_5_product_question',
-            'artikeldetails_fragezumprodukt_anzeigen',
-            'artikeldetails_fragezumprodukt_email',
-            'produktfrage_abfragen_anrede',
-            'produktfrage_abfragen_vorname',
-            'produktfrage_abfragen_nachname',
-            'produktfrage_abfragen_firma',
-            'produktfrage_abfragen_tel',
-            'produktfrage_abfragen_fax',
-            'produktfrage_abfragen_mobil',
-            'produktfrage_kopiekunde',
-            'produktfrage_sperre_minuten',
-            'produktfrage_abfragen_captcha'
-        ],
-        'configgroup_5_product_available' => [
-            'configgroup_5_product_available',
-            'benachrichtigung_nutzen',
-            'benachrichtigung_abfragen_vorname',
-            'benachrichtigung_abfragen_nachname',
-            'benachrichtigung_sperre_minuten',
-            'benachrichtigung_abfragen_captcha',
-            'benachrichtigung_min_lagernd'
-        ]
-    ];
+    if (empty($keys)) {
+        $keys = [
+            'configgroup_5_product_question'  => [
+                'configgroup_5_product_question',
+                'artikeldetails_fragezumprodukt_anzeigen',
+                'artikeldetails_fragezumprodukt_email',
+                'produktfrage_abfragen_anrede',
+                'produktfrage_abfragen_vorname',
+                'produktfrage_abfragen_nachname',
+                'produktfrage_abfragen_firma',
+                'produktfrage_abfragen_tel',
+                'produktfrage_abfragen_fax',
+                'produktfrage_abfragen_mobil',
+                'produktfrage_kopiekunde',
+                'produktfrage_sperre_minuten',
+                'produktfrage_abfragen_captcha'
+            ],
+            'configgroup_5_product_available' => [
+                'configgroup_5_product_available',
+                'benachrichtigung_nutzen',
+                'benachrichtigung_abfragen_vorname',
+                'benachrichtigung_abfragen_nachname',
+                'benachrichtigung_sperre_minuten',
+                'benachrichtigung_abfragen_captcha',
+                'benachrichtigung_min_lagernd'
+            ]
+        ];
+    }
 
     if ($filter !== '' && isset($keys[$filter])) {
         $keysToFilter = $keys[$filter];

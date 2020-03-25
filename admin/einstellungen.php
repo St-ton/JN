@@ -163,8 +163,8 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && $sectionID > 0 && Form
 
 if ($step === 'uebersicht') {
     $sections     = $db->query(
-        'SELECT * 
-            FROM teinstellungensektion 
+        'SELECT *
+            FROM teinstellungensektion
             ORDER BY kEinstellungenSektion',
         ReturnType::ARRAY_OF_OBJECTS
     );
@@ -203,7 +203,7 @@ if ($step === 'einstellungen bearbeiten') {
         $confData = $db->query(
             'SELECT *
                 FROM teinstellungenconf
-                WHERE nModul = 0 
+                WHERE nModul = 0
                     AND nStandardAnzeigen = 1
                     AND kEinstellungenSektion = ' . (int)$section->kEinstellungenSektion . ' ' .
                 $sql->cWHERE . '
@@ -259,10 +259,19 @@ if ($step === 'einstellungen bearbeiten') {
                 ? Text::htmlentities($setValue->cWert)
                 : null;
         }
+
         $sectionItem->setValue($config, $setValue);
         $oSections[(int)$config->kEinstellungenSektion] = $sectionItem;
     }
 
+    if (!extension_loaded('soap')) {
+        $keys = [
+            'configgroup_6_vat_id' => [
+                'shop_ustid_bzstpruefung',
+                'shop_ustid_force_remote_check'
+            ]];
+        $confData = filteredConfData($confData, Request::verifyGPDataString('group'), $keys);
+    }
     $smarty->assign('Sektion', $section)
            ->assign('Conf', filteredConfData($confData, Request::verifyGPDataString('group')))
            ->assign(

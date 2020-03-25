@@ -2149,6 +2149,12 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
                             $ret['ustid_err'] = $resultVatCheck['errorcode'] . ',' . $resultVatCheck['errorinfo'];
                         }
                         break;
+                    case 'core':
+                        // if we have problems like "no module php_soap" we create a log entry
+                        // (use case: the module and the vat-check was formerly activated yet
+                        // but the php-module is disabled now)
+                        Shop::Container()->getLogService()->warn($resultVatCheck['errorinfo']);
+                        break;
                 }
             }
         }

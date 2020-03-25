@@ -4,6 +4,7 @@ namespace JTL\Backend;
 
 use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
+use JTL\Jtllog;
 use JTL\Shop;
 use JTL\xtea\XTEA;
 
@@ -208,7 +209,7 @@ class AuthToken
         if (!self::isEditable()) {
             return;
         }
-
+        Shop::Container()->getLogService()->addDebug('requestToken: ' . $authCode);
         $this->reset($authCode);
         header('location: ' . self::AUTH_SERVER . '?' . http_build_query([
                 'url'  => $returnURL,
@@ -225,14 +226,16 @@ class AuthToken
     {
         $authCode = (string)Request::postVar('code');
         $token    = (string)Request::postVar('token');
-
+        Shop::Container()->getLogService()->addDebug('responseToken: ' . $authCode . ' / ' . $token);
         if ($authCode !== null && $token !== null) {
             $this->set($authCode, $token);
+            Shop::Container()->getLogService()->addDebug('responseToken: ' . ($this->isValid() ? '200' : '404'));
             http_response_code($this->isValid() ? 200 : 404);
 
             exit;
         }
 
+        Shop::Container()->getLogService()->addDebug('responseToken: 404');
         http_response_code(404);
 
         exit;

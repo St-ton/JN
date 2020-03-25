@@ -444,14 +444,18 @@ function getJTLVersionDB(bool $bDate = false)
 {
     $ret         = 0;
     $versionData = Shop::Container()->getDB()->query(
-        'SELECT nVersion, dAktualisiert FROM tversion',
+        'SELECT nVersion FROM tversion',
         ReturnType::SINGLE_OBJECT
     );
     if (isset($versionData->nVersion)) {
         $ret = $versionData->nVersion;
     }
     if ($bDate) {
-        $ret = $versionData->dAktualisiert;
+        $latestUpdate = Shop::Container()->getDB()->query(
+            'SELECT max(dExecuted) as date FROM tmigration',
+            ReturnType::SINGLE_OBJECT
+        );
+        $ret          = $latestUpdate->date;
     }
 
     return $ret;

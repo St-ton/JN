@@ -578,7 +578,12 @@ class Redirect
         foreach ($redirects as $redirect) {
             $redirect->kRedirect            = (int)$redirect->kRedirect;
             $redirect->nCount               = (int)$redirect->nCount;
+            $redirect->cFromUrl             = Text::filterXSS($redirect->cFromUrl);
             $redirect->oRedirectReferer_arr = self::getReferers($redirect->kRedirect);
+
+            foreach ($redirect->oRedirectReferer_arr as $referer) {
+                $referer->cRefererUrl = Text::filterXSS($referer->cRefererUrl);
+            }
         }
 
         return $redirects;

@@ -21,8 +21,21 @@
                 {col}
                     <dl>
                     {foreach name=Variationen from=$Artikel->$VariationsSource key=i item=Variation}
+
                     {strip}
-                        <dt>{$Variation->cName}{if $Variation->cTyp === 'IMGSWATCHES'} <span class="swatches-selected text-muted" data-id="{$Variation->kEigenschaft}"></span>{/if}</dt>
+                        <dt>{$Variation->cName}&nbsp;
+                            {if $Variation->cTyp === 'IMGSWATCHES'}
+                                <span class="swatches-selected text-success" data-id="{$Variation->kEigenschaft}">
+                                {foreach $Variation->Werte as $variationValue}
+                                    {if isset($oVariationKombi_arr[$variationValue->kEigenschaft])
+                                        && in_array($variationValue->kEigenschaftWert, $oVariationKombi_arr[$variationValue->kEigenschaft])}
+                                        {$variationValue->cName}
+                                        {break}
+                                    {/if}
+                                {/foreach}
+                                </span>
+                            {/if}
+                        </dt>
                         <dd class="form-group text-left">
                             {if $Variation->cTyp === 'SELECTBOX'}
                                 {block name='productdetails-variation-select-outer'}

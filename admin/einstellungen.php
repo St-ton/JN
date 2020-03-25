@@ -265,7 +265,7 @@ if ($step === 'einstellungen bearbeiten') {
     }
 
     if (!extension_loaded('soap')) {
-        $keys = [
+        $keys     = [
             'configgroup_6_vat_id' => [
                 'shop_ustid_bzstpruefung',
                 'shop_ustid_force_remote_check'

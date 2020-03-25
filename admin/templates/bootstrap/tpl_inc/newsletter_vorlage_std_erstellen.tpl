@@ -320,25 +320,20 @@
                 {if isset($oNewslettervorlageStd->oNewslettervorlageStdVar_arr) && $oNewslettervorlageStd->oNewslettervorlageStdVar_arr|@count > 0}
                     {foreach $oNewslettervorlageStd->oNewslettervorlageStdVar_arr as $oNewslettervorlageStdVar}
                         {if $oNewslettervorlageStdVar->cTyp === 'BILD'}
-                            {if isset($oNewslettervorlageStdVar->cInhalt) && $oNewslettervorlageStdVar->cInhalt|strlen > 0}
-                                <div class="form-group form-row align-items-center">
-                                    <label class="col col-sm-4 col-form-label text-sm-right"></label>
-                                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                        <img class="img-fluid" src="{$oNewslettervorlageStdVar->cInhalt}?={$nRand}" />
-                                    </div>
-                                </div>
-                            {/if}
                             <div class="form-group form-row align-items-center">
                                 <label class="col col-sm-4 col-form-label text-sm-right" for="kNewslettervorlageStdVar_{$oNewslettervorlageStdVar->kNewslettervorlageStdVar}">{$oNewslettervorlageStdVar->cName}:</label>
                                 <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                    <div class="input-group mb-3">
-                                        <div class="custom-file">
-                                            <input class="custom-file-input" id="kNewslettervorlageStdVar_{$oNewslettervorlageStdVar->kNewslettervorlageStdVar}" name="kNewslettervorlageStdVar_{$oNewslettervorlageStdVar->kNewslettervorlageStdVar}" type="file" accept="image/*" />
-                                            <label class="custom-file-label" for="cBrandingBild">
-                                                <span class="text-truncate">{__('fileSelect')}</span>
-                                            </label>
-                                        </div>
-                                    </div>
+                                    <input class="custom-file-input" id="kNewslettervorlageStdVar_{$oNewslettervorlageStdVar->kNewslettervorlageStdVar}" name="kNewslettervorlageStdVar_{$oNewslettervorlageStdVar->kNewslettervorlageStdVar}" type="file"/>
+                                    {include file='tpl_inc/fileupload.tpl'
+                                        fileID="#kNewslettervorlageStdVar_{$oNewslettervorlageStdVar->kNewslettervorlageStdVar}"
+                                        fileShowRemove=true
+                                        filePreview=true
+                                        fileInitialPreview="[
+                                                {if isset($oNewslettervorlageStdVar->cInhalt) && $oNewslettervorlageStdVar->cInhalt|strlen > 0}
+                                                    '<img class=\"img-fluid\" src=\"{$oNewslettervorlageStdVar->cInhalt}?={$nRand}\" />'
+                                                {/if}
+                                                ]"
+                                            }
                                 </div>
                             </div>
                             <div class="form-group form-row align-items-center">

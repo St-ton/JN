@@ -37,9 +37,6 @@
             <div class="clearall">
                 <div class="no_overflow card" id="settings">
                     <div class="card-body">
-                        <div class="text-center">
-                            <img src="{$oSuchspecialOverlay->getURL($smarty.const.IMAGE_SIZE_SM)}?rnd={$cRnd}" class="mb-3" />
-                        </div>
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="nAktiv">{__('suchspecialoverlayActive')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
@@ -58,14 +55,15 @@
                         <div class="form-group form-row align-items-center file-input">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="cSuchspecialOverlayBild">{__('suchspecialoverlayFileName')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <div class="input-group">
-                                    <div class="custom-file">
-                                        <input class="custom-file-input" type="file" name="cSuchspecialOverlayBild" accept="image/jpeg,image/gif,image/png,image/bmp" id="cSuchspecialOverlayBild" value="" tabindex="1" />
-                                        <label class="custom-file-label" for="cSuchspecialOverlayBild">
-                                            <span class="text-truncate">{__('fileSelect')}</span>
-                                        </label>
-                                    </div>
-                                </div>
+                                <input class="custom-file-input" type="file" name="cSuchspecialOverlayBild" id="cSuchspecialOverlayBild" tabindex="1" />
+                                {include file='tpl_inc/fileupload.tpl'
+                                    fileID='#cSuchspecialOverlayBild'
+                                    fileShowRemove=true
+                                    filePreview=true
+                                    fileInitialPreview="[
+                                            '<img src=\"{$oSuchspecialOverlay->getURL($smarty.const.IMAGE_SIZE_SM)}?rnd={$cRnd}\" class=\"mb-3\" />'
+                                        ]"
+                                }
                             </div>
                             <div class="col-auto ml-sm-n4 order-2 order-sm-3">
                                 {getHelpDesc cDesc=__('suchspecialoverlayFileNameDesc')}

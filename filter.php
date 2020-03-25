@@ -218,7 +218,7 @@ $smarty->assign(
 );
 executeHook(HOOK_FILTER_ENDE);
 
-if (Request::isAjaxRequest()) {
+if (Request::verifyGPCDataInt('useMobileFilters')) {
     $smarty->assign('NaviFilters', $NaviFilter)
         ->assign('show_filters', true)
         ->assign('itemCount', $oSuchergebnisse->getProductCount())

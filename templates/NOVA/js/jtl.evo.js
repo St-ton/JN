@@ -860,7 +860,7 @@
                 self=this;
 
             $wrapper.addClass('loading');
-            $.ajax(href, {data: {'isAjax':1}})
+            $.ajax(href, {data: {'useMobileFilters':1}})
             .done(function(data) {
                 $wrapper.html(data);
                 self.initPriceSlider($wrapper, false);

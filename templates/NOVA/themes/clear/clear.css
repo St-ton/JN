@@ -18656,6 +18656,11 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
   right: -22px;
 }
 
+.variation .badge {
+  display: inline-flex;
+  align-items: center;
+}
+
 aside h4 {
   margin-bottom: 1rem;
 }
@@ -19693,7 +19698,7 @@ aside .last-seen-link {
   display: inline-block;
 }
 .swatches .variation.not-available {
-  border: dashed #b90000;
+  border: dashed 1px #b90000;
 }
 .swatches .variation.not-available .label-variation {
   opacity: 0.5;

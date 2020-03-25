@@ -75,7 +75,7 @@
                             <ul class="pagination">
                                 {block name='snippets-productlist-page-nav-first-page'}
                                     <li class="page-item{if $Suchergebnisse->getPages()->getCurrentPage() == 1} disabled{/if}">
-                                        {link class="page-link" href=$filterPagination->getPrev()->getURL() aria=['label' => {lang key='previous' section='productOverview'}]}<i class="fas fa-long-arrow-alt-left"></i>{/link}
+                                        {link class="page-link js-pagination-ajax" href=$filterPagination->getPrev()->getURL() aria=['label' => {lang key='previous' section='productOverview'}]}<i class="fas fa-long-arrow-alt-left"></i>{/link}
                                     </li>
                                 {/block}
                                 <li class="page-item dropdown">
@@ -88,7 +88,7 @@
                                         {block name='snippets-productlist-page-nav-pages'}
                                             {foreach $filterPagination->getPages() as $page}
                                                 <div class="dropdown-item page-item{if $page->isActive()} active{/if}">
-                                                    {link class="page-link" href=$page->getURL()}<span class="pagination-site">{lang key='page'}</span> {$page->getPageNumber()}{/link}
+                                                    {link class="page-link js-pagination-ajax" href=$page->getURL()}<span class="pagination-site">{lang key='page'}</span> {$page->getPageNumber()}{/link}
                                                 </div>
                                             {/foreach}
                                         {/block}
@@ -96,7 +96,7 @@
                                 </li>
                                 {block name='snippets-productlist-page-nav-last-page'}
                                     <li class="page-item{if $Suchergebnisse->getPages()->getCurrentPage() == $Suchergebnisse->getPages()->getMaxPage()} disabled{/if}">
-                                        {link class="page-link" href=$filterPagination->getNext()->getURL() aria=['label' => {lang key='next' section='productOverview'}]}<i class="fas fa-long-arrow-alt-right"></i>{/link}
+                                        {link class="page-link js-pagination-ajax" href=$filterPagination->getNext()->getURL() aria=['label' => {lang key='next' section='productOverview'}]}<i class="fas fa-long-arrow-alt-right"></i>{/link}
                                     </li>
                                 {/block}
                             </ul>

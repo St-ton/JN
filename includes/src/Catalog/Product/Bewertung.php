@@ -10,6 +10,7 @@ use JTL\DB\ReturnType;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
+use function Functional\each;
 
 /**
  * Class Bewertung
@@ -103,6 +104,7 @@ class Bewertung
                 ReturnType::SINGLE_OBJECT
             );
             if (!empty($data)) {
+                $this->sanitizeRatingData($data);
                 $data->nAnzahlHilfreich = $data->nHilfreich + $data->nNichtHilfreich;
             }
 
@@ -111,6 +113,21 @@ class Bewertung
         }
 
         return $this;
+    }
+
+    /**
+     * @param stdClass $item
+     */
+    public function sanitizeRatingData(stdClass $item): void
+    {
+        $item->kBewertung      = (int)$item->kBewertung;
+        $item->kArtikel        = (int)$item->kArtikel;
+        $item->kKunde          = (int)$item->kKunde;
+        $item->kSprache        = (int)$item->kSprache;
+        $item->nHilfreich      = (int)$item->nHilfreich;
+        $item->nNichtHilfreich = (int)$item->nNichtHilfreich;
+        $item->nSterne         = (int)$item->nSterne;
+        $item->nAktiv          = (int)$item->nAktiv;
     }
 
     /**
@@ -206,6 +223,7 @@ class Bewertung
                 ['customerID' => Frontend::getCustomer()->getID()],
                 ReturnType::ARRAY_OF_OBJECTS
             );
+            each($this->oBewertung_arr, [$this, 'sanitizeRatingData']);
         }
         $total = $db->query(
             'SELECT COUNT(*) AS nAnzahl, tartikelext.fDurchschnittsBewertung AS fDurchschnitt
@@ -241,9 +259,8 @@ class Bewertung
         }
         $this->nSterne_arr = [0, 0, 0, 0, 0];
         foreach ($ratingCounts as $item) {
-            $this->nSterne_arr[5 - $item->nSterne] = $item->nAnzahl;
+            $this->nSterne_arr[5 - (int)$item->nSterne] = (int)$item->nAnzahl;
         }
-
         \executeHook(\HOOK_BEWERTUNG_CLASS_BEWERTUNG, ['oBewertung' => &$this]);
 
         return $this;

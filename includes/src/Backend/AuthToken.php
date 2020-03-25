@@ -26,9 +26,6 @@ class AuthToken
     /** @var string */
     private $token;
 
-    /** @var int */
-    private $owner;
-
     /** @var string */
     private $hash;
 
@@ -57,7 +54,7 @@ class AuthToken
     private function load(): void
     {
         $token = Shop::Container()->getDB()->queryPrepared(
-            'SELECT tstoreauth.owner, tstoreauth.auth_code, tstoreauth.access_token,
+            'SELECT tstoreauth.auth_code, tstoreauth.access_token,
                 tadminlogin.cPass AS hash, tstoreauth.verified
                 FROM tstoreauth
                 INNER JOIN tadminlogin ON tadminlogin.kAdminlogin = tstoreauth.owner
@@ -70,13 +67,11 @@ class AuthToken
             $this->authCode = $token->auth_code;
             $this->token    = $token->access_token;
             $this->hash     = sha1($token->hash);
-            $this->owner    = (int)$token->owner;
             $this->verified = $token->verified;
         } else {
             $this->authCode = null;
             $this->token    = null;
             $this->hash     = null;
-            $this->owner    = 0;
             $this->verified = null;
         }
     }

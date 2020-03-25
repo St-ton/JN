@@ -425,15 +425,17 @@ class IOMethods
     /**
      * @param int $productID
      * @param int $qty
+     * @param array $data
      * @return IOResponse
      * @throws SmartyException
      */
-    public function pushToWishlist(int $productID, $qty): IOResponse
+    public function pushToWishlist(int $productID, int $qty, array $data): IOResponse
     {
+        $_POST       = $data;
         $conf        = Shopsetting::getInstance()->getAll();
         $response    = new stdClass();
         $objResponse = new IOResponse();
-        $qty         = (int)$qty === 0 ? 1 : (int)$qty;
+        $qty         = $qty === 0 ? 1 : $qty;
         $smarty      = Shop::Smarty();
         if (Frontend::getCustomer()->getID() === 0) {
             $response->nType     = 1;
@@ -446,7 +448,7 @@ class IOMethods
             return $objResponse;
         }
         $vals = Shop::Container()->getDB()->selectAll('teigenschaft', 'kArtikel', $productID);
-        if (!empty($vals) && !Product::isParent($productID)) {
+        if (!empty($vals) && empty($_POST['eigenschaftwert']) && !Product::isParent($productID)) {
             // Falls die Wunschliste aus der Artikelübersicht ausgewählt wurde,
             // muss zum Artikel weitergeleitet werden um Variationen zu wählen
             $response->nType     = 1;
@@ -460,7 +462,7 @@ class IOMethods
 
         $_POST['Wunschliste'] = 1;
         $_POST['a']           = $productID;
-        $_POST['n']           = (int)$qty;
+        $_POST['n']           = $qty;
 
         CartHelper::checkAdditions();
 
@@ -632,17 +634,18 @@ class IOMethods
      */
     public function buildConfiguration($aValues): IOResponse
     {
-        $smarty          = Shop::Smarty();
-        $response        = new IOResponse();
-        $product         = new Artikel();
-        $productID       = (int)($aValues['VariKindArtikel'] ?? $aValues['a']);
-        $items           = $aValues['item'] ?? [];
-        $quantities      = $aValues['quantity'] ?? [];
-        $itemQuantities  = $aValues['item_quantity'] ?? [];
-        $variationValues = $aValues['eigenschaftwert'] ?? [];
-        $amount          = $aValues['anzahl'] ?? 1;
-        $invalidGroups   = [];
-        $config          = Product::buildConfig(
+        $_POST['jtl_token'] = $aValues['jtl_token'];
+        $smarty             = Shop::Smarty();
+        $response           = new IOResponse();
+        $product            = new Artikel();
+        $productID          = (int)($aValues['VariKindArtikel'] ?? $aValues['a']);
+        $items              = $aValues['item'] ?? [];
+        $quantities         = $aValues['quantity'] ?? [];
+        $itemQuantities     = $aValues['item_quantity'] ?? [];
+        $variationValues    = $aValues['eigenschaftwert'] ?? [];
+        $amount             = $aValues['anzahl'] ?? 1;
+        $invalidGroups      = [];
+        $config             = Product::buildConfig(
             $productID,
             $amount,
             $variationValues,
@@ -651,7 +654,7 @@ class IOMethods
             $itemQuantities,
             true
         );
-        $net             = Frontend::getCustomerGroup()->getIsMerchant();
+        $net                = Frontend::getCustomerGroup()->getIsMerchant();
         $product->fuelleArtikel($productID);
         $fVKNetto                      = $product->gibPreis($amount, [], Frontend::getCustomerGroup()->getID());
         $fVK                           = [
@@ -837,6 +840,12 @@ class IOMethods
         $product->fuelleArtikel($kVaterArtikel, $options, Frontend::getCustomerGroup()->getID());
         $weightDiff   = 0;
         $newProductNr = '';
+
+        $response         = new stdClass();
+        $response->check  = Wishlist::checkVariOnList($kVaterArtikel, $valueIDs);
+        $response->itemID = $kVaterArtikel;
+
+        $objResponse->script('this.response = ' . \json_encode($response) . ';');
 
         // Alle Variationen ohne Freifeld
         $keyValueVariations = $product->keyValueVariations($product->VariationenOhneFreifeld);

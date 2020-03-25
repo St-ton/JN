@@ -51,39 +51,39 @@ class Updater
      */
     public function verify(): void
     {
-        if (static::$isVerified !== true) {
-            MigrationHelper::verifyIntegrity();
-            $dbVersion      = $this->getCurrentDatabaseVersion();
-            $dbVersionShort = (int)\sprintf('%d%02d', $dbVersion->getMajor(), $dbVersion->getMinor());
-
-            // While updating from 3.xx to 4.xx provide a default admin-template row
-            if ($dbVersionShort < 400) {
-                $count = (int)$this->db->query(
-                    "SELECT * FROM `ttemplate` WHERE `eTyp` = 'admin'",
-                    ReturnType::AFFECTED_ROWS
-                );
-                if ($count === 0) {
-                    $this->db->query(
-                        "ALTER TABLE `ttemplate` 
-                            CHANGE `eTyp` `eTyp` ENUM('standard','mobil','admin') NOT NULL",
-                        ReturnType::AFFECTED_ROWS
-                    );
-                    $this->db->query(
-                        "INSERT INTO `ttemplate` (`cTemplate`, `eTyp`) VALUES ('bootstrap', 'admin')",
-                        ReturnType::AFFECTED_ROWS
-                    );
-                }
-            }
-
-            if ($dbVersionShort < 404) {
-                $this->db->query(
-                    'ALTER TABLE `tversion` CHANGE `nTyp` `nTyp` INT(4) UNSIGNED NOT NULL',
-                    ReturnType::AFFECTED_ROWS
-                );
-            }
-
-            static::$isVerified = true;
+        if (static::$isVerified === true) {
+            return;
         }
+        MigrationHelper::verifyIntegrity();
+        $dbVersion      = $this->getCurrentDatabaseVersion();
+        $dbVersionShort = (int)\sprintf('%d%02d', $dbVersion->getMajor(), $dbVersion->getMinor());
+        // While updating from 3.xx to 4.xx provide a default admin-template row
+        if ($dbVersionShort < 400) {
+            $count = (int)$this->db->query(
+                "SELECT * FROM `ttemplate` WHERE `eTyp` = 'admin'",
+                ReturnType::AFFECTED_ROWS
+            );
+            if ($count === 0) {
+                $this->db->query(
+                    "ALTER TABLE `ttemplate` 
+                        CHANGE `eTyp` `eTyp` ENUM('standard','mobil','admin') NOT NULL",
+                    ReturnType::AFFECTED_ROWS
+                );
+                $this->db->query(
+                    "INSERT INTO `ttemplate` (`cTemplate`, `eTyp`) VALUES ('bootstrap', 'admin')",
+                    ReturnType::AFFECTED_ROWS
+                );
+            }
+        }
+
+        if ($dbVersionShort < 404) {
+            $this->db->query(
+                'ALTER TABLE `tversion` CHANGE `nTyp` `nTyp` INT(4) UNSIGNED NOT NULL',
+                ReturnType::AFFECTED_ROWS
+            );
+        }
+
+        static::$isVerified = true;
     }
 
     /**

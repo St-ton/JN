@@ -14,8 +14,8 @@
                             {if count($LivesucheTop) > 0}
                                 {foreach $LivesucheTop as $suche}
                                     <li class="my-2">
-                                        {link href=$suche->cURL}{$suche->cSuche}{/link}, {lang key='matches'}:
-                                        <span class="badge-pill badge-primary">{$suche->nAnzahlTreffer}</span>
+                                        {link href=$suche->cURL class="mr-1"}{$suche->cSuche}{/link},
+                                        {lang key='matches'}: <span class="badge-pill badge-primary">{$suche->nAnzahlTreffer}</span>
                                     </li>
                                 {/foreach}
                             {else}
@@ -31,8 +31,8 @@
                             {if count($LivesucheLast) > 0}
                                 {foreach $LivesucheLast as $suche}
                                     <li class="my-2">
-                                        {link href=$suche->cURL}{$suche->cSuche}{/link}, {lang key='matches'}:
-                                        <span class="badge-pill badge-primary">{$suche->nAnzahlTreffer}</span>
+                                        {link class="mr-1" href=$suche->cURL}{$suche->cSuche}{/link},
+                                        {lang key='matches'}:<span class="badge-pill badge-primary">{$suche->nAnzahlTreffer}</span>
                                     </li>
                                 {/foreach}
                             {else}

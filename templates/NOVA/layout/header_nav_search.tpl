@@ -4,7 +4,7 @@
  *}
 {block name='layout-header-nav-search'}
     {block name='layout-header-nav-search-search'}
-        <li class="nav-item d-none d-lg-block">
+        <li class="nav-item d-none d-lg-block mr-3">
             {form action='index.php' method='get'}
                 <div class="form-icon">
                     {inputgroup}
@@ -12,6 +12,7 @@
                         {inputgroupaddon append=true}
                             {button type="submit" name='search' variant="secondary" aria=["label"=>{lang key='search'}]}<span class="fas fa-search"></span>{/button}
                         {/inputgroupaddon}
+                        <span class="form-clear d-none"><i class="fas fa-times"></i></span>
                     {/inputgroup}
                 </div>
             {/form}

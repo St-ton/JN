@@ -18656,6 +18656,11 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
   right: -22px;
 }
 
+.variation .badge {
+  display: inline-flex;
+  align-items: center;
+}
+
 aside h4 {
   margin-bottom: 1rem;
 }
@@ -19693,7 +19698,7 @@ aside .last-seen-link {
   display: inline-block;
 }
 .swatches .variation.not-available {
-  border: dashed #b90000;
+  border: dashed 1px #b90000;
 }
 .swatches .variation.not-available .label-variation {
   opacity: 0.5;
@@ -20045,6 +20050,11 @@ label {
     padding: 1rem;
   }
 }
+@media (max-width: 991.98px) {
+  .modal-content {
+    height: 100%;
+  }
+}
 
 .modal-title {
   font-size: 1.25rem;
@@ -20103,6 +20113,11 @@ label {
 }
 .modal-dialog {
   margin-top: 1.75rem;
+}
+@media (max-width: 991.98px) {
+  .modal-dialog {
+    height: 100%;
+  }
 }
 
 #maintenance button.close {
@@ -21611,6 +21626,7 @@ table caption {
 
 .hr-sect {
   display: flex;
+  justify-content: center;
   flex-basis: 100%;
   align-items: center;
   color: #525252;
@@ -21627,7 +21643,7 @@ table caption {
 .hr-sect::before, .hr-sect::after {
   content: "";
   flex-grow: 1;
-  background: #ebebeb;
+  background: rgba(0, 0, 0, 0.1);
   height: 1px;
   font-size: 0px;
   line-height: 0px;
@@ -21636,6 +21652,52 @@ table caption {
   text-decoration: none;
   border-bottom: 0.375rem solid transparent;
   font-weight: 700;
+}
+@media (max-width: 991.98px) {
+  .hr-sect {
+    text-align: center;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 15px 0px;
+    margin: 15px 0px;
+  }
+  .hr-sect::before, .hr-sect::after {
+    margin: 0;
+    flex-grow: unset;
+  }
+  .hr-sect a {
+    border-bottom: none;
+    margin: auto;
+  }
+}
+
+@media (max-width: 991.98px) {
+  #cfg-container .hr-sect {
+    text-align: initial;
+    border-top: 0;
+    border-bottom: 0;
+    padding: initial;
+    margin: initial;
+  }
+  #cfg-container .hr-sect::before {
+    margin: 0px 30px 0px 0px;
+  }
+  #cfg-container .hr-sect::after {
+    margin: 0px 0px 0px 30px;
+  }
+  #cfg-container .hr-sect::before, #cfg-container .hr-sect::after {
+    content: "";
+    flex-grow: 1;
+    background: rgba(0, 0, 0, 0.1);
+    height: 1px;
+    font-size: 0px;
+    line-height: 0px;
+  }
+  #cfg-container .hr-sect a {
+    text-decoration: none;
+    border-bottom: 0.375rem solid transparent;
+    font-weight: 700;
+  }
 }
 
 .cart-summary {
@@ -21647,12 +21709,6 @@ table caption {
   bottom: 0;
   padding: 1rem 0;
   z-index: 1019;
-}
-
-.selection-wizard-question .selection-wizard-answer {
-  white-space: nowrap;
-  margin: 0 1rem 1rem 0;
-  display: inline-block;
 }
 
 /* wishlist */
@@ -23022,7 +23078,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 #cfg-container-tab-panes {
   height: calc((var(--vh, 1vh) * 78) - 3rem);
   overflow-x: auto;
-  padding-right: 16px;
+  padding-right: 17px;
   border-bottom: 2px solid #ebebeb;
 }
 @media (max-width: 767.98px) {
@@ -23032,6 +23088,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 
 .cfg-group .config-item {
+  cursor: pointer;
   padding: 0.75rem;
   border: 2px solid #f8f8f8;
   border-radius: 0;
@@ -23049,6 +23106,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   display: none;
 }
 .cfg-group .cfg-swatch:disabled ~ .custom-control-label .config-item {
+  cursor: default;
   background: #f8f8f8;
   color: #9b9b9b;
 }
@@ -23139,6 +23197,8 @@ header .navbar-toggler {
 }
 header .nav-right .dropdown-menu {
   margin-top: -0.03125rem;
+  -webkit-box-shadow: inset 0 1rem 0.5625rem -0.75rem rgba(0, 0, 0, 0.06);
+  box-shadow: inset 0 1rem 0.5625rem -0.75rem rgba(0, 0, 0, 0.06);
 }
 @media (max-width: 991.98px) {
   header .navbar {
@@ -23266,6 +23326,8 @@ header .nav-right .dropdown-menu {
     max-height: calc(100vh - 12.5rem);
     overflow: auto;
     margin-top: -0.03125rem;
+    -webkit-box-shadow: inset 0 1rem 0.5625rem -0.75rem rgba(0, 0, 0, 0.06);
+    box-shadow: inset 0 1rem 0.5625rem -0.75rem rgba(0, 0, 0, 0.06);
   }
   header .navbar-nav > .nav-item.dropdown-full {
     position: static;
@@ -23327,6 +23389,20 @@ header .nav-right .dropdown-menu {
 .main-search .twitter-typeahead {
   display: flex;
   flex-grow: 1;
+}
+
+.form-clear {
+  align-items: center;
+  bottom: 8px;
+  color: rgba(0, 0, 0, 0.54);
+  cursor: pointer;
+  display: flex;
+  height: 24px;
+  justify-content: center;
+  position: absolute;
+  right: 52px;
+  width: 24px;
+  z-index: 10;
 }
 
 /* footer */

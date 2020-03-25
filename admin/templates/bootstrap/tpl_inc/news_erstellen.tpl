@@ -149,9 +149,8 @@
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="previewImage">{__('preview')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <input class="form-control-upload" name="previewImage" id="previewImage" type="file"/>
                                 {include file='tpl_inc/fileupload.tpl'
-                                    fileID='#previewImage'
+                                    fileID='previewImage'
                                     filePreview=true
                                     fileMaxSize={$nMaxFileSize}
                                     fileInitialPreview="[
@@ -173,25 +172,25 @@
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right">{__('newsPics')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <input class="form-control-upload" id="images" name="Bilder[]" type="file" multiple/>
                                 {include file='tpl_inc/fileupload.tpl'
-                                fileID='#images'
-                                filePreview=true
-                                fileMaxSize={$nMaxFileSize}
-                                fileIsSingle=false
-                                fileInitialPreview="[
-                                        {foreach $files as $file}
-                                        '<img src=\"{$file->cURLFull}\" class=\"file-preview-image img-fluid\"/><a href=\"news.php?news=1&news_editieren=1&kNews={$oNews->getID()}&delpic={$file->cName}&token={$smarty.session.jtl_token}\" title=\"{__('delete')}\"><i class=\"fas fa-trash-alt\"></i></a>',
-                                        {/foreach}
-                                    ]"
-                                fileInitialPreviewConfig="[
-                                        {foreach $files as $file}
-                                        {
-                                            caption: '$#{$file->cName}#$',
-                                            width:   '120px'
-                                        },
-                                        {/foreach}
-                                    ]"
+                                    fileID='images'
+                                    fileName='Bilder[]'
+                                    filePreview=true
+                                    fileMaxSize={$nMaxFileSize}
+                                    fileIsSingle=false
+                                    fileInitialPreview="[
+                                            {foreach $files as $file}
+                                            '<img src=\"{$file->cURLFull}\" class=\"file-preview-image img-fluid\"/><a href=\"news.php?news=1&news_editieren=1&kNews={$oNews->getID()}&delpic={$file->cName}&token={$smarty.session.jtl_token}\" title=\"{__('delete')}\"><i class=\"fas fa-trash-alt\"></i></a>',
+                                            {/foreach}
+                                        ]"
+                                    fileInitialPreviewConfig="[
+                                            {foreach $files as $file}
+                                            {
+                                                caption: '$#{$file->cName}#$',
+                                                width:   '120px'
+                                            },
+                                            {/foreach}
+                                        ]"
                                 }
                             </div>
                         </div>

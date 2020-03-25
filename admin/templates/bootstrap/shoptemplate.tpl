@@ -164,15 +164,10 @@
                                                         <input type="{$oSetting->cType}" size="32" name="cWert[]" value="{$oSetting->cValue}" id="pf_first" class="form-control">
                                                     </div>
                                                 {elseif $oSetting->cType === 'upload' && isset($oSetting->rawAttributes.target)}
-                                                    <div class="template-upload">
-                                                        <input name="upload-{$oSetting@iteration}"
-                                                               id="tpl-upload-{$oSetting@iteration}" type="file"
-                                                               class="file"
-                                                               accept="{if !empty($oSetting->rawAttributes.accept)}{$oSetting->rawAttributes.accept}{else}image/*{/if}">
-                                                    </div>
                                                     <input type="hidden" name="cWert[]" value="upload-{$oSetting@iteration}" />
                                                     {include file='tpl_inc/fileupload.tpl'
-                                                        fileID="#tpl-upload-{$oSetting@iteration}"
+                                                        fileID="tpl-upload-{$oSetting@iteration}"
+                                                        fileName="upload-{$oSetting@iteration}"
                                                         fileDeleteUrl="{$shopURL}/{$PFAD_ADMIN}shoptemplate.php?token={$smarty.session.jtl_token}"
                                                         filePreview=true
                                                         fileExtraData='{id:1}'

@@ -181,31 +181,32 @@
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="Bilder_0">{__('images')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <input class="form-control-upload" id="Bilder_0" name="Bilder[]" type="file" multiple/>
-                        </div>
-                        {include file='tpl_inc/fileupload.tpl'
-                            fileID='#Bilder_0'
-                            filePreview=true
-                            fileMaxSize=1000
-                            fileIsSingle=false
-                            fileInitialPreview="[
-                                {if !empty($cDatei_arr)}
-                                    {foreach $cDatei_arr as $cDatei}
-                                        '{$cDatei->cURL}<a href=\"links.php?action=edit-link&kLink={$Link->getID()}&token={$smarty.session.jtl_token}&delpic=1&cName={$cDatei->cNameFull}{if isset($Link->getPluginID()) && $Link->getPluginID() > 0}{$Link->getPluginID()}{/if}\"><i class=\"fas fa-trash\"></i></a>',
-                                    {/foreach}
-                                {/if}
-                                ]"
-                            fileInitialPreviewConfig="[
+                            {include file='tpl_inc/fileupload.tpl'
+                                fileID='Bilder_0'
+                                fileName='Bilder[]'
+                                filePreview=true
+                                fileMaxSize=1000
+                                fileIsSingle=false
+                                fileInitialPreview="[
                                     {if !empty($cDatei_arr)}
                                         {foreach $cDatei_arr as $cDatei}
-                                            {
-                                            caption: '$#{$cDatei->cName}#$',
-                                            width:   '120px'
-                                            },
+                                            '{$cDatei->cURL}<a href=\"links.php?action=edit-link&kLink={$Link->getID()}&token={$smarty.session.jtl_token}&delpic=1&cName={$cDatei->cNameFull}{if isset($Link->getPluginID()) && $Link->getPluginID() > 0}{$Link->getPluginID()}{/if}\"><i class=\"fas fa-trash\"></i></a>',
                                         {/foreach}
                                     {/if}
-                                ]"
-                        }
+                                    ]"
+                                fileInitialPreviewConfig="[
+                                        {if !empty($cDatei_arr)}
+                                            {foreach $cDatei_arr as $cDatei}
+                                                {
+                                                caption: '$#{$cDatei->cName}#$',
+                                                width:   '120px'
+                                                },
+                                            {/foreach}
+                                        {/if}
+                                    ]"
+                            }
+                        </div>
+
                     </div>
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="bIsFluid">{__('bIsFluidText')}:</label>

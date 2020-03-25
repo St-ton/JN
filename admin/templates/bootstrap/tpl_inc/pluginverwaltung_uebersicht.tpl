@@ -113,24 +113,24 @@
                     <form enctype="multipart/form-data">
                         {$jtl_token}
                         <div class="form-group">
-                            <input id="plugin-install-upload" type="file" multiple class="file">
+                            {include file='tpl_inc/fileupload.tpl'
+                                fileID='plugin-install-upload'
+                                fileUploadUrl="{$shopURL}/{$PFAD_ADMIN}pluginverwaltung.php"
+                                fileBrowseClear=true
+                                fileUploadAsync=true
+                                fileAllowedExtensions="['zip']"
+                                fileMaxSize=100000
+                                fileOverwriteInitial='false'
+                                fileShowUpload=true
+                                fileShowRemove=true
+                                fileDefaultBatchSelectedEvent=false
+                                fileSuccessMsg="{__('successPluginUpload')}"
+                                fileErrorMsg=true
+                            }
                         </div>
                         <hr>
                     </form>
-                    {include file='tpl_inc/fileupload.tpl'
-                        fileID='#plugin-install-upload'
-                        fileUploadUrl="{$shopURL}/{$PFAD_ADMIN}pluginverwaltung.php"
-                        fileBrowseClear=true
-                        fileUploadAsync=true
-                        fileAllowedExtensions="['zip']"
-                        fileMaxSize=100000
-                        fileOverwriteInitial='false'
-                        fileShowUpload=true
-                        fileShowRemove=true
-                        fileDefaultBatchSelectedEvent=false
-                        fileSuccessMsg="{__('successPluginUpload')}"
-                        fileErrorMsg=true
-                    }
+
                     <script>
                         let defaultError = '{__('errorPluginUpload')}',
                             $fi          = $('#plugin-install-upload');

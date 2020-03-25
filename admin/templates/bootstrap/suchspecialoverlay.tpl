@@ -55,9 +55,8 @@
                         <div class="form-group form-row align-items-center file-input">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="cSuchspecialOverlayBild">{__('suchspecialoverlayFileName')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <input class="custom-file-input" type="file" name="cSuchspecialOverlayBild" id="cSuchspecialOverlayBild" tabindex="1" />
                                 {include file='tpl_inc/fileupload.tpl'
-                                    fileID='#cSuchspecialOverlayBild'
+                                    fileID='cSuchspecialOverlayBild'
                                     fileShowRemove=true
                                     filePreview=true
                                     fileInitialPreview="[

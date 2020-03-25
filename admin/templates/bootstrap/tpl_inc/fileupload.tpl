@@ -2,7 +2,10 @@
 -----------------------------------------------------------------------------------
 variable name                  | default | description
 -----------------------------------------------------------------------------------
-$fileID                        |         | id of file input
+$fileID                        |         | input id
+$fileName                      |         | input name
+$fileRequired                  |         | input required
+$fileClass                     |         | input class
 $fileAllowedExtensions         | ----->  | default: ['jpg', 'jpeg', 'jpe', 'gif', 'png', 'bmp', 'svg']
 $fileUploadUrl                 | false   | url to upload file via ajax
 $fileDeleteUrl                 |         | url to delete file via ajax
@@ -25,9 +28,21 @@ $fileSuccessMsg                | false   | success message after upload
 $fileErrorMsg                  | false   | error message while uploading - automatically generated
 -----------------------------------------------------------------------------------
 *}
-{$fileIDNoHashtag = substr($fileID,1)}
+{$fileIDFull   = '#'|cat:$fileID}
+{$fileIsSingle = $fileIsSingle|default:true}
+<input class="custom-file-input {$fileClass|default:''}"
+       type="file"
+       name="{if isset($fileName)}{$fileName}{else}{$fileID}{/if}"
+       id="{$fileID}"
+       tabindex="1"
+       {if $fileRequired|default:false}required{/if}
+       {if !$fileIsSingle}multiple{/if}/>
 <script>
-    $('{$fileID}').fileinput({
+    let $file        = $('{$fileIDFull}'),
+        $fileSuccess = $('{$fileIDFull}-upload-success'),
+        $fileError   = $('{$fileIDFull}-upload-error');
+
+    $file.fileinput({
         {if isset($fileUploadUrl)}
         uploadUrl: '{$fileUploadUrl}',
         {/if}
@@ -59,14 +74,14 @@ $fileErrorMsg                  | false   | error message while uploading - autom
                 {$fileAllowedExtensions}
             {/if},
         overwriteInitial: {$fileOverwriteInitial|default:'true'},
-        {if $fileIsSingle|default:true}
+        {if $fileIsSingle}
         initialPreviewCount: 1,
         {/if}
         theme: 'fas',
         language: '{$language|mb_substr:0:2}',
         browseOnZoneClick: true,
         maxFileSize: {$fileMaxSize|default:500},
-        {if $fileIsSingle|default:true}
+        {if $fileIsSingle}
         maxFilesNum: 1,
         {/if}
         {if $filePreview|default:false}
@@ -76,43 +91,43 @@ $fileErrorMsg                  | false   | error message while uploading - autom
     });
 
     {if $fileDefaultBrowseEvent|default:true}
-        $('{$fileID}').on("filebrowse", function(event, files) {
+        $file.on("filebrowse", function(event, files) {
             {if $fileBrowseClear|default:false}
-                $('{$fileID}').fileinput('clear');
+                $file.fileinput('clear');
             {/if}
-            $('{$fileID}-upload-success').hide().addClass('hidden');
-            $('{$fileID}-upload-error').html('').hide().addClass('hidden');
+            $fileSuccess.hide().addClass('hidden');
+            $fileError.html('').hide().addClass('hidden');
         });
     {/if}
     {if $fileDefaultBatchSelectedEvent|default:true}
-        $('{$fileID}').on("filebatchselected", function(event, files) {
-            $('{$fileID}').fileinput("upload");
+        $file.on("filebatchselected", function(event, files) {
+            $file.fileinput("upload");
         });
     {/if}
     {if $fileDefaultUploadSuccessEvent|default:true}
-        $('{$fileID}').on('filebatchuploadsuccess', function(event, data) {
+        $file.on('filebatchuploadsuccess', function(event, data) {
             if (data.response.status === 'OK') {
-                $('{$fileID}-upload-success').show().removeClass('hidden');
+                $fileSuccess.show().removeClass('hidden');
             } else {
-                $('{$fileID}-upload-error').show().removeClass('hidden');
+                $fileError.show().removeClass('hidden');
             }
         });
     {/if}
     {if $fileDefaultUploadErrorEvent|default:true}
-        $('{$fileID}').on('fileuploaderror', function(event, data, msg) {
-            $('{$fileID}-upload-error').show().removeClass('hidden');
-            $('{$fileID}-upload-error').append('<p style="margin-top:20px">' + msg + '</p>')
+        $file.on('fileuploaderror', function(event, data, msg) {
+            $fileError.show().removeClass('hidden');
+            $fileError.append('<p style="margin-top:20px">' + msg + '</p>')
         });
     {/if}
 </script>
 
 {if $fileSuccessMsg|default:false}
-    <div id="{$fileIDNoHashtag}-upload-success" class="alert alert-success hidden mt-3">
+    <div id="{$fileID}-upload-success" class="alert alert-success hidden mt-3">
         {$fileSuccessMsg}
     </div>
 {/if}
 {if $fileErrorMsg|default:false}
-    <div id="{$fileIDNoHashtag}-upload-error" class="alert alert-danger hidden mt-3">
+    <div id="{$fileID}-upload-error" class="alert alert-danger hidden mt-3">
         {$fileErrorMsg}
     </div>
 {/if}

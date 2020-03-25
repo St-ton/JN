@@ -10,9 +10,9 @@
             <div class="card-body">
                 <input type="hidden" name="upload" value="1" />
                 <div class="col-xs-12">
-                    <input name="shopLogo" id="shoplogo-upload" type="file" class="file" accept="image/*">
                     {include file='tpl_inc/fileupload.tpl'
-                        fileID='#shoplogo-upload'
+                        fileID='shoplogo-upload'
+                        fileName='shopLogo'
                         fileUploadUrl="{$shopURL}/{$PFAD_ADMIN}shoplogouploader.php?token={$smarty.session.jtl_token}"
                         fileDeleteUrl="{$shopURL}/{$PFAD_ADMIN}shoplogouploader.php?token={$smarty.session.jtl_token}"
                         filePreview=$ShopLogo|strlen > 0

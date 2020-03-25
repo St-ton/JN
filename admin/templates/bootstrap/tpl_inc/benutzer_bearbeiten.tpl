@@ -385,27 +385,27 @@ $(document).ready(function() {
                             <div class="form-group form-row align-items-center">
                                 <label class="col col-sm-4 col-form-label text-sm-right" for="useAvatarUpload">{__('Image')}:</label>
                                 <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                    <input class="form-control-upload" id="useAvatarUpload" name="extAttribs[useAvatarUpload]" type="file"/>
+                                    {include file='tpl_inc/fileupload.tpl'
+                                        fileID='useAvatarUpload'
+                                        fileName='extAttribs[useAvatarUpload]'
+                                        filePreview=true
+                                        fileMaxSize=1000
+                                        fileInitialPreview="[
+                                            {if isset($attribValues.useAvatar) && $attribValues.useAvatar->cAttribValue === 'U'}
+                                            '<img src=\"{$shopURL}/{$attribValues.useAvatarUpload->cAttribValue}\" class=\"preview-image\"/>',
+                                            {/if}
+                                        ]"
+                                        fileInitialPreviewConfig="[
+                                            {if isset($attribValues.useAvatar) && $attribValues.useAvatar->cAttribValue === 'U'}
+                                            {
+                                                caption: '{__('preview')}',
+                                                width:   '120px'
+                                            }
+                                            {/if}
+                                        ]"
+                                    }
                                 </div>
                             </div>
-                            {include file='tpl_inc/fileupload.tpl'
-                                fileID='#useAvatarUpload'
-                                filePreview=true
-                                fileMaxSize=1000
-                                fileInitialPreview="[
-                                        {if isset($attribValues.useAvatar) && $attribValues.useAvatar->cAttribValue === 'U'}
-                                        '<img src=\"{$shopURL}/{$attribValues.useAvatarUpload->cAttribValue}\" class=\"preview-image\"/>',
-                                        {/if}
-                                    ]"
-                                fileInitialPreviewConfig="[
-                                        {if isset($attribValues.useAvatar) && $attribValues.useAvatar->cAttribValue === 'U'}
-                                        {
-                                            caption: '{__('preview')}',
-                                            width:   '120px'
-                                        }
-                                        {/if}
-                                    ]"
-                            }
                             <input type="hidden" name="extAttribs[useAvatarUpload]" value="{if isset($attribValues.useAvatarUpload)}{$attribValues.useAvatarUpload->cAttribValue}{/if}" />
                             {if isset($cError_arr.useAvatarUpload)}
                                 <span class="input-group-addon error"><i class="fa fa-exclamation-triangle"></i></span>

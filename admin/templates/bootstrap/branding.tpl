@@ -120,9 +120,9 @@
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="cBrandingBild">{__('brandingFileName')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <input name="cBrandingBild" id="cBrandingBild" type="file" class="file" accept="image/*" {if !$oBranding->cBrandingBild|strlen > 0}required{/if}>
                                 {include file='tpl_inc/fileupload.tpl'
-                                    fileID='#cBrandingBild'
+                                    fileID='cBrandingBild'
+                                    fileRequired=!$oBranding->cBrandingBild|strlen > 0
                                     filePreview=true
                                     fileMaxSize=256
                                     fileInitialPreview="[

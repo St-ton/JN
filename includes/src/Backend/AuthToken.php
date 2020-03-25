@@ -3,8 +3,9 @@
 namespace JTL\Backend;
 
 use JTL\DB\ReturnType;
+use JTL\Exceptions\CircularReferenceException;
+use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Helpers\Request;
-use JTL\Jtllog;
 use JTL\Shop;
 use JTL\xtea\XTEA;
 
@@ -14,10 +15,14 @@ use JTL\xtea\XTEA;
  */
 class AuthToken
 {
-    private const AUTH_SERVER = 'https://oauth2.api.jtl-software.com/link';
+    //private const AUTH_SERVER = 'https://oauth2.api.jtl-software.com/link';
+    private const AUTH_SERVER = 'https://auth.jtl-test.de/link';
 
     /** @var self */
     private static $instance;
+
+    /** @var string */
+    private $authCode;
 
     /** @var string */
     private $token;
@@ -53,7 +58,8 @@ class AuthToken
     private function load(): void
     {
         $token = Shop::Container()->getDB()->queryPrepared(
-            'SELECT tstoreauth.owner, tstoreauth.access_token, tadminlogin.cPass AS hash, tstoreauth.verified
+            'SELECT tstoreauth.owner, tstoreauth.auth_code, tstoreauth.access_token,
+                tadminlogin.cPass AS hash, tstoreauth.verified
                 FROM tstoreauth
                 INNER JOIN tadminlogin ON tadminlogin.kAdminlogin = tstoreauth.owner
                 LIMIT 1',
@@ -62,11 +68,13 @@ class AuthToken
         );
 
         if ($token) {
+            $this->authCode = $token->auth_code;
             $this->token    = $token->access_token;
             $this->hash     = sha1($token->hash);
             $this->owner    = (int)$token->owner;
             $this->verified = $token->verified;
         } else {
+            $this->authCode = null;
             $this->token    = null;
             $this->hash     = null;
             $this->owner    = 0;
@@ -209,7 +217,6 @@ class AuthToken
         if (!self::isEditable()) {
             return;
         }
-        Shop::Container()->getLogService()->addDebug('requestToken: ' . $authCode);
         $this->reset($authCode);
         header('location: ' . self::AUTH_SERVER . '?' . http_build_query([
                 'url'  => $returnURL,
@@ -226,17 +233,29 @@ class AuthToken
     {
         $authCode = (string)Request::postVar('code');
         $token    = (string)Request::postVar('token');
-        Shop::Container()->getLogService()->addDebug('responseToken: ' . $authCode . ' / ' . $token);
-        if ($authCode !== null && $token !== null) {
-            $this->set($authCode, $token);
-            Shop::Container()->getLogService()->addDebug('responseToken: ' . ($this->isValid() ? '200' : '404'));
-            http_response_code($this->isValid() ? 200 : 404);
+        $logger   = null;
+        try {
+            $logger = Shop::Container()->getLogService();
+        } catch (CircularReferenceException $e) {
+        } catch (ServiceNotFoundException $e) {
+            $logger = null;
+        }
+
+        if ($authCode === null || $authCode !== $this->authCode) {
+            $logger !== null && $logger->addError('Call responseToken with invalid authcode!');
+            http_response_code(404);
 
             exit;
         }
 
-        Shop::Container()->getLogService()->addDebug('responseToken: 404');
-        http_response_code(404);
+        if ($token === null || $token === '') {
+            http_response_code(200);
+
+            exit;
+        }
+
+        $this->set($authCode, $token);
+        http_response_code($this->isValid() ? 200 : 404);
 
         exit;
     }

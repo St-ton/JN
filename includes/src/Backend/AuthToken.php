@@ -15,8 +15,7 @@ use JTL\xtea\XTEA;
  */
 class AuthToken
 {
-    //private const AUTH_SERVER = 'https://oauth2.api.jtl-software.com/link';
-    private const AUTH_SERVER = 'https://auth.jtl-test.de/link';
+    private const AUTH_SERVER = 'https://oauth2.api.jtl-software.com/link';
 
     /** @var self */
     private static $instance;

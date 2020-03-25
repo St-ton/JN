@@ -212,14 +212,13 @@
                                                    size="50"/>
                                             </div>
                                         </div>
-                                        <div class="input-group mb-3">
-                                            <div class="custom-file">
-                                                <input id="cPDFS_{$smarty.section.anhaenge.index}_{$kSprache}" name="cPDFS_{$kSprache}[]" type="file" class="custom-file-input" maxlength="2097152"/>
-                                                <label class="custom-file-label" for="cPDFS_{$smarty.section.anhaenge.index}_{$kSprache}">
-                                                    <span class="text-truncate">{__('fileSelect')}</span>
-                                                </label>
-                                            </div>
-                                        </div>
+                                        {include file='tpl_inc/fileupload.tpl'
+                                            fileID="cPDFS_{$smarty.section.anhaenge.index}_{$kSprache}"
+                                            fileName="cPDFS_{$kSprache}[]"
+                                            fileAllowedExtensions="['pdf']"
+                                            fileShowRemove=true
+                                            fileMaxSize=2097152
+                                        }
                                     </div>
                                 </div>
                             {/section}

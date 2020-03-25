@@ -80,7 +80,9 @@ $fileErrorMsg                  | false   | error message while uploading - autom
         theme: 'fas',
         language: '{$language|mb_substr:0:2}',
         browseOnZoneClick: true,
-        maxFileSize: {$fileMaxSize|default:500},
+        {if $fileMaxSize !== 'false'}
+            maxFileSize: {$fileMaxSize|default:500},
+        {/if}
         {if $fileIsSingle}
         maxFilesNum: 1,
         {/if}

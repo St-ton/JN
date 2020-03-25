@@ -46,7 +46,7 @@ if (!empty($uid)) {
         header('Location: ' . $linkHelper->getStaticRoute('jtl.php'), true, 303);
         exit;
     }
-    $order    = new Bestellung($status->kBestellung, true);
+    $order    = new Bestellung((int)$status->kBestellung, true);
     $plzValid = false;
 
     if (Form::validateToken()) {

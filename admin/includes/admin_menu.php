@@ -369,6 +369,10 @@ $adminMenu = [
                     'link'   => 'wawisync.php',
                     'permissions' => 'WAWI_SYNC_VIEW',
                 ],
+                __('JTL-Store') => (object)[
+                    'link'   => 'store.php',
+                    'permissions' => 'ADMIN_ONLY',
+                ],
             ],
             __('Troubleshooting') => [
                 __('System diagnostics')               => (object)[

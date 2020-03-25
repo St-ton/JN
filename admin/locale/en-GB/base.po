@@ -275,6 +275,9 @@ msgstr " Hour"
 msgid "hours"
 msgstr " Hours"
 
+msgid "seconds"
+msgstr "Seconds"
+
 msgid "errorEnterValidDate"
 msgstr "Please enter a valid date."
 

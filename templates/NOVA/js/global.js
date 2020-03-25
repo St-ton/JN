@@ -332,14 +332,14 @@ $(document).ready(function () {
         return false;
     });
 
-    $(document).on('click', '.pagination-ajax a:not(.active)', function(e) {
+    $(document).on('click', '.pagination-ajax a:not(.active), .js-pagination-ajax:not(.active)', function(e) {
         var url = $(this).attr('href');
         history.pushState(null, null, url);
         loadContent(url);
         return e.preventDefault();
     });
 
-    if ($('.pagination-ajax').length > 0) {
+    if ($('.js-pagination-ajax').length > 0) {
         window.addEventListener('popstate', function(e) {
             loadContent(document.location.href);
         }, false);
@@ -461,6 +461,7 @@ $(document).ready(function () {
         placement: 'bottom',
         trigger:   'hover',
         container: 'body',
+        sanitize: false,
         template:  	'<div class="popover popover-min-width" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>',
         content:   function () {
             return $(this).children('.area-desc').html()

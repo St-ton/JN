@@ -1080,7 +1080,7 @@ function fakeBestellung()
     $order->kWaehrung        = Frontend::getCurrency()->getID();
     $order->fWaehrungsFaktor = Frontend::getCurrency()->getConversionFactor();
 
-    $order->oRechnungsadresse              = $order->oRechnungsadresse ?? new stdClass();
+    $order->oRechnungsadresse              = $order->oRechnungsadresse ?? new Rechnungsadresse();
     $order->oRechnungsadresse->cVorname    = $customer->cVorname;
     $order->oRechnungsadresse->cNachname   = $customer->cNachname;
     $order->oRechnungsadresse->cFirma      = $customer->cFirma;

@@ -443,6 +443,15 @@ msgstr "Zonen"
 msgid "zone"
 msgstr "Zone"
 
+msgid "newZone"
+msgstr "Neue Zone"
+
+msgid "saveZones"
+msgstr "Zonen speichern"
+
+msgid "deleteZone"
+msgstr "Zone löschen"
+
 msgid "title"
 msgstr "Titel"
 

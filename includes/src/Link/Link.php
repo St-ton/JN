@@ -332,7 +332,6 @@ final class Link extends AbstractLink
     public function map(array $localizedLinks): LinkInterface
     {
         \executeHook(\HOOK_LINK_PRE_MAP, ['data' => $localizedLinks]);
-        $baseURL = Shop::getURL(true) . '/';
         foreach ($localizedLinks as $link) {
             $link = $this->sanitizeLinkData($link);
             $this->setIdentifier($link->cIdentifier ?? '');
@@ -365,7 +364,7 @@ final class Link extends AbstractLink
             $this->setURL(
                 $this->linkType === 2
                     ? $link->localizedUrl
-                    : ($baseURL . $link->localizedUrl),
+                    : (Shop::getURL(true, $link->languageID) . '/' . $link->localizedUrl),
                 $link->languageID
             );
             $this->setHandler($link->handler ?? '');

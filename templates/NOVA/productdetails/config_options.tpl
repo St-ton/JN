@@ -4,49 +4,49 @@
  *}
 {block name='productdetails-config-options'}
     <div id="cfg-accordion" class="accordion">
-        {foreach $Artikel->oKonfig_arr as $oGruppe}
-            {if $oGruppe->getItemCount() > 0}
-                {$configLocalization = $oGruppe->getSprache()}
-                {$configImagePath = $oGruppe->getImage(\JTL\Media\Image::SIZE_XS)}
-                {$kKonfiggruppe = $oGruppe->getKonfiggruppe()}
-                <div class="cfg-group js-cfg-group {if $oGruppe@first}visited{/if}" data-id="{$kKonfiggruppe}">
+        {foreach $Artikel->oKonfig_arr as $configGroup}
+            {if $configGroup->getItemCount() > 0}
+                {$configLocalization = $configGroup->getSprache()}
+                {$configImagePath = $configGroup->getImage(\JTL\Media\Image::SIZE_XS)}
+                {$kKonfiggruppe = $configGroup->getKonfiggruppe()}
+                <div class="cfg-group js-cfg-group {if $configGroup@first}visited{/if}" data-id="{$kKonfiggruppe}">
                     <div class="hr-sect mb-0">
                         <span class="d-none js-group-checked"><i class="far fa-check-square"></i></span>
                         <span><i class="far fa-square"></i></span>
                         {button
-                            id="crd-hdr-{$oGruppe@iteration}"
+                            id="crd-hdr-{$configGroup@iteration}"
                             variant="link"
-                            data=["toggle"=>"collapse","target"=>"#cfg-grp-cllps-{$oGruppe@iteration}"]
+                            data=["toggle"=>"collapse","target"=>"#cfg-grp-cllps-{$configGroup@iteration}"]
                             class="text-left text-decoration-none"
-                            disabled=!$oGruppe@first
+                            disabled=!$configGroup@first
                         }
                             {$configLocalization->getName()}
                         {/button}
                     </div>
 
-                    {collapse visible=$oGruppe@first
-                        id="cfg-grp-cllps-{$oGruppe@iteration}"
-                        aria=["labelledby"=>"crd-hdr-{$oGruppe@iteration}"]
+                    {collapse visible=$configGroup@first
+                        id="cfg-grp-cllps-{$configGroup@iteration}"
+                        aria=["labelledby"=>"crd-hdr-{$configGroup@iteration}"]
                         data=["parent"=>"#cfg-accordion"]
                         class="js-cfg-group-collapse"}
                         <div class="text-center mb-5 sticky-top">
-                            {if !empty($oGruppe->getMin()) || !empty($oGruppe->getMax())}
+                            {if !empty($configGroup->getMin()) || !empty($configGroup->getMax())}
                                 {badge variant="info" class="js-group-badge-checked"}
-                                    {if $oGruppe->getMin() === 1 && $oGruppe->getMax() === 1}
+                                    {if $configGroup->getMin() === 1 && $configGroup->getMax() === 1}
                                         {lang key='configChooseOneComponent' section='productDetails'}
-                                    {elseif $oGruppe->getMin() === $oGruppe->getMax()}
-                                        {lang key='configChooseNumberComponents' section='productDetails' printf=$oGruppe->getMin()}
-                                    {elseif !empty($oGruppe->getMin()) && $oGruppe->getMax()<$oGruppe->getItemCount()}
-                                        {lang key='configChooseMinMaxComponents' section='productDetails' printf=$oGruppe->getMin()|cat:':::'|cat:$oGruppe->getMax()}
-                                    {elseif !empty($oGruppe->getMin())}
-                                            {lang key='configChooseMinComponents' section='productDetails' printf=$oGruppe->getMin()}
-                                    {elseif $oGruppe->getMax()<$oGruppe->getItemCount()}
-                                        {lang key='configChooseMaxComponents' section='productDetails' printf=$oGruppe->getMax()}
+                                    {elseif $configGroup->getMin() === $configGroup->getMax()}
+                                        {lang key='configChooseNumberComponents' section='productDetails' printf=$configGroup->getMin()}
+                                    {elseif !empty($configGroup->getMin()) && $configGroup->getMax()<$configGroup->getItemCount()}
+                                        {lang key='configChooseMinMaxComponents' section='productDetails' printf=$configGroup->getMin()|cat:':::'|cat:$configGroup->getMax()}
+                                    {elseif !empty($configGroup->getMin())}
+                                            {lang key='configChooseMinComponents' section='productDetails' printf=$configGroup->getMin()}
+                                    {elseif $configGroup->getMax()<$configGroup->getItemCount()}
+                                        {lang key='configChooseMaxComponents' section='productDetails' printf=$configGroup->getMax()}
                                     {else}
                                         {lang key='optional'}
                                     {/if}
                                 {/badge}
-                            {elseif $oGruppe->getMin() == 0}
+                            {elseif $configGroup->getMin() == 0}
                                 {badge variant="info" class="js-group-badge-checked"}{lang key='optional'}{/badge}
                             {/if}
                         </div>
@@ -71,10 +71,10 @@
                                 {col cols=12 lg=4 offset-lg="{if $configLocalization->hatBeschreibung()}0{else}4{/if}" order=0 order-lg=1}
                                     {image fluid=true lazy=true webp=true
                                         src=$configImagePath
-                                        srcset="{$oGruppe->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_konfiggruppe_mini_breite}w,
-                                            {$oGruppe->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_konfiggruppe_klein_breite}w,
-                                            {$oGruppe->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_konfiggruppe_normal_breite}w,
-                                            {$oGruppe->getImage(\JTL\Media\Image::SIZE_LG)} {$Einstellungen.bilder.bilder_konfiggruppe_gross_breite}w"
+                                        srcset="{$configGroup->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_konfiggruppe_mini_breite}w,
+                                            {$configGroup->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_konfiggruppe_klein_breite}w,
+                                            {$configGroup->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_konfiggruppe_normal_breite}w,
+                                            {$configGroup->getImage(\JTL\Media\Image::SIZE_LG)} {$Einstellungen.bilder.bilder_konfiggruppe_gross_breite}w"
                                         alt=$configLocalization->getName()
                                         sizes="auto"
                                     }
@@ -85,12 +85,12 @@
 
                     {block name='productdetails-config-container-group-items'}
                         {row class="form-group"}
-                        {$viewType = $oGruppe->getAnzeigeTyp()}
+                        {$viewType = $configGroup->getAnzeigeTyp()}
                         {if $viewType === $smarty.const.KONFIG_ANZEIGE_TYP_CHECKBOX
                         || $viewType === $smarty.const.KONFIG_ANZEIGE_TYP_RADIO
                         || $viewType === $smarty.const.KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI}
                             {block name='productdetails-config-container-group-item-type-swatch'}
-                                {foreach $oGruppe->oItem_arr as $oItem}
+                                {foreach $configGroup->oItem_arr as $oItem}
                                     {col cols=6 md=4 lg=3}
                                         {$bSelectable = 0}
                                         {if $oItem->isInStock()}
@@ -118,7 +118,7 @@
                                                 checked=$checkboxActive
                                                 id="item{$oItem->getKonfigitem()}"
                                                 class="cfg-swatch"
-                                                required=$oItem@first && $oGruppe->getMin() > 0
+                                                required=$oItem@first && $configGroup->getMin() > 0
                                             }
                                                 <div data-id="{$oItem->getKonfigitem()}" class="config-item text-center mb-5{if $oItem->getEmpfohlen()} bg-info{/if}{if empty($bSelectable)} disabled{/if}{if $checkboxActive} active{/if}">
                                                     {if isset($aKonfigitemerror_arr[$kKonfigitem]) && $aKonfigitemerror_arr[$kKonfigitem]}
@@ -288,12 +288,12 @@
                                     {formgroup}
                                         {select name="item[{$kKonfiggruppe}][]"
                                             data=["ref"=>$kKonfiggruppe]
-                                            required=$oGruppe->getMin() > 0
+                                            required=$configGroup->getMin() > 0
                                             aria=["label"=>$configLocalization->getName()]
                                             class='custom-select'
                                         }
                                             <option value="">{lang key='pleaseChoose'}</option>
-                                        {foreach $oGruppe->oItem_arr as $oItem}
+                                        {foreach $configGroup->oItem_arr as $oItem}
                                             {$bSelectable = 0}
                                             {if $oItem->isInStock()}
                                                 {$bSelectable = 1}
@@ -315,7 +315,7 @@
                                     {/formgroup}
                                 {/col}
                                 {col}
-                                {foreach $oGruppe->oItem_arr as $oItem}
+                                {foreach $configGroup->oItem_arr as $oItem}
                                     {$bSelectable = 0}
                                     {if $oItem->isInStock()}
                                         {$bSelectable = 1}
@@ -384,7 +384,7 @@
                                                             class="quantity"
                                                             name="item_quantity[{$oItem->getKonfigitem()}]"
                                                             autocomplete="off"
-                                                            value="{if !empty($nKonfigitemAnzahl_arr[$oItem->getKonfigitem()])}{$nKonfigitemAnzahl_arr[$oItem->getKonfigitem()]}{else}{if $oItem->getArtikel()->fAbnahmeintervall > 0}{if $oItem->getArtikel()->fMindestbestellmenge > $oItem->getArtikel()->fAbnahmeintervall}{$oItem->getArtikel()->fMindestbestellmenge}{else}{$oItem->getArtikel()->fAbnahmeintervall}{/if}{else}1{/if}{/if}"
+                                                            value="{if !empty($nKonfigitemAnzahl_arr[$oItem->getKonfigitem()])}{$nKonfigitemAnzahl_arr[$oItem->getKonfigitem()]}{else}{if $oItem->getArtikel()->fAbnahmeintervall > 0}{if $oItem->getArtikel()->fMindestbestellmenge > $oItem->getArtikel()->fAbnahmeintervall}{$oItem->getArtikel()->fMindestbestellmenge}{else}{$oItem->getArtikel()->fAbnahmeintervall}{/if}{else}{$oItem->getMin()}{/if}{/if}"
                                                         }
                                                         {inputgroupappend}
                                                             {button variant=""
@@ -407,7 +407,7 @@
                         {/row}
                     {/block}
                         <div class="sticky-bottom">
-                            {if $oGruppe@last}
+                            {if $configGroup@last}
                                 {nav}
                                     {navitem id="cfg-tab-summary-finish"
                                         class="m-auto"
@@ -425,7 +425,7 @@
                                 {button
                                     size="sm"
                                     variant="secondary"
-                                    data=["toggle"=>"collapse","target"=>"#cfg-grp-cllps-{$oGruppe@iteration + 1}"]
+                                    data=["toggle"=>"collapse","target"=>"#cfg-grp-cllps-{$configGroup@iteration + 1}"]
                                     class="m-auto js-cfg-next no-caret"}
                                     {lang key='nextConfigurationGroup' section='productDetails'} <i class="fas fa-arrow-right"></i>
                                 {/button}

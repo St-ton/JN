@@ -1084,11 +1084,27 @@ final class Shop
         ];
     }
 
+    private static function getLanguageFromServerName(): void
+    {
+        if (!\defined('EXPERIMENTAL_MULTILANG_SHOP') || \EXPERIMENTAL_MULTILANG_SHOP !== true) {
+            return;
+        }
+        foreach ($_SESSION['Sprachen'] ?? [] as $language) {
+            $code    = \mb_convert_case($language->getCode(), \MB_CASE_UPPER);
+            $shopURL = \defined('URL_SHOP_' . $code) ? \constant('URL_SHOP_' . $code) : \URL_SHOP;
+            if ($_SERVER['HTTP_HOST'] === \parse_url($shopURL)['host']) {
+                self::setLanguage($language->getId(), $language->getCode());
+                break;
+            }
+        }
+    }
+
     /**
      * check for seo url
      */
     public static function seoCheck(): void
     {
+        self::getLanguageFromServerName();
         $uri                             = $_SERVER['HTTP_X_REWRITE_URL'] ?? $_SERVER['REQUEST_URI'] ?? '';
         self::$uri                       = $uri;
         self::$bSEOMerkmalNotFound       = false;
@@ -1821,32 +1837,36 @@ final class Shop
     }
 
     /**
-     * @param bool $bForceSSL
-     * @param bool $bMultilang
+     * @param bool     $forceSSL
+     * @param int|null $langID
      * @return string - the shop URL without trailing slash
      */
-    public static function getURL(bool $bForceSSL = false, bool $bMultilang = true): string
+    public static function getURL(bool $forceSSL = false, int $langID = null): string
     {
-        $idx = (int)$bForceSSL;
-        if (isset(self::$url[self::$kSprache][$idx])) {
-            return self::$url[self::$kSprache][$idx];
+        $langID = $langID ?? self::$kSprache;
+        $idx    = (int)$forceSSL;
+        if (isset(self::$url[$langID][$idx])) {
+            return self::$url[$langID][$idx];
         }
-        // EXPERIMENTAL_MULTILANG_SHOP
-        $shopURL   = ($bMultilang === true && isset($_SESSION['cISOSprache'])
-            && \defined('URL_SHOP_' . \mb_convert_case($_SESSION['cISOSprache'], \MB_CASE_UPPER)))
-            ? \constant('URL_SHOP_' . \mb_convert_case($_SESSION['cISOSprache'], \MB_CASE_UPPER))
-            : \URL_SHOP;
+        $shopURL   = \URL_SHOP;
         $sslStatus = Request::checkSSL();
         if ($sslStatus === 2) {
             $shopURL = \str_replace('http://', 'https://', $shopURL);
-        } elseif ($sslStatus === 4 || ($sslStatus === 3 && $bForceSSL)) {
+        } elseif ($sslStatus === 4 || ($sslStatus === 3 && $forceSSL)) {
             $shopURL = \str_replace('http://', 'https://', $shopURL);
         }
-
-        $url                              = \rtrim($shopURL, '/');
-        self::$url[self::$kSprache][$idx] = $url;
+        $url                      = \rtrim($shopURL, '/');
+        self::$url[$langID][$idx] = $url;
 
         return $url;
+    }
+
+    /**
+     * @param array $urls
+     */
+    public static function setURLs(array $urls): void
+    {
+        self::$url = $urls;
     }
 
     /**

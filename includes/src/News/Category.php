@@ -194,7 +194,6 @@ class Category implements CategoryInterface
      */
     public function map(array $categoryLanguages): CategoryInterface
     {
-//        Shop::dbg($categoryLanguages);
         foreach ($categoryLanguages as $groupLanguage) {
             $langID                          = (int)$groupLanguage->languageID;
             $this->languageIDs[]             = $langID;

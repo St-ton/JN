@@ -354,6 +354,14 @@ class URL
                     return !empty($obj->cSeo)
                         ? $prefix . $obj->cSeo
                         : $prefix . '?q=' . $obj->kSuchspecial . $lang;
+
+                case \URLART_NEWSLETTER:
+                    $prefix = $full === false
+                        ? ''
+                        : Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_NEWSLETTER)->getURL();
+                    return !empty($obj->cSeo)
+                        ? $prefix . $obj->cSeo
+                        : $prefix . '?show=' . $obj->kNewsletterHistory;
             }
         }
 

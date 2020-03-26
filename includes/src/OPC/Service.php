@@ -399,8 +399,6 @@ class Service
             $options = [];
 
             if ($class === Characteristic::class) {
-                $name = 'Merkmale';
-
                 foreach ($availableFilter->getOptions() as $option) {
                     foreach ($option->getOptions() as $suboption) {
                         /** @var Option $suboption */

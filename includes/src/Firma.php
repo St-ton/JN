@@ -6,6 +6,7 @@
 
 namespace JTL;
 
+use JTL\Country\Country;
 use JTL\DB\ReturnType;
 use stdClass;
 
@@ -111,6 +112,11 @@ class Firma
     public $cBIC;
 
     /**
+     * @var Country
+     */
+    public $country;
+
+    /**
      * @param bool $load
      */
     public function __construct(bool $load = true)
@@ -125,12 +131,15 @@ class Firma
      */
     public function loadFromDB(): self
     {
-        $obj = Shop::Container()->getDB()->query('SELECT * FROM tfirma LIMIT 1', ReturnType::SINGLE_OBJECT);
+        $countryHelper = Shop::Container()->getCountryService();
+        $obj           = Shop::Container()->getDB()->query('SELECT * FROM tfirma LIMIT 1', ReturnType::SINGLE_OBJECT);
         if ($obj !== false) {
             foreach (\get_object_vars($obj) as $k => $v) {
                 $this->$k = $v;
             }
         }
+        $this->country = $countryHelper->getCountry($countryHelper->getIsoByCountryName($this->cLand));
+
         \executeHook(\HOOK_FIRMA_CLASS_LOADFROMDB, ['instance' => $this]);
 
         return $this;

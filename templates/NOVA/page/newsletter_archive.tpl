@@ -6,23 +6,25 @@
     {opcMountPoint id='opc_before_newsletter'}
     {container}
         {block name='page-newsletter-archive-toptags'}
-            <div id="toptags">{lang key='newsletterhistory'}</div>
+            <div id="toptags" class="h2">{lang key='newsletterhistory'}</div>
         {/block}
         {block name='page-newsletter-archive-content'}
-            {card class="newsletter"}
-                {row class="font-weight-bold border-bottom"}
-                    {col cols=7}{lang key='newsletterhistorysubject'}{/col}
-                    {col cols=5}{lang key='newsletterhistorydate'}{/col}
-                {/row}
-                {foreach $oNewsletterHistory_arr as $oNewsletterHistory}
-                    {row class="content_{$oNewsletterHistory@iteration % 2}"}
-                        {col cols=7}
-                            {link href="{get_static_route id='newsletter.php'}?show={$oNewsletterHistory->kNewsletterHistory}"}{$oNewsletterHistory->cBetreff}{/link}
-                        {/col}
-                        {col cols=5}{$oNewsletterHistory->Datum}{/col}
-                    {/row}
-                {/foreach}
-            {/card}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>{lang key='newsletterhistorysubject'}</th>
+                        <th>{lang key='newsletterhistorydate'}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {foreach $oNewsletterHistory_arr as $oNewsletterHistory}
+                        <tr>
+                            <td>{link href="{$oNewsletterHistory->cURLFull}"}{$oNewsletterHistory->cBetreff}{/link}</td>
+                            <td>{$oNewsletterHistory->Datum}</td>
+                        </tr>
+                    {/foreach}
+                </tbody>
+            </table>
         {/block}
     {/container}
 {/block}

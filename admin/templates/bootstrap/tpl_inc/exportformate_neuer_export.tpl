@@ -26,8 +26,8 @@
                 <hr class="mb-n3">
             </div>
             <div class="card-body">
-                <div class="form-group form-row align-items-center{if isset($cPlausiValue_arr.cName)} error{/if}">
-                    <label class="col col-sm-4 col-form-label text-sm-right" for="cName">{__('name')}{if isset($cPlausiValue_arr.cName)} <span class="fillout">{__('FillOut')}</span>{/if}:</label>
+                <div class="form-group form-row align-items-center{if isset($cPlausiValue_arr.cName)} form-error{/if}">
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="cName">{__('name')}:</label>
                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         <input class="form-control" type="text" name="cName" id="cName" value="{if isset($cPostVar_arr.cName)}{$cPostVar_arr.cName}{elseif isset($Exportformat->cName)}{$Exportformat->cName}{/if}" tabindex="1" />
                     </div>
@@ -117,10 +117,10 @@
                     </div>
                 </div>
 
-                <div class="form-group form-row align-items-center item{if isset($cPlausiValue_arr.cDateiname)} error{/if}">
-                    <label class="col col-sm-4 col-form-label text-sm-right" for="cDateiname">{__('filename')}{if isset($cPlausiValue_arr.cDateiname)} <span class="fillout">{__('FillOut')}</span>{/if}:</label>
+                <div class="form-group form-row align-items-center item{if isset($cPlausiValue_arr.cDateiname)} form-error{/if}">
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="cDateiname">{__('filename')}:</label>
                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                        <input class="form-control{if isset($cPlausiValue_arr.cDateiname)} fieldfillout{/if}" type="text" name="cDateiname" id="cDateiname" value="{if isset($cPostVar_arr.cDateiname)}{$cPostVar_arr.cDateiname}{elseif isset($Exportformat->cDateiname)}{$Exportformat->cDateiname}{/if}" tabindex="2" />
+                        <input class="form-control" type="text" name="cDateiname" id="cDateiname" value="{if isset($cPostVar_arr.cDateiname)}{$cPostVar_arr.cDateiname}{elseif isset($Exportformat->cDateiname)}{$Exportformat->cDateiname}{/if}" tabindex="2" />
                     </div>
                 </div>
                 {if !isset($Exportformat->bPluginContentFile)|| !$Exportformat->bPluginContentFile}

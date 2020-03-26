@@ -2021,14 +2021,18 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
     }
 
     foreach ([
-                 'kundenregistrierung_abfragen_anrede' => 'anrede',
-                 'kundenregistrierung_pflicht_vorname' => 'vorname',
-                 'kundenregistrierung_abfragen_firma' => 'firma',
-                 'kundenregistrierung_abfragen_firmazusatz' => 'firmazusatz',
-                 'kundenregistrierung_abfragen_titel' => 'titel',
-                 'kundenregistrierung_abfragen_adresszusatz' => 'adresszusatz',
-                 'kundenregistrierung_abfragen_www' => 'www',
-                 'kundenregistrierung_abfragen_bundesland' => 'bundesland'
+                'kundenregistrierung_abfragen_anrede'       => 'anrede',
+                'kundenregistrierung_pflicht_vorname'       => 'vorname',
+                'kundenregistrierung_abfragen_firma'        => 'firma',
+                'kundenregistrierung_abfragen_firmazusatz'  => 'firmazusatz',
+                'kundenregistrierung_abfragen_titel'        => 'titel',
+                'kundenregistrierung_abfragen_adresszusatz' => 'adresszusatz',
+                'kundenregistrierung_abfragen_www'          => 'www',
+                'kundenregistrierung_abfragen_bundesland'   => 'bundesland',
+                'kundenregistrierung_abfragen_geburtstag'   => 'geburtstag',
+                'kundenregistrierung_abfragen_fax'          => 'fax',
+                'kundenregistrierung_abfragen_tel'          => 'tel',
+                'kundenregistrierung_abfragen_mobil'        => 'mobil'
              ] as $confKey => $dataKey) {
         if ($conf['kunden'][$confKey] === 'Y') {
             $data[$dataKey] = isset($data[$dataKey]) ? trim($data[$dataKey]) : null;

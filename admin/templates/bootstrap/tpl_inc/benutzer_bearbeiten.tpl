@@ -140,21 +140,19 @@ $(document).ready(function() {
                 </div>
                 <div class="card-body">
                     <div class="item">
-                        <div class="form-group form-row align-items-center{if isset($cError_arr.cName)} error{/if}">
+                        <div class="form-group form-row align-items-center{if isset($cError_arr.cName)} form-error{/if}">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="cName">{__('preSurName')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <input id="cName" class="form-control" type="text" name="cName" value="{if isset($oAccount->cName)}{$oAccount->cName}{/if}" />
                             </div>
-                            {if isset($cError_arr.cName)}<span class="input-group-addon error" title="{__('FillOut')}"><i class="fa fa-exclamation-triangle"></i></span>{/if}
                         </div>
                     </div>
                     <div class="item">
-                        <div class="form-group form-row align-items-center{if isset($cError_arr.cMail)} error{/if}">
+                        <div class="form-group form-row align-items-center{if isset($cError_arr.cMail)} form-error{/if}">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="cMail">{__('emailAddress')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <input id="cMail" class="form-control" type="text" name="cMail" value="{if isset($oAccount->cMail)}{$oAccount->cMail}{/if}" />
                             </div>
-                            {if isset($cError_arr.cMail)}<span class="input-group-addon error" title="{__('FillOut')}"><i class="fa fa-exclamation-triangle"></i></span>{/if}
                         </div>
                     </div>
                     <div class="item">
@@ -184,22 +182,20 @@ $(document).ready(function() {
                 </div>
                 <div class="card-body">
                     <div class="item">
-                        <div class="form-group form-row align-items-center{if isset($cError_arr.cLogin)} error{/if}">
-                            <label class="col col-sm-4 col-form-label text-sm-right" for="cLogin">{__('username')}:</label>
+                        <div class="form-group form-row align-items-center{if isset($cError_arr.cLogin)} form-error{/if}">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="cLogin">{__('username')}
+                                {if isset($cError_arr.cLogin) && $cError_arr.cLogin == 2}
+                                    <span class="input-group-addon text-danger" data-html="true" data-toggle="tooltip" data-original-title="{{__('usernameNotAvailable')}|sprintf:{$oAccount->cLogin}}"><i class="fa fa-exclamation-triangle"></i></span>
+                                {/if}:
+                            </label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <input id="cLogin" class="form-control" type="text" name="cLogin" value="{if isset($oAccount->cLogin)}{$oAccount->cLogin}{/if}">
                             </div>
-                            {if isset($cError_arr.cLogin) && $cError_arr.cLogin == 1}
-                                <span class="input-group-addon error" title="{__('FillOut')}"><i class="fa fa-exclamation-triangle"></i></span>
-                            {elseif isset($cError_arr.cLogin) && $cError_arr.cLogin == 2}
-                                <span class="input-group-addon error">{{__('usernameNotAvailable')}|sprintf:{$oAccount->cLogin}}</span>
-                                <span class="input-group-addon error" title="Benutzername bereits vergeben"><i class="fa fa-exclamation-triangle"></i></span>
-                            {/if}
                         </div>
                     </div>
 
                     <div class="item">
-                        <div class="form-group form-row align-items-center{if isset($cError_arr.cPass)} error{/if}">
+                        <div class="form-group form-row align-items-center{if isset($cError_arr.cPass)} form-error{/if}">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="cPass">{__('password')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <input id="cPass" class="form-control" type="text" name="cPass" autocomplete="off" />
@@ -212,11 +208,6 @@ $(document).ready(function() {
                                         <span class="fas fa-random"></span>
                                     </span>
                                 </button>
-                                {if isset($cError_arr.cPass)}
-                                    <span class="input-group-addon error" title="{__('FillOut')}">
-                                        <i class="fa fa-exclamation-triangle"></i>
-                                    </span>
-                                {/if}
                             </div>
                         </div>
                     </div>
@@ -236,12 +227,11 @@ $(document).ready(function() {
                             </div>
                         </div>
 
-                        <div class="item{if !empty($cError_arr.dGueltigBis)} error{/if}"{if !$oAccount->dGueltigBis || $oAccount->dGueltigBis == null} style="display: none;"{/if} id="tmp_date">
-                            <div class="form-group form-row align-items-center">
+                        <div class="item"{if !$oAccount->dGueltigBis || $oAccount->dGueltigBis == null} style="display: none;"{/if} id="tmp_date">
+                            <div class="form-group form-row align-items-center{if !empty($cError_arr.dGueltigBis)} form-error{/if}">
                                 <label class="col col-sm-4 col-form-label text-sm-right" for="dGueltigBis">{__('tillInclusive')}</label>
                                 <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                     <input class="form-control" type="text" name="dGueltigBis" value="{if $oAccount->dGueltigBis}{$oAccount->dGueltigBis|date_format:'%d.%m.%Y %H:%M:%S'}{/if}" id="dGueltigBis" />
-                                    {if !empty($cError_arr.dGueltigBis)}<span class="input-group-addon error" title="{__('FillOut')}"><i class="fa fa-exclamation-triangle"></i></span>{/if}
                                 </div>
                             </div>
                         </div>

@@ -27,30 +27,24 @@ cDokuURL=__('auswahlassistentURL')}
                     <hr class="mb-n3">
                 </div>
                 <div class="card-body">
-                    <div class="form-group form-row align-items-center">
+                    <div class="form-group form-row align-items-center{if isset($cPlausi_arr.cFrage)} form-error{/if}">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="cFrage">
-                            {__('question')}
-                            {if isset($cPlausi_arr.cName)}
-                                <span class="fillout">{__('FillOut')}</span>
-                            {/if}:
+                            {__('question')}:
                         </label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <input id="cFrage" class="form-control{if isset($cPlausi_arr.cFrage)} fieldfillout{/if}"
+                            <input id="cFrage" class="form-control"
                                    name="cFrage" type="text"
                                    value="{if isset($cPost_arr.cFrage)}{$cPost_arr.cFrage}{elseif isset($oFrage->cFrage)}{$oFrage->cFrage}{/if}">
                         </div>
                         <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc="{__('hintQuestionName')}"}</div>
                     </div>
 
-                    <div class="form-group form-row align-items-center">
+                    <div class="form-group form-row align-items-center{if isset($cPlausi_arr.kAuswahlAssistentGruppe)} form-error{/if}">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="kAuswahlAssistentGruppe">
-                            {__('group')}
-                            {if isset($cPlausi_arr.kAuswahlAssistentGruppe)}
-                                <span class="fillout">{__('FillOut')}</span>
-                            {/if}:
+                            {__('group')}:
                         </label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <select id="kAuswahlAssistentGruppe" name="kAuswahlAssistentGruppe" class="custom-select{if isset($cPlausi_arr.kAuswahlAssistentGruppe)} fieldfillout{/if}">
+                            <select id="kAuswahlAssistentGruppe" name="kAuswahlAssistentGruppe" class="custom-select">
                                 <option value="-1">{__('aaChoose')}</option>
                                 {foreach $oAuswahlAssistentGruppe_arr as $oAuswahlAssistentGruppe}
                                     <option value="{$oAuswahlAssistentGruppe->kAuswahlAssistentGruppe}"
@@ -61,12 +55,12 @@ cDokuURL=__('auswahlassistentURL')}
                         <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc="{__('hintQuestionGroup')}"}</div>
                     </div>
 
-                    <div class="form-group form-row align-items-center">
-                        <label class="col col-sm-4 col-form-label text-sm-right" for="kMM">{__('attribute')} {if isset($cPlausi_arr.kMerkmal) && $cPlausi_arr.kMerkmal == 1} <span class="fillout">{__('FillOut')}</span>{/if}
+                    <div class="form-group form-row align-items-center{if isset($cPlausi_arr.kMerkmal)} form-error{/if}">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="kMM">{__('attribute')}
                             {if isset($cPlausi_arr.kMerkmal) && $cPlausi_arr.kMerkmal == 2 }<span class="fillout">{__('aaMerkmalTaken')}</span>{/if}:
                         </label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <select id="kMM" name="kMerkmal" class="custom-select{if isset($cPlausi_arr.kMerkmal)} fieldfillout{/if}">
+                            <select id="kMM" name="kMerkmal" class="custom-select">
                                 <option value="-1">{__('aaChoose')}</option>
                                 {foreach $oMerkmal_arr as $oMerkmal}
                                     <option value="{$oMerkmal->kMerkmal}"{if (isset($cPost_arr.kMerkmal) && $oMerkmal->kMerkmal == $cPost_arr.kMerkmal) || (isset($oFrage->kMerkmal) && $oMerkmal->kMerkmal == $oFrage->kMerkmal)} selected{/if}>{$oMerkmal->cName}</option>
@@ -76,15 +70,12 @@ cDokuURL=__('auswahlassistentURL')}
                         <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc="{__('hintQuestionAttribute')}"}</div>
                     </div>
 
-                    <div class="form-group form-row align-items-center">
+                    <div class="form-group form-row align-items-center{if isset($cPlausi_arr.nSort)} form-error{/if}">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="nSort">
-                            {__('sorting')}
-                            {if isset($cPlausi_arr.nSort)}
-                                <span class="fillout">{__('FillOut')}</span>
-                            {/if}:
+                            {__('sorting')}:
                         </label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <input id="nSort" class="form-control{if isset($cPlausi_arr.nSort)} fieldfillout{/if}"
+                            <input id="nSort" class="form-control"
                                    name="nSort" type="text"
                                    value="{if isset($cPost_arr.nSort)}{$cPost_arr.nSort}{elseif isset($oFrage->nSort)}{$oFrage->nSort}{else}1{/if}">
                         </div>

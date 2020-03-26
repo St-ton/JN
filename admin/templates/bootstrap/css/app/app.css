@@ -2549,10 +2549,6 @@ textarea.form-control {
   color: #435a6b;
   text-decoration: none;
 }
-.btn:focus, .btn.focus {
-  outline: 0;
-  box-shadow: none;
-}
 .btn.disabled, .btn:disabled {
   opacity: 0.65;
   box-shadow: none;
@@ -3089,7 +3085,7 @@ input[type=button].btn-block {
 }
 
 .fade {
-  transition: opacity 0.35s linear;
+  transition: opacity 0.15s linear;
 }
 @media (prefers-reduced-motion: reduce) {
   .fade {
@@ -12355,6 +12351,14 @@ input[type=color]::-webkit-color-swatch {
 }
 .form-counter .btn:hover {
   background-color: #f5f7fa;
+}
+
+.fieldfillout {
+  border-color: #e10505;
+}
+
+.form-error input, .form-error select {
+  border-color: #e10505;
 }
 
 .icon-text-indent {

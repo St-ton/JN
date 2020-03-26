@@ -61,8 +61,9 @@
                 </div>
                 {block name='layout-header-nav-account-link-register'}
                     <div class="dropdown-footer bg-gray-light">
-                        {link href="{get_static_route id='registrieren.php'}" rel="nofollow" title="{lang key='registerNow'}"}
-                            {lang key='newHere'} <span class="text-decoration-underline">{lang key='registerNow'}</span>
+                        {lang key='newHere'}
+                        {link href="{get_static_route id='registrieren.php'}" class="text-decoration-underline" rel="nofollow" title="{lang key='registerNow'}"}
+                            {lang key='registerNow'}
                         {/link}
                     </div>
                 {/block}

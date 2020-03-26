@@ -13777,14 +13777,6 @@ body {
     padding-left: 1rem;
   }
 }
-@media (max-width: 991.98px) {
-  #dropdown-search {
-    display: none;
-  }
-  #dropdown-search.show {
-    display: none;
-  }
-}
 
 h1, .h1 {
   font-weight: 700;

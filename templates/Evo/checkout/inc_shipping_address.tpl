@@ -66,8 +66,10 @@
 {literal}
     <script type="text/javascript">
         $(window).on('load', function () {
-            $('#checkout_register_shipping_address').prop('checked', false);
-            $('#select_shipping_address').addClass('in').removeClass('hidden');
+            var $registerShippingAddress = $('#checkout_register_shipping_address');
+            if ($registerShippingAddress.prop('checked')) {
+                $registerShippingAddress.click();
+            }
             $.evo.extended().smoothScrollToAnchor('#checkout_register_shipping_address');
         });
     </script>

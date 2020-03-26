@@ -1179,6 +1179,11 @@ class Kupon
     {
         switch ($errorCode) {
             case 0:
+                Shop::Container()->getAlertService()->addAlert(
+                    Alert::TYPE_SUCCESS,
+                    Shop::Lang()->get('couponSuccess', 'global'),
+                    'couponSuccess'
+                );
                 return null;
             case 1:
             case 2:

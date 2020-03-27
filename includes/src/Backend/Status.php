@@ -347,14 +347,14 @@ class Status
         return isset($conf['suche_fulltext'])
             && $conf['suche_fulltext'] !== 'N'
             && (!Shop::Container()->getDB()->query(
-                "SHOW INDEX 
-                    FROM tartikel 
+                "SHOW INDEX
+                    FROM tartikel
                     WHERE KEY_NAME = 'idx_tartikel_fulltext'",
                 ReturnType::SINGLE_OBJECT
             )
                 || !Shop::Container()->getDB()->query(
-                    "SHOW INDEX 
-                    FROM tartikelsprache 
+                    "SHOW INDEX
+                    FROM tartikelsprache
                     WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'",
                     ReturnType::SINGLE_OBJECT
                 ));
@@ -402,7 +402,7 @@ class Status
         $translations = Shop::Container()->getDB()->query(
             "SELECT lang.cContentText, lang.cContentHtml
                 FROM temailvorlagesprache lang
-                JOIN temailvorlage 
+                JOIN temailvorlage
                 ON lang.kEmailvorlage = temailvorlage.kEmailvorlage
                 WHERE temailvorlage.cName = 'Passwort vergessen'",
             ReturnType::ARRAY_OF_OBJECTS
@@ -490,5 +490,13 @@ class Status
         }
 
         return $_SESSION['emailSyntaxErrorCount'];
+    }
+
+    /**
+     * @return bool
+     */
+    protected function hasExtensionSOAP(): bool
+    {
+        return extension_loaded('soap');
     }
 }

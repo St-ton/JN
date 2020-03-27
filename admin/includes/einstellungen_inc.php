@@ -302,6 +302,12 @@ function sortiereEinstellungen($config)
  */
 function filteredConfData(array $confData, string $filter): array
 {
+    // --DEBUG-- -------------------------------------------------------------
+    require_once('/var/www/html/shop5_01/includes/vendor/apache/log4php/src/main/php/Logger.php');
+    \Logger::configure('/var/www/html/shop5_01/_logging_conf.xml');
+    $oLogger = \Logger::getLogger('default');
+    // --DEBUG-- -------------------------------------------------------------
+
     $keys = [
         'configgroup_5_product_question'  => [
             'configgroup_5_product_question',
@@ -329,13 +335,12 @@ function filteredConfData(array $confData, string $filter): array
         ]
     ];
     if (!extension_loaded('soap')) {
-        $keys[] = [
-            'configgroup_6_vat_id' => [
-                'shop_ustid_bzstpruefung',
-                'shop_ustid_force_remote_check'
-            ]
+        $keys['configgroup_6_vat_id'] = [
+            'shop_ustid_bzstpruefung',
+            'shop_ustid_force_remote_check'
         ];
     }
+    $oLogger->debug('keys: '.print_r($keys, true)); // --DEBUG--
 
     if ($filter !== '' && isset($keys[$filter])) {
         $keysToFilter = $keys[$filter];

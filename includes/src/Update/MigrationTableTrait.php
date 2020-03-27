@@ -10,7 +10,6 @@ use Exception;
 use JTL\DB\ReturnType;
 use stdClass;
 
-
 /**
  * Trait MigrationTableTrait
  * @package JTL\Update

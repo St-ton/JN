@@ -259,7 +259,6 @@ if ($step === 'einstellungen bearbeiten') {
                 ? Text::htmlentities($setValue->cWert)
                 : null;
         }
-
         $sectionItem->setValue($config, $setValue);
         $oSections[(int)$config->kEinstellungenSektion] = $sectionItem;
     }

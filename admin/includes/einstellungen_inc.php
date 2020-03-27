@@ -326,7 +326,7 @@ function filteredConfData(array $confData, string $filter): array
             'benachrichtigung_sperre_minuten',
             'benachrichtigung_abfragen_captcha',
             'benachrichtigung_min_lagernd'
-        ],
+        ]
     ];
     if (!extension_loaded('soap')) {
         $keys[] = [

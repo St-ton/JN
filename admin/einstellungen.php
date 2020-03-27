@@ -264,14 +264,6 @@ if ($step === 'einstellungen bearbeiten') {
         $oSections[(int)$config->kEinstellungenSektion] = $sectionItem;
     }
 
-    if (!extension_loaded('soap')) {
-        $keys     = [
-            'configgroup_6_vat_id' => [
-                'shop_ustid_bzstpruefung',
-                'shop_ustid_force_remote_check'
-            ]];
-        $confData = filteredConfData($confData, Request::verifyGPDataString('group'), $keys);
-    }
     $smarty->assign('Sektion', $section)
            ->assign('Conf', filteredConfData($confData, Request::verifyGPDataString('group')))
            ->assign(

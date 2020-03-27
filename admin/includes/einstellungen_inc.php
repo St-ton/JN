@@ -328,6 +328,14 @@ function filteredConfData(array $confData, string $filter, array $keys = []): ar
                 'benachrichtigung_sperre_minuten',
                 'benachrichtigung_abfragen_captcha',
                 'benachrichtigung_min_lagernd'
+            ],
+        ];
+    }
+    if (!extension_loaded('soap')) {
+        $keys[] = [
+            'configgroup_6_vat_id' => [
+                'shop_ustid_bzstpruefung',
+                'shop_ustid_force_remote_check'
             ]
         ];
     }

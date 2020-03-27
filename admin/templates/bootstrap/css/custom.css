@@ -511,20 +511,6 @@ label .fillout {
 .label a {
   color: inherit;
 }
-.save-wrapper {
-  bottom: 0;
-  width: 100%;
-  position: sticky;
-  padding: 1.5rem 1.5rem;
-  background: #fff;
-  box-shadow: 0px -2px 16px 0px rgba(0, 0, 0, 0.06);
-  text-align: right;
-  margin: 20px 0;
-  z-index: 10;
-}
-.save-wrapper .row {
-  align-items: center;
-}
 .pages .pageinfo {
   float: left;
   margin-top: 25px;
@@ -2645,9 +2631,6 @@ input[type=number] {
 .select2-container {
   min-width: 100%;
   max-width: inherit;
-}
-.save-wrapper .row > div {
-  margin-bottom: 8px;
 }
 .typeahead-spinner {
   position: absolute;

@@ -12,7 +12,7 @@
                     {lang key='myPersonalData'}
                 {/if}
             </div>
-            {if isset($checkout)}
+            {if isset($checkout) && $Einstellungen.kaufabwicklung.bestellvorgang_unregistriert === 'Y'}
                 <div>
                     {lang key='guestOrRegistered' section='checkout'}
                 </div>

@@ -127,7 +127,7 @@
                 {if isset($oNewsletterHistory) && $oNewsletterHistory->kNewsletterHistory > 0}
                     {block name='newsletter-index-newsletter-history'}
                         {block name='newsletter-index-newsletter-history-heading'}
-                            <div class="h3">{lang key='newsletterhistory' section='global'}</div>
+                            <div class="h2">{lang key='newsletterhistory' section='global'}</div>
                         {/block}
                         {block name='newsletter-index-newsletter-history-content'}
                             <div id="newsletterContent">

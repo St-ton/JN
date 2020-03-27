@@ -377,7 +377,6 @@ class KategorieListe
                 $category->kKategorie
             );
             $category->bUnterKategorien = isset($sub->kKategorie);
-            $category->cBeschreibung    = Text::parseNewsText($category->cBeschreibung);
 
             $tmpCategory = new Kategorie();
             foreach (\get_object_vars($category) as $k => $v) {

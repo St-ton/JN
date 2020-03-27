@@ -3739,7 +3739,7 @@ class Artikel
         $this->fVPEWert                          = $data->fVPEWert;
         $this->cName                             = Text::htmlentitiesOnce($data->cName, \ENT_COMPAT | \ENT_HTML401);
         $this->cSeo                              = $data->cSeo;
-        $this->cBeschreibung                     = Text::parseNewsText($data->cBeschreibung);
+        $this->cBeschreibung                     = $data->cBeschreibung;
         $this->cAnmerkung                        = $data->cAnmerkung;
         $this->cArtNr                            = $data->cArtNr;
         $this->cVPE                              = $data->cVPE;
@@ -3751,7 +3751,7 @@ class Artikel
         $this->cLagerBeachten                    = $data->cLagerBeachten;
         $this->cLagerKleinerNull                 = $data->cLagerKleinerNull;
         $this->cLagerVariation                   = $data->cLagerVariation;
-        $this->cKurzBeschreibung                 = Text::parseNewsText($data->cKurzBeschreibung);
+        $this->cKurzBeschreibung                 = $data->cKurzBeschreibung;
         $this->cLieferstatus                     = $data->cName_tlieferstatus;
         $this->cTopArtikel                       = $data->cTopArtikel;
         $this->cNeu                              = $data->cNeu;
@@ -3904,7 +3904,7 @@ class Artikel
             $this->cHerstellerMetaTitle       = $data->cMetaTitle_spr;
             $this->cHerstellerMetaKeywords    = $data->cMetaKeywords_spr;
             $this->cHerstellerMetaDescription = $data->cMetaDescription_spr;
-            $this->cHerstellerBeschreibung    = Text::parseNewsText($data->cBeschreibung_hst_spr);
+            $this->cHerstellerBeschreibung    = $data->cBeschreibung_hst_spr;
             $this->cHerstellerSortNr          = $data->nSortNr_thersteller;
             if ($data->manufImg !== null && \mb_strlen($data->manufImg) > 0) {
                 $this->cBildpfad_thersteller    = $manufacturer->getImage(Image::SIZE_XS);
@@ -4673,9 +4673,7 @@ class Artikel
     {
         \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
         foreach (\array_keys(\get_object_vars($obj)) as $member) {
-            $this->$member = ($member === 'cBeschreibung' || $member === 'cKurzBeschreibung')
-                ? Text::parseNewsText($obj->$member)
-                : $obj->$member;
+            $this->$member = $obj->$member;
         }
 
         return $this;

@@ -24,7 +24,7 @@ $cCanonicalURL        = '';
 if (pruefeBetreffVorhanden()) {
     $step            = 'formular';
     $fehlendeAngaben = [];
-    if (isset($_POST['kontakt']) && (int)$_POST['kontakt'] === 1) {
+    if (isset($_POST['kontakt']) && (int)$_POST['kontakt'] === 1 && validateToken()) {
         $fehlendeAngaben = gibFehlendeEingabenKontaktformular();
         $kKundengruppe   = Kundengruppe::getCurrent();
         // CheckBox Plausi

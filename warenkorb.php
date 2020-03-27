@@ -32,16 +32,17 @@ uebernehmeWarenkorbAenderungen();
 validiereWarenkorbKonfig();
 pruefeGuthabenNutzen();
 //Versandermittlung?
-if (isset($_POST['land'], $_POST['plz']) &&
-    !VersandartHelper::getShippingCosts($_POST['land'], $_POST['plz'], $MsgWarning)
+if (isset($_POST['land'], $_POST['plz'])
+    && !VersandartHelper::getShippingCosts($_POST['land'], $_POST['plz'], $MsgWarning)
 ) {
     $MsgWarning = Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages');
 }
 //Kupons bearbeiten
-if ($cart !== null &&
-    isset($_POST['Kuponcode']) &&
-    strlen($_POST['Kuponcode']) > 0 &&
-    $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0
+if ($cart !== null
+    && isset($_POST['Kuponcode'])
+    && strlen($_POST['Kuponcode']) > 0
+    && $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0
+    && validateToken()
 ) {
     // Kupon darf nicht im leeren Warenkorb eingelöst werden
     $Kupon             = new Kupon();
@@ -84,7 +85,10 @@ if (isset($_SESSION['checkCouponResult'])) {
 }
 
 // Gratis Geschenk bearbeiten
-if (isset($_POST['gratis_geschenk'], $_POST['gratishinzufuegen']) && (int)$_POST['gratis_geschenk'] === 1) {
+if (isset($_POST['gratis_geschenk'], $_POST['gratishinzufuegen'])
+    && (int)$_POST['gratis_geschenk'] === 1
+    && validateToken()
+) {
     $kArtikelGeschenk = (int)$_POST['gratisgeschenk'];
     // Pruefen ob der Artikel wirklich ein Gratis Geschenk ist
     $oArtikelGeschenk = Shop::DB()->query(

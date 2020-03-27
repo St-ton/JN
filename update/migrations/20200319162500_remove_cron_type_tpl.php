@@ -31,7 +31,7 @@ class Migration_20200319162500 extends Migration implements IMigration
         );
         $this->setConfig(
             'cron_type',
-            ($useCron->cWert === 'Y' || $useCron->name === 'NOVA') ? 's2s' : 'N',
+            ($useCron->cWert  ?? 'N') === 'N' ? 'N' : 's2s',
             \CONF_CRON,
             'Pseudo-Cron Methode',
             'selectbox',

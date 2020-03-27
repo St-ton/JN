@@ -715,7 +715,6 @@ if ($step === 'uebersicht') {
             DATE_FORMAT(dStart, '%d.%m.%Y %H:%i') AS Datum
             FROM tnewsletterhistory
             WHERE kSprache = :lid
-                AND nAnzahl > 0
             ORDER BY dStart DESC
             LIMIT " . $pagiHistory->getLimitSQL(),
         ['lid' => (int)$_SESSION['kSprache']],

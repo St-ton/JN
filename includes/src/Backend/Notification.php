@@ -284,6 +284,15 @@ class Notification implements IteratorAggregate, Countable
             );
         }
 
+        if (!$status->hasExtensionSOAP()) {
+            $this->add(
+                NotificationEntry::TYPE_INFO,
+                __('ustIdMiasCheckTitle'),
+                __('ustIdMiasCheckMessage'),
+                Shop::getAdminURL().'/einstellungen.php?kSektion=6'
+            );
+        }
+
         return $this;
     }
 }

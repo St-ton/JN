@@ -527,6 +527,14 @@ $(document).ready(function () {
         tristate(e.target);
     });
 
+    $('.fieldfillout').on('change', function () {
+        $(this).removeClass('fieldfillout');
+    });
+
+    $('.form-error input, .form-error select').on('change', function () {
+        $(this).closest('.form-error').removeClass('form-error');
+    });
+
     checkSingleSettingCard();
     onChangeFormSubmit();
 });

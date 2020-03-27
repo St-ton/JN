@@ -97,10 +97,12 @@
                                             {$bSelectable = 1}
                                         {/if}
                                         {$kKonfigitem = $oItem->getKonfigitem()}
-                                        {$checkboxActive = (!empty($aKonfigerror_arr)
-                                            && isset($smarty.post.item)
-                                            && isset($smarty.post.item[$kKonfiggruppe])
-                                            && $oItem->getKonfigitem()|in_array:$smarty.post.item[$kKonfiggruppe])
+                                        {$checkboxActive = (isset($nKonfigitem_arr)
+                                                && in_array($oItem->getKonfigitem(), $nKonfigitem_arr))
+                                            || (!empty($aKonfigerror_arr)
+                                                && isset($smarty.post.item)
+                                                && isset($smarty.post.item[$kKonfiggruppe])
+                                                && $oItem->getKonfigitem()|in_array:$smarty.post.item[$kKonfiggruppe])
                                             || ($oItem->getSelektiert()
                                                 && (!isset($aKonfigerror_arr)
                                                     || !$aKonfigerror_arr))}

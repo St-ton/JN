@@ -138,7 +138,7 @@ class Firma
                 $this->$k = $v;
             }
         }
-        $this->country = isset($this->cLand)
+        $this->country = $this->cLand !== null
             ? $countryHelper->getCountry($countryHelper->getIsoByCountryName($this->cLand))
             : null;
 

@@ -16,9 +16,6 @@
                         {include file='productdetails/config_sidebar.tpl'}
                     {/block}
                 </div>
-               {* <div class="tab-pane fade" id="cfg-tab-pane-save" role="tabpanel" aria-labelledby="cfg-tab-save">
-                    save, QR-code, short URL
-                </div>*}
             </div>
 
 
@@ -35,37 +32,17 @@
                 }
                     <i class="fas fa-cart-plus"></i> <span class="d-none d-sm-inline-flex ml-2">{lang key='yourConfiguration'}</span>
                 {/navitem}
-                {*{navitem id="cfg-tab-save"
-                    href="#cfg-tab-pane-save" role="tab" router-data=["toggle"=>"pill"]
-                    router-aria=["controls"=>"cfg-tab-pane-save", "selected"=>"false"]
-                }
-                    <i class="fas fa-save"></i> <span class="d-none d-sm-inline-flex ml-2">{lang key='saveComponents' section='productDetails'}</span>
-                {/navitem}*}
                 {navitem href="#" disabled=true}
                     <strong id="cfg-price" class="price"></strong>
                 {/navitem}
             {/nav}
         {/modal}
     {/block}
-
-    {*{block name='productdetails-config-container-sticky-sidebar'}
-        {col cols=12 class="mb-6"}
-            <div id="cfg-sticky-sidebar" class="mb-4">
-                {if $Artikel->bHasKonfig}
-                    {block name='productdetails-config-container-include-config-sidebar'}
-                        {include file='productdetails/config_sidebar.tpl'}
-                    {/block}
-                {/if}
-            </div>
-            {row}
-                {col cols=12 md=6 offset-md=6}
-                    {block name='productdetails-config-container-include-basket'}
-                        <div class="mt-3">
-                            {include file='productdetails/basket.tpl'}
-                        </div>
-                    {/block}
-                {/col}
-            {/row}
-        {/col}
-    {/block}*}
+    {block name='productdetails-config-container-script'}
+        {if isset($kEditKonfig) && !isset($bWarenkorbHinzugefuegt)}
+            {inline_script}<script>
+                $('#cfg-container').modal('show');
+            </script>{/inline_script}
+        {/if}
+    {/block}
 {/block}

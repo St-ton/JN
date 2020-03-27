@@ -25,5 +25,8 @@
             {lang key='applyConfiguration' section='productDetails'}
         {/button}*}
         {include file='productdetails/basket.tpl'}
+        {if isset($kEditKonfig)}
+            <input type="hidden" name="kEditKonfig" value="{$kEditKonfig}"/>
+        {/if}
     </div>
 {/block}

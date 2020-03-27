@@ -138,7 +138,7 @@ class Firma
                 $this->$k = $v;
             }
         }
-        $this->country = $countryHelper->getCountry($countryHelper->getIsoByCountryName($this->cLand));
+        $this->country = $countryHelper->getCountry($countryHelper->getIsoByCountryName($this->cLand ?? '') ?? '');
 
         \executeHook(\HOOK_FIRMA_CLASS_LOADFROMDB, ['instance' => $this]);
 

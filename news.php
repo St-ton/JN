@@ -104,9 +104,10 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                    ->assign('oNewsKategorie_arr', $oNewsKategorie_arr);
 
             // Kommentar hinzufügen
-            if (isset($_POST['kommentar_einfuegen'], $Einstellungen['news']['news_kommentare_nutzen']) &&
-                (int)$_POST['kommentar_einfuegen'] > 0 &&
-                $Einstellungen['news']['news_kommentare_nutzen'] === 'Y'
+            if (isset($_POST['kommentar_einfuegen'], $Einstellungen['news']['news_kommentare_nutzen'])
+                && (int)$_POST['kommentar_einfuegen'] > 0
+                && $Einstellungen['news']['news_kommentare_nutzen'] === 'Y'
+                && validateToken()
             ) {
                 // Plausi
                 $nPlausiValue_arr = pruefeKundenKommentar(

@@ -139,7 +139,7 @@ if (isset($_GET['fc']) && strlen($_GET['fc']) > 0) {
     }
 }
 // Abonnieren
-if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
+if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1 && validateToken()) {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'newsletter_inc.php';
 
@@ -168,13 +168,13 @@ if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
     }
 
     $smarty->assign('cPost_arr', StringHandler::filterXSS($_POST));
-} elseif (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 2) {
+} elseif (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 2 && validateToken()) {
     // weiterleitung vom Footer zu newsletter.php
     $oPlausi->cPost_arr['cEmail'] = isset($_POST['cEmail'])
         ? StringHandler::filterXSS(Shop::DB()->escape(strip_tags($_POST['cEmail'])))
         : null;
     $smarty->assign('oPlausi', $oPlausi);
-} elseif (isset($_POST['abmelden']) && (int)$_POST['abmelden'] === 1) { // Abmelden
+} elseif (isset($_POST['abmelden']) && (int)$_POST['abmelden'] === 1 && validateToken()) { // Abmelden
     if (valid_email($_POST['cEmail'])) {
         // Pruefen, ob Email bereits vorhanden
         $oNewsletterEmpfaenger = Shop::DB()->select(

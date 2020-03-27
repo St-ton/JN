@@ -7,7 +7,9 @@
 namespace JTL\Update;
 
 use Exception;
+use JTL\DB\ReturnType;
 use stdClass;
+
 
 /**
  * Trait MigrationTableTrait
@@ -98,13 +100,23 @@ trait MigrationTableTrait
     public function removeLocalization($key, $section = null): void
     {
         if ($section) {
-            $this->execute(
-                "DELETE tsprachwerte
+            $this->getDB()->queryPrepared(
+                'DELETE tsprachwerte
                     FROM tsprachwerte
                     INNER JOIN tsprachsektion USING(kSprachsektion)
-                    WHERE tsprachwerte.cName = '{$key}' AND tsprachsektion.cName = '{$section}';");
+                    WHERE tsprachwerte.cName = :langKey AND tsprachsektion.cName = :langSection',
+                [
+                    'langKey'     => $key,
+                    'langSection' => $section
+                ],
+                ReturnType::DEFAULT
+            );
         } else {
-            $this->execute("DELETE FROM tsprachwerte WHERE cName = '{$key}'");
+            $this->getDB()->queryPrepared(
+                'DELETE FROM tsprachwerte WHERE cName = :langKey',
+                ['langKey' => $key],
+                ReturnType::DEFAULT
+            );
         }
     }
 

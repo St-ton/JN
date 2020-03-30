@@ -550,7 +550,7 @@ class NiceDB implements DbInterface
             } elseif ($value === null) {
                 $value = '';
             }
-            $lc = \mb_convert_case($value, \MB_CASE_LOWER);
+            $lc = \mb_convert_case((string)$value, \MB_CASE_LOWER);
             if ($lc === 'now()' || $lc === 'current_timestamp') {
                 $insData['`' . $column . '`'] = $value;
                 if (!\in_array($column, $excludeUpdate, true)) {
@@ -590,7 +590,7 @@ class NiceDB implements DbInterface
         $lastID = $this->pdo->lastInsertId();
         $this->analyzeQuery($sql, $assigns, null, \microtime(true) - $start);
 
-        return $lastID;
+        return (int)$lastID;
     }
 
     /**

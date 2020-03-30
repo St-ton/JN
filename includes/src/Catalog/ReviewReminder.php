@@ -100,7 +100,8 @@ class ReviewReminder
 
             return [];
         }
-        $reciepients = [];
+        $reciepients    = [];
+        $defaultOptions = Artikel::getDefaultOptions();
         foreach ($this->orders as $orderData) {
             $openReviews = [];
             $order       = new Bestellung((int)$orderData->kBestellung);
@@ -115,7 +116,7 @@ class ReviewReminder
                 }
                 $productVisible = (new Artikel())->fuelleArtikel(
                     (int)$item->kArtikel,
-                    null,
+                    $defaultOptions,
                     (int)$customer->kKundengruppe
                 );
                 if ($productVisible !== null && $productVisible->kArtikel > 0) {

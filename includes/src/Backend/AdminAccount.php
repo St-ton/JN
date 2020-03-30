@@ -303,8 +303,8 @@ class AdminAccount
             if (!isset($admin->kSprache)) {
                 $admin->kSprache = Shop::getLanguageID();
             }
-            $admin->cISO       = Shop::Lang()->getIsoFromLangID($admin->kSprache)->cISO;
-            $admin->attributes = $this->getAttributes($admin->kAdminlogin);
+            $admin->cISO       = Shop::Lang()->getIsoFromLangID((int)$admin->kSprache)->cISO;
+            $admin->attributes = $this->getAttributes((int)$admin->kAdminlogin);
             $this->toSession($admin);
             $this->checkAndUpdateHash($cPass);
             if (!$this->getIsTwoFaAuthenticated()) {

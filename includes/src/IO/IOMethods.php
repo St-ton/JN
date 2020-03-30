@@ -775,14 +775,9 @@ class IOMethods
         }
 
         if ($productID > 0) {
-            $product = new Artikel();
-            $options = (object)[
-                'nMain'                     => 0,
-                'nWarenlager'               => 0,
-                'nVariationKombi'           => 0,
-                'nVariationen'              => 0,
-                'nKeinLagerbestandBeachten' => 1,
-            ];
+            $product                            = new Artikel();
+            $options                            = Artikel::getDefaultOptions();
+            $options->nKeinLagerbestandBeachten = 1;
 
             $product->fuelleArtikel(
                 $productID,
@@ -825,14 +820,7 @@ class IOMethods
             return $objResponse;
         }
         $options                            = new stdClass();
-        $options->nMerkmale                 = 0;
-        $options->nAttribute                = 0;
-        $options->nArtikelAttribute         = 0;
-        $options->nMedienDatei              = 0;
-        $options->nVariationKombi           = 1;
         $options->nKeinLagerbestandBeachten = 1;
-        $options->nKonfig                   = 0;
-        $options->nDownload                 = 0;
         $options->nMain                     = 1;
         $options->nWarenlager               = 1;
         $options->nVariationen              = 1;
@@ -983,14 +971,7 @@ class IOMethods
 
         if ($parentProductID > 0) {
             $options                            = new stdClass();
-            $options->nMerkmale                 = 0;
-            $options->nAttribute                = 0;
-            $options->nArtikelAttribute         = 0;
-            $options->nMedienDatei              = 0;
-            $options->nVariationKombi           = 1;
             $options->nKeinLagerbestandBeachten = 1;
-            $options->nKonfig                   = 0;
-            $options->nDownload                 = 0;
             $options->nMain                     = 1;
             $options->nWarenlager               = 1;
             $options->nVariationen              = 1;
@@ -1434,7 +1415,7 @@ class IOMethods
         $response->review = flatten(filter(
             (new Artikel())->fuelleArtikel(Shop::$kArtikel, Artikel::getDetailOptions())->Bewertungen->oBewertung_arr,
             static function ($e) use ($formData) {
-                    return (int)$e->kBewertung === (int)$formData['reviewID'];
+                return (int)$e->kBewertung === (int)$formData['reviewID'];
             }
         ))[0];
 

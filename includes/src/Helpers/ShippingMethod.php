@@ -394,6 +394,7 @@ class ShippingMethod
 
         $shippingClasses        = self::getShippingClasses($cart);
         $conf                   = Shop::getSettings([\CONF_KAUFABWICKLUNG]);
+        $defaultOptions         = Artikel::getDefaultOptions();
         $additionalShippingFees = 0;
         $perTaxClass            = [];
         $taxClassID             = 0;
@@ -409,7 +410,7 @@ class ShippingMethod
             if ($nArtikelAssoc !== 1) {
                 continue;
             }
-            $tmpProduct = (new Artikel())->fuelleArtikel($productID);
+            $tmpProduct = (new Artikel())->fuelleArtikel($productID, $defaultOptions);
             // Normaler Variationsartikel
             if ($tmpProduct !== null
                 && $tmpProduct->nIstVater === 0
@@ -433,11 +434,9 @@ class ShippingMethod
                 $merge              = true;
             }
         }
-
         if ($merge) {
             $products = \array_merge($products);
         }
-        $defaultOptions = Artikel::getDefaultOptions();
         foreach ($products as $i => $product) {
             $tmpProduct = (new Artikel())->fuelleArtikel($product['kArtikel'], $defaultOptions);
             if ($tmpProduct === null || $tmpProduct->kArtikel <= 0) {
@@ -1537,7 +1536,7 @@ class ShippingMethod
                         $paymentMethodID
                     );
 
-                    return count($paymentMethods) > 0;
+                    return \count($paymentMethods) > 0;
                 }
             );
         }

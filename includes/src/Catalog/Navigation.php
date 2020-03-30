@@ -290,10 +290,8 @@ class Navigation
                 $ele->setURL($this->product->cURL);
                 $ele->setURLFull($this->product->cURLFull);
                 if ($this->product->isChild()) {
-                    $parent         = new Artikel();
-                    $options        = new stdClass();
-                    $options->nMain = 1;
-                    $parent->fuelleArtikel($this->product->kVaterArtikel, $options);
+                    $parent = new Artikel();
+                    $parent->fuelleArtikel($this->product->kVaterArtikel, Artikel::getDefaultOptions());
                     $ele->setName($parent->cKurzbezeichnung);
                     $ele->setURL($parent->cURL);
                     $ele->setURLFull($parent->cURLFull);
@@ -478,10 +476,8 @@ class Navigation
                     $ele->setURL($this->product->cURL);
                     $ele->setURLFull($this->product->cURLFull);
                     if ($this->product->isChild()) {
-                        $parent         = new Artikel();
-                        $options        = new stdClass();
-                        $options->nMain = 1;
-                        $parent->fuelleArtikel($this->product->kVaterArtikel, $options);
+                        $parent = new Artikel();
+                        $parent->fuelleArtikel($this->product->kVaterArtikel, Artikel::getDefaultOptions());
                         $ele->setName($parent->cKurzbezeichnung);
                         $ele->setURL($parent->cURL);
                         $ele->setURLFull($parent->cURLFull);

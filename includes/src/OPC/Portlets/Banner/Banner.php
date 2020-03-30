@@ -22,11 +22,7 @@ class Banner extends Portlet
      */
     public function getProduct(int $productID)
     {
-        $defaultOptions = Artikel::getDefaultOptions();
-        $product        = new Artikel();
-        $product->fuelleArtikel($productID, $defaultOptions);
-
-        return $product;
+        return (new Artikel())->fuelleArtikel($productID, Artikel::getDefaultOptions());
     }
 
     /**

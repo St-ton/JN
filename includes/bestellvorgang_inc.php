@@ -58,7 +58,6 @@ function pruefeBestellungMoeglich()
 function pruefeVersandartWahl($shippingMethod, $formValues = 0, $bMsg = true): bool
 {
     global $step;
-
     $nReturnValue = versandartKorrekt($shippingMethod, $formValues);
     executeHook(HOOK_BESTELLVORGANG_PAGE_STEPVERSAND_PLAUSI);
 
@@ -511,7 +510,7 @@ function pruefeZahlungsartwahlStep($post)
             return null;
         }
     } else {
-        $zahlungsangaben = zahlungsartKorrekt($post['Zahlungsart']);
+        $zahlungsangaben = zahlungsartKorrekt((int)$post['Zahlungsart']);
     }
     executeHook(HOOK_BESTELLVORGANG_PAGE_STEPZAHLUNG_PLAUSI);
 
@@ -823,7 +822,7 @@ function gibStepBestaetigung($get)
 {
     $linkHelper = Shop::Container()->getLinkService();
     //check currenct shipping method again to avoid using invalid methods when using one click method (#9566)
-    if (isset($_SESSION['Versandart']->kVersandart) && !versandartKorrekt($_SESSION['Versandart']->kVersandart)) {
+    if (isset($_SESSION['Versandart']->kVersandart) && !versandartKorrekt((int)$_SESSION['Versandart']->kVersandart)) {
         header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php') . '?editVersandart=1', true, 303);
     }
     // Bei Standardzahlungsarten mit Zahlungsinformationen prüfen ob Daten vorhanden sind
@@ -1612,7 +1611,7 @@ function gibZahlungsarten(int $shippingMethodID, int $customerGroupID)
 function gibAktiveVersandart($shippingMethods)
 {
     if (isset($_SESSION['Versandart'])) {
-        $_SESSION['AktiveVersandart'] = $_SESSION['Versandart']->kVersandart;
+        $_SESSION['AktiveVersandart'] = (int)$_SESSION['Versandart']->kVersandart;
     } elseif (!empty($_SESSION['AktiveVersandart']) && GeneralObject::hasCount($shippingMethods)) {
         $active = (int)$_SESSION['AktiveVersandart'];
         if (array_reduce($shippingMethods, static function ($carry, $item) use ($active) {
@@ -1620,7 +1619,7 @@ function gibAktiveVersandart($shippingMethods)
         }, 0) !== (int)$_SESSION['AktiveVersandart']) {
             $_SESSION['AktiveVersandart'] = ShippingMethod::getFirstShippingMethod(
                 $shippingMethods,
-                $_SESSION['Zahlungsart']->kZahlungsart ?? 0
+                (int)($_SESSION['Zahlungsart']->kZahlungsart ?? 0)
             )->kVersandart ?? 0;
         }
     } else {
@@ -1630,7 +1629,7 @@ function gibAktiveVersandart($shippingMethods)
         )->kVersandart ?? 0;
     }
 
-    return $_SESSION['AktiveVersandart'];
+    return (int)$_SESSION['AktiveVersandart'];
 }
 
 /**
@@ -1664,7 +1663,7 @@ function gibAktiveVerpackung(array $packagings): array
     if (isset($_SESSION['Verpackung']) && count($_SESSION['Verpackung']) > 0) {
         $_SESSION['AktiveVerpackung'] = [];
         foreach ($_SESSION['Verpackung'] as $packaging) {
-            $_SESSION['AktiveVerpackung'][$packaging->kVerpackung] = 1;
+            $_SESSION['AktiveVerpackung'][(int)$packaging->kVerpackung] = 1;
         }
     } elseif (!empty($_SESSION['AktiveVerpackung']) && count($packagings) > 0) {
         foreach (array_keys($_SESSION['AktiveVerpackung']) as $active) {
@@ -2767,14 +2766,14 @@ function pruefeAjaxEinKlick(): int
     if (isset($_SESSION['Versandart'])) {
         $bVersandart = true;
     } else {
-        $bVersandart = pruefeVersandartWahl($lastOrder->kVersandart, 0, false);
+        $bVersandart = pruefeVersandartWahl((int)$lastOrder->kVersandart, 0, false);
     }
     if ($bVersandart) {
         if ($lastOrder->kZahlungsart > 0) {
             if (isset($_SESSION['Zahlungsart'])) {
                 return 5;
             }
-            if (zahlungsartKorrekt($lastOrder->kZahlungsart) === 2) {
+            if (zahlungsartKorrekt((int)$lastOrder->kZahlungsart) === 2) {
                 gibStepZahlung();
 
                 return 5;

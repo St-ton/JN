@@ -132,7 +132,9 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
             $activeVersandart = gibAktiveVersandart($shippingMethods);
             pruefeVersandartWahl(
                 $activeVersandart,
-                ['kVerpackung' => array_keys(gibAktiveVerpackung(ShippingMethod::getPossiblePackagings($customerGroupID)))]
+                ['kVerpackung' => array_keys(
+                    gibAktiveVerpackung(ShippingMethod::getPossiblePackagings($customerGroupID))
+                )]
             );
         }
     }

@@ -26,8 +26,8 @@ interface FactoryInterface
     public function __construct(DbInterface $db, array $config, string $baseURL, string $baseImageURL);
 
     /**
-     * @param array           $languages
-     * @param LanguageModel[] $customerGroups
+     * @param LanguageModel[] $languages
+     * @param int[]           $customerGroups
      * @return Generator
      */
     public function getCollection(array $languages, array $customerGroups): Generator;

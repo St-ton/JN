@@ -180,10 +180,10 @@
                             {/if}
 
                             <div class="settings">
-                                <div class="form-group form-row align-items-center{if isset($cPlausi_arr.cName)} error{/if}">
-                                    <label class="col col-sm-4 col-form-label text-sm-right" for="cName">{__('name')}{if isset($cPlausi_arr.cName)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
+                                <div class="form-group form-row align-items-center{if isset($cPlausi_arr.cName)} form-error{/if}">
+                                    <label class="col col-sm-4 col-form-label text-sm-right" for="cName">{__('name')}</label>
                                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                        <input id="cName" name="cName" type="text" placeholder="Name" class="form-control{if isset($cPlausi_arr.cName)} fieldfillout{/if}" value="{if isset($cPost_arr.cName)}{$cPost_arr.cName}{elseif isset($oCheckBox->cName)}{$oCheckBox->cName}{/if}">
+                                        <input id="cName" name="cName" type="text" placeholder="Name" class="form-control" value="{if isset($cPost_arr.cName)}{$cPost_arr.cName}{elseif isset($oCheckBox->cName)}{$oCheckBox->cName}{/if}">
                                     </div>
                                     <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('hintCheckboxName')}</div>
                                 </div>
@@ -192,10 +192,10 @@
                                         {assign var=cISO value=$language->getCode()}
                                         {assign var=kSprache value=$language->getId()}
                                         {assign var=cISOText value="cText_$cISO"}
-                                        <div class="form-group form-row align-items-center{if isset($cPlausi_arr.cText)} error{/if}">
-                                            <label class="col col-sm-4 col-form-label text-sm-right" for="cText_{$cISO}">{__('text')} ({$language->getLocalizedName()}){if isset($cPlausi_arr.cText)} <span class="fillout">{__('FillOut')}</span>{/if}:</label>
+                                        <div class="form-group form-row align-items-center{if isset($cPlausi_arr.cText)} form-error{/if}">
+                                            <label class="col col-sm-4 col-form-label text-sm-right" for="cText_{$cISO}">{__('text')} ({$language->getLocalizedName()}):</label>
                                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                                <textarea id="cText_{$cISO}" placeholder="Text ({$language->getLocalizedName()})" class="form-control {if isset($cPlausi_arr.cText)}fieldfillout{else}field{/if}" name="cText_{$cISO}">{if isset($cPost_arr.$cISOText)}{$cPost_arr.$cISOText}{elseif isset($oCheckBox->oCheckBoxSprache_arr[$kSprache]->cText)}{$oCheckBox->oCheckBoxSprache_arr[$kSprache]->cText}{/if}</textarea>
+                                                <textarea id="cText_{$cISO}" placeholder="Text ({$language->getLocalizedName()})" class="form-control " name="cText_{$cISO}">{if isset($cPost_arr.$cISOText)}{$cPost_arr.$cISOText}{elseif isset($oCheckBox->oCheckBoxSprache_arr[$kSprache]->cText)}{$oCheckBox->oCheckBoxSprache_arr[$kSprache]->cText}{/if}</textarea>
                                             </div>
                                             <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('hintCheckboxText')}</div>
                                         </div>
@@ -205,10 +205,10 @@
                                         {assign var=cISO value=$language->getCode()}
                                         {assign var=kSprache value=$language->getId()}
                                         {assign var=cISOBeschreibung value="cBeschreibung_$cISO"}
-                                        <div class="form-group form-row align-items-center{if isset($cPlausi_arr.cBeschreibung)} error{/if}">
-                                            <label class="col col-sm-4 col-form-label text-sm-right" for="cBeschreibung_{$cISO}">{__('description')} ({$language->getLocalizedName()}){if isset($cPlausi_arr.cBeschreibung)} <span class="fillout">{__('FillOut')}</span>{/if}:</label>
+                                        <div class="form-group form-row align-items-center {if isset($cPlausi_arr.cBeschreibung)} form-error{/if}">
+                                            <label class="col col-sm-4 col-form-label text-sm-right" for="cBeschreibung_{$cISO}">{__('description')} ({$language->getLocalizedName()}):</label>
                                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                                <textarea id="cBeschreibung_{$cISO}" class="form-control {if isset($cPlausi_arr.cBeschreibung)}fieldfillout{else}field{/if}" name="cBeschreibung_{$cISO}">{if isset($cPost_arr.$cISOBeschreibung)}{$cPost_arr.$cISOBeschreibung}{elseif isset($oCheckBox->oCheckBoxSprache_arr[$kSprache]->cBeschreibung)}{$oCheckBox->oCheckBoxSprache_arr[$kSprache]->cBeschreibung}{/if}</textarea>
+                                                <textarea id="cBeschreibung_{$cISO}" class="form-control" name="cBeschreibung_{$cISO}">{if isset($cPost_arr.$cISOBeschreibung)}{$cPost_arr.$cISOBeschreibung}{elseif isset($oCheckBox->oCheckBoxSprache_arr[$kSprache]->cBeschreibung)}{$oCheckBox->oCheckBoxSprache_arr[$kSprache]->cBeschreibung}{/if}</textarea>
                                             </div>
                                             <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('hintCheckboxDescription')}</div>
                                         </div>
@@ -216,19 +216,19 @@
                                 {/if}
 
                                 {if isset($oLink_arr) && $oLink_arr|@count > 0}
-                                    <div class="form-group form-row align-items-center{if isset($cPlausi_arr.kLink)} error{/if}">
-                                        <label class="col col-sm-4 col-form-label text-sm-right" for="nLink">{__('internalLink')}{if isset($cPlausi_arr.kLink)} <span class="fillout">{__('FillOut')}</span>{/if}:</label>
+                                    <div class="form-group form-row align-items-center{if isset($cPlausi_arr.kLink)} form-error{/if}">
+                                        <label class="col col-sm-4 col-form-label text-sm-right" for="nLink">{__('internalLink')}:</label>
                                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                             <div class="form-row align-items-center">
                                                 <div class="col-xs-3 group-radio">
                                                     <label>
-                                                    <input id="nLink" name="nLink" type="radio" class="{if isset($cPlausi_arr.kLink)} fieldfillout{/if}" value="-1" onClick="aenderAnzeigeLinks(false);"{if (!isset($cPlausi_arr.kLink) && (!isset($oCheckBox->kLink) || !$oCheckBox->kLink)) || isset($cPlausi_arr.kLink) && $cPost_arr.nLink == -1} checked="checked"{/if} />
+                                                    <input id="nLink" name="nLink" type="radio" class="" value="-1" onClick="aenderAnzeigeLinks(false);"{if (!isset($cPlausi_arr.kLink) && (!isset($oCheckBox->kLink) || !$oCheckBox->kLink)) || isset($cPlausi_arr.kLink) && $cPost_arr.nLink == -1} checked="checked"{/if} />
                                                         {__('noLink')}
                                                     </label>
                                                 </div>
                                                 <div class="col-xs-3 group-radio">
                                                     <label>
-                                                        <input id="nLink2" name="nLink" type="radio" class="form-control2{if isset($cPlausi_arr.kLink)} fieldfillout{/if}" value="1" onClick="aenderAnzeigeLinks(true);"{if (isset($cPost_arr.nLink) && $cPost_arr.nLink == 1) || (isset($oCheckBox->kLink) && $oCheckBox->kLink > 0)} checked="checked"{/if} />
+                                                        <input id="nLink2" name="nLink" type="radio" class="form-control2" value="1" onClick="aenderAnzeigeLinks(true);"{if (isset($cPost_arr.nLink) && $cPost_arr.nLink == 1) || (isset($oCheckBox->kLink) && $oCheckBox->kLink > 0)} checked="checked"{/if} />
                                                         {__('internalLink')}
                                                     </label>
                                                 </div>
@@ -245,12 +245,12 @@
                                     </div>
                                 {/if}
 
-                                <div class="form-group form-row align-items-center{if isset($cPlausi_arr.cAnzeigeOrt)} error{/if}">
-                                    <label class="col col-sm-4 col-form-label text-sm-right" for="cAnzeigeOrt">{__('checkboxLocation')}{if isset($cPlausi_arr.cAnzeigeOrt)} <span class="fillout">{__('FillOut')}</span>{/if}:</label>
+                                <div class="form-group form-row align-items-center{if isset($cPlausi_arr.cAnzeigeOrt)} form-error{/if}">
+                                    <label class="col col-sm-4 col-form-label text-sm-right" for="cAnzeigeOrt">{__('checkboxLocation')}:</label>
                                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                         <select id="cAnzeigeOrt"
                                                 name="cAnzeigeOrt[]"
-                                                class="selectpicker custom-select{if isset($cPlausi_arr.cAnzeigeOrt)} fieldfillout{/if}"
+                                                class="selectpicker custom-select"
                                                 multiple="multiple"
                                                 onClick="checkFunctionDependency();"
                                                 data-selected-text-format="count > 2"
@@ -324,10 +324,10 @@
                                     <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('hintCheckboxLogActivate')}</div>
                                 </div>
 
-                                <div class="form-group form-row align-items-center{if isset($cPlausi_arr.nSort)} error{/if}">
-                                    <label class="col col-sm-4 col-form-label text-sm-right" for="nSort">{__('sortHigherBottom')}{if isset($cPlausi_arr.nSort)} <span class="fillout">{__('FillOut')}</span>{/if}:</label>
+                                <div class="form-group form-row align-items-center{if isset($cPlausi_arr.nSort)} form-error{/if}">
+                                    <label class="col col-sm-4 col-form-label text-sm-right" for="nSort">{__('sortHigherBottom')}:</label>
                                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                        <input id="nSort" name="nSort" type="text" class="form-control{if isset($cPlausi_arr.nSort)} fieldfillout{/if}" value="{if isset($cPost_arr.nSort)}{$cPost_arr.nSort}{elseif isset($oCheckBox->nSort)}{$oCheckBox->nSort}{/if}" />
+                                        <input id="nSort" name="nSort" type="text" class="form-control" value="{if isset($cPost_arr.nSort)}{$cPost_arr.nSort}{elseif isset($oCheckBox->nSort)}{$oCheckBox->nSort}{/if}" />
                                     </div>
                                     <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('hintCheckboxOrder')}</div>
                                 </div>
@@ -348,12 +348,12 @@
                                 {/if}
 
                                 {if $customerGroups|@count > 0}
-                                    <div class="form-group form-row align-items-center{if isset($cPlausi_arr.kKundengruppe)} error{/if}">
-                                        <label class="col col-sm-4 col-form-label text-sm-right" for="kKundengruppe">{__('customerGroup')}{if isset($cPlausi_arr.kKundengruppe)} <span class="fillout">{__('FillOut')}</span>{/if}:</label>
+                                    <div class="form-group form-row align-items-center{if isset($cPlausi_arr.kKundengruppe)} form-error{/if}">
+                                        <label class="col col-sm-4 col-form-label text-sm-right" for="kKundengruppe">{__('customerGroup')}:</label>
                                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                             <select id="kKundengruppe"
                                                     name="kKundengruppe[]"
-                                                    class="selectpicker custom-select{if isset($cPlausi_arr.kKundengruppe)} fieldfillout{/if}"
+                                                    class="selectpicker custom-select"
                                                     multiple="multiple"
                                                     data-selected-text-format="count > 2"
                                                     data-size="7"

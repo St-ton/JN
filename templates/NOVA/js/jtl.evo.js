@@ -73,7 +73,6 @@
                     }
                 });
             });
-
         },
 
         initSlick: function (node, sliderType) {
@@ -203,10 +202,63 @@
                             }
                         }
                     ]
+                },
+                'gallery' : {
+                    lazyLoad: 'ondemand',
+                    infinite: true,
+                    dots:     false,
+                    swipeToSlide:   true,
+                    arrows:   false,
+                    speed: 500,
+                    fade: true,
+                    cssEase: 'linear',
+                    asNavFor: '#gallery_preview',
+                    responsive:     [
+                        {
+                            breakpoint: 992,
+                            settings: {
+                                dots: true
+                            }
+                        }
+                    ]
+                },
+                'gallery_preview' : {
+                    lazyLoad:       'ondemand',
+                    slidesToShow:   5,
+                    slidesToScroll: 1,
+                    asNavFor:       '#gallery',
+                    dots:           false,
+                    swipeToSlide:   true,
+                    arrows:         true,
+                    focusOnSelect:  true,
+                    responsive:     [
+                        {
+                            breakpoint: 768,
+                            settings:   {
+                                slidesToShow: 4
+                            }
+                        },
+                        {
+                            breakpoint: 576,
+                            settings: {
+                                slidesToShow: 3
+                            }
+                        }
+                    ]
                 }
             };
             if ($('#content').hasClass('col-lg-9')) {
                 sliderOptions['news-slider']['slidesToShow'] = 2;
+            }
+            if (sliderType === 'gallery_preview') {
+                sliderType = 'gallery';
+                node = $('#gallery');
+            }
+            if (sliderType === 'gallery') {
+                $('.js-gallery-images').removeClass('d-none');
+                $('.slick-inital-arrow').remove();
+                $('.initial-slick-dots').remove();
+                $('#gallery_preview').slick(sliderOptions['gallery_preview']);
             }
 
             return node.slick(sliderOptions[sliderType]);

@@ -303,7 +303,7 @@ function sortiereEinstellungen($config)
 function filteredConfData(array $confData, string $filter): array
 {
     $keys = [
-        'configgroup_5_product_question' => [
+        'configgroup_5_product_question'  => [
             'configgroup_5_product_question',
             'artikeldetails_fragezumprodukt_anzeigen',
             'artikeldetails_fragezumprodukt_email',
@@ -328,6 +328,12 @@ function filteredConfData(array $confData, string $filter): array
             'benachrichtigung_min_lagernd'
         ]
     ];
+    if (!extension_loaded('soap')) {
+        $keys['configgroup_6_vat_id'] = [
+            'shop_ustid_bzstpruefung',
+            'shop_ustid_force_remote_check'
+        ];
+    }
 
     if ($filter !== '' && isset($keys[$filter])) {
         $keysToFilter = $keys[$filter];

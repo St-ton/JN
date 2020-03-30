@@ -103,7 +103,7 @@
                     </div>
                     <div class="save-wrapper">
                         <div class="row">
-                            <div class="col-sm-6 col-xl-auto text-left ml-3">
+                            <div class="col-sm-6 col-xl-auto text-left">
                                 <div class="custom-control custom-checkbox">
                                     <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);" />
                                     <label class="custom-control-label" for="ALLMSGS">{__('globalSelectAll')}</label>

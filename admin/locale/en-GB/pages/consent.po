@@ -49,3 +49,6 @@ msgstr "Localizations"
 
 msgid "generalHeading"
 msgstr "General"
+
+msgid "privacyPolicy"
+msgstr "Terms of use (link)"

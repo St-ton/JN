@@ -177,7 +177,7 @@ class MenuItem
      */
     public function setDescription(string $description): void
     {
-        $this->description = Text::parseNewsText($description);
+        $this->description = $description;
     }
 
     /**

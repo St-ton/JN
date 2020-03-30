@@ -74,6 +74,9 @@ class Characteristic extends BaseCharacteristic
         $this->setIsCustom(false)
             ->setUrlParam('mf')
             ->setUrlParamSEO(\SEP_MERKMAL)
+            ->setFrontendName(Shop::isAdmin()
+                ? __('filterCharacteristics')
+                : Shop::Lang()->get('characteristics', 'comparelist'))
             ->setVisibility($this->getConfig('navigationsfilter')['merkmalfilter_verwenden']);
     }
 

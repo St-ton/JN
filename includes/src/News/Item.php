@@ -230,7 +230,7 @@ class Item extends AbstractItem
             }
             $this->setCustomerGroups(self::parseSSKAdvanced($item->cKundengruppe));
             $this->setLanguageCode($item->languageCode ?? Shop::getLanguageCode(), $languageID);
-            $this->setContent(Text::parseNewsText($item->content ?? ''), $languageID);
+            $this->setContent($item->content ?? '', $languageID);
             $this->setMetaDescription($item->metaDescription ?? '', $languageID);
             $this->setMetaTitle($item->metaTitle ?? '', $languageID);
             $this->setMetaKeyword($item->metaKeywords ?? '', $languageID);

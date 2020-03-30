@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {assign var=anzeige value=$Einstellungen.artikeldetails.artikel_lagerbestandsanzeige}
 <div class="delivery-status">
 {block name='delivery-status'}
@@ -39,7 +35,7 @@
             <p class="estimated-delivery"
                data-toggle="popover"
                data-placement="top"
-               data-content="{lang key='shippingInformation' section='productDetails' printf=$Firma->cLand|cat:':::'|cat:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}">
+               data-content="{lang key='shippingInformation' section='productDetails' printf=$Firma->country->getName()|cat:':::'|cat:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}">
                 {if !isset($availability) && !isset($shippingTime)}<strong>{lang key='shippingTime'}: </strong>{/if}
                 <span class="a{$Artikel->Lageranzeige->nStatus} text-nowrap">
                     {$Artikel->cEstimatedDelivery}

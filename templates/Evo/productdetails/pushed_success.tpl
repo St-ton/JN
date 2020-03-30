@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 <div id="pushed-success" class="notification-alert bg-info panel-wrap{if isset($inline)} no-margin{/if}">
     {if isset($zuletztInWarenkorbGelegterArtikel)}
         {assign var=pushedArtikel value=$zuletztInWarenkorbGelegterArtikel}

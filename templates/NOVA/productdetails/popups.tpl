@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productdetails-popups'}
     {assign var=kArtikel value=$Artikel->kArtikel}
     {if $Artikel->kArtikelVariKombi > 0}

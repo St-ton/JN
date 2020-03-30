@@ -1,8 +1,3 @@
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
-
 var localDateFormat = 'DD.MM.YYYY - HH:mm';
 var internalDateFormat = 'YYYY-MM-DD HH:mm:ss';
 

@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 <script type="text/javascript">
     if (top.location !== self.location) {ldelim}
         top.location = self.location.href;

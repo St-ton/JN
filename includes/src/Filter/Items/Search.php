@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Filter\Items;
 
@@ -69,7 +65,7 @@ class Search extends AbstractFilter
         parent::__construct($productFilter);
         $this->setIsCustom(false)
              ->setVisibility($this->getConfig('navigationsfilter')['suchtrefferfilter_nutzen'])
-             ->setFrontendName(Shop::Lang()->get('searchFilter'))
+             ->setFrontendName(Shop::isAdmin() ? __('filterSearch') : Shop::Lang()->get('searchFilter'))
              ->setUrlParam('sf');
     }
 

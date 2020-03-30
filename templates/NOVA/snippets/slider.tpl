@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='snippets-slider'}
     {if isset($oSlider) && count($oSlider->getSlides()) > 0}
         {container fluid=$isFluid}

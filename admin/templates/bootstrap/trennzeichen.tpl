@@ -35,13 +35,13 @@
                         {/if}
                         <td class="text-left">{__('weight')}</td>
                         <td class="widthheight text-center">
-                            <div class="input-group form-counter">
+                            <div class="input-group form-counter{if isset($xPlausiVar_arr[$nDezimal_weight])} form-error{/if}">
                                 <div class="input-group-prepend">
                                     <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
                                         <span class="fas fa-minus"></span>
                                     </button>
                                 </div>
-                                <input size="2" type="number" name="nDezimal_{$smarty.const.JTL_SEPARATOR_WEIGHT}" class="form-control{if isset($xPlausiVar_arr[$nDezimal_weight])} fieldfillout{/if}" value="{if isset($xPostVar_arr[$nDezimal_weight])}{$xPostVar_arr[$nDezimal_weight]}{else}{if isset($oTrennzeichenAssoc_arr[$smarty.const.JTL_SEPARATOR_WEIGHT])}{$oTrennzeichenAssoc_arr[$smarty.const.JTL_SEPARATOR_WEIGHT]->getDezimalstellen()}{/if}{/if}" />
+                                <input size="2" type="number" name="nDezimal_{$smarty.const.JTL_SEPARATOR_WEIGHT}" class="form-control" value="{if isset($xPostVar_arr[$nDezimal_weight])}{$xPostVar_arr[$nDezimal_weight]}{else}{if isset($oTrennzeichenAssoc_arr[$smarty.const.JTL_SEPARATOR_WEIGHT])}{$oTrennzeichenAssoc_arr[$smarty.const.JTL_SEPARATOR_WEIGHT]->getDezimalstellen()}{/if}{/if}" />
                                 <div class="input-group-append">
                                     <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
                                         <span class="fas fa-plus"></span>
@@ -65,13 +65,13 @@
                         {/if}
                         <td class="text-left">{__('quantity')}</td>
                         <td class="widthheight text-center">
-                            <div class="input-group form-counter">
+                            <div class="input-group form-counter{if isset($xPlausiVar_arr[$nDezimal_amount])} form-error{/if}">
                                 <div class="input-group-prepend">
                                     <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
                                         <span class="fas fa-minus"></span>
                                     </button>
                                 </div>
-                                <input size="2" type="number" name="nDezimal_{$smarty.const.JTL_SEPARATOR_AMOUNT}" class="form-control{if isset($xPlausiVar_arr[$nDezimal_amount])} fieldfillout{/if}" value="{if isset($xPostVar_arr[$nDezimal_amount])}{$xPostVar_arr[$nDezimal_amount]}{else}{if isset($oTrennzeichenAssoc_arr[$smarty.const.JTL_SEPARATOR_AMOUNT])}{$oTrennzeichenAssoc_arr[$smarty.const.JTL_SEPARATOR_AMOUNT]->getDezimalstellen()}{/if}{/if}" />
+                                <input size="2" type="number" name="nDezimal_{$smarty.const.JTL_SEPARATOR_AMOUNT}" class="form-control" value="{if isset($xPostVar_arr[$nDezimal_amount])}{$xPostVar_arr[$nDezimal_amount]}{else}{if isset($oTrennzeichenAssoc_arr[$smarty.const.JTL_SEPARATOR_AMOUNT])}{$oTrennzeichenAssoc_arr[$smarty.const.JTL_SEPARATOR_AMOUNT]->getDezimalstellen()}{/if}{/if}" />
                                 <div class="input-group-append">
                                     <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
                                         <span class="fas fa-plus"></span>
@@ -95,13 +95,13 @@
                         {/if}
                         <td class="text-left">{__('length')}</td>
                         <td class="widthheight text-center">
-                            <div class="input-group form-counter">
+                            <div class="input-group form-counter{if isset($xPlausiVar_arr[$nDezimal_length])} form-error{/if}">
                                 <div class="input-group-prepend">
                                     <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
                                         <span class="fas fa-minus"></span>
                                     </button>
                                 </div>
-                                <input size="2" type="number" name="nDezimal_{$smarty.const.JTL_SEPARATOR_LENGTH}" class="form-control{if isset($xPlausiVar_arr[$nDezimal_length])} fieldfillout{/if}" value="{if isset($xPostVar_arr[$nDezimal_length])}{$xPostVar_arr[$nDezimal_length]}{else}{if isset($oTrennzeichenAssoc_arr[$smarty.const.JTL_SEPARATOR_LENGTH])}{$oTrennzeichenAssoc_arr[$smarty.const.JTL_SEPARATOR_LENGTH]->getDezimalstellen()}{/if}{/if}" />
+                                <input size="2" type="number" name="nDezimal_{$smarty.const.JTL_SEPARATOR_LENGTH}" class="form-control" value="{if isset($xPostVar_arr[$nDezimal_length])}{$xPostVar_arr[$nDezimal_length]}{else}{if isset($oTrennzeichenAssoc_arr[$smarty.const.JTL_SEPARATOR_LENGTH])}{$oTrennzeichenAssoc_arr[$smarty.const.JTL_SEPARATOR_LENGTH]->getDezimalstellen()}{/if}{/if}" />
                                 <div class="input-group-append">
                                     <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
                                         <span class="fas fa-plus"></span>

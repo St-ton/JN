@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Filter;
 
@@ -1677,12 +1673,8 @@ class ProductFilter
                 ->setError($error);
         }
         if ($fill === true) { // @todo: slice list of IDs when not filling?
-            $opt                        = new stdClass();
-            $opt->nMerkmale             = 1;
+            $opt                        = Artikel::getDefaultOptions();
             $opt->nKategorie            = 1;
-            $opt->nAttribute            = 1;
-            $opt->nArtikelAttribute     = 1;
-            $opt->nVariationKombiKinder = 1;
             $opt->nVariationen          = 1;
             $opt->nWarenlager           = 1;
             $opt->nRatings              = \PRODUCT_LIST_SHOW_RATINGS === true ? 1 : 0;

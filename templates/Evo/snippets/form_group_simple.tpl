@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {if !empty($options)}
     {assign var='inputType' value=$options[0]}
     {assign var='inputId' value=$options[1]}

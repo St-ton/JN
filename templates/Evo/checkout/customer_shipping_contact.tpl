@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {if $Einstellungen.kunden.lieferadresse_abfragen_tel !== 'N'
     || $Einstellungen.kunden.lieferadresse_abfragen_fax !== 'N'
     || $Einstellungen.kunden.lieferadresse_abfragen_email !== 'N'

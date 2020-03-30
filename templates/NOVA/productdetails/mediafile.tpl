@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productdetails-mediafile'}
     {if !empty($Artikel->oMedienDatei_arr)}
         {assign var=mp3List value=false}
@@ -53,7 +49,7 @@
                                             {if $oMedienDatei->cPfad|strlen > 1 || $oMedienDatei->cURL|strlen > 1}
                                                 {assign var=audiosrc value=$oMedienDatei->cURL}
                                                 {if $oMedienDatei->cPfad|strlen > 1}
-                                                    {assign var=audiosrc value=$smarty.const.PFAD_MEDIAFILES|cat:$oMedienDatei->cPfad}
+                                                    {assign var=audiosrc value=$ShopURL|cat:'/':$smarty.const.PFAD_MEDIAFILES:$oMedienDatei->cPfad}
                                                 {/if}
                                                 {if $audiosrc|strlen > 1}
                                                     <audio controls controlsList="nodownload">
@@ -66,7 +62,6 @@
                                     {/row}
                                 {/card}
                             {/block}
-                            {* Audio *}
                         {/if}
 
                         {* Video *}
@@ -88,7 +83,7 @@
                                         {/if}
                                         {if !empty($oMedienDatei->cPfad)}
                                             <p>
-                                                {link href="{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" target="_blank"}{$oMedienDatei->cName}{/link}
+                                                {link href="{$ShopURL}/{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" target="_blank"}{$oMedienDatei->cName}{/link}
                                             </p>
                                         {elseif !empty($oMedienDatei->cURL)}
                                             <p>
@@ -109,7 +104,7 @@
                                     {/col}
                                     {col md=6}
                                         {if !empty($oMedienDatei->cPfad)}
-                                            {link href="{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" target="_blank"}
+                                            {link href="{$ShopURL}/{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" target="_blank"}
                                                 {image alt="PDF" src="{$smarty.const.PFAD_BILDER}intern/file-pdf.png"}
                                             {/link}
                                             <br />

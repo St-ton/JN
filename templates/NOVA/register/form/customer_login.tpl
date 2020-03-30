@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='register-form-customer-login'}
     {block name='register-form-customer-login-email'}
         {formgroup label="{lang key='email' section='account data'}" label-for="login_email"}

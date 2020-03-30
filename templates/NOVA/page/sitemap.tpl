@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='page-sitemap'}
     {if $Einstellungen.sitemap.sitemap_seiten_anzeigen === 'Y'}
         {block name='page-sitemap-pages'}

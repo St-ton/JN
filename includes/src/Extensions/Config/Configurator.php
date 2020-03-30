@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Extensions\Config;
 
@@ -34,31 +30,43 @@ class Configurator
     }
 
     /**
+     * @return array[]
+     */
+    public static function getGroups(): array
+    {
+        return self::$groups;
+    }
+
+    /**
      * @param int $productID
      * @param int $languageID
      * @return Group[]
      */
     public static function getKonfig(int $productID, int $languageID = 0): array
     {
-        if (isset(self::$groups[$productID])) {
-            return self::$groups[$productID];
-        }
         $groups = [];
         $data   = Shop::Container()->getDB()->selectAll(
             'tartikelkonfiggruppe',
             'kArtikel',
             $productID,
-            'kArtikel, kKonfigGruppe',
+            'kKonfigGruppe',
             'nSort ASC'
         );
         if (!\is_array($data) || \count($data) === 0 || !self::checkLicense()) {
             return [];
         }
         $languageID = $languageID ?: Shop::getLanguageID();
-        foreach ($data as $item) {
-            $groups[] = new Group((int)$item->kKonfigGruppe, $languageID);
+        if (!isset(self::$groups[$languageID])) {
+            self::$groups[$languageID] = [];
         }
-        self::$groups[$productID] = $groups;
+        foreach ($data as $item) {
+            $id    = (int)$item->kKonfigGruppe;
+            $group = self::$groups[$languageID][$id] ?? new Group($id, $languageID);
+            if (\count($group->oItem_arr) > 0) {
+                $groups[]                       = $group;
+                self::$groups[$languageID][$id] = $group;
+            }
+        }
 
         return $groups;
     }
@@ -73,13 +81,15 @@ class Configurator
             return false;
         }
 
-        return (int)Shop::Container()->getDB()->queryPrepared(
-            'SELECT COUNT(*) AS cnt
+        return Shop::Container()->getDB()->queryPrepared(
+            'SELECT tartikelkonfiggruppe.kKonfiggruppe
                  FROM tartikelkonfiggruppe
-                 WHERE tartikelkonfiggruppe.kArtikel = :pid',
+                 JOIN tkonfigitem
+                    ON tkonfigitem.kKonfiggruppe = tartikelkonfiggruppe.kKonfiggruppe
+                        AND tartikelkonfiggruppe.kArtikel = :pid',
             ['pid' => $productID],
             ReturnType::SINGLE_OBJECT
-        )->cnt > 0;
+        ) !== false;
     }
 
     /**

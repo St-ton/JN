@@ -1,10 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- *
- * @global Session $session
- */
 
 use JTL\Customer\AccountController;
 use JTL\Shop;

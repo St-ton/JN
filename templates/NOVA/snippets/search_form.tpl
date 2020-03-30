@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='snippets-search-form'}
     {form action='index.php' method='get' class='main-search flex-grow-1' slide=true}
         {inputgroup}

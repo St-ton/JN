@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='boxes-box-direct-purchase'}
     {card class="box box-direct-purchase mb-4" id="sidebox{$oBox->getID()}" title=""}
         {block name='boxes-box-direct-purchase-title'}

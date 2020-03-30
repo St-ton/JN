@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='snippets-filter-price-slider'}
     {block name='snippets-filter-price-slider-content'}
         {inputgroup class="mb-3" size="sm"}

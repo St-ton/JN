@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='boxes-box-last-seen'}
     {lang key='lastViewed' assign='boxtitle'}
     {card class="box box-last-seen mb-4" id="sidebox{$oBox->getID()}"}

@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Cart\Cart;
 use JTL\Cart\CartItem;
@@ -790,9 +786,7 @@ define('HOOK_TOOLSGLOBAL_INC_SETZELINKS', 105);
 define('HOOK_TOOLSGLOBAL_INC_BERECHNEVERSANDPREIS', 106);
 
 /**
- * at the end of parseNewsText()
- *
- * @file tools.Global.php
+ * @removed in 5.0.0
  */
 define('HOOK_TOOLSGLOBAL_INC_SWITCH_PARSENEWSTEXT', 107);
 

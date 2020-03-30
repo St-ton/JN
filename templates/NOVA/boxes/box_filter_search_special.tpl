@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='boxes-box-filter-search-special'}
     {assign var=ssf value=$NaviFilter->getSearchSpecialFilter()}
     {if $bBoxenFilterNach

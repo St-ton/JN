@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 <div id="order-confirmation" class="well well-sm">
     {block name='checkout-order-confirmation'}
         <div class="alert alert-info">{lang key='orderConfirmationPost' section='checkout'}</div>

@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='boxes-box-categories'}
     {card class="box box-categories word-break mb-md-4" id="sidebox_categories{$oBox->getCustomID()}"}
         {block name='boxes-box-categories-content'}

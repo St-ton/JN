@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productdetails-image'}
     <div id="image_wrapper" class="gallery-with-action text-right mb-6" role="group">
         {row class="h-100"}

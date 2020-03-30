@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Catalog\Product;
 
@@ -519,11 +515,6 @@ class Artikel
     /**
      * @var array
      */
-    public $nVariationKombiNichtMoeglich_arr = [];
-
-    /**
-     * @var array
-     */
     public $oVariBoxMatrixBild_arr;
 
     /**
@@ -692,11 +683,6 @@ class Artikel
     public $oStueckliste_arr = [];
 
     /**
-     * @var array
-     */
-    public $nVariationKombiUnique_arr = [];
-
-    /**
      * @var int
      */
     public $nErscheinendesProdukt;
@@ -725,11 +711,6 @@ class Artikel
      * @var string
      */
     public $cVersandklasse;
-
-    /**
-     * @var float
-     */
-    public $fMaxRabatt;
 
     /**
      * @var float
@@ -775,11 +756,6 @@ class Artikel
      * @var string
      */
     public $cBildpfad_thersteller;
-
-    /**
-     * @var int
-     */
-    public $nMindestbestellmenge;
 
     /**
      * @var string
@@ -997,21 +973,6 @@ class Artikel
     public $cMassMenge = '';
 
     /**
-     * @var string
-     */
-    public $cLaenge = '';
-
-    /**
-     * @var string
-     */
-    public $cBreite = '';
-
-    /**
-     * @var string
-     */
-    public $cHoehe = '';
-
-    /**
      * @var bool
      */
     public $cacheHit = false;
@@ -1030,11 +991,6 @@ class Artikel
      * @var string
      */
     public $originalSeo = '';
-
-    /**
-     * @var array
-     */
-    public $languageURLs = [];
 
     /**
      * @var int
@@ -1655,24 +1611,21 @@ class Artikel
             ReturnType::SINGLE_OBJECT
         );
         if (isset($main->kArtikel, $main->kStueckliste) && $main->kArtikel > 0 && $main->kStueckliste > 0) {
-            $options                             = new stdClass();
-            $options->nMerkmale                  = 1;
-            $options->nAttribute                 = 1;
-            $options->nArtikelAttribute          = 1;
+            $options                             = self::getDefaultOptions();
             $options->nKeineSichtbarkeitBeachten = 1;
             $options->nStueckliste               = 1;
             $this->oProduktBundleMain->fuelleArtikel((int)$main->kArtikel, $options);
 
-            $currency = Frontend::getCurrency();
-            $bundles  = Shop::Container()->getDB()->selectAll(
+            $currency                            = Frontend::getCurrency();
+            $bundles                             = Shop::Container()->getDB()->selectAll(
                 'tstueckliste',
                 'kStueckliste',
                 $main->kStueckliste,
                 'kArtikel, fAnzahl'
             );
+            $options->nKeineSichtbarkeitBeachten = 0;
             foreach ($bundles as $bundle) {
-                $options->nKeineSichtbarkeitBeachten = 0;
-                $product                             = new self();
+                $product = new self();
                 $product->fuelleArtikel((int)$bundle->kArtikel, $options);
 
                 $this->oProduktBundle_arr[]           = $product;
@@ -2793,19 +2746,17 @@ class Artikel
 
         // Preise holen bzw. Artikel
         if (\is_array($varCombChildren) && ($cnt = \count($varCombChildren)) > 0 && $cnt <= \ART_MATRIX_MAX) {
-            $tmp      = [];
-            $per      = ' ' . Shop::Lang()->get('vpePer') . ' ';
-            $taxRate  = $_SESSION['Steuersatz'][$this->kSteuerklasse];
-            $currency = Frontend::getCurrency();
+            $tmp                                = [];
+            $per                                = ' ' . Shop::Lang()->get('vpePer') . ' ';
+            $taxRate                            = $_SESSION['Steuersatz'][$this->kSteuerklasse];
+            $currency                           = Frontend::getCurrency();
+            $options                            = self::getDefaultOptions();
+            $options->nKeinLagerbestandBeachten = 1;
             foreach ($varCombChildren as $i => $productID) {
                 if (isset($tmp[$productID])) {
                     $varCombChildren[$i] = $tmp[$productID];
                 } else {
-                    $options                            = new stdClass();
-                    $options->nKeinLagerbestandBeachten = 1;
-                    $options->nArtikelAttribute         = 1;
-                    $options->nVariationen              = 0;
-                    $product                            = new self();
+                    $product = new self();
                     $product->fuelleArtikel($productID, $options);
 
                     $tmp[$productID]     = $product;
@@ -3105,8 +3056,6 @@ class Artikel
             'nAttribute',
             'nArtikelAttribute',
             'nMedienDatei',
-            'nVariationKombi',
-            'nVariationKombiKinder',
             'nVariationDetailPreis',
             'nWarenkorbmatrix',
             'nStueckliste',
@@ -3120,7 +3069,6 @@ class Artikel
             'nWarenlager',
             'bSimilar',
             'nRatings',
-            'nLanguageURLs',
             'nVariationen',
         ];
     }
@@ -3140,7 +3088,7 @@ class Artikel
         $given = \get_object_vars($options);
         $mask  = '';
         if (isset($options->nDownload) && $options->nDownload === 1 && !Download::checkLicense()) {
-            //unset download-option if there is no license for the download module
+            // unset download-option if there is no license for the download module
             $options->nDownload = 0;
         }
         foreach (self::getAllOptions() as $_opt) {
@@ -3163,8 +3111,6 @@ class Artikel
         $options->nArtikelAttribute     = 1;
         $options->nMedienDatei          = 1;
         $options->nVariationen          = 1;
-        $options->nVariationKombi       = 1;
-        $options->nVariationKombiKinder = 1;
         $options->nWarenlager           = 1;
         $options->nVariationDetailPreis = 1;
         $options->nRatings              = 1;
@@ -3175,7 +3121,6 @@ class Artikel
         $options->nKonfig               = 1;
         $options->nMain                 = 1;
         $options->bSimilar              = true;
-        $options->nLanguageURLs         = 1;
 
         return $options;
     }
@@ -3209,7 +3154,6 @@ class Artikel
         $options->nKeinLagerbestandBeachten = 1;
         $options->nMedienDatei              = 1;
         $options->nVariationen              = 1;
-        $options->nVariationKombi           = 0;
 
         return $options;
     }
@@ -3363,17 +3307,15 @@ class Artikel
         if ($this->getOption('nDownload', 0) === 1) {
             $this->oDownload_arr = Download::getDownloads(['kArtikel' => $this->kArtikel], $langID);
         }
-        if (Configurator::checkLicense()) {
-            $this->bHasKonfig = Configurator::hasKonfig($this->kArtikel);
-            if ($this->bHasKonfig && $this->getOption('nKonfig', 0) === 1) {
-                if (Configurator::validateKonfig($this->kArtikel)) {
-                    $this->oKonfig_arr = Configurator::getKonfig($this->kArtikel, $langID);
-                } else {
-                    Shop::Container()->getLogService()->error(
-                        'Konfigurator für Artikel (Art.Nr.: ' .
-                        $this->cArtNr . ') konnte nicht geladen werden.'
-                    );
-                }
+        $this->bHasKonfig = Configurator::hasKonfig($this->kArtikel);
+        if ($this->bHasKonfig && $this->getOption('nKonfig', 0) === 1) {
+            if (Configurator::validateKonfig($this->kArtikel)) {
+                $this->oKonfig_arr = Configurator::getKonfig($this->kArtikel, $langID);
+            } else {
+                Shop::Container()->getLogService()->error(
+                    'Konfigurator für Artikel (Art.Nr.: ' .
+                    $this->cArtNr . ') konnte nicht geladen werden.'
+                );
             }
         }
         $this->checkCanBePurchased();
@@ -3422,14 +3364,10 @@ class Artikel
         if ($noCache === false) {
             // oVariationKombiKinderAssoc_arr can contain a lot of article objects, prices may depend on customers
             // so do not save to cache
-            $newPrice                             = $this->Preise;
-            $children                             = $this->oVariationKombiKinderAssoc_arr;
-            $this->oVariationKombiKinderAssoc_arr = null;
-            $this->Preise                         = $basePrice;
-            Shop::Container()->getCache()->set($this->cacheID, $this, $cacheTags);
-            // restore oVariationKombiKinderAssoc_arr and Preise to class instance
-            $this->oVariationKombiKinderAssoc_arr = $children;
-            $this->Preise                         = $newPrice;
+            $toSave                                 = clone $this;
+            $toSave->oVariationKombiKinderAssoc_arr = null;
+            $toSave->Preise                         = $basePrice;
+            Shop::Container()->getCache()->set($this->cacheID, $toSave, $cacheTags);
         }
 
         return $this;
@@ -3739,7 +3677,7 @@ class Artikel
         $this->fVPEWert                          = $data->fVPEWert;
         $this->cName                             = Text::htmlentitiesOnce($data->cName, \ENT_COMPAT | \ENT_HTML401);
         $this->cSeo                              = $data->cSeo;
-        $this->cBeschreibung                     = Text::parseNewsText($data->cBeschreibung);
+        $this->cBeschreibung                     = $data->cBeschreibung;
         $this->cAnmerkung                        = $data->cAnmerkung;
         $this->cArtNr                            = $data->cArtNr;
         $this->cVPE                              = $data->cVPE;
@@ -3751,7 +3689,7 @@ class Artikel
         $this->cLagerBeachten                    = $data->cLagerBeachten;
         $this->cLagerKleinerNull                 = $data->cLagerKleinerNull;
         $this->cLagerVariation                   = $data->cLagerVariation;
-        $this->cKurzBeschreibung                 = Text::parseNewsText($data->cKurzBeschreibung);
+        $this->cKurzBeschreibung                 = $data->cKurzBeschreibung;
         $this->cLieferstatus                     = $data->cName_tlieferstatus;
         $this->cTopArtikel                       = $data->cTopArtikel;
         $this->cNeu                              = $data->cNeu;
@@ -3904,7 +3842,7 @@ class Artikel
             $this->cHerstellerMetaTitle       = $data->cMetaTitle_spr;
             $this->cHerstellerMetaKeywords    = $data->cMetaKeywords_spr;
             $this->cHerstellerMetaDescription = $data->cMetaDescription_spr;
-            $this->cHerstellerBeschreibung    = Text::parseNewsText($data->cBeschreibung_hst_spr);
+            $this->cHerstellerBeschreibung    = $data->cBeschreibung_hst_spr;
             $this->cHerstellerSortNr          = $data->nSortNr_thersteller;
             if ($data->manufImg !== null && \mb_strlen($data->manufImg) > 0) {
                 $this->cBildpfad_thersteller    = $manufacturer->getImage(Image::SIZE_XS);
@@ -4673,9 +4611,7 @@ class Artikel
     {
         \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
         foreach (\array_keys(\get_object_vars($obj)) as $member) {
-            $this->$member = ($member === 'cBeschreibung' || $member === 'cKurzBeschreibung')
-                ? Text::parseNewsText($obj->$member)
-                : $obj->$member;
+            $this->$member = $obj->$member;
         }
 
         return $this;

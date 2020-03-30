@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 <ul class="filter_search nav nav-list">
     {foreach $NaviFilter->searchFilterCompat->getOptions() as $searchFilter}
         <li>

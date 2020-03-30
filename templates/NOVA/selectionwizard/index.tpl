@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='selectionwizard-index'}
     {if isset($AWA)}
         {opcMountPoint id='opc_before_selection_wizard'}

@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Services;
 
@@ -206,7 +202,6 @@ class Container extends ContainerBase implements DefaultServicesInterface
     {
         return $this->get(JTLDebugBar::class);
     }
-
 
     /**
      * @inheritdoc

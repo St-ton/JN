@@ -1,10 +1,4 @@
 <?php
-/**
- * Extended attributes for backend user
- *
- * @author JTL-Software-GmbH
- * @created Mon, 20 Jun 2016 15:08:08 +0200
- */
 
 use JTL\Update\IMigration;
 use JTL\Update\Migration;

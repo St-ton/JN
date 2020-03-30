@@ -90,7 +90,7 @@ msgid "no"
 msgstr "No"
 
 msgid "update"
-msgstr "Refresh"
+msgstr "Update"
 
 msgid "from"
 msgstr "from"
@@ -275,6 +275,9 @@ msgstr " Hour"
 msgid "hours"
 msgstr " Hours"
 
+msgid "seconds"
+msgstr "Seconds"
+
 msgid "errorEnterValidDate"
 msgstr "Please enter a valid date."
 
@@ -300,7 +303,7 @@ msgid "errorCSRF"
 msgstr "Cross-site request forgery! Are cookies enabled?"
 
 msgid "errorSessionExpired"
-msgstr "Your session has been reset. Please log on again."
+msgstr "Your session has been reset. Please log in again."
 
 msgid "row"
 msgstr "Row"
@@ -390,7 +393,7 @@ msgid "pageType"
 msgstr "Page type"
 
 msgid "tag"
-msgstr "Tag"
+msgstr "Day"
 
 msgid "attribute"
 msgstr "Characteristic"
@@ -426,7 +429,7 @@ msgid "chooseProduct"
 msgstr "Select items"
 
 msgid "deleteProduct"
-msgstr "Delete items"
+msgstr "Delete item"
 
 msgid "filter"
 msgstr "Filters"
@@ -442,6 +445,15 @@ msgstr "Zones"
 
 msgid "zone"
 msgstr "Zone"
+
+msgid "newZone"
+msgstr "New Zone"
+
+msgid "saveZones"
+msgstr "Save Zones"
+
+msgid "deleteZone"
+msgstr "Delete Zone"
 
 msgid "title"
 msgstr "Name"
@@ -594,13 +606,13 @@ msgid "unmodified"
 msgstr "Unmodified"
 
 msgid "tplChecksums"
-msgstr "Template file checksums"
+msgstr "Template file check sums"
 
 msgid "modifiedFiles"
 msgstr "Modified files"
 
 msgid "lastModified"
-msgstr "Last modified"
+msgstr "Last edited"
 
 msgid "files"
 msgstr "Files"
@@ -663,7 +675,7 @@ msgid "indices"
 msgstr "Indices"
 
 msgid "count"
-msgstr "Count"
+msgstr "Number"
 
 msgid "showData"
 msgstr "View data"
@@ -774,7 +786,7 @@ msgid "servicePartners"
 msgstr "Service partners"
 
 msgid "actions"
-msgstr "Interactions"
+msgstr "Actions"
 
 msgid "linkVerb"
 msgstr "Link"
@@ -861,7 +873,7 @@ msgid "customers"
 msgstr "Customers"
 
 msgid "products"
-msgstr "Items"
+msgstr "Item"
 
 msgid "only"
 msgstr "only"
@@ -1065,7 +1077,7 @@ msgid "version"
 msgstr "Version"
 
 msgid "shopversion"
-msgstr "Shop version"
+msgstr "Online shop version"
 
 msgid "create"
 msgstr "Create"
@@ -1182,7 +1194,7 @@ msgid "level"
 msgstr "Level"
 
 msgid "orderNumberShort"
-msgstr "Purchase order ID"
+msgstr "Order ID"
 
 msgid "currency"
 msgstr "Currency"
@@ -1245,13 +1257,13 @@ msgid "question"
 msgstr "Question"
 
 msgid "orderNumber"
-msgstr "Purchase order ID"
+msgstr "Order ID"
 
 msgid "customer"
 msgstr "Customer"
 
 msgid "search"
-msgstr "Find"
+msgstr "Search"
 
 msgid "more"
 msgstr "More"
@@ -1404,7 +1416,7 @@ msgid "contact"
 msgstr "Contact"
 
 msgid "news"
-msgstr "News"
+msgstr "Blog"
 
 msgid "mapping"
 msgstr "Mapping"
@@ -1491,7 +1503,7 @@ msgstr "Tagging"
 
 # page type (tspezialseite)
 msgid "Livesuche"
-msgstr "Live search"
+msgstr "Search queries"
 
 # page type (tspezialseite)
 msgid "Datenschutz"
@@ -1549,16 +1561,16 @@ msgstr "Newsletter archive"
 
 # page type (tspezialseite)
 msgid "News"
-msgstr "News"
+msgstr "Blog"
 
 msgid "pageNewsMonth"
-msgstr "Monthly overview of newsletters"
+msgstr "Monthly overview of blog posts"
 
 msgid "pageNewsCategory"
-msgstr "News category"
+msgstr "Blog category"
 
 msgid "pageNewsDetail"
-msgstr "Detailed news posting page"
+msgstr "Detailed blog post page"
 
 msgid "pagePlugin"
 msgstr "Plug-in"
@@ -1611,7 +1623,7 @@ msgstr "Note on battery law"
 
 # page type (tspezialseite)
 msgid "WRB-Formular"
-msgstr "Instructions on withdrawal"
+msgstr "Withdrawal form"
 
 msgid "exception"
 msgstr "Exception"
@@ -1680,7 +1692,7 @@ msgid "europeanUnion"
 msgstr "European Union"
 
 msgid "notEuropeanUnionEurope"
-msgstr "Not European Union in Europe"
+msgstr "Non-European Union in Europe"
 
 msgid "countries"
 msgstr "Countries"
@@ -1809,7 +1821,7 @@ msgid "end"
 msgstr "End"
 
 msgid "color"
-msgstr "Color"
+msgstr "Colour"
 
 msgid "white"
 msgstr "white"
@@ -1869,7 +1881,7 @@ msgid "fileSelect"
 msgstr "Select file"
 
 msgid "helpCenterHeader"
-msgstr "Help center"
+msgstr "Help Centre"
 
 msgid "notificationsHeader"
 msgstr "Notifications"
@@ -1884,28 +1896,49 @@ msgid "cancelWithIcon"
 msgstr "<i class=\"fas fa-exclamation\"></i> Cancel"
 
 msgid "selectPickerNoneSelectedText"
-msgstr "Nothing selected"
+msgstr "No selection"
 
 msgid "selectPickerNoneResultsText"
-msgstr "{0} resulted in not hits"
+msgstr "{0} without results"
 
 msgid "selectPickerCountSelectedText"
 msgstr "{0} selected"
 
 msgid "selectPickerLimitReached"
-msgstr "Limit reached (max. {n})"
+msgstr "Limit reached (max. of {n})"
 
 msgid "selectPickerGroupLimitReached"
-msgstr "Group limit reached (max. {n})"
+msgstr "Group limit reached (max. of {n})"
 
 msgid "selectPickerSelectAllText"
-msgstr "Select all"
+msgstr "Activate all"
 
 msgid "selectPickerDeselectAllText"
-msgstr "Deselect all"
+msgstr "Deactivate all"
 
 msgid "close"
 msgstr "Close"
 
 msgid "none"
 msgstr "None"
+
+msgid "filterManufacturers"
+msgstr "Manufacturers"
+
+msgid "filterPriceRange"
+msgstr "Price range"
+
+msgid "filterRatings"
+msgstr "Reviews"
+
+msgid "filterSearch"
+msgstr "Search filter"
+
+msgid "filterSearchSpecial"
+msgstr "Special items"
+
+msgid "filterCategory"
+msgstr "Categories"
+
+msgid "filterCharacteristics"
+msgstr "Characteristics"

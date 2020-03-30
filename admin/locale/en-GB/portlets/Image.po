@@ -6,7 +6,7 @@ msgid "Image"
 msgstr "Image"
 
 msgid "shape"
-msgstr "Shape"
+msgstr "Form"
 
 msgid "shapeNormal"
 msgstr "normal"
@@ -18,7 +18,7 @@ msgid "shapeCircle"
 msgstr "circle"
 
 msgid "shapeThumbnail"
-msgstr "thumbnail"
+msgstr "as thumbnail"
 
 msgid "imageResponsive"
-msgstr "Responsive image?"
+msgstr "Responsive image"

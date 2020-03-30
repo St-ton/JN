@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productdetails-review-form'}
     {block name='productdetails-review-form-include-header'}
         {include file='layout/header.tpl'}
@@ -16,7 +12,7 @@
                 <h1>{lang key='productRating' section='product rating'}</h1>
             {/block}
             {block name='productdetails-review-form-form'}
-                {form action="{get_static_route id='bewertung.php'}#tab-votes" class="jtl-validate"}
+                {form action="{get_static_route id='bewertung.php'}#tab-votes" class="jtl-validate" slide=true}
                     {block name='productdetails-review-form-alerts'}
                         {$alertList->displayAlertByKey('productNotBuyed')}
                         {$alertList->displayAlertByKey('loginFirst')}

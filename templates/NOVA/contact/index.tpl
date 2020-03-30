@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='contact-index'}
     {block name='contact-index-include-header'}
         {include file='layout/header.tpl'}
@@ -41,7 +37,7 @@
                     {/block}
                 {/if}
                 {block name='contact-index-form'}
-                    {form name="contact" action="{get_static_route id='kontakt.php'}" method="post" class="jtl-validate"}
+                    {form name="contact" action="{get_static_route id='kontakt.php'}" method="post" class="jtl-validate" slide=true}
                         {block name='contact-index-form-content'}
                             {block name='contact-index-fieldset-contact'}
                             <fieldset>

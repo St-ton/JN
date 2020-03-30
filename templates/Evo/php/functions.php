@@ -1,8 +1,5 @@
 <?php
 /**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- *
  * @global \JTL\Smarty\JTLSmarty $smarty
  */
 
@@ -93,13 +90,14 @@ function get_product_list($params, $smarty)
         'seite'                  => $params['seite'] ?? null
     ];
     if ($params['kArtikel'] !== null) {
-        $products = [];
+        $products       = [];
+        $defaultOptions = Artikel::getDefaultOptions();
         if (!is_array($params['kArtikel'])) {
             $params['kArtikel'] = [$params['kArtikel']];
         }
         foreach ($params['kArtikel'] as $productID) {
             $product    = new Artikel();
-            $products[] = $product->fuelleArtikel($productID, Artikel::getDefaultOptions());
+            $products[] = $product->fuelleArtikel($productID, $defaultOptions);
         }
     } else {
         $products = (new ProductFilter(

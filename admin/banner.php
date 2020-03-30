@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Alert\Alert;
 use JTL\Boxes\Admin\BoxAdmin;
@@ -36,7 +32,7 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
         $bannerPath = $_FILES['oFile']['name'];
     }
     if ($bannerPath === null) {
-        $checks['oFile'] = 1;
+        $checks['oFile'] = $_FILES['oFile']['error'];
     }
     $dateFrom  = null;
     $dateUntil = null;

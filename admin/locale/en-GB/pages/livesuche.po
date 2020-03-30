@@ -3,13 +3,13 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "livesearch"
-msgstr "Live search"
+msgstr "Search queries"
 
 msgid "livesucheURL"
 msgstr "https://jtl-url.de/hjd59"
 
 msgid "livesucheDesc"
-msgstr "Here you can find the latest search queries entered into the search function of JTL-Shop and can link search queries and search terms with other search queries/terms, e.g. mobile phone with smartphone. If a customer looks for the search term \"mobile phone\", he will also see the results for the search term \"smartphone\"."
+msgstr "Here you can find the latest search queries entered into the search function of JTL-Shop and can link search queries and search terms with other search queries/terms, e.g. mobile phone with smartphone. If a customer looks for the search term \"mobile phone\", they will also see the results for the search term \"smartphone\"."
 
 msgid "searchnew"
 msgstr "New search"
@@ -90,7 +90,7 @@ msgid "successSearchDeleteMultiple"
 msgstr "Selected search queries deleted successfully."
 
 msgid "successBlacklistRefresh"
-msgstr "Black list updated successfully."
+msgstr "Blacklist updated successfully."
 
 msgid "successSearchMapDelete"
 msgstr "Link %s deleted successfully."

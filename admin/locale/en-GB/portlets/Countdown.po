@@ -6,7 +6,7 @@ msgid "Countdown"
 msgstr "Countdown"
 
 msgid "countdownDateTime"
-msgstr "Target date and time"
+msgstr "End date and time"
 
 msgid "textAfterCountdownFinished"
-msgstr "Expiration text"
+msgstr "Text after countdown ended"

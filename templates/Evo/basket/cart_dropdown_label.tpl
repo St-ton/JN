@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 <a href="{get_static_route id='warenkorb.php'}" class="dropdown-toggle" data-toggle="dropdown" title="{lang key='basket'}">
     <span class="fa fa-shopping-cart"></span>
     {if $WarenkorbArtikelPositionenanzahl >= 1}

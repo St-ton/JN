@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\DB;
 
@@ -240,7 +236,10 @@ class NiceDB implements DbInterface
         array $named = null,
         float $time = 0
     ): DbInterface {
-        if ($this->debug !== true || \mb_strpos($stmt, 'tprofiler') !== false) {
+        if ($this->debug !== true
+            || \mb_strpos($stmt, 'tprofiler') !== false
+            || \mb_stripos($stmt, 'create table') !== false
+        ) {
             return $this;
         }
         $backtrace = $this->debugLevel > 2 ? \debug_backtrace() : null;
@@ -547,7 +546,7 @@ class NiceDB implements DbInterface
             } elseif ($value === null) {
                 $value = '';
             }
-            $lc = \mb_convert_case($value, \MB_CASE_LOWER);
+            $lc = \mb_convert_case((string)$value, \MB_CASE_LOWER);
             if ($lc === 'now()' || $lc === 'current_timestamp') {
                 $insData['`' . $column . '`'] = $value;
                 if (!\in_array($column, $excludeUpdate, true)) {
@@ -587,7 +586,7 @@ class NiceDB implements DbInterface
         $lastID = $this->pdo->lastInsertId();
         $this->analyzeQuery($sql, $assigns, null, \microtime(true) - $start);
 
-        return $lastID;
+        return (int)$lastID;
     }
 
     /**

@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='snippets-wishlist'}
     {block name='snippets-wishlist-header'}
         {include file='layout/header.tpl'}
@@ -24,7 +20,7 @@
                         <div class="subheadline mb-5">{$CWunschliste->cName}</div>
                     {/block}
                     {block name='snippets-wishlist-form'}
-                        {form method="post" action="{get_static_route id='wunschliste.php'}" name="Wunschliste" slide=false}
+                        {form method="post" action="{get_static_route id='wunschliste.php'}" name="Wunschliste"}
                         {block name='snippets-wishlist-form-inner'}
                             {block name='snippets-wishlist-form-inputs-hidden'}
                                 {input type="hidden" name="wlvm" value="1"}
@@ -110,7 +106,7 @@
                                 {/dropdownitem}
                                 {dropdownitem class="text-center position-relative"}
                                 {block name='snippets-wishlist-actions-delete-wl'}
-                                    {form method="post" action="{get_static_route id='wunschliste.php'}"}
+                                    {form method="post" action="{get_static_route id='wunschliste.php'}" slide=true}
                                         {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
                                         {input type="hidden" name="kWunschlisteTarget" value=$CWunschliste->kWunschliste}
                                         {input type="hidden" name="action" value="delete"}
@@ -123,7 +119,7 @@
                                 {if $CWunschliste->nStandard != 1}
                                     {dropdownitem class="text-center position-relative"}
                                     {block name='snippets-wishlist-actions-set-active'}
-                                        {form method="post" action="{get_static_route id='wunschliste.php'}"}
+                                        {form method="post" action="{get_static_route id='wunschliste.php'}" slide=true}
                                             {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
                                             {input type="hidden" name="kWunschlisteTarget" value=$CWunschliste->kWunschliste}
                                             {input type="hidden" name="action" value="setAsDefault"}
@@ -154,8 +150,11 @@
                         {/col}
                     {/block}
                     {block name='snippets-wishlist-wishlists'}
-                        {col class="col-auto"}
-                            {dropdown id='wlName' variant='outline-secondary' text=$CWunschliste->cName}
+                        {col class="col-md-auto"}
+                            {dropdown id='wlName'
+                                variant='outline-secondary'
+                                text=$CWunschliste->cName
+                                toggle-class='w-100'}
                             {foreach $oWunschliste_arr as $wishlist}
                                 {dropdownitem href="{get_static_route id='wunschliste.php'}{if $wishlist->nStandard != 1}?wl={$wishlist->kWunschliste}{/if}" rel="nofollow" }
                                     {$wishlist->cName}
@@ -171,8 +170,7 @@
                         <div id="wishlist-search">
                             {form method="post"
                                 action="{get_static_route id='wunschliste.php'}"
-                                name="WunschlisteSuche"
-                                slide=false}
+                                name="WunschlisteSuche"}
                             {block name='snippets-wishlist-search-form-inputs-hidden'}
                                 {if $CWunschliste->nOeffentlich == 1 && !empty($cURLID)}
                                     {input type="hidden" name="wlid" value=$cURLID}
@@ -247,7 +245,7 @@
                 {block name='snippets-wishlist-link'}
                     {row class="mt-3 {if $CWunschliste->nOeffentlich != 1}d-none{/if}" id='wishlist-url-wrapper'}
                         {col cols=12}
-                            {form method="post" action="{get_static_route id='wunschliste.php'}" slide=false}
+                            {form method="post" action="{get_static_route id='wunschliste.php'}"}
                                 {block name='snippets-wishlist-link-inputs-hidden'}
                                     {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
                                 {/block}
@@ -341,7 +339,7 @@
                     {row}
                         {col cols=12}
                             {collapse id="create-new-wishlist" visible=($newWL === 1) class='mb-3'}
-                                {form method="post" action="{get_static_route id='wunschliste.php'}"}
+                                {form method="post" action="{get_static_route id='wunschliste.php'}" slide=true}
                                     {block name='snippets-wishlist-form-content-new'}
                                         {block name='snippets-wishlist-form-content-new-inputs-hidden'}
                                             {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
@@ -376,8 +374,7 @@
                     action="{get_static_route id='wunschliste.php'}{if $CWunschliste->nStandard != 1}?wl={$CWunschliste->kWunschliste}{/if}"
                     name="Wunschliste"
                     class="basket_wrapper{if $hasItems === true} mt-6{/if}"
-                    id="wl-items-form"
-                    slide=false}
+                    id="wl-items-form"}
                 {block name='snippets-wishlist-form-basket-content'}
                     {block name='snippets-wishlist-form-basket-inputs-hidden'}
                         {input type="hidden" name="wla" value="1"}

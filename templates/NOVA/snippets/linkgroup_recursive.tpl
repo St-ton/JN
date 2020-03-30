@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='snippets-linkgroup-recursive'}
     {if isset($linkgroupIdentifier) && (!isset($i) || isset($limit) && $i < $limit)}
         {strip}
@@ -36,7 +32,7 @@
                         {if $hasItems}
                             <li class="nav-item {if $hasItems}dropdown{/if}{if $li->getIsActive() || (isset($activeParent) && $activeParent == $li->getID())} active{/if}">
                                 {block name='snippets-linkgroup-recursive-link'}
-                                    <a class="nav-link px-2 dropdown-toggle" target="_self" href="{$li->getURL()}" data-toggle="collapse"
+                                    <a class="nav-link dropdown-toggle" target="_self" href="{$li->getURL()}" data-toggle="collapse"
                                        data-target="#link_box_{$li->getID()}_{$i}"
                                        aria-expanded="{if $li->getIsActive() || (isset($activeParent) && $activeParent == $li->getID())}true{else}false{/if}">
                                         {$li->getName()}
@@ -62,7 +58,6 @@
                             {block name='snippets-linkgroup-recursive-has-not-items'}
                                 {navitem class="{if $li->getIsActive() || (isset($activeParent) && $activeParent == $li->getID())} active{/if}"
                                     href=$li->getURL()
-                                    router-class="px-2"
                                 }
                                     {$li->getName()}
                                 {/navitem}

@@ -6,7 +6,7 @@ msgid "Product Stream"
 msgstr "Product Stream"
 
 msgid "presentation"
-msgstr "Appearance"
+msgstr "View"
 
 msgid "presentationGallery"
 msgstr "Gallery"
@@ -21,4 +21,4 @@ msgid "presentationSlider"
 msgstr "Slider with names and prices"
 
 msgid "itemFilter"
-msgstr "Artikelfilter"
+msgstr "Item filters"

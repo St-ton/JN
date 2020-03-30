@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Helpers;
 
@@ -496,7 +492,7 @@ class Product
                         ReturnType::SINGLE_OBJECT
                     );
 
-                    if ($propExists->kEigenschaftWert) {
+                    if (isset($propExists->kEigenschaftWert)) {
                         $val                       = new stdClass();
                         $val->kEigenschaftWert     = (int)self::getSelectedVariationValue($prop->kEigenschaft);
                         $val->kEigenschaft         = $prop->kEigenschaft;
@@ -527,13 +523,14 @@ class Product
                         '&r=' . \R_VARWAEHLEN, true, 302);
                     exit();
                 }
-                $val                = new stdClass();
-                $val->cFreifeldWert = $db->escape(
+                $val                   = new stdClass();
+                $val->cFreifeldWert    = $db->escape(
                     Text::filterXSS(self::getSelectedVariationValue($prop->kEigenschaft))
                 );
-                $val->kEigenschaft  = $prop->kEigenschaft;
-                $val->cTyp          = $prop->cTyp;
-                $properties[]       = $val;
+                $val->kEigenschaft     = $prop->kEigenschaft;
+                $val->kEigenschaftWert = null;
+                $val->cTyp             = $prop->cTyp;
+                $properties[]          = $val;
             }
         }
 
@@ -797,12 +794,8 @@ class Product
         if ($productID <= 0 || !self::isVariChild($productID)) {
             return $attributeValues;
         }
-        $product                           = new Artikel();
-        $productOptions                    = new stdClass();
-        $productOptions->nMerkmale         = 0;
-        $productOptions->nAttribute        = 0;
-        $productOptions->nArtikelAttribute = 0;
-        $productOptions->nVariationKombi   = 1;
+        $product        = new Artikel();
+        $productOptions = new stdClass();
         if (!$visibility) {
             $productOptions->nKeineSichtbarkeitBeachten = 1;
         }
@@ -916,16 +909,17 @@ class Product
                 ReturnType::ARRAY_OF_OBJECTS
             );
             if (\count($xsell) > 0) {
-                $xsellgruppen = group($xsell, static function ($e) {
+                $xsellgruppen   = group($xsell, static function ($e) {
                     return $e->kXSellGruppe;
                 });
+                $defaultOptions = Artikel::getDefaultOptions();
                 foreach ($xsellgruppen as $groupID => $products) {
                     $group          = new stdClass();
                     $group->Artikel = [];
                     foreach ($products as $xs) {
                         $group->Name         = $xs->cName;
                         $group->Beschreibung = $xs->cBeschreibung;
-                        $product             = (new Artikel())->fuelleArtikel((int)$xs->kXSellArtikel);
+                        $product             = (new Artikel())->fuelleArtikel((int)$xs->kXSellArtikel, $defaultOptions);
                         if ($product !== null && (int)$product->kArtikel > 0 && $product->aufLagerSichtbarkeit()) {
                             $group->Artikel[] = $product;
                         }
@@ -1731,23 +1725,22 @@ class Product
      */
     public static function combineParentAndChild($parent, $child)
     {
-        $product                                   = $child;
-        $kVariKindArtikel                          = (int)$child->kArtikel;
-        $product->kArtikel                         = (int)$parent->kArtikel;
-        $product->kVariKindArtikel                 = $kVariKindArtikel;
-        $product->nIstVater                        = 1;
-        $product->kVaterArtikel                    = (int)$parent->kArtikel;
-        $product->kEigenschaftKombi                = $parent->kEigenschaftKombi;
-        $product->kEigenschaftKombi_arr            = $parent->kEigenschaftKombi_arr;
-        $product->fDurchschnittsBewertung          = $parent->fDurchschnittsBewertung;
-        $product->Bewertungen                      = $parent->Bewertungen ?? null;
-        $product->HilfreichsteBewertung            = $parent->HilfreichsteBewertung ?? null;
-        $product->oVariationKombiVorschau_arr      = $parent->oVariationKombiVorschau_arr ?? [];
-        $product->oVariationDetailPreis_arr        = $parent->oVariationDetailPreis_arr;
-        $product->nVariationKombiNichtMoeglich_arr = $parent->nVariationKombiNichtMoeglich_arr;
-        $product->oVariationKombiVorschauText      = $parent->oVariationKombiVorschauText ?? null;
-        $product->cVaterURL                        = $parent->cURL;
-        $product->VaterFunktionsAttribute          = $parent->FunktionsAttribute;
+        $product                              = $child;
+        $kVariKindArtikel                     = (int)$child->kArtikel;
+        $product->kArtikel                    = (int)$parent->kArtikel;
+        $product->kVariKindArtikel            = $kVariKindArtikel;
+        $product->nIstVater                   = 1;
+        $product->kVaterArtikel               = (int)$parent->kArtikel;
+        $product->kEigenschaftKombi           = $parent->kEigenschaftKombi;
+        $product->kEigenschaftKombi_arr       = $parent->kEigenschaftKombi_arr;
+        $product->fDurchschnittsBewertung     = $parent->fDurchschnittsBewertung;
+        $product->Bewertungen                 = $parent->Bewertungen ?? null;
+        $product->HilfreichsteBewertung       = $parent->HilfreichsteBewertung ?? null;
+        $product->oVariationKombiVorschau_arr = $parent->oVariationKombiVorschau_arr ?? [];
+        $product->oVariationDetailPreis_arr   = $parent->oVariationDetailPreis_arr;
+        $product->oVariationKombiVorschauText = $parent->oVariationKombiVorschauText ?? null;
+        $product->cVaterURL                   = $parent->cURL;
+        $product->VaterFunktionsAttribute     = $parent->FunktionsAttribute;
 
         \executeHook(\HOOK_ARTIKEL_INC_FASSEVARIVATERUNDKINDZUSAMMEN, ['article' => $product]);
 
@@ -1899,10 +1892,7 @@ class Product
         if ($productID <= 0) {
             return false;
         }
-        $options                             = new stdClass();
-        $options->nMerkmale                  = 1;
-        $options->nAttribute                 = 1;
-        $options->nArtikelAttribute          = 1;
+        $options                             = Artikel::getDefaultOptions();
         $options->nKeineSichtbarkeitBeachten = 1;
 
         return CartHelper::addProductIDToCart($productID, 1, [], 0, false, 0, $options);
@@ -1946,15 +1936,8 @@ class Product
         } else {
             $selectedProperties = self::getSelectedPropertiesForArticle($productID, false);
         }
-
-        $product                               = new Artikel();
-        $productOptions                        = new stdClass();
-        $productOptions->nKonfig               = 1;
-        $productOptions->nAttribute            = 1;
-        $productOptions->nArtikelAttribute     = 1;
-        $productOptions->nVariationKombi       = 1;
-        $productOptions->nVariationKombiKinder = 1;
-        $product->fuelleArtikel($productID, $productOptions);
+        $product = new Artikel();
+        $product->fuelleArtikel($productID, Artikel::getDefaultOptions());
 
         $config->nMinDeliveryDays      = $product->nMinDeliveryDays;
         $config->nMaxDeliveryDays      = $product->nMaxDeliveryDays;

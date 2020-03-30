@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Backend;
 
@@ -281,6 +277,15 @@ class Notification implements IteratorAggregate, Countable
                 __('getEmailTemplateSyntaxErrorCountTitle'),
                 \sprintf(__('getEmailTemplateSyntaxErrorCountMessage'), $emailSyntaxErrorCount),
                 'emailvorlagen.php'
+            );
+        }
+
+        if (!$status->hasExtensionSOAP()) {
+            $this->add(
+                NotificationEntry::TYPE_INFO,
+                __('ustIdMiasCheckTitle'),
+                __('ustIdMiasCheckMessage'),
+                Shop::getAdminURL().'/einstellungen.php?kSektion=6'
             );
         }
 

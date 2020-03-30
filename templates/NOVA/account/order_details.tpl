@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='account-order-details'}
     {block name='account-order-details-script-location'}
         <script>
@@ -152,7 +148,7 @@
                     {block name='account-order-details-request-plz'}
                         {row}
                             {col cols=12 md=6}
-                                {form method="post" id='request-plz' action="{get_static_route}" class="jtl-validate"}
+                                {form method="post" id='request-plz' action="{get_static_route}" class="jtl-validate" slide=true}
                                     {input type="hidden" name="uid" value="{$uid}"}
                                     <p>{lang key='enter_plz_for_details' section='account data'}</p>
                                     {formgroup

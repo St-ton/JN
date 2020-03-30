@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productlist-header'}
     {if !isset($oNavigationsinfo) || isset($Suchergebnisse) && isset($oNavigationsinfo) && empty($oNavigationsinfo->getName())}
         {opcMountPoint id='opc_before_heading'}
@@ -16,7 +12,7 @@
             {alert variant="info"}{lang key='noResults' section='productOverview'}{/alert}
         {/block}
         {block name='productlist-header-form-search'}
-            {form id="suche2" action=$ShopURL method="get"}
+            {form id="suche2" action=$ShopURL method="get" slide=true}
                 <fieldset>
                     {formgroup label-for="searchkey" label="{lang key='searchText'}"}
                             {input type="text" name="suchausdruck" value="{if $Suchergebnisse->getSearchTerm()}{$Suchergebnisse->getSearchTerm()|escape:'htmlall'}{/if}" id="searchkey"}

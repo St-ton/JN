@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Cart\CartHelper;
 use JTL\Catalog\ComparisonList;
@@ -17,7 +13,7 @@ $compareList = null;
 $conf        = Shop::getSettings([CONF_VERGLEICHSLISTE, CONF_ARTIKELDETAILS]);
 $attrVar     = [[], []];
 $linkHelper  = Shop::Container()->getLinkService();
-$kLink       = $linkHelper->getSpecialPageLinkKey(LINKTYP_VERGLEICHSLISTE);
+$kLink       = $linkHelper->getSpecialPageID(LINKTYP_VERGLEICHSLISTE);
 $link        = $linkHelper->getPageLink($kLink);
 $compareList = new ComparisonList();
 $attrVar     = $compareList->buildAttributeAndVariation();

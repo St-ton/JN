@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {* nur anzeigen, wenn >1 Warenlager aktiv und Artikel ist auf Lager/im Zulauf/Ueberverkaeufe erlaubt/beachtet kein Lager *}
 {block name='productdetails-warehouse'}
     {assign var=anzeige value=$Einstellungen.artikeldetails.artikel_lagerbestandsanzeige}
@@ -29,7 +25,7 @@
                 class="fade"}
                 {block name='productdetails-warehouse-modal-content'}
                     {block name='productdetails-warehouse-modal-content-header'}
-                        {row class="mt-5"}
+                        {row}
                             {col}
                                 <span class="font-weight-bold">{lang key='warehouse'}</span>
                             {/col}

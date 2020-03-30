@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Alert\Alert;
 use JTL\Cart\Cart;
@@ -12,6 +8,7 @@ use JTL\Checkout\Kupon;
 use JTL\Customer\AccountController;
 use JTL\Extensions\Download\Download;
 use JTL\Extensions\Upload\Upload;
+use JTL\Helpers\Form;
 use JTL\Helpers\Order;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
@@ -34,6 +31,7 @@ $cart         = Frontend::getCart();
 $alertService = Shop::Container()->getAlertService();
 $linkService  = Shop::Container()->getLinkService();
 $controller   = new AccountController(Shop::Container()->getDB(), $alertService, $linkService, $smarty);
+$valid        = Form::validateToken();
 
 unset($_SESSION['ajaxcheckout']);
 if (Request::postInt('login') === 1) {
@@ -73,7 +71,10 @@ if ($conf['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'NO'
 if (Request::verifyGPCDataInt('wk') === 1) {
     Kupon::resetNewCustomerCoupon();
 }
-if (Request::postInt('unreg_form') === 1 && $conf['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y') {
+if ($valid
+    && Request::postInt('unreg_form') === 1
+    && $conf['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y'
+) {
     pruefeUnregistriertBestellen($_POST);
 }
 if (isset($_GET['editLieferadresse'])) {
@@ -127,7 +128,9 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
             $activeVersandart = gibAktiveVersandart($shippingMethods);
             pruefeVersandartWahl(
                 $activeVersandart,
-                ['kVerpackung' => array_keys(gibAktiveVerpackung(ShippingMethod::getPossiblePackagings($customerGroupID)))]
+                ['kVerpackung' => array_keys(
+                    gibAktiveVerpackung(ShippingMethod::getPossiblePackagings($customerGroupID))
+                )]
             );
         }
     }
@@ -214,7 +217,7 @@ if ($step === 'Bestaetigung' && $cart->gibGesamtsummeWaren(true) === 0.0) {
     Cart::refreshChecksum($cart);
     $_SESSION['AktiveZahlungsart'] = $savedPayment;
 }
-$kLink = $linkService->getSpecialPageLinkKey(LINKTYP_BESTELLVORGANG);
+$kLink = $linkService->getSpecialPageID(LINKTYP_BESTELLVORGANG);
 $link  = $linkService->getPageLink($kLink);
 CartHelper::addVariationPictures($cart);
 Shop::Smarty()->assign(

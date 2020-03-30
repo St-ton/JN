@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='checkout-inc-shipping-address'}
     {assign var=fehlendeAngabenShipping value=$fehlendeAngaben.shippingAddress|default:null}
     {assign var=showShippingAddress value=(isset($Lieferadresse) || !empty($kLieferadresse) || isset($forceDeliveryAddress))}
@@ -102,8 +98,10 @@
         {block name='checkout-inc-shipping-address-script-show-shipping-address'}
             {inline_script}<script>
                 $(window).on('load', function () {
-                    $('#checkout_register_shipping_address').prop('checked', false);
-                    $('#select_shipping_address').addClass('show').removeClass('hidden');
+                    var $registerShippingAddress = $('#checkout_register_shipping_address');
+                    if ($registerShippingAddress.prop('checked')) {
+                        $registerShippingAddress.click();
+                    }
                     $.evo.extended().smoothScrollToAnchor('#checkout_register_shipping_address');
                 });
             </script>{/inline_script}

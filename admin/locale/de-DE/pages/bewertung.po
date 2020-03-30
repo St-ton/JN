@@ -20,9 +20,6 @@ msgstr "Alle Bewertungen zurücksetzen"
 msgid "removeReply"
 msgstr "Antwort löschen"
 
-msgid "clearVotesComent"
-msgstr "Wählen Sie diese Option nur dann, wenn Sie alle bisher abgegebenen Bewertungspunkte löschen möchten. Das Bewertungssystem wird komplett zurückgesetzt, inklusive aller Kommentare."
-
 msgid "options"
 msgstr "Auswahl"
 

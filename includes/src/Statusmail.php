@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL;
 
@@ -58,7 +54,8 @@ class Statusmail
      */
     public function updateConfig(): bool
     {
-        if (Request::postInt('nAktiv') === 0
+        $active = Request::postInt('nAktiv') === 1;
+        if (!$active
             || (Text::filterEmailAddress($_POST['cEmail']) !== false
                 && \is_array($_POST['cIntervall_arr'])
                 && \count($_POST['cIntervall_arr']) > 0
@@ -84,7 +81,9 @@ class Statusmail
                 $statusMail->dLastSent = 'NOW()';
 
                 $id = $this->db->insert('tstatusemail', $statusMail);
-                $this->createCronJob($id, $interval * 24);
+                if ($active) {
+                    $this->createCronJob($id, $interval * 24);
+                }
             }
 
             return true;
@@ -110,7 +109,7 @@ class Statusmail
         $d->setTime(0, 0);
         Shop::Container()->getAlertService()->addAlert(
             Alert::TYPE_INFO,
-            \sprintf(__('nextStatusMail'), $types[$frequency]['name'], $d->format('Y-m-d')),
+            \sprintf(__('nextStatusMail'), $types[$frequency]['name'], $d->format('d.m.Y')),
             'nextStatusMail' . $frequency
         );
         $cron = new LegacyCron(

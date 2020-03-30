@@ -9,19 +9,19 @@ msgid "minHeightPX"
 msgstr "Minimum height in px"
 
 msgid "boxedContainer"
-msgstr "Boxed Container"
+msgstr "Box container"
 
 msgid "image"
 msgstr "Static image"
 
 msgid "imageParallax"
-msgstr "Parallax image"
+msgstr "Parallax scrolling"
 
 msgid "backgroundVideo"
-msgstr "Video"
+msgstr "Background video"
 
 msgid "noBackground"
-msgstr "No background"
+msgstr "no background"
 
 msgid "placeholderImage"
 msgstr "Placeholder image"

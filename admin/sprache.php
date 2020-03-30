@@ -1,9 +1,6 @@
 <?php
 /**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- *
- * @global smarty
+ * @global \JTL\Smarty\JTLSmarty $smarty
  */
 
 use JTL\Alert\Alert;

@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productlist-layout-options'}
     {if isset($oErweiterteDarstellung->nDarstellung)
     && $Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung === 'Y'

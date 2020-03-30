@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='layout-header'}
     {block name='layout-header-doctype'}<!DOCTYPE html>{/block}
     <html {block name='layout-header-html-attributes'}lang="{$meta_language}" itemscope {if $nSeitenTyp === $smarty.const.URLART_ARTIKEL}itemtype="http://schema.org/ItemPage"
@@ -339,16 +335,16 @@
                                         <div class="nav-mobile-header px-3 d-lg-none">
                                             {row class="align-items-center"}
                                                 {col}
+                                                    <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#mainNavigation" aria-controls="mainNavigation" aria-expanded="false" aria-label="Toggle navigation">
+                                                        <span class="navbar-toggler-icon"></span>
+                                                    </button>
+                                                {/col}
+                                                {col class="col-auto ml-auto"}
                                                     <span class="nav-offcanvas-title">{lang key='menuName'}</span>
                                                     {link href="#" class="nav-offcanvas-title d-none" data=["menu-back"=>""]}
                                                         <span class="fas fa-chevron-left mr-2"></span>
                                                         <span>{lang key='back'}</span>
                                                     {/link}
-                                                {/col}
-                                                {col class="col-auto ml-auto"}
-                                                    <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#mainNavigation" aria-controls="mainNavigation" aria-expanded="false" aria-label="Toggle navigation">
-                                                        <span class="navbar-toggler-icon"></span>
-                                                    </button>
                                                 {/col}
                                             {/row}
                                             <hr class="my-0" />
@@ -401,7 +397,7 @@
             <div id="content-wrapper"
                  class="{if $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}
                             container-fluid container-fluid-xl
-                        {/if} mt-0 {if $isFluidBanner || $isFluidSlider}pt-3{else}pt-5 pt-lg-7{/if}">
+                        {/if} mt-0 {if $isFluidBanner || $isFluidSlider}pt-3{else}pt-sm-3 pt-5 pt-lg-7{/if}">
         {/block}
 
         {block name='layout-header-breadcrumb'}

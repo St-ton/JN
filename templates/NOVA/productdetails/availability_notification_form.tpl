@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productdetails-availability-notification-form'}
     {if isset($position) && $position === 'popup'}
         {if isset($Artikelhinweise) && count($Artikelhinweise) > 0}
@@ -18,7 +14,7 @@
         {form action="{if !empty($Artikel->cURLFull)}{$Artikel->cURLFull}{else}{$ShopURL}/{/if}"
             method="post" id="article_availability{$Artikel->kArtikel}"
             class="jtl-validate"
-        }
+            slide=true}
             {block name='productdetails-availability-notification-form-fieldset-contact'}
                 <fieldset>
                     {block name='productdetails-availability-notification-form-legend-contact'}

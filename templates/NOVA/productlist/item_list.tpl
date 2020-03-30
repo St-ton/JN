@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productlist-item-list'}
     {if $Einstellungen.template.productlist.variation_select_productlist === 'N'}
         {assign var=hasOnlyListableVariations value=0}
@@ -11,7 +7,7 @@
     <div id="result-wrapper_buy_form_{$Artikel->kArtikel}" data-wrapper="true" class="productbox productbox-row productbox-show-variations {if $Einstellungen.template.productlist.hover_productlist === 'Y'} productbox-hover{/if}{if isset($listStyle) && $listStyle === 'list'} active{/if}">
         <div class="productbox-inner">
         {row}
-            {col cols=12 md=4 lg=3}
+            {col cols=12 md=4 lg=6 xl=3}
                 {block name='productlist-item-list-image'}
                     <div class="productbox-image">
                         {if isset($Artikel->Bilder[0]->cAltAttribut)}
@@ -24,6 +20,11 @@
                                 {include file='snippets/ribbon.tpl'}
                             {/block}
                         {/if}
+                        {block name='productlist-item-box-include-productlist-actions'}
+                            <div class="productbox-quick-actions productbox-onhover d-none d-md-flex">
+                                {include file='productlist/productlist_actions.tpl'}
+                            </div>
+                        {/block}
                         {block name="productlist-item-list-images"}
                             <div class="productbox-images">
                                 {link href=$Artikel->cURLFull}
@@ -94,8 +95,7 @@
                 {/block}
                 {form id="buy_form_{$Artikel->kArtikel}"
                     action=$ShopURL class="form form-basket jtl-validate"
-                    data=["toggle" => "basket-add"]
-                    slide=false}
+                    data=["toggle" => "basket-add"]}
                     {row}
                         {col cols=12 xl=4 class='productbox-details'}
                             {block name='productlist-item-list-details'}

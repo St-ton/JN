@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='checkout-step3-shipping-options'}
     {row}
         {col cols=12 lg=9}
@@ -11,7 +7,7 @@
                 {/block}
             {else}
                 {block name='checkout-step3-shipping-options-form'}
-                    {form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form jtl-validate mb-7" slide=false}
+                    {form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form jtl-validate mb-7"}
                         {block name='checkout-step3-shipping-options-fieldset-shipping-payment'}
                             <fieldset id="checkout-shipping-payment" class="mb-7">
                                 {block name='checkout-step3-shipping-options-legend-shipping-options'}

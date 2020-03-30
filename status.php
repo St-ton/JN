@@ -1,13 +1,10 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Alert\Alert;
 use JTL\Checkout\Bestellung;
 use JTL\Customer\Customer;
 use JTL\DB\ReturnType;
+use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Session\Frontend;
@@ -45,20 +42,22 @@ if (!empty($uid)) {
         header('Location: ' . $linkHelper->getStaticRoute('jtl.php'), true, 303);
         exit;
     }
-    $order    = new Bestellung($status->kBestellung, true);
+    $order    = new Bestellung((int)$status->kBestellung, true);
     $plzValid = false;
 
-    if (isset($_POST['plz']) && $order->oRechnungsadresse->cPLZ === Text::filterXSS($_POST['plz'])) {
-        $plzValid = true;
-    } elseif (!empty($_POST['plz'])) {
-        $db->update('tbestellstatus', 'cUID', $uid, (object)[
-            'failedAttempts' => (int)$status->failedAttempts + 1,
-        ]);
-        Shop::Container()->getAlertService()->addAlert(
-            Alert::TYPE_DANGER,
-            Shop::Lang()->get('incorrectLogin'),
-            'statusOrderincorrectLogin'
-        );
+    if (Form::validateToken()) {
+        if (isset($_POST['plz']) && $order->oRechnungsadresse->cPLZ === Text::filterXSS($_POST['plz'])) {
+            $plzValid = true;
+        } elseif (!empty($_POST['plz'])) {
+            $db->update('tbestellstatus', 'cUID', $uid, (object)[
+                'failedAttempts' => (int)$status->failedAttempts + 1,
+            ]);
+            Shop::Container()->getAlertService()->addAlert(
+                Alert::TYPE_DANGER,
+                Shop::Lang()->get('incorrectLogin'),
+                'statusOrderincorrectLogin'
+            );
+        }
     }
 
     $smarty->assign('Bestellung', $order)

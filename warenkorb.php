@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Alert\Alert;
 use JTL\Cart\CartHelper;
@@ -11,6 +7,7 @@ use JTL\Catalog\Product\Preise;
 use JTL\Checkout\Kupon;
 use JTL\DB\ReturnType;
 use JTL\Extensions\Upload\Upload;
+use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Session\Frontend;
@@ -34,19 +31,23 @@ Shop::setPageType(PAGE_WARENKORB);
 $linkHelper      = Shop::Container()->getLinkService();
 $couponCodeValid = true;
 $cart            = Frontend::getCart();
-$kLink           = $linkHelper->getSpecialPageLinkKey(LINKTYP_WARENKORB);
+$kLink           = $linkHelper->getSpecialPageID(LINKTYP_WARENKORB);
 $link            = $linkHelper->getPageLink($kLink);
 $alertHelper     = Shop::Container()->getAlertService();
+$valid           = Form::validateToken();
 // Warenkorbaktualisierung?
-CartHelper::applyCartChanges();
+if ($valid) {
+    CartHelper::applyCartChanges();
+}
 CartHelper::validateCartConfig();
 pruefeGuthabenNutzen();
-if (isset($_POST['land'], $_POST['plz'])
+if ($valid && isset($_POST['land'], $_POST['plz'])
     && !ShippingMethod::getShippingCosts($_POST['land'], $_POST['plz'], $warning)
 ) {
     $warning = Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages');
 }
-if ($cart !== null
+if ($valid
+    && $cart !== null
     && isset($_POST['Kuponcode'])
     && mb_strlen($_POST['Kuponcode']) > 0
     && $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0
@@ -89,7 +90,7 @@ if (isset($_SESSION['checkCouponResult'])) {
     unset($_SESSION['checkCouponResult']);
     $smarty->assign('cKuponfehler', $couponError['ungueltig']);
 }
-if (isset($_POST['gratis_geschenk'], $_POST['gratisgeschenk']) && (int)$_POST['gratis_geschenk'] === 1) {
+if ($valid && isset($_POST['gratis_geschenk'], $_POST['gratisgeschenk']) && (int)$_POST['gratis_geschenk'] === 1) {
     $giftID = (int)$_POST['gratisgeschenk'];
     $gift   = Shop::Container()->getDB()->query(
         'SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand, 

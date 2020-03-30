@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='snippets-pagination'}
     {assign var=cParam_arr value=$cParam_arr|default:[]}
     {assign var=noWrapper value=$noWrapper|default:false}
@@ -109,7 +105,7 @@
             {if $showFilter === true && (in_array('count', $parts) || in_array('sort', $parts))}
                 {block name='snippets-pagination-form'}
                     {col cols="12" md="auto" class="ml-md-0 ml-auto mt-3 mt-md-0"}
-                        {form action="{$cThisUrl}{$cAnchor}" method="get" slide=false}
+                        {form action="{$cThisUrl}{$cAnchor}" method="get"}
                             {block name='snippets-pagination-form-content'}
                                 {row}
                                 {block name='snippets-pagination-form-hidden'}

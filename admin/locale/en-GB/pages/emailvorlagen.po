@@ -9,7 +9,7 @@ msgid "emailTemplateURL"
 msgstr "https://jtl-url.de/mvfr2"
 
 msgid "emailTemplatesHint"
-msgstr "Here you can edit the templates of all emails that can be sent with JTL-Shop. These templates are edited using the Smarty Template engine. When you request a test email, you can choose between every language available for the shop."
+msgstr "Here you can edit the templates of all emails that can be sent with JTL-Shop. These templates are edited using the Smarty Template engine. When you request a test email, you can choose between every language available for the online shop."
 
 msgid "testmail"
 msgstr "Request test email"
@@ -18,7 +18,7 @@ msgid "testmailsGoToEmail"
 msgstr "Test emails will be sent to the following address: "
 
 msgid "noMasterEmailSpecified"
-msgstr "No master email address found. Please enter a master sender email address under Contents &gt; Emails &gt; Settings."
+msgstr "No master email address found. Please enter a master sender email address under Contents > Emails > Settings."
 
 msgid "emailTemplateModifyHint"
 msgstr "Here you can edit the content of an email template in every language available for JTL-Shop. You can also specify the email address from which the email is to be send and whether certain attachments will be added by default."
@@ -48,7 +48,7 @@ msgid "emailAddWRB"
 msgstr "Attach withdrawal"
 
 msgid "emailAddWRBForm"
-msgstr "Attach exemplary instructions on withdrawal"
+msgstr "Attach model withdrawal form"
 
 msgid "emailAddDSE"
 msgstr "Attach data privacy statement"
@@ -90,7 +90,7 @@ msgid "errorFileNameMissing"
 msgstr "Please also enter a name for every file."
 
 msgid "errorFileSizeType"
-msgstr "The file must be a PDF and must not be larger than 2 MB."
+msgstr "The file must be a PDF and must not be larger than 2&nbsp;MB."
 
 msgid "errorFileNamePdfMissing"
 msgstr "The PDF file does not have a name."
@@ -135,7 +135,7 @@ msgstr "New customer registration"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_accounterstellung_durch_betreiber"
-msgstr "Creation of a customer account by shop operator"
+msgstr "Creation of a customer account by online shop operator"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_bestellung_bezahlt"
@@ -151,7 +151,7 @@ msgstr "Deletion of customer account"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_kdgrp_zuweisung"
-msgstr "Assignment to customer group by shop operator"
+msgstr "Assignment to customer group by online shop operator"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_kontaktformular"
@@ -179,7 +179,7 @@ msgstr "Order was updated"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_bestellung_storno"
-msgstr "Ordered was cancelled"
+msgstr "Order was cancelled"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_bestellung_restorno"
@@ -187,7 +187,7 @@ msgstr "Order was reactivated"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_bestellung_teilversandt"
-msgstr "Order was partly shipped"
+msgstr "Order was partly delivered"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_footer"
@@ -238,4 +238,4 @@ msgid "name_core_jtl_verfuegbarkeitsbenachrichtigung_optin"
 msgstr "Back in stock notification email (double opt-in confirmation)"
 
 msgid "Empty mail body"
-msgstr "Empty mail body"
+msgstr "Empty email body"

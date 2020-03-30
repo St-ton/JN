@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Services;
 
@@ -149,7 +145,6 @@ interface DefaultServicesInterface extends ContainerInterface
      * @return JTLDebugBar
      */
     public function getDebugBar(): JTLDebugBar;
-
 
     /**
      * @return CountryServiceInterface

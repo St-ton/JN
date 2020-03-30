@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productdetails-question-on-item'}
     {if isset($fehlendeAngaben_fragezumprodukt)}
         {$fehlendeAngaben = $fehlendeAngaben_fragezumprodukt}
@@ -22,7 +18,7 @@
         method="post"
         id="article_question"
         class="jtl-validate"
-    }
+        slide=true}
         {block name='productdetails-question-on-item-form-fieldset-contact'}
             <fieldset>
                 {block name='productdetails-question-on-item-form-legend-contact'}

@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productdetails-reviews'}
     <div class="reviews mt-3">
         {block name='productdetails-reviews-content'}
@@ -75,7 +71,7 @@
             {/block}
             {block name='productdetails-reviews-votes'}
                 {col cols=12 md=8  order=0 order-md=1}
-                    {form method="post" action="{get_static_route id='bewertung.php'}#tab-votes" id="article_rating"}
+                    {form method="post" action="{get_static_route id='bewertung.php'}#tab-votes" id="article_rating" slide=true}
                         <div class="subheadline">
                             {if $Artikel->Bewertungen->oBewertungGesamt->nAnzahl == 0}
                                 {lang key='firstReview'}
@@ -119,7 +115,7 @@
                         {/cardheader}
                     {/block}
                     {block name='productdetails-reviews-most-helpful'}
-                        {form method="post" action="{get_static_route id='bewertung.php'}#tab-votes"}
+                        {form method="post" action="{get_static_route id='bewertung.php'}#tab-votes" slide=true}
                             {input type="hidden" name="bhjn" value="1"}
                             {input type="hidden" name="a" value=$Artikel->kArtikel}
                             {input type="hidden" name="btgsterne" value=$BlaetterNavi->nSterne}
@@ -145,7 +141,7 @@
                 {include file='snippets/pagination.tpl' oPagination=$ratingPagination cThisUrl=$Artikel->cURLFull cAnchor='tab-votes'}
             {/block}
             {block name='productdetails-reviews-form'}
-                {form id="reviews-list" method="post" action="{get_static_route id='bewertung.php'}#tab-votes" class="reviews-list"}
+                {form id="reviews-list" method="post" action="{get_static_route id='bewertung.php'}#tab-votes" class="reviews-list" slide=true}
                     {input type="hidden" name="bhjn" value="1"}
                     {input type="hidden" name="a" value=$Artikel->kArtikel}
                     {input type="hidden" name="btgsterne" value=$BlaetterNavi->nSterne}

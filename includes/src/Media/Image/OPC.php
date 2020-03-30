@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Media\Image;
 
@@ -25,7 +21,7 @@ class OPC extends AbstractImage
     protected $regEx = '/^media\/image\/'
     . '(?P<type>opc)'
     . '\/(?P<size>xs|sm|md|lg|xl|os)'
-    . '\/(?P<name>[a-zA-Z0-9\-_\. ]+)'
+    . '\/(?P<name>[a-zA-Z0-9\-_\. äööüÄÖÜß]+)'
     . '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
 
     /**

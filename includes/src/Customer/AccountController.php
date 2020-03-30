@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Customer;
 
@@ -159,7 +155,6 @@ class AccountController
     {
         Shop::setPageType(\PAGE_MEINKONTO);
         $ratings = [];
-        $linkID  = $this->linkService->getSpecialPageLinkKey(\LINKTYP_LOGIN);
         $step    = 'mein Konto';
         $valid   = Form::validateToken();
         if (Request::verifyGPCDataInt('logout') === 1) {
@@ -221,7 +216,7 @@ class AccountController
             $step = 'kunden_werben_kunden';
             $this->checkPromotion($_POST);
         }
-        if (Request::postInt('wlh') > 0) {
+        if ($valid && Request::postInt('wlh') > 0) {
             $step = 'mein Konto';
             $name = Text::htmlentities(Text::filterXSS($_POST['cWunschlisteName']));
             $this->alertService->addAlert(Alert::TYPE_NOTE, Wishlist::save($name), 'saveWL');
@@ -230,7 +225,9 @@ class AccountController
         if ($wishlistID > 0) {
             $step = $this->modifyWishlist($customerID, $wishlistID);
         }
-        if (Request::verifyGPCDataInt('editRechnungsadresse') > 0) {
+        if (Request::verifyGPCDataInt('editRechnungsadresse') > 0
+            || Request::verifyGPCDataInt('editLieferadresse') > 0
+        ) {
             $step = 'rechnungsdaten';
         }
         if (Request::getInt('pass') === 1) {
@@ -299,7 +296,7 @@ class AccountController
         $this->smarty->assign('Kunde', $_SESSION['Kunde'])
             ->assign('customerAttributes', $_SESSION['Kunde']->getCustomerAttributes())
             ->assign('bewertungen', $ratings)
-            ->assign('Link', $this->linkService->getPageLink($linkID))
+            ->assign('Link', $this->linkService->getSpecialPage(\LINKTYP_LOGIN))
             ->assign('BESTELLUNG_STATUS_BEZAHLT', \BESTELLUNG_STATUS_BEZAHLT)
             ->assign('BESTELLUNG_STATUS_VERSANDT', \BESTELLUNG_STATUS_VERSANDT)
             ->assign('BESTELLUNG_STATUS_OFFEN', \BESTELLUNG_STATUS_OFFEN)

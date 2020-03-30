@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 // Version
 define('APPLICATION_VERSION', '5.0.0');
@@ -84,6 +80,7 @@ define('URLART_NEWS', 8);
 define('URLART_NEWSMONAT', 9);
 define('URLART_NEWSKATEGORIE', 10);
 define('URLART_SEARCHSPECIALS', 12);
+define('URLART_NEWSLETTER', 13);
 // bestellstatus
 define('BESTELLUNG_STATUS_STORNO', -1);
 define('BESTELLUNG_STATUS_OFFEN', 1);
@@ -310,6 +307,7 @@ define('R_UNVERKAEUFLICH', 15);
 define('R_AUFANFRAGE', 16);
 define('R_EMPTY_TAG', 17);
 define('R_EMPTY_VARIBOX', 18);
+define('R_MISSING_TOKEN', 19);
 // Kategorietiefe
 // 0 = Aus
 // 1 = Tiefe 0 (Hauptkategorien)

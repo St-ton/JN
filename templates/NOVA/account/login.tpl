@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='account-login'}
     {block name='account-login-heading'}
         <h1>{if !empty($oRedirect->cName)}{$oRedirect->cName}{else}{lang key='loginTitle' section='login'}{/if}</h1>
@@ -32,7 +28,7 @@
         {opcMountPoint id='opc_before_login'}
         {row}
             {col sm=8 lg=6}
-                {form id="login_form" action="{get_static_route id='jtl.php'}" method="post" role="form" class="jtl-validate"}
+                {form id="login_form" action="{get_static_route id='jtl.php'}" method="post" role="form" class="jtl-validate" slide=true}
                     <fieldset>
                         {block name='account-login-form-submit-legend-login'}
                             <legend>

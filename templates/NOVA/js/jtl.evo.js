@@ -1,8 +1,3 @@
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
-
 (function () {
     'use strict';
 
@@ -49,6 +44,7 @@
 
             $('.slick-lazy').on('mouseenter', function (e) {
                 let mainNode = $(this);
+                mainNode.removeClass('slick-lazy');
                 if (!mainNode.hasClass('slick-initialized')) {
                     self.initSlick(mainNode, mainNode.data('slick-type'));
                 }
@@ -72,7 +68,6 @@
                     }
                 });
             });
-
         },
 
         initSlick: function (node, sliderType) {
@@ -202,10 +197,63 @@
                             }
                         }
                     ]
+                },
+                'gallery' : {
+                    lazyLoad: 'ondemand',
+                    infinite: true,
+                    dots:     false,
+                    swipeToSlide:   true,
+                    arrows:   false,
+                    speed: 500,
+                    fade: true,
+                    cssEase: 'linear',
+                    asNavFor: '#gallery_preview',
+                    responsive:     [
+                        {
+                            breakpoint: 992,
+                            settings: {
+                                dots: true
+                            }
+                        }
+                    ]
+                },
+                'gallery_preview' : {
+                    lazyLoad:       'ondemand',
+                    slidesToShow:   5,
+                    slidesToScroll: 1,
+                    asNavFor:       '#gallery',
+                    dots:           false,
+                    swipeToSlide:   true,
+                    arrows:         true,
+                    focusOnSelect:  true,
+                    responsive:     [
+                        {
+                            breakpoint: 768,
+                            settings:   {
+                                slidesToShow: 4
+                            }
+                        },
+                        {
+                            breakpoint: 576,
+                            settings: {
+                                slidesToShow: 3
+                            }
+                        }
+                    ]
                 }
             };
             if ($('#content').hasClass('col-lg-9')) {
                 sliderOptions['news-slider']['slidesToShow'] = 2;
+            }
+            if (sliderType === 'gallery_preview') {
+                sliderType = 'gallery';
+                node = $('#gallery');
+            }
+            if (sliderType === 'gallery') {
+                $('.js-gallery-images').removeClass('d-none');
+                $('.slick-inital-arrow').remove();
+                $('.initial-slick-dots').remove();
+                $('#gallery_preview').slick(sliderOptions['gallery_preview']);
             }
 
             return node.slick(sliderOptions[sliderType]);
@@ -271,9 +319,9 @@
                     }],
                 }
             };
-            if ($('#tab-link-tab-priceFlow').length) {
+            if ($('#tab-link-priceFlow').length) {
                 // using tabs
-                $('#tab-link-tab-priceFlow').on('shown.bs.tab', function () {
+                $('#tab-link-priceFlow').on('shown.bs.tab', function () {
                     if (typeof window.priceHistoryChart !== 'undefined' && window.priceHistoryChart === null) {
                         window.priceHistoryChart = new Chart(window.ctx, {
                             type: 'line',
@@ -718,7 +766,11 @@
 
         setWishlistVisibilitySwitches: function() {
             $('.wl-visibility-switch').on('change', function () {
-                $.evo.io().call('setWishlistVisibility', [$(this).data('wl-id'), $(this).is(":checked")], $(this), function(error, data) {
+                $.evo.io().call(
+                    'setWishlistVisibility',
+                    [$(this).data('wl-id'), $(this).is(":checked"), $('.jtl_token').val()],
+                    $(this),
+                    function(error, data) {
                     if (error) {
                         return;
                     }
@@ -779,12 +831,12 @@
                 },
                 step: 1
             });
-            $priceSlider.noUiSlider.on('end', function (values, handle) {
-                $.evo.redirectToNewPriceRange(values[0] + '_' + values[1], redirect, $wrapper);
-            });
-            $priceSlider.noUiSlider.on('slide', function (values, handle) {
+            $priceSlider.noUiSlider.on('change', function (values, handle) {
                 $priceRangeFrom.val(values[0]);
                 $priceRangeTo.val(values[1]);
+                setTimeout(function(){
+                    $.evo.redirectToNewPriceRange(values[0] + '_' + values[1], redirect, $wrapper);
+                },0);
             });
             $('.price-range-input').change(function () {
                 let prFrom = $priceRangeFrom.val(),
@@ -803,7 +855,7 @@
                 self=this;
 
             $wrapper.addClass('loading');
-            $.ajax(href, {data: {'isAjax':1}})
+            $.ajax(href, {data: {'useMobileFilters':1}})
             .done(function(data) {
                 $wrapper.html(data);
                 self.initPriceSlider($wrapper, false);
@@ -929,6 +981,7 @@
             this.fixStickyElements();
             this.setWishlistVisibilitySwitches();
             this.initEModals();
+            $.evo.article().initConfigListeners();
             this.initScrollEvents();
             this.initReviewHelpful();
             this.initWishlist();

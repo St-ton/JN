@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='account-downloads'}
     {if !empty($Bestellung->oDownload_arr)}
         {block name='account-downloads-subheading'}
@@ -45,7 +41,7 @@
                                         {if $Bestellung->cStatus == $smarty.const.BESTELLUNG_STATUS_BEZAHLT
                                         || $Bestellung->cStatus == $smarty.const.BESTELLUNG_STATUS_VERSANDT
                                         || $Bestellung->cStatus == $smarty.const.BESTELLUNG_STATUS_TEILVERSANDT}
-                                            {form method="post" action="{get_static_route id='jtl.php'}"}
+                                            {form method="post" action="{get_static_route id='jtl.php'}" slide=true}
                                                 {input name="a" type="hidden" value="getdl"}
                                                 {input name="bestellung" type="hidden" value=$Bestellung->kBestellung}
                                                 {input name="dl" type="hidden" value=$oDownload->getDownload()}
@@ -125,7 +121,7 @@
                                                         {row}
                                                             {col md=4}{lang key='download'}:{/col}
                                                             {col md=8}
-                                                            {form method="post" action="{get_static_route id='jtl.php'}"}
+                                                            {form method="post" action="{get_static_route id='jtl.php'}" slide=true}
                                                                 {input name="kBestellung" type="hidden" value=$oDownload->kBestellung}
                                                                 {input name="kKunde" type="hidden" value=$smarty.session.Kunde->kKunde}
                                                                 {if $cStatus == $smarty.const.BESTELLUNG_STATUS_BEZAHLT

@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Alert\Alert;
 use JTL\Catalog\Product\Preise;
@@ -58,7 +54,6 @@ function pruefeBestellungMoeglich()
 function pruefeVersandartWahl($shippingMethod, $formValues = 0, $bMsg = true): bool
 {
     global $step;
-
     $nReturnValue = versandartKorrekt($shippingMethod, $formValues);
     executeHook(HOOK_BESTELLVORGANG_PAGE_STEPVERSAND_PLAUSI);
 
@@ -339,9 +334,8 @@ function pruefeRechnungsadresseStep($get): void
 {
     global $step, $Kunde;
     //sondersteps Rechnungsadresse ändern
-    if (isset($get['editRechnungsadresse'])
-        && (int)$get['editRechnungsadresse'] === 1
-        && !empty(Frontend::getCustomer()->cOrt)
+    if (!empty(Frontend::getCustomer()->cOrt)
+        && (Request::getInt('editRechnungsadresse') === 1 || Request::getInt('editLieferadresse') === 1)
     ) {
         Kupon::resetNewCustomerCoupon();
         $Kunde = Frontend::getCustomer();
@@ -503,13 +497,16 @@ function pruefeZahlungsartwahlStep($post)
 {
     global $zahlungsangaben, $step;
     if (!isset($post['zahlungsartwahl']) || (int)$post['zahlungsartwahl'] !== 1) {
-        if (isset($_SESSION['Zahlungsart'])) {
+        if (isset($_SESSION['Zahlungsart'])
+            && Request::getInt('editRechnungsadresse') !== 1
+            && Request::getInt('editLieferadresse') !== 1
+        ) {
             $zahlungsangaben = zahlungsartKorrekt((int)$_SESSION['Zahlungsart']->kZahlungsart);
         } else {
             return null;
         }
     } else {
-        $zahlungsangaben = zahlungsartKorrekt($post['Zahlungsart']);
+        $zahlungsangaben = zahlungsartKorrekt((int)$post['Zahlungsart']);
     }
     executeHook(HOOK_BESTELLVORGANG_PAGE_STEPZAHLUNG_PLAUSI);
 
@@ -821,7 +818,7 @@ function gibStepBestaetigung($get)
 {
     $linkHelper = Shop::Container()->getLinkService();
     //check currenct shipping method again to avoid using invalid methods when using one click method (#9566)
-    if (isset($_SESSION['Versandart']->kVersandart) && !versandartKorrekt($_SESSION['Versandart']->kVersandart)) {
+    if (isset($_SESSION['Versandart']->kVersandart) && !versandartKorrekt((int)$_SESSION['Versandart']->kVersandart)) {
         header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php') . '?editVersandart=1', true, 303);
     }
     // Bei Standardzahlungsarten mit Zahlungsinformationen prüfen ob Daten vorhanden sind
@@ -1219,21 +1216,21 @@ function zahlungsartKorrekt(int $paymentMethodID): int
         getPaymentSurchageDiscount($paymentMethod);
         $specialItem        = new stdClass();
         $specialItem->cName = [];
-        foreach ($_SESSION['Sprachen'] as $Sprache) {
+        foreach ($_SESSION['Sprachen'] as $lang) {
             if ($paymentMethod->kZahlungsart > 0) {
                 $localized = Shop::Container()->getDB()->select(
                     'tzahlungsartsprache',
                     'kZahlungsart',
                     (int)$paymentMethod->kZahlungsart,
                     'cISOSprache',
-                    $Sprache->cISO,
+                    $lang->cISO,
                     null,
                     null,
                     false,
                     'cName'
                 );
                 if (isset($localized->cName)) {
-                    $specialItem->cName[$Sprache->cISO] = $localized->cName;
+                    $specialItem->cName[$lang->cISO] = $localized->cName;
                 }
             }
         }
@@ -1363,26 +1360,26 @@ function getPaymentSurchageDiscount($paymentMethod)
     }
     $specialItem               = new stdClass();
     $specialItem->cGebuehrname = [];
-    foreach ($_SESSION['Sprachen'] as $Sprache) {
+    foreach ($_SESSION['Sprachen'] as $lang) {
         if ($paymentMethod->kZahlungsart > 0) {
-            $name_spr = Shop::Container()->getDB()->select(
+            $loc = Shop::Container()->getDB()->select(
                 'tzahlungsartsprache',
                 'kZahlungsart',
                 (int)$paymentMethod->kZahlungsart,
                 'cISOSprache',
-                $Sprache->cISO,
+                $lang->cISO,
                 null,
                 null,
                 false,
                 'cGebuehrname'
             );
 
-            $specialItem->cGebuehrname[$Sprache->cISO] = $name_spr->cGebuehrname ?? '';
+            $specialItem->cGebuehrname[$lang->cISO] = $loc->cGebuehrname ?? '';
             if ($paymentMethod->cAufpreisTyp === 'prozent') {
                 if ($paymentMethod->fAufpreis > 0) {
-                    $specialItem->cGebuehrname[$Sprache->cISO] .= ' +';
+                    $specialItem->cGebuehrname[$lang->cISO] .= ' +';
                 }
-                $specialItem->cGebuehrname[$Sprache->cISO] .= $paymentMethod->fAufpreis . '%';
+                $specialItem->cGebuehrname[$lang->cISO] .= $paymentMethod->fAufpreis . '%';
             }
         }
     }
@@ -1545,22 +1542,22 @@ function gibZahlungsarten(int $shippingMethodID, int $customerGroupID)
         //posname lokalisiert ablegen
         $method->angezeigterName = [];
         $method->cGebuehrname    = [];
-        foreach ($_SESSION['Sprachen'] as $Sprache) {
-            $name_spr = Shop::Container()->getDB()->select(
+        foreach ($_SESSION['Sprachen'] as $lang) {
+            $loc = Shop::Container()->getDB()->select(
                 'tzahlungsartsprache',
                 'kZahlungsart',
                 (int)$method->kZahlungsart,
                 'cISOSprache',
-                $Sprache->cISO,
+                $lang->cISO,
                 null,
                 null,
                 false,
                 'cName, cGebuehrname, cHinweisTextShop'
             );
-            if (isset($name_spr->cName)) {
-                $method->angezeigterName[$Sprache->cISO] = $name_spr->cName;
-                $method->cGebuehrname[$Sprache->cISO]    = $name_spr->cGebuehrname;
-                $method->cHinweisText[$Sprache->cISO]    = $name_spr->cHinweisTextShop;
+            if (isset($loc->cName)) {
+                $method->angezeigterName[$lang->cISO] = $loc->cName;
+                $method->cGebuehrname[$lang->cISO]    = $loc->cGebuehrname;
+                $method->cHinweisText[$lang->cISO]    = $loc->cHinweisTextShop;
             }
         }
         $confData = Shop::Container()->getDB()->selectAll(
@@ -1610,7 +1607,7 @@ function gibZahlungsarten(int $shippingMethodID, int $customerGroupID)
 function gibAktiveVersandart($shippingMethods)
 {
     if (isset($_SESSION['Versandart'])) {
-        $_SESSION['AktiveVersandart'] = $_SESSION['Versandart']->kVersandart;
+        $_SESSION['AktiveVersandart'] = (int)$_SESSION['Versandart']->kVersandart;
     } elseif (!empty($_SESSION['AktiveVersandart']) && GeneralObject::hasCount($shippingMethods)) {
         $active = (int)$_SESSION['AktiveVersandart'];
         if (array_reduce($shippingMethods, static function ($carry, $item) use ($active) {
@@ -1618,7 +1615,7 @@ function gibAktiveVersandart($shippingMethods)
         }, 0) !== (int)$_SESSION['AktiveVersandart']) {
             $_SESSION['AktiveVersandart'] = ShippingMethod::getFirstShippingMethod(
                 $shippingMethods,
-                $_SESSION['Zahlungsart']->kZahlungsart ?? 0
+                (int)($_SESSION['Zahlungsart']->kZahlungsart ?? 0)
             )->kVersandart ?? 0;
         }
     } else {
@@ -1628,7 +1625,7 @@ function gibAktiveVersandart($shippingMethods)
         )->kVersandart ?? 0;
     }
 
-    return $_SESSION['AktiveVersandart'];
+    return (int)$_SESSION['AktiveVersandart'];
 }
 
 /**
@@ -1662,7 +1659,7 @@ function gibAktiveVerpackung(array $packagings): array
     if (isset($_SESSION['Verpackung']) && count($_SESSION['Verpackung']) > 0) {
         $_SESSION['AktiveVerpackung'] = [];
         foreach ($_SESSION['Verpackung'] as $packaging) {
-            $_SESSION['AktiveVerpackung'][$packaging->kVerpackung] = 1;
+            $_SESSION['AktiveVerpackung'][(int)$packaging->kVerpackung] = 1;
         }
     } elseif (!empty($_SESSION['AktiveVerpackung']) && count($packagings) > 0) {
         foreach (array_keys($_SESSION['AktiveVerpackung']) as $active) {
@@ -1813,11 +1810,12 @@ function versandartKorrekt(int $shippingMethodID, $formValues = 0)
         : ($formValues['kVerpackung'] ?? []);
     $cartTotal              = $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true);
     $_SESSION['Verpackung'] = [];
+    $db                     = Shop::Container()->getDB();
     if (GeneralObject::hasCount($packagingIDs)) {
         $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_VERPACKUNG);
         foreach ($packagingIDs as $packagingID) {
             $packagingID = (int)$packagingID;
-            $packagings  = Shop::Container()->getDB()->queryPrepared(
+            $packagings  = $db->queryPrepared(
                 "SELECT *
                     FROM tverpackung
                     WHERE kVerpackung = :pid
@@ -1838,7 +1836,7 @@ function versandartKorrekt(int $shippingMethodID, $formValues = 0)
                 return false;
             }
             $localizedNames     = [];
-            $localizedPackaging = Shop::Container()->getDB()->selectAll(
+            $localizedPackaging = $db->selectAll(
                 'tverpackungsprache',
                 'kVerpackung',
                 (int)$packagings->kVerpackung
@@ -1888,7 +1886,7 @@ function versandartKorrekt(int $shippingMethodID, $formValues = 0)
         $depending = 'Y';
     }
     $countryCode    = $deliveryCountry;
-    $shippingMethod = Shop::Container()->getDB()->queryPrepared(
+    $shippingMethod = $db->queryPrepared(
         "SELECT *
             FROM tversandart
             WHERE cLaender LIKE :iso
@@ -1914,22 +1912,22 @@ function versandartKorrekt(int $shippingMethodID, $formValues = 0)
     }
     $specialItem        = new stdClass();
     $specialItem->cName = [];
-    foreach ($_SESSION['Sprachen'] as $language) {
-        $localized = Shop::Container()->getDB()->select(
+    foreach ($_SESSION['Sprachen'] as $lang) {
+        $loc = $db->select(
             'tversandartsprache',
             'kVersandart',
             (int)$shippingMethod->kVersandart,
             'cISOSprache',
-            $language->cISO,
+            $lang->cISO,
             null,
             null,
             false,
             'cName, cHinweisTextShop'
         );
-        if (isset($localized->cName)) {
-            $specialItem->cName[$language->cISO]                     = $localized->cName;
-            $shippingMethod->angezeigterName[$language->cISO]        = $localized->cName;
-            $shippingMethod->angezeigterHinweistext[$language->cISO] = $localized->cHinweisTextShop;
+        if (isset($loc->cName)) {
+            $specialItem->cName[$lang->cISO]                     = $loc->cName;
+            $shippingMethod->angezeigterName[$lang->cISO]        = $loc->cName;
+            $shippingMethod->angezeigterHinweistext[$lang->cISO] = $loc->cHinweisTextShop;
         }
     }
     $taxItem = $shippingMethod->eSteuer !== 'netto';
@@ -1957,19 +1955,19 @@ function versandartKorrekt(int $shippingMethodID, $formValues = 0)
     $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG);
     if (isset($shippingMethod->Zuschlag->fZuschlag) && $shippingMethod->Zuschlag->fZuschlag != 0) {
         $specialItem->cName = [];
-        foreach (Frontend::getLanguages() as $language) {
-            $localized                           = Shop::Container()->getDB()->select(
+        foreach (Frontend::getLanguages() as $lang) {
+            $loc                             = $db->select(
                 'tversandzuschlagsprache',
                 'kVersandzuschlag',
                 (int)$shippingMethod->Zuschlag->kVersandzuschlag,
                 'cISOSprache',
-                $language->cISO,
+                $lang->cISO,
                 null,
                 null,
                 false,
                 'cName'
             );
-            $specialItem->cName[$language->cISO] = $localized->cName;
+            $specialItem->cName[$lang->cISO] = $loc->cName;
         }
         $cart->erstelleSpezialPos(
             $specialItem->cName,
@@ -2018,14 +2016,18 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
     }
 
     foreach ([
-                 'kundenregistrierung_abfragen_anrede' => 'anrede',
-                 'kundenregistrierung_pflicht_vorname' => 'vorname',
-                 'kundenregistrierung_abfragen_firma' => 'firma',
-                 'kundenregistrierung_abfragen_firmazusatz' => 'firmazusatz',
-                 'kundenregistrierung_abfragen_titel' => 'titel',
-                 'kundenregistrierung_abfragen_adresszusatz' => 'adresszusatz',
-                 'kundenregistrierung_abfragen_www' => 'www',
-                 'kundenregistrierung_abfragen_bundesland' => 'bundesland'
+                'kundenregistrierung_abfragen_anrede'       => 'anrede',
+                'kundenregistrierung_pflicht_vorname'       => 'vorname',
+                'kundenregistrierung_abfragen_firma'        => 'firma',
+                'kundenregistrierung_abfragen_firmazusatz'  => 'firmazusatz',
+                'kundenregistrierung_abfragen_titel'        => 'titel',
+                'kundenregistrierung_abfragen_adresszusatz' => 'adresszusatz',
+                'kundenregistrierung_abfragen_www'          => 'www',
+                'kundenregistrierung_abfragen_bundesland'   => 'bundesland',
+                'kundenregistrierung_abfragen_geburtstag'   => 'geburtstag',
+                'kundenregistrierung_abfragen_fax'          => 'fax',
+                'kundenregistrierung_abfragen_tel'          => 'tel',
+                'kundenregistrierung_abfragen_mobil'        => 'mobil'
              ] as $confKey => $dataKey) {
         if ($conf['kunden'][$confKey] === 'Y') {
             $data[$dataKey] = isset($data[$dataKey]) ? trim($data[$dataKey]) : null;
@@ -2145,6 +2147,12 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
                             $ret['ustid']     = 4;
                             $ret['ustid_err'] = $resultVatCheck['errorcode'] . ',' . $resultVatCheck['errorinfo'];
                         }
+                        break;
+                    case 'core':
+                        // if we have problems like "no module php_soap" we create a log entry
+                        // (use case: the module and the vat-check was formerly activated yet
+                        // but the php-module is disabled now)
+                        Shop::Container()->getLogService()->warn($resultVatCheck['errorinfo']);
                         break;
                 }
             }
@@ -2663,7 +2671,7 @@ function gibBestellschritt(string $step)
  */
 function setzeLieferadresseAusRechnungsadresse(?array $post = null): Lieferadresse
 {
-    $customer                         = $post !== null ? getKundendaten($post, 0) : Frontend::getCustomer();
+    $customer                         = isset($post['kKunde']) ? getKundendaten($post, 0) : Frontend::getCustomer();
     $shippingAddress                  = new Lieferadresse();
     $shippingAddress->kKunde          = $customer->kKunde;
     $shippingAddress->cAnrede         = $customer->cAnrede;
@@ -2754,14 +2762,14 @@ function pruefeAjaxEinKlick(): int
     if (isset($_SESSION['Versandart'])) {
         $bVersandart = true;
     } else {
-        $bVersandart = pruefeVersandartWahl($lastOrder->kVersandart, 0, false);
+        $bVersandart = pruefeVersandartWahl((int)$lastOrder->kVersandart, 0, false);
     }
     if ($bVersandart) {
         if ($lastOrder->kZahlungsart > 0) {
             if (isset($_SESSION['Zahlungsart'])) {
                 return 5;
             }
-            if (zahlungsartKorrekt($lastOrder->kZahlungsart) === 2) {
+            if (zahlungsartKorrekt((int)$lastOrder->kZahlungsart) === 2) {
                 gibStepZahlung();
 
                 return 5;

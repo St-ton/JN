@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='snippets-categories-mega'}
     {strip}
     {if !isset($i)}
@@ -48,7 +44,7 @@
                                     {container}
                                         {row class="lg-row-lg nav"}
                                             {col lg=4 xl=3 class="my-lg-4 nav-item dropdown d-lg-none"}
-                                                {link href=$category->getURL() class="nav-link font-size-base" rel="nofollow"}
+                                                {link href=$category->getURL() class="font-size-base" rel="nofollow"}
                                                     <span class="text-truncate font-weight-bold d-block pr-3 pr-lg-0">{lang key='menuShow' printf=$category->getName()}</span>
                                                 {/link}
                                             {/col}
@@ -78,8 +74,7 @@
                     {block name='snippets-categories-mega-category-no-child'}
                         {navitem href=$category->getURL() title=$category->getName()
                             class="nav-scrollbar-item {if $category->getID() === $activeId}active{/if}"}
-                            <span class="text-truncate d-block pr-3 pr-lg-0">{$category->getShortName()}</span>
-                            <span class="badge text-gray-dark product-count">{$category->getProductCount()}</span>
+                            <span class="text-truncate d-block">{$category->getShortName()}</span>
                         {/navitem}
                     {/block}
                 {/if}
@@ -112,15 +107,16 @@
                         <div class="dropdown-body p-0 py-lg-4">
                             {container}
                                 {row class="lg-row-lg nav"}
-                                    {col lg=4 xl=3 class="my-lg-4 nav-item dropdown d-lg-none"}
+                                    {col lg=4 xl=3 class="my-lg-4 nav-item d-lg-none"}
                                         {block name='snippets-categories-mega-manufacturers-header'}
-                                            {link href="{if $manufacturerOverview !== null}{$manufacturerOverview->getURL()}{else}#{/if}" class="nav-link font-size-base" rel="nofollow"}
+                                            {link href="{if $manufacturerOverview !== null}{$manufacturerOverview->getURL()}{else}#{/if}" class="font-size-base" rel="nofollow"}
                                                 <span class="text-truncate font-weight-bold d-block pr-3 pr-lg-0">
                                                     {if $manufacturerOverview !== null && !empty($manufacturerOverview->getName())}
-                                                        {$manufacturerOverview->getName()}
+                                                        {$manufacturerTitle = $manufacturerOverview->getName()}
                                                     {else}
-                                                        {lang key='manufacturers'}
+                                                        {$manufacturerTitle = {lang key='manufacturers'}}
                                                     {/if}
+                                                    {lang key='menuShow' printf=$manufacturerTitle}
                                                 </span>
                                             {/link}
                                         {/block}

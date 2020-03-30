@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Session;
 
@@ -106,8 +102,7 @@ class CookieConfig
                 continue;
             }
             $shopLangURL = \constant('URL_SHOP_' . \mb_convert_case($code, \MB_CASE_UPPER));
-            if (isset($_SERVER['HTTP_HOST'])
-                && \mb_strpos($shopLangURL, $_SERVER['HTTP_HOST']) !== false
+            if (\mb_strpos($shopLangURL, ($_SERVER['HTTP_HOST'] ?? ' ')) !== false
                 && \defined('COOKIE_DOMAIN_' . \mb_convert_case($code, \MB_CASE_UPPER))
             ) {
                 return \constant('COOKIE_DOMAIN_' . \mb_convert_case($code, \MB_CASE_UPPER));

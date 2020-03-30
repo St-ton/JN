@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 <section class="panel panel-default box box-login" id="sidebox{$oBox->getID()}">
     <div class="panel-heading">
         <div class="panel-title">{if empty($smarty.session.Kunde)}{lang key='login'}{else}{lang key='hello'}, {$smarty.session.Kunde->cVorname} {$smarty.session.Kunde->cNachname}{/if}</div>
@@ -13,12 +9,12 @@
                 {$jtl_token}
                 {include file='snippets/form_group_simple.tpl'
                     options=[
-                        'email', 'email-box-login', 'email', null,{lang key='emailadress'}, true
+                        'email', "email-box-login-{$oBox->getID()}", 'email', null,{lang key='emailadress'}, true
                     ]
                 }
                 {include file='snippets/form_group_simple.tpl'
                     options=[
-                        'password', 'password-box-login', 'passwort', null,{lang key='password' section='account data'}, true
+                        'password', "password-box-login-{$oBox->getID()}", 'passwort', null,{lang key='password' section='account data'}, true
                     ]
                 }
                 {if isset($showLoginCaptcha) && $showLoginCaptcha}

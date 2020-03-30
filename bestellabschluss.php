@@ -1,10 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
-
 use JTL\Cart\Cart;
 use JTL\Cart\CartHelper;
 use JTL\Checkout\Bestellung;
@@ -23,7 +18,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'warenkorb_inc.php';
 Shop::setPageType(PAGE_BESTELLABSCHLUSS);
 $conf       = Shopsetting::getInstance()->getAll();
 $linkHelper = Shop::Container()->getLinkService();
-$kLink      = $linkHelper->getSpecialPageLinkKey(LINKTYP_BESTELLABSCHLUSS);
+$kLink      = $linkHelper->getSpecialPageID(LINKTYP_BESTELLABSCHLUSS);
 $link       = $linkHelper->getPageLink($kLink);
 $cart       = Frontend::getCart();
 $smarty     = Shop::Smarty();

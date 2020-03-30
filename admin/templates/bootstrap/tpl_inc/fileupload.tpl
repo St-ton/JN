@@ -25,7 +25,7 @@ $fileDefaultBatchSelectedEvent | true    | set false and created a custom .on("f
 $fileDefaultUploadSuccessEvent | true    | set false and created a custom .on("filebatchuploadsuccess") event
 $fileDefaultUploadErrorEvent   | true    | set false and created a custom .on("fileuploaderror") event
 $fileSuccessMsg                | false   | success message after upload
-$fileErrorMsg                  | false   | error message while uploading - automatically generated
+$fileErrorMsg                  | true   | error message while uploading - automatically generated
 -----------------------------------------------------------------------------------
 *}
 {$fileIDFull   = '#'|cat:$fileID}
@@ -37,6 +37,18 @@ $fileErrorMsg                  | false   | error message while uploading - autom
        tabindex="1"
        {if $fileRequired|default:false}required{/if}
        {if !$fileIsSingle}multiple{/if}/>
+
+{if $fileSuccessMsg|default:false}
+    <div id="{$fileID}-upload-success" class="alert alert-success d-none mt-3">
+        {$fileSuccessMsg}
+    </div>
+{/if}
+{if $fileErrorMsg|default:true}
+    <div id="{$fileID}-upload-error" class="alert alert-danger d-none mt-3">
+        {$fileErrorMsg|default:''}
+    </div>
+{/if}
+
 <script>
     let $file        = $('{$fileIDFull}'),
         $fileSuccess = $('{$fileIDFull}-upload-success'),
@@ -80,7 +92,7 @@ $fileErrorMsg                  | false   | error message while uploading - autom
         theme: 'fas',
         language: '{$language|mb_substr:0:2}',
         browseOnZoneClick: true,
-        {if $fileMaxSize !== 'false'}
+        {if $fileMaxSize|default:true !== 'false'}
             maxFileSize: {$fileMaxSize|default:500},
         {/if}
         {if $fileIsSingle}
@@ -97,8 +109,8 @@ $fileErrorMsg                  | false   | error message while uploading - autom
             {if $fileBrowseClear|default:false}
                 $file.fileinput('clear');
             {/if}
-            $fileSuccess.hide().addClass('hidden');
-            $fileError.html('').hide().addClass('hidden');
+            $fileSuccess.addClass('d-none');
+            $fileError.html('').addClass('d-none');
         });
     {/if}
     {if $fileDefaultBatchSelectedEvent|default:true}
@@ -109,27 +121,16 @@ $fileErrorMsg                  | false   | error message while uploading - autom
     {if $fileDefaultUploadSuccessEvent|default:true}
         $file.on('filebatchuploadsuccess', function(event, data) {
             if (data.response.status === 'OK') {
-                $fileSuccess.show().removeClass('hidden');
+                $fileSuccess.removeClass('d-none');
             } else {
-                $fileError.show().removeClass('hidden');
+                $fileError.removeClass('d-none');
             }
         });
     {/if}
     {if $fileDefaultUploadErrorEvent|default:true}
-        $file.on('fileuploaderror', function(event, data, msg) {
-            $fileError.show().removeClass('hidden');
+        $file.on('fileuploaderror, fileerror', function(event, data, msg) {
+            $fileError.removeClass('d-none');
             $fileError.append('<p style="margin-top:20px">' + msg + '</p>')
         });
     {/if}
 </script>
-
-{if $fileSuccessMsg|default:false}
-    <div id="{$fileID}-upload-success" class="alert alert-success hidden mt-3">
-        {$fileSuccessMsg}
-    </div>
-{/if}
-{if $fileErrorMsg|default:false}
-    <div id="{$fileID}-upload-error" class="alert alert-danger hidden mt-3">
-        {$fileErrorMsg}
-    </div>
-{/if}

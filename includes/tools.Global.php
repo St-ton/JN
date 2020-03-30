@@ -840,8 +840,8 @@ function gibTrustedShopsBewertenButton()
  */
 function parseNewsText($text)
 {
-    trigger_error(__FUNCTION__ . ' is deprecated. ' . Text::class . '::parseNewsText() instead.', E_USER_DEPRECATED);
-    return Text::parseNewsText($text);
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    return $text;
 }
 
 /**

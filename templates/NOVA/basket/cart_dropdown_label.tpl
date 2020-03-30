@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='basket-cart-dropdown-label'}
     <li class="cart-icon-dropdown nav-item dropdown">
         {block name='basket-cart-dropdown-label-link'}

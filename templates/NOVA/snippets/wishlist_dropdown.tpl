@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='snippets-wishlist-dropdown'}
     {if $wishlists->isNotEmpty()}
         {block name='snippets-wishlist-dropdown-wishlists'}

@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {if isset($linkgroupIdentifier) && (!isset($i) || isset($limit) && $i < $limit)}
     {strip}
         {if !isset($i)}

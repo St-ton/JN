@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 <section class="panel panel-default box box-categories word-break" id="sidebox_categories{$oBox->getCustomID()}">
     <div class="panel-heading">
         <div class="panel-title">{if !empty($oBox->getTitle())}{$oBox->getTitle()}{else}{lang key='categories'}{/if}</div>

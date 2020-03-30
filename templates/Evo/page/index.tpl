@@ -1,8 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
-
 {include file='productwizard/index.tpl'}
 
 {if isset($StartseiteBoxen) && $StartseiteBoxen|@count > 0}

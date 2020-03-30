@@ -1,8 +1,3 @@
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
-
 class Iframe
 {
     constructor(opc, io, gui, page, shopUrl, templateUrl)

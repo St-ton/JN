@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='account-feedback'}
     {block name='account-feedback-heading'}
         <h1>{lang key='allRatings'}</h1>

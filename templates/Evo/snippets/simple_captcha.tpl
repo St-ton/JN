@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 <div class="form-group float-label-control">
     <input type="hidden" name="{$captchaToken}" value="{$captchaCode}">
     <label>{lang key='captcha_code_active' section='global'}</label>

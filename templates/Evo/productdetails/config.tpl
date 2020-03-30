@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {if isset($Artikel->oKonfig_arr) && $Artikel->oKonfig_arr|@count > 0}
     <div class="product-configuration top10 row">
         <div class="col-sm-12 col-lg-8">

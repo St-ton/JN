@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='snippets-categories-mega-recursive'}
     {block name='snippets-categories-mega-recursive-main-link'}
         {link href=$mainCategory->getURL() class="d-lg-block {if $firstChild}submenu-headline submenu-headline-toplevel{/if} nav-link {if $mainCategory->hasChildren()}dropdown-toggle{/if}" aria=["expanded"=>"false"]}

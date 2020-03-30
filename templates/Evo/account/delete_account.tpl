@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 <h1>{lang key='deleteAccount' section='login'}</h1>
 <div class="alert alert-danger">{lang key='reallyDeleteAccount' section='login'}</div>
 <form id="delete_account" action="{get_static_route id='jtl.php'}" method="post">

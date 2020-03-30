@@ -1,8 +1,3 @@
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
-
 (function($, document, window, viewport){
     'use strict';
 
@@ -49,7 +44,7 @@
             this.options = ArticleClass.DEFAULTS;
             this.gallery = null;
         },
-        
+
         onLoad: function() {
             if (this.isSingleArticle()) {
                 var that = this;

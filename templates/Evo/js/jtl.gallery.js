@@ -1,15 +1,10 @@
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
-
 (function () {
     'use strict';
 
     var GalleryClass = function (element, options) {
         this.init(element, options);
     };
-        
+
     GalleryClass.DEFAULTS = {
         items: [],
         size: 'md',
@@ -63,7 +58,7 @@
             this.setItems(items);
             this.render();
         },
-        
+
         getIdent: function() {
             return this.ident;
         },
@@ -209,7 +204,7 @@
                         indicator = $(self.options.template.indicator);
                         $(gallery.container).parent().addClass('theme-default');
                         $(gallery.container).parent().append(indicator);
-                        
+
                         for (i = 0; i < pswpItems.length; i++) {
                             indicator.append($('<a />')
                                 .attr('src', '#')
@@ -239,7 +234,7 @@
 
             this.activate(0);
             this.showThumbs(this.itemCount() > 1);
-            
+
             this.adjust();
 
             GalleryClass.prototype.element = this.element;
@@ -292,11 +287,11 @@
                 } else {
                     next = Math.floor(( $(this.element).find('.image-thumbs').outerWidth(false) - $(this.element).find('.thumbs-box').scrollLeft() - (img_w * step * -1) ) / img_w) * img_w * -1;
                 }
-                
+
                 $(this.element).find('.thumbs-box').animate({scrollLeft: '-=' + next}, 'slow');
             }
         },
-        
+
         showThumbs: function(show) {
             if (show) {
                 $(this.element).find('.image-gallery').addClass('has-thumbs');
@@ -349,7 +344,7 @@
 
                     prevElem.removeClass('btn-gallery-left').addClass('btn-gallery-up').css({'top': '', 'left': btn_left + 'px'});
                     nextElem.removeClass('btn-gallery-right').addClass('btn-gallery-down').css({'top': '', 'left': btn_left + 'px'});
-                    
+
                     //Show / Hide Navi Button
                     if ($(this.element).find('.image-thumbs').height() <= $(this.element).find('.thumbs').height()) {
                         prevElem.hide();
@@ -376,11 +371,11 @@
                     $(this.element).find('.thumbs-box').css({'height': h + 'px', 'width' : (w - img_w_outer) + 'px', 'overflow' : 'hidden'});
                     $(this.element).find('.image-thumbs').css({'width' : ulw + 'px'});
                     $(this.element).find('.thumbs').css({'position': 'relative'});
-                    
+
                     btn_top = parseInt((h - prevElem.height())/2);
                     prevElem.removeClass('btn-gallery-up').addClass('btn-gallery-left').css({'left' : '', 'top':btn_top + 'px'});
                     nextElem.removeClass('btn-gallery-down').addClass('btn-gallery-right').css({'left':'', 'top':btn_top + 'px'});
-                    
+
                     //Show / Hidden Navi Button
                     if ($(this.element).find('.image-thumbs').width() <= $(this.element).find('.thumbs').width()) {
                         prevElem.hide();
@@ -403,7 +398,7 @@
                 this.setMaxHeight(height, img_h);
             }
         },
-        
+
         calcHeights: function() {
             var images = this.getStack(),
                 newMaxHeight = $(this.element).find('ul.image-container')

@@ -1,10 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- * @package       jtl-shop
- * @since         5.0.0
- */
 
 namespace JTL;
 

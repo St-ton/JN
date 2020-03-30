@@ -1,8 +1,5 @@
 <?php
 /**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- *
  * @global \JTL\Smarty\JTLSmarty $smarty
  */
 

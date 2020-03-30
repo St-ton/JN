@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='snippets-stock-status'}
     {assign var=anzeige value=$Einstellungen.artikeldetails.artikel_lagerbestandsanzeige}
     {if $anzeige !== 'nichts'

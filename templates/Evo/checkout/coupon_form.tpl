@@ -1,8 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
-
 {if $KuponMoeglich == 1}
     <form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form form-inline evo-validate">
         {$jtl_token}

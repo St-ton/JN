@@ -791,7 +791,7 @@ final class Admin
      */
     public function getSubscribers($limitSQL, $searchSQL): array
     {
-        return $this->db->query(
+        $result = $this->db->query(
             "SELECT tnewsletterempfaenger.*,
                 DATE_FORMAT(tnewsletterempfaenger.dEingetragen, '%d.%m.%Y %H:%i') AS dEingetragen_de,
                 DATE_FORMAT(tnewsletterempfaenger.dLetzterNewsletter, '%d.%m.%Y %H:%i') AS dLetzterNewsletter_de,
@@ -814,5 +814,10 @@ final class Admin
                 ORDER BY tnewsletterempfaenger.dEingetragen DESC' . $limitSQL,
             ReturnType::ARRAY_OF_OBJECTS
         );
+        if (empty($result)) {
+            return [];
+        }
+
+        return $result;
     }
 }

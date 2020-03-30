@@ -26,24 +26,4 @@ class Helper
 
         return ($recipient->kKunde ?? 0) > 0;
     }
-
-    /**
-     * @param int $historyID
-     * @param int $customerGroup
-     * @return bool
-     */
-    public static function customerGroupHasHistory(int $historyID, int $customerGroup): bool
-    {
-        $history = Shop::Container()->getDB()->queryPrepared(
-            "SELECT kNewsletterHistory, nAnzahl, cBetreff, cHTMLStatic, cKundengruppeKey,
-            DATE_FORMAT(dStart, '%d.%m.%Y %H:%i') AS Datum
-            FROM tnewsletterhistory
-            WHERE kNewsletterHistory = :hid",
-            ['hid' => $historyID],
-            ReturnType::SINGLE_OBJECT
-        );
-        $groups  = Text::parseSSKint($history->cKundengruppeKey ?? '');
-
-        return \in_array(0, $groups, true) || \in_array($customerGroup, $groups, true);
-    }
 }

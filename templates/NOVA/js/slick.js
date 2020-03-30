@@ -1716,9 +1716,7 @@
 
             _.animating = false;
 
-            if (_.slideCount > _.options.slidesToShow) {
-                _.setPosition();
-            }
+            _.setPosition();
 
             _.swipeLeft = null;
 
@@ -2237,10 +2235,12 @@
 
         _.setHeight();
 
-        if (_.options.fade === false) {
-            _.setCSS(_.getLeft(_.currentSlide));
-        } else {
-            _.setFade();
+        if (_.slideCount > _.options.slidesToShow) {
+            if (_.options.fade === false) {
+                _.setCSS(_.getLeft(_.currentSlide));
+            } else {
+                _.setFade();
+            }
         }
 
         _.$slider.trigger('setPosition', [_]);

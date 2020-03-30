@@ -65,13 +65,13 @@ function checkNewsletterSend() {ldelim}
                                    required>
                         </div>
                     </div>
-                    <div class="form-group form-row align-items-center {if isset($cPlausiValue_arr.kKundengruppe_arr)} error{/if}">
+                    <div class="form-group form-row align-items-center {if isset($cPlausiValue_arr.kKundengruppe_arr)} form-error{/if}">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="kKundengruppe">{__('newslettercustomergrp')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <select id="kKundengruppe"
                                     name="kKundengruppe[]"
                                     multiple="multiple"
-                                    class="selectpicker custom-select {if isset($cPlausiValue_arr.kKundengruppe_arr)}fieldfillout{else}combo{/if}"
+                                    class="selectpicker custom-select {if !isset($cPlausiValue_arr.kKundengruppe_arr)}combo{/if}"
                                     data-selected-text-format="count > 2"
                                     data-size="7"
                                     data-actions-box="true"
@@ -313,11 +313,11 @@ function checkNewsletterSend() {ldelim}
                         </div>
                         {if $cOption !== 'editieren'}
                             <div class="col-sm-6 col-xl-auto">
-                                <button class="btn btn-outline-primary btn-block mb-2" name="speichern_und_senden" type="button" value="{__('newsletterdraftsaveandsend')}" onclick="checkNewsletterSend();">{__('newsletterdraftsaveandsend')}</button>
+                                <button class="btn btn-outline-primary btn-block" name="speichern_und_senden" type="button" value="{__('newsletterdraftsaveandsend')}" onclick="checkNewsletterSend();">{__('newsletterdraftsaveandsend')}</button>
                             </div>
                         {/if}
                         <div class="col-sm-6 col-xl-auto">
-                            <button class="btn btn-outline-primary btn-block mb-2" name="speichern_und_testen" type="submit" value="{__('newsletterdraftsaveandtest')}">{__('newsletterdraftsaveandtest')}</button>
+                            <button class="btn btn-outline-primary btn-block" name="speichern_und_testen" type="submit" value="{__('newsletterdraftsaveandtest')}">{__('newsletterdraftsaveandtest')}</button>
                         </div>
                         <div class="col-sm-6 col-xl-auto">
                             <button class="btn btn-primary btn-block" name="speichern" type="submit" value="{__('save')}">{__('saveWithIcon')}</button>

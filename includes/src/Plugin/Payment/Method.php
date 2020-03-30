@@ -264,7 +264,7 @@ class Method implements MethodInterface
             $paymentSession               = new stdClass();
             $paymentSession->cSID         = \session_id();
             $paymentSession->cNotifyID    = '';
-            $paymentSession->dZeitBezahlt = '_DBNULL_';
+            $paymentSession->dZeitBezahlt = 'NOW()';
             $paymentSession->cZahlungsID  = \uniqid('', true);
             $paymentSession->dZeit        = 'NOW()';
             Shop::Container()->getDB()->insert('tzahlungsession', $paymentSession);

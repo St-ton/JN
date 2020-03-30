@@ -860,12 +860,6 @@
                 "url": "https://gitlab.com/jtl-software/oauth2/client.git",
                 "reference": "d94b4862ffc2104ed8201f911ac23b9883c28a29"
             },
-            "dist": {
-                "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/jtl-software%2Foauth2%2Fclient/repository/archive.zip?sha=d94b4862ffc2104ed8201f911ac23b9883c28a29",
-                "reference": "d94b4862ffc2104ed8201f911ac23b9883c28a29",
-                "shasum": ""
-            },
             "require": {
                 "league/oauth2-client": "^2.0"
             },
@@ -904,7 +898,7 @@
                 "oauth",
                 "oauth2"
             ],
-            "time": "2018-09-27T13:08:24+00:00"
+            "time": "2018-09-27T13:07:58+00:00"
         },
         {
             "name": "jtlshop/phpquery",
@@ -1082,12 +1076,6 @@
                 "type": "git",
                 "url": "https://gitlab.com/jtl-software/jtl-shop/tools/semver.git",
                 "reference": "eab468ba725574d19f18fea9217a1e534135f10b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/jtl-software%2Fjtl-shop%2Ftools%2Fsemver/repository/archive.zip?sha=eab468ba725574d19f18fea9217a1e534135f10b",
-                "reference": "eab468ba725574d19f18fea9217a1e534135f10b",
-                "shasum": ""
             },
             "require": {
                 "php": ">=5.6.0"

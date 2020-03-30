@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {if isset($AWA)}
     <script>
         var nSelection_arr = [{$AWA->getSelections()|implode:','}];

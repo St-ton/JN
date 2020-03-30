@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Extensions\Config;
 
@@ -169,7 +165,7 @@ class ItemLocalization
      */
     public function setName(string $name): self
     {
-        $this->cName = Shop::Container()->getDB()->escape($name);
+        $this->cName = $name;
 
         return $this;
     }
@@ -180,7 +176,7 @@ class ItemLocalization
      */
     public function setBeschreibung(string $cBeschreibung): self
     {
-        $this->cBeschreibung = Shop::Container()->getDB()->escape($cBeschreibung);
+        $this->cBeschreibung = $cBeschreibung;
 
         return $this;
     }

@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {if !empty($Bestellung->oDownload_arr)}
     <h2>{lang key='yourDownloads'}</h2>
     <div class="panel-group" role="tablist">

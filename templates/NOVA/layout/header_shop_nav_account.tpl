@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='layout-header-shop-nav-account'}
     {navitemdropdown tag="li"
         aria=['expanded' => 'false']

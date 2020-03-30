@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {assign var=cParam_arr value=$cParam_arr|default:[]}
 {assign var=cUrlAppend value=$cParam_arr|http_build_query}
 {* parts list to display: label, pagination, items-per-page-options, sort-options *}
@@ -127,7 +123,3 @@
         </form>
     {/if}
 </div>
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}

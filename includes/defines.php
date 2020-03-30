@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 // Charset
 ifndef('JTL_CHARSET', 'utf-8');
@@ -48,7 +44,7 @@ ifndef('ADMIN_MIGRATION', false);
 ifndef('IO_LOG_CONSOLE', false);
 ifndef('DEFAULT_CURL_OPT_VERIFYPEER', true);
 ifndef('DEFAULT_CURL_OPT_VERIFYHOST', 2);
-ini_set('session.use_trans_sid', 0);
+ini_set('session.use_trans_sid', '0');
 // Logging (in logs/) 0 => aus, 1 => nur errors, 2 => errors, notifications, 3 => errors, notifications, debug
 ifndef('ES_LOGGING', 1);
 ifndef('ES_DB_LOGGING', 0);

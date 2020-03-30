@@ -199,7 +199,7 @@
                                     <label for="cPDFS_{$smarty.section.anhaenge.index}_{$kSprache}">{__('pdf')} {$smarty.section.anhaenge.index}:</label>
                                     <div class="for">
                                         {math equation="x-y" x=$smarty.section.anhaenge.index y=1 assign=loopdekr}
-                                        <div class="form-row mb-2">
+                                        <div class="form-row mb-2{if count($cFehlerAnhang_arr) > 0 && isset($cFehlerAnhang_arr[$kSprache][$smarty.section.anhaenge.index]) && $cFehlerAnhang_arr[$kSprache][$smarty.section.anhaenge.index] == 1} form-error{/if}">
                                             <div class="col-sm-auto col-form-label">
                                                 <label for="cPDFNames_{$smarty.section.anhaenge.index}_{$kSprache}">{__('filename')}:</label>
                                             </div>
@@ -208,7 +208,7 @@
                                                    name="cPDFNames_{$kSprache}[]"
                                                    type="text"
                                                    value="{if isset($attachments[$loopdekr + 1])}{$attachments[$loopdekr + 1]}{/if}"
-                                                   class="form-control{if count($cFehlerAnhang_arr) > 0}{if isset($cFehlerAnhang_arr[$kSprache][$smarty.section.anhaenge.index]) && $cFehlerAnhang_arr[$kSprache][$smarty.section.anhaenge.index] == 1} fieldfillout{/if}{/if}"
+                                                   class="form-control"
                                                    size="50"/>
                                             </div>
                                         </div>

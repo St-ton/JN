@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace VueInstaller;
 
@@ -127,203 +123,203 @@ class DemoDataInstaller
     public function setConfig(): self
     {
         $this->pdo->query(
-            "UPDATE `teinstellungen` 
-                SET `cWert`='Y' 
-                WHERE `kEinstellungenSektion`='107' 
+            "UPDATE `teinstellungen`
+                SET `cWert`='Y'
+                WHERE `kEinstellungenSektion`='107'
                 AND cName = 'bewertung_anzeigen';",
             ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "UPDATE `teinstellungen` 
-                SET `cWert`='10' 
-                WHERE `kEinstellungenSektion`='2' 
+            "UPDATE `teinstellungen`
+                SET `cWert`='10'
+                WHERE `kEinstellungenSektion`='2'
                 AND cName = 'startseite_bestseller_anzahl';",
             ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "UPDATE `teinstellungen` 
-                SET `cWert`='10' 
-                WHERE `kEinstellungenSektion`='2' 
+            "UPDATE `teinstellungen`
+                SET `cWert`='10'
+                WHERE `kEinstellungenSektion`='2'
                 AND cName = 'startseite_neuimsortiment_anzahl';",
             ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "UPDATE `teinstellungen` 
-                SET `cWert`='10' 
-                WHERE `kEinstellungenSektion`='2' 
+            "UPDATE `teinstellungen`
+                SET `cWert`='10'
+                WHERE `kEinstellungenSektion`='2'
                 AND cName = 'startseite_sonderangebote_anzahl';",
             ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "UPDATE `teinstellungen` 
-                SET `cWert`='10' 
-                WHERE `kEinstellungenSektion`='2' 
+            "UPDATE `teinstellungen`
+                SET `cWert`='10'
+                WHERE `kEinstellungenSektion`='2'
                 AND cName = 'startseite_topangebote_anzahl';",
             ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "UPDATE `ttemplateeinstellungen` 
-                SET `cWert`='Y' 
-                WHERE `cTemplate`='NOVA' 
-                AND `cSektion`='megamenu' 
+            "UPDATE `ttemplateeinstellungen`
+                SET `cWert`='Y'
+                WHERE `cTemplate`='NOVA'
+                AND `cSektion`='megamenu'
                 AND `cName`='show_pages';",
             ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "UPDATE `ttemplateeinstellungen` 
-                SET `cWert`='Y' 
-                WHERE `cTemplate`='NOVA' 
-                AND `cSektion`='megamenu' 
+            "UPDATE `ttemplateeinstellungen`
+                SET `cWert`='Y'
+                WHERE `cTemplate`='NOVA'
+                AND `cSektion`='megamenu'
                 AND `cName`='show_manufacturers';",
             ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "UPDATE `ttemplateeinstellungen` 
-                SET `cWert`='Y' 
-                WHERE `cTemplate`='NOVA' 
-                AND `cSektion`='footer' 
+            "UPDATE `ttemplateeinstellungen`
+                SET `cWert`='Y'
+                WHERE `cTemplate`='NOVA'
+                AND `cSektion`='footer'
                 AND `cName`='newsletter_footer';",
             ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "UPDATE `ttemplateeinstellungen` 
-                SET `cWert`='Y' 
-                WHERE `cTemplate`='NOVA' 
-                AND `cSektion`='footer' 
+            "UPDATE `ttemplateeinstellungen`
+                SET `cWert`='Y'
+                WHERE `cTemplate`='NOVA'
+                AND `cSektion`='footer'
                 AND `cName`='socialmedia_footer';",
             ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "UPDATE `ttemplateeinstellungen` 
-                SET `cWert`='https://www.facebook.com/JTLSoftware/' 
-                WHERE `cTemplate`='NOVA' 
-                AND `cSektion`='footer' 
+            "UPDATE `ttemplateeinstellungen`
+                SET `cWert`='https://www.facebook.com/JTLSoftware/'
+                WHERE `cTemplate`='NOVA'
+                AND `cSektion`='footer'
                 AND `cName`='facebook';",
             ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "UPDATE `ttemplateeinstellungen` 
-                SET `cWert`='https://twitter.com/JTLSoftware' 
-                WHERE `cTemplate`='NOVA' 
-                AND `cSektion`='footer' 
+            "UPDATE `ttemplateeinstellungen`
+                SET `cWert`='https://twitter.com/JTLSoftware'
+                WHERE `cTemplate`='NOVA'
+                AND `cSektion`='footer'
                 AND `cName`='twitter';",
             ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "UPDATE `ttemplateeinstellungen` 
-                SET `cWert`='https://www.youtube.com/user/JTLSoftwareGmbH' 
-                WHERE `cTemplate`='NOVA' 
-                AND `cSektion`='footer' 
+            "UPDATE `ttemplateeinstellungen`
+                SET `cWert`='https://www.youtube.com/user/JTLSoftwareGmbH'
+                WHERE `cTemplate`='NOVA'
+                AND `cSektion`='footer'
                 AND `cName`='youtube';",
             ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "UPDATE `ttemplateeinstellungen` 
-                SET `cWert`='https://www.xing.com/companies/jtl-softwaregmbh' 
-                WHERE `cTemplate`='NOVA' 
-                AND `cSektion`='footer' 
+            "UPDATE `ttemplateeinstellungen`
+                SET `cWert`='https://www.xing.com/companies/jtl-softwaregmbh'
+                WHERE `cTemplate`='NOVA'
+                AND `cSektion`='footer'
                 AND `cName`='xing';",
             ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "UPDATE `tlinksprache` 
+            "UPDATE `tlinksprache`
                 SET `cTitle`='Startseite!', `cContent`='" . $this->faker->text(500) . "'
-                WHERE `kLink`='3' 
+                WHERE `kLink`='3'
                 AND `cISOSprache`='ger';",
             ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "UPDATE `tlinksprache` 
-                SET `cTitle`='Home!', `cContent`='" . $this->faker->text(500) . "' 
-                WHERE `kLink`=3 
+            "UPDATE `tlinksprache`
+                SET `cTitle`='Home!', `cContent`='" . $this->faker->text(500) . "'
+                WHERE `kLink`=3
                 AND `cISOSprache`='eng';",
             ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "INSERT INTO `teinheit` (`kEinheit`, `kSprache`, `cName`) 
+            "INSERT INTO `teinheit` (`kEinheit`, `kSprache`, `cName`)
                 VALUES (1,1,'kg'),(1,2,'kg'),(2,1,'ml'),(2,2,'ml'),(3,1,'Stk'),(3,2,'Piece');",
             ReturnType::DEFAULT
         );
         $this->pdo->query(
             "INSERT INTO `tlink` (`kLink`,`kVaterLink`,`kPlugin`,`cName`,`nLinkart`,`cNoFollow`,`cKundengruppen`,
-            `cSichtbarNachLogin`,`cDruckButton`,`nSort`,`bSSL`,`bIsFluid`,`cIdentifier`) 
+            `cSichtbarNachLogin`,`cDruckButton`,`nSort`,`bSSL`,`bIsFluid`,`cIdentifier`)
                 VALUES (100,0,0,'NurEndkunden',1,'N','1;','N','N',0,0,0,'');",
             ReturnType::DEFAULT
         );
         $this->pdo->query(
             "INSERT INTO `tlink` (`kLink`,`kVaterLink`,`kPlugin`,`cName`,`nLinkart`,`cNoFollow`,
-          `cKundengruppen`,`cSichtbarNachLogin`,`cDruckButton`,`nSort`,`bSSL`,`bIsFluid`,`cIdentifier`) 
+          `cKundengruppen`,`cSichtbarNachLogin`,`cDruckButton`,`nSort`,`bSSL`,`bIsFluid`,`cIdentifier`)
                 VALUES (101,0,0,'NurHaendler',1,'N','2;','N','N',0,0,0,'');",
             ReturnType::DEFAULT
         );
         $this->pdo->query(
             "INSERT INTO `tlink` (`kLink`,`kVaterLink`,`kPlugin`,`cName`,`nLinkart`,`cNoFollow`,
-            `cKundengruppen`,`cSichtbarNachLogin`,`cDruckButton`,`nSort`,`bSSL`,`bIsFluid`,`cIdentifier`) 
+            `cKundengruppen`,`cSichtbarNachLogin`,`cDruckButton`,`nSort`,`bSSL`,`bIsFluid`,`cIdentifier`)
                 VALUES (102,0,9,0,'Beispiel',1,'N',NULL,'N','N',0,0,0,'');",
             ReturnType::DEFAULT
         );
         $this->pdo->query(
             "INSERT INTO `tlink` (`kLink`,`kVaterLink`,`kPlugin`,`cName`,`nLinkart`,`cNoFollow`,
-            `cKundengruppen`,`cSichtbarNachLogin`,`cDruckButton`,`nSort`,`bSSL`,`bIsFluid`,`cIdentifier`) 
+            `cKundengruppen`,`cSichtbarNachLogin`,`cDruckButton`,`nSort`,`bSSL`,`bIsFluid`,`cIdentifier`)
                 VALUES (103,102,0,'Kindseite1',1,'N',NULL,'N','N',0,0,0,'');",
             ReturnType::DEFAULT
         );
         $this->pdo->query(
             "INSERT INTO `tlink` (`kLink`,`kVaterLink`,`kPlugin`,`cName`,`nLinkart`,`cNoFollow`,
-            `cKundengruppen`,`cSichtbarNachLogin`,`cDruckButton`,`nSort`,`bSSL`,`bIsFluid`,`cIdentifier`) 
+            `cKundengruppen`,`cSichtbarNachLogin`,`cDruckButton`,`nSort`,`bSSL`,`bIsFluid`,`cIdentifier`)
                 VALUES (104,102,0,'Kindseite2',1,'N',NULL,'N','N',0,0,0,'');",
             ReturnType::DEFAULT
         );
         $this->pdo->query(
-            'INSERT INTO `tlinkgroupassociations` (`linkID`,`linkGroupID`) 
+            'INSERT INTO `tlinkgroupassociations` (`linkID`,`linkGroupID`)
                 VALUES (100, 9), (101, 9), (102, 9), (103, 9), (104, 9);',
             ReturnType::DEFAULT
         );
         $this->pdo->query(
             "INSERT INTO `tlinksprache` (`kLink`,`cSeo`,`cISOSprache`,`cName`,`cTitle`,`cContent`,
-            `cMetaTitle`,`cMetaKeywords`,`cMetaDescription`) 
+            `cMetaTitle`,`cMetaKeywords`,`cMetaDescription`)
                 VALUES (100,'customers-only','eng','Customers only','Customers only','" .
             $this->faker->text(500) . "','','','');",
             ReturnType::DEFAULT
         );
         $this->pdo->query(
             "INSERT INTO `tlinksprache` (`kLink`,`cSeo`,`cISOSprache`,`cName`,`cTitle`,`cContent`,
-            `cMetaTitle`,`cMetaKeywords`,`cMetaDescription`) 
+            `cMetaTitle`,`cMetaKeywords`,`cMetaDescription`)
                 VALUES (100,'nur-kunden','ger','Nur Endkunden','Nur Endkunden','" .
             $this->faker->text(500) . "','','','');",
             ReturnType::DEFAULT
         );
         $this->pdo->query(
             "INSERT INTO `tlinksprache` (`kLink`,`cSeo`,`cISOSprache`,`cName`,`cTitle`,`cContent`,
-                `cMetaTitle`,`cMetaKeywords`,`cMetaDescription`) 
+                `cMetaTitle`,`cMetaKeywords`,`cMetaDescription`)
                 VALUES (101,'retailers-only','eng','Retailers only','Retailers only','" .
             $this->faker->text(500) . "','','','');",
             ReturnType::DEFAULT
         );
         $this->pdo->query(
             "INSERT INTO `tlinksprache` (`kLink`,`cSeo`,`cISOSprache`,`cName`,`cTitle`,`cContent`,
-            `cMetaTitle`,`cMetaKeywords`,`cMetaDescription`) 
+            `cMetaTitle`,`cMetaKeywords`,`cMetaDescription`)
                 VALUES (101,'nur-haendler','ger','Nur Haendler','Nur Haendler','" .
             $this->faker->text(500) . "','','','');",
             ReturnType::DEFAULT
         );
         $this->pdo->query(
             "INSERT INTO `tlinksprache` (`kLink`,`cSeo`,`cISOSprache`,`cName`,`cTitle`,`cContent`,
-            `cMetaTitle`,`cMetaKeywords`,`cMetaDescription`) 
+            `cMetaTitle`,`cMetaKeywords`,`cMetaDescription`)
                 VALUES (102,'beispiel-seite','ger','Beispielseite','Beispielseite','" .
             $this->faker->text(500) . "','','','');",
             ReturnType::DEFAULT
         );
         $this->pdo->query(
             "INSERT INTO `tlinksprache` (`kLink`,`cSeo`,`cISOSprache`,`cName`,`cTitle`,`cContent`,
-            `cMetaTitle`,`cMetaKeywords`,`cMetaDescription`) 
+            `cMetaTitle`,`cMetaKeywords`,`cMetaDescription`)
                 VALUES (103,'kindseite-eins','ger','Kindseite1','Kindseite1','" .
             $this->faker->text(500) . "','','','');",
             ReturnType::DEFAULT
         );
         $this->pdo->query(
             "INSERT INTO `tlinksprache` (`kLink`,`cSeo`,`cISOSprache`,`cName`,`cTitle`,`cContent`,
-            `cMetaTitle`,`cMetaKeywords`,`cMetaDescription`) 
+            `cMetaTitle`,`cMetaKeywords`,`cMetaDescription`)
                 VALUES (104,'kindseite-zwei','ger','Kindseite2','Kindseite2','" .
             $this->faker->text(500) . "','','','');",
             ReturnType::DEFAULT
@@ -426,7 +422,7 @@ class DemoDataInstaller
     {
         $this->pdo->query('TRUNCATE TABLE tartikelext', ReturnType::DEFAULT);
         $this->pdo->query(
-            'INSERT INTO tartikelext(kArtikel, fDurchschnittsBewertung) 
+            'INSERT INTO tartikelext(kArtikel, fDurchschnittsBewertung)
                 SELECT kArtikel, AVG(nSterne) FROM tbewertung GROUP BY kArtikel',
             ReturnType::DEFAULT
         );
@@ -950,7 +946,7 @@ class DemoDataInstaller
         }
         // we've got the left value, and now that we've processed the children of this node we also know the right value
         $this->pdo->query(
-            'UPDATE tkategorie SET lft = ' . $left . ', rght = ' . $right . ', nLevel = ' . $level . ' 
+            'UPDATE tkategorie SET lft = ' . $left . ', rght = ' . $right . ', nLevel = ' . $level . '
                 WHERE kKategorie = ' . $parentId,
             ReturnType::DEFAULT
         );

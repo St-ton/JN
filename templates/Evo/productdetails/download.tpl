@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 <div class="table-responsive">
     <table class="table table-striped table-bordered">
         <thead>

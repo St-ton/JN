@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='boxes-box-filter-category'}
     {if $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE
         && !($isMobile || $Einstellungen.template.productlist.filter_placement === 'modal')}

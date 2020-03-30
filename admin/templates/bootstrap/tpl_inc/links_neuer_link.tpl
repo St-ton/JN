@@ -55,14 +55,14 @@
                     <hr class="mb-n3">
                 </div>
                 <div class="card-body">
-                    <div class="form-group form-row align-items-center{if isset($xPlausiVar_arr.cName)} error{/if}">
-                        <label class="col col-sm-4 col-form-label text-sm-right" for="cName">{__('name')} {if isset($xPlausiVar_arr.cName)} <span class="fillout">{__('FillOut')}</span>{/if}:</label>
+                    <div class="form-group form-row align-items-center{if isset($xPlausiVar_arr.cName)} form-error{/if}">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="cName">{__('name')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <input required type="text" name="cName" id="cName" class="form-control{if isset($xPlausiVar_arr.cName)} fieldfillout{/if}" value="{if isset($xPostVar_arr.cName) && $xPostVar_arr.cName}{$xPostVar_arr.cName}{elseif !empty($Link->getDisplayName())}{$Link->getDisplayName()}{/if}" tabindex="1" />
+                            <input required type="text" name="cName" id="cName" class="form-control" value="{if isset($xPostVar_arr.cName) && $xPostVar_arr.cName}{$xPostVar_arr.cName}{elseif !empty($Link->getDisplayName())}{$Link->getDisplayName()}{/if}" tabindex="1" />
                         </div>
                     </div>
-                    <div class="form-group form-row align-items-center{if isset($xPlausiVar_arr.nLinkart) || isset($xPlausiVar_arr.nSpezialseite)} error{/if}">
-                        <label class="col col-sm-4 col-form-label text-sm-right">{__('linkType')}{if isset($xPlausiVar_arr.nLinkart)} <span class="fillout">{__('FillOut')}</span>{/if}:</label>
+                    <div class="form-group form-row align-items-center{if isset($xPlausiVar_arr.nLinkart) || isset($xPlausiVar_arr.nSpezialseite)} form-error{/if}">
+                        <label class="col col-sm-4 col-form-label text-sm-right">{__('linkType')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         {if $Link->getPluginID() > 0}
                             <p class="multi_input">
@@ -96,12 +96,12 @@
                         {/if}
                         </div>
                     </div>
-                    <div class="form-group form-row align-items-center{if isset($xPlausiVar_arr.cKundengruppen)} error{/if}">
-                        <label class="col col-sm-4 col-form-label text-sm-right" for="cKundengruppen">{__('restrictedToCustomerGroups')}{if isset($xPlausiVar_arr.cKundengruppen)} <span class="fillout">{__('FillOut')}</span>{/if}:</label>
+                    <div class="form-group form-row align-items-center{if isset($xPlausiVar_arr.cKundengruppen)} form-error{/if}">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="cKundengruppen">{__('restrictedToCustomerGroups')}:</label>
                         {$activeGroups = $Link->getCustomerGroups()}
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <select required name="cKundengruppen[]"
-                                    class="selectpicker custom-select{if isset($xPlausiVar_arr.cKundengruppen)} fieldfillout{/if}"
+                                    class="selectpicker custom-select"
                                     multiple="multiple"
                                     size="6"
                                     id="cKundengruppen"

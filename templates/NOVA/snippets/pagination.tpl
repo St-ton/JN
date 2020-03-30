@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='snippets-pagination'}
     {assign var=cParam_arr value=$cParam_arr|default:[]}
     {assign var=noWrapper value=$noWrapper|default:false}

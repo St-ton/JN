@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productdetails-config-summary'}
 {strip}
     {block name='productdetails-config-summary-name-net'}

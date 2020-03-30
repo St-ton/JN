@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Checkout;
 
@@ -50,9 +46,9 @@ class Nummern
     {
         $item = Shop::Container()->getDB()->select('tnummern', 'nArt', $id);
         if ($item !== null && $item->nArt > 0) {
-            foreach (\array_keys(\get_object_vars($item)) as $member) {
-                $this->$member = $item->$member;
-            }
+            $this->nNummer       = (int)$item->nNummer;
+            $this->nArt          = (int)$item->nArt;
+            $this->dAktualisiert = $item->dAktualisiert;
         }
 
         return $this;

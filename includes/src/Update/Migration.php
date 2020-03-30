@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Update;
 
@@ -95,7 +91,7 @@ class Migration implements JsonSerializable
      */
     public function getCreated(): DateTime
     {
-        return DateTime::createFromFormat('YmdHis', $this->getId());
+        return DateTime::createFromFormat('YmdHis', (string)$this->getId());
     }
 
     /**

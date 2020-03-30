@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {assign var='isFluidBanner' value=isset($Einstellungen.template.theme.banner_full_width) && $Einstellungen.template.theme.banner_full_width === 'Y' &&  isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'fluid' && isset($oImageMap)}
 {assign var='isQuickview' value=isset($smarty.get.quickView) && $smarty.get.quickView == 1}
 {if !$isFluidBanner && !$isQuickview}

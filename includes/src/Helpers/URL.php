@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Helpers;
 
@@ -354,6 +350,14 @@ class URL
                     return !empty($obj->cSeo)
                         ? $prefix . $obj->cSeo
                         : $prefix . '?q=' . $obj->kSuchspecial . $lang;
+
+                case \URLART_NEWSLETTER:
+                    $prefix = $full === false
+                        ? ''
+                        : Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_NEWSLETTER)->getURL();
+                    return !empty($obj->cSeo)
+                        ? $prefix . $obj->cSeo
+                        : $prefix . '?show=' . $obj->kNewsletterHistory;
             }
         }
 

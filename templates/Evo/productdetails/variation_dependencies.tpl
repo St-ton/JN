@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 function checkAbhaengigkeiten(givenElement,givenSelectedIndex)
 {ldelim}
    //alle formular felder enablen

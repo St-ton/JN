@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {assign var=ssf value=$NaviFilter->getSearchSpecialFilter()}
 {if $bBoxenFilterNach
     && $ssf->getVisibility() !== \JTL\Filter\Visibility::SHOW_NEVER

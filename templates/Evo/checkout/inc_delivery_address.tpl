@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {if $Lieferadresse->cFirma}
     {$Lieferadresse->cFirma}
     <br />

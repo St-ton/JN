@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {if isset($fehlendeAngaben.shippingAddress)}
     {assign var='fehlendeAngabenShipping' value=$fehlendeAngaben.shippingAddress}
 {else}

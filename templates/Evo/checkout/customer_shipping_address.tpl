@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {$name = 'shipping_address'}
 {* salutation / title *}
 <div class="row">

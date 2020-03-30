@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 /**
  * Fügt für einen bestimmten Artikel, in einer bestimmten Sprache eine Bewertung hinzu.

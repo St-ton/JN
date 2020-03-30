@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='blog-overview'}
     {block name='blog-overview-heading'}
         {opcMountPoint id='opc_before_heading'}

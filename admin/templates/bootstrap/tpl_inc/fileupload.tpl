@@ -25,7 +25,7 @@ $fileDefaultBatchSelectedEvent | true    | set false and created a custom .on("f
 $fileDefaultUploadSuccessEvent | true    | set false and created a custom .on("filebatchuploadsuccess") event
 $fileDefaultUploadErrorEvent   | true    | set false and created a custom .on("fileuploaderror") event
 $fileSuccessMsg                | false   | success message after upload
-$fileErrorMsg                  | true   | error message while uploading - automatically generated
+$fileErrorMsg                  | true    | error message while uploading - automatically generated
 -----------------------------------------------------------------------------------
 *}
 {$fileIDFull   = '#'|cat:$fileID}
@@ -50,87 +50,89 @@ $fileErrorMsg                  | true   | error message while uploading - automa
 {/if}
 
 <script>
-    let $file        = $('{$fileIDFull}'),
-        $fileSuccess = $('{$fileIDFull}-upload-success'),
-        $fileError   = $('{$fileIDFull}-upload-error');
+    (function () {
+        let $file = $('{$fileIDFull}'),
+            $fileSuccess = $('{$fileIDFull}-upload-success'),
+            $fileError = $('{$fileIDFull}-upload-error');
 
-    $file.fileinput({
-        {if isset($fileUploadUrl)}
-        uploadUrl: '{$fileUploadUrl}',
-        {/if}
-        {if isset($fileDeleteUrl)}
-        deleteUrl: '{$fileDeleteUrl}',
-        {/if}
-        autoOrientImage: false,
-        showUpload: {$fileShowUpload|default:'false'},
-        showRemove: {$fileShowRemove|default:'false'},
-        showCancel: {$fileShowCancel|default:'false'},
-        cancelClass: 'btn btn-outline-primary',
-        uploadClass: 'btn btn-outline-primary',
-        removeClass: 'btn btn-outline-primary',
-        uploadAsync: {$fileUploadAsync|default:'false'},
-        showPreview: {$filePreview|default:'false'},
-        initialPreviewShowDelete: false,
-        fileActionSettings: {
-            showZoom: false,
-            showRemove: false,
-            showDrag: false
-        },
-        {if isset($fileExtraData)}
-        uploadExtraData: {$fileExtraData},
-        {/if}
-        allowedFileExtensions :
+        $file.fileinput({
+            {if isset($fileUploadUrl)}
+            uploadUrl: '{$fileUploadUrl}',
+            {/if}
+            {if isset($fileDeleteUrl)}
+            deleteUrl: '{$fileDeleteUrl}',
+            {/if}
+            autoOrientImage: false,
+            showUpload: {$fileShowUpload|default:'false'},
+            showRemove: {$fileShowRemove|default:'false'},
+            showCancel: {$fileShowCancel|default:'false'},
+            cancelClass: 'btn btn-outline-primary',
+            uploadClass: 'btn btn-outline-primary',
+            removeClass: 'btn btn-outline-primary',
+            uploadAsync: {$fileUploadAsync|default:'false'},
+            showPreview: {$filePreview|default:'false'},
+            initialPreviewShowDelete: false,
+            fileActionSettings: {
+                showZoom: false,
+                showRemove: false,
+                showDrag: false
+            },
+            {if isset($fileExtraData)}
+            uploadExtraData: {$fileExtraData},
+            {/if}
+            allowedFileExtensions:
             {if empty($fileAllowedExtensions)}
                 ['jpg', 'jpeg', 'jpe', 'gif', 'png', 'bmp', 'svg']
             {else}
-                {$fileAllowedExtensions}
+            {$fileAllowedExtensions}
             {/if},
-        overwriteInitial: {$fileOverwriteInitial|default:'true'},
-        {if $fileIsSingle}
-        initialPreviewCount: 1,
-        {/if}
-        theme: 'fas',
-        language: '{$language|mb_substr:0:2}',
-        browseOnZoneClick: true,
-        {if $fileMaxSize|default:true !== 'false'}
+            overwriteInitial: {$fileOverwriteInitial|default:'true'},
+            {if $fileIsSingle}
+            initialPreviewCount: 1,
+            {/if}
+            theme: 'fas',
+            language: '{$language|mb_substr:0:2}',
+            browseOnZoneClick: true,
+            {if $fileMaxSize|default:true !== 'false'}
             maxFileSize: {$fileMaxSize|default:500},
-        {/if}
-        {if $fileIsSingle}
-        maxFilesNum: 1,
-        {/if}
-        {if $filePreview|default:false}
-        initialPreviewConfig: {if isset($fileInitialPreviewConfig)}{$fileInitialPreviewConfig}{else}[]{/if},
-        initialPreview: {if isset($fileInitialPreview)}{$fileInitialPreview}{else}[]{/if},
-        {/if}
-    });
+            {/if}
+            {if $fileIsSingle}
+            maxFilesNum: 1,
+            {/if}
+            {if $filePreview|default:false}
+            initialPreviewConfig: {if isset($fileInitialPreviewConfig)}{$fileInitialPreviewConfig}{else}[]{/if},
+            initialPreview: {if isset($fileInitialPreview)}{$fileInitialPreview}{else}[]{/if},
+            {/if}
+        });
 
-    {if $fileDefaultBrowseEvent|default:true}
-        $file.on("filebrowse", function(event, files) {
+        {if $fileDefaultBrowseEvent|default:true}
+        $file.on("filebrowse", function (event, files) {
             {if $fileBrowseClear|default:false}
-                $file.fileinput('clear');
+            $file.fileinput('clear');
             {/if}
             $fileSuccess.addClass('d-none');
             $fileError.html('').addClass('d-none');
         });
-    {/if}
-    {if $fileDefaultBatchSelectedEvent|default:true}
-        $file.on("filebatchselected", function(event, files) {
+        {/if}
+        {if $fileDefaultBatchSelectedEvent|default:true}
+        $file.on("filebatchselected", function (event, files) {
             $file.fileinput("upload");
         });
-    {/if}
-    {if $fileDefaultUploadSuccessEvent|default:true}
-        $file.on('filebatchuploadsuccess', function(event, data) {
+        {/if}
+        {if $fileDefaultUploadSuccessEvent|default:true}
+        $file.on('filebatchuploadsuccess', function (event, data) {
             if (data.response.status === 'OK') {
                 $fileSuccess.removeClass('d-none');
             } else {
                 $fileError.removeClass('d-none');
             }
         });
-    {/if}
-    {if $fileDefaultUploadErrorEvent|default:true}
-        $file.on('fileuploaderror, fileerror', function(event, data, msg) {
+        {/if}
+        {if $fileDefaultUploadErrorEvent|default:true}
+        $file.on('fileuploaderror, fileerror', function (event, data, msg) {
             $fileError.removeClass('d-none');
             $fileError.append('<p style="margin-top:20px">' + msg + '</p>')
         });
-    {/if}
+        {/if}
+    }());
 </script>

@@ -144,11 +144,11 @@
                     </code>
                 </div>
             </div>
-            {foreach $availableLanguages as $language}
+            {foreach $availableLanguages as $availableLanguage}
                 <div class="box_info card">
-                    {assign var=kSprache value=$language->getId()}
+                    {assign var=kSprache value=$availableLanguage->getId()}
                     <div class="card-header">
-                        <div class="subheading1">{__('content')} {$language->getLocalizedName()}</div>
+                        <div class="subheading1">{__('content')} {$availableLanguage->getLocalizedName()}</div>
                         <hr class="mb-n2">
                     </div>
                     <div class="card-body">

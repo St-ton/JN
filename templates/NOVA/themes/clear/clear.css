@@ -23191,6 +23191,34 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   }
 }
 
+/* consent */
+.consent-btn-holder {
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  flex-direction: column;
+  align-items: left;
+}
+@media (min-width: 768px) {
+  .consent-btn-holder {
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    flex-direction: row;
+    -webkit-box-align: center;
+    align-items: center;
+  }
+  .consent-btn-holder > div:last-child {
+    margin: 1rem 0 0;
+  }
+}
+.consent-btn-holder > div:last-child {
+  margin: 0 0 0 auto;
+}
+.consent-btn-holder > div:first-child {
+  -webkit-box-flex: 1;
+  flex-grow: 1;
+}
+
 /* header */
 #header-top-bar {
   position: relative;

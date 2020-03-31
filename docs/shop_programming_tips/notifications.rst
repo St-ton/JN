@@ -5,17 +5,17 @@ Notifications
 
    <br />
 
-Im Backen von JTL-Shop 5 gibt es die Möglichkeit, wichtige Informationen für den Shop-Administrator an zentraler
+Im Backend von JTL-Shop 5 gibt es die Möglichkeit, wichtige Informationen für den Shop-Administrator an zentraler
 Stelle auszugeben. |br|
 
 .. image:: /_images/backend_notification-area.png
 
 Dieser Mechanismus wird "Notifications" genannt und steht ausschließlich im Backend des Onlineshops zur Verfügung.
 
-Notifications werden vorwiegend dazu eingesetzt, um Statusmeldungen, unvorteilhafte Konfigurationen oder Fehler
+Notifications werden vorwiegend dazu eingesetzt, unvorteilhafte oder ungültige Konfigurationen oder Fehler
 des Onlineshops anzuzeigen. Sie können ebenso aus Plugins heraus generiert werden.
 
-Die Singleton-Klasse ``Notification`` hält hierfür hautpsächlich die Methode ``add()`` bereit:
+Die Singleton-Klasse ``Notification`` hält hierfür zum Beispiel die Methode ``add()`` bereit:
 
 .. code-block:: php
 
@@ -27,41 +27,9 @@ Die Singleton-Klasse ``Notification`` hält hierfür hautpsächlich die Methode 
     */
     public function add(int $type, string $title, string $description = null, string $url = null)
 
-Parameter der Methode ``add()``:
+Die einfachste Form um eine Statusmeldung Ihres Plugins auszugeben, ist der direkte Aufruf von ``add()``.
 
-+------------------+---------------------------------------------------------------------+
-| Paramter         | Verwendung                                                          |
-+==================+=====================================================================+
-| ``$type``        | Priorität der Notification (siehe: :ref:`label_notifications_type`) |
-+------------------+---------------------------------------------------------------------+
-| ``$title``       | Titeltext                                                           |
-+------------------+---------------------------------------------------------------------+
-| ``$description`` | Beschreibungstext                                                   |
-+------------------+---------------------------------------------------------------------+
-| ``$url``         | optionales Linkziel, |br|                                           |
-|                  | wenn die Notification auf eine Backendseite weiterleiten soll       |
-+------------------+---------------------------------------------------------------------+
-
-
-.. _label_notifications_type:
-
-Notification Type:
-------------------
-
-+------------------+--------+------------------------------------------------------------------------+
-| Konstante        | Wert   | mögliche Verwendung                                                    |
-+==================+========+========================================================================+
-| ``TYPE_NONE``    | ``-1`` | (Farbe: dunkelgrau) allgemeine Informationen                           |
-+------------------+--------+------------------------------------------------------------------------+
-| ``TYPE_INFO``    | ``0``  | (Farbe: hellgrau) optionale Konfigurationen                            |
-+------------------+--------+------------------------------------------------------------------------+
-| ``TYPE_WARNING`` | ``1``  | (Farbe: orange) Warnungen zu Einstellungen, |br|                       |
-|                  |        | die den ordnungsgemäßen Betrieb des Onlineshops beeinträchtigen können |
-+------------------+--------+------------------------------------------------------------------------+
-| ``TYPE_DANGER``  | ``2``  | (Farbe: rot)  Warnungen zu kritischen Einstellungen, Fehler            |
-+------------------+--------+------------------------------------------------------------------------+
-
-Eine einfache Status-Warnung könnte Sie beispielsweise so ausgeben:
+**Beispiel:**
 
 .. code-block:: php
 
@@ -74,17 +42,76 @@ Eine einfache Status-Warnung könnte Sie beispielsweise so ausgeben:
        );
 
 
-Weiterhin kann mit der Methode ``addNotify``
+Parameter der Methode ``add()``
+
++------------------+---------------------------------------------------------------------+
+| Parameter        | Verwendung                                                          |
++==================+=====================================================================+
+| ``$type``        | Priorität der Notification (siehe: :ref:`label_notifications_type`) |
++------------------+---------------------------------------------------------------------+
+| ``$title``       | Titeltext                                                           |
++------------------+---------------------------------------------------------------------+
+| ``$description`` | Beschreibungstext                                                   |
++------------------+---------------------------------------------------------------------+
+| ``$url``         | optionales Linkziel, |br|                                           |
+|                  | wenn die Notification auf eine Backendseite weiterleiten soll       |
++------------------+---------------------------------------------------------------------+
+
+Eine weitere Variante, Notifications zu erzeugen, ist das Generieren eines ``NotificationEntry``-Objektes.
 
 .. code-block:: php
 
-    /**
-     * @param NotificationEntry $notify
-     */
-    public function addNotify(NotificationEntry $notify)
-    {
-        $this->array[] = $notify;
-    }
+   /**
+    * NotificationEntry constructor.
+    * @param int         $type
+    * @param string      $title
+    * @param null|string $description
+    * @param null|string $url
+   */
+   public function __construct($type, $title, $description = null, $url = null)
+
+Die Parameter zum Erzeugen eines ``NotificationEntry`` gleichen denen der ``add()``-Methode. |br|
+Auf diese Weise können Notifications an einer zentralen Stelle definiert und im späteren Programmverlauf, beim
+Eintreten entsprechender Zustände, einfach ausgegeben werden.
+
+**Beispiel:**
+
+.. code-block:: php
+
+   // definition
+   //
+   $entry = (new NotificationEntry(
+       NotificationEntry:: TYPE_WARNING,
+       $this->getPlugin()->getMeta()->getName(),
+       'Plugin nicht konfiguriert',
+       Shop::getAdminURL() . '/plugin.php?kPlugin=' . $this->getID()
+   ))->setPluginId($this→getPluginID());
+
+   // publication (later)
+   //
+   Notification::getInstance()->addNotify($entry);
 
 
-...
+.. _label_notifications_type:
+
+NotificationEntry Typen
+-----------------------
+
++------------------+--------+------------------------------------------------------------------------+
+| Konstante        | Wert   | mögliche Verwendung                                                    |
++==================+========+========================================================================+
+| ``TYPE_INFO``    | ``0``  | (Farbe: hellgrau) allgemeine Informationen                             |
++------------------+--------+------------------------------------------------------------------------+
+| ``TYPE_WARNING`` | ``1``  | (Farbe: orange) Warnungen zu Einstellungen, |br|                       |
+|                  |        | die den ordnungsgemäßen Betrieb des Onlineshops beeinträchtigen können |
++------------------+--------+------------------------------------------------------------------------+
+| ``TYPE_DANGER``  | ``2``  | (Farbe: rot) Warnungen zu kritischen Einstellungen und Fehlern         |
++------------------+--------+------------------------------------------------------------------------+
+
+Das Rendern aller Notifications erfolgt beim Auslösen des Dispatcher-Events ``backend.notification``. |br|
+Dieses Event wird stets bei der Initialisierungen des Onlineshop-Backends ausgelöst. |br|
+
+.. attention::
+
+    Die Erzeugung eines NotificationEntrys sollte keine zeitkritischen Programmschritte enthalten,
+    da diese das Onlineshop-Backend blockieren können.

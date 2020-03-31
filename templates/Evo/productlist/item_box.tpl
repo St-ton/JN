@@ -3,7 +3,7 @@
 {else}
     {hasOnlyListableVariations artikel=$Artikel maxVariationCount=$Einstellungen.template.productlist.variation_select_productlist maxWerteCount=$Einstellungen.template.productlist.variation_max_werte_productlist assign='hasOnlyListableVariations'}
 {/if}
-<div id="result-wrapper_buy_form_{$Artikel->kArtikel}" class="product-cell text-center{if $Einstellungen.template.productlist.hover_productlist === 'Y'} hover-enabled{/if}{if isset($listStyle) && $listStyle === 'gallery'} active{/if}{if isset($class)} {$class}{/if}">
+<div id="result-wrapper_buy_form_{$Artikel->kArtikel}" data-wrapper="true" class="product-cell text-center{if $Einstellungen.template.productlist.hover_productlist === 'Y'} hover-enabled{/if}{if isset($listStyle) && $listStyle === 'gallery'} active{/if}{if isset($class)} {$class}{/if}">
     {block name='productlist-image'}
         <a class="image-wrapper" href="{$Artikel->cURLFull}">
             {if isset($Artikel->Bilder[0]->cAltAttribut)}

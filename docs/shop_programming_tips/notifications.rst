@@ -85,7 +85,7 @@ Eintreten entsprechender Zustände, einfach ausgegeben werden.
        $this->getPlugin()->getMeta()->getName(),
        'Plugin nicht konfiguriert',
        Shop::getAdminURL() . '/plugin.php?kPlugin=' . $this->getID()
-   ))->setPluginId($this→getPluginID());
+   ))->setPluginId($this->getPluginID());
 
    // publication (later)
    //
@@ -108,8 +108,9 @@ NotificationEntry Typen
 | ``TYPE_DANGER``  | ``2``  | (Farbe: rot) Warnungen zu kritischen Einstellungen und Fehlern         |
 +------------------+--------+------------------------------------------------------------------------+
 
-Das Rendern aller Notifications erfolgt beim Auslösen des Dispatcher-Events ``backend.notification``. |br|
-Dieses Event wird stets bei der Initialisierungen des Onlineshop-Backends ausgelöst. |br|
+Das Rendern aller Notifications erfolgt bei der Initialisierung des Shop-Backends. An dieser Stelle wird auch das
+Dispatcher-Event ``backend.notification`` ausgelöst. Über dieses Event ist es Plugins möglich, eigene Notifications
+zu erzeugen.
 
 .. attention::
 

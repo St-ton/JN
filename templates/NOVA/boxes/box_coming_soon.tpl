@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='boxes-box-coming-soon'}
     {lang key='upcomingProducts' assign='slidertitle'}
     {assign var=moreLink value=$oBox->getURL()}

@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productdetails-variation-value'}
     {strip}
         {if !isset($hideVariationValue) || !$hideVariationValue}

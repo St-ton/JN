@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productdetails-matrix-classic'}
     {assign var=anzeige value=$Einstellungen.artikeldetails.artikel_lagerbestandsanzeige}
     {block name='productdetails-matrix-classic-sold-out'}

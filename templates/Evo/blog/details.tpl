@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {include file='snippets/extension.tpl'}
 
 {if !empty($cNewsErr)}

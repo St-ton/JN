@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 <div class="panel-wrap">
     {if isset($position) && $position === 'popup'}
         {if isset($Artikelhinweise) && count($Artikelhinweise) > 0}

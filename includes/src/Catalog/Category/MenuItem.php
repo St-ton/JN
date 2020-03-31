@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Catalog\Category;
 
@@ -177,7 +173,7 @@ class MenuItem
      */
     public function setDescription(string $description): void
     {
-        $this->description = Text::parseNewsText($description);
+        $this->description = $description;
     }
 
     /**

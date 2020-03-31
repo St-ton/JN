@@ -51,6 +51,11 @@
             <div class="save-wrapper card-footer">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
+                        <a class="btn btn-outline-primary btn-block" href="bewertung.php">
+                            {__('cancelWithIcon')}
+                        </a>
+                    </div>
+                    <div class="col-sm-6 col-xl-auto">
                         <button name="bewertungsubmit" type="submit" value="{__('save')}" class="btn btn-primary btn-block">{__('saveWithIcon')}</button>
                     </div>
                 </div>

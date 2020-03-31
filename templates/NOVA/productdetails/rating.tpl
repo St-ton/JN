@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productdetails-rating'}
     {if $stars > 0}
         {if isset($total) && $total > 1}

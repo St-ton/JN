@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='page-manufacturers'}
     {opcMountPoint id='opc_before_manufacturers'}
     {block name='page-manufacturers-content'}

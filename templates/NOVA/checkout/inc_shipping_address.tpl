@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='checkout-inc-shipping-address'}
     {assign var=fehlendeAngabenShipping value=$fehlendeAngaben.shippingAddress|default:null}
     {assign var=showShippingAddress value=(isset($Lieferadresse) || !empty($kLieferadresse) || isset($forceDeliveryAddress))}

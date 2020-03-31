@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Filter\Items;
 
@@ -36,7 +32,7 @@ class Category extends BaseCategory
              ->setUrlParam('kf')
              ->setUrlParamSEO(\SEP_KAT)
              ->setVisibility($this->getConfig('navigationsfilter')['allgemein_kategoriefilter_benutzen'])
-             ->setFrontendName(Shop::Lang()->get('allCategories'));
+             ->setFrontendName(Shop::isAdmin() ? __('filterCategory') : Shop::Lang()->get('allCategories'));
     }
 
     /**

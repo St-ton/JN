@@ -36,7 +36,7 @@
     </div>
 </div>
 
-<label>Vorschau</label>
+<label>{__('preview')}</label>
 
 <div class="row-layout-previews" id="{$propname}-previews">
     <div>

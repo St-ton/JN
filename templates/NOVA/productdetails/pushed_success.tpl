@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productdetails-pushed-success'}
     <div id="pushed-success" {if $card}role="alert" class="card shadow-sm alert alert-dismissable p-0 mb-5"{/if}>
         {if isset($zuletztInWarenkorbGelegterArtikel)}

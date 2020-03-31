@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {assign var='moreLink' value=$oBox->getURL()}
 {lang key='showAllSpecialOffers' assign='moreTitle'}
 {assign var=specialOfferArticles value=$oBox->getProducts()->elemente}

@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 <ul class="{if isset($class)}{$class}{else}nav nav-list{/if}">
     {foreach $Suchergebnisse->Bewertung as $oBewertung}
         {if $NaviFilter->hasRatingFilter() && $NaviFilter->getRatingFilter()->getValue() == $oBewertung->nStern}

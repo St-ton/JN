@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='snippets-form-group-simple'}
     {if !empty($options)}
         {assign var=inputType value=$options[0]}

@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='snippets-notification'}
     {card no-body=true class="clearfix {if isset($inline)} m-0{/if}"}
         {if isset($title)}

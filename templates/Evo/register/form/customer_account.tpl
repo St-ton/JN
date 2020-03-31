@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='billing-address-form'}
     {include file='checkout/inc_billing_address_form.tpl'}
 {/block}

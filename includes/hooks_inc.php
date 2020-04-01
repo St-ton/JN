@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Collection;
 use JTL\Cart\Cart;
 use JTL\Cart\CartItem;
 use JTL\Catalog\Category\Kategorie;
@@ -251,7 +252,7 @@ define('HOOK_NEWS_PAGE_DETAILANSICHT', 32);
  *
  * @file news.php
  * @param \JTL\News\Category category - since 5.0.0
- * @param Illuminate\Support\Collection items - since 5.0.0
+ * @param Collection items - since 5.0.0
  */
 define('HOOK_NEWS_PAGE_NEWSUEBERSICHT', 33);
 
@@ -1633,7 +1634,7 @@ define('HOOK_GET_ALL_CATEGORIES', 219);
 /**
  * @since 4.04
  * @file seite_inc.php
- * @param \Illuminate\Support\Collection - oNews_arr
+ * @param Collection - oNews_arr
  * @param array - cacheTags
  * @param bool  - cached
  */
@@ -1951,4 +1952,9 @@ define('HOOK_WARENKORB_ERSTELLE_SPEZIAL_POS', 310);
  */
 define('HOOK_IO_HANDLE_REQUEST_ADMIN', 311);
 
+/**
+ * @since 5.0.0
+ * @file Manager.php
+ * @param Collection items - collection of JTL\Consent\ConsentModel\ConsentModel
+ */
 define('CONSENT_MANAGER_GET_ACTIVE_ITEMS', 320);

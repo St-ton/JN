@@ -179,8 +179,12 @@
 					{/block}
 					{block name='snippets-consent-manager-confirm-buttons'}
 						<div class="consent-btn-helper">
-							<button type="button" class="consent-btn consent-btn-outline-primary" id="consent-btn-once">{lang key='consentOnce' section='consent'}</button>
-							<button type="button" class="consent-btn consent-btn-tertiary" id="consent-btn-always">{lang key='consentAlways' section='consent'}</button>
+							<div>
+								<button type="button" class="consent-btn consent-btn-outline-primary btn-block" id="consent-btn-once">{lang key='consentOnce' section='consent'}</button>
+							</div>
+							<div>
+								<button type="button" class="consent-btn consent-btn-tertiary btn-block" id="consent-btn-always">{lang key='consentAlways' section='consent'}</button>
+							</div>
 						</div>
 					{/block}
 				</div>

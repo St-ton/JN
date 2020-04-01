@@ -19,21 +19,3 @@
 		@return $value;
 	}
 }
-
-@function rem($value) {
-	@if(unitless($value)) {
-		@return 'no unit';
-	}
-
-	$unit: 		unit($value);
-	$valueRaw:	strip-units($value);
-
-	@if($unit == 'px') {
-		@return $valueRaw / 16 * 1rem;
-	} @else if($unit == 'pt') {
-		@return px($value) / 16px * 1rem;
-	} @else if($unit == 'rem') {
-		@return $value;
-	}
-}
-

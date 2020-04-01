@@ -8,7 +8,7 @@
 	@include media-breakpoint-up(md) { padding: 2rem; }
 }
 
-.#{$prefix}-modal-close { border: 0; background: transparent; color: $gray-dark; position: absolute; right: 0; top: 0; outline: 0; cursor: pointer; padding: 1rem; transition: all .2s;
+.#{$prefix}-modal-close { border: 0; background: transparent; color: $gray-light; position: absolute; right: 0; top: 0; outline: 0; cursor: pointer; padding: 1rem; transition: all .2s;
 	svg { width: 1.5rem; height: 1.5rem; }
 
 	&:hover { color: $shaftblue-dark; }

@@ -1922,6 +1922,18 @@ msgstr "Close"
 msgid "none"
 msgstr "None"
 
+msgid "successSave"
+msgstr "Successfully saved"
+
+msgid "errorSave"
+msgstr "Could not save"
+
+msgid "successDelete"
+msgstr "Successfully deleted"
+
+msgid "errorDelete"
+msgstr "Could not delete"
+
 msgid "filterManufacturers"
 msgstr "Manufacturers"
 
@@ -1943,14 +1955,3 @@ msgstr "Categories"
 msgid "filterCharacteristics"
 msgstr "Characteristics"
 
-msgid "successSave"
-msgstr "Successfully saved"
-
-msgid "errorSave"
-msgstr "Could not save"
-
-msgid "successDelete"
-msgstr "Successfully deleted"
-
-msgid "errorDelete"
-msgstr "Could not delete"

@@ -16,7 +16,8 @@
 	    {continue}
     {/if}
     {if strpos($type, "\\") !== false && class_exists($type)}
-	    <div class="subheading-1">{__('childHeading')}</div>
+	    <div class="subheading1">{__('childHeading')}</div>
+			<hr>
 	    {foreach $item->$name as $childItem}
 	        {include file='tpl_inc/model_item.tpl' isChild=true postfix=999 item=$childItem prefix=$name}
 		    <hr>
@@ -43,7 +44,16 @@
 		        <textarea class="form-control ckeditor" id="{$name}{$postfix}" name="{$inputName}" rows="10" cols="40">{$item->getAttribValue($name)}</textarea>
 		    </div>
 	    {else}
-			<label class="col col-sm-4 col-form-label text-sm-right" for="{$name}{$postfix}">{__({$name})}:</label>
+			<label class="col col-sm-4 col-form-label text-sm-right" for="{$name}{$postfix}">
+				{__({$name})}
+				{if $name === 'languageID'}
+					{foreach $availableLanguages as $availableLanguage}
+						{if $availableLanguage->id === (int)$item->getAttribValue($name)}
+							({$availableLanguage->localizedName})
+						{/if}
+					{/foreach}
+				{/if}:
+			</label>
 			<div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
 				{input readonly=!$inputConfig->isModifyable() type=$inputType value=$item->getAttribValue($name) name=$inputName id=$name|cat:$postfix}
 			</div>

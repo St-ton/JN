@@ -47,5 +47,5 @@ msgstr "Consent"
 msgid "childHeading"
 msgstr "Lokalisierungen"
 
-msgid "generalHeading"
-msgstr "Allgemein"
+msgid "privacyPolicy"
+msgstr "Nutzungsbedingungen (Link)"

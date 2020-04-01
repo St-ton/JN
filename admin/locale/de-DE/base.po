@@ -1922,6 +1922,18 @@ msgstr "Schließen"
 msgid "none"
 msgstr "Keine"
 
+msgid "successSave"
+msgstr "Erfolgreich gespeichert"
+
+msgid "errorSave"
+msgstr "Konnte nicht speichern"
+
+msgid "successDelete"
+msgstr "Erfolgreich gelöscht"
+
+msgid "errorDelete"
+msgstr "Konnte nicht löschen"
+
 msgid "filterManufacturers"
 msgstr "Alle Hersteller"
 
@@ -1943,14 +1955,3 @@ msgstr "Alle Kategorien"
 msgid "filterCharacteristics"
 msgstr "Merkmale"
 
-msgid "successSave"
-msgstr "Erfolgreich gespeichert"
-
-msgid "errorSave"
-msgstr "Konnte nicht speichern"
-
-msgid "successDelete"
-msgstr "Erfolgreich gelöscht"
-
-msgid "errorDelete"
-msgstr "Konnte nicht löschen"

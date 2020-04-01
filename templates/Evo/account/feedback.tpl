@@ -1,8 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
-
 <h1>{lang key='allRatings'}</h1>
 
 {if empty($smarty.session.Kunde->kKunde)}

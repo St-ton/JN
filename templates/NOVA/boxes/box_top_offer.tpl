@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='boxes-box-top-offer'}
     {lang key='topOffer' assign='slidertitle'}
     {assign var=moreLink value=$oBox->getURL()}

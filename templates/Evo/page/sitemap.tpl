@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {if $Einstellungen.sitemap.sitemap_seiten_anzeigen === 'Y'}
     {block name='sitemap-pages'}
         {opcMountPoint id='opc_before_pages'}

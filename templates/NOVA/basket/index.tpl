@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='basket-index'}
     {block name='basket-index-include-header'}
         {include file='layout/header.tpl'}

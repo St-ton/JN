@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='account-order-item'}
     <div class="order-items card-table mr-3 ml-3">
         {foreach $Bestellung->Positionen as $oPosition}

@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='snippets-filter-characteristics'}
     {$is_dropdown = ($Merkmal->cTyp === 'SELECTBOX')}
     {$limit = $Einstellungen.template.productlist.filter_max_options}

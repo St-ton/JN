@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {if empty($cPost_arr)}
     {assign var='cPost_arr' value=null}
 {/if}

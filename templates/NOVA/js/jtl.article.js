@@ -122,24 +122,24 @@
 
             function toggleFullscreen(fullscreen = false)
             {
-                var maxHeight= Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-                var otherElemHeight = 0;
-                var current = ($('#gallery .slick-current').data('slick-index'));
+                let maxHeight       = Math.max(document.documentElement.clientHeight, window.innerHeight || 0),
+                    otherElemHeight = 0,
+                    current         = ($('#gallery .slick-current').data('slick-index')),
+                    $galleryImages  = $('#gallery img');
 
                 if (fullscreen) {
                     $('#image_wrapper').addClass('fullscreen');
+                    let $galleryTopbar = $('#image_wrapper .product-detail-image-topbar');
 
-                    otherElemHeight = $('#image_wrapper .product-detail-image-topbar').outerHeight() +
-                        parseInt($('#image_wrapper .product-detail-image-topbar').css('marginBottom')) +
-                        230;
+                    otherElemHeight = $galleryTopbar.outerHeight() + parseInt($galleryTopbar.css('marginBottom')) + 230;
 
-                    $('#gallery picture *').removeAttr('sizes');
-                    lazySizes.autoSizer.updateElem($('#gallery picture *'));
+                    $galleryImages.removeAttr('sizes');
+                    lazySizes.autoSizer.updateElem($galleryImages);
                 } else {
                     $('#image_wrapper').removeClass('fullscreen');
                 }
 
-                $('#gallery img').css('max-height', maxHeight-otherElemHeight);
+                $galleryImages.css('max-height', maxHeight-otherElemHeight);
 
                 $('#gallery').slick('slickSetOption','initialSlide', current, true);
                 $('#gallery_preview').slick('slickGoTo', current, true);

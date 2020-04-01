@@ -25,14 +25,20 @@
 					{block name='snippets-consent-manager-banner-body-actions'}
 						<div class="consent-banner-actions">
 							<div class="consent-btn-helper">
-								<button type="button" class="consent-btn consent-btn-tertiary consent-btn-block" id="consent-banner-btn-all">{lang key='consentAll' section='consent'}</button>
-								<button type="button"
-										class="consent-btn consent-btn-outline-primary"
-										id="consent-banner-btn-close"
-										title="{lang key='closeTitle' section='consent'}">
-									{lang key='close' section='consent'}
-								</button>
-								<button type="button" class="consent-btn consent-btn-primary" id="consent-banner-btn-settings">{lang key='configure' section='consent'}</button>
+								<div class="consent-accept">
+									<button type="button" class="consent-btn consent-btn-tertiary btn-block" id="consent-banner-btn-all">{lang key='consentAll' section='consent'}</button>
+								</div>
+								<div>
+									<button type="button"
+											class="consent-btn consent-btn-outline-primary btn-block"
+											id="consent-banner-btn-close"
+											title="{lang key='close' section='consent'}">
+										{lang key='close' section='consent'}
+									</button>
+								</div>
+								<div>
+									<button type="button" class="consent-btn consent-btn-secondary btn-block" id="consent-banner-btn-settings">{lang key='configure' section='consent'}</button>
+								</div>
 							</div>
 						</div>
 					{/block}

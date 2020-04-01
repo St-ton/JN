@@ -50,12 +50,10 @@ class Migration_20200319145600 extends Migration implements IMigration
         $this->setLocalization('eng', 'consent', 'consentAlways', 'Agree for all sessions');
         $this->setLocalization('ger', 'consent', 'consentAll', 'Alle akzeptieren');
         $this->setLocalization('eng', 'consent', 'consentAll', 'Accept all');
-        $this->setLocalization('ger', 'consent', 'close', 'Diesen Hinweis schließen');
-        $this->setLocalization('eng', 'consent', 'close', 'Close this note');
-        $this->setLocalization('ger', 'consent', 'closeTittle', 'Schließen');
-        $this->setLocalization('eng', 'consent', 'closeTittle', 'Close');
-        $this->setLocalization('ger', 'consent', 'configure', 'Einzeln konfigurieren');
-        $this->setLocalization('eng', 'consent', 'configure', 'Individual configuration');
+        $this->setLocalization('ger', 'consent', 'close', 'Schließen');
+        $this->setLocalization('eng', 'consent', 'close', 'Close');
+        $this->setLocalization('ger', 'consent', 'configure', 'Konfigurieren');
+        $this->setLocalization('eng', 'consent', 'configure', 'Configuration');
         $this->setLocalization('ger', 'consent', 'consentDescription', 'Durch Klicken auf „Alle akzeptieren“ gestatten ' .
             'Sie den Einsatz folgender Dienste auf unserer Website: %s. Sie können die Einstellung jederzeit ändern ' .
             '(Fingerabdruck-Icon links unten). Weitere Details finden Sie unte <i>Konfigurieren</i> und in unserer ' .

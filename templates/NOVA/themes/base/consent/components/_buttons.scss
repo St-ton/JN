@@ -8,13 +8,30 @@
 	.#{$prefix}-btn-outline-#{$color} { @include button-outline-variant-consent($value); }
 }
 
-.#{$prefix}-btn-helper { margin: -.25rem; display: flex; flex-wrap: wrap;
-	> .#{$prefix}-btn { margin: .25rem; flex-grow: 1; }
+.#{$prefix}-btn-helper {
+	margin: -.25rem;
+	display: flex;
+	flex-wrap: wrap;
+
+	> div {
+		padding: 0 .25rem;
+		width: 50%;
+		> .#{$prefix}-btn {
+			margin: .25rem;
+			flex-grow: 1;
+			font-weight: $font-weight-semibold;
+		}
+	}
+
+	.#{$prefix}-accept {
+		width: 100%;
+		margin-bottom: .5rem;
+	}
 }
 
 .#{$prefix}-btn-block { width: 100%; }
 
-.#{$prefix}-btn-sm { padding: .45rem .85rem; font-size: .75rem; }
+.#{$prefix}-btn-sm { padding: .45rem .85rem; font-size: .75rem; font-weight: $font-weight-semibold;}
 
 .#{$prefix}-btn-holder {
 	display: flex;

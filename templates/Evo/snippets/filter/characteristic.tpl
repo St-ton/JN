@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {$is_dropdown = false}
 {$limit = $Einstellungen.template.productlist.filter_max_options}
 {$collapseInit = false}

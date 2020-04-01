@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='checkout-modules-paypal-bestellabschluss'}
     {block name='checkout-modules-paypal-bestellabschluss-script'}
         {inline_script}<script>

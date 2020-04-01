@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='snippets-scroll-top'}
     {block name='snippets-scroll-top-main'}
         <div class="smoothscroll-top">

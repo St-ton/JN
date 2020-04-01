@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\OPC;
 
@@ -399,8 +395,6 @@ class Service
             $options = [];
 
             if ($class === Characteristic::class) {
-                $name = 'Merkmale';
-
                 foreach ($availableFilter->getOptions() as $option) {
                     foreach ($option->getOptions() as $suboption) {
                         /** @var Option $suboption */

@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Helpers;
 
@@ -285,8 +281,8 @@ class CMS
             'dStart DESC'
         );
         foreach ($history as $item) {
-            $item->cURL     = URL::buildURL($item, \URLART_NEWS);
-            $item->cURLFull = URL::buildURL($item, \URLART_NEWS, true);
+            $item->cURL     = URL::buildURL($item, \URLART_NEWSLETTER);
+            $item->cURLFull = URL::buildURL($item, \URLART_NEWSLETTER, true);
         }
 
         return $history;

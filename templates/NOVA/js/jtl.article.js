@@ -1,8 +1,3 @@
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
-
 (function($, document, window, viewport){
     'use strict';
 
@@ -52,7 +47,7 @@
             this.options = ArticleClass.DEFAULTS;
             this.gallery = null;
         },
-        
+
         onLoad: function() {
             if (this.isSingleArticle()) {
                 var that = this;
@@ -113,57 +108,16 @@
             /*
              * product slider and zoom (details)
              */
-            function slickinit(fullscreen, current = 0)
+            function slickinit()
             {
-                var previewSlidesToShow = 5;
-
-                var options = {
-                    lazyLoad: 'ondemand',
-                    infinite: true,
-                    dots:     false,
-                    swipeToSlide:   true,
-                    arrows:   false,
-                    speed: 500,
-                    fade: true,
-                    cssEase: 'linear',
-                    asNavFor: '#gallery_preview',
-                    responsive:     [
-                        {
-                            breakpoint: 992,
-                            settings: {
-                                dots: true
-                            }
-                        }
-                    ]
-                };
-
-                var options_preview = {
-                    lazyLoad:       'ondemand',
-                    slidesToShow:   previewSlidesToShow,
-                    slidesToScroll: 1,
-                    asNavFor:       '#gallery',
-                    dots:           false,
-                    swipeToSlide:   true,
-                    arrows:         true,
-                    focusOnSelect:  true,
-                    responsive:     [
-                        {
-                            breakpoint: 768,
-                            settings:   {
-                                slidesToShow: 4
-                            }
-                        },
-                        {
-                            breakpoint: 576,
-                                settings: {
-                                slidesToShow: 3
-                            }
-                        }
-                    ]
-                };
-
-                $('#gallery').slick(options);
-                $('#gallery_preview').slick(options_preview);
+                $('.initial-slick-dots').on('click', function () {
+                    let mainNode = $('#gallery');
+                    mainNode.removeClass('slick-lazy');
+                    $.evo.extended().initSlick(mainNode, mainNode.data('slick-type'));
+                    if(mainNode.slick('getSlick').slideCount > mainNode.slick('slickGetOption', 'slidesToShow')) {
+                        mainNode.slick('slickGoTo', 1);
+                    }
+                });
             }
 
             function toggleFullscreen(fullscreen = false)
@@ -199,7 +153,7 @@
                 });
             }
 
-            slickinit(false);
+            slickinit();
 
             if (wrapper[0].id.indexOf(this.options.modal.wrapper_modal.substr(1)) === -1) {
                 addClickListener();

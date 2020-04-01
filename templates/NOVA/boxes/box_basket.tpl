@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='boxes-box-basket'}
     {card class="box box-basket mb-4" id="sidebox{$oBox->getID()}"}
         <div class="box-body text-center">

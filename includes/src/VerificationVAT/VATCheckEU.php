@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\VerificationVAT;
 
@@ -60,6 +56,15 @@ class VATCheckEU extends AbstractVATCheck
      */
     public function doCheckID(string $ustID): array
     {
+        if (!extension_loaded('soap')) {
+            return [
+                'success'   => false,
+                'errortype' => 'core',
+                'errorcode' => -1,
+                'errorinfo' => 'VAT check not possible! Module "php_soap" was disabled.'
+            ];
+        }
+
         $vatParser = new VATCheckVatParser($this->condenseSpaces($ustID));
         if ($vatParser->parseVatId() === true) {
             [$countryCode, $vatNumber] = $vatParser->getIdAsParams();

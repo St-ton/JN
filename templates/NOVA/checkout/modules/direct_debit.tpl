@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='checkout-modules-direct-debit'}
     <fieldset id="payment_debit">
        <legend>{lang key='paymentOptionDebitDesc' section='shipping payment'}</legend>

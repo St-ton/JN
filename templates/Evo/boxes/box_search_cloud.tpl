@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 <script>
     $(window).on('load', function () {
         var searchItems     = {$oBox->getItems()|json_encode},

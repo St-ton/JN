@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 <h1>{lang key='newsMonthOverview' section='news'}</h1>
 
 {if $noarchiv}

@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='boxes-box-wishlist'}
     {if $oBox->getItems()|count > 0}
         {card class="box box-wishlist mb-md-4" id="sidebox{$oBox->getID()}"}

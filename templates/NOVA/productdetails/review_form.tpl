@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productdetails-review-form'}
     {block name='productdetails-review-form-include-header'}
         {include file='layout/header.tpl'}

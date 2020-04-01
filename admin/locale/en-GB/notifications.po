@@ -115,3 +115,9 @@ msgstr "At least one special page was created several times for the same custome
 
 msgid "Safe mode enabled."
 msgstr "Safe mode active. Some functions might not be available."
+
+msgid "ustIdMiasCheckTitle"
+msgstr "VAT-ID Check"
+
+msgid "ustIdMiasCheckMessage"
+msgstr "If you want to use the european VAT tax check through the EU MIAS system, please install the PHP module 'php_soap'."

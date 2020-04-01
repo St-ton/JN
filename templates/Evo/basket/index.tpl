@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='header'}
     {include file='layout/header.tpl'}
 {/block}
@@ -10,15 +6,15 @@
     {opcMountPoint id='opc_before_heading'}
 
     <h1>{lang key='basket' section='global'}</h1>
-    
+
     {include file='snippets/extension.tpl'}
-    
+
     {if !empty($WarenkorbVersandkostenfreiHinweis) && $Warenkorb->PositionenArr|@count > 0}
         <div class="alert alert-info">
             <span class="basket_notice">{$WarenkorbVersandkostenfreiHinweis}</span>
         </div>
     {/if}
-    
+
     {if ($Warenkorb->PositionenArr|@count > 0)}
         {block name='basket'}
             {opcMountPoint id='opc_before_basket'}
@@ -65,7 +61,7 @@
                         {include file='snippets/shipping_calculator.tpl' checkout=true}
                     </form>
                 {/if}
-    
+
                 {if $oArtikelGeschenk_arr|@count > 0}
                     {block name='basket-freegift'}
                         <div id="freegift" class="panel panel-info">
@@ -98,7 +94,7 @@
                         </div>
                     {/block}
                 {/if}
-    
+
                 {if !empty($xselling->Kauf) && count($xselling->Kauf->Artikel) > 0}
                     {block name='basket-xsell'}
                         {lang key='basketCustomerWhoBoughtXBoughtAlsoY' section='global' assign='panelTitle'}

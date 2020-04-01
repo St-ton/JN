@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Alert\Alert;
 use JTL\Campaign;
@@ -715,7 +711,6 @@ if ($step === 'uebersicht') {
             DATE_FORMAT(dStart, '%d.%m.%Y %H:%i') AS Datum
             FROM tnewsletterhistory
             WHERE kSprache = :lid
-                AND nAnzahl > 0
             ORDER BY dStart DESC
             LIMIT " . $pagiHistory->getLimitSQL(),
         ['lid' => (int)$_SESSION['kSprache']],

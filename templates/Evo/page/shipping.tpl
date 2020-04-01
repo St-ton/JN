@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {if isset($Einstellungen.global.global_versandermittlung_anzeigen)
     && $Einstellungen.global.global_versandermittlung_anzeigen === 'Y'
     && (!isset($smarty.get.shipping_calculator)

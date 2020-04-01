@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {foreach $oBox->getItems() as $Merkmal}
     {assign var=kMerkmal value=$Merkmal->kMerkmal}
     <section class="panel panel-default box box-filter-characteristics" id="sidebox{$oBox->getID()}-{$Merkmal->kMerkmal}">

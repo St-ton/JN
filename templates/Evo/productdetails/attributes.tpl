@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {if $showAttributesTable}
     <div class="product-attributes">
     {block name='productdetails-attributes'}

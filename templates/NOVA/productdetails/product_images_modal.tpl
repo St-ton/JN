@@ -1,7 +1,3 @@
-{**
-* @copyright (c) JTL-Software-GmbH
-* @license https://jtl-url.de/jtlshoplicense
-*}
 {block name='productdetails-product-images-modal'}
 <div class="modal modal-fullview fade" id="productImagesModal" tabindex="-1" role="dialog" aria-labelledby="productImagesModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">

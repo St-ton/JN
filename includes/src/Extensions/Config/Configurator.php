@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Extensions\Config;
 
@@ -90,8 +86,7 @@ class Configurator
                  FROM tartikelkonfiggruppe
                  JOIN tkonfigitem
                     ON tkonfigitem.kKonfiggruppe = tartikelkonfiggruppe.kKonfiggruppe
-                 WHERE tartikelkonfiggruppe.kArtikel = :pid
-                 GROUP BY tkonfigitem.kKonfiggruppe',
+                        AND tartikelkonfiggruppe.kArtikel = :pid',
             ['pid' => $productID],
             ReturnType::SINGLE_OBJECT
         ) !== false;

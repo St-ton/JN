@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Extensions\Config;
 
@@ -277,7 +273,7 @@ class Item implements JsonSerializable
      */
     private function addProduct(int $customerGroupID, int $languageID): void
     {
-        $options                             = Artikel::getExportOptions();
+        $options                             = Artikel::getDefaultOptions();
         $options->nKeineSichtbarkeitBeachten = 1;
 
         $this->oArtikel = new Artikel();

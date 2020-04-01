@@ -2,6 +2,7 @@
 
 use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
+use JTL\Helpers\Request;
 use JTL\Shop;
 use function Functional\filter;
 use function Functional\flatten;
@@ -344,3 +345,22 @@ function filteredConfData(array $confData, string $filter): array
         return !\in_array($e->cWertName, $keysToFilter, true);
     });
 }
+
+/**
+ * @param int $sectionID
+ * @return string
+ */
+function filteredConfDescription(int $sectionID): string
+{
+    switch (Request::verifyGPDataString('group')) {
+        case 'configgroup_5_product_question':
+            $desc = __('prefDesc5ProductQuestion');
+            break;
+        default:
+            $desc = Shop::Smarty()->getConfigVars('prefDesc' . $sectionID);
+            break;
+    }
+
+    return $desc;
+}
+

@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productlist-item-list'}
     {if $Einstellungen.template.productlist.variation_select_productlist === 'N'}
         {assign var=hasOnlyListableVariations value=0}

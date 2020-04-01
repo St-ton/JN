@@ -1,14 +1,11 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Alert\Alert;
 use JTL\Customer\Customer;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
+use JTL\Newsletter\Controller;
 use JTL\Newsletter\Helper;
 use JTL\Optin\Optin;
 use JTL\Optin\OptinNewsletter;
@@ -27,6 +24,7 @@ $alertHelper = Shop::Container()->getAlertService();
 $linkHelper  = Shop::Container()->getLinkService();
 $kLink       = $linkHelper->getSpecialPageID(LINKTYP_NEWSLETTER, false);
 $valid       = Form::validateToken();
+$controller  = new Controller($db, Shop::getSettings([\CONF_NEWSLETTER]));
 if ($kLink === false) {
     $bFileNotFound       = true;
     Shop::$kLink         = $linkHelper->getSpecialPageID(LINKTYP_404);
@@ -88,7 +86,7 @@ if ($valid && Request::verifyGPCDataInt('abonnieren') > 0) {
     }
 } elseif (Request::getInt('show') > 0) {
     $option = 'anzeigen';
-    if (Helper::customerGroupHasHistory(Request::getInt('show'), Frontend::getCustomer()->getID())) {
+    if ($history = $controller->getHistory(Frontend::getCustomer()->getGroupID(), Request::getInt('show'))) {
         $smarty->assign('oNewsletterHistory', $history);
     }
 }

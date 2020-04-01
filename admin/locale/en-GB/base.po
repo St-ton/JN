@@ -275,6 +275,9 @@ msgstr " Hour"
 msgid "hours"
 msgstr " Hours"
 
+msgid "seconds"
+msgstr "Seconds"
+
 msgid "errorEnterValidDate"
 msgstr "Please enter a valid date."
 
@@ -1918,6 +1921,27 @@ msgstr "Close"
 
 msgid "none"
 msgstr "None"
+
+msgid "filterManufacturers"
+msgstr "Manufacturers"
+
+msgid "filterPriceRange"
+msgstr "Price range"
+
+msgid "filterRatings"
+msgstr "Reviews"
+
+msgid "filterSearch"
+msgstr "Search filter"
+
+msgid "filterSearchSpecial"
+msgstr "Special items"
+
+msgid "filterCategory"
+msgstr "Categories"
+
+msgid "filterCharacteristics"
+msgstr "Characteristics"
 
 msgid "successSave"
 msgstr "Successfully saved"

@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 <input type="submit" name="fake" class="hidden">
 
 <table class="table table-striped order-items layout-fixed hyphens">

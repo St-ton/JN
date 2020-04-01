@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productdetails-config-options'}
     <div id="cfg-accordion" class="accordion">
         {foreach $Artikel->oKonfig_arr as $configGroup}
@@ -97,10 +93,12 @@
                                             {$bSelectable = 1}
                                         {/if}
                                         {$kKonfigitem = $oItem->getKonfigitem()}
-                                        {$checkboxActive = (!empty($aKonfigerror_arr)
-                                            && isset($smarty.post.item)
-                                            && isset($smarty.post.item[$kKonfiggruppe])
-                                            && $oItem->getKonfigitem()|in_array:$smarty.post.item[$kKonfiggruppe])
+                                        {$checkboxActive = (isset($nKonfigitem_arr)
+                                                && in_array($oItem->getKonfigitem(), $nKonfigitem_arr))
+                                            || (!empty($aKonfigerror_arr)
+                                                && isset($smarty.post.item)
+                                                && isset($smarty.post.item[$kKonfiggruppe])
+                                                && $oItem->getKonfigitem()|in_array:$smarty.post.item[$kKonfiggruppe])
                                             || ($oItem->getSelektiert()
                                                 && (!isset($aKonfigerror_arr)
                                                     || !$aKonfigerror_arr))}

@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Catalog\Product;
 
@@ -75,10 +71,10 @@ class ArtikelListe
             Shop::Container()->getCache()->set($cacheID, $items, [\CACHING_GROUP_CATEGORY]);
         }
         if (\is_array($items)) {
-            $options = Artikel::getDefaultOptions();
+            $defaultOptions = Artikel::getDefaultOptions();
             foreach ($items as $item) {
                 $product = new Artikel();
-                $product->fuelleArtikel((int)$item->kArtikel, $options);
+                $product->fuelleArtikel((int)$item->kArtikel, $defaultOptions);
                 $this->elemente[] = $product;
             }
         }
@@ -142,9 +138,7 @@ class ArtikelListe
             );
             $defaultOptions = Artikel::getDefaultOptions();
             foreach ($items as $item) {
-                $product = new Artikel();
-                $product->fuelleArtikel((int)$item->kArtikel, $defaultOptions);
-                $this->elemente[] = $product;
+                $this->elemente[] = (new Artikel())->fuelleArtikel((int)$item->kArtikel, $defaultOptions);
             }
             Shop::Container()->getCache()->set(
                 $cacheID,
@@ -172,9 +166,8 @@ class ArtikelListe
         $total          = 0;
         $defaultOptions = Artikel::getDefaultOptions();
         for ($i = $start; $i < $cnt; $i++) {
-            $product = new Artikel();
-            $product->fuelleArtikel($productIDs[$i], $defaultOptions);
-            if (!empty($product->kArtikel) && $product->kArtikel > 0) {
+            $product = (new Artikel())->fuelleArtikel($productIDs[$i], $defaultOptions);
+            if ($product !== null && $product->kArtikel > 0) {
                 ++$total;
                 $this->elemente[] = $product;
             }
@@ -242,9 +235,7 @@ class ArtikelListe
         }
         $defaultOptions = Artikel::getDefaultOptions();
         foreach ($items as $obj) {
-            $product = new Artikel();
-            $product->fuelleArtikel((int)$obj->kArtikel, $defaultOptions);
-            $this->elemente[] = $product;
+            $this->elemente[] = (new Artikel())->fuelleArtikel((int)$obj->kArtikel, $defaultOptions);
         }
 
         return $this->elemente;
@@ -320,9 +311,9 @@ class ArtikelListe
             Shop::Container()->getCache()->set($cacheID, $items, $cacheTags);
         }
         if (\is_array($items)) {
-            $options = Artikel::getDefaultOptions();
+            $defaultOptions = Artikel::getDefaultOptions();
             foreach ($items as $item) {
-                $this->elemente[] = (new Artikel())->fuelleArtikel((int)$item->kArtikel, $options);
+                $this->elemente[] = (new Artikel())->fuelleArtikel((int)$item->kArtikel, $defaultOptions);
             }
         }
 

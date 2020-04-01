@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Cron\Starter;
 
@@ -45,7 +41,6 @@ class StarterFactory
                 $this->starter->setURL(Shop::getURL() . '/' . \PFAD_INCLUDES . 'cron_inc.php');
                 break;
             case 'N':
-            case 'tpl':
             default:
                 $this->starter = new DummyStarter();
                 break;

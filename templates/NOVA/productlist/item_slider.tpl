@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productlist-item-slider'}
     {link href=$Artikel->cURLFull}
         {block name='productlist-item-slider-link'}

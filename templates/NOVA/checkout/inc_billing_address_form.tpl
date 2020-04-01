@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='checkout-inc-billing-address-form'}
     <fieldset>
         {block name='checkout-inc-billing-address-form-legend'}
@@ -12,7 +8,7 @@
                     {lang key='myPersonalData'}
                 {/if}
             </div>
-            {if isset($checkout)}
+            {if isset($checkout) && $Einstellungen.kaufabwicklung.bestellvorgang_unregistriert === 'Y'}
                 <div>
                     {lang key='guestOrRegistered' section='checkout'}
                 </div>

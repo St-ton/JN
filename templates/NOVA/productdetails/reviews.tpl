@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productdetails-reviews'}
     <div class="reviews mt-3">
         {block name='productdetails-reviews-content'}

@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {has_boxes position='left' assign='hasLeftBox'}
 {if isset($bWarenkorbHinzugefuegt) && $bWarenkorbHinzugefuegt}
     {include file='productdetails/pushed_success.tpl'}

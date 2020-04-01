@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='account-downloads'}
     {if !empty($Bestellung->oDownload_arr)}
         {block name='account-downloads-subheading'}

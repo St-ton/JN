@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Sitemap\Factories;
 
@@ -26,8 +22,8 @@ interface FactoryInterface
     public function __construct(DbInterface $db, array $config, string $baseURL, string $baseImageURL);
 
     /**
-     * @param array           $languages
-     * @param LanguageModel[] $customerGroups
+     * @param LanguageModel[] $languages
+     * @param int[]           $customerGroups
      * @return Generator
      */
     public function getCollection(array $languages, array $customerGroups): Generator;

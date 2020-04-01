@@ -14,18 +14,16 @@
                 <hr class="mb-n3">
             </div>
             <div class="card-body">
-                <div class="form-group form-row align-items-center{if isset($cError_arr.cGruppe)} error{/if}">
+                <div class="form-group form-row align-items-center{if isset($cError_arr.cGruppe)} form-error{/if}">
                     <label class="col col-sm-4 col-form-label text-sm-right" for="cGruppe">{__('name')}:</label>
                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         <input class="form-control" type="text" name="cGruppe" id="cGruppe" value="{if isset($oAdminGroup->cGruppe)}{$oAdminGroup->cGruppe}{/if}" />
-                        {if isset($cError_arr.cGruppe)}<span class="input-group-addon error" title="{__('FillOut')}"><i class="fa fa-exclamation-triangle"></i></span>{/if}
                     </div>
                 </div>
-                <div class="form-group form-row align-items-center{if isset($cError_arr.cBeschreibung)} error{/if}">
+                <div class="form-group form-row align-items-center{if isset($cError_arr.cBeschreibung)} form-error{/if}">
                     <label class="col col-sm-4 col-form-label text-sm-right" for="cBeschreibung">{__('description')}:</label>
                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         <input class="form-control" type="text" id="cBeschreibung" name="cBeschreibung" value="{if isset($oAdminGroup->cBeschreibung)}{$oAdminGroup->cBeschreibung}{/if}" />
-                        {if isset($cError_arr.cBeschreibung)}<span class="input-group-addon error" title="{__('FillOut')}"><i class="fa fa-exclamation-triangle"></i></span>{/if}
                     </div>
                 </div>
             </div>

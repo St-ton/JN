@@ -100,8 +100,4 @@
 		.dropdown-item { flex-direction: row; align-items: center; }
 		.path { margin-left: auto; padding-left: $spacer; }
 	}
-
-	@include media-breakpoint-down(md) { display: none;
-		&.show { display: none; }
-	}
 }

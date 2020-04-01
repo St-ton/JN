@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='checkout-step0-login-or-register'}
     {block name='checkout-step0-login-or-register-alert'}
         {if !empty($fehlendeAngaben) && !$alertNote}

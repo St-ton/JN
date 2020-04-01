@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {assign var='isOnCompareList' value=false}
 {if isset($smarty.session.Vergleichsliste)}
     {foreach $smarty.session.Vergleichsliste->oArtikel_arr as $product}

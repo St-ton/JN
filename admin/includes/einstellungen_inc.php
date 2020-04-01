@@ -363,4 +363,3 @@ function filteredConfDescription(int $sectionID): string
 
     return $desc;
 }
-

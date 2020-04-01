@@ -1,0 +1,45 @@
+
+.#{$prefix}-btn { display: inline-block; border-radius: $border-radius; border: 0; padding: .45rem .85rem; font-size: .75rem; outline: 0; transition: all .2s; cursor: pointer; border: .0625rem solid transparent;
+	@include media-breakpoint-up(md) { padding: .85rem 1.5rem; font-size: .875rem; }
+}
+
+@each $color, $value in $theme-colors-consent {
+	.#{$prefix}-btn-#{$color} { @include button-variant-consent($value); }
+	.#{$prefix}-btn-outline-#{$color} { @include button-outline-variant-consent($value); }
+}
+
+.#{$prefix}-btn-helper { margin: -.25rem; display: flex; flex-wrap: wrap;
+	> .#{$prefix}-btn { margin: .25rem; flex-grow: 1; }
+}
+
+.#{$prefix}-btn-block { width: 100%; }
+
+.#{$prefix}-btn-sm { padding: .45rem .85rem; font-size: .75rem; }
+
+.#{$prefix}-btn-holder {
+	display: flex;
+	-webkit-box-orient: vertical;
+	-webkit-box-direction: normal;
+	flex-direction: column;
+	align-items: left;
+
+	@include media-breakpoint-up(md) {
+		-webkit-box-orient: horizontal;
+		-webkit-box-direction: normal;
+		flex-direction: row;
+		-webkit-box-align: center;
+		align-items: center;
+
+		&>div:last-child {
+			margin: 1rem 0 0;
+		}
+	}
+	&>div:last-child {
+		margin: 0 0 0 auto;
+	}
+
+	&>div:first-child {
+		-webkit-box-flex: 1;
+		flex-grow: 1;
+	}
+}

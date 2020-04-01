@@ -132,12 +132,10 @@
     <Minify>
         <CSS Name="clear.css">
             <File Path="themes/clear/clear.css"/>
-            <File Path="themes/base/consent.css"/>
             <File Path="themes/clear/custom.css"/>
         </CSS>
         <CSS Name="dark.css">
             <File Path="themes/dark/dark.css"/>
-            <File Path="themes/base/consent.css"/>
             <File Path="themes/dark/custom.css"/>
         </CSS>
         <JS Name="jtl3.js">

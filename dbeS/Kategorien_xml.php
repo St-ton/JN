@@ -115,20 +115,17 @@ function bearbeiteInsert($xml)
         );
         $oSeoAssoc_arr = getSeoFromDB($Kategorie->kKategorie, 'kKategorie', null, 'kSprache');
 
-        //Kategorie
+        $db->delete('tseo', ['kKey', 'cKey'], [$Kategorie->kKategorie, 'kKategorie']);
         $kategorie_arr = mapArray($xml, 'tkategorie', $GLOBALS['mKategorie']);
         if ($kategorie_arr[0]->kKategorie > 0) {
             if (!$kategorie_arr[0]->cSeo) {
                 $kategorie_arr[0]->cSeo = getFlatSeoPath($kategorie_arr[0]->cName);
             }
-            $kategorie_arr[0]->cSeo                  = getSeo($kategorie_arr[0]->cSeo);
+            $kategorie_arr[0]->cSeo                  = checkSeo(getSeo($kategorie_arr[0]->cSeo));
             $kategorie_arr[0]->dLetzteAktualisierung = 'now()';
             $kategorie_arr[0]->lft                   = isset($oDataOld->lft) ? $oDataOld->lft : 0;
             $kategorie_arr[0]->rght                  = isset($oDataOld->rght) ? $oDataOld->rght : 0;
             $kategorie_arr[0]->nLevel                = isset($oDataOld->nLevel) ? $oDataOld->nLevel : 0;
-            if (!isset($oDataOld->cSeo) || $oDataOld->cSeo !== $kategorie_arr[0]->cSeo) {
-                $kategorie_arr[0]->cSeo = checkSeo($kategorie_arr[0]->cSeo);
-            }
             DBInsertOnExistUpdate('tkategorie', $kategorie_arr, ['kKategorie']);
             // Insert into tredirect weil sich das SEO geändert hat
             if (isset($oDataOld->cSeo)) {
@@ -167,17 +164,6 @@ function bearbeiteInsert($xml)
                 if (!isset($oShopSpracheAssoc_arr[$kategoriesprache_arr[$i]->kSprache])) {
                     continue;
                 }
-                $oSeoOld = $db->queryPrepared(
-                    'SELECT cSeo
-                        FROM tkategoriesprache
-                        WHERE kKategorie = :categoryID
-                            AND kSprache = :langID',
-                    [
-                        'categoryID' => $Kategorie->kKategorie,
-                        'langID'     => (int)$kategoriesprache_arr[$i]->kSprache,
-                    ],
-                    1
-                );
                 if (!$kategoriesprache_arr[$i]->cSeo) {
                     $kategoriesprache_arr[$i]->cSeo = $kategoriesprache_arr[$i]->cName;
                 }
@@ -187,10 +173,7 @@ function bearbeiteInsert($xml)
                 if (!$kategoriesprache_arr[$i]->cSeo) {
                     $kategoriesprache_arr[$i]->cSeo = $kategorie_arr[0]->cName;
                 }
-                $kategoriesprache_arr[$i]->cSeo = getSeo($kategoriesprache_arr[$i]->cSeo);
-                if (!isset($oSeoOld->cSeo) || $oSeoOld->cSeo !== $kategoriesprache_arr[$i]->cSeo) {
-                    $kategoriesprache_arr[$i]->cSeo = checkSeo($kategoriesprache_arr[$i]->cSeo);
-                }
+                $kategoriesprache_arr[$i]->cSeo = checkSeo(getSeo($kategoriesprache_arr[$i]->cSeo));
                 DBInsertOnExistUpdate('tkategoriesprache', [$kategoriesprache_arr[$i]], ['kKategorie', 'kSprache']);
 
                 //insert in tseo

@@ -1,6 +1,18 @@
 
-.#{$prefix}-show-more { text-align: right; display: block; margin-bottom: 1rem;
-	@include media-breakpoint-up(md) { float: right; }
+.#{$prefix}-show-more {
+	text-align: right;
+	display: block;
+	margin: 0;
+	@include media-breakpoint-up(md) {
+		float: right;
+	}
+	@include media-breakpoint-down(md) {
+	 display: flex;
+	 -webkit-box-align: center;
+	 align-items: center;
+	 font-size: .8rem;
+	 margin: 1rem 0;
+	}
 }
 
 .#{$prefix}-more-description { background: $rysywhite; padding: 1rem; border-radius: $border-radius; margin-top: 1rem; }

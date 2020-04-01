@@ -9,6 +9,7 @@ Programmier-Tipps
     :hidden:
 
     alerts
+    notifications
     shopclass
     pagination
     backend_filter

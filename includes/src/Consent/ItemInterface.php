@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Consent;
 
@@ -74,7 +70,7 @@ interface ItemInterface
      * @param int|null $idx
      * @return string
      */
-    public function getTOS(int $idx = null): string;
+    public function getPrivacyPolicy(int $idx = null): string;
 
     /**
      * @param string   $tos
@@ -91,4 +87,34 @@ interface ItemInterface
      * @param int $currentLanguageID
      */
     public function setCurrentLanguageID(int $currentLanguageID): void;
+
+    /**
+     * @return string
+     */
+    public function getItemID(): string;
+
+    /**
+     * @param string $itemID
+     */
+    public function setItemID(string $itemID): void;
+
+    /**
+     * @return int
+     */
+    public function getPluginID(): int;
+
+    /**
+     * @param int $pluginID
+     */
+    public function setPluginID(int $pluginID): void;
+
+    /**
+     * @return bool
+     */
+    public function isActive(): bool;
+
+    /**
+     * @param bool $active
+     */
+    public function setActive(bool $active): void;
 }

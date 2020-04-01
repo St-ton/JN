@@ -6,9 +6,6 @@
  *
  * Parameters are:
  * ('jtl_token': '', 'path': '')
- *
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
  */
 
 use JTL\Helpers\Form;

@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\OPC\Portlets\Banner;
 
@@ -22,11 +18,7 @@ class Banner extends Portlet
      */
     public function getProduct(int $productID)
     {
-        $defaultOptions = Artikel::getDefaultOptions();
-        $product        = new Artikel();
-        $product->fuelleArtikel($productID, $defaultOptions);
-
-        return $product;
+        return (new Artikel())->fuelleArtikel($productID, Artikel::getDefaultOptions());
     }
 
     /**

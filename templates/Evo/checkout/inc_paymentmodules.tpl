@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {if !isset($abschlussseite) || $abschlussseite !== 1}
     {if $oPlugin !== null && $oPlugin instanceof JTL\Plugin\PluginInterface}
         {$method = $oPlugin->getPaymentMethods()->getMethodByID($Bestellung->Zahlungsart->cModulId)}

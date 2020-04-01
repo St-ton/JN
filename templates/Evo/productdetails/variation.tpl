@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {assign var='modal' value=isset($smarty.get.quickView) && $smarty.get.quickView == 1}
 {if isset($Artikel->Variationen) && $Artikel->Variationen|@count > 0 && !$showMatrix}
     {assign var="VariationsSource" value="Variationen"}

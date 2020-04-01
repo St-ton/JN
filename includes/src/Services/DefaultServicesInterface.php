@@ -1,14 +1,11 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Services;
 
 use JTL\Backend\AdminAccount;
 use JTL\Boxes\FactoryInterface;
 use JTL\Cache\JTLCacheInterface;
+use JTL\Consent\ManagerInterface;
 use JTL\DB\DbInterface;
 use JTL\DB\Services\GcServiceInterface;
 use JTL\Debug\JTLDebugBar;
@@ -71,7 +68,7 @@ interface DefaultServicesInterface extends ContainerInterface
      * @throws ServiceNotFoundException
      * @throws CircularReferenceException
      */
-    public function getBackendLogService() : LoggerInterface;
+    public function getBackendLogService(): LoggerInterface;
 
     /**
      * @return Service
@@ -123,22 +120,27 @@ interface DefaultServicesInterface extends ContainerInterface
     /**
      * @return CaptchaServiceInterface
      */
-    public function getCaptchaService() : CaptchaServiceInterface;
+    public function getCaptchaService(): CaptchaServiceInterface;
 
     /**
      * @return NewsServiceInterface
      */
-    public function getNewsService() : NewsServiceInterface;
+    public function getNewsService(): NewsServiceInterface;
 
     /**
      * @return AlertServiceInterface
      */
-    public function getAlertService() : AlertServiceInterface;
+    public function getAlertService(): AlertServiceInterface;
+
+    /**
+     * @return ManagerInterface
+     */
+    public function getConsentManager(): ManagerInterface;
 
     /**
      * @return GetText
      */
-    public function getGetText() : GetText;
+    public function getGetText(): GetText;
 
     /**
      * @return AdminAccount
@@ -153,5 +155,5 @@ interface DefaultServicesInterface extends ContainerInterface
     /**
      * @return CountryServiceInterface
      */
-    public function getCountryService() : CountryServiceInterface;
+    public function getCountryService(): CountryServiceInterface;
 }

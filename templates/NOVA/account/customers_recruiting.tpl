@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='account-customers-recruiting'}
     {block name='account-customers-recruiting-heading'}
         <h1>{lang key='kwkName' section='login'}</h1>

@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='checkout-inc-billing-address'}
     <ul class="list-unstyled">
         {if isset($orderDetail)}

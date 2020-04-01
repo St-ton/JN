@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productdetails-config-container'}
     {block name='productdetails-config-container-main'}
         {modal id="cfg-container" class="mb-5" size="xl" title="{lang key="configure"}"}

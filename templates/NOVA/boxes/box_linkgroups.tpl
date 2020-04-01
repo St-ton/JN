@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='boxes-box-linkgroups'}
     {card class="box box-linkgroup mb-md-7 text-left" id="box{$oBox->getID()}" no-body=true}
         {block name='boxes-box-linkgroups-toggle-title'}

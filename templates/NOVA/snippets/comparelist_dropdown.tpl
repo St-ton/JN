@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='snippets-comparelist-dropdown'}
     {block name='snippets-comparelist-dropdown-products'}
         <div class="table-responsive max-h-sm lg-max-h">

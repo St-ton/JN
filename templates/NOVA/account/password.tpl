@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='account-password'}
     {block name='account-password-include-header'}
         {include file='layout/header.tpl'}

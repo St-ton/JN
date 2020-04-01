@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='account-delete-account'}
     {block name='heading'}
         <h1>{lang key='deleteAccount' section='login'}</h1>

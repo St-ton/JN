@@ -1,9 +1,6 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
+use Illuminate\Support\Collection;
 use JTL\Cart\Cart;
 use JTL\Cart\CartItem;
 use JTL\Catalog\Category\Kategorie;
@@ -255,7 +252,7 @@ define('HOOK_NEWS_PAGE_DETAILANSICHT', 32);
  *
  * @file news.php
  * @param \JTL\News\Category category - since 5.0.0
- * @param Illuminate\Support\Collection items - since 5.0.0
+ * @param Collection items - since 5.0.0
  */
 define('HOOK_NEWS_PAGE_NEWSUEBERSICHT', 33);
 
@@ -790,9 +787,7 @@ define('HOOK_TOOLSGLOBAL_INC_SETZELINKS', 105);
 define('HOOK_TOOLSGLOBAL_INC_BERECHNEVERSANDPREIS', 106);
 
 /**
- * at the end of parseNewsText()
- *
- * @file tools.Global.php
+ * @removed in 5.0.0
  */
 define('HOOK_TOOLSGLOBAL_INC_SWITCH_PARSENEWSTEXT', 107);
 
@@ -1639,7 +1634,7 @@ define('HOOK_GET_ALL_CATEGORIES', 219);
 /**
  * @since 4.04
  * @file seite_inc.php
- * @param \Illuminate\Support\Collection - oNews_arr
+ * @param Collection - oNews_arr
  * @param array - cacheTags
  * @param bool  - cached
  */
@@ -1948,3 +1943,18 @@ define('HOOK_BESTELLABSCHLUSS_INC_BESTELLUNGINDB_LIEFERADRESSE_ALT', 305);
  * @param float qty
  */
 define('HOOK_WARENKORB_ERSTELLE_SPEZIAL_POS', 310);
+
+/**
+ * @since 5.0.0
+ * @file admin/io.php
+ * @param \JTL\Backend\AdminIO io
+ * @param string request
+ */
+define('HOOK_IO_HANDLE_REQUEST_ADMIN', 311);
+
+/**
+ * @since 5.0.0
+ * @file Manager.php
+ * @param Collection items - collection of JTL\Consent\ConsentModel\ConsentModel
+ */
+define('CONSENT_MANAGER_GET_ACTIVE_ITEMS', 320);

@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 <div>
     <canvas id="priceHistoryChart" width="400" height="150"></canvas>
 </div>

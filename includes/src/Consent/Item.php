@@ -1,11 +1,8 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Consent;
 
+use JTL\Model\DataModelInterface;
 use JTL\Shop;
 
 /**
@@ -15,9 +12,19 @@ use JTL\Shop;
 class Item implements ItemInterface
 {
     /**
-     * @var int|string
+     * @var int
      */
     private $id;
+
+    /**
+     * @var int
+     */
+    private $pluginID;
+
+    /**
+     * @var string
+     */
+    private $itemID;
 
     /**
      * @var string[]
@@ -50,11 +57,40 @@ class Item implements ItemInterface
     private $currentLanguageID;
 
     /**
-     * Item constructor.
+     * @var bool
      */
-    public function __construct()
+    private $active;
+
+    /**
+     * Item constructor.
+     * @param int|null $currentLanguageID
+     */
+    public function __construct(int $currentLanguageID = null)
     {
-        $this->currentLanguageID = Shop::getLanguageID();
+        $this->currentLanguageID = $currentLanguageID ?? Shop::getLanguageID();
+    }
+
+    /**
+     * @param ConsentModel|DataModelInterface $model
+     * @return $this
+     */
+    public function loadFromModel(DataModelInterface $model)
+    {
+        $this->setID($model->getId());
+        $this->setItemID($model->getItemID());
+        $this->setCompany($model->getCompany());
+        $this->setPluginID($model->getPluginID());
+        $this->setActive($model->getActive() === 1);
+        foreach ($model->getLocalization() as $localization) {
+            /** @var ConsentLocalizationModel $localization */
+            $langID = $localization->getLanguageID();
+            $this->setName($localization->getName(), $langID);
+            $this->setPrivacyPolicy($localization->getPrivacyPolicy(), $langID);
+            $this->setDescription($localization->getDescription(), $langID);
+            $this->setPurpose($localization->getPurpose(), $langID);
+        }
+
+        return $this;
     }
 
     /**
@@ -167,5 +203,53 @@ class Item implements ItemInterface
     public function setCurrentLanguageID(int $currentLanguageID): void
     {
         $this->currentLanguageID = $currentLanguageID;
+    }
+
+    /**
+     * @return string
+     */
+    public function getItemID(): string
+    {
+        return $this->itemID;
+    }
+
+    /**
+     * @param string $itemID
+     */
+    public function setItemID(string $itemID): void
+    {
+        $this->itemID = $itemID;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPluginID(): int
+    {
+        return $this->pluginID;
+    }
+
+    /**
+     * @param int $pluginID
+     */
+    public function setPluginID(int $pluginID): void
+    {
+        $this->pluginID = $pluginID;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isActive(): bool
+    {
+        return $this->active;
+    }
+
+    /**
+     * @param bool $active
+     */
+    public function setActive(bool $active): void
+    {
+        $this->active = $active;
     }
 }

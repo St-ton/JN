@@ -300,17 +300,12 @@
                 .on('mouseenter', function (e) {
                     var $item      = $(this),
                         $variation = $item.data('value');
-                    $('.variation-image-preview.lazyloaded.vt' + $variation).addClass('show');
-                    $('.variation-image-preview.lazyload.vt' + $variation).removeClass('d-none').on('lazyloaded', function () {
-                        $('.variation-image-preview.vt' + $variation).addClass('show');
-                    });
+                    $('.variation-image-preview.vt' + $variation).addClass('show');
+                    $('.variation-image-preview.vt' + $variation).removeClass('d-none');
                 }).on('mouseleave', function (e) {
                     var $item      = $(this),
                         $variation = $item.data('value');
-                    $('.variation-image-preview.lazyloaded.vt' + $variation).removeClass('show');
-                    $('.variation-image-preview.lazyload.vt' + $variation).on('lazyloaded', function () {
-                        $('.variation-image-preview.vt' + $variation).removeClass('show');
-                    });
+                $('.variation-image-preview.vt' + $variation).removeClass('show');
             });
 
             $('.variations .selectpicker').on('show.bs.select', function () {

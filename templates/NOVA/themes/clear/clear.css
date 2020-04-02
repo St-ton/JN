@@ -23042,7 +23042,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   width: 98%;
   height: auto;
   background: #ffffff;
-  border: 3px solid #9b9b9b;
+  border: 3px solid #ebebeb;
   opacity: 1;
   border-radius: 0.125rem;
   -webkit-box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
@@ -23054,7 +23054,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 #image_wrapper .variation-image-preview::before, #image_wrapper .variation-image-preview::after {
   left: 100%;
-  top: 75%;
+  top: 62%;
   content: " ";
   height: 0px;
   width: 0px;
@@ -23067,7 +23067,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 #image_wrapper .variation-image-preview::before {
   margin-top: -18px;
   border-width: 14px 0px 14px 18px;
-  border-color: transparent transparent transparent #9b9b9b;
+  border-color: transparent transparent transparent #ebebeb;
 }
 #image_wrapper .variation-image-preview::after {
   margin-top: -14px;

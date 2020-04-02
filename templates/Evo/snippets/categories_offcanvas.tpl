@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {lang key='view' assign='view_'}
 <h5>{$result->current->cName}</h5>
 <ul class="nav navbar-nav">

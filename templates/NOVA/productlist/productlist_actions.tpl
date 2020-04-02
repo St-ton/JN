@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productlist-productlist-actions'}
     {form action="#" method="post" class="product-actions actions-small d-flex" data=["toggle" => "product-actions"]}
         {block name='productlist-productlist-actions-buttons'}

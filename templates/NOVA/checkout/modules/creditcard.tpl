@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='checkout-modules-creditcard'}
     {block name='checkout-modules-creditcard-alert'}
         <fieldset>

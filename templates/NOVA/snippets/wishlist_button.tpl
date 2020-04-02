@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='snippets-wishlist-button'}
     {assign var='isOnWishList' value=false}
     {assign var='wishlistPos' value=0}

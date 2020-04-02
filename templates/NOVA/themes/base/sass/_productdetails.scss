@@ -126,6 +126,42 @@
 			border-color: transparent transparent transparent $white;
 		}
 	}
+
+	#gallery {
+		&:not(.slick-initialized) {
+			padding: 0 map-get($spacers, 3);
+		}
+		.slick-list {
+			@include media-breakpoint-down(md) {
+				padding-right: 0;
+			}
+		}
+	}
+
+	#gallery_preview {
+		&:not(.slick-initialized) {
+			div.js-gallery-images {
+				width: calc((100% - 49px)/5);
+				min-width: calc((100% - 49px)/5);
+				padding: 0 .5rem;
+				&:not(.preview-first) {
+					opacity: 0.2;
+				}
+			}
+			&.slick-count-default {
+				div.js-gallery-images {
+					width: calc((100%)/5);
+					min-width: calc((100%)/5);
+				}
+			}
+			.slick-prev {
+				margin-right: -0.5rem;
+			}
+			.slick-next {
+				margin-left: -0.5rem;
+			}
+		}
+	}
 }
 
 .cfg-item-description {

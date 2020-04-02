@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 error_reporting(ADMIN_LOG_LEVEL);
 date_default_timezone_set(SHOP_TIMEZONE);
 

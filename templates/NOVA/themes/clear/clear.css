@@ -18656,6 +18656,11 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
   right: -22px;
 }
 
+.variation .badge {
+  display: inline-flex;
+  align-items: center;
+}
+
 aside h4 {
   margin-bottom: 1rem;
 }
@@ -19693,7 +19698,7 @@ aside .last-seen-link {
   display: inline-block;
 }
 .swatches .variation.not-available {
-  border: dashed #b90000;
+  border: dashed 1px #b90000;
 }
 .swatches .variation.not-available .label-variation {
   opacity: 0.5;
@@ -20113,6 +20118,10 @@ label {
   .modal-dialog {
     height: 100%;
   }
+}
+
+#productImagesModal .modal-dialog {
+  height: auto;
 }
 
 #maintenance button.close {
@@ -23064,6 +23073,32 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   margin-top: -14px;
   border-width: 10px 0px 10px 14px;
   border-color: transparent transparent transparent #ffffff;
+}
+#image_wrapper #gallery:not(.slick-initialized) {
+  padding: 0 1rem;
+}
+@media (max-width: 991.98px) {
+  #image_wrapper #gallery .slick-list {
+    padding-right: 0;
+  }
+}
+#image_wrapper #gallery_preview:not(.slick-initialized) div.js-gallery-images {
+  width: calc((100% - 49px)/5);
+  min-width: calc((100% - 49px)/5);
+  padding: 0 0.5rem;
+}
+#image_wrapper #gallery_preview:not(.slick-initialized) div.js-gallery-images:not(.preview-first) {
+  opacity: 0.2;
+}
+#image_wrapper #gallery_preview:not(.slick-initialized).slick-count-default div.js-gallery-images {
+  width: calc((100%)/5);
+  min-width: calc((100%)/5);
+}
+#image_wrapper #gallery_preview:not(.slick-initialized) .slick-prev {
+  margin-right: -0.5rem;
+}
+#image_wrapper #gallery_preview:not(.slick-initialized) .slick-next {
+  margin-left: -0.5rem;
 }
 
 .cfg-item-description {

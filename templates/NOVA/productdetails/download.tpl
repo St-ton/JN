@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productdetails-download'}
 <div class="card-columns">
     {foreach $Artikel->oDownload_arr as $oDownload}

@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 <h1 class="menu-title">{block name='account-wishlist-title'}{lang key='yourWishlist' section='login'}{/block}</h1>
 {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y'}
     {block name='account-wishlist'}

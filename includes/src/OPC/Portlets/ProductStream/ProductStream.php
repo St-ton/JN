@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\OPC\Portlets\ProductStream;
 
@@ -97,13 +93,10 @@ class ProductStream extends Portlet
      */
     public function getFilteredProducts(PortletInstance $instance): array
     {
-        $products = [];
-        $options  = Artikel::getDefaultOptions();
-
+        $products       = [];
+        $defaultOptions = Artikel::getDefaultOptions();
         foreach ($this->getFilteredProductIds($instance) as $productID) {
-            $product = new Artikel();
-            $product->fuelleArtikel($productID, $options);
-            $products[] = $product;
+            $products[] = (new Artikel())->fuelleArtikel($productID, $defaultOptions);
         }
 
         return $products;

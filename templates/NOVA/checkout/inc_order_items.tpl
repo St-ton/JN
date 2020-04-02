@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='checkout-inc-order-items'}
     {input type="submit" name="fake" class="d-none"}
     {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}

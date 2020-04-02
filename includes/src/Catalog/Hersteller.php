@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Catalog;
 
@@ -204,10 +200,9 @@ class Hersteller
         $this->cBildpfadNormal = \BILD_KEIN_HERSTELLERBILD_VORHANDEN;
         if (isset($obj->kHersteller) && $obj->kHersteller > 0) {
             // URL bauen
-            $this->cURL          = (isset($obj->cSeo) && \mb_strlen($obj->cSeo) > 0)
+            $this->cURL = (isset($obj->cSeo) && \mb_strlen($obj->cSeo) > 0)
                 ? $shopURL . $obj->cSeo
                 : $shopURL . '?h=' . $obj->kHersteller;
-            $this->cBeschreibung = Text::parseNewsText($this->cBeschreibung);
         }
         if (\mb_strlen($this->cBildpfad) > 0) {
             $this->cBildpfadKlein  = \PFAD_HERSTELLERBILDER_KLEIN . $this->cBildpfad;

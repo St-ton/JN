@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='blog-preview'}
     <div itemprop="blogPost" itemscope=true itemtype="https://schema.org/BlogPosting" class="newsbox h-100 border-bottom border-sm-bottom-0 pb-5 position-relative">
         <meta itemprop="mainEntityOfPage" content="{$ShopURL}/{$newsItem->getURL()}">

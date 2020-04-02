@@ -17,7 +17,7 @@
 			}
 		}
 		&.not-available {
-			border: dashed $danger;
+			border: dashed 1px $danger;
 			.label-variation {
 				opacity: 0.5;
 			}

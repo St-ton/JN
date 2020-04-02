@@ -300,39 +300,30 @@
                 .on('mouseenter', function (e) {
                     var $item      = $(this),
                         $variation = $item.data('value');
-                    $('.variation-image-preview.lazyloaded.vt' + $variation).addClass('show');
-                    $('.variation-image-preview.lazyload.vt' + $variation).removeClass('d-none').on('lazyloaded', function () {
-                        $('.variation-image-preview.vt' + $variation).addClass('show');
-                    });
+                    $('.variation-image-preview.vt' + $variation).addClass('show');
+                    $('.variation-image-preview.vt' + $variation).removeClass('d-none');
                 }).on('mouseleave', function (e) {
                     var $item      = $(this),
                         $variation = $item.data('value');
-                    $('.variation-image-preview.lazyloaded.vt' + $variation).removeClass('show');
-                    $('.variation-image-preview.lazyload.vt' + $variation).on('lazyloaded', function () {
-                        $('.variation-image-preview.vt' + $variation).removeClass('show');
-                    });
+                $('.variation-image-preview.vt' + $variation).removeClass('show');
             });
 
             $('.variations .selectpicker').on('show.bs.select', function () {
                 var $item = $(this).parent();
                 $item.find('li .variation').on('mouseenter', function () {
                     var $variation = $(this).find('span[data-value]').data("value");
-                    $('.variation-image-preview.lazyloaded.vt' + $variation).addClass('show');
-                    $('.variation-image-preview.lazyload.vt' + $variation).removeClass('d-none').on('lazyloaded', function () {
-                        $('.variation-image-preview.vt' + $variation).addClass('show');
-                    });
+                    $('.variation-image-preview.vt' + $variation).addClass('show');
+                    $('.variation-image-preview.vt' + $variation).removeClass('d-none');
                 }).on('mouseleave', function () {
                     var $variation = $(this).find('span[data-value]').data("value");
-                    $('.variation-image-preview.lazyloaded.vt' + $variation).removeClass('show');
-                    $('.variation-image-preview.lazyload.vt' + $variation).on('lazyloaded', function () {
-                        $('.variation-image-preview.vt' + $variation).removeClass('show');
-                    });
+                    $('.variation-image-preview.vt' + $variation).removeClass('show');
                 });
             });
 
             $('.variations .selectpicker').on('hide.bs.select', function () {
                 var $item = $(this).parent();
                 $item.find('li .variation').off('mouseenter mouseleave');
+                $('.variation-image-preview').removeClass('show');
             });
         },
 

@@ -171,7 +171,7 @@
                 let maxHeight       = Math.max(document.documentElement.clientHeight, window.innerHeight || 0),
                     otherElemHeight = 0,
                     current         = ($('#gallery .slick-current').data('slick-index')),
-                    $galleryImages  = $('#gallery img');
+                    $galleryImages  = $('#gallery img, #gallery picture source');
 
                 if (fullscreen) {
                     $('#image_wrapper').addClass('fullscreen');

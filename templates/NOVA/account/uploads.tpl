@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='account-uploads'}
     {if !empty($Bestellung->oUpload_arr)}
         {assign var=nNameLength value=50}

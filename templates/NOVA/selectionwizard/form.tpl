@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='selectionwizard-form'}
     {if isset($AWA)}
         {block name='selectionwizard-form-heading'}

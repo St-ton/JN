@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Cart\CartItem;
 use JTL\Catalog\Currency;
@@ -1080,7 +1076,7 @@ function fakeBestellung()
     $order->kWaehrung        = Frontend::getCurrency()->getID();
     $order->fWaehrungsFaktor = Frontend::getCurrency()->getConversionFactor();
 
-    $order->oRechnungsadresse              = $order->oRechnungsadresse ?? new stdClass();
+    $order->oRechnungsadresse              = $order->oRechnungsadresse ?? new Rechnungsadresse();
     $order->oRechnungsadresse->cVorname    = $customer->cVorname;
     $order->oRechnungsadresse->cNachname   = $customer->cNachname;
     $order->oRechnungsadresse->cFirma      = $customer->cFirma;

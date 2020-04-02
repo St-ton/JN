@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {if (int)$ShopCreditAmount > 0 && (int)$OrderAmount === 0}
     <div class="col-xs-12">
         <div class="checkbox">

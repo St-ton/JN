@@ -1,5 +1,5 @@
 {foreach $filters as $filter}
-    <label>{$filter.name}</label>
+    <label>{__($filter.name)}</label>
     <div class="filters-section">
         <div class="no-options" style="display: none">Keine Optionen</div>
         <div class="filters-section-inner">

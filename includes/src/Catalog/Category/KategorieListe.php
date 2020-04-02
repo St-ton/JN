@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Catalog\Category;
 
@@ -377,7 +373,6 @@ class KategorieListe
                 $category->kKategorie
             );
             $category->bUnterKategorien = isset($sub->kKategorie);
-            $category->cBeschreibung    = Text::parseNewsText($category->cBeschreibung);
 
             $tmpCategory = new Kategorie();
             foreach (\get_object_vars($category) as $k => $v) {

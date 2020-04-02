@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='content-all-closingtags'}
     {block name='content-closingtag'}
         {opcMountPoint id='opc_content'}
@@ -290,9 +286,6 @@
                 "{$ShopURL}/{$customJSPath}?v={$nTemplateVersion}",
             {/if}
         ]{/strip});
-        {if (!isset($Einstellungen.template.general.use_cron) || $Einstellungen.template.general.use_cron === 'Y') && $smarty.now % 10 === 0}
-            $.get('includes/cron_inc.php');
-        {/if}
     </script>
     {captchaMarkup getBody=false}
 {/block}

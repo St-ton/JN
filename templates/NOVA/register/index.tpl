@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='register-index'}
     {block name='register-index-header'}
         {include file='layout/header.tpl'}

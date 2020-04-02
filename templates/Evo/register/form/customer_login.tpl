@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 <div class="form-group float-label-control">
     <label for="email" class="control-label">{lang key='email' section='account data'}</label>
     <input type="text" name="email" id="login_email" class="form-control" placeholder="{lang key='email' section='account data'}" required autocomplete="email"/>

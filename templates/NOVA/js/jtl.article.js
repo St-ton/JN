@@ -1,8 +1,3 @@
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
-
 (function($, document, window, viewport){
     'use strict';
 
@@ -52,7 +47,7 @@
             this.options = ArticleClass.DEFAULTS;
             this.gallery = null;
         },
-        
+
         onLoad: function() {
             if (this.isSingleArticle()) {
                 var that = this;
@@ -113,79 +108,38 @@
             /*
              * product slider and zoom (details)
              */
-            function slickinit(fullscreen, current = 0)
+            function slickinit()
             {
-                var previewSlidesToShow = 5;
-
-                var options = {
-                    lazyLoad: 'ondemand',
-                    infinite: true,
-                    dots:     false,
-                    swipeToSlide:   true,
-                    arrows:   false,
-                    speed: 500,
-                    fade: true,
-                    cssEase: 'linear',
-                    asNavFor: '#gallery_preview',
-                    responsive:     [
-                        {
-                            breakpoint: 992,
-                            settings: {
-                                dots: true
-                            }
-                        }
-                    ]
-                };
-
-                var options_preview = {
-                    lazyLoad:       'ondemand',
-                    slidesToShow:   previewSlidesToShow,
-                    slidesToScroll: 1,
-                    asNavFor:       '#gallery',
-                    dots:           false,
-                    swipeToSlide:   true,
-                    arrows:         true,
-                    focusOnSelect:  true,
-                    responsive:     [
-                        {
-                            breakpoint: 768,
-                            settings:   {
-                                slidesToShow: 4
-                            }
-                        },
-                        {
-                            breakpoint: 576,
-                                settings: {
-                                slidesToShow: 3
-                            }
-                        }
-                    ]
-                };
-
-                $('#gallery').slick(options);
-                $('#gallery_preview').slick(options_preview);
+                $('.initial-slick-dots').on('click', function () {
+                    let mainNode = $('#gallery');
+                    mainNode.removeClass('slick-lazy');
+                    $.evo.extended().initSlick(mainNode, mainNode.data('slick-type'));
+                    if(mainNode.slick('getSlick').slideCount > mainNode.slick('slickGetOption', 'slidesToShow')) {
+                        mainNode.slick('slickGoTo', 1);
+                    }
+                });
             }
 
             function toggleFullscreen(fullscreen = false)
             {
-                var maxHeight= Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-                var otherElemHeight = 0;
-                var current = ($('#gallery .slick-current').data('slick-index'));
+                let maxHeight       = Math.max(document.documentElement.clientHeight, window.innerHeight || 0),
+                    otherElemHeight = 0,
+                    current         = ($('#gallery .slick-current').data('slick-index')),
+                    $galleryImages  = $('#gallery img');
 
                 if (fullscreen) {
                     $('#image_wrapper').addClass('fullscreen');
+                    let $galleryTopbar = $('#image_wrapper .product-detail-image-topbar');
 
-                    otherElemHeight = $('#image_wrapper .product-detail-image-topbar').outerHeight() +
-                        parseInt($('#image_wrapper .product-detail-image-topbar').css('marginBottom')) +
-                        230;
+                    otherElemHeight = $galleryTopbar.outerHeight() + parseInt($galleryTopbar.css('marginBottom')) + 230;
 
-                    $('#gallery picture *').removeAttr('sizes');
-                    lazySizes.autoSizer.updateElem($('#gallery picture *'));
+                    $galleryImages.removeAttr('sizes');
+                    lazySizes.autoSizer.updateElem($galleryImages);
                 } else {
                     $('#image_wrapper').removeClass('fullscreen');
                 }
 
-                $('#gallery img').css('max-height', maxHeight-otherElemHeight);
+                $galleryImages.css('max-height', maxHeight-otherElemHeight);
 
                 $('#gallery').slick('slickSetOption','initialSlide', current, true);
                 $('#gallery_preview').slick('slickGoTo', current, true);
@@ -199,7 +153,7 @@
                 });
             }
 
-            slickinit(false);
+            slickinit();
 
             if (wrapper[0].id.indexOf(this.options.modal.wrapper_modal.substr(1)) === -1) {
                 addClickListener();
@@ -968,16 +922,13 @@
                     container = $('#cfg-container'),
                     sidebar   = $('#cfg-sticky-sidebar'),
                     width,
-                    form,
-                    $spinner = $.evo.extended().spinner(container.get(0));
+                    form;
 
                 if (container.length === 0) {
                     return;
                 }
 
-                if (init) {
-
-                }
+                let $spinner = $.evo.extended().spinner(container.get(0));
 
                 $('#buy_form').find('*[data-selected="true"]')
                     .attr('checked', true)
@@ -985,7 +936,6 @@
                     .attr('data-selected', null);
 
                 form = $.evo.io().getFormValues('buy_form');
-
 
                 container.addClass('loading');
                 $.evo.io().call('buildConfiguration', [form], that, function (error, data) {
@@ -1334,7 +1284,6 @@
             var $wrapper = this.getWrapper(wrapper),
                 $item    = $('[data-value="' + value + '"].variation', $wrapper);
             $item.addClass('active')
-                .removeClass('loading')
                 .find('input')
                 .prop('checked', true)
                 .end()
@@ -1449,7 +1398,7 @@
                     $('.updatingStockInfo', $wrapper).show();
                 }
 
-                $current.addClass('loading');
+                $('.tooltip.show').remove();
                 args.wrapper = wrapper;
 
                 $.evo.article()

@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='boxes-box-comparelist'}
     {assign var=maxItems value=$oBox->getItemCount()}
     {assign var=itemCount value=count($oBox->getProducts())}

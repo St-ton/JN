@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='snippets-filter-active-filter'}
 {if $NaviFilter->getFilterCount() > 0}
     {block name='snippets-filter-active-filter-content'}

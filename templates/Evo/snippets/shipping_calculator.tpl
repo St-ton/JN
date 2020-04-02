@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {if empty($Versandarten)}
     {block name='shipping-estimate-form'}
         <div class="panel panel-default" id="shipping-estimate-form">

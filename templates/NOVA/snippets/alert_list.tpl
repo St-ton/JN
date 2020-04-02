@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='snippets-alert-list'}
     {if count($alertList->getAlertlist()) > 0}
         <div id="alert-list" class="{if $container|default:true}container{/if}">

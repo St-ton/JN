@@ -1,13 +1,4 @@
 <?php
-/**
- * remove_tkuponneukunde_backup
- *
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- * @package       jtl-shop
- * @since         5.0.0
- * @author fp
- */
 
 use JTL\Update\IMigration;
 use JTL\Update\Migration;

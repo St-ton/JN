@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='boxes-box-search-cloud'}
     {block name='boxes-box-search-cloud-script'}
         {inline_script}<script>

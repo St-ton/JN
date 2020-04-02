@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {if !empty($fehlendeAngaben) && !$alertNote}
     <div class="alert alert-danger">{lang key='mandatoryFieldNotification' section='errorMessages'}</div>
 {/if}

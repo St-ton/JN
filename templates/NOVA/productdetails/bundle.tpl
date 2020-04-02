@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productdetails-bundle'}
     {if !empty($Products)}
         {block name='productdetails-bundle-form'}

@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='page-livesearch'}
     {if count($LivesucheTop) > 0 || count($LivesucheLast) > 0}
         {opcMountPoint id='opc_before_livesearch'}

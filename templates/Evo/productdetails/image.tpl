@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 <div id="gallery" class="hidden">
     {block name='product-image'}
     {foreach $Artikel->Bilder as $image}

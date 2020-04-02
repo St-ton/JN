@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productdetails-basket'}
     {if ($Artikel->inWarenkorbLegbar == 1 || $Artikel->nErscheinendesProdukt == 1) || $Artikel->Variationen}
         <div id="add-to-cart" class="mt-5 d-print-none product-buy{if $Artikel->nErscheinendesProdukt} coming_soon{/if}">
@@ -70,7 +66,12 @@
                                         disabled=$Artikel->bHasKonfig && !$isConfigCorrect|default:false
                                         class="js-cfg-validate"}
                                         <span class="btn-basket-check">
-                                            <span class="d-none d-sm-inline-block mr-1">{lang key='addToCart'}</span> <i class="fas fa-shopping-cart"></i>
+                                            <span class="d-none d-sm-inline-block mr-1">
+                                                {if isset($kEditKonfig)}
+                                                    {lang key='applyChanges'}
+                                                {else}
+                                                    {lang key='addToCart'}</span> <i class="fas fa-shopping-cart"></i>
+                                                {/if}
                                         </span>
                                         <svg x="0px" y="0px" width="32px" height="32px" viewBox="0 0 32 32">
                                             <path stroke-dasharray="19.79 19.79" stroke-dashoffset="19.79" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" d="M9,17l3.9,3.9c0.1,0.1,0.2,0.1,0.3,0L23,11"/>

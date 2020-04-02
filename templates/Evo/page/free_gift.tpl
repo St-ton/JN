@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {opcMountPoint id='opc_before_free_gift'}
 
 <p class="box_info">{lang key='freeGiftFromOrderValue'}</p>

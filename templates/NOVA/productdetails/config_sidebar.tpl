@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productdetails-config-sidebar'}
     <div id="product-configuration-sidebar">
         {block name='productdetails-config-sidebar-table'}
@@ -25,5 +21,8 @@
             {lang key='applyConfiguration' section='productDetails'}
         {/button}*}
         {include file='productdetails/basket.tpl'}
+        {if isset($kEditKonfig)}
+            <input type="hidden" name="kEditKonfig" value="{$kEditKonfig}"/>
+        {/if}
     </div>
 {/block}

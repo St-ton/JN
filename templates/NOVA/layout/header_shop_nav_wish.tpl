@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='layout-header-shop-nav-wish'}
     {if !empty($wishlists) && $Einstellungen.global.global_wunschliste_anzeigen === 'Y'}
         {$wlCount = 0}

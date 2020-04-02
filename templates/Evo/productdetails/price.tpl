@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {if $smarty.session.Kundengruppe->mayViewPrices()}
     <div class="price_wrapper">
     {block name='price-wrapper'}
@@ -56,7 +52,7 @@
                 {if $Artikel->cEinheit && ($Artikel->fMindestbestellmenge > 1 || $Artikel->fAbnahmeintervall > 1)}
                     <span class="price_label per_unit"> {lang key='vpePer'} 1 {$Artikel->cEinheit}</span>
                 {/if}
-                
+
                 {* Grundpreis *}
                 {if !empty($Artikel->cLocalizedVPE)}
                     {block name='detail-base-price'}
@@ -71,7 +67,7 @@
                         </div>
                     {/block}
                 {/if}
-                
+
                 {block name='detail-vat-info'}
                     <p class="vat_info text-muted top5">
                         {include file='snippets/shipping_tax_info.tpl' taxdata=$Artikel->taxData}
@@ -108,7 +104,7 @@
                         </div>
                     {/if}
                 {/if}
-                
+
                 {* --- Staffelpreise? --- *}
                 {if !empty($Artikel->staffelPreis_arr)}
                     <div class="bulk-price">
@@ -169,6 +165,7 @@
                         </div>
                     {/block}
                 {/if}
+
                 {if $Artikel->Preise->Sonderpreis_aktiv && isset($Einstellungen.artikeluebersicht) && $Einstellungen.artikeluebersicht.artikeluebersicht_sonderpreisanzeige == 2}
                     <div class="instead-of old-price">
                         <small class="text-muted">

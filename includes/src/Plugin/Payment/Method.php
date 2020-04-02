@@ -8,7 +8,9 @@ use JTL\Checkout\Bestellung;
 use JTL\Checkout\ZahlungsLog;
 use JTL\Customer\Customer;
 use JTL\DB\ReturnType;
+use JTL\Filter\Metadata;
 use JTL\Helpers\Request;
+use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Plugin\Helper as PluginHelper;
@@ -201,27 +203,21 @@ class Method implements MethodInterface
      */
     public function sendErrorMail(string $body)
     {
-        $conf                = Shop::getSettings([\CONF_EMAILS]);
-        $mail                = new stdClass();
-        $mail->toEmail       = $conf['emails']['email_master_absender'];
-        $mail->toName        = $conf['emails']['email_master_absender_name'];
-        $mail->fromEmail     = $mail->toEmail;
-        $mail->fromName      = $mail->toName;
-        $mail->subject       = \sprintf(
-            Shop::Lang()->get('errorMailSubject', 'paymentMethods'),
-            $conf['global']['global_meta_title']
+        $conf = Shop::getSettings([\CONF_EMAILS]);
+        $meta = Metadata::getGlobalMetaData();
+        $lang = LanguageHelper::getDefaultLanguage();
+        $mail = new Mail();
+
+        Shop::Container()->get(Mailer::class)->send(
+            $mail->setLanguage($lang)
+                ->setToName($conf['emails']['email_master_absender_name'])
+                ->setToMail($conf['emails']['email_master_absender'])
+                ->setSubject(\sprintf(
+                    Shop::Lang()->get('errorMailSubject', 'paymentMethods'),
+                    $meta[$lang->id]->Title ?? ''
+                ))
+                ->setBodyText($body)
         );
-        $mail->bodyText      = $body;
-        $mail->methode       = $conf['eMails']['eMail_methode'];
-        $mail->sendMail_pfad = $conf['eMails']['eMail_sendMail_pfad'];
-        $mail->smtp_hostname = $conf['eMails']['eMail_smtp_hostname'];
-        $mail->smtp_port     = $conf['eMails']['eMail_smtp_port'];
-        $mail->smtp_auth     = $conf['eMails']['eMail_smtp_auth'];
-        $mail->smtp_user     = $conf['eMails']['eMail_smtp_user'];
-        $mail->smtp_pass     = $conf['eMails']['eMail_smtp_pass'];
-        $mail->SMTPSecure    = $conf['emails']['email_smtp_verschluesselung'];
-        include_once \PFAD_ROOT . \PFAD_INCLUDES . 'mailTools.php';
-        \verschickeMail($mail);
 
         return $this;
     }

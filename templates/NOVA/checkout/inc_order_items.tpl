@@ -51,7 +51,7 @@
                     {/block}
                     {block name='checkout-inc-order-items-items-main-content'}
                         {col cols=$cols lg=$itemInfoCols class="ml-auto"}
-                            {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
+                            {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL || $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_GRATISGESCHENK}
                                 {block name='checkout-inc-order-items-product-data-link'}
                                     <p>{link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}{$oPosition->cName|trans}{/link}</p>
                                 {/block}
@@ -67,7 +67,10 @@
                                                 </li>
                                             {/block}
                                         {/if}
-                                        {if $oPosition->Artikel->cLocalizedVPE && $oPosition->Artikel->cVPE !== 'N'}
+                                        {if $oPosition->Artikel->cLocalizedVPE
+                                            && $oPosition->Artikel->cVPE !== 'N'
+                                            && $oPosition->nPosTyp != $C_WARENKORBPOS_TYP_GRATISGESCHENK
+                                        }
                                             {block name='checkout-inc-order-items-product-data-base-price'}
                                                 <li class="baseprice"><strong>{lang key='basePrice'}:</strong> {$oPosition->Artikel->cLocalizedVPE[$NettoPreise]}</li>
                                             {/block}

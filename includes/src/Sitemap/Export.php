@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Sitemap;
 
@@ -130,7 +126,7 @@ final class Export
     }
 
     /**
-     * @param array              $customerGroupIDs
+     * @param int[]              $customerGroupIDs
      * @param LanguageModel[]    $languages
      * @param FactoryInterface[] $factories
      */

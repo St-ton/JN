@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='snippets-checkbox'}
     {if empty($cPost_arr)}
         {assign var=cPost_arr value=null}

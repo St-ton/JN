@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productdetails-price'}
     {if $smarty.session.Kundengruppe->mayViewPrices()}
         <div class="price_wrapper mb-4">
@@ -176,17 +172,17 @@
                     {block name='productdetails-price-price-note'}
                     <div class="price-note">
                         {* Grundpreis *}
-                        {if !empty($Artikel->cLocalizedVPE)}
+                        {if !empty($Artikel->cLocalizedVPE) && !$Artikel->Preise->oPriceRange->isRange()}
                             {block name='productdetails-price-list-base-price'}
-                            <div class="base_price" itemprop="priceSpecification" itemscope itemtype="http://schema.org/UnitPriceSpecification">
-                                <meta itemprop="price" content="{if $Artikel->Preise->oPriceRange->isRange()}{($Artikel->Preise->oPriceRange->minBruttoPrice/$Artikel->fVPEWert)|string_format:"%.2f"}{else}{($Artikel->Preise->fVKBrutto/$Artikel->fVPEWert)|string_format:"%.2f"}{/if}">
-                                <meta itemprop="priceCurrency" content="{$smarty.session.Waehrung->getName()}">
-                                <span class="value" itemprop="referenceQuantity" itemscope itemtype="http://schema.org/QuantitativeValue">
+                                <div class="base_price" itemprop="priceSpecification" itemscope itemtype="http://schema.org/UnitPriceSpecification">
+                                    <meta itemprop="price" content="{($Artikel->Preise->fVKBrutto/$Artikel->fVPEWert)|string_format:"%.2f"}">
+                                    <meta itemprop="priceCurrency" content="{$smarty.session.Waehrung->getName()}">
+                                    <span class="value" itemprop="referenceQuantity" itemscope itemtype="http://schema.org/QuantitativeValue">
                                     {$Artikel->cLocalizedVPE[$NettoPreise]}
                                     <meta itemprop="value" content="{$Artikel->fGrundpreisMenge}">
                                     <meta itemprop="unitText" content="{$Artikel->cVPEEinheit|regex_replace:"/[\d ]/":""}">
                                 </span>
-                            </div>
+                                </div>
                             {/block}
                         {/if}
                         {block name='productdetails-price-special-prices'}

@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Alert\Alert;
 use JTL\Cart\Cart;
@@ -132,7 +128,9 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
             $activeVersandart = gibAktiveVersandart($shippingMethods);
             pruefeVersandartWahl(
                 $activeVersandart,
-                ['kVerpackung' => array_keys(gibAktiveVerpackung(ShippingMethod::getPossiblePackagings($customerGroupID)))]
+                ['kVerpackung' => array_keys(
+                    gibAktiveVerpackung(ShippingMethod::getPossiblePackagings($customerGroupID))
+                )]
             );
         }
     }

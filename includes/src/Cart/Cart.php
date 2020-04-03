@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Cart;
 
@@ -1862,7 +1858,7 @@ class Cart
         foreach ($this->PositionenArr as $item) {
             $totalWeight += $item->fGesamtgewicht;
             $itemCount   += $item->nAnzahl;
-            $maxPrices   += $item->Artikel->Preise->fVKNetto
+            $maxPrices   += isset($item->Artikel->Preise->fVKNetto)
                 ? $item->Artikel->Preise->fVKNetto * $item->nAnzahl : 0;
         }
 
@@ -1901,7 +1897,7 @@ class Cart
 
         $this->oFavourableShipping = null;
         if (isset($shipping->kVersandart)) {
-            $method               = new Versandart($shipping->kVersandart);
+            $method               = new Versandart((int)$shipping->kVersandart);
             $method->cCountryCode = $countryCode;
 
             if ($method->eSteuer === 'brutto') {

@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Backend\AdminFavorite;
 use JTL\Backend\Notification;
@@ -442,16 +438,21 @@ function ermittleDatumWoche(string $dateString)
  */
 function getJTLVersionDB(bool $bDate = false)
 {
-    $ret         = 0;
-    $versionData = Shop::Container()->getDB()->query(
-        'SELECT nVersion, dAktualisiert FROM tversion',
-        ReturnType::SINGLE_OBJECT
-    );
-    if (isset($versionData->nVersion)) {
-        $ret = $versionData->nVersion;
-    }
+    $ret = 0;
     if ($bDate) {
-        $ret = $versionData->dAktualisiert;
+        $latestUpdate = Shop::Container()->getDB()->query(
+            'SELECT max(dExecuted) as date FROM tmigration',
+            ReturnType::SINGLE_OBJECT
+        );
+        $ret          = $latestUpdate->date;
+    } else {
+        $versionData = Shop::Container()->getDB()->query(
+            'SELECT nVersion FROM tversion',
+            ReturnType::SINGLE_OBJECT
+        );
+        if (isset($versionData->nVersion)) {
+            $ret = $versionData->nVersion;
+        }
     }
 
     return $ret;

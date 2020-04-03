@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Catalog;
 
@@ -100,7 +96,8 @@ class ReviewReminder
 
             return [];
         }
-        $reciepients = [];
+        $reciepients    = [];
+        $defaultOptions = Artikel::getDefaultOptions();
         foreach ($this->orders as $orderData) {
             $openReviews = [];
             $order       = new Bestellung((int)$orderData->kBestellung);
@@ -115,7 +112,7 @@ class ReviewReminder
                 }
                 $productVisible = (new Artikel())->fuelleArtikel(
                     (int)$item->kArtikel,
-                    null,
+                    $defaultOptions,
                     (int)$customer->kKundengruppe
                 );
                 if ($productVisible !== null && $productVisible->kArtikel > 0) {

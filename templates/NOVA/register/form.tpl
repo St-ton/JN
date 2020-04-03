@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='register-form'}
     {form action="{get_static_route id='registrieren.php'}" class="jtl-validate clearfix" slide=true}
         {block name='register-form-content'}

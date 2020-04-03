@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='header'}
     {include file='layout/header.tpl'}
 {/block}
@@ -16,7 +12,7 @@
                 {lang key='createNewAccount' section='account data' assign='panel_heading'}
             {/if}
         {/if}
-    
+
         {include file='snippets/extension.tpl'}
         {if !empty($fehlendeAngaben)}
             <div class="alert alert-danger">{lang key='mandatoryFieldNotification' section='errorMessages'}</div>

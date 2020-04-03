@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 <img class="overlay-img hidden-xs"
      srcset="{$Artikel->oSuchspecialBild->getURL($smarty.const.IMAGE_SIZE_XS)},
              {$Artikel->oSuchspecialBild->getURL($smarty.const.IMAGE_SIZE_SM)} 2x,

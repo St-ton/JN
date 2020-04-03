@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productdetails-mediafile'}
     {if !empty($Artikel->oMedienDatei_arr)}
         {assign var=mp3List value=false}

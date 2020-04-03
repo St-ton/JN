@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 <div class="alert alert-{$alert->getCssType()} align-items-center"
     data-fade-out="{$alert->getFadeOut()}"
     data-key="{$alert->getKey()}"

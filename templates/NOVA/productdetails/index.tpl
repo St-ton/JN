@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productdetails-index'}
     {block name='productdetails-index-include-header'}
         {if !isset($bAjaxRequest) || !$bAjaxRequest}

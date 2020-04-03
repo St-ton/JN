@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productdetails-config-sidebar'}
     <div id="product-configuration-sidebar">
         {block name='productdetails-config-sidebar-table'}

@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productdetails-config'}
     {if isset($Artikel->oKonfig_arr) && $Artikel->oKonfig_arr|@count > 0}
         {row class="product-configuration mt-2 mb-5"}

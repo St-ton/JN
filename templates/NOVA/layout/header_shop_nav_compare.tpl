@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='layout-header-shop-nav-compare'}
     <li id="shop-nav-compare"
         title="{lang key='compare'}"

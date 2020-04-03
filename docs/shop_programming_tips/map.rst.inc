@@ -1,6 +1,9 @@
 :doc:`/shop_programming_tips/alerts`
     Informationen über das Erzeugen von Alerts (Meldungen wie z.B. Fehler/Hinweise)
 
+:doc:`/shop_programming_tips/notifications`
+    Notifications im Backend erzeugen
+
 :doc:`/shop_programming_tips/shopclass`
     Die zentrale Bedeutung der `Shop`-Klasse und ihre Benutzung
 

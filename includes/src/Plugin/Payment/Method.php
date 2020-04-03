@@ -8,7 +8,6 @@ use JTL\Checkout\Bestellung;
 use JTL\Checkout\ZahlungsLog;
 use JTL\Customer\Customer;
 use JTL\DB\ReturnType;
-use JTL\Filter\Metadata;
 use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;

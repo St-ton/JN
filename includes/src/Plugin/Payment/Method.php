@@ -203,18 +203,15 @@ class Method implements MethodInterface
      */
     public function sendErrorMail(string $body)
     {
-        $conf = Shop::getSettings([\CONF_EMAILS]);
-        $meta = Metadata::getGlobalMetaData();
-        $lang = LanguageHelper::getDefaultLanguage();
         $mail = new Mail();
 
         Shop::Container()->get(Mailer::class)->send(
-            $mail->setLanguage($lang)
-                ->setToName($conf['emails']['email_master_absender_name'])
-                ->setToMail($conf['emails']['email_master_absender'])
+            $mail->setLanguage(LanguageHelper::getDefaultLanguage())
+                ->setToName(Shop::getSettingValue(\CONF_EMAILS, 'email_master_absender_name'))
+                ->setToMail(Shop::getSettingValue(\CONF_EMAILS, 'email_master_absender'))
                 ->setSubject(\sprintf(
                     Shop::Lang()->get('errorMailSubject', 'paymentMethods'),
-                    $meta[$lang->id]->Title ?? ''
+                    Shop::getSettingValue(\CONF_GLOBAL, 'global_shopname')
                 ))
                 ->setBodyText($body)
         );

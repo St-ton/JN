@@ -23648,9 +23648,37 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   width: 98%;
   height: auto;
   background: #ffffff;
+  border: 3px solid #ebebeb;
+  opacity: 1;
+  border-radius: 0.125rem;
+  -webkit-box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
 }
 #image_wrapper .variation-image-preview:not(.show) {
   z-index: -5;
+  opacity: 0;
+}
+#image_wrapper .variation-image-preview::before, #image_wrapper .variation-image-preview::after {
+  left: 100%;
+  top: 62%;
+  content: " ";
+  height: 0px;
+  width: 0px;
+  position: absolute;
+  border-width: initial;
+  border-style: solid;
+  border-color: transparent;
+  border-image: initial;
+}
+#image_wrapper .variation-image-preview::before {
+  margin-top: -18px;
+  border-width: 14px 0px 14px 18px;
+  border-color: transparent transparent transparent #ebebeb;
+}
+#image_wrapper .variation-image-preview::after {
+  margin-top: -14px;
+  border-width: 10px 0px 10px 14px;
+  border-color: transparent transparent transparent #ffffff;
 }
 #image_wrapper #gallery:not(.slick-initialized) {
   padding: 0 1rem;

@@ -23,9 +23,6 @@ msgstr "Plugin-ID"
 msgid "languageID"
 msgstr "Sprach-ID"
 
-msgid "tos"
-msgstr "Datenschutzerklärung"
-
 msgid "description"
 msgstr "Beschreibung"
 
@@ -46,6 +43,9 @@ msgstr "Consent"
 
 msgid "childHeading"
 msgstr "Lokalisierungen"
+
+msgid "generalHeading"
+msgstr "Allgemein"
 
 msgid "privacyPolicy"
 msgstr "Nutzungsbedingungen (Link)"

@@ -23,9 +23,6 @@ msgstr "Plugin ID"
 msgid "languageID"
 msgstr "Language ID"
 
-msgid "tos"
-msgstr "Terms of service"
-
 msgid "description"
 msgstr "Description"
 
@@ -51,4 +48,4 @@ msgid "generalHeading"
 msgstr "General"
 
 msgid "privacyPolicy"
-msgstr "Terms of use (link)"
+msgstr "Privacy policy (link)"

@@ -1161,7 +1161,7 @@ function sendStatusMail()
                 $cIntervalAdj = 'Monatliche';
                 break;
             default:
-            break;
+                break;
         }
 
         $dBis        = date_create()->format('Y-m-d H:i:s');

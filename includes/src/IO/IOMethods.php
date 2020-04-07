@@ -177,6 +177,7 @@ class IOMethods
         $smarty      = Shop::Smarty();
         $response    = new stdClass();
         $objResponse = new IOResponse();
+        $token       = $properties['jtl_token'];
         if ($amount <= 0 || $productID <= 0) {
             return $objResponse;
         }
@@ -199,7 +200,7 @@ class IOMethods
             $amount = \max((int)$amount, 1);
         }
         // Prüfung
-        $errors = CartHelper::addToCartCheck($product, $amount, $properties);
+        $errors = CartHelper::addToCartCheck($product, $amount, $properties, 2, $token);
 
         if (\count($errors) > 0) {
             $localizedErrors = Product::getProductMessages($errors, true, $product, $amount);
@@ -807,10 +808,9 @@ class IOMethods
     public function checkDependencies($aValues): IOResponse
     {
         $objResponse   = new IOResponse();
-        $checkBulk     = isset($aValues['VariKindArtikel']);
-        $kVaterArtikel = $checkBulk ? (int)$aValues['VariKindArtikel'] : (int)$aValues['a'];
+        $kVaterArtikel = (int)$aValues['a'];
         $fAnzahl       = (float)$aValues['anzahl'];
-        $valueIDs      = isset($aValues['eigenschaftwert']) ? \array_filter((array)$aValues['eigenschaftwert']) : [];
+        $valueIDs      = \array_filter((array)$aValues['eigenschaftwert']);
         $wrapper       = isset($aValues['wrapper']) ? Text::filterXSS($aValues['wrapper']) : '';
 
         if ($kVaterArtikel <= 0) {
@@ -822,7 +822,7 @@ class IOMethods
         $options->nWarenlager               = 1;
         $options->nVariationen              = 1;
         $product                            = new Artikel();
-        $product->fuelleArtikel($kVaterArtikel, $checkBulk ? null : $options, Frontend::getCustomerGroup()->getID());
+        $product->fuelleArtikel($kVaterArtikel, $options, Frontend::getCustomerGroup()->getID());
         $weightDiff   = 0;
         $newProductNr = '';
 

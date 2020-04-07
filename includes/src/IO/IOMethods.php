@@ -808,7 +808,8 @@ class IOMethods
     public function checkDependencies($aValues): IOResponse
     {
         $objResponse   = new IOResponse();
-        $kVaterArtikel = (int)$aValues['a'];
+        $checkBulk     = isset($aValues['VariKindArtikel']);
+        $kVaterArtikel = $checkBulk ? (int)$aValues['VariKindArtikel'] : (int)$aValues['a'];
         $fAnzahl       = (float)$aValues['anzahl'];
         $valueIDs      = \array_filter((array)$aValues['eigenschaftwert']);
         $wrapper       = isset($aValues['wrapper']) ? Text::filterXSS($aValues['wrapper']) : '';
@@ -822,7 +823,7 @@ class IOMethods
         $options->nWarenlager               = 1;
         $options->nVariationen              = 1;
         $product                            = new Artikel();
-        $product->fuelleArtikel($kVaterArtikel, $options, Frontend::getCustomerGroup()->getID());
+        $product->fuelleArtikel($kVaterArtikel, $checkBulk ? null : $options, Frontend::getCustomerGroup()->getID());
         $weightDiff   = 0;
         $newProductNr = '';
 

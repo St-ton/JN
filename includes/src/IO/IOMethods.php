@@ -809,7 +809,7 @@ class IOMethods
         $objResponse   = new IOResponse();
         $kVaterArtikel = (int)$aValues['a'];
         $fAnzahl       = (float)$aValues['anzahl'];
-        $valueIDs      = \array_filter((array)$aValues['eigenschaftwert']);
+        $valueIDs      = isset($aValues['eigenschaftwert']) ? \array_filter((array)$aValues['eigenschaftwert']) : [];
         $wrapper       = isset($aValues['wrapper']) ? Text::filterXSS($aValues['wrapper']) : '';
 
         if ($kVaterArtikel <= 0) {

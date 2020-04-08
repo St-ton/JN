@@ -305,7 +305,7 @@
                                         {else}
                                             {col cols=12}
                                                 {block name='productlist-item-list-basket-details-quantity'}
-                                                    {inputgroup class="form-counter"}
+                                                    {inputgroup class="form-counter" data=["bulk" => {!empty($Artikel->staffelPreis_arr)}]}
                                                         {inputgroupprepend}
                                                             {button variant=""
                                                                 data=["count-down"=>""]

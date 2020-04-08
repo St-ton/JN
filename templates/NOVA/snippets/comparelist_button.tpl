@@ -12,7 +12,8 @@
         type="submit"
         class="{$classes|default:''} compare badge badge-circle-1 action-tip-animation-b {if $isOnCompareList}on-list{/if}"
         aria=["label" => {lang key='addToCompare' section='productOverview'}]
-        data=["product-id-cl" => $Artikel->kArtikel]
+        data=["product-id-cl" => $Artikel->kArtikel, "toggle"=>"tooltip", "trigger"=>"hover"]
+        title={lang key='addToCompare' section='productOverview'}
     }
         <span class="far fa-list-alt"></span>
     {/button}

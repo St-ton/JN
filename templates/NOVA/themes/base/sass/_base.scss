@@ -486,7 +486,9 @@ a[data-toggle="collapse"][aria-expanded=true],
   .custom-control-label::after {
     display: none;
   }
-  cursor: pointer;
+  label {
+    cursor: pointer;
+  }
 }
 
 .banner {

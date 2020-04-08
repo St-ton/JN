@@ -22145,12 +22145,12 @@ a[data-toggle=collapse][aria-expanded=true] i.fa-chevron-down,
   color: #525252 !important;
 }
 
-.freegift {
-  cursor: pointer;
-}
 .freegift .custom-control-label::before,
 .freegift .custom-control-label::after {
   display: none;
+}
+.freegift label {
+  cursor: pointer;
 }
 
 .banner {
@@ -23523,7 +23523,6 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 
 .list-gallery {
   display: flex;
-  align-items: center;
   flex-direction: column;
 }
 .list-gallery img {

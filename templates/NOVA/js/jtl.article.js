@@ -122,24 +122,24 @@
 
             function toggleFullscreen(fullscreen = false)
             {
-                var maxHeight= Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-                var otherElemHeight = 0;
-                var current = ($('#gallery .slick-current').data('slick-index'));
+                let maxHeight       = Math.max(document.documentElement.clientHeight, window.innerHeight || 0),
+                    otherElemHeight = 0,
+                    current         = ($('#gallery .slick-current').data('slick-index')),
+                    $galleryImages  = $('#gallery img, #gallery picture source');
 
                 if (fullscreen) {
                     $('#image_wrapper').addClass('fullscreen');
+                    let $galleryTopbar = $('#image_wrapper .product-detail-image-topbar');
 
-                    otherElemHeight = $('#image_wrapper .product-detail-image-topbar').outerHeight() +
-                        parseInt($('#image_wrapper .product-detail-image-topbar').css('marginBottom')) +
-                        230;
+                    otherElemHeight = $galleryTopbar.outerHeight() + parseInt($galleryTopbar.css('marginBottom')) + 230;
 
-                    $('#gallery picture *').removeAttr('sizes');
-                    lazySizes.autoSizer.updateElem($('#gallery picture *'));
+                    $galleryImages.removeAttr('sizes');
+                    lazySizes.autoSizer.updateElem($galleryImages);
                 } else {
                     $('#image_wrapper').removeClass('fullscreen');
                 }
 
-                $('#gallery img').css('max-height', maxHeight-otherElemHeight);
+                $galleryImages.css('max-height', maxHeight-otherElemHeight);
 
                 $('#gallery').slick('slickSetOption','initialSlide', current, true);
                 $('#gallery_preview').slick('slickGoTo', current, true);
@@ -251,8 +251,8 @@
                 that       = this,
                 $config    = $('#product-configurator');
 
-            if ($bulkPrice.length > 0 && $config.length === 0) {
-                $('#quantity', $wrapper)
+            if (($bulkPrice.length > 0 && $config.length === 0) || $('#product-list').length > 0) {
+                $('#quantity, [data-bulk="1"] .quantity', $wrapper)
                     .each(function(i, item) {
                         var $item   = $(item),
                             wrapper = '#' + $item.closest('form').closest('div[data-wrapper="true"]').attr('id');
@@ -300,39 +300,30 @@
                 .on('mouseenter', function (e) {
                     var $item      = $(this),
                         $variation = $item.data('value');
-                    $('.variation-image-preview.lazyloaded.vt' + $variation).addClass('show');
-                    $('.variation-image-preview.lazyload.vt' + $variation).removeClass('d-none').on('lazyloaded', function () {
-                        $('.variation-image-preview.vt' + $variation).addClass('show');
-                    });
+                    $('.variation-image-preview.vt' + $variation).addClass('show');
+                    $('.variation-image-preview.vt' + $variation).removeClass('d-none');
                 }).on('mouseleave', function (e) {
                     var $item      = $(this),
                         $variation = $item.data('value');
-                    $('.variation-image-preview.lazyloaded.vt' + $variation).removeClass('show');
-                    $('.variation-image-preview.lazyload.vt' + $variation).on('lazyloaded', function () {
-                        $('.variation-image-preview.vt' + $variation).removeClass('show');
-                    });
+                $('.variation-image-preview.vt' + $variation).removeClass('show');
             });
 
             $('.variations .selectpicker').on('show.bs.select', function () {
                 var $item = $(this).parent();
                 $item.find('li .variation').on('mouseenter', function () {
                     var $variation = $(this).find('span[data-value]').data("value");
-                    $('.variation-image-preview.lazyloaded.vt' + $variation).addClass('show');
-                    $('.variation-image-preview.lazyload.vt' + $variation).removeClass('d-none').on('lazyloaded', function () {
-                        $('.variation-image-preview.vt' + $variation).addClass('show');
-                    });
+                    $('.variation-image-preview.vt' + $variation).addClass('show');
+                    $('.variation-image-preview.vt' + $variation).removeClass('d-none');
                 }).on('mouseleave', function () {
                     var $variation = $(this).find('span[data-value]').data("value");
-                    $('.variation-image-preview.lazyloaded.vt' + $variation).removeClass('show');
-                    $('.variation-image-preview.lazyload.vt' + $variation).on('lazyloaded', function () {
-                        $('.variation-image-preview.vt' + $variation).removeClass('show');
-                    });
+                    $('.variation-image-preview.vt' + $variation).removeClass('show');
                 });
             });
 
             $('.variations .selectpicker').on('hide.bs.select', function () {
                 var $item = $(this).parent();
                 $item.find('li .variation').off('mouseenter mouseleave');
+                $('.variation-image-preview').removeClass('show');
             });
         },
 

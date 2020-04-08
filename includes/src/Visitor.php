@@ -56,8 +56,7 @@ class Visitor
             $diff = (new DateTime())->getTimestamp() - (new DateTime($visitor->dLetzteAktivitaet))->getTimestamp();
             if ($diff > 2) {
                 $visitor = self::updateVisitorObject($visitor, $visitor->kBesucher, $userAgent, $botID);
-                // update the db and simultaneously retrieve the ID to update the session below
-                $visitor->kBesucher = self::dbUpdate($visitor, $visitor->kBesucher);
+                self::dbUpdate($visitor, $visitor->kBesucher);
             } else {
                 // time-diff is to low! so we do nothing but update this "last-action"-time in the session
                 $visitor->dLetzteAktivitaet = (new DateTime())->format('Y-m-d H:i:s');

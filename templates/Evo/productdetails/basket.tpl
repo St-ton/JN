@@ -33,7 +33,7 @@
                 {/block}
             {/if}
         {/if}
-        {if $Artikel->inWarenkorbLegbar == 1 && ($Artikel->fMindestbestellmenge > 1 || ($Artikel->fMindestbestellmenge > 0 && $Artikel->cTeilbar === 'Y') || $Artikel->fAbnahmeintervall > 0 || $Artikel->cTeilbar === 'Y' || (isset($Artikel->FunktionsAttribute[$FKT_ATTRIBUT_MAXBESTELLMENGE]) && $Artikel->FunktionsAttribute[$FKT_ATTRIBUT_MAXBESTELLMENGE] > 0))}
+        {if $Artikel->inWarenkorbLegbar == 1 && ($Artikel->fMindestbestellmenge > 1 || ($Artikel->fMindestbestellmenge > 0 && $Artikel->cTeilbar === 'Y') || ($Artikel->fAbnahmeintervall > 0 && $Einstellungen.artikeldetails.artikeldetails_artikelintervall_anzeigen === 'Y') || $Artikel->cTeilbar === 'Y' || (isset($Artikel->FunktionsAttribute[$FKT_ATTRIBUT_MAXBESTELLMENGE]) && $Artikel->FunktionsAttribute[$FKT_ATTRIBUT_MAXBESTELLMENGE] > 0))}
             <div class="clearfix"></div>
             <div class="purchase-info alert alert-info top10" role="alert">
                 {assign var="units" value=$Artikel->cEinheit}

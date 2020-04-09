@@ -19424,6 +19424,9 @@ aside .last-seen-link {
     padding-right: 50px;
   }
 }
+.carousel:not(.slick-initialized).slick-lazy > div {
+  margin: 0 auto;
+}
 @media (max-width: 767.98px) {
   .carousel:not(.slick-initialized).slick-type-product .product-wrapper {
     width: calc(100%/2);

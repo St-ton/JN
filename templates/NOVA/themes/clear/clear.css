@@ -23045,18 +23045,21 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   height: auto;
   background: #ffffff;
   border: 3px solid #ebebeb;
-  opacity: 1;
+  opacity: 0;
   border-radius: 0.125rem;
   -webkit-box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-}
-#image_wrapper .variation-image-preview:not(.show) {
   z-index: -5;
-  opacity: 0;
+}
+@media (min-width: 992px) {
+  #image_wrapper .variation-image-preview.show {
+    z-index: 1070;
+    opacity: 1;
+  }
 }
 #image_wrapper .variation-image-preview::before, #image_wrapper .variation-image-preview::after {
   left: 100%;
-  top: 62%;
+  top: 50%;
   content: " ";
   height: 0px;
   width: 0px;

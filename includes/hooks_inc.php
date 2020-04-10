@@ -1942,3 +1942,11 @@ define('HOOK_BESTELLABSCHLUSS_INC_BESTELLUNGINDB_LIEFERADRESSE_ALT', 305);
  * @param float qty
  */
 define('HOOK_WARENKORB_ERSTELLE_SPEZIAL_POS', 310);
+
+/**
+ * @since 5.0.0
+ * @file admin/io.php
+ * @param \JTL\Backend\AdminIO io
+ * @param string request
+ */
+define('HOOK_IO_HANDLE_REQUEST_ADMIN', 311);

@@ -49,6 +49,15 @@ class ReviewController extends BaseController
     public function handleRequest()
     {
         if (!Form::validateToken()) {
+            Shop::Container()->getAlertService()->addAlert(
+                Alert::TYPE_WARNING,
+                Shop::Lang()->get('invalidToken'),
+                'invalidToken',
+                [
+                    'saveInSession' => true,
+                ]
+            );
+
             return false;
         }
         $this->checkRedirect();

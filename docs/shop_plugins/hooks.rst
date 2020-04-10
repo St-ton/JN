@@ -54,7 +54,7 @@ an den Body des HTML-Dokuments anhängen:
     <?php
 
     $template = $oPlugin->cFrontendPfad . 'templates/' . 'example.tpl';
-    pq('body')->append($smarty->fetch($template);
+    pq('body')->append($smarty->fetch($template));
 
 
 Eine Übersicht über PHPQuery finden Sie in dessen `Dokumentation <https://code.google.com/archive/p/phpquery>`_.

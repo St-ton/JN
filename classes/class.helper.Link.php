@@ -635,11 +635,9 @@ class LinkHelper
             if (isset($oLink->cLocalizedName) && array_key_exists($cISO, $oLink->cLocalizedName)) {
                 $oLink->cName = $oLink->cLocalizedName[$cISO];
             }
-            if(isset($oSpeziallinks[$oObj->nLinkart])){
-                if(empty($oSpeziallinks[$oObj->nLinkart]->cURL)){
-                    $oSpeziallinks[$oObj->nLinkart] = $oObj;
-                }
-            }else{
+            if (isset($oSpeziallinks[$oObj->nLinkart]) && empty($oSpeziallinks[$oObj->nLinkart]->cURL)) {
+                $oSpeziallinks[$oObj->nLinkart] = $oObj;
+            } elseif (!isset($oSpeziallinks[$oObj->nLinkart])) {
                 $oSpeziallinks[$oObj->nLinkart] = $oObj;
             }
         }

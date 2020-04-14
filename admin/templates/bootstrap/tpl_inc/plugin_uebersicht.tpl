@@ -18,7 +18,7 @@
                         {foreach $oPlugin->getAdminMenu()->getItems()->toArray() as $menuItem}
                             <li class="tab-{$menuItem->id} nav-item">
                                 <a class="tab-link-{$menuItem->id} nav-link {if ($defaultTabbertab === -1 && $menuItem@index === 0) || ($defaultTabbertab > -1 && ($defaultTabbertab === $menuItem->id || $defaultTabbertab === $menuItem->name))} {assign var=hasActiveMenuTab value=true}active{/if}" data-toggle="tab" role="tab" href="#plugin-tab-{$menuItem->id}">
-                                    {$menuItem->displayName}
+                                    {__($menuItem->displayName)}
                                 </a>
                             </li>
                         {/foreach}

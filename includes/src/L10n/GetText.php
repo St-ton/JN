@@ -127,9 +127,7 @@ class GetText
      */
     public function loadTranslations(string $dir, string $domain): self
     {
-        $path = $this->getMoPath($dir, $domain);
-
-        return $this->loadLocaleFile($path);
+        return $this->loadLocaleFile($this->getMoPath($dir, $domain));
     }
 
     /**
@@ -138,9 +136,7 @@ class GetText
      */
     public function loadAdminLocale(string $domain): self
     {
-        $path = $this->getAdminMoPath($domain);
-
-        return $this->loadLocaleFile($path);
+        return $this->loadLocaleFile($this->getAdminMoPath($domain));
     }
 
     /**
@@ -150,9 +146,7 @@ class GetText
      */
     public function loadPluginLocale(string $domain, PluginInterface $plugin): self
     {
-        $path = $this->getPluginMoPath($domain, $plugin);
-
-        return $this->loadLocaleFile($path);
+        return $this->loadLocaleFile($this->getPluginMoPath($domain, $plugin));
     }
 
     /**
@@ -162,9 +156,7 @@ class GetText
      */
     public function loadPluginItemLocale(string $domain, ListingItem $item): self
     {
-        $dir = \PFAD_ROOT . \PLUGIN_DIR . $item->getDir() . '/';
-
-        return $this->loadTranslations($dir, $domain);
+        return $this->loadTranslations(\PFAD_ROOT . \PLUGIN_DIR . $item->getDir() . '/', $domain);
     }
 
     /**

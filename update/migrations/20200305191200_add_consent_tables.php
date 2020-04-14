@@ -43,6 +43,8 @@ class Migration_20200305191200 extends Migration implements IMigration
           CONSTRAINT `fk_consent_id` FOREIGN KEY (`consentID`) REFERENCES `tconsent` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;'
         );
+        $this->execute("INSERT INTO `tadminrecht` (`cRecht`, `cBeschreibung`) 
+            VALUES ('CONSENT_MANAGER', 'Consent Manager')");
     }
 
     /**
@@ -52,5 +54,6 @@ class Migration_20200305191200 extends Migration implements IMigration
     {
         $this->execute('DROP TABLE IF EXISTS tconsentlocalization');
         $this->execute('DROP TABLE IF EXISTS tconsent');
+        $this->execute("DELETE FROM `tadminrecht` WHERE `cRecht` = 'CONSENT_MANAGER'");
     }
 }

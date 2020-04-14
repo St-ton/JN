@@ -23,6 +23,8 @@ class Migration_20200407153000 extends Migration implements IMigration
           `returnCode` int(11) NOT NULL,
           PRIMARY KEY (`id`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;');
+        $this->execute("INSERT INTO `tadminrecht` (`cRecht`, `cBeschreibung`)
+            VALUES ('LICENSE_MANAGER', 'License Manager')");
     }
 
     /**
@@ -31,5 +33,6 @@ class Migration_20200407153000 extends Migration implements IMigration
     public function down()
     {
         $this->execute('DROP TABLE IF EXISTS licenses');
+        $this->execute("DELETE FROM `tadminrecht` WHERE `cRecht` = 'LICENSE_MANAGER'");
     }
 }

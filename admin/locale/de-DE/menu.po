@@ -394,6 +394,9 @@ msgstr "Systemprüfung"
 msgid "Rating system"
 msgstr "Bewertungssystem"
 
+msgid "Consent manager"
+msgstr "Consent-Manager"
+
 msgid "Manage favorites"
 msgstr "Favoriten verwalten"
 

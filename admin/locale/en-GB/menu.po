@@ -363,6 +363,9 @@ msgstr "System check"
 msgid "Rating system"
 msgstr "Review system"
 
+msgid "Consent manager"
+msgstr "Consent manager"
+
 msgid "Manage favorites"
 msgstr "Managing favourites"
 

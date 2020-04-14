@@ -23111,9 +23111,23 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 #image_wrapper #gallery_preview:not(.slick-initialized) .slick-prev {
   margin-right: -0.5rem;
+  animation: 0.5s fadeIn;
+  animation-fill-mode: forwards;
+  visibility: hidden;
 }
 #image_wrapper #gallery_preview:not(.slick-initialized) .slick-next {
   margin-left: -0.5rem;
+  animation: 0.5s fadeIn;
+  animation-fill-mode: forwards;
+  visibility: hidden;
+}
+@keyframes fadeIn {
+  99% {
+    visibility: hidden;
+  }
+  100% {
+    visibility: visible;
+  }
 }
 
 .cfg-item-description {

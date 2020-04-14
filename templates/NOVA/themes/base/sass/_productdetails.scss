@@ -159,9 +159,23 @@
 			}
 			.slick-prev {
 				margin-right: -0.5rem;
+				animation: 0.5s fadeIn;
+				animation-fill-mode: forwards;
+				visibility: hidden;
 			}
 			.slick-next {
 				margin-left: -0.5rem;
+				animation: 0.5s fadeIn;
+				animation-fill-mode: forwards;
+				visibility: hidden;
+			}
+			@keyframes fadeIn {
+				99% {
+					visibility: hidden;
+				}
+				100% {
+					visibility: visible;
+				}
 			}
 		}
 	}

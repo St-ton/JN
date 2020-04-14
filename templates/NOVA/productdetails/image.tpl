@@ -80,7 +80,7 @@
                                 {strip}
                                     <div class="js-gallery-images
                                     {if $image@first} preview-first {if $imageCount <= $imageCountDefault} ml-auto{/if}
-                                    {elseif $image@index >= $imageCountDefault}d-none{/if}
+                                    {elseif $image@index >= $imageCountDefault} d-none{/if}
                                     {if $image@last && $imageCount <= $imageCountDefault} mr-auto{/if}">
                                         {image alt=$image->cAltAttribut|escape:'html'
                                             class="product-image"

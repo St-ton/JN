@@ -363,6 +363,9 @@ msgstr "Plugin-Marktplatz"
 msgid "Plug-in manager"
 msgstr "Plugin-Manager"
 
+msgid "My purchases"
+msgstr "Meine Einkäufe"
+
 msgid "Plug-in profiler"
 msgstr "Plugin-Profiler"
 

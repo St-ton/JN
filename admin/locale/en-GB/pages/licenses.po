@@ -1,0 +1,51 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "docURL"
+msgstr ""
+
+msgid "errorFetchLicenseAPI"
+msgstr "Could fetch data from store API."
+
+msgid "Licenses"
+msgstr "Licenses"
+
+msgid "Active licenses"
+msgstr "Active licenses"
+
+msgid "Unbound licenses"
+msgstr "Unbound licenses"
+
+msgid "free"
+msgstr "free"
+
+msgid "Valid until %s"
+msgstr "Valid until %s"
+
+msgid "pageDesc"
+msgstr "Manage your active and available licenses."
+
+msgid "ID"
+msgstr "ID"
+
+msgid "Name"
+msgstr "Name"
+
+msgid "Installed"
+msgstr "Installed"
+
+msgid "Links"
+msgstr "Links"
+
+msgid "Subscription"
+msgstr "Subscription"
+
+msgid "Developer"
+msgstr "Developer"
+
+msgid "itemDetails"
+msgstr "Details"
+
+msgid "setBinding"
+msgstr "Bind to current shop"

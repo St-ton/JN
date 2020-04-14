@@ -1,0 +1,51 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "docURL"
+msgstr ""
+
+msgid "errorFetchLicenseAPI"
+msgstr "Konnte keine Daten von der Store API holen."
+
+msgid "Licenses"
+msgstr "Lizenzen"
+
+msgid "Unbound licenses"
+msgstr "Ungebundene Lizenzen"
+
+msgid "free"
+msgstr "kostenlos"
+
+msgid "Valid until %s"
+msgstr "gültig bis %s"
+
+msgid "Active licenses"
+msgstr "Aktive Lizenzen"
+
+msgid "pageDesc"
+msgstr "Hier können Sie Ihre verfügbaren und aktiven Lizenzen einsehen."
+
+msgid "ID"
+msgstr "ID"
+
+msgid "Name"
+msgstr "Name"
+
+msgid "Installed"
+msgstr "Installiert"
+
+msgid "Links"
+msgstr "Links"
+
+msgid "Subscription"
+msgstr "Subskription"
+
+msgid "Developer"
+msgstr "Entwickler"
+
+msgid "itemDetails"
+msgstr "Details"
+
+msgid "setBinding"
+msgstr "An aktuellen Shop binden"

@@ -337,6 +337,9 @@ msgstr "Plug-in marketplace"
 msgid "Plug-in manager"
 msgstr "Plug-in manager"
 
+msgid "My purchases"
+msgstr "My purchases"
+
 msgid "Plug-in profiler"
 msgstr "Plug-in profiler"
 

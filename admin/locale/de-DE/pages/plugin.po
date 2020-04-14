@@ -13,3 +13,9 @@ msgstr "Autor"
 
 msgid "pluginHomepage"
 msgstr "Website"
+
+msgid "Lizenzvereinbarungen"
+msgstr "Lizenzvereinbarungen"
+
+msgid "Lizenz"
+msgstr "Lizenz"

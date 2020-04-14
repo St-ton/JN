@@ -6,6 +6,7 @@ use Illuminate\Support\Collection;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\License\Manager;
 use JTL\Plugin\Data\AdminMenu;
 use JTL\Plugin\Data\Cache;
 use JTL\Plugin\Data\Config;
@@ -268,6 +269,7 @@ abstract class AbstractLoader implements LoaderInterface
         }, $this->db->selectAll('tpluginadminmenu', 'kPlugin', $plugin->getID(), '*', 'nSort'));
         $menus = \collect($menus);
         $this->addMarkdownToAdminMenu($plugin, $menus);
+        $this->addLicenseInfo($plugin, $menus);
 
         $adminMenu = new AdminMenu();
         $adminMenu->setItems($menus);
@@ -317,7 +319,7 @@ abstract class AbstractLoader implements LoaderInterface
             $menu->pluginID         = $menu->kPlugin;
             $menu->nSort            = $items->count() + 1;
             $menu->sort             = $menu->nSort;
-            $menu->name             = 'licsense';
+            $menu->name             = 'license';
             $menu->cName            = __('Lizenzvereinbarungen');
             $menu->displayName      = $menu->cName;
             $menu->cDateiname       = $meta->getLicenseMD();
@@ -349,6 +351,43 @@ abstract class AbstractLoader implements LoaderInterface
             $menu->configurable     = false;
             $menu->isMarkdown       = true;
             $menu->tpl              = 'tpl_inc/plugin_changelog.tpl';
+            $menu->html             = '';
+            $items->push($menu);
+        }
+
+        return $items;
+    }
+
+    /**
+     * @param PluginInterface $plugin
+     * @param Collection      $items
+     * @return Collection
+     */
+    protected function addLicenseInfo(PluginInterface $plugin, Collection $items): Collection
+    {
+        $lastItem = $items->last();
+        $lastIdx  = $lastItem->idx ?? -1;
+        $manager = new Manager($this->db);
+        $license = $manager->getLicenseForPluginID($plugin->getPluginID());
+        if ($license !== null) {
+            ++$lastIdx;
+            $menu                   = new stdClass();
+            $menu->kPluginAdminMenu = -1;
+            $menu->id               = 'plugin-license-' . $lastIdx;
+            $menu->kPlugin          = $plugin->getID();
+            $menu->pluginID         = $menu->kPlugin;
+            $menu->nSort            = $items->count() + 1;
+            $menu->sort             = $menu->nSort;
+            $menu->name             = 'licenseinfo';
+            $menu->cName            = __('Lizenz');
+            $menu->displayName      = $menu->cName;
+            $menu->cDateiname       = '';
+            $menu->file             = '';
+            $menu->idx              = $lastIdx;
+            $menu->nConf            = 0;
+            $menu->configurable     = false;
+            $menu->isMarkdown       = false;
+            $menu->tpl              = 'tpl_inc/plugin_license_info.tpl';
             $menu->html             = '';
             $items->push($menu);
         }

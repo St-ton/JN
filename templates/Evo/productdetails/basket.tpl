@@ -41,7 +41,7 @@
         {if $Artikel->inWarenkorbLegbar == 1
             && ($Artikel->fMindestbestellmenge > 1
                 || ($Artikel->fMindestbestellmenge > 0 && $Artikel->cTeilbar === 'Y')
-                || $Artikel->fAbnahmeintervall > 0
+                || ($Artikel->fAbnahmeintervall > 0 && $Einstellungen.artikeldetails.artikeldetails_artikelintervall_anzeigen === 'Y')
                 || $Artikel->cTeilbar === 'Y'
                 || (!empty($Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE])
                     && $Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE] > 0))}

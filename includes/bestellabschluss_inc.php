@@ -1107,7 +1107,9 @@ function fakeBestellung()
                 $order->Positionen[$i]->$member = $item->$member;
             }
 
-            $order->Positionen[$i]->cName = $order->Positionen[$i]->cName[$_SESSION['cISOSprache']];
+            if (is_array($order->Positionen[$i]->cName)) {
+                $order->Positionen[$i]->cName = $order->Positionen[$i]->cName[$_SESSION['cISOSprache']];
+            }
             $order->Positionen[$i]->fMwSt = Tax::getSalesTax($item->kSteuerklasse);
             $order->Positionen[$i]->setzeGesamtpreisLocalized();
         }

@@ -52,6 +52,9 @@ class Availability extends AbstractFilter
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = 'available';
         }
+        if ($this->getValue() === 1) {
+            $this->setName(Shop::Lang()->get('ampelGruen'));
+        }
 
         return $this;
     }

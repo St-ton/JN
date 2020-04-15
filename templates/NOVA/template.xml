@@ -68,7 +68,7 @@
             </Setting>
         </Section>
         <Section Name="Listen- und Gallerieansicht" Key="productlist">
-            <Setting Description="Filter anzeigen in (Desktop)" Key="filter_placement" Type="select" Value="modal">
+            <Setting Description="Filter anzeigen in (Desktop)" Key="filter_placement" Type="select" Value="sidebar">
                 <Option Value="sidebar">Seitenleiste (Einstellbar unter "Standardelemente -> Footer / Boxen" und "Standardansichten -> Artikelübersicht")</Option>
                 <Option Value="modal">Modal (Einstellbar unter "Standardansichten -> Artikelübersicht")</Option>
             </Setting>

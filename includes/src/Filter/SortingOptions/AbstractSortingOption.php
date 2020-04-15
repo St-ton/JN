@@ -5,6 +5,7 @@ namespace JTL\Filter\SortingOptions;
 use JTL\Filter\Join;
 use JTL\Filter\Option;
 use JTL\Filter\ProductFilter;
+use JTL\Plugin\PluginInterface;
 
 /**
  * Class AbstractSortingOption
@@ -28,6 +29,11 @@ abstract class AbstractSortingOption extends Option implements SortingOptionInte
     protected $priority = 0;
 
     /**
+     * @var PluginInterface|null
+     */
+    protected $plugin;
+
+    /**
      * @var array
      */
     public static $mapping = [
@@ -38,11 +44,13 @@ abstract class AbstractSortingOption extends Option implements SortingOptionInte
     /**
      * AbstractSortingOption constructor.
      * @param ProductFilter $productFilter
+     * @param PluginInterface|null $plugin
      */
-    public function __construct(ProductFilter $productFilter)
+    public function __construct(ProductFilter $productFilter, ?PluginInterface $plugin = null)
     {
         parent::__construct($productFilter);
         $this->productFilter = $productFilter;
+        $this->plugin        = $plugin;
         $this->join          = new Join();
         $this->isCustom      = false;
     }

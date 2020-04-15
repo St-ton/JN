@@ -9,7 +9,7 @@
             role="button"
             data=["toggle"=> "collapse", "target"=>"#cllps-box{$oBox->getID()}"]
             }
-                {$oBox->getTitle()}
+                {lang key='filterAvailability'}
             {/button}
             {collapse id="cllps-box{$oBox->getID()}" visible=$oBox->getItems()->isActive()}
             {block name='boxes-box-filter-availability-content'}

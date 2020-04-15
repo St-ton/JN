@@ -27,6 +27,37 @@ class Migration_20200415125300 extends Migration implements IMigration
             "INSERT INTO `tboxvorlage`
                 VALUES (103, 0, 'tpl', 'Filter (Verfügbarkeit)', '2', 'box_filter_availability.tpl')"
         );
+
+        $this->setConfig(
+            'allgemein_availabilityfilter_benutzen',
+            'Y',
+            \CONF_NAVIGATIONSFILTER,
+            'Verfügbarkeitsfilter benutzen',
+            'selectbox',
+            117,
+            (object)[
+                'cBeschreibung' => 'Soll die Verfügbarkeitsfilterung beim Filtern benutzt werden?',
+                'inputOptions'  => [
+                    'content' => 'Ja, im Contentbereich',
+                    'box'     => 'Ja, in Navigationsbox',
+                    'Y'       => 'Ja, im Contentbereich und der Navigationsbox',
+                    'N'       => 'Nein'
+                ]
+            ]
+        );
+        $this->setConfig(
+            'configgroup_110_availability_filter',
+            'Verfügbarkeitsfilter',
+            \CONF_NAVIGATIONSFILTER,
+            'Verfügbarkeitsfilter',
+            null,
+            115,
+            (object)['cConf' => 'N']
+        );
+
+
+        $this->setLocalization('ger', 'global', 'filterAvailability', 'Verfügbarkeit');
+        $this->setLocalization('eng', 'global', 'filterAvailability', 'Availability');
     }
 
     /**
@@ -44,5 +75,10 @@ class Migration_20200415125300 extends Migration implements IMigration
                     ON tboxen.kBox = tboxensichtbar.kBox
                   WHERE tboxvorlage.kBoxvorlage = 103'
         );
+
+        $this->removeConfig('allgemein_availabilityfilter_benutzen');
+        $this->removeConfig('configgroup_110_availability_filter');
+
+        $this->removeLocalization('filterAvailability', 'global');
     }
 }

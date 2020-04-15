@@ -203,6 +203,9 @@ msgstr "Current characteristic value"
 msgid "configgroup_110_current_category"
 msgstr "Current category"
 
+msgid "configgroup_110_availability_filter"
+msgstr "Availability filter"
+
 msgid "configgroup_111_email_blacklist"
 msgstr "Email blacklist"
 

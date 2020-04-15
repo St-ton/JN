@@ -31,9 +31,8 @@ class Availability extends AbstractFilter
             ->setIcon('fa-truck')
             ->setUrlParam('availability')
             ->setInputType(InputType::BUTTON)
-            ->setName(Shop::Lang()->get('sortAvailability'))
-            ->setVisibility('Y')
-            ->setFrontendName($this->getName());
+            ->setVisibility($this->getConfig('navigationsfilter')['allgemein_availabilityfilter_benutzen'])
+            ->setFrontendName(Shop::isAdmin() ? __('filterAvailability') : Shop::Lang()->get('filterAvailability'));
     }
 
     /**

@@ -293,6 +293,8 @@ function sortiereEinstellungen($config)
 }
 
 /**
+ * settings page is separated but has same config group as parent config page, filter these settings
+ *
  * @param array $confData
  * @param string $filter
  * @return array
@@ -347,6 +349,8 @@ function filteredConfData(array $confData, string $filter): array
 }
 
 /**
+ *  settings page is separated but has same config group as parent config page, get separate description
+ *
  * @param int $sectionID
  * @return string
  */

@@ -73,6 +73,30 @@
 	@at-root .slick-dotted & { margin-top: map-get($spacers, 6) / -2; }
 }
 
+.slick-lightbox {
+  .slick-arrow {
+    opacity: 0.75;
+    background: transparent;
+
+    &:hover {
+      opacity: 1;
+    }
+
+    &:after {
+      color: #ccc;
+      font-size: 20px;
+    }
+
+    &.slick-prev {
+      transform: translate(0, -50%);
+    }
+
+    &.slick-next {
+      transform: translate(0, -50%);
+    }
+  }
+}
+
 .slick-prev { left: $spacer; transform: translate(-100%, -50%);
 	&::after { @include fas('f053'); }
 	@include media-breakpoint-down(lg) { transform: translate(50%, -50%); }

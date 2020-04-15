@@ -19544,6 +19544,24 @@ aside .last-seen-link {
   margin-top: -1.5rem;
 }
 
+.slick-lightbox .slick-arrow {
+  opacity: 0.75;
+  background: transparent;
+}
+.slick-lightbox .slick-arrow:hover {
+  opacity: 1;
+}
+.slick-lightbox .slick-arrow:after {
+  color: #ccc;
+  font-size: 20px;
+}
+.slick-lightbox .slick-arrow.slick-prev {
+  transform: translate(0, -50%);
+}
+.slick-lightbox .slick-arrow.slick-next {
+  transform: translate(0, -50%);
+}
+
 .slick-prev {
   left: 1rem;
   transform: translate(-100%, -50%);

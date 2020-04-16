@@ -298,33 +298,31 @@
         registerHoverVariations: function ($wrapper) {
             $('.variations label.variation', $wrapper)
                 .on('mouseenter', function (e) {
-                    var $item      = $(this),
-                        $variation = $item.data('value');
-                    $('.variation-image-preview.vt' + $variation).addClass('show');
-                    $('.variation-image-preview.vt' + $variation).removeClass('d-none');
-                }).on('mouseleave', function (e) {
-                    var $item      = $(this),
-                        $variation = $item.data('value');
-                $('.variation-image-preview.vt' + $variation).removeClass('show');
-            });
-
-            $('.variations .selectpicker').on('show.bs.select', function () {
-                var $item = $(this).parent();
-                $item.find('li .variation').on('mouseenter', function () {
-                    var $variation = $(this).find('span[data-value]').data("value");
-                    $('.variation-image-preview.vt' + $variation).addClass('show');
-                    $('.variation-image-preview.vt' + $variation).removeClass('d-none');
-                }).on('mouseleave', function () {
-                    var $variation = $(this).find('span[data-value]').data("value");
-                    $('.variation-image-preview.vt' + $variation).removeClass('show');
+                    $('.variation-image-preview.vt' + $(this).data('value'))
+                        .addClass('show d-md-block')
+                        .css('top', $(this).offset().top - $(this).closest('#content').position().top - $('.js-gallery-images').innerHeight()/2 - 12);
+                })
+                .on('mouseleave', function (e) {
+                    $('.variation-image-preview.vt' + $(this).data('value')).removeClass('show d-md-block');
                 });
-            });
 
-            $('.variations .selectpicker').on('hide.bs.select', function () {
-                var $item = $(this).parent();
-                $item.find('li .variation').off('mouseenter mouseleave');
-                $('.variation-image-preview').removeClass('show');
-            });
+            $('.variations .selectpicker')
+                .on('show.bs.select', function () {
+                    $(this).parent().find('li .variation')
+                        .on('mouseenter', function () {
+                            $('.variation-image-preview.vt' + $(this).find('span[data-value]').data("value"))
+                                .addClass('show d-md-block')
+                                .css('top', $(this).offset().top - $(this).closest('#content').position().top - $('.js-gallery-images').innerHeight()/2 - 12);
+                        })
+                        .on('mouseleave', function () {
+                            $('.variation-image-preview.vt' + $(this).find('span[data-value]').data("value"))
+                                .removeClass('show d-md-block');
+                    });
+                })
+                .on('hide.bs.select', function () {
+                    $(this).parent().find('li .variation').off('mouseenter mouseleave');
+                    $('.variation-image-preview').removeClass('show');
+                });
         },
 
         registerImageSwitch: function($wrapper) {

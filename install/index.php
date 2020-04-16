@@ -185,7 +185,7 @@ switch ($step) {
         $adminLogin->nLoginVersuch     = 0;
         $adminLogin->bAktiv            = 1;
 
-        if (!$DB->insertRow('tadminlogin', $adminLogin)) {
+        if ($cHinweis === '' && !$DB->insertRow('tadminlogin', $adminLogin)) {
             $cHinweis .= '<br />' . $DB->getError() . ' Nr: ' . $DB->getErrorCode();
         }
 
@@ -194,13 +194,17 @@ switch ($step) {
         $syncLogin->cName = $_POST['syncuser'];
         $syncLogin->cPass = $_POST['syncpass'];
 
-        if (!$DB->insertRow('tsynclogin', $syncLogin)) {
+        if (preg_match('/[^A-Za-z0-9\!"\#\$%&\'\(\)\*\+,-\.\/:;\=\>\?@\[\\\\\]\^_`\|\}~]/', $_POST['syncpass'])) {
+            $cHinweis .= 'Benutzername und Passwort dürfen nur Groß- und Kleinbuchstaben, Zahlen sowie folgende ' .
+                'Sonderzeichen enthalten: !\"#$%&\'()*+,-./:;=>?@[\\]^_`|}~';
+        }
+        if ($cHinweis === '' && !$DB->insertRow('tsynclogin', $syncLogin)) {
             $cHinweis .= '<br />' . $DB->getError() . ' Nr: ' . $DB->getErrorCode();
         }
         // Zahlungarten auf Nutzbarkeit pruefen
         pruefeZahlungsartNutzbarkeit();
 
-        if (strlen($cHinweis) === 0) {
+        if ($cHinweis === '') {
             if (!schreibeConfigDateiInstall(
                 $_POST['DBhost'],
                 $_POST['DBuser'],

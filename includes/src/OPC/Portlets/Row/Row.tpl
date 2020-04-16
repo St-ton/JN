@@ -11,9 +11,9 @@
         {assign var=areaId value="col-$i"}
         {col class=$areaClass|default:null
                  cols=$colLayout.xs|default:false
-                 sm=$colLayout.sm|default:false
-                 md=$colLayout.md|default:false
-                 lg=$colLayout.lg|default:false
+                 md=$colLayout.sm|default:false
+                 lg=$colLayout.md|default:false
+                 xl=$colLayout.lg|default:false
                  data=['area-id' => $areaId]}
             {if $isPreview}
                 {$instance->getSubareaPreviewHtml($areaId)}

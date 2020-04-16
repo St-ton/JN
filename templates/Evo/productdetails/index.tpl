@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='header'}
     {if !isset($bAjaxRequest) || !$bAjaxRequest}
         {include file='layout/header.tpl'}
@@ -21,7 +17,7 @@
             {include file='productlist/item_box.tpl'}
         {/if}
     {else}
-        <div id="result-wrapper" itemprop="mainEntity" itemscope itemtype="http://schema.org/Product">
+        <div id="result-wrapper" data-wrapper="true" itemprop="mainEntity" itemscope itemtype="http://schema.org/Product">
             <meta itemprop="url" content="{$ShopURL}/{$Artikel->cSeo}">
             {include file='snippets/extension.tpl'}
             {include file='productdetails/details.tpl'}

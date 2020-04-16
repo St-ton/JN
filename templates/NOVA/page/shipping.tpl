@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='page-shipping'}
     {if isset($Einstellungen.global.global_versandermittlung_anzeigen)
         && $Einstellungen.global.global_versandermittlung_anzeigen === 'Y'

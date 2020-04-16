@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {if !empty($Bestellung->oUpload_arr)}
     {assign var=nNameLength value=50}
     {assign var=nImageMaxWidth value=480}

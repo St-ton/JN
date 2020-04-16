@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='snippets-ribbon'}
     {if !empty($Artikel->Preise->Sonderpreis_aktiv)}
         {$sale = $Artikel->Preise->discountPercentage}

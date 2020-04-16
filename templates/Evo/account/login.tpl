@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 <h1>{if !empty($oRedirect->cName)}{$oRedirect->cName}{else}{lang key='loginTitle' section='login'}{/if}</h1>
 {opcMountPoint id='opc_before_login'}
 {if !$bCookieErlaubt}

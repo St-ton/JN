@@ -16,3 +16,9 @@ msgstr "Click"
 
 msgid "onHover"
 msgstr "Hover"
+
+msgid "flipcardFront"
+msgstr "Front"
+
+msgid "flipcardBack"
+msgstr "Back"

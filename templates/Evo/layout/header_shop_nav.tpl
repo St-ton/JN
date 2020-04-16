@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {strip}
 <ul class="header-shop-nav nav navbar-nav force-float horizontal pull-right">
     {block name='navbar-productsearch'}

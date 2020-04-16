@@ -25,11 +25,11 @@
                     <hr class="mb-n3">
                 </div>
                 <div class="card-body">
-                    <div class="form-group form-row align-items-center">
-                        <label class="col col-sm-4 col-form-label text-sm-right" for="cName">{__('name')}{if isset($cPlausi_arr.cName)} <span class="fillout">{__('FillOut')}</span>{/if}:</label>
+                    <div class="form-group form-row align-items-center{if isset($cPlausi_arr.cName)} form-error{/if}">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="cName">{__('name')}</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <input name="cName" id="cName" type="text"
-                                   class="form-control{if isset($cPlausi_arr.cName)} fieldfillout{/if}"
+                                   class="form-control"
                                    value="{if isset($cPost_arr.cName)}{$cPost_arr.cName}{elseif isset($oGruppe->cName)}{$oGruppe->cName}{/if}">
                         </div>
                         <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc="{__('hintName')}"}</div>
@@ -70,14 +70,14 @@
                         }
                     </script>
 
-                    <div class="form-group form-row align-items-center">
-                        <label class="col col-sm-4 col-form-label text-sm-right" for="assign_categories_list">{__('category')}{if isset($cPlausi_arr.cOrt)} <span class="fillout">{__('FillOut')}</span>{/if}
+                    <div class="form-group form-row align-items-center{if isset($cPlausi_arr.cOrt)} form-error{/if}">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="assign_categories_list">{__('category')}
                             {if isset($cPlausi_arr.cKategorie) && $cPlausi_arr.cKategorie != 3} <span class="fillout">{__('aaKatSyntax')}</span>{/if}
                             {if isset($cPlausi_arr.cKategorie) && $cPlausi_arr.cKategorie == 3} <span class="fillout">{__('aaKatTaken')}</span>{/if}:
                         </label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <input name="cKategorie" id="assign_categories_list" type="text"
-                                   class="form-control{if isset($cPlausi_arr.cOrt)} fieldfillout{/if}"
+                                   class="form-control"
                                    value="{if isset($cPost_arr.cKategorie)}{$cPost_arr.cKategorie}{elseif isset($oGruppe->cKategorie)}{$oGruppe->cKategorie}{/if}">
                         </div>
                         <div class="col-auto ml-sm-n4 order-2 order-sm-3">
@@ -85,13 +85,13 @@
                         </div>
                     </div>
 
-                    <div class="form-group form-row align-items-center">
-                        <label class="col col-sm-4 col-form-label text-sm-right"for="kLink_arr">{__('aaSpecialSite')}{if isset($cPlausi_arr.cOrt)} <span class="fillout">{__('FillOut')}</span>{/if}
+                    <div class="form-group form-row align-items-center{if isset($cPlausi_arr.cOrt)} form-error{/if}">
+                        <label class="col col-sm-4 col-form-label text-sm-right"for="kLink_arr">{__('aaSpecialSite')}
                             {if isset($cPlausi_arr.kLink_arr)} <span class="fillout">{__('aaLinkTaken')}</span>{/if}:
                         </label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             {if $oLink_arr|count > 0}
-                                <select id="kLink_arr" name="kLink_arr[]"  class="custom-select{if isset($cPlausi_arr.cOrt)} fieldfillout{/if}" multiple>
+                                <select id="kLink_arr" name="kLink_arr[]"  class="custom-select" multiple>
                                     {foreach $oLink_arr as $oLink}
                                         {assign var=bAOSelect value=false}
                                         {if isset($oGruppe->oAuswahlAssistentOrt_arr) && $oGruppe->oAuswahlAssistentOrt_arr|@count > 0}
@@ -119,12 +119,12 @@
                         </div>
                     </div>
 
-                    <div class="form-group form-row align-items-center">
-                        <label class="col col-sm-4 col-form-label text-sm-right" for="nStartseite">{__('startPage')}{if isset($cPlausi_arr.cOrt)} <span class="fillout">{__('FillOut')}</span>{/if}
+                    <div class="form-group form-row align-items-center{if isset($cPlausi_arr.cOrt)} form-error{/if}">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="nStartseite">{__('startPage')}
                             {if isset($cPlausi_arr.nStartseite)} <span class="fillout">{__('aaStartseiteTaken')}</span>{/if}:
                         </label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <select id="nStartseite" name="nStartseite"  class="custom-select{if isset($cPlausi_arr.cOrt)} fieldfillout{/if}">
+                            <select id="nStartseite" name="nStartseite"  class="custom-select">
                                 <option value="0"{if (isset($cPost_arr.nStartseite) && $cPost_arr.nStartseite == 0) || (isset($oGruppe->nStartseite) && $oGruppe->nStartseite == 0)} selected{/if}>
                                     {__('no')}
                                 </option>

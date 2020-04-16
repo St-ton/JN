@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='snippets-filter-mobile'}
     {if $isMobile && !$isTablet}
         <span class="h2 mt-3 border-0 px-3" id="productlist-filter">{lang key='filterAndSort'}</span>

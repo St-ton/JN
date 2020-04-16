@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='selectionwizard-question'}
     {listgroupitem class="selection-wizard-question {if $nQuestion > $AWA->getCurQuestion()}disabled{/if}"}
         {block name='selectionwizard-question-heading'}

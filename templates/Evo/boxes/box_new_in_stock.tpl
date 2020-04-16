@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {lang key='newProducts' assign='slidertitle'}
 {assign var='moreLink' value=$oBox->getURL()}
 {lang key='showAllNewProducts' assign='moreTitle'}

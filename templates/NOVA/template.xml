@@ -13,10 +13,6 @@
                 <Option Value="static">Ja, statisch</Option>
                 <Option Value="N">Nein</Option>
             </Setting>
-            <Setting Description="Aufgabenplaner-Blindgrafik aktivieren?" Key="use_cron" Type="select" Value="Y">
-                <Option Value="N">Nein</Option>
-                <Option Value="Y">Ja</Option>
-            </Setting>
         </Section>
         <Section Name="Theme" Key="theme">
             <Setting Description="Theme" Key="theme_default" Type="select" Value="clear" Editable="false">
@@ -72,7 +68,7 @@
             </Setting>
         </Section>
         <Section Name="Listen- und Gallerieansicht" Key="productlist">
-            <Setting Description="Filter anzeigen in (Desktop)" Key="filter_placement" Type="select" Value="modal">
+            <Setting Description="Filter anzeigen in (Desktop)" Key="filter_placement" Type="select" Value="sidebar">
                 <Option Value="sidebar">Seitenleiste (Einstellbar unter "Standardelemente -> Footer / Boxen" und "Standardansichten -> Artikelübersicht")</Option>
                 <Option Value="modal">Modal (Einstellbar unter "Standardansichten -> Artikelübersicht")</Option>
             </Setting>

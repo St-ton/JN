@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Campaign;
 use JTL\Cart\CartHelper;
@@ -840,8 +836,8 @@ function gibTrustedShopsBewertenButton()
  */
 function parseNewsText($text)
 {
-    trigger_error(__FUNCTION__ . ' is deprecated. ' . Text::class . '::parseNewsText() instead.', E_USER_DEPRECATED);
-    return Text::parseNewsText($text);
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    return $text;
 }
 
 /**

@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {if isset($Artikel->oKonfig_arr) && $Artikel->oKonfig_arr|@count > 0}
     <div class="product-configuration top10 row">
         <div class="col-sm-12 col-lg-8">
@@ -87,7 +83,7 @@
                                                         </div>
                                                         {if $oGruppe->getAnzeigeTyp() == $smarty.const.KONFIG_ANZEIGE_TYP_CHECKBOX}
                                                             {assign var=itemQuantity value=$oItem->getInitial()}
-                                                            {if isset($nKonfigitemAnzahl_arr) && array_key_exists($oItem->getKonfigitem(), $nKonfiggruppeAnzahl_arr)}
+                                                            {if !empty($nKonfigitemAnzahl_arr[$oItem->getKonfigitem()])}
                                                                 {assign var=itemQuantity value=$nKonfigitemAnzahl_arr[$oItem->getKonfigitem()]}
                                                             {/if}
                                                             {if $oItem->getMin() === $oItem->getMax()}

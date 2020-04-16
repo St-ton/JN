@@ -1,7 +1,3 @@
-{**
-     * @copyright (c) JTL-Software-GmbH
-     * @license https://jtl-url.de/jtlshoplicense
-     *}
 {block name='productdetails-tabs'}
     {block name='productdetails-tabs-settings'}
         {$tabanzeige = $Einstellungen.artikeldetails.artikeldetails_tabs_nutzen !== 'N'}

@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='checkout-step5-confirmation'}
     <div id="order-confirm">
         {block name='checkout-step5-confirmation-alert'}

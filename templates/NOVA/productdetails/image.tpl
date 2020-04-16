@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productdetails-image'}
     <div id="image_wrapper" class="gallery-with-action text-right mb-6" role="group">
         {row class="h-100"}
@@ -32,11 +28,13 @@
             {/if}
             {block name='productdetails-image-images-wrapper'}
                 <div id="gallery_wrapper" class="clearfix">
-                    <div id="gallery" class="product-images slick-smooth-loading carousel">
+                    <div id="gallery"
+                         class="product-images slick-smooth-loading carousel slick-lazy"
+                         data-slick-type="gallery">
                         {block name='productdetails-image-images'}
                             {foreach $Artikel->Bilder as $image}
                                 {strip}
-                                    <div>
+                                    <div class="js-gallery-images {if !$image@first}d-none{/if}">
                                         {image alt=$image->cAltAttribut|escape:'html'
                                             class="product-image"
                                             fluid=true
@@ -54,19 +52,36 @@
                             {/foreach}
                         {/block}
                     </div>
+                    <ul class="slick-dots initial-slick-dots d-lg-none" style="" role="tablist">
+                        {foreach $Artikel->Bilder as $image}
+                            <li class="{if $image@first}slick-active{/if}" role="presentation">
+                                {button}{/button}
+                            </li>
+                        {/foreach}
+                    </ul>
                 </div>
             {/block}
             {/col}
         {/block}
         {block name='productdetails-image-preview'}
             {col cols=12 align-self='end' class='product-detail-image-preview-bar'}
-            {if $Artikel->Bilder|@count > 1}
+            {$imageCount = $Artikel->Bilder|@count}
+            {$imageCountDefault = 5}
+            {if $imageCount > 1}
                 <div id="gallery_preview_wrapper" class="mx-auto mt-4">
-                    <div id="gallery_preview" class="product-thumbnails slick-smooth-loading carousel carousel-thumbnails mb-5 mb-lg-0 d-none d-lg-flex mx-0">
+                    <div id="gallery_preview"
+                         class="product-thumbnails slick-smooth-loading carousel carousel-thumbnails mb-5 mb-lg-0 d-none d-lg-flex mx-0 slick-lazy {if $imageCount <= $imageCountDefault}slick-count-default{/if}"
+                         data-slick-type="gallery_preview">
+                        {if $imageCount > $imageCountDefault}
+                            <button class="slick-prev slick-arrow slick-inital-arrow" aria-label="Previous" type="button" style="">Previous</button>
+                        {/if}
                         {block name='productdetails-image-preview-images'}
                             {foreach $Artikel->Bilder as $image}
                                 {strip}
-                                    <div>
+                                    <div class="js-gallery-images
+                                    {if $image@first} preview-first {if $imageCount <= $imageCountDefault} ml-auto{/if}
+                                    {elseif $image@index >= $imageCountDefault}d-none{/if}
+                                    {if $image@last && $imageCount <= $imageCountDefault} mr-auto{/if}">
                                         {image alt=$image->cAltAttribut|escape:'html'
                                             class="product-image"
                                             fluid=true
@@ -78,6 +93,9 @@
                                 {/strip}
                             {/foreach}
                         {/block}
+                        {if $imageCount > $imageCountDefault}
+                            <button class="slick-next slick-arrow slick-inital-arrow" aria-label="Next" type="button" style="">Next</button>
+                        {/if}
                     </div>
                 </div>
             {/if}
@@ -103,16 +121,18 @@
                 {foreach name=Variationen from=$Artikel->$VariationsSource key=i item=Variation}
                     {foreach name=Variationswerte from=$Variation->Werte key=y item=Variationswert}
                         {if $Variationswert->getImage() !== null}
-                            {image fluid=true webp=true lazy=true
-                                class="variation-image-preview d-none fade vt{$Variationswert->kEigenschaftWert}"
-                                src=$Variationswert->getImage(\JTL\Media\Image::SIZE_XS)
-                                srcset="{$Variationswert->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_variationen_mini_breite}w,
-                                    {$Variationswert->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_variationen_klein_breite}w,
-                                    {$Variationswert->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_variationen_breite}w,
-                                    {$Variationswert->getImage(\JTL\Media\Image::SIZE_LG)} {$Einstellungen.bilder.bilder_variationen_gross_breite}w,"
-                                sizes="50vw"
-                                alt=$Variationswert->cName|escape:'quotes'
-                            }
+                            <div class="variation-image-preview d-none fade vt{$Variationswert->kEigenschaftWert}">
+                                {image fluid=true webp=true lazy=true
+                                    class=""
+                                    src=$Variationswert->getImage(\JTL\Media\Image::SIZE_XS)
+                                    srcset="{$Variationswert->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_variationen_mini_breite}w,
+                                        {$Variationswert->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_variationen_klein_breite}w,
+                                        {$Variationswert->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_variationen_breite}w,
+                                        {$Variationswert->getImage(\JTL\Media\Image::SIZE_LG)} {$Einstellungen.bilder.bilder_variationen_gross_breite}w,"
+                                    sizes="50vw"
+                                    alt=$Variationswert->cName|escape:'quotes'
+                                }
+                            </div>
                         {/if}
                     {/foreach}
                 {/foreach}

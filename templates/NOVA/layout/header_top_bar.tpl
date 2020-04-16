@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='layout-header-top-bar'}
     {strip}
         {nav tag='ul' class='nav-dividers'}

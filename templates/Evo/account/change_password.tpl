@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 <h1>{lang key='changePassword' section='login'}</h1>
 
 {block name='change-password-form'}

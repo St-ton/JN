@@ -6,10 +6,10 @@
             {$instance->getAnimationClass()} {$instance->getStyleClasses()}"
      style="{$instance->getStyleString()}">
     {if $isPreview}
-        <a href="#" class="opc-Flipcard-flip-btn">
-            <span class="opc-Flipcard-label opc-Flipcard-label-front active">Vorderseite</span>
+        <a href="#" class="opc-Flipcard-flip-btn opc-no-disable">
+            <span class="opc-Flipcard-label opc-Flipcard-label-front active">{__('flipcardFront')}</span>
             <i class="fas fa-exchange-alt"></i>
-            <span class="opc-Flipcard-label opc-Flipcard-label-back">Rückseite</span>
+            <span class="opc-Flipcard-label opc-Flipcard-label-back">{__('flipcardBack')}</span>
         </a>
     {/if}
     <div class="opc-Flipcard-inner">

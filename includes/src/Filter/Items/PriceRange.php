@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Filter\Items;
 
@@ -80,7 +76,7 @@ class PriceRange extends AbstractFilter
         $this->setIsCustom(false)
              ->setUrlParam('pf')
              ->setVisibility($this->getConfig('navigationsfilter')['preisspannenfilter_benutzen'])
-             ->setFrontendName(Shop::Lang()->get('rangeOfPrices'));
+             ->setFrontendName(Shop::isAdmin() ? __('filterPriceRange') : Shop::Lang()->get('rangeOfPrices'));
     }
 
     /**

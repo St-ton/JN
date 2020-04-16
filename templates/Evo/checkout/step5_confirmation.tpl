@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 <div id="order-confirm">
     {if !empty($smarty.get.mailBlocked)}
         <p class="alert alert-danger">{lang key='kwkEmailblocked' section='errorMessages'}</p>
@@ -67,7 +63,7 @@
                                 <strong class="title">{lang key='shippingOptions' section='global'}: </strong>
                                 {$smarty.session.Versandart->angezeigterName|trans}
                             </p>
-                            
+
                             {$cEstimatedDelivery = $smarty.session.Warenkorb->getEstimatedDeliveryTime()}
                             {if $cEstimatedDelivery|@count_characters > 0}
                                 <p class="small text-muted">

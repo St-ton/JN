@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='boxes-box-login'}
     {card
         class="box box-login mb-4"
@@ -56,9 +52,12 @@
                                 {navitem class="resetpw" href="{get_static_route id='pass.php' secure=true}"}
                                     {lang key='forgotPassword'}
                                 {/navitem}
-                                {navitem class="register" href="{get_static_route id='registrieren.php'}"}
-                                    {lang key='newHere'} {lang key='registerNow'}
-                                {/navitem}
+                                <li class="nav-item">
+                                    {lang key='newHere'}
+                                    {link class="register text-decoration-underline" href="{get_static_route id='registrieren.php'}"}
+                                        {lang key='registerNow'}
+                                    {/link}
+                                </li>
                             {/nav}
                         {/block}
                     {/form}

@@ -1,8 +1,3 @@
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
-
 class Iframe
 {
     constructor(opc, io, gui, page, shopUrl, templateUrl)
@@ -85,7 +80,7 @@ class Iframe
     disableLinks()
     {
         // disable links and buttons that could change the current iframe page
-        this.jq('a, button')
+        this.jq('a:not(.opc-no-disable), button:not(.opc-no-disable)')
             .off('click')
             .attr('onclick', '')
             .on('click', e => e.preventDefault());
@@ -129,6 +124,7 @@ class Iframe
         this.updateDropTargets();
         this.pagetree.render();
         this.gui.hideLoader();
+        this.disableLinks();
     }
 
     updateDropTargets()

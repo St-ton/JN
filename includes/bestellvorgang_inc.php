@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Alert\Alert;
 use JTL\Catalog\Product\Preise;
@@ -58,7 +54,6 @@ function pruefeBestellungMoeglich()
 function pruefeVersandartWahl($shippingMethod, $formValues = 0, $bMsg = true): bool
 {
     global $step;
-
     $nReturnValue = versandartKorrekt($shippingMethod, $formValues);
     executeHook(HOOK_BESTELLVORGANG_PAGE_STEPVERSAND_PLAUSI);
 
@@ -511,7 +506,7 @@ function pruefeZahlungsartwahlStep($post)
             return null;
         }
     } else {
-        $zahlungsangaben = zahlungsartKorrekt($post['Zahlungsart']);
+        $zahlungsangaben = zahlungsartKorrekt((int)$post['Zahlungsart']);
     }
     executeHook(HOOK_BESTELLVORGANG_PAGE_STEPZAHLUNG_PLAUSI);
 
@@ -823,7 +818,7 @@ function gibStepBestaetigung($get)
 {
     $linkHelper = Shop::Container()->getLinkService();
     //check currenct shipping method again to avoid using invalid methods when using one click method (#9566)
-    if (isset($_SESSION['Versandart']->kVersandart) && !versandartKorrekt($_SESSION['Versandart']->kVersandart)) {
+    if (isset($_SESSION['Versandart']->kVersandart) && !versandartKorrekt((int)$_SESSION['Versandart']->kVersandart)) {
         header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php') . '?editVersandart=1', true, 303);
     }
     // Bei Standardzahlungsarten mit Zahlungsinformationen prüfen ob Daten vorhanden sind
@@ -953,9 +948,9 @@ function plausiKupon($post)
         } else {
             $errors['ungueltig'] = 11;
         }
+        Kupon::mapCouponErrorMessage($errors['ungueltig'] ?? 0);
     }
     plausiNeukundenKupon();
-    Kupon::mapCouponErrorMessage($errors['ungueltig'] ?? 0);
 
     return (count($errors) > 0)
         ? $errors
@@ -1612,7 +1607,7 @@ function gibZahlungsarten(int $shippingMethodID, int $customerGroupID)
 function gibAktiveVersandart($shippingMethods)
 {
     if (isset($_SESSION['Versandart'])) {
-        $_SESSION['AktiveVersandart'] = $_SESSION['Versandart']->kVersandart;
+        $_SESSION['AktiveVersandart'] = (int)$_SESSION['Versandart']->kVersandart;
     } elseif (!empty($_SESSION['AktiveVersandart']) && GeneralObject::hasCount($shippingMethods)) {
         $active = (int)$_SESSION['AktiveVersandart'];
         if (array_reduce($shippingMethods, static function ($carry, $item) use ($active) {
@@ -1620,7 +1615,7 @@ function gibAktiveVersandart($shippingMethods)
         }, 0) !== (int)$_SESSION['AktiveVersandart']) {
             $_SESSION['AktiveVersandart'] = ShippingMethod::getFirstShippingMethod(
                 $shippingMethods,
-                $_SESSION['Zahlungsart']->kZahlungsart ?? 0
+                (int)($_SESSION['Zahlungsart']->kZahlungsart ?? 0)
             )->kVersandart ?? 0;
         }
     } else {
@@ -1630,7 +1625,7 @@ function gibAktiveVersandart($shippingMethods)
         )->kVersandart ?? 0;
     }
 
-    return $_SESSION['AktiveVersandart'];
+    return (int)$_SESSION['AktiveVersandart'];
 }
 
 /**
@@ -1664,7 +1659,7 @@ function gibAktiveVerpackung(array $packagings): array
     if (isset($_SESSION['Verpackung']) && count($_SESSION['Verpackung']) > 0) {
         $_SESSION['AktiveVerpackung'] = [];
         foreach ($_SESSION['Verpackung'] as $packaging) {
-            $_SESSION['AktiveVerpackung'][$packaging->kVerpackung] = 1;
+            $_SESSION['AktiveVerpackung'][(int)$packaging->kVerpackung] = 1;
         }
     } elseif (!empty($_SESSION['AktiveVerpackung']) && count($packagings) > 0) {
         foreach (array_keys($_SESSION['AktiveVerpackung']) as $active) {
@@ -2021,14 +2016,18 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
     }
 
     foreach ([
-                 'kundenregistrierung_abfragen_anrede' => 'anrede',
-                 'kundenregistrierung_pflicht_vorname' => 'vorname',
-                 'kundenregistrierung_abfragen_firma' => 'firma',
-                 'kundenregistrierung_abfragen_firmazusatz' => 'firmazusatz',
-                 'kundenregistrierung_abfragen_titel' => 'titel',
-                 'kundenregistrierung_abfragen_adresszusatz' => 'adresszusatz',
-                 'kundenregistrierung_abfragen_www' => 'www',
-                 'kundenregistrierung_abfragen_bundesland' => 'bundesland'
+                'kundenregistrierung_abfragen_anrede'       => 'anrede',
+                'kundenregistrierung_pflicht_vorname'       => 'vorname',
+                'kundenregistrierung_abfragen_firma'        => 'firma',
+                'kundenregistrierung_abfragen_firmazusatz'  => 'firmazusatz',
+                'kundenregistrierung_abfragen_titel'        => 'titel',
+                'kundenregistrierung_abfragen_adresszusatz' => 'adresszusatz',
+                'kundenregistrierung_abfragen_www'          => 'www',
+                'kundenregistrierung_abfragen_bundesland'   => 'bundesland',
+                'kundenregistrierung_abfragen_geburtstag'   => 'geburtstag',
+                'kundenregistrierung_abfragen_fax'          => 'fax',
+                'kundenregistrierung_abfragen_tel'          => 'tel',
+                'kundenregistrierung_abfragen_mobil'        => 'mobil'
              ] as $confKey => $dataKey) {
         if ($conf['kunden'][$confKey] === 'Y') {
             $data[$dataKey] = isset($data[$dataKey]) ? trim($data[$dataKey]) : null;
@@ -2148,6 +2147,12 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
                             $ret['ustid']     = 4;
                             $ret['ustid_err'] = $resultVatCheck['errorcode'] . ',' . $resultVatCheck['errorinfo'];
                         }
+                        break;
+                    case 'core':
+                        // if we have problems like "no module php_soap" we create a log entry
+                        // (use case: the module and the vat-check was formerly activated yet
+                        // but the php-module is disabled now)
+                        Shop::Container()->getLogService()->warn($resultVatCheck['errorinfo']);
                         break;
                 }
             }
@@ -2757,14 +2762,14 @@ function pruefeAjaxEinKlick(): int
     if (isset($_SESSION['Versandart'])) {
         $bVersandart = true;
     } else {
-        $bVersandart = pruefeVersandartWahl($lastOrder->kVersandart, 0, false);
+        $bVersandart = pruefeVersandartWahl((int)$lastOrder->kVersandart, 0, false);
     }
     if ($bVersandart) {
         if ($lastOrder->kZahlungsart > 0) {
             if (isset($_SESSION['Zahlungsart'])) {
                 return 5;
             }
-            if (zahlungsartKorrekt($lastOrder->kZahlungsart) === 2) {
+            if (zahlungsartKorrekt((int)$lastOrder->kZahlungsart) === 2) {
                 gibStepZahlung();
 
                 return 5;

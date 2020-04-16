@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Alert\Alert;
 use JTL\Checkout\Bestellung;
@@ -46,7 +42,7 @@ if (!empty($uid)) {
         header('Location: ' . $linkHelper->getStaticRoute('jtl.php'), true, 303);
         exit;
     }
-    $order    = new Bestellung($status->kBestellung, true);
+    $order    = new Bestellung((int)$status->kBestellung, true);
     $plzValid = false;
 
     if (Form::validateToken()) {

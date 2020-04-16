@@ -1,10 +1,5 @@
 <?php
 
-$header = <<<'EOF'
-@copyright (c) JTL-Software-GmbH
-@license http://jtl-url.de/jtlshoplicense
-EOF;
-
 $finder = PhpCsFixer\Finder::create()
                            ->exclude('dbeS')
                            ->exclude('vendor')
@@ -80,7 +75,6 @@ return PhpCsFixer\Config::create()
                             'combine_consecutive_unsets'                  => true,
                             'header_comment'                              => [
                                 'commentType' => 'PHPDoc',
-                                'header'      => $header,
                                 'separate'    => 'bottom'
                             ],
                             'list_syntax'                                 => ['syntax' => 'long'],

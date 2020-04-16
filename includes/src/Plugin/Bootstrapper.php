@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Plugin;
 
@@ -125,6 +121,14 @@ abstract class Bootstrapper implements BootstrapperInterface
     public function getPlugin(): PluginInterface
     {
         return $this->plugin;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setPlugin(PluginInterface $plugin): void
+    {
+        $this->plugin = $plugin;
     }
 
     /**

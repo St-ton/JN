@@ -1,14 +1,10 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='snippets-linkgroup-list'}
     {if isset($linkgroupIdentifier)}
     {strip}
     {assign var=checkLinkParents value=false}
         {if isset($Link) && $Link->getID() > 0}
             {assign var=activeId value=$Link->getID()}
-        {elseif Shop::$kLink > 0}
+        {elseif JTL\Shop::$kLink > 0}
             {assign var=activeId value=JTL\Shop::$kLink}
             {assign var=Link value=JTL\Shop::Container()->getLinkService()->getLinkByID($activeId)}
         {/if}

@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 include __DIR__ . '/../config.JTL-Shop.ini.php';
 
 /**

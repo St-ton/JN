@@ -1,13 +1,11 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\DB\ReturnType;
 use JTL\News\Controller;
 use JTL\Session\Frontend;
 use JTL\Shop;
+use function Functional\map;
+use function Functional\pluck;
 
 /**
  * @param bool $bActiveOnly
@@ -271,14 +269,14 @@ function getCurrentNewsCategory(int $newsCategoryID, bool $activeOnly = false)
 function getNewsCategory(int $newsID)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $newsCategories = \Functional\map(
-        \Functional\pluck(Shop::Container()->getDB()->selectAll(
+    $newsCategories = map(
+        pluck(Shop::Container()->getDB()->selectAll(
             'tnewskategorienews',
             'kNews',
             $newsID,
             'kNewsKategorie'
         ), 'kNewsKategorie'),
-        function ($e) {
+        static function ($e) {
             return (int)$e;
         }
     );

@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Optin;
 
@@ -157,7 +153,7 @@ class OptinNewsletter extends OptinBase implements OptinInterface
 
                         unset($recipient);
                         $recipient                     = new stdClass();
-                        $recipient->kSprache           = Shop::getLanguage();
+                        $recipient->kSprache           = Shop::getLanguageID();
                         $recipient->kKunde             = ($customerId ?? 0);
                         $recipient->nAktiv             = ($customerId > 0 &&
                             $this->conf['newsletter']['newsletter_doubleopt'] === 'U') ? 1 : 0;
@@ -175,7 +171,7 @@ class OptinNewsletter extends OptinBase implements OptinInterface
 
                         $this->dbHandler->insert('tnewsletterempfaenger', $recipient);
                         $history               = new stdClass();
-                        $history->kSprache     = Shop::getLanguage();
+                        $history->kSprache     = Shop::getLanguageID();
                         $history->kKunde       = ($customerId ?? 0);
                         $history->cAnrede      = $this->refData->getSalutation();
                         $history->cVorname     = $this->refData->getFirstName();
@@ -264,7 +260,7 @@ class OptinNewsletter extends OptinBase implements OptinInterface
         $shopURL                       = Shop::getURL();
         $optinCodePrefix               = '/?oc=';
         $recipient                     = new stdClass();
-        $recipient->kSprache           = Shop::getLanguage();
+        $recipient->kSprache           = Shop::getLanguageID();
         $recipient->kKunde             = isset($_SESSION['Kunde']->kKunde)
             ? (int)$_SESSION['Kunde']->kKunde
             : 0;

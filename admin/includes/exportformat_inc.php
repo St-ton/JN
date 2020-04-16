@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
@@ -238,7 +234,7 @@ function baueArtikelExportSQL(&$export)
     if (empty($export->kExportformat)) {
         return $sql;
     }
-    $conf = getEinstellungenExport($export->kExportformat);
+    $conf = getEinstellungenExport((int)$export->kExportformat);
 
     switch ($export->nVarKombiOption) {
         case 2:

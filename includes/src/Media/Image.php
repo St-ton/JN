@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Media;
 
@@ -271,8 +267,8 @@ class Image
                     'height' => (int)$settings['bilder_newskategorie_klein_hoehe']
                 ],
                 self::SIZE_MD => [
-                    'width'  => (int)$settings['bilder_newskategorie_normal_hoehe'],
-                    'height' => (int)$settings['bilder_newskategorie_normal_breite']
+                    'width'  => (int)$settings['bilder_newskategorie_normal_breite'],
+                    'height' => (int)$settings['bilder_newskategorie_normal_hoehe']
                 ],
                 self::SIZE_LG => [
                     'width'  => (int)$settings['bilder_newskategorie_gross_breite'],

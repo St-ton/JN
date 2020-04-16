@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='header'}
     {include file='layout/header.tpl'}
 {/block}
@@ -240,7 +236,7 @@
                     {/block}
                 </div>
             </div>
-    
+
             {*@todo*}
             {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y'}
                 {block name='account-wishlist'}

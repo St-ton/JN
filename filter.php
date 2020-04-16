@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Alert\Alert;
 use JTL\Catalog\Category\Kategorie;
@@ -218,7 +214,7 @@ $smarty->assign(
 );
 executeHook(HOOK_FILTER_ENDE);
 
-if (Request::isAjaxRequest()) {
+if (Request::verifyGPCDataInt('useMobileFilters')) {
     $smarty->assign('NaviFilters', $NaviFilter)
         ->assign('show_filters', true)
         ->assign('itemCount', $oSuchergebnisse->getProductCount())

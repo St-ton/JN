@@ -11,6 +11,9 @@ msgstr "Mindesthöhe in px"
 msgid "boxedContainer"
 msgstr "Boxed Container"
 
+msgid "image"
+msgstr "statisches Bild"
+
 msgid "imageParallax"
 msgstr "mitlaufendes Bild (parallax)"
 

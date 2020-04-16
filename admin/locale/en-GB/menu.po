@@ -10,11 +10,11 @@ msgid "Toggle navigation"
 msgstr "Toggle navigation"
 
 msgid "Search item"
-msgstr "Search terms"
+msgstr "Search term"
 
 # Top Menu
 msgid "Appearance"
-msgstr "Appearance"
+msgstr "View"
 
 # Mid Menu
 msgid "Templates"
@@ -32,10 +32,10 @@ msgid "Watermark"
 msgstr "Watermark"
 
 msgid "Shop logo"
-msgstr "Shop logo"
+msgstr "Logo"
 
 msgid "Item badges"
-msgstr "Item badges"
+msgstr "Item stickers"
 
 # Top Menu
 msgid "Contents"
@@ -45,18 +45,17 @@ msgstr "Contents"
 msgid "Item"
 msgstr "Items"
 
-# Menu Items
 msgid "Item detail page"
 msgstr "Item detail page"
 
 msgid "Reviews"
-msgstr "Reviews"
+msgstr "Customer reviews"
 
 msgid "Price history"
 msgstr "Price history"
 
 msgid "Warehouse display"
-msgstr "Warehouse display"
+msgstr "Warehouse stocks"
 
 # Top Menu
 msgid "Pages"
@@ -68,26 +67,20 @@ msgstr "OnPage Composer"
 
 # Menu Items
 msgid "Home page"
-msgstr "Home page"
+msgstr "Start page"
 
 msgid "Terms / Withdrawal"
-msgstr "Terms / Withdrawal"
+msgstr "Terms/Withdrawal"
 
 msgid "Blog posts"
-msgstr "Blog posts"
+msgstr "Blog postings"
 
 msgid "Footer / Boxes"
-msgstr "Footer / Boxes"
+msgstr "Footers/Boxes"
 
 msgid "Languages"
-msgstr "Languages"
+msgstr "Language variables"
 
-# Just incase you want to add a translation for partners:
-#   msgid "IT-Recht Kanzlei"
-#   msgstr "IT-Recht Kanzlei"
-#
-#   msgid "Trustbadge Reviews"
-#   msgstr "Trustbadge Reviews"
 # Mid Menu
 msgid "Forms"
 msgstr "Forms"
@@ -107,7 +100,7 @@ msgstr "Check boxes"
 
 # Mid Menu
 msgid "Email"
-msgstr "Emails"
+msgstr "Email"
 
 # Menu Items
 msgid "Email settings"
@@ -119,8 +112,8 @@ msgstr "Reports"
 msgid "Blacklist"
 msgstr "Blacklist"
 
-msgid "Log"
-msgstr "Log"
+msgid "E-mail log"
+msgstr "Email log"
 
 # Top Menu
 msgid "Purchases"
@@ -132,7 +125,7 @@ msgstr "Basket"
 
 # Menu Items
 msgid "Checkout"
-msgstr "Checkout"
+msgstr "Order process"
 
 msgid "Baskets"
 msgstr "Baskets"
@@ -175,7 +168,7 @@ msgid "Customer loyalty"
 msgstr "Customer loyalty"
 
 msgid "Recommendations"
-msgstr "Recommendations"
+msgstr "Customer referrals"
 
 msgid "Coupons"
 msgstr "Coupons"
@@ -209,26 +202,22 @@ msgstr "Statistics"
 
 # Menu Items
 msgid "Sales"
-msgstr "Sales"
+msgstr "Sales revenues"
 
 msgid "Visitors"
 msgstr "Visitors"
 
 msgid "Referrer pages"
-msgstr "Referrer pages"
+msgstr "Origin pages"
 
 msgid "Search engines"
 msgstr "Search engines"
 
 msgid "Entry pages"
-msgstr "Entry pages"
+msgstr "Start pages"
 
 msgid "Coupon statistics"
 msgstr "Coupons"
-
-# Top Menu
-msgid "Import / Export"
-msgstr "Import/Export"
 
 # Mid Menu
 msgid "Import"
@@ -239,7 +228,7 @@ msgid "Customers"
 msgstr "Customers"
 
 msgid "Newsletters"
-msgstr "Newsletters"
+msgstr "Newsletter"
 
 msgid "Postal codes"
 msgstr "Postal codes"
@@ -256,7 +245,7 @@ msgid "Other formats"
 msgstr "Other formats"
 
 msgid "Site map"
-msgstr "Site map"
+msgstr "Sitemap"
 
 msgid "RSS feed"
 msgstr "RSS feed"
@@ -277,13 +266,13 @@ msgid "Users"
 msgstr "Users"
 
 msgid "JTL-Wawi synchronisation"
-msgstr "JTL-Wawi synchronisation"
+msgstr "Sync with JTL-Wawi"
 
 msgid "Meta data"
 msgstr "Meta data"
 
 msgid "SEO path"
-msgstr "SEO path"
+msgstr "SEO paths"
 
 msgid "Number formats"
 msgstr "Number formats"
@@ -292,7 +281,7 @@ msgid "Cache"
 msgstr "Cache"
 
 msgid "Filesystem"
-msgstr "Filesystem"
+msgstr "File system"
 
 # Mid Menu
 msgid "Maintenance"
@@ -303,7 +292,7 @@ msgid "Orders"
 msgstr "Orders"
 
 msgid "Approvals"
-msgstr "Approvals"
+msgstr "Activations"
 
 msgid "Status"
 msgstr "Status"
@@ -312,7 +301,7 @@ msgid "Update"
 msgstr "Update"
 
 msgid "Item images"
-msgstr "Item images"
+msgstr "Images"
 
 msgid "Forwarding"
 msgstr "Forwarding"
@@ -331,7 +320,7 @@ msgid "Search queries"
 msgstr "Search queries"
 
 msgid "Search query activation"
-msgstr "Search query activation"
+msgstr "Activate search queries"
 
 # Top Menu
 msgid "Plug-ins"
@@ -418,13 +407,13 @@ msgid "There are errors within the database structure."
 msgstr "Error in the database structure."
 
 msgid "Your template version differs from your shop version.<br />For additional help about template updates go to <i class='fa fa-external-link'></i> Wiki"
-msgstr "The template version does not match the shop version.<br/>For further information on adjusting the template, please see the <i class=\"fa fa-external-link\"></i> JTL-Guide."
+msgstr "The template version does not match the version of our online shop.<br/>For further information on adjusting the template, please see the <i class=\"fa fa-external-link\"></i> JTL-Guide."
 
 msgid "You are using a full responsive template. The activation of a separate mobile template is not necessary in this case."
 msgstr "You are using a fully responsive template. It is not necessary to activate a separate mobile template."
 
 msgid "You have activated a non-standard template!"
-msgstr "No default shop template enabled."
+msgstr "No standard template enabled."
 
 msgid "The profiler is active. This can cause strong power loss in the shop."
 msgstr "The plug-in profiler is active. This can lead to severe performance issues."
@@ -442,7 +431,7 @@ msgid "The full-text index does not exist!"
 msgstr "No full-text index available."
 
 msgid "E-mail template broken"
-msgstr "Bad email template"
+msgstr "Defective email template"
 
 msgid "The E-mail template 'Passwort vergessen'/'Forgotten password' is outdated. The variable $neues_passwort is not available anymore. Please replace this with $passwordResetLink or reset the template."
 msgstr "The email template \"Forgot password\" is outdated. The variable $neues_passwort is no longer available. Please replace it by $passwordResetLink or reset the template."
@@ -451,7 +440,7 @@ msgid "Insecure SMTP connection"
 msgstr "Unsafe SMTP connection"
 
 msgid "You have selected SMTP as mail-method, but no encryption method has been chosen. We recommend you urgently to adjust your mail settings. You can find these options at 'System > E-Mails > Emaileinstellungen > SMTP Security'"
-msgstr "You have chosen SMTP but did not select an SMTP security method. We urgently recommend adapting your email settings. You will find the option here: System &gt; Emails &gt; Email settings &gt; SMTP Security."
+msgstr "You chose SMTP but did not select an SMTP security method. We urgently recommend adapting your email settings. You will find the option here: Administration > Emails > Server."
 
 msgid "User management"
 msgstr "User management"
@@ -469,13 +458,13 @@ msgid "Landing pages"
 msgstr "Landing pages"
 
 msgid "Default views"
-msgstr "Default views"
+msgstr "Standard views"
 
 msgid "Default elements"
-msgstr "Default elements"
+msgstr "Standard elements"
 
 msgid "Question on item"
-msgstr "Question on item"
+msgstr "Question about item"
 
 msgid "Custom contents"
 msgstr "Custom contents"
@@ -484,22 +473,22 @@ msgid "Server"
 msgstr "Server"
 
 msgid "Accounts"
-msgstr "Accounts"
+msgstr "Users &amp; rights"
 
 msgid "Troubleshooting"
 msgstr "Troubleshooting"
 
 msgid "System diagnostics"
-msgstr "System diagnostics"
+msgstr "Diagnostics"
 
 msgid "Set up"
 msgstr "Set up"
 
 msgid "Email templates"
-msgstr "Templates"
+msgstr "Template"
 
 msgid "Global"
 msgstr "Global"
 
 msgid "Availability notifications"
-msgstr "Availability notifications"
+msgstr "Availability requests"

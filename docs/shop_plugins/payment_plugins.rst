@@ -6,18 +6,19 @@ Zahlungs-Plugins
    <br />
 
 Ein Zahlungs-Plugin definiert über den Knoten ``<PaymentMethod>`` in der ``info.xml`` eine oder mehrere
-Zahlungsmethoden, die dann über eine Zuordnung zu Versandarten im Shop für Bezahlvorgänge genutzt werden können. |br|
-Die grundsätzliche XML-Struktur einer Zahlungsmethode kann im Abschnitt :ref:`label_infoxml_paymentmethode`
-unter :doc:`infoxml` eingesehen werden.
+Zahlungsmethoden, die dann über eine Zuordnung zu Versandarten im Onlineshop für Bezahlvorgänge genutzt werden
+können. |br|
+Die grundsätzliche XML-Struktur einer Zahlungsmethode finden Sie im Abschnitt :ref:`label_infoxml_paymentmethode`
+unter :doc:`infoxml`.
 
 Grundlegendes
 -------------
 
-Jede Zahlungsmethode wird durch eine Payment-Klasse representiert. Der Klassenname und die zugehörige Klassendatei
+Jede Zahlungsmethode wird durch eine Payment-Klasse repräsentiert. Der Klassenname und die zugehörige Klassendatei
 werden in der ``info.xml`` mit den Knoten ``<ClassName>`` und ``<ClassFile>`` festgelegt. Die Klassendatei muss sich
 für eine erfolgreiche Validierung der Zahlungsmethode im Unterverzeichnis ``paymentmethod`` innerhalb des
 Plugin-Verzeichnisses befinden. Bis einschließlich Version 4.x können die Bezeichner für Klassenname und Klassendatei
-frei gewählt werden, während diese ab Version 5.0 der PSR-4 Spezifikation folgen müssen. |br|
+frei gewählt werden, während diese ab Version 5.0 der PSR-4-Spezifikation folgen müssen. |br|
 Jede Payment-Klasse muss ab Version 5.0 das Interface ``JTL\Plugin\Payment\MethodInterface`` implementieren oder von
 ``JTL\Plugin\Payment\Method`` abgeerbt werden. Bis einschließlich Version 4.x müssen alle Payment-Klassen Unterklassen
 von ``PaymentMethod`` (``/includes/modules/PaymentMethod.class.php``) sein. |br|
@@ -25,8 +26,8 @@ von ``PaymentMethod`` (``/includes/modules/PaymentMethod.class.php``) sein. |br|
 weiterer Hooks für den Zahlungsprozess ist normalerweise nur notwendig, wenn durch die Zahlungsmethode weitergehende
 Eingriffe in den Ablauf des Zahlungsvorganges oder des gesamten Bestellprozesses notwendig sind.
 
-Implementation einer Payment-Klasse bis einschl. Version 4.x
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+Implementation einer Payment-Klasse bis einschl. JTL-Shop Version 4.x
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 .. code-block:: php
    :emphasize-lines: 2
@@ -42,8 +43,13 @@ Implementation einer Payment-Klasse bis einschl. Version 4.x
         ...
     }
 
-Implementation einer Payment-Klasse ab Version 5.0
-""""""""""""""""""""""""""""""""""""""""""""""""""
+Implementation einer Payment-Klasse ab JTL-Shop Version 5.0
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+.. hint::
+
+    Im Weiteren wird von einer **Implementation für JTL-Shop Version 5.x** ausgegangen und nur soweit dies nicht auch
+    sinngemäß für JTL-Shop Version 4.x gilt, explizit auf die Unterschiede eingegangen.
 
 .. code-block:: php
    :emphasize-lines: 4
@@ -60,11 +66,6 @@ Implementation einer Payment-Klasse ab Version 5.0
     {
         ...
     }
-
-.. hint::
-
-    Im Weiteren wird von einer **Implementation für Version 5.x** ausgegangen und nur soweit dies nicht auch sinngemäß
-    für Version 4.x gilt, explizit auf die Unterschiede eingegangen.
 
 Die Basis-Payment-Klasse ``JTL\Plugin\Payment\Method`` implementiert das benötigte Interface und stellt alle
 grundlegenden Funktionen einer Zahlungsmethode zur Verfügung. Die eigene Payment-Klasse sollte deshalb immer von dieser
@@ -126,8 +127,8 @@ Methode ``preparePaymentProcess`` überschreiben.
 
 Die Methode ``preparePaymentProcess`` wird durch den Bestellabschluss nach Finalisierung der Bestellung aufgerufen und
 startet den Bezahlvorgang der Zahlungsmethode. |br|
-Im Beispiel wird das - über die ``info.xml`` definierte - E-Mail-Template für die Zahlungsmethode geladen und über den
-Mailer-Service des Shops versendet.
+Im Beispiel wird das über die ``info.xml`` definierte E-Mail-Template für die Zahlungsmethode geladen und über den
+Mailer-Service von JTL-Shop versendet.
 
 Zahlung vor Bestellabschluss
 ----------------------------
@@ -135,38 +136,40 @@ Zahlung vor Bestellabschluss
 Im Modus "Zahlung vor Bestellabschluss" wird beim Abschließen des Bestellvorganges durch den Kunden die Bestellung
 nicht festgeschrieben, sondern lediglich in der aktuellen Kundensession gehalten, wenn der Bezahlvorgang gestartet wird.
 Die Zahlungsmethode muss bei erfolgreicher Zahlung über einen Aufruf von ``/includes/modules/notify.php`` dafür sorgen,
-dass der Kunde zum Bestellabschluss gelangt und die Bestellung festgeschrieben wird. Dies kann z.B. über eine
+dass der Kunde zum Bestellabschluss gelangt und die Bestellung festgeschrieben wird. Dies kann z. B. über eine
 URL-Weiterleitung erfolgen. Die dafür notwendige URL kann mittels
 :ref:`getNotificationURL <label_public-function-method-getNotificationURL>` ermittelt werden. |br|
-Im Fehlerfall muss der Kunde zurück in den Bestellprozess geleitet werden, um die Bezahlung ggfs. wiederholen oder den
-Checkout mit einer anderen Zahlungsart fortsetzen zu können.
+Im Fehlerfall muss der Kunde zurück in den Bestellprozess geleitet werden, um die Bezahlung ggf. zu wiederholen oder
+den Checkout mit einer anderen Zahlungsart fortsetzen zu können.
 
 .. hint::
 
-   Bei Zahlungsmethoden die eine zeitversetzte Bestätigung der Zahlung via Webhook versenden kann es passieren, dass
+   Bei Zahlungsmethoden, die eine zeitversetzte Bestätigung der Zahlung via Webhook versenden, kann es passieren, dass
    die Bestellung nicht mehr festgeschrieben werden kann, da diese aufgrund einer abgelaufenen Kundensession bereits
-   verfallen ist. In diesem Fall existiert dann eine Zahlung zu der es keine Bestellung gibt! |br|
+   verfallen ist. In diesem Fall existiert dann eine Zahlung, zu der es keine Bestellung gibt! |br|
    Für solche Zahlungsmethoden sollte besser nur der Modus "Zahlung nach Bestellabschluss" gewählt werden.
 
 Die "Zahlung vor Bestellabschluss" kann für die Zahlungsmethode über den XML-Parameter ``<PreOrder>1</PreOrder>``
-voreingestellt werden. Dieser Wert lässt sich jedoch in den Einstellungen der Zahlungsmethode vom Shop-Betreiber
-nachträglich ändern.
+voreingestellt werden. Dieser Wert lässt sich jedoch in den Einstellungen der Zahlungsmethode vom Betreiber des
+Onlineshops nachträglich ändern.
 
 Zahlung nach Bestellabschluss
 -----------------------------
 
-Im Modus "Zahlung nach Bestellabschluss" wird die Bestellung komplett abgeschlossen und in der Datenabk gespeichert,
+Im Modus "Zahlung nach Bestellabschluss" wird die Bestellung komplett abgeschlossen und in der Datenbank gespeichert,
 bevor der Bezahlvorgang gestartet wird. Die Zahlungsmethode muss hier dafür sorgen, dass bei erfolgreicher Zahlung
 die Bestellung per :ref:`setOrderStatusToPaid <label_public-function-method-setOrderStatusToPaid>` auf den Status
 "bezahlt" gesetzt und mittels :ref:`addIncomingPayment <label_public-function-method-addIncomingPayment>` der
 Zahlungseingang gespeichert wird. |br|
-Eine Zahlung in diesem Modus kann normalerweise - z.B. nach einem Fehler - auch erneut gestartet werden und sollte das
-durch :ref:`canPayAgain <label_public-function-method-canPayAgain>` entsprechend aktivieren. Ein Rücksprung in den
-Bestellvorgang und die Auswahl einer anderen Zahlungsmethode durch den Kunden ist jedoch nicht möglich.
+Ein Zahlvorgang, der in diesen Modus läuft, kann normalerweise auch neu gestartet werden falls Fehler aufgetreten sind.
+Die Zahlungsmethode sollte dies dann auch entsprechend signalisieren. |br|
+Siehe hierzu auch :ref:`canPayAgain <label_public-function-method-canPayAgain>` |br|
+Ein Rücksprung in den Bestellvorgang und die Auswahl einer anderen Zahlungsmethode durch den Kunden ist jedoch nicht
+möglich.
 
 Die "Zahlung nach Bestellabschluss" kann für die Zahlungsmethode über den XML-Parameter ``<PreOrder>0</PreOrder>``
-voreingestellt werden. Dieser Wert lässt sich jedoch in den Einstellungen der Zahlungsmethode vom Shop-Betreiber
-nachträglich ändern.
+voreingestellt werden. Dieser Wert lässt sich jedoch in den Einstellungen der Zahlungsmethode vom Betreiber des
+Onlineshops nachträglich ändern.
 
 .. hint::
 
@@ -196,8 +199,8 @@ public function init()
 
 Wird bei jedem Instanziieren der Zahlungsmethode aufgerufen. In der Payment-Basisklasse werden die Properties
 ``caption`` und ``duringCheckout`` initialisiert. Als Rückgabewert wird die Klasseninstanz selbst erwartet. |br|
-Diese Methode sollte überschrieben werden, wenn eigene Initialisierungen vorgenommen werden müssen. Z.B. können hier
-- die ab Version 5.0 notwendigen - Sprachdateien des Plugins geladen werden, um eine saubere Trennung von Code und
+Diese Methode sollte überschrieben werden, wenn eigene Initialisierungen vorgenommen werden müssen. Z. B. können hier
+die ab JTL-Shop Version 5.0 notwendigen Sprachdateien des Plugins geladen werden, um eine saubere Trennung von Code und
 Sprache zu ermöglichen.
 
 .. code-block:: php
@@ -225,28 +228,37 @@ Sprache zu ermöglichen.
 public function getOrderHash()
 """"""""""""""""""""""""""""""
 
+(Beschreibung folgt)
+
 .. _label_public-function-method-getReturnURL:
 
 public function getReturnURL()
 """"""""""""""""""""""""""""""
+
+(Beschreibung folgt)
 
 .. _label_public-function-method-getNotificationURL:
 
 public function getNotificationURL()
 """"""""""""""""""""""""""""""""""""
 
+(Beschreibung folgt)
+
 .. _label_public-function-method-updateNotificationID:
 
 public function updateNotificationID()
 """"""""""""""""""""""""""""""""""""""
+
+(Beschreibung folgt)
 
 .. _label_public-function-method-getShopTitle:
 
 public function getShopTitle()
 """"""""""""""""""""""""""""""
 
-Liefert den Namen des Shops, der ggfs. an einen Payment-Provider übergeben wird. In der Payment-Basisklasse wird
-hier der Name des Shops aus der Konfiguration ermittelt. Diese Methode muss normalerweise nicht überschrieben werden.
+Liefert den Namen des Onlineshops, der ggf. an einen Payment-Provider übergeben wird. In der Payment-Basisklasse wird
+hier der Name des Onlineshops aus der Konfiguration ermittelt. Diese Methode muss normalerweise nicht überschrieben
+werden.
 
 .. _label_public-function-method-preparePaymentProcess:
 
@@ -255,7 +267,7 @@ public function preparePaymentProcess()
 
 Die Methode ``preparePaymentProcess`` wird durch den Bestellabschluss nach Finalisierung der Bestellung aufgerufen und
 startet den Bezahlvorgang der Zahlungsmethode. |br|
-Je nachdem ob die Zahlungsmethode im Modus "Zahlung vor Bestellabschluss" oder "Zahlung nach Bestellabschluss"
+Je nachdem, ob die Zahlungsmethode im Modus "Zahlung vor Bestellabschluss" oder "Zahlung nach Bestellabschluss"
 ausgeführt wird, ist zum Zeitpunkt des Aufrufs die zugrundeliegende Bestellung bereits in der Tabelle ``tbestellung``
 persistiert oder sie existiert nur innerhalb der aktiven Kundensession.
 
@@ -333,15 +345,21 @@ Beispiel für eine Implementation im Modus "Zahlung nach Bestellabschluss".
 public function sendErrorMail()
 """""""""""""""""""""""""""""""
 
+(Beschreibung folgt)
+
 .. _label_public-function-method-generateHash:
 
 public function generateHash()
 """"""""""""""""""""""""""""""
 
+(Beschreibung folgt)
+
 .. _label_public-function-method-deletePaymentHash:
 
 public function deletePaymentHash()
 """""""""""""""""""""""""""""""""""
+
+(Beschreibung folgt)
 
 .. _label_public-function-method-addIncomingPayment:
 
@@ -357,7 +375,7 @@ werden.
 public function setOrderStatusToPaid()
 """"""""""""""""""""""""""""""""""""""
 
-Mit ``setOrderStatusToPaid`` wird die übergebene Bestellung in den Status "bezalt" versetzt. Die Methode der
+Mit ``setOrderStatusToPaid`` wird die übergebene Bestellung in den Status "bezahlt" versetzt. Die Methode der
 Payment-Basisklasse führt dazu ein Update der Tabelle ``tbestellung`` durch. Diese Methode muss normalerweise nicht
 überschrieben werden.
 
@@ -375,33 +393,43 @@ muss normalerweise nicht überschrieben werden.
 public function handleNotification()
 """"""""""""""""""""""""""""""""""""
 
+(Beschreibung folgt)
+
 .. _label_public-function-method-finalizeOrder:
 
 public function finalizeOrder()
 """""""""""""""""""""""""""""""
+
+(Beschreibung folgt)
 
 .. _label_public-function-method-redirectOnCancel:
 
 public function redirectOnCancel()
 """"""""""""""""""""""""""""""""""
 
+(Beschreibung folgt)
+
 .. _label_public-function-method-redirectOnPaymentSuccess:
 
 public function redirectOnPaymentSuccess()
 """"""""""""""""""""""""""""""""""""""""""
+
+(Beschreibung folgt)
 
 .. _label_public-function-method-doLog:
 
 public function doLog()
 """""""""""""""""""""""
 
+(Beschreibung folgt)
+
 .. _label_public-function-method-getCustomerOrderCount:
 
 public function getCustomerOrderCount()
 """""""""""""""""""""""""""""""""""""""
 
-Zu einem bestehenden Kunden wird mit dieser Methode der Payment-Basisklasse, die Anzahl an Bestellungen, die
-"in Bearbeitung", "bezahlt" oder "versandt" sind, ermittelt. Diese Methode muss normalerweise nicht überschrieben
+Mit dieser Methode der Payment-Basisklasse wird zu einem bestehenden Kunden die Anzahl an Bestellungen ermittelt, die
+"in Bearbeitung", "bezahlt" oder "versandt" sind. Diese Methode muss normalerweise nicht überschrieben
 werden.
 
 .. _label_public-function-method-loadSettings:
@@ -409,10 +437,14 @@ werden.
 public function loadSettings()
 """"""""""""""""""""""""""""""
 
+(Beschreibung folgt)
+
 .. _label_public-function-method-getSetting:
 
 public function getSetting()
 """"""""""""""""""""""""""""
+
+(Beschreibung folgt)
 
 .. _label_public-function-method-isValid:
 
@@ -421,12 +453,12 @@ public function isValid()
 
 Diese Methode gibt die Validität der Zahlungsmethode im aktuellen Zahlvorgang - also abhängig von Kunde und / oder
 Warenkorb - an. |br|
-Bei Rückgabe von ``false`` wird die Zahlungsmethode im Bestellprozess nicht angeboten, bzw. als ungültig
+Bei Rückgabe von ``false`` wird die Zahlungsmethode im Bestellprozess nicht angeboten bzw. als ungültig
 zurückgewiesen.  Der Rückgabewert ``true`` zeigt dagegen an, dass die Zahlungsart verwendet werden kann. |br|
 In der Payment-Basisklasse wird hier das Ergebnis von :ref:`isValidIntern <label_public-function-method-isValidIntern>`
-und zusätzlich die Erfüllung der Bedingungen für Mindestanzahl Bestellungen durch den Kunden, sowie Mindestbestellwert
-im aktuellen Warenkorb geprüft. |br|
-Diese Methode muss nur überschrieben werden, wenn eigene Kunden- und Warenkorbabhängige Bedingungen geprüft werden
+und zusätzlich die Erfüllung der Bedingungen für die Mindestanzahl an Bestellungen durch den Kunden sowie der
+Mindestbestellwert im aktuellen Warenkorb geprüft. |br|
+Diese Methode muss nur überschrieben werden, wenn eigene kunden- und warenkorbabhängige Bedingungen geprüft werden
 müssen.
 
 .. code-block:: php
@@ -446,12 +478,12 @@ public function isValidIntern()
 
 Mit dieser Methode wird die grundsätzliche (interne) Validität der Zahlungsmethode geprüft. |br|
 Ein Rückgabewert ``true`` signalisiert hierbei, dass die Zahlungsmethode gültig ist und verwendet werden kann.
-Bei Rückgabe von ``false`` wird die Zahlungsmethode als ungültig angesehen und nicht zur Auswahl im Bestellprozess
+Bei Rückgabe von ``false`` wird die Zahlungsmethode als ungültig angesehen und im Bestellprozess nicht zur Auswahl
 angezeigt. |br|
 Im Gegensatz zu :ref:`isValid <label_public-function-method-isValid>` erfolgt die Prüfung unabhängig vom
 aktuellen Zahlvorgang. Die Implementation der Payment-Basisklasse liefert immer ``true``. Diese Methode muss also
-überschrieben werden, wenn die Zahlungsmethode aufgrund "interner" Gründe - z.B. fehlende oder fehlerhafte
-Konfiguration - nicht verfügbar ist.
+überschrieben werden, wenn die Zahlungsmethode aufgrund "interner" Gründe wie fehlender oder fehlerhafter
+Konfiguration nicht verfügbar ist.
 
 .. code-block:: php
 
@@ -482,7 +514,7 @@ Mit ``isSelectable`` steht eine Möglichkeit zur Verfügung, die Zahlungsmethode
 Im Unterschied zu :ref:`isValid <label_public-function-method-isValid>` und
 :ref:`isValidIntern <label_public-function-method-isValidIntern>` wird diese Methode für reine Frontend-Bedingungen
 genutzt. |br|
-Dies ist z.B. dann der Fall, wenn eine grundsätzlich zulässige Zahlungsmethode nicht in der Liste zur Auswahl der
+Dies ist z. B. dann der Fall, wenn eine grundsätzlich zulässige Zahlungsmethode nicht in der Liste zur Auswahl der
 Versand- und Zahlungsart aufgeführt werden soll, weil diese nur für einen Expresskauf-Button oder für ein direktes
 Bezahlen am Artikel oder aus dem Warenkorb heraus genutzt wird. |br|
 In der Payment-Basisklasse liefert diese Methode immer das Ergebnis von
@@ -501,7 +533,7 @@ In der Payment-Basisklasse liefert diese Methode immer das Ergebnis von
 .. note::
 
     Die Methoden ``isValidIntern()``, ``isValid()`` und ``isSelectable()`` bedingen einander. Dabei hat
-    ``isValidIntern()`` die höchste und ``isSelectable()`` die geringste Wertigkeit. Eine Zahlungsmethode die über
+    ``isValidIntern()`` die höchste und ``isSelectable()`` die geringste Wertigkeit. Eine Zahlungsmethode, die über
     ``isValidIntern()`` ``false`` liefert, ist auch nicht valide und auch nicht auswählbar. Eine nicht auswählbare
     Zahlungsmethode kann aber durchaus valide sein. |br| Durch den Aufruf der geerbten Methoden aus der
     Payment-Basisklasse kann diese Abhängigkeit einfach sichergestellt werden.
@@ -511,13 +543,13 @@ In der Payment-Basisklasse liefert diese Methode immer das Ergebnis von
 public function handleAdditional()
 """"""""""""""""""""""""""""""""""
 
-Wird im Bestellprozess aufgerufen, um zu prüfen ob der Zusatzschritt im Bestellprozess angezeigt werden soll.
+Wird im Bestellprozess aufgerufen, um zu prüfen, ob der Zusatzschritt im Bestellprozess angezeigt werden soll.
 Ist der Zwischenschritt aus Plugin-Sicht notwendig, muss ``false`` zurückgegeben werden. |br|
-Dies kann z.B. genutzt werden, um zusätzliche, Zahlartrelevante Daten (z.B Kreditkartendaten) vom Kunden abzufragen.
-Sind diese Daten z.B. bereits in der Kundensession vorhanden, kann der Schritt mit Rückgabe von ``true`` übersprungen
-werden. |br|
+Dies kann z. B. genutzt werden, um zusätzliche, für die Zahlungsart relevante Daten wie Kreditkartendaten vom Kunden
+abzufragen.  Sind diese Daten z. B. bereits in der Kundensession vorhanden, kann der Schritt mit Rückgabe von ``true``
+übersprungen werden. |br|
 In der Payment-Basisklasse liefert diese Methode immer ``true`` und muss deshalb nur überschrieben werden, wenn ein
-eigener Zwischenschrit (siehe: :ref:`<AdditionalTemplateFile> <label_AdditionalTemplateFile>`) vorhanden ist.
+eigener Zwischenschritt (siehe: :ref:`<AdditionalTemplateFile> <label_AdditionalTemplateFile>`) vorhanden ist.
 
 .. code-block:: php
 
@@ -547,8 +579,8 @@ eigener Zwischenschrit (siehe: :ref:`<AdditionalTemplateFile> <label_AdditionalT
 public function validateAdditional()
 """"""""""""""""""""""""""""""""""""
 
-Diese Methode Wird im Bestellprozess aufgerufen und entscheidet im Zusammenspiel mit
-:ref:`handleAdditional <label_public-function-method-handleAdditional>` ob das Zusatzschritt-Template
+Diese Methode wird im Bestellprozess aufgerufen und entscheidet im Zusammenspiel mit
+:ref:`handleAdditional <label_public-function-method-handleAdditional>`, ob das Zusatzschritt-Template
 (siehe: :ref:`<AdditionalTemplateFile> <label_AdditionalTemplateFile>`) nach der Auswahl der Zahlungsart angezeigt
 werden muss. Können die Daten aus dem Zwischenschritt nicht validiert werden, wird ``false`` zurückgegeben,
 ansonsten ``true``.
@@ -611,7 +643,7 @@ Diese Methode muss überschrieben werden, wenn eine andere Cache-Methode verwend
 public function unsetCache()
 """"""""""""""""""""""""""""
 
-Mit ``unsetCache`` wird ein Key-Value-Pair aus dem Zwischenspeicher entfern. Die Payment-Basisklasse benutzt für die
+Mit ``unsetCache`` wird ein Key-Value-Pair aus dem Zwischenspeicher entfernt. Die Payment-Basisklasse benutzt für die
 Methoden :ref:`addCache <label_public-function-method-addCache>`,
 :ref:`unsetCache <label_public-function-method-unsetCache>` und :ref:`getCache <label_public-function-method-getCache>`
 die aktuelle Kunden-Session als Zwischenspeicher. |br|
@@ -633,20 +665,24 @@ Diese Methode muss überschrieben werden, wenn eine andere Cache-Methode verwend
 public function createInvoice()
 """""""""""""""""""""""""""""""
 
+(Beschreibung folgt)
+
 .. _label_public-function-method-reactivateOrder:
 
 public function reactivateOrder()
 """""""""""""""""""""""""""""""""
+
+(Beschreibung folgt)
 
 .. _label_public-function-method-cancelOrder:
 
 public function cancelOrder()
 """""""""""""""""""""""""""""
 
-Diese Methode wird vom Shop-Core bei der Synchronisation mit JTL-Wawi aufgerufen, wenn eine Bestellung storniert wurde.
-Die Payment-Basisklasse setzt den Status der zugeordneten Bestellung auf "storniert" und versendet über
+Diese Methode wird vom JTL-Shop-Core bei der Synchronisation mit JTL-Wawi aufgerufen, wenn eine Bestellung storniert
+wurde. Die Payment-Basisklasse setzt den Status der zugeordneten Bestellung auf "storniert" und versendet über
 :ref:`sendMail <label_public-function-method-sendMail>` die "Bestellung storniert"-E-Mail. |br|
-Diese Methode muss überschrieben werden, wenn weitergehende Operationen notwendig sind. Das kann z.B. die Stornierung
+Diese Methode muss überschrieben werden, wenn weitergehende Operationen notwendig sind. Das kann z. B. die Stornierung
 der Zahlung beim Payment-Provider sein.
 
 .. code-block:: php

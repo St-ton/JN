@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {if $smarty.session.Kundengruppe->mayViewPrices()}
     <div class="price_wrapper">
     {block name='price-wrapper'}
@@ -56,7 +52,7 @@
                 {if $Artikel->cEinheit && ($Artikel->fMindestbestellmenge > 1 || $Artikel->fAbnahmeintervall > 1)}
                     <span class="price_label per_unit"> {lang key='vpePer'} 1 {$Artikel->cEinheit}</span>
                 {/if}
-                
+
                 {* Grundpreis *}
                 {if !empty($Artikel->cLocalizedVPE)}
                     {block name='detail-base-price'}
@@ -71,7 +67,7 @@
                         </div>
                     {/block}
                 {/if}
-                
+
                 {block name='detail-vat-info'}
                     <p class="vat_info text-muted top5">
                         {include file='snippets/shipping_tax_info.tpl' taxdata=$Artikel->taxData}
@@ -108,7 +104,7 @@
                         </div>
                     {/if}
                 {/if}
-                
+
                 {* --- Staffelpreise? --- *}
                 {if !empty($Artikel->staffelPreis_arr)}
                     <div class="bulk-price">
@@ -156,20 +152,20 @@
         {else}{* scope productlist *}
             <div class="price-note">
                 {* Grundpreis *}
-                {if !empty($Artikel->cLocalizedVPE)}
-                {block name='list-base-price'}
-                    <div class="base_price text-nowrap" itemprop="priceSpecification" itemscope itemtype="http://schema.org/UnitPriceSpecification">
-                        <meta itemprop="price" content="{if $Artikel->Preise->oPriceRange->isRange()}{($Artikel->Preise->oPriceRange->minBruttoPrice/$Artikel->fVPEWert)|string_format:"%.2f"}{else}{($Artikel->Preise->fVKBrutto/$Artikel->fVPEWert)|string_format:"%.2f"}{/if}">
-                        <meta itemprop="priceCurrency" content="{$smarty.session.Waehrung->getName()}">
-                        <span class="value" itemprop="referenceQuantity" itemscope itemtype="http://schema.org/QuantitativeValue">
-                            {$Artikel->cLocalizedVPE[$NettoPreise]}
-                            <meta itemprop="value" content="{$Artikel->fGrundpreisMenge}">
-                            <meta itemprop="unitText" content="{$Artikel->cVPEEinheit|regex_replace:"/[\d ]/":""}">
-                        </span>
-                    </div>
-                {/block}
+                {if !empty($Artikel->cLocalizedVPE) && !$Artikel->Preise->oPriceRange->isRange()}
+                    {block name='productdetails-price-list-base-price'}
+                        <div class="base_price" itemprop="priceSpecification" itemscope itemtype="http://schema.org/UnitPriceSpecification">
+                            <meta itemprop="price" content="{($Artikel->Preise->fVKBrutto/$Artikel->fVPEWert)|string_format:"%.2f"}">
+                            <meta itemprop="priceCurrency" content="{$smarty.session.Waehrung->getName()}">
+                            <span class="value" itemprop="referenceQuantity" itemscope itemtype="http://schema.org/QuantitativeValue">
+                                    {$Artikel->cLocalizedVPE[$NettoPreise]}
+                                    <meta itemprop="value" content="{$Artikel->fGrundpreisMenge}">
+                                    <meta itemprop="unitText" content="{$Artikel->cVPEEinheit|regex_replace:"/[\d ]/":""}">
+                                </span>
+                        </div>
+                    {/block}
                 {/if}
-                
+
                 {if $Artikel->Preise->Sonderpreis_aktiv && isset($Einstellungen.artikeluebersicht) && $Einstellungen.artikeluebersicht.artikeluebersicht_sonderpreisanzeige == 2}
                     <div class="instead-of old-price">
                         <small class="text-muted">

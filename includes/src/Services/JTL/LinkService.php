@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Services\JTL;
 
@@ -213,16 +209,16 @@ final class LinkService implements LinkServiceInterface
 
     /**
      * @former gibLinkKeySpecialSeite()
-     * @param int $nLinkart
+     * @param int $linkType
      * @return LinkInterface|null
      */
-    public function getSpecialPage(int $nLinkart): ?LinkInterface
+    public function getSpecialPage(int $linkType): ?LinkInterface
     {
         $lg = $this->getLinkGroupByName('specialpages');
 
         return $lg !== null
-            ? $lg->getLinks()->first(static function (LinkInterface $l) use ($nLinkart) {
-                return $l->getLinkType() === $nLinkart;
+            ? $lg->getLinks()->first(static function (LinkInterface $l) use ($linkType) {
+                return $l->getLinkType() === $linkType;
             })
             : null;
     }
@@ -230,9 +226,13 @@ final class LinkService implements LinkServiceInterface
     /**
      * @inheritdoc
      */
-    public function getSpecialPageID(int $nLinkart)
+    public function getSpecialPageID(int $linkType, bool $fallback = true)
     {
-        $link = $this->getSpecialPage($nLinkart);
+        $link = $this->getSpecialPage($linkType);
+        if ($link !== null) {
+            return $link->getID();
+        }
+        $link = $fallback ? $this->getSpecialPage(\LINKTYP_404) : null;
 
         return $link === null ? false : $link->getID();
     }
@@ -240,9 +240,9 @@ final class LinkService implements LinkServiceInterface
     /**
      * @inheritdoc
      */
-    public function getSpecialPageLinkKey(int $nLinkart)
+    public function getSpecialPageLinkKey(int $linkType)
     {
-        return $this->getSpecialPageID($nLinkart);
+        return $this->getSpecialPageID($linkType);
     }
 
     /**

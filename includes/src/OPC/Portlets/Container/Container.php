@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\OPC\Portlets\Container;
 
@@ -45,6 +41,7 @@ class Container extends Portlet
                 'type'    => InputType::RADIO,
                 'label'   => __('background'),
                 'options' => [
+                    'still' => __('image'),
                     'image' => __('imageParallax'),
                     'video' => __('backgroundVideo'),
                     'false' => __('noBackground'),
@@ -52,6 +49,12 @@ class Container extends Portlet
                 'default' => 'false',
                 'width'   => 50,
                 'childrenFor' => [
+                    'still' => [
+                        'still-src'  => [
+                            'label' => __('backgroundImage'),
+                            'type'  => InputType::IMAGE,
+                        ],
+                    ],
                     'image' => [
                         'src'  => [
                             'label' => __('backgroundImage'),

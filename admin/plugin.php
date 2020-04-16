@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Alert\Alert;
 use JTL\DB\ReturnType;
@@ -32,8 +28,9 @@ $updated         = false;
 $pluginID        = Request::verifyGPCDataInt('kPlugin');
 $db              = Shop::Container()->getDB();
 $cache           = Shop::Container()->getCache();
-$plugin          = null;
 $alertHelper     = Shop::Container()->getAlertService();
+$plugin          = null;
+$loader          = null;
 $activeTab       = -1;
 if ($step === 'plugin_uebersicht' && $pluginID > 0) {
     if (Request::verifyGPCDataInt('Setting') === 1) {
@@ -93,6 +90,13 @@ if ($step === 'plugin_uebersicht' && $pluginID > 0) {
         } else {
             $notice = __('successConfigSave');
         }
+        $loader = Helper::getLoaderByPluginID($pluginID, $db, $cache);
+        if ($loader !== null) {
+            $plugin = $loader->init($pluginID, $invalidateCache);
+            if ($plugin !== null && $plugin->isBootstrap()) {
+                Helper::updatePluginInstance($plugin);
+            }
+        }
     }
     if (Request::verifyGPCDataInt('kPluginAdminMenu') > 0) {
         $activeTab = Request::verifyGPCDataInt('kPluginAdminMenu');
@@ -101,7 +105,7 @@ if ($step === 'plugin_uebersicht' && $pluginID > 0) {
         $activeTab = Request::verifyGPDataString('cPluginTab');
     }
     $smarty->assign('defaultTabbertab', $activeTab);
-    $loader = Helper::getLoaderByPluginID($pluginID, $db, $cache);
+    $loader = $loader ?? Helper::getLoaderByPluginID($pluginID, $db, $cache);
     if ($loader !== null) {
         $plugin = $loader->init($pluginID, $invalidateCache);
     }
@@ -137,15 +141,13 @@ if ($step === 'plugin_uebersicht' && $pluginID > 0) {
             } elseif ($menu->configurable === false) {
                 if (SAFE_MODE) {
                     $menu->html = __('Safe mode enabled.');
-                } else {
-                    if ($menu->file !== '' && file_exists($plugin->getPaths()->getAdminPath() . $menu->file)) {
-                        ob_start();
-                        require $plugin->getPaths()->getAdminPath() . $menu->file;
-                        $menu->html = ob_get_clean();
-                    } elseif ($plugin->isBootstrap() === true) {
-                        $menu->html = PluginHelper::bootstrap($pluginID, $loader)
-                            ->renderAdminMenuTab($menu->name, $menu->id, $smarty);
-                    }
+                } elseif ($menu->file !== '' && file_exists($plugin->getPaths()->getAdminPath() . $menu->file)) {
+                    ob_start();
+                    require $plugin->getPaths()->getAdminPath() . $menu->file;
+                    $menu->html = ob_get_clean();
+                } elseif ($plugin->isBootstrap() === true) {
+                    $menu->html = PluginHelper::bootstrap($pluginID, $loader)
+                        ->renderAdminMenuTab($menu->name, $menu->id, $smarty);
                 }
             } elseif ($menu->configurable === true) {
                 $smarty->assign('oPluginAdminMenu', $menu);

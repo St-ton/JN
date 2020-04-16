@@ -102,7 +102,7 @@ msgid "global_shopname_name"
 msgstr "Name des Onlineshops"
 
 msgid "global_shopname_desc"
-msgstr "Hier legen Sie den Titel Ihres Onlineshops fest. Dieser wird beispielsweise angezeigt, wenn Sie mit der Maus übe das Logo des Onlineshops fahren."
+msgstr "Hier legen Sie den Titel Ihres Onlineshops fest. Dieser wird beispielsweise angezeigt, wenn Sie mit der Maus über das Logo des Onlineshops fahren."
 
 msgid "global_sichtbarkeit_name"
 msgstr "Sichtbar ohne Anmeldung"
@@ -222,7 +222,7 @@ msgid "wartungsmodus_aktiviert_name"
 msgstr "Wartungsmodus aktivieren"
 
 msgid "wartungsmodus_aktiviert_desc"
-msgstr "Der Besucher des Onlineshops sieht einen Infotext zur laufenden Wartung. Dieser Text wird über die Sprachvariable „maintenanceModeActive“ gesteuert. Wechseln Sie zum Menüeintrag „Sprachen“, um den Text für diese Sprachvariable zu ändern."
+msgstr "Der Besucher des Onlineshops sieht einen Infotext zur laufenden Wartung. Dieser Text wird über die Sprachvariable „maintenanceModeActive“ gesteuert. Wechseln Sie zum Menüeintrag „Sprachvariablen“, um den Text für diese Sprachvariable zu ändern."
 
 msgid "global_versandermittlung_anzeigen_name"
 msgstr "Versandkostenermittlung anzeigen"
@@ -978,7 +978,7 @@ msgid "benachrichtigung_min_lagernd_name"
 msgstr "Benachrichtigung ab prozentualem Mindestlagerbestand"
 
 msgid "benachrichtigung_min_lagernd_desc"
-msgstr "Hier stellen Sie ein, ab welchem Verhältnis zwischen verfügbarem Lagerbestand und Verfügbarkeitsanfragen eine Verfügbarkeitsbenachrichtigung versendet wird. Beispiel: 10 Kunden haben einen Artikel angefragt. Ihr neuer Lagerbestand umfasst 3 Einheiten verwalten. Damit eine Verfügbarkeitsbenachrichtigung versendet wird, dürfen Sie hier also höchstens 30 Prozent einstellen."
+msgstr "Hier stellen Sie ein, ab welchem Verhältnis zwischen verfügbarem Lagerbestand und Verfügbarkeitsanfragen eine Verfügbarkeitsbenachrichtigung versendet wird. Beispiel: 10 Kunden haben einen Artikel angefragt. Ihr neuer Lagerbestand umfasst 3 Einheiten. Damit eine Verfügbarkeitsbenachrichtigung versendet wird, dürfen Sie hier also höchstens 30 Prozent einstellen."
 
 msgid "artikeldetails_vergleichsliste_anzeigen_name"
 msgstr "„Zur Vergleichsliste hinzufügen“ anzeigen"
@@ -1575,7 +1575,7 @@ msgid "bilder_artikel_normal_breite_desc"
 msgstr ""
 
 msgid "bilder_artikel_normal_hoehe_name"
-msgstr "Artikelbilder Normal Breite"
+msgstr "Artikelbilder Normal Höhe"
 
 msgid "bilder_artikel_normal_hoehe_desc"
 msgstr ""
@@ -3015,4 +3015,10 @@ msgid "general_child_item_bulk_pricing_name"
 msgstr "Variationsübergreifende Staffelpreise"
 
 msgid "general_child_item_bulk_pricing_desc"
-msgstr "Für Staffelpreisgrenzen im Warenkorb zählen alle Kindartikel einer VarKombi."
+msgstr "Bei der Berechnung von Staffelpreisen im Warenkorb werden alle Kindartikel eines Artikels berücksichtigt."
+
+msgid "gtin_display_name"
+msgstr "GTIN anzeigen"
+
+msgid "gtin_display_desc"
+msgstr "Hier legen Sie fest, ob die GTIN angezeigt wird."

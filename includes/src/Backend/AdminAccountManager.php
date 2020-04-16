@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Backend;
 
@@ -16,9 +12,8 @@ use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
-use StringHandler;
-use function Functional\reindex;
 use stdClass;
+use function Functional\reindex;
 
 /**
  * Class AdminAccountManager
@@ -329,7 +324,7 @@ class AdminAccountManager
         foreach (LanguageHelper::getAllLanguages() as $language) {
             $useVita_ISO = 'useVita_' . $language->cISO;
             if (!empty($attribs[$useVita_ISO])) {
-                $shortText = StringHandler::filterXSS($attribs[$useVita_ISO]);
+                $shortText = Text::filterXSS($attribs[$useVita_ISO]);
                 $longtText = $attribs[$useVita_ISO];
 
                 if (\mb_strlen($shortText) > 255) {

@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='snippets-shipping-tax-info'}
     {block name='snippets-shipping-tax-info-content'}
         {block name='snippets-shipping-tax-info-tax-data'}

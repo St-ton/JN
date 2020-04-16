@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Plugin\Admin\Installation\Items;
 
@@ -160,7 +156,7 @@ class FrontendLinks extends AbstractItem
         $linkFile                      = new stdClass();
         $linkFile->kPlugin             = $pluginID;
         $linkFile->kLink               = $linkID;
-        $linkFile->cDatei              = $links['Filename'];
+        $linkFile->cDatei              = $links['Filename'] ?? '';
         $linkFile->cTemplate           = $links['Template'] ?? '_DBNULL_';
         $linkFile->cFullscreenTemplate = $links['FullscreenTemplate'] ?? '_DBNULL_';
 

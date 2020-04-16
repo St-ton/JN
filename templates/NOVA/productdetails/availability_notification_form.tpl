@@ -1,15 +1,11 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productdetails-availability-notification-form'}
     {if isset($position) && $position === 'popup'}
         {if isset($Artikelhinweise) && count($Artikelhinweise) > 0}
             {block name='productdetails-availability-notification-form-alert'}
                 {alert dismissable=true variant="danger"}
-                {foreach $Artikelhinweise as $Artikelhinweis}
-                    {$Artikelhinweis}
-                {/foreach}
+                    {foreach $Artikelhinweise as $Artikelhinweis}
+                        {$Artikelhinweis}
+                    {/foreach}
                 {/alert}
             {/block}
         {/if}
@@ -17,8 +13,8 @@
     {block name='productdetails-availability-notification-form-form'}
         {form action="{if !empty($Artikel->cURLFull)}{$Artikel->cURLFull}{else}{$ShopURL}/{/if}"
             method="post" id="article_availability{$Artikel->kArtikel}"
-            class="jtl-validate label-slide"
-        }
+            class="jtl-validate"
+            slide=true}
             {block name='productdetails-availability-notification-form-fieldset-contact'}
                 <fieldset>
                     {block name='productdetails-availability-notification-form-legend-contact'}

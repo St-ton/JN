@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='layout-index'}
     {if isset($nFullscreenTemplate) && $nFullscreenTemplate == 1}
         {block name='layout-index-plugin-template'}

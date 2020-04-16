@@ -1,8 +1,3 @@
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
-
 (function($, document, window, viewport){
     'use strict';
 
@@ -49,7 +44,7 @@
             this.options = ArticleClass.DEFAULTS;
             this.gallery = null;
         },
-        
+
         onLoad: function() {
             if (this.isSingleArticle()) {
                 var that = this;
@@ -158,7 +153,7 @@
             $('.simple-variations input[type="radio"], .simple-variations select', $wrapper)
                 .each(function(i, item) {
                     var $item   = $(item),
-                        wrapper = '#' + $item.closest('form').closest('div').attr('id');
+                        wrapper = '#' + $item.closest('form').closest('div[data-wrapper="true"]').attr('id');
 
                     $item.on('change', function () {
                         that.variationPrice($(this), true, wrapper);
@@ -172,11 +167,11 @@
                 that       = this,
                 $config    = $('#product-configurator');
 
-            if ($bulkPrice.length > 0 && $config.length === 0) {
-                $('#quantity', $wrapper)
+            if (($bulkPrice.length > 0 && $config.length === 0) || $('#product-list').length > 0) {
+                $('#quantity, [data-bulk="1"] .quantity', $wrapper)
                     .each(function(i, item) {
                         var $item   = $(item),
-                            wrapper = '#' + $item.closest('form').closest('div').attr('id');
+                            wrapper = '#' + $item.closest('form').closest('div[data-wrapper="true"]').attr('id');
 
                         $item.on('change', function () {
                             that.variationPrice($(this), true, wrapper);
@@ -612,7 +607,7 @@
             var qty =  parseInt(data[this.options.input.quantity]);
             if (productId > 0) {
                 var that = this;
-                $.evo.io().call('pushToWishlist', [productId, qty], that, function(error, data) {
+                $.evo.io().call('pushToWishlist', [productId, qty, data], that, function(error, data) {
                     if (error) {
                         return;
                     }
@@ -1278,7 +1273,7 @@
 
             args.wrapper = wrapper;
 
-            io.call('checkDependencies', [args], null, function (error, data) {
+            io.call('checkDependencies', [args], $(this), function (error, data) {
                 $wrapper.removeClass('loading');
                 if (animation) {
                     $spinner.stop();

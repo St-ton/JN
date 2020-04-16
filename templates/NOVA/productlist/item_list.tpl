@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productlist-item-list'}
     {if $Einstellungen.template.productlist.variation_select_productlist === 'N'}
         {assign var=hasOnlyListableVariations value=0}
@@ -11,7 +7,7 @@
     <div id="result-wrapper_buy_form_{$Artikel->kArtikel}" data-wrapper="true" class="productbox productbox-row productbox-show-variations {if $Einstellungen.template.productlist.hover_productlist === 'Y'} productbox-hover{/if}{if isset($listStyle) && $listStyle === 'list'} active{/if}">
         <div class="productbox-inner">
         {row}
-            {col cols=12 md=4 lg=3}
+            {col cols=12 md=4 lg=6 xl=3}
                 {block name='productlist-item-list-image'}
                     <div class="productbox-image">
                         {if isset($Artikel->Bilder[0]->cAltAttribut)}
@@ -24,6 +20,11 @@
                                 {include file='snippets/ribbon.tpl'}
                             {/block}
                         {/if}
+                        {block name='productlist-item-box-include-productlist-actions'}
+                            <div class="productbox-quick-actions productbox-onhover d-none d-md-flex">
+                                {include file='productlist/productlist_actions.tpl'}
+                            </div>
+                        {/block}
                         {block name="productlist-item-list-images"}
                             <div class="productbox-images">
                                 {link href=$Artikel->cURLFull}
@@ -38,6 +39,7 @@
                                                         {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
                                                     sizes="auto"
                                                     class="{if !$isMobile && !empty($Artikel->Bilder[1])}first{/if}"
+                                                    fluid-grow=true
                                                 }
                                                 {if !$isMobile && !empty($Artikel->Bilder[1])}
                                                     {$image = $Artikel->Bilder[1]}
@@ -92,7 +94,9 @@
                         {/block}
                     {/if}
                 {/block}
-                {form id="buy_form_{$Artikel->kArtikel}" action=$ShopURL class="form form-basket jtl-validate" data=["toggle" => "basket-add"]}
+                {form id="buy_form_{$Artikel->kArtikel}"
+                    action=$ShopURL class="form form-basket jtl-validate"
+                    data=["toggle" => "basket-add"]}
                     {row}
                         {col cols=12 xl=4 class='productbox-details'}
                             {block name='productlist-item-list-details'}
@@ -115,6 +119,14 @@
                                                     {/foreach}
                                                 </ul>
                                             {/col}
+                                        {/block}
+                                    {/if}
+                                    {if !empty($Artikel->cBarcode)
+                                        && ($Einstellungen.artikeldetails.gtin_display === 'lists'
+                                            || $Einstellungen.artikeldetails.gtin_display === 'always')}
+                                        {block name='productlist-item-list-details-gtin'}
+                                            {col tag='dt' cols=6}{lang key='ean'}:{/col}
+                                            {col tag='dd' cols=6}{$Artikel->cBarcode}{/col}
                                         {/block}
                                     {/if}
                                     {if !empty($Artikel->cISBN)
@@ -161,7 +173,16 @@
                                             || $Einstellungen.artikeldetails.adr_hazard_display === 'DL')}
                                         {block name='productlist-item-list-details-hazard'}
                                             {col tag='dt' cols=6}{lang key='adrHazardSign'}:{/col}
-                                            {col tag='dd' cols=6}{$Artikel->cGefahrnr}<br>{$Artikel->cUNNummer}{/col}
+                                            {col tag='dd' cols=6}
+                                                <table class="adr-table">
+                                                    <tr>
+                                                        <td>{$Artikel->cGefahrnr}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>{$Artikel->cUNNummer}</td>
+                                                    </tr>
+                                                </table>
+                                            {/col}
                                         {/block}
                                     {/if}
                                     {if isset($Artikel->dMHD) && isset($Artikel->dMHD_de)}
@@ -285,7 +306,7 @@
                                         {else}
                                             {col cols=12}
                                                 {block name='productlist-item-list-basket-details-quantity'}
-                                                    {inputgroup class="form-counter"}
+                                                    {inputgroup class="form-counter" data=["bulk" => {!empty($Artikel->staffelPreis_arr)}]}
                                                         {inputgroupprepend}
                                                             {button variant=""
                                                                 data=["count-down"=>""]

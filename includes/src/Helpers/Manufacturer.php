@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Helpers;
 
@@ -46,10 +42,10 @@ class Manufacturer
         $lagerfilter   = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
         $this->cacheID = 'manuf_' . Shop::Container()->getCache()->getBaseID() .
             ($lagerfilter !== '' ? \md5($lagerfilter) : '');
-        self::$langID  = Shop::getLanguage();
+        self::$langID  = Shop::getLanguageID();
         if (self::$langID <= 0) {
-            if (Shop::getLanguage() > 0) {
-                self::$langID = Shop::getLanguage();
+            if (Shop::getLanguageID() > 0) {
+                self::$langID = Shop::getLanguageID();
             } else {
                 $_lang        = LanguageHelper::getDefaultLanguage();
                 self::$langID = (int)$_lang->kSprache;
@@ -64,7 +60,7 @@ class Manufacturer
      */
     public static function getInstance(): self
     {
-        return (self::$instance === null || Shop::getLanguage() !== self::$langID)
+        return (self::$instance === null || Shop::getLanguageID() !== self::$langID)
             ? new self()
             : self::$instance;
     }

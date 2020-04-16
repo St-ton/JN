@@ -6,7 +6,7 @@ msgid "globalemetaangaben"
 msgstr "Global meta data"
 
 msgid "globalemetaangabenDesc"
-msgstr "Here you can define the global meta data (title, meta description, meta keywords) for each language."
+msgstr "Here you can define the global meta data for each language."
 
 msgid "globalemetaangabenMetaDesc"
 msgstr "Meta description"

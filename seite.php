@@ -1,14 +1,11 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Alert\Alert;
 use JTL\Catalog\Hersteller;
 use JTL\Extensions\SelectionWizard\Wizard;
 use JTL\Helpers\CMS;
 use JTL\Helpers\ShippingMethod;
+use JTL\Helpers\Text;
 use JTL\Helpers\URL;
 use JTL\Plugin\Helper as PluginHelper;
 use JTL\Session\Frontend;
@@ -51,15 +48,15 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
            ->assign('oNews_arr', $conf['news']['news_benutzen'] === 'Y'
                ? CMS::getHomeNews($conf)
                : []);
-    Wizard::startIfRequired(AUSWAHLASSISTENT_ORT_STARTSEITE, 1, Shop::getLanguage(), $smarty);
+    Wizard::startIfRequired(AUSWAHLASSISTENT_ORT_STARTSEITE, 1, Shop::getLanguageID(), $smarty);
 } elseif ($link->getLinkType() === LINKTYP_AGB) {
     $smarty->assign('AGB', Shop::Container()->getLinkService()->getAGBWRB(
-        Shop::getLanguage(),
+        Shop::getLanguageID(),
         Frontend::getCustomerGroup()->getID()
     ));
 } elseif (\in_array($link->getLinkType(), [LINKTYP_WRB, LINKTYP_WRB_FORMULAR, LINKTYP_DATENSCHUTZ], true)) {
     $smarty->assign('WRB', Shop::Container()->getLinkService()->getAGBWRB(
-        Shop::getLanguage(),
+        Shop::getLanguageID(),
         Frontend::getCustomerGroup()->getID()
     ));
 } elseif ($link->getLinkType() === LINKTYP_VERSAND) {
@@ -127,7 +124,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 $smarty->assign('Link', $link)
        ->assign('bSeiteNichtGefunden', Shop::getPageType() === PAGE_404)
        ->assign('cFehler', !empty($cFehler) ? $cFehler : null)
-       ->assign('meta_language', StringHandler::convertISO2ISO639(Shop::getLanguageCode()));
+       ->assign('meta_language', Text::convertISO2ISO639(Shop::getLanguageCode()));
 
 executeHook(HOOK_SEITE_PAGE);
 

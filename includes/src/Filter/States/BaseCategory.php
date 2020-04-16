@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Filter\States;
 
@@ -108,7 +104,7 @@ class BaseCategory extends AbstractFilter
                 }
             }
             foreach ($seoData as $item) {
-                if ((int)$item->kSprache === Shop::getLanguage()) {
+                if ((int)$item->kSprache === Shop::getLanguageID()) {
                     if (!empty($item->cName)) {
                         $this->setName($item->cName);
                     } elseif (!empty($item->cKatName)) {

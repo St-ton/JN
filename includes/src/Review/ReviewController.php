@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Review;
 
@@ -13,12 +9,13 @@ use JTL\Catalog\Product\Artikel;
 use JTL\Customer\Customer;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTLSmarty;
+use JTL\Smarty\JTLSmarty;
 
 /**
  * Class ReviewController
@@ -51,6 +48,18 @@ class ReviewController extends BaseController
      */
     public function handleRequest()
     {
+        if (!Form::validateToken()) {
+            Shop::Container()->getAlertService()->addAlert(
+                Alert::TYPE_WARNING,
+                Shop::Lang()->get('invalidToken'),
+                'invalidToken',
+                [
+                    'saveInSession' => true,
+                ]
+            );
+
+            return false;
+        }
         $this->checkRedirect();
         $params   = Shop::getParameters();
         $customer = Frontend::getCustomer();

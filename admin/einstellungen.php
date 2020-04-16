@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Alert\Alert;
 use JTL\Backend\Settings\Manager;
@@ -163,8 +159,8 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && $sectionID > 0 && Form
 
 if ($step === 'uebersicht') {
     $sections     = $db->query(
-        'SELECT * 
-            FROM teinstellungensektion 
+        'SELECT *
+            FROM teinstellungensektion
             ORDER BY kEinstellungenSektion',
         ReturnType::ARRAY_OF_OBJECTS
     );
@@ -203,7 +199,7 @@ if ($step === 'einstellungen bearbeiten') {
         $confData = $db->query(
             'SELECT *
                 FROM teinstellungenconf
-                WHERE nModul = 0 
+                WHERE nModul = 0
                     AND nStandardAnzeigen = 1
                     AND kEinstellungenSektion = ' . (int)$section->kEinstellungenSektion . ' ' .
                 $sql->cWHERE . '
@@ -275,8 +271,7 @@ if ($step === 'einstellungen bearbeiten') {
            ->assign('oSections', $oSections);
 }
 
-$smarty->configLoad('german.conf', 'einstellungen')
-       ->assign('cPrefDesc', $smarty->getConfigVars('prefDesc' . $sectionID))
+$smarty->assign('cPrefDesc', $smarty->getConfigVars('prefDesc' . $sectionID))
        ->assign('cPrefURL', $smarty->getConfigVars('prefURL' . $sectionID))
        ->assign('step', $step)
        ->assign('waehrung', $defaultCurrency->cName)

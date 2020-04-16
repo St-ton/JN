@@ -60,16 +60,16 @@ msgid "productRestrictions"
 msgstr "Limit to SKUs"
 
 msgid "restrictionToCustomerGroup"
-msgstr "Only valid for"
+msgstr "Limited to customer groups:"
 
 msgid "restrictedToManufacturers"
-msgstr "Limited to the manufacturers"
+msgstr "Limited to manufacturers"
 
 msgid "restrictedToCategories"
-msgstr "Limited to the categories"
+msgstr "Limited to categories"
 
 msgid "restrictedToCustomers"
-msgstr "Limited to the customers"
+msgstr "Limited to customers"
 
 msgid "allCategories"
 msgstr "All categories"
@@ -78,7 +78,7 @@ msgid "allCustomers"
 msgstr "All customers"
 
 msgid "informCustomers"
-msgstr "Send an email regarding the coupon to the selected customers"
+msgstr "Tell selected customers about coupon via email"
 
 msgid "emailPreview"
 msgstr "Email preview"
@@ -87,7 +87,7 @@ msgid "couponType"
 msgstr "Coupon type"
 
 msgid "standardCoupon"
-msgstr "Default coupon"
+msgstr "Standard coupon"
 
 msgid "shippingCoupon"
 msgstr "Free shipping coupon"
@@ -150,7 +150,7 @@ msgid "periodOfValidity"
 msgstr "Validity period (days)"
 
 msgid "validFromHelp"
-msgstr "Specify from when the coupon is valid. The default setting is always the current time."
+msgstr "Specify from when on the coupon is valid. The default setting is always the current time."
 
 msgid "validUntilHelp"
 msgstr "Specify until when the coupon is valid. If you leave the field empty, the coupon either has unlimited validity or the setting \"Validity period (days)\" will be used."
@@ -159,13 +159,13 @@ msgid "periodOfValidityHelp"
 msgstr "Enter the number of days that the coupon will be valid. This option can be used alternatively to the option \"Valid until\". If both fields remain empty, the coupon has unlimited validity."
 
 msgid "errorImportCSV"
-msgstr "The CSV file could not be imported completed."
+msgstr "Could not completely import CSV file."
 
 msgid "successImportCSV"
-msgstr "CSV-Datei imported successfully."
+msgstr "CSV file imported successfully."
 
 msgid "errorImportRow"
-msgstr "rows could not be imported."
+msgstr "rows cannot be imported."
 
 msgid "successCouponSave"
 msgstr "Coupon saved successfully."
@@ -201,7 +201,7 @@ msgid "errorCouponCodeShort"
 msgstr "The code to be generated has less than 2 characters. Please increase the number of characters in the prefix and/or suffix or enter a higher number for the length of the random code."
 
 msgid "errorCouponCodeOptionSelect"
-msgstr "Please select at least one option for \"Random code with…\"."
+msgstr "Please select at least one&nbsp;option for \"Random code with…\"."
 
 msgid "errorCouponCodeDuplicate"
 msgstr "The entered code is already in use for a different coupon. Please select a different code."

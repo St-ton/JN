@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='boxes-box-categories'}
     {card class="box box-categories word-break mb-md-4" id="sidebox_categories{$oBox->getCustomID()}"}
         {block name='boxes-box-categories-content'}
@@ -12,12 +8,12 @@
                     role="button"
                     aria=["expanded"=>"false","controls"=>"crd-cllps-{$oBox->getID()}"]
                     class="text-decoration-none font-weight-bold mb-2 d-md-none dropdown-toggle"}
-                    <span>{if !empty($oBox->getTitle())}{$oBox->getTitle()}{else}{lang key='categories'}{/if}</span>
+                    {if !empty($oBox->getTitle())}{$oBox->getTitle()}{else}{lang key='categories'}{/if}
                 {/link}
             {/block}
             {block name='boxes-box-categories-title'}
                 <div class="productlist-filter-headline d-none d-md-flex">
-                    <span>{if !empty($oBox->getTitle())}{$oBox->getTitle()}{else}{lang key='categories'}{/if}</span>
+                    {if !empty($oBox->getTitle())}{$oBox->getTitle()}{else}{lang key='categories'}{/if}
                 </div>
             {/block}
             {block name='boxes-box-categories-collapse'}

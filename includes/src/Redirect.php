@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL;
 
@@ -99,7 +95,11 @@ class Redirect
      */
     public function find(string $url): ?stdClass
     {
-        return Shop::Container()->getDB()->select('tredirect', 'cFromUrl', $this->normalize($url));
+        return Shop::Container()->getDB()->select(
+            'tredirect',
+            'cFromUrl',
+            \mb_substr($this->normalize($url), 0, 255)
+        );
     }
 
     /**
@@ -390,7 +390,7 @@ class Redirect
                     && (!isset($conf['global']['redirect_save_404']) || $conf['global']['redirect_save_404'] === 'Y')
                 ) {
                     $item           = new self();
-                    $item->cFromUrl = $url;
+                    $item->cFromUrl = $url . (!empty($queryString) ? '?' . $queryString : '');
                     $item->cToUrl   = '';
                     unset($item->kRedirect);
                     $item->kRedirect = Shop::Container()->getDB()->insert('tredirect', $item);
@@ -427,6 +427,7 @@ class Redirect
                 $ins->cIP          = $ip;
                 $ins->dDate        = \time();
                 Shop::Container()->getDB()->insert('tredirectreferer', $ins);
+                // this counts only how many different referrers are hitting that url
                 if ($item !== null) {
                     ++$item->nCount;
                     Shop::Container()->getDB()->update('tredirect', 'kRedirect', $item->kRedirect, $item);
@@ -573,7 +574,12 @@ class Redirect
         foreach ($redirects as $redirect) {
             $redirect->kRedirect            = (int)$redirect->kRedirect;
             $redirect->nCount               = (int)$redirect->nCount;
+            $redirect->cFromUrl             = Text::filterXSS($redirect->cFromUrl);
             $redirect->oRedirectReferer_arr = self::getReferers($redirect->kRedirect);
+
+            foreach ($redirect->oRedirectReferer_arr as $referer) {
+                $referer->cRefererUrl = Text::filterXSS($referer->cRefererUrl);
+            }
         }
 
         return $redirects;

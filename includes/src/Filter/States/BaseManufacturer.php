@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Filter\States;
 
@@ -17,6 +13,7 @@ use JTL\Filter\ProductFilter;
 use JTL\Filter\StateSQL;
 use JTL\Filter\Type;
 use JTL\MagicCompatibilityTrait;
+use JTL\Media\Image;
 use JTL\Shop;
 
 /**
@@ -223,7 +220,7 @@ class BaseManufacturer extends AbstractFilter
                 ->setValue($manufacturer->kHersteller)
                 ->setCount($manufacturer->nAnzahl)
                 ->setSort($manufacturer->nSortNr)
-                ->setData('cBildpfadKlein', $manufacturerData->getImage(\JTL\Media\Image::SIZE_XS));
+                ->setData('cBildpfadKlein', $manufacturerData->getImage(Image::SIZE_XS));
         }
         $this->options = $options;
         $this->productFilter->getCache()->set($cacheID, $options, [\CACHING_GROUP_FILTER]);

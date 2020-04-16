@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Cart;
 
@@ -1851,8 +1847,8 @@ class Cart
         $totalWeight     = 0;
         $shippingClasses = ShippingMethod::getShippingClasses(Frontend::getCart());
         $shippingMethods = map(ShippingMethod::getPossibleShippingMethods(
-            ($_SESSION['Lieferadresse']->cLand ?? $_SESSION['Kunde']->cLand) ?? $_SESSION['cLieferlandISO'],
-            ($_SESSION['Lieferadresse']->cPLZ ?? null) ?? Frontend::getCustomer()->cPLZ,
+            $_SESSION['Lieferadresse']->cLand ?? Frontend::getCustomer()->cLand ?? $_SESSION['cLieferlandISO'],
+            $_SESSION['Lieferadresse']->cPLZ ?? Frontend::getCustomer()->cPLZ,
             $shippingClasses,
             $customerGroupID
         ), static function ($e) {
@@ -1862,7 +1858,7 @@ class Cart
         foreach ($this->PositionenArr as $item) {
             $totalWeight += $item->fGesamtgewicht;
             $itemCount   += $item->nAnzahl;
-            $maxPrices   += $item->Artikel->Preise->fVKNetto
+            $maxPrices   += isset($item->Artikel->Preise->fVKNetto)
                 ? $item->Artikel->Preise->fVKNetto * $item->nAnzahl : 0;
         }
 
@@ -1901,7 +1897,7 @@ class Cart
 
         $this->oFavourableShipping = null;
         if (isset($shipping->kVersandart)) {
-            $method               = new Versandart($shipping->kVersandart);
+            $method               = new Versandart((int)$shipping->kVersandart);
             $method->cCountryCode = $countryCode;
 
             if ($method->eSteuer === 'brutto') {

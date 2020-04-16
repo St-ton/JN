@@ -2549,10 +2549,6 @@ textarea.form-control {
   color: #435a6b;
   text-decoration: none;
 }
-.btn:focus, .btn.focus {
-  outline: 0;
-  box-shadow: none;
-}
 .btn.disabled, .btn:disabled {
   opacity: 0.65;
   box-shadow: none;
@@ -3089,7 +3085,7 @@ input[type=button].btn-block {
 }
 
 .fade {
-  transition: opacity 0.35s linear;
+  transition: opacity 0.15s linear;
 }
 @media (prefers-reduced-motion: reduce) {
   .fade {
@@ -12357,6 +12353,14 @@ input[type=color]::-webkit-color-swatch {
   background-color: #f5f7fa;
 }
 
+.fieldfillout {
+  border-color: #e10505;
+}
+
+.form-error input, .form-error select {
+  border-color: #e10505;
+}
+
 .icon-text-indent {
   display: inline-block;
   padding-left: 1.5em;
@@ -12693,6 +12697,23 @@ ul li:last-child, ol li:last-child {
 }
 .table-dark.table-striped tbody tr:nth-of-type(even) {
   background-color: #343a40;
+}
+
+@media (max-width: 991.98px) {
+  .table-responsive {
+    max-height: 300px;
+  }
+  .table-responsive th {
+    z-index: 1;
+    position: sticky;
+    top: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .table-responsive td {
+    padding: 0.5rem;
+  }
 }
 
 .tooltip-inner {
@@ -13125,6 +13146,44 @@ body {
   background: #000000;
   opacity: 0.5;
   z-index: -1;
+}
+
+.save-wrapper {
+  bottom: 0;
+  width: 100%;
+  position: sticky;
+  padding: 1.5rem 1.5rem;
+  background: #fff;
+  box-shadow: 0px -2px 16px 0px rgba(0, 0, 0, 0.06);
+  text-align: right;
+  margin: 20px 0;
+  z-index: 10;
+}
+.save-wrapper .row {
+  align-items: center;
+}
+.save-wrapper .row > div {
+  margin-bottom: 8px;
+}
+@media (max-width: 991.98px) {
+  .save-wrapper .row > div {
+    margin-bottom: 6px;
+  }
+}
+@media (max-width: 991.98px) {
+  .save-wrapper {
+    padding: 0.5rem 1.5rem;
+  }
+  .save-wrapper .btn {
+    padding: 0.25rem 0.5rem;
+    line-height: 1.5;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .dashboard-col {
+    padding-right: 0;
+  }
 }
 
 #content_wrapper {
@@ -13719,14 +13778,6 @@ body {
   #dropdown-search .path {
     margin-left: auto;
     padding-left: 1rem;
-  }
-}
-@media (max-width: 991.98px) {
-  #dropdown-search {
-    display: none;
-  }
-  #dropdown-search.show {
-    display: none;
   }
 }
 

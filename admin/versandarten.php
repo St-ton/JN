@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use Illuminate\Support\Collection;
 use JTL\Alert\Alert;
@@ -171,9 +167,8 @@ if (Form::validateToken()) {
                 $staffelDa = true;
             }
             //preisstaffel beachten
-            if (!isset($_POST['bis'][0])
+            if (!isset($_POST['bis'][0], $_POST['preis'][0])
                 || mb_strlen($_POST['bis'][0]) === 0
-                || !isset($_POST['preis'][0])
                 || mb_strlen($_POST['preis'][0]) === 0
             ) {
                 $staffelDa = false;

@@ -93,7 +93,7 @@
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="previewImage">{__('preview')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <div class="input-group mb-3">
+                                <div class="input-group">
                                     {if !empty($oNewsKategorie->getPreviewImage())}
                                         <div class="input-group-prepend">
                                             <div class="input-group-text">

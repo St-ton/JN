@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Mail\Mail;
 
@@ -480,6 +476,14 @@ class Mail implements MailInterface
         $this->attachments = $attachments;
 
         return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function addAttachment(Attachment $attachment): void
+    {
+        $this->attachments[] = $attachment;
     }
 
     /**

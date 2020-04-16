@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Link;
 
@@ -332,7 +328,6 @@ final class Link extends AbstractLink
     public function map(array $localizedLinks): LinkInterface
     {
         \executeHook(\HOOK_LINK_PRE_MAP, ['data' => $localizedLinks]);
-        $baseURL = Shop::getURL(true) . '/';
         foreach ($localizedLinks as $link) {
             $link = $this->sanitizeLinkData($link);
             $this->setIdentifier($link->cIdentifier ?? '');
@@ -353,7 +348,7 @@ final class Link extends AbstractLink
             $this->setIsEnabled((bool)$link->bIsActive);
             $this->setFileName($link->cDateiname ?? '');
             $this->setLanguageCode($link->cISOSprache, $link->languageID);
-            $this->setContent(Text::parseNewsText($link->content ?? ''), $link->languageID);
+            $this->setContent($link->content ?? '', $link->languageID);
             $this->setMetaDescription($link->metaDescription ?? '', $link->languageID);
             $this->setMetaTitle($link->metaTitle ?? '', $link->languageID);
             $this->setMetaKeyword($link->metaKeywords ?? '', $link->languageID);
@@ -365,7 +360,7 @@ final class Link extends AbstractLink
             $this->setURL(
                 $this->linkType === 2
                     ? $link->localizedUrl
-                    : ($baseURL . $link->localizedUrl),
+                    : (Shop::getURL(true, $link->languageID) . '/' . $link->localizedUrl),
                 $link->languageID
             );
             $this->setHandler($link->handler ?? '');

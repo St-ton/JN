@@ -1,14 +1,10 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='boxes-box-last-seen'}
     {lang key='lastViewed' assign='boxtitle'}
     {card class="box box-last-seen mb-4" id="sidebox{$oBox->getID()}"}
         {block name='boxes-box-last-seen-content'}
             {block name='boxes-box-last-seen-title'}
                 <div class="productlist-filter-headline">
-                    <span>{$boxtitle}</span>
+                    {$boxtitle}
                 </div>
             {/block}
             {foreach $oBox->getProducts() as $product}

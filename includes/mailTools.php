@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Catalog\Product\Preise;
 use JTL\Checkout\Kupon;
@@ -806,9 +802,9 @@ function SendNiceMailReply($fromName, $fromMail, $replyTo, $to, $subject, $text,
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $eol = "\n";
-    if (mb_stripos(PHP_OS, 'WIN') === 0) {
+    if (PHP_OS_FAMILY === 'Windows') {
         $eol = "\r\n";
-    } elseif (mb_stripos(PHP_OS, 'MAC') === 0) {
+    } elseif (PHP_OS_FAMILY === 'Darwin') {
         $eol = "\r";
     }
 

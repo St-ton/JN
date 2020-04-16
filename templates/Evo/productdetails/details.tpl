@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {has_boxes position='left' assign='hasLeftBox'}
 {if isset($bWarenkorbHinzugefuegt) && $bWarenkorbHinzugefuegt}
     {include file='productdetails/pushed_success.tpl'}
@@ -61,7 +57,9 @@
                                 {/if}
                             </div>
                         {/if}
-                        {if !empty($Artikel->cBarcode)}
+                        {if !empty($Artikel->cBarcode)
+                            && ($Einstellungen.artikeldetails.gtin_display === 'details'
+                                || $Einstellungen.artikeldetails.gtin_display === 'always')}
                             <div class="col-xs-8">
                                 <p class="text-muted">{lang key='ean'}: <span itemprop="{if $Artikel->cBarcode|count_characters === 8}gtin8{else}gtin13{/if}">{$Artikel->cBarcode}</span></p>
                             </div>

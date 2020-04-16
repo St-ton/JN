@@ -12,7 +12,7 @@ msgid "sitemapDownload"
 msgstr "Sitemap download"
 
 msgid "sitemapExportDesc"
-msgstr "Here you can download the online shop sitemap according to the standard Sitemap Protocol 0.9. You can upload the sitemap to all search engines supporting this standard. <br/>With a synchronisation with JTL-Wawi or a manual download of the sitemap, the file export/sitemap_index.xml and other content files of your online shop will be newly generated so that external services can access them."
+msgstr "Here you can download the online shop sitemap according to the standard Sitemap Protocol 0.9. You can upload the sitemap to all search engines supporting this standard.<br/>With a synchronisation with JTL-Wawi or a manual download of the sitemap, the file export/sitemap_index.xml and other content files of your online shop will be newly generated so that external services can access them."
 
 msgid "searchEnginesHint"
 msgstr "Among others, <a class=\"externURL\" href=\"http://www.google.com\" rel=\"external\">Google</a>, <a class=\"externURL\" href=\"http://www.yahoo.com\" rel=\"external\">Yahoo!</a>, and <a class=\"externURL\" href=\"http://www.msn.com\" rel=\"external\">Microsoft</a> also support this standard."
@@ -42,7 +42,7 @@ msgid "sitemapUserAgent"
 msgstr "User agent"
 
 msgid "sitemapDate"
-msgstr "Created on"
+msgstr "Created"
 
 msgid "sitemapSelectAll"
 msgstr "Select all"

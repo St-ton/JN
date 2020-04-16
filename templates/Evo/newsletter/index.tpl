@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='header'}
     {include file='layout/header.tpl'}
 {/block}
@@ -23,7 +19,7 @@
                     <div class="panel-body">
                         {block name='newsletter-subscribe-body'}
                         <p>{lang key='newsletterSubscribeDesc' section='newsletter'}</p>
-    
+
                         <form method="post" action="{get_static_route id='newsletter.php'}" role="form" class="evo-validate">
                             <fieldset>
                                 {if !empty($oPlausi->cPost_arr.cVorname)}
@@ -80,7 +76,7 @@
                                     {include file='snippets/checkbox.tpl' nAnzeigeOrt=$nAnzeigeOrt cPlausi_arr=$plausiArr cPost_arr=$cPost_arr}
                                     <hr>
                                 {/if}
-    
+
                                 <div class="form-group">
                                     {$jtl_token}
                                         <input type="hidden" name="abonnieren" value="1" />
@@ -99,7 +95,7 @@
             </div>
             {/block}
         {/if}
-        
+
         {block name='newsletter-unsubscribe'}
         {opcMountPoint id='opc_before_newsletter_unsubscribe'}
         <div id="newsletter-unsubscribe" class="panel-wrap top15">
@@ -109,7 +105,7 @@
                 <div class="panel-body">
                     {block name='newsletter-unsubscribe-body'}
                     <p>{lang key='newsletterUnsubscribeDesc' section='newsletter'}</p>
-    
+
                     <form method="post" action="{get_static_route id='newsletter.php'}" name="newsletterabmelden" class="evo-validate">
                         <fieldset>
                             {include file='snippets/form_group_simple.tpl'
@@ -144,7 +140,7 @@
                         {lang key='newsletterdraftdate' section='newsletter'}: {$oNewsletterHistory->Datum}
                     </p>
                 </div>
-    
+
                 <fieldset id="newsletterHtml">
                     <legend>{lang key='newsletterHtml' section='newsletter'}</legend>
                     {$oNewsletterHistory->cHTMLStatic|replace:'src="http://':'src="//'}

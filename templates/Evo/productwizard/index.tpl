@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {if !empty($oAuswahlAssistent->kAuswahlAssistentGruppe)}
     {opcMountPoint id='opc_before_selection_wizard'}
 

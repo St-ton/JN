@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Filter\SortingOptions;
 
@@ -22,11 +18,11 @@ class RatingDESC extends AbstractSortingOption
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->setOrderBy('AVG(tbewertung.nSterne) DESC, tartikel.cName');
-        $this->join->setComment('join from SORT by rating')
+        $this->setOrderBy('tartikelext.fDurchschnittsBewertung DESC, tartikel.cName');
+        $this->join->setComment('join from sort by rating')
                    ->setType('LEFT JOIN')
-                   ->setTable('tbewertung')
-                   ->setOn('tbewertung.kArtikel = tartikel.kArtikel');
+                   ->setTable('tartikelext')
+                   ->setOn('tartikelext.kArtikel = tartikel.kArtikel');
         $this->setName(Shop::Lang()->get('rating'));
         $this->setPriority($this->getConfig('artikeluebersicht')['suche_sortierprio_bewertung']);
         $this->setValue(\SEARCH_SORT_RATING);

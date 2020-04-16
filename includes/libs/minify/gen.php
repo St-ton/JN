@@ -54,7 +54,7 @@ $root_uri = dirname($_SERVER['SCRIPT_NAME']);
 $uri      = substr($_SERVER['REQUEST_URI'], strlen($root_uri));
 if (strpos($_SERVER['REQUEST_URI'], PFAD_INCLUDES_LIBS) === false || $uri === '') {
     // handle rewrite of templates_c/min/static to /static
-    $uri = substr($_SERVER['REQUEST_URI'], strlen('/static'));
+    $uri = substr($_SERVER['REQUEST_URI'], strpos($_SERVER['REQUEST_URI'], '/static') + strlen('/static'));
 }
 if (!preg_match('~^/(\d+)/(.*)$~', $uri, $m)) {
     http_response_code(404);

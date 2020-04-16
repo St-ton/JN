@@ -1,7 +1,3 @@
-{**
-     * @copyright (c) JTL-Software-GmbH
-     * @license https://jtl-url.de/jtlshoplicense
-     *}
 {block name='productdetails-tabs'}
     {block name='productdetails-tabs-settings'}
         {$tabanzeige = $Einstellungen.artikeldetails.artikeldetails_tabs_nutzen !== 'N'}
@@ -80,41 +76,37 @@
                         {tabs id="product-tabs"}
                         {if $useDescription}
                             {block name='productdetails-tabs-tab-description'}
-                                {tab title="{lang key="description" section="productDetails"}" active=$setActiveClass.description id="tb-dsc"}
-                                    <div id="tab-description">
-                                        {block name='productdetails-tabs-tab-content'}
-                                            {block name='tab-description-media-types'}
-                                                {opcMountPoint id='opc_before_desc'}
-                                                <div class="desc">
-                                                    {$Artikel->cBeschreibung}
-                                                    {if $useDescriptionWithMediaGroup}
-                                                        {foreach $Artikel->getMediaTypes() as $mediaType}
-                                                            <div class="h3 mt-3">{$mediaType->name}</div>
-                                                            <div class="media">
-                                                                {include file='productdetails/mediafile.tpl'}
-                                                            </div>
-                                                        {/foreach}
-                                                    {/if}
-                                                </div>
-                                                {opcMountPoint id='opc_after_desc'}
-                                            {/block}
-                                            {block name='productdetails-tabs-tab-description-include-attributes'}
-                                                {include file='productdetails/attributes.tpl' tplscope='details'
-                                                showProductWeight=$showProductWeight showShippingWeight=$showShippingWeight
-                                                dimension=$dimension showAttributesTable=$showAttributesTable}
-                                            {/block}
+                                {tab title="{lang key="description" section="productDetails"}" active=$setActiveClass.description id="description"}
+                                    {block name='productdetails-tabs-tab-content'}
+                                        {block name='tab-description-media-types'}
+                                            {opcMountPoint id='opc_before_desc'}
+                                            <div class="desc">
+                                                {$Artikel->cBeschreibung}
+                                                {if $useDescriptionWithMediaGroup}
+                                                    {foreach $Artikel->getMediaTypes() as $mediaType}
+                                                        <div class="h3 mt-3">{$mediaType->name}</div>
+                                                        <div class="media">
+                                                            {include file='productdetails/mediafile.tpl'}
+                                                        </div>
+                                                    {/foreach}
+                                                {/if}
+                                            </div>
+                                            {opcMountPoint id='opc_after_desc'}
                                         {/block}
-                                    </div>
+                                        {block name='productdetails-tabs-tab-description-include-attributes'}
+                                            {include file='productdetails/attributes.tpl' tplscope='details'
+                                            showProductWeight=$showProductWeight showShippingWeight=$showShippingWeight
+                                            dimension=$dimension showAttributesTable=$showAttributesTable}
+                                        {/block}
+                                    {/block}
                                 {/tab}
                             {/block}
                         {/if}
 
                         {if $useDownloads}
                             {block name='productdetails-tabs-tab-downloads'}
-                                {tab title="{lang section="productDownloads" key="downloadSection"}" active=$setActiveClass.downloads id="tb-dwnld"}
-                                    <div id="tab-downloads">
-                                        {include file='productdetails/download.tpl'}
-                                    </div>
+                                {tab title="{lang section="productDownloads" key="downloadSection"}" active=$setActiveClass.downloads id="downloads"}
+                                    {include file='productdetails/download.tpl'}
                                 {/tab}
                             {/block}
                         {/if}
@@ -122,10 +114,8 @@
                         {if !empty($separatedTabs)}
                             {block name='productdetails-tabs-tab-separated-tabs'}
                                 {foreach $separatedTabs as $separatedTab}
-                                    {tab title=$separatedTab.name active=$setActiveClass.separatedTabs && $separatedTab@first id="tb-sprtd-{{$separatedTab.id}}"}
-                                        <div id="tab-{$separatedTab.id}">
-                                            {$separatedTab.content}
-                                        </div>
+                                    {tab title=$separatedTab.name active=$setActiveClass.separatedTabs && $separatedTab@first id="{$separatedTab.id}"}
+                                        {$separatedTab.content}
                                     {/tab}
                                 {/foreach}
                             {/block}
@@ -133,40 +123,32 @@
 
                         {if $useVotes}
                             {block name='productdetails-tabs-tab-votes'}
-                                {tab title="{lang key='Votes'}" active=$setActiveClass.votes id="tb-vts"}
-                                    <div id="tab-votes">
-                                        {include file='productdetails/reviews.tpl' stars=$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt}
-                                    </div>
+                                {tab title="{lang key='Votes'}" active=$setActiveClass.votes id="votes"}
+                                    {include file='productdetails/reviews.tpl' stars=$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt}
                                 {/tab}
                             {/block}
                         {/if}
 
                         {if $useQuestionOnItem}
                             {block name='productdetails-tabs-tab-question-on-item'}
-                                {tab title="{lang key="productQuestion" section="productDetails"}" active=$setActiveClass.questionOnItem id="tb-qstn"}
-                                    <div id="tab-questionOnItem">
-                                        {include file='productdetails/question_on_item.tpl' position="tab"}
-                                    </div>
+                                {tab title="{lang key="productQuestion" section="productDetails"}" active=$setActiveClass.questionOnItem id="questionOnItem"}
+                                    {include file='productdetails/question_on_item.tpl' position="tab"}
                                 {/tab}
                             {/block}
                         {/if}
 
                         {if $usePriceFlow}
                             {block name='productdetails-tabs-tab-price-flow'}
-                                {tab title="{lang key='priceFlow' section='productDetails'}" active=$setActiveClass.priceFlow id="tb-prcFlw"}
-                                    <div id="tab-priceFlow">
-                                        {include file='productdetails/price_history.tpl'}
-                                    </div>
+                                {tab title="{lang key='priceFlow' section='productDetails'}" active=$setActiveClass.priceFlow id="priceFlow"}
+                                    {include file='productdetails/price_history.tpl'}
                                 {/tab}
                             {/block}
                         {/if}
 
                         {if $useAvailabilityNotification}
                             {block name='productdetails-tabs-tab-availability-notification'}
-                                {tab title="{lang key='notifyMeWhenProductAvailableAgain'}" active=$setActiveClass.availabilityNotification id="tb-vlbltNtfctn"}
-                                    <div id="tab-availabilityNotification">
-                                        {include file='productdetails/availability_notification_form.tpl' position='tab' tplscope='artikeldetails'}
-                                    </div>
+                                {tab title="{lang key='notifyMeWhenProductAvailableAgain'}" active=$setActiveClass.availabilityNotification id="tab-availabilityNotification"}
+                                    {include file='productdetails/availability_notification_form.tpl' position='tab' tplscope='artikeldetails'}
                                 {/tab}
                             {/block}
                         {/if}
@@ -175,10 +157,8 @@
                             {block name='productdetails-tabs-tab-mediagroup'}
                                 {foreach $Artikel->getMediaTypes() as $mediaType}
                                     {$cMedienTypId = $mediaType->name|@seofy}
-                                    {tab title="{$mediaType->name} ({$mediaType->count})" active=$setActiveClass.mediaGroup && $mediaType@first id="tb-{$cMedienTypId}"}
-                                        <div id="tab-{$cMedienTypId}">
-                                            {include file='productdetails/mediafile.tpl'}
-                                        </div>
+                                    {tab title="{$mediaType->name} ({$mediaType->count})" active=$setActiveClass.mediaGroup && $mediaType@first id="{$cMedienTypId}"}
+                                        {include file='productdetails/mediafile.tpl'}
                                     {/tab}
                                 {/foreach}
                             {/block}
@@ -189,7 +169,7 @@
                 {/block}
             {else}
                 {block name='productdetails-tabs-no-tabs'}
-                    {container}
+                    {container class="mb-7"}
                         <div class="accordion" id="tabAccordion">
                             {if $useDescription}
                                 {block name='productdetails-tabs-description'}

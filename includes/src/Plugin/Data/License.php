@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Plugin\Data;
 
@@ -32,7 +28,7 @@ class License
      */
     public function hasLicenseCheck(): bool
     {
-        return !empty($this->class) && !empty($this->class);
+        return !empty($this->class) && !empty($this->className);
     }
 
     /**

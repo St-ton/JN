@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {opcMountPoint id='opc_before_newsletter'}
 
 <div id="toptags">{lang key='newsletterhistory' section='global'}</div>
@@ -13,7 +9,7 @@
     {foreach $oNewsletterHistory_arr as $oNewsletterHistory}
     <tr class="content_{$oNewsletterHistory@iteration % 2}">
         <td class="left_td">
-            <a href="{get_static_route id='newsletter.php'}?show={$oNewsletterHistory->kNewsletterHistory}">{$oNewsletterHistory->cBetreff}</a>
+            <a href="{$oNewsletterHistory->cURLFull}">{$oNewsletterHistory->cBetreff}</a>
         </td>
         <td class="right_td">{$oNewsletterHistory->Datum}</td>
     </tr>

@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\News;
 
@@ -230,7 +226,7 @@ class Item extends AbstractItem
             }
             $this->setCustomerGroups(self::parseSSKAdvanced($item->cKundengruppe));
             $this->setLanguageCode($item->languageCode ?? Shop::getLanguageCode(), $languageID);
-            $this->setContent(Text::parseNewsText($item->content ?? ''), $languageID);
+            $this->setContent($item->content ?? '', $languageID);
             $this->setMetaDescription($item->metaDescription ?? '', $languageID);
             $this->setMetaTitle($item->metaTitle ?? '', $languageID);
             $this->setMetaKeyword($item->metaKeywords ?? '', $languageID);

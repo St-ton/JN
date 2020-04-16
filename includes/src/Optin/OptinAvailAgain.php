@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Optin;
 
@@ -66,7 +62,7 @@ class OptinAvailAgain extends OptinBase implements OptinInterface
         $customerId = Frontend::getCustomer()->getID();
 
         $recipient               = new stdClass();
-        $recipient->kSprache     = Shop::getLanguage();
+        $recipient->kSprache     = Shop::getLanguageID();
         $recipient->kKunde       = $customerId;
         $recipient->nAktiv       = $customerId > 0;
         $recipient->cAnrede      = $this->refData->getSalutation();
@@ -105,7 +101,7 @@ class OptinAvailAgain extends OptinBase implements OptinInterface
     public function activateOptin(): void
     {
         $inquiry            = Product::getAvailabilityFormDefaults();
-        $inquiry->kSprache  = Shop::getLanguage();
+        $inquiry->kSprache  = Shop::getLanguageID();
         $inquiry->cIP       = Request::getRealIP();
         $inquiry->dErstellt = 'NOW()';
         $inquiry->nStatus   = 0;

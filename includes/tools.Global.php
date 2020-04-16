@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Campaign;
 use JTL\Cart\CartHelper;
@@ -17,6 +13,7 @@ use JTL\Checkout\Kupon;
 use JTL\Checkout\Versandart;
 use JTL\Checkout\Zahlungsart;
 use JTL\Customer\Customer;
+use JTL\Filter\Metadata;
 use JTL\Filter\ProductFilter;
 use JTL\GeneralDataProtection\IpAnonymizer;
 use JTL\Helpers\Category;
@@ -35,8 +32,10 @@ use JTL\Helpers\Text;
 use JTL\Helpers\URL;
 use JTL\Jtllog;
 use JTL\Language\LanguageHelper;
+use JTL\Link\LinkGroupCollection;
 use JTL\Redirect;
 use JTL\Services\JTL\LinkService;
+use JTL\Services\JTL\SimpleCaptchaService;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\SimpleMail;
@@ -80,7 +79,7 @@ function checkeTel($data)
  */
 function checkeDatum($data)
 {
-    trigger_error(__FUNCTION__ . ' is deprecated. Use \JTL\Helpers\Text::checkDate instead', E_USER_DEPRECATED);
+    trigger_error(__FUNCTION__ . ' is deprecated. Use ' . Text::class . '::checkDate instead', E_USER_DEPRECATED);
     return Text::checkDate($data);
 }
 
@@ -390,7 +389,7 @@ function sortiereFilter($filters, $keyName)
 function holeGlobaleMetaAngaben()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return JTL\Filter\Metadata::getGlobalMetaData();
+    return Metadata::getGlobalMetaData();
 }
 
 /**
@@ -400,7 +399,7 @@ function holeGlobaleMetaAngaben()
 function holeExcludedKeywords()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return JTL\Filter\Metadata::getExcludes();
+    return Metadata::getExcludes();
 }
 
 /**
@@ -837,8 +836,8 @@ function gibTrustedShopsBewertenButton()
  */
 function parseNewsText($text)
 {
-    trigger_error(__FUNCTION__ . ' is deprecated. ' . Text::class . '::parseNewsText() instead.', E_USER_DEPRECATED);
-    return Text::parseNewsText($text);
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    return $text;
 }
 
 /**
@@ -981,10 +980,10 @@ function getDeliverytimeEstimationText($minDeliveryDays, $maxDeliveryDays)
 function prepareMeta($metaProposal, $metaSuffix = null, $maxLength = null)
 {
     trigger_error(
-        __FUNCTION__ . ' is deprecated. Use ' . JTL\Filter\Metadata::class . '::prepareMeta() instead.',
+        __FUNCTION__ . ' is deprecated. Use ' . Metadata::class . '::prepareMeta() instead.',
         E_USER_DEPRECATED
     );
-    return JTL\Filter\Metadata::prepareMeta($metaProposal, $metaSuffix, $maxLength);
+    return Metadata::prepareMeta($metaProposal, $metaSuffix, $maxLength);
 }
 
 /**
@@ -997,10 +996,10 @@ function prepareMeta($metaProposal, $metaSuffix = null, $maxLength = null)
 function truncateMetaDescription($description)
 {
     trigger_error(
-        __FUNCTION__ . ' is deprecated. Use ' . \JTL\Filters\Metadata::class . '::truncateMetaDescription() instead.',
+        __FUNCTION__ . ' is deprecated. Use ' . Metadata::class . '::truncateMetaDescription() instead.',
         E_USER_DEPRECATED
     );
-    return JTL\Filter\Metadata::truncateMetaDescription($description);
+    return Metadata::truncateMetaDescription($description);
 }
 
 /**
@@ -1306,10 +1305,10 @@ function generiereCaptchaCode($sec)
 function encodeCode($klartext)
 {
     trigger_error(
-        __FUNCTION__ . ' is deprecated. Use ' . \JTL\Services\JTL\SimpleCaptchaService::class . '::encodeCode() instead.',
+        __FUNCTION__ . ' is deprecated. Use ' . SimpleCaptchaService::class . '::encodeCode() instead.',
         E_USER_DEPRECATED
     );
-    return \JTL\Services\JTL\SimpleCaptchaService::encodeCode($klartext);
+    return SimpleCaptchaService::encodeCode($klartext);
 }
 
 /**
@@ -2100,7 +2099,8 @@ function setzeSpracheUndWaehrungLink()
         __FUNCTION__ . ' is deprecated. Use ' . LanguageHelper::class . '::generateLanguageAndCurrencyLinks() instead.',
         E_USER_DEPRECATED
     );
-    LanguageHelper::generateLanguageAndCurrencyLinks();
+    $helper = LanguageHelper::getInstance();
+    $helper->generateLanguageAndCurrencyLinks();
 }
 
 /**
@@ -2177,7 +2177,7 @@ function landISO($cLand)
 }
 
 /**
- * @return \JTL\Link\LinkGroupCollection
+ * @return LinkGroupCollection
  * @deprecated since 5.0.0
  */
 function setzeLinks()

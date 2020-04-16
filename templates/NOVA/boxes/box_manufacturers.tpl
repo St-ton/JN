@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='boxes-box-manufacturers'}
     {card class="box box-manufacturers mb-md-4" id="sidebox{$oBox->getID()}"}
         {block name='boxes-box-manufacturers-content'}
@@ -17,7 +13,7 @@
             {/block}
             {block name='boxes-box-manufacturers-title'}
                 <div class="productlist-filter-headline d-none d-md-flex">
-                    <span>{lang key='manufacturers'}</span>
+                    {lang key='manufacturers'}
                 </div>
             {/block}
             {block name='boxes-box-manufacturers-collapse'}

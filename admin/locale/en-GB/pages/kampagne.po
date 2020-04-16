@@ -15,7 +15,7 @@ msgid "kampagneSingle"
 msgstr "Campaign"
 
 msgid "kampagneIntern"
-msgstr "Internal shop campaigns"
+msgstr "Internal JTL-Shop campaigns"
 
 msgid "kampagneExtern"
 msgstr "Custom campaigns"
@@ -27,13 +27,13 @@ msgid "kampagneNewBTN"
 msgstr "Create new campaign"
 
 msgid "kampagneDetailStatsBTN"
-msgstr "Refresh"
+msgstr "Update"
 
 msgid "kampagneDetailStats"
-msgstr "Detailed campaign reports"
+msgstr "Detailed campaign statistics"
 
 msgid "kampagneDetailStatsDef"
-msgstr "Detailed reports"
+msgstr "Detailed statistics"
 
 msgid "kampagneDetailGraph"
 msgstr "Graphs"
@@ -111,7 +111,7 @@ msgid "errorCampaignNameDuplicate"
 msgstr "The entered campaign name already exists."
 
 msgid "errorCampaignParameterDuplicate"
-msgstr "The entered campaign parameters is already in use."
+msgstr "The entered campaign parameter is already in use."
 
 msgid "Hit"
 msgstr "Hits"

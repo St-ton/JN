@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\dbeS\Sync;
 
@@ -539,7 +535,9 @@ abstract class AbstractSync
         );
         // Handle price details from xml...
         foreach ($prices as $i => $price) {
-            $this->handlePriceFormat((int)$price->kArtikel, (int)$price->kKundenGruppe, (int)$price->kKunde);
+            $price->kKunde        = (int)($price->kKunde ?? 0);
+            $price->kKundenGruppe = (int)($price->kKundenGruppe ?? 0);
+            $this->handlePriceFormat((int)$price->kArtikel, $price->kKundenGruppe, $price->kKunde);
             $details = empty($xml['tpreis'][$i])
                 ? $this->mapper->mapArray($xml['tpreis'], 'tpreisdetail', 'mPreisDetail')
                 : $this->mapper->mapArray($xml['tpreis'][$i], 'tpreisdetail', 'mPreisDetail');
@@ -558,8 +556,8 @@ abstract class AbstractSync
                         'countingFrom'  => $preisdetail->nAnzahlAb,
                         'nettoPrice'    => $preisdetail->fNettoPreis,
                         'productID'     => $productID,
-                        'customerGroup' => (int)$price->kKundenGruppe,
-                        'customerPrice' => (int)$price->kKunde,
+                        'customerGroup' => $price->kKundenGruppe,
+                        'customerPrice' => $price->kKunde,
                     ],
                     ReturnType::DEFAULT
                 );

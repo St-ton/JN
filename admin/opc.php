@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -54,6 +50,8 @@ if ($hasUpdates) {
     } catch (Exception $e) {
         $error = $e->getMessage();
     }
+
+    Shop::Container()->getGetText()->loadAdminLocale('pages/opc/tutorials');
 
     $smarty->assign('error', $error)
            ->assign('page', $page)

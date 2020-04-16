@@ -54,6 +54,15 @@
 #opc button.opc-btn-primary.opc-full-width, #opc button.opc-btn-secondary.opc-full-width {
   width: 100%;
 }
+#opc button.opc-btn-primary[disabled], #opc button.opc-btn-secondary[disabled] {
+  background-color: #BDBDBD;
+  color: #F5F7FA;
+  border: 1px solid #BDBDBD;
+}
+#opc button.opc-btn-primary[disabled]:hover, #opc button.opc-btn-secondary[disabled]:hover {
+  background-color: #BDBDBD;
+  color: #F5F7FA;
+}
 #opc button.opc-btn-primary:hover {
   background-color: #22a4f3;
 }
@@ -64,6 +73,9 @@
 }
 #opc button.opc-btn-secondary:hover {
   color: #22a4f3;
+}
+#opc button.opc-mini-btn {
+  padding: 6px 12px;
 }
 #opc button.opc-small-btn {
   padding: 8px 10px;
@@ -166,6 +178,7 @@
 }
 #opc .toggle-switch {
   cursor: pointer;
+  background-color: inherit;
 }
 #opc .toggle-switch input {
   display: none;
@@ -286,6 +299,7 @@
 }
 #opc .nav-tabs .nav-item {
   margin: 0;
+  background-color: inherit;
 }
 #opc .nav-tabs .nav-item .nav-link {
   border: none;
@@ -295,7 +309,7 @@
   margin: 0 14px;
   margin-right: 8px;
   color: #BDBDBD;
-  background: none;
+  background-color: inherit;
 }
 #opc .nav-tabs .nav-item .nav-link:hover {
   color: #435A6B;
@@ -892,6 +906,117 @@
   display: block;
 }
 
+#tutBackdrop2.active {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  opacity: 0.5;
+  pointer-events: all;
+  transition: opacity 0.5s ease;
+  z-index: 9999 !important;
+}
+
+#tutBackdrop3.active {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  opacity: 0;
+  pointer-events: all;
+  z-index: 1051 !important;
+}
+
+#tutorials #tutboxPrev {
+  margin-right: 12px;
+}
+#tutorials .button .fa-chevron-right {
+  margin-left: 4px;
+}
+#tutorials .button .fa-chevron-left {
+  margin-right: 4px;
+}
+#tutorials #tutBackdrop {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: black;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+  z-index: 1049 !important;
+}
+#tutorials #tutBox {
+  display: none;
+  width: 300px;
+  background-color: white;
+  position: absolute;
+  box-shadow: 0 0 4px 4px rgba(0, 0, 0, 0.125);
+  z-index: 99999 !important;
+  font-size: 14px;
+  color: #435A6B;
+  border-radius: 4px;
+  overflow: hidden;
+}
+#tutorials #tutBox.centered-c {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+#tutorials #tutBox.centered-v {
+  top: 50%;
+  transform: translate(0, -50%);
+}
+#tutorials #tutBox.centered-h {
+  left: 50%;
+  transform: translate(-50%, 0);
+}
+#tutorials #tutBox #tutboxHeader {
+  padding: 10px 14px;
+  background-color: #5cbcf6;
+  color: #fff;
+}
+#tutorials #tutBox #tutboxHeader h5 {
+  font-size: 16px;
+  font-weight: normal;
+  margin: 0;
+}
+#tutorials #tutBox #tutboxContent {
+  padding: 0;
+  margin: 12px;
+}
+#tutorials #tutBox #tutboxFooter {
+  padding: 0;
+  margin: 12px;
+}
+#tutorials #tutBox #tutboxFooter:after {
+  display: block;
+  content: "";
+  clear: both;
+}
+#tutorials.active #tutBackdrop {
+  opacity: 0.5;
+  pointer-events: all;
+}
+#tutorials.active #tutBox {
+  display: block;
+}
+
+.hightlighted-element {
+  z-index: 99999 !important;
+  position: relative;
+}
+
+.hightlighted-modal {
+  z-index: 99999 !important;
+}
+
 html, body {
   margin: 0;
   padding: 0;
@@ -1226,35 +1351,20 @@ html, body {
   height: 100%;
   transition: all 0.2s ease-in-out;
 }
-#opc #tourForm .tour-label {
-  padding-left: 0;
-  width: 100%;
-  margin-bottom: 16px;
+#opc #tourModal .card {
   cursor: pointer;
+  margin-bottom: 16px;
 }
-#opc #tourForm input:checked + .card {
+#opc #tourModal .card:hover {
   border-color: #5cbcf6;
 }
-#opc #tourForm input:checked + .card .card-header {
+#opc #tourModal .card:hover .card-header {
   background-color: #5cbcf6;
   background-image: none;
   color: #F5F7FA;
 }
 #opc #publishModal .modal-body {
   overflow: inherit;
-}
-#opc .icons-container .fa {
-  margin: 3px;
-}
-#opc .popover[class*=tour-] {
-  z-index: 1102;
-  /* top: 20px !important;
-  left: auto !important;
-  right: 20px !important;*/
-}
-#opc .popover[class*=tour-] .popover-title {
-  color: #fff;
-  background-color: #5cbcf6;
 }
 #opc .banner-zones {
   position: absolute;

@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {foreach $oNewsKategorie_arr as $oNewsKategorie}
     {if $selectedCat === $oNewsKategorie->getID()}{assign var='oCurNewsCat' value=$oNewsKategorie}{/if}
     <option value="{$oNewsKategorie->getID()}"

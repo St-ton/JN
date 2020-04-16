@@ -1,10 +1,7 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Alert\Alert;
+use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -28,7 +25,7 @@ $conf  = Shop::getSettings([
     CONF_KUNDENWERBENKUNDEN,
     CONF_NEWSLETTER
 ]);
-$kLink = $linkHelper->getSpecialPageLinkKey(LINKTYP_REGISTRIEREN);
+$kLink = $linkHelper->getSpecialPageID(LINKTYP_REGISTRIEREN);
 $link  = $linkHelper->getPageLink($kLink);
 $step  = 'formular';
 $titel = Shop::Lang()->get('newAccount', 'login');
@@ -36,7 +33,7 @@ $edit  = Request::getInt('editRechnungsadresse');
 if (isset($_POST['editRechnungsadresse'])) {
     $edit = (int)$_POST['editRechnungsadresse'];
 }
-if (Request::postInt('form') === 1) {
+if (Form::validateToken() && Request::postInt('form') === 1) {
     kundeSpeichern($_POST);
 }
 if (Request::getInt('editRechnungsadresse') === 1) {

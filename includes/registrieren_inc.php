@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\CheckBox;
 use JTL\Customer\Customer;
@@ -115,7 +111,7 @@ function kundeSpeichern(array $post)
             }
 
             $knd->kKundengruppe     = $customerGroupID;
-            $knd->kSprache          = Shop::getLanguage();
+            $knd->kSprache          = Shop::getLanguageID();
             $knd->cAbgeholt         = 'N';
             $knd->cSperre           = 'N';
             $knd->cAktiv            = $conf['global']['global_kundenkonto_aktiv'] === 'A'

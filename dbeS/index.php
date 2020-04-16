@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\dbeS\FileHandler;
 use JTL\dbeS\Starter;
@@ -11,7 +7,7 @@ use JTL\Language\LanguageHelper;
 use JTL\Plugin\Helper;
 use JTL\Shop;
 
-define('DEFINES_PFAD', '../includes/');
+define('DEFINES_PFAD', __DIR__ . '/../includes/');
 define('FREIDEFINIERBARER_FEHLER', 8);
 
 require_once DEFINES_PFAD . 'config.JTL-Shop.ini.php';

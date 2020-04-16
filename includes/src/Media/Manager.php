@@ -1,15 +1,10 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Media;
 
 use DirectoryIterator;
 use Exception;
 use FilesystemIterator;
-use Image;
 use JTL\Helpers\URL;
 use JTL\IO\IOError;
 use JTL\Media\Image\Category;

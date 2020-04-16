@@ -1,6 +1,3 @@
-{config_load file="$lang.conf" section='dbupdater'}
-{config_load file="$lang.conf" section='shopupdate'}
-
 {function migration_list manager=null title='' filter=0 plugin=null} {* filter: 0 - All, 1 - Executed, 2 - Pending *}
     <div class="card">
         <div class="card-body">

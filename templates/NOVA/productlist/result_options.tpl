@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productlist-result-options'}
     {assign var=show_filters value=$Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab == 0
     || $NaviFilter->getSearchResults()->getProductCount() >= $Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab
@@ -56,15 +52,6 @@
                     </div>
                 {/if}
             {/if}
-            {inline_script}<script>
-                let initiallized = false;
-                $('#js-filters').on('click', function() {
-                    if (!initiallized) {
-                        $.evo.initFilters(window.location.href);
-                        initiallized = true;
-                    }
-                });
-            </script>{/inline_script}
         {/block}
     </div>
 {/block}

@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Plugin;
 
@@ -30,7 +26,7 @@ class Helper
     private static $templatePaths;
 
     /**
-     * @var array
+     * @var BootstrapperInterface[]
      */
     private static $bootstrapper = [];
 
@@ -463,6 +459,17 @@ class Helper
         }
 
         return self::$bootstrapper[$id];
+    }
+
+    /**
+     * @param PluginInterface $plugin
+     */
+    public static function updatePluginInstance(PluginInterface $plugin): void
+    {
+        $bootstrapper = self::$bootstrapper[$plugin->getID()] ?? null;
+        if ($bootstrapper !== null) {
+            $bootstrapper->setPlugin($plugin);
+        }
     }
 
     /**

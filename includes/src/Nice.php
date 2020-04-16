@@ -1,14 +1,10 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL;
 
 use JTL\DB\ReturnType;
+use JTL\xtea\XTEA;
 use stdClass;
-use XTEA;
 
 /**
  * Class Nice

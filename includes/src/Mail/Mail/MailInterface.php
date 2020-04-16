@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Mail\Mail;
 
@@ -174,6 +170,11 @@ interface MailInterface
      * @return MailInterface
      */
     public function setAttachments(array $attachments): self;
+
+    /**
+     * @param Attachment $attachment
+     */
+    public function addAttachment(Attachment $attachment): void;
 
     /**
      * @return Attachment[]

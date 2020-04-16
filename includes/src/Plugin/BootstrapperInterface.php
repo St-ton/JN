@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Plugin;
 
@@ -57,6 +53,11 @@ interface BootstrapperInterface
      * @param null|string $description
      */
     public function addNotify($type, $title, $description = null): void;
+
+    /**
+     * @param PluginInterface $plugin
+     */
+    public function setPlugin(PluginInterface $plugin): void;
 
     /**
      * @return PluginInterface

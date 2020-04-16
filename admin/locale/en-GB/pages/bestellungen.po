@@ -30,13 +30,13 @@ msgid "orderDate"
 msgstr "Order date"
 
 msgid "orderPickedUpResetBTN"
-msgstr "Put down for transfer to JTL-Wawi during next synchronisation"
+msgstr "Schedule new transfer to JTL-Wawi during next synchronisation"
 
 msgid "orderSearch"
 msgstr "Search"
 
 msgid "orderSearchItem"
-msgstr "Purchase order ID"
+msgstr "Order ID"
 
 msgid "orderCanceled"
 msgstr "cancelled"
@@ -51,16 +51,16 @@ msgid "orderShipped"
 msgstr "shipped"
 
 msgid "orderPartlyShipped"
-msgstr "partially shipped"
+msgstr "partially delivered"
 
 msgid "orderIpAddress"
 msgstr "IP address"
 
 msgid "successOrderReset"
-msgstr "Selected purchase orders reset successfully."
+msgstr "Selected orders reset successfully."
 
 msgid "errorAtLeastOneOrder"
-msgstr "Please select at least one purchase order."
+msgstr "Please select at least one order."
 
 msgid "errorMissingOrderNumber"
-msgstr "Please enter a purchase order ID."
+msgstr "Please enter an order ID."

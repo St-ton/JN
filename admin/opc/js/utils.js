@@ -1,8 +1,3 @@
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
-
 var localDateFormat = 'DD.MM.YYYY - HH:mm';
 var internalDateFormat = 'YYYY-MM-DD HH:mm:ss';
 
@@ -63,7 +58,7 @@ class Emitter
 
     once(name, cb)
     {
-        this.subject(name).one(cb);
+        this.subject(name).once(cb);
     }
 
     emit(name, data)

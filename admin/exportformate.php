@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Alert\Alert;
 use JTL\Backend\Revision;
@@ -16,7 +12,7 @@ use JTL\Shop;
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
 
-JTL\Shop::Container()->getGetText()->loadConfigLocales(true, true);
+Shop::Container()->getGetText()->loadConfigLocales(true, true);
 
 $oAccount->permission('EXPORT_FORMATS_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
@@ -78,7 +74,7 @@ if (Request::postInt('neu_export') === 1 && Form::validateToken()) {
             '*',
             'nSort'
         );
-        JTL\Shop::Container()->getGetText()->localizeConfigs($Conf);
+        Shop::Container()->getGetText()->localizeConfigs($Conf);
         $configCount = count($Conf);
         for ($i = 0; $i < $configCount; $i++) {
             $aktWert                = new stdClass();

@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL;
 
@@ -60,8 +56,7 @@ class Visitor
             $diff = (new DateTime())->getTimestamp() - (new DateTime($visitor->dLetzteAktivitaet))->getTimestamp();
             if ($diff > 2) {
                 $visitor = self::updateVisitorObject($visitor, $visitor->kBesucher, $userAgent, $botID);
-                // update the db and simultaneously retrieve the ID to update the session below
-                $visitor->kBesucher = self::dbUpdate($visitor, $visitor->kBesucher);
+                self::dbUpdate($visitor, $visitor->kBesucher);
             } else {
                 // time-diff is to low! so we do nothing but update this "last-action"-time in the session
                 $visitor->dLetzteAktivitaet = (new DateTime())->format('Y-m-d H:i:s');
@@ -130,9 +125,9 @@ class Visitor
         $vis->kKunde            = Frontend::getCustomer()->getID();
         $vis->kBestellung       = $vis->kKunde > 0 ? self::refreshCustomerOrderId((int)$vis->kKunde) : 0;
         $vis->cReferer          = self::getReferer();
-        $vis->cUserAgent        = Text::filterXSS($_SERVER['HTTP_USER_AGENT']);
+        $vis->cUserAgent        = Text::filterXSS($_SERVER['HTTP_USER_AGENT'] ?? '');
         $vis->cBrowser          = self::getBrowser();
-        $vis->cAusstiegsseite   = $_SERVER['REQUEST_URI'];
+        $vis->cAusstiegsseite   = $_SERVER['REQUEST_URI'] ?? '';
         $vis->dLetzteAktivitaet = (new DateTime())->format('Y-m-d H:i:s');
         $vis->kBesucherBot      = $botID;
 
@@ -154,11 +149,11 @@ class Visitor
         $vis->cID               = \md5($userAgent . Request::getRealIP());
         $vis->kKunde            = Frontend::getCustomer()->getID();
         $vis->kBestellung       = $vis->kKunde > 0 ? self::refreshCustomerOrderId((int)$vis->kKunde) : 0;
-        $vis->cEinstiegsseite   = $_SERVER['REQUEST_URI'];
+        $vis->cEinstiegsseite   = $_SERVER['REQUEST_URI'] ?? '';
         $vis->cReferer          = self::getReferer();
-        $vis->cUserAgent        = Text::filterXSS($_SERVER['HTTP_USER_AGENT']);
+        $vis->cUserAgent        = Text::filterXSS($_SERVER['HTTP_USER_AGENT'] ?? '');
         $vis->cBrowser          = self::getBrowser();
-        $vis->cAusstiegsseite   = $_SERVER['REQUEST_URI'];
+        $vis->cAusstiegsseite   = $vis->cEinstiegsseite;
         $vis->dLetzteAktivitaet = (new DateTime())->format('Y-m-d H:i:s');
         $vis->dZeit             = (new DateTime())->format('Y-m-d H:i:s');
         $vis->kBesucherBot      = $botID;

@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='snippets-shipping-calculator'}
     {block name='snippets-shipping-calculator-form'}
         <div id="shipping-estimate-form" class="mb-5">

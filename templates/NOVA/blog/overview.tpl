@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='blog-overview'}
     {block name='blog-overview-heading'}
         {opcMountPoint id='opc_before_heading'}
@@ -20,7 +16,7 @@
                 {col cols=12 class='col-xl'}
                     {get_static_route id='news.php' assign=routeURL}
                     {block name='blog-overview-form'}
-                        {form id="frm_filter" name="frm_filter" action=$cCanonicalURL|default:$routeURL}
+                        {form id="frm_filter" name="frm_filter" action=$cCanonicalURL|default:$routeURL slide=true}
                             {formgroup}
                                 {formrow}
                                     {col cols=12 sm=4 lg='auto'}
@@ -120,7 +116,7 @@
                                         {$oNewsCat->getDescription()}
                                     {/col}
                                     {col cols=12 sm=4}
-                                        {image webp=true center=true fluid=true
+                                        {image webp=true center=true fluid=true lazy=true
                                             src=$oNewsCat->getImage(\JTL\Media\Image::SIZE_MD)
                                                 srcset="{$oNewsCat->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_newskategorie_mini_breite}w,
                                                 {$oNewsCat->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_newskategorie_klein_breite}w,

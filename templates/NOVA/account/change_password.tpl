@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='account-change-password'}
     {block name='account-change-password-heading'}
         <h1>{lang key='changePassword' section='login'}</h1>
@@ -13,7 +9,7 @@
         {row}
             {col md=5 lg=4}
                 {block name='account-change-password-form-password'}
-                    {form id="password" action="{get_static_route id='jtl.php'}" method="post" class="jtl-validate label-slide"}
+                    {form id="password" action="{get_static_route id='jtl.php'}" method="post" class="jtl-validate" slide=true}
                         {block name='account-change-password-form-password-content'}
                             {include file='snippets/form_group_simple.tpl'
                                 options=[

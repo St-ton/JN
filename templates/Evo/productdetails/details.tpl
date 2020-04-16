@@ -82,8 +82,10 @@
                                 {/if}
                             </div>
                         {/if}
-                        {if !empty($Artikel->cBarcode)}
-                            <div class="col-xs-8">
+                            {if !empty($Artikel->cBarcode)
+                                && ($Einstellungen.artikeldetails.gtin_display === 'details'
+                                    || $Einstellungen.artikeldetails.gtin_display === 'always')}
+                                <div class="col-xs-8">
                                 <p class="text-muted">{lang key='ean'}: <span itemprop="{if $Artikel->cBarcode|count_characters === 8}gtin8{else}gtin13{/if}">{$Artikel->cBarcode}</span></p>
                             </div>
                         {/if}

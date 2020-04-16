@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Backend\Wizard\DefaultFactory;
 use JTL\Backend\Wizard\Controller;

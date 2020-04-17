@@ -10,9 +10,9 @@ use JTL\Update\IMigration;
 use JTL\Update\Migration;
 
 /**
- * Class Migration_20200417082200
+ * Class Migration_20200417100000
  */
-class Migration_20200417082200 extends Migration implements IMigration
+class Migration_20200417100000 extends Migration implements IMigration
 {
     protected $author      = 'mh';
     protected $description = 'Remove customer recruting tables';

@@ -8,7 +8,6 @@ use JTL\Checkout\Lieferadresse;
 use JTL\Checkout\Lieferschein;
 use JTL\Checkout\Rechnungsadresse;
 use JTL\Customer\Customer;
-use JTL\Customer\Referral;
 use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
 use JTL\Language\LanguageHelper;

@@ -215,9 +215,6 @@ msgstr "Blog"
 msgid "configgroup_114_sitemap_settings"
 msgstr "Sitemap-Einstellungen"
 
-msgid "configgroup_116_customer_recruit_customer"
-msgstr "Einstellungen für Kunden werben Kunden"
-
 msgid "configgroup_119_searchspecial_standard_search"
 msgstr "Standardsortierung für Besondere Artikel"
 

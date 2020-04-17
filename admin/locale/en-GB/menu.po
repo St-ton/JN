@@ -167,9 +167,6 @@ msgstr "Marketing"
 msgid "Customer loyalty"
 msgstr "Customer loyalty"
 
-msgid "Recommendations"
-msgstr "Customer referrals"
-
 msgid "Coupons"
 msgstr "Coupons"
 

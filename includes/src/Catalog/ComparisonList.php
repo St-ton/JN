@@ -104,9 +104,9 @@ class ComparisonList
             $product->Variationen = $variations;
         }
         $this->oArtikel_arr[] = $product;
-        if (Frontend::get('Vergleichsliste') === null) {
-            Frontend::set('Vergleichsliste', $this);
-        }
+
+        Frontend::set('Vergleichsliste', $this);
+
         \executeHook(\HOOK_VERGLEICHSLISTE_CLASS_EINFUEGEN);
 
         return $this;

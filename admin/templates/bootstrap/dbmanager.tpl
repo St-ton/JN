@@ -602,11 +602,15 @@ $(function() {
                                             {$value = $value|escape:'html'|truncate:100:'...'}
                                         {elseif $info->Name|in_array:['float', 'decimal']}
                                             {$class = 'float'}
-                                            {$decimals = (int)$info->Size[1]}
-                                            {$value = $value|number_format:$decimals}
+                                            {if is_array($info->Size)}
+                                                {$decimals = (int)$info->Size[1]}
+                                                {$value = $value|number_format:$decimals}
+                                            {else}
+                                                {$value = $value|number_format:4}
+                                            {/if}
                                         {elseif $info->Name|in_array:['double']}
                                             {$class = 'float'}
-                                            {$value = $value|number_format:2}
+                                            {$value = $value|number_format:4}
                                         {elseif $info->Name|in_array:['tinyint', 'smallint', 'mediumint', 'int', 'bigint']}
                                             {$class = 'int'}
                                         {elseif $info->Name|in_array:['date', 'datetime', 'time', 'timestamp', 'year']}

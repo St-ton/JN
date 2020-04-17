@@ -70,3 +70,6 @@ msgstr ""
 
 msgid "prefURL2"
 msgstr "https://jtl-url.de/8qj9i"
+
+msgid "prefDesc5ProductQuestion"
+msgstr "Here you can adjust the settings regarding questions that customers ask about specific items. Customers can open the respective window via the item detail page."

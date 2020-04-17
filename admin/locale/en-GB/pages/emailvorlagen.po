@@ -18,7 +18,7 @@ msgid "testmailsGoToEmail"
 msgstr "Test emails will be sent to the following address: "
 
 msgid "noMasterEmailSpecified"
-msgstr "No master email address found. Please enter a master sender email address under Contents > Emails > Settings."
+msgstr "No master email address found. Please enter a master sender email address under Administration > Email > Server."
 
 msgid "emailTemplateModifyHint"
 msgstr "Here you can edit the content of an email template in every language available for JTL-Shop. You can also specify the email address from which the email is to be send and whether certain attachments will be added by default."

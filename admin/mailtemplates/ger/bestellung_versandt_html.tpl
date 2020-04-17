@@ -13,7 +13,7 @@ Ihre Bestellung vom {$Bestellung->dErstelldatum_de} mit Bestellnummer {$Bestellu
     <br>
     {foreach $oLieferschein->oVersand_arr as $oVersand}
         {if $oVersand->getIdentCode()|strlen > 0}
-            <strong>Tracking-Url:</strong> <a href="{$oVersand->getLogistikVarUrl()}">{$oVersand->getIdentCode()}</a><br>
+            <strong>Tracking-URL:</strong> <a href="{$oVersand->getLogistikVarUrl()}">{$oVersand->getIdentCode()}</a><br>
             {if $oVersand->getHinweis()|strlen > 0}
                 <strong>Tracking-Hinweis:</strong> {$oVersand->getHinweis()}<br>
             {/if}

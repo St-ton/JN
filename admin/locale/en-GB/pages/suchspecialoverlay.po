@@ -12,16 +12,16 @@ msgid "suchspecialoverlayUrl"
 msgstr "https://jtl-url.de/q6a35"
 
 msgid "suchspecial"
-msgstr "Badge for item type:"
+msgstr "Badge for item type"
 
 msgid "suchspecialoverlayActive"
-msgstr "Badge function active:"
+msgstr "Badge function active"
 
 msgid "suchspecialoverlayActiveDesc"
 msgstr "Specify whether the badge will be displayed for the item type indicated in the field \"Sticker for item type\"."
 
 msgid "suchspecialoverlayFileName"
-msgstr "Badge image:"
+msgstr "Badge image"
 
 msgid "suchspecialoverlayFileNameDesc"
 msgstr "Select the image used for the item sticker."

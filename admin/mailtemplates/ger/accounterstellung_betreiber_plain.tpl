@@ -16,9 +16,9 @@ Zur Kontrolle hier noch einmal Ihre Kundendaten:
 {if $Kunde->cTel}Telefon: {$Kunde->cTel}
 {/if}{if $Kunde->cMobil}Mobil: {$Kunde->cMobil}
 {/if}{if $Kunde->cFax}Fax: {$Kunde->cFax}
-{/if}Email: {$Kunde->cMail}
+{/if}E-Mail: {$Kunde->cMail}
 Passwort: {$Kunde->cPasswortKlartext}
-{if $Kunde->cUSTID}UstID: {$Kunde->cUSTID}
+{if $Kunde->cUSTID}Ust-ID: {$Kunde->cUSTID}
 {/if}
 
 Mit diesen Daten können Sie sich ab sofort in Ihrem persönlichen
@@ -26,7 +26,7 @@ Kundenkonto anmelden und den aktuellen Status Ihrer Bestellungen
 verfolgen.
 
 Wir freuen uns sehr, Sie als neuen Kunden bei uns begrüßen zu dürfen.
-Wenn sie Fragen zu unserem Angebot oder speziellen Produkten haben,
+Wenn Sie Fragen zu unserem Angebot oder speziellen Produkten haben,
 nehmen Sie einfach Kontakt mit uns auf.
 
 Wir wünschen Ihnen viel Spaß beim Stöbern in unserem Sortiment.

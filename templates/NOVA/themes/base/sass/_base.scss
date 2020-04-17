@@ -486,7 +486,9 @@ a[data-toggle="collapse"][aria-expanded=true],
   .custom-control-label::after {
     display: none;
   }
-  cursor: pointer;
+  label {
+    cursor: pointer;
+  }
 }
 
 .banner {
@@ -868,4 +870,13 @@ body {
 
 .loading {
   min-height: 140px
+}
+
+.lazyload,
+.lazyloading {
+  opacity: 0;
+}
+.lazyloaded {
+  opacity: 1;
+  transition: opacity 300ms;
 }

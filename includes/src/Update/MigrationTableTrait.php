@@ -120,18 +120,16 @@ trait MigrationTableTrait
      */
     private function getAvailableInputTypes(): array
     {
-        $result = [];
-        $items  = $this->fetchAll(
-            "SELECT DISTINCT cInputTyp 
-                FROM `teinstellungenconf` 
-                WHERE cInputTyp IS NOT NULL 
-                    AND cInputTyp != ''"
-        );
-        foreach ($items as $item) {
-            $result[] = $item->cInputTyp;
-        }
-
-        return $result;
+        return [
+            'selectbox',
+            'number',
+            'pass',
+            'text',
+            'kommazahl',
+            'listbox',
+            'selectkdngrp',
+            'color'
+        ];
     }
 
     /**

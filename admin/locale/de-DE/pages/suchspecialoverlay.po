@@ -12,16 +12,16 @@ msgid "suchspecialoverlayUrl"
 msgstr "https://jtl-url.de/538df"
 
 msgid "suchspecial"
-msgstr "Sticker für Artikeltyp:"
+msgstr "Sticker für Artikeltyp"
 
 msgid "suchspecialoverlayActive"
-msgstr "Sticker-Funktion aktiv:"
+msgstr "Sticker-Funktion aktiv"
 
 msgid "suchspecialoverlayActiveDesc"
 msgstr "Hier legen Sie fest, ob der Sticker für den unter „Sticker für Artikeltyp“ ausgewählten Artikeltyp angezeigt werden soll."
 
 msgid "suchspecialoverlayFileName"
-msgstr "Sticker-Grafik:"
+msgstr "Sticker-Grafik"
 
 msgid "suchspecialoverlayFileNameDesc"
 msgstr "Hier wählen Sie die Grafik aus, die als Artikelsticker angezeigt werden soll."

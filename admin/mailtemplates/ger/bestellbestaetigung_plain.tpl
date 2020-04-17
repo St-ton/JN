@@ -53,7 +53,7 @@ Ihre Rechnungsadresse:
 {/if}{if $Kunde->cFax}Fax: {$Kunde->cFax}
 {/if}
 E-Mail: {$Kunde->cMail}
-{if $Kunde->cUSTID}UstID: {$Kunde->cUSTID}
+{if $Kunde->cUSTID}Ust-ID: {$Kunde->cUSTID}
 {/if}
 
 {if !empty($Bestellung->Lieferadresse->kLieferadresse)}

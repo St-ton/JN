@@ -17,12 +17,12 @@ Zur Kontrolle hier noch einmal Ihre Kundendaten:
 {/if}{if $Kunde->cFax}Fax: {$Kunde->cFax}
 {/if}
 E-Mail-Adresse: {$Kunde->cMail}
-{if $Kunde->cUSTID}Ust.-ID: {$Kunde->cUSTID}
+{if $Kunde->cUSTID}Ust-ID: {$Kunde->cUSTID}
 {/if}
 
 Mit diesen Daten können Sie sich ab sofort in Ihrem persönlichen Kundenkonto anmelden und den aktuellen Status Ihrer Bestellungen verfolgen.
 
-Wir freuen uns sehr, Sie als neuen Kunden bei uns begrüßen zu dürfen. Wenn sie Fragen zu unserem Angebot oder speziellen Produkten haben, nehmen Sie einfach Kontakt mit uns auf.
+Wir freuen uns sehr, Sie als neuen Kunden bei uns begrüßen zu dürfen. Wenn Sie Fragen zu unserem Angebot oder speziellen Produkten haben, nehmen Sie einfach Kontakt mit uns auf.
 
 Wir wünschen Ihnen viel Spaß beim Stöbern in unserem Sortiment.
 

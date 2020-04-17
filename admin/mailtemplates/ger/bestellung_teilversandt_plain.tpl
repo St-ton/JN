@@ -27,7 +27,7 @@ der Versandstatus Ihrer Bestellung mit Bestellnummer {$Bestellung->cBestellNr} h
 
         {foreach $oLieferschein->oVersand_arr as $oVersand}
             {if $oVersand->getIdentCode()|strlen > 0}
-                Tracking-Url: {$oVersand->getLogistikVarUrl()}
+                Tracking-URL: {$oVersand->getLogistikVarUrl()}
             {/if}
         {/foreach}
     {/if}

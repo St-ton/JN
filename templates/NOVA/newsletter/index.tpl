@@ -4,12 +4,28 @@
     {/block}
 
     {block name='newsletter-index-content'}
+        {block name='newsletter-index-heading'}
+            {if !empty($Link->getTitle())}
+                {opcMountPoint id='opc_before_newsletter_heading'}
+                {container}
+                    <h1>{$Link->getTitle()}</h1>
+                {/container}
+            {/if}
+        {/block}
         {block name='newsletter-index-include-extension'}
             {include file='snippets/extension.tpl'}
         {/block}
         {if !isset($cPost_arr)}
             {assign var=cPost_arr value=array()}
         {/if}
+        {block name='newsletter-index-link-content'}
+            {if !empty($Link->getContent())}
+                {opcMountPoint id='opc_before_newsletter_content'}
+                {container class="my-3"}
+                    {$Link->getContent()}
+                {/container}
+            {/if}
+        {/block}
         {if $cOption === 'eintragen'}
             {if empty($bBereitsAbonnent)}
                 {block name='newsletter-index-newsletter-subscribe-form'}

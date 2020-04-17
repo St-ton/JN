@@ -1,7 +1,7 @@
 {includeMailTemplate template=header type=html}
 
 Hallo,<br>
-schau dir doch mal meinen Wunschzettel an bei {$Firma->cName}.<br>
+schau dir doch mal meinen Wunschzettel bei {$Firma->cName} an.<br>
 <br>
 <table cellpadding="5" cellspacing="0" border="0" width="100%">
     <tr>

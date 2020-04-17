@@ -74,7 +74,9 @@
                                 fileShowRemove=true
                                 filePreview=true
                                 fileInitialPreview="[
+                                        {if!empty($banner->cBildPfad)}
                                         '<img src=\"{$banner->cBildPfad}\" class=\"mb-3\" />'
+                                        {/if}
                                     ]"
                             }
                             </div>

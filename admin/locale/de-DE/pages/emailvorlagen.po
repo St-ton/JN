@@ -202,14 +202,6 @@ msgid "name_core_jtl_newsletteranmelden"
 msgstr "Freischalt-E-Mail nach Newsletter-Anmeldung"
 
 # email name (temailvorlage)
-msgid "name_core_jtl_kundenwerbenkunden"
-msgstr "Kunden werben Kunden"
-
-# email name (temailvorlage)
-msgid "name_core_jtl_kundenwerbenkundenboni"
-msgstr "Kunden werben Kunden – Belohnung"
-
-# email name (temailvorlage)
 msgid "name_core_jtl_artikelweiterempfehlen"
 msgstr "Artikel weiterempfehlen"
 

@@ -714,9 +714,6 @@ final class Orders extends AbstractSync
             foreach ($updatedOrder->oLieferschein_arr as $note) {
                 $note->setEmailVerschickt(true)->update();
             }
-            // Guthaben an Bestandskunden verbuchen, Email rausschicken:
-            $oKwK = new Referral();
-            $oKwK->verbucheBestandskundenBoni($customer->cMail);
         }
     }
 

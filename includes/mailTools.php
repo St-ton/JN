@@ -298,17 +298,6 @@ function sendeMail($moduleID, $data, $mail = null)
             $smarty->assign('NewsletterEmpfaenger', $data->NewsletterEmpfaenger);
             break;
 
-        case MAILTEMPLATE_KUNDENWERBENKUNDEN:
-            $smarty->assign('Neukunde', $data->oNeukunde)
-                   ->assign('Bestandskunde', $data->oBestandskunde);
-            break;
-
-        case MAILTEMPLATE_KUNDENWERBENKUNDENBONI:
-                $smarty->assign('BestandskundenBoni', $data->BestandskundenBoni)
-                       ->assign('Neukunde', $data->oNeukunde)
-                       ->assign('Bestandskunde', $data->oBestandskunde);
-            break;
-
         case MAILTEMPLATE_STATUSEMAIL:
             $data->mail->toName = $data->tfirma->cName . ' ' . $data->cIntervall;
             $mailTPL->cBetreff  = $data->tfirma->cName . ' ' . $data->cIntervall;

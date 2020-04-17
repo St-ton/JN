@@ -56,7 +56,6 @@ final class Shopsetting implements ArrayAccess
         \CONF_METAANGABEN         => 'metaangaben',
         \CONF_NEWS                => 'news',
         \CONF_SITEMAP             => 'sitemap',
-        \CONF_KUNDENWERBENKUNDEN  => 'kundenwerbenkunden',
         \CONF_SUCHSPECIAL         => 'suchspecials',
         \CONF_TEMPLATE            => 'template',
         \CONF_CHECKBOX            => 'checkbox',

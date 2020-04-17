@@ -156,7 +156,7 @@ class FrontendLinks extends AbstractItem
         $linkFile                      = new stdClass();
         $linkFile->kPlugin             = $pluginID;
         $linkFile->kLink               = $linkID;
-        $linkFile->cDatei              = $links['Filename'];
+        $linkFile->cDatei              = $links['Filename'] ?? '';
         $linkFile->cTemplate           = $links['Template'] ?? '_DBNULL_';
         $linkFile->cFullscreenTemplate = $links['FullscreenTemplate'] ?? '_DBNULL_';
 

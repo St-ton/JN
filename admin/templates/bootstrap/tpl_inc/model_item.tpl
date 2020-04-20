@@ -19,7 +19,7 @@
 	    <div class="subheading1">{__('childHeading')}</div>
 			<hr>
 	    {foreach $item->$name as $childItem}
-	        {include file='tpl_inc/model_item.tpl' isChild=true postfix=999 item=$childItem prefix=$name}
+	        {include file='tpl_inc/model_item.tpl' isChild=true postfix=$childItem->getId() item=$childItem prefix=$name}
 		    <hr>
         {/foreach}
 	    {continue}

@@ -451,7 +451,7 @@
                 </div>
                 <div class="card">
                     <div class="card-header">
-                        <div class="subheading1">{__('acceptedPaymentMethods')}</div>
+                        <div class="subheading1">{__('acceptedPaymentMethods')} {getHelpDesc cDesc=__('acceptedPaymentMethodsDesc')}</div>
                         <hr class="mb-n3">
                     </div>
                     <div class="card-body">

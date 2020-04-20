@@ -13,6 +13,9 @@
 			@include media-breakpoint-down(md) {
 				padding-right: 50px;
 			}
+			> div {
+				margin: 0 auto;
+			}
 		}
 		&.slick-type-product {
 			.product-wrapper {

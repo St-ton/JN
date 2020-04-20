@@ -2,6 +2,7 @@
 
 use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
+use JTL\Helpers\Request;
 use JTL\Shop;
 use function Functional\filter;
 use function Functional\flatten;
@@ -292,6 +293,8 @@ function sortiereEinstellungen($config)
 }
 
 /**
+ * settings page is separated but has same config group as parent config page, filter these settings
+ *
  * @param array $confData
  * @param string $filter
  * @return array
@@ -343,4 +346,24 @@ function filteredConfData(array $confData, string $filter): array
     return filter($confData, static function ($e) use ($keysToFilter) {
         return !\in_array($e->cWertName, $keysToFilter, true);
     });
+}
+
+/**
+ *  settings page is separated but has same config group as parent config page, get separate description
+ *
+ * @param int $sectionID
+ * @return string
+ */
+function filteredConfDescription(int $sectionID): string
+{
+    switch (Request::verifyGPDataString('group')) {
+        case 'configgroup_5_product_question':
+            $desc = __('prefDesc5ProductQuestion');
+            break;
+        default:
+            $desc = Shop::Smarty()->getConfigVars('prefDesc' . $sectionID);
+            break;
+    }
+
+    return $desc;
 }

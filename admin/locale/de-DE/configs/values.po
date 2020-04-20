@@ -1688,6 +1688,18 @@ msgstr "Ja, im Content-Bereich und der Navigationsbox"
 msgid "allgemein_kategoriefilter_benutzen_value(N)"
 msgstr "Nein"
 
+msgid "allgemein_availabilityfilter_benutzen_value(content)"
+msgstr "Ja, im Content-Bereich"
+
+msgid "allgemein_availabilityfilter_benutzen_value(box)"
+msgstr "Ja, in Navigationsbox"
+
+msgid "allgemein_availabilityfilter_benutzen_value(Y)"
+msgstr "Ja, im Content-Bereich und der Navigationsbox"
+
+msgid "allgemein_availabilityfilter_benutzen_value(N)"
+msgstr "Nein"
+
 msgid "kategoriefilter_anzeigen_als_value(KA)"
 msgstr "Kategorien der Artikel"
 

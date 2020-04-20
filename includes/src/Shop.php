@@ -1957,7 +1957,7 @@ final class Shop
                 $adminLangTag = $_SESSION['AdminAccount']->language;
                 \session_write_close();
                 \session_id($oldID);
-                new Session\Frontend();
+                Frontend::getInstance();
             } else {
                 $result       = $isLogged();
                 $adminToken   = $_SESSION['jtl_token'];

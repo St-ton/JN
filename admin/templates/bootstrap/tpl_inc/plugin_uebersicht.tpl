@@ -11,7 +11,7 @@
         </div>
         {assign var=hasActiveMenuTab value=false}
         {assign var=hasActiveMenuItem value=false}
-        <div class="tabs">
+        <div class="tabs" id="tabs-{$oPlugin->getPluginID()}">
             {if $oPlugin !== null && $oPlugin->getAdminMenu()->getItems()->count() > 0}
                 <nav class="tabs-nav">
                     <ul class="nav nav-tabs" role="tablist">

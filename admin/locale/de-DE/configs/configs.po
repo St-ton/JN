@@ -2378,6 +2378,12 @@ msgstr "Kategoriefilterung benutzen"
 msgid "allgemein_kategoriefilter_benutzen_desc"
 msgstr "Mit dieser Option legen Sie fest, ob Ihren Kunden in der Ergebnisliste unter dem Punkt „Filtern nach“ die Kategorie als Filtermöglichkeit angezeigt wird. Diese Optionen werden im NOVA-Template nur teilweise unterstützt. Bitte wählen Sie „Ja, im Content-Bereich und der Navigationsbox“ oder „Nein“, falls Sie NOVA verwenden."
 
+msgid "allgemein_availabilityfilter_benutzen_name"
+msgstr "Verfügbarkeitsfilterung benutzen"
+
+msgid "allgemein_availabilityfilter_benutzen_desc"
+msgstr "Mit dieser Option legen Sie fest, ob Ihren Kunden in der Ergebnisliste unter dem Punkt „Filtern nach“ die Verfügbarkeit als Filtermöglichkeit angezeigt wird. Diese Optionen werden im NOVA-Template nur teilweise unterstützt. Bitte wählen Sie „Ja, im Content-Bereich und der Navigationsbox“ oder „Nein“, falls Sie NOVA verwenden."
+
 msgid "kategoriefilter_anzeigen_als_name"
 msgstr "Kategoriefilter anzeigen als"
 

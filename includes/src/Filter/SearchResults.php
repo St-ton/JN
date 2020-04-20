@@ -118,6 +118,11 @@ class SearchResults implements SearchResultsInterface
     /**
      * @var Option[]
      */
+    private $availabilityFilterOptions = [];
+
+    /**
+     * @var Option[]
+     */
     private $customFilterOptions = [];
 
     /**
@@ -521,6 +526,24 @@ class SearchResults implements SearchResultsInterface
     /**
      * @inheritdoc
      */
+    public function getAvailabilityFilterOptions(): array
+    {
+        return $this->availabilityFilterOptions;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setAvailabilityFilterOptions($options): SearchResultsInterface
+    {
+        $this->availabilityFilterOptions = $options;
+
+        return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getCustomFilterOptions(): array
     {
         return $this->customFilterOptions;
@@ -686,6 +709,7 @@ class SearchResults implements SearchResultsInterface
         $categoryOptions             = $productFilter->getCategoryFilter()->getOptions();
         $priceRangeOptions           = $productFilter->getPriceRangeFilter()->getOptions($this->getProductCount());
         $searchSpecialFilters        = $productFilter->getSearchSpecialFilter()->getOptions();
+        $availabilityOptions         = $productFilter->getAvailabilitylFilter()->getOptions();
         $characteristicFilterOptions = $productFilter->getCharacteristicFilterCollection()->getOptions([
             'oAktuelleKategorie' => $currentCategory,
             'bForce'             => $selectionWizard === true
@@ -730,6 +754,7 @@ class SearchResults implements SearchResultsInterface
             ->setCategoryFilterOptions($categoryOptions)
             ->setSearchFilterOptions($searchFilterOptions)
             ->setSearchSpecialFilterOptions($searchSpecialFilters)
+            ->setAvailabilityFilterOptions($availabilityOptions)
             ->setCharacteristicFilterOptions($characteristicFilterOptions)
             ->setCustomFilterOptions($customFilterOptions)
             ->setSearchFilterJSON($json);

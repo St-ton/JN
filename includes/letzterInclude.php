@@ -91,6 +91,17 @@ $expandedCategories->getOpenCategories($AktuelleKategorie);
 if (!isset($NaviFilter)) {
     $NaviFilter = Shop::run();
 }
+//put availability on top
+$filters = $NaviFilter->getAvailableContentFilters();
+foreach ($filters as $key => $filter) {
+    if ($filter->getClassName() === 'JTL\Filter\Items\Availability') {
+        unset($filters[$key]);
+        \array_unshift($filters, $filter);
+        break;
+    }
+}
+$NaviFilter->setAvailableFilters($filters);
+
 $linkHelper->activate($pageType);
 $origin  = (isset($_SESSION['Kunde']->cLand) && mb_strlen($_SESSION['Kunde']->cLand) > 0)
     ? $_SESSION['Kunde']->cLand

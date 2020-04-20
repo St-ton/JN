@@ -10,7 +10,9 @@
  */
 
 require_once __DIR__ . '/includes/admininclude.php';
-$oAccount->permission('CONTENT_PAGE_VIEW', true, true);
+if (!$oAccount->permission('SLIDER_VIEW', true)) {
+    $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
+}
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'elfinder_inc.php';
 
 if (validateToken()) {

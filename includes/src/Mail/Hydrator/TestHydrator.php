@@ -43,7 +43,7 @@ class TestHydrator extends DefaultsHydrator
             ['kKundengruppe', 'kSprache'],
             [$customer->kKundengruppe, $langID]
         );
-
+Shop::dbg($customer);
         $this->smarty->assign('oKunde', $customer)
             ->assign('oMailObjekt', $this->getStatusMail())
             ->assign('Verfuegbarkeit_arr', ['cArtikelName_arr' => [], 'cHinweis' => ''])
@@ -292,6 +292,7 @@ class TestHydrator extends DefaultsHydrator
         $customer->cVorname          = 'Max';
         $customer->cNachname         = 'Mustermann';
         $customer->cFirma            = 'Musterfirma';
+        $customer->cZusatz           = 'Musterfirma-Zusatz';
         $customer->cStrasse          = 'Musterstrasse';
         $customer->cHausnummer       = '123';
         $customer->cPLZ              = '12345';

@@ -292,6 +292,7 @@ class TestHydrator extends DefaultsHydrator
         $customer->cVorname          = 'Max';
         $customer->cNachname         = 'Mustermann';
         $customer->cFirma            = 'Musterfirma';
+        $customer->cZusatz           = 'Musterfirma-Zusatz';
         $customer->cStrasse          = 'Musterstrasse';
         $customer->cHausnummer       = '123';
         $customer->cPLZ              = '12345';

@@ -143,6 +143,9 @@ define('SEARCH_SORT_PRICE_DESC', 4);
 define('SEARCH_SORT_EAN', 5);
 define('SEARCH_SORT_NEWEST_FIRST', 6);
 define('SEARCH_SORT_PRODUCTNO', 7);
+/**
+ * @deprecated
+ */
 define('SEARCH_SORT_AVAILABILITY', 8);
 define('SEARCH_SORT_WEIGHT', 9);
 define('SEARCH_SORT_DATEOFISSUE', 10);
@@ -153,6 +156,9 @@ define('SEARCH_SORT_CRITERION_NAME', 'artikelname');
 define('SEARCH_SORT_CRITERION_NAME_ASC', 'artikelname aufsteigend');
 define('SEARCH_SORT_CRITERION_NAME_DESC', 'artikelname absteigend');
 define('SEARCH_SORT_CRITERION_PRODUCTNO', 'artikelnummer');
+/**
+ * @deprecated
+ */
 define('SEARCH_SORT_CRITERION_AVAILABILITY', 'lagerbestand');
 define('SEARCH_SORT_CRITERION_WEIGHT', 'gewicht');
 define('SEARCH_SORT_CRITERION_PRICE', 'preis');

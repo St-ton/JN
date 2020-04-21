@@ -2,7 +2,6 @@
 
 namespace JTL\Mapper;
 
-use JTL\Filter\SortingOptions\Availability;
 use JTL\Filter\SortingOptions\Bestseller;
 use JTL\Filter\SortingOptions\DateCreated;
 use JTL\Filter\SortingOptions\DateOfIssue;
@@ -48,8 +47,6 @@ class SortingType
                 return DateCreated::class;
             case \SEARCH_SORT_PRODUCTNO:
                 return ProductNumber::class;
-            case \SEARCH_SORT_AVAILABILITY:
-                return Availability::class;
             case \SEARCH_SORT_WEIGHT:
                 return Weight::class;
             case \SEARCH_SORT_DATEOFISSUE:
@@ -81,8 +78,6 @@ class SortingType
                 return \SEARCH_SORT_NAME_DESC;
             case \SEARCH_SORT_CRITERION_PRODUCTNO:
                 return \SEARCH_SORT_PRODUCTNO;
-            case \SEARCH_SORT_CRITERION_AVAILABILITY:
-                return \SEARCH_SORT_AVAILABILITY;
             case \SEARCH_SORT_CRITERION_WEIGHT:
                 return \SEARCH_SORT_WEIGHT;
             case \SEARCH_SORT_CRITERION_PRICE_ASC:

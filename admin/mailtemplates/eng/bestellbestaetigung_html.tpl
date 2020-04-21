@@ -112,7 +112,7 @@ Your order with the order number {$Bestellung->cBestellNr} consists of the follo
                 <tr>
                     <td>
                         <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                            {if !empty($Kunde->cFirma)}{$Kunde->cFirma}<br>{/if}
+                            {if !empty($Kunde->cFirma)}{$Kunde->cFirma} - {if !empty($Kunde->cZusatz)}{$Kunde->cZusatz}{/if}<br>{/if}
                             {$Kunde->cVorname} {$Kunde->cNachname}<br>
                             {$Kunde->cStrasse} {$Kunde->cHausnummer}<br>
                             {if $Kunde->cAdressZusatz}{$Kunde->cAdressZusatz}<br>{/if}

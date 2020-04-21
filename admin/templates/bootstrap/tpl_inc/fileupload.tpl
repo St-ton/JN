@@ -94,7 +94,7 @@ $fileErrorMsg                  | true    | error message while uploading - autom
             language: '{$language|mb_substr:0:2}',
             browseOnZoneClick: true,
             {if $fileMaxSize|default:true !== 'false'}
-            maxFileSize: {$fileMaxSize|default:500},
+            maxFileSize: {$fileMaxSize|default:6000},
             {/if}
             {if $fileIsSingle}
             maxFilesNum: 1,

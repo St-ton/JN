@@ -181,7 +181,7 @@ function bearbeiteListBox($listBoxes, $cWertName, int $configSectionID)
 
             $db->insert('teinstellungen', $newConf);
         }
-    } elseif ($cWertName === 'bewertungserinnerung_kundengruppen' || $cWertName === 'kwk_kundengruppen') {
+    } elseif ($cWertName === 'bewertungserinnerung_kundengruppen') {
         // Leere Kundengruppen Work Around
         $customerGroup = $db->select('tkundengruppe', 'cStandard', 'Y');
         if ($customerGroup->kKundengruppe > 0) {

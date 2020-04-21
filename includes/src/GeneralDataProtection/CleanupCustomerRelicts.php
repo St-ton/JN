@@ -16,8 +16,6 @@ use JTL\DB\ReturnType;
  * `tbesucherarchiv`
  * `tkundenattribut`
  * `tkundenkontodaten`
- * `tkundenwerbenkunden`
- * `tkundenwerbenkundenbonus`
  * `tzahlungsinfo`
  * `tlieferadresse`
  * `trechnungsadresse`
@@ -32,7 +30,6 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
     public function execute(): void
     {
         $this->cleanupVisitorArchive();
-        $this->cleanupCustomerRecruitings();
         $this->cleanupCustomerAttributes();
         $this->cleanupPaymentInformation();
         $this->cleanupCustomerAccountData();
@@ -53,23 +50,6 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
                 AND NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = tbesucherarchiv.kKunde)
                 LIMIT :pLimit',
             ['pLimit' => $this->workLimit],
-            ReturnType::DEFAULT
-        );
-    }
-
-    /**
-     * delete customer recruitings
-     * where no valid customer accounts exist
-     */
-    private function cleanupCustomerRecruitings()
-    {
-        $this->db->queryPrepared(
-            'DELETE k, b
-            FROM tkundenwerbenkunden k
-                LEFT JOIN tkundenwerbenkundenbonus b ON k.kKunde = b.kKunde
-            WHERE k.kKunde > 0
-                AND NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = k.kKunde)',
-            [],
             ReturnType::DEFAULT
         );
     }

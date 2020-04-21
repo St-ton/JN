@@ -326,7 +326,6 @@
                                     {include file='tpl_inc/fileupload.tpl'
                                         fileID="kNewslettervorlageStdVar_{$oNewslettervorlageStdVar->kNewslettervorlageStdVar}"
                                         fileShowRemove=true
-                                        filePreview=true
                                         fileInitialPreview="[
                                                 {if isset($oNewslettervorlageStdVar->cInhalt) && $oNewslettervorlageStdVar->cInhalt|strlen > 0}
                                                     '<img class=\"img-fluid\" src=\"{$oNewslettervorlageStdVar->cInhalt}?={$nRand}\" />'

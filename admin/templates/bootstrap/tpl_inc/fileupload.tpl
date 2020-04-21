@@ -9,7 +9,7 @@ $fileClass                     |         | input class
 $fileAllowedExtensions         | ----->  | default: ['jpg', 'jpeg', 'jpe', 'gif', 'png', 'bmp', 'svg']
 $fileUploadUrl                 | false   | url to upload file via ajax
 $fileDeleteUrl                 |         | url to delete file via ajax
-$filePreview                   | false   | enable previe image
+$filePreview                   | true    | enable previe image
 $fileMaxSize                   |         | max allowed size of file
 $fileIsSingle                  | true    | only allow one file to be uploaded
 $fileInitialPreviewConfig      |         | array with json - config of initial preview
@@ -25,7 +25,7 @@ $fileDefaultBatchSelectedEvent | true    | set false and created a custom .on("f
 $fileDefaultUploadSuccessEvent | true    | set false and created a custom .on("filebatchuploadsuccess") event
 $fileDefaultUploadErrorEvent   | true    | set false and created a custom .on("fileuploaderror") event
 $fileSuccessMsg                | false   | success message after upload
-$fileErrorMsg                  | true    | error message while uploading - automatically generated
+$fileErrorMsg                  | false   | error message while uploading - automatically generated
 -----------------------------------------------------------------------------------
 *}
 {$fileIDFull   = '#'|cat:$fileID}
@@ -43,10 +43,8 @@ $fileErrorMsg                  | true    | error message while uploading - autom
         {$fileSuccessMsg}
     </div>
 {/if}
-{if $fileErrorMsg|default:true}
-    <div id="{$fileID}-upload-error" class="alert alert-danger d-none mt-3">
-        {$fileErrorMsg|default:''}
-    </div>
+{if $fileErrorMsg|default:false}
+    <div id="{$fileID}-upload-error" class="alert alert-danger d-none mt-3"></div>
 {/if}
 
 <script>
@@ -70,7 +68,7 @@ $fileErrorMsg                  | true    | error message while uploading - autom
             uploadClass: 'btn btn-outline-primary',
             removeClass: 'btn btn-outline-primary',
             uploadAsync: {$fileUploadAsync|default:'false'},
-            showPreview: {$filePreview|default:'false'},
+            showPreview: {$filePreview|default:'true'},
             initialPreviewShowDelete: false,
             fileActionSettings: {
                 showZoom: false,
@@ -116,7 +114,9 @@ $fileErrorMsg                  | true    | error message while uploading - autom
         {/if}
         {if $fileDefaultBatchSelectedEvent|default:true}
         $file.on("filebatchselected", function (event, files) {
-            $file.fileinput("upload");
+            if ($file.fileinput('getFilesCount') > 0) {
+                $file.fileinput("upload");
+            }
         });
         {/if}
         {if $fileDefaultUploadSuccessEvent|default:true}

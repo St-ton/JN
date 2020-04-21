@@ -151,7 +151,6 @@
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 {include file='tpl_inc/fileupload.tpl'
                                     fileID='previewImage'
-                                    filePreview=true
                                     fileMaxSize={$nMaxFileSize}
                                     fileInitialPreview="[
                                             {if !empty($oNews->getPreviewImage())}
@@ -175,7 +174,6 @@
                                 {include file='tpl_inc/fileupload.tpl'
                                     fileID='images'
                                     fileName='Bilder[]'
-                                    filePreview=true
                                     fileMaxSize={$nMaxFileSize}
                                     fileIsSingle=false
                                     fileInitialPreview="[

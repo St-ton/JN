@@ -378,7 +378,6 @@ $(document).ready(function() {
                                     {include file='tpl_inc/fileupload.tpl'
                                         fileID='useAvatarUpload'
                                         fileName='extAttribs[useAvatarUpload]'
-                                        filePreview=true
                                         fileMaxSize=1000
                                         fileInitialPreview="[
                                             {if isset($attribValues.useAvatar) && $attribValues.useAvatar->cAttribValue === 'U'}

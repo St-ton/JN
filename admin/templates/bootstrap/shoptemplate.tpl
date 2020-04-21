@@ -169,7 +169,6 @@
                                                         fileID="tpl-upload-{$oSetting@iteration}"
                                                         fileName="upload-{$oSetting@iteration}"
                                                         fileDeleteUrl="{$shopURL}/{$PFAD_ADMIN}shoptemplate.php?token={$smarty.session.jtl_token}"
-                                                        filePreview=true
                                                         fileExtraData='{id:1}'
                                                         fileMaxSize="{if !empty($oSetting->rawAttributes.maxFileSize)}{$oSetting->rawAttributes.maxFileSize}{else}1000{/if}"
                                                         fileAllowedExtensions="{if !empty($oSetting->rawAttributes.allowedFileExtensions)}{$oSetting->rawAttributes.allowedFileExtensions}{/if}"

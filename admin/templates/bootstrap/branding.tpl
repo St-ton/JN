@@ -123,7 +123,6 @@
                                 {include file='tpl_inc/fileupload.tpl'
                                     fileID='cBrandingBild'
                                     fileRequired=!$oBranding->cBrandingBild|strlen > 0
-                                    filePreview=true
                                     fileMaxSize=256
                                     fileInitialPreview="[
                                             {if $oBranding->cBrandingBild|strlen > 0}

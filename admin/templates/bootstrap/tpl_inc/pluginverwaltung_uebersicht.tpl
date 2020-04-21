@@ -125,7 +125,6 @@
                                 fileShowRemove=true
                                 fileDefaultBatchSelectedEvent=false
                                 fileSuccessMsg="{__('successPluginUpload')}"
-                                fileErrorMsg=true
                             }
                         </div>
                         <hr>

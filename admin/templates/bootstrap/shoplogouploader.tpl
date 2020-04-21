@@ -15,7 +15,6 @@
                         fileName='shopLogo'
                         fileUploadUrl="{$shopURL}/{$PFAD_ADMIN}shoplogouploader.php?token={$smarty.session.jtl_token}"
                         fileDeleteUrl="{$shopURL}/{$PFAD_ADMIN}shoplogouploader.php?token={$smarty.session.jtl_token}"
-                        filePreview=$ShopLogo|strlen > 0
                         fileBrowseClear=true
                         fileSuccessMsg="{__('successLogoUpload')}"
                         fileErrorMsg="{{__('errorLogoUpload')}|sprintf:{$smarty.const.PFAD_SHOPLOGO}}"

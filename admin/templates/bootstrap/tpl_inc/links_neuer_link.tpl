@@ -184,7 +184,6 @@
                             {include file='tpl_inc/fileupload.tpl'
                                 fileID='Bilder_0'
                                 fileName='Bilder[]'
-                                filePreview=true
                                 fileMaxSize=1000
                                 fileIsSingle=false
                                 fileInitialPreview="[

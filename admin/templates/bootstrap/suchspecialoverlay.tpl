@@ -58,7 +58,6 @@
                                 {include file='tpl_inc/fileupload.tpl'
                                     fileID='cSuchspecialOverlayBild'
                                     fileShowRemove=true
-                                    filePreview=true
                                     fileInitialPreview="[
                                             '<img src=\"{$oSuchspecialOverlay->getURL($smarty.const.IMAGE_SIZE_SM)}?rnd={$cRnd}\" class=\"mb-3\" />'
                                         ]"

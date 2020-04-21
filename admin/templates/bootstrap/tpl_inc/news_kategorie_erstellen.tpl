@@ -96,7 +96,6 @@
                                 {include file='tpl_inc/fileupload.tpl'
                                     fileID='previewImage'
                                     fileShowRemove=true
-                                    filePreview=true
                                     fileMaxSize=2097152
                                     fileInitialPreview="[
                                             {if !empty($oNewsKategorie->getPreviewImage())}

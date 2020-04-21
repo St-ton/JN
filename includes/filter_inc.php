@@ -881,15 +881,6 @@ function gibNextSortPrio($search, $conf = null)
         $obj->angezeigterName = Shop::Lang()->get('sortProductno');
         $max                  = $conf['artikeluebersicht']['suche_sortierprio_artikelnummer'];
     }
-    if ($max < $conf['artikeluebersicht']['suche_sortierprio_lagerbestand']
-        && !in_array('suche_sortierprio_lagerbestand', $search, true)
-    ) {
-        $obj                  = new stdClass();
-        $obj->name            = 'suche_sortierprio_lagerbestand';
-        $obj->value           = SEARCH_SORT_AVAILABILITY;
-        $obj->angezeigterName = Shop::Lang()->get('sortAvailability');
-        $max                  = $conf['artikeluebersicht']['suche_sortierprio_lagerbestand'];
-    }
     if ($max < $conf['artikeluebersicht']['suche_sortierprio_gewicht']
         && !in_array('suche_sortierprio_gewicht', $search, true)
     ) {

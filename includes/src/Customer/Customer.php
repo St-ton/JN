@@ -1079,8 +1079,6 @@ class Customer
         $db->delete('tkundendatenhistory', 'kKunde', $customerID);
         $db->delete('tkundenkontodaten', 'kKunde', $customerID);
         $db->delete('tzahlungsinfo', 'kKunde', $customerID);
-        $db->delete('tkundenwerbenkunden', 'kKunde', $customerID);
-        $db->delete('tkundenwerbenkundenbonus', 'kKunde', $customerID);
         $db->delete('tkontakthistory', 'cMail', $this->cMail);
         $db->delete('tproduktanfragehistory', 'cMail', $this->cMail);
         $db->delete('tverfuegbarkeitsbenachrichtigung', 'cMail', $this->cMail);

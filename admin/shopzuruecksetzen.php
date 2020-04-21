@@ -177,7 +177,6 @@ if (Request::postInt('zuruecksetzen') === 1 && Form::validateToken()) {
                     $db->query('TRUNCATE tkundenfeldwert', ReturnType::DEFAULT);
                     $db->query('TRUNCATE tkundenherkunft', ReturnType::DEFAULT);
                     $db->query('TRUNCATE tkundenkontodaten', ReturnType::DEFAULT);
-                    $db->query('TRUNCATE tkundenwerbenkunden', ReturnType::DEFAULT);
                     $db->query('TRUNCATE tlieferadresse', ReturnType::DEFAULT);
                     $db->query('TRUNCATE twarenkorbpers', ReturnType::DEFAULT);
                     $db->query('TRUNCATE twarenkorbperspos', ReturnType::DEFAULT);
@@ -185,10 +184,6 @@ if (Request::postInt('zuruecksetzen') === 1 && Form::validateToken()) {
                     $db->query('TRUNCATE twunschliste', ReturnType::DEFAULT);
                     $db->query('TRUNCATE twunschlistepos', ReturnType::DEFAULT);
                     $db->query('TRUNCATE twunschlisteposeigenschaft', ReturnType::DEFAULT);
-                    break;
-                case 'kwerbenk':
-                    $db->query('TRUNCATE tkundenwerbenkunden', ReturnType::DEFAULT);
-                    $db->query('TRUNCATE tkundenwerbenkundenbonus', ReturnType::DEFAULT);
                     break;
                 case 'bestellungen':
                     $db->query('TRUNCATE tbestellid', ReturnType::DEFAULT);

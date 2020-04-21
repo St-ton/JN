@@ -46,7 +46,6 @@ class_alias(\JTL\SimpleCSS::class, 'SimpleCSS', true);
 class_alias(\JTL\Piechart::class, 'Piechart', true);
 class_alias(\JTL\Slider::class, 'Slider', true);
 class_alias(\JTL\XMLParser::class, 'XMLParser', true);
-class_alias(\JTL\Customer\Referral::class, 'KundenwerbenKunden', true);
 class_alias(\JTL\SimpleMail::class, 'SimpleMail', true);
 class_alias(\JTL\ExtensionPoint::class, 'ExtensionPoint', true);
 class_alias(\JTL\PlausiKundenfeld::class, 'PlausiKundenfeld', true);

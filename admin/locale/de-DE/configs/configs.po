@@ -500,12 +500,6 @@ msgstr "Priorität der Sortiermöglichkeiten: Artikelnummer"
 msgid "suche_sortierprio_artikelnummer_desc"
 msgstr "Je kleiner die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
 
-msgid "suche_sortierprio_lagerbestand_name"
-msgstr "Priorität der Sortiermöglichkeiten: Verfügbarkeit"
-
-msgid "suche_sortierprio_lagerbestand_desc"
-msgstr "Je kleiner die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
-
 msgid "suche_sortierprio_gewicht_name"
 msgstr "Priorität der Sortiermöglichkeiten: Gewicht"
 

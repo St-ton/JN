@@ -500,12 +500,6 @@ msgstr "Priority of sorting options: SKU"
 msgid "suche_sortierprio_artikelnummer_desc"
 msgstr "The smaller the number, the higher up the sorting option will be displayed. Enter 0 if you do not want this option to be displayed."
 
-msgid "suche_sortierprio_lagerbestand_name"
-msgstr "Priority of sorting options: availability"
-
-msgid "suche_sortierprio_lagerbestand_desc"
-msgstr "The smaller the number, the higher up the sorting option will be displayed. Enter 0 if you do not want this option to be displayed."
-
 msgid "suche_sortierprio_gewicht_name"
 msgstr "Priority of sorting options: weight"
 

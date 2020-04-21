@@ -2,7 +2,7 @@
     {if $isMobile && !$isTablet}
         <span class="h2 mt-3 border-0 px-3" id="productlist-filter">{lang key='filterAndSort'}</span>
     {/if}
-    <div class="productlist-filter-wrapper">
+    <div class="productlist-filter-wrapper dropdown-full-width">
         <ul class="productlist-filter-accordion border-md-bottom border-lg-bottom-0">
         {block name='snippets-filter-mobile-sorting'}
             <li>

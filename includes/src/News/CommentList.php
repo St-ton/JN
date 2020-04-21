@@ -92,6 +92,7 @@ final class CommentList implements ItemListInterface
             'SELECT *
                 FROM tnewskommentar
                 WHERE kNews = :nid
+                AND nAktiv = 1
                 ORDER BY tnewskommentar.dErstellt DESC',
             ['nid' => $this->newsID],
             ReturnType::ARRAY_OF_OBJECTS

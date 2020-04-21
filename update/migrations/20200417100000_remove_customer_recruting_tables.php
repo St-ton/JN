@@ -34,7 +34,7 @@ class Migration_20200417100000 extends Migration implements IMigration
     public function down()
     {
         $this->execute(
-            'CREATE TABLE `tkundenwerbenkunden` (
+            'CREATE TABLE IF NOT EXISTS `tkundenwerbenkunden` (
               `kKundenWerbenKunden` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
               `kKunde` INT(10) UNSIGNED NOT NULL,
               `cVorname` VARCHAR(255) NOT NULL,
@@ -49,7 +49,7 @@ class Migration_20200417100000 extends Migration implements IMigration
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci'
         );
         $this->execute(
-            'CREATE TABLE `tkundenwerbenkundenbonus` (
+            'CREATE TABLE IF NOT EXISTS `tkundenwerbenkundenbonus` (
               `kKundenWerbenKundenBonus` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
               `kKunde` INT(10) UNSIGNED NOT NULL,
               `fGuthaben` DOUBLE DEFAULT NULL,

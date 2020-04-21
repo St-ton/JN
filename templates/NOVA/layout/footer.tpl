@@ -24,7 +24,7 @@
                 trigger[i].addEventListener('click', triggerCall)
             }
             document.addEventListener('consent.updated', function(e) {
-                $.post('/', {
+                $.post('{$ShopURLSSL}/', {
                             'action': 'updateconsent',
                             'jtl_token': '{$smarty.session.jtl_token}',
                             'data': e.detail

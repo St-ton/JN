@@ -218,9 +218,6 @@ msgstr "Blog"
 msgid "configgroup_114_sitemap_settings"
 msgstr "Sitemap settings"
 
-msgid "configgroup_116_customer_recruit_customer"
-msgstr "Settings for customer referral programme"
-
 msgid "configgroup_119_searchspecial_standard_search"
 msgstr "Default sorting for special items"
 

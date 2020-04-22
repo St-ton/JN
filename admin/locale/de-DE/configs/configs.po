@@ -2738,30 +2738,6 @@ msgstr "Sitemap nach Export an Google und Bing übermitteln"
 msgid "sitemap_google_ping_desc"
 msgstr "Hier legen Sie fest, ob nach dem Export der Dateien sitemap.xml und sitemap_index.xml eine Mitteilung an Google und Bing erfolgt, damit diese die Sitemap erneut einlesen."
 
-msgid "kwk_nutzen_name"
-msgstr "„Kunden werben Kunden“ aktivieren"
-
-msgid "kwk_nutzen_desc"
-msgstr "Hier aktivieren Sie die Funktion „Kunden werben Kunden“ für Ihren JTL-Shop."
-
-msgid "kwk_neukundenguthaben_name"
-msgstr "Startguthaben für geworbene Neukunden"
-
-msgid "kwk_neukundenguthaben_desc"
-msgstr "Hier geben Sie die Höhe des Guthabens ein, das ein geworbener Neukunde erhalten soll."
-
-msgid "kwk_bestandskundenguthaben_name"
-msgstr "Bonusguthaben für werbende Bestandskunden"
-
-msgid "kwk_bestandskundenguthaben_desc"
-msgstr "Hier geben Sie die Höhe des Guthabens ein, das ein Bestandskunde erhält, der erfolgreich einen Neukunden geworben hat."
-
-msgid "kwk_kundengruppen_name"
-msgstr "Kundengruppenzuordnung"
-
-msgid "kwk_kundengruppen_desc"
-msgstr "Hier legen Sie fest, welcher Kundengruppe Neukunden zugeordnet werden, die neu geworben wurden."
-
 msgid "suchspecials_sortierung_bestseller_name"
 msgstr "Sortierung für Bestseller"
 

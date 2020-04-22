@@ -32,6 +32,9 @@ define('CONF_EMAILBLACKLIST', 111);
 define('CONF_METAANGABEN', 112);
 define('CONF_NEWS', 113);
 define('CONF_SITEMAP', 114);
+/**
+ * @deprecated
+ */
 define('CONF_KUNDENWERBENKUNDEN', 116);
 define('CONF_SUCHSPECIAL', 119);
 define('CONF_CHECKBOX', 120);
@@ -113,7 +116,13 @@ define('MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR', 'core_jtl_verfuegbarkeitsbenach
 define('MAILTEMPLATE_WUNSCHLISTE', 'core_jtl_wunschliste');
 define('MAILTEMPLATE_BEWERTUNGERINNERUNG', 'core_jtl_bewertungerinnerung');
 define('MAILTEMPLATE_NEWSLETTERANMELDEN', 'core_jtl_newsletteranmelden');
+/**
+ * @deprecated
+ */
 define('MAILTEMPLATE_KUNDENWERBENKUNDEN', 'core_jtl_kundenwerbenkunden');
+/**
+ * @deprecated
+ */
 define('MAILTEMPLATE_KUNDENWERBENKUNDENBONI', 'core_jtl_kundenwerbenkundenboni');
 define('MAILTEMPLATE_STATUSEMAIL', 'core_jtl_statusemail');
 define('MAILTEMPLATE_CHECKBOX_SHOPBETREIBER', 'core_jtl_checkbox_shopbetreiber');

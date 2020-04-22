@@ -98,6 +98,18 @@ msgstr "Rahmenfarbe"
 msgid "Border radius"
 msgstr "Rahmenabrundung"
 
+msgid "Hidden on XS"
+msgstr "Verstecken bei XS"
+
+msgid "Hidden on SM"
+msgstr "Verstecken bei SM"
+
+msgid "Hidden on MD"
+msgstr "Verstecken bei MD"
+
+msgid "Hidden on LG"
+msgstr "Verstecken bei LG"
+
 # Animations tab
 
 msgid "Animation style"

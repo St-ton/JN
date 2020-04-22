@@ -3,8 +3,7 @@
     {if $slides|count > 0}
         {$imgAttribs = $instance->getImageAttributes($slides[0].url, '', '')}
     {/if}
-    <div {$instance->getDataAttributeString()}
-         class="text-center opc-ImageSlider {if $slides|count > 0}opc-ImageSlider-with-image{/if}"
+    <div class="text-center opc-ImageSlider {if $slides|count > 0}opc-ImageSlider-with-image{/if}"
          style="{if $slides|count > 0}background-image: url('{$imgAttribs.src}');{/if} {$instance->getStyleString()}">
         <div>
             {file_get_contents($portlet->getBaseUrl()|cat:'icon.svg')}
@@ -14,7 +13,7 @@
 {else}
     {$uid = $instance->getUid()}
 
-    <div style="{$instance->getStyleString()}">
+    <div style="{$instance->getStyleString()}" class="{$instance->getStyleClasses()}">
         {if $instance->getProperty('slides')|count > 0}
             <div class="theme-{$instance->getProperty('slider-theme')}">
                 <div id="{$uid}" class="nivoSlider">

@@ -1,10 +1,9 @@
 {$uid = $instance->getUid()}
 
 <div id="{$uid}"
-     class="opc-Countdown {$instance->getAnimationClass()}"
+     class="opc-Countdown {$instance->getAnimationClass()} {$instance->getStyleClasses()}"
      style="{$instance->getStyleString()}"
      {$instance->getAnimationDataAttributeString()}
-     {if $isPreview}{$instance->getDataAttributeString()}{/if}
 >
     <div class="opc-area" {if $isPreview}data-area-id="cntdwn-title"{/if}>
         {if $isPreview}

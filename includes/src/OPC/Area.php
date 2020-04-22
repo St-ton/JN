@@ -100,11 +100,8 @@ class Area implements \JsonSerializable
         $list = [];
 
         foreach ($this->content as $portletInstance) {
-            $cssFile = $portletInstance->getPortlet()->getCssFile($preview);
-
-            if (!empty($cssFile)) {
-                $list[$cssFile] = true;
-            }
+            $cssFiles = $portletInstance->getPortlet()->getCssFiles($preview);
+            $list     = $list + $cssFiles;
 
             foreach ($portletInstance->getSubareaList()->getAreas() as $area) {
                 $list = $list + $area->getCssList($preview);

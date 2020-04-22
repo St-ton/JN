@@ -4,6 +4,7 @@ namespace JTL\License\Struct;
 
 use DateTime;
 use JTL\Shop;
+use JTLShop\SemVer\Version;
 use stdClass;
 
 /**
@@ -53,7 +54,7 @@ class ExsLicense
     private $license;
 
     /**
-     * @var stdClass
+     * @var Releases
      */
     private $releases;
 
@@ -68,9 +69,9 @@ class ExsLicense
     private $queryDate;
 
     /**
-     * @var bool
+     * @var Version|null
      */
-    private $isInstalled = false;
+    private $installedVersion;
 
     /**
      * @var int
@@ -83,7 +84,6 @@ class ExsLicense
      */
     public function __construct(?stdClass $json)
     {
-        $this->releases = new stdClass();
         if ($json !== null) {
             $this->fromJSON($json);
         }
@@ -102,9 +102,7 @@ class ExsLicense
             $this->setLicense(new License($json->license));
         }
         $this->setVendor(new Vendor($json->vendor));
-        $this->releases            = new stdClass();
-        $this->releases->available = new Release($json->releases->available ?? null);
-        $this->releases->latest    = new Release($json->releases->latest ?? null);
+        $this->releases = new Releases($json->releases);
         foreach ($json->links as $link) {
             $this->links[] = new Link($link);
         }
@@ -207,17 +205,17 @@ class ExsLicense
     }
 
     /**
-     * @return stdClass
+     * @return Releases
      */
-    public function getReleases(): stdClass
+    public function getReleases(): Releases
     {
         return $this->releases;
     }
 
     /**
-     * @param stdClass $releases
+     * @param Releases $releases
      */
-    public function setReleases(stdClass $releases): void
+    public function setReleases(Releases $releases): void
     {
         $this->releases = $releases;
     }
@@ -271,18 +269,18 @@ class ExsLicense
     }
 
     /**
-     * @return bool
+     * @return Version|null
      */
-    public function isInstalled(): bool
+    public function getInstalledVersion(): ?Version
     {
-        return $this->isInstalled;
+        return $this->installedVersion;
     }
 
     /**
-     * @param bool $isInstalled
+     * @param Version|null $installedVersion
      */
-    public function setIsInstalled(bool $isInstalled): void
+    public function setInstalledVersion(?Version $installedVersion): void
     {
-        $this->isInstalled = $isInstalled;
+        $this->installedVersion = $installedVersion;
     }
 }

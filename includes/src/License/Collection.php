@@ -29,4 +29,15 @@ class Collection extends \Illuminate\Support\Collection
             return $e->getState() === ExsLicense::STATE_UNBOUND;
         });
     }
+
+    /**
+     * @param string $pluginID
+     * @return ExsLicense|null
+     */
+    public function getForPluginID(string $pluginID): ?ExsLicense
+    {
+        return $this->filter(static function (ExsLicense $e) use ($pluginID) {
+            return $e->getID() === $pluginID;
+        })->first();
+    }
 }

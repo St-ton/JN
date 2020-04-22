@@ -6,6 +6,7 @@ use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\License\Struct\ExsLicense;
 use JTL\Shop;
+use JTLShop\SemVer\Version;
 
 /**
  * Class Mapper
@@ -53,7 +54,9 @@ class Mapper
             $esxLicense->setState(ExsLicense::STATE_ACTIVE);
             if ($esxLicense->getType() === ExsLicense::TYPE_PLUGIN) {
                 $installed = $this->db->select('tplugin', 'cPluginID', $esxLicense->getID());
-                $esxLicense->setIsInstalled($installed !== null);
+                if ($installed !== null) {
+                    $esxLicense->setInstalledVersion(Version::parse($installed->nVersion));
+                }
             }
             $collection->push($esxLicense);
         }

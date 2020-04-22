@@ -19,7 +19,16 @@
 					<tr>
 						<td>{$license->getID()}</td>
 						<td>{$license->getName()}</td>
-						<td><i class="far {if $license->isInstalled()}fa-check-circle{else}fa-circle{/if}"></i></td>
+						<td>
+							{$installedVersion = $license->getInstalledVersion()}
+							{if $installedVersion === null}
+								<i class="far fa-circle"></i>
+							{else}
+								<i class="far fa-check-circle"></i> ({$installedVersion})
+								<pre>{$license->getReleases()|var_dump}</pre>
+                            {/if}
+
+						</td>
 						<td>
 							{$licData = $license->getLicense()}
 	                        {__($licData->getType())}

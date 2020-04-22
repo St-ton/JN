@@ -658,4 +658,12 @@ class AdminAccount
 
         return false;
     }
+
+    /**
+     * @return GetText
+     */
+    public function getGetText(): GetText
+    {
+        return $this->getText;
+    }
 }

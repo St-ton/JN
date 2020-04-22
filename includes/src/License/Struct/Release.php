@@ -3,6 +3,7 @@
 namespace JTL\License\Struct;
 
 use DateTime;
+use JTLShop\SemVer\Version;
 use stdClass;
 
 /**
@@ -18,7 +19,7 @@ class Release
     public const TYPE_BUGFIX = 'bugfix';
 
     /**
-     * @var string
+     * @var Version
      */
     private $version;
 
@@ -58,7 +59,7 @@ class Release
      */
     public function fromJSON(stdClass $json): void
     {
-        $this->setVersion($json->version);
+        $this->setVersion(Version::parse($json->version));
         $this->setType($json->type);
         $this->setReleaseDate($json->releaseDate);
         $this->setShortDescription($json->shortDescription);
@@ -66,17 +67,17 @@ class Release
     }
 
     /**
-     * @return string
+     * @return Version
      */
-    public function getVersion(): string
+    public function getVersion(): Version
     {
         return $this->version;
     }
 
     /**
-     * @param string $version
+     * @param Version $version
      */
-    public function setVersion(string $version): void
+    public function setVersion(Version $version): void
     {
         $this->version = $version;
     }

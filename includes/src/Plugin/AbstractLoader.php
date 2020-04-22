@@ -372,6 +372,7 @@ abstract class AbstractLoader implements LoaderInterface
         if ($license !== null) {
             ++$lastIdx;
             $menu                   = new stdClass();
+            $menu->data             = $license;
             $menu->kPluginAdminMenu = -1;
             $menu->id               = 'plugin-license-' . $lastIdx;
             $menu->kPlugin          = $plugin->getID();

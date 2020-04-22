@@ -73,7 +73,7 @@
                                 fileID='oFile'
                                 fileShowRemove=true
                                 fileInitialPreview="[
-                                        {if!empty($banner->cBildPfad)}
+                                        {if !empty($banner->cBildPfad)}
                                         '<img src=\"{$banner->cBildPfad}\" class=\"mb-3\" />'
                                         {/if}
                                     ]"

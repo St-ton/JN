@@ -202,14 +202,6 @@ msgid "name_core_jtl_newsletteranmelden"
 msgstr "Activation email after newsletter subscription"
 
 # email name (temailvorlage)
-msgid "name_core_jtl_kundenwerbenkunden"
-msgstr "Customer referral programme"
-
-# email name (temailvorlage)
-msgid "name_core_jtl_kundenwerbenkundenboni"
-msgstr "Customer referral programme – reward"
-
-# email name (temailvorlage)
 msgid "name_core_jtl_artikelweiterempfehlen"
 msgstr "Recommend item"
 

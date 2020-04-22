@@ -296,6 +296,9 @@ msgstr "Invalid user name or password"
 msgid "errorTwoFactorExpired"
 msgstr "Code for two-factor authentication expired"
 
+msgid "errorTwoFactorFaultyExpired"
+msgstr "Code for two-factor authentication faulty or expired"
+
 msgid "errorNoPermission"
 msgstr "No permissions available"
 

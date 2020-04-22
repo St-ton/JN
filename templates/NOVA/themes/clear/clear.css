@@ -20450,6 +20450,10 @@ aside .last-seen-link {
   padding: 0.5rem 1.5rem;
 }
 
+.dropdown-full-width .dropdown-menu {
+  width: 100%;
+}
+
 .square, .productbox-image-wrapper {
   display: flex;
   position: relative;

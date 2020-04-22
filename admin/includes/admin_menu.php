@@ -30,11 +30,6 @@ $adminMenu = [
                     'link'        => 'gratisgeschenk.php',
                     'permissions' => 'MODULE_GIFT_VIEW',
                 ],
-                __('Recommendations') => (object)[
-                    'link'        => 'kundenwerbenkunden.php',
-                    'permissions' => 'MODULE_CAC_VIEW',
-                    'section'     => CONF_KUNDENWERBENKUNDEN,
-                ],
             ],
             __('Statistics') => [
                 __('Sales')             => (object)[

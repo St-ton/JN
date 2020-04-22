@@ -68,9 +68,6 @@ msgstr "Delete online shop customers"
 msgid "customersOrdersCoupons"
 msgstr "Customers, orders and coupons"
 
-msgid "deleteCustomersRecruitCustomers"
-msgstr "Delete data regarding customer referral programme"
-
 msgid "deleteCoupons"
 msgstr "Delete coupons"
 

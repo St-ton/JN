@@ -16,7 +16,6 @@ use JTL\Shop;
  *
  * `temailhistory`
  * `tkontakthistory`
- * `tkundenwerbenkunden`
  * `tzahlungslog`
  * `tproduktanfragehistory`
  * `tverfuegbarkeitsbenachrichtigung`
@@ -33,7 +32,6 @@ class CleanupLogs extends Method implements MethodInterface
     {
         $this->cleanupEmailHistory();
         $this->cleanupContactHistory();
-        $this->cleanupCustomerRecruitings();
         $this->cleanupPaymentLogEntries();
         $this->cleanupProductInquiries();
         $this->cleanupAvailabilityInquiries();
@@ -72,25 +70,6 @@ class CleanupLogs extends Method implements MethodInterface
                 WHERE dErstellt <= :pDateLimit
                 ORDER BY dErstellt ASC
                 LIMIT :pLimit',
-            [
-                'pDateLimit' => $this->dateLimit,
-                'pLimit'     => $this->workLimit
-            ],
-            ReturnType::DEFAULT
-        );
-    }
-
-    /**
-     * delete customer recruitings
-     * older than the given interval
-     */
-    private function cleanupCustomerRecruitings(): void
-    {
-        Shop::Container()->getDB()->queryPrepared(
-            'DELETE FROM tkundenwerbenkunden
-            WHERE dErstellt <= :pDateLimit
-            ORDER BY dErstellt ASC
-            LIMIT :pLimit',
             [
                 'pDateLimit' => $this->dateLimit,
                 'pLimit'     => $this->workLimit

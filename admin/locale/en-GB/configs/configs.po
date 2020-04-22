@@ -500,12 +500,6 @@ msgstr "Priority of sorting options: SKU"
 msgid "suche_sortierprio_artikelnummer_desc"
 msgstr "The smaller the number, the higher up the sorting option will be displayed. Enter 0 if you do not want this option to be displayed."
 
-msgid "suche_sortierprio_lagerbestand_name"
-msgstr "Priority of sorting options: availability"
-
-msgid "suche_sortierprio_lagerbestand_desc"
-msgstr "The smaller the number, the higher up the sorting option will be displayed. Enter 0 if you do not want this option to be displayed."
-
 msgid "suche_sortierprio_gewicht_name"
 msgstr "Priority of sorting options: weight"
 
@@ -2743,30 +2737,6 @@ msgstr "Submit sitemap to Google and Bing after export"
 
 msgid "sitemap_google_ping_desc"
 msgstr "Specify whether a notification is sent to Google and Bing after the files sitemap.xml and sitemap_index.xml have been exported so that they can recrawl the sitemap."
-
-msgid "kwk_nutzen_name"
-msgstr "Activate customer referral programme"
-
-msgid "kwk_nutzen_desc"
-msgstr "Enables you to activate a bonus system for existing customers who invite new customers to register for your JTL-Shop."
-
-msgid "kwk_neukundenguthaben_name"
-msgstr "Initial credit for referred new customers"
-
-msgid "kwk_neukundenguthaben_desc"
-msgstr "Enter the amount of credit that a referred new customer receives after registration."
-
-msgid "kwk_bestandskundenguthaben_name"
-msgstr "Bonus credit for existing referring customers"
-
-msgid "kwk_bestandskundenguthaben_desc"
-msgstr "Enter the amount of credit that an existing customer receives when a new customer they invited to your online shop buys their first item."
-
-msgid "kwk_kundengruppen_name"
-msgstr "Customer group assignment"
-
-msgid "kwk_kundengruppen_desc"
-msgstr "Specify into which customer group new customers are sorted who have been newly referred."
 
 msgid "suchspecials_sortierung_bestseller_name"
 msgstr "Sorting of bestsellers"

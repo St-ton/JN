@@ -296,6 +296,9 @@ msgstr "Benutzername oder Passwort falsch"
 msgid "errorTwoFactorExpired"
 msgstr "2-Faktor-Authentifizierungs-Code abgelaufen"
 
+msgid "errorTwoFactorFaultyExpired"
+msgstr "2-Faktor-Authentifizierungs-Code falsch oder abgelaufen"
+
 msgid "errorNoPermission"
 msgstr "Keine Berechtigungen vorhanden"
 

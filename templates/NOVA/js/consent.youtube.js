@@ -16,4 +16,15 @@ function embedYoutube(detail) {
 			notices[j].classList.add('invisible');
 		}
 	}
+	if (detail !== null && typeof detail.vimeo !== 'undefined' && detail.vimeo === true) {
+		let embeds = document.querySelectorAll('iframe.needs-consent.vimeo');
+		for (let i = 0; i < embeds.length; ++i) {
+			embeds[i].src = embeds[i].dataset.src;
+			embeds[i].className = 'vimeo';
+		}
+		let notices = document.querySelectorAll('a[data-consent="vimeo"]');
+		for (let j = 0; j < notices.length; ++j) {
+			notices[j].classList.add('invisible');
+		}
+	}
 }

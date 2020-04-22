@@ -91,22 +91,22 @@ trait PortletStyles
             ],
             'hidden-xs'        => [
                 'type'       => InputType::CHECKBOX,
-                'label'      => 'Hidden on XS',
+                'label'      => __('Hidden on XS'),
                 'width'      => 25,
             ],
             'hidden-sm'        => [
                 'type'       => InputType::CHECKBOX,
-                'label'      => 'Hidden on SM',
+                'label'      => __('Hidden on SM'),
                 'width'      => 25,
             ],
             'hidden-md'        => [
                 'type'       => InputType::CHECKBOX,
-                'label'      => 'Hidden on MD',
+                'label'      => __('Hidden on MD'),
                 'width'      => 25,
             ],
             'hidden-lg'        => [
                 'type'       => InputType::CHECKBOX,
-                'label'      => 'Hidden on LG',
+                'label'      => __('Hidden on LG'),
                 'width'      => 25,
             ],
         ];

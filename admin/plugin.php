@@ -152,7 +152,7 @@ if ($step === 'plugin_uebersicht' && $pluginID > 0) {
             } elseif ($menu->configurable === true) {
                 $hidden = true;
                 foreach ($plugin->getConfig()->getOptions() as $confItem) {
-                    if ($confItem->inputType !== InputType::NONE) {
+                    if ($confItem->inputType !== InputType::NONE && $confItem->confType === 'Y') {
                         $hidden = false;
                         break;
                     }

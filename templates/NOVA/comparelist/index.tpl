@@ -145,11 +145,13 @@
                             {foreach $prioRows as $row}
                                 {if $row['key'] !== 'Merkmale' && $row['key'] !== 'Variationen'}
                                     <tr class="comparelist-row" data-id="row-{$row['key']}">
-                                    <td>
-                                        {block name='comparelist-index-products-row-name'}
-                                            <b>{$row['name']}</b>
-                                        {/block}
-                                    </td>
+                                    {block name='comparelist-index-products-row-name'}
+                                        <td>
+                                            <div class="text-truncate">
+                                                {$row['name']}
+                                            </div>
+                                        </td>
+                                    {/block}
                                     {block name='comparelist-index-products'}
                                         {foreach $oVergleichsliste->oArtikel_arr as $oArtikel}
                                             {if $row['key'] === 'verfuegbarkeit'}
@@ -216,7 +218,9 @@
                                         {foreach $oMerkmale_arr as $oMerkmale}
                                             <tr class="comparelist-row" data-id="row-attr-{$oMerkmale->cName}">
                                                 <td>
-                                                    <b>{$oMerkmale->cName}</b>
+                                                    <div class="text-truncate">
+                                                        {$oMerkmale->cName}
+                                                    </div>
                                                 </td>
                                                 {foreach $oVergleichsliste->oArtikel_arr as $oArtikel}
                                                     <td style="min-width: {$Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_spaltengroesse}px">
@@ -241,11 +245,13 @@
                                     {block name='comparelist-index-variations'}
                                         {foreach $oVariationen_arr as $oVariationen}
                                             <tr class="comparelist-row" data-id="row-vari-{$oVariationen->cName}">
-                                                <td>
-                                                    {block name='comparelist-index-variation-name'}
-                                                        <b>{$oVariationen->cName}</b>
-                                                    {/block}
-                                                </td>
+                                                {block name='comparelist-index-variation-name'}
+                                                    <td>
+                                                        <div class="text-truncate">
+                                                            {$oVariationen->cName}
+                                                        </div>
+                                                    </td>
+                                                {/block}
                                                 {foreach $oVergleichsliste->oArtikel_arr as $oArtikel}
                                                     <td>
                                                         {if isset($oArtikel->oVariationenNurKind_arr) && $oArtikel->oVariationenNurKind_arr|@count > 0}

@@ -18441,6 +18441,27 @@ Supports Thumbs: false
     padding-left: 2rem;
   }
 }
+@media (min-width: 576px) {
+  .container {
+    max-width: 97vw;
+  }
+}
+@media (min-width: 768px) {
+  .container {
+    max-width: 720px;
+  }
+}
+@media (min-width: 992px) {
+  .container {
+    max-width: 960px;
+  }
+}
+@media (min-width: 1300px) {
+  .container {
+    max-width: 1250px;
+  }
+}
+
 .badge {
   border: 1px solid transparent;
   text-decoration: none;
@@ -19423,6 +19444,9 @@ aside .last-seen-link {
     padding-right: 50px;
   }
 }
+.carousel:not(.slick-initialized).slick-lazy > div {
+  margin: 0 auto;
+}
 @media (max-width: 767.98px) {
   .carousel:not(.slick-initialized).slick-type-product .product-wrapper {
     width: calc(100%/2);
@@ -19838,6 +19862,10 @@ aside .last-seen-link {
 
 .dropdown-header {
   padding: 0.5rem 1.5rem;
+}
+
+.dropdown-full-width .dropdown-menu {
+  width: 100%;
 }
 
 .square, .productbox-image-wrapper {
@@ -21741,9 +21769,6 @@ input.form-control[name=wishlist-url] {
   height: calc(1.5em + 1.25rem + 2px);
 }
 
-.comparelist {
-  max-height: 800px;
-}
 .comparelist .table thead th:first-child, .comparelist td:first-child {
   position: sticky;
   left: 0;
@@ -21767,11 +21792,27 @@ input.form-control[name=wishlist-url] {
 .comparelist .table tbody td:first-child {
   background-color: #f5f7fa;
 }
+@media (max-width: 991.98px) {
+  .comparelist .table td {
+    padding: 0.3rem;
+  }
+  .comparelist .table td:first-child > div {
+    width: 110px;
+  }
+  .comparelist .table th {
+    padding: 0;
+  }
+}
 .comparelist .stretched {
   display: flex;
   flex-direction: column;
   height: 100%;
   justify-content: space-between;
+}
+@media (max-width: 991.98px) {
+  .comparelist .stretched {
+    justify-content: initial;
+  }
 }
 
 .custom-checkbox + .description {
@@ -21965,6 +22006,16 @@ body {
 
 .loading {
   min-height: 140px;
+}
+
+.lazyload,
+.lazyloading {
+  opacity: 0;
+}
+
+.lazyloaded {
+  opacity: 1;
+  transition: opacity 300ms;
 }
 
 /* utilities */
@@ -23059,18 +23110,21 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   height: auto;
   background: #343434;
   border: 3px solid #f5f7fa;
-  opacity: 1;
+  opacity: 0;
   border-radius: 0.125rem;
   -webkit-box-shadow: 0 0.5rem 1rem rgba(255, 255, 255, 0.15);
   box-shadow: 0 0.5rem 1rem rgba(255, 255, 255, 0.15);
-}
-#image_wrapper .variation-image-preview:not(.show) {
   z-index: -5;
-  opacity: 0;
+}
+@media (min-width: 992px) {
+  #image_wrapper .variation-image-preview.show {
+    z-index: 1070;
+    opacity: 1;
+  }
 }
 #image_wrapper .variation-image-preview::before, #image_wrapper .variation-image-preview::after {
   left: 100%;
-  top: 62%;
+  top: 50%;
   content: " ";
   height: 0px;
   width: 0px;
@@ -23112,9 +23166,23 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 #image_wrapper #gallery_preview:not(.slick-initialized) .slick-prev {
   margin-right: -0.5rem;
+  animation: 0.5s fadeIn;
+  animation-fill-mode: forwards;
+  visibility: hidden;
 }
 #image_wrapper #gallery_preview:not(.slick-initialized) .slick-next {
   margin-left: -0.5rem;
+  animation: 0.5s fadeIn;
+  animation-fill-mode: forwards;
+  visibility: hidden;
+}
+@keyframes fadeIn {
+  99% {
+    visibility: hidden;
+  }
+  100% {
+    visibility: visible;
+  }
 }
 
 .cfg-item-description {

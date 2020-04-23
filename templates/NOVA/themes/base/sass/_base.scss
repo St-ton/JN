@@ -678,7 +678,6 @@ input.form-control[name="wishlist-url"] {
 }
 
 .comparelist {
-  max-height: 800px;
   .table thead th, td {
     &:first-child {
       position: sticky;
@@ -703,6 +702,17 @@ input.form-control[name="wishlist-url"] {
     tbody td:first-child {
       background-color: #f5f7fa;
     }
+    @include media-breakpoint-down(md) {
+      td {
+        padding: 0.3rem;
+        &:first-child > div {
+          width: 110px;
+        }
+      }
+      th {
+        padding: 0;
+      }
+    }
   }
 
   .stretched {
@@ -710,6 +720,9 @@ input.form-control[name="wishlist-url"] {
     flex-direction: column;
     height: 100%;
     justify-content: space-between;
+    @include media-breakpoint-down(md) {
+      justify-content: initial;
+    }
   }
 }
 

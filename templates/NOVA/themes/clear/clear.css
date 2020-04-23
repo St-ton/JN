@@ -18442,6 +18442,27 @@ Supports Thumbs: false
     padding-left: 2rem;
   }
 }
+@media (min-width: 576px) {
+  .container {
+    max-width: 97vw;
+  }
+}
+@media (min-width: 768px) {
+  .container {
+    max-width: 720px;
+  }
+}
+@media (min-width: 992px) {
+  .container {
+    max-width: 960px;
+  }
+}
+@media (min-width: 1300px) {
+  .container {
+    max-width: 1250px;
+  }
+}
+
 .badge {
   border: 1px solid transparent;
   text-decoration: none;
@@ -21749,9 +21770,6 @@ input.form-control[name=wishlist-url] {
   height: calc(1.5em + 1.25rem + 2px);
 }
 
-.comparelist {
-  max-height: 800px;
-}
 .comparelist .table thead th:first-child, .comparelist td:first-child {
   position: sticky;
   left: 0;
@@ -21775,11 +21793,27 @@ input.form-control[name=wishlist-url] {
 .comparelist .table tbody td:first-child {
   background-color: #f5f7fa;
 }
+@media (max-width: 991.98px) {
+  .comparelist .table td {
+    padding: 0.3rem;
+  }
+  .comparelist .table td:first-child > div {
+    width: 110px;
+  }
+  .comparelist .table th {
+    padding: 0;
+  }
+}
 .comparelist .stretched {
   display: flex;
   flex-direction: column;
   height: 100%;
   justify-content: space-between;
+}
+@media (max-width: 991.98px) {
+  .comparelist .stretched {
+    justify-content: initial;
+  }
 }
 
 .custom-checkbox + .description {

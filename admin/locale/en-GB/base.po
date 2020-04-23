@@ -305,6 +305,9 @@ msgstr "No permissions available"
 msgid "errorCSRF"
 msgstr "Cross-site request forgery! Are cookies enabled?"
 
+msgid "errorWrongCookieSettings"
+msgstr "Please check your cookie settings."
+
 msgid "errorSessionExpired"
 msgstr "Your session has been reset. Please log in again."
 

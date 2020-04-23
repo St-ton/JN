@@ -306,7 +306,7 @@ msgid "errorCSRF"
 msgstr "Cross-site request forgery! Are cookies enabled?"
 
 msgid "errorWrongCookieSettings"
-msgstr "Please check your cookie settings."
+msgstr "Please check your cookie settings. You can  find more information in the <a href=\"https://guide.jtl-software.de/jtl-shop/systemverwaltung/globale-einstellungen/#bereich-h-cookie-einstellungen\" target=\"_blank\"><i class=\"fa fa-external-link\"></i> JTL-Guide</a>"
 
 msgid "errorSessionExpired"
 msgstr "Your session has been reset. Please log in again."

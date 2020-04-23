@@ -69,14 +69,14 @@ class ExsLicense
     private $queryDate;
 
     /**
-     * @var Version|null
-     */
-    private $installedVersion;
-
-    /**
      * @var int
      */
     private $state = self::STATE_UNBOUND;
+
+    /**
+     * @var ReferencedItemInterface|null
+     */
+    private $referencedItem;
 
     /**
      * ExsLicenseData constructor.
@@ -269,18 +269,18 @@ class ExsLicense
     }
 
     /**
-     * @return Version|null
+     * @return ReferencedItemInterface|null
      */
-    public function getInstalledVersion(): ?Version
+    public function getReferencedItem(): ?ReferencedItemInterface
     {
-        return $this->installedVersion;
+        return $this->referencedItem;
     }
 
     /**
-     * @param Version|null $installedVersion
+     * @param ReferencedItemInterface|null $referencedItem
      */
-    public function setInstalledVersion(?Version $installedVersion): void
+    public function setReferencedItem(?ReferencedItemInterface $referencedItem): void
     {
-        $this->installedVersion = $installedVersion;
+        $this->referencedItem = $referencedItem;
     }
 }

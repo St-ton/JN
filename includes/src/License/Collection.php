@@ -31,13 +31,13 @@ class Collection extends \Illuminate\Support\Collection
     }
 
     /**
-     * @param string $pluginID
+     * @param string $itemID
      * @return ExsLicense|null
      */
-    public function getForPluginID(string $pluginID): ?ExsLicense
+    public function getForItemID(string $itemID): ?ExsLicense
     {
-        return $this->filter(static function (ExsLicense $e) use ($pluginID) {
-            return $e->getID() === $pluginID;
+        return $this->filter(static function (ExsLicense $e) use ($itemID) {
+            return $e->getID() === $itemID;
         })->first();
     }
 }

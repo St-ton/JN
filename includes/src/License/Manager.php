@@ -8,8 +8,6 @@ use GuzzleHttp\Exception\RequestException;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\License\Struct\ExsLicense;
-use JTL\Shop;
-use JTLShop\SemVer\Version;
 use stdClass;
 
 /**
@@ -86,7 +84,7 @@ class Manager
      */
     private function getLocalTestData(): stdClass
     {
-        $obj             = \json_decode(\file_get_contents(\PFAD_ROOT . 'getLicenses.json'));
+        $obj             = \json_decode(\file_get_contents(\PFAD_ROOT . 'getLicenses.json'), false);
         $dt              = new DateTime();
         $obj->timestamp  = $dt->format('y-m-d H:i:s');
         $obj->returnCode = 200;
@@ -112,7 +110,7 @@ class Manager
         if ($data === false) {
             return null;
         }
-        $obj             = \json_decode($data->data);
+        $obj             = \json_decode($data->data, false);
         $obj->timestamp  = $data->timestamp;
         $obj->returnCode = $data->returnCode;
 
@@ -120,12 +118,12 @@ class Manager
     }
 
     /**
-     * @param string $pluginID
+     * @param string $itemID
      * @return ExsLicense|null
      */
-    public function getLicenseForPluginID(string $pluginID): ?ExsLicense
+    public function getLicenseByItemID(string $itemID): ?ExsLicense
     {
-        return (new Mapper($this->db, $this))->getCollection()->getForPluginID($pluginID);
+        return (new Mapper($this->db, $this))->getCollection()->getForItemID($itemID);
     }
 
     /**

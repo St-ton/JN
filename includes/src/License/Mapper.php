@@ -5,6 +5,8 @@ namespace JTL\License;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\License\Struct\ExsLicense;
+use JTL\License\Struct\ReferencedItem;
+use JTL\License\Struct\ReferencedPlugin;
 use JTL\Shop;
 use JTLShop\SemVer\Version;
 
@@ -53,10 +55,8 @@ class Mapper
             $esxLicense->setQueryDate($data->timestamp);
             $esxLicense->setState(ExsLicense::STATE_ACTIVE);
             if ($esxLicense->getType() === ExsLicense::TYPE_PLUGIN) {
-                $installed = $this->db->select('tplugin', 'cPluginID', $esxLicense->getID());
-                if ($installed !== null) {
-                    $esxLicense->setInstalledVersion(Version::parse($installed->nVersion));
-                }
+                $plugin = new ReferencedPlugin($this->db, $extension->id, $esxLicense->getReleases()->getAvailable());
+                $esxLicense->setReferencedItem($plugin);
             }
             $collection->push($esxLicense);
         }

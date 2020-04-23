@@ -182,7 +182,7 @@
                                                         {block name='comparelist-index-products-row-weight'}
                                                             {$oArtikel->$row['key']} {lang key='weightUnit' section='comparelist'}
                                                         {/block}
-                                                    {elseif $row['key'] === 'cBeschreibung'}
+                                                    {elseif $row['key'] === 'cBeschreibung' || $row['key'] === 'cKurzBeschreibung'}
                                                         {block name='comparelist-index-products-row-description'}
                                                             {if $oArtikel->$row['key']|strlen < $descriptionLength}
                                                                 {$oArtikel->$row['key']}
@@ -201,6 +201,10 @@
                                                                     {/button}
                                                                 {/block}
                                                             {/if}
+                                                        {/block}
+                                                    {else}
+                                                        {block name='comparelist-index-products-row-default'}
+                                                            {$oArtikel->$row['key']}
                                                         {/block}
                                                     {/if}
                                                 </td>

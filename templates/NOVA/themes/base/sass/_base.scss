@@ -677,12 +677,28 @@ input.form-control[name="wishlist-url"] {
   height: $input-height;
 }
 
+#filter-checkboxes {
+  @include media-breakpoint-down(md) {
+    .custom-checkbox label {
+      max-width: 32vw;
+    }
+  }
+}
+
+.delete-link-times {
+  position: absolute;
+  z-index: 1;
+  right: 0.5rem;
+  top: 0.5rem;
+  font-size: $font-size-lg;
+}
+
 .comparelist {
   .table thead th, td {
     &:first-child {
       position: sticky;
       left: 0;
-      background: #fff;
+      background: $white;
       z-index: $zindex-dropdown - 4;
     }
   }
@@ -695,12 +711,13 @@ input.form-control[name="wishlist-url"] {
       &:not(:first-child) {
         z-index: $zindex-dropdown - 2;
       }
-      background: #fff;
+      background: $white;
       vertical-align: top;
       z-index: $zindex-dropdown - 1;
     }
     tbody td:first-child {
-      background-color: #f5f7fa;
+      background-color: $gray-lighter;
+      font-weight: $font-weight-bold;
     }
     @include media-breakpoint-down(md) {
       td {

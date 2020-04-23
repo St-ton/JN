@@ -50,7 +50,7 @@
                                         {if $row['key'] !== 'Merkmale' && $row['key'] !== 'Variationen'}
                                             {col cols=6 md=4 lg=3 xl=2 class="my-2"}
                                                 {checkbox checked=true data=['id' => $row['key']] class='comparelist-checkbox'}
-                                                    {$row['name']}
+                                                    <div class="text-truncate">{$row['name']}</div>
                                                 {/checkbox}
                                             {/col}
                                         {/if}
@@ -58,7 +58,7 @@
                                             {foreach $oMerkmale_arr as $oMerkmale}
                                                 {col cols=6 md=4 lg=3 xl=2 class="my-2"}
                                                     {checkbox checked=true data=['id' => "attr-{$oMerkmale->cName}"] class='comparelist-checkbox'}
-                                                        {$oMerkmale->cName}
+                                                        <div class="text-truncate">{$oMerkmale->cName}</div>
                                                     {/checkbox}
                                                 {/col}
                                             {/foreach}
@@ -67,7 +67,7 @@
                                             {foreach $oVariationen_arr as $oVariationen}
                                                 {col cols=6 md=4 lg=3 xl=2 class="my-2"}
                                                     {checkbox checked=true data=['id' => "vari-{$oVariationen->cName}"] class='comparelist-checkbox'}
-                                                        {$oVariationen->cName}
+                                                        <div class="text-truncate">{$oVariationen->cName}</div>
                                                     {/checkbox}
                                                 {/col}
                                             {/foreach}
@@ -92,7 +92,7 @@
                                             <div class="stretched">
                                                 <div>
                                                     {block name='comparelist-index-products-header-delete'}
-                                                        <div class="text-right">
+                                                        <div class="delete-link-times">
                                                             {link href=$oArtikel->cURLDEL
                                                                 class="text-decoration-none"
                                                                 title="{lang key='removeFromCompareList' section='comparelist'}"

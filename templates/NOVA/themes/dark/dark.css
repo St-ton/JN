@@ -21769,17 +21769,31 @@ input.form-control[name=wishlist-url] {
   height: calc(1.5em + 1.25rem + 2px);
 }
 
+@media (max-width: 991.98px) {
+  #filter-checkboxes .custom-checkbox label {
+    max-width: 32vw;
+  }
+}
+
+.delete-link-times {
+  position: absolute;
+  z-index: 1;
+  right: 0.5rem;
+  top: 0.5rem;
+  font-size: 1rem;
+}
+
 .comparelist .table thead th:first-child, .comparelist td:first-child {
   position: sticky;
   left: 0;
-  background: #fff;
+  background: #343434;
   z-index: 996;
 }
 .comparelist .table {
   width: 98%;
 }
 .comparelist .table thead th {
-  background: #fff;
+  background: #343434;
   vertical-align: top;
   z-index: 999;
 }
@@ -21790,7 +21804,8 @@ input.form-control[name=wishlist-url] {
   z-index: 998;
 }
 .comparelist .table tbody td:first-child {
-  background-color: #f5f7fa;
+  background-color: #525252;
+  font-weight: 700;
 }
 @media (max-width: 991.98px) {
   .comparelist .table td {

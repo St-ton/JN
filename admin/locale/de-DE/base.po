@@ -305,6 +305,9 @@ msgstr "Keine Berechtigungen vorhanden"
 msgid "errorCSRF"
 msgstr "Cross-Site-Request-Forgery! Sind Cookies aktiviert?"
 
+msgid "errorWrongCookieSettings"
+msgstr "Fehlerhafte Cookie-Einstellungen: Anmeldung nicht möglich. Bitte wenden Sie sich an den Support."
+
 msgid "errorSessionExpired"
 msgstr "Ihre Sitzung wurde zurückgesetzt. Bitte melden Sie sich neu an."
 

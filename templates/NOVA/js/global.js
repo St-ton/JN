@@ -535,6 +535,16 @@ $(document).ready(function () {
     addCopyToClipboardListener();
     initWow();
     setClickableRow();
+
+    $('.toggle-image-js')
+        .on('mouseenter', function () {
+            $(this).find('.first-wrapper').addClass('d-none');
+            $(this).find('.second-wrapper').removeClass('d-none');
+        })
+        .on('mouseleave', function () {
+            $(this).find('.first-wrapper').removeClass('d-none');
+            $(this).find('.second-wrapper').addClass('d-none');
+    });
 });
 
 function setClickableRow ()

@@ -16,14 +16,15 @@
                             {$characteristicValue = $AWA->getSelectedValue($nQuestion)}
                             {$img = $characteristicValue->getImage(\JTL\Media\Image::SIZE_XS)}
                             {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['B', 'BT']:true && $img !== null}
-                                {image webp=true lazy=true
+                                {image webp=true
+                                    lazy=true
                                     src=$img
                                     srcset="{$characteristicValue->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_merkmalwert_mini_breite}w,
                                         {$characteristicValue->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_merkmalwert_klein_breite}w,
                                         {$characteristicValue->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_merkmalwert_normal_breite}w"
                                     alt=$characteristicValue->getValue()|escape:'html'
                                     sizes="auto"
-                                    class="w-100"
+                                    fluid-grow=true
                                 }
                             {/if}
                             {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['T', 'BT', 'S']:true}
@@ -60,14 +61,15 @@
                                     {link class="selection-wizard-answer no-deco" href="#" data=["value"=>$characteristicValue->getID()]}
                                         {$img = $characteristicValue->getImage(\JTL\Media\Image::SIZE_XS)}
                                         {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['B', 'BT']:true && $img !== null}
-                                            {image webp=true lazy=true
+                                            {image webp=true
+                                                lazy=true
                                                 src=$img
                                                 srcset="{$characteristicValue->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_merkmalwert_mini_breite}w,
                                                     {$characteristicValue->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_merkmalwert_klein_breite}w,
                                                     {$characteristicValue->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_merkmalwert_normal_breite}w"
                                                 alt=$characteristicValue->getValue()|escape:'html'
                                                 sizes="auto"
-                                                class="w-100"
+                                                fluid-grow=true
                                             }
                                         {/if}
                                         {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['T', 'BT']:true}
@@ -93,26 +95,32 @@
                         <option value="-1">{lang key='pleaseChoose' section='global'}</option>
                     {/select}
                 {else}
-                    {foreach $oFrage->oWert_arr as $characteristicValue}
-                        {if $characteristicValue->getCount() > 0}
-                            {$img = $characteristicValue->getImage(\JTL\Media\Image::SIZE_XS)}
-                            <span class="selection-wizard-answer">
-                                {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['B', 'BT']:true && $img !== null}
-                                    {image webp=true lazy=true
-                                        src=$img
-                                        srcset="{$characteristicValue->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_merkmalwert_mini_breite}w,
-                                            {$characteristicValue->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_merkmalwert_klein_breite}w,
-                                            {$characteristicValue->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_merkmalwert_normal_breite}w"
-                                        alt=$characteristicValue->getValue()|escape:'html'
-                                        sizes="40px"
-                                    }
+                    {row class="text-center"}
+                        {foreach $oFrage->oWert_arr as $characteristicValue}
+                            {col cols=4 sm=4 md=3 xl=2 class="mb-3"}
+                                {if $characteristicValue->getCount() > 0}
+                                    {$img = $characteristicValue->getImage(\JTL\Media\Image::SIZE_XS)}
+                                    <span class="selection-wizard-answer">
+                                        {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['B', 'BT']:true && $img !== null}
+                                            {image webp=true
+                                                lazy=true
+                                                fluid-grow=true
+                                                src=$img
+                                                srcset="{$characteristicValue->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_merkmalwert_mini_breite}w,
+                                                    {$characteristicValue->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_merkmalwert_klein_breite}w,
+                                                    {$characteristicValue->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_merkmalwert_normal_breite}w"
+                                                alt=$characteristicValue->getValue()|escape:'html'
+                                                sizes="auto"
+                                            }
+                                        {/if}
+                                        {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['T', 'BT']:true}
+                                            {$characteristicValue->getValue()}
+                                        {/if}
+                                    </span>
                                 {/if}
-                                {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['T', 'BT']:true}
-                                    {$characteristicValue->getValue()}
-                                {/if}
-                            </span>
-                        {/if}
-                    {/foreach}
+                            {/col}
+                        {/foreach}
+                    {/row}
                 {/if}
             {/block}
         {/if}

@@ -18,6 +18,7 @@
 	.slick-slide,
 	img {
 		outline: none !important;
+		width: 100%;
 	}
 
 	.slick-slide img {
@@ -53,6 +54,10 @@
 		z-index: 10000;
 		background-color: rgba($gray-darker, .5);
 		overflow: hidden;
+
+		img {
+			width: initial;
+		}
 
 		.product-actions {
 			display: none;

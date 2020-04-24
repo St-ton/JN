@@ -307,6 +307,7 @@ msgstr "Cross-site request forgery! Are cookies enabled?"
 
 msgid "errorCookieSettings"
 msgstr "Faulty cookie settings: login not possible. Please contact the Support team."
+
 msgid "errorSessionExpired"
 msgstr "Your session has been reset. Please log in again."
 

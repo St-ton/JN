@@ -69,11 +69,15 @@
                     <div class="form-group form-row align-items-center file-input">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="oFile">{__('banner')} *:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <div class="custom-file">
-                                <input class="custom-file-input" id="oFile" type="file" name="oFile" />
-                                <label class="custom-file-label" for="oFile">
-                                    <span class="text-truncate">{__('fileSelect')}</span>
-                                </label>
+                            {include file='tpl_inc/fileupload.tpl'
+                                fileID='oFile'
+                                fileShowRemove=true
+                                fileInitialPreview="[
+                                        {if !empty($banner->cBildPfad)}
+                                        '<img src=\"{$banner->cBildPfad}\" class=\"mb-3\" />'
+                                        {/if}
+                                    ]"
+                            }
                             </div>
                         </div>
                     </div>

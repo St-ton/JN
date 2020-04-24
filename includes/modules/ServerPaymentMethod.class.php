@@ -1,3 +1,1 @@
-<?php
-
-class_alias(\JTL\Plugin\Payment\ServerMethod::class, 'ServerPaymentMethod', true);
+<?php  // removed in 5.0.0

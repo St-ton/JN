@@ -3,10 +3,26 @@
 {/block}
 
 {block name='content'}
+    {block name='newsletter-index-heading'}
+        {if !empty($Link->getTitle())}
+            {opcMountPoint id='opc_before_newsletter_heading'}
+            <div>
+                <h1>{$Link->getTitle()}</h1>
+            </div>
+        {/if}
+    {/block}
     {include file='snippets/extension.tpl'}
     {if !isset($cPost_arr)}
         {assign var=cPost_arr value=array()}
     {/if}
+    {block name='newsletter-index-link-content'}
+        {if !empty($Link->getContent())}
+            {opcMountPoint id='opc_before_newsletter_content'}
+            <div class="bottom15">
+                {$Link->getContent()}
+            </div>
+        {/if}
+    {/block}
     {if $cOption === 'eintragen'}
         {if empty($bBereitsAbonnent)}
             {block name='newsletter-subscribe'}

@@ -39,6 +39,7 @@
                                                         {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
                                                     sizes="auto"
                                                     class="{if !$isMobile && !empty($Artikel->Bilder[1])}first{/if}"
+                                                    fluid-grow=true
                                                 }
                                                 {if !$isMobile && !empty($Artikel->Bilder[1])}
                                                     {$image = $Artikel->Bilder[1]}
@@ -305,7 +306,7 @@
                                         {else}
                                             {col cols=12}
                                                 {block name='productlist-item-list-basket-details-quantity'}
-                                                    {inputgroup class="form-counter"}
+                                                    {inputgroup class="form-counter" data=["bulk" => {!empty($Artikel->staffelPreis_arr)}]}
                                                         {inputgroupprepend}
                                                             {button variant=""
                                                                 data=["count-down"=>""]

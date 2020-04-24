@@ -121,7 +121,7 @@ Zur Kontrolle hier noch einmal Ihre Kundendaten:<br>
 				<tr>
 					<td>
 						<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-							<strong>Email:</strong>
+							<strong>E-Mail:</strong>
 						</font>
 					</td>
 				</tr>
@@ -170,7 +170,7 @@ Zur Kontrolle hier noch einmal Ihre Kundendaten:<br>
 				<tr>
 					<td>
 						<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-							<strong>UstID:</strong>
+							<strong>Ust-ID:</strong>
 						</font>
 					</td>
 				</tr>
@@ -195,7 +195,7 @@ Kundenkonto anmelden und den aktuellen Status Ihrer Bestellungen
 verfolgen.<br>
 <br>
 Wir freuen uns sehr, Sie als neuen Kunden bei uns begrüßen zu dürfen.
-Wenn sie Fragen zu unserem Angebot oder speziellen Produkten haben,
+Wenn Sie Fragen zu unserem Angebot oder speziellen Produkten haben,
 nehmen Sie einfach Kontakt mit uns auf.<br>
 <br>
 Wir wünschen Ihnen viel Spaß beim Stöbern in unserem Sortiment.<br>

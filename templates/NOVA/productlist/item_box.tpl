@@ -34,6 +34,7 @@
                                                 sizes="auto"
                                                 data=["id"  => $imgcounter]
                                                 class="{if !$isMobile && !empty($Artikel->Bilder[1])} first{/if}"
+                                                fluid-grow=true
                                             }
                                             {if !$isMobile && !empty($Artikel->Bilder[1])}
                                                 {$image = $Artikel->Bilder[1]}

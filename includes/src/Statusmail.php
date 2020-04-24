@@ -450,44 +450,6 @@ class Statusmail
     /**
      * @return int
      */
-    private function getNewCustomerPromotionsCount(): int
-    {
-        return (int)$this->db->queryPrepared(
-            'SELECT COUNT(*) AS cnt
-                FROM tkundenwerbenkunden
-                WHERE dErstellt >= :from
-                    AND dErstellt < :to',
-            [
-                'from' => $this->dateStart,
-                'to'   => $this->dateEnd
-            ],
-            ReturnType::SINGLE_OBJECT
-        )->cnt;
-    }
-
-    /**
-     * @return int
-     */
-    private function getSuccessfulNewCustomerPromotionsCount(): int
-    {
-        return (int)$this->db->queryPrepared(
-            'SELECT COUNT(*) AS cnt
-                FROM tkundenwerbenkunden
-                WHERE dErstellt >= :from
-                    AND dErstellt < :to
-                    AND nRegistriert = 1
-                    AND nGuthabenVergeben = 1',
-            [
-                'from' => $this->dateStart,
-                'to'   => $this->dateEnd
-            ],
-            ReturnType::SINGLE_OBJECT
-        )->cnt;
-    }
-
-    /**
-     * @return int
-     */
     private function getSentWishlistCount(): int
     {
         return (int)$this->db->queryPrepared(
@@ -735,12 +697,6 @@ class Statusmail
                     break;
                 case 10:
                     $mail->oAnzahlGezahltesGuthaben = $this->getRatingCreditsCount();
-                    break;
-                case 13:
-                    $mail->nAnzahlGeworbenerKunden = $this->getNewCustomerPromotionsCount();
-                    break;
-                case 14:
-                    $mail->nAnzahlErfolgreichGeworbenerKunden = $this->getSuccessfulNewCustomerPromotionsCount();
                     break;
                 case 15:
                     $mail->nAnzahlVersendeterWunschlisten = $this->getSentWishlistCount();

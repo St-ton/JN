@@ -212,10 +212,6 @@ class AccountController
                 'wls'
             );
         }
-        if ($this->config['kundenwerbenkunden']['kwk_nutzen'] === 'Y' && Request::verifyGPCDataInt('KwK') === 1) {
-            $step = 'kunden_werben_kunden';
-            $this->checkPromotion($_POST);
-        }
         if ($valid && Request::postInt('wlh') > 0) {
             $step = 'mein Konto';
             $name = Text::htmlentities(Text::filterXSS($_POST['cWunschlisteName']));
@@ -784,7 +780,8 @@ class AccountController
                 $tmp->Wert               = 1;
                 $redir->oParameter_arr[] = $tmp;
                 $redir->nRedirect        = \R_LOGIN_BEWERTUNG;
-                $redir->cURL             = 'bewertung.php?a=' . Request::verifyGPCDataInt('a') . '&bfa=1';
+                $redir->cURL             = 'bewertung.php?a=' . Request::verifyGPCDataInt('a') . '&bfa=1&token=' .
+                    $_SESSION['jtl_token'];
                 $redir->cName            = Shop::Lang()->get('review', 'redirect');
                 break;
             case \R_LOGIN_TAG:
@@ -852,49 +849,6 @@ class AccountController
 
         \header('Location: ' . $this->linkService->getStaticRoute('jtl.php') . '?loggedout=1', true, 303);
         exit();
-    }
-
-    /**
-     * @param array $data
-     */
-    private function checkPromotion(array $data): void
-    {
-        if (Request::verifyGPCDataInt('kunde_werben') !== 1) {
-            return;
-        }
-        if (SimpleMail::checkBlacklist($data['cEmail'])) {
-            $this->alertService->addAlert(
-                Alert::TYPE_ERROR,
-                Shop::Lang()->get('kwkEmailblocked', 'errorMessages') . '<br />',
-                'kwkEmailblocked'
-            );
-        } elseif (Referral::checkInputData($data)) {
-            if (Referral::saveToDB($data, $this->config)) {
-                $this->alertService->addAlert(
-                    Alert::TYPE_NOTE,
-                    \sprintf(
-                        Shop::Lang()->get('kwkAdd', 'messages') . '<br />',
-                        Text::filterXSS($data['cEmail'])
-                    ),
-                    'kwkAdd'
-                );
-            } else {
-                $this->alertService->addAlert(
-                    Alert::TYPE_ERROR,
-                    \sprintf(
-                        Shop::Lang()->get('kwkAlreadyreg', 'errorMessages') . '<br />',
-                        Text::filterXSS($data['cEmail'])
-                    ),
-                    'kwkAlreadyreg'
-                );
-            }
-        } else {
-            $this->alertService->addAlert(
-                Alert::TYPE_ERROR,
-                Shop::Lang()->get('kwkWrongdata', 'errorMessages') . '<br />',
-                'kwkWrongdata'
-            );
-        }
     }
 
     /**

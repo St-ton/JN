@@ -35,7 +35,7 @@
                             {col cols=3 lg=2 class="text-center vcenter"}
                                 {if !empty($oPosition->Artikel->cVorschaubild)}
                                     {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}
-                                        {image fluid=true webp=true lazy=true
+                                        {image fluid-grow=true webp=true lazy=true
                                             alt=$oPosition->cName|trans
                                             src=$oPosition->Artikel->cVorschaubild
                                             srcset="{$oPosition->Artikel->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
@@ -51,7 +51,7 @@
                     {/block}
                     {block name='checkout-inc-order-items-items-main-content'}
                         {col cols=$cols lg=$itemInfoCols class="ml-auto"}
-                            {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
+                            {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL || $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_GRATISGESCHENK}
                                 {block name='checkout-inc-order-items-product-data-link'}
                                     <p>{link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}{$oPosition->cName|trans}{/link}</p>
                                 {/block}
@@ -67,7 +67,10 @@
                                                 </li>
                                             {/block}
                                         {/if}
-                                        {if $oPosition->Artikel->cLocalizedVPE && $oPosition->Artikel->cVPE !== 'N'}
+                                        {if $oPosition->Artikel->cLocalizedVPE
+                                            && $oPosition->Artikel->cVPE !== 'N'
+                                            && $oPosition->nPosTyp != $C_WARENKORBPOS_TYP_GRATISGESCHENK
+                                        }
                                             {block name='checkout-inc-order-items-product-data-base-price'}
                                                 <li class="baseprice"><strong>{lang key='basePrice'}:</strong> {$oPosition->Artikel->cLocalizedVPE[$NettoPreise]}</li>
                                             {/block}

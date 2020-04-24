@@ -948,9 +948,9 @@ function plausiKupon($post)
         } else {
             $errors['ungueltig'] = 11;
         }
+        Kupon::mapCouponErrorMessage($errors['ungueltig'] ?? 0);
     }
     plausiNeukundenKupon();
-    Kupon::mapCouponErrorMessage($errors['ungueltig'] ?? 0);
 
     return (count($errors) > 0)
         ? $errors

@@ -40,7 +40,7 @@ Delivery time: {if isset($Bestellung->cEstimatedDeliveryEx)}{$Bestellung->cEstim
 
 Your billing address:
 
-{if !empty($Kunde->cFirma)}{$Kunde->cFirma}{/if}
+{if !empty($Kunde->cFirma)}{$Kunde->cFirma} - {if !empty($Kunde->cZusatz)}{$Kunde->cZusatz}{/if}{/if}
 {$Kunde->cVorname} {$Kunde->cNachname}
 {$Kunde->cStrasse} {$Kunde->cHausnummer}
 {if $Kunde->cAdressZusatz}{$Kunde->cAdressZusatz}

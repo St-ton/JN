@@ -181,7 +181,7 @@ function bearbeiteListBox($listBoxes, $cWertName, int $configSectionID)
 
             $db->insert('teinstellungen', $newConf);
         }
-    } elseif ($cWertName === 'bewertungserinnerung_kundengruppen' || $cWertName === 'kwk_kundengruppen') {
+    } elseif ($cWertName === 'bewertungserinnerung_kundengruppen') {
         // Leere Kundengruppen Work Around
         $customerGroup = $db->select('tkundengruppe', 'cStandard', 'Y');
         if ($customerGroup->kKundengruppe > 0) {
@@ -438,16 +438,21 @@ function ermittleDatumWoche(string $dateString)
  */
 function getJTLVersionDB(bool $bDate = false)
 {
-    $ret         = 0;
-    $versionData = Shop::Container()->getDB()->query(
-        'SELECT nVersion, dAktualisiert FROM tversion',
-        ReturnType::SINGLE_OBJECT
-    );
-    if (isset($versionData->nVersion)) {
-        $ret = $versionData->nVersion;
-    }
+    $ret = 0;
     if ($bDate) {
-        $ret = $versionData->dAktualisiert;
+        $latestUpdate = Shop::Container()->getDB()->query(
+            'SELECT max(dExecuted) as date FROM tmigration',
+            ReturnType::SINGLE_OBJECT
+        );
+        $ret          = $latestUpdate->date;
+    } else {
+        $versionData = Shop::Container()->getDB()->query(
+            'SELECT nVersion FROM tversion',
+            ReturnType::SINGLE_OBJECT
+        );
+        if (isset($versionData->nVersion)) {
+            $ret = $versionData->nVersion;
+        }
     }
 
     return $ret;

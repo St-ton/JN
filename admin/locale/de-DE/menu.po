@@ -187,9 +187,6 @@ msgstr "Marketing"
 msgid "Customer loyalty"
 msgstr "Kundenbindung"
 
-msgid "Recommendations"
-msgstr "Kundenempfehlungen"
-
 msgid "Coupons"
 msgstr "Coupons"
 

@@ -93,4 +93,11 @@ $io->register('getPages', [$jsonApi, 'getPages'])
    ->register('createShippingSurchargeZIP', 'createShippingSurchargeZIP', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
    ->register('getShippingSurcharge', 'getShippingSurcharge', $versandartenInc, 'ORDER_SHIPMENT_VIEW');
 
-$io->respondAndExit($io->handleRequest($_REQUEST['io']));
+$request = $_REQUEST['io'];
+
+executeHook(HOOK_IO_HANDLE_REQUEST_ADMIN, [
+    'io'      => &$io,
+    'request' => &$request
+]);
+
+$io->respondAndExit($io->handleRequest($request));

@@ -18,7 +18,7 @@ msgid "testmailsGoToEmail"
 msgstr "Test emails will be sent to the following address: "
 
 msgid "noMasterEmailSpecified"
-msgstr "No master email address found. Please enter a master sender email address under Contents > Emails > Settings."
+msgstr "No master email address found. Please enter a master sender email address under Administration > Email > Server."
 
 msgid "emailTemplateModifyHint"
 msgstr "Here you can edit the content of an email template in every language available for JTL-Shop. You can also specify the email address from which the email is to be send and whether certain attachments will be added by default."
@@ -200,14 +200,6 @@ msgstr "Header"
 # email name (temailvorlage)
 msgid "name_core_jtl_newsletteranmelden"
 msgstr "Activation email after newsletter subscription"
-
-# email name (temailvorlage)
-msgid "name_core_jtl_kundenwerbenkunden"
-msgstr "Customer referral programme"
-
-# email name (temailvorlage)
-msgid "name_core_jtl_kundenwerbenkundenboni"
-msgstr "Customer referral programme – reward"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_artikelweiterempfehlen"

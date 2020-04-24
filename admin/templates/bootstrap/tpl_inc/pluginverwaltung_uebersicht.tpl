@@ -113,36 +113,30 @@
                     <form enctype="multipart/form-data">
                         {$jtl_token}
                         <div class="form-group">
-                            <input id="plugin-install-upload" type="file" multiple class="file">
+                            {include file='tpl_inc/fileupload.tpl'
+                                fileID='plugin-install-upload'
+                                fileUploadUrl="{$shopURL}/{$PFAD_ADMIN}pluginverwaltung.php"
+                                fileBrowseClear=true
+                                fileUploadAsync=true
+                                fileAllowedExtensions="['zip']"
+                                fileMaxSize=100000
+                                fileOverwriteInitial='false'
+                                fileShowUpload=true
+                                fileShowRemove=true
+                                fileDefaultBatchSelectedEvent=false
+                                fileSuccessMsg="{__('successPluginUpload')}"
+                            }
                         </div>
                         <hr>
                     </form>
+
                     <script>
-                        var uploadURL = '{$shopURL}/{$PFAD_ADMIN}pluginverwaltung.php',
-                            lang = '{$language|mb_substr:0:2}',
-                            defaultError = '{__('errorPluginUpload')}';
+                        let defaultError = '{__('errorPluginUpload')}',
+                            $fi          = $('#plugin-install-upload');
                         {literal}
-                        $('#plugin-install-upload').fileinput({
-                            uploadUrl: uploadURL,
-                            allowedFileExtensions : ['zip'],
-                            overwriteInitial: false,
-                            showPreview: false,
-                            cancelClass: 'btn btn-outline-primary',
-                            language: lang,
-                            maxFileSize: 100000,
-                            maxFilesNum: 1
-                        }).on('fileuploaderror', function(event, data, msg) {
+                        $fi.on('fileuploaded', function(event, data, previewId, index) {
                             var response = data.response,
-                                alert = $('#plugin-upload-error');
-                            if (response.error.length > 0) {
-                                alert.html(defaultError + ': ' + response.error);
-                            } else {
-                                alert.html(defaultError);
-                            }
-                            alert.show().removeClass('hidden');
-                        }).on('fileuploaded', function(event, data, previewId, index) {
-                            var response = data.response,
-                                alert = $('#plugin-upload-error');
+                                alert = $('#plugin-install-upload-upload-error');
                             if (response.status === 'OK') {
                                 alert.hide();
                                 var wasActiveVerfuegbar = $('#verfuegbar').hasClass('active'),
@@ -151,7 +145,7 @@
                                 $('#fehlerhaft').replaceWith(response.html.erroneous);
                                 $('a[href="#fehlerhaft"]').find('.badge').html(response.html.erroneous_count);
                                 $('a[href="#verfuegbar"]').find('.badge').html(response.html.available_count);
-                                $('#plugin-upload-success').show().removeClass('hidden');
+                                $('#plugin-install-upload-upload-success').show().removeClass('hidden');
                                 if (wasActiveFehlerhaft) {
                                     $('#fehlerhaft').addClass('active show');
                                 } else if (wasActiveVerfuegbar) {
@@ -165,16 +159,13 @@
                                 }
                                 alert.show().removeClass('hidden');
                             }
-                            var fi = $('#plugin-install-upload');
-                            fi.fileinput('reset');
-                            fi.fileinput('clear');
-                            fi.fileinput('refresh');
-                            fi.fileinput('enable');
+                            $fi.fileinput('reset');
+                            $fi.fileinput('clear');
+                            $fi.fileinput('refresh');
+                            $fi.fileinput('enable');
                         });
                         {/literal}
                     </script>
-                    <div id="plugin-upload-success" class="alert alert-info hidden">{__('successPluginUpload')}</div>
-                    <div id="plugin-upload-error" class="alert alert-danger hidden"></div>
                 </div>
             </div>
         </div>

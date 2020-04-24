@@ -11,6 +11,7 @@ use JTL\Shop;
 use JTL\Shopsetting;
 
 require_once __DIR__ . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/einstellungen_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
 
 $oAccount->permission('SETTINGS_ARTICLEOVERVIEW_VIEW', true, true);
@@ -225,7 +226,7 @@ $smarty->assign('action', 'sucheinstellungen.php')
        ->assign('kEinstellungenSektion', $kSektion)
        ->assign('Sektion', $section)
        ->assign('Conf', getAdminSectionSettings(CONF_ARTIKELUEBERSICHT))
-       ->assign('cPrefDesc', $smarty->getConfigVars('prefDesc' . $kSektion))
+       ->assign('cPrefDesc', filteredConfDescription($kSektion))
        ->assign('cPrefURL', $smarty->getConfigVars('prefURL' . $kSektion))
        ->assign('step', $step)
        ->assign('supportFulltext', version_compare($mysqlVersion, '5.6', '>='))

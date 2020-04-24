@@ -19424,6 +19424,9 @@ aside .last-seen-link {
     padding-right: 50px;
   }
 }
+.carousel:not(.slick-initialized).slick-lazy > div {
+  width: 100%;
+}
 @media (max-width: 767.98px) {
   .carousel:not(.slick-initialized).slick-type-product .product-wrapper {
     width: calc(100%/2);
@@ -19542,6 +19545,24 @@ aside .last-seen-link {
 }
 .slick-dotted .slick-arrow {
   margin-top: -1.5rem;
+}
+
+.slick-lightbox .slick-arrow {
+  opacity: 0.75;
+  background: transparent;
+}
+.slick-lightbox .slick-arrow:hover {
+  opacity: 1;
+}
+.slick-lightbox .slick-arrow:after {
+  color: #ccc;
+  font-size: 20px;
+}
+.slick-lightbox .slick-arrow.slick-prev {
+  transform: translate(0, -50%);
+}
+.slick-lightbox .slick-arrow.slick-next {
+  transform: translate(0, -50%);
 }
 
 .slick-prev {
@@ -19821,6 +19842,10 @@ aside .last-seen-link {
 
 .dropdown-header {
   padding: 0.5rem 1.5rem;
+}
+
+.dropdown-full-width .dropdown-menu {
+  width: 100%;
 }
 
 .square, .productbox-image-wrapper {
@@ -21539,12 +21564,12 @@ a[data-toggle=collapse][aria-expanded=true] i.fa-chevron-down,
   color: #525252 !important;
 }
 
-.freegift {
-  cursor: pointer;
-}
 .freegift .custom-control-label::before,
 .freegift .custom-control-label::after {
   display: none;
+}
+.freegift label {
+  cursor: pointer;
 }
 
 .banner {
@@ -21948,6 +21973,16 @@ body {
 
 .loading {
   min-height: 140px;
+}
+
+.lazyload,
+.lazyloading {
+  opacity: 0;
+}
+
+.lazyloaded {
+  opacity: 1;
+  transition: opacity 300ms;
 }
 
 /* utilities */
@@ -22917,11 +22952,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 
 .list-gallery {
   display: flex;
-  align-items: center;
   flex-direction: column;
-}
-.list-gallery img {
-  max-height: 300px;
 }
 .list-gallery img.first {
   opacity: 1;
@@ -22975,6 +23006,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 #image_wrapper .slick-slide,
 #image_wrapper img {
   outline: none !important;
+  width: 100%;
 }
 #image_wrapper .slick-slide img {
   margin: 0 auto;
@@ -23003,6 +23035,9 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   z-index: 10000;
   background-color: rgba(82, 82, 82, 0.5);
   overflow: hidden;
+}
+#image_wrapper.fullscreen img {
+  width: initial;
 }
 #image_wrapper.fullscreen .product-actions {
   display: none;
@@ -23042,9 +23077,40 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   width: 98%;
   height: auto;
   background: #ffffff;
-}
-#image_wrapper .variation-image-preview:not(.show) {
+  border: 3px solid #ebebeb;
+  opacity: 0;
+  border-radius: 0.125rem;
+  -webkit-box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
   z-index: -5;
+}
+@media (min-width: 992px) {
+  #image_wrapper .variation-image-preview.show {
+    z-index: 1070;
+    opacity: 1;
+  }
+}
+#image_wrapper .variation-image-preview::before, #image_wrapper .variation-image-preview::after {
+  left: 100%;
+  top: 50%;
+  content: " ";
+  height: 0px;
+  width: 0px;
+  position: absolute;
+  border-width: initial;
+  border-style: solid;
+  border-color: transparent;
+  border-image: initial;
+}
+#image_wrapper .variation-image-preview::before {
+  margin-top: -18px;
+  border-width: 14px 0px 14px 18px;
+  border-color: transparent transparent transparent #ebebeb;
+}
+#image_wrapper .variation-image-preview::after {
+  margin-top: -14px;
+  border-width: 10px 0px 10px 14px;
+  border-color: transparent transparent transparent #ffffff;
 }
 #image_wrapper #gallery:not(.slick-initialized) {
   padding: 0 1rem;
@@ -23068,9 +23134,23 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 #image_wrapper #gallery_preview:not(.slick-initialized) .slick-prev {
   margin-right: -0.5rem;
+  animation: 0.5s fadeIn;
+  animation-fill-mode: forwards;
+  visibility: hidden;
 }
 #image_wrapper #gallery_preview:not(.slick-initialized) .slick-next {
   margin-left: -0.5rem;
+  animation: 0.5s fadeIn;
+  animation-fill-mode: forwards;
+  visibility: hidden;
+}
+@keyframes fadeIn {
+  99% {
+    visibility: hidden;
+  }
+  100% {
+    visibility: visible;
+  }
 }
 
 .cfg-item-description {

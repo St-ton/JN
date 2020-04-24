@@ -50,7 +50,7 @@ der Versandstatus Ihrer Bestellung mit Bestellnummer {$Bestellung->cBestellNr} h
         </table>
         {foreach $oLieferschein->oVersand_arr as $oVersand}
             {if $oVersand->getIdentCode()|strlen > 0}
-                <br><strong>Tracking-Url:</strong> <a href="{$oVersand->getLogistikVarUrl()}">{$oVersand->getIdentCode()}</a>
+                <br><strong>Tracking-URL:</strong> <a href="{$oVersand->getLogistikVarUrl()}">{$oVersand->getIdentCode()}</a>
             {/if}
         {/foreach}
     {/if}

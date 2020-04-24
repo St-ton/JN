@@ -5,7 +5,7 @@
 {/block}
 
 {block name='content'}
-    <div id="result-wrapper">
+    <div id="result-wrapper" data-wrapper="true">
         {block name='productlist-header'}
             {include file='productlist/header.tpl'}
         {/block}

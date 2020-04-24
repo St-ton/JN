@@ -88,10 +88,8 @@
 
 .list-gallery {
 	display: flex;
-	align-items: center;
 	flex-direction: column;
 	img {
-		max-height: $list-max-img-height;
 		&.first {
 			opacity: 1;
 			transition: $transition-fade;

@@ -47,7 +47,7 @@ $mail                = new Mail();
 $factory             = new TemplateFactory($db);
 $controller          = new Controller($db, $mailer, $factory);
 if ($pluginID > 0) {
-    $settingsTableName = 'tpluginemailvorlageeinstellungen';
+    $settingsTableName = $pluginSettingsTable;
 }
 if (isset($_GET['err'])) {
     $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTemplate'), 'errorTemplate');
@@ -154,7 +154,7 @@ if ((($emailTemplateID > 0 && $continue === true)
     }
 
     $step        = 'bearbeiten';
-    $config      = $db->selectAll($pluginSettingsTable, 'kEmailvorlage', $emailTemplateID);
+    $config      = $db->selectAll($settingsTableName, 'kEmailvorlage', $emailTemplateID);
     $configAssoc = [];
     foreach ($config as $item) {
         $configAssoc[$item->cKey] = $item->cValue;

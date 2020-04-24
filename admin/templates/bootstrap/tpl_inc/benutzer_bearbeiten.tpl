@@ -46,47 +46,7 @@ $(document).ready(function() {
         $('#isoVita_' + iso).show();
     });
 });
-{/literal}
 </script>
-<script>
-    $(function () {
-        var $el = $('#useAvatarUpload');
-        $el.fileinput({
-            uploadAsync:           false,
-            showPreview:           true,
-            showUpload:            false,
-            showRemove:            false,
-            showDrag:              false,
-            browseClass:           'btn btn-default',
-            cancelClass:           'btn btn-outline-primary',
-            cancelIcon:            '<i class="fas fa-exclamation"></i>',
-            fileActionSettings:    {
-                showZoom:   false,
-                showDrag:   false,
-                showRemove: false,
-            },
-            theme:                 'fas',
-            language:              '{$language|mb_substr:0:2}',
-            allowedFileExtensions: ['jpg', 'jpeg', 'jpe', 'gif', 'png', 'bmp'],
-            browseOnZoneClick:     true,
-            maxFileSize:           1000,
-            initialPreview:        [
-                {if isset($attribValues.useAvatar) && $attribValues.useAvatar->cAttribValue === 'U'}
-                '<img src="{$shopURL}/{$attribValues.useAvatarUpload->cAttribValue}" class="preview-image"/>',
-                {/if}
-            ],
-            initialPreviewConfig:  [
-                {if isset($attribValues.useAvatar) && $attribValues.useAvatar->cAttribValue === 'U'}
-                {
-                    caption: '{__('preview')}',
-                    width:   '120px'
-                }
-                {/if}
-            ]
-        });
-    });
-</script>
-{literal}
 <style>
     /* CONSIDER: styles ar mandatory for the QR-code! */
 
@@ -415,7 +375,24 @@ $(document).ready(function() {
                             <div class="form-group form-row align-items-center">
                                 <label class="col col-sm-4 col-form-label text-sm-right" for="useAvatarUpload">{__('Image')}:</label>
                                 <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                    <input class="form-control-upload" id="useAvatarUpload" name="extAttribs[useAvatarUpload]" type="file"/>
+                                    {include file='tpl_inc/fileupload.tpl'
+                                        fileID='useAvatarUpload'
+                                        fileName='extAttribs[useAvatarUpload]'
+                                        fileMaxSize=1000
+                                        fileInitialPreview="[
+                                            {if isset($attribValues.useAvatar) && $attribValues.useAvatar->cAttribValue === 'U'}
+                                            '<img src=\"{$shopURL}/{$attribValues.useAvatarUpload->cAttribValue}\" class=\"preview-image\"/>',
+                                            {/if}
+                                        ]"
+                                        fileInitialPreviewConfig="[
+                                            {if isset($attribValues.useAvatar) && $attribValues.useAvatar->cAttribValue === 'U'}
+                                            {
+                                                caption: '{__('preview')}',
+                                                width:   '120px'
+                                            }
+                                            {/if}
+                                        ]"
+                                    }
                                 </div>
                             </div>
                             <input type="hidden" name="extAttribs[useAvatarUpload]" value="{if isset($attribValues.useAvatarUpload)}{$attribValues.useAvatarUpload->cAttribValue}{/if}" />

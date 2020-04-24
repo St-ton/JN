@@ -6,7 +6,7 @@ msgid "configureContactform"
 msgstr "Kontaktformular"
 
 msgid "contanctformDesc"
-msgstr "Hier können Sie das Kontaktformular von JTL-Shop für allgemeine Anfragen konfigurieren. Um das Kontaktformular anzeigen zu können, müssen Sie mindestens einen Betreff anlegen. Sie können das Formular über „Inhalte > Eigene Seiten“ z. B. im Kopfbereich des Onlineshops einbinden."
+msgstr "Hier können Sie das Kontaktformular von JTL-Shop für allgemeine Anfragen konfigurieren. Um das Kontaktformular anzeigen zu können, müssen Sie mindestens einen Betreff anlegen. Sie können das Formular über „Darstellung > Eigene Inhalte > Seiten“ z. B. im Kopfbereich des Onlineshops einbinden."
 
 msgid "contanctformSubjectDesc"
 msgstr "Mit Betreffen können Sie Kontaktanfragen an die richtige Abteilung leiten. Der Kunde wählt im Kontaktformular den Betreff aus. Die Anfrage wird als E-Mail an die im Betreff hinterlegte E-Mail-Adresse gesendet."

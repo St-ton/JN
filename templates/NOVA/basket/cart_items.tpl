@@ -46,10 +46,11 @@
                             {col cols=3 xl=2 class="h-100"}
                                 {if !empty($oPosition->Artikel->cVorschaubild)}
                                     {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}
-                                        {image lazy=true webp=true
+                                        {image lazy=true
+                                            webp=true
                                             src=$oPosition->Artikel->cVorschaubild
                                             alt=$oPosition->cName|trans
-                                            fluid=true
+                                            fluid-grow=true
                                         }
                                     {/link}
                                 {/if}
@@ -58,7 +59,7 @@
                     {/block}
                     {block name='basket-cart-items-items-main-content'}
                         {col cols=$cols xl=$itemInfoCols class="ml-auto"}
-                        {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
+                        {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL || $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_GRATISGESCHENK}
                             {block name='basket-cart-items-product-link'}
                                 {link class='mb-3 d-block' href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}{$oPosition->cName|trans}{/link}
                             {/block}
@@ -79,7 +80,10 @@
                                             </li>
                                         {/block}
                                     {/if}
-                                    {if $oPosition->Artikel->cLocalizedVPE && $oPosition->Artikel->cVPE !== 'N'}
+                                    {if $oPosition->Artikel->cLocalizedVPE
+                                        && $oPosition->Artikel->cVPE !== 'N'
+                                        && $oPosition->nPosTyp != $C_WARENKORBPOS_TYP_GRATISGESCHENK
+                                    }
                                         {block name='basket-cart-items-product-data-base-price'}
                                             <li class="baseprice"><strong>{lang key='basePrice'}:</strong> {$oPosition->Artikel->cLocalizedVPE[$NettoPreise]}</li>
                                         {/block}

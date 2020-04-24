@@ -93,22 +93,16 @@
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="previewImage">{__('preview')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <div class="input-group">
-                                    {if !empty($oNewsKategorie->getPreviewImage())}
-                                        <div class="input-group-prepend">
-                                            <div class="input-group-text">
-                                                <img src="{$shopURL}/{$oNewsKategorie->getPreviewImage()}" alt="" height="20" width="20" class="preview-image left"/>
-                                            </div>
-                                        </div>
-                                    {/if}
-                                    <div class="custom-file">
-                                        <input class="custom-file-input" id="previewImage" name="previewImage" type="file" maxlength="2097152" accept="image/*" />
-                                        <label class="custom-file-label" for="previewImage">
-                                            <span class="text-truncate">{__('fileSelect')}</span>
-                                        </label>
-                                    </div>
-                                </div>
-                                <input name="previewImage" type="hidden" value="{if !empty($oNewsKategorie->getPreviewImage())}{$oNewsKategorie->getPreviewImage()}{/if}" />
+                                {include file='tpl_inc/fileupload.tpl'
+                                    fileID='previewImage'
+                                    fileShowRemove=true
+                                    fileMaxSize=2097152
+                                    fileInitialPreview="[
+                                            {if !empty($oNewsKategorie->getPreviewImage())}
+                                                '<img src=\"{$shopURL}/{$oNewsKategorie->getPreviewImage()}\" class=\"mb-3\" />'
+                                            {/if}
+                                        ]"
+                                }
                             </div>
                         </div>
                         {if $files|@count > 0}

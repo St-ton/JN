@@ -102,16 +102,16 @@ export default {
                 installDemoData:     'Demodaten installieren?',
                 verify:              'Daten prüfen',
                 headerMsg:           'Datenbankparameter',
-                leadMsg:             'Konfigurieren Sie die Datenbank',
-                contentMsg:          '<p>Für die Installation des JTL-Shops benötigen wir eine MySQL-Datenbank.</p>'
-                                         + '<p>Meistens müssen der Benutzer und die Datenbank erst manuell erstellt werden. '
+                leadMsg:             'Konfigurieren der Datenbank',
+                contentMsg:          '<p>Für die Installation von JTL-Shop benötigen Sie eine MySQL-Datenbank.</p>'
+                                         + '<p>In der Regel müssen Datenbank und Benutzer erst manuell erstellt werden. '
                                          + 'Bei Problemen wenden Sie sich bitte an Ihren Administrator bzw. Webhoster, da dieser Vorgang '
                                          + 'von Hoster zu Hoster unterschiedlich ist und von der eingesetzten Software abhängt.</p>'
                                          + '<p>Der Benutzer benötigt Lese-, Schreib- und Löschrechte (Create, Insert, Update, Delete) '
                                          + 'für diese Datenbank.</p>'
                                          + '<p>Als <strong>Host</strong> ist <i>localhost</i> zumeist die richtige Einstellung. '
                                          + 'Diese Information erhalten Sie ebenfalls von Ihrem Webhoster.</p>'
-                                         + '<p>Das Feld <strong>Socket</strong> füllen Sie bitte nur aus, wenn Sie ganz sicher sind, '
+                                         + '<p>Füllen Sie das Feld <strong>Socket</strong> nur aus, wenn Sie ganz sicher sind, '
                                          + 'dass Ihre Datenbank über einen Socket erreichbar ist. '
                                          + 'In diesem Fall tragen Sie bitte den absoluten Pfad zum Socket ein.</p>',
                 connectionSuccess:   'Erfolgreich verbunden',
@@ -134,7 +134,16 @@ export default {
                 verify:              'verify',
                 headerMsg:           'Database parameters',
                 leadMsg:             'Configure the database',
-                contentMsg:          '',
+                contentMsg:          '<p>You need a MySQL database to install JTL-Shop.</p>'
+                                        + '<p>Usually the database and its users must be created manually. '
+                                        + 'In case of any problems, please contact your server administrator or web hosting provider. '
+                                        + 'The creation process varies from provider to provider and depends on the software used.</p>'
+                                        + '<p>Users require read, write, and delete permissions (create, insert, update, delete) for this database.</p>'
+                                        + '<p>In most cases, <i>localhost</i> is the right choice to enter for the <strong>Host</strong>. '
+                                        + 'For further information on this topic, please refer to your web hosting provider.</p>'
+                                        + '<p>Only complete the <strong>Socket</strong> field if you are sure that your '
+                                        + 'database is accessible via a socket. '
+                                        + 'If this is the case, enter the absolute path to the socket.</p>',
                 connectionSuccess:   'Successfully connected',
                 cannotConnect:       'Could not connect',
                 shopExists:          'The selected database already contains a shop installation',

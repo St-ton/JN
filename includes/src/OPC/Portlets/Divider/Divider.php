@@ -17,7 +17,7 @@ class Divider extends Portlet
      */
     public function getPreviewHtml(PortletInstance $instance): string
     {
-        return '<hr ' . $instance->getAttributeString(). ' ' . $instance->getDataAttributeString() . '>';
+        return '<hr ' . $instance->getAttributeString(). '>';
     }
 
     /**
@@ -26,7 +26,7 @@ class Divider extends Portlet
      */
     public function getFinalHtml(PortletInstance $instance): string
     {
-        return '<hr ' . $instance->getAttributeString(). '>';
+        return '<hr class="' . $instance->getStyleClasses() . '" ' . $instance->getAttributeString(). '>';
     }
 
     /**

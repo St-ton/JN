@@ -164,55 +164,31 @@
                                                         <input type="{$oSetting->cType}" size="32" name="cWert[]" value="{$oSetting->cValue}" id="pf_first" class="form-control">
                                                     </div>
                                                 {elseif $oSetting->cType === 'upload' && isset($oSetting->rawAttributes.target)}
-                                                    <div class="template-upload">
-                                                        <input name="upload-{$oSetting@iteration}"
-                                                               id="tpl-upload-{$oSetting@iteration}" type="file"
-                                                               class="file"
-                                                               accept="{if !empty($oSetting->rawAttributes.accept)}{$oSetting->rawAttributes.accept}{else}image/*{/if}">
-                                                    </div>
                                                     <input type="hidden" name="cWert[]" value="upload-{$oSetting@iteration}" />
-                                                    <script>
-                                                        $('#tpl-upload-{$oSetting@iteration}').fileinput({ldelim}
-                                                            uploadAsync: false,
-                                                            uploadExtraData: {ldelim}id:1{rdelim},
-                                                            allowedFileExtensions : {if !empty($oSetting->rawAttributes.allowedFileExtensions)}{$oSetting->rawAttributes.allowedFileExtensions}{else}['jpg', 'jpeg', 'jpe', 'gif', 'png', 'bmp']{/if},
-                                                            overwriteInitial: true,
-                                                            browseOnZoneClick:     true,
-                                                            cancelClass: 'btn btn-outline-primary',
-                                                            fileActionSettings:    {
-                                                                showZoom:   false,
-                                                                showDrag:   false,
-                                                                showRemove: false
-                                                            },
-                                                            deleteUrl: '{$shopURL}/{$PFAD_ADMIN}shoptemplate.php?token={$smarty.session.jtl_token}',
-                                                            initialPreviewCount: 1,
-                                                            theme: 'fas',
-                                                            showPreview: true,
-                                                            language: '{$language|mb_substr:0:2}',
-                                                            maxFileSize: {if !empty($oSetting->rawAttributes.maxFileSize)}{$oSetting->rawAttributes.maxFileSize}{else}1000{/if},
-                                                            maxFilesNum: 1{if !empty($oSetting->cValue)}, initialPreview: [
-                                                                '<img src="{$shopURL}/templates/{$oTemplate->cOrdner}/{$oSetting->rawAttributes.target}{$oSetting->cValue}?v={$smarty.now}" class="file-preview-image" alt="" title="" />'
-                                                            ]{/if},
-                                                            initialPreviewConfig: [
-                                                                {ldelim}
+                                                    {include file='tpl_inc/fileupload.tpl'
+                                                        fileID="tpl-upload-{$oSetting@iteration}"
+                                                        fileName="upload-{$oSetting@iteration}"
+                                                        fileDeleteUrl="{$shopURL}/{$PFAD_ADMIN}shoptemplate.php?token={$smarty.session.jtl_token}"
+                                                        fileExtraData='{id:1}'
+                                                        fileMaxSize="{if !empty($oSetting->rawAttributes.maxFileSize)}{$oSetting->rawAttributes.maxFileSize}{else}1000{/if}"
+                                                        fileAllowedExtensions="{if !empty($oSetting->rawAttributes.allowedFileExtensions)}{$oSetting->rawAttributes.allowedFileExtensions}{/if}"
+                                                        fileInitialPreview="[
+                                                                {if !empty($oSetting->cValue)}
+                                                                    '<img src=\"{$shopURL}/templates/{$oTemplate->cOrdner}/{$oSetting->rawAttributes.target}{$oSetting->cValue}?v={$smarty.now}\" class=\"file-preview-image\"/>'
+                                                                {/if}
+                                                            ]"
+                                                        fileInitialPreviewConfig="[
+                                                                {
                                                                     url: '{$shopURL}/{$PFAD_ADMIN}shoptemplate.php',
-                                                                    extra: {ldelim}
+                                                                    extra: {
                                                                             upload: '{$oTemplate->cOrdner}/{$oSetting->rawAttributes.target}{$oSetting->cValue}',
                                                                             id: 'upload-{$oSetting@iteration}',
                                                                             token : '{$smarty.session.jtl_token}',
                                                                             cName : '{$oSetting->cKey}'
-                                                                           {rdelim}
-                                                                {rdelim}
-                                                            ]
-                                                        {rdelim}).on('fileuploaded', function(event, data) {ldelim}
-                                                            if (data.response.status === 'OK') {ldelim}
-                                                                $('#logo-upload-success').show().removeClass('hidden');
-                                                                $('.kv-upload-progress').addClass('hide');
-                                                            {rdelim} else {ldelim}
-                                                                $('#logo-upload-error').show().removeClass('hidden');
-                                                            {rdelim}
-                                                        {rdelim});
-                                                    </script>
+                                                                           }
+                                                                }
+                                                            ]"
+                                                    }
                                                 {/if}
                                             </div>
                                         {else}

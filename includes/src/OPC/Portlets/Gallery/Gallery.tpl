@@ -1,23 +1,16 @@
-{if $isPreview}
-    {$data = ['portlet' => $instance->getDataAttribute()]}
-    {$dataStr = $instance->getDataAttributeString()}
-{/if}
-
 {$galleryStyle = $instance->getProperty('galleryStyle')}
 {$images = $instance->getProperty('images')}
 
 {if $isPreview && empty($images)}
-    <div data-portlet="{$instance->getDataAttribute()}" class="opc-Gallery-preview"
-         style="{$instance->getStyleString()}">
+    <div class="opc-Gallery-preview" style="{$instance->getStyleString()}">
         <div>
             {file_get_contents($portlet->getBaseUrl()|cat:'icon.svg')}
             <span>{__('Gallery')}</span>
         </div>
     </div>
 {elseif $galleryStyle === 'columns'}
-    <div class="opc-Gallery-columns" {$dataStr|default:''}
-         id="{$instance->getUid()}"
-         style="{$instance->getStyleString()}">
+    <div class="opc-Gallery-columns {$instance->getStyleClasses()}"
+         id="{$instance->getUid()}" style="{$instance->getStyleString()}">
         {foreach $images as $key => $image}
             {$imgAttribs = $instance->getImageAttributes($image.url, $image.alt, '')}
             <a {if $isPreview === false}
@@ -44,7 +37,6 @@
     {row
         id=$instance->getUid()
         class='opc-Gallery opc-Gallery-'|cat:$galleryStyle
-        data=$data|default:null
         style=$instance->getStyleString()
     }
         {$xsSum = 0}

@@ -1,5 +1,5 @@
 {if $isPreview}
-    <div {$instance->getAttributeString()} {$instance->getDataAttributeString()} class="opc-Video">
+    <div {$instance->getAttributeString()} class="opc-Video">
         {if !empty($instance->getProperty('video-responsive'))}
             {$style = 'width:100%;'}
         {else}
@@ -33,7 +33,7 @@
         {/if}
     </div>
 {else}
-    <div id="{$instance->getUid()}" {$instance->getAttributeString()}>
+    <div id="{$instance->getUid()}" {$instance->getAttributeString()} class="{$instance->getStyleClasses()}">
         {if !empty($instance->getProperty('video-title'))}
             <label>{$instance->getProperty('video-title')}</label>
         {/if}

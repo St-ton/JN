@@ -87,8 +87,10 @@ if (Request::postInt('adminlogin') === 1) {
 
                 break;
         }
-    } elseif ($csrfOK !== true) {
+    } elseif (isset($_COOKIE['eSIdAdm'])) {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCSRF'), 'errorCSRF');
+    } else {
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCookieSettings'), 'errorCookieSettings');
     }
 }
 $type          = '';

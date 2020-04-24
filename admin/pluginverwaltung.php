@@ -1,6 +1,7 @@
 <?php
 
 use JTL\Alert\Alert;
+use JTL\Backend\AuthToken;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -386,17 +387,14 @@ if ($reload === true) {
     exit();
 }
 
-$hasAuth = (bool)$db->query(
-    'SELECT access_token FROM tstoreauth WHERE access_token IS NOT NULL',
-    ReturnType::AFFECTED_ROWS
-);
-
+$hasAuth = AuthToken::getInstance($db)->isValid();
+$alert   = Shop::Container()->getAlertService();
 if (SAFE_MODE) {
-    Shop::Container()->getAlertService()->addAlert(Alert::TYPE_WARNING, __('Safe mode enabled.'), 'warnSafeMode');
+    $alert->addAlert(Alert::TYPE_WARNING, __('Safe mode enabled.'), 'warnSafeMode');
 }
 
-Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, $errorMsg, 'errorPlugin');
-Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $notice, 'noticePlugin');
+$alert->addAlert(Alert::TYPE_ERROR, $errorMsg, 'errorPlugin');
+$alert->addAlert(Alert::TYPE_NOTE, $notice, 'noticePlugin');
 
 $smarty->assign('hinweis64', base64_encode($notice))
     ->assign('step', $step)

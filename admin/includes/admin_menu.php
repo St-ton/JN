@@ -12,21 +12,21 @@ $adminMenu = [
                 'permissions' => 'ORDER_VIEW',
             ],
             __('Promotions') => [
-                __('Newsletter')      => (object)[
+                __('Newsletter') => (object)[
                     'link'        => 'newsletter.php',
                     'permissions' => 'MODULE_NEWSLETTER_VIEW',
                     'section'     => CONF_NEWSLETTER,
                 ],
-                __('Blog posts')      => (object)[
+                __('Blog posts') => (object)[
                     'link'        => 'news.php',
                     'permissions' => 'CONTENT_NEWS_SYSTEM_VIEW',
                     'section'     => CONF_NEWS,
                 ],
-                __('Coupons')         => (object)[
+                __('Coupons')    => (object)[
                     'link'        => 'kupons.php',
                     'permissions' => 'ORDER_COUPON_VIEW',
                 ],
-                __('Free gifts')      => (object)[
+                __('Free gifts') => (object)[
                     'link'        => 'gratisgeschenk.php',
                     'permissions' => 'MODULE_GIFT_VIEW',
                 ],
@@ -174,7 +174,7 @@ $adminMenu = [
                     'permissions' => 'MODULE_VOTESYSTEM_VIEW',
                     'section'     => CONF_BEWERTUNG,
                 ],
-                __('Consent manager')                    => (object)[
+                __('Consent manager')            => (object)[
                     'link'        => 'consent.php',
                     'permissions' => 'CONSENT_MANAGER'
                 ],
@@ -367,6 +367,10 @@ $adminMenu = [
                 __('JTL-Wawi synchronisation') => (object)[
                     'link'        => 'wawisync.php',
                     'permissions' => 'WAWI_SYNC_VIEW',
+                ],
+                __('JTL-Store')                => (object)[
+                    'link'        => 'store.php',
+                    'permissions' => 'ADMIN_ONLY',
                 ],
             ],
             __('Troubleshooting') => [

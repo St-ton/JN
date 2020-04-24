@@ -11,7 +11,6 @@ use JTL\Plugin\Admin\Installation\Extractor;
 use JTL\Plugin\Admin\Installation\InstallationResponse;
 use JTL\Plugin\Admin\Installation\Installer;
 use JTL\Plugin\Admin\Installation\Uninstaller;
-use JTL\Plugin\Admin\Listing;
 use JTL\Plugin\Admin\Updater;
 use JTL\Plugin\Admin\Validation\LegacyPluginValidator;
 use JTL\Plugin\Admin\Validation\PluginValidator;
@@ -38,7 +37,7 @@ class Admin
     /**
      * @var JTLCacheInterface
      */
-    private $cache
+    private $cache;
 
     /**
      * Admin constructor.
@@ -49,8 +48,8 @@ class Admin
     public function __construct(Manager $manager, DbInterface $db, JTLCacheInterface $cache)
     {
         $this->manager = $manager;
-        $this->db = $db;
-        $this->cache = $cache;
+        $this->db      = $db;
+        $this->cache   = $cache;
     }
 
     /**
@@ -60,7 +59,7 @@ class Admin
      */
     public function updateItem(string $itemID)
     {
-        $res = false;
+        $res         = false;
         $licenseData = $this->manager->getLicenseByItemID($itemID);
         if ($licenseData === null) {
             throw new InvalidArgumentException('Could not find item with ID ' . $itemID);
@@ -69,7 +68,7 @@ class Admin
         if ($available === null) {
             throw new InvalidArgumentException('Could not find update for item with ID ' . $itemID);
         }
-        $downloader = new Downloader();
+        $downloader        = new Downloader();
         $downloadedArchive = $downloader->downloadRelease($available);
         if ($licenseData->getType() === ExsLicense::TYPE_PLUGIN) {
             $res = $this->updatePlugin($itemID, $downloadedArchive);
@@ -95,7 +94,7 @@ class Admin
         $updater         = new Updater($this->db, $installer);
 
         $extractor = new Extractor(new XMLParser());
-        $res = $extractor->extractPlugin($downloadedArchive);
+        $res       = $extractor->extractPlugin($downloadedArchive);
         Shop::dbg($res, false, 'extracted:');
         return $updater->update(Helper::getIDByPluginID($itemID));
     }

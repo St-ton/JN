@@ -176,6 +176,7 @@ class Extractor
         try {
             $this->moveToPluginsDir($dirName);
         } catch (InvalidArgumentException $e) {
+            $this->response->setStatus(InstallationResponse::STATUS_FAILED);
             $this->response->addMessage($e->getMessage());
 
             return false;

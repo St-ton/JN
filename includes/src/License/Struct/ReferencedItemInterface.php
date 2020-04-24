@@ -2,7 +2,6 @@
 
 namespace JTL\License\Struct;
 
-
 use JTLShop\SemVer\Version;
 
 /**

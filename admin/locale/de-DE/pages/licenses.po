@@ -49,3 +49,6 @@ msgstr "Details"
 
 msgid "setBinding"
 msgstr "An aktuellen Shop binden"
+
+msgid "Update to version %s available"
+msgstr "Aktualisierung auf Version %s verfügbar"

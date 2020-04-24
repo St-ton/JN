@@ -368,7 +368,7 @@ abstract class AbstractLoader implements LoaderInterface
         $lastItem = $items->last();
         $lastIdx  = $lastItem->idx ?? -1;
         $manager  = new Manager($this->db);
-        $license  = $manager->getLicenseForPluginID($plugin->getPluginID());
+        $license  = $manager->getLicenseByItemID($plugin->getPluginID());
         if ($license !== null) {
             ++$lastIdx;
             $menu                   = new stdClass();

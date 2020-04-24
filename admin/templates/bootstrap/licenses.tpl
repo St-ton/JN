@@ -3,7 +3,7 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('Licenses') cBeschreibung=__('pageDesc') cDokuURL=__('https://www.jtl-software.de')}
 
 <div id="content">
-	<div class="card">
+	<div class="card" id="active-licenses">
 		<div class="card-header">{__('Active licenses')}</div>
 		<div class="card-body">
 			<table class="table table-striped">
@@ -20,21 +20,10 @@
 						<td>{$license->getID()}</td>
 						<td>{$license->getName()}</td>
 						<td>
-							{$installedVersion = $license->getInstalledVersion()}
-							{if $installedVersion === null}
-								<i class="far fa-circle"></i>
-							{else}
-								<i class="far fa-check-circle"></i> ({$installedVersion})
-								<pre>{$license->getReleases()|var_dump}</pre>
-                            {/if}
-
+							{include file='tpl_inc/licenses_referenced_item.tpl' referencedItem=$license->getReferencedItem()}
 						</td>
 						<td>
-							{$licData = $license->getLicense()}
-	                        {__($licData->getType())}
-							{if $licData->getSubscription() !== null}, {__('Valid until %s', $licData->getSubscription()->getValidUntil()->format('d.m.Y'))}
-							{elseif $licData->getValidUntil() !== null}, {__('Valid until %s', $licData->getValidUntil()->format('d.m.Y'))}
-							{/if}
+                            {include file='tpl_inc/licenses_license.tpl' licData=$license->getLicense()}
 						</td>
 					</tr>
 	            {/foreach}
@@ -70,5 +59,29 @@
 	</div>
 </div>
 
+<script type="text/javascript">
+	$(document).ready(function () {
+		$('#active-licenses').on('submit', '.update-item-form', function (e) {
+			console.log(e.target);
+			var updateBTN = $(e.target).find('.update-item');
+			updateBTN.attr('disabled', true);
+			updateBTN.find('i').addClass('fa-spin');
+			$.ajax({
+				method: 'POST',
+                url: '{$shopURL}/admin/licenses.php',
+				data: $(e.target).serialize()
+			}).done(function (r) {
+				console.log('Done!', r);
+				window.setTimeout(function () {
+					updateBTN.attr('disabled', false);
+					updateBTN.find('i').removeClass('fa-spin');
+				}, 2000
+				);
+
+			});
+			return false;
+		});
+	});
+</script>
 {include file='tpl_inc/dbupdater_scripts.tpl'}
 {include file='tpl_inc/footer.tpl'}

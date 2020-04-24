@@ -58,7 +58,7 @@
     },
     "require-dev": {
         "phpunit/php-token-stream": "^3.0",
-        "eloquent/pathogen": "~0.6",
+        "mschop/pathogen": "^0.6",
         "nikic/php-parser": "^2.1",
         "phpmd/phpmd": "@stable",
         "phpunit/phpunit": "^7.3",

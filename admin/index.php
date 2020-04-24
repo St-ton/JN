@@ -207,9 +207,6 @@ if ($oAccount->getIsAuthenticated()) {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSessionExpired'), 'errorSessionExpired');
     }
     Shop::Container()->getGetText()->loadAdminLocale('pages/login');
-    if (!isset($_COOKIE['eSIdAdm'])) {
-        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorWrongCookieSettings'), 'errorWrongCookieSettings');
-    }
     $smarty->assign('uri', isset($_REQUEST['uri']) && mb_strlen(trim($_REQUEST['uri'])) > 0
         ? trim($_REQUEST['uri'])
         : '')

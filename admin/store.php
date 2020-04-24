@@ -18,7 +18,7 @@ if ($action !== 'code') {
     $oAccount->permission($_SESSION['jtl_token'], true, true);
 }
 
-$authToken = AuthToken::instance();
+$authToken = AuthToken::getInstance(Shop::Container()->getDB());
 
 switch ($action) {
     case 'revoke':
@@ -30,7 +30,7 @@ switch ($action) {
         if (Form::validateToken()) {
             $authToken->requestToken(
                 Backend::get('jtl_token'),
-                Shop::getURL(true).$_SERVER['SCRIPT_NAME'].'?action=code'
+                Shop::getURL(true) . $_SERVER['SCRIPT_NAME'] . '?action=code'
             );
         }
         break;
@@ -40,4 +40,4 @@ switch ($action) {
 }
 
 $smarty->assign('hasAuth', $authToken->isValid())
-       ->display('store.tpl');
+    ->display('store.tpl');

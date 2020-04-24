@@ -387,14 +387,14 @@ if ($reload === true) {
     exit();
 }
 
-$hasAuth = AuthToken::instance()->isValid();
-
+$hasAuth = AuthToken::getInstance($db)->isValid();
+$alert   = Shop::Container()->getAlertService();
 if (SAFE_MODE) {
-    Shop::Container()->getAlertService()->addAlert(Alert::TYPE_WARNING, __('Safe mode enabled.'), 'warnSafeMode');
+    $alert->addAlert(Alert::TYPE_WARNING, __('Safe mode enabled.'), 'warnSafeMode');
 }
 
-Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, $errorMsg, 'errorPlugin');
-Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $notice, 'noticePlugin');
+$alert->addAlert(Alert::TYPE_ERROR, $errorMsg, 'errorPlugin');
+$alert->addAlert(Alert::TYPE_NOTE, $notice, 'noticePlugin');
 
 $smarty->assign('hinweis64', base64_encode($notice))
     ->assign('step', $step)

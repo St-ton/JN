@@ -2,6 +2,7 @@
 
 namespace JTL\Backend;
 
+use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\ServiceNotFoundException;
@@ -10,7 +11,7 @@ use JTL\Shop;
 use JTL\xtea\XTEA;
 
 /**
- * Class StoreToken
+ * Class AuthToken
  * @package JTL\Backend
  */
 class AuthToken
@@ -32,20 +33,26 @@ class AuthToken
     /** @var string */
     private $verified;
 
+    /** @var DbInterface */
+    private $db;
+
     /**
-     * StoreToken constructor.
+     * AuthToken constructor.
+     * @param DbInterface $db
      */
-    public function __construct()
+    public function __construct(DbInterface $db)
     {
+        $this->db = $db;
         $this->load();
     }
 
     /**
-     * @return self
+     * @param DbInterface $db
+     * @return static
      */
-    public static function instance(): self
+    public static function getInstance(DbInterface $db): self
     {
-        return self::$instance ?? new self();
+        return self::$instance ?? new self($db);
     }
 
     /**
@@ -53,20 +60,20 @@ class AuthToken
      */
     private function load(): void
     {
-        $token = Shop::Container()->getDB()->queryPrepared(
+        $token = $this->db->query(
             'SELECT tstoreauth.auth_code, tstoreauth.access_token,
                 tadminlogin.cPass AS hash, tstoreauth.verified
                 FROM tstoreauth
-                INNER JOIN tadminlogin ON tadminlogin.kAdminlogin = tstoreauth.owner
+                INNER JOIN tadminlogin 
+                    ON tadminlogin.kAdminlogin = tstoreauth.owner
                 LIMIT 1',
-            [],
             ReturnType::SINGLE_OBJECT
         );
 
         if ($token) {
             $this->authCode = $token->auth_code;
             $this->token    = $token->access_token;
-            $this->hash     = sha1($token->hash);
+            $this->hash     = \sha1($token->hash);
             $this->verified = $token->verified;
         } else {
             $this->authCode = null;
@@ -81,18 +88,7 @@ class AuthToken
      */
     private function salt(): string
     {
-        static $uuid = null;
-
-        if ($uuid === null) {
-            $srv = Shop::Container()->getDB()->query(
-                'SELECT @@SERVER_UUID AS uuid',
-                ReturnType::SINGLE_OBJECT
-            );
-
-            $uuid = $srv->uuid ?? \BLOWFISH_KEY;
-        }
-
-        return $uuid . '.' . $this->hash ?? '';
+        return \BLOWFISH_KEY . '.' . $this->hash ?? '';
     }
 
     /**
@@ -100,7 +96,7 @@ class AuthToken
      */
     private function getCrypto(): XTEA
     {
-        return new XTEA(sha1(\BLOWFISH_KEY. '.' . $this->salt()));
+        return new XTEA(\sha1(\BLOWFISH_KEY . '.' . $this->salt()));
     }
 
     /**
@@ -109,7 +105,7 @@ class AuthToken
      */
     private function set(string $authCode, string $token): void
     {
-        Shop::Container()->getDB()->queryPrepared(
+        $this->db->queryPrepared(
             'UPDATE tstoreauth SET
                 access_token = :token,
                 verified     = :verified,
@@ -117,7 +113,7 @@ class AuthToken
                 WHERE auth_code = :authCode',
             [
                 'token'    => $this->getCrypto()->encrypt($token),
-                'verified' => sha1($token),
+                'verified' => \sha1($token),
                 'authCode' => $authCode,
             ],
             ReturnType::DEFAULT
@@ -140,9 +136,9 @@ class AuthToken
      */
     public function isValid(): bool
     {
-        $token = rtrim($this->getCrypto()->decrypt($this->token ?? ''));
+        $token = \rtrim($this->getCrypto()->decrypt($this->token ?? ''));
 
-        return ($token !== '') && (sha1($token) === $this->verified);
+        return ($token !== '') && (\sha1($token) === $this->verified);
     }
 
     /**
@@ -150,7 +146,7 @@ class AuthToken
      */
     public function get(): string
     {
-        return $this->isValid() ? rtrim($this->getCrypto()->decrypt($this->token ?? '')) : '';
+        return $this->isValid() ? \rtrim($this->getCrypto()->decrypt($this->token ?? '')) : '';
     }
 
     /**
@@ -162,7 +158,7 @@ class AuthToken
             return;
         }
 
-        Shop::Container()->getDB()->query('TRUNCATE TABLE tstoreauth', ReturnType::DEFAULT);
+        $this->db->query('TRUNCATE TABLE tstoreauth', ReturnType::DEFAULT);
         $this->load();
     }
 
@@ -175,11 +171,10 @@ class AuthToken
             return;
         }
 
-        $db    = Shop::Container()->getDB();
         $owner = Shop::Container()->getAdminAccount()->account()->kAdminlogin ?? 0;
 
         if ($owner > 0) {
-            $db->queryPrepared(
+            $this->db->queryPrepared(
                 "INSERT INTO tstoreauth (owner, auth_code, access_token, created_at, verified)
                     VALUES (:owner, :authCode, '', NOW(), '')
                     ON DUPLICATE KEY UPDATE
@@ -193,7 +188,7 @@ class AuthToken
                 ],
                 ReturnType::DEFAULT
             );
-            $db->queryPrepared(
+            $this->db->queryPrepared(
                 'DELETE FROM tstoreauth WHERE owner != :owner',
                 ['owner' => $owner],
                 ReturnType::DEFAULT
@@ -212,7 +207,7 @@ class AuthToken
             return;
         }
         $this->reset($authCode);
-        header('location: ' . self::AUTH_SERVER . '?' . http_build_query([
+        \header('Location: ' . self::AUTH_SERVER . '?' . \http_build_query([
                 'url'  => $returnURL,
                 'code' => $authCode
             ], '', '&'));
@@ -237,20 +232,17 @@ class AuthToken
 
         if ($authCode === null || $authCode !== $this->authCode) {
             $logger !== null && $logger->addError('Call responseToken with invalid authcode!');
-            http_response_code(404);
-
+            \http_response_code(404);
             exit;
         }
 
         if ($token === null || $token === '') {
-            http_response_code(200);
-
+            \http_response_code(200);
             exit;
         }
 
         $this->set($authCode, $token);
-        http_response_code($this->isValid() ? 200 : 404);
-
+        \http_response_code($this->isValid() ? 200 : 404);
         exit;
     }
 }

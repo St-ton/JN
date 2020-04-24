@@ -20,7 +20,7 @@
 						<td>{$license->getID()}</td>
 						<td>{$license->getName()}</td>
 						<td>
-							{include file='tpl_inc/licenses_referenced_item.tpl' referencedItem=$license->getReferencedItem()}
+							{include file='tpl_inc/licenses_referenced_item.tpl' license=$license}
 						</td>
 						<td>
                             {include file='tpl_inc/licenses_license.tpl' licData=$license->getLicense()}
@@ -62,7 +62,6 @@
 <script type="text/javascript">
 	$(document).ready(function () {
 		$('#active-licenses').on('submit', '.update-item-form', function (e) {
-			console.log(e.target);
 			var updateBTN = $(e.target).find('.update-item');
 			updateBTN.attr('disabled', true);
 			updateBTN.find('i').addClass('fa-spin');
@@ -71,13 +70,19 @@
                 url: '{$shopURL}/admin/licenses.php',
 				data: $(e.target).serialize()
 			}).done(function (r) {
-				console.log('Done!', r);
-				window.setTimeout(function () {
+				var result = JSON.parse(r);
+				console.log('got result: ', result);
+				if (result.id && result.html) {
+					var itemID = '#' + result.id;
+					if (result.action === 'update') {
+						itemID = '#license-item-' + result.id;
+					}
+					$(itemID).replaceWith(result.html);
 					updateBTN.attr('disabled', false);
 					updateBTN.find('i').removeClass('fa-spin');
-				}, 2000
-				);
-
+				} else {
+					console.log('Done!', r, result);
+				}
 			});
 			return false;
 		});

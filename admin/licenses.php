@@ -14,8 +14,6 @@ $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 
 $db      = Shop::Container()->getDB();
 $manager = new Manager($db);
-// @todo:
-// $lang = $oAccount->getGetText()->getLanguage()
 try {
     $manager->update();
 } catch (RequestException $e) {
@@ -25,17 +23,9 @@ try {
         'errorFetchLicenseAPI'
     );
 }
-$mapper   = new Mapper($db, $manager);
-$admin = new Admin($manager, $db, Shop::Container()->getCache());
-//$v1 = Version::parse('1.0.0');
-//$v2 = Version::parse('1.0.1');
-//Shop::dbg($v2->greaterThan($v1), true);
-if (!empty($_POST) && Form::validateToken()) {
-    Shop::dbg($_POST, false, 'POST:');
-    $admin->updateItem($_POST['item-id']);
-}
+$mapper = new Mapper($db, $manager);
+$admin  = new Admin($manager, $db, Shop::Container()->getCache());
+$admin->handle($smarty);
 
-$licenses = $mapper->getCollection();
-$smarty->assign('licenses', $licenses)
-    ->assign('lastUpdate', $lastItem->timestamp ?? null)
+$smarty->assign('licenses', $mapper->getCollection())
     ->display('licenses.tpl');

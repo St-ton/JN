@@ -95,11 +95,15 @@
                         {link href=$subCategory->getURL()}
                             {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'Y'}
                                 {block name='productlist-header-subcategories-image'}
-                                    {image fluid-grow=true lazy=true webp=true
-                                        src=$subCategory->getImage()
-                                        alt=$subCategory->getName()
-                                        class="mb-2 d-none d-md-block"
-                                    }
+                                    <div class="square square-image">
+                                        <div class="inner">
+                                            {image fluid-grow=true lazy=true webp=true
+                                                src=$subCategory->getImage()
+                                                alt=$subCategory->getName()
+                                                class="mb-2 d-none d-md-block"}
+                                        </div>
+                                    </div>
+
                                 {/block}
                             {/if}
                             {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'B'}

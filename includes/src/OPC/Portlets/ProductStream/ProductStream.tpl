@@ -37,7 +37,11 @@
             {foreach $productlist as $Artikel}
                 <div class="product-wrapper">
                     <a href="{$Artikel->cURLFull}">
-                        <img src="{$Artikel->Bilder[0]->cURLNormal}" alt="{$Artikel->cName}" title="{$Artikel->cName}">
+                        <div class="square square-image">
+                            <div class="inner">
+                                <img src="{$Artikel->Bilder[0]->cURLNormal}" alt="{$Artikel->cName}" title="{$Artikel->cName}">
+                            </div>
+                        </div>
                     </a>
                 </div>
             {/foreach}

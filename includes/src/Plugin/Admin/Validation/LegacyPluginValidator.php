@@ -16,13 +16,11 @@ final class LegacyPluginValidator extends AbstractValidator
     protected const BASE_DIR = \PFAD_ROOT . \PFAD_PLUGIN;
 
     /**
-     * @param int  $kPlugin
-     * @param bool $forUpdate
-     * @return int
+     * @inheritDoc
      */
-    public function validateByPluginID(int $kPlugin, bool $forUpdate = false): int
+    public function validateByPluginID(int $pluginID, bool $forUpdate = false): int
     {
-        $plugin = $this->db->select('tplugin', 'kPlugin', $kPlugin);
+        $plugin = $this->db->select('tplugin', 'kPlugin', $pluginID);
         if (empty($plugin->kPlugin)) {
             return InstallCode::NO_PLUGIN_FOUND;
         }
@@ -41,9 +39,7 @@ final class LegacyPluginValidator extends AbstractValidator
     }
 
     /**
-     * @param string $path
-     * @param bool   $forUpdate
-     * @return int
+     * @inheritDoc
      */
     public function validateByPath(string $path, bool $forUpdate = false): int
     {
@@ -65,10 +61,7 @@ final class LegacyPluginValidator extends AbstractValidator
     }
 
     /**
-     * @param      $xml
-     * @param bool $forUpdate
-     * @return int
-     * @former pluginPlausiIntern()
+     * @inheritDoc
      */
     public function pluginPlausiIntern($xml, bool $forUpdate): int
     {

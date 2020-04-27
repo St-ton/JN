@@ -73,8 +73,10 @@ class SimpleCaptchaService implements CaptchaServiceInterface
             $code  = \rand() . ':' . \time();
         }
 
-        Frontend::set('simplecaptcha.token', $token);
-        Frontend::set('simplecaptcha.code', $code);
+        if (Frontend::get('simplecaptcha.token') === null && Frontend::get('simplecaptcha.code') === null) {
+            Frontend::set('simplecaptcha.token', $token);
+            Frontend::set('simplecaptcha.code', $code);
+        }
 
         return $smarty->assign('captchaToken', $token)
                       ->assign('captchaCode', \sha1($code))

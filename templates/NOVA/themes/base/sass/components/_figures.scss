@@ -9,6 +9,12 @@
 	}
 }
 
+.slick-slide {
+	.square {
+		display: flex !important;
+	}
+}
+
 .square-image {
 	position: relative;
 	display: flex;
@@ -37,6 +43,17 @@
 		}
 	}
 }
-
+.fullscreen {
+	.square-image {
+		.inner {
+			img {
+				left: initial;
+				top: initial;
+				-webkit-transform: initial;
+				transform: initial;
+			}
+		}
+	}
+}
 
 .square-inner { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }

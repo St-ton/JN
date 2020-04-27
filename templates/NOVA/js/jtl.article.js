@@ -140,6 +140,7 @@
                 }
 
                 $galleryImages.css('max-height', maxHeight-otherElemHeight);
+                $('#gallery').css('max-height', maxHeight-otherElemHeight);
 
                 $('#gallery').slick('slickSetOption','initialSlide', current, true);
                 $('#gallery_preview').slick('slickGoTo', current, true);

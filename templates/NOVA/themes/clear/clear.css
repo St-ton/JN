@@ -19664,7 +19664,7 @@ aside .last-seen-link {
   margin: 0 -0.5rem;
 }
 .carousel-thumbnails .slick-slide {
-  padding: 0 0.5rem;
+  padding: 0;
 }
 .carousel-thumbnails .slick-arrow {
   flex: 0 0 auto;
@@ -19858,6 +19858,10 @@ aside .last-seen-link {
   padding-bottom: 100%;
 }
 
+.slick-slide .square, .slick-slide .productbox-image-wrapper {
+  display: flex !important;
+}
+
 .square-image {
   position: relative;
   display: flex;
@@ -19885,6 +19889,13 @@ aside .last-seen-link {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
+}
+
+.fullscreen .square-image .inner img {
+  left: initial;
+  top: initial;
+  -webkit-transform: initial;
+  transform: initial;
 }
 
 .square-inner, .productbox-image-wrapper-inner {
@@ -22013,6 +22024,12 @@ body {
   transition: opacity 300ms;
 }
 
+#shop-nav img {
+  width: 45px;
+  height: 45px;
+  object-fit: contain;
+}
+
 /* utilities */
 .rounded-top-left {
   border-top-left-radius: 0.125rem !important;
@@ -23064,9 +23081,6 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   background-color: rgba(82, 82, 82, 0.5);
   overflow: hidden;
 }
-#image_wrapper.fullscreen img {
-  width: initial;
-}
 #image_wrapper.fullscreen .product-actions {
   display: none;
 }
@@ -23084,6 +23098,9 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   color: #f5f7fa;
   padding: 6px;
   margin-right: 10px;
+}
+#image_wrapper.fullscreen #gallery {
+  margin-bottom: 0;
 }
 #image_wrapper.fullscreen #gallery .product-image {
   cursor: pointer;
@@ -23140,6 +23157,9 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   border-width: 10px 0px 10px 14px;
   border-color: transparent transparent transparent #ffffff;
 }
+#image_wrapper #gallery {
+  margin-bottom: 2rem;
+}
 #image_wrapper #gallery:not(.slick-initialized) {
   padding: 0 1rem;
 }
@@ -23151,7 +23171,6 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 #image_wrapper #gallery_preview:not(.slick-initialized) div.js-gallery-images {
   width: calc((100% - 49px)/5);
   min-width: calc((100% - 49px)/5);
-  padding: 0 0.5rem;
 }
 #image_wrapper #gallery_preview:not(.slick-initialized) div.js-gallery-images:not(.preview-first) {
   opacity: 0.2;

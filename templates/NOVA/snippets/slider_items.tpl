@@ -18,11 +18,15 @@
                     <input class="custom-control-input " type="radio" id="gift{$item->kArtikel}" name="gratisgeschenk" value="{$item->kArtikel}" onclick="submit();">
                     <label for="gift{$item->kArtikel}" class="custom-control-label {if $selectedFreegift===$item->kArtikel}badge-check{/if}">
                         {if $selectedFreegift===$item->kArtikel}{badge class="badge-circle"}<i class="fas fa-check mx-auto"></i>{/badge}{/if}
-                        {image lazy=true
-                            webp=true
-                            src=$item->Bilder[0]->cURLKlein
-                            fluid-grow=true
-                            alt=$item->cName}
+                        <div class="square square-image">
+                            <div class="inner">
+                                {image lazy=true
+                                webp=true
+                                src=$item->Bilder[0]->cURLKlein
+                                fluid-grow=true
+                                alt=$item->cName}
+                            </div>
+                        </div>
                         <div class="caption">
                             <p class="small text-muted">{lang key='freeGiftFrom1'} {$item->cBestellwert} {lang key='freeGiftFrom2'}</p>
                             <p>{$item->cName}</p>

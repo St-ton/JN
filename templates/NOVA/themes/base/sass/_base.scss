@@ -880,3 +880,11 @@ body {
   opacity: 1;
   transition: opacity 300ms;
 }
+
+#shop-nav {
+  img {
+    width: 45px;
+    height: 45px;
+    object-fit: contain;
+  }
+}

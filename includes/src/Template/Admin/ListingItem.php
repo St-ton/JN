@@ -1,0 +1,754 @@
+<?php declare(strict_types=1);
+
+namespace JTL\Template\Admin;
+
+use DateTime;
+use InvalidArgumentException;
+use JTL\Backend\FileCheck;
+use JTL\Helpers\GeneralObject;
+use JTL\Mapper\PluginValidation;
+use JTL\Plugin\InstallCode;
+use JTL\Plugin\PluginInterface;
+use JTL\Plugin\State;
+use JTL\Shop;
+use JTL\Template\Model;
+use JTLShop\SemVer\Version;
+
+/**
+ * Class ListingItem
+ * @package JTL\Template\Admin
+ */
+class ListingItem
+{
+    /**
+     * @var string
+     */
+    private $path = '';
+
+    /**
+     * @var string
+     */
+    private $dir = '';
+
+    /**
+     * @var string
+     */
+    private $name = '';
+
+    /**
+     * @var Version
+     */
+    private $version;
+
+    /**
+     * @var Version
+     */
+    private $shopVersion;
+
+    /**
+     * @var string
+     */
+    private $description = '';
+
+    /**
+     * @var string
+     */
+    private $author = '';
+
+    /**
+     * @var string|null
+     */
+    private $preview = '';
+
+    /**
+     * @var string|null
+     */
+    private $url = '';
+
+    /**
+     * @var int
+     */
+    private $id = 0;
+
+    /**
+     * @var string
+     */
+    private $framework = '';
+
+    /**
+     * @var int
+     */
+    private $errorCode = 0;
+
+    /**
+     * @var string
+     */
+    private $errorMessage = '';
+
+    /**
+     * @var bool
+     */
+    private $hasError = false;
+
+    /**
+     * @var bool
+     */
+    private $available = true;
+
+    /**
+     * @var bool
+     */
+    private $active = false;
+
+    /**
+     * @var int
+     */
+    private $state = State::NONE;
+
+    /**
+     * @var bool|Version
+     */
+    private $updateAvailable = false;
+
+    /**
+     * @var bool
+     */
+    private $hasLicenseCheck = false;
+
+    /**
+     * @var bool
+     */
+    private $isChild = false;
+
+    /**
+     * @var string
+     */
+    private $license = '';
+
+    /**
+     * @var string|null
+     */
+    private $updateFromDir;
+
+    /**
+     * @var DateTime|null
+     */
+    private $dateInstalled;
+
+    /**
+     * @var int
+     */
+    private $langVarCount = 0;
+
+    /**
+     * @var int
+     */
+    private $linkCount = 0;
+
+    /**
+     * @var int
+     */
+    private $optionsCount = 0;
+
+    /**
+     * @var string|null
+     */
+    private $readmeMD;
+
+    /**
+     * @var string|null
+     */
+    private $licenseMD;
+
+    /**
+     * @var string|null
+     */
+    private $parent;
+
+    /**
+     * @var array|bool|null
+     */
+    private $checksums;
+
+    /**
+     * @param array $xml
+     * @return ListingItem
+     */
+    public function parseXML(array $xml): self
+    {
+        $node       = null;
+        $this->name = $xml['cVerzeichnis'];
+        $this->dir  = $xml['cVerzeichnis'];
+        $node       = $xml['Template'][0] ?? null;
+        if ($node !== null) {
+            if (!isset($node['ShopVersion'])) {
+                return $this->fail();
+            }
+            if (!isset($node['Name'])) {
+                return $this->fail();
+            }
+            $this->name         = $node['Name'];
+            $this->description  = $node['Description'] ?? '';
+            $this->author       = $node['Author'] ?? '';
+            $this->url          = $node['URL'] ?? null;
+            $this->preview      = $node['Preview'] ?? null;
+            $this->framework    = $node['Framework'] ?? null;
+            $this->isChild      = isset($node['Parent']);
+            $this->parent = $node['Parent'] ?? null;
+            $version            = $node['Version'] ?? $node['ShopVersion'];
+            $this->optionsCount = isset($node['Settings'][0]) ? 1 : 0;
+            $this->shopVersion  = Version::parse($node['ShopVersion']);
+            $this->addChecksums();
+            try {
+                $this->version = Version::parse($version);
+            } catch (InvalidArgumentException $e) {
+                return $this->fail();
+            }
+        }
+        if ($xml['cFehlercode'] !== InstallCode::OK) {
+            $this->available    = false;
+            $this->hasError     = true;
+            $this->errorCode    = $xml['cFehlercode'];
+            $this->errorMessage = '@todo! error msg'; // @todo
+
+            return $this->fail();
+        }
+
+        return $this;
+    }
+
+
+    private function addChecksums(): void
+    {
+        $files       = [];
+        $errorsCount = 0;
+        $base        = \PFAD_ROOT . \PFAD_TEMPLATES . \basename($this->dir) . '/';
+        $checker     = new FileCheck();
+        $res = $checker->validateCsvFile($base . 'checksums.csv', $files, $errorsCount, $base);
+        if ($res === FileCheck::ERROR_INPUT_FILE_MISSING || $res === FileCheck::ERROR_NO_HASHES_FOUND) {
+            $this->checksums = null;
+            return;
+        }
+
+        $this->checksums = $errorsCount === 0 ? true : $files;
+    }
+
+    /**
+     * @return $this
+     */
+    private function fail(): self
+    {
+        $this->version     = Version::parse('0.0.0');
+        $this->shopVersion = $this->shopVersion ?? $this->version;
+
+        return $this;
+    }
+
+    public function loadFromTemplate(Model $plugin): self
+    {
+        $meta = $plugin->getMeta();
+        $this->setName($meta->getName());
+        $this->setDescription($meta->getDescription());
+        $this->setAuthor($meta->getAuthor());
+        $this->setID($plugin->getID());
+        $this->setFramework($plugin->getPluginID());
+        $this->setPath($plugin->getPaths()->getBaseDir());
+        $this->setDir($plugin->getPaths()->getVersionedPath());
+        $this->setIsLegacy($plugin->isLegacy());
+        $this->setPreview($meta->getIcon());
+        $this->setVersion($meta->getSemVer());
+        $this->setState($plugin->getState());
+        $this->setDateInstalled($meta->getDateInstalled());
+        $this->setLangVarCount($plugin->getLocalization()->getLangVars()->count());
+        $this->setLinkCount($plugin->getLinks()->getLinks()->count());
+        $this->setHasLicenseCheck($plugin->getLicense()->hasLicenseCheck());
+        $this->setOptionsCount($plugin->getConfig()->getOptions()->count()
+            + $plugin->getAdminMenu()->getItems()->count());
+        $this->setReadmeMD($meta->getReadmeMD());
+        $this->setLicenseMD($meta->getLicenseMD());
+        $this->setLicenseKey($plugin->getLicense()->getKey());
+        $this->setUpdateAvailable($plugin->getMeta()->getUpdateAvailable());
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDir(): string
+    {
+        return $this->dir;
+    }
+
+    /**
+     * @param string $dir
+     */
+    public function setDir(string $dir): void
+    {
+        $this->dir = $dir;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPath(): string
+    {
+        return $this->path;
+    }
+
+    /**
+     * @param string $path
+     */
+    public function setPath(string $path): void
+    {
+        $this->path = $path;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setName(string $name): void
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * @return Version
+     */
+    public function getVersion(): Version
+    {
+        return $this->version;
+    }
+
+    /**
+     * @param Version $version
+     */
+    public function setVersion(Version $version): void
+    {
+        $this->version = $version;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param string $description
+     */
+    public function setDescription(string $description): void
+    {
+        $this->description = $description;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAuthor(): string
+    {
+        return $this->author;
+    }
+
+    /**
+     * @param string $author
+     */
+    public function setAuthor(string $author): void
+    {
+        $this->author = $author;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPreview(): ?string
+    {
+        return $this->preview;
+    }
+
+    /**
+     * @param string|null $preview
+     */
+    public function setPreview(?string $preview): void
+    {
+        $this->preview = $preview;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getFramework(): ?string
+    {
+        return $this->framework;
+    }
+
+    /**
+     * @param string|null $framework
+     */
+    public function setFramework(?string $framework): void
+    {
+        $this->framework = $framework;
+    }
+
+    /**
+     * @return int
+     */
+    public function getID(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setID(int $id): void
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * @return int
+     */
+    public function getErrorCode(): int
+    {
+        return $this->errorCode;
+    }
+
+    /**
+     * @param int $errorCode
+     */
+    public function setErrorCode(int $errorCode): void
+    {
+        $this->errorCode = $errorCode;
+    }
+
+    /**
+     * @return string
+     */
+    public function getErrorMessage(): string
+    {
+        return $this->errorMessage;
+    }
+
+    /**
+     * @param string $errorMessage
+     */
+    public function setErrorMessage(string $errorMessage): void
+    {
+        $this->errorMessage = $errorMessage;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasError(): bool
+    {
+        return $this->hasError;
+    }
+
+    /**
+     * @param bool $hasError
+     */
+    public function setHasError(bool $hasError): void
+    {
+        $this->hasError = $hasError;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAvailable(): bool
+    {
+        return $this->available;
+    }
+
+    /**
+     * @param bool $available
+     */
+    public function setAvailable(bool $available): void
+    {
+        $this->available = $available;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isActive(): bool
+    {
+        return $this->active;
+    }
+
+    /**
+     * @param bool $active
+     */
+    public function setActive(bool $active): void
+    {
+        $this->active = $active;
+    }
+
+    /**
+     * @return int
+     */
+    public function getState(): int
+    {
+        return $this->state;
+    }
+
+    /**
+     * @param int $state
+     */
+    public function setState(int $state): void
+    {
+        $this->state = $state;
+    }
+
+    /**
+     * @return bool|Version
+     */
+    public function isUpdateAvailable()
+    {
+        return $this->updateAvailable;
+    }
+
+    /**
+     * @param bool|Version $updateAvailable
+     */
+    public function setUpdateAvailable($updateAvailable): void
+    {
+        $this->updateAvailable = $updateAvailable;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getUpdateFromDir(): ?string
+    {
+        return $this->updateFromDir;
+    }
+
+    /**
+     * @param string|null $updateFromDir
+     */
+    public function setUpdateFromDir(?string $updateFromDir): void
+    {
+        $this->updateFromDir = $updateFromDir;
+    }
+
+    /**
+     * @return DateTime|null
+     */
+    public function getDateInstalled(): ?DateTime
+    {
+        return $this->dateInstalled;
+    }
+
+    /**
+     * @param DateTime|null $dateInstalled
+     */
+    public function setDateInstalled(?DateTime $dateInstalled): void
+    {
+        $this->dateInstalled = $dateInstalled;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLangVarCount(): int
+    {
+        return $this->langVarCount;
+    }
+
+    /**
+     * @param int $langVarCount
+     */
+    public function setLangVarCount(int $langVarCount): void
+    {
+        $this->langVarCount = $langVarCount;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasLicenseCheck(): bool
+    {
+        return $this->hasLicenseCheck;
+    }
+
+    /**
+     * @param bool $hasLicenseCheck
+     */
+    public function setHasLicenseCheck(bool $hasLicenseCheck): void
+    {
+        $this->hasLicenseCheck = $hasLicenseCheck;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLicenseKey(): string
+    {
+        return $this->license;
+    }
+
+    /**
+     * @param string $license
+     */
+    public function setLicenseKey(string $license): void
+    {
+        $this->license = $license;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLinkCount(): int
+    {
+        return $this->linkCount;
+    }
+
+    /**
+     * @param int $linkCount
+     */
+    public function setLinkCount(int $linkCount): void
+    {
+        $this->linkCount = $linkCount;
+    }
+
+    /**
+     * @return int
+     */
+    public function getOptionsCount(): int
+    {
+        return $this->optionsCount;
+    }
+
+    /**
+     * @param int $optionsCount
+     */
+    public function setOptionsCount(int $optionsCount): void
+    {
+        $this->optionsCount = $optionsCount;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getReadmeMD(): ?string
+    {
+        return $this->readmeMD;
+    }
+
+    /**
+     * @param string|null $readmeMD
+     */
+    public function setReadmeMD(?string $readmeMD): void
+    {
+        $this->readmeMD = $readmeMD;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getLicenseMD(): ?string
+    {
+        return $this->licenseMD;
+    }
+
+    /**
+     * @param string|null $licenseMD
+     */
+    public function setLicenseMD(?string $licenseMD): void
+    {
+        $this->licenseMD = $licenseMD;
+    }
+
+    /**
+     * @return Version
+     */
+    public function getShopVersion(): Version
+    {
+        return $this->shopVersion;
+    }
+
+    /**
+     * @param Version $shopVersion
+     */
+    public function setShopVersion(Version $shopVersion): void
+    {
+        $this->shopVersion = $shopVersion;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getURL(): ?string
+    {
+        return $this->url;
+    }
+
+    /**
+     * @param string|null $url
+     */
+    public function setURL(?string $url): void
+    {
+        $this->url = $url;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isChild(): bool
+    {
+        return $this->isChild;
+    }
+
+    /**
+     * @param bool $isChild
+     */
+    public function setIsChild(bool $isChild): void
+    {
+        $this->isChild = $isChild;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getParent(): ?string
+    {
+        return $this->parent;
+    }
+
+    /**
+     * @param string|null $parent
+     */
+    public function setParent(?string $parent): void
+    {
+        $this->parent = $parent;
+    }
+
+    /**
+     * @return array|bool|null
+     */
+    public function getChecksums()
+    {
+        return $this->checksums;
+    }
+
+    /**
+     * @param array|bool|null $checksums
+     */
+    public function setChecksums($checksums): void
+    {
+        $this->checksums = $checksums;
+    }
+}

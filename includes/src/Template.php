@@ -2,9 +2,12 @@
 
 namespace JTL;
 
+use Exception;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Template as TemplateHelper;
 use JTL\Plugin\State;
+use JTL\Template\Model;
+use LogicException;
 use SimpleXMLElement;
 use stdClass;
 use function Functional\group;
@@ -99,54 +102,36 @@ class Template
      */
     public function init(): self
     {
-        if (isset($_SESSION['template']->cTemplate)) {
-            self::$cTemplate = $_SESSION['template']->cTemplate;
-            self::$parent    = $_SESSION['template']->parent;
-            $this->name      = $_SESSION['template']->name;
-            $this->author    = $_SESSION['template']->author;
-            $this->url       = $_SESSION['template']->url;
-            $this->version   = $_SESSION['template']->version;
-            $this->preview   = $_SESSION['template']->preview;
-
-            return $this;
-        }
-        $cacheID = 'current_template_' .
-            (self::$isAdmin === true ? '_admin' : '');
+        $cacheID = 'current_template_' . (self::$isAdmin === true ? '_admin' : '');
         if (($template = Shop::Container()->getCache()->get($cacheID)) !== false) {
-            self::$cTemplate = $template->cTemplate;
-            self::$parent    = $template->parent;
-            $this->name      = $template->name;
-            $this->author    = $template->author;
-            $this->url       = $template->url;
-            $this->version   = $template->version;
-            $this->preview   = $template->preview;
+            $this->loadFromObject($template);
 
             return $this;
         }
-        $template = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'standard');
-        if (!empty($template)) {
-            self::$cTemplate = $template->cTemplate;
-            self::$parent    = !empty($template->parent) ? $template->parent : null;
-            $this->name      = $template->name;
-            $this->author    = $template->author;
-            $this->url       = $template->url;
-            $this->version   = $template->version;
-            $this->preview   = $template->preview;
-
-            $tplObject             = new stdClass();
-            $tplObject->cTemplate  = self::$cTemplate;
-            $tplObject->isMobile   = false;
-            $tplObject->parent     = self::$parent;
-            $tplObject->name       = $this->name;
-            $tplObject->version    = $this->version;
-            $tplObject->author     = $this->author;
-            $tplObject->url        = $this->url;
-            $tplObject->preview    = $this->preview;
-            $_SESSION['template']  = $tplObject;
-            $_SESSION['cTemplate'] = self::$cTemplate;
-
+        try {
+            $template = Model::loadByAttributes(['eTyp' => 'standard'], Shop::Container()->getDB());
+            $this->loadFromObject($template);
             Shop::Container()->getCache()->set($cacheID, $template, [\CACHING_GROUP_TEMPLATE]);
+        } catch (Exception $e) {
+            throw new LogicException('No template loaded');
         }
+
+        return $this;
+    }
+
+    /**
+     * @param object $object
+     * @return $this
+     */
+    private function loadFromObject($object): self
+    {
+        self::$cTemplate = $object->cTemplate;
+        self::$parent    = !empty($object->parent) ? $object->parent : null;
+        $this->name      = $object->name;
+        $this->author    = $object->author;
+        $this->url       = $object->url;
+        $this->version   = $object->version;
+        $this->preview   = $object->preview;
 
         return $this;
     }
@@ -224,7 +209,7 @@ class Template
                 $frontend  = \PFAD_PLUGIN_VERSION . $item->nVersion . '/' . $frontend;
             }
             $item->rel .= $frontend;
-            $item->abs  = \PFAD_ROOT . $item->rel;
+            $item->abs = \PFAD_ROOT . $item->rel;
         }
 
         return $items;
@@ -432,8 +417,8 @@ class Template
     }
 
     /**
-     * @deprecated since 5.0.0
      * @return bool
+     * @deprecated since 5.0.0
      */
     public function hasMobileTemplate(): bool
     {
@@ -474,7 +459,6 @@ class Template
      */
     public function setzeKundenTemplate(): self
     {
-        unset($_SESSION['template'], $_SESSION['cTemplate']);
         $this->init();
 
         return $this;

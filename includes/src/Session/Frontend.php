@@ -222,7 +222,7 @@ class Frontend extends AbstractSession
      */
     private function updateGlobals(): void
     {
-        unset($_SESSION['cTemplate'], $_SESSION['template'], $_SESSION['oKategorie_arr_new']);
+        unset($_SESSION['oKategorie_arr_new']);
         $_SESSION['ks']       = [];
         $_SESSION['Sprachen'] = LanguageHelper::getInstance()->gibInstallierteSprachen();
         Currency::setCurrencies(true);

@@ -6,6 +6,7 @@
     <ShopVersion>5.0.0</ShopVersion>
     <Preview>preview.png</Preview>
     <Description>JTL-Shop Responsive-Template</Description>
+    <Framework>Bootstrap4</Framework>
     <Settings>
         <Section Name="Allgemein" Key="general">
             <Setting Description="Komprimierung von JavaScript- und CSS-Dateien" Key="use_minify" Type="select" Value="N">

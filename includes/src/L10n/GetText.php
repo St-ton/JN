@@ -160,6 +160,16 @@ class GetText
     }
 
     /**
+     * @param string                          $domain
+     * @param \JTL\Template\Admin\ListingItem $item
+     * @return GetText
+     */
+    public function loadTemplateItemLocale(string $domain, \JTL\Template\Admin\ListingItem $item): self
+    {
+        return $this->loadTranslations(\PFAD_ROOT . \PFAD_TEMPLATES . $item->getDir() . '/', $domain);
+    }
+
+    /**
      * @param string $dir
      * @param string $domain
      * @return Translations

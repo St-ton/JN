@@ -29,6 +29,12 @@ $db             = Shop::Container()->getDB();
 $admin          = Request::getVar('admin') === 'true';
 $templateHelper = TemplateHelper::getInstance(true);
 $templateHelper->disableCaching();
+
+$cache = Shop::Container()->getCache();
+$validator = new Template\Admin\Validation\TemplateValidator($db, new \JTL\XMLParser());
+$lstng = new Template\Admin\Listing($db, $validator);
+//Shop::dbg($lstng->getAll(), true, 'ALL:');
+
 if (isset($_POST['key'], $_POST['upload'])) {
     $file     = PFAD_ROOT . PFAD_TEMPLATES . $_POST['upload'];
     $response = (object)['status' => 'FAILED'];
@@ -92,9 +98,9 @@ if (Request::postVar('type') === 'settings' && Form::validateToken()) {
     $tplConfXML   = $template->leseEinstellungenXML($dir, $parentFolder);
     $sectionCount = count($_POST['cSektion']);
     for ($i = 0; $i < $sectionCount; $i++) {
-        $section = $db->escape($_POST['cSektion'][$i]);
-        $name    = $db->escape($_POST['cName'][$i]);
-        $value   = $db->escape($_POST['cWert'][$i]);
+        $section = $_POST['cSektion'][$i];
+        $name    = $_POST['cName'][$i];
+        $value   = $_POST['cWert'][$i];
         // for uploads, the value of an input field is the $_FILES index of the uploaded file
         if (mb_strpos($value, 'upload-') === 0) {
             // all upload fields have to start with "upload-" - so check for that
@@ -272,7 +278,9 @@ if (mb_strlen(Request::getVar('settings', '')) > 0 && Form::validateToken()) {
 
     $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
 }
+//dd($lstng->getAll());
 $smarty->assign('admin', ($admin === true) ? 1 : 0)
+    ->assign('listingItems', $lstng->getAll())
        ->assign('oTemplate_arr', $templateHelper->getFrontendTemplates())
        ->assign('oAdminTemplate_arr', $templateHelper->getAdminTemplates())
        ->assign('oStoredTemplate_arr', $templateHelper->getStoredTemplates())

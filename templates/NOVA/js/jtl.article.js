@@ -299,9 +299,11 @@
         registerHoverVariations: function ($wrapper) {
             $('.variations label.variation', $wrapper)
                 .on('mouseenter', function (e) {
-                    $('.variation-image-preview.vt' + $(this).data('value'))
-                        .addClass('show d-md-block')
-                        .css('top', $(this).offset().top - $(this).closest('#content').position().top - $('.js-gallery-images').innerHeight()/2 - 12);
+                    let mainImageHeight = $('.js-gallery-images').innerHeight();
+                        $('.variation-image-preview.vt' + $(this).data('value')).addClass('show d-md-block')
+                        .css('top', $(this).offset().top - $(this).closest('#content').position().top - mainImageHeight/2)
+                        .find('img')
+                            .height(mainImageHeight);
                 })
                 .on('mouseleave', function (e) {
                     $('.variation-image-preview.vt' + $(this).data('value')).removeClass('show d-md-block');
@@ -311,9 +313,12 @@
                 .on('show.bs.select', function () {
                     $(this).parent().find('li .variation')
                         .on('mouseenter', function () {
+                            let mainImageHeight = $('.js-gallery-images').innerHeight();
                             $('.variation-image-preview.vt' + $(this).find('span[data-value]').data("value"))
                                 .addClass('show d-md-block')
-                                .css('top', $(this).offset().top - $(this).closest('#content').position().top - $('.js-gallery-images').innerHeight()/2 - 12);
+                                .css('top', $(this).offset().top - $(this).closest('#content').position().top - mainImageHeight/2)
+                                .find('img')
+                                    .height(mainImageHeight);
                         })
                         .on('mouseleave', function () {
                             $('.variation-image-preview.vt' + $(this).find('span[data-value]').data("value"))

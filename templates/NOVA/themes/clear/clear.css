@@ -22030,6 +22030,12 @@ body {
   object-fit: contain;
 }
 
+.box-compare img, .box-wishlist img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+}
+
 /* utilities */
 .rounded-top-left {
   border-top-left-radius: 0.125rem !important;
@@ -23134,6 +23140,9 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
     z-index: 1070;
     opacity: 1;
   }
+}
+#image_wrapper .variation-image-preview img {
+  object-fit: contain;
 }
 #image_wrapper .variation-image-preview::before, #image_wrapper .variation-image-preview::after {
   left: 100%;

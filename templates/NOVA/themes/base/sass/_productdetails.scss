@@ -111,6 +111,9 @@
 				opacity: 1;
 			}
 		}
+		img {
+			object-fit: contain;
+		}
 		&::before, &::after {
 			left: 100%;
 			top: 50%;

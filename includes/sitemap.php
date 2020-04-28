@@ -1,5 +1,6 @@
 <?php
 
+use JTL\Crawler;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -45,15 +46,9 @@ sendRequestFile($cDatei);
  */
 function getRequestBot(): int
 {
-    foreach (array_keys(Visitor::getSpiders()) as $agent) {
-        if (mb_stripos($_SERVER['HTTP_USER_AGENT'], $agent) !== false) {
-            $bot = Shop::Container()->getDB()->select('tbesucherbot', 'cUserAgent', $agent);
-
-            return isset($bot->kBesucherBot) ? (int)$bot->kBesucherBot : 0;
-        }
-    }
-
-    return 0;
+    $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? null;
+    $bot       = Crawler::getByUserAgent($userAgent);
+    return isset($bot->kBesucherBot) ? (int)$bot->kBesucherBot : 0;
 }
 
 /**

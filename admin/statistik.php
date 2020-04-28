@@ -3,6 +3,7 @@
 use JTL\Helpers\Request;
 use JTL\Pagination\Filter;
 use JTL\Pagination\Pagination;
+use JTL\Crawler;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'statistik_inc.php';
@@ -48,6 +49,49 @@ if (in_array($statsType, $pie, true)) {
     $members = gibMappingDaten($statsType);
     $smarty->assign('linechart', prepareLineChartStats($stats, $statsTypeName, $axisNames))
         ->assign('ylabel', $members['nCount'] ?? 0);
+}
+if ($statsType === 3) {
+    if (Request::postInt('delete_crawler') === 1) {
+        $selectedCrawler = Request::postVar('selectedCrawler');
+        Crawler::deleteBatch($selectedCrawler);
+    }
+    if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
+        $backTab = Request::verifyGPDataString('tab');
+        $smarty->assign('cTab', $backTab);
+    }
+    $crawlerPagination = (new Pagination('crawler'))
+        ->setItemArray(Crawler::getAll())
+        ->assemble();
+    $smarty->assign('crawler_arr', $crawlerPagination->getPageItems());
+    $smarty->assign('crawlerPagination', $crawlerPagination);
+    if (Request::verifyGPCDataInt('edit') === 1 || Request::verifyGPCDataInt('new') === 1) {
+        if (Request::postInt('save_crawler') === 1) {
+            if (!empty(Request::postVar('cUserAgent')) && !empty(Request::postVar('cBeschreibung'))) {
+                $id     = Request::postInt('id');
+                $item   = [
+                    'cUserAgent' => Request::postVar('cUserAgent'),
+                    'cBeschreibung' => Request::postVar('cBeschreibung'),
+                    'kBesucherBot' => (int)$id
+                ];
+                $result = Crawler::set($item);
+                if ($result === -1) {
+                    Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, __('missingCrawlerFields'), 'missingCrawlerFields');
+                } else {
+                    header('Location: statistik.php?s=3&tab=settings');
+                }
+            } else {
+                Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, __('missingCrawlerFields'), 'missingCrawlerFields');
+            }
+        }
+        $id = Request::verifyGPCDataInt('id');
+        if ($id === 0) {
+            $crawler = new Crawler();
+        } else {
+            $crawler = Crawler::get($id);
+        }
+        $smarty->assign('crawler', $crawler);
+        $smarty->display('tpl_inc/crawler_edit.tpl');
+    }
 }
 $members = [];
 foreach ($stats as $stat) {

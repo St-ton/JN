@@ -40,3 +40,39 @@ msgstr "Sales revenues"
 
 msgid "statisticType"
 msgstr "Statistics type"
+
+msgid "crawlerSettings"
+msgstr "Settings"
+
+msgid "crawlerOverviewTitle"
+msgstr "Crawler Overview"
+
+msgid "newCrawler"
+msgstr "Add new crawler"
+
+msgid "createCrawler"
+msgstr "Add crawler"
+
+msgid "editCrawler"
+msgstr "Edit crawler"
+
+msgid "crawlerUserAgent"
+msgstr "Crawler name (useragent)"
+
+msgid "crawlerDescription"
+msgstr "Crawler description"
+
+msgid "crawlerListUserAgent"
+msgstr "Useragent"
+
+msgid "crawlerListDescription"
+msgstr "Description"
+
+msgid "missingCrawlerFields"
+msgstr "Please complete all mandatory fields"
+
+msgid "crawlerUserAgentHint"
+msgstr "Hier legen Sie fest, welche Crawler </br> vom Besucherzähler ausgeschlossen werden sollen."
+
+msgid "crawlerDescriptionHint"
+msgstr "Hier legen Sie eine genauere Beschreibung für den Crawler fest."

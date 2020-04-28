@@ -4,6 +4,7 @@ namespace JTL;
 
 use JTL\DB\ReturnType;
 use JTL\Services\JTL\Validation\Rules\DateTime;
+use JTL\Helpers\Request;
 
 /**
  * Class Crawler
@@ -43,10 +44,22 @@ class Crawler
     public $dZeit;
 
     /**
-     * @var $id int
-     * @return object
+     * @param $kBesucherBot int
+     * @param string|null $cUserAgent
+     * @param string|null $cBeschreibung
      */
-    public static function get(int $id): object
+    public function __construct(int $kBesucherBot = 0, string $cUserAgent = null, string $cBeschreibung = null)
+    {
+        $this->kBesucherBot  = $kBesucherBot;
+        $this->cUserAgent    = $cUserAgent;
+        $this->cBeschreibung = $cBeschreibung;
+    }
+
+    /**
+     * @var $id int
+     *  @return object|int
+     */
+    public static function getById(int $id)
     {
         return Shop::Container()->getDB()->queryPrepared(
             'SELECT * FROM tbesucherbot WHERE kBesucherBot = :id LIMIT 1',
@@ -56,7 +69,7 @@ class Crawler
     }
 
     /**
-     * @var $id int
+     * @var $userAgent string
      * @return object|bool
      */
     public static function getByUserAgent(string $userAgent)
@@ -64,35 +77,34 @@ class Crawler
         $crawler = self::getAll();
         $result  = array_filter($crawler, static function ($item) use ($userAgent) {
             return mb_stripos($item->cUserAgent, $userAgent) !== false;
-        }, ARRAY_FILTER_USE_BOTH);
+        });
         $result  = array_values($result);
         return count($result) > 0 ? (object)$result[0] : false;
     }
 
     /**
+     * @var $item object
      * @return bool
      */
-    public static function set($item): bool
+    public static function setCrawler(object $item): bool
     {
         Shop::Container()->getCache()->flush('crawler');
-        if (isset($item['kBesucherBot'], $item['cUserAgent'], $item['cBeschreibung']) && $item['kBesucherBot'] > 0) {
+        if (isset($item->cUserAgent, $item->cBeschreibung) && !empty($item->kBesucherBot)) {
             return Shop::Container()->getDB()->update(
                 'tbesucherbot',
                 'kBesucherBot',
-                $item['kBesucherBot'],
-                (object)$item
-            );
-        } elseif ($item['kBesucherBot'] === 0) {
-            return Shop::Container()->getDB()->insert(
-                'tbesucherbot',
-                (object)$item
+                $item->kBesucherBot,
+                $item
             );
         }
-        return -1;
+        return Shop::Container()->getDB()->insert(
+            'tbesucherbot',
+            $item
+        );
     }
 
     /**
-     * @return array|mixed
+     * @return array
      */
     public static function getAll(): array
     {
@@ -108,8 +120,8 @@ class Crawler
     }
 
     /**
-     * @return bool
      * @var $ids array
+     * @return bool
      */
     public static function deleteBatch(array $ids): bool
     {
@@ -118,12 +130,46 @@ class Crawler
             return (int)$id;
         }, $ids);
         $where_in = '('.implode(',', $ids).')';
-
         $db->executeQuery(
             'DELETE FROM tbesucherbot WHERE kBesucherBot IN '.$where_in.' ',
             ReturnType::DEFAULT
         );
         Shop::Container()->getCache()->flush('crawler');
         return true;
+    }
+
+    /**
+     * @return object|mixed
+     */
+    public static function checkSubmit()
+    {
+        $crawler = false;
+        if (Request::postInt('delete_crawler') === 1) {
+            $selectedCrawler = Request::postVar('selectedCrawler');
+            self::deleteBatch($selectedCrawler);
+        }
+        if (Request::postInt('save_crawler') === 1) {
+            if (!empty(Request::postVar('cUserAgent')) && !empty(Request::postVar('cBeschreibung'))) {
+                $crawlerId = Request::postInt('id');
+                $item      = new self((int)$crawlerId, Request::postVar('cUserAgent'), Request::postVar('cBeschreibung'));
+                $result    = self::setCrawler($item);
+                if ($result === -1) {
+                    Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, __('missingCrawlerFields'), 'missingCrawlerFields');
+                } else {
+                    header('Location: statistik.php?s=3&tab=settings');
+                }
+            } else {
+                Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, __('missingCrawlerFields'), 'missingCrawlerFields');
+            }
+        }
+        if (Request::verifyGPCDataInt('edit') === 1 || Request::verifyGPCDataInt('new') === 1) {
+            $crawlerId = Request::verifyGPCDataInt('id');
+            if ($crawlerId === 0) {
+                $crawler = new self();
+            } else {
+                $crawler = self::getById($crawlerId);
+            }
+        }
+        return $crawler;
     }
 }

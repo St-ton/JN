@@ -51,58 +51,31 @@ if (in_array($statsType, $pie, true)) {
         ->assign('ylabel', $members['nCount'] ?? 0);
 }
 if ($statsType === 3) {
-    if (Request::postInt('delete_crawler') === 1) {
-        $selectedCrawler = Request::postVar('selectedCrawler');
-        Crawler::deleteBatch($selectedCrawler);
-    }
-    if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
-        $backTab = Request::verifyGPDataString('tab');
-        $smarty->assign('cTab', $backTab);
-    }
-    $crawlerPagination = (new Pagination('crawler'))
-        ->setItemArray(Crawler::getAll())
-        ->assemble();
-    $smarty->assign('crawler_arr', $crawlerPagination->getPageItems());
-    $smarty->assign('crawlerPagination', $crawlerPagination);
-    if (Request::verifyGPCDataInt('edit') === 1 || Request::verifyGPCDataInt('new') === 1) {
-        if (Request::postInt('save_crawler') === 1) {
-            if (!empty(Request::postVar('cUserAgent')) && !empty(Request::postVar('cBeschreibung'))) {
-                $id     = Request::postInt('id');
-                $item   = [
-                    'cUserAgent' => Request::postVar('cUserAgent'),
-                    'cBeschreibung' => Request::postVar('cBeschreibung'),
-                    'kBesucherBot' => (int)$id
-                ];
-                $result = Crawler::set($item);
-                if ($result === -1) {
-                    Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, __('missingCrawlerFields'), 'missingCrawlerFields');
-                } else {
-                    header('Location: statistik.php?s=3&tab=settings');
-                }
-            } else {
-                Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, __('missingCrawlerFields'), 'missingCrawlerFields');
-            }
+    $crawler = Crawler::checkSubmit();
+    if ($crawler === false) {
+        if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
+            $backTab = Request::verifyGPDataString('tab');
+            $smarty->assign('cTab', $backTab);
         }
-        $id = Request::verifyGPCDataInt('id');
-        if ($id === 0) {
-            $crawler = new Crawler();
-        } else {
-            $crawler = Crawler::get($id);
-        }
-        $smarty->assign('crawler', $crawler);
-        $smarty->display('tpl_inc/crawler_edit.tpl');
+        $crawlerPagination = (new Pagination('crawler'))
+            ->setItemArray(Crawler::getAll())
+            ->assemble();
+        $smarty->assign('crawler_arr', $crawlerPagination->getPageItems());
+        $smarty->assign('crawlerPagination', $crawlerPagination);
     }
 }
 $members = [];
 foreach ($stats as $stat) {
     $members[] = array_keys(get_object_vars($stat));
 }
-
 $pagination = (new Pagination())
     ->setItemCount(count($stats))
     ->assemble();
-
-$smarty->assign('headline', $statsTypeName)
+if ($statsType === 3 && is_object($crawler)) {
+    $smarty->assign('crawler', $crawler);
+    $smarty->display('tpl_inc/crawler_edit.tpl');
+} else {
+    $smarty->assign('headline', $statsTypeName)
     ->assign('nTyp', $statsType)
     ->assign('oStat_arr', $stats)
     ->assign('cMember_arr', mappeDatenMember($members, gibMappingDaten($statsType)))
@@ -111,3 +84,4 @@ $smarty->assign('headline', $statsTypeName)
     ->assign('pagination', $pagination)
     ->assign('oFilter', $filter)
     ->display('statistik.tpl');
+}

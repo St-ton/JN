@@ -72,7 +72,7 @@ msgid "missingCrawlerFields"
 msgstr "Please complete all mandatory fields"
 
 msgid "crawlerUserAgentHint"
-msgstr "Hier legen Sie fest, welche Crawler </br> vom Besucherzähler ausgeschlossen werden sollen."
+msgstr "Hier legen Sie fest, welcher Webcrawler </br> vom Besucherzähler ausgeschlossen werden soll."
 
 msgid "crawlerDescriptionHint"
-msgstr "Hier legen Sie eine genauere Beschreibung für den Crawler fest."
+msgstr "Hier legen Sie eine genauere Beschreibung für den Webcrawler fest."

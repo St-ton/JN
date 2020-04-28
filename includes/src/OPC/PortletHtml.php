@@ -125,7 +125,9 @@ trait PortletHtml
      * @throws \SmartyException
      */
     final protected function getHtmlFromTpl(
-        PortletInstance $instance, bool $isPreview, bool $inContainer = true
+        PortletInstance $instance,
+        bool $isPreview,
+        bool $inContainer = true
     ): string {
         if (\function_exists('\getFrontendSmarty')) {
             $smarty = \getFrontendSmarty();

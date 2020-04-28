@@ -2,8 +2,7 @@
     {if !empty($Artikel->oMedienDatei_arr)}
         {assign var=mp3List value=false}
         {assign var=titles value=false}
-        {assign var=twoColumns value=$mediaType->count < 3}
-        <div class="card-columns {if $twoColumns}card-columns-2{/if}">
+        <div class="card-columns {if $mediaType->count < 3}card-columns-2{/if}">
         {foreach $Artikel->oMedienDatei_arr as $oMedienDatei}
             {if ($mediaType->name == $oMedienDatei->cMedienTyp && $oMedienDatei->cAttributTab|count_characters == 0)
             || ($oMedienDatei->cAttributTab|count_characters > 0 && $mediaType->name == $oMedienDatei->cAttributTab)}
@@ -75,13 +74,12 @@
                         {block name='productdetails-mediafile-misc'}
                             {card title=$oMedienDatei->cName class="mb-3"}
                                 {row}
-                                    {$descHalfWidth = $oMedienDatei->cBeschreibung|strlen < 300}
-                                    {col cols=12 lg="{if $twoColumns && $descHalfWidth}6{else}12{/if}"}
+                                    {col cols=12}
                                         {$oMedienDatei->cBeschreibung}
                                     {/col}
-                                    {col cols=12 lg="{if $twoColumns && $descHalfWidth}6{else}12{/if}"}
+                                    {col cols=12}
                                         {if $oMedienDatei->cURL|strpos:'youtube' !== false || $oMedienDatei->cURL|strpos:'youtu.be' !== false}
-                                            <div class="mt-3 {if $twoColumns && $descHalfWidth}mt-lg-0{/if}">
+                                            <div class="mt-3">
                                                 {include file='productdetails/mediafile_youtube_embed.tpl'}
                                             </div>
                                         {else}

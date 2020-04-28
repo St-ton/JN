@@ -204,9 +204,14 @@
             <div class="save-wrapper">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
-                        {if isset($smarty.get.activate)}<input type="hidden" name="activate" value="1" />{/if}
+                        {if isset($smarty.get.activate)}
+                            <input type="hidden" name="activate" value="1" />
+                            <input type="hidden" name="action" value="activate" />
+                        {else}
+                            <input type="hidden" name="action" value="save-config" />
+                        {/if}
                         <input type="hidden" name="type" value="settings" />
-                        <input type="hidden" name="ordner" value="{$oTemplate->cOrdner}" />
+                        <input type="hidden" name="dir" value="{$oTemplate->cOrdner}" />
                         <input type="hidden" name="admin" value="{$admin}" />
                         <button type="submit" class="btn btn-primary btn-block">
                             {if isset($smarty.get.activate)}<i class="fa fa-share"></i> {__('activateTemplate')}{else}{__('saveWithIcon')}{/if}

@@ -26,12 +26,6 @@ msgstr "Could not edit template or settings. If the template is a child template
 msgid "errorFileUpload"
 msgstr "Could not upload file. Please check the write access of folder \"%s\"."
 
-msgid "successLayoutReset"
-msgstr "Layout reset successfully."
-
-msgid "errorLayoutReset"
-msgstr "Could not reset layout. File %s does not exist or does not have sufficient write access."
-
 msgid "errorStyleFilePermission"
 msgstr "Could not write style file. File %s does not exist or does not have sufficient write access."
 

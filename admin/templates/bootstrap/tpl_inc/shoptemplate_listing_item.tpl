@@ -99,13 +99,13 @@
         {elseif $listingItem->isAvailable()}
             {if !$listingItem->isActive()}
                 {if $listingItem->getOptionsCount() > 0 && false}
-					<a class="btn btn-primary" href="shoptemplate.php?settings={$listingItem->getDir()}&activate=1&token={$smarty.session.jtl_token}"><i class="fal fa-share"></i> {__('activate')}</a>
+					<a class="btn btn-primary" href="shoptemplate.php?action=activate&dir={$listingItem->getDir()}&activate=1&token={$smarty.session.jtl_token}"><i class="fal fa-share"></i> {__('activate')}</a>
                 {else}
-					<a class="btn btn-primary" href="shoptemplate.php?switch={$listingItem->getDir()}&token={$smarty.session.jtl_token}"><i class="fal fa-share"></i> {__('activate')}</a>
+					<a class="btn btn-primary" href="shoptemplate.php?action=switch&dir={$listingItem->getDir()}&token={$smarty.session.jtl_token}"><i class="fal fa-share"></i> {__('activate')}</a>
                 {/if}
             {else}
                 {if $listingItem->getOptionsCount() > 0}
-					<a class="btn btn-outline-primary" href="shoptemplate.php?settings={$listingItem->getDir()}&token={$smarty.session.jtl_token}"><i class="fal fa-edit"></i> {__('settings')}</a>
+					<a class="btn btn-outline-primary" href="shoptemplate.php?action=config&dir={$listingItem->getDir()}&token={$smarty.session.jtl_token}"><i class="fal fa-edit"></i> {__('settings')}</a>
                 {/if}
             {/if}
         {/if}

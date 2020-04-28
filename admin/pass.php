@@ -8,11 +8,11 @@ use JTL\Shop;
 require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 $step         = 'prepare';
-$aslertHelper = Shop::Container()->getAlertService();
+$alertService = Shop::Container()->getAlertService();
 if (isset($_POST['mail']) && Form::validateToken()) {
     $account = Shop::Container()->getAdminAccount();
     $account->prepareResetPassword(Text::filterXSS($_POST['mail']));
-    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successEmailSend'), 'successEmailSend');
+    $alertService->addAlert(Alert::TYPE_SUCCESS, __('successEmailSend'), 'successEmailSend');
 } elseif (isset($_POST['pw_new'], $_POST['pw_new_confirm'], $_POST['fpm'], $_POST['fpwh']) && Form::validateToken()) {
     if ($_POST['pw_new'] === $_POST['pw_new_confirm']) {
         $account  = Shop::Container()->getAdminAccount();
@@ -22,7 +22,7 @@ if (isset($_POST['mail']) && Form::validateToken()) {
             $upd->cPass = Shop::Container()->getPasswordService()->hash($_POST['pw_new']);
             $update     = Shop::Container()->getDB()->update('tadminlogin', 'cMail', $_POST['fpm'], $upd);
             if ($update > 0) {
-                $alertHelper->addAlert(
+                $alertService->addAlert(
                     Alert::TYPE_SUCCESS,
                     __('successPasswordChange'),
                     'successPasswordChange',
@@ -30,13 +30,13 @@ if (isset($_POST['mail']) && Form::validateToken()) {
                 );
                 header('Location: index.php?pw_updated=true');
             } else {
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorPasswordChange'), 'errorPasswordChange');
+                $alertService->addAlert(Alert::TYPE_ERROR, __('errorPasswordChange'), 'errorPasswordChange');
             }
         } else {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorHashInvalid'), 'errorHashInvalid');
+            $alertService->addAlert(Alert::TYPE_ERROR, __('errorHashInvalid'), 'errorHashInvalid');
         }
     } else {
-        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorPasswordMismatch'), 'errorPasswordMismatch');
+        $alertService->addAlert(Alert::TYPE_ERROR, __('errorPasswordMismatch'), 'errorPasswordMismatch');
     }
     $smarty->assign('fpwh', $_POST['fpwh'])
            ->assign('fpm', $_POST['fpm']);

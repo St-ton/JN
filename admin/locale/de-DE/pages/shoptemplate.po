@@ -26,12 +26,6 @@ msgstr "Template bzw. Einstellungen konnten nicht geändert werden. Falls das Te
 msgid "errorFileUpload"
 msgstr "Der Datei-Upload konnte nicht ausgeführt werden – bitte überprüfen Sie die Schreibrechte des Ordners „%s“."
 
-msgid "successLayoutReset"
-msgstr "Layout wurde erfolgreich zurückgesetzt."
-
-msgid "errorLayoutReset"
-msgstr "Layout konnte nicht zurückgesetzt werden. Die Datei %s existiert nicht oder hat nicht genügend Schreibrechte."
-
 msgid "errorStyleFilePermission"
 msgstr "Style-Datei konnte nicht geschrieben werden. Die Datei %s existiert nicht oder hat nicht genügend Schreibrechte."
 

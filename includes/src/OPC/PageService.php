@@ -105,10 +105,10 @@ class PageService
      */
     public function renderMountPoint(array $params): string
     {
-        $id     = $params['id'];
-        $title  = $params['title'] ?? $id;
+        $id          = $params['id'];
+        $title       = $params['title'] ?? $id;
         $inContainer = $params['inContainer'] ?? true;
-        $output = '';
+        $output      = '';
 
         if ($this->opc->isEditMode()) {
             $output = '<div class="opc-area opc-rootarea" data-area-id="' . $id . '" data-title="' . $title

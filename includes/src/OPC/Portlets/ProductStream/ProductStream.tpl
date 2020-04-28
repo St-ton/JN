@@ -37,13 +37,14 @@
         {/if}
     {elseif $style === 'simpleSlider'}
         <div id="{$instance->getUid()}"
-             class="carousel carousel-arrows-inside slick-lazy
+             class="carousel carousel-arrows-inside evo-slider slick-lazy
                     opc-ProductStream opc-ProductStream-slider slick-type-product"
              data-slick-type="product-slider">
             {foreach $productlist as $Artikel}
                 <div class="product-wrapper">
                     <a href="{$Artikel->cURLFull}">
-                        <img src="{$Artikel->Bilder[0]->cURLNormal}" alt="{$Artikel->cName}" title="{$Artikel->cName}">
+                        <img src="{$Artikel->Bilder[0]->cURLNormal}" alt="{$Artikel->cName}"
+                             title="{$Artikel->cName}">
                     </a>
                 </div>
             {/foreach}

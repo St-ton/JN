@@ -35,7 +35,7 @@
                             {col cols=3 lg=2 class="text-center vcenter"}
                                 {if !empty($oPosition->Artikel->cVorschaubild)}
                                     {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}
-                                        {image fluid=true webp=true lazy=true
+                                        {image fluid-grow=true webp=true lazy=true
                                             alt=$oPosition->cName|trans
                                             src=$oPosition->Artikel->cVorschaubild
                                             srcset="{$oPosition->Artikel->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,

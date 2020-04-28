@@ -4,6 +4,8 @@ namespace JTL\Backend;
 
 use JTL\Helpers\Template;
 use JTL\Shop;
+use JTL\Template\Admin\Config;
+use JTL\Template\XMLReader;
 use SimpleXMLElement;
 
 /**
@@ -31,11 +33,6 @@ class AdminTemplate
      * @var bool
      */
     private static $isAdmin = true;
-
-    /**
-     * @var Template
-     */
-    private static $helper;
 
     /**
      * @var string
@@ -67,7 +64,6 @@ class AdminTemplate
      */
     public function __construct()
     {
-        self::$helper = Template::getInstance(true);
         $this->init();
         self::$instance = $this;
     }
@@ -87,7 +83,9 @@ class AdminTemplate
      */
     public function getConfig()
     {
-        return self::$helper->getConfig(self::$cTemplate);
+        $config = new Config(self::$cTemplate, Shop::Container()->getDB());
+
+        return $config->loadConfigFromDB();
     }
 
     /**
@@ -142,8 +140,9 @@ class AdminTemplate
                 'admin_css' => [],
                 'admin_js'  => []
             ];
+            $reader = new XMLReader();
             foreach ($folders as $dir) {
-                $xml = self::$helper->getXML($dir, true);
+                $xml = $reader->getXML($dir, true);
                 if ($xml === null) {
                     continue;
                 }

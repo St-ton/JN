@@ -194,7 +194,7 @@ class ListingItem
             $this->preview      = $node['Preview'] ?? null;
             $this->framework    = $node['Framework'] ?? null;
             $this->isChild      = isset($node['Parent']);
-            $this->parent = $node['Parent'] ?? null;
+            $this->parent       = $node['Parent'] ?? null;
             $version            = $node['Version'] ?? $node['ShopVersion'];
             $this->optionsCount = isset($node['Settings'][0]) ? 1 : 0;
             $this->shopVersion  = Version::parse($node['ShopVersion']);
@@ -224,7 +224,7 @@ class ListingItem
         $errorsCount = 0;
         $base        = \PFAD_ROOT . \PFAD_TEMPLATES . \basename($this->dir) . '/';
         $checker     = new FileCheck();
-        $res = $checker->validateCsvFile($base . 'checksums.csv', $files, $errorsCount, $base);
+        $res         = $checker->validateCsvFile($base . 'checksums.csv', $files, $errorsCount, $base);
         if ($res === FileCheck::ERROR_INPUT_FILE_MISSING || $res === FileCheck::ERROR_NO_HASHES_FOUND) {
             $this->checksums = null;
             return;

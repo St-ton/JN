@@ -4,6 +4,7 @@ namespace JTL\Template\Admin\Validation;
 
 use JTL\DB\DbInterface;
 use JTL\Plugin\InstallCode;
+use JTL\Shop;
 use JTL\XMLParser;
 
 /**
@@ -13,6 +14,16 @@ use JTL\XMLParser;
 class TemplateValidator implements ValidatorInterface
 {
     protected const BASE_DIR = \PFAD_ROOT . \PFAD_PLUGIN;
+
+    public const RES_OK = 1;
+
+    public const RES_XML_PARSE_ERROR = 2;
+
+    public const RES_PARENT_NOT_FOUND = 3;
+
+    public const RES_XML_NOT_FOUND = 4;
+
+    public const RES_DIR_DOES_NOT_EXIST = 5;
 
     /**
      * @var DbInterface
@@ -25,19 +36,12 @@ class TemplateValidator implements ValidatorInterface
     protected $dir;
 
     /**
-     * @var XMLParser
-     */
-    protected $parser;
-
-    /**
      * AbstractValidator constructor.
      * @param DbInterface $db
-     * @param XMLParser   $parser
      */
-    public function __construct(DbInterface $db, XMLParser $parser)
+    public function __construct(DbInterface $db)
     {
         $this->db     = $db;
-        $this->parser = $parser;
     }
 
     /**
@@ -59,23 +63,49 @@ class TemplateValidator implements ValidatorInterface
     }
 
     /**
+     * @param string $path
+     * @param array  $xml
+     * @return int
+     */
+    public function validate(string $path, array $xml): int
+    {
+        $code = $this->validateByPath($path);
+        if ($code === InstallCode::OK) {
+            $code = $this->validateXML($xml);
+        }
+
+        return $code;
+    }
+
+    /**
      * @inheritdoc
      */
     public function validateByPath(string $path, bool $forUpdate = false): int
     {
-//        echo '<br>' . __CLASS__ . ':' . __METHOD__ . ': setting path to ' . $path;
         $this->setDir($path);
-        if (empty($this->dir)) {
-            return InstallCode::WRONG_PARAM;
-        }
-        if (!\is_dir($this->dir)) {
-            return InstallCode::DIR_DOES_NOT_EXIST;
+        if (empty($this->dir) || !\is_dir($this->dir)) {
+            return self::RES_DIR_DOES_NOT_EXIST;
         }
         $infoXML = $this->dir . '/' . \TEMPLATE_XML;
         if (!\file_exists($infoXML)) {
-            return InstallCode::INFO_XML_MISSING;
+            return self::RES_XML_NOT_FOUND;
         }
 
-        return InstallCode::OK;//$this->pluginPlausiIntern($this->parser->parse($infoXML), $forUpdate);
+        return self::RES_OK;
+    }
+
+    public function validateXML(array $xml): int
+    {
+        $node       = $xml['Template'][0] ?? null;
+        if ($node !== null) {
+            $parent = $node['Parent'] ?? null;
+            if ($parent !== null) {
+                $parent = \basename($parent);
+                if (!\file_exists(\PFAD_ROOT . \PFAD_TEMPLATES . $parent . '/template.xml')) {
+                    return self::RES_PARENT_NOT_FOUND;
+                }
+            }
+        }
+        return 1;
     }
 }

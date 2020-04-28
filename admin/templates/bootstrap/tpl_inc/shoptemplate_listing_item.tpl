@@ -11,14 +11,14 @@
                 {if !empty($listingItem->getDescription())}
 					<div class="small">{$listingItem->getDescription()}</div>
                 {/if}
-				<span class="label label-default">
+				<span class="badge badge-default">
                     <i class="far fa-folder" aria-hidden="true"></i> {$listingItem->getDir()}
                 </span>
 	            {if $listingItem->isChild() === true}<span class="label label-info"><i class="fa fa-level-up" aria-hidden="true"></i> <abbr title="{{__('inheritsFrom')}|sprintf:{$listingItem->getParent()}}">{$listingItem->getParent()}</abbr></span>{/if}
 
                 {if isset($oStoredTemplate_arr[$listingItem->getDir()])}
                     {foreach $oStoredTemplate_arr[$listingItem->getDir()] as $oStored}
-						<span class="label label-warning"><i class="fal fa-info-circle" aria-hidden="true"></i> <abbr title="{__('originalExists')} ({$oStored->cVersion})">{$oStored->cVersion}</abbr></span>
+						<span class="badge badge-warning"><i class="fal fa-info-circle" aria-hidden="true"></i> <abbr title="{__('originalExists')} ({$oStored->cVersion})">{$oStored->cVersion}</abbr></span>
                     {/foreach}
                 {/if}
 				<div class="font-size-sm">
@@ -32,11 +32,11 @@
 	<td class="text-vcenter text-center">
         {if $listingItem->hasError() === true}
 			<h4 class="label-wrap">
-				<span class="label label-danger">{__('faulty')}</span>
+				<span class="badge badge-danger">{__('faulty')}</span>
 			</h4>
         {elseif $listingItem->isActive()}
 			<h4 class="label-wrap">
-				<span class="label label-success">{__('activated')}</span>
+				<span class="badge badge-success">{__('activated')}</span>
 			</h4>
         {/if}
 		{$check = $listingItem->getChecksums()}
@@ -95,14 +95,14 @@
 	</td>
 	<td class="text-vcenter text-center">
         {if $listingItem->hasError()}
-			<span class="error"><strong>{__('danger')}:</strong><br />{__('parentTemplateMissing')}.</span>
+			<span class="error"><strong>{__('danger')}:</strong><br />
+				{if $listingItem->getErrorCode() === JTL\Template\Admin\Validation\TemplateValidator::RES_PARENT_NOT_FOUND}{__('parentTemplateMissing')}.
+				{else}{__('error')}
+				{/if}
+			</span>
         {elseif $listingItem->isAvailable()}
             {if !$listingItem->isActive()}
-                {if $listingItem->getOptionsCount() > 0 && false}
-					<a class="btn btn-primary" href="shoptemplate.php?action=activate&dir={$listingItem->getDir()}&activate=1&token={$smarty.session.jtl_token}"><i class="fal fa-share"></i> {__('activate')}</a>
-                {else}
-					<a class="btn btn-primary" href="shoptemplate.php?action=switch&dir={$listingItem->getDir()}&token={$smarty.session.jtl_token}"><i class="fal fa-share"></i> {__('activate')}</a>
-                {/if}
+				<a class="btn btn-primary" href="shoptemplate.php?action=switch&dir={$listingItem->getDir()}{if $listingItem->getOptionsCount() > 0}&config=1{/if}&token={$smarty.session.jtl_token}"><i class="fal fa-share"></i> {__('activate')}</a>
             {else}
                 {if $listingItem->getOptionsCount() > 0}
 					<a class="btn btn-outline-primary" href="shoptemplate.php?action=config&dir={$listingItem->getDir()}&token={$smarty.session.jtl_token}"><i class="fal fa-edit"></i> {__('settings')}</a>

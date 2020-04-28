@@ -7,6 +7,7 @@ use JTL\Backend\FileCheck;
 use JTL\DB\ReturnType;
 use JTL\Shop;
 use JTL\Template as CurrentTemplate;
+use JTL\Template\XMLReader;
 use SimpleXMLElement;
 use stdClass;
 
@@ -89,85 +90,6 @@ class Template
     }
 
     /**
-     * get list of all backend templates
-     *
-     * @return array
-     */
-    public function getAdminTemplates(): array
-    {
-        $templates = [];
-        $folders   = $this->getAdminTemplateFolders();
-        foreach ($folders as $folder) {
-            $templateData = $this->getData($folder, true);
-            if ($templateData) {
-                $templates[] = $templateData;
-            }
-        }
-
-        return $templates;
-    }
-
-    /**
-     * @return array
-     */
-    public function getStoredTemplates(): array
-    {
-        $storedTemplates  = [];
-        $subTemplateDir   = 'original' . \DIRECTORY_SEPARATOR;
-        $storeTemplateDir = \PFAD_ROOT . \PFAD_TEMPLATES . $subTemplateDir;
-
-        $folders      = $this->getFrontendTemplateFolders();
-        $childFolders = $this->getFolders($storeTemplateDir, 2);
-
-        foreach ($childFolders as $version => $dirs) {
-            $intersect = \array_intersect(
-                \array_values($folders),
-                \array_keys($dirs)
-            );
-            foreach ($intersect as $dir) {
-                $d = $subTemplateDir . $version . \DIRECTORY_SEPARATOR . $dir;
-                if (($data = $this->getData($d, false)) !== false) {
-                    $storedTemplates[$dir][] = $data;
-                }
-            }
-        }
-
-        return $storedTemplates;
-    }
-
-    /**
-     * get list of all frontend templates
-     *
-     * @return array
-     */
-    public function getFrontendTemplates(): array
-    {
-        $templates = [];
-        $folders   = $this->getFrontendTemplateFolders();
-        foreach ($folders as $folder) {
-            $templateData = $this->getData($folder, false);
-            if ($templateData) {
-                $templates[] = $templateData;
-            }
-        }
-
-        foreach ($templates as $template) {
-            //check if given parent template is available
-            if ($template->bChild === true) {
-                $template->bHasError = true;
-                foreach ($templates as $_template) {
-                    if ($_template->cOrdner === $template->cParent) {
-                        $template->bHasError = false;
-                        break;
-                    }
-                }
-            }
-        }
-
-        return $templates;
-    }
-
-    /**
      * @param string $path
      * @param int    $depth
      * @return array
@@ -232,42 +154,13 @@ class Template
     /**
      * read xml config file
      *
-     * @param string    $cOrdner
+     * @param string    $dirName
      * @param bool|null $isAdmin
      * @return null|SimpleXMLElement
      */
-    public function getXML($cOrdner, bool $isAdmin = null)
+    public function getXML($dirName, bool $isAdmin = null)
     {
-        $isAdmin = $isAdmin ?? $this->isAdmin;
-        $xmlFile = $isAdmin === false
-            ? \PFAD_ROOT . \PFAD_TEMPLATES . $cOrdner . \DIRECTORY_SEPARATOR . \TEMPLATE_XML
-            : \PFAD_ROOT . \PFAD_ADMIN . \PFAD_TEMPLATES . $cOrdner . \DIRECTORY_SEPARATOR . \TEMPLATE_XML;
-        if (!\file_exists($xmlFile)) {
-            return null;
-        }
-        if (\defined('LIBXML_NOWARNING')) {
-            //try to suppress warning if opening fails
-            $xml = \simplexml_load_file($xmlFile, 'SimpleXMLElement', \LIBXML_NOWARNING);
-        } else {
-            $xml = \simplexml_load_file($xmlFile);
-        }
-        if ($xml === false) {
-            $xml = \simplexml_load_string(\file_get_contents($xmlFile));
-        }
-
-        if (\is_a($xml, SimpleXMLElement::class)) {
-            $xml->Ordner = $cOrdner;
-        } else {
-            $xml = null;
-        }
-        if (\EVO_COMPATIBILITY === false
-            && ((string)$xml->Name === 'Evo' || ((string)$xml->Parent ?? '') === 'Evo')
-            && CurrentTemplate::getInstance()->getName() !== (string)$xml->Name
-        ) {
-            return null;
-        }
-
-        return $xml;
+        return (new XMLReader())->getXML($dirName, $isAdmin ?? $this->isAdmin);
     }
 
     /**
@@ -295,9 +188,10 @@ class Template
     /**
      * @param string    $dir
      * @param bool|null $isAdmin
+     * @param SimpleXMLElement|null $xml
      * @return bool|stdClass
      */
-    public function getData($dir, bool $isAdmin = null)
+    public function getData($dir, bool $isAdmin = null, SimpleXMLElement $xml = null)
     {
         $isAdmin = $isAdmin ?? $this->isAdmin;
         $cacheID = 'tpl_' . $dir . ($isAdmin ? '_admin' : '');
@@ -305,7 +199,7 @@ class Template
             return $template;
         }
         $template = new stdClass();
-        $xml      = $this->getXML($dir, $isAdmin);
+        $xml      = $xml ?? $this->getXML($dir, $isAdmin);
         if (!$xml) {
             return false;
         }
@@ -336,8 +230,6 @@ class Template
                     ? $template->cShopVersion
                     : $parentConfig->cShopVersion;
             }
-        } else {
-            $template->checksums = $this->getChecksums((string)$dir);
         }
         if (empty($template->cVersion)) {
             $template->cVersion = $template->cShopVersion;
@@ -364,24 +256,5 @@ class Template
         }
 
         return $template;
-    }
-
-    /**
-     * @param string $dirname
-     * @return array|bool|null
-     */
-    private function getChecksums(string $dirname)
-    {
-        $files       = [];
-        $errorsCount = 0;
-        $base        = \PFAD_ROOT . \PFAD_TEMPLATES . \basename($dirname) . '/';
-        $checker     = new FileCheck();
-
-        $res = $checker->validateCsvFile($base . 'checksums.csv', $files, $errorsCount, $base);
-        if ($res === FileCheck::ERROR_INPUT_FILE_MISSING || $res === FileCheck::ERROR_NO_HASHES_FOUND) {
-            return null;
-        }
-
-        return $errorsCount === 0 ? true : $files;
     }
 }

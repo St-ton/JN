@@ -68,7 +68,7 @@ final class Listing
      */
     private function getActiveTemplate(): Model
     {
-        return Model::loadByAttributes(['eTyp' => 'standard'], $this->db);
+        return Model::loadByAttributes(['type' => 'standard'], $this->db);
     }
 
     /**
@@ -95,7 +95,7 @@ final class Listing
                 continue;
             }
             $xml                 = $parser->parse($info);
-            $code                = $validator->validateByPath($templateDir . $dir);
+            $code                = $validator->validate($templateDir . $dir, $xml);
             $xml['cVerzeichnis'] = $dir;
             $xml['cFehlercode']  = $code;
             $item                = new ListingItem();
@@ -117,7 +117,12 @@ final class Listing
             if ($code === InstallCode::OK) {
                 $item->setAvailable(true);
                 $item->setHasError(false);
+            } else {
+                $item->setAvailable(false);
+                $item->setHasError(true);
+                $item->setErrorCode($code);
             }
+
 
             $this->items[] = $item;
         }

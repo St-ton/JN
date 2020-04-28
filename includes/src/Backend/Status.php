@@ -6,7 +6,6 @@ use Exception;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Checkout\ZahlungsLog;
 use JTL\DB\ReturnType;
-use JTL\Helpers\Template as TemplateHelper;
 use JTL\Media\Image\Product;
 use JTL\Media\Image\StatsItem;
 use JTL\Plugin\Helper;
@@ -14,7 +13,7 @@ use JTL\Plugin\State;
 use JTL\Profiler;
 use JTL\Shop;
 use JTL\SingletonTrait;
-use JTL\Template;
+use JTL\Template\Model;
 use JTL\Update\Updater;
 use stdClass;
 use Systemcheck\Environment;
@@ -210,7 +209,13 @@ class Status
      */
     protected function hasDifferentTemplateVersion(): bool
     {
-        return Template::getInstance()->getVersion() !== \APPLICATION_VERSION;
+        try {
+            $model    = new Model(Shop::Container()->getDB());
+            $template = $model->loadActiveTemplate();
+        } catch (Exception $e) {
+            return false;
+        }
+        return $template->getVersion() !== \APPLICATION_VERSION;
     }
 
     /**
@@ -218,21 +223,23 @@ class Status
      */
     protected function hasMobileTemplateIssue(): bool
     {
-        $template = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'standard');
-        if ($template !== null && isset($template->cTemplate)) {
-            $tplData = TemplateHelper::getInstance()->getData($template->cTemplate);
-            if ($tplData !== false && $tplData->bResponsive) {
-                $mobileTpl = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'mobil');
-                if ($mobileTpl !== null) {
-                    $xmlFile = \PFAD_ROOT . \PFAD_TEMPLATES . $mobileTpl->cTemplate .
-                        \DIRECTORY_SEPARATOR . \TEMPLATE_XML;
-                    if (\file_exists($xmlFile)) {
-                        return true;
-                    }
-                    // Wenn ein Template aktiviert aber physisch nicht vorhanden ist,
-                    // ist der DB-Eintrag falsch und wird gelöscht
-                    Shop::Container()->getDB()->delete('ttemplate', 'eTyp', 'mobil');
+        try {
+            $model    = new Model(Shop::Container()->getDB());
+            $template = $model->loadActiveTemplate();
+        } catch (Exception $e) {
+            return false;
+        }
+        if ($template->isResponsive()) {
+            $mobileTpl = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'mobil');
+            if ($mobileTpl !== null) {
+                $xmlFile = \PFAD_ROOT . \PFAD_TEMPLATES . $mobileTpl->cTemplate .
+                    \DIRECTORY_SEPARATOR . \TEMPLATE_XML;
+                if (\file_exists($xmlFile)) {
+                    return true;
                 }
+                // Wenn ein Template aktiviert aber physisch nicht vorhanden ist,
+                // ist der DB-Eintrag falsch und wird gelöscht
+                Shop::Container()->getDB()->delete('ttemplate', 'eTyp', 'mobil');
             }
         }
 
@@ -343,11 +350,11 @@ class Status
         return isset($conf['suche_fulltext'])
             && $conf['suche_fulltext'] !== 'N'
             && (!Shop::Container()->getDB()->query(
-                "SHOW INDEX
+                    "SHOW INDEX
                     FROM tartikel
                     WHERE KEY_NAME = 'idx_tartikel_fulltext'",
-                ReturnType::SINGLE_OBJECT
-            )
+                    ReturnType::SINGLE_OBJECT
+                )
                 || !Shop::Container()->getDB()->query(
                     "SHOW INDEX
                     FROM tartikelsprache

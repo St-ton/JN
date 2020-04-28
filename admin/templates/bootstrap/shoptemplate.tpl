@@ -1,9 +1,9 @@
 {include file='tpl_inc/header.tpl'}
 {assign var=cBeschreibung value=__('shoptemplatesDesc')}
 {if isset($oEinstellungenXML) && $oEinstellungenXML}
-    {assign var=cTitel value={__('settings')}|cat:': '|cat:$oTemplate->cName}
-    {if !empty($oTemplate->cDokuURL)}
-        {assign var=cDokuURL value=$oTemplate->cDokuURL}
+    {assign var=cTitel value={__('settings')}|cat:': '|cat:$template->getName()}
+    {if !empty($template->getDocumentationURL())}
+        {assign var=cDokuURL value=$template->getDocumentationURL()}
     {else}
         {assign var=cDokuURL value=__('shoptemplateURL')}
     {/if}
@@ -15,12 +15,12 @@
 {*workaround: no async uploads (the fileinput option uploadAsync does not work correctly... *}
 <style>.fileinput-upload-button, .kv-file-upload{ldelim}display:none!important;{rdelim}</style>
 <div id="content">
-{if isset($oEinstellungenXML) && $oEinstellungenXML}
+{if isset($oEinstellungenXML) && $oEinstellungenXML|count > 0}
     <form action="shoptemplate.php" method="post" enctype="multipart/form-data" id="form_settings">
         {$jtl_token}
         <div id="settings" class="settings">
-            {if isset($oTemplate->eTyp) && ($oTemplate->eTyp === 'admin' || ($oTemplate->eTyp !== 'mobil' && $oTemplate->bResponsive))}
-                <input type="hidden" name="eTyp" value="{if !empty($oTemplate->eTyp)}{$oTemplate->eTyp}{else}standard{/if}" />
+            {if $template->getType() === 'admin' || ($template->getType() !== 'mobil' && $template->isResponsive())}
+                <input type="hidden" name="eTyp" value="{if !empty($template->getType())}{$template->getType()}{else}standard{/if}" />
             {else}
                 <div class="card">
                     <div class="card-header">
@@ -28,17 +28,17 @@
                         <hr class="mb-n3">
                     </div>
                     <div class="card-body">
-                        {if $oTemplate->eTyp === 'mobil' && $oTemplate->bResponsive}
+                        {if $template->getType() === 'mobil' && $template->isResponsive()}
                             <div class="alert alert-warning">{__('warning_responsive_mobile')}</div>
                         {/if}
                         <div class="item form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="eTyp">{__('standardTemplateMobil')}</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <select class="custom-select" name="eTyp" id="eTyp">
-                                    <option value="standard" {if $oTemplate->eTyp === 'standard'}selected="selected"{/if}>
+                                    <option value="standard" {if $template->getType() === 'standard'}selected="selected"{/if}>
                                         {__('optimizeBrowser')}
                                     </option>
-                                    <option value="mobil" {if $oTemplate->eTyp === 'mobil'}selected="selected"{/if}>
+                                    <option value="mobil" {if $template->getType() === 'mobil'}selected="selected"{/if}>
                                         {__('optimizeMobile')}
                                     </option>
                                 </select>
@@ -165,6 +165,9 @@
                                                     </div>
                                                 {elseif $oSetting->cType === 'upload' && isset($oSetting->rawAttributes.target)}
                                                     <input type="hidden" name="cWert[]" value="upload-{$oSetting@iteration}" />
+                                                    {if !empty($oSetting->cValue)}
+                                                        <img src="{$shopURL}/templates/{$template->getDir()}/{$oSetting->rawAttributes.target}{$oSetting->cValue}?v={$smarty.now}" class="file-preview-image"/><hr>
+                                                    {/if}
                                                     {include file='tpl_inc/fileupload.tpl'
                                                         fileID="tpl-upload-{$oSetting@iteration}"
                                                         fileName="upload-{$oSetting@iteration}"
@@ -174,20 +177,18 @@
                                                         fileAllowedExtensions="{if !empty($oSetting->rawAttributes.allowedFileExtensions)}{$oSetting->rawAttributes.allowedFileExtensions}{/if}"
                                                         fileInitialPreview="[
                                                                 {if !empty($oSetting->cValue)}
-                                                                    '<img src=\"{$shopURL}/templates/{$oTemplate->cOrdner}/{$oSetting->rawAttributes.target}{$oSetting->cValue}?v={$smarty.now}\" class=\"file-preview-image\"/>'
+                                                                    '<img src=\"{$shopURL}/templates/{$template->getDir()}/{$oSetting->rawAttributes.target}{$oSetting->cValue}?v={$smarty.now}\" class=\"file-preview-image\"/>'
                                                                 {/if}
                                                             ]"
-                                                        fileInitialPreviewConfig="[
-                                                                {
-                                                                    url: '{$shopURL}/{$PFAD_ADMIN}shoptemplate.php',
-                                                                    extra: {
-                                                                            upload: '{$oTemplate->cOrdner}/{$oSetting->rawAttributes.target}{$oSetting->cValue}',
-                                                                            id: 'upload-{$oSetting@iteration}',
-                                                                            token : '{$smarty.session.jtl_token}',
-                                                                            cName : '{$oSetting->cKey}'
-                                                                           }
-                                                                }
-                                                            ]"
+                                                        fileInitialPreviewConfig="[{
+                                                            url: '{$shopURL}/{$PFAD_ADMIN}shoptemplate.php',
+                                                            extra: {
+                                                                    upload: '{$template->getDir()}/{$oSetting->rawAttributes.target}{$oSetting->cValue}',
+                                                                    id:     'upload-{$oSetting@iteration}',
+                                                                    token:  '{$smarty.session.jtl_token}',
+                                                                    cName:  '{$oSetting->cKey}'
+                                                            }
+                                                        }]"
                                                     }
                                                 {/if}
                                             </div>
@@ -211,8 +212,8 @@
                             <input type="hidden" name="action" value="save-config" />
                         {/if}
                         <input type="hidden" name="type" value="settings" />
-                        <input type="hidden" name="dir" value="{$oTemplate->cOrdner}" />
-                        <input type="hidden" name="admin" value="{$admin}" />
+                        <input type="hidden" name="dir" value="{$template->getDir()}" />
+                        <input type="hidden" name="admin" value="0" />
                         <button type="submit" class="btn btn-primary btn-block">
                             {if isset($smarty.get.activate)}<i class="fa fa-share"></i> {__('activateTemplate')}{else}{__('saveWithIcon')}{/if}
                         </button>

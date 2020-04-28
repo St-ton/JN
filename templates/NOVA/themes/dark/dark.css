@@ -19403,6 +19403,11 @@ aside .last-seen-link {
     column-count: 4;
   }
 }
+@media (min-width: 992px) {
+  .card-columns.card-columns-2 {
+    column-count: 2;
+  }
+}
 
 .carousel {
   transition: opacity 0.2s;

@@ -2,7 +2,8 @@
     {if !empty($Artikel->oMedienDatei_arr)}
         {assign var=mp3List value=false}
         {assign var=titles value=false}
-        <div class="card-columns">
+        {assign var=twoColumns value=$mediaType->count < 3}
+        <div class="card-columns {if $twoColumns}card-columns-2{/if}">
         {foreach $Artikel->oMedienDatei_arr as $oMedienDatei}
             {if ($mediaType->name == $oMedienDatei->cMedienTyp && $oMedienDatei->cAttributTab|count_characters == 0)
             || ($oMedienDatei->cAttributTab|count_characters > 0 && $mediaType->name == $oMedienDatei->cAttributTab)}
@@ -74,12 +75,15 @@
                         {block name='productdetails-mediafile-misc'}
                             {card title=$oMedienDatei->cName class="mb-3"}
                                 {row}
-                                    {col md=6}
+                                    {$descHalfWidth = $oMedienDatei->cBeschreibung|strlen < 300}
+                                    {col cols=12 lg="{if $twoColumns && $descHalfWidth}6{else}12{/if}"}
                                         {$oMedienDatei->cBeschreibung}
                                     {/col}
-                                    {col md=6}
+                                    {col cols=12 lg="{if $twoColumns && $descHalfWidth}6{else}12{/if}"}
                                         {if $oMedienDatei->cURL|strpos:'youtube' !== false || $oMedienDatei->cURL|strpos:'youtu.be' !== false}
-                                            {include file='productdetails/mediafile_youtube_embed.tpl'}
+                                            <div class="mt-3 {if $twoColumns && $descHalfWidth}mt-lg-0{/if}">
+                                                {include file='productdetails/mediafile_youtube_embed.tpl'}
+                                            </div>
                                         {else}
                                             {if isset($oMedienDatei->oEmbed) && $oMedienDatei->oEmbed->code}
                                                 {$oMedienDatei->oEmbed->code}

@@ -26,10 +26,6 @@ class Row extends Portlet
     public function getPropertyDesc(): array
     {
         return [
-//            'dropper' => [
-//                'type' => InputType::CUSTOM,
-//                'template' => 'dropper-extension'
-//            ],
             'layout' => [
                 'type'    => InputType::ROW_LAYOUT,
                 'label'   => __('Layout'),

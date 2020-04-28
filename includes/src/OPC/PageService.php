@@ -107,13 +107,14 @@ class PageService
     {
         $id     = $params['id'];
         $title  = $params['title'] ?? $id;
+        $inContainer = $params['inContainer'] ?? true;
         $output = '';
 
         if ($this->opc->isEditMode()) {
             $output = '<div class="opc-area opc-rootarea" data-area-id="' . $id . '" data-title="' . $title
                 . '"></div>';
         } elseif ($this->getCurPage()->getAreaList()->hasArea($id)) {
-            $output = $this->getCurPage()->getAreaList()->getArea($id)->getFinalHtml();
+            $output = $this->getCurPage()->getAreaList()->getArea($id)->getFinalHtml($inContainer);
         }
 
         Shop::fire('shop.OPC.PageService.renderMountPoint', [

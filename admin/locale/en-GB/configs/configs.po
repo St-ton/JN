@@ -1752,7 +1752,7 @@ msgid "bilder_hintergrundfarbe_name"
 msgstr "Background colour"
 
 msgid "bilder_hintergrundfarbe_desc"
-msgstr ""
+msgstr "If file format is 'JPG', please select colors without transparency, e.g.: rgb(255,0,0)."
 
 msgid "sonstiges_livesuche_all_top_count_name"
 msgstr "Number of top search queries to be displayed"

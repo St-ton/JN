@@ -5,6 +5,7 @@ namespace JTL;
 use JTL\DB\ReturnType;
 use JTL\Services\JTL\Validation\Rules\DateTime;
 use JTL\Helpers\Request;
+use JTL\Alert\Alert;
 
 /**
  * Class Crawler

@@ -13,7 +13,7 @@
         {/if}
     {/container}
     {block name='productdetails-details-form'}
-        {opcMountPoint id='opc_before_buy_form'}
+        {opcMountPoint id='opc_before_buy_form' inContainer=false}
         {container}
             {form id="buy_form" action=$Artikel->cURLFull class="jtl-validate"}
                 {row id="product-offer" class="product-detail"}

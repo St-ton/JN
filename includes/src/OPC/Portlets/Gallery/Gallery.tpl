@@ -34,6 +34,9 @@
         {/foreach}
     </div>
 {else}
+    {if $inContainer === false}
+        <div class="container-fluid">
+    {/if}
     {row
         id=$instance->getUid()
         class='opc-Gallery opc-Gallery-'|cat:$galleryStyle
@@ -111,6 +114,9 @@
             {/col}
         {/foreach}
     {/row}
+    {if $inContainer === false}
+        </div>
+    {/if}
 {/if}
 
 {if $isPreview === false}

@@ -116,12 +116,13 @@ class PortletInstance implements \JsonSerializable
     }
 
     /**
+     * @param bool $inContainer
      * @return string
      * @throws \Exception
      */
-    public function getFinalHtml(): string
+    public function getFinalHtml(bool $inContainer = true): string
     {
-        $result = $this->portlet->getFinalHtml($this);
+        $result = $this->portlet->getFinalHtml($this, $inContainer);
 
         Shop::fire('shop.OPC.PortletInstance.getFinalHtml', [
             'portletInstance' => $this,

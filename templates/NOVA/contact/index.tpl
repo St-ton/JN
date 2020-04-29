@@ -6,7 +6,7 @@
     {block name='contact-index-content'}
         {if !empty($Spezialcontent->titel)}
             {block name='contact-index-heading'}
-                {opcMountPoint id='opc_before_heading'}
+                {opcMountPoint id='opc_before_heading' inContainer=false}
                 {container}
                     <div class="title h2">
                         {$Spezialcontent->titel}

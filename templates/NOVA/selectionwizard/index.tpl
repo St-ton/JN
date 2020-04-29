@@ -1,6 +1,6 @@
 {block name='selectionwizard-index'}
     {if isset($AWA)}
-        {opcMountPoint id='opc_before_selection_wizard'}
+        {opcMountPoint id='opc_before_selection_wizard' inContainer=false}
         {block name='selectionwizard-index-script'}
             {inline_script}<script>
                 var nSelection_arr = [{implode(',', $AWA->getSelections())}];

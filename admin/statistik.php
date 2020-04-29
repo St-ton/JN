@@ -51,8 +51,7 @@ if (in_array($statsType, $pie, true)) {
         ->assign('ylabel', $members['nCount'] ?? 0);
 }
 if ($statsType === 3) {
-    $crawler = Crawler::checkSubmit();
-    if ($crawler === false) {
+    if (($crawler = Crawler::checkSubmit()) === false) {
         if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
             $backTab = Request::verifyGPDataString('tab');
             $smarty->assign('cTab', $backTab);
@@ -64,17 +63,18 @@ if ($statsType === 3) {
         $smarty->assign('crawlerPagination', $crawlerPagination);
     }
 }
-$members = [];
-foreach ($stats as $stat) {
-    $members[] = array_keys(get_object_vars($stat));
-}
-$pagination = (new Pagination())
-    ->setItemCount(count($stats))
-    ->assemble();
+
 if ($statsType === 3 && is_object($crawler)) {
     $smarty->assign('crawler', $crawler);
     $smarty->display('tpl_inc/crawler_edit.tpl');
 } else {
+    $members = [];
+    foreach ($stats as $stat) {
+        $members[] = array_keys(get_object_vars($stat));
+    }
+    $pagination = (new Pagination())
+        ->setItemCount(count($stats))
+        ->assemble();
     $smarty->assign('headline', $statsTypeName)
     ->assign('nTyp', $statsType)
     ->assign('oStat_arr', $stats)

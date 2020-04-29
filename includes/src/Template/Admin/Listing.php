@@ -102,7 +102,7 @@ final class Listing
             $item                = new ListingItem();
             $item->parseXML($xml);
             $item->setPath($templateDir . $dir);
-            $item->setActive($item->getName() === $active->getTemplate());
+            $item->setActive($item->getDir() === $active->getTemplate());
 
             $gettext->loadTemplateItemLocale('base', $item);
             $msgid = $item->getFramework() . '_desc';

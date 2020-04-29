@@ -25,6 +25,8 @@ class TemplateValidator implements ValidatorInterface
 
     public const RES_DIR_DOES_NOT_EXIST = 5;
 
+    public const RES_SHOP_VERSION_NOT_FOUND = 6;
+
     /**
      * @var DbInterface
      */
@@ -94,18 +96,28 @@ class TemplateValidator implements ValidatorInterface
         return self::RES_OK;
     }
 
+    /**
+     * @param array $xml
+     * @return int
+     */
     public function validateXML(array $xml): int
     {
         $node = $xml['Template'][0] ?? null;
-        if ($node !== null) {
-            $parent = $node['Parent'] ?? null;
-            if ($parent !== null) {
-                $parent = \basename($parent);
-                if (!\file_exists(\PFAD_ROOT . \PFAD_TEMPLATES . $parent . '/template.xml')) {
-                    return self::RES_PARENT_NOT_FOUND;
-                }
+        if ($node === null) {
+            return self::RES_XML_NOT_FOUND;
+        }
+        $parent = $node['Parent'] ?? null;
+        if ($parent !== null) {
+            $parent = \basename($parent);
+            if (!\file_exists(\PFAD_ROOT . \PFAD_TEMPLATES . $parent . '/template.xml')) {
+                return self::RES_PARENT_NOT_FOUND;
             }
         }
-        return 1;
+        $shopVersion = $node['ShopVersion'] ?? null;
+        if ($shopVersion === null) {
+            return self::RES_SHOP_VERSION_NOT_FOUND;
+        }
+
+        return self::RES_OK;
     }
 }

@@ -17,6 +17,8 @@ use JTL\Smarty\JTLSmarty;
 use JTL\Template\Admin\Validation\TemplateValidator;
 use JTL\Template\Config;
 use JTL\Template\Model;
+use JTL\Template\TemplateService;
+use JTL\Template\TemplateServiceInterface;
 use JTL\Template\XMLReader;
 
 /**
@@ -271,14 +273,14 @@ class Controller
 
     private function displayTemplateSettings(): void
     {
-        $reader    = new XMLReader();
-        $tplXML    = $reader->getXML($this->currentTemplateDir);
-        $parentXML = ($tplXML !== null || empty($tplXML->Parent)) ? null : $reader->getXML((string)$tplXML->Parent);
+        $reader = new XMLReader();
+        $tplXML = $reader->getXML($this->currentTemplateDir);
         if ($tplXML === null) {
             throw new InvalidArgumentException('Cannot display template settings');
         }
-        $model        = new Model($this->db);
-        $current      = $model->mergeWithXML($this->currentTemplateDir, $tplXML, $parentXML);
+        $service = Shop::Container()->get(TemplateServiceInterface::class);
+        /** @var TemplateService $service */
+        $current      = $service->loadFull(['cTemplate' => $this->currentTemplateDir]);
         $parentFolder = null;
         if ($tplXML !== null && !empty($tplXML->Parent)) {
             $parentFolder = (string)$tplXML->Parent;

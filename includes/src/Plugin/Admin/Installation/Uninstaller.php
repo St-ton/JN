@@ -121,6 +121,7 @@ final class Uninstaller
             ReturnType::DEFAULT
         );
         $this->db->delete('tplugineinstellungen', 'kPlugin', $pluginID);
+        $this->db->delete('tconsent', 'pluginID', $pluginID);
         $this->db->delete('tplugincustomtabelle', 'kPlugin', $pluginID);
         $this->db->delete('tpluginlinkdatei', 'kPlugin', $pluginID);
         $this->db->queryPrepared(

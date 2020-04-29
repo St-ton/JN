@@ -7,7 +7,6 @@
 *}
 <script>
     function submitDeletion() {ldelim}
-    console.log($('input[data-id="{$triggerName}"]'));
     $('input[data-id="{$triggerName}"]').val(1).trigger('click');
     {rdelim}
 </script>

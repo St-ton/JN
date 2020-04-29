@@ -47,6 +47,9 @@ msgstr "Settings"
 msgid "crawlerOverviewTitle"
 msgstr "Crawler Overview"
 
+msgid "deleteCrawlerModalTitle"
+msgstr "Delete crawler"
+
 msgid "newCrawler"
 msgstr "Add new crawler"
 

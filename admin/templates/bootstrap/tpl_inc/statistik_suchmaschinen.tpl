@@ -167,4 +167,4 @@
         </div>
     </div>
 </div>
-{include file='tpl_inc/modal_delete.tpl' modalTitle=__('deleteCrawler') triggerName='delete_crawler' modalID='crawler-modal'}
+{include file='tpl_inc/modal_delete.tpl' modalTitle=__('deleteCrawlerModalTitle') triggerName='delete_crawler' modalID='crawler-modal'}

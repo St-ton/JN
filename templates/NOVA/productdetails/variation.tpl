@@ -181,8 +181,8 @@
                                                                {if $smarty.foreach.Variationswerte.index === 0 && !$showMatrix} required{/if}
                                                                />
                                                             {if $hasImage}
-                                                                {*<div class="square square-image">*}
-                                                                    {*<div class="inner">*}
+                                                                <div class="square square-image">
+                                                                    <div class="inner">
                                                                         {image fluid=true webp=true lazy=true
                                                                             src=$Variationswert->getImage(\JTL\Media\Image::SIZE_XS)
                                                                             srcset="{$Variationswert->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_variationen_mini_breite}w,
@@ -191,8 +191,8 @@
                                                                             sizes="40px"
                                                                             alt=$Variationswert->cName|escape:'quotes'
                                                                         }
-                                                                    {*</div>*}
-                                                                {*</div>*}
+                                                                    </div>
+                                                                </div>
                                                             {else}
                                                                 {$Variationswert->cName}
                                                             {/if}

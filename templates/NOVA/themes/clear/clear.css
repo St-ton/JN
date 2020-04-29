@@ -19737,6 +19737,8 @@ aside .last-seen-link {
   word-break: break-word;
   text-overflow: ellipsis;
   transition: all 0.5s ease-in-out;
+  min-height: 90px;
+  min-width: 90px;
 }
 .swatches-image img {
   padding: 0.5rem;

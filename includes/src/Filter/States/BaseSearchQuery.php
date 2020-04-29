@@ -276,7 +276,7 @@ class BaseSearchQuery extends AbstractFilter
         if ($naviConf['suchtrefferfilter_nutzen'] === 'N') {
             return $options;
         }
-        $limit     = (isset($naviConf['suchtrefferfilter_anzahl'])
+        $limit = (isset($naviConf['suchtrefferfilter_anzahl'])
             && ($n = (int)$naviConf['suchtrefferfilter_anzahl']) > 0)
             ? ' LIMIT ' . $n
             : '';

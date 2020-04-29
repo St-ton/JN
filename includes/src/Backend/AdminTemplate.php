@@ -140,7 +140,7 @@ class AdminTemplate
                 'admin_css' => [],
                 'admin_js'  => []
             ];
-            $reader = new XMLReader();
+            $reader    = new XMLReader();
             foreach ($folders as $dir) {
                 $xml = $reader->getXML($dir, true);
                 if ($xml === null) {

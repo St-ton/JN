@@ -7,6 +7,8 @@ use JTL\Backend\FileCheck;
 use JTL\DB\ReturnType;
 use JTL\Shop;
 use JTL\Template as CurrentTemplate;
+use JTL\Template\Model;
+use JTL\Template\TemplateServiceInterface;
 use JTL\Template\XMLReader;
 use SimpleXMLElement;
 use stdClass;
@@ -165,96 +167,25 @@ class Template
 
     /**
      * @param string $dir
-     * @return array|bool
+     * @return array
+     * @deprecated since 5.0.0
      */
-    public function getConfig(string $dir)
+    public function getConfig(string $dir): array
     {
-        $settingsData = Shop::Container()->getDB()->selectAll('ttemplateeinstellungen', 'cTemplate', $dir);
-        if (\is_array($settingsData) && \count($settingsData) > 0) {
-            $settings = [];
-            foreach ($settingsData as $oSetting) {
-                if (isset($settings[$oSetting->cSektion]) && !\is_array($settings[$oSetting->cSektion])) {
-                    $settings[$oSetting->cSektion] = [];
-                }
-                $settings[$oSetting->cSektion][$oSetting->cName] = $oSetting->cWert;
-            }
-
-            return $settings;
-        }
-
-        return false;
+        \trigger_error(__METHOD__ . ' is deprecated. Use Shop::getSettings().', \E_USER_DEPRECATED);
+        return Shop::getSettings([\CONF_TEMPLATE])['template'];
     }
 
     /**
      * @param string    $dir
      * @param bool|null $isAdmin
      * @param SimpleXMLElement|null $xml
-     * @return bool|stdClass
+     * @return Model
+     * @deprecated since 5.0.0
      */
     public function getData($dir, bool $isAdmin = null, SimpleXMLElement $xml = null)
     {
-        $isAdmin = $isAdmin ?? $this->isAdmin;
-        $cacheID = 'tpl_' . $dir . ($isAdmin ? '_admin' : '');
-        if ($this->cachingEnabled === true && ($template = Shop::Container()->getCache()->get($cacheID)) !== false) {
-            return $template;
-        }
-        $template = new stdClass();
-        $xml      = $xml ?? $this->getXML($dir, $isAdmin);
-        if (!$xml) {
-            return false;
-        }
-        $template->cName        = \trim((string)$xml->Name);
-        $template->cOrdner      = (string)$dir;
-        $template->cAuthor      = \trim((string)$xml->Author);
-        $template->cURL         = \trim((string)$xml->URL);
-        $template->cVersion     = \trim((string)$xml->Version);
-        $template->cShopVersion = \trim((string)$xml->ShopVersion);
-        $template->cPreview     = \trim((string)$xml->Preview);
-        $template->cDokuURL     = \trim((string)$xml->DokuURL);
-        $template->bChild       = !empty($xml->Parent);
-        $template->cParent      = !empty($xml->Parent) ? \trim((string)$xml->Parent) : '';
-        $template->bResponsive  = empty($xml['isFullResponsive'])
-            ? false
-            : (\strtolower((string)$xml['isFullResponsive']) === 'true');
-        $template->bHasError    = false;
-        $template->eTyp         = '';
-        $template->cDescription = !empty($xml->Description) ? \trim((string)$xml->Description) : '';
-        if (!Text::is_utf8($template->cDescription)) {
-            $template->cDescription = Text::convertUTF8($template->cDescription);
-        }
-        if (!empty($xml->Parent)) {
-            $parentConfig = $this->getData($xml->Parent, $isAdmin);
-            if ($parentConfig !== false) {
-                $template->cVersion     = !empty($template->cVersion) ? $template->cVersion : $parentConfig->cVersion;
-                $template->cShopVersion = !empty($template->cShopVersion)
-                    ? $template->cShopVersion
-                    : $parentConfig->cShopVersion;
-            }
-        }
-        if (empty($template->cVersion)) {
-            $template->cVersion = $template->cShopVersion;
-        }
-
-        $templates = Shop::Container()->getDB()->query(
-            'SELECT * FROM ttemplate',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-        foreach ($templates as $tpl) {
-            if (!isset($template->bAktiv) || !$template->bAktiv) {
-                $template->bAktiv = (\strcasecmp($template->cOrdner, $tpl->cTemplate) === 0);
-                if ($template->bAktiv) {
-                    $template->eTyp = $tpl->eTyp;
-                }
-            }
-        }
-        $template->bEinstellungen = isset($xml->Settings->Section) || $template->bChild;
-        if (\mb_strlen($template->cName) === 0) {
-            $template->cName = $template->cOrdner;
-        }
-        if ($this->cachingEnabled === true) {
-            Shop::Container()->getCache()->set($cacheID, $template, [\CACHING_GROUP_TEMPLATE]);
-        }
-
-        return $template;
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+        return Shop::Container()->get(TemplateServiceInterface::class)->loadFull(['cTemplate' => $dir]);
     }
 }

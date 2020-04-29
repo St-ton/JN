@@ -500,6 +500,9 @@ function getSpiderArr()
     $cSpider_arr['Twiceler']                                           = 'Twiceler-0.9 http://www.cuil.com/twiceler/robot.html';
     $cSpider_arr['SeznamBot']                                          = 'Seznam Tschechische Suchmaschine http://www.seznam.cz/';
     $cSpider_arr['iisbot']                                             = 'MS Seo Toolkit vom IIS http://www.microsoft.com/web/spotlight/seo.aspx';
+    $cSpider_arr['bingbot']                                            = 'Bing.com';
+    $cSpider_arr['semrush']                                            = 'SemRush Bot';
+    $cSpider_arr['qwantify']                                           = 'qwant.com';
 
     return $cSpider_arr;
 }

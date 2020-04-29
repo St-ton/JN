@@ -57,7 +57,8 @@
 .slick-track { display: flex; flex-wrap: nowrap; }
 
 .slick-slide {
-	flex: 0 0 auto;
+	// firefox height bug
+	//flex: 0 0 auto;
 	max-width: 100%;
 	width: 100%;
 	float: none;

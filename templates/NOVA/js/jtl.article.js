@@ -135,12 +135,13 @@
 
                     $galleryImages.removeAttr('sizes');
                     lazySizes.autoSizer.updateElem($galleryImages);
+
+                    $galleryImages.css('max-height', maxHeight-otherElemHeight);
+                    $('#gallery').css('max-height', maxHeight-otherElemHeight);
                 } else {
                     $('#image_wrapper').removeClass('fullscreen');
+                    $galleryImages.css('max-height', '100%');
                 }
-
-                $galleryImages.css('max-height', maxHeight-otherElemHeight);
-                $('#gallery').css('max-height', maxHeight-otherElemHeight);
 
                 $('#gallery').slick('slickSetOption','initialSlide', current, true);
                 $('#gallery_preview').slick('slickGoTo', current, true);

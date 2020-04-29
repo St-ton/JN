@@ -26,7 +26,7 @@
                                             {$characteristicValue->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_merkmalwert_normal_breite}w"
                                         alt=$characteristicValue->getValue()|escape:'html'
                                         sizes="auto"
-                                        fluid-grow=true
+                                        fluid=true
                                     }
                                 </div>
                             </div>
@@ -75,7 +75,7 @@
                                                         {$characteristicValue->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_merkmalwert_normal_breite}w"
                                                     alt=$characteristicValue->getValue()|escape:'html'
                                                     sizes="auto"
-                                                    fluid-grow=true
+                                                    fluid=true
                                                 }
                                             </div>
                                         </div>
@@ -114,7 +114,7 @@
                                             <div class="inner">
                                                 {image webp=true
                                                     lazy=true
-                                                    fluid-grow=true
+                                                    fluid=true
                                                     src=$img
                                                     srcset="{$characteristicValue->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_merkmalwert_mini_breite}w,
                                                         {$characteristicValue->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_merkmalwert_klein_breite}w,

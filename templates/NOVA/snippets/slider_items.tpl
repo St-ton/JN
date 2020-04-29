@@ -21,10 +21,10 @@
                         <div class="square square-image">
                             <div class="inner">
                                 {image lazy=true
-                                webp=true
-                                src=$item->Bilder[0]->cURLKlein
-                                fluid-grow=true
-                                alt=$item->cName}
+                                    webp=true
+                                    src=$item->Bilder[0]->cURLKlein
+                                    fluid=true
+                                    alt=$item->cName}
                             </div>
                         </div>
                         <div class="caption">

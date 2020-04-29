@@ -15,6 +15,9 @@
             {$gridmd = '4'}
             {$gridxl = '3'}
         {/if}
+        {if $inContainer === false}
+            <div class="container-fluid">
+        {/if}
         {row class=$style|cat:' product-list opc-ProductStream opc-ProductStream-'|cat:$style|cat:' '|cat:$instance->getStyleClasses()
              itemprop="mainEntity" itemscope=true itemtype="http://schema.org/ItemList"}
             {foreach $productlist as $Artikel}
@@ -29,15 +32,19 @@
                 {/col}
             {/foreach}
         {/row}
+        {if $inContainer === false}
+            </div>
+        {/if}
     {elseif $style === 'simpleSlider'}
         <div id="{$instance->getUid()}"
-             class="carousel carousel-arrows-inside slick-lazy
+             class="carousel carousel-arrows-inside evo-slider slick-lazy
                     opc-ProductStream opc-ProductStream-slider slick-type-product"
              data-slick-type="product-slider">
             {foreach $productlist as $Artikel}
                 <div class="product-wrapper">
                     <a href="{$Artikel->cURLFull}">
-                        <img src="{$Artikel->Bilder[0]->cURLNormal}" alt="{$Artikel->cName}" title="{$Artikel->cName}">
+                        <img src="{$Artikel->Bilder[0]->cURLNormal}" alt="{$Artikel->cName}"
+                             title="{$Artikel->cName}">
                     </a>
                 </div>
             {/foreach}

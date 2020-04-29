@@ -23,6 +23,16 @@ class MinifyService
     public const TYPE_JS = 'js';
 
     /**
+     * MinifyService constructor.
+     */
+    public function __construct()
+    {
+        if (!\is_dir($this->baseDir) && !\mkdir($this->baseDir) && !\is_dir($this->baseDir)) {
+            throw new \RuntimeException(\sprintf('Directory "%s" was not created', $this->baseDir));
+        }
+    }
+
+    /**
      * Build a URI for the static cache
      *
      * @param string $urlPrefix E.g. "/min/static"

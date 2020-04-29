@@ -7,7 +7,7 @@
         {assign var=moreLink value=null}
         {assign var=moreTitle value=null}
 
-        {opcMountPoint id='opc_before_boxes'}
+        {opcMountPoint id='opc_before_boxes' inContainer=false}
 
         {block name='page-index-boxes'}
             {foreach $StartseiteBoxen as $Box}
@@ -45,7 +45,7 @@
     {block name='page-index-additional-content'}
         {if isset($oNews_arr) && $oNews_arr|@count > 0}
 
-            {opcMountPoint id='opc_before_news'}
+            {opcMountPoint id='opc_before_news' inContainer=false}
 
             <section>
                 {container}

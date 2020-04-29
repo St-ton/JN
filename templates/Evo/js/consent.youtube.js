@@ -13,7 +13,7 @@ function embedYoutube(detail) {
 		}
 		let notices = document.querySelectorAll('a[data-consent="youtube"]');
 		for (let j = 0; j < notices.length; ++j) {
-			notices[j].classList.add('d-none');
+			notices[j].classList.add('hidden');
 		}
 	}
 	if (detail !== null && typeof detail.vimeo !== 'undefined' && detail.vimeo === true) {
@@ -24,7 +24,7 @@ function embedYoutube(detail) {
 		}
 		let notices = document.querySelectorAll('a[data-consent="vimeo"]');
 		for (let j = 0; j < notices.length; ++j) {
-			notices[j].classList.add('d-none');
+			notices[j].classList.add('hidden');
 		}
 	}
 }

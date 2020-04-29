@@ -416,8 +416,7 @@ class Image
                 });
             }
             if ($settings['container'] === true && $req->getType() !== self::TYPE_OPC) {
-                $background = $req->getExt() === 'png' ? 'rgba(0,0,0,0)' : $settings['background'];
-                $img->resizeCanvas($maxWidth, $maxHeight, 'center', false, $background);
+                $img->resizeCanvas($maxWidth, $maxHeight, 'center', false, $settings['background']);
             }
         }
     }

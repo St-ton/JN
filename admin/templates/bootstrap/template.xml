@@ -18,7 +18,7 @@
             <File Path="css/daterangepicker.css"/>
             <File Path="css/typeaheadjs.css"/>
             <File Path="css/fontawesome-pro/css/all.min.css"/>
-
+            <File Path="css/bootstrap-colorpicker.min.css"/>
             <File Path="css/app/preload.css"/>
             <File Path="css/app/app.css"/>
 
@@ -50,7 +50,7 @@
             <File Path="js/daterangepicker.js"/>
             <File Path="js/searchpicker.js"/>
             <File Path="js/typeahead.bundle.js"/>
-
+            <File Path="js/bootstrap-colorpicker.min.js"/>
             <File Path="js/Chart.min.js"/>
             <File Path="js/draggable.bundle.js"/>
             <File Path="js/store.modern.min.js"/>

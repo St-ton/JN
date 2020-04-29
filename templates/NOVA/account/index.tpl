@@ -33,8 +33,8 @@
             {/block}
         {/if}
 
-        {opcMountPoint id='opc_before_account'}
         {container}
+            {opcMountPoint id='opc_before_account'}
             {row id="account"}
                 {col cols=12}
                     {if $step === 'login'}

@@ -22,9 +22,10 @@ class Divider extends Portlet
 
     /**
      * @param PortletInstance $instance
+     * @param bool $inContainer
      * @return string
      */
-    public function getFinalHtml(PortletInstance $instance): string
+    public function getFinalHtml(PortletInstance $instance, bool $inContainer = true): string
     {
         return '<hr class="' . $instance->getStyleClasses() . '" ' . $instance->getAttributeString(). '>';
     }

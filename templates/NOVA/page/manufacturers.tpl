@@ -1,5 +1,5 @@
 {block name='page-manufacturers'}
-    {opcMountPoint id='opc_before_manufacturers'}
+    {opcMountPoint id='opc_before_manufacturers' inContainer=false}
     {block name='page-manufacturers-content'}
         {container}
             <div class="card-columns manufacturers-columns">

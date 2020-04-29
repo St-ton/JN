@@ -4,42 +4,39 @@ namespace JTL\Template;
 
 use Exception;
 use JTL\DB\DbInterface;
-use JTL\MagicCompatibilityTrait;
 use JTL\Model\DataAttribute;
 use JTL\Model\DataModel;
-use JTL\Model\DataModelInterface;
 use JTL\Shop;
 use SimpleXMLElement;
-use stdClass;
 
 /**
  * Class Model
  *
- * @package JTL\ChangeMe
+ * @package JTL\Template
  * @property string $cTemplate
  * @method string getCTemplate()
  * @method void setCTemplate(string $value)
  * @property string $type
  * @method string getType()
  * @method void setType(string $value)
- * @property string $parent
- * @method string getParent()
- * @method void setParent(string $value)
+ * @property string $cParent
+ * @method string getCParent()
+ * @method void setCParent(string $value)
  * @property int    $templateID
  * @method int getTemplateID()
  * @method void setTemplateID(int $value)
- * @property string $name
- * @method string getName()
- * @method void setName(string $value)
+ * @property string $cName
+ * @method string getCName()
+ * @method void setCName(string $value)
  * @property string $author
  * @method string getAuthor()
  * @method void setAuthor(string $value)
  * @property string $url
  * @method string getUrl()
  * @method void setUrl(string $value)
- * @property string $version
- * @method string getVersion()
- * @method void setVersion(string $value)
+ * @property string $cVersion
+ * @method string getCVersion()
+ * @method void setCVersion(string $value)
  * @property string $preview
  * @method string getPreview()
  * @method void setPreview(string $value)
@@ -52,54 +49,31 @@ use stdClass;
  * @property string $framework
  * @method string getFramework()
  * @method void setFramework(string $value)
+ * @property bool   $isActive
+ * @property bool   $hasConfig
+ * @property bool   $hasError
+ * @property bool   $isResponsive
+ * @property bool   $isChild
+ * @property string $description
+ * @property string $shopVersion
+ * @property string $cOrdner
+ * @property string $dir
+ * @method string getDir()
+ * @method void setDir(string $value)
+ * @method string getDescription()
+ * @method void setDescription(string $value)
+ * @method string getShopVersion()
+ * @method void setShopVersion(string $value)
+ * @method string getDocumentationURL()
+ * @method void setDocumentationURL(string $value)
+ * @method void setIsChild(bool $value)
+ * @method void setIsActive(bool $value)
+ * @method void setHasError(bool $value)
+ * @method void setHasConfig(bool $value)
+ * @method void setIsResponsive(bool $value)
  */
 final class Model extends DataModel
 {
-    /**
-     * @var string
-     */
-    private $documentationURL = '';
-
-    /**
-     * @var string
-     */
-    private $dir = '';
-
-    /**
-     * @var string
-     */
-    private $shopVersion = '';
-
-    /**
-     * @var string
-     */
-    private $description = '';
-
-    /**
-     * @var bool
-     */
-    private $isChild = false;
-
-    /**
-     * @var bool
-     */
-    private $isActive = false;
-
-    /**
-     * @var bool
-     */
-    private $hasConfig = false;
-
-    /**
-     * @var bool
-     */
-    private $isResponsive = false;
-
-    /**
-     * @var bool
-     */
-    private $hasError = false;
-
     /**
      * @param array $attributes
      * @return $this
@@ -117,12 +91,13 @@ final class Model extends DataModel
     }
 
     /**
-     * @return $this
+     * @param DbInterface|null $db
+     * @return static
      * @throws Exception
      */
-    public function loadActiveTemplate(): self
+    public static function loadActiveTemplate(?DbInterface $db = null): self
     {
-        return $this->loadFull(['type' => 'standard']);
+        return self::newInstance($db ?? Shop::Container()->getDB())->loadFull(['type' => 'standard']);
     }
 
     /**
@@ -174,150 +149,6 @@ final class Model extends DataModel
     }
 
     /**
-     * @return string
-     */
-    public function getDocumentationURL(): string
-    {
-        return $this->documentationURL;
-    }
-
-    /**
-     * @param string $documentationURL
-     */
-    public function setDocumentationURL(string $documentationURL): void
-    {
-        $this->documentationURL = $documentationURL;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDir(): string
-    {
-        return $this->dir;
-    }
-
-    /**
-     * @param string $dir
-     */
-    public function setDir(string $dir): void
-    {
-        $this->dir = $dir;
-    }
-
-    /**
-     * @return string
-     */
-    public function getShopVersion(): string
-    {
-        return $this->shopVersion;
-    }
-
-    /**
-     * @param string $shopVersion
-     */
-    public function setShopVersion(string $shopVersion): void
-    {
-        $this->shopVersion = $shopVersion;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDescription(): string
-    {
-        return $this->description;
-    }
-
-    /**
-     * @param string $description
-     */
-    public function setDescription(string $description): void
-    {
-        $this->description = $description;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isChild(): bool
-    {
-        return $this->isChild;
-    }
-
-    /**
-     * @param bool $isChild
-     */
-    public function setIsChild(bool $isChild): void
-    {
-        $this->isChild = $isChild;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isResponsive(): bool
-    {
-        return $this->isResponsive;
-    }
-
-    /**
-     * @param bool $isResponsive
-     */
-    public function setIsResponsive(bool $isResponsive): void
-    {
-        $this->isResponsive = $isResponsive;
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasError(): bool
-    {
-        return $this->hasError;
-    }
-
-    /**
-     * @param bool $hasError
-     */
-    public function setHasError(bool $hasError): void
-    {
-        $this->hasError = $hasError;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isActive(): bool
-    {
-        return $this->isActive;
-    }
-
-    /**
-     * @param bool $isActive
-     */
-    public function setIsActive(bool $isActive): void
-    {
-        $this->isActive = $isActive;
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasConfig(): bool
-    {
-        return $this->hasConfig;
-    }
-
-    /**
-     * @param bool $hasConfig
-     */
-    public function setHasConfig(bool $hasConfig): void
-    {
-        $this->hasConfig = $hasConfig;
-    }
-
-    /**
      * @inheritdoc
      */
     public function getTableName(): string
@@ -336,6 +167,110 @@ final class Model extends DataModel
     }
 
     /**
+     * @return bool
+     */
+    public function isResponsive(): bool
+    {
+        return $this->isResponsive;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasError(): bool
+    {
+        return $this->hasError;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasConfig(): bool
+    {
+        return $this->hasConfig;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isChild(): bool
+    {
+        return $this->isChild;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->cName;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setName(string $name): void
+    {
+        $this->cName = $name;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getParent(): ?string
+    {
+        return $this->cParent;
+    }
+
+    /**
+     * @param string|null $name
+     */
+    public function setParent(?string $name): void
+    {
+        $this->cParent = $name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getVersion(): string
+    {
+        return $this->cVersion;
+    }
+
+    /**
+     * @param string $version
+     */
+    public function setVersion(string $version): void
+    {
+        $this->cVersion = $version;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTemplate(): string
+    {
+        return $this->cTemplate;
+    }
+
+    /**
+     * @param string $template
+     */
+    public function setTemplate(string $template): void
+    {
+        $this->cTemplate = $template;
+    }
+
+    /**
      * @inheritdoc
      */
     public function getAttributes(): array
@@ -345,16 +280,88 @@ final class Model extends DataModel
             $attributes               = [];
             $attributes['cTemplate']  = DataAttribute::create('cTemplate', 'varchar');
             $attributes['type']       = DataAttribute::create('eTyp', 'enum', null, false);
-            $attributes['parent']     = DataAttribute::create('parent', 'varchar');
+            $attributes['cParent']    = DataAttribute::create('parent', 'varchar');
             $attributes['templateID'] = DataAttribute::create('templateID', 'int', null, false, true);
-            $attributes['name']       = DataAttribute::create('name', 'varchar');
+            $attributes['cName']      = DataAttribute::create('name', 'varchar');
             $attributes['author']     = DataAttribute::create('author', 'varchar');
             $attributes['url']        = DataAttribute::create('url', 'varchar');
-            $attributes['version']    = DataAttribute::create('version', 'varchar', null, false);
+            $attributes['cVersion']   = DataAttribute::create('version', 'varchar', null, false);
             $attributes['preview']    = DataAttribute::create('preview', 'varchar');
             $attributes['exsID']      = DataAttribute::create('exsID', 'varchar');
             $attributes['bootstrap']  = DataAttribute::create('bootstrap', 'tinyint', self::cast('0', 'tinyint'), false);
             $attributes['framework']  = DataAttribute::create('framework', 'varchar');
+
+            $dir = new DataAttribute();
+            $dir->setName('cOrdner')
+                ->setDataType('varchar')
+                ->setDefault('')
+                ->setNullable(false)
+                ->setDynamic(true);
+            $attributes['dir'] = $dir;
+
+            $shopVersion = new DataAttribute();
+            $shopVersion->setName('shopVersion')
+                ->setDataType('varchar')
+                ->setDefault('')
+                ->setNullable(false)
+                ->setDynamic(true);
+            $attributes['shopVersion'] = $shopVersion;
+
+            $documentationURL = new DataAttribute();
+            $documentationURL->setName('documentationURL')
+                ->setDataType('varchar')
+                ->setDefault('')
+                ->setNullable(false)
+                ->setDynamic(true);
+            $attributes['documentationURL'] = $documentationURL;
+
+            $description = new DataAttribute();
+            $description->setName('description')
+                ->setDataType('varchar')
+                ->setDefault('')
+                ->setNullable(false)
+                ->setDynamic(true);
+            $attributes['description'] = $description;
+
+            $isChild = new DataAttribute();
+            $isChild->setName('isChild')
+                ->setDataType('bool')
+                ->setDefault(false)
+                ->setNullable(false)
+                ->setDynamic(true);
+            $attributes['isChild'] = $isChild;
+
+            $isResponsive = new DataAttribute();
+            $isResponsive->setName('isResponsive')
+                ->setDataType('bool')
+                ->setDefault(false)
+                ->setNullable(false)
+                ->setDynamic(true);
+            $attributes['isResponsive'] = $isResponsive;
+
+            $hasError = new DataAttribute();
+            $hasError->setName('hasError')
+                ->setDataType('bool')
+                ->setDefault(false)
+                ->setNullable(false)
+                ->setDynamic(true);
+            $attributes['hasError'] = $hasError;
+
+            $hasConfig = new DataAttribute();
+            $hasConfig->setName('hasConfig')
+                ->setDataType('bool')
+                ->setDefault(false)
+                ->setNullable(false)
+                ->setDynamic(true);
+            $attributes['hasConfig'] = $hasConfig;
+
+            $isActive = new DataAttribute();
+            $isActive->setName('isActive')
+                ->setDataType('bool')
+                ->setDefault(false)
+                ->setNullable(false)
+                ->setDynamic(true);
+            $attributes['isActive'] = $isActive;
         }
 
         return $attributes;

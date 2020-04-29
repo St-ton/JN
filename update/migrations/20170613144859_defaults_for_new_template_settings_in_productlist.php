@@ -23,15 +23,15 @@ class Migration_20170613144859 extends Migration implements IMigration
         $template = Template::getInstance();
         $config   = $template->getConfig();
 
-        if ($template->xmlData->cName === 'Evo' || $template->xmlData->cParent === 'Evo') {
+        if ($template->getModel()->getName() === 'Evo' || $template->getModel()->getParent() === 'Evo') {
             if (!isset($config['productlist']['variation_select_productlist'])) {
-                $template->setConfig($template->xmlData->cOrdner, 'productlist', 'variation_select_productlist', 'N');
+                $template->setConfig($template->getModel()->getDir(), 'productlist', 'variation_select_productlist', 'N');
             }
             if (!isset($config['productlist']['variation_select_productlist'])) {
-                $template->setConfig($template->xmlData->cOrdner, 'productlist', 'quickview_productlist', 'N');
+                $template->setConfig($template->getModel()->getDir(), 'productlist', 'quickview_productlist', 'N');
             }
             if (!isset($config['productlist']['variation_select_productlist'])) {
-                $template->setConfig($template->xmlData->cOrdner, 'productlist', 'hover_productlist', 'N');
+                $template->setConfig($template->getModel()->getDir(), 'productlist', 'hover_productlist', 'N');
             }
         }
     }
@@ -39,6 +39,6 @@ class Migration_20170613144859 extends Migration implements IMigration
     public function down()
     {
         $template = Template::getInstance();
-        $this->execute("DELETE FROM ttemplateeinstellungen WHERE cTemplate = '" . $template->xmlData->cOrdner . "' AND cSektion = 'productlist'");
+        $this->execute("DELETE FROM ttemplateeinstellungen WHERE cTemplate = '" . $template->getModel()->getDir() . "' AND cSektion = 'productlist'");
     }
 }

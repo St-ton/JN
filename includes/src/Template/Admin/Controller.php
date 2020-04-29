@@ -66,8 +66,7 @@ class Controller
         JTLCacheInterface $cache,
         AlertServiceInterface $alertService,
         JTLSmarty $smarty
-    )
-    {
+    ) {
         $this->db           = $db;
         $this->cache        = $cache;
         $this->alertService = $alertService;
@@ -158,7 +157,6 @@ class Controller
             while (($obj = \readdir($dh)) !== false) {
                 if (\mb_strpos($obj, '.') === 0) {
                     continue;
-
                 }
                 if (!\is_dir(\PFAD_ROOT . \PFAD_COMPILEDIR . $obj)) {
                     \unlink(\PFAD_ROOT . \PFAD_COMPILEDIR . $obj);

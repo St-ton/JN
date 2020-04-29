@@ -41,7 +41,7 @@ class TemplateValidator implements ValidatorInterface
      */
     public function __construct(DbInterface $db)
     {
-        $this->db     = $db;
+        $this->db = $db;
     }
 
     /**
@@ -96,7 +96,7 @@ class TemplateValidator implements ValidatorInterface
 
     public function validateXML(array $xml): int
     {
-        $node       = $xml['Template'][0] ?? null;
+        $node = $xml['Template'][0] ?? null;
         if ($node !== null) {
             $parent = $node['Parent'] ?? null;
             if ($parent !== null) {

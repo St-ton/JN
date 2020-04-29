@@ -210,8 +210,7 @@ class Status
     protected function hasDifferentTemplateVersion(): bool
     {
         try {
-            $model    = new Model(Shop::Container()->getDB());
-            $template = $model->loadActiveTemplate();
+            $template = Model::loadActiveTemplate(Shop::Container()->getDB());
         } catch (Exception $e) {
             return false;
         }
@@ -224,8 +223,7 @@ class Status
     protected function hasMobileTemplateIssue(): bool
     {
         try {
-            $model    = new Model(Shop::Container()->getDB());
-            $template = $model->loadActiveTemplate();
+            $template = Model::loadActiveTemplate(Shop::Container()->getDB());
         } catch (Exception $e) {
             return false;
         }
@@ -350,11 +348,11 @@ class Status
         return isset($conf['suche_fulltext'])
             && $conf['suche_fulltext'] !== 'N'
             && (!Shop::Container()->getDB()->query(
-                    "SHOW INDEX
+                "SHOW INDEX
                     FROM tartikel
                     WHERE KEY_NAME = 'idx_tartikel_fulltext'",
-                    ReturnType::SINGLE_OBJECT
-                )
+                ReturnType::SINGLE_OBJECT
+            )
                 || !Shop::Container()->getDB()->query(
                     "SHOW INDEX
                     FROM tartikelsprache

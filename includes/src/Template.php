@@ -3,12 +3,12 @@
 namespace JTL;
 
 use Exception;
+use InvalidArgumentException;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Template as TemplateHelper;
 use JTL\Plugin\State;
 use JTL\Template\Model;
 use JTL\Template\XMLReader;
-use LogicException;
 use SimpleXMLElement;
 use stdClass;
 use function Functional\group;
@@ -46,6 +46,7 @@ class Template
 
     /**
      * @var string
+     * @deprecated since 5.0.0
      */
     public $xmlData;
 
@@ -80,14 +81,21 @@ class Template
     private $reader;
 
     /**
-     *
+     * @var Model
+     */
+    private $model;
+
+    /**
+     * Template constructor.
+     * @throws Exception
      */
     public function __construct()
     {
         $this->init();
         self::$frontEndInstance = $this;
         $this->reader           = new XMLReader();
-        $this->xmlData          = self::$helper->getData(self::$cTemplate, false);
+        $this->model            = Model::loadActiveTemplate(Shop::Container()->getDB());
+        $this->xmlData          = $this->model;
     }
 
     /**
@@ -99,40 +107,48 @@ class Template
     }
 
     /**
+     * @return Model
+     */
+    public function getModel(): Model
+    {
+        return $this->model;
+    }
+
+    /**
      * @return $this
      */
     public function init(): self
     {
         $cacheID = 'current_template';
         if (($template = Shop::Container()->getCache()->get($cacheID)) !== false) {
-            $this->loadFromObject($template);
+            $this->loadFromModel($template);
 
             return $this;
         }
         try {
-            $template = Model::loadByAttributes(['type' => 'standard'], Shop::Container()->getDB());
-            $this->loadFromObject($template);
+            $template = Model::loadActiveTemplate(Shop::Container()->getDB());
+            $this->loadFromModel($template);
             Shop::Container()->getCache()->set($cacheID, $template, [\CACHING_GROUP_TEMPLATE]);
         } catch (Exception $e) {
-            throw new LogicException('No template loaded');
+            throw new InvalidArgumentException('No template loaded - Exception: ' . $e->getMessage());
         }
 
         return $this;
     }
 
     /**
-     * @param object $object
+     * @param Model $model
      * @return $this
      */
-    private function loadFromObject($object): self
+    private function loadFromModel(Model $model): self
     {
-        self::$cTemplate = $object->cTemplate;
-        self::$parent    = !empty($object->parent) ? $object->parent : null;
-        $this->name      = $object->name;
-        $this->author    = $object->author;
-        $this->url       = $object->url;
-        $this->version   = $object->version;
-        $this->preview   = $object->preview;
+        self::$cTemplate = $model->getTemplate();
+        self::$parent    = !empty($model->getParent()) ? $model->getParent() : null;
+        $this->name      = $model->getName();
+        $this->author    = $model->getAuthor();
+        $this->url       = $model->getUrl();
+        $this->version   = $model->getVersion();
+        $this->preview   = $model->getPreview();
 
         return $this;
     }
@@ -212,7 +228,7 @@ class Template
                 $frontend  = \PFAD_PLUGIN_VERSION . $item->nVersion . '/' . $frontend;
             }
             $item->rel .= $frontend;
-            $item->abs = \PFAD_ROOT . $item->rel;
+            $item->abs  = \PFAD_ROOT . $item->rel;
         }
 
         return $items;

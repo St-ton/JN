@@ -191,9 +191,10 @@ function dbUpdateIO()
         } else {
             $templateVersion = $template->version;
         }
-        if ($template->xmlData === false
-            || (!Version::parse($template->xmlData->cVersion)->equals($templateVersion)
-            && $template->setTemplate($template->xmlData->cName, $template->xmlData->eTyp))
+        $model = $template->getModel();
+        if ($model === null
+            || (!Version::parse($model->getVersion())->equals($templateVersion)
+            && $template->setTemplate($model->getName(), $model->getType()))
         ) {
             unset($_SESSION['cTemplate'], $_SESSION['template']);
         }
@@ -309,7 +310,7 @@ function dbupdaterStatusTpl($pluginID = null)
                                                  ->equals(Version::parse($currentFileVersion)))
            ->assign('version', $version)
            ->assign('updateError', $updateError)
-           ->assign('currentTemplateFileVersion', $template->xmlData->cVersion ?? '1.0.0')
+           ->assign('currentTemplateFileVersion', $template->getModel()->getVersion() ?? '1.0.0')
            ->assign('currentTemplateDatabaseVersion', $template->version);
 
     return [

@@ -7,9 +7,11 @@ use Illuminate\Support\Collection;
 use JTL\DB\DbInterface;
 use JTL\Plugin\InstallCode;
 use JTL\Shop;
+use JTL\Template\Admin\Validation\TemplateValidator;
 use JTL\Template\Admin\Validation\ValidatorInterface;
 use JTL\Template\Model;
 use JTL\XMLParser;
+use JTLShop\SemVer\Version;
 
 /**
  * Class Listing
@@ -42,8 +44,7 @@ final class Listing
     public function __construct(
         DbInterface $db,
         ValidatorInterface $validator
-    )
-    {
+    ) {
         $this->db        = $db;
         $this->validator = $validator;
         $this->items     = new Collection();
@@ -101,7 +102,7 @@ final class Listing
             $item                = new ListingItem();
             $item->parseXML($xml);
             $item->setPath($templateDir . $dir);
-            $item->setActive($item->getName() === $active->getName());
+            $item->setActive($item->getName() === $active->getTemplate());
 
             $gettext->loadTemplateItemLocale('base', $item);
             $msgid = $item->getFramework() . '_desc';
@@ -113,8 +114,7 @@ final class Listing
             }
             $item->setAuthor(__($item->getAuthor()));
             $item->setName(__($item->getName()));
-
-            if ($code === InstallCode::OK) {
+            if ($code === TemplateValidator::RES_OK) {
                 $item->setAvailable(true);
                 $item->setHasError(false);
             } else {
@@ -122,8 +122,6 @@ final class Listing
                 $item->setHasError(true);
                 $item->setErrorCode($code);
             }
-
-
             $this->items[] = $item;
         }
 

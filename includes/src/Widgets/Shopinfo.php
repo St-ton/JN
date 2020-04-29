@@ -3,7 +3,7 @@
 namespace JTL\Widgets;
 
 use JTL\Shop;
-use JTL\Template;
+use JTL\Template\TemplateServiceInterface;
 
 /**
  * Class Shopinfo
@@ -16,8 +16,7 @@ class Shopinfo extends AbstractWidget
      */
     public function init()
     {
-        $tpl             = Template::getInstance();
-        $strTplVersion   = $tpl->getVersion();
+        $strTplVersion   = Shop::Container()->get(TemplateServiceInterface::class)->getActiveTemplate()->getVersion();
         $strFileVersion  = Shop::getApplicationVersion();
         $strDBVersion    = Shop::getShopDatabaseVersion();
         $strUpdated      = \date_format(\date_create(\getJTLVersionDB(true)), 'd.m.Y, H:i:m');

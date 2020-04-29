@@ -7,7 +7,7 @@ use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Helpers\Text;
 use JTL\Session\Backend;
 use JTL\Shop;
-use JTL\Template;
+use JTL\Template\TemplateServiceInterface;
 use JTL\Update\DBMigrationHelper;
 use JTLShop\SemVer\Parser;
 
@@ -580,8 +580,7 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', in
                     @rmdir($pParameters['path'] . $pParameters['filename']);
                 }
             };
-            $template    = Template::getInstance();
-            $templateDir = $template->getDir();
+            $templateDir = Shop::Container()->get(TemplateServiceInterface::class)->getActiveTemplate();
             $dirMan      = new DirManager();
             $dirMan->getData(PFAD_ROOT . PFAD_COMPILEDIR . $templateDir, $callback);
             $dirMan->getData(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR, $callback);

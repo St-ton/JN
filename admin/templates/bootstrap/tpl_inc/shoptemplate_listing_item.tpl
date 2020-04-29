@@ -87,9 +87,9 @@
             {/if}
         {/if}
 	</td>
-{*    <td class="text-vcenter text-center">*}
-{*        {$listingItem->getVersion()}*}
-{*    </td>*}
+    <td class="text-vcenter text-center">
+        {$listingItem->getVersion()}
+    </td>
 	<td class="text-vcenter text-center">
         {$listingItem->getShopVersion()}
 	</td>

@@ -58,8 +58,17 @@ use SimpleXMLElement;
  * @property string $shopVersion
  * @property string $cOrdner
  * @property string $dir
+ * @property string $fileVersion
+ * @property Resources $resources
+ * @property array $config
+ * @method array getConfig()
+ * @method Resources getResources()
+ * @method string getFileVersion()
  * @method string getDir()
+ * @method void setResources(Resources $value)
+ * @method void setConfig(array $value)
  * @method void setDir(string $value)
+ * @method void setFileVersion(string $value)
  * @method string getDescription()
  * @method void setDescription(string $value)
  * @method string getShopVersion()
@@ -74,80 +83,6 @@ use SimpleXMLElement;
  */
 final class Model extends DataModel
 {
-    /**
-     * @param array $attributes
-     * @return $this
-     * @throws Exception
-     */
-    public function loadFull(array $attributes): self
-    {
-        $template = self::loadByAttributes($attributes, $this->getDB());
-        $reader   = new XMLReader();
-
-        return $this->mergeWithXML(
-            $template->getCTemplate(),
-            $reader->getXML($template->getCTemplate(), $template->getType() === 'admin')
-        );
-    }
-
-    /**
-     * @param DbInterface|null $db
-     * @return static
-     * @throws Exception
-     */
-    public static function loadActiveTemplate(?DbInterface $db = null): self
-    {
-        return self::newInstance($db ?? Shop::Container()->getDB())->loadFull(['type' => 'standard']);
-    }
-
-    /**
-     * @param string                $dir
-     * @param SimpleXMLElement      $xml
-     * @param SimpleXMLElement|null $parentXML
-     * @return $this
-     * @throws Exception
-     */
-    public function mergeWithXML(string $dir, SimpleXMLElement $xml, ?SimpleXMLElement $parentXML = null): self
-    {
-        $template = self::loadByAttributes(['cTemplate' => $dir], $this->getDB(), self::ON_NOTEXISTS_NEW);
-        $template->setName(\trim((string)$xml->Name));
-        $template->setDir($dir);
-        $template->setAuthor(\trim((string)$xml->Author));
-        $template->setUrl(\trim((string)$xml->URL));
-        $template->setVersion(\trim((string)$xml->Version));
-        $template->setShopVersion(\trim((string)$xml->ShopVersion));
-        $template->setPreview(\trim((string)$xml->Preview));
-        $template->setDocumentationURL(\trim((string)$xml->DokuURL));
-        $template->setIsChild(!empty($xml->Parent));
-        $template->setParent(!empty($xml->Parent) ? \trim((string)$xml->Parent) : '');
-        $template->setIsResponsive(empty($xml['isFullResponsive'])
-            ? false
-            : (\strtolower((string)$xml['isFullResponsive']) === 'true'));
-        $template->setHasError(false);
-        $template->setDescription(!empty($xml->Description) ? \trim((string)$xml->Description) : '');
-        if ($parentXML !== null && !empty($xml->Parent)) {
-            $parentConfig = $this->mergeWithXML((string)$xml->Parent, $parentXML);
-            if ($parentConfig !== false) {
-                $version = !empty($template->getVersion()) ? $template->getVersion() : $parentConfig->getVersion();
-                $template->setVersion($version);
-                $shopVersion = !empty($template->getShopVersion())
-                    ? $template->getShopVersion()
-                    : $parentConfig->getShopVersion();
-                $template->setShopVersion($shopVersion);
-            }
-        }
-        $version = $template->getVersion();
-        if (empty($version)) {
-            $template->setVersion($template->getShopVersion());
-        }
-        $template->setHasConfig(isset($xml->Settings->Section) || $template->isChild());
-        if (\mb_strlen($template->getName()) === 0) {
-            $template->setName($dir);
-        }
-
-        return $template;
-    }
-
     /**
      * @inheritdoc
      */
@@ -291,6 +226,20 @@ final class Model extends DataModel
             $attributes['bootstrap']  = DataAttribute::create('bootstrap', 'tinyint', self::cast('0', 'tinyint'), false);
             $attributes['framework']  = DataAttribute::create('framework', 'varchar');
 
+            $resources = new DataAttribute();
+            $resources->setName('resources')
+                ->setDataType('object')
+                ->setNullable(false)
+                ->setDynamic(true);
+            $attributes['resources'] = $resources;
+
+            $config = new DataAttribute();
+            $config->setName('config')
+                ->setDataType('object')
+                ->setNullable(false)
+                ->setDynamic(true);
+            $attributes['config'] = $config;
+
             $dir = new DataAttribute();
             $dir->setName('cOrdner')
                 ->setDataType('varchar')
@@ -298,6 +247,14 @@ final class Model extends DataModel
                 ->setNullable(false)
                 ->setDynamic(true);
             $attributes['dir'] = $dir;
+
+            $fileVersion = new DataAttribute();
+            $fileVersion->setName('fileVersion')
+                ->setDataType('varchar')
+                ->setDefault('')
+                ->setNullable(false)
+                ->setDynamic(true);
+            $attributes['fileVersion'] = $fileVersion;
 
             $shopVersion = new DataAttribute();
             $shopVersion->setName('shopVersion')

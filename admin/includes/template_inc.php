@@ -11,5 +11,6 @@ use JTL\Template;
  */
 function __switchTemplate(string $dir, string $type = 'standard')
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Template::getInstance()->setTemplate($dir, $type);
 }

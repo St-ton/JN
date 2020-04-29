@@ -4,14 +4,12 @@ namespace JTL;
 
 use Exception;
 use InvalidArgumentException;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Template as TemplateHelper;
-use JTL\Plugin\State;
 use JTL\Template\Model;
+use JTL\Template\TemplateServiceInterface;
 use JTL\Template\XMLReader;
 use SimpleXMLElement;
 use stdClass;
-use function Functional\group;
 
 /**
  * Class Template
@@ -94,7 +92,7 @@ class Template
         $this->init();
         self::$frontEndInstance = $this;
         $this->reader           = new XMLReader();
-        $this->model            = Model::loadActiveTemplate(Shop::Container()->getDB());
+        $this->model            = Shop::Container()->get(TemplateServiceInterface::class)->getActiveTemplate();
         $this->xmlData          = $this->model;
     }
 
@@ -126,7 +124,7 @@ class Template
             return $this;
         }
         try {
-            $template = Model::loadActiveTemplate(Shop::Container()->getDB());
+            $template = Shop::Container()->get(TemplateServiceInterface::class)->getActiveTemplate();
             $this->loadFromModel($template);
             Shop::Container()->getCache()->set($cacheID, $template, [\CACHING_GROUP_TEMPLATE]);
         } catch (Exception $e) {
@@ -175,6 +173,7 @@ class Template
      */
     public function leseXML($dir = null)
     {
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
         return $this->reader->getXML($dir ?? self::$cTemplate);
     }
 
@@ -185,100 +184,7 @@ class Template
      */
     public function getPluginResources(): array
     {
-        $resourcesc = Shop::Container()->getDB()->queryPrepared(
-            'SELECT * 
-                FROM tplugin_resources AS res
-                JOIN tplugin
-                    ON tplugin.kPlugin = res.kPlugin
-                WHERE tplugin.nStatus = :state
-                ORDER BY res.priority DESC',
-            ['state' => State::ACTIVATED],
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-        $grouped    = group($resourcesc, static function ($e) {
-            return $e->type;
-        });
-        if (isset($grouped['js'])) {
-            $grouped['js'] = group($grouped['js'], static function ($e) {
-                return $e->position;
-            });
-        }
-
-        return [
-            'css'     => $this->getPluginResourcesPath($grouped['css'] ?? []),
-            'js_head' => $this->getPluginResourcesPath($grouped['js']['head'] ?? []),
-            'js_body' => $this->getPluginResourcesPath($grouped['js']['body'] ?? [])
-        ];
-    }
-
-    /**
-     * get resource path for single plugins
-     *
-     * @param stdClass[] $items
-     * @return array
-     */
-    private function getPluginResourcesPath(array $items): array
-    {
-        foreach ($items as $item) {
-            $frontend = \PFAD_PLUGIN_FRONTEND . $item->type . '/' . $item->path;
-            if ((int)$item->bExtension === 1) {
-                $item->rel = \PLUGIN_DIR . $item->cVerzeichnis . '/';
-            } else {
-                $item->rel = \PFAD_PLUGIN . $item->cVerzeichnis . '/';
-                $frontend  = \PFAD_PLUGIN_VERSION . $item->nVersion . '/' . $frontend;
-            }
-            $item->rel .= $frontend;
-            $item->abs  = \PFAD_ROOT . $item->rel;
-        }
-
-        return $items;
-    }
-
-    /**
-     * parse node of js/css files for insertion conditions and validate them
-     *
-     * @param SimpleXMLElement $node
-     * @return bool
-     */
-    private function checkCondition($node): bool
-    {
-        $settingsGroup = \constant((string)$node->attributes()->DependsOnSettingGroup);
-        $settingValue  = (string)$node->attributes()->DependsOnSettingValue;
-        $comparator    = (string)$node->attributes()->DependsOnSettingComparison;
-        $setting       = (string)$node->attributes()->DependsOnSetting;
-        $conf          = Shop::getSettings([$settingsGroup]);
-        $hierarchy     = \explode('.', $setting);
-        $iterations    = \count($hierarchy);
-        $i             = 0;
-        if (empty($comparator)) {
-            $comparator = '==';
-        }
-        foreach ($hierarchy as $_h) {
-            $conf = $conf[$_h] ?? null;
-            if ($conf === null) {
-                return false;
-            }
-            if (++$i === $iterations) {
-                switch ($comparator) {
-                    case '==':
-                        return $conf == $settingValue;
-                    case '===':
-                        return $conf === $settingValue;
-                    case '>=':
-                        return $conf >= $settingValue;
-                    case '<=':
-                        return $conf <= $settingValue;
-                    case '>':
-                        return $conf > $settingValue;
-                    case '<':
-                        return $conf < $settingValue;
-                    default:
-                        return false;
-                }
-            }
-        }
-
-        return false;
+        // @todo
     }
 
     /**
@@ -289,148 +195,7 @@ class Template
      */
     public function getMinifyArray($absolute = false)
     {
-        $dir        = $this->getDir();
-        $folders    = [];
-        $res        = [];
-        $parentHash = '';
-        if (self::$parent !== null) {
-            $parentHash = self::$parent;
-            $folders[]  = self::$parent;
-        }
-        $folders[] = $dir;
-        $cacheID   = 'tpl_mnfy_dt_' . $dir . $parentHash;
-        if (($tplGroups = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $tplGroups = [
-                'plugin_css'     => [],
-                'plugin_js_head' => [],
-                'plugin_js_body' => []
-            ];
-            foreach ($folders as $dir) {
-                $xml = $this->reader->getXML($dir);
-                if ($xml === null) {
-                    continue;
-                }
-                $cssSource = $xml->Minify->CSS ?? [];
-                $jsSource  = $xml->Minify->JS ?? [];
-                /** @var SimpleXMLElement $css */
-                foreach ($cssSource as $css) {
-                    $name = (string)$css->attributes()->Name;
-                    if (!isset($tplGroups[$name])) {
-                        $tplGroups[$name] = [];
-                    }
-                    /** @var SimpleXMLElement $cssFile */
-                    foreach ($css->File as $cssFile) {
-                        $file     = (string)$cssFile->attributes()->Path;
-                        $filePath = \PFAD_ROOT . \PFAD_TEMPLATES . $xml->Ordner . '/' . $file;
-                        if (\file_exists($filePath)
-                            && (empty($cssFile->attributes()->DependsOnSetting)
-                                || $this->checkCondition($cssFile) === true)
-                        ) {
-                            $_file          = \PFAD_TEMPLATES . $dir . '/' . (string)$cssFile->attributes()->Path;
-                            $customFilePath = \str_replace('.css', '_custom.css', $filePath);
-                            if (\file_exists($customFilePath)) { //add _custom file if existing
-                                $_file              = \str_replace(
-                                    '.css',
-                                    '_custom.css',
-                                    \PFAD_TEMPLATES . $dir . '/' . (string)$cssFile->attributes()->Path
-                                );
-                                $tplGroups[$name][] = [
-                                    'idx' => \str_replace('.css', '_custom.css', (string)$cssFile->attributes()->Path),
-                                    'abs' => \realpath(\PFAD_ROOT . $_file),
-                                    'rel' => $_file
-                                ];
-                            } else { //otherwise add normal file
-                                $tplGroups[$name][] = [
-                                    'idx' => $file,
-                                    'abs' => \realpath(\PFAD_ROOT . $_file),
-                                    'rel' => $_file
-                                ];
-                            }
-                        }
-                    }
-                }
-                /** @var SimpleXMLElement $js */
-                foreach ($jsSource as $js) {
-                    $name = (string)$js->attributes()->Name;
-                    if (!isset($tplGroups[$name])) {
-                        $tplGroups[$name] = [];
-                    }
-                    foreach ($js->File as $jsFile) {
-                        if (!empty($jsFile->attributes()->DependsOnSetting) && $this->checkCondition($jsFile) !== true) {
-                            continue;
-                        }
-                        $_file    = \PFAD_TEMPLATES . $dir . '/' . (string)$jsFile->attributes()->Path;
-                        $newEntry = [
-                            'idx' => (string)$jsFile->attributes()->Path,
-                            'abs' => \PFAD_ROOT . $_file,
-                            'rel' => $_file
-                        ];
-                        $found    = false;
-                        if (!empty($jsFile->attributes()->override)
-                            && (string)$jsFile->attributes()->override === 'true'
-                        ) {
-                            $idxToOverride = (string)$jsFile->attributes()->Path;
-                            $max           = \count($tplGroups[$name]);
-                            for ($i = 0; $i < $max; $i++) {
-                                if ($tplGroups[$name][$i]['idx'] === $idxToOverride) {
-                                    $tplGroups[$name][$i] = $newEntry;
-                                    $found                = true;
-                                    break;
-                                }
-                            }
-                        }
-                        if ($found === false) {
-                            $tplGroups[$name][] = $newEntry;
-                        }
-                    }
-                }
-            }
-            $pluginRes = $this->getPluginResources();
-            foreach ($pluginRes['css'] as $_cssRes) {
-                $customFilePath = \str_replace('.css', '_custom.css', $_cssRes->abs);
-                if (\file_exists($customFilePath)) {
-                    $tplGroups['plugin_css'][] = [
-                        'idx' => $_cssRes->cName,
-                        'abs' => $customFilePath,
-                        'rel' => \str_replace('.css', '_custom.css', $_cssRes->rel)
-                    ];
-                } else {
-                    $tplGroups['plugin_css'][] = [
-                        'idx' => $_cssRes->cName,
-                        'abs' => $_cssRes->abs,
-                        'rel' => $_cssRes->rel
-                    ];
-                }
-            }
-            foreach ($pluginRes['js_head'] as $_jshRes) {
-                $tplGroups['plugin_js_head'][] = [
-                    'idx' => $_jshRes->cName,
-                    'abs' => $_jshRes->abs,
-                    'rel' => $_jshRes->rel
-                ];
-            }
-            foreach ($pluginRes['js_body'] as $_jsbRes) {
-                $tplGroups['plugin_js_body'][] = [
-                    'idx' => $_jsbRes->cName,
-                    'abs' => $_jsbRes->abs,
-                    'rel' => $_jsbRes->rel
-                ];
-            }
-            $cacheTags = [\CACHING_GROUP_OPTION, \CACHING_GROUP_TEMPLATE, \CACHING_GROUP_PLUGIN];
-            \executeHook(\HOOK_CSS_JS_LIST, [
-                'groups'     => &$tplGroups,
-                'cache_tags' => &$cacheTags
-            ]);
-            Shop::Container()->getCache()->set($cacheID, $tplGroups, $cacheTags);
-        }
-        foreach ($tplGroups as $name => $_tplGroup) {
-            $res[$name] = [];
-            foreach ($_tplGroup as $_file) {
-                $res[$name][] = $absolute === true ? $_file['abs'] : $_file['rel'];
-            }
-        }
-
-        return $res;
+        // @todo
     }
 
     /**
@@ -439,6 +204,7 @@ class Template
      */
     public function hasMobileTemplate(): bool
     {
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
         return false;
     }
 
@@ -448,6 +214,7 @@ class Template
      */
     public function isMobileTemplateActive(): bool
     {
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
         return false;
     }
 
@@ -489,6 +256,7 @@ class Template
      */
     public function leseEinstellungenXML($folder, $parent = null): array
     {
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
         self::$cTemplate = $folder;
 
         return $this->reader->getConfigXML($folder, $parent);
@@ -527,6 +295,7 @@ class Template
      */
     public function leseLessXML($dir): array
     {
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
         $xml       = $this->reader->getXML($dir);
         $lessFiles = [];
         if (!$xml || !isset($xml->Lessfiles)) {
@@ -676,6 +445,7 @@ class Template
      */
     public function IsMobile(): bool
     {
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
         return false;
     }
 
@@ -750,5 +520,6 @@ class Template
      */
     public function check($bRedirect = true): void
     {
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
     }
 }

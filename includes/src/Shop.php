@@ -84,6 +84,8 @@ use JTL\Session\Frontend;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
 use JTL\Smarty\MailSmarty;
+use JTL\Template\TemplateService;
+use JTL\Template\TemplateServiceInterface;
 use JTLShop\SemVer\Version;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
@@ -2162,6 +2164,10 @@ final class Shop
 
         $container->singleton(ManagerInterface::class, static function () {
             return new Manager();
+        });
+
+        $container->singleton(TemplateServiceInterface::class, static function (Container $container) {
+            return new TemplateService($container->getDB(), $container->getCache());
         });
 
         $container->bind(CronController::class);

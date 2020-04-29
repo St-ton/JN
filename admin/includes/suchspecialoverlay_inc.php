@@ -3,7 +3,8 @@
 use JTL\Alert\Alert;
 use JTL\DB\ReturnType;
 use JTL\Shop;
-use JTL\Template;
+use JTL\Template\Model;
+use JTL\Template\TemplateServiceInterface;
 
 /**
  * @return array
@@ -63,7 +64,8 @@ function speicherEinstellung(
             ->setPriority((int)$post['nPrio']);
 
     if (mb_strlen($files['name']) > 0) {
-        $template    = $template ?: Template::getInstance()->getName();
+        $template    = $template
+            ?: Shop::Container()->get(TemplateServiceInterface::class)->getActiveTemplate()->getName();
         $overlayPath = PFAD_ROOT . PFAD_TEMPLATES . $template . PFAD_OVERLAY_TEMPLATE;
         if (!is_writable($overlayPath)) {
             Shop::Container()->getAlertService()->addAlert(

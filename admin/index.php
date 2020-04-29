@@ -149,7 +149,6 @@ function openDashboard()
 
         $smarty->assign('bDashboard', true)
                ->assign('bUpdateError', (Request::postInt('shopupdate') === 1 ? '1' : false))
-               ->assign('bTemplateDiffers', Template::getInstance()->getVersion() !== APPLICATION_VERSION)
                ->assign('oActiveWidget_arr', getWidgets())
                ->assign('oAvailableWidget_arr', getWidgets(false))
                ->assign('bInstallExists', is_dir(PFAD_ROOT . 'install'));

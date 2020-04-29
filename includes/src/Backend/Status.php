@@ -13,7 +13,7 @@ use JTL\Plugin\State;
 use JTL\Profiler;
 use JTL\Shop;
 use JTL\SingletonTrait;
-use JTL\Template\Model;
+use JTL\Template\TemplateServiceInterface;
 use JTL\Update\Updater;
 use stdClass;
 use Systemcheck\Environment;
@@ -210,7 +210,7 @@ class Status
     protected function hasDifferentTemplateVersion(): bool
     {
         try {
-            $template = Model::loadActiveTemplate(Shop::Container()->getDB());
+            $template = Shop::Container()->get(TemplateServiceInterface::class)->getActiveTemplate();
         } catch (Exception $e) {
             return false;
         }
@@ -223,7 +223,7 @@ class Status
     protected function hasMobileTemplateIssue(): bool
     {
         try {
-            $template = Model::loadActiveTemplate(Shop::Container()->getDB());
+            $template = Shop::Container()->get(TemplateServiceInterface::class)->getActiveTemplate();
         } catch (Exception $e) {
             return false;
         }

@@ -4,7 +4,7 @@ use JTL\Minify\MinifyService;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
-use JTL\Template;
+use JTL\Template\TemplateServiceInterface;
 use JTL\Update\MigrationManager;
 use JTL\Update\Updater;
 use JTLShop\SemVer\Version;
@@ -19,7 +19,7 @@ $oAccount->permission('SHOP_UPDATE_VIEW', true, true);
 
 $db       = Shop::Container()->getDB();
 $updater  = new Updater($db);
-$template = Template::getInstance();
+$template = Shop::Container()->get(TemplateServiceInterface::class)->getActiveTemplate();
 $feSmarty = new JTLSmarty(true, ContextType::FRONTEND);
 $feSmarty->clearCompiledTemplate();
 $smarty->clearCompiledTemplate();
@@ -42,6 +42,6 @@ $smarty->assign('updatesAvailable', $updatesAvailable)
        ->assign('hasDifferentVersions', !Version::parse($fileVersion)->equals(Version::parse($fileVersion)))
        ->assign('version', $version)
        ->assign('updateError', $updateError)
-       ->assign('currentTemplateFileVersion', $template->getModel()->getVersion() ?? '1.0.0')
-       ->assign('currentTemplateDatabaseVersion', $template->version)
+       ->assign('currentTemplateFileVersion', $template->getFileVersion())
+       ->assign('currentTemplateDatabaseVersion', $template->getVersion())
        ->display('dbupdater.tpl');

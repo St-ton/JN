@@ -6,6 +6,7 @@
 				<th></th>
 				<th>{__('Name')}</th>
 				<th class="text-center">{__('status')}</th>
+				<th class="text-center">{__('version')}</th>
 				<th class="text-center">{__('shopversion')}</th>
 				<th></th>
 			</tr>

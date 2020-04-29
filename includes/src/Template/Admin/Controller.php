@@ -2,6 +2,7 @@
 
 namespace JTL\Template\Admin;
 
+use Exception;
 use InvalidArgumentException;
 use JTL\Alert\Alert;
 use JTL\Cache\JTLCacheInterface;
@@ -14,9 +15,9 @@ use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use JTL\Template\Admin\Validation\TemplateValidator;
+use JTL\Template\Config;
 use JTL\Template\Model;
 use JTL\Template\XMLReader;
-use stdClass;
 
 /**
  * Class Controller
@@ -113,7 +114,7 @@ class Controller
      * @param string $dir
      * @param string $type
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     private function setActiveTemplate(string $dir, string $type = 'standard'): bool
     {

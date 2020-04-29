@@ -8,6 +8,7 @@ use JTL\Plugin\PluginLoader;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
 use JTL\Template;
+use JTL\Template\TemplateServiceInterface;
 use JTL\Update\IMigration;
 use JTL\Update\MigrationManager;
 use JTL\Update\Updater;
@@ -277,7 +278,7 @@ function dbupdaterStatusTpl($pluginID = null)
     $smarty                 = JTLSmarty::getInstance(false, ContextType::BACKEND);
     $db                     = Shop::Container()->getDB();
     $updater                = new Updater($db);
-    $template               = Template::getInstance();
+    $template               = Shop::Container()->get(TemplateServiceInterface::class)->getActiveTemplate();
     $manager                = null;
     $currentFileVersion     = $updater->getCurrentFileVersion();
     $currentDatabaseVersion = $updater->getCurrentDatabaseVersion();
@@ -310,8 +311,8 @@ function dbupdaterStatusTpl($pluginID = null)
                                                  ->equals(Version::parse($currentFileVersion)))
            ->assign('version', $version)
            ->assign('updateError', $updateError)
-           ->assign('currentTemplateFileVersion', $template->getModel()->getVersion() ?? '1.0.0')
-           ->assign('currentTemplateDatabaseVersion', $template->version);
+           ->assign('currentTemplateFileVersion', $template->getFileVersion() ?? '1.0.0')
+           ->assign('currentTemplateDatabaseVersion', $template->getVersion());
 
     return [
         'tpl'  => $smarty->fetch('tpl_inc/dbupdater_status.tpl'),

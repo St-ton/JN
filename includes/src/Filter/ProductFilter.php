@@ -30,7 +30,8 @@ use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\MagicCompatibilityTrait;
 use JTL\Mapper\SortingType;
-use JTL\Template;
+use JTL\Shop;
+use JTL\Template\TemplateServiceInterface;
 use stdClass;
 use function Functional\first;
 use function Functional\flatten;
@@ -977,10 +978,11 @@ class ProductFilter
      */
     public function getAvailableContentFilters(): array
     {
+        $templateSettings = Shop::Container()->get(TemplateServiceInterface::class)->getActiveTemplate()->getConfig();
+
         return \array_filter(
             $this->filters,
-            static function ($f) {
-                $templateSettings = Template::getInstance()->getConfig();
+            static function ($f) use ($templateSettings) {
                 /** @var FilterInterface $f */
                 return $f->getVisibility() === Visibility::SHOW_ALWAYS
                     || $f->getVisibility() === Visibility::SHOW_CONTENT

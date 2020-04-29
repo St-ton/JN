@@ -380,6 +380,7 @@ abstract class DataModel implements DataModelInterface, Iterator
                 }
                 break;
             case 'model':
+            case 'object':
                 return $value;
             case 'yesno':
                 if (\is_string($value) && \in_array($value, ['Y', 'N'], true)) {
@@ -406,6 +407,9 @@ abstract class DataModel implements DataModelInterface, Iterator
      */
     private static function getType(string $type)
     {
+        if ($type === 'object') {
+            return $type;
+        }
         if (self::isChildModel($type)) {
             return 'model';
         }

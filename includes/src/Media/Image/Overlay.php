@@ -7,6 +7,7 @@ use JTL\Language\LanguageHelper;
 use JTL\MagicCompatibilityTrait;
 use JTL\Shop;
 use JTL\Template;
+use JTL\Template\TemplateServiceInterface;
 use stdClass;
 
 /**
@@ -360,7 +361,8 @@ class Overlay
      */
     public function setTemplateName(string $template = null): self
     {
-        $this->templateName = $template ?: Template::getInstance()->getName();
+        $this->templateName = $template
+            ?:  Shop::Container()->get(TemplateServiceInterface::class)->getActiveTemplate()->getName();
 
         return $this;
     }

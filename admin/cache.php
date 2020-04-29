@@ -8,7 +8,8 @@ use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
 use JTL\Minify\MinifyService;
 use JTL\Shop;
-use JTL\Template;
+use JTL\Template\Model;
+use JTL\Template\TemplateServiceInterface;
 
 require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
@@ -293,7 +294,7 @@ switch ($action) {
             'notice' => &$notice,
             'error'  => &$error
         ];
-        $template     = Template::getInstance();
+        $template     = Shop::Container()->get(TemplateServiceInterface::class)->getActiveTemplate();
         $dirMan       = new DirManager();
         $dirMan->getData(PFAD_ROOT . PFAD_COMPILEDIR . $template->getDir(), $callback, $cbParameters);
         $dirMan->getData(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR, $callback, $cbParameters);
@@ -416,7 +417,7 @@ $callback = static function (array $pParameters) {
     }
 };
 
-$template = Template::getInstance();
+$template = Shop::Container()->get(TemplateServiceInterface::class)->getActiveTemplate();
 $dirMan   = new DirManager();
 $dirMan->getData(PFAD_ROOT . PFAD_COMPILEDIR . $template->getDir(), $callback, ['files' => &$tplcacheStats->frontend])
     ->getData(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR, $callback, ['files' => &$tplcacheStats->backend]);

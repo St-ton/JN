@@ -4,6 +4,8 @@ namespace JTL;
 
 use ArrayAccess;
 use JTL\DB\ReturnType;
+use JTL\Template\Model;
+use JTL\Template\TemplateServiceInterface;
 
 /**
  * Class Shopsetting
@@ -66,7 +68,7 @@ final class Shopsetting implements ArrayAccess
     ];
 
     /**
-     *
+     * Shopsetting constructor.
      */
     private function __construct()
     {
@@ -155,7 +157,7 @@ final class Shopsetting implements ArrayAccess
             $settings = Shop::Container()->getCache()->get(
                 $cacheID,
                 static function ($cache, $id, &$content, &$tags) {
-                    $content = Template::getInstance()->getConfig();
+                    $content = Shop::Container()->get(TemplateServiceInterface::class)->getActiveTemplate()->getConfig();
                     $tags    = [\CACHING_GROUP_TEMPLATE, \CACHING_GROUP_OPTION];
 
                     return true;
@@ -294,8 +296,9 @@ final class Shopsetting implements ArrayAccess
         if ($this->allSettings !== null) {
             return $this->allSettings;
         }
+        $db       = Shop::Container()->getDB();
         $result   = [];
-        $settings = Shop::Container()->getDB()->query(
+        $settings = $db->query(
             'SELECT teinstellungen.kEinstellungenSektion, teinstellungen.cName, teinstellungen.cWert,
                 teinstellungenconf.cInputTyp AS type
                 FROM teinstellungen
@@ -325,8 +328,7 @@ final class Shopsetting implements ArrayAccess
                 }
             }
         }
-        $template           = Template::getInstance();
-        $result['template'] = $template->getConfig();
+        $result['template'] = Shop::Container()->get(TemplateServiceInterface::class)->getActiveTemplate()->getConfig();
         $this->allSettings  = $result;
 
         return $result;

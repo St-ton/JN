@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace JTL\Template\Admin;
+namespace JTL\Template;
 
 use JTL\DB\DbInterface;
 use JTL\Template\XMLReader;

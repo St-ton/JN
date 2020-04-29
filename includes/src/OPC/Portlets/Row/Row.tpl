@@ -4,6 +4,10 @@
     {$areaClass = 'opc-area'}
 {/if}
 
+{if $inContainer === false}
+    <div class="container-fluid">
+{/if}
+
 {row data=$data|default:[]
      class=$instance->getAnimationClass()|cat:' '|cat:$instance->getStyleClasses()
      style=$instance->getStyleString()|default:null}
@@ -28,3 +32,7 @@
         {/foreach}
     {/foreach}
 {/row}
+
+{if $inContainer === false}
+    </div>
+{/if}

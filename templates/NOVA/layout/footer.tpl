@@ -24,7 +24,7 @@
         {/block}
 
         {block name='layout-footer-content-closingtag'}
-            {opcMountPoint id='opc_content' title='Default Area'}
+            {opcMountPoint id='opc_content' title='Default Area' inContainer=false}
             </div>{* /content *}
         {/block}
 
@@ -71,6 +71,11 @@
                                                         {/inputgroupaddon}
                                                     {/inputgroup}
                                                 {/formgroup}
+                                            {/block}
+                                            {block name='layout-footer-form-captcha'}
+                                                <div class="d-none form-group{if !empty($plausiArr.captcha) && $plausiArr.captcha === true} has-error{/if}">
+                                                    {captchaMarkup getBody=true}
+                                                </div>
                                             {/block}
                                         {/form}
                                     {/block}

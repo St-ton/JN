@@ -280,7 +280,7 @@ class BaseSearchQuery extends AbstractFilter
             && ($n = (int)$naviConf['suchtrefferfilter_anzahl']) > 0)
             ? ' LIMIT ' . $n
             : '';
-        $sql = (new StateSQL())->from($this->productFilter->getCurrentStateData());
+        $sql   = (new StateSQL())->from($this->productFilter->getCurrentStateData());
         $sql->setSelect(['tsuchanfrage.kSuchanfrage', 'tsuchanfrage.cSuche', 'tartikel.kArtikel']);
         $sql->setOrderBy(null);
         $sql->setLimit('');

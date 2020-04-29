@@ -18,11 +18,6 @@
 	.slick-slide,
 	img {
 		outline: none !important;
-		width: 100%;
-	}
-
-	.slick-slide img {
-		margin: 0 auto;
 	}
 
 	.slick-slide:not(.slick-current) img{
@@ -31,13 +26,6 @@
 		&:hover {
 			-webkit-filter: opacity(1);
 			filter: opacity(1);
-		}
-	}
-
-	#gallery_preview_wrapper {
-		.product-image {
-			border: $border-width solid $gray-darker;
-			border-radius: $border-radius;
 		}
 	}
 
@@ -54,6 +42,10 @@
 		z-index: 10000;
 		background-color: rgba($gray-darker, .5);
 		overflow: hidden;
+
+		img {
+			margin: 0 auto;
+		}
 
 		.product-actions {
 			display: none;
@@ -81,6 +73,16 @@
 			margin-bottom: 0;
 			.product-image {
 				cursor: pointer;
+			}
+			.square-image {
+				.inner {
+					img {
+						left: initial;
+						top: initial;
+						-webkit-transform: initial;
+						transform: initial;
+					}
+				}
 			}
 		}
 
@@ -153,10 +155,19 @@
 	#gallery_preview {
 		&:not(.slick-initialized) {
 			div.js-gallery-images {
-				width: calc((100% - 49px)/5);
-				min-width: calc((100% - 49px)/5);
+				width: calc(79%/5);
+				min-width: calc(79%/5);
+				height: 100%;
 				&:not(.preview-first) {
 					opacity: 0.2;
+				}
+				padding: 0;
+				border: $border-width solid $gray-darker;
+				border-radius: $border-radius;
+				margin: 0 0.5rem;
+				@include media-breakpoint-down(lg) {
+					width: calc(72%/5);
+					min-width: calc(72%/5);
 				}
 			}
 			&.slick-count-default {

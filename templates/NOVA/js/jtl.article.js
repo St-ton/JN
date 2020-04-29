@@ -301,9 +301,7 @@
                 .on('mouseenter', function (e) {
                     let mainImageHeight = $('.js-gallery-images').innerHeight();
                         $('.variation-image-preview.vt' + $(this).data('value')).addClass('show d-md-block')
-                        .css('top', $(this).offset().top - $(this).closest('#content').position().top - mainImageHeight/2)
-                        .find('img')
-                            .height(mainImageHeight);
+                        .css('top', $(this).offset().top - $(this).closest('#content').position().top - mainImageHeight/2 -12);
                 })
                 .on('mouseleave', function (e) {
                     $('.variation-image-preview.vt' + $(this).data('value')).removeClass('show d-md-block');
@@ -316,9 +314,7 @@
                             let mainImageHeight = $('.js-gallery-images').innerHeight();
                             $('.variation-image-preview.vt' + $(this).find('span[data-value]').data("value"))
                                 .addClass('show d-md-block')
-                                .css('top', $(this).offset().top - $(this).closest('#content').position().top - mainImageHeight/2)
-                                .find('img')
-                                    .height(mainImageHeight);
+                                .css('top', $(this).offset().top - $(this).closest('#content').position().top - mainImageHeight/2 -12);
                         })
                         .on('mouseleave', function () {
                             $('.variation-image-preview.vt' + $(this).find('span[data-value]').data("value"))

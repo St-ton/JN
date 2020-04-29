@@ -9,7 +9,7 @@
                         {assign var=alt value=$Artikel->cName}
                     {/if}
                     {block name='productlist-item-slider-image'}
-                        {image fluid-grow=true webp=true lazy=true
+                        {image fluid=true webp=true lazy=true
                             alt=$Artikel->cName
                             src=$Artikel->Bilder[0]->cURLKlein
                             srcset="{$Artikel->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,

@@ -428,7 +428,7 @@
                                                                              {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
                                                                              {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
                                                                             sizes="auto"
-                                                                            class="w-100{if !$isMobile && !empty($wlPosition->Artikel->Bilder[1])} first{/if}"
+                                                                            class="{if !$isMobile && !empty($wlPosition->Artikel->Bilder[1])} first{/if}"
                                                                         }
                                                                         </div>
                                                                     </div>

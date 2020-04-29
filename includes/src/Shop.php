@@ -2162,8 +2162,8 @@ final class Shop
             return new Mailer($hydrator, $smarty, $settings, $validator);
         });
 
-        $container->singleton(ManagerInterface::class, static function () {
-            return new Manager();
+        $container->singleton(ManagerInterface::class, static function (Container $container) {
+            return new Manager($container->getDB());
         });
 
         $container->singleton(TemplateServiceInterface::class, static function (Container $container) {

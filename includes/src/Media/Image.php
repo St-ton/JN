@@ -85,8 +85,9 @@ class Image
         if (self::$settings !== null) {
             return self::$settings;
         }
-        $settings = Shop::getSettings([\CONF_BILDER]);
-        $settings = \array_shift($settings);
+        $settings = Shop::getSettings([\CONF_BILDER, \CONF_BRANDING]);
+        $branding = $settings['branding'];
+        $settings = $settings['bilder'];
 
         self::$settings         = [
             'background'                    => $settings['bilder_hintergrundfarbe'],
@@ -94,7 +95,7 @@ class Image
             'format'                        => \mb_convert_case($settings['bilder_dateiformat'], \MB_CASE_LOWER),
             'scale'                         => $settings['bilder_skalieren'] === 'Y',
             'quality'                       => (int)$settings['bilder_jpg_quali'],
-            'branding'                      => self::getBranding()[self::TYPE_PRODUCT] ?? null,
+            'branding'                      => $branding[self::TYPE_PRODUCT] ?? null,
             self::TYPE_PRODUCT              => [
                 self::SIZE_XS => [
                     'width'  => (int)$settings['bilder_artikel_mini_breite'],
@@ -287,34 +288,6 @@ class Image
         self::$settings['size'] = self::$settings[self::TYPE_PRODUCT];
 
         return self::$settings;
-    }
-
-    /**
-     * Convert old branding naming
-     *
-     * @return array
-     */
-    private static function getBranding(): array
-    {
-        $data = Shop::Container()->getDB()->query(
-            'SELECT tbranding.cBildKategorie AS type, 
-            tbrandingeinstellung.cPosition AS position, tbrandingeinstellung.cBrandingBild AS path,
-            tbrandingeinstellung.dTransparenz AS transparency, tbrandingeinstellung.dGroesse AS size
-                FROM tbrandingeinstellung
-                INNER JOIN tbranding 
-                    ON tbrandingeinstellung.kBranding = tbranding.kBranding
-                WHERE tbrandingeinstellung.nAktiv = 1',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-        foreach ($data as $item) {
-            $item->size         = (int)$item->size;
-            $item->transparency = (int)$item->transparency;
-            $item->path         = \PFAD_ROOT . \PFAD_BRANDINGBILDER . $item->path;
-        }
-
-        return reindex($data, static function ($e) {
-            return $e->type;
-        });
     }
 
     /**

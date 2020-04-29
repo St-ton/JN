@@ -99,6 +99,7 @@
             <hr class="mb-3">
             {include file='tpl_inc/pagination.tpl' pagination=$crawlerPagination cParam_arr=['s'=>$nTyp,'tab'=>'settings']}
             <form id="crawlerList" name="crawlerList" method="post" action="statistik.php?s=3&tab=settings">
+                {$jtl_token}
                 <div class="table-responsive">
                     <table id="category-list" class="list table table-striped">
                         <thead>

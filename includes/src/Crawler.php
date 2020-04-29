@@ -3,6 +3,7 @@
 namespace JTL;
 
 use JTL\DB\ReturnType;
+use JTL\Helpers\Form;
 use JTL\Services\JTL\Validation\Rules\DateTime;
 use JTL\Helpers\Request;
 use JTL\Alert\Alert;
@@ -144,7 +145,14 @@ class Crawler
      */
     public static function checkSubmit()
     {
-        $crawler = false;
+        $crawler      = false;
+        $alertService = Shop::Container()->getAlertService();
+        if (Form::validateToken() === false &&
+            (Request::postInt('save_crawler') || Request::postInt('delete_crawler'))
+        ) {
+            $alertService->addAlert(Alert::TYPE_ERROR, __('errorCSRF'), 'errorCSRF');
+            return $crawler;
+        }
         if (Request::postInt('delete_crawler') === 1) {
             $selectedCrawler = Request::postVar('selectedCrawler');
             self::deleteBatch($selectedCrawler);
@@ -152,15 +160,19 @@ class Crawler
         if (Request::postInt('save_crawler') === 1) {
             if (!empty(Request::postVar('cUserAgent')) && !empty(Request::postVar('cBeschreibung'))) {
                 $crawlerId = Request::postInt('id');
-                $item      = new self((int)$crawlerId, Request::postVar('cUserAgent'), Request::postVar('cBeschreibung'));
+                $item      = new self(
+                    (int)$crawlerId,
+                    Request::postVar('cUserAgent'),
+                    Request::postVar('cBeschreibung')
+                );
                 $result    = self::setCrawler($item);
                 if ($result === -1) {
-                    Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, __('missingCrawlerFields'), 'missingCrawlerFields');
+                    $alertService->addAlert(Alert::TYPE_ERROR, __('missingCrawlerFields'), 'missingCrawlerFields');
                 } else {
                     header('Location: statistik.php?s=3&tab=settings');
                 }
             } else {
-                Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, __('missingCrawlerFields'), 'missingCrawlerFields');
+                $alertService->addAlert(Alert::TYPE_ERROR, __('missingCrawlerFields'), 'missingCrawlerFields');
             }
         }
         if (Request::verifyGPCDataInt('edit') === 1 || Request::verifyGPCDataInt('new') === 1) {

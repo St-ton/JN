@@ -100,21 +100,25 @@ function regionsToState(){
             } else {
                 var state_id = connection_id+'-state';
                 var state = $('#'+state_id);
+                var state_data = state.data();
                 if (state.length === 0) {
                     return;
                 }
-                var title = $('#pleaseChoose-gettext').html();
+                var title = state_data.defaultoption;
                 var stateIsRequired = state.attr('required') === 'required';
                 var data = data.response;
-
                 var def = $('#'+state_id).val();
 
                 if (data !== null && data.length > 0) {
                     if (stateIsRequired){
-                        var state = $('<select />').attr({ id: state_id, name: state.attr('name'), title:title, class: 'custom-select required form-control js-state-select', required: 'required'});
+                        var state = $('<select />').attr({ id: state_id, name: state.attr('name'), class: 'custom-select required form-control js-state-select', required: 'required'});
                     } else {
-                        var state = $('<select />').attr({ id: state_id, name: state.attr('name'),title:title, class: 'custom-select form-control js-state-select'});
+                        var state = $('<select />').attr({ id: state_id, name: state.attr('name'), class: 'custom-select form-control js-state-select'});
                     }
+
+                    Object.keys(state_data).forEach(function(key,index) {
+                        state.data(key,state_data[key]);
+                    });
 
                     state.append('<option value="">' + title + '</option>');
                     $(data).each(function(idx, item) {
@@ -126,10 +130,13 @@ function regionsToState(){
                     $('#'+state_id).replaceWith(state);
                 } else {
                     if (stateIsRequired) {
-                        var state = $('<input />').attr({ type: 'text', id: state_id, name: state.attr('name'), class: 'required form-control js-state-select', placeholder: title, required: 'required' });
+                        var state = $('<input />').attr({ type: 'text', id: state_id, name: state.attr('name'),  class: 'required form-control js-state-select', placeholder: title, required: 'required' });
                     } else {
-                        var state = $('<input />').attr({ type: 'text', id: state_id, name: state.attr('name'), class: 'form-control js-state-select', placeholder: title });
+                        var state = $('<input />').attr({ type: 'text', id: state_id, name: state.attr('name'),  class: 'form-control js-state-select', placeholder: title });
                     }
+                    Object.keys(state_data).forEach(function(key,index) {
+                        state.data(key,state_data[key]);
+                    });
                     $('#'+state_id).replaceWith(state);
                 }
             }

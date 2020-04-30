@@ -190,11 +190,10 @@
                         }
                             {if !empty($oShippingStates)}
                                 {select
-                                        title="{lang key=pleaseChoose}"
                                         name="{$prefix}[{$name}][bundesland]"
                                         id="{$prefix}-{$name}-state"
                                         class="state-input custom-select js-state-select"
-                                        data-connector="{$prefix}{$name}"
+                                        data=["defaultoption"=>{lang key=pleaseChoose}]
                                         autocomplete="shipping address-level1"
                                         required=($Einstellungen.kunden.lieferadresse_abfragen_bundesland === 'Y')
                                 }
@@ -209,8 +208,11 @@
                                     name="{$prefix}[{$name}][bundesland]"
                                     value="{if isset($Lieferadresse->cBundesland)}{$Lieferadresse->cBundesland}{/if}"
                                     id="{$prefix}-{$name}-state"
-                                    data=["toggle"=>"state",
-                                        "target"=>"#{$prefix}-{$name}-country"]
+                                    data=[
+                                        "toggle"=>"state",
+                                        "defaultoption"=>{lang key=pleaseChoose},
+                                        "target"=>"#{$prefix}-{$name}-country"
+                                    ]
                                     placeholder="{lang key='state' section='account data'}"
                                     required=($Einstellungen.kunden.lieferadresse_abfragen_bundesland === 'Y')
                                     autocomplete="shipping address-level1"}

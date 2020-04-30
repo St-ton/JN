@@ -274,10 +274,9 @@
                                         label-for="state"
                                         label="{lang key='state' section='account data'}{if $Einstellungen.kunden.kundenregistrierung_abfragen_bundesland !== 'Y'}<span class='optional'> - {lang key='optional'}</span>{/if}"
                                     }
-                                     <span id="pleaseChoose-gettext" class="d-none">{lang key=pleaseChoose}</span>
                                         {if !empty($oStates)}
                                             {select
-                                                title="{lang key=pleaseChoose}"
+                                                data=["defaultOption"=>{lang key=pleaseChoose}]
                                                 name="bundesland"
                                                 id="billing_address-state"
                                                 class="state-input custom-select js-state-select"
@@ -295,6 +294,7 @@
                                                 name="bundesland"
                                                 value=$cState
                                                 id="billing_address-state"
+                                                data=["defaultOption"=>{lang key=pleaseChoose}]
                                                 placeholder="{lang key='state' section='account data'}"
                                                 autocomplete="billing address-level1"
                                                 required=($Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y')

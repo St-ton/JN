@@ -86,31 +86,34 @@ function compatibility() {
         }
     };
 }
+function regionsToState(){
+    $('.js-country-select').on('change', function() {
 
-function regionsToState() {
-    var state = $('#state');
-    if (state.length === 0) {
-        return;
-    }
-    var title = state.attr('title');
-    var stateIsRequired = state.attr('required') === 'required';
-
-    $('#country').on('change', function() {
         var result = {};
         var io = $.evo.io();
-        var val = $(this).find(':selected').val();
+        var country = $(this).find(':selected').val();
+        var connection_id = $(this).attr('id').toString().replace("-country","");
 
-        io.call('getRegionsByCountry', [val], result, function (error, data) {
+        io.call('getRegionsByCountry', [country], result, function (error, data) {
             if (error) {
                 console.error(data);
             } else {
-                var data = result.response;
-                var def = $('#state').val();
+                var state_id = connection_id+'-state';
+                var state = $('#'+state_id);
+                if (state.length === 0) {
+                    return;
+                }
+                var title = $('#pleaseChoose-gettext').html();
+                var stateIsRequired = state.attr('required') === 'required';
+                var data = data.response;
+
+                var def = $('#'+state_id).val();
+
                 if (data !== null && data.length > 0) {
                     if (stateIsRequired){
-                        var state = $('<select />').attr({ id: 'state', name: 'bundesland', class: 'custom-select required form-control', required: 'required'});
+                        var state = $('<select />').attr({ id: state_id, name: state.attr('name'), title:title, class: 'custom-select required form-control js-state-select', required: 'required'});
                     } else {
-                        var state = $('<select />').attr({ id: 'state', name: 'bundesland', class: 'custom-select form-control'});
+                        var state = $('<select />').attr({ id: state_id, name: state.attr('name'),title:title, class: 'custom-select form-control js-state-select'});
                     }
 
                     state.append('<option value="">' + title + '</option>');
@@ -120,19 +123,18 @@ function regionsToState() {
                                 .attr('selected', item.cCode == def || item.cName == def ? 'selected' : false)
                         );
                     });
-                    $('#state').replaceWith(state);
+                    $('#'+state_id).replaceWith(state);
                 } else {
                     if (stateIsRequired) {
-                        var state = $('<input />').attr({ type: 'text', id: 'state', name: 'bundesland', class: 'required form-control', placeholder: title, required: 'required' });
+                        var state = $('<input />').attr({ type: 'text', id: state_id, name: state.attr('name'), class: 'required form-control js-state-select', placeholder: title, required: 'required' });
                     } else {
-                        var state = $('<input />').attr({ type: 'text', id: 'state', name: 'bundesland', class: 'form-control', placeholder: title });
+                        var state = $('<input />').attr({ type: 'text', id: state_id, name: state.attr('name'), class: 'form-control js-state-select', placeholder: title });
                     }
-                    $('#state').replaceWith(state);
+                    $('#'+state_id).replaceWith(state);
                 }
             }
         });
         return false;
-
     }).trigger('change');
 }
 

@@ -317,7 +317,7 @@ abstract class AbstractLoader implements LoaderInterface
             $menu->pluginID         = $menu->kPlugin;
             $menu->nSort            = $items->count() + 1;
             $menu->sort             = $menu->nSort;
-            $menu->name             = 'licsense';
+            $menu->name             = 'license';
             $menu->cName            = __('Lizenzvereinbarungen');
             $menu->displayName      = $menu->cName;
             $menu->cDateiname       = $meta->getLicenseMD();

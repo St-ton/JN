@@ -84,17 +84,21 @@
                                 <div class="panel-heading"><h3 class="panel-title">{$oMedienDatei->cName}</h3></div>
                                 <div class="panel-body">
                                     <p>{$oMedienDatei->cBeschreibung}</p>
-                                    {if isset($oMedienDatei->oEmbed) && $oMedienDatei->oEmbed->code}
-                                        {$oMedienDatei->oEmbed->code}
-                                    {/if}
-                                    {if !empty($oMedienDatei->cPfad)}
-                                        <p>
-                                            <a href="{$ShopURL}/{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" target="_blank">{$oMedienDatei->cName}</a>
-                                        </p>
-                                    {elseif !empty($oMedienDatei->cURL)}
-                                        <p>
-                                            <a href="{$oMedienDatei->cURL}" target="_blank"><i class="fa fa-external-link"></i> {$oMedienDatei->cName}</a>
-                                        </p>
+                                    {if $oMedienDatei->cURL|strpos:'youtube' !== false || $oMedienDatei->cURL|strpos:'youtu.be' !== false}
+                                        {include file='productdetails/mediafile_youtube_embed.tpl'}
+                                    {else}
+                                        {if isset($oMedienDatei->oEmbed) && $oMedienDatei->oEmbed->code}
+                                            {$oMedienDatei->oEmbed->code}
+                                        {/if}
+                                        {if !empty($oMedienDatei->cPfad)}
+                                            <p>
+                                                <a href="{$ShopURL}/{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" target="_blank">{$oMedienDatei->cName}</a>
+                                            </p>
+                                        {elseif !empty($oMedienDatei->cURL)}
+                                            <p>
+                                                <a href="{$oMedienDatei->cURL}" target="_blank"><i class="fa fa-external-link"></i> {$oMedienDatei->cName}</a>
+                                            </p>
+                                        {/if}
                                     {/if}
                                 </div>
                             </div>

@@ -16,6 +16,7 @@ class_alias(\JTL\Events\Dispatcher::class, 'EventDispatcher', true);
 class_alias(\JTL\Widgets\AbstractWidget::class, 'WidgetBase', true);
 class_alias(\JTL\Helpers\PHPSettings::class, 'PHPSettingsHelper', true);
 class_alias(\JTL\Helpers\PaymentMethod::class, 'ZahlungsartHelper', true);
+class_alias(\JTL\Plugin\Payment\LegacyMethod::class, 'PaymentMethod', true);
 class_alias(\JTL\Helpers\ShippingMethod::class, 'VersandartHelper', true);
 class_alias(\JTL\Cart\CartHelper::class, 'WarenkorbHelper', true);
 class_alias(\JTL\Helpers\Order::class, 'BestellungHelper', true);

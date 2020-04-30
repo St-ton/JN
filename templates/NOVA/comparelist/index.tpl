@@ -7,7 +7,7 @@
 
     {block name='comparelist-index-content'}
         {block name='comparelist-index-heading'}
-            {opcMountPoint id='opc_before_heading'}
+            {opcMountPoint id='opc_before_heading' inContainer=false}
             {container}
                 <h1 class="h2">{lang key='compare' section='global'}</h1>
                 <hr class="mt-0 mb-3">
@@ -19,7 +19,7 @@
 
         {if $oVergleichsliste->oArtikel_arr|@count > 0}
             {block name='comparelist-index-filter'}
-                {opcMountPoint id='opc_before_filter'}
+                {opcMountPoint id='opc_before_filter' inContainer=false}
                 {container}
                     <div id="filter-checkboxes" class="mb-4">
                         {block name='comparelist-index-filter-buttons'}

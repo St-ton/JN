@@ -18462,6 +18462,20 @@ Supports Thumbs: false
   }
 }
 
+.yt-container {
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-bottom: 56.25%;
+}
+.yt-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
 .badge {
   border: 1px solid transparent;
   text-decoration: none;
@@ -19422,6 +19436,11 @@ aside .last-seen-link {
 @media (min-width: 992px) {
   .card-columns.manufacturers-columns {
     column-count: 4;
+  }
+}
+@media (min-width: 992px) {
+  .card-columns.card-columns-2 {
+    column-count: 2;
   }
 }
 

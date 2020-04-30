@@ -73,14 +73,15 @@ class Area implements \JsonSerializable
     }
 
     /**
+     * @param bool $inContainer
      * @return string
      * @throws \Exception
      */
-    public function getFinalHtml(): string
+    public function getFinalHtml(bool $inContainer = true): string
     {
         $result = '';
         foreach ($this->content as $portletInstance) {
-            $result .= $portletInstance->getFinalHtml();
+            $result .= $portletInstance->getFinalHtml($inContainer);
         }
 
         Shop::fire('shop.OPC.Area.getFinalHtml', [

@@ -1,5 +1,6 @@
 # files
 /includes/config.JTL-Shop.ini.php
+/includes/plugins/*
 /rss.xml
 /shopinfo.xml
 /.idea

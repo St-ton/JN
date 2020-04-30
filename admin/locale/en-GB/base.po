@@ -305,6 +305,9 @@ msgstr "No permissions available"
 msgid "errorCSRF"
 msgstr "Cross-site request forgery! Are cookies enabled?"
 
+msgid "errorCookieSettings"
+msgstr "Faulty cookie settings: login not possible. Please contact the Support team."
+
 msgid "errorSessionExpired"
 msgstr "Your session has been reset. Please log in again."
 
@@ -1925,6 +1928,18 @@ msgstr "Close"
 msgid "none"
 msgstr "None"
 
+msgid "successSave"
+msgstr "Successfully saved"
+
+msgid "errorSave"
+msgstr "Could not save"
+
+msgid "successDelete"
+msgstr "Successfully deleted"
+
+msgid "errorDelete"
+msgstr "Could not delete"
+
 msgid "filterManufacturers"
 msgstr "Manufacturers"
 
@@ -1945,3 +1960,4 @@ msgstr "Categories"
 
 msgid "filterCharacteristics"
 msgstr "Characteristics"
+

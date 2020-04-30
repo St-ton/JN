@@ -2,7 +2,7 @@
     {if !empty($Artikel->oMedienDatei_arr)}
         {assign var=mp3List value=false}
         {assign var=titles value=false}
-        <div class="card-columns">
+        <div class="card-columns {if $mediaType->count < 3}card-columns-2{/if}">
         {foreach $Artikel->oMedienDatei_arr as $oMedienDatei}
             {if ($mediaType->name == $oMedienDatei->cMedienTyp && $oMedienDatei->cAttributTab|count_characters == 0)
             || ($oMedienDatei->cAttributTab|count_characters > 0 && $mediaType->name == $oMedienDatei->cAttributTab)}
@@ -22,7 +22,7 @@
                     {/if}
 
                     {* Images *}
-                    {if $oMedienDatei->nMedienTyp == 1}
+                    {if $oMedienDatei->nMedienTyp === 1}
                         {block name='productdetails-mediafile-images'}
                             {$cMediaAltAttr = ""}
                             {if isset($oMedienDatei->oMedienDateiAttribut_arr) && $oMedienDatei->oMedienDateiAttribut_arr|@count > 0}
@@ -37,7 +37,7 @@
                             {/card}
                         {/block}
                         {* Audio *}
-                    {elseif $oMedienDatei->nMedienTyp == 2}
+                    {elseif $oMedienDatei->nMedienTyp === 2}
                         {if $oMedienDatei->cName|strlen > 1}
                             {block name='productdetails-mediafile-audio'}
                                 {card title=$oMedienDatei->cName class="mb-3"}
@@ -65,30 +65,36 @@
                         {/if}
 
                         {* Video *}
-                    {elseif $oMedienDatei->nMedienTyp == 3}
+                    {elseif $oMedienDatei->nMedienTyp === 3}
                         {block name='productdetails-mediafile-video'}
                         <!-- flash videos are not supported any more. Use html5 videos instead. -->
                         {/block}
                         {* Sonstiges *}
-                    {elseif $oMedienDatei->nMedienTyp == 4}
+                    {elseif $oMedienDatei->nMedienTyp === 4}
                         {block name='productdetails-mediafile-misc'}
                             {card title=$oMedienDatei->cName class="mb-3"}
                                 {row}
-                                    {col md=6}
+                                    {col cols=12}
                                         {$oMedienDatei->cBeschreibung}
                                     {/col}
-                                    {col md=6}
-                                        {if isset($oMedienDatei->oEmbed) && $oMedienDatei->oEmbed->code}
-                                            {$oMedienDatei->oEmbed->code}
-                                        {/if}
-                                        {if !empty($oMedienDatei->cPfad)}
-                                            <p>
-                                                {link href="{$ShopURL}/{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" target="_blank"}{$oMedienDatei->cName}{/link}
-                                            </p>
-                                        {elseif !empty($oMedienDatei->cURL)}
-                                            <p>
-                                                {link href=$oMedienDatei->cURL target="_blank"}<i class="fa fa-external-link"></i> {$oMedienDatei->cName}{/link}
-                                            </p>
+                                    {col cols=12}
+                                        {if $oMedienDatei->cURL|strpos:'youtube' !== false || $oMedienDatei->cURL|strpos:'youtu.be' !== false}
+                                            <div class="mt-3">
+                                                {include file='productdetails/mediafile_youtube_embed.tpl'}
+                                            </div>
+                                        {else}
+                                            {if isset($oMedienDatei->oEmbed) && $oMedienDatei->oEmbed->code}
+                                                {$oMedienDatei->oEmbed->code}
+                                            {/if}
+                                            {if !empty($oMedienDatei->cPfad)}
+                                                <p>
+                                                    {link href="{$ShopURL}/{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" target="_blank"}{$oMedienDatei->cName}{/link}
+                                                </p>
+                                            {elseif !empty($oMedienDatei->cURL)}
+                                                <p>
+                                                    {link href=$oMedienDatei->cURL target="_blank"}<i class="fa fa-external-link"></i> {$oMedienDatei->cName}{/link}
+                                                </p>
+                                            {/if}
                                         {/if}
                                     {/col}
                                 {/row}

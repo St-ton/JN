@@ -181,24 +181,8 @@ function updateFertig(int $version): void
 function dbUpdateIO()
 {
     Shop::Container()->getGetText()->loadAdminLocale('pages/dbupdater');
-    $template = Template::getInstance();
-    $updater  = new Updater(Shop::Container()->getDB());
-
+    $updater = new Updater(Shop::Container()->getDB());
     try {
-        if ((int)$template->version === 5) {
-            $templateVersion = '5.0.0';
-        } elseif ((int)$template->version === 4) {
-            $templateVersion = '4.0.0';
-        } else {
-            $templateVersion = $template->version;
-        }
-        $model = $template->getModel();
-        if ($model === null
-            || (!Version::parse($model->getVersion())->equals($templateVersion)
-            && $template->setTemplate($model->getName(), $model->getType()))
-        ) {
-            unset($_SESSION['cTemplate'], $_SESSION['template']);
-        }
         $dbVersion       = $updater->getCurrentDatabaseVersion();
         $updateResult    = $updater->update();
         $availableUpdate = $updater->hasPendingUpdates();

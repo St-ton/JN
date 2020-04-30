@@ -7,6 +7,9 @@ use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Mapper\PageTypeToPageNiceName;
 use JTL\Helpers\Template;
+use JTL\Shop;
+use JTL\Template\Model;
+use JTL\Template\TemplateServiceInterface;
 use stdClass;
 use function Functional\filter;
 use function Functional\map;
@@ -542,7 +545,9 @@ final class BoxAdmin
      */
     public function getInvisibleBoxes(): array
     {
-        $unavailabe = filter(Template::getInstance()->getBoxLayoutXML(), static function ($e) {
+        $model = Shop::Container()->get(TemplateServiceInterface::class)->getActiveTemplate();
+        /** @var Model $model */
+        $unavailabe = filter($model->getBoxLayout(), static function ($e) {
             return $e === false;
         });
         $mapped     = map($unavailabe, static function ($e, $key) {

@@ -61,14 +61,17 @@ use SimpleXMLElement;
  * @property string $fileVersion
  * @property Resources $resources
  * @property array $config
- * @method array getConfig()
+ * @property array $boxLayout
+ * @method Config getConfig()
  * @method Resources getResources()
  * @method string getFileVersion()
  * @method string getDir()
+ * @method array getBoxLayout()
  * @method void setResources(Resources $value)
- * @method void setConfig(array $value)
+ * @method void setConfig(Config $value)
  * @method void setDir(string $value)
  * @method void setFileVersion(string $value)
+ * @method void setBoxLayout(array $value)
  * @method string getDescription()
  * @method void setDescription(string $value)
  * @method string getShopVersion()
@@ -225,6 +228,13 @@ final class Model extends DataModel
             $attributes['exsID']      = DataAttribute::create('exsID', 'varchar');
             $attributes['bootstrap']  = DataAttribute::create('bootstrap', 'tinyint', self::cast('0', 'tinyint'), false);
             $attributes['framework']  = DataAttribute::create('framework', 'varchar');
+
+            $boxLayout = new DataAttribute();
+            $boxLayout->setName('boxLayout')
+                ->setDataType('object')
+                ->setNullable(false)
+                ->setDynamic(true);
+            $attributes['boxLayout'] = $boxLayout;
 
             $resources = new DataAttribute();
             $resources->setName('resources')

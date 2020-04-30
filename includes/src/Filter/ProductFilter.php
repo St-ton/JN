@@ -978,7 +978,7 @@ class ProductFilter
      */
     public function getAvailableContentFilters(): array
     {
-        $templateSettings = Shop::Container()->get(TemplateServiceInterface::class)->getActiveTemplate()->getConfig();
+        $templateSettings = $this->filterConfig->getConfig('template');
 
         return \array_filter(
             $this->filters,

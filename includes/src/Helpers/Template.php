@@ -5,6 +5,7 @@ namespace JTL\Helpers;
 use Exception;
 use InvalidArgumentException;
 use JTL\Shop;
+use JTL\Template\Config;
 use JTL\Template\Model;
 use JTL\Template\TemplateServiceInterface;
 use JTL\Template\XMLReader;
@@ -14,6 +15,7 @@ use stdClass;
 /**
  * Class Template
  * @package JTL\Helpers
+ * @deprecated since 5.0.0
  */
 class Template
 {
@@ -39,7 +41,6 @@ class Template
 
     /**
      * @var string
-     * @deprecated since 5.0.0
      */
     public $xmlData;
 
@@ -84,6 +85,7 @@ class Template
      */
     public function __construct()
     {
+        \trigger_error(__CLASS__ . ' is deprecated.', \E_USER_DEPRECATED);
         $this->init();
         self::$frontEndInstance = $this;
         $this->reader           = new XMLReader();
@@ -164,11 +166,9 @@ class Template
     /**
      * @param null|string $dir
      * @return null|SimpleXMLElement
-     * @deprecated since 5.0.0
      */
     public function leseXML($dir = null)
     {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
         return $this->reader->getXML($dir ?? self::$cTemplate);
     }
 
@@ -195,21 +195,17 @@ class Template
 
     /**
      * @return bool
-     * @deprecated since 5.0.0
      */
     public function hasMobileTemplate(): bool
     {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
         return false;
     }
 
     /**
      * @return bool
-     * @deprecated since 5.0.0
      */
     public function isMobileTemplateActive(): bool
     {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
         return false;
     }
 
@@ -220,17 +216,7 @@ class Template
      */
     public function getSkin(): ?string
     {
-        $cSkin = Shop::Container()->getDB()->select(
-            'ttemplateeinstellungen',
-            ['cName', 'cSektion', 'cTemplate'],
-            [
-                'theme_default',
-                'theme',
-                self::$cTemplate
-            ]
-        );
-
-        return $cSkin->cWert ?? null;
+        return Shop::getSettings([CONF_TEMPLATE])['template']['theme']['theme_default'] ?? null;
     }
 
     /**
@@ -247,11 +233,9 @@ class Template
      * @param string      $folder - the current template's dir name
      * @param string|null $parent
      * @return array
-     * @deprecated since 5.0.0
      */
     public function leseEinstellungenXML($folder, $parent = null): array
     {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
         self::$cTemplate = $folder;
 
         return $this->reader->getConfigXML($folder, $parent);
@@ -286,11 +270,9 @@ class Template
     /**
      * @param string $dir
      * @return array
-     * @deprecated since 5.0.0
      */
     public function leseLessXML($dir): array
     {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
         $xml       = $this->reader->getXML($dir);
         $lessFiles = [];
         if (!$xml || !isset($xml->Lessfiles)) {
@@ -378,20 +360,7 @@ class Template
      */
     public function getConfig()
     {
-        $settingsData = Shop::Container()->getDB()->selectAll('ttemplateeinstellungen', 'cTemplate', self::$cTemplate);
-        if (\is_array($settingsData) && \count($settingsData) > 0) {
-            $settings = [];
-            foreach ($settingsData as $oSetting) {
-                if (isset($settings[$oSetting->cSektion]) && !\is_array($settings[$oSetting->cSektion])) {
-                    $settings[$oSetting->cSektion] = [];
-                }
-                $settings[$oSetting->cSektion][$oSetting->cName] = $oSetting->cWert;
-            }
-
-            return $settings;
-        }
-
-        return false;
+        return Shop::getSettings([\CONF_TEMPLATE])['template'];
     }
 
     /**
@@ -405,30 +374,8 @@ class Template
      */
     public function setConfig($dir, $section, $name, $value): self
     {
-        $config = Shop::Container()->getDB()->select(
-            'ttemplateeinstellungen',
-            'cTemplate',
-            $dir,
-            'cSektion',
-            $section,
-            'cName',
-            $name
-        );
-        if ($config !== null && isset($config->cTemplate)) {
-            Shop::Container()->getDB()->update(
-                'ttemplateeinstellungen',
-                ['cTemplate', 'cSektion', 'cName'],
-                [$dir, $section, $name],
-                (object)['cWert' => $value]
-            );
-        } else {
-            $ins            = new stdClass();
-            $ins->cTemplate = $dir;
-            $ins->cSektion  = $section;
-            $ins->cName     = $name;
-            $ins->cWert     = $value;
-            Shop::Container()->getDB()->insert('ttemplateeinstellungen', $ins);
-        }
+        $config = new Config($dir, Shop::Container()->getDB());
+        $config->updateConfigInDB($section, $name, $value);
         Shop::Container()->getCache()->flushTags([\CACHING_GROUP_OPTION, \CACHING_GROUP_TEMPLATE]);
 
         return $this;
@@ -436,11 +383,9 @@ class Template
 
     /**
      * @return bool
-     * @deprecated since 5.0.0
      */
     public function IsMobile(): bool
     {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
         return false;
     }
 
@@ -503,10 +448,8 @@ class Template
 
     /**
      * @param bool $bRedirect
-     * @deprecated since 5.0.0
      */
     public function check($bRedirect = true): void
     {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
     }
 }

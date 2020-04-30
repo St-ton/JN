@@ -139,9 +139,11 @@ class XMLReader
                             break;
                         }
                     }
-                    $setting->bEditable = \mb_strlen($setting->bEditable) === 0
-                        ? true
-                        : (bool)(int)$setting->bEditable;
+                    if (\is_string($setting->bEditable)) {
+                        $setting->bEditable = \mb_strlen($setting->bEditable) === 0
+                            ? true
+                            : (bool)(int)$setting->bEditable;
+                    }
                     if (isset($XMLSetting->Option)) {
                         if (!isset($setting->oOptions_arr)) {
                             $setting->oOptions_arr = [];

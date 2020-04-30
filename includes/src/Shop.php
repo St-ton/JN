@@ -989,8 +989,6 @@ final class Shop
                 self::$kArtikel = 0;
             }
         }
-        $_SESSION['cTemplate'] = Template::$cTemplate;
-
         if (self::$kWunschliste === 0
             && Request::verifyGPDataString('error') === ''
             && \mb_strlen(Request::verifyGPDataString('wlid')) > 0

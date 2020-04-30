@@ -113,7 +113,7 @@ class MinifyService
     {
         $minify      = $template->getResources()->getMinifyArray();
         $tplVersion  = $template->getVersion();
-        $config      = $template->getConfig();
+        $config      = Shop::getConfig([\CONF_TEMPLATE])['template'];
         $allowStatic = isset($config['general']['use_minify']) && $config['general']['use_minify'] === 'static';
         $cacheTime   = $allowStatic ? $this->getCacheTime() : null;
         $css         = $minify[$themeDir . '.css'] ?? [];

@@ -83,9 +83,7 @@ class AdminTemplate
      */
     public function getConfig()
     {
-        $config = new Config(self::$cTemplate, Shop::Container()->getDB());
-
-        return $config->loadConfigFromDB();
+        return false;
     }
 
     /**

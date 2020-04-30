@@ -12,6 +12,7 @@ use JTL\phpQuery\phpQuery;
 use JTL\Plugin\Helper;
 use JTL\Shop;
 use JTL\Helpers\Template;
+use JTL\Template\TemplateServiceInterface;
 
 /**
  * Class JTLSmarty
@@ -31,11 +32,6 @@ class JTLSmarty extends \SmartyBC
     public $_cache_include_info;
 
     /**
-     * @var Template
-     */
-    public $template;
-
-    /**
      * @var JTLSmarty[]
      */
     private static $instance = [];
@@ -49,6 +45,11 @@ class JTLSmarty extends \SmartyBC
      * @var bool
      */
     public static $isChildTemplate = false;
+
+    /**
+     * @var string
+     */
+    private $templateDir;
 
     /**
      * modified constructor with custom initialisation
@@ -85,12 +86,10 @@ class JTLSmarty extends \SmartyBC
     private function initTemplate(): ?string
     {
         $parent         = null;
-        $this->template = $this->context === ContextType::BACKEND
-            ? AdminTemplate::getInstance()
-            : Template::getInstance();
-        $tplDir         = $this->template->getDir();
         if ($this->context !== ContextType::BACKEND) {
-            $parent     = $this->template->getParent();
+            $model      = Shop::Container()->get(TemplateServiceInterface::class)->getActiveTemplate();
+            $tplDir     = $model->getDir();
+            $parent     = $model->getParent();
             $compileDir = \PFAD_ROOT . \PFAD_COMPILEDIR . $tplDir . '/';
             if (!\file_exists($compileDir)) {
                 \mkdir($compileDir);
@@ -112,6 +111,7 @@ class JTLSmarty extends \SmartyBC
                      ->assign('parentTemplateDir', \PFAD_TEMPLATES . $parent . '/');
             }
         } else {
+            $tplDir = 'bootstrap';
             $compileDir = \PFAD_ROOT . \PFAD_ADMIN . \PFAD_COMPILEDIR;
             if (!\file_exists($compileDir)) {
                 \mkdir($compileDir);
@@ -123,6 +123,7 @@ class JTLSmarty extends \SmartyBC
                  ->setConfigDir(\PFAD_ROOT . \PFAD_ADMIN . \PFAD_TEMPLATES . $tplDir . '/lang/')
                  ->setPluginsDir(\SMARTY_PLUGINS_DIR);
         }
+        $this->templateDir = $tplDir;
 
         return $parent;
     }
@@ -192,7 +193,7 @@ class JTLSmarty extends \SmartyBC
      */
     public function getTemplateUrlPath(): string
     {
-        return \PFAD_TEMPLATES . $this->template->getDir() . '/';
+        return \PFAD_TEMPLATES . $this->templateDir . '/';
     }
 
     /**

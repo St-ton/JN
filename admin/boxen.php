@@ -10,6 +10,8 @@ use JTL\Helpers\Request;
 use JTL\Link\LinkGroupInterface;
 use JTL\Shop;
 use JTL\Helpers\Template;
+use JTL\Template\Model;
+use JTL\Template\TemplateServiceInterface;
 use function Functional\map;
 use function Functional\reindex;
 
@@ -184,9 +186,11 @@ if (Request::postInt('einstellungen') > 0) {
     $flushres = Shop::Container()->getCache()->flushTags([CACHING_GROUP_OBJECT, CACHING_GROUP_BOX, 'boxes']);
     Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
 }
-$boxList       = $boxService->buildList($pageID, false);
-$boxTemplates  = $boxAdmin->getTemplates($pageID);
-$boxContainer  = Template::getInstance()->getBoxLayoutXML();
+$boxList      = $boxService->buildList($pageID, false);
+$boxTemplates = $boxAdmin->getTemplates($pageID);
+$model        = Shop::Container()->get(TemplateServiceInterface::class)->getActiveTemplate();
+/** @var Model $model */
+$boxContainer  = $model->getBoxLayout();
 $filterMapping = [];
 if ($pageID === PAGE_ARTIKELLISTE) { //map category name
     $filterMapping = Shop::Container()->getDB()->query(

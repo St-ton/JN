@@ -77,6 +77,7 @@ class TemplateService implements TemplateServiceInterface
                 $this->loaded = true;
             }
         }
+        $_SESSION['cTemplate'] = $this->activeTemplate->getTemplate();
 
         return $this->activeTemplate;
     }
@@ -90,15 +91,15 @@ class TemplateService implements TemplateServiceInterface
     {
         $template  = Model::loadByAttributes($attributes, $this->db);
         $reader    = new XMLReader();
-        $tplXML    = $reader->getXML($template->getCTemplate(), $template->getType() === 'admin');
+        $tplXML    = $reader->getXML($template->getTemplate(), $template->getType() === 'admin');
         $parentXML = ($tplXML !== null || empty($tplXML->Parent)) ? null : $reader->getXML((string)$tplXML->Parent);
         $template  = $this->mergeWithXML(
-            $template->getCTemplate(),
+            $template->getTemplate(),
             $tplXML,
             $parentXML
         );
-        $resources = new Resources($this->db, $template->getDir(), $tplXML, $parentXML);
-        $template->setResources($resources);
+        $template->setBoxLayout($this->getBoxLayout($tplXML, $parentXML));
+        $template->setResources(new Resources($this->db, $template->getDir(), $tplXML, $parentXML));
 
         return $template;
     }
@@ -151,8 +152,30 @@ class TemplateService implements TemplateServiceInterface
             $template->setName($dir);
         }
         $config = new Config($template->getDir(), $this->db);
-        $template->setConfig($config->loadConfigFromDB());
+        $template->setConfig($config);
 
         return $template;
+    }
+
+    /**
+     * @param SimpleXMLElement      $tplXML
+     * @param SimpleXMLElement|null $parentXML
+     * @return array
+     */
+    private function getBoxLayout(SimpleXMLElement $tplXML, ?SimpleXMLElement $parentXML = null): array
+    {
+        $items = [];
+        foreach ([$tplXML, $parentXML] as $xml) {
+            if ($xml === null || !isset($xml->Boxes) || \count($xml->Boxes) !== 1) {
+                continue;
+            }
+            foreach ($xml->Boxes[0] as $item) {
+                /** @var SimpleXMLElement $item */
+                $attr                           = $item->attributes();
+                $items[(string)$attr->Position] = (bool)(int)$attr->Available;
+            }
+        }
+
+        return $items;
     }
 }

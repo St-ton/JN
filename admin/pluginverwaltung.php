@@ -60,8 +60,6 @@ if (isset($_SESSION['plugin_msg'])) {
 } elseif (mb_strlen(Request::verifyGPDataString('h')) > 0) {
     $notice = Text::filterXSS(base64_decode(Request::verifyGPDataString('h')));
 }
-
-
 if (!empty($_FILES['file_data'])) {
     $response       = $extractor->extractPlugin($_FILES['file_data']['tmp_name']);
     $pluginUploaded = true;

@@ -176,11 +176,10 @@ class Controller
         $parentFolder = null;
         $reader       = new XMLReader();
         $tplXML       = $reader->getXML($this->currentTemplateDir);
-
         if ($tplXML !== null && !empty($tplXML->Parent)) {
             $parentFolder = (string)$tplXML->Parent;
         }
-        $tplConfXML   = $this->config->getTemplateConfig($reader, $parentFolder);
+        $tplConfXML   = $this->config->getConfigXML($reader, $parentFolder);
         $sectionCount = \count($_POST['cSektion']);
         for ($i = 0; $i < $sectionCount; $i++) {
             $section = $_POST['cSektion'][$i];
@@ -285,7 +284,7 @@ class Controller
         if ($tplXML !== null && !empty($tplXML->Parent)) {
             $parentFolder = (string)$tplXML->Parent;
         }
-        $tplConfXML = $this->config->getTemplateConfig($reader, $parentFolder);
+        $tplConfXML = $this->config->getConfigXML($reader, $parentFolder);
         $preview    = $this->getPreview($tplConfXML);
 
         $this->smarty->assign('template', $current)

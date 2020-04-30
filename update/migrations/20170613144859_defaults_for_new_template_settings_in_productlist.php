@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Defaults for new template settings in productlist
  *
@@ -6,40 +6,48 @@
  * @created Tue, 13 Jun 2017 14:48:59 +0200
  */
 
-use JTL\Helpers\Template;
+use JTL\Template\Config;
+use JTL\Template\TemplateServiceInterface;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
+use JTL\Shop;
 
 /**
  * Class Migration_20170613144859
  */
 class Migration_20170613144859 extends Migration implements IMigration
 {
-    protected $author      = 'fp';
+    protected $author = 'fp';
     protected $description = 'Defaults for new template settings in productlist';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
-        $template = Template::getInstance();
-        $config   = $template->getConfig();
-
-        if ($template->getModel()->getName() === 'Evo' || $template->getModel()->getParent() === 'Evo') {
-            if (!isset($config['productlist']['variation_select_productlist'])) {
-                $template->setConfig($template->getModel()->getDir(), 'productlist', 'variation_select_productlist', 'N');
+        $template = Shop::Container()->get(TemplateServiceInterface::class)->getActiveTemplate();
+        $config   = new Config($template->getDir(), $this->getDB());
+        $settings = Shop::getSettings([\CONF_TEMPLATE])['template'];
+        if ($template->getName() === 'Evo' || $template->getParent() === 'Evo') {
+            if (!isset($settings['productlist']['variation_select_productlist'])) {
+                $config->updateConfigInDB('productlist', 'variation_select_productlist', 'N');
             }
-            if (!isset($config['productlist']['variation_select_productlist'])) {
-                $template->setConfig($template->getModel()->getDir(), 'productlist', 'quickview_productlist', 'N');
+            if (!isset($settings['productlist']['variation_select_productlist'])) {
+                $config->updateConfigInDB('productlist', 'quickview_productlist', 'N');
             }
-            if (!isset($config['productlist']['variation_select_productlist'])) {
-                $template->setConfig($template->getModel()->getDir(), 'productlist', 'hover_productlist', 'N');
+            if (!isset($settings['productlist']['variation_select_productlist'])) {
+                $config->updateConfigInDB('productlist', 'hover_productlist', 'N');
             }
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
-        $template = Template::getInstance();
+        $currentTemplate = Shop::Container()->get(TemplateServiceInterface::class)->getActiveTemplate();
         $this->execute("DELETE FROM ttemplateeinstellungen
-            WHERE cTemplate = '" . $template->getModel()->getDir() . "' AND cSektion = 'productlist'");
+            WHERE cTemplate = '" . $currentTemplate->getDir() . "' AND cSektion = 'productlist'");
     }
 }

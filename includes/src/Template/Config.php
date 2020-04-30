@@ -4,6 +4,7 @@ namespace JTL\Template;
 
 use JTL\DB\DbInterface;
 use JTL\Template\XMLReader;
+use SimpleXMLElement;
 use stdClass;
 
 /**
@@ -38,7 +39,7 @@ class Config
      * @param string|null $parentFolder
      * @return array
      */
-    public function getTemplateConfig(XMLReader $reader, ?string $parentFolder = null): array
+    public function getConfigXML(XMLReader $reader, ?string $parentFolder = null): array
     {
         $configValues = $this->loadConfigFromDB();
         $configXML    = $reader->getConfigXML($this->currentTemplateDir, $parentFolder);

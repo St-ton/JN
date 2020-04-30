@@ -265,12 +265,13 @@ class Resources
      * @param SimpleXMLElement $node
      * @return bool
      */
-    private function checkCondition($node): bool
+    private function checkCondition(SimpleXMLElement $node): bool
     {
-        $settingsGroup = \constant((string)$node->attributes()->DependsOnSettingGroup);
-        $settingValue  = (string)$node->attributes()->DependsOnSettingValue;
-        $comparator    = (string)$node->attributes()->DependsOnSettingComparison;
-        $setting       = (string)$node->attributes()->DependsOnSetting;
+        $attrs         = $node->attributes();
+        $settingsGroup = \constant((string)$attrs->DependsOnSettingGroup);
+        $settingValue  = (string)$attrs->DependsOnSettingValue;
+        $comparator    = (string)$attrs->DependsOnSettingComparison;
+        $setting       = (string)$attrs->DependsOnSetting;
         $conf          = Shop::getSettings([$settingsGroup]);
         $hierarchy     = \explode('.', $setting);
         $iterations    = \count($hierarchy);

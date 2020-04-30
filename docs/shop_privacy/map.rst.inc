@@ -1,3 +1,3 @@
 :doc:`/shop_privacy/consentmanager`
-    Allgemeine Informationen über das Plugin-System
+    Einwilligungen zum Speichern personenbezogener Daten
 

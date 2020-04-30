@@ -1,7 +1,6 @@
 <?php
 
-use JTL\Shop;
-use JTL\Template;
+use JTL\Helpers\Template;
 
 /**
  * @param string $dir

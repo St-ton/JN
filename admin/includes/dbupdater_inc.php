@@ -7,7 +7,7 @@ use JTL\Plugin\Admin\Installation\MigrationManager as PluginMigrationManager;
 use JTL\Plugin\PluginLoader;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
-use JTL\Template;
+use JTL\Helpers\Template;
 use JTL\Template\TemplateServiceInterface;
 use JTL\Update\IMigration;
 use JTL\Update\MigrationManager;

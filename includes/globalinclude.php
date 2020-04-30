@@ -8,7 +8,7 @@ use JTL\Plugin\Helper;
 use JTL\Profiler;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Template;
+use JTL\Helpers\Template;
 use JTLShop\SemVer\Version;
 
 $nStartzeit = microtime(true);

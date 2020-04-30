@@ -6,7 +6,7 @@
  * @created Tue, 13 Jun 2017 14:48:59 +0200
  */
 
-use JTL\Template;
+use JTL\Helpers\Template;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
 
@@ -39,6 +39,7 @@ class Migration_20170613144859 extends Migration implements IMigration
     public function down()
     {
         $template = Template::getInstance();
-        $this->execute("DELETE FROM ttemplateeinstellungen WHERE cTemplate = '" . $template->getModel()->getDir() . "' AND cSektion = 'productlist'");
+        $this->execute("DELETE FROM ttemplateeinstellungen
+            WHERE cTemplate = '" . $template->getModel()->getDir() . "' AND cSektion = 'productlist'");
     }
 }

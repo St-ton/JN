@@ -6,7 +6,7 @@ use JTL\Boxes\Type;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Mapper\PageTypeToPageNiceName;
-use JTL\Template;
+use JTL\Helpers\Template;
 use stdClass;
 use function Functional\filter;
 use function Functional\map;

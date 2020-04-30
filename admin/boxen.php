@@ -9,7 +9,7 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Link\LinkGroupInterface;
 use JTL\Shop;
-use JTL\Template;
+use JTL\Helpers\Template;
 use function Functional\map;
 use function Functional\reindex;
 

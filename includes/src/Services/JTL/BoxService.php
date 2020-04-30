@@ -21,7 +21,7 @@ use JTL\Plugin\State;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
-use JTL\Template;
+use JTL\Helpers\Template;
 use function Functional\first;
 use function Functional\group;
 use function Functional\map;

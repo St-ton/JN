@@ -11,7 +11,7 @@ use JTL\Language\LanguageHelper;
 use JTL\phpQuery\phpQuery;
 use JTL\Plugin\Helper;
 use JTL\Shop;
-use JTL\Template;
+use JTL\Helpers\Template;
 
 /**
  * Class JTLSmarty

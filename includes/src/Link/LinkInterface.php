@@ -51,12 +51,12 @@ interface LinkInterface
     public function setParent(int $parent): void;
 
     /**
-     * @return array
+     * @return int[]
      */
     public function getLinkGroups(): array;
 
     /**
-     * @param array $linkGroups
+     * @param int[] $linkGroups
      */
     public function setLinkGroups(array $linkGroups): void;
 

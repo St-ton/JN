@@ -1688,6 +1688,18 @@ msgstr "Ja, im Content-Bereich und der Navigationsbox"
 msgid "allgemein_kategoriefilter_benutzen_value(N)"
 msgstr "Nein"
 
+msgid "allgemein_availabilityfilter_benutzen_value(content)"
+msgstr "Ja, im Content-Bereich"
+
+msgid "allgemein_availabilityfilter_benutzen_value(box)"
+msgstr "Ja, in Navigationsbox"
+
+msgid "allgemein_availabilityfilter_benutzen_value(Y)"
+msgstr "Ja, im Content-Bereich und der Navigationsbox"
+
+msgid "allgemein_availabilityfilter_benutzen_value(N)"
+msgstr "Nein"
+
 msgid "kategoriefilter_anzeigen_als_value(KA)"
 msgstr "Kategorien der Artikel"
 
@@ -2010,12 +2022,6 @@ msgid "sitemap_google_ping_value(Y)"
 msgstr "Ja"
 
 msgid "sitemap_google_ping_value(N)"
-msgstr "Nein"
-
-msgid "kwk_nutzen_value(Y)"
-msgstr "Ja"
-
-msgid "kwk_nutzen_value(N)"
 msgstr "Nein"
 
 msgid "suchspecials_sortierung_bestseller_value(-1)"

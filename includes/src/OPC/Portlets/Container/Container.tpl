@@ -1,11 +1,7 @@
 {$style = "{$instance->getStyleString()};min-height:{$instance->getProperty('min-height')}px; position:relative;"}
-{$class = 'opc-Container '|cat:$instance->getAnimationClass()}
+{$class = 'opc-Container '|cat:$instance->getAnimationClass()|cat:' '|cat:$instance->getStyleClasses()}
 {$data  = $instance->getAnimationData()}
 {$fluid = $instance->getProperty('boxed') === false}
-
-{if $isPreview}
-    {$data = $data|array_merge:['portlet' => $instance->getDataAttribute()]}
-{/if}
 
 {if $instance->getProperty('background-flag') === 'still' && !empty($instance->getProperty('still-src'))}
     {$name = basename($instance->getProperty('still-src'))}

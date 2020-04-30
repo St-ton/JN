@@ -23,12 +23,13 @@ trait PortletHtml
 
     /**
      * @param PortletInstance $instance
+     * @param bool $inContainer
      * @return string
      * @throws \Exception
      */
-    public function getFinalHtml(PortletInstance $instance): string
+    public function getFinalHtml(PortletInstance $instance, bool $inContainer = true): string
     {
-        return $this->getFinalHtmlFromTpl($instance);
+        return $this->getFinalHtmlFromTpl($instance, $inContainer);
     }
 
     /**
@@ -108,12 +109,13 @@ trait PortletHtml
 
     /**
      * @param PortletInstance $instance
+     * @param bool $inContainer
      * @return string
-     * @throws \Exception
+     * @throws \SmartyException
      */
-    final protected function getFinalHtmlFromTpl(PortletInstance $instance): string
+    final protected function getFinalHtmlFromTpl(PortletInstance $instance, bool $inContainer = true): string
     {
-        return $this->getHtmlFromTpl($instance, false);
+        return $this->getHtmlFromTpl($instance, false, $inContainer);
     }
 
     /**
@@ -122,8 +124,11 @@ trait PortletHtml
      * @return string
      * @throws \SmartyException
      */
-    final protected function getHtmlFromTpl(PortletInstance $instance, bool $isPreview): string
-    {
+    final protected function getHtmlFromTpl(
+        PortletInstance $instance,
+        bool $isPreview,
+        bool $inContainer = true
+    ): string {
         if (\function_exists('\getFrontendSmarty')) {
             $smarty = \getFrontendSmarty();
         } else {
@@ -140,6 +145,7 @@ trait PortletHtml
             ->assign('isPreview', $isPreview)
             ->assign('portlet', $this)
             ->assign('instance', $instance)
+            ->assign('inContainer', $inContainer)
             ->fetch($tplPath);
     }
 
@@ -237,6 +243,14 @@ trait PortletHtml
         }
 
         return $path;
+    }
+
+    /**
+     * @return string
+     */
+    final protected function getCommonResource($name)
+    {
+        return Shop::getURL() . '/' . \PFAD_INCLUDES . 'src/OPC/Portlets/common/' . $name;
     }
 
     /**

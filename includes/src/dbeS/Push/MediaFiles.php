@@ -30,7 +30,7 @@ final class MediaFiles extends AbstractPush
         }
         $archive = new ZipArchive();
         if ($archive->open(\PFAD_SYNC_TMP . $zip, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== false
-            && $archive->addFile(\PFAD_SYNC_TMP . self::XML_FILE) !== false
+            && $archive->addFile(\PFAD_SYNC_TMP . self::XML_FILE, self::XML_FILE) !== false
         ) {
             $archive->close();
             \readfile(\PFAD_SYNC_TMP . $zip);

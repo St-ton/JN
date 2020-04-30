@@ -6,7 +6,7 @@
     {block name='newsletter-index-content'}
         {block name='newsletter-index-heading'}
             {if !empty($Link->getTitle())}
-                {opcMountPoint id='opc_before_newsletter_heading'}
+                {opcMountPoint id='opc_before_newsletter_heading' inContainer=false}
                 {container}
                     <h1>{$Link->getTitle()}</h1>
                 {/container}
@@ -20,7 +20,7 @@
         {/if}
         {block name='newsletter-index-link-content'}
             {if !empty($Link->getContent())}
-                {opcMountPoint id='opc_before_newsletter_content'}
+                {opcMountPoint id='opc_before_newsletter_content' inContainer=false}
                 {container class="my-3"}
                     {$Link->getContent()}
                 {/container}
@@ -29,7 +29,7 @@
         {if $cOption === 'eintragen'}
             {if empty($bBereitsAbonnent)}
                 {block name='newsletter-index-newsletter-subscribe-form'}
-                    {opcMountPoint id='opc_before_newsletter_subscribe'}
+                    {opcMountPoint id='opc_before_newsletter_subscribe' inContainer=false}
                     {container}
                         {row}
                             {col cols=12 lg=8}
@@ -97,7 +97,7 @@
             {/if}
 
             {block name='newsletter-index-newsletter-unsubscribe-form'}
-                {opcMountPoint id='opc_before_newsletter_unsubscribe'}
+                {opcMountPoint id='opc_before_newsletter_unsubscribe' inContainer=false}
                 {container}
                     {row}
                         {col cols=12 lg=8}

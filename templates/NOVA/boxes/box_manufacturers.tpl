@@ -27,7 +27,7 @@
                             {dropdown class="w-100" variant="secondary btn-block" text="{lang key='selectManufacturer'}<span class='caret'></span>"}
                                 {foreach $oBox->getManufacturers() as $manufacturer}
                                     {if $manufacturer@index === 10}{break}{/if}
-                                    {dropdownitem href=$hst->cSeo}
+                                    {dropdownitem href=$manufacturer->cSeo}
                                         {$manufacturer->cName|escape:'html'}
                                     {/dropdownitem}
                                 {/foreach}

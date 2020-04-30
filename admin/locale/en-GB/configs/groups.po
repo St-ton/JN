@@ -203,6 +203,9 @@ msgstr "Current characteristic value"
 msgid "configgroup_110_current_category"
 msgstr "Current category"
 
+msgid "configgroup_110_availability_filter"
+msgstr "Availability filter"
+
 msgid "configgroup_111_email_blacklist"
 msgstr "Email blacklist"
 
@@ -214,9 +217,6 @@ msgstr "Blog"
 
 msgid "configgroup_114_sitemap_settings"
 msgstr "Sitemap settings"
-
-msgid "configgroup_116_customer_recruit_customer"
-msgstr "Settings for customer referral programme"
 
 msgid "configgroup_119_searchspecial_standard_search"
 msgstr "Default sorting for special items"

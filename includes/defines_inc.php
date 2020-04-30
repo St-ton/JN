@@ -32,6 +32,9 @@ define('CONF_EMAILBLACKLIST', 111);
 define('CONF_METAANGABEN', 112);
 define('CONF_NEWS', 113);
 define('CONF_SITEMAP', 114);
+/**
+ * @deprecated
+ */
 define('CONF_KUNDENWERBENKUNDEN', 116);
 define('CONF_SUCHSPECIAL', 119);
 define('CONF_CHECKBOX', 120);
@@ -113,7 +116,13 @@ define('MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR', 'core_jtl_verfuegbarkeitsbenach
 define('MAILTEMPLATE_WUNSCHLISTE', 'core_jtl_wunschliste');
 define('MAILTEMPLATE_BEWERTUNGERINNERUNG', 'core_jtl_bewertungerinnerung');
 define('MAILTEMPLATE_NEWSLETTERANMELDEN', 'core_jtl_newsletteranmelden');
+/**
+ * @deprecated
+ */
 define('MAILTEMPLATE_KUNDENWERBENKUNDEN', 'core_jtl_kundenwerbenkunden');
+/**
+ * @deprecated
+ */
 define('MAILTEMPLATE_KUNDENWERBENKUNDENBONI', 'core_jtl_kundenwerbenkundenboni');
 define('MAILTEMPLATE_STATUSEMAIL', 'core_jtl_statusemail');
 define('MAILTEMPLATE_CHECKBOX_SHOPBETREIBER', 'core_jtl_checkbox_shopbetreiber');
@@ -134,6 +143,9 @@ define('SEARCH_SORT_PRICE_DESC', 4);
 define('SEARCH_SORT_EAN', 5);
 define('SEARCH_SORT_NEWEST_FIRST', 6);
 define('SEARCH_SORT_PRODUCTNO', 7);
+/**
+ * @deprecated
+ */
 define('SEARCH_SORT_AVAILABILITY', 8);
 define('SEARCH_SORT_WEIGHT', 9);
 define('SEARCH_SORT_DATEOFISSUE', 10);
@@ -144,6 +156,9 @@ define('SEARCH_SORT_CRITERION_NAME', 'artikelname');
 define('SEARCH_SORT_CRITERION_NAME_ASC', 'artikelname aufsteigend');
 define('SEARCH_SORT_CRITERION_NAME_DESC', 'artikelname absteigend');
 define('SEARCH_SORT_CRITERION_PRODUCTNO', 'artikelnummer');
+/**
+ * @deprecated
+ */
 define('SEARCH_SORT_CRITERION_AVAILABILITY', 'lagerbestand');
 define('SEARCH_SORT_CRITERION_WEIGHT', 'gewicht');
 define('SEARCH_SORT_CRITERION_PRICE', 'preis');
@@ -430,6 +445,7 @@ define('BOX_FILTER_SUCHE', 28);
 define('BOX_FILTER_SUCHSPECIAL', 29);
 define('BOX_FILTER_HERSTELLER', 101);
 define('BOX_FILTER_KATEGORIE', 102);
+define('BOX_FILTER_AVAILABILITY', 103);
 define('BOX_EIGENE_BOX_OHNE_RAHMEN', 30);
 define('BOX_EIGENE_BOX_MIT_RAHMEN', 31);
 define('BOX_KONFIGURATOR', 33);

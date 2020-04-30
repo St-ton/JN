@@ -736,10 +736,11 @@ class CartHelper
      * @param int            $qty
      * @param array          $attributes
      * @param int            $accuracy
+     * @param string|null    $token
      * @return array
      * @former pruefeFuegeEinInWarenkorb()
      */
-    public static function addToCartCheck($product, $qty, $attributes, int $accuracy = 2): array
+    public static function addToCartCheck($product, $qty, $attributes, int $accuracy = 2, ?string $token = null): array
     {
         $cart          = Frontend::getCart();
         $productID     = (int)$product->kArtikel; // relevant für die Berechnung von Artikelsummen im Warenkorb
@@ -867,7 +868,7 @@ class CartHelper
                 break;
             }
         }
-        if (!Form::validateToken($attributes['jtl_token'] ?? null)) {
+        if (!Form::validateToken($token)) {
             $redirectParam[] = \R_MISSING_TOKEN;
         }
         \executeHook(\HOOK_ADD_TO_CART_CHECK, [

@@ -9,6 +9,8 @@ use JTL\Catalog\NavigationEntry;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Catalog\Wishlist\Wishlist;
+use JTL\Consent\Manager;
+use JTL\Consent\ManagerInterface;
 use JTL\DB\ReturnType;
 use JTL\ExtensionPoint;
 use JTL\Filter\Metadata;
@@ -89,6 +91,17 @@ $expandedCategories->getOpenCategories($AktuelleKategorie);
 if (!isset($NaviFilter)) {
     $NaviFilter = Shop::run();
 }
+//put availability on top
+$filters = $NaviFilter->getAvailableContentFilters();
+foreach ($filters as $key => $filter) {
+    if ($filter->getClassName() === 'JTL\Filter\Items\Availability') {
+        unset($filters[$key]);
+        \array_unshift($filters, $filter);
+        break;
+    }
+}
+$NaviFilter->setAvailableFilters($filters);
+
 $linkHelper->activate($pageType);
 $origin  = (isset($_SESSION['Kunde']->cLand) && mb_strlen($_SESSION['Kunde']->cLand) > 0)
     ? $_SESSION['Kunde']->cLand
@@ -227,11 +240,11 @@ if (isset($hinweis)) {
     $alertHelper->addAlert(Alert::TYPE_NOTE, $hinweis, 'miscHinweis');
     trigger_error('global $hinweis is deprecated.', \E_USER_DEPRECATED);
 }
-
 $smarty->assign('bCookieErlaubt', isset($_COOKIE['JTLSHOP']))
        ->assign('Brotnavi', $nav->createNavigation())
        ->assign('nIsSSL', Request::checkSSL())
        ->assign('boxes', $boxesToShow)
+       ->assign('consentItems', Shop::Container()->getConsentManager()->getActiveItems(Shop::getLanguageID()))
        ->assign('nZeitGebraucht', isset($nStartzeit) ? (microtime(true) - $nStartzeit) : 0)
        ->assign('Besucherzaehler', $visitorCount)
        ->assign('alertList', Shop::Container()->getAlertService())

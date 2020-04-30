@@ -1,6 +1,7 @@
-<h{$instance->getProperty('level')} style="{$instance->getStyleString()}"
-                                    {if $isPreview}data-portlet="{$instance->getDataAttribute()}"{/if}
-                                    class="{$instance->getAnimationClass()}"
-                                    {$instance->getAnimationDataAttributeString()}>
+{$htag = 'h'|cat:$instance->getProperty('level')}
+
+<{$htag} style="{$instance->getStyleString()}"
+         class="{$instance->getAnimationClass()} {$instance->getStyleClasses()}"
+         {$instance->getAnimationDataAttributeString()}>
     {$instance->getProperty('text')}
-</h{$instance->getProperty('level')}>
+</{$htag}>

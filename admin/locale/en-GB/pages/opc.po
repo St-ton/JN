@@ -102,6 +102,18 @@ msgstr "Border colour"
 msgid "Border radius"
 msgstr "Border rounding"
 
+msgid "Hidden on XS"
+msgstr "Hidden on XS"
+
+msgid "Hidden on SM"
+msgstr "Hidden on SM"
+
+msgid "Hidden on MD"
+msgstr "Hidden on MD"
+
+msgid "Hidden on LG"
+msgstr "Hidden on LG"
+
 # Animations tab
 
 msgid "Animation style"

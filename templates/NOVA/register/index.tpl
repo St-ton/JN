@@ -59,7 +59,7 @@
             {/block}
         {elseif $step === 'formular eingegangen'}
             {block name='register-index-account-created'}
-                {opcMountPoint id='opc_before_heading'}
+                {opcMountPoint id='opc_before_heading' inContainer=false}
                 {container}
                     <h1>{lang key='accountCreated'}</h1>
                     {opcMountPoint id='opc_after_heading'}

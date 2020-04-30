@@ -218,6 +218,17 @@ interface SearchResultsInterface
     /**
      * @return Option[]
      */
+    public function getAvailabilityFilterOptions(): array;
+
+    /**
+     * @param Option[] $options
+     * @return $this
+     */
+    public function setAvailabilityFilterOptions($options): SearchResultsInterface;
+
+    /**
+     * @return Option[]
+     */
     public function getCustomFilterOptions(): array;
 
     /**

@@ -22409,10 +22409,9 @@ input.form-control[name=wishlist-url] {
   font-size: 1rem;
 }
 
-.comparelist .table thead th:first-child, .comparelist td:first-child {
+.comparelist .table tr.comparelist-row td:first-child {
   position: sticky;
   left: 0;
-  background: #ffffff;
   z-index: 996;
 }
 .comparelist .table {
@@ -22447,13 +22446,6 @@ input.form-control[name=wishlist-url] {
 .comparelist .stretched {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  justify-content: space-between;
-}
-@media (max-width: 991.98px) {
-  .comparelist .stretched {
-    justify-content: initial;
-  }
 }
 
 .custom-checkbox + .description {

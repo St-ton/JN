@@ -88,7 +88,7 @@
                                 <tr>
                                     <th class="sticky-top">&nbsp;</th>
                                     {foreach $oVergleichsliste->oArtikel_arr as $oArtikel}
-                                        <th class="text-center sticky-top equal-height min-w">
+                                        <th class="text-center sticky-top min-w pb-0">
                                             <div class="stretched">
                                                 <div>
                                                     {block name='comparelist-index-products-header-delete'}
@@ -112,7 +112,7 @@
                                                                      {$oArtikel->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
                                                                      {$oArtikel->Bilder[0]->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
                                                                 sizes="200px"
-                                                                class="mt-2 mt-md-0"
+                                                                class="my-2"
                                                             }
                                                         {/link}
                                                     {/block}

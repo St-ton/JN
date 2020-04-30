@@ -278,7 +278,7 @@ class BaseSearchQuery extends AbstractFilter
         }
         $limit = (isset($naviConf['suchtrefferfilter_anzahl'])
             && ($n = (int)$naviConf['suchtrefferfilter_anzahl']) > 0) ? ' LIMIT ' . $n : '';
-        $sql   = (new StateSQL())->from($this->productFilter->getCurrentStateData());
+        $sql = (new StateSQL())->from($this->productFilter->getCurrentStateData());
         $sql->setSelect(['tsuchanfrage.kSuchanfrage', 'tsuchanfrage.cSuche', 'tartikel.kArtikel']);
         $sql->setOrderBy(null);
         $sql->setLimit('');
@@ -892,8 +892,7 @@ class BaseSearchQuery extends AbstractFilter
         $searchQueries,
         int $limit = 0,
         $fullText = 'Y'
-    ): int
-    {
+    ): int {
         if ($searchCache->kSuchCache > 0) {
             $productCols = \array_map(static function ($item) {
                 $items = \explode('.', $item, 2);
@@ -906,19 +905,19 @@ class BaseSearchQuery extends AbstractFilter
             });
 
             $score = 'MATCH (' . \implode(', ', $productCols) . ")
-                        AGAINST ('" . \implode(' ', $searchQueries) . "' IN NATURAL LANGUAGE MODE)";
+                        AGAINST ('" . \implode(' ', $searchQueries) . "' IN NATURAL LANGUAGE MODE) ";
             if ($fullText === 'B') {
                 $match = 'MATCH (' . \implode(', ', $productCols) . ")
-                        AGAINST ('" . \implode('* ', $searchQueries) . "*' IN BOOLEAN MODE)";
+                        AGAINST ('" . \implode('* ', $searchQueries) . "*' IN BOOLEAN MODE) ";
             } else {
                 $match = $score;
             }
 
-            $sql = "SELECT {$searchCache->kSuchCache} AS kSuchCache,
-                    IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP,
-                    $score AS score
+            $sql = 'SELECT ' . $searchCache->kSuchCache . ' AS kSuchCache,
+                    IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP, '
+                    . $score . ' AS score
                     FROM tartikel
-                    WHERE $match " . $this->productFilter->getFilterSQL()->getStockFilterSQL() . ' ';
+                    WHERE ' . $this->productFilter->getFilterSQL()->getStockFilterSQL() . ' ';
 
             if (Shop::getLanguageID() > 0 && !LanguageHelper::isDefaultLanguageActive()) {
                 $score = 'MATCH (' . \implode(', ', $langCols) . ")
@@ -929,22 +928,22 @@ class BaseSearchQuery extends AbstractFilter
                 } else {
                     $match = $score;
                 }
-                $sql .= "UNION DISTINCT
-                SELECT {$searchCache->kSuchCache} AS kSuchCache,
-                    IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP,
-                    $score AS score
+                $sql .= 'UNION DISTINCT
+                SELECT ' . $searchCache->kSuchCache . ' AS kSuchCache,
+                    IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP, '
+                    . $score . ' AS score
                     FROM tartikel
                     INNER JOIN tartikelsprache ON tartikelsprache.kArtikel = tartikel.kArtikel
-                    WHERE $match " . $this->productFilter->getFilterSQL()->getStockFilterSQL() . ' ';
+                    WHERE ' . $match . $this->productFilter->getFilterSQL()->getStockFilterSQL() . ' ';
             }
 
             $this->productFilter->getDB()->query(
-                "INSERT INTO tsuchcachetreffer
+                'INSERT INTO tsuchcachetreffer
                         SELECT kSuchCache, kArtikelTMP, ROUND(MAX(15 - score) * 10)
-                        FROM ($sql) AS i
+                        FROM ( ' . $sql . ' AS i
                         LEFT JOIN tartikelsichtbarkeit 
                             ON tartikelsichtbarkeit.kArtikel = i.kArtikelTMP
-                            AND tartikelsichtbarkeit.kKundengruppe = " . Frontend::getCustomerGroup()->getID() . '
+                            AND tartikelsichtbarkeit.kKundengruppe = ' . Frontend::getCustomerGroup()->getID() . '
                         WHERE tartikelsichtbarkeit.kKundengruppe IS NULL
                         GROUP BY kSuchCache, kArtikelTMP' . ($limit > 0 ? ' LIMIT ' . $limit : ''),
                 ReturnType::AFFECTED_ROWS
@@ -1028,10 +1027,10 @@ class BaseSearchQuery extends AbstractFilter
 
         if ($active === null) {
             $active = $this->productFilter->getDB()->query(
-                    "SHOW INDEX FROM tartikel 
+                "SHOW INDEX FROM tartikel 
                     WHERE KEY_NAME = 'idx_tartikel_fulltext'",
-                    ReturnType::SINGLE_OBJECT
-                )
+                ReturnType::SINGLE_OBJECT
+            )
                 && $this->productFilter->getDB()->query(
                     "SHOW INDEX 
                         FROM tartikelsprache 

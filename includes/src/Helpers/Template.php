@@ -92,68 +92,6 @@ class Template
     }
 
     /**
-     * @param string $path
-     * @param int    $depth
-     * @return array
-     */
-    public function getFolders(string $path, int $depth = 0): array
-    {
-        $result = [];
-        if (!\is_dir($path)) {
-            return $result;
-        }
-
-        foreach (\scandir($path, \SCANDIR_SORT_ASCENDING) as $value) {
-            if (!\in_array($value, ['.', '..'], true) && \is_dir($path . \DIRECTORY_SEPARATOR . $value)) {
-                $result[$value] = $depth > 1
-                    ? $this->getFolders($path . \DIRECTORY_SEPARATOR . $value, $depth - 1)
-                    : [];
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * get all potential template folder names
-     *
-     * @param bool $path
-     * @return array
-     */
-    private function getFrontendTemplateFolders($path = false): array
-    {
-        $res      = [];
-        $iterator = new DirectoryIterator(\PFAD_ROOT . \PFAD_TEMPLATES);
-        foreach ($iterator as $fileinfo) {
-            if (!$fileinfo->isDot() && $fileinfo->isDir()) {
-                $res[] = $path ? $fileinfo->getRealPath() : $fileinfo->getFilename();
-            }
-        }
-
-        return $res;
-    }
-
-    /**
-     * get all potential admin template folder names
-     *
-     * @param bool $path
-     * @return array
-     */
-    private function getAdminTemplateFolders(bool $path = false): array
-    {
-        $res      = [];
-        $iterator = new DirectoryIterator(\PFAD_ROOT . \PFAD_ADMIN . \PFAD_TEMPLATES);
-        foreach ($iterator as $fileinfo) {
-            if (!$fileinfo->isDot() && $fileinfo->isDir() && $fileinfo->getFilename() !== 'default') {
-                // default template is deprecated since 5.0
-                $res[] = $path ? $fileinfo->getRealPath() : $fileinfo->getFilename();
-            }
-        }
-
-        return $res;
-    }
-
-    /**
      * read xml config file
      *
      * @param string    $dirName

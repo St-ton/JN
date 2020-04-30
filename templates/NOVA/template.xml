@@ -171,6 +171,8 @@
             <File Path="js/jqcloud.js"/>
             <File Path="js/nouislider.min.js"/>
             <File Path="js/password/password.min.js"/>
+            <File Path="js/consent.js"/>
+            <File Path="js/consent.youtube.js"/>
         </JS>
     </Minify>
     <Boxes>

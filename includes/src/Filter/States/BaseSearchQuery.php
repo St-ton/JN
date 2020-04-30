@@ -60,8 +60,8 @@ class BaseSearchQuery extends AbstractFilter
     {
         parent::__construct($productFilter);
         $this->setIsCustom(false)
-             ->setUrlParam('suche')
-             ->setUrlParamSEO(null);
+            ->setUrlParam('suche')
+            ->setUrlParamSEO(null);
     }
 
     /**
@@ -277,9 +277,7 @@ class BaseSearchQuery extends AbstractFilter
             return $options;
         }
         $limit = (isset($naviConf['suchtrefferfilter_anzahl'])
-            && ($n = (int)$naviConf['suchtrefferfilter_anzahl']) > 0)
-            ? ' LIMIT ' . $n
-            : '';
+            && ($n = (int)$naviConf['suchtrefferfilter_anzahl']) > 0) ? ' LIMIT ' . $n : '';
         $sql   = (new StateSQL())->from($this->productFilter->getCurrentStateData());
         $sql->setSelect(['tsuchanfrage.kSuchanfrage', 'tsuchanfrage.cSuche', 'tartikel.kArtikel']);
         $sql->setOrderBy(null);
@@ -894,7 +892,8 @@ class BaseSearchQuery extends AbstractFilter
         $searchQueries,
         int $limit = 0,
         $fullText = 'Y'
-    ): int {
+    ): int
+    {
         if ($searchCache->kSuchCache > 0) {
             $productCols = \array_map(static function ($item) {
                 $items = \explode('.', $item, 2);
@@ -1029,10 +1028,10 @@ class BaseSearchQuery extends AbstractFilter
 
         if ($active === null) {
             $active = $this->productFilter->getDB()->query(
-                "SHOW INDEX FROM tartikel 
+                    "SHOW INDEX FROM tartikel 
                     WHERE KEY_NAME = 'idx_tartikel_fulltext'",
-                ReturnType::SINGLE_OBJECT
-            )
+                    ReturnType::SINGLE_OBJECT
+                )
                 && $this->productFilter->getDB()->query(
                     "SHOW INDEX 
                         FROM tartikelsprache 

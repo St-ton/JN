@@ -536,16 +536,6 @@ $(document).ready(function () {
     initWow();
     setClickableRow();
 
-    $('.toggle-image-js')
-        .on('mouseenter', function () {
-            $(this).find('.first-wrapper').addClass('d-none');
-            $(this).find('.second-wrapper').removeClass('d-none');
-        })
-        .on('mouseleave', function () {
-            $(this).find('.first-wrapper').removeClass('d-none');
-            $(this).find('.second-wrapper').addClass('d-none');
-    });
-
     document.addEventListener('lazybeforesizes', function(e){
         //use width of parent node instead of the image width itself
         var parent = e.target.parentNode;

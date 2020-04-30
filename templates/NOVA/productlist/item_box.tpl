@@ -21,7 +21,7 @@
                                     {include file='snippets/ribbon.tpl'}
                                 {/block}
                             {/if}
-                            <div class="productbox-images {if !$isMobile && !empty($Artikel->Bilder[1])}toggle-image-js{/if} list-gallery">
+                            <div class="productbox-images list-gallery">
                                 {link href=$Artikel->cURLFull}
                                     {block name="productlist-item-list-image"}
                                         {strip}
@@ -40,7 +40,7 @@
                                             }</div>
                                             </div>
                                             {if !$isMobile && !empty($Artikel->Bilder[1])}
-                                                <div class="productbox-image square square-image d-none second-wrapper">
+                                                <div class="productbox-image square square-image second-wrapper">
                                                     <div class="inner">
                                                     {$image = $Artikel->Bilder[1]}
                                                     {image alt=$alt fluid=true webp=true lazy=true

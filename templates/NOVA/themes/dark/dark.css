@@ -19273,6 +19273,7 @@ aside .last-seen-link {
   line-height: 15px !important;
   border-radius: 50% !important;
   padding: 0;
+  z-index: 1;
 }
 .badge-circle::before {
   display: none;

@@ -433,7 +433,7 @@
                                                                         </div>
                                                                     </div>
                                                                     {if !$isMobile && !empty($wlPosition->Artikel->Bilder[1])}
-                                                                    <div class="square square-image d-none second-wrapper">
+                                                                    <div class="square square-image second-wrapper">
                                                                         <div class="inner">
                                                                         {$image = $wlPosition->Artikel->Bilder[1]}
                                                                         {image alt=$wlPosition->Artikel->cName fluid=true webp=true lazy=true

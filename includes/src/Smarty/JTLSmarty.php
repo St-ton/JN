@@ -85,7 +85,7 @@ class JTLSmarty extends \SmartyBC
      */
     private function initTemplate(): ?string
     {
-        $parent         = null;
+        $parent = null;
         if ($this->context !== ContextType::BACKEND) {
             $model      = Shop::Container()->get(TemplateServiceInterface::class)->getActiveTemplate();
             $tplDir     = $model->getDir();
@@ -111,7 +111,7 @@ class JTLSmarty extends \SmartyBC
                      ->assign('parentTemplateDir', \PFAD_TEMPLATES . $parent . '/');
             }
         } else {
-            $tplDir = 'bootstrap';
+            $tplDir     = 'bootstrap';
             $compileDir = \PFAD_ROOT . \PFAD_ADMIN . \PFAD_COMPILEDIR;
             if (!\file_exists($compileDir)) {
                 \mkdir($compileDir);

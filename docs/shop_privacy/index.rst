@@ -9,3 +9,6 @@ Datanschutz
     :hidden:
 
     consentmanager
+
+
+.. include:: /shop_privacy/map.rst.inc

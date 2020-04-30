@@ -188,7 +188,6 @@
                             label="{lang key='state' section='account data'}{if $Einstellungen.kunden.lieferadresse_abfragen_bundesland !== 'Y'}<span class='optional'> - {lang key='optional'}</span>{/if}"
                             label-for="{$prefix}-{$name}-state"
                         }
-                            <span id="pleaseChoose-gettext" class="d-none">{lang key=pleaseChoose}</span>
                             {if !empty($oShippingStates)}
                                 {select
                                         title="{lang key=pleaseChoose}"

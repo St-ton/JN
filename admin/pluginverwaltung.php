@@ -61,8 +61,8 @@ if (isset($_SESSION['plugin_msg'])) {
 }
 
 
-if (!empty($_FILES['file_data'])) {
-    $response       = $extractor->extractPlugin($_FILES['file_data']['tmp_name']);
+if (!empty($_FILES['plugin-install-upload'])) {
+    $response       = $extractor->extractPlugin($_FILES['plugin-install-upload']['tmp_name']);
     $pluginUploaded = true;
 }
 $pluginsInstalled   = $listing->getInstalled();
@@ -87,6 +87,9 @@ $pluginsAvailable = $pluginsAll->filter(static function (ListingItem $item) {
 $pluginsErroneous = $pluginsAll->filter(static function (ListingItem $item) {
     return $item->isHasError() === true && $item->isInstalled() === false;
 });
+error_log(json_encode($pluginUploaded));
+error_log(json_encode($_FILES));
+error_log('blub');
 if ($pluginUploaded === true) {
     $smarty->assign('pluginsDisabled', $pluginsDisabled)
         ->assign('pluginsInstalled', $pluginsInstalled)

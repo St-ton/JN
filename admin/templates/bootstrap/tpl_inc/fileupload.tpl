@@ -138,5 +138,10 @@ $fileExtraData                 |         | you also need to add the jtl_token: j
             $fileError.append('<p style="margin-top:20px">' + msg + '</p>')
         });
         {/if}
+        $file.on('fileuploaded', function(event, data) {
+            {if $fileSuccessMsg|default:false}
+                $fileSuccess.removeClass('d-none');
+            {/if}
+        });
     }());
 </script>

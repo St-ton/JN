@@ -216,10 +216,10 @@
                                             fileID="cPDFS_{$smarty.section.anhaenge.index}_{$kSprache}"
                                             fileName="cPDFS_{$kSprache}[]"
                                             fileAllowedExtensions="['pdf']"
-                                            fileShowRemove='true'
+                                            fileShowRemove=true
                                             fileMaxSize=2097152
-                                            filePreview='false'
-                                            fileErrorMsg='true'
+                                            filePreview=false
+                                            fileErrorMsg=true
                                         }
                                     </div>
                                 </div>

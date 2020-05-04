@@ -10,7 +10,7 @@ $fileAllowedExtensions         | ----->  | default: ['jpg', 'jpeg', 'jpe', 'gif'
 $fileUploadUrl                 | false   | url to upload file via ajax
 $fileDeleteUrl                 |         | url to delete file via ajax
 $filePreview                   | true    | enable previe image
-$fileMaxSize                   |         | max allowed size of file
+$fileMaxSize                   |         | max allowed size of file, set false for unlimited size
 $fileIsSingle                  | true    | only allow one file to be uploaded
 $fileInitialPreviewConfig      |         | array with json - config of initial preview
 $fileInitialPreview            |         | array with html of the preview images
@@ -30,21 +30,29 @@ $fileExtraData                 |         | you also need to add the jtl_token: j
 -----------------------------------------------------------------------------------
 *}
 {$fileIDFull   = '#'|cat:$fileID}
+{$fileShowUpload = "{if isset($fileShowUpload) && $fileShowUpload === true}true{else}false{/if}"}
+{$fileShowRemove = "{if isset($fileShowRemove) && $fileShowRemove === true}true{else}false{/if}"}
+{$fileShowCancel = "{if isset($fileShowCancel) && $fileShowCancel === true}true{else}false{/if}"}
+{$fileOverwriteInitial = "{if isset($fileOverwriteInitial) && $fileOverwriteInitial === false}false{else}true{/if}"}
+{$fileUploadAsync = "{if isset($fileUploadAsync) && $fileUploadAsync === false}false{else}true{/if}"}
+{$filePreview = "{if isset($filePreview) && $filePreview === true}true{else}false{/if}"}
 {$fileIsSingle = $fileIsSingle|default:true}
+{$fileSuccessMsg = $fileSuccessMsg|default:false}
+{$fileErrorMsg = $fileErrorMsg|default:false}
 <input class="custom-file-input {$fileClass|default:''}"
        type="file"
        name="{if isset($fileName)}{$fileName}{else}{$fileID}{/if}"
        id="{$fileID}"
        tabindex="1"
        {if $fileRequired|default:false}required{/if}
-       {if $fileIsSingle === 'false'}multiple{/if}/>
+       {if !$fileIsSingle}multiple{/if}/>
 
-{if $fileSuccessMsg|default:false}
+{if $fileSuccessMsg}
     <div id="{$fileID}-upload-success" class="alert alert-success d-none mt-3">
         {$fileSuccessMsg}
     </div>
 {/if}
-{if $fileErrorMsg|default:false}
+{if $fileErrorMsg}
     <div id="{$fileID}-upload-error" class="alert alert-danger d-none mt-3"></div>
 {/if}
 
@@ -62,14 +70,14 @@ $fileExtraData                 |         | you also need to add the jtl_token: j
             deleteUrl: '{$fileDeleteUrl}',
             {/if}
             autoOrientImage: false,
-            showUpload: {$fileShowUpload|default:'false'},
-            showRemove: {$fileShowRemove|default:'false'},
-            showCancel: {$fileShowCancel|default:'false'},
+            showUpload: {$fileShowUpload},
+            showRemove: {$fileShowRemove},
+            showCancel: {$fileShowCancel},
             cancelClass: 'btn btn-outline-primary',
             uploadClass: 'btn btn-outline-primary',
             removeClass: 'btn btn-outline-primary',
-            uploadAsync: {$fileUploadAsync|default:'false'},
-            showPreview: {$filePreview|default:'true'},
+            uploadAsync: {$fileUploadAsync},
+            showPreview: {$filePreview},
             initialPreviewShowDelete: false,
             fileActionSettings: {
                 showZoom: false,
@@ -77,53 +85,53 @@ $fileExtraData                 |         | you also need to add the jtl_token: j
                 showDrag: false
             },
             uploadExtraData:
-                {if isset($fileExtraData)}
-                    {$fileExtraData}
-                {else}
-                    { jtl_token: '{$smarty.session.jtl_token}' }
-                {/if},
+            {if isset($fileExtraData)}
+                {$fileExtraData}
+            {else}
+                { jtl_token: '{$smarty.session.jtl_token}' }
+            {/if},
             allowedFileExtensions:
             {if empty($fileAllowedExtensions)}
                 ['jpg', 'jpeg', 'jpe', 'gif', 'png', 'bmp', 'svg']
             {else}
-            {$fileAllowedExtensions}
+                {$fileAllowedExtensions}
             {/if},
-            overwriteInitial: {$fileOverwriteInitial|default:'true'},
-            {if $fileIsSingle !== 'false'}
+            overwriteInitial: {$fileOverwriteInitial},
+            {if $fileIsSingle}
             initialPreviewCount: 1,
             {/if}
             theme: 'fas',
             language: '{$language|mb_substr:0:2}',
             browseOnZoneClick: true,
-            {if $fileMaxSize|default:true !== 'false'}
+            {if !isset($fileMaxSize) || $fileMaxSize}
             maxFileSize: {$fileMaxSize|default:6000},
             {/if}
-            {if $fileIsSingle !== 'false'}
+            {if $fileIsSingle}
             maxFilesNum: 1,
             {/if}
-            {if $filePreview|default:true}
+            {if $filePreview !== 'false'}
             initialPreviewConfig: {if isset($fileInitialPreviewConfig)}{$fileInitialPreviewConfig}{else}[]{/if},
             initialPreview: {if isset($fileInitialPreview)}{$fileInitialPreview}{else}[]{/if},
             {/if}
         });
 
-        {if $fileDefaultBrowseEvent|default:true !== 'false'}
+        {if $fileDefaultBrowseEvent|default:true}
         $file.on("filebrowse", function (event, files) {
             {if $fileBrowseClear|default:false}
-            $file.fileinput('clear');
+                $file.fileinput('clear');
             {/if}
             $fileSuccess.addClass('d-none');
             $fileError.html('').addClass('d-none');
         });
         {/if}
-        {if $fileDefaultBatchSelectedEvent|default:true !== 'false'}
+        {if $fileDefaultBatchSelectedEvent|default:true}
         $file.on("filebatchselected", function (event, files) {
             if ($file.fileinput('getFilesCount') > 0) {
                 $file.fileinput("upload");
             }
         });
         {/if}
-        {if $fileDefaultUploadSuccessEvent|default:true !== 'false'}
+        {if $fileDefaultUploadSuccessEvent|default:true}
         $file.on('filebatchuploadsuccess', function (event, data) {
             if (data.response.status === 'OK') {
                 $fileSuccess.removeClass('d-none');
@@ -132,14 +140,14 @@ $fileExtraData                 |         | you also need to add the jtl_token: j
             }
         });
         {/if}
-        {if $fileDefaultUploadErrorEvent|default:true !== 'false'}
+        {if $fileDefaultUploadErrorEvent|default:true}
         $file.on('fileuploaderror, fileerror', function (event, data, msg) {
             $fileError.removeClass('d-none');
             $fileError.append('<p style="margin-top:20px">' + msg + '</p>')
         });
         {/if}
         $file.on('fileuploaded', function(event, data) {
-            {if $fileSuccessMsg|default:false}
+            {if $fileSuccessMsg}
                 $fileSuccess.removeClass('d-none');
             {/if}
         });

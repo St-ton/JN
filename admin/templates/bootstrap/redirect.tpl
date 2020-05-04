@@ -344,9 +344,9 @@
                                     fileID='csv-import'
                                     fileName='cFile'
                                     fileAllowedExtensions="['csv','txt']"
-                                    fileShowRemove='true'
-                                    fileMaxSize='false'
-                                    fileRequired='true'
+                                    fileShowRemove=true
+                                    fileMaxSize=false
+                                    fileRequired=true
                                 }
                             </div>
                         </div>

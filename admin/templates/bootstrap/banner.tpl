@@ -71,7 +71,7 @@
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             {include file='tpl_inc/fileupload.tpl'
                                 fileID='oFile'
-                                fileShowRemove='true'
+                                fileShowRemove=true
                                 fileInitialPreview="[
                                         {if !empty($banner->cBildPfad)}
                                         '<img src=\"{$banner->cBildPfad}\" class=\"mb-3\" />'

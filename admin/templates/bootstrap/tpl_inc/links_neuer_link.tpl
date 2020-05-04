@@ -185,7 +185,7 @@
                                 fileID='Bilder_0'
                                 fileName='Bilder[]'
                                 fileMaxSize=1000
-                                fileIsSingle='false'
+                                fileIsSingle=false
                                 fileInitialPreview="[
                                     {if !empty($cDatei_arr)}
                                         {foreach $cDatei_arr as $cDatei}

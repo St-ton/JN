@@ -58,3 +58,12 @@ msgstr "Parent-Template fehlt"
 
 msgid "errorOverlayWritePermissions"
 msgstr "Die Artikelsticker konnten nicht erzeugt werden. Bitte prüfen Sie die Schreibrechte des Ordners „%s“ und aktivieren Sie das Template erneut."
+
+msgid "successTemplateUpload"
+msgstr "Template erfolgreich hochgeladen."
+
+msgid "uploadTemplateHeading"
+msgstr "Template hochladen"
+
+msgid "errorTemplateUpload"
+msgstr "Das Template konnte nicht hochgeladen werden. Bitte wenden Sie sich an den Support."

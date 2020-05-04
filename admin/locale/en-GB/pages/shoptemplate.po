@@ -58,3 +58,12 @@ msgstr "Missing parent template"
 
 msgid "errorOverlayWritePermissions"
 msgstr "Could not create item badges. Please check the write access of the folder \"%s\" and re-enable the template."
+
+msgid "successTemplateUpload"
+msgstr "Template uploaded successfully."
+
+msgid "uploadTemplateHeading"
+msgstr "Upload template"
+
+msgid "errorTemplateUpload"
+msgstr "Could not upload template. Please contact the Support team."

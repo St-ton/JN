@@ -87,9 +87,6 @@ $pluginsAvailable = $pluginsAll->filter(static function (ListingItem $item) {
 $pluginsErroneous = $pluginsAll->filter(static function (ListingItem $item) {
     return $item->isHasError() === true && $item->isInstalled() === false;
 });
-error_log(json_encode($pluginUploaded));
-error_log(json_encode($_FILES));
-error_log('blub');
 if ($pluginUploaded === true) {
     $smarty->assign('pluginsDisabled', $pluginsDisabled)
         ->assign('pluginsInstalled', $pluginsInstalled)

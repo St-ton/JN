@@ -95,7 +95,7 @@
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 {include file='tpl_inc/fileupload.tpl'
                                     fileID='previewImage'
-                                    fileShowRemove=true
+                                    fileShowRemove='true'
                                     fileMaxSize=2097152
                                     fileInitialPreview="[
                                             {if !empty($oNewsKategorie->getPreviewImage())}

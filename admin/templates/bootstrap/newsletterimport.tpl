@@ -23,9 +23,9 @@
                             {include file='tpl_inc/fileupload.tpl'
                                 fileID='csv'
                                 fileAllowedExtensions="['csv','txt']"
-                                fileShowRemove=true
+                                fileShowRemove='true'
                                 fileMaxSize='false'
-                                fileRequired=true
+                                fileRequired='true'
                             }
                         </div>
                     </div>

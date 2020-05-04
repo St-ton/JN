@@ -37,7 +37,7 @@ $fileExtraData                 |         | you also need to add the jtl_token: j
        id="{$fileID}"
        tabindex="1"
        {if $fileRequired|default:false}required{/if}
-       {if !$fileIsSingle}multiple{/if}/>
+       {if $fileIsSingle === 'false'}multiple{/if}/>
 
 {if $fileSuccessMsg|default:false}
     <div id="{$fileID}-upload-success" class="alert alert-success d-none mt-3">
@@ -89,7 +89,7 @@ $fileExtraData                 |         | you also need to add the jtl_token: j
             {$fileAllowedExtensions}
             {/if},
             overwriteInitial: {$fileOverwriteInitial|default:'true'},
-            {if $fileIsSingle}
+            {if $fileIsSingle !== 'false'}
             initialPreviewCount: 1,
             {/if}
             theme: 'fas',
@@ -98,7 +98,7 @@ $fileExtraData                 |         | you also need to add the jtl_token: j
             {if $fileMaxSize|default:true !== 'false'}
             maxFileSize: {$fileMaxSize|default:6000},
             {/if}
-            {if $fileIsSingle}
+            {if $fileIsSingle !== 'false'}
             maxFilesNum: 1,
             {/if}
             {if $filePreview|default:true}
@@ -107,7 +107,7 @@ $fileExtraData                 |         | you also need to add the jtl_token: j
             {/if}
         });
 
-        {if $fileDefaultBrowseEvent|default:true}
+        {if $fileDefaultBrowseEvent|default:true !== 'false'}
         $file.on("filebrowse", function (event, files) {
             {if $fileBrowseClear|default:false}
             $file.fileinput('clear');
@@ -116,14 +116,14 @@ $fileExtraData                 |         | you also need to add the jtl_token: j
             $fileError.html('').addClass('d-none');
         });
         {/if}
-        {if $fileDefaultBatchSelectedEvent|default:true}
+        {if $fileDefaultBatchSelectedEvent|default:true !== 'false'}
         $file.on("filebatchselected", function (event, files) {
             if ($file.fileinput('getFilesCount') > 0) {
                 $file.fileinput("upload");
             }
         });
         {/if}
-        {if $fileDefaultUploadSuccessEvent|default:true}
+        {if $fileDefaultUploadSuccessEvent|default:true !== 'false'}
         $file.on('filebatchuploadsuccess', function (event, data) {
             if (data.response.status === 'OK') {
                 $fileSuccess.removeClass('d-none');
@@ -132,7 +132,7 @@ $fileExtraData                 |         | you also need to add the jtl_token: j
             }
         });
         {/if}
-        {if $fileDefaultUploadErrorEvent|default:true}
+        {if $fileDefaultUploadErrorEvent|default:true !== 'false'}
         $file.on('fileuploaderror, fileerror', function (event, data, msg) {
             $fileError.removeClass('d-none');
             $fileError.append('<p style="margin-top:20px">' + msg + '</p>')

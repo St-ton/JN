@@ -175,7 +175,7 @@
                                     fileID='images'
                                     fileName='Bilder[]'
                                     fileMaxSize={$nMaxFileSize}
-                                    fileIsSingle=false
+                                    fileIsSingle='false'
                                     fileInitialPreview="[
                                             {foreach $files as $file}
                                             '<img src=\"{$file->cURLFull}\" class=\"file-preview-image img-fluid\"/><a href=\"news.php?news=1&news_editieren=1&kNews={$oNews->getID()}&delpic={$file->cName}&token={$smarty.session.jtl_token}\" title=\"{__('delete')}\"><i class=\"fas fa-trash-alt\"></i></a>',

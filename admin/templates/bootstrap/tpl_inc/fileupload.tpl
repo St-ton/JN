@@ -10,7 +10,7 @@ $fileAllowedExtensions         | ----->  | default: ['jpg', 'jpeg', 'jpe', 'gif'
 $fileUploadUrl                 | false   | url to upload file via ajax
 $fileDeleteUrl                 |         | url to delete file via ajax
 $filePreview                   | true    | enable previe image
-$fileMaxSize                   |         | max allowed size of file, set false for unlimited size
+$fileMaxSize                   | 6000    | max allowed size of file, set false for unlimited size
 $fileIsSingle                  | true    | only allow one file to be uploaded
 $fileInitialPreviewConfig      |         | array with json - config of initial preview
 $fileInitialPreview            |         | array with html of the preview images
@@ -33,9 +33,9 @@ $fileExtraData                 |         | you also need to add the jtl_token: j
 {$fileShowUpload = "{if isset($fileShowUpload) && $fileShowUpload === true}true{else}false{/if}"}
 {$fileShowRemove = "{if isset($fileShowRemove) && $fileShowRemove === true}true{else}false{/if}"}
 {$fileShowCancel = "{if isset($fileShowCancel) && $fileShowCancel === true}true{else}false{/if}"}
+{$fileUploadAsync = "{if isset($fileUploadAsync) && $fileUploadAsync === true}true{else}false{/if}"}
 {$fileOverwriteInitial = "{if isset($fileOverwriteInitial) && $fileOverwriteInitial === false}false{else}true{/if}"}
-{$fileUploadAsync = "{if isset($fileUploadAsync) && $fileUploadAsync === false}false{else}true{/if}"}
-{$filePreview = "{if isset($filePreview) && $filePreview === true}true{else}false{/if}"}
+{$filePreview = "{if isset($filePreview) && $filePreview === false}false{else}true{/if}"}
 {$fileIsSingle = $fileIsSingle|default:true}
 {$fileSuccessMsg = $fileSuccessMsg|default:false}
 {$fileErrorMsg = $fileErrorMsg|default:false}

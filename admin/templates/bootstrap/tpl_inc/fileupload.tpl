@@ -26,6 +26,7 @@ $fileDefaultUploadSuccessEvent | true    | set false and created a custom .on("f
 $fileDefaultUploadErrorEvent   | true    | set false and created a custom .on("fileuploaderror") event
 $fileSuccessMsg                | false   | success message after upload
 $fileErrorMsg                  | false   | error message while uploading - automatically generated
+$fileExtraData                 |         | you also need to add the jtl_token: jtl_token: '{$smarty.session.jtl_token}'
 -----------------------------------------------------------------------------------
 *}
 {$fileIDFull   = '#'|cat:$fileID}
@@ -75,9 +76,12 @@ $fileErrorMsg                  | false   | error message while uploading - autom
                 showRemove: false,
                 showDrag: false
             },
-            {if isset($fileExtraData)}
-            uploadExtraData: {$fileExtraData},
-            {/if}
+            uploadExtraData:
+                {if isset($fileExtraData)}
+                    {$fileExtraData}
+                {else}
+                    { jtl_token: '{$smarty.session.jtl_token}' }
+                {/if},
             allowedFileExtensions:
             {if empty($fileAllowedExtensions)}
                 ['jpg', 'jpeg', 'jpe', 'gif', 'png', 'bmp', 'svg']

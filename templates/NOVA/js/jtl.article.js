@@ -145,6 +145,12 @@
 
                 $('#gallery').slick('slickSetOption','initialSlide', current, true);
                 $('#gallery_preview').slick('slickGoTo', current, true);
+
+                //fix firefox height bug
+                $('.slick-slide, .slick-arrow').css({'display': 'none'});
+                setTimeout(function(){
+                    $('.slick-slide, .slick-arrow').css({'display': 'block'});
+                }, 50);
             }
 
             function addClickListener() {

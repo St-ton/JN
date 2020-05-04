@@ -97,7 +97,7 @@ $fileErrorMsg                  | false   | error message while uploading - autom
             {if $fileIsSingle}
             maxFilesNum: 1,
             {/if}
-            {if $filePreview|default:false}
+            {if $filePreview|default:true}
             initialPreviewConfig: {if isset($fileInitialPreviewConfig)}{$fileInitialPreviewConfig}{else}[]{/if},
             initialPreview: {if isset($fileInitialPreview)}{$fileInitialPreview}{else}[]{/if},
             {/if}

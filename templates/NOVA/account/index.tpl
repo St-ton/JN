@@ -26,7 +26,7 @@
                     };
                     eModal.confirm(options).then(
                         function() {
-                            window.location = "{get_static_route id='bestellvorgang.php'}?basket2Pers=1"
+                            window.location = "{get_static_route id='bestellvorgang.php'}?basket2Pers=1&token={$smarty.session.jtl_token}"
                         }
                     );
                 </script>{/inline_script}

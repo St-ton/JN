@@ -271,7 +271,7 @@ class Frontend extends AbstractSession
             }
         } else {
             foreach ($_SESSION['Waehrungen'] as $currency) {
-                /** @var $currency Currency */
+                /** @var Currency $currency */
                 if ($currency->isDefault()) {
                     $_SESSION['Waehrung']      = $currency;
                     $_SESSION['cWaehrungName'] = $currency->getName();

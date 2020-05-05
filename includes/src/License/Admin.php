@@ -90,8 +90,6 @@ class Admin
             $response->html = $smarty->fetch('tpl_inc/licenses_referenced_item.tpl');
             $this->sendResponse($response);
         }
-
-        return;
     }
 
     /**

@@ -431,6 +431,9 @@ abstract class DataModel implements DataModelInterface, Iterator
         });
     }
 
+    /**
+     *
+     */
     protected function onInstanciation(): void
     {
     }
@@ -442,10 +445,16 @@ abstract class DataModel implements DataModelInterface, Iterator
     {
     }
 
+    /**
+     *
+     */
     protected function onBeforeInsert(): void
     {
     }
 
+    /**
+     *
+     */
     protected function onBeforeUpdate(): void
     {
     }

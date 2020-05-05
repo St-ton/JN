@@ -758,7 +758,7 @@ final class Link extends AbstractLink
     }
 
     /**
-     * @inheritdoc
+     * @return bool
      */
     public function getPrintButton(): bool
     {
@@ -838,7 +838,7 @@ final class Link extends AbstractLink
     }
 
     /**
-     * @inheritdoc
+     * @return array|int[]
      */
     public function getLanguageIDs(): array
     {
@@ -846,7 +846,7 @@ final class Link extends AbstractLink
     }
 
     /**
-     * @inheritdoc
+     * @param array $ids
      */
     public function setLanguageIDs(array $ids): void
     {

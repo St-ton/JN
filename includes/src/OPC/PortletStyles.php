@@ -45,11 +45,9 @@ trait PortletStyles
             $list[$extra] = true;
         }
 
-        if (\in_array('styles', $this->getPropertyTabs())) {
-            if (!$preview) {
-                $url        = $this->getCommonResource('hidden-size.css');
-                $list[$url] = true;
-            }
+        if (\in_array('styles', $this->getPropertyTabs(), true) && !$preview) {
+            $url        = $this->getCommonResource('hidden-size.css');
+            $list[$url] = true;
         }
 
         return $list;

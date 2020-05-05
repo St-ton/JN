@@ -83,12 +83,12 @@ interface JobInterface
     public function setDateLastStarted($date): void;
 
     /**
-     * @inheritdoc
+     * @return DateTime|null
      */
     public function getDateLastFinished(): ?DateTime;
 
     /**
-     * @inheritdoc
+     * @param DateTime $date
      */
     public function setDateLastFinished($date): void;
 

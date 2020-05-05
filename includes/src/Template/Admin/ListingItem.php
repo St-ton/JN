@@ -244,34 +244,6 @@ class ListingItem
         return $this;
     }
 
-    public function loadFromTemplate(Model $plugin): self
-    {
-        $meta = $plugin->getMeta();
-        $this->setName($meta->getName());
-        $this->setDescription($meta->getDescription());
-        $this->setAuthor($meta->getAuthor());
-        $this->setID($plugin->getID());
-        $this->setFramework($plugin->getPluginID());
-        $this->setPath($plugin->getPaths()->getBaseDir());
-        $this->setDir($plugin->getPaths()->getVersionedPath());
-        $this->setIsLegacy($plugin->isLegacy());
-        $this->setPreview($meta->getIcon());
-        $this->setVersion($meta->getSemVer());
-        $this->setState($plugin->getState());
-        $this->setDateInstalled($meta->getDateInstalled());
-        $this->setLangVarCount($plugin->getLocalization()->getLangVars()->count());
-        $this->setLinkCount($plugin->getLinks()->getLinks()->count());
-        $this->setHasLicenseCheck($plugin->getLicense()->hasLicenseCheck());
-        $this->setOptionsCount($plugin->getConfig()->getOptions()->count()
-            + $plugin->getAdminMenu()->getItems()->count());
-        $this->setReadmeMD($meta->getReadmeMD());
-        $this->setLicenseMD($meta->getLicenseMD());
-        $this->setLicenseKey($plugin->getLicense()->getKey());
-        $this->setUpdateAvailable($plugin->getMeta()->getUpdateAvailable());
-
-        return $this;
-    }
-
     /**
      * @return string
      */

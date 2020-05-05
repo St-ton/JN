@@ -441,7 +441,8 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * {@inheritdoc}
+     * @param string $message
+     * @return $this
      */
     public function comment($message)
     {
@@ -456,7 +457,8 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * {@inheritdoc}
+     * @param string $message
+     * @return $this
      */
     public function verbose($message)
     {

@@ -883,11 +883,11 @@ final class Controller
         });
 
         $shopURL = Shop::getURL() . '/';
-        $count   = \count($images);
-        for ($i = 1; $i <= $count; $i++) {
-            $text = \str_replace(
-                '$#Bild' . $i . '#$',
-                '<img alt="" src="' . $shopURL . \PFAD_NEWSBILDER . $id . '/' . $images[$i - 1] . '" />',
+        foreach ($images as $image) {
+            $imageID = \substr(\explode('.', $image)[0], 4);
+            $text    = \str_replace(
+                '$#Bild' . $imageID . '#$',
+                '<img alt="" src="' . $shopURL . \PFAD_NEWSBILDER . $id . '/' . $image . '" />',
                 $text
             );
         }

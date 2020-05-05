@@ -8,13 +8,13 @@
 	            fileID='template-install-upload'
 	            fileUploadUrl="{$shopURL}/{$PFAD_ADMIN}shoptemplate.php"
                 fileBrowseClear=true
-                fileUploadAsync='true'
+                fileUploadAsync=true
                 fileAllowedExtensions="['zip']"
                 fileMaxSize=100000
-                fileOverwriteInitial='false'
-                filePreview='false'
-                fileShowUpload='true'
-                fileShowRemove='true'
+                fileOverwriteInitial=false
+                filePreview=false
+                fileShowUpload=true
+                fileShowRemove=true
                 fileDefaultBatchSelectedEvent=false
                 fileSuccessMsg="{__('successTemplateUpload')}"
 	            }

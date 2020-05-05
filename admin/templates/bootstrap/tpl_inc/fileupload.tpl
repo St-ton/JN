@@ -10,7 +10,7 @@ $fileAllowedExtensions         | ----->  | default: ['jpg', 'jpeg', 'jpe', 'gif'
 $fileUploadUrl                 | false   | url to upload file via ajax
 $fileDeleteUrl                 |         | url to delete file via ajax
 $filePreview                   | true    | enable previe image
-$fileMaxSize                   |         | max allowed size of file
+$fileMaxSize                   | 6000    | max allowed size of file, set false for unlimited size
 $fileIsSingle                  | true    | only allow one file to be uploaded
 $fileInitialPreviewConfig      |         | array with json - config of initial preview
 $fileInitialPreview            |         | array with html of the preview images
@@ -26,10 +26,19 @@ $fileDefaultUploadSuccessEvent | true    | set false and created a custom .on("f
 $fileDefaultUploadErrorEvent   | true    | set false and created a custom .on("fileuploaderror") event
 $fileSuccessMsg                | false   | success message after upload
 $fileErrorMsg                  | false   | error message while uploading - automatically generated
+$fileExtraData                 |         | you also need to add the jtl_token: jtl_token: '{$smarty.session.jtl_token}'
 -----------------------------------------------------------------------------------
 *}
 {$fileIDFull   = '#'|cat:$fileID}
+{$fileShowUpload = "{if isset($fileShowUpload) && $fileShowUpload === true}true{else}false{/if}"}
+{$fileShowRemove = "{if isset($fileShowRemove) && $fileShowRemove === true}true{else}false{/if}"}
+{$fileShowCancel = "{if isset($fileShowCancel) && $fileShowCancel === true}true{else}false{/if}"}
+{$fileUploadAsync = "{if isset($fileUploadAsync) && $fileUploadAsync === true}true{else}false{/if}"}
+{$fileOverwriteInitial = "{if isset($fileOverwriteInitial) && $fileOverwriteInitial === false}false{else}true{/if}"}
+{$filePreview = "{if isset($filePreview) && $filePreview === false}false{else}true{/if}"}
 {$fileIsSingle = $fileIsSingle|default:true}
+{$fileSuccessMsg = $fileSuccessMsg|default:false}
+{$fileErrorMsg = $fileErrorMsg|default:false}
 <input class="custom-file-input {$fileClass|default:''}"
        type="file"
        name="{if isset($fileName)}{$fileName}{else}{$fileID}{/if}"
@@ -38,12 +47,12 @@ $fileErrorMsg                  | false   | error message while uploading - autom
        {if $fileRequired|default:false}required{/if}
        {if !$fileIsSingle}multiple{/if}/>
 
-{if $fileSuccessMsg|default:false}
+{if $fileSuccessMsg}
     <div id="{$fileID}-upload-success" class="alert alert-success d-none mt-3">
         {$fileSuccessMsg}
     </div>
 {/if}
-{if $fileErrorMsg|default:false}
+{if $fileErrorMsg}
     <div id="{$fileID}-upload-error" class="alert alert-danger d-none mt-3"></div>
 {/if}
 
@@ -61,43 +70,46 @@ $fileErrorMsg                  | false   | error message while uploading - autom
             deleteUrl: '{$fileDeleteUrl}',
             {/if}
             autoOrientImage: false,
-            showUpload: {$fileShowUpload|default:'false'},
-            showRemove: {$fileShowRemove|default:'false'},
-            showCancel: {$fileShowCancel|default:'false'},
+            showUpload: {$fileShowUpload},
+            showRemove: {$fileShowRemove},
+            showCancel: {$fileShowCancel},
             cancelClass: 'btn btn-outline-primary',
             uploadClass: 'btn btn-outline-primary',
             removeClass: 'btn btn-outline-primary',
-            uploadAsync: {$fileUploadAsync|default:'false'},
-            showPreview: {$filePreview|default:'true'},
+            uploadAsync: {$fileUploadAsync},
+            showPreview: {$filePreview},
             initialPreviewShowDelete: false,
             fileActionSettings: {
                 showZoom: false,
                 showRemove: false,
                 showDrag: false
             },
+            uploadExtraData:
             {if isset($fileExtraData)}
-            uploadExtraData: {$fileExtraData},
-            {/if}
+                {$fileExtraData}
+            {else}
+                { jtl_token: '{$smarty.session.jtl_token}' }
+            {/if},
             allowedFileExtensions:
             {if empty($fileAllowedExtensions)}
                 ['jpg', 'jpeg', 'jpe', 'gif', 'png', 'bmp', 'svg']
             {else}
-            {$fileAllowedExtensions}
+                {$fileAllowedExtensions}
             {/if},
-            overwriteInitial: {$fileOverwriteInitial|default:'true'},
+            overwriteInitial: {$fileOverwriteInitial},
             {if $fileIsSingle}
             initialPreviewCount: 1,
             {/if}
             theme: 'fas',
             language: '{$language|mb_substr:0:2}',
             browseOnZoneClick: true,
-            {if $fileMaxSize|default:true !== 'false'}
+            {if !isset($fileMaxSize) || $fileMaxSize}
             maxFileSize: {$fileMaxSize|default:6000},
             {/if}
             {if $fileIsSingle}
             maxFilesNum: 1,
             {/if}
-            {if $filePreview|default:false}
+            {if $filePreview !== 'false'}
             initialPreviewConfig: {if isset($fileInitialPreviewConfig)}{$fileInitialPreviewConfig}{else}[]{/if},
             initialPreview: {if isset($fileInitialPreview)}{$fileInitialPreview}{else}[]{/if},
             {/if}
@@ -106,7 +118,7 @@ $fileErrorMsg                  | false   | error message while uploading - autom
         {if $fileDefaultBrowseEvent|default:true}
         $file.on("filebrowse", function (event, files) {
             {if $fileBrowseClear|default:false}
-            $file.fileinput('clear');
+                $file.fileinput('clear');
             {/if}
             $fileSuccess.addClass('d-none');
             $fileError.html('').addClass('d-none');
@@ -136,5 +148,10 @@ $fileErrorMsg                  | false   | error message while uploading - autom
             $fileError.append('<p style="margin-top:20px">' + msg + '</p>')
         });
         {/if}
+        $file.on('fileuploaded', function(event, data) {
+            {if $fileSuccessMsg}
+                $fileSuccess.removeClass('d-none');
+            {/if}
+        });
     }());
 </script>

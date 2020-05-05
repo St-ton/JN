@@ -5,11 +5,11 @@
     <form id="crawlerForm" name="crawlerForm" method="post">
         {$jtl_token}
         <input type="hidden" name="save_crawler" value="1" />
-        <input type="hidden" name="id" value="{$crawler->kBesucherBot}" />
+        <input type="hidden" name="id" value="{$crawler->getID()}" />
         <div class="settings">
             <div class="card">
                 <div class="card-header">
-                    <div class="subheading1">{if isset($crawler->kBesucherBot)} {__('editCrawler')} {else} {__('createCrawler')} {/if} </div>
+                    <div class="subheading1">{if isset($crawler->getID())} {__('editCrawler')} {else} {__('createCrawler')} {/if} </div>
                     <hr class="mb-n3">
                 </div>
                 <div class="table-responsive">
@@ -17,14 +17,14 @@
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="cMetaTitle_{$cISO}">{__('crawlerUserAgent')} *:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <input class="form-control" name="cUserAgent" type="text" value="{$crawler->cUserAgent}" />
+                                <input class="form-control" name="useragent" type="text" value="{$crawler->getUserAgent()}" />
                             </div>
                             <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('crawlerUserAgentHint')}</div>
                         </div>
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="cMetaTitle_{$cISO}">{__('crawlerDescription')} *:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <input class="form-control" type="text" name="cBeschreibung" value="{$crawler->cBeschreibung}"/>
+                                <input class="form-control" type="text" name="description" value="{$crawler->getDescription()}"/>
                             </div>
                             <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('crawlerDescriptionHint')}</div>
                         </div>

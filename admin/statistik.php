@@ -8,7 +8,11 @@ use JTL\Crawler;
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'statistik_inc.php';
 
-$statsType = Request::verifyGPCDataInt('s');
+$statsType    = Request::verifyGPCDataInt('s');
+$db           = Shop::Container()->getDB();
+$cache        = Shop::Container()->getCache();
+$alertService = Shop::Container()->getAlertService();
+
 
 switch ($statsType) {
     case 2:
@@ -51,13 +55,14 @@ if (in_array($statsType, $pie, true)) {
         ->assign('ylabel', $members['nCount'] ?? 0);
 }
 if ($statsType === 3) {
-    if (($crawler = Crawler::checkSubmit()) === false) {
+    $controller = new Crawler\Controller($db, $cache, $alertService);
+    if (($crawler = $controller->checkRequest()) === false) {
         if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
             $backTab = Request::verifyGPDataString('tab');
             $smarty->assign('cTab', $backTab);
         }
         $crawlerPagination = (new Pagination('crawler'))
-            ->setItemArray(Crawler::getAll())
+            ->setItemArray($controller->getAllCrawler())
             ->assemble();
         $smarty->assign('crawler_arr', $crawlerPagination->getPageItems());
         $smarty->assign('crawlerPagination', $crawlerPagination);

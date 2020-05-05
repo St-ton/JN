@@ -3,6 +3,7 @@
 namespace JTL;
 
 use DateTime;
+use JTL\Crawler;
 use JTL\DB\ReturnType;
 use JTL\GeneralDataProtection\IpAnonymizer;
 use JTL\Helpers\Request;
@@ -383,7 +384,11 @@ class Visitor
      */
     public static function isSpider($userAgent): int
     {
-        $bot = Crawler::getByUserAgent($userAgent);
+        $db         = Shop::Container()->getDB();
+        $cache      = Shop::Container()->getCache();
+        $controller = new Crawler\Controller($db, $cache);
+        $bot        = $controller->getByUserAgent($userAgent);
+
         return $bot === false ? 0 : (int)$bot->kBesucherBot;
     }
 
@@ -392,7 +397,11 @@ class Visitor
      */
     public static function getSpiders(): array
     {
-        return Crawler::getAll();
+        $db         = Shop::Container()->getDB();
+        $cache      = Shop::Container()->getCache();
+        $controller = new Crawler\Controller($db, $cache);
+
+        return $controller->getAllCrawler();
     }
 
     /**

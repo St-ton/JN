@@ -46,8 +46,11 @@ sendRequestFile($cDatei);
  */
 function getRequestBot(): int
 {
-    $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? null;
-    $bot       = Crawler::getByUserAgent($userAgent);
+    $userAgent  = $_SERVER['HTTP_USER_AGENT'] ?? null;
+    $db         = Shop::Container()->getDB();
+    $cache      = Shop::Container()->getCache();
+    $controller = new Crawler\Controller($db, $cache);
+    $bot        = $controller->getByUserAgent($userAgent);
     return isset($bot->kBesucherBot) ? (int)$bot->kBesucherBot : 0;
 }
 

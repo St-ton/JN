@@ -1,0 +1,51 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "docURL"
+msgstr ""
+
+msgid "pageTitle"
+msgstr "Consent manager"
+
+msgid "pageDesc"
+msgstr "Manage texts for conset items"
+
+msgid "itemID"
+msgstr "ID"
+
+msgid "company"
+msgstr "Company"
+
+msgid "pluginID"
+msgstr "Plugin ID"
+
+msgid "languageID"
+msgstr "Language ID"
+
+msgid "description"
+msgstr "Description"
+
+msgid "purpose"
+msgstr "Purpose"
+
+msgid "disable"
+msgstr "disable"
+
+msgid "enable"
+msgstr "enable"
+
+msgid "saveAndContinue"
+msgstr "Save and continue"
+
+msgid "modelHeader"
+msgstr "Consent"
+
+msgid "childHeading"
+msgstr "Localizations"
+
+msgid "generalHeading"
+msgstr "General"
+
+msgid "privacyPolicy"
+msgstr "Privacy policy (link)"

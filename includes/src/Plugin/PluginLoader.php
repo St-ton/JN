@@ -81,6 +81,7 @@ class PluginLoader extends AbstractLoader
         $getText = Shop::Container()->getGetText();
         $getText->setLanguage();
         $plugin->setID($id);
+        $plugin->setPluginID($obj->cPluginID);
         $plugin->setIsExtension(true);
         $plugin->setPaths($paths);
         $getText->loadPluginLocale('base', $plugin);

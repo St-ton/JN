@@ -120,7 +120,7 @@
                                 fileUploadAsync=true
                                 fileAllowedExtensions="['zip']"
                                 fileMaxSize=100000
-                                fileOverwriteInitial='false'
+                                fileOverwriteInitial=false
                                 fileShowUpload=true
                                 fileShowRemove=true
                                 fileDefaultBatchSelectedEvent=false

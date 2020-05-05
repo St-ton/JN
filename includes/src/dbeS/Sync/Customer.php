@@ -152,40 +152,41 @@ final class Customer extends AbstractSync
         if (!isset($xml['gutscheine']['gutschein']) || !\is_array($xml['gutscheine']['gutschein'])) {
             return;
         }
+        $mailer = Shop::Container()->get(Mailer::class);
         foreach ($this->mapper->mapArray($xml['gutscheine'], 'gutschein', 'mGutschein') as $voucher) {
             if (!($voucher->kGutschein > 0 && $voucher->kKunde > 0)) {
                 continue;
             }
             $exists = $this->db->select('tgutschein', 'kGutschein', (int)$voucher->kGutschein);
-            if (!isset($exists->kGutschein) || !$exists->kGutschein) {
-                $this->db->insert('tgutschein', $voucher);
-                $this->logger->debug(
-                    'Gutschein fuer kKunde ' .
-                    (int)$voucher->kKunde . ' wurde eingeloest. ' .
-                    \print_r($voucher, true)
-                );
-                $this->db->query(
-                    'UPDATE tkunde 
-                    SET fGuthaben = fGuthaben + ' . (float)$voucher->fWert . ' 
-                    WHERE kKunde = ' . (int)$voucher->kKunde,
-                    ReturnType::DEFAULT
-                );
-                $this->db->query(
-                    'UPDATE tkunde 
-                    SET fGuthaben = 0 
-                    WHERE kKunde = ' . (int)$voucher->kKunde . ' 
-                        AND fGuthaben < 0',
-                    ReturnType::DEFAULT
-                );
-                $customer        = new CustomerClass((int)$voucher->kKunde);
-                $obj             = new stdClass();
-                $obj->tkunde     = $customer;
-                $obj->tgutschein = $voucher;
-                if ($customer->cMail) {
-                    $mailer = Shop::Container()->get(Mailer::class);
-                    $mail   = new Mail();
-                    $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_GUTSCHEIN, $obj));
-                }
+            if (!empty($exists->kGutschein)) {
+                continue;
+            }
+            $this->db->insert('tgutschein', $voucher);
+            $this->logger->debug(
+                'Gutschein fuer kKunde ' .
+                (int)$voucher->kKunde . ' wurde eingeloest. ' .
+                \print_r($voucher, true)
+            );
+            $this->db->query(
+                'UPDATE tkunde 
+                SET fGuthaben = fGuthaben + ' . (float)$voucher->fWert . ' 
+                WHERE kKunde = ' . (int)$voucher->kKunde,
+                ReturnType::DEFAULT
+            );
+            $this->db->query(
+                'UPDATE tkunde 
+                SET fGuthaben = 0 
+                WHERE kKunde = ' . (int)$voucher->kKunde . ' 
+                    AND fGuthaben < 0',
+                ReturnType::DEFAULT
+            );
+            $customer        = new CustomerClass((int)$voucher->kKunde);
+            $obj             = new stdClass();
+            $obj->tkunde     = $customer;
+            $obj->tgutschein = $voucher;
+            if ($customer->cMail) {
+                $mail = new Mail();
+                $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_GUTSCHEIN, $obj));
             }
         }
     }

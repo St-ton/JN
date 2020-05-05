@@ -424,10 +424,9 @@ class BaseSearchQuery extends AbstractFilter
      */
     public function editSearchCache($langIDExt = 0): int
     {
-        require_once \PFAD_ROOT . \PFAD_INCLUDES . 'suche_inc.php';
         // Mapping beachten
-        $cSuche = $this->getQueryMapping($this->getName() ?? '', $langIDExt);
-        $this->setName($cSuche);
+        $query = $this->getQueryMapping($this->getName() ?? '', $langIDExt);
+        $this->setName($query);
         $langID = $langIDExt > 0
             ? (int)$langIDExt
             : $this->getLanguageID();
@@ -441,7 +440,6 @@ class BaseSearchQuery extends AbstractFilter
                     AND DATE_ADD(tsuchcache.dGueltigBis, INTERVAL 5 MINUTE) < NOW()',
             ReturnType::AFFECTED_ROWS
         );
-
         // Suchcache checken, ob bereits vorhanden
         $searchCache = $this->productFilter->getDB()->executeQueryPrepared(
             'SELECT kSuchCache
@@ -451,26 +449,25 @@ class BaseSearchQuery extends AbstractFilter
                     AND (dGueltigBis > NOW() OR dGueltigBis IS NULL)',
             [
                 'lang'   => $langID,
-                'search' => $cSuche
+                'search' => $query
             ],
             ReturnType::SINGLE_OBJECT
         );
-
         if (isset($searchCache->kSuchCache) && $searchCache->kSuchCache > 0) {
             return (int)$searchCache->kSuchCache; // Gib gültigen Suchcache zurück
         }
         // wenn kein Suchcache vorhanden
-        $nMindestzeichen = ($min = (int)$this->getConfig('artikeluebersicht')['suche_min_zeichen']) > 0
+        $minChars = ($min = (int)$this->getConfig('artikeluebersicht')['suche_min_zeichen']) > 0
             ? $min
             : 3;
-        if (\mb_strlen($cSuche) < $nMindestzeichen) {
+        if (\mb_strlen($query) < $minChars) {
             require_once \PFAD_ROOT . \PFAD_INCLUDES . 'sprachfunktionen.php';
-            $this->error = \lang_suche_mindestanzahl($cSuche, $nMindestzeichen);
+            $this->error = \lang_suche_mindestanzahl($query, $minChars);
 
             return 0;
         }
         // Suchausdruck aufbereiten
-        $search = $this->prepareSearchQuery($cSuche);
+        $search = $this->prepareSearchQuery($query);
         $tmp    = $search;
         if (\count($search) === 0) {
             return 0;
@@ -480,7 +477,7 @@ class BaseSearchQuery extends AbstractFilter
         $cols                   = $this->getSearchColumnClasses($rows);
         $searchCache            = new \stdClass();
         $searchCache->kSprache  = $langID;
-        $searchCache->cSuche    = $cSuche;
+        $searchCache->cSuche    = $query;
         $searchCache->dErstellt = 'NOW()';
         $kSuchCache             = $this->productFilter->getDB()->insert('tsuchcache', $searchCache);
 

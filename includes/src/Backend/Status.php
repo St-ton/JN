@@ -498,6 +498,6 @@ class Status
      */
     protected function hasExtensionSOAP(): bool
     {
-        return extension_loaded('soap');
+        return \extension_loaded('soap');
     }
 }

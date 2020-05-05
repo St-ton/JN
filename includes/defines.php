@@ -62,6 +62,7 @@ ifndef('SMARTY_USE_SUB_DIRS', false);
 ifndef('JTL_INCLUDE_ONLY_DB', 0);
 ifndef('SOCKET_TIMEOUT', 30);
 ifndef('ARTICLES_PER_PAGE_HARD_LIMIT', 100);
+
 // Pfade
 ifndef('PFAD_CLASSES', 'classes/old/'); // DEPRECATED
 ifndef('PFAD_CONFIG', 'config/');
@@ -82,7 +83,7 @@ ifndef('PFAD_INCLUDES_MODULES', PFAD_INCLUDES . 'modules/');
 ifndef('PFAD_SMARTY', PFAD_INCLUDES . 'vendor/smarty/smarty/libs/');
 ifndef('SMARTY_DIR', PFAD_ROOT . PFAD_SMARTY);
 /**
- * @deprecated since Shop 5
+ * @deprecated since 5.0.0
  */
 ifndef('PFAD_PHPQUERY', PFAD_INCLUDES . 'vendor/jtlshop/phpquery/src/');
 ifndef('PFAD_PCLZIP', PFAD_INCLUDES . 'vendor/pclzip/pclzip/');

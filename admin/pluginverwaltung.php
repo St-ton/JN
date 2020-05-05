@@ -62,8 +62,8 @@ if (isset($_SESSION['plugin_msg'])) {
 }
 
 
-if (!empty($_FILES['file_data'])) {
-    $response       = $extractor->extractPlugin($_FILES['file_data']['tmp_name']);
+if (!empty($_FILES['plugin-install-upload'])) {
+    $response       = $extractor->extractPlugin($_FILES['plugin-install-upload']['tmp_name']);
     $pluginUploaded = true;
 }
 $pluginsInstalled   = $listing->getInstalled();

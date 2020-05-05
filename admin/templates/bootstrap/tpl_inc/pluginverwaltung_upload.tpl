@@ -5,14 +5,13 @@
             {include file='tpl_inc/fileupload.tpl'
             fileID='plugin-install-upload'
             fileUploadUrl="{$shopURL}/{$PFAD_ADMIN}pluginverwaltung.php"
-            fileBrowseClear='true'
-            fileUploadAsync='true'
+            fileBrowseClear=true
+            fileUploadAsync=true
             fileAllowedExtensions="['zip']"
             fileMaxSize=100000
-            fileOverwriteInitial='false'
-            filePreview='false'
-            fileShowUpload='true'
-            fileShowRemove='true'
+            fileOverwriteInitial=false
+            fileShowUpload=true
+            fileShowRemove=true
             fileDefaultBatchSelectedEvent=false
             fileSuccessMsg="{__('successPluginUpload')}"
             }

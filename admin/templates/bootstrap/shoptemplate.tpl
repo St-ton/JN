@@ -12,8 +12,11 @@
     {assign var=cDokuURL value=__('shoptemplateURL')}
 {/if}
 {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=$cBeschreibung cDokuURL=$cDokuURL}
+
+
 {*workaround: no async uploads (the fileinput option uploadAsync does not work correctly... *}
-<style>.fileinput-upload-button, .kv-file-upload{ldelim}display:none!important;{rdelim}</style>
+<style>#form_settings .fileinput-upload-button, .kv-file-upload{ldelim}display:none!important;{rdelim}</style>
+
 <div id="content">
 {if isset($oEinstellungenXML) && $oEinstellungenXML|count > 0}
     <form action="shoptemplate.php" method="post" enctype="multipart/form-data" id="form_settings">
@@ -224,6 +227,7 @@
     </form>
 {else}
     {include file='tpl_inc/shoptemplate_overview.tpl'}
+    {include file='tpl_inc/shoptemplate_upload.tpl'}
 {/if}
 </div>
 {include file='tpl_inc/footer.tpl'}

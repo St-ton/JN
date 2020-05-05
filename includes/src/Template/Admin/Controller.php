@@ -11,6 +11,7 @@ use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Overlay;
 use JTL\Helpers\Request;
+use JTL\Plugin\Admin\Installation\InstallationResponse;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
@@ -20,6 +21,7 @@ use JTL\Template\Model;
 use JTL\Template\TemplateService;
 use JTL\Template\TemplateServiceInterface;
 use JTL\Template\XMLReader;
+use stdClass;
 
 /**
  * Class Controller
@@ -69,7 +71,8 @@ class Controller
         JTLCacheInterface $cache,
         AlertServiceInterface $alertService,
         JTLSmarty $smarty
-    ) {
+    )
+    {
         $this->db           = $db;
         $this->cache        = $cache;
         $this->alertService = $alertService;
@@ -86,6 +89,13 @@ class Controller
             $valid                    = false;
         }
         $this->config = new Config($this->currentTemplateDir, $this->db);
+        if (!empty($_FILES['template-install-upload'])) {
+            $action = 'upload';
+            if (!$valid) {
+                $this->failResponse();
+                return;
+            }
+        }
         if (!$valid) {
             $this->displayOverview();
             return;
@@ -106,10 +116,38 @@ class Controller
                 $this->saveConfig();
                 $this->displayOverview();
                 break;
+            case 'upload':
+                $this->upload($_FILES['template-install-upload']);
+                break;
             default:
                 $this->displayOverview();
                 break;
         }
+    }
+
+    private function failResponse(): void
+    {
+        $response = new InstallationResponse();
+        $response->setStatus(InstallationResponse::STATUS_FAILED);
+        $response->setError(__('errorCSRF'));
+        die($response->toJson());
+    }
+
+    /**
+     * @param array $files
+     * @throws \SmartyException
+     */
+    private function upload(array $files): void
+    {
+        $extractor     = new Extractor();
+        $response      = $extractor->extractTemplate($_FILES['template-install-upload']['tmp_name']);
+        $lstng         = new Listing($this->db, new TemplateValidator($this->db));
+        $html          = new stdClass();
+        $html->id      = '#shoptemplate-overview';
+        $html->content = $this->smarty->assign('listingItems', $lstng->getAll())
+            ->fetch('tpl_inc/shoptemplate_overview.tpl');
+        $response->setHtml($html);
+        die($response->toJson());
     }
 
     /**

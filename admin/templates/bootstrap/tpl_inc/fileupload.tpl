@@ -121,6 +121,7 @@ $fileErrorMsg                  | false   | error message while uploading - autom
         {/if}
         {if $fileDefaultUploadSuccessEvent|default:true}
         $file.on('filebatchuploadsuccess', function (event, data) {
+            console.log('data@default:', data);
             if (data.response.status === 'OK') {
                 $fileSuccess.removeClass('d-none');
             } else {
@@ -130,6 +131,7 @@ $fileErrorMsg                  | false   | error message while uploading - autom
         {/if}
         {if $fileDefaultUploadErrorEvent|default:true}
         $file.on('fileuploaderror, fileerror', function (event, data, msg) {
+            console.log('data@defaultError:', data);
             $fileError.removeClass('d-none');
             $fileError.append('<p style="margin-top:20px">' + msg + '</p>')
         });

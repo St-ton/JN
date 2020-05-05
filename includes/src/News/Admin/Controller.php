@@ -115,7 +115,9 @@ final class Controller
             $newsItem->nAktiv        = $active;
             $newsItem->dErstellt     = (new DateTime())->format('Y-m-d H:i:s');
             $newsItem->dGueltigVon   = DateTime::createFromFormat('d.m.Y H:i', $dateValidFrom)->format('Y-m-d H:i:00');
-            $newsItem->cPreviewImage = $previewImage;
+            if ($previewImage !== '') {
+                $newsItem->cPreviewImage = $previewImage;
+            }
             if ($update === true) {
                 $revision = new Revision($this->db);
                 $revision->addRevision('news', $newsItemID, true);
@@ -222,13 +224,15 @@ final class Controller
             if (!\is_dir($dir) && !\mkdir(self::UPLOAD_DIR . $newsItemID) && !\is_dir($dir)) {
                 throw new Exception('Cannot create upload dir: ' . $dir);
             }
-            $oldImages = $this->getNewsImages($newsItemID, self::UPLOAD_DIR);
+            if ($previewImage !== '') {
+                $oldImages = $this->getNewsImages($newsItemID, self::UPLOAD_DIR);
 
-            $newsItem->cPreviewImage = $this->addPreviewImage($oldImages, $newsItemID);
-            $this->addImages($oldImages, $newsItemID);
-            $upd                = new stdClass();
-            $upd->cPreviewImage = $newsItem->cPreviewImage;
-            $this->db->update('tnews', 'kNews', $newsItemID, $upd);
+                $newsItem->cPreviewImage = $this->addPreviewImage($oldImages, $newsItemID);
+                $this->addImages($oldImages, $newsItemID);
+                $upd                = new stdClass();
+                $upd->cPreviewImage = $newsItem->cPreviewImage;
+                $this->db->update('tnews', 'kNews', $newsItemID, $upd);
+            }
             $this->db->delete('tnewskategorienews', 'kNews', $newsItemID);
             foreach ($newsCategoryIDs as $categoryID) {
                 $ins                 = new stdClass();

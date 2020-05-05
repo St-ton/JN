@@ -476,7 +476,7 @@ class BoxService implements BoxServiceInterface
             }
             $result[] = $box;
         }
-        $result = sort($result, static function (BoxInterface $first, BoxInterface $second) use ($pageType) {
+        $result      = sort($result, static function (BoxInterface $first, BoxInterface $second) use ($pageType) {
             return $first->getSort($pageType) <=> $second->getSort($pageType);
         });
         $this->boxes = group($result, static function (BoxInterface $e) {

@@ -60,7 +60,7 @@ if (isset($_SESSION['plugin_msg'])) {
 } elseif (mb_strlen(Request::verifyGPDataString('h')) > 0) {
     $notice = Text::filterXSS(base64_decode(Request::verifyGPDataString('h')));
 }
-if (!empty($_FILES['plugin-install-upload'])) {
+if (!empty($_FILES['plugin-install-upload']) && Form::validateToken()) {
     $response       = $extractor->extractPlugin($_FILES['plugin-install-upload']['tmp_name']);
     $pluginUploaded = true;
 }

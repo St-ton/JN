@@ -71,8 +71,7 @@ class Controller
         JTLCacheInterface $cache,
         AlertServiceInterface $alertService,
         JTLSmarty $smarty
-    )
-    {
+    ) {
         $this->db           = $db;
         $this->cache        = $cache;
         $this->alertService = $alertService;

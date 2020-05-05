@@ -160,7 +160,7 @@
                                     fileInitialPreviewConfig="[
                                             {if !empty($oNews->getPreviewImage())}
                                             {
-                                                caption: '{__('preview')}',
+                                                caption: '$#preview#$',
                                                 width:   '120px'
                                             }
                                             {/if}

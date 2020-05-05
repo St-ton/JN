@@ -225,7 +225,7 @@ final class Controller
                 throw new Exception('Cannot create upload dir: ' . $dir);
             }
             if ($previewImage !== '') {
-                $oldImages = $this->getNewsImages($newsItemID, self::UPLOAD_DIR);
+                $oldImages = $this->getNewsImages($newsItemID, self::UPLOAD_DIR, false);
 
                 $newsItem->cPreviewImage = $this->addPreviewImage($oldImages, $newsItemID);
                 $this->addImages($oldImages, $newsItemID);
@@ -688,11 +688,12 @@ final class Controller
     /**
      * @param int    $itemID
      * @param string $uploadDirName
+     * @param bool   $excludePreview
      * @return array
      */
-    public function getNewsImages(int $itemID, string $uploadDirName): array
+    public function getNewsImages(int $itemID, string $uploadDirName, bool $excludePreview = true): array
     {
-        return $this->getImages(\PFAD_NEWSBILDER, $itemID, $uploadDirName);
+        return $this->getImages(\PFAD_NEWSBILDER, $itemID, $uploadDirName, $excludePreview);
     }
 
     /**
@@ -709,9 +710,10 @@ final class Controller
      * @param string $base
      * @param int    $itemID
      * @param string $uploadDirName
+     * @param bool   $excludePreview
      * @return array
      */
-    private function getImages(string $base, int $itemID, string $uploadDirName): array
+    private function getImages(string $base, int $itemID, string $uploadDirName, bool $excludePreview = true): array
     {
         $images = [];
         if ($this->sanitizeDir('fake', $itemID, $uploadDirName) === false) {
@@ -721,11 +723,14 @@ final class Controller
         $iterator     = new DirectoryIterator($uploadDirName . $itemID);
         foreach ($iterator as $fileinfo) {
             $fileName = $fileinfo->getFilename();
-            if ($fileinfo->isDot()
+            if (($excludePreview
+                    && ($fileName === 'preview.png'
+                        || $fileName === 'preview.jpeg'
+                        || $fileName === 'preview.jpg'
+                    )
+                )
                 || !$fileinfo->isFile()
-                || $fileName === 'preview.png'
-                || $fileName === 'preview.jpeg'
-                || $fileName === 'preview.jpg'
+                || $fileinfo->isDot()
             ) {
                 continue;
             }

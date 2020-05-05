@@ -433,6 +433,9 @@ function pruefeVersandkostenfreiKuponVorgemerkt(): array
         if (angabenKorrekt($errors)) {
             Kupon::acceptCoupon($_SESSION['oVersandfreiKupon']);
             Shop::Smarty()->assign('KuponMoeglich', Kupon::couponsAvailable());
+        } else {
+            Frontend::getCart()->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON, true);
+            Kupon::mapCouponErrorMessage($errors['ungueltig']);
         }
     }
 

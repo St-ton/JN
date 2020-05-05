@@ -1202,7 +1202,12 @@ class Kupon
                 break;
         }
         if ($createAlert) {
-            Shop::Container()->getAlertService()->addAlert(Alert::TYPE_DANGER, $errorMessage, 'couponError');
+            Shop::Container()->getAlertService()->addAlert(
+                Alert::TYPE_DANGER,
+                $errorMessage,
+                'couponError',
+                ['saveInSession' => true]
+            );
         }
 
         return $errorMessage;

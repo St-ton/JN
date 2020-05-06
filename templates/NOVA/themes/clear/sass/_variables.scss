@@ -84,7 +84,7 @@ $container-max-widths: (
 // font
 
 $line-height-base:                  1.5 !default;
-$nova-theme-path:                   "..";
+$nova-theme-path:                   ".." !default;
 $fa-font-path:                      "../base/fontawesome/webfonts" !default;
 $font-family-sans-serif:            'Open Sans', sans-serif !default;
 $font-accent:                       Montserrat, sans-serif !default;

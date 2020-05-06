@@ -491,14 +491,14 @@ final class Installer
      */
     public function syncPluginUpdate(int $pluginID): int
     {
-        $oldPluginID = $this->plugin->getID();
-        $res         = $this->uninstaller->uninstall($oldPluginID, true, $pluginID);
+        $newPluginID = $this->plugin->getID();
+        $res         = $this->uninstaller->uninstall($newPluginID, true, $pluginID);
         if ($res !== InstallCode::OK) {
             $this->uninstaller->uninstall($pluginID);
 
             return InstallCode::SQL_ERROR;
         }
-        $upd = (object)['kPlugin' => $oldPluginID];
+        $upd = (object)['kPlugin' => $newPluginID];
         $this->db->update('tplugin', 'kPlugin', $pluginID, $upd);
         $this->db->update('tpluginhook', 'kPlugin', $pluginID, $upd);
         $this->db->update('tpluginadminmenu', 'kPlugin', $pluginID, $upd);
@@ -511,47 +511,97 @@ final class Installer
         $this->db->update('texportformat', 'kPlugin', $pluginID, $upd);
         $this->db->update('topcportlet', 'kPlugin', $pluginID, $upd);
         $this->db->update('topcblueprint', 'kPlugin', $pluginID, $upd);
-        $this->updateLangVars($oldPluginID, $pluginID);
-        $this->updateConfig($oldPluginID, $pluginID);
-        $this->db->update(
-            'tboxvorlage',
-            ['kCustomID', 'eTyp'],
-            [$pluginID, 'plugin'],
-            (object)['kCustomID' => $oldPluginID]
-        );
-        $this->updateMailTemplates($oldPluginID, $pluginID);
+        $this->updateLangVars($newPluginID, $pluginID);
+        $this->updateConfig($newPluginID, $pluginID);
+
+        $this->updateMailTemplates($newPluginID, $pluginID);
         $this->cleanUpMailTemplates();
-        $this->db->update('tlink', 'kPlugin', $pluginID, (object)['kPlugin' => $oldPluginID]);
-        // tboxen
+        $this->db->update('tlink', 'kPlugin', $pluginID, (object)['kPlugin' => $newPluginID]);
         // Ausnahme: Gibt es noch eine Boxenvorlage in der Pluginversion?
         // Falls nein -> lösche tboxen mit dem entsprechenden kPlugin
-        $data = $this->db->select('tboxvorlage', 'kCustomID', $oldPluginID, 'eTyp', 'plugin');
-        if (isset($data->kBoxvorlage) && (int)$data->kBoxvorlage > 0) {
-            $upd              = new stdClass();
-            $upd->kBoxvorlage = $data->kBoxvorlage;
-            $this->db->update('tboxen', 'kCustomID', $oldPluginID, $upd);
-        } else {
-            $this->db->delete('tboxen', 'kCustomID', $oldPluginID);
-        }
-        $upd = (object)['kPlugin' => $oldPluginID];
+        $this->updateBoxes($newPluginID, $pluginID);
+
         $this->db->update('tcheckboxfunktion', 'kPlugin', $pluginID, $upd);
         $this->db->update('tspezialseite', 'kPlugin', $pluginID, $upd);
-        $this->updatePaymentMethods($oldPluginID, $pluginID);
+        $this->updatePaymentMethods($newPluginID, $pluginID);
 
         return InstallCode::OK;
     }
 
     /**
-     * @param int $oldPluginID
+     * @param int $newPluginID
      * @param int $pluginID
      */
-    private function updateLangVars(int $oldPluginID, int $pluginID): void
+    private function updateBoxes(int $newPluginID, int $pluginID): void
+    {
+        $newBoxTemplates = $this->db->queryPrepared(
+            "SELECT *
+                FROM tboxvorlage
+                WHERE kCustomID = :pid
+                AND (eTyp = 'plugin' OR eTyp = 'extension')",
+            ['pid' => $newPluginID],
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+        $oldBoxTemplates = $this->db->queryPrepared(
+            "SELECT *
+                FROM tboxvorlage
+                WHERE kCustomID = :pid
+                AND (eTyp = 'plugin' OR eTyp = 'extension')",
+            ['pid' => $pluginID],
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+        foreach ($newBoxTemplates as $template) {
+            foreach ($oldBoxTemplates as $newBoxTemplate) {
+                if ($template->cTemplate === $newBoxTemplate->cTemplate) {
+                    $this->db->queryPrepared(
+                        'UPDATE tboxen
+                            SET kBoxvorlage = :bid, kCustomID = :pid
+                            WHERE kBoxvorlage = :oid',
+                        [
+                            'bid' => $newBoxTemplate->kBoxvorlage,
+                            'pid' => $newPluginID,
+                            'oid' => $template->kBoxvorlage
+                        ],
+                        ReturnType::DEFAULT
+                    );
+                    break;
+                }
+            }
+        }
+        $this->db->delete('tboxvorlage', ['kCustomID', 'eTyp'], [$newPluginID, 'plugin']);
+        $this->db->delete('tboxvorlage', ['kCustomID', 'eTyp'], [$newPluginID, 'extension']);
+        $this->db->update(
+            'tboxvorlage',
+            ['kCustomID', 'eTyp'],
+            [$pluginID, 'plugin'],
+            (object)['kCustomID' => $newPluginID]
+        );
+        $this->db->update(
+            'tboxvorlage',
+            ['kCustomID', 'eTyp'],
+            [$pluginID, 'extension'],
+            (object)['kCustomID' => $newPluginID]
+        );
+        $this->db->queryPrepared(
+            'DELETE FROM tboxen
+                WHERE kCustomID = :pid 
+                AND kBoxvorlage NOT IN (SELECT kBoxvorlage FROM tboxvorlage WHERE kCustomID = :pid)',
+            ['pid' => $newPluginID],
+            ReturnType::DEFAULT
+        );
+    }
+
+    /**
+     * @param int $newPluginID
+     * @param int $pluginID
+     */
+    private function updateLangVars(int $newPluginID, int $pluginID): void
     {
         $this->db->update(
             'tpluginsprachvariablecustomsprache',
             'kPlugin',
             $pluginID,
-            (object)['kPlugin' => $oldPluginID]
+            (object)['kPlugin' => $newPluginID]
         );
         $customLangVars = $this->db->queryPrepared(
             'SELECT DISTINCT tpluginsprachvariable.kPluginSprachvariable AS newID,
@@ -560,14 +610,14 @@ final class Installer
                 JOIN tpluginsprachvariable
                     ON tpluginsprachvariable.cName =  tpluginsprachvariablecustomsprache.cSprachvariable
                 WHERE tpluginsprachvariablecustomsprache.kPlugin = :pid',
-            ['pid' => $oldPluginID],
+            ['pid' => $newPluginID],
             ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($customLangVars as $langVar) {
             $this->db->update(
                 'tpluginsprachvariablecustomsprache',
                 ['kPlugin', 'kPluginSprachvariable'],
-                [$oldPluginID, $langVar->oldID],
+                [$newPluginID, $langVar->oldID],
                 (object)['kPluginSprachvariable' => $langVar->newID]
             );
         }

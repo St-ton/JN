@@ -104,7 +104,8 @@
     "autoload": {
         "psr-4": {
             "JTL\\": ["src/"],
-            "Plugin\\": ["../plugins/"]
+            "Plugin\\": ["../plugins/"],
+            "Template\\": ["../templates/"]
         }
     },
     "autoload-dev": {

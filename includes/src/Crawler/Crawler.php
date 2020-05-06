@@ -151,6 +151,4 @@ class Crawler
     {
         $this->link = $link;
     }
-
-
 }

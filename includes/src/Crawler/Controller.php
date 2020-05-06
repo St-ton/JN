@@ -122,6 +122,7 @@ class Controller
                 $item
             );
         }
+
         return $this->db->insert(
             'tbesucherbot',
             $item

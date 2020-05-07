@@ -20504,6 +20504,7 @@ aside .last-seen-link {
   height: 100%;
   overflow: hidden;
   left: 0;
+  top: 0;
 }
 .square-image .inner a {
   width: 100%;

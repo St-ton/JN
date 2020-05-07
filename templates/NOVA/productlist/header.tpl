@@ -102,7 +102,6 @@
                                                 alt=$subCategory->getName()}
                                         </div>
                                     </div>
-
                                 {/block}
                             {/if}
                             {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'B'}

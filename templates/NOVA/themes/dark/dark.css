@@ -19947,10 +19947,6 @@ aside .last-seen-link {
   bottom: 0;
 }
 
-.carousel:not(#gallery) .square-image img {
-  width: 100%;
-}
-
 .label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) {
   position: relative;
 }

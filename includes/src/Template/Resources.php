@@ -79,23 +79,23 @@ class Resources
             return;
         }
         $this->initialized = true;
-        $tplGroups         = [
+        $groups            = [
             'plugin_css'     => [],
             'plugin_js_head' => [],
             'plugin_js_body' => []
         ];
         foreach ($this->xmlList as $xml) {
-            $currentBaseDir = (string)$xml->dir;
             if ($xml === null) {
                 continue;
             }
-            $cssSource = $xml->Minify->CSS ?? [];
-            $jsSource  = $xml->Minify->JS ?? [];
+            $currentBaseDir = (string)$xml->dir;
+            $cssSource      = $xml->Minify->CSS ?? [];
+            $jsSource       = $xml->Minify->JS ?? [];
             foreach ($cssSource as $css) {
                 /** @var SimpleXMLElement $css */
                 $name = (string)$css->attributes()->Name;
-                if (!isset($tplGroups[$name])) {
-                    $tplGroups[$name] = [];
+                if (!isset($groups[$name])) {
+                    $groups[$name] = [];
                 }
                 /** @var SimpleXMLElement $cssFile */
                 foreach ($css->File as $cssFile) {
@@ -105,21 +105,21 @@ class Resources
                         && (empty($cssFile->attributes()->DependsOnSetting)
                             || $this->checkCondition($cssFile) === true)
                     ) {
-                        $_file          = \PFAD_TEMPLATES . $currentBaseDir . '/' . (string)$cssFile->attributes()->Path;
-                        $customFilePath = \str_replace('.css', '_custom.css', $filePath);
-                        if (\file_exists($customFilePath)) { //add _custom file if existing
-                            $_file              = \str_replace(
+                        $_file      = \PFAD_TEMPLATES . $currentBaseDir . '/' . (string)$cssFile->attributes()->Path;
+                        $customFile = \str_replace('.css', '_custom.css', $filePath);
+                        if (\file_exists($customFile)) { //add _custom file if existing
+                            $_file           = \str_replace(
                                 '.css',
                                 '_custom.css',
                                 \PFAD_TEMPLATES . $currentBaseDir . '/' . (string)$cssFile->attributes()->Path
                             );
-                            $tplGroups[$name][] = [
+                            $groups[$name][] = [
                                 'idx' => \str_replace('.css', '_custom.css', (string)$cssFile->attributes()->Path),
                                 'abs' => \realpath(\PFAD_ROOT . $_file),
                                 'rel' => $_file
                             ];
                         } else { //otherwise add normal file
-                            $tplGroups[$name][] = [
+                            $groups[$name][] = [
                                 'idx' => $file,
                                 'abs' => \realpath(\PFAD_ROOT . $_file),
                                 'rel' => $_file
@@ -131,8 +131,8 @@ class Resources
             foreach ($jsSource as $js) {
                 /** @var SimpleXMLElement $js */
                 $name = (string)$js->attributes()->Name;
-                if (!isset($tplGroups[$name])) {
-                    $tplGroups[$name] = [];
+                if (!isset($groups[$name])) {
+                    $groups[$name] = [];
                 }
                 foreach ($js->File as $jsFile) {
                     if (!empty($jsFile->attributes()->DependsOnSetting) && $this->checkCondition($jsFile) !== true) {
@@ -149,32 +149,32 @@ class Resources
                         && (string)$jsFile->attributes()->override === 'true'
                     ) {
                         $idxToOverride = (string)$jsFile->attributes()->Path;
-                        $max           = \count($tplGroups[$name]);
+                        $max           = \count($groups[$name]);
                         for ($i = 0; $i < $max; $i++) {
-                            if ($tplGroups[$name][$i]['idx'] === $idxToOverride) {
-                                $tplGroups[$name][$i] = $newEntry;
-                                $found                = true;
+                            if ($groups[$name][$i]['idx'] === $idxToOverride) {
+                                $groups[$name][$i] = $newEntry;
+                                $found             = true;
                                 break;
                             }
                         }
                     }
                     if ($found === false) {
-                        $tplGroups[$name][] = $newEntry;
+                        $groups[$name][] = $newEntry;
                     }
                 }
             }
         }
         $pluginRes = $this->getPluginResources();
         foreach ($pluginRes['css'] as $_cssRes) {
-            $customFilePath = \str_replace('.css', '_custom.css', $_cssRes->abs);
-            if (\file_exists($customFilePath)) {
-                $tplGroups['plugin_css'][] = [
+            $customFile = \str_replace('.css', '_custom.css', $_cssRes->abs);
+            if (\file_exists($customFile)) {
+                $groups['plugin_css'][] = [
                     'idx' => $_cssRes->cName,
-                    'abs' => $customFilePath,
+                    'abs' => $customFile,
                     'rel' => \str_replace('.css', '_custom.css', $_cssRes->rel)
                 ];
             } else {
-                $tplGroups['plugin_css'][] = [
+                $groups['plugin_css'][] = [
                     'idx' => $_cssRes->cName,
                     'abs' => $_cssRes->abs,
                     'rel' => $_cssRes->rel
@@ -182,14 +182,14 @@ class Resources
             }
         }
         foreach ($pluginRes['js_head'] as $_jshRes) {
-            $tplGroups['plugin_js_head'][] = [
+            $groups['plugin_js_head'][] = [
                 'idx' => $_jshRes->cName,
                 'abs' => $_jshRes->abs,
                 'rel' => $_jshRes->rel
             ];
         }
         foreach ($pluginRes['js_body'] as $_jsbRes) {
-            $tplGroups['plugin_js_body'][] = [
+            $groups['plugin_js_body'][] = [
                 'idx' => $_jsbRes->cName,
                 'abs' => $_jsbRes->abs,
                 'rel' => $_jsbRes->rel
@@ -197,11 +197,11 @@ class Resources
         }
         $cacheTags = [\CACHING_GROUP_OPTION, \CACHING_GROUP_TEMPLATE, \CACHING_GROUP_PLUGIN];
         \executeHook(\HOOK_CSS_JS_LIST, [
-            'groups'     => &$tplGroups,
+            'groups'     => &$groups,
             'cache_tags' => &$cacheTags
         ]);
         $this->cacheTags = $cacheTags;
-        $this->groups    = $tplGroups;
+        $this->groups    = $groups;
     }
 
     /**

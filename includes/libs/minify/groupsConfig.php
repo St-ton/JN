@@ -16,4 +16,4 @@ if ($isAdmin) {
 $resources = Shop::Container()->get(TemplateServiceInterface::class)->getActiveTemplate()->getResources();
 $resources->init();
 
-return $resources->getMinifyArray();
+return $resources->getMinifyArray(true);

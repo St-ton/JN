@@ -95,12 +95,11 @@
                         {link href=$subCategory->getURL()}
                             {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'Y'}
                                 {block name='productlist-header-subcategories-image'}
-                                    <div class="square square-image">
+                                    <div class="square square-image mb-2 d-none d-md-block">
                                         <div class="inner">
                                             {image fluid=true lazy=true webp=true
                                                 src=$subCategory->getImage()
-                                                alt=$subCategory->getName()
-                                                class="mb-2 d-none d-md-block"}
+                                                alt=$subCategory->getName()}
                                         </div>
                                     </div>
 

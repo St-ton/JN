@@ -12,7 +12,11 @@ use JTL\phpQuery\phpQuery;
 use JTL\Plugin\Helper;
 use JTL\Shop;
 use JTL\Helpers\Template;
+use JTL\Template\BootChecker;
+use JTL\Template\BootstrapperInterface;
+use JTL\Template\Model;
 use JTL\Template\TemplateServiceInterface;
+use RuntimeException;
 
 /**
  * Class JTLSmarty
@@ -62,9 +66,9 @@ class JTLSmarty extends \SmartyBC
         parent::__construct();
         \Smarty::$_CHARSET = \JTL_CHARSET;
         $this->setErrorReporting(\SMARTY_LOG_LEVEL)
-             ->setForceCompile(\SMARTY_FORCE_COMPILE)
-             ->setDebugging(\SMARTY_DEBUG_CONSOLE)
-             ->setUseSubDirs(\SMARTY_USE_SUB_DIRS);
+            ->setForceCompile(\SMARTY_FORCE_COMPILE)
+            ->setDebugging(\SMARTY_DEBUG_CONSOLE)
+            ->setUseSubDirs(\SMARTY_USE_SUB_DIRS);
         $this->context = $context;
         $this->config  = Shop::getSettings([\CONF_TEMPLATE, \CONF_CACHING, \CONF_GLOBAL]);
 
@@ -87,12 +91,14 @@ class JTLSmarty extends \SmartyBC
     {
         $parent = null;
         if ($this->context !== ContextType::BACKEND) {
-            $model      = Shop::Container()->get(TemplateServiceInterface::class)->getActiveTemplate();
+            $container = Shop::Container();
+            $model     = $container->get(TemplateServiceInterface::class)->getActiveTemplate();
+            /** @var Model $model */
             $tplDir     = $model->getDir();
             $parent     = $model->getParent();
             $compileDir = \PFAD_ROOT . \PFAD_COMPILEDIR . $tplDir . '/';
-            if (!\file_exists($compileDir)) {
-                \mkdir($compileDir);
+            if (!\is_dir($compileDir) && !\mkdir($compileDir) && !\is_dir($compileDir)) {
+                throw new RuntimeException(\sprintf('Directory "%s" could not be created', $compileDir));
             }
             $templatePaths[$this->context] = \PFAD_ROOT . \PFAD_TEMPLATES . $tplDir . '/';
             foreach (Helper::getTemplatePaths() as $moduleId => $path) {
@@ -100,28 +106,32 @@ class JTLSmarty extends \SmartyBC
                 $templatePaths[$templateKey] = $path;
             }
             $this->setTemplateDir($templatePaths)
-                 ->setCompileDir($compileDir)
-                 ->setCacheDir(\PFAD_ROOT . \PFAD_COMPILEDIR . $tplDir . '/' . 'page_cache/')
-                 ->setPluginsDir(\SMARTY_PLUGINS_DIR);
-
+                ->setCompileDir($compileDir)
+                ->setCacheDir(\PFAD_ROOT . \PFAD_COMPILEDIR . $tplDir . '/' . 'page_cache/')
+                ->setPluginsDir(\SMARTY_PLUGINS_DIR);
             if ($parent !== null) {
                 self::$isChildTemplate = true;
                 $this->addTemplateDir(\PFAD_ROOT . \PFAD_TEMPLATES . $parent, $parent . '/')
-                     ->assign('parent_template_path', \PFAD_ROOT . \PFAD_TEMPLATES . $parent . '/')
-                     ->assign('parentTemplateDir', \PFAD_TEMPLATES . $parent . '/');
+                    ->assign('parent_template_path', \PFAD_ROOT . \PFAD_TEMPLATES . $parent . '/')
+                    ->assign('parentTemplateDir', \PFAD_TEMPLATES . $parent . '/');
+            }
+            if (($bootstrapper = BootChecker::bootstrap($tplDir)) !== null) {
+                $bootstrapper->setSmarty($this);
+                $bootstrapper->setTemplate($model);
+                $bootstrapper->boot();
             }
         } else {
             $tplDir     = 'bootstrap';
             $compileDir = \PFAD_ROOT . \PFAD_ADMIN . \PFAD_COMPILEDIR;
-            if (!\file_exists($compileDir)) {
-                \mkdir($compileDir);
+            if (!\is_dir($compileDir) && !\mkdir($compileDir) && !\is_dir($compileDir)) {
+                throw new RuntimeException(\sprintf('Directory "%s" could not be created', $compileDir));
             }
             $this->setCaching(false)
-                 ->setDebugging(\SMARTY_DEBUG_CONSOLE)
-                 ->setTemplateDir([$this->context => \PFAD_ROOT . \PFAD_ADMIN . \PFAD_TEMPLATES . $tplDir])
-                 ->setCompileDir($compileDir)
-                 ->setConfigDir(\PFAD_ROOT . \PFAD_ADMIN . \PFAD_TEMPLATES . $tplDir . '/lang/')
-                 ->setPluginsDir(\SMARTY_PLUGINS_DIR);
+                ->setDebugging(\SMARTY_DEBUG_CONSOLE)
+                ->setTemplateDir([$this->context => \PFAD_ROOT . \PFAD_ADMIN . \PFAD_TEMPLATES . $tplDir])
+                ->setCompileDir($compileDir)
+                ->setConfigDir(\PFAD_ROOT . \PFAD_ADMIN . \PFAD_TEMPLATES . $tplDir . '/lang/')
+                ->setPluginsDir(\SMARTY_PLUGINS_DIR);
         }
         $this->templateDir = $tplDir;
 
@@ -136,13 +146,13 @@ class JTLSmarty extends \SmartyBC
     {
         $pluginCollection = new PluginCollection($this->config, LanguageHelper::getInstance());
         $this->registerPlugin(self::PLUGIN_FUNCTION, 'lang', [$pluginCollection, 'translate'])
-             ->registerPlugin(self::PLUGIN_MODIFIER, 'replace_delim', [$pluginCollection, 'replaceDelimiters'])
-             ->registerPlugin(self::PLUGIN_MODIFIER, 'count_characters', [$pluginCollection, 'countCharacters'])
-             ->registerPlugin(self::PLUGIN_MODIFIER, 'string_format', [$pluginCollection, 'stringFormat'])
-             ->registerPlugin(self::PLUGIN_MODIFIER, 'string_date_format', [$pluginCollection, 'dateFormat'])
-             ->registerPlugin(self::PLUGIN_MODIFIERCOMPILER, 'default', [$pluginCollection, 'compilerModifierDefault'])
-             ->registerPlugin(self::PLUGIN_MODIFIER, 'truncate', [$pluginCollection, 'truncate'])
-             ->registerPlugin(self::PLUGIN_BLOCK, 'inline_script', [$pluginCollection, 'inlineScript']);
+            ->registerPlugin(self::PLUGIN_MODIFIER, 'replace_delim', [$pluginCollection, 'replaceDelimiters'])
+            ->registerPlugin(self::PLUGIN_MODIFIER, 'count_characters', [$pluginCollection, 'countCharacters'])
+            ->registerPlugin(self::PLUGIN_MODIFIER, 'string_format', [$pluginCollection, 'stringFormat'])
+            ->registerPlugin(self::PLUGIN_MODIFIER, 'string_date_format', [$pluginCollection, 'dateFormat'])
+            ->registerPlugin(self::PLUGIN_MODIFIERCOMPILER, 'default', [$pluginCollection, 'compilerModifierDefault'])
+            ->registerPlugin(self::PLUGIN_MODIFIER, 'truncate', [$pluginCollection, 'truncate'])
+            ->registerPlugin(self::PLUGIN_BLOCK, 'inline_script', [$pluginCollection, 'inlineScript']);
 
         if ($this->context !== ContextType::BACKEND) {
             $this->cache_lifetime = 86400;
@@ -174,8 +184,8 @@ class JTLSmarty extends \SmartyBC
         $config = $config ?? Shop::getSettings([\CONF_CACHING]);
 
         return $this->setCaching(self::CACHING_OFF)
-                    ->setCompileCheck(!(isset($config['caching']['compile_check'])
-                        && $config['caching']['compile_check'] === 'N'));
+            ->setCompileCheck(!(isset($config['caching']['compile_check'])
+                && $config['caching']['compile_check'] === 'N'));
     }
 
     /**
@@ -230,7 +240,7 @@ class JTLSmarty extends \SmartyBC
      * @param null|string $template
      * @param null|string $cacheID
      * @param null|string $compileID
-     * @param null $parent
+     * @param null        $parent
      * @return bool
      */
     public function isCached($template = null, $cacheID = null, $compileID = null, $parent = null): bool
@@ -323,14 +333,14 @@ class JTLSmarty extends \SmartyBC
     /**
      * fetches a rendered Smarty template
      *
-     * @param  string $template   the resource handle of the template file or template object
-     * @param  mixed  $cacheID   cache id to be used with this template
-     * @param  mixed  $compileID compile id to be used with this template
-     * @param  object $parent     next higher level of Smarty variables
+     * @param string $template the resource handle of the template file or template object
+     * @param mixed  $cacheID cache id to be used with this template
+     * @param mixed  $compileID compile id to be used with this template
+     * @param object $parent next higher level of Smarty variables
      *
-     * @throws \Exception
-     * @throws \SmartyException
      * @return string rendered template output
+     * @throws \SmartyException
+     * @throws \Exception
      */
     public function fetch($template = null, $cacheID = null, $compileID = null, $parent = null): string
     {
@@ -349,10 +359,10 @@ class JTLSmarty extends \SmartyBC
     /**
      * displays a Smarty template
      *
-     * @param string $template   the resource handle of the template file or template object
-     * @param mixed  $cacheID   cache id to be used with this template
+     * @param string $template the resource handle of the template file or template object
+     * @param mixed  $cacheID cache id to be used with this template
      * @param mixed  $compileID compile id to be used with this template
-     * @param object $parent     next higher level of Smarty variables
+     * @param object $parent next higher level of Smarty variables
      * @throws \SmartyException
      */
     public function display($template = null, $cacheID = null, $compileID = null, $parent = null)

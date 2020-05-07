@@ -1,13 +1,15 @@
 <?php
 
-namespace Nova;
+namespace Template\NOVA;
 
 use Illuminate\Support\Collection;
+use JTL\Cache\JTLCacheInterface;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\CheckBox;
+use JTL\DB\DbInterface;
 use JTL\Filter\Config;
 use JTL\Filter\ProductFilter;
 use JTL\Helpers\Category;
@@ -24,10 +26,31 @@ use JTL\Staat;
 
 /**
  * Class Plugins
- * @package Nova
+ * @package Template\NOVA
  */
 class Plugins
 {
+    /**
+     * @var DbInterface
+     */
+    private $db;
+
+    /**
+     * @var JTLCacheInterface
+     */
+    private $cache;
+
+    /**
+     * Plugins constructor.
+     * @param DbInterface       $db
+     * @param JTLCacheInterface $cache
+     */
+    public function __construct(DbInterface $db, JTLCacheInterface $cache)
+    {
+        $this->db    = $db;
+        $this->cache = $cache;
+    }
+
     /**
      * @param array                         $params
      * @param \Smarty_Internal_TemplateBase $smarty
@@ -79,8 +102,8 @@ class Plugins
         } else {
             $products = (new ProductFilter(
                 Config::getDefault(),
-                Shop::Container()->getDB(),
-                Shop::Container()->getCache()
+                $this->db,
+                $this->cache
             ))
                 ->initStates($params)
                 ->generateSearchResults(null, true, $limit)
@@ -284,13 +307,13 @@ class Plugins
         $surcharge->cPreisInklAufpreis = '';
 
         if ((float)$params['fAufpreisNetto'] != 0) {
-            $fAufpreisNetto         = (float)$params['fAufpreisNetto'];
-            $fVKNetto               = (float)$params['fVKNetto'];
-            $kSteuerklasse          = (int)$params['kSteuerklasse'];
-            $fVPEWert               = (float)$params['fVPEWert'];
-            $cVPEEinheit            = $params['cVPEEinheit'];
+            $fAufpreisNetto = (float)$params['fAufpreisNetto'];
+            $fVKNetto       = (float)$params['fVKNetto'];
+            $kSteuerklasse  = (int)$params['kSteuerklasse'];
+            $fVPEWert       = (float)$params['fVPEWert'];
+            $cVPEEinheit    = $params['cVPEEinheit'];
             $funcAttributes = $params['FunktionsAttribute'];
-            $precision           = (isset($funcAttributes[\FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT])
+            $precision      = (isset($funcAttributes[\FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT])
                 && (int)$funcAttributes[\FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT] > 0)
                 ? (int)$funcAttributes[\FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]
                 : 2;
@@ -304,17 +327,17 @@ class Plugins
 
                 if ($fVPEWert > 0) {
                     $surcharge->cPreisVPEWertAufpreis     = Preise::getLocalizedPriceString(
-                        $fAufpreisNetto / $fVPEWert,
-                        Frontend::getCurrency()->getCode(),
-                        true,
-                        $precision
-                    ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
+                            $fAufpreisNetto / $fVPEWert,
+                            Frontend::getCurrency()->getCode(),
+                            true,
+                            $precision
+                        ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
                     $surcharge->cPreisVPEWertInklAufpreis = Preise::getLocalizedPriceString(
-                        ($fAufpreisNetto + $fVKNetto) / $fVPEWert,
-                        Frontend::getCurrency()->getCode(),
-                        true,
-                        $precision
-                    ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
+                            ($fAufpreisNetto + $fVKNetto) / $fVPEWert,
+                            Frontend::getCurrency()->getCode(),
+                            true,
+                            $precision
+                        ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
 
                     $surcharge->cAufpreisLocalized = $surcharge->cAufpreisLocalized . ', ' .
                         $surcharge->cPreisVPEWertAufpreis;
@@ -334,20 +357,20 @@ class Plugins
 
                 if ($fVPEWert > 0) {
                     $surcharge->cPreisVPEWertAufpreis     = Preise::getLocalizedPriceString(
-                        Tax::getGross($fAufpreisNetto / $fVPEWert, $_SESSION['Steuersatz'][$kSteuerklasse]),
-                        Frontend::getCurrency()->getCode(),
-                        true,
-                        $precision
-                    ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
+                            Tax::getGross($fAufpreisNetto / $fVPEWert, $_SESSION['Steuersatz'][$kSteuerklasse]),
+                            Frontend::getCurrency()->getCode(),
+                            true,
+                            $precision
+                        ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
                     $surcharge->cPreisVPEWertInklAufpreis = Preise::getLocalizedPriceString(
-                        Tax::getGross(
-                            ($fAufpreisNetto + $fVKNetto) / $fVPEWert,
-                            $_SESSION['Steuersatz'][$kSteuerklasse]
-                        ),
-                        Frontend::getCurrency()->getCode(),
-                        true,
-                        $precision
-                    ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
+                            Tax::getGross(
+                                ($fAufpreisNetto + $fVKNetto) / $fVPEWert,
+                                $_SESSION['Steuersatz'][$kSteuerklasse]
+                            ),
+                            Frontend::getCurrency()->getCode(),
+                            true,
+                            $precision
+                        ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
 
                     $surcharge->cAufpreisLocalized = $surcharge->cAufpreisLocalized .
                         ', ' . $surcharge->cPreisVPEWertAufpreis;
@@ -582,8 +605,8 @@ class Plugins
     public function getCMSContent($params, $smarty)
     {
         if (isset($params['kLink']) && (int)$params['kLink'] > 0) {
-            $linkID   = (int)$params['kLink'];
-            $link   = Shop::Container()->getLinkService()->getLinkByID($linkID);
+            $linkID  = (int)$params['kLink'];
+            $link    = Shop::Container()->getLinkService()->getLinkByID($linkID);
             $content = $link !== null ? $link->getContent() : null;
             if (isset($params['assign'])) {
                 $smarty->assign($params['assign'], $content);

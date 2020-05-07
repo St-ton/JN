@@ -16,6 +16,7 @@ use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use JTL\Template\Admin\Validation\TemplateValidator;
+use JTL\Template\BootChecker;
 use JTL\Template\Config;
 use JTL\Template\Model;
 use JTL\Template\TemplateService;
@@ -138,8 +139,14 @@ class Controller
      */
     private function upload(array $files): void
     {
-        $extractor     = new Extractor();
-        $response      = $extractor->extractTemplate($_FILES['template-install-upload']['tmp_name']);
+        $extractor = new Extractor();
+        $response  = $extractor->extractTemplate($files['tmp_name']);
+        if ($response->getStatus() === InstallationResponse::STATUS_OK
+            && $response->getDirName()
+            && ($bootstrapper = BootChecker::bootstrap($response->getDirName())) !== null
+        ) {
+            $bootstrapper->installed();
+        }
         $lstng         = new Listing($this->db, new TemplateValidator($this->db));
         $html          = new stdClass();
         $html->id      = '#shoptemplate-overview';
@@ -189,6 +196,7 @@ class Controller
                 : (string)$parentConfig->ShopVersion;
         }
         $model->setVersion($version);
+        $model->setBootstrap((int)\file_exists(\PFAD_ROOT . \PFAD_TEMPLATES . $dir . '/Bootstrap.php'));
         $save = $model->save();
         if ($save === true) {
             if (!$dh = \opendir(\PFAD_ROOT . \PFAD_COMPILEDIR)) {
@@ -297,9 +305,23 @@ class Controller
             ->display('shoptemplate.tpl');
     }
 
+    /**
+     * @return string|null
+     */
+    private function getPreviousTemplate(): ?string
+    {
+        return $this->db->select('ttemplate', 'eTyp', 'standard')->cTemplate ?? null;
+    }
+
     private function switch(): void
     {
+        if (($bootstrapper = BootChecker::bootstrap($this->getPreviousTemplate())) !== null) {
+            $bootstrapper->disabled();
+        }
         if ($this->setActiveTemplate($this->currentTemplateDir)) {
+            if (($bootstrapper = BootChecker::bootstrap($this->currentTemplateDir)) !== null) {
+                $bootstrapper->enabled();
+            }
             $this->alertService->addAlert(Alert::TYPE_SUCCESS, __('successTemplateSave'), 'successTemplateSave');
         } else {
             $this->alertService->addAlert(Alert::TYPE_ERROR, __('errorTemplateSave'), 'errorTemplateSave');

@@ -16,6 +16,10 @@
   }
 }
 
+.container {
+  @include make-container-max-widths($max-widths: $container-max-widths, $breakpoints: $grid-breakpoints)
+}
+
 .yt-container {
   position: relative;
   width: 100%;

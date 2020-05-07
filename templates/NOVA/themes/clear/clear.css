@@ -19048,6 +19048,27 @@ Supports Thumbs: false
     padding-left: 2rem;
   }
 }
+@media (min-width: 576px) {
+  .container {
+    max-width: 97vw;
+  }
+}
+@media (min-width: 768px) {
+  .container {
+    max-width: 720px;
+  }
+}
+@media (min-width: 992px) {
+  .container {
+    max-width: 960px;
+  }
+}
+@media (min-width: 1300px) {
+  .container {
+    max-width: 1250px;
+  }
+}
+
 .yt-container {
   position: relative;
   width: 100%;
@@ -20705,6 +20726,10 @@ label {
     height: 100%;
   }
 }
+.modal-content .container {
+  padding-right: 0;
+  padding-left: 0;
+}
 
 .modal-title {
   font-size: 1.25rem;
@@ -20766,7 +20791,7 @@ label {
 }
 @media (max-width: 991.98px) {
   .modal-dialog {
-    height: 100%;
+    height: auto;
   }
 }
 
@@ -22374,20 +22399,30 @@ input.form-control[name=wishlist-url] {
   height: calc(1.5em + 1.25rem + 2px);
 }
 
-.comparelist {
-  max-height: 800px;
+@media (max-width: 991.98px) {
+  #filter-checkboxes .custom-checkbox label {
+    max-width: 32vw;
+  }
 }
-.comparelist .table thead th:first-child, .comparelist td:first-child {
+
+.delete-link-times {
+  position: absolute;
+  z-index: 1;
+  right: 0.5rem;
+  top: 0.5rem;
+  font-size: 1rem;
+}
+
+.comparelist .table tr.comparelist-row td:first-child {
   position: sticky;
   left: 0;
-  background: #fff;
   z-index: 996;
 }
 .comparelist .table {
   width: 98%;
 }
 .comparelist .table thead th {
-  background: #fff;
+  background: #ffffff;
   vertical-align: top;
   z-index: 999;
 }
@@ -22399,12 +22434,22 @@ input.form-control[name=wishlist-url] {
 }
 .comparelist .table tbody td:first-child {
   background-color: #f5f7fa;
+  font-weight: 700;
+}
+@media (max-width: 991.98px) {
+  .comparelist .table td {
+    padding: 0.3rem;
+  }
+  .comparelist .table td:first-child > div {
+    width: 110px;
+  }
+  .comparelist .table th {
+    padding: 0;
+  }
 }
 .comparelist .stretched {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  justify-content: space-between;
 }
 
 .custom-checkbox + .description {

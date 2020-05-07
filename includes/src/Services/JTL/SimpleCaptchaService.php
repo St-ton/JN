@@ -68,9 +68,9 @@ class SimpleCaptchaService implements CaptchaServiceInterface
         if ($token === null || $code === null) {
             $cryptoService = Shop::Container()->getCryptoService();
             try {
-                $token  = $cryptoService->randomString(8);
-                $code   = $cryptoService->randomString(12);
-                $code  .= ':' . \time();
+                $token = $cryptoService->randomString(8);
+                $code  = $cryptoService->randomString(12);
+                $code .= ':' . \time();
             } catch (Exception $e) {
                 $token = 'token';
                 $code  = \rand() . ':' . \time();

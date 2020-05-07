@@ -54,6 +54,8 @@ interface BootstrapperInterface
     public function setTemplate(Model $template): void;
 
     /**
+     * this will only work after boot()
+     *
      * @return JTLSmarty|null
      */
     public function getSmarty(): ?JTLSmarty;

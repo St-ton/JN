@@ -14,21 +14,22 @@ use Smarty;
  */
 class Bootstrap extends Bootstrapper
 {
-    protected $name = 'NOVA';
-
     /**
      * @inheritdoc
      */
     public function boot(): void
     {
         parent::boot();
-//        echo '<br>' . $this->name . ' booting...';
         $this->registerPlugins();
     }
 
     private function registerPlugins(): void
     {
         $smarty = $this->getSmarty();
+        if ($smarty === null) {
+            // this will never happen but it calms the IDE down
+            return;
+        }
         $plugins = new Plugins($this->getDB(), $this->getCache());
         $scc     = new DefaultComponentRegistrator(new Renderer($smarty));
         $scc->registerComponents();
@@ -70,7 +71,6 @@ class Bootstrap extends Bootstrapper
     public function installed(): void
     {
         parent::installed();
-        echo '<br>' . $this->name . ' installed...';
     }
 
     /**
@@ -78,7 +78,6 @@ class Bootstrap extends Bootstrapper
      */
     public function enabled(): void
     {
-        echo '<br>' . $this->name . ' enabled...';
         parent::enabled();
     }
 
@@ -87,7 +86,6 @@ class Bootstrap extends Bootstrapper
      */
     public function disabled(): void
     {
-        echo '<br>' . $this->name . ' disabled...';
         parent::enabled();
     }
 
@@ -96,8 +94,7 @@ class Bootstrap extends Bootstrapper
      */
     public function updated($oldVersion, $newVersion): void
     {
-        echo '<br>' . $this->name . ' updated from ' . $oldVersion . ' to ' . $newVersion;
-        \error_log('NOVA updated from ' . $oldVersion . ' to ' . $newVersion);
+        \error_log('updated from ' . $oldVersion . ' to ' . $newVersion);
     }
 
     /**
@@ -105,7 +102,6 @@ class Bootstrap extends Bootstrapper
      */
     public function uninstalled(bool $deleteData = true): void
     {
-        echo '<br>' . $this->name . ' uninstalled';
         parent::uninstalled($deleteData);
     }
 }

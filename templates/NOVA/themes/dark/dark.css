@@ -19896,6 +19896,7 @@ aside .last-seen-link {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  left: 0;
 }
 .square-image .inner a {
   width: 100%;

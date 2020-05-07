@@ -54,13 +54,15 @@
                             {/foreach}
                         {/block}
                     </div>
-                    <ul class="slick-dots initial-slick-dots d-lg-none" style="" role="tablist">
-                        {foreach $Artikel->Bilder as $image}
-                            <li class="{if $image@first}slick-active{/if}" role="presentation">
-                                {button}{/button}
-                            </li>
-                        {/foreach}
-                    </ul>
+                    {if $Artikel->Bilder|count > 1}
+                        <ul class="slick-dots initial-slick-dots d-lg-none" style="" role="tablist">
+                            {foreach $Artikel->Bilder as $image}
+                                <li class="{if $image@first}slick-active{/if}" role="presentation">
+                                    {button}{/button}
+                                </li>
+                            {/foreach}
+                        </ul>
+                    {/if}
                 </div>
             {/block}
             {/col}

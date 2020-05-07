@@ -20726,6 +20726,10 @@ label {
     height: 100%;
   }
 }
+.modal-content .container {
+  padding-right: 0;
+  padding-left: 0;
+}
 
 .modal-title {
   font-size: 1.25rem;
@@ -20787,7 +20791,7 @@ label {
 }
 @media (max-width: 991.98px) {
   .modal-dialog {
-    height: 100%;
+    height: auto;
   }
 }
 

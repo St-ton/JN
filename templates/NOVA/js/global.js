@@ -106,38 +106,39 @@ function regionsToState(){
                 }
                 var title = state_data.defaultoption;
                 var stateIsRequired = state.attr('required') === 'required';
-                var data = data.response;
+                var data = result.response;
                 var def = $('#'+state_id).val();
+                if(typeof(data)!=='undefined'){
+                    if (data !== null && data.length > 0) {
+                        if (stateIsRequired){
+                            var state = $('<select />').attr({ id: state_id, name: state.attr('name'), class: 'custom-select required form-control js-state-select', required: 'required'});
+                        } else {
+                            var state = $('<select />').attr({ id: state_id, name: state.attr('name'), class: 'custom-select form-control js-state-select'});
+                        }
 
-                if (data !== null && data.length > 0) {
-                    if (stateIsRequired){
-                        var state = $('<select />').attr({ id: state_id, name: state.attr('name'), class: 'custom-select required form-control js-state-select', required: 'required'});
+                        Object.keys(state_data).forEach(function(key,index) {
+                            state.data(key,state_data[key]);
+                        });
+
+                        state.append('<option value="">' + title + '</option>');
+                        $(data).each(function(idx, item) {
+                            state.append(
+                                $('<option></option>').val(item.cCode).html(item.cName)
+                                    .attr('selected', item.cCode == def || item.cName == def ? 'selected' : false)
+                            );
+                        });
+                        $('#'+state_id).replaceWith(state);
                     } else {
-                        var state = $('<select />').attr({ id: state_id, name: state.attr('name'), class: 'custom-select form-control js-state-select'});
+                        if (stateIsRequired) {
+                            var state = $('<input />').attr({ type: 'text', id: state_id, name: state.attr('name'),  class: 'required form-control js-state-select', placeholder: title, required: 'required' });
+                        } else {
+                            var state = $('<input />').attr({ type: 'text', id: state_id, name: state.attr('name'),  class: 'form-control js-state-select', placeholder: title });
+                        }
+                        Object.keys(state_data).forEach(function(key,index) {
+                            state.data(key,state_data[key]);
+                        });
+                        $('#'+state_id).replaceWith(state);
                     }
-
-                    Object.keys(state_data).forEach(function(key,index) {
-                        state.data(key,state_data[key]);
-                    });
-
-                    state.append('<option value="">' + title + '</option>');
-                    $(data).each(function(idx, item) {
-                        state.append(
-                            $('<option></option>').val(item.cCode).html(item.cName)
-                                .attr('selected', item.cCode == def || item.cName == def ? 'selected' : false)
-                        );
-                    });
-                    $('#'+state_id).replaceWith(state);
-                } else {
-                    if (stateIsRequired) {
-                        var state = $('<input />').attr({ type: 'text', id: state_id, name: state.attr('name'),  class: 'required form-control js-state-select', placeholder: title, required: 'required' });
-                    } else {
-                        var state = $('<input />').attr({ type: 'text', id: state_id, name: state.attr('name'),  class: 'form-control js-state-select', placeholder: title });
-                    }
-                    Object.keys(state_data).forEach(function(key,index) {
-                        state.data(key,state_data[key]);
-                    });
-                    $('#'+state_id).replaceWith(state);
                 }
             }
         });

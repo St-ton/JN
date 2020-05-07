@@ -276,7 +276,7 @@
                                     }
                                         {if !empty($oStates)}
                                             {select
-                                                data=["defaultOption"=>{lang key=pleaseChoose}]
+                                                data=["defaultoption"=>{lang key=pleaseChoose}]
                                                 name="bundesland"
                                                 id="billing_address-state"
                                                 class="state-input custom-select js-state-select"
@@ -294,7 +294,7 @@
                                                 name="bundesland"
                                                 value=$cState
                                                 id="billing_address-state"
-                                                data=["defaultOption"=>{lang key=pleaseChoose}]
+                                                data=["defaultoption"=>{lang key=pleaseChoose}]
                                                 placeholder="{lang key='state' section='account data'}"
                                                 autocomplete="billing address-level1"
                                                 required=($Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y')

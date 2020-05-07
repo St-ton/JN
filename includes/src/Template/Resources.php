@@ -320,7 +320,7 @@ class Resources
      * @param bool $absolute
      * @return array
      */
-    public function getMinifyArray(bool $absolute = true): array
+    public function getMinifyArray(bool $absolute = false): array
     {
         if (!$this->initialized) {
             $this->init();

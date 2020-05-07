@@ -23610,6 +23610,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 .filter-item .filter-img {
   width: auto;
   height: 42px;
+  max-width: 42px;
   margin: 0.2rem;
   border: 3px solid transparent;
 }

@@ -181,7 +181,7 @@ final class Model extends DataModel
      */
     public function getVersion(): string
     {
-        return $this->cVersion;
+        return $this->cVersion ?? '0.0.0';
     }
 
     /**

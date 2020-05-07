@@ -85,6 +85,7 @@ class Resources
             'plugin_js_body' => []
         ];
         foreach ($this->xmlList as $xml) {
+            $currentBaseDir = (string)$xml->dir;
             if ($xml === null) {
                 continue;
             }
@@ -99,18 +100,18 @@ class Resources
                 /** @var SimpleXMLElement $cssFile */
                 foreach ($css->File as $cssFile) {
                     $file     = (string)$cssFile->attributes()->Path;
-                    $filePath = \PFAD_ROOT . \PFAD_TEMPLATES . $xml->Ordner . '/' . $file;
+                    $filePath = \PFAD_ROOT . \PFAD_TEMPLATES . $currentBaseDir . '/' . $file;
                     if (\file_exists($filePath)
                         && (empty($cssFile->attributes()->DependsOnSetting)
                             || $this->checkCondition($cssFile) === true)
                     ) {
-                        $_file          = \PFAD_TEMPLATES . $this->dir . '/' . (string)$cssFile->attributes()->Path;
+                        $_file          = \PFAD_TEMPLATES . $currentBaseDir . '/' . (string)$cssFile->attributes()->Path;
                         $customFilePath = \str_replace('.css', '_custom.css', $filePath);
                         if (\file_exists($customFilePath)) { //add _custom file if existing
                             $_file              = \str_replace(
                                 '.css',
                                 '_custom.css',
-                                \PFAD_TEMPLATES . $this->dir . '/' . (string)$cssFile->attributes()->Path
+                                \PFAD_TEMPLATES . $currentBaseDir . '/' . (string)$cssFile->attributes()->Path
                             );
                             $tplGroups[$name][] = [
                                 'idx' => \str_replace('.css', '_custom.css', (string)$cssFile->attributes()->Path),
@@ -137,7 +138,7 @@ class Resources
                     if (!empty($jsFile->attributes()->DependsOnSetting) && $this->checkCondition($jsFile) !== true) {
                         continue;
                     }
-                    $_file    = \PFAD_TEMPLATES . $this->dir . '/' . (string)$jsFile->attributes()->Path;
+                    $_file    = \PFAD_TEMPLATES . $currentBaseDir . '/' . (string)$jsFile->attributes()->Path;
                     $newEntry = [
                         'idx' => (string)$jsFile->attributes()->Path,
                         'abs' => \PFAD_ROOT . $_file,

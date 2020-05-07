@@ -13,7 +13,6 @@
 {/if}
 {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=$cBeschreibung cDokuURL=$cDokuURL}
 
-<style>#sidebar { display: none; }</style>
 {*workaround: no async uploads (the fileinput option uploadAsync does not work correctly... *}
 <style>#form_settings .fileinput-upload-button, .kv-file-upload{ldelim}display:none!important;{rdelim}</style>
 

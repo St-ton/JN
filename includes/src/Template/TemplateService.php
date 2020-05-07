@@ -92,7 +92,7 @@ class TemplateService implements TemplateServiceInterface
         $template  = Model::loadByAttributes($attributes, $this->db);
         $reader    = new XMLReader();
         $tplXML    = $reader->getXML($template->getTemplate(), $template->getType() === 'admin');
-        $parentXML = ($tplXML !== null || empty($tplXML->Parent)) ? null : $reader->getXML((string)$tplXML->Parent);
+        $parentXML = ($tplXML === null || empty($tplXML->Parent)) ? null : $reader->getXML((string)$tplXML->Parent);
         $template  = $this->mergeWithXML(
             $template->getTemplate(),
             $tplXML,
@@ -118,6 +118,7 @@ class TemplateService implements TemplateServiceInterface
         $template->setDir($dir);
         $template->setAuthor(\trim((string)$xml->Author));
         $template->setUrl(\trim((string)$xml->URL));
+        $template->setVersion(\trim((string)$xml->Version));
         $template->setFileVersion(\trim((string)$xml->Version));
         $template->setShopVersion(\trim((string)$xml->ShopVersion));
         $template->setPreview(\trim((string)$xml->Preview));

@@ -37,7 +37,7 @@ class XMLReader
         }
 
         if (\is_a($xml, SimpleXMLElement::class)) {
-            $xml->Ordner = $dirName;
+            $xml->dir = $dirName;
         } else {
             $xml = null;
         }

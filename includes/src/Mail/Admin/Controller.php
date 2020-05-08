@@ -14,7 +14,6 @@ use JTL\Mail\Mailer;
 use JTL\Mail\Template\Model;
 use JTL\Mail\Template\TemplateFactory;
 use JTL\Mail\Template\TemplateInterface;
-use JTL\Shop;
 use PHPMailer\PHPMailer\Exception;
 use stdClass;
 

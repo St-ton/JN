@@ -144,9 +144,9 @@ class Starter
     private $cache;
 
     /**
-     * @var string | null
+     * @var string
      */
-    private $wawiVersion;
+    private $wawiVersion = 'unknown';
 
     /**
      * Starter constructor.
@@ -344,11 +344,11 @@ class Starter
                 echo $return;
                 exit();
             }
-            $serializedXML = empty($this->getWawiVersion())
+            $serializedXML = $this->getWawiVersion() === 'unknown'
                 ? Text::convertISO(XML::serialize($res))
                 : XML::serialize($res);
             echo \is_array($res)
-                ? $return . ";\n" .$serializedXML
+                ? $return . ";\n" . $serializedXML
                 : $return . ';' . $res;
         } else {
             $this->init($post, [], false);
@@ -409,32 +409,28 @@ class Starter
         }
     }
 
-    /**
-     *@return void
-     */
     public function setVersionByUserAgent(): void
     {
         $useragent = $_SERVER['HTTP_USER_AGENT'];
         $matches   = [];
-        preg_match('/JTL-Wawi\/(\d+(\.\d+)+)/', $useragent, $matches);
-        if (count($matches) > 0 && isset($matches[1])) {
+        \preg_match('/JTL-Wawi\/(\d+(\.\d+)+)/', $useragent, $matches);
+        if (\count($matches) > 0 && isset($matches[1])) {
             $this->setWawiVersion($matches[1]);
         }
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getWawiVersion(): ?string
+    public function getWawiVersion(): string
     {
         return $this->wawiVersion;
     }
 
     /**
-     * @param  string|null $wawiVersion
-     * @return void
+     * @param  string $wawiVersion
      */
-    public function setWawiVersion(?string $wawiVersion): void
+    public function setWawiVersion(string $wawiVersion): void
     {
         $this->wawiVersion = $wawiVersion;
     }

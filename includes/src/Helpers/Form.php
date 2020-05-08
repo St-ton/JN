@@ -141,12 +141,28 @@ class Form
     }
 
     /**
+     * @param bool $clear
      * @return stdClass
      * @since 5.0.0
      */
-    public static function baueKontaktFormularVorgaben(): stdClass
+    public static function baueKontaktFormularVorgaben(bool $clear = false): stdClass
     {
-        $msg = new stdClass();
+        $msg                  = new stdClass();
+        $msg->cAnrede         = '';
+        $msg->cVorname        = '';
+        $msg->cNachname       = '';
+        $msg->cFirma          = '';
+        $msg->cMail           = '';
+        $msg->cTel            = '';
+        $msg->cMobil          = '';
+        $msg->cFax            = '';
+        $msg->kKontaktBetreff = null;
+        $msg->cNachricht      = null;
+
+        if ($clear) {
+            return $msg;
+        }
+
         if (isset($_SESSION['Kunde'])) {
             $msg->cAnrede   = $_SESSION['Kunde']->cAnrede;
             $msg->cVorname  = $_SESSION['Kunde']->cVorname;
@@ -198,30 +214,6 @@ class Form
             } elseif ($msg->cAnrede === 'w') {
                 $msg->cAnredeLocalized = Shop::Lang()->get('salutationW');
             }
-        }
-        if (!isset($msg->cAnrede)) {
-            $msg->cAnrede = '';
-        }
-        if (!isset($msg->cVorname)) {
-            $msg->cVorname = '';
-        }
-        if (!isset($msg->cNachname)) {
-            $msg->cNachname = '';
-        }
-        if (!isset($msg->cFirma)) {
-            $msg->cFirma = '';
-        }
-        if (!isset($msg->cMail)) {
-            $msg->cMail = '';
-        }
-        if (!isset($msg->cTel)) {
-            $msg->cTel = '';
-        }
-        if (!isset($msg->cMobil)) {
-            $msg->cMobil = '';
-        }
-        if (!isset($msg->cFax)) {
-            $msg->cFax = '';
         }
 
         return $msg;

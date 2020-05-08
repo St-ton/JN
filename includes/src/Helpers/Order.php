@@ -40,18 +40,17 @@ class Order extends CartHelper
         $order           = $this->getObject();
         $info            = new stdClass();
         $info->type      = self::GROSS;
-        $info->currency  = null;
+        $info->currency  = $order->Waehrung;
         $info->article   = [0, 0];
         $info->shipping  = [0, 0];
         $info->discount  = [0, 0];
         $info->surcharge = [0, 0];
         $info->total     = [0, 0];
         $info->items     = [];
-        $info->currency  = $order->Waehrung;
         foreach ($order->Positionen as $orderItem) {
             $amountItem = $orderItem->fPreisEinzelNetto;
-            if (GeneralObject::isCountable('WarenkorbPosEigenschaftArr', $orderItem)
-                && (!isset($orderItem->Artikel->kVaterArtikel) || (int)$orderItem->Artikel->kVaterArtikel === 0)
+            if ((!isset($orderItem->Artikel->kVaterArtikel) || (int)$orderItem->Artikel->kVaterArtikel === 0)
+                && GeneralObject::isCountable('WarenkorbPosEigenschaftArr', $orderItem)
             ) {
                 foreach ($orderItem->WarenkorbPosEigenschaftArr as $attr) {
                     if ($attr->fAufpreis !== 0) {

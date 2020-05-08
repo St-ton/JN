@@ -78,7 +78,7 @@
 
                 {if $newsItem->getPreviewImage() !== ''}
                     {block name='blog-details-image'}
-                        {image webp=true lazy=true fluid-grow=true
+                        {image webp=true lazy=true fluid=true
                             src=$newsItem->getImage(\JTL\Media\Image::SIZE_MD)
                             srcset="{$newsItem->getImage(\JTL\Media\Image::SIZE_XS)} 300w,
                                 {$newsItem->getImage(\JTL\Media\Image::SIZE_SM)} 600w,

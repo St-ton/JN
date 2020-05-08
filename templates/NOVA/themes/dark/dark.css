@@ -18752,14 +18752,6 @@ aside .box-monthlynews a .value {
 aside .box-monthlynews a .value:hover {
   text-decoration: none;
 }
-aside .last-seen-link {
-  text-decoration: underline;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  width: 100%;
-  overflow: hidden;
-  display: block;
-}
 
 .box-categories .dropdown .collapse,
 .box-linkgroup .dropdown .collapse {

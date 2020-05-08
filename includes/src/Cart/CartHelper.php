@@ -50,19 +50,18 @@ class CartHelper
     {
         $info            = new stdClass();
         $info->type      = Frontend::getCustomerGroup()->isMerchant() ? self::NET : self::GROSS;
-        $info->currency  = null;
+        $info->currency  = $this->getCurrency();
         $info->article   = [0, 0];
         $info->shipping  = [0, 0];
         $info->discount  = [0, 0];
         $info->surcharge = [0, 0];
         $info->total     = [0, 0];
         $info->items     = [];
-        $info->currency  = $this->getCurrency();
 
         foreach (Frontend::getCart()->PositionenArr as $item) {
             $amountItem = $item->fPreisEinzelNetto;
-            if (GeneralObject::isCountable('WarenkorbPosEigenschaftArr', $item)
-                && (!isset($item->Artikel->kVaterArtikel) || (int)$item->Artikel->kVaterArtikel === 0)
+            if ((!isset($item->Artikel->kVaterArtikel) || (int)$item->Artikel->kVaterArtikel === 0)
+                && GeneralObject::isCountable('WarenkorbPosEigenschaftArr', $item)
             ) {
                 foreach ($item->WarenkorbPosEigenschaftArr as $attr) {
                     if ($attr->fAufpreis != 0) {

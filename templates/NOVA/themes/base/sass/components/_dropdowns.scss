@@ -37,3 +37,9 @@
 .dropdown-header {
 	padding: map-get($spacers, 2) $dropdown-item-padding-x;
 }
+
+.dropdown-full-width {
+	.dropdown-menu {
+		width: 100%;
+	}
+}

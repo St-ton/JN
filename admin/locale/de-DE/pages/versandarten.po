@@ -326,3 +326,6 @@ msgstr "PLZ löschen"
 
 msgid "countriesSelected"
 msgstr "ausgewählt"
+
+msgid "acceptedPaymentMethodsDesc"
+msgstr "Geben Sie für einen Rabatt einen negativen Wert ein"

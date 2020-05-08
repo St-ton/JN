@@ -144,11 +144,11 @@
                     </code>
                 </div>
             </div>
-            {foreach $availableLanguages as $language}
+            {foreach $availableLanguages as $availableLanguage}
                 <div class="box_info card">
-                    {assign var=kSprache value=$language->getId()}
+                    {assign var=kSprache value=$availableLanguage->getId()}
                     <div class="card-header">
-                        <div class="subheading1">{__('content')} {$language->getLocalizedName()}</div>
+                        <div class="subheading1">{__('content')} {$availableLanguage->getLocalizedName()}</div>
                         <hr class="mb-n2">
                     </div>
                     <div class="card-body">
@@ -212,14 +212,15 @@
                                                    size="50"/>
                                             </div>
                                         </div>
-                                        <div class="input-group mb-3">
-                                            <div class="custom-file">
-                                                <input id="cPDFS_{$smarty.section.anhaenge.index}_{$kSprache}" name="cPDFS_{$kSprache}[]" type="file" class="custom-file-input" maxlength="2097152"/>
-                                                <label class="custom-file-label" for="cPDFS_{$smarty.section.anhaenge.index}_{$kSprache}">
-                                                    <span class="text-truncate">{__('fileSelect')}</span>
-                                                </label>
-                                            </div>
-                                        </div>
+                                        {include file='tpl_inc/fileupload.tpl'
+                                            fileID="cPDFS_{$smarty.section.anhaenge.index}_{$kSprache}"
+                                            fileName="cPDFS_{$kSprache}[]"
+                                            fileAllowedExtensions="['pdf']"
+                                            fileShowRemove=true
+                                            fileMaxSize=2097152
+                                            filePreview=false
+                                            fileErrorMsg=true
+                                        }
                                     </div>
                                 </div>
                             {/section}

@@ -1,5 +1,5 @@
 {block name='page-newsletter-archive'}
-    {opcMountPoint id='opc_before_newsletter'}
+    {opcMountPoint id='opc_before_newsletter' inContainer=false}
     {container}
         {block name='page-newsletter-archive-toptags'}
             <div id="toptags" class="h2">{lang key='newsletterhistory'}</div>

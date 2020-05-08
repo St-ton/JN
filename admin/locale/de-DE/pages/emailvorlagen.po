@@ -18,7 +18,7 @@ msgid "testmailsGoToEmail"
 msgstr "Test-E-Mails werden an folgende Adresse gesendet: "
 
 msgid "noMasterEmailSpecified"
-msgstr "Keine Master-E-Mail-Adresse hinterlegt. Bitte tragen Sie eine Master-E-Mail-Adresse für den Absender unter Inhalte > E-Mails > Einstellungen ein."
+msgstr "Keine Master-E-Mail-Adresse hinterlegt. Bitte tragen Sie eine Master-E-Mail-Adresse für den Absender unter Administration > E-Mail > Server ein."
 
 msgid "emailTemplateModifyHint"
 msgstr "Hier bearbeiten Sie den Inhalt einer E-Mail-Vorlage in jeder in JTL-Shop gepflegten Sprache. Sie können außerdem festlegen, von welcher Adresse aus die E-Mail versendet werden soll, und ob bestimmte Anhänge standardmäßig mitgesendet werden sollen."
@@ -200,14 +200,6 @@ msgstr "Header"
 # email name (temailvorlage)
 msgid "name_core_jtl_newsletteranmelden"
 msgstr "Freischalt-E-Mail nach Newsletter-Anmeldung"
-
-# email name (temailvorlage)
-msgid "name_core_jtl_kundenwerbenkunden"
-msgstr "Kunden werben Kunden"
-
-# email name (temailvorlage)
-msgid "name_core_jtl_kundenwerbenkundenboni"
-msgstr "Kunden werben Kunden – Belohnung"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_artikelweiterempfehlen"

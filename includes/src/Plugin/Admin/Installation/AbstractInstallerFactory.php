@@ -8,6 +8,7 @@ use JTL\Plugin\Admin\Installation\Items\AdminMenu;
 use JTL\Plugin\Admin\Installation\Items\Blueprints;
 use JTL\Plugin\Admin\Installation\Items\Boxes;
 use JTL\Plugin\Admin\Installation\Items\Checkboxes;
+use JTL\Plugin\Admin\Installation\Items\Consent;
 use JTL\Plugin\Admin\Installation\Items\CSS;
 use JTL\Plugin\Admin\Installation\Items\Exports;
 use JTL\Plugin\Admin\Installation\Items\FrontendLinks;
@@ -67,6 +68,7 @@ abstract class AbstractInstallerFactory
         $items->push(new Hooks());
         $items->push(new Uninstall());
         $items->push(new AdminMenu());
+        $items->push(new Consent());
         $items->push(new SettingsLinks());
         $items->push(new FrontendLinks());
         $items->push(new PaymentMethods());

@@ -26,11 +26,11 @@ Bestellungen von Neukunden: {$oMailObjekt->nAnzahlBestellungenNeukunden}
 {/if}
 
 {if $oMailObjekt->nAnzahlZahlungseingaengeVonBestellungen !== -1}
-Bestellungen die bezahlt wurden: {$oMailObjekt->nAnzahlZahlungseingaengeVonBestellungen}
+Bestellungen, die bezahlt wurden: {$oMailObjekt->nAnzahlZahlungseingaengeVonBestellungen}
 {/if}
 
 {if $oMailObjekt->nAnzahlVersendeterBestellungen !== -1}
-Bestellungen die versendet wurden: {$oMailObjekt->nAnzahlVersendeterBestellungen}
+Bestellungen, die versendet wurden: {$oMailObjekt->nAnzahlVersendeterBestellungen}
 {/if}
 
 {if $oMailObjekt->nAnzahlBesucher !== -1}
@@ -89,6 +89,6 @@ Produktvergleiche: {$oMailObjekt->nAnzahlVergleiche}
 {/if}
 
 {if $oMailObjekt->nAnzahlGenutzteKupons !== -1}
-Genutzte Kupons: {$oMailObjekt->nAnzahlGenutzteKupons}
+Genutzte Coupons: {$oMailObjekt->nAnzahlGenutzteKupons}
 {/if}
 {includeMailTemplate template=footer type=plain}

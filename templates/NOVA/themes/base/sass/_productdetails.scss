@@ -18,6 +18,7 @@
 	.slick-slide,
 	img {
 		outline: none !important;
+		width: 100%;
 	}
 
 	.slick-slide img {
@@ -53,6 +54,10 @@
 		z-index: 10000;
 		background-color: rgba($gray-darker, .5);
 		overflow: hidden;
+
+		img {
+			width: initial;
+		}
 
 		.product-actions {
 			display: none;
@@ -96,16 +101,19 @@
 		height: auto;
 		background: $white;
 		border: 3px solid $gray-medium;
-		opacity: 1;
+		opacity: 0;
 		border-radius: $border-radius;
 		@include box-shadow($box-shadow);
-		&:not(.show) {
-			z-index: -5;
-			opacity: 0;
+		z-index: -5;
+		@include media-breakpoint-up(lg) {
+			&.show {
+				z-index: $zindex-tooltip;
+				opacity: 1;
+			}
 		}
 		&::before, &::after {
 			left: 100%;
-			top: 62%;
+			top: 50%;
 			content: " ";
 			height: 0px;
 			width: 0px;
@@ -156,9 +164,23 @@
 			}
 			.slick-prev {
 				margin-right: -0.5rem;
+				animation: 0.5s fadeIn;
+				animation-fill-mode: forwards;
+				visibility: hidden;
 			}
 			.slick-next {
 				margin-left: -0.5rem;
+				animation: 0.5s fadeIn;
+				animation-fill-mode: forwards;
+				visibility: hidden;
+			}
+			@keyframes fadeIn {
+				99% {
+					visibility: hidden;
+				}
+				100% {
+					visibility: visible;
+				}
 			}
 		}
 	}

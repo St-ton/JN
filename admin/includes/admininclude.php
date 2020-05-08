@@ -110,6 +110,4 @@ if ($loggedIn) {
     }
 }
 
-$pageName = basename($_SERVER['PHP_SELF'], '.php');
-
-Shop::Container()->getGetText()->loadAdminLocale("pages/$pageName");
+Shop::Container()->getGetText()->loadAdminLocale('pages/' . basename($_SERVER['PHP_SELF'], '.php'));

@@ -191,6 +191,9 @@ msgstr "Datenbankprüfung"
 msgid "permission_PERMISSIONCHECK_VIEW"
 msgstr "Verzeichnisprüfung"
 
+msgid "permission_IMAGE_UPLOAD"
+msgstr "Bild-Upload"
+
 # description of admin group (tadminlogingruppe)
 msgid "Voller Zugriff auf den Administrationsbereich."
 msgstr "Voller Zugriff auf den Administrationsbereich"

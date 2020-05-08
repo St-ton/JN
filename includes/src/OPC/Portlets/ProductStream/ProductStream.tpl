@@ -1,7 +1,7 @@
 {$style = $instance->getProperty('listStyle')}
 
 {if $isPreview}
-    <div {$instance->getDataAttributeString()} class="opc-ProductStream">
+    <div class="opc-ProductStream">
         {image alt='ProductStream' src=$portlet->getBaseUrl()|cat:'preview.'|cat:$style|cat:'.png'}
     </div>
 {else}
@@ -15,8 +15,11 @@
             {$gridmd = '4'}
             {$gridxl = '3'}
         {/if}
-        {row class=$style|cat:' product-list opc-ProductStream opc-ProductStream-'|cat:$style itemprop="mainEntity"
-                itemscope=true itemtype="http://schema.org/ItemList"}
+        {if $inContainer === false}
+            <div class="container-fluid">
+        {/if}
+        {row class=$style|cat:' product-list opc-ProductStream opc-ProductStream-'|cat:$style|cat:' '|cat:$instance->getStyleClasses()
+             itemprop="mainEntity" itemscope=true itemtype="http://schema.org/ItemList"}
             {foreach $productlist as $Artikel}
                 {col cols={$grid} md="{if isset($gridmd)}{$gridmd}{/if}" xl="{if isset($gridxl)}{$gridxl}{/if}"
                      class="product-wrapper {if !($style === 'list' && $Artikel@last)}mb-4{/if}"
@@ -29,13 +32,19 @@
                 {/col}
             {/foreach}
         {/row}
+        {if $inContainer === false}
+            </div>
+        {/if}
     {elseif $style === 'simpleSlider'}
-        <div id="{$instance->getUid()}" class="carousel carousel-arrows-inside slick-lazy opc-ProductStream opc-ProductStream-slider slick-type-product"
-            data-slick-type="product-slider">
+        <div id="{$instance->getUid()}"
+             class="carousel carousel-arrows-inside evo-slider slick-lazy
+                    opc-ProductStream opc-ProductStream-slider slick-type-product"
+             data-slick-type="product-slider">
             {foreach $productlist as $Artikel}
                 <div class="product-wrapper">
                     <a href="{$Artikel->cURLFull}">
-                        <img src="{$Artikel->Bilder[0]->cURLNormal}" alt="{$Artikel->cName}" title="{$Artikel->cName}">
+                        <img src="{$Artikel->Bilder[0]->cURLNormal}" alt="{$Artikel->cName}"
+                             title="{$Artikel->cName}">
                     </a>
                 </div>
             {/foreach}

@@ -1,8 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Services\JTL;
 
 use JTL\Smarty\JTLSmarty;
+use JTL\Smarty\JTLSmartyTemplateClass;
 
 /**
  * Interface CaptchaService
@@ -21,13 +22,13 @@ interface CaptchaServiceInterface
     public function isEnabled(): bool;
 
     /**
-     * @param JTLSmarty $smarty
+     * @param JTLSmarty|JTLSmartyTemplateClass $smarty
      * @return string
      */
     public function getHeadMarkup($smarty): string;
 
     /**
-     * @param JTLSmarty $smarty
+     * @param JTLSmarty|JTLSmartyTemplateClass $smarty
      * @return string
      */
     public function getBodyMarkup($smarty): string;

@@ -17,16 +17,17 @@ class Divider extends Portlet
      */
     public function getPreviewHtml(PortletInstance $instance): string
     {
-        return '<hr ' . $instance->getAttributeString(). ' ' . $instance->getDataAttributeString() . '>';
+        return '<hr ' . $instance->getAttributeString(). '>';
     }
 
     /**
      * @param PortletInstance $instance
+     * @param bool $inContainer
      * @return string
      */
-    public function getFinalHtml(PortletInstance $instance): string
+    public function getFinalHtml(PortletInstance $instance, bool $inContainer = true): string
     {
-        return '<hr ' . $instance->getAttributeString(). '>';
+        return '<hr class="' . $instance->getStyleClasses() . '" ' . $instance->getAttributeString(). '>';
     }
 
     /**

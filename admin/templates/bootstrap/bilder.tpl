@@ -102,29 +102,20 @@
                                 </div>
                             </div>
                         {elseif $cnf->cInputTyp === 'color'}
-                            <span class="input-group-colorpicker-wrap">
-                            <div id="{$cnf->cWertName}" style="display:inline-block">
-                                <div style="background-color: {$cnf->gesetzterWert}" class="colorSelector"></div>
+                            <div class="input-group" id="config-{$cnf->cWertName}-group">
+                                <input type="text" class="form-control colorpicker-input {$cnf->cWertName}_data"
+                                       name="{$cnf->cWertName}"
+                                       value="{$cnf->gesetzterWert}" >
+                                <span class="input-group-append">
+                                    <span class="input-group-text colorpicker-input-addon"><i></i></span>
+                                </span>
                             </div>
-                            <input type="hidden" name="{$cnf->cWertName}" class="{$cnf->cWertName}_data" value="{$cnf->gesetzterWert}" />
-                            <script type="text/javascript">
-                                $('#{$cnf->cWertName}').ColorPicker({ldelim}
-                                    color:    '{$cnf->gesetzterWert}',
-                                    onShow:   function (colpkr) {ldelim}
-                                        $(colpkr).fadeIn(500);
-                                        return false;
-                                    {rdelim},
-                                    onHide:   function (colpkr) {ldelim}
-                                        $(colpkr).fadeOut(500);
-                                        return false;
-                                    {rdelim},
-                                    onChange: function (hsb, hex, rgb) {ldelim}
-                                        $('#{$cnf->cWertName} div').css('backgroundColor', '#' + hex);
-                                        $('.{$cnf->cWertName}_data').val('#' + hex);
-                                    {rdelim}
-                                {rdelim});
+                            <script>
+                                $('#config-{$cnf->cWertName}-group').colorpicker({
+                                    format: 'rgba',
+                                    fallbackColor: 'rgba(0,0,0,0)',
+                                });
                             </script>
-                            </span>
                         {else}
                             <input class="form-control" type="text" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{$cnf->gesetzterWert}" tabindex="1" />
                         {/if}

@@ -47,7 +47,7 @@
                                             {$value = ''}
                                         {/if}
                                         {if $var->type === 'textarea'}
-                                            <textarea id="lv-{$var->id}_{$cISOSprache}" class="form-control" style="width: 350px;" name="{$var->id}_{$cISOSprache}" type="{$var->type}">{$value}"</textarea>
+                                            <textarea id="lv-{$var->id}_{$cISOSprache}" class="form-control" style="width: 350px;" name="{$var->id}_{$cISOSprache}" type="{$var->type}">{$value}</textarea>
                                         {else}
                                             <input id="lv-{$var->id}_{$cISOSprache}" class="form-control" style="width: 350px;" name="{$var->id}_{$cISOSprache}" type="{$var->type}" value="{$value}" />
                                         {/if}

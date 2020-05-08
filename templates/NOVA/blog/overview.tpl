@@ -1,6 +1,6 @@
 {block name='blog-overview'}
     {block name='blog-overview-heading'}
-        {opcMountPoint id='opc_before_heading'}
+        {opcMountPoint id='opc_before_heading' inContainer=false}
         {container}
             <h1>{lang key='news' section='news'}</h1>
         {/container}
@@ -9,7 +9,7 @@
     {block name='blog-overview-include-extension'}
         {include file='snippets/extension.tpl'}
     {/block}
-    {opcMountPoint id='opc_before_filter'}
+    {opcMountPoint id='opc_before_filter' inContainer=false}
     {container}
         {block name='filter'}
             {row class='align-items-end mt-6 mb-2'}

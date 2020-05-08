@@ -1,6 +1,6 @@
 {block name='page-livesearch'}
     {if count($LivesucheTop) > 0 || count($LivesucheLast) > 0}
-        {opcMountPoint id='opc_before_livesearch'}
+        {opcMountPoint id='opc_before_livesearch' inContainer=false}
         {container}
             {row id="livesearch" class="mt-4"}
                 {block name='page-livesearch-top-searches'}

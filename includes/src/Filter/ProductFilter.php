@@ -8,6 +8,7 @@ use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Product\Artikel;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Filter\Items\Availability;
 use JTL\Filter\Items\Category;
 use JTL\Filter\Items\Characteristic;
 use JTL\Filter\Items\Limit;
@@ -89,6 +90,11 @@ class ProductFilter
      * @var SearchSpecial
      */
     private $searchSpecialFilter;
+
+    /**
+     * @var Availability
+     */
+    private $availabilityFilter;
 
     /**
      * @var Rating
@@ -590,6 +596,8 @@ class ProductFilter
 
         $this->searchSpecialFilter = new SearchSpecial($this);
 
+        $this->availabilityFilter = new Availability($this);
+
         $this->ratingFilter = new Rating($this);
 
         $this->priceRangeFilter = new PriceRange($this);
@@ -610,6 +618,7 @@ class ProductFilter
         $this->filters[] = $this->priceRangeFilter;
         $this->filters[] = $this->ratingFilter;
         $this->filters[] = $this->search;
+        $this->filters[] = $this->availabilityFilter;
 
         $this->sorting = new Sort($this);
         $this->limits  = new Limit($this);
@@ -1328,6 +1337,25 @@ class ProductFilter
     public function setSearchSpecialFilter(FilterInterface $filter): self
     {
         $this->searchSpecialFilter = $filter;
+
+        return $this;
+    }
+
+    /**
+     * @return SearchSpecial
+     */
+    public function getAvailabilitylFilter(): FilterInterface
+    {
+        return $this->availabilityFilter;
+    }
+
+    /**
+     * @param FilterInterface $filter
+     * @return $this
+     */
+    public function setAvailabilityFilter(FilterInterface $filter): self
+    {
+        $this->availabilityFilter = $filter;
 
         return $this;
     }

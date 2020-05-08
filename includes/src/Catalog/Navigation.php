@@ -353,8 +353,7 @@ class Navigation
                         'del'                  => $this->language->get('deleteAccount', 'login'),
                         'bestellung'           => $this->language->get('bcOrder', 'breadcrumb'),
                         'wl'                   => $this->language->get('bcWishlist', 'breadcrumb'),
-                        'pass'                 => $this->language->get('changePassword', 'login'),
-                        'KwK'                  => $this->language->get('kwkName', 'login')
+                        'pass'                 => $this->language->get('changePassword', 'login')
                     ];
 
                     foreach ($childPages as $childPage => $childPageLang) {

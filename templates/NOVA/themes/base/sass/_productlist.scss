@@ -90,7 +90,6 @@
 	display: flex;
 	flex-direction: column;
 	img {
-		max-height: $list-max-img-height;
 		&.first {
 			opacity: 1;
 			transition: $transition-fade;

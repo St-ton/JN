@@ -275,11 +275,7 @@ if (Request::verifyGPCDataInt('error') === 1) {
         $kWunschliste = $wishlist->kWunschliste;
     }
     if (!$kWunschliste) {
-        header(
-            'Location: ' .
-            $linkHelper->getStaticRoute('jtl.php') .
-            '?u=' . $params['kUmfrage'] . '&r=' . R_LOGIN_WUNSCHLISTE
-        );
+        header('Location: ' . $linkHelper->getStaticRoute('jtl.php') . '&r=' . R_LOGIN_WUNSCHLISTE);
         exit;
     }
 }
@@ -290,11 +286,7 @@ if ($wishlist === null) {
 if ($customerID > 0) {
     $wishlists = Wishlist::getWishlists()->toArray();
 } elseif ($wishlist->kWunschliste === 0) {
-    header(
-        'Location: ' .
-        $linkHelper->getStaticRoute('jtl.php') .
-        '?u=' . $params['kUmfrage'] . '&r=' . R_LOGIN_WUNSCHLISTE
-    );
+    header('Location: ' . $linkHelper->getStaticRoute('jtl.php') . '&r=' . R_LOGIN_WUNSCHLISTE);
     exit;
 }
 

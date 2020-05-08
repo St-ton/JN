@@ -13,7 +13,7 @@
         {/if}
     {/container}
     {block name='productdetails-details-form'}
-        {opcMountPoint id='opc_before_buy_form'}
+        {opcMountPoint id='opc_before_buy_form' inContainer=false}
         {container}
             {form id="buy_form" action=$Artikel->cURLFull class="jtl-validate"}
                 {row id="product-offer" class="product-detail"}
@@ -117,9 +117,11 @@
                                                             {if ($Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'B'
                                                                 || $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'BT')
                                                                 && !empty($Artikel->cHerstellerBildURLKlein)}
-                                                                {image lazy=true webp=true
+                                                                {image lazy=true
+                                                                    webp=true
                                                                     src=$Artikel->cHerstellerBildURLKlein
                                                                     alt=$Artikel->cHersteller
+                                                                    width="60px"
                                                                 }
                                                                 <meta itemprop="image" content="{$Artikel->cHerstellerBildURLKlein}">
                                                             {/if}

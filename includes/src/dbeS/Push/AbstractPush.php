@@ -87,7 +87,7 @@ abstract class AbstractPush
     {
         $xmlfile       = \fopen(\PFAD_SYNC_TMP . self::XML_FILE, 'w');
         $serializedXML = $wawiVersion === 'unknown'
-            ? strtr(Text::convertISO(XML::serialize($xml)), "\0", ' ')
+            ? \strtr(Text::convertISO(XML::serialize($xml)), "\0", ' ')
             : XML::serialize($xml);
         \fwrite($xmlfile, $serializedXML);
         \fclose($xmlfile);

@@ -365,19 +365,6 @@ class Starter
     }
 
     /**
-     *@return void
-     */
-    public function setVersionByUserAgent(): void
-    {
-        $useragent = $_SERVER['HTTP_USER_AGENT'];
-        $matches   = [];
-        preg_match('/JTL-Wawi\/(\d+(\.\d+)+)/', $useragent, $matches);
-        if (count($matches) > 0 && isset($matches[1])) {
-            $this->setWawiVersion($matches[1]);
-        }
-    }
-
-    /**
      * @param array $post
      * @param array $files
      * @param bool  $unzip
@@ -423,6 +410,19 @@ class Starter
     }
 
     /**
+     *@return void
+     */
+    public function setVersionByUserAgent(): void
+    {
+        $useragent = $_SERVER['HTTP_USER_AGENT'];
+        $matches   = [];
+        preg_match('/JTL-Wawi\/(\d+(\.\d+)+)/', $useragent, $matches);
+        if (count($matches) > 0 && isset($matches[1])) {
+            $this->setWawiVersion($matches[1]);
+        }
+    }
+
+    /**
      * @return string|null
      */
     public function getWawiVersion(): ?string
@@ -431,7 +431,8 @@ class Starter
     }
 
     /**
-     * @param string|null $wawiVersion
+     * @param  string|null $wawiVersion
+     * @return void
      */
     public function setWawiVersion(?string $wawiVersion): void
     {

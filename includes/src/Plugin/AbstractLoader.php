@@ -95,7 +95,7 @@ abstract class AbstractLoader implements LoaderInterface
         );
         $links = new Links();
 
-        return $links->load($data);
+        return $links->load($data, $this->db);
     }
 
     /**

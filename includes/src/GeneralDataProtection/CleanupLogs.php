@@ -44,7 +44,7 @@ class CleanupLogs extends Method implements MethodInterface
      * delete email history
      * older than given interval
      */
-    private function cleanupEmailHistory()
+    private function cleanupEmailHistory(): void
     {
         $this->db->queryPrepared(
             'DELETE FROM temailhistory
@@ -84,7 +84,7 @@ class CleanupLogs extends Method implements MethodInterface
      */
     private function cleanupPaymentLogEntries(): void
     {
-        Shop::Container()->getDB()->queryPrepared(
+        $this->db->queryPrepared(
             'DELETE FROM tzahlungslog
             WHERE dDatum <= :pDateLimit
             ORDER BY dDatum ASC
@@ -103,7 +103,7 @@ class CleanupLogs extends Method implements MethodInterface
      */
     private function cleanupProductInquiries(): void
     {
-        Shop::Container()->getDB()->queryPrepared(
+        $this->db->queryPrepared(
             'DELETE FROM tproduktanfragehistory
             WHERE dErstellt <= :pDateLimit
             ORDER BY dErstellt ASC
@@ -122,7 +122,7 @@ class CleanupLogs extends Method implements MethodInterface
      */
     private function cleanupAvailabilityInquiries(): void
     {
-        Shop::Container()->getDB()->queryPrepared(
+        $this->db->queryPrepared(
             'DELETE FROM tverfuegbarkeitsbenachrichtigung
             WHERE dErstellt <= :pDateLimit
             ORDER BY dErstellt ASC

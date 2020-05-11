@@ -533,7 +533,7 @@ final class Admin
                 ? $dt->format('Y-m-d H:i:s')
                 : $now->format('Y-m-d H:i:s');
             if (isset($post['kNewsletterVorlage']) && (int)$post['kNewsletterVorlage'] > 0) {
-                $revision = new Revision(Shop::Container()->getDB());
+                $revision = new Revision($this->db);
                 $revision->addRevision('newsletter', $templateID, true);
                 $upd                = new stdClass();
                 $upd->cName         = $tpl->cName;
@@ -772,7 +772,7 @@ final class Admin
      */
     public function getSubscriberCount($searchSQL): int
     {
-        return (int)Shop::Container()->getDB()->query(
+        return (int)$this->db->query(
             'SELECT COUNT(*) AS cnt
                 FROM tnewsletterempfaenger
                 WHERE kSprache = ' . (int)$_SESSION['kSprache'] . $searchSQL->cWHERE,

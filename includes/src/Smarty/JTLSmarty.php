@@ -420,8 +420,8 @@ class JTLSmarty extends \SmartyBC
             if ($resourceName === $resource_cfb_name) {
                 $extends = [];
                 foreach ($this->getTemplateDir() as $module => $templateDir) {
-                    if (\strpos($module, 'plugin_') === 0) {
-                        $pluginID    = \substr($module, 7);
+                    if (\mb_strpos($module, 'plugin_') === 0) {
+                        $pluginID    = \mb_substr($module, 7);
                         $templateVar = 'oPlugin_' . $pluginID;
                         if ($this->getTemplateVars($templateVar) === null) {
                             $plugin = Helper::getPluginById($pluginID);

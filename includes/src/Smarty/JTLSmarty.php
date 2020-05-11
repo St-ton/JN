@@ -101,22 +101,22 @@ class JTLSmarty extends \SmartyBC
                 throw new RuntimeException(\sprintf('Directory "%s" could not be created', $compileDir));
             }
             $templatePaths[$this->context] = \PFAD_ROOT . \PFAD_TEMPLATES . $tplDir . '/';
-            foreach (Helper::getTemplatePaths() as $moduleId => $path) {
-                $templateKey                 = 'plugin_' . $moduleId;
-                $templatePaths[$templateKey] = $path;
-            }
-            $this->setTemplateDir($templatePaths)
-                ->setCompileDir($compileDir)
+            $this->setCompileDir($compileDir)
                 ->setCacheDir(\PFAD_ROOT . \PFAD_COMPILEDIR . $tplDir . '/' . 'page_cache/')
                 ->setPluginsDir(\SMARTY_PLUGINS_DIR)
                 ->assign('tplDir', \PFAD_ROOT . \PFAD_TEMPLATES . $tplDir . '/');
             if ($parent !== null) {
-                self::$isChildTemplate = true;
-                $this->addTemplateDir(\PFAD_ROOT . \PFAD_TEMPLATES . $parent, $parent . '/')
-                    ->assign('tplDir', \PFAD_ROOT . \PFAD_TEMPLATES . $parent . '/')
+                self::$isChildTemplate  = true;
+                $templatePaths[$parent] = \PFAD_ROOT . \PFAD_TEMPLATES . $parent;
+                $this->assign('tplDir', \PFAD_ROOT . \PFAD_TEMPLATES . $parent . '/')
                     ->assign('parent_template_path', \PFAD_ROOT . \PFAD_TEMPLATES . $parent . '/')
                     ->assign('parentTemplateDir', \PFAD_TEMPLATES . $parent . '/');
             }
+            foreach (Helper::getTemplatePaths() as $moduleId => $path) {
+                $templateKey                 = 'plugin_' . $moduleId;
+                $templatePaths[$templateKey] = $path;
+            }
+            $this->setTemplateDir($templatePaths);
             if (($bootstrapper = BootChecker::bootstrap($tplDir)) !== null) {
                 $bootstrapper->setSmarty($this);
                 $bootstrapper->setTemplate($model);
@@ -399,6 +399,9 @@ class JTLSmarty extends \SmartyBC
         if (\mb_strpos($resourceName, 'string:') === 0) {
             return $resourceName;
         }
+        if (\mb_strpos($resourceName, '[') !== false) {
+            return $resourceName;
+        }
         if (\mb_strpos($resourceName, 'file:') === 0) {
             $resourceName = \str_replace('file:', '', $resourceName);
             $transform    = true;
@@ -414,28 +417,27 @@ class JTLSmarty extends \SmartyBC
                 'out'       => &$resource_cfb_name,
                 'transform' => $transform
             ]);
-            if ($resourceName === $resource_cfb_name
-                && \file_exists($this->getTemplateDir(ContextType::FRONTEND) . $resource_cfb_name)
-            ) {
-                $pluginTemplateExtends = [];
-                foreach (Helper::getTemplatePaths() as $moduleId => $pluginTemplatePath) {
-                    $templateKey = 'plugin_' . $moduleId;
-                    $templateVar = 'oPlugin_' . $moduleId;
-                    if ($this->getTemplateVars($templateVar) === null) {
-                        $oPlugin = Helper::getPluginById($moduleId);
-                        $this->assign($templateVar, $oPlugin);
+            if ($resourceName === $resource_cfb_name) {
+                $extends = [];
+                foreach ($this->getTemplateDir() as $module => $templateDir) {
+                    if (\strpos($module, 'plugin_') === 0) {
+                        $pluginID    = \substr($module, 7);
+                        $templateVar = 'oPlugin_' . $pluginID;
+                        if ($this->getTemplateVars($templateVar) === null) {
+                            $plugin = Helper::getPluginById($pluginID);
+                            $this->assign($templateVar, $plugin);
+                        }
                     }
-                    if (\file_exists($this->_realpath($pluginTemplatePath . $resource_cfb_name, true))) {
-                        $pluginTemplateExtends[] = \sprintf('[%s]%s', $templateKey, $resource_cfb_name);
+                    if (\file_exists($templateDir . $resource_cfb_name)) {
+                        $extends    [] = \sprintf('[%s]%s', $module, $resource_cfb_name);
                     }
                 }
 
-                if (\count($pluginTemplateExtends) > 0) {
+                if (\count($extends) > 1) {
                     $transform         = false;
                     $resource_cfb_name = \sprintf(
-                        'extends:[frontend]%s|%s',
-                        $resource_cfb_name,
-                        \implode('|', $pluginTemplateExtends)
+                        'extends:%s',
+                        \implode('|', $extends)
                     );
                 }
             }

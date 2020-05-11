@@ -105,6 +105,18 @@ class JTLSmarty extends \SmartyBC
                 ->setCacheDir(\PFAD_ROOT . \PFAD_COMPILEDIR . $tplDir . '/' . 'page_cache/')
                 ->setPluginsDir(\SMARTY_PLUGINS_DIR)
                 ->assign('tplDir', \PFAD_ROOT . \PFAD_TEMPLATES . $tplDir . '/');
+            if ($parent !== null) {
+                self::$isChildTemplate  = true;
+                $templatePaths[$parent] = \PFAD_ROOT . \PFAD_TEMPLATES . $parent;
+                $this->assign('tplDir', \PFAD_ROOT . \PFAD_TEMPLATES . $parent . '/')
+                    ->assign('parent_template_path', \PFAD_ROOT . \PFAD_TEMPLATES . $parent . '/')
+                    ->assign('parentTemplateDir', \PFAD_TEMPLATES . $parent . '/');
+            }
+            foreach (Helper::getTemplatePaths() as $moduleId => $path) {
+                $templateKey                 = 'plugin_' . $moduleId;
+                $templatePaths[$templateKey] = $path;
+            }
+            $this->setTemplateDir($templatePaths);
             if (($bootstrapper = BootChecker::bootstrap($tplDir)) !== null) {
                 $bootstrapper->setSmarty($this);
                 $bootstrapper->setTemplate($model);
@@ -385,9 +397,6 @@ class JTLSmarty extends \SmartyBC
     {
         $transform = false;
         if (\mb_strpos($resourceName, 'string:') === 0 || \mb_strpos($resourceName, '[') !== false) {
-            return $resourceName;
-        }
-        if (\mb_strpos($resourceName, '[') !== false) {
             return $resourceName;
         }
         if (\mb_strpos($resourceName, 'file:') === 0) {

@@ -17,7 +17,7 @@
                         <fieldset>
                             {include file='snippets/form_group_simple.tpl'
                                 options=[
-                                    'email', 'email', 'email', null,
+                                    'email', 'email', 'email', "{if $presetEmail !== ''}{$presetEmail}{/if}",
                                     {lang key='emailadress'}, true
                                 ]
                             }

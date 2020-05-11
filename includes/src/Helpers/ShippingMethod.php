@@ -1276,6 +1276,46 @@ class ShippingMethod
         ) {
             return '';
         }
+
+        if (isset($method->cNameLocalized)) {
+            $name = $method->cNameLocalized;
+        } else {
+            $localized = Shop::Container()->getDB()->select(
+                'tversandartsprache',
+                'kVersandart',
+                $method->kVersandart,
+                'cISOSprache',
+                Shop::getLanguageCode()
+            );
+            $name      = !empty($localized->cName)
+                ? $localized->cName
+                : $method->cName;
+        }
+        $fSummeDiff = self::getShippingFreeDifference($method, $cartSum);
+        if ($fSummeDiff <= 0) {
+            return \sprintf(
+                Shop::Lang()->get('noShippingCostsReached', 'basket'),
+                $name,
+                self::getShippingFreeCountriesString($method),
+                (string)$method->cLaender
+            );
+        }
+
+        return \sprintf(
+            Shop::Lang()->get('noShippingCostsAt', 'basket'),
+            Preise::getLocalizedPriceString($fSummeDiff),
+            $name,
+            self::getShippingFreeCountriesString($method)
+        );
+    }
+
+    /**
+     * @param $method
+     * @param $cartSum
+     * @return float
+     */
+    public static function getShippingFreeDifference($method, $cartSum): float
+    {
         $db         = Shop::Container()->getDB();
         $fSummeDiff = (float)$method->fVersandkostenfreiAbX - (float)$cartSum;
         // check if vkfreiabx is calculated net or gross
@@ -1292,35 +1332,8 @@ class ShippingMethod
                 }
             }
         }
-        if (isset($method->cNameLocalized)) {
-            $name = $method->cNameLocalized;
-        } else {
-            $localized = $db->select(
-                'tversandartsprache',
-                'kVersandart',
-                $method->kVersandart,
-                'cISOSprache',
-                Shop::getLanguageCode()
-            );
-            $name      = !empty($localized->cName)
-                ? $localized->cName
-                : $method->cName;
-        }
-        if ($fSummeDiff <= 0) {
-            return \sprintf(
-                Shop::Lang()->get('noShippingCostsReached', 'basket'),
-                $name,
-                self::getShippingFreeCountriesString($method),
-                (string)$method->cLaender
-            );
-        }
 
-        return \sprintf(
-            Shop::Lang()->get('noShippingCostsAt', 'basket'),
-            Preise::getLocalizedPriceString($fSummeDiff),
-            $name,
-            self::getShippingFreeCountriesString($method)
-        );
+        return $fSummeDiff;
     }
 
     /**

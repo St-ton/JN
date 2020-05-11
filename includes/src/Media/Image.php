@@ -93,7 +93,6 @@ class Image
             'background'                    => $settings['bilder_hintergrundfarbe'],
             'container'                     => $settings['container_verwenden'] === 'Y',
             'format'                        => \mb_convert_case($settings['bilder_dateiformat'], \MB_CASE_LOWER),
-            'scale'                         => $settings['bilder_skalieren'] === 'Y',
             'quality'                       => (int)$settings['bilder_jpg_quali'],
             'branding'                      => $branding[self::TYPE_PRODUCT] ?? null,
             self::TYPE_PRODUCT              => [
@@ -383,7 +382,7 @@ class Image
         $maxWidth     = $containerDim->getWidth();
         $maxHeight    = $containerDim->getHeight();
         if ($maxWidth > 0 && $maxHeight > 0) {
-            if ($settings['scale'] === true || $img->getWidth() > $maxWidth || $img->getHeight() > $maxHeight) {
+            if ($img->getWidth() > $maxWidth || $img->getHeight() > $maxHeight) {
                 $img->resize($maxWidth, $maxHeight, static function (Constraint $constraint) {
                     $constraint->aspectRatio();
                 });

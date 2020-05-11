@@ -44,6 +44,7 @@
 	.filter-img {
 		width: auto;
 		height: 42px;
+		max-width: 42px;
 		margin: 0.2rem;
 		border: 3px solid transparent;
 	}
@@ -89,6 +90,13 @@
 .list-gallery {
 	display: flex;
 	flex-direction: column;
+	.second-wrapper {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+	}
 	img {
 		&.first {
 			opacity: 1;
@@ -96,10 +104,6 @@
 		}
 		&.second {
 			opacity: 0;
-			position: absolute;
-			top: 0;
-			left: 50%;
-			transform: translateX(-50%);
 			transition: $transition-fade;
 		}
 	}

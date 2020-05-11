@@ -27,6 +27,7 @@ use JTL\Template\TemplateServiceInterface;
 use function Functional\first;
 use function Functional\group;
 use function Functional\map;
+use function Functional\sort;
 use function Functional\tail;
 
 /**
@@ -362,6 +363,7 @@ class BoxService implements BoxServiceInterface
                        tboxen.cTitel, tboxen.ePosition, tboxensichtbar.kSeite, tboxensichtbar.nSort, 
                        tboxensichtbar.cFilter, tboxvorlage.eTyp, 
                        tboxvorlage.cName, tboxvorlage.cTemplate, tplugin.nStatus AS pluginStatus,
+                       GROUP_CONCAT(tboxensichtbar.nSort) AS sortBypageIDs,
                        GROUP_CONCAT(tboxensichtbar.kSeite) AS pageIDs,
                        GROUP_CONCAT(tboxensichtbar.bAktiv) AS pageVisibilities,                       
                        tsprache.kSprache, tboxsprache.cInhalt, tboxsprache.cTitel
@@ -407,7 +409,7 @@ class BoxService implements BoxServiceInterface
             $this->cache->set($cacheID, $grouped, [\CACHING_GROUP_OBJECT, \CACHING_GROUP_BOX, 'boxes']);
         }
 
-        return $this->getItems($grouped);
+        return $this->getItems($grouped, $pageType);
     }
 
     /**
@@ -433,9 +435,10 @@ class BoxService implements BoxServiceInterface
 
     /**
      * @param array $grouped
+     * @param int   $pageType
      * @return array
      */
-    private function getItems(array $grouped): array
+    private function getItems(array $grouped, int $pageType): array
     {
         $children = [];
         $result   = [];
@@ -477,6 +480,9 @@ class BoxService implements BoxServiceInterface
             }
             $result[] = $box;
         }
+        $result      = sort($result, static function (BoxInterface $first, BoxInterface $second) use ($pageType) {
+            return $first->getSort($pageType) <=> $second->getSort($pageType);
+        });
         $this->boxes = group($result, static function (BoxInterface $e) {
             return $e->getPosition();
         });

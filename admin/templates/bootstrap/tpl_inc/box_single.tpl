@@ -56,8 +56,8 @@
                     <span class="fas fa-minus"></span>
                 </button>
             </div>
-            <input class="form-control text-right" type="number" name="sort[]" value="{$oBox->getSort()}"
-                   autocomplete="off" id="{$oBox->getSort()}">
+            <input class="form-control text-right" type="number" name="sort[]" value="{$oBox->getSort($nPage)}"
+                   autocomplete="off" id="{$oBox->getSort($nPage)}">
             <div class="input-group-append">
                 <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
                     <span class="fas fa-plus"></span>

@@ -456,15 +456,15 @@ class Statusmail
     {
         $res = $this->db->queryPrepared(
             'SELECT COUNT(*) AS total 
-                FROM tnewsletterempfaengerhistory
-                WHERE dAusgetragen >= :from
-                AND dAusgetragen < :to
-                AND cAktion NOT IN ("Eingetragen","Aktiviert")
-                GROUP BY cEmail
+                FROM toptinhistory
+                WHERE dDeActivated >= :from
+                AND dDeActivated < :to
+                AND kOptinClass = :class
                 ',
             [
-                'from' => $this->dateStart,
-                'to'   => $this->dateEnd
+                'class' => 'JTL\\Optin\\OptinNewsletter',
+                'from'  => $this->dateStart,
+                'to'    => $this->dateEnd
             ],
             ReturnType::SINGLE_OBJECT
         );
@@ -478,15 +478,15 @@ class Statusmail
     {
         $res = $this->db->queryPrepared(
             'SELECT COUNT(*) AS total 
-                FROM tnewsletterempfaengerhistory
-                WHERE dEingetragen >= :from
-                AND dEingetragen < :to
-                AND cAktion != "Geloescht"
-                GROUP BY cEmail
+                FROM toptin
+                WHERE dActivated >= :from
+                AND dActivated < :to
+                AND kOptinClass = :class
                 ',
             [
-                'from' => $this->dateStart,
-                'to'   => $this->dateEnd
+                'class' => 'JTL\\Optin\\OptinNewsletter',
+                'from'  => $this->dateStart,
+                'to'    => $this->dateEnd
             ],
             ReturnType::SINGLE_OBJECT
         );

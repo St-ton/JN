@@ -1,5 +1,6 @@
 <div {$instance->getAttributeString()} class="opc-Tabs {$instance->getStyleClasses()}">
-    {tabs}
+    <nav class="tab-navigation">
+        {tabs}
         {foreach $instance->getProperty('tabs') as $i => $tabTitle}
             {$tabId = $instance->getUid()|cat:'-'|cat:$i}
             {$areaId = 'tab-'|cat:$i}
@@ -13,5 +14,6 @@
                 </div>
             {/tab}
         {/foreach}
-    {/tabs}
+        {/tabs}
+    </nav>
 </div>

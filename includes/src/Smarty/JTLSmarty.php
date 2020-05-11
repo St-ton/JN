@@ -108,10 +108,12 @@ class JTLSmarty extends \SmartyBC
             $this->setTemplateDir($templatePaths)
                 ->setCompileDir($compileDir)
                 ->setCacheDir(\PFAD_ROOT . \PFAD_COMPILEDIR . $tplDir . '/' . 'page_cache/')
-                ->setPluginsDir(\SMARTY_PLUGINS_DIR);
+                ->setPluginsDir(\SMARTY_PLUGINS_DIR)
+                ->assign('tplDir', \PFAD_ROOT . \PFAD_TEMPLATES . $tplDir . '/');
             if ($parent !== null) {
                 self::$isChildTemplate = true;
                 $this->addTemplateDir(\PFAD_ROOT . \PFAD_TEMPLATES . $parent, $parent . '/')
+                    ->assign('tplDir', \PFAD_ROOT . \PFAD_TEMPLATES . $parent . '/')
                     ->assign('parent_template_path', \PFAD_ROOT . \PFAD_TEMPLATES . $parent . '/')
                     ->assign('parentTemplateDir', \PFAD_TEMPLATES . $parent . '/');
             }

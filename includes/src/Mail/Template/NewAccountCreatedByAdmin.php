@@ -2,6 +2,9 @@
 
 namespace JTL\Mail\Template;
 
+use JTL\Shop;
+use JTL\Smarty\JTLSmarty;
+
 /**
  * Class NewAccountCreatedByAdmin
  * @package JTL\Mail\Template
@@ -9,4 +12,17 @@ namespace JTL\Mail\Template;
 class NewAccountCreatedByAdmin extends AbstractTemplate
 {
     protected $id = \MAILTEMPLATE_ACCOUNTERSTELLUNG_DURCH_BETREIBER;
+
+    /**
+     * @inheritdoc
+     */
+    public function preRender(JTLSmarty $smarty, $data): void
+    {
+        parent::preRender($smarty, $data);
+
+        $smarty->assign(
+            'newPasswordURL',
+            Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_PASSWORD_VERGESSEN)->getURL()
+        );
+    }
 }

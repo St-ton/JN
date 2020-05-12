@@ -174,7 +174,6 @@ final class Uninstaller
             ['pid' => $pluginID],
             ReturnType::DEFAULT
         );
-        $this->db->delete('tboxvorlage', ['kCustomID', 'eTyp'], [$pluginID, 'plugin']);
         $this->db->delete('tpluginlinkdatei', 'kPlugin', $pluginID);
         $this->db->queryPrepared(
             'DELETE temailvorlage, temailvorlagespracheoriginal

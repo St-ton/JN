@@ -1310,9 +1310,6 @@ msgstr "Deaktivieren"
 msgid "bilder_dateiformat_value(JPG)"
 msgstr "JPEG"
 
-msgid "bilder_skalieren_value(Y)"
-msgstr "Ja"
-
 msgid "container_verwenden_value(Y)"
 msgstr "Ja"
 
@@ -1320,10 +1317,7 @@ msgid "bilder_dateiformat_value(PNG)"
 msgstr "PNG"
 
 msgid "bilder_dateiformat_value(AUTO)"
-msgstr "Auto"
-
-msgid "bilder_skalieren_value(N)"
-msgstr "Nein"
+msgstr "Auto (zusätzlich .webp anlegen)"
 
 msgid "container_verwenden_value(N)"
 msgstr "Nein"

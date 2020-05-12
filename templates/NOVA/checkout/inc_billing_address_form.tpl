@@ -245,7 +245,7 @@
                                     label-for="country"
                                     label="{lang key='country' section='account data'}"
                                 }
-                                    {select name="land" id="country" class="country-input custom-select" required=true autocomplete="billing country"}
+                                    {select name="land" id="billing_address-country" class="country-input custom-select js-country-select" required=true autocomplete="billing country"}
                                         <option value="" disabled>{lang key='country' section='account data'}</option>
                                         {foreach $laender as $land}
                                             <option value="{$land->getISO()}" {if $cIso === $land->getISO()}selected="selected"{/if}>{$land->getName()}</option>
@@ -276,10 +276,10 @@
                                     }
                                         {if !empty($oStates)}
                                             {select
-                                                title="{lang key=pleaseChoose}"
+                                                data=["defaultoption"=>{lang key=pleaseChoose}]
                                                 name="bundesland"
-                                                id="state"
-                                                class="state-input custom-select"
+                                                id="billing_address-state"
+                                                class="state-input custom-select js-state-select"
                                                 autocomplete="billing address-level1"
                                                 required=($Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y')
                                             }
@@ -291,10 +291,10 @@
                                         {else}
                                             {input
                                                 type="text"
-                                                title="{lang key=pleaseChoose}"
                                                 name="bundesland"
                                                 value=$cState
-                                                id="state"
+                                                id="billing_address-state"
+                                                data=["defaultoption"=>{lang key=pleaseChoose}]
                                                 placeholder="{lang key='state' section='account data'}"
                                                 autocomplete="billing address-level1"
                                                 required=($Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y')

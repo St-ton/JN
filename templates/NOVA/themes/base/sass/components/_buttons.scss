@@ -151,6 +151,7 @@
   line-height: 15px !important;
   border-radius: 50% !important;
   padding: 0;
+  z-index: 1;
   &::before { display: none; }
   &.circle-small {
     width: 36px;

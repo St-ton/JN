@@ -1740,13 +1740,7 @@ msgid "bilder_dateiformat_name"
 msgstr "File format"
 
 msgid "bilder_dateiformat_desc"
-msgstr "Specify whether to save images in PNG or JPEG format."
-
-msgid "bilder_skalieren_name"
-msgstr "Scale up images"
-
-msgid "bilder_skalieren_desc"
-msgstr "Specify whether to scale up images whose dimensions are too small for the specified image size. Please note that if there are too many differences, this may result in pixelated images."
+msgstr "Specify whether images are to be saved in the JPEG or PNG format. If 'Auto' is selected and the server allows this, all images are also saved in the webp format. While this requires more storage space on the server, webp images are significantly smaller and lead to better front-end performance"
 
 msgid "bilder_hintergrundfarbe_name"
 msgstr "Background colour"

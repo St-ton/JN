@@ -4,8 +4,6 @@ namespace JTL\Template\Admin\Validation;
 
 use JTL\DB\DbInterface;
 use JTL\Plugin\InstallCode;
-use JTL\Shop;
-use JTL\XMLParser;
 
 /**
  * Class TemplateValidator
@@ -26,6 +24,8 @@ class TemplateValidator implements ValidatorInterface
     public const RES_DIR_DOES_NOT_EXIST = 5;
 
     public const RES_SHOP_VERSION_NOT_FOUND = 6;
+
+    public const RES_NAME_NOT_FOUND = 7;
 
     /**
      * @var DbInterface

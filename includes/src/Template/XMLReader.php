@@ -2,7 +2,6 @@
 
 namespace JTL\Template;
 
-use JTL\Shop;
 use SimpleXMLElement;
 use stdClass;
 

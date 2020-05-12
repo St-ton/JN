@@ -67,3 +67,21 @@ msgstr "Template hochladen"
 
 msgid "errorTemplateUpload"
 msgstr "Das Template konnte nicht hochgeladen werden. Bitte wenden Sie sich an den Support."
+
+msgid "errorParentNotFound"
+msgstr "Das Elterntemplate konnte nicht gefunden werden."
+
+msgid "errorShopVersionNotFound"
+msgstr "XML-Knoten \"ShopVersion\" nicht gefunden."
+
+msgid "errorXmlNotFound"
+msgstr "template.xml nicht gefunden."
+
+msgid "errorXmlParse"
+msgstr "XML konnte nicht geparst werden."
+
+msgid "errorNameNotFound"
+msgstr "XML-Knoten \"Name\" konnte nicht gefunden werden."
+
+msgid "errorUnknown"
+msgstr "Unbekannter Fehler."

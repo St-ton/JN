@@ -3,8 +3,6 @@
 namespace JTL\Template;
 
 use JTL\DB\DbInterface;
-use JTL\Template\XMLReader;
-use SimpleXMLElement;
 use stdClass;
 
 /**

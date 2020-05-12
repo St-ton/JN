@@ -5,7 +5,6 @@ namespace JTL\Template;
 use Exception;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
-use JTL\Shop;
 use SimpleXMLElement;
 
 /**
@@ -83,9 +82,7 @@ class TemplateService implements TemplateServiceInterface
     }
 
     /**
-     * @param array $attributes
-     * @return Model
-     * @throws Exception
+     * @inheritDoc
      */
     public function loadFull(array $attributes): Model
     {

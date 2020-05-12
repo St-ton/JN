@@ -169,7 +169,7 @@ class Controller
         $reader    = new XMLReader();
         $tplConfig = $reader->getXML($dir);
         if ($tplConfig !== null && !empty($tplConfig->Parent)) {
-            if (!\is_dir(\PFAD_ROOT . \PFAD_TEMPLATES . (string)$tplConfig->Parent)) {
+            if (!\is_dir(\PFAD_ROOT . \PFAD_TEMPLATES . $tplConfig->Parent)) {
                 return false;
             }
             $parent       = (string)$tplConfig->Parent;

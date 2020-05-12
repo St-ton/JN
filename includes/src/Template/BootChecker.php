@@ -2,7 +2,6 @@
 
 namespace JTL\Template;
 
-use Exception;
 use JTL\Shop;
 
 /**

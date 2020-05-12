@@ -3,11 +3,8 @@
 namespace JTL\Template;
 
 use Exception;
-use JTL\DB\DbInterface;
 use JTL\Model\DataAttribute;
 use JTL\Model\DataModel;
-use JTL\Shop;
-use SimpleXMLElement;
 
 /**
  * Class Model

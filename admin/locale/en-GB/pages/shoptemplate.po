@@ -67,3 +67,21 @@ msgstr "Upload template"
 
 msgid "errorTemplateUpload"
 msgstr "Could not upload template. Please contact the Support team."
+
+msgid "errorParentNotFound"
+msgstr "Parent template not found."
+
+msgid "errorShopVersionNotFound"
+msgstr "XML node \"ShopVersion\" not found."
+
+msgid "errorXmlNotFound"
+msgstr "template.xml not found."
+
+msgid "errorXmlParse"
+msgstr "XML could not be parsed."
+
+msgid "errorNameNotFound"
+msgstr "XML node \"Name\" not found."
+
+msgid "errorUnknown"
+msgstr "Unknwon error."

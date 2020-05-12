@@ -20,4 +20,11 @@ interface TemplateServiceInterface
      * @throws Exception
      */
     public function getActiveTemplate(): Model;
+
+    /**
+     * @param array $attributes
+     * @return Model
+     * @throws Exception
+     */
+    public function loadFull(array $attributes): Model;
 }

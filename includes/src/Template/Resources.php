@@ -105,16 +105,16 @@ class Resources
                         && (empty($cssFile->attributes()->DependsOnSetting)
                             || $this->checkCondition($cssFile) === true)
                     ) {
-                        $_file      = \PFAD_TEMPLATES . $currentBaseDir . '/' . (string)$cssFile->attributes()->Path;
+                        $_file      = \PFAD_TEMPLATES . $currentBaseDir . '/' . $cssFile->attributes()->Path;
                         $customFile = \str_replace('.css', '_custom.css', $filePath);
                         if (\file_exists($customFile)) { //add _custom file if existing
                             $_file           = \str_replace(
                                 '.css',
                                 '_custom.css',
-                                \PFAD_TEMPLATES . $currentBaseDir . '/' . (string)$cssFile->attributes()->Path
+                                \PFAD_TEMPLATES . $currentBaseDir . '/' . $cssFile->attributes()->Path
                             );
                             $groups[$name][] = [
-                                'idx' => \str_replace('.css', '_custom.css', (string)$cssFile->attributes()->Path),
+                                'idx' => \str_replace('.css', '_custom.css', $cssFile->attributes()->Path),
                                 'abs' => \realpath(\PFAD_ROOT . $_file),
                                 'rel' => $_file
                             ];
@@ -138,7 +138,7 @@ class Resources
                     if (!empty($jsFile->attributes()->DependsOnSetting) && $this->checkCondition($jsFile) !== true) {
                         continue;
                     }
-                    $_file    = \PFAD_TEMPLATES . $currentBaseDir . '/' . (string)$jsFile->attributes()->Path;
+                    $_file    = \PFAD_TEMPLATES . $currentBaseDir . '/' . $jsFile->attributes()->Path;
                     $newEntry = [
                         'idx' => (string)$jsFile->attributes()->Path,
                         'abs' => \PFAD_ROOT . $_file,

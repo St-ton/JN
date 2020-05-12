@@ -95,10 +95,8 @@
 	</td>
 	<td class="text-vcenter text-center">
         {if $listingItem->hasError()}
-			<span class="error"><strong>{__('danger')}:</strong><br />
-				{if $listingItem->getErrorCode() === JTL\Template\Admin\Validation\TemplateValidator::RES_PARENT_NOT_FOUND}{__('parentTemplateMissing')}.
-				{else}{__('error')}
-				{/if}
+			<span class="error"><strong>{__('error')}:</strong><br />
+				{$listingItem->getErrorMessage()}
 			</span>
         {elseif $listingItem->isAvailable()}
             {if !$listingItem->isActive()}

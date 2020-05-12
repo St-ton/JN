@@ -5,13 +5,9 @@ namespace JTL\Template\Admin;
 use DateTime;
 use InvalidArgumentException;
 use JTL\Backend\FileCheck;
-use JTL\Helpers\GeneralObject;
-use JTL\Mapper\PluginValidation;
-use JTL\Plugin\InstallCode;
-use JTL\Plugin\PluginInterface;
 use JTL\Plugin\State;
 use JTL\Shop;
-use JTL\Template\Model;
+use JTL\Template\Admin\Validation\TemplateValidator;
 use JTLShop\SemVer\Version;
 
 /**
@@ -176,16 +172,15 @@ class ListingItem
      */
     public function parseXML(array $xml): self
     {
-        $node       = null;
         $this->name = $xml['cVerzeichnis'];
         $this->dir  = $xml['cVerzeichnis'];
         $node       = $xml['Template'][0] ?? null;
         if ($node !== null) {
             if (!isset($node['ShopVersion'])) {
-                return $this->fail();
+                return $this->fail(TemplateValidator::RES_SHOP_VERSION_NOT_FOUND);
             }
             if (!isset($node['Name'])) {
-                return $this->fail();
+                return $this->fail(TemplateValidator::RES_NAME_NOT_FOUND);
             }
             $this->name         = $node['Name'];
             $this->description  = $node['Description'] ?? '';
@@ -202,21 +197,46 @@ class ListingItem
             try {
                 $this->version = Version::parse($version);
             } catch (InvalidArgumentException $e) {
-                return $this->fail();
+                $xml['cFehlercode'] = TemplateValidator::RES_SHOP_VERSION_NOT_FOUND;
             }
         }
-        if ($xml['cFehlercode'] !== InstallCode::OK) {
-            $this->available    = false;
-            $this->hasError     = true;
-            $this->errorCode    = $xml['cFehlercode'];
-            $this->errorMessage = '@todo! error msg'; // @todo
-
-            return $this->fail();
+        if ($xml['cFehlercode'] !== TemplateValidator::RES_OK) {
+            return $this->fail($xml['cFehlercode']);
         }
 
         return $this;
     }
 
+    /**
+     * @param int $code
+     */
+    private function generateErrorMessage(int $code): void
+    {
+        switch ($code) {
+            case TemplateValidator::RES_OK:
+                $msg = '';
+                break;
+            case TemplateValidator::RES_PARENT_NOT_FOUND:
+                $msg = __('errorParentNotFound');
+                break;
+            case TemplateValidator::RES_SHOP_VERSION_NOT_FOUND:
+                $msg = __('errorShopVersionNotFound');
+                break;
+            case TemplateValidator::RES_XML_NOT_FOUND:
+                $msg = __('errorXmlNotFound');
+                break;
+            case TemplateValidator::RES_XML_PARSE_ERROR:
+                $msg = __('errorXmlParse');
+                break;
+            case TemplateValidator::RES_NAME_NOT_FOUND:
+                $msg = __('errorNameNotFound');
+                break;
+            default:
+                $msg = __('errorUnknown');
+                break;
+        }
+        $this->setErrorMessage($msg);
+    }
 
     private function addChecksums(): void
     {
@@ -227,19 +247,24 @@ class ListingItem
         $res         = $checker->validateCsvFile($base . 'checksums.csv', $files, $errorsCount, $base);
         if ($res === FileCheck::ERROR_INPUT_FILE_MISSING || $res === FileCheck::ERROR_NO_HASHES_FOUND) {
             $this->checksums = null;
+
             return;
         }
-
         $this->checksums = $errorsCount === 0 ? true : $files;
     }
 
     /**
+     * @param int $errorCode
      * @return $this
      */
-    private function fail(): self
+    private function fail(int $errorCode): self
     {
         $this->version     = Version::parse('0.0.0');
         $this->shopVersion = $this->shopVersion ?? $this->version;
+        $this->available   = false;
+        $this->hasError    = true;
+        $this->setErrorCode($errorCode);
+        $this->generateErrorMessage($errorCode);
 
         return $this;
     }

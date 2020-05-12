@@ -5,13 +5,11 @@ namespace JTL\Template\Admin;
 use DirectoryIterator;
 use Illuminate\Support\Collection;
 use JTL\DB\DbInterface;
-use JTL\Plugin\InstallCode;
 use JTL\Shop;
 use JTL\Template\Admin\Validation\TemplateValidator;
 use JTL\Template\Admin\Validation\ValidatorInterface;
 use JTL\Template\Model;
 use JTL\XMLParser;
-use JTLShop\SemVer\Version;
 
 /**
  * Class Listing
@@ -80,7 +78,6 @@ final class Listing
     private function parseTemplateDir(XMLParser $parser, string $templateDir): Collection
     {
         $validator = $this->validator;
-
         if (!\is_dir($templateDir)) {
             return $this->items;
         }

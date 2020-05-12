@@ -921,6 +921,8 @@ class Cart
     {
         $defaultOptions               = Artikel::getDefaultOptions();
         $defaultOptions->nStueckliste = 1;
+        $this->oFavourableShipping    = null;
+
         foreach ($this->PositionenArr as $i => $item) {
             if ($item->kArtikel > 0 && $item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
                 $oldItem = clone $item;

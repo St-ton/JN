@@ -1740,13 +1740,7 @@ msgid "bilder_dateiformat_name"
 msgstr "Dateiformat"
 
 msgid "bilder_dateiformat_desc"
-msgstr "Hier legen Sie fest, ob die Bilder im PNG- oder im JPEG-Format gespeichert werden sollen."
-
-msgid "bilder_skalieren_name"
-msgstr "Bilder hochskalieren"
-
-msgid "bilder_skalieren_desc"
-msgstr "Hier legen Sie fest, ob Bilder, deren Abmessungen zu gering für die angegebenen Bildgrößen sind, hochskaliert werden sollen. Bitte beachten Sie, dass bei zu großen Unterschieden verpixelte Bilder entstehen können."
+msgstr "Hier legen Sie fest, ob die Bilder im PNG- oder im JPEG-Format gespeichert werden sollen. Falls „Auto“ ausgewählt wird und der Server dies zulässt, werden alle Bilder auch im webp-Format angelegt. Dadurch wird zwar zusätzlicher Speicherpatz auf dem Server belegt, Bilder im webp-Format sind jedoch wesentlich kleiner und führen daher zu einer besseren Performance im Frontend."
 
 msgid "bilder_hintergrundfarbe_name"
 msgstr "Hintergrundfarbe"

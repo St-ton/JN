@@ -13,8 +13,8 @@
                 <div class="modal-body">
                     {foreach $images as $image}
                         {block name='productdetails-product-images-modal-image'}
-                            <div class="productbox-image-wrapper">
-                                <div class="productbox-image-wrapper-inner">
+                            <div class="square square-image">
+                                <div class="inner">
                                     {image alt=$image->cAltAttribut|escape:'html'
                                         class="product-image"
                                         fluid=true

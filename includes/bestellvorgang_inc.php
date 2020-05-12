@@ -433,6 +433,9 @@ function pruefeVersandkostenfreiKuponVorgemerkt(): array
         if (angabenKorrekt($errors)) {
             Kupon::acceptCoupon($_SESSION['oVersandfreiKupon']);
             Shop::Smarty()->assign('KuponMoeglich', Kupon::couponsAvailable());
+        } else {
+            Frontend::getCart()->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON, true);
+            Kupon::mapCouponErrorMessage($errors['ungueltig']);
         }
     }
 
@@ -2671,7 +2674,7 @@ function gibBestellschritt(string $step)
  */
 function setzeLieferadresseAusRechnungsadresse(?array $post = null): Lieferadresse
 {
-    $customer                         = isset($post['kKunde']) ? getKundendaten($post, 0) : Frontend::getCustomer();
+    $customer                         = isset($post['land']) ? getKundendaten($post, 0) : Frontend::getCustomer();
     $shippingAddress                  = new Lieferadresse();
     $shippingAddress->kKunde          = $customer->kKunde;
     $shippingAddress->cAnrede         = $customer->cAnrede;

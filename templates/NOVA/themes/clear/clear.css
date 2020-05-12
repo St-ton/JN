@@ -20832,6 +20832,9 @@ label {
 #productImagesModal .modal-dialog {
   height: auto;
 }
+#productImagesModal .square-image {
+  margin-bottom: 0.25rem;
+}
 
 #maintenance button.close {
   display: none;

@@ -19,10 +19,11 @@ class Comment implements CommentInterface
      * @var array
      */
     protected static $mapping = [
-        'cKommentar'   => 'Text',
-        'cName'        => 'Name',
-        'dErstellt'    => 'DateCreatedCompat',
-        'dErstellt_de' => 'DateCreatedCompat',
+        'cKommentar'        => 'Text',
+        'cAntwortKommentar' => 'AnswerText',
+        'cName'             => 'Name',
+        'dErstellt'         => 'DateCreatedCompat',
+        'dErstellt_de'      => 'DateCreatedCompat',
     ];
 
     /**
@@ -64,6 +65,11 @@ class Comment implements CommentInterface
      * @var string
      */
     private $text;
+
+    /**
+     * @var string
+     */
+    private $answerText;
 
     /**
      * @var \DateTime
@@ -117,6 +123,7 @@ class Comment implements CommentInterface
             $this->setName($comment->cName);
             $this->setMail($comment->cEmail);
             $this->setText($comment->cKommentar);
+            $this->setAnswerText($comment->cAntwortKommentar);
             $this->setDateCreated($comment->dErstellt);
         }
 
@@ -300,5 +307,21 @@ class Comment implements CommentInterface
         $res['db'] = '*truncated*';
 
         return $res;
+    }
+
+    /**
+     * @return string | null
+     */
+    public function getAnswerText(): ?string
+    {
+        return $this->answerText;
+    }
+
+    /**
+     * @param string $answerText
+     */
+    public function setAnswerText(string $answerText): void
+    {
+        $this->answerText = $answerText;
     }
 }

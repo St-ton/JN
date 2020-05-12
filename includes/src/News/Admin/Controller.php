@@ -275,6 +275,7 @@ final class Controller
         $upd             = new stdClass();
         $upd->cName      = $post['cName'];
         $upd->cKommentar = $post['cKommentar'];
+        $upd->cAntwortKommentar = $post['cAntwortKommentar'];
         $this->flushCache();
 
         return $this->db->update('tnewskommentar', 'kNewsKommentar', $id, $upd) >= 0;

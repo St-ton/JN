@@ -121,11 +121,12 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
             } else {
                 $controller->setStep('news_kommentar_editieren');
                 $controller->setErrorMsg(__('errorCheckInput'));
-                $comment                 = new stdClass();
-                $comment->kNewsKommentar = $_POST['kNewsKommentar'];
-                $comment->kNews          = $_POST['kNews'];
-                $comment->cName          = $_POST['cName'];
-                $comment->cKommentar     = $_POST['cKommentar'];
+                $comment                    = new stdClass();
+                $comment->kNewsKommentar    = $_POST['kNewsKommentar'];
+                $comment->kNews             = $_POST['kNews'];
+                $comment->cName             = $_POST['cName'];
+                $comment->cKommentar        = $_POST['cKommentar'];
+                $comment->cAntwortKommentar = $_POST['cAntwortKommentar'];
                 $smarty->assign('oNewsKommentar', $comment);
             }
         } else {

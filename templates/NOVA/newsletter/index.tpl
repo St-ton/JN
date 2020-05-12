@@ -75,13 +75,13 @@
 
                                             {block name='newsletter-index-newsletter-subscribe-form-content-submit'}
                                                 {row}
-                                                    {col md=4 class='ml-md-auto'}
+                                                    {col md=6 class='ml-md-auto'}
                                                         {input type="hidden" name="abonnieren" value="1"}
                                                         {button type="submit" variant="primary" block=true}
                                                             <span>{lang key='newsletterSendSubscribe' section='newsletter'}</span>
                                                         {/button}
                                                         <p class="info small mt-1">
-                                                            {lang key='unsubscribeAnytime' section='newsletter'}
+                                                            {lang key='unsubscribeAnytime' section='newsletter' printf=$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL()}
                                                         </p>
                                                     {/col}
                                                 {/row}
@@ -120,7 +120,7 @@
                                         }
                                         {input type="hidden" name="abmelden" value="1"}
                                         {row}
-                                            {col md=4 class='ml-md-auto'}
+                                            {col md=6 class='ml-md-auto'}
                                                 {button type="submit" block=true variant="outline-primary"}
                                                     <span>{lang key='newsletterSendUnsubscribe' section='newsletter'}</span>
                                                 {/button}

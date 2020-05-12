@@ -19048,6 +19048,27 @@ Supports Thumbs: false
     padding-left: 2rem;
   }
 }
+@media (min-width: 576px) {
+  .container {
+    max-width: 97vw;
+  }
+}
+@media (min-width: 768px) {
+  .container {
+    max-width: 720px;
+  }
+}
+@media (min-width: 992px) {
+  .container {
+    max-width: 960px;
+  }
+}
+@media (min-width: 1300px) {
+  .container {
+    max-width: 1250px;
+  }
+}
+
 .yt-container {
   position: relative;
   width: 100%;
@@ -19337,14 +19358,6 @@ aside .box-monthlynews a .value {
 }
 aside .box-monthlynews a .value:hover {
   text-decoration: none;
-}
-aside .last-seen-link {
-  text-decoration: underline;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  width: 100%;
-  overflow: hidden;
-  display: block;
 }
 
 .box-categories .dropdown .collapse,
@@ -19880,6 +19893,7 @@ aside .last-seen-link {
   line-height: 15px !important;
   border-radius: 50% !important;
   padding: 0;
+  z-index: 1;
 }
 .badge-circle::before {
   display: none;
@@ -20135,15 +20149,11 @@ aside .last-seen-link {
 }
 
 .slick-slide {
-  flex: 0 0 auto;
   max-width: 100%;
   width: 100%;
   float: none;
   height: auto;
   padding: 0 1rem;
-}
-.slick-slide img {
-  margin: auto;
 }
 
 .slick-arrow {
@@ -20289,7 +20299,10 @@ aside .last-seen-link {
   margin: 0 -0.5rem;
 }
 .carousel-thumbnails .slick-slide {
-  padding: 0 0.5rem;
+  padding: 0;
+  border: 1px solid #525252;
+  border-radius: 0.125rem;
+  margin: 0 0.5rem;
 }
 .carousel-thumbnails .slick-arrow {
   flex: 0 0 auto;
@@ -20362,6 +20375,7 @@ aside .last-seen-link {
   word-break: break-word;
   text-overflow: ellipsis;
   transition: all 0.5s ease-in-out;
+  width: 90px;
 }
 .swatches-image img {
   padding: 0.5rem;
@@ -20481,6 +20495,47 @@ aside .last-seen-link {
   content: "";
   display: inline-block;
   padding-bottom: 100%;
+}
+
+.slick-slide .square, .slick-slide .productbox-image-wrapper {
+  display: flex !important;
+}
+
+.square-image {
+  position: relative;
+  display: flex;
+}
+.square-image .inner {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.square-image .inner picture {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  left: 0;
+  top: 0;
+}
+.square-image .inner a {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.square-image .inner img {
+  display: block;
+  position: relative;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  height: auto;
+  width: auto;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
 }
 
 .square-inner, .productbox-image-wrapper-inner {
@@ -20705,6 +20760,10 @@ label {
     height: 100%;
   }
 }
+.modal-content .container {
+  padding-right: 0;
+  padding-left: 0;
+}
 
 .modal-title {
   font-size: 1.25rem;
@@ -20766,7 +20825,7 @@ label {
 }
 @media (max-width: 991.98px) {
   .modal-dialog {
-    height: 100%;
+    height: auto;
   }
 }
 
@@ -20975,7 +21034,6 @@ label {
 
 .productbox-image {
   position: relative;
-  margin-bottom: 1rem;
 }
 
 .productbox-image-wrapper-inner a {
@@ -22374,20 +22432,30 @@ input.form-control[name=wishlist-url] {
   height: calc(1.5em + 1.25rem + 2px);
 }
 
-.comparelist {
-  max-height: 800px;
+@media (max-width: 991.98px) {
+  #filter-checkboxes .custom-checkbox label {
+    max-width: 32vw;
+  }
 }
-.comparelist .table thead th:first-child, .comparelist td:first-child {
+
+.delete-link-times {
+  position: absolute;
+  z-index: 1;
+  right: 0.5rem;
+  top: 0.5rem;
+  font-size: 1rem;
+}
+
+.comparelist .table tr.comparelist-row td:first-child {
   position: sticky;
   left: 0;
-  background: #fff;
   z-index: 996;
 }
 .comparelist .table {
   width: 98%;
 }
 .comparelist .table thead th {
-  background: #fff;
+  background: #ffffff;
   vertical-align: top;
   z-index: 999;
 }
@@ -22399,12 +22467,22 @@ input.form-control[name=wishlist-url] {
 }
 .comparelist .table tbody td:first-child {
   background-color: #f5f7fa;
+  font-weight: 700;
+}
+@media (max-width: 991.98px) {
+  .comparelist .table td {
+    padding: 0.3rem;
+  }
+  .comparelist .table td:first-child > div {
+    width: 110px;
+  }
+  .comparelist .table th {
+    padding: 0;
+  }
 }
 .comparelist .stretched {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  justify-content: space-between;
 }
 
 .custom-checkbox + .description {
@@ -22608,6 +22686,18 @@ body {
 .lazyloaded {
   opacity: 1;
   transition: opacity 300ms;
+}
+
+#shop-nav img {
+  width: 45px;
+  height: 45px;
+  object-fit: contain;
+}
+
+.box-compare img, .box-wishlist img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
 }
 
 /* utilities */
@@ -23508,6 +23598,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 .filter-item .filter-img {
   width: auto;
   height: 42px;
+  max-width: 42px;
   margin: 0.2rem;
   border: 3px solid transparent;
 }
@@ -23579,16 +23670,19 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   display: flex;
   flex-direction: column;
 }
+.list-gallery .second-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
 .list-gallery img.first {
   opacity: 1;
   transition: opacity 0.35s linear;
 }
 .list-gallery img.second {
   opacity: 0;
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
   transition: opacity 0.35s linear;
 }
 .list-gallery:hover img.first {
@@ -23631,10 +23725,6 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 #image_wrapper .slick-slide,
 #image_wrapper img {
   outline: none !important;
-  width: 100%;
-}
-#image_wrapper .slick-slide img {
-  margin: 0 auto;
 }
 #image_wrapper .slick-slide:not(.slick-current) img {
   -webkit-filter: opacity(0.4);
@@ -23643,10 +23733,6 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 #image_wrapper .slick-slide:not(.slick-current) img:hover {
   -webkit-filter: opacity(1);
   filter: opacity(1);
-}
-#image_wrapper #gallery_preview_wrapper .product-image {
-  border: 1px solid #525252;
-  border-radius: 0.125rem;
 }
 #image_wrapper .product-detail-image-topbar {
   display: none;
@@ -23662,7 +23748,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   overflow: hidden;
 }
 #image_wrapper.fullscreen img {
-  width: initial;
+  margin: 0 auto;
 }
 #image_wrapper.fullscreen .product-actions {
   display: none;
@@ -23682,8 +23768,17 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   padding: 6px;
   margin-right: 10px;
 }
+#image_wrapper.fullscreen #gallery {
+  margin-bottom: 0;
+}
 #image_wrapper.fullscreen #gallery .product-image {
   cursor: pointer;
+}
+#image_wrapper.fullscreen #gallery .square-image .inner img {
+  left: initial;
+  top: initial;
+  -webkit-transform: initial;
+  transform: initial;
 }
 #image_wrapper.fullscreen #gallery_preview_wrapper {
   width: 100%;
@@ -23715,6 +23810,9 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
     opacity: 1;
   }
 }
+#image_wrapper .variation-image-preview img {
+  object-fit: contain;
+}
 #image_wrapper .variation-image-preview::before, #image_wrapper .variation-image-preview::after {
   left: 100%;
   top: 50%;
@@ -23737,6 +23835,9 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   border-width: 10px 0px 10px 14px;
   border-color: transparent transparent transparent #ffffff;
 }
+#image_wrapper #gallery {
+  margin-bottom: 2rem;
+}
 #image_wrapper #gallery:not(.slick-initialized) {
   padding: 0 1rem;
 }
@@ -23746,12 +23847,22 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   }
 }
 #image_wrapper #gallery_preview:not(.slick-initialized) div.js-gallery-images {
-  width: calc((100% - 49px)/5);
-  min-width: calc((100% - 49px)/5);
-  padding: 0 0.5rem;
+  width: calc(79%/5);
+  min-width: calc(79%/5);
+  height: 100%;
+  padding: 0;
+  border: 1px solid #525252;
+  border-radius: 0.125rem;
+  margin: 0 0.5rem;
 }
 #image_wrapper #gallery_preview:not(.slick-initialized) div.js-gallery-images:not(.preview-first) {
   opacity: 0.2;
+}
+@media (max-width: 1299.98px) {
+  #image_wrapper #gallery_preview:not(.slick-initialized) div.js-gallery-images {
+    width: calc(72%/5);
+    min-width: calc(72%/5);
+  }
 }
 #image_wrapper #gallery_preview:not(.slick-initialized).slick-count-default div.js-gallery-images {
   width: calc((100%)/5);

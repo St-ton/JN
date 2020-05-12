@@ -16,16 +16,20 @@
                             {$characteristicValue = $AWA->getSelectedValue($nQuestion)}
                             {$img = $characteristicValue->getImage(\JTL\Media\Image::SIZE_XS)}
                             {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['B', 'BT']:true && $img !== null}
-                                {image webp=true
-                                    lazy=true
-                                    src=$img
-                                    srcset="{$characteristicValue->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_merkmalwert_mini_breite}w,
-                                        {$characteristicValue->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_merkmalwert_klein_breite}w,
-                                        {$characteristicValue->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_merkmalwert_normal_breite}w"
-                                    alt=$characteristicValue->getValue()|escape:'html'
-                                    sizes="auto"
-                                    fluid-grow=true
-                                }
+                            <div class="square square-image">
+                                <div class="inner">
+                                    {image webp=true
+                                        lazy=true
+                                        src=$img
+                                        srcset="{$characteristicValue->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_merkmalwert_mini_breite}w,
+                                            {$characteristicValue->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_merkmalwert_klein_breite}w,
+                                            {$characteristicValue->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_merkmalwert_normal_breite}w"
+                                        alt=$characteristicValue->getValue()|escape:'html'
+                                        sizes="auto"
+                                        fluid=true
+                                    }
+                                </div>
+                            </div>
                             {/if}
                             {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['T', 'BT', 'S']:true}
                                 {$characteristicValue->getValue()}
@@ -61,16 +65,20 @@
                                     {link class="selection-wizard-answer no-deco" href="#" data=["value"=>$characteristicValue->getID()]}
                                         {$img = $characteristicValue->getImage(\JTL\Media\Image::SIZE_XS)}
                                         {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['B', 'BT']:true && $img !== null}
-                                            {image webp=true
-                                                lazy=true
-                                                src=$img
-                                                srcset="{$characteristicValue->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_merkmalwert_mini_breite}w,
-                                                    {$characteristicValue->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_merkmalwert_klein_breite}w,
-                                                    {$characteristicValue->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_merkmalwert_normal_breite}w"
-                                                alt=$characteristicValue->getValue()|escape:'html'
-                                                sizes="auto"
-                                                fluid-grow=true
-                                            }
+                                        <div class="square square-image">
+                                            <div class="inner">
+                                                {image webp=true
+                                                    lazy=true
+                                                    src=$img
+                                                    srcset="{$characteristicValue->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_merkmalwert_mini_breite}w,
+                                                        {$characteristicValue->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_merkmalwert_klein_breite}w,
+                                                        {$characteristicValue->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_merkmalwert_normal_breite}w"
+                                                    alt=$characteristicValue->getValue()|escape:'html'
+                                                    sizes="auto"
+                                                    fluid=true
+                                                }
+                                            </div>
+                                        </div>
                                         {/if}
                                         {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['T', 'BT']:true}
                                             <span class="text-clamp-2">
@@ -102,16 +110,20 @@
                                     {$img = $characteristicValue->getImage(\JTL\Media\Image::SIZE_XS)}
                                     <span class="selection-wizard-answer">
                                         {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['B', 'BT']:true && $img !== null}
-                                            {image webp=true
-                                                lazy=true
-                                                fluid-grow=true
-                                                src=$img
-                                                srcset="{$characteristicValue->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_merkmalwert_mini_breite}w,
-                                                    {$characteristicValue->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_merkmalwert_klein_breite}w,
-                                                    {$characteristicValue->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_merkmalwert_normal_breite}w"
-                                                alt=$characteristicValue->getValue()|escape:'html'
-                                                sizes="auto"
-                                            }
+                                        <div class="square square-image">
+                                            <div class="inner">
+                                                {image webp=true
+                                                    lazy=true
+                                                    fluid=true
+                                                    src=$img
+                                                    srcset="{$characteristicValue->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_merkmalwert_mini_breite}w,
+                                                        {$characteristicValue->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_merkmalwert_klein_breite}w,
+                                                        {$characteristicValue->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_merkmalwert_normal_breite}w"
+                                                    alt=$characteristicValue->getValue()|escape:'html'
+                                                    sizes="auto"
+                                                }
+                                            </div>
+                                        </div>
                                         {/if}
                                         {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['T', 'BT']:true}
                                             {$characteristicValue->getValue()}

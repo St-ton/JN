@@ -3,6 +3,7 @@
 use JTL\Alert\Alert;
 use JTL\Customer\Customer;
 use JTL\Helpers\Form;
+use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Shop;
 
@@ -113,6 +114,7 @@ if (!$alertHelper->alertTypeExists(Alert::TYPE_ERROR)) {
 }
 
 $smarty->assign('step', $step)
+       ->assign('presetEmail', Text::filterXSS(Request::verifyGPDataString('email')))
        ->assign('Link', $link);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';

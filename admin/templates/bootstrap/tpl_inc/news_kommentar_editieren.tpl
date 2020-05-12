@@ -37,7 +37,7 @@
                     </div>
                 </div>
                 <div class="form-group form-row align-items-center">
-                    <label class="col col-sm-4 col-form-label text-sm-right" for="cAntwortKommentar">{__('answer')}:</label>
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="cAntwortKommentar">{__('commentReply')}:</label>
                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         <textarea id="cAntwortKommentar" class="ckeditor form-control" name="cAntwortKommentar" rows="15" cols="60">{$oNewsKommentar->getAnswerText()}</textarea>
                     </div>

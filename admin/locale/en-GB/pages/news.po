@@ -154,3 +154,6 @@ msgstr "Blog category added successfully."
 
 msgid "successNewsCommentDelete"
 msgstr "Selected blog comments deleted successfully."
+
+msgid "commentReply"
+msgstr "Answer"

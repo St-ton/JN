@@ -194,6 +194,13 @@
                                                         {$comment->getName()}, {$comment->getDateCreated()->format('d.m.y H:i')}
                                                     </p>
                                                     {$comment->getText()}
+                                                    {if !empty($comment->getAnswerText())}
+                                                        <br><br>
+                                                        <blockquote class="review-reply">
+                                                            <strong>{lang key='commentReply' section='news'}:</strong><br>
+                                                            {$comment->getAnswerText()}
+                                                        </blockquote>
+                                                    {/if}
                                                 {/listgroupitem}
                                             {/foreach}
                                         {/listgroup}

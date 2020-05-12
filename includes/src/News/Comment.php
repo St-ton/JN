@@ -318,9 +318,9 @@ class Comment implements CommentInterface
     }
 
     /**
-     * @param string $answerText
+     * @param string | null $answerText
      */
-    public function setAnswerText(string $answerText): void
+    public function setAnswerText(?string $answerText): void
     {
         $this->answerText = $answerText;
     }

@@ -50,6 +50,16 @@
                         </div>
                         <div class="card-body">
                             {$comment->getText()}
+                            {if !empty($comment->getAnswerText())}
+                                <br><br>
+                                <blockquote class="review-reply">
+                                    <strong>{__('commentReply')}</strong><br>
+                                    {$comment->getAnswerText()}
+                                </blockquote>
+                            {/if}
+                        </div>
+
+
                         </div>
                     </div>
                 {/foreach}

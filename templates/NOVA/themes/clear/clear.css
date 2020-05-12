@@ -16032,7 +16032,7 @@ select.selectpicker {
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 100001;
+  z-index: 1050;
   background-color: rgba(21, 28, 33, 0.9);
   overflow-x: hidden;
   overflow-y: auto;
@@ -16116,7 +16116,7 @@ select.selectpicker {
   font-size: 0.875rem;
   line-height: 1.5;
   position: fixed;
-  z-index: 100000;
+  z-index: 1049;
   bottom: 2rem;
   left: 1rem;
   right: 1rem;
@@ -16351,7 +16351,7 @@ select.selectpicker {
   position: fixed;
   left: 1rem;
   bottom: 1rem;
-  z-index: 100000;
+  z-index: 1049;
   background: #ffffff;
   border-radius: 10rem;
   padding: 0.5rem;
@@ -23518,7 +23518,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 
 .zindex-modal {
-  z-index: 100001;
+  z-index: 1050;
 }
 
 .zindex-popover {

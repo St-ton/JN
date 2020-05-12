@@ -298,8 +298,8 @@ class BoxService implements BoxServiceInterface
             'left'   => null
         ];
         $this->smarty->assign('BoxenEinstellungen', $this->config)
-                     ->assign('bBoxenFilterNach', $this->showBoxes(Shop::getProductFilter()))
-                     ->assign('NettoPreise', Frontend::getCustomerGroup()->getIsMerchant());
+            ->assign('bBoxenFilterNach', $this->showBoxes(Shop::getProductFilter()))
+            ->assign('NettoPreise', Frontend::getCustomerGroup()->getIsMerchant());
         foreach ($positionedBoxes as $_position => $boxes) {
             if (!\is_array($boxes)) {
                 $boxes = [];
@@ -342,7 +342,7 @@ class BoxService implements BoxServiceInterface
         if ($activeOnly === true && \count($visiblePositions) === 0) {
             return [];
         }
-        $boxAdmin   = new BoxAdmin(Shop::Container()->getDB());
+        $boxAdmin   = new BoxAdmin($this->db);
         $validPages = \implode(',', $boxAdmin->getValidPageTypes());
         $cacheID    = 'bx_' . $pageType . '_' . (int)$activeOnly . '_' . Shop::getLanguageID();
         $activeSQL  = $activeOnly
@@ -350,8 +350,9 @@ class BoxService implements BoxServiceInterface
                 AND tboxen.ePosition IN (' . \implode(',', $visiblePositions) . ')'
             : '';
         $plgnSQL    = $activeOnly
-            ? ' AND (tplugin.nStatus = ' . State::ACTIVATED . "  OR (tboxvorlage.eTyp != '" . Type::PLUGIN .
-            "' AND tboxvorlage.eTyp != '" . Type::EXTENSION . "'))"
+            ? ' AND (tplugin.nStatus = ' . State::ACTIVATED
+            . ' OR tboxvorlage.eTyp IS NULL '
+            . "  OR (tboxvorlage.eTyp != '" . Type::PLUGIN . "' AND tboxvorlage.eTyp != '" . Type::EXTENSION . "'))"
             : '';
         if (($grouped = $this->cache->get($cacheID)) === false) {
             $boxData = $this->db->query(
@@ -375,7 +376,7 @@ class BoxService implements BoxServiceInterface
                     LEFT JOIN tsprache
                         ON tsprache.cISO = tboxsprache.cISO
                     WHERE tboxen.kContainer > -1 '
-                        . $activeSQL . $plgnSQL . ' 
+                . $activeSQL . $plgnSQL . ' 
                     GROUP BY tboxsprache.kBoxSprache, tboxen.kBox, tboxensichtbar.cFilter
                     ORDER BY tboxensichtbar.nSort, tboxen.kBox ASC',
                 ReturnType::ARRAY_OF_OBJECTS
@@ -440,13 +441,13 @@ class BoxService implements BoxServiceInterface
         $result   = [];
         foreach ($grouped as $i => $boxes) {
             $first = first($boxes);
-            if ((int)$first->kContainer > 0) {
+            if ($first->kContainer > 0) {
                 $box = $this->factory->getBoxByBaseType($first->kBoxvorlage, $first->eTyp);
                 $box->map($boxes);
-                if (!isset($children[(int)$first->kContainer])) {
-                    $children[(int)$first->kContainer] = [];
+                if (!isset($children[$first->kContainer])) {
+                    $children[$first->kContainer] = [];
                 }
-                $children[(int)$first->kContainer][] = $box;
+                $children[$first->kContainer][] = $box;
                 unset($grouped[$i]);
             }
         }
@@ -458,18 +459,15 @@ class BoxService implements BoxServiceInterface
             if ($class === Plugin::class) {
                 $plugin = new LegacyPlugin($box->getCustomID());
                 $box->setTemplateFile(
-                    $plugin->getPaths()->getFrontendPath() .
-                    \PFAD_PLUGIN_BOXEN .
-                    $box->getTemplateFile()
+                    $plugin->getPaths()->getFrontendPath()
+                    . \PFAD_PLUGIN_BOXEN
+                    . $box->getTemplateFile()
                 );
                 $box->setPlugin($plugin);
             } elseif ($class === Extension::class) {
                 $loader = new PluginLoader($this->db, $this->cache);
                 $plugin = $loader->init($box->getCustomID());
-                $box->setTemplateFile(
-                    $plugin->getPaths()->getFrontendPath() .
-                    $box->getTemplateFile()
-                );
+                $box->setTemplateFile($plugin->getPaths()->getFrontendPath() . $box->getTemplateFile());
                 $box->setExtension($plugin);
             } elseif ($box->getType() === Type::CONTAINER) {
                 $box->setChildren($children);

@@ -7,7 +7,7 @@ use JTL\Plugin\Admin\Installation\MigrationManager as PluginMigrationManager;
 use JTL\Plugin\PluginLoader;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
-use JTL\Helpers\Template;
+use JTL\Smarty\JTLSmarty;
 use JTL\Template\TemplateServiceInterface;
 use JTL\Update\IMigration;
 use JTL\Update\MigrationManager;
@@ -192,6 +192,9 @@ function dbUpdateIO()
             $updateResult = sprintf('Version: %d.%02d', $updateResult->getMajor(), $updateResult->getMinor());
         } else {
             $updateResult = sprintf('Version: %.2f', $updateResult / 100);
+        }
+        if ($availableUpdate === false) {
+            $updater->finalize();
         }
 
         return [

@@ -50,17 +50,17 @@ class Crawler
     private $link;
 
     /**
-     * @param array $crawler
+     * @param array $crawlers
      * @return object
      */
-    public function map(array $crawler) :object
+    public function map(array $crawlers) :object
     {
-        foreach ($crawler as $cr) {
-            $this->setID((int)$cr->kBesucherBot);
-            $this->setDescription($cr->cBeschreibung);
-            $this->setUserAgent($cr->cUserAgent);
-            $this->setName($cr->cName);
-            $this->setLink($cr->cLink);
+        foreach ($crawlers as $crawler) {
+            $this->setID((int)$crawler->kBesucherBot);
+            $this->setDescription($crawler->cBeschreibung);
+            $this->setUserAgent($crawler->cUserAgent);
+            $this->setName($crawler->cName);
+            $this->setLink($crawler->cLink);
         }
 
         return $this;
@@ -135,10 +135,9 @@ class Crawler
     }
 
     /**
-     * @param string $link
      * @return string
      */
-    public function getLink(string $link): string
+    public function getLink(): string
     {
         return $this->link;
     }

@@ -10,6 +10,10 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Services\JTL\AlertServiceInterface;
 
+/**
+ * Class Controller
+ * @package JTL\Crawler
+ */
 class Controller
 {
     /**
@@ -29,8 +33,8 @@ class Controller
 
     /**
      * Crawler constructor.
-     * @param DbInterface $db
-     * @param JTLCacheInterface $cache
+     * @param DbInterface           $db
+     * @param JTLCacheInterface     $cache
      * @param AlertServiceInterface $alertService
      */
     public function __construct(DbInterface $db, JTLCacheInterface $cache, AlertServiceInterface $alertService = null)
@@ -41,10 +45,11 @@ class Controller
     }
 
     /**
-     * @var int $id
+     * @param int $id
      * @return array
+     * @throws \InvalidArgumentException
      */
-    public function getCrawler(int $id):array
+    public function getCrawler(int $id): array
     {
         $crawler = $this->db->queryPrepared(
             'SELECT * FROM tbesucherbot WHERE kBesucherBot = :id ',
@@ -52,54 +57,54 @@ class Controller
             ReturnType::ARRAY_OF_OBJECTS
         );
         if (\count($crawler) === 0) {
-            throw new \InvalidArgumentException('Provided crawler id ' . $this->id . ' not found.');
+            throw new \InvalidArgumentException('Provided crawler id ' . $id . ' not found.');
         }
+
         return $crawler;
     }
 
     /**
      * @return array
      */
-    public function getAllCrawler():array
+    public function getAllCrawlers(): array
     {
         $cacheID = 'crawler';
-        if (($crawler = $this->cache->get($cacheID)) === false) {
-            $crawler = $this->db->query(
+        if (($crawlers = $this->cache->get($cacheID)) === false) {
+            $crawlers = $this->db->query(
                 'SELECT * FROM tbesucherbot ORDER BY kBesucherBot DESC',
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            $this->cache->set($cacheID, $crawler, [\CACHING_GROUP_CORE]);
+            $this->cache->set($cacheID, $crawlers, [\CACHING_GROUP_CORE]);
         }
 
-        return $crawler;
+        return $crawlers;
     }
 
     /**
-     * @var $userAgent string
+     * @param string $userAgent
      * @return object|bool
      */
     public function getByUserAgent(string $userAgent)
     {
-        $crawler = $this->getAllCrawler();
-        $result  = array_filter($crawler, static function ($item) use ($userAgent) {
-            return mb_stripos($item->cUserAgent, $userAgent) !== false;
+        $crawlers = $this->getAllCrawlers();
+        $result   = \array_filter($crawlers, static function ($item) use ($userAgent) {
+            return \mb_stripos($item->cUserAgent, $userAgent) !== false;
         });
-        $result  = array_values($result);
-        return count($result) > 0 ? (object)$result[0] : false;
+        $result   = \array_values($result);
+
+        return \count($result) > 0 ? (object)$result[0] : false;
     }
 
     /**
-     * @var $ids array
+     * @param array $ids
      * @return bool
      */
     public function deleteCrawler(array $ids): bool
     {
-        $ids      = array_map(static function ($id) {
-            return (int)$id;
-        }, $ids);
-        $where_in = '('.implode(',', $ids).')';
+        $where_in = '(' . \implode(',', \array_map('\intval', $ids)) . ')';
         $this->db->executeQuery(
-            'DELETE FROM tbesucherbot WHERE kBesucherBot IN '.$where_in.' ',
+            'DELETE FROM tbesucherbot 
+                WHERE kBesucherBot IN ' . $where_in . ' ',
             ReturnType::DEFAULT
         );
         $this->cache->flush('crawler');
@@ -108,10 +113,10 @@ class Controller
     }
 
     /**
-     * @var $item object
-     * @return mixed
+     * @param object $item
+     * @return int
      */
-    public function saveCrawler(object $item)
+    public function saveCrawler(object $item): int
     {
         $this->cache->flush('crawler');
         if (isset($item->kBesucherBot, $item->cBeschreibung) && !empty($item->kBesucherBot)) {
@@ -139,6 +144,7 @@ class Controller
             && (Request::postInt('save_crawler') || Request::postInt('delete_crawler'))
         ) {
             $this->alertService->addAlert(Alert::TYPE_ERROR, __('errorCSRF'), 'errorCSRF');
+
             return $crawler;
         }
         if (Request::postInt('delete_crawler') === 1) {
@@ -153,9 +159,13 @@ class Controller
                 $item->cBeschreibung = Request::postVar('description');
                 $result              = $this->saveCrawler($item);
                 if ($result === -1) {
-                    $this->alertService->addAlert(Alert::TYPE_ERROR, __('missingCrawlerFields'), 'missingCrawlerFields');
+                    $this->alertService->addAlert(
+                        Alert::TYPE_ERROR,
+                        __('missingCrawlerFields'),
+                        'missingCrawlerFields'
+                    );
                 } else {
-                    header('Location: statistik.php?s=3&tab=settings');
+                    \header('Location: statistik.php?s=3&tab=settings');
                 }
             } else {
                 $this->alertService->addAlert(Alert::TYPE_ERROR, __('missingCrawlerFields'), 'missingCrawlerFields');

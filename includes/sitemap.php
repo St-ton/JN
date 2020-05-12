@@ -1,11 +1,10 @@
 <?php
 
-use JTL\Crawler;
+use JTL\Crawler\Controller;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Shop;
-use JTL\Visitor;
 
 define('JTL_INCLUDE_ONLY_DB', 1);
 require_once __DIR__ . '/globalinclude.php';
@@ -46,12 +45,10 @@ sendRequestFile($cDatei);
  */
 function getRequestBot(): int
 {
-    $userAgent  = $_SERVER['HTTP_USER_AGENT'] ?? null;
-    $db         = Shop::Container()->getDB();
-    $cache      = Shop::Container()->getCache();
-    $controller = new Crawler\Controller($db, $cache);
-    $bot        = $controller->getByUserAgent($userAgent);
-    return isset($bot->kBesucherBot) ? (int)$bot->kBesucherBot : 0;
+    $controller = new Controller(Shop::Container()->getDB(), Shop::Container()->getCache());
+    $bot        = $controller->getByUserAgent($_SERVER['HTTP_USER_AGENT'] ?? null);
+
+    return (int)($bot->kBesucherBot ?? 0);
 }
 
 /**

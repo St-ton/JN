@@ -401,7 +401,7 @@ class Visitor
         $cache      = Shop::Container()->getCache();
         $controller = new Crawler\Controller($db, $cache);
 
-        return $controller->getAllCrawler();
+        return $controller->getAllCrawlers();
     }
 
     /**

@@ -1,3 +1,39 @@
+{block name='consent-manager'}
+    {include file='snippets/consent_manager.tpl'}
+    <script>
+        $(window).on('load', function () {
+            const CM = new ConsentManager({
+                version: 1
+            });
+            var trigger = document.querySelectorAll('.trigger');
+            var triggerCall = function (e) {
+                e.preventDefault();
+                let type = e.target.dataset.consent;
+                if (CM.getSettings(type) === false) {
+                    CM.openConfirmationModal(type, function () {
+                        let data = CM._getLocalData();
+                        if (data === null) {
+                            data = { settings: {} };
+                        }
+                        data.settings[type] = true;
+                        document.dispatchEvent(new CustomEvent('consent.updated', { detail: data.settings }));
+                    });
+                }
+            }
+            for (let i = 0; i < trigger.length; ++i) {
+                trigger[i].addEventListener('click', triggerCall)
+            }
+            document.addEventListener('consent.updated', function (e) {
+                $.post('{$ShopURLSSL}/', {
+                        'action': 'updateconsent',
+                        'jtl_token': '{$smarty.session.jtl_token}',
+                        'data': e.detail
+                    }
+                );
+            });
+        });
+    </script>
+{/block}
 {block name='content-all-closingtags'}
     {block name='content-closingtag'}
         {opcMountPoint id='opc_content'}
@@ -63,7 +99,7 @@
                                     <h5>{lang key='newsletter' section='newsletter'} {lang key='newsletterSendSubscribe' section='newsletter'}
                                     </h5>
                                     <p class="info small">
-                                        {lang key='unsubscribeAnytime' section='newsletter'}
+                                        {lang key='unsubscribeAnytime' section='newsletter' printf=$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL()}
                                     </p>
                                 </div>
                                 <form method="post" action="{get_static_route id='newsletter.php'}" class="form col-xs-12 col-sm-6">

@@ -377,7 +377,7 @@
 
     {block name='layout-header-main-wrapper-starttag'}
         <main id="main-wrapper" class="{if $bExclusive} exclusive{/if}{if $hasLeftPanel} aside-active{/if}">
-        {opcMountPoint id='opc_before_main'}
+        {opcMountPoint id='opc_before_main' inContainer=false}
     {/block}
 
     {block name='layout-header-fluid-banner'}

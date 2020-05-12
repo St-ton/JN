@@ -135,14 +135,22 @@
 
                     $galleryImages.removeAttr('sizes');
                     lazySizes.autoSizer.updateElem($galleryImages);
+
+                    $galleryImages.css('max-height', maxHeight-otherElemHeight);
+                    $('#gallery').css('max-height', maxHeight-otherElemHeight);
                 } else {
                     $('#image_wrapper').removeClass('fullscreen');
+                    $galleryImages.css('max-height', '100%');
                 }
-
-                $galleryImages.css('max-height', maxHeight-otherElemHeight);
 
                 $('#gallery').slick('slickSetOption','initialSlide', current, true);
                 $('#gallery_preview').slick('slickGoTo', current, true);
+
+                //fix firefox height bug
+                $('.slick-slide, .slick-arrow').css({'display': 'none'});
+                setTimeout(function(){
+                    $('.slick-slide, .slick-arrow').css({'display': 'block'});
+                }, 50);
             }
 
             function addClickListener() {
@@ -298,9 +306,9 @@
         registerHoverVariations: function ($wrapper) {
             $('.variations label.variation', $wrapper)
                 .on('mouseenter', function (e) {
-                    $('.variation-image-preview.vt' + $(this).data('value'))
-                        .addClass('show d-md-block')
-                        .css('top', $(this).offset().top - $(this).closest('#content').position().top - $('.js-gallery-images').innerHeight()/2 - 12);
+                    let mainImageHeight = $('.js-gallery-images').innerHeight();
+                        $('.variation-image-preview.vt' + $(this).data('value')).addClass('show d-md-block')
+                        .css('top', $(this).offset().top - $(this).closest('#content').position().top - mainImageHeight/2 -12);
                 })
                 .on('mouseleave', function (e) {
                     $('.variation-image-preview.vt' + $(this).data('value')).removeClass('show d-md-block');
@@ -310,9 +318,10 @@
                 .on('show.bs.select', function () {
                     $(this).parent().find('li .variation')
                         .on('mouseenter', function () {
+                            let mainImageHeight = $('.js-gallery-images').innerHeight();
                             $('.variation-image-preview.vt' + $(this).find('span[data-value]').data("value"))
                                 .addClass('show d-md-block')
-                                .css('top', $(this).offset().top - $(this).closest('#content').position().top - $('.js-gallery-images').innerHeight()/2 - 12);
+                                .css('top', $(this).offset().top - $(this).closest('#content').position().top - mainImageHeight/2 -12);
                         })
                         .on('mouseleave', function () {
                             $('.variation-image-preview.vt' + $(this).find('span[data-value]').data("value"))

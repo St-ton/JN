@@ -1709,6 +1709,7 @@ class Artikel
 
         $this->oMedienDatei_arr = $db->query($sql, ReturnType::ARRAY_OF_OBJECTS);
         foreach ($this->oMedienDatei_arr as $mediaFile) {
+            $mediaFile->kMedienDatei             = (int)$mediaFile->kMedienDatei;
             $mediaFile->kSprache                 = (int)$mediaFile->kSprache;
             $mediaFile->nSort                    = (int)$mediaFile->nSort;
             $mediaFile->oMedienDateiAttribut_arr = [];
@@ -1737,9 +1738,6 @@ class Artikel
                         $mediaFile->cAttributTab = $oMedienDateiAttribut->cWert;
                     }
                 }
-            }
-            if ($mediaFile->nMedienTyp === 4) {
-                $this->buildYoutubeEmbed($mediaFile);
             }
             $mediaTypeName = \mb_strlen($mediaFile->cAttributTab) > 0
                 ? $mediaFile->cAttributTab
@@ -1782,83 +1780,10 @@ class Artikel
     /**
      * @param object $mediaFile
      * @return $this
+     * @deprecated since 5.0.0
      */
     public function buildYoutubeEmbed($mediaFile): self
     {
-        if (!isset($mediaFile->cURL)) {
-            return $this;
-        }
-        if (\mb_strpos($mediaFile->cURL, 'youtube') !== false) {
-            $mediaFile->oEmbed = new stdClass();
-            if (\mb_strpos($mediaFile->cURL, 'watch?v=') !== false) {
-                $height     = 'auto';
-                $width      = '100%';
-                $related    = '?rel=0';
-                $fullscreen = ' allowfullscreen';
-                if (isset($mediaFile->oMedienDateiAttribut_arr) && \count($mediaFile->oMedienDateiAttribut_arr) > 0) {
-                    foreach ($mediaFile->oMedienDateiAttribut_arr as $attr) {
-                        if ($attr->cName === 'related' && $attr->cWert === '1') {
-                            $related = '';
-                        } elseif ($attr->cName === 'width' && \is_numeric($attr->cWert)) {
-                            $width = $attr->cWert;
-                        } elseif ($attr->cName === 'height' && \is_numeric($attr->cWert)) {
-                            $height = $attr->cWert;
-                        } elseif ($attr->cName === 'fullscreen' && ($attr->cWert === '0' || $attr->cWert === 'false')) {
-                            $fullscreen = '';
-                        }
-                    }
-                }
-                $search                     = ['https://', 'watch?v='];
-                $replace                    = ['//', 'embed/'];
-                $embedURL                   = \str_replace($search, $replace, $mediaFile->cURL) . $related;
-                $mediaFile->oEmbed->code    = '<iframe class="youtube" width="' . $width . '" height="' . $height
-                    . '" src="' . $embedURL . '" frameborder="0"' . $fullscreen . '></iframe>';
-                $mediaFile->oEmbed->options = [
-                    'height'     => $height,
-                    'width'      => $width,
-                    'related'    => $related,
-                    'fullscreen' => $fullscreen
-                ];
-            } elseif (\mb_strpos($mediaFile->cURL, 'embed') !== false) {
-                $mediaFile->oEmbed->code = $mediaFile->cURL;
-            }
-        } elseif (\mb_strpos($mediaFile->cURL, 'youtu.be') !== false) {
-            $mediaFile->oEmbed = new stdClass();
-            if (\mb_strpos($mediaFile->cURL, 'embed') !== false) {
-                $mediaFile->oEmbed->code = $mediaFile->cURL;
-            } else {
-                $height     = 'auto';
-                $width      = '100%';
-                $related    = '?rel=0';
-                $fullscreen = ' allowfullscreen';
-                if (isset($mediaFile->oMedienDateiAttribut_arr) && \count($mediaFile->oMedienDateiAttribut_arr) > 0) {
-                    foreach ($mediaFile->oMedienDateiAttribut_arr as $attr) {
-                        if ($attr->cName === 'related' && $attr->cWert === '1') {
-                            $related = '';
-                        } elseif ($attr->cName === 'width' && \is_numeric($attr->cWert)) {
-                            $width = $attr->cWert;
-                        } elseif ($attr->cName === 'height' && \is_numeric($attr->cWert)) {
-                            $height = $attr->cWert;
-                        } elseif ($attr->cName === 'fullscreen' && ($attr->cWert === '0'
-                                || $attr->cWert === 'false')) {
-                            $fullscreen = '';
-                        }
-                    }
-                }
-                $search                     = ['https://', 'youtu.be/'];
-                $replace                    = ['//', 'youtube.com/embed/'];
-                $embedURL                   = \str_replace($search, $replace, $mediaFile->cURL) . $related;
-                $mediaFile->oEmbed->code    = '<iframe class="youtube" width="' . $width . '" height="' . $height
-                    . '" src="' . $embedURL . '" frameborder="0"' . $fullscreen . '></iframe>';
-                $mediaFile->oEmbed->options = [
-                    'height'     => $height,
-                    'width'      => $width,
-                    'related'    => $related,
-                    'fullscreen' => $fullscreen
-                ];
-            }
-        }
-
         return $this;
     }
 

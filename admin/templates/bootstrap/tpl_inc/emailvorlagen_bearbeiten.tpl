@@ -218,8 +218,8 @@
                                             fileAllowedExtensions="['pdf']"
                                             fileShowRemove=true
                                             fileMaxSize=2097152
-                                            filePreview='false'
-                                            fileErrorMsg='true'
+                                            filePreview=false
+                                            fileErrorMsg=true
                                         }
                                     </div>
                                 </div>

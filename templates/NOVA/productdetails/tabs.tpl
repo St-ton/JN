@@ -70,7 +70,7 @@
         || $useAvailabilityNotification || $useMediaGroup || !empty($separatedTabs)}
             {if $tabanzeige}
                 {block name='productdetails-tabs-tabs'}
-                    {opcMountPoint id='opc_before_tabs'}
+                    {opcMountPoint id='opc_before_tabs' inContainer=false}
                     {container class="mb-7"}
                         <nav class="tab-navigation">
                         {tabs id="product-tabs"}

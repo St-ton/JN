@@ -752,11 +752,6 @@
                 });
         },
 
-        setCompareListHeight: function() {
-            var h = parseInt($('.comparelist .equal-height').outerHeight());
-            $('.comparelist .equal-height').height(h);
-        },
-
         fixStickyElements: function() {
             var sticky    = '.cart-summary';
             var navHeight = $('#jtl-nav-wrapper').outerHeight(true);
@@ -977,7 +972,6 @@
             if ($('body').data('page') == 3) {
                 this.addInactivityCheck('#cart-form');
             }
-            this.setCompareListHeight();
             this.fixStickyElements();
             this.setWishlistVisibilitySwitches();
             this.initEModals();

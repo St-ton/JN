@@ -89,7 +89,9 @@ class ProductStream extends Portlet
 
     /**
      * @param PortletInstance $instance
-     * @return Artikel[]
+     * @return array
+     * @throws \JTL\Exceptions\CircularReferenceException
+     * @throws \JTL\Exceptions\ServiceNotFoundException
      */
     public function getFilteredProducts(PortletInstance $instance): array
     {

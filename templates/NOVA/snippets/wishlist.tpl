@@ -392,7 +392,7 @@
                             {row class='product-list'}
                             {foreach $wishlistItems as $wlPosition}
                                 {col cols=12 sm=6 md=4 xl=3 class="mb-7"}
-                                    <div id="result-wrapper_buy_form_{$wlPosition->kWunschlistePos}" data-wrapper="true" class="productbox productbox-column productbox-hover">
+                                    <div id="result-wrapper_buy_form_{$wlPosition->kWunschlistePos}" data-wrapper="true" class="productbox productbox-column productbox-hover p-2 p-xl-0">
                                         <div class="productbox-inner pos-abs">
                                             {row}
                                                 {col cols=12}
@@ -420,15 +420,21 @@
                                                             {strip}
                                                                 <div>
                                                                     {link href=$wlPosition->Artikel->cURLFull}
+                                                                    <div class="square square-image first-wrapper">
+                                                                        <div class="inner">
                                                                         {image alt=$wlPosition->Artikel->cName fluid=true webp=true lazy=true
                                                                             src="{$image->cURLKlein}"
                                                                             srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
                                                                              {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
                                                                              {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
                                                                             sizes="auto"
-                                                                            class="w-100{if !$isMobile && !empty($wlPosition->Artikel->Bilder[1])} first{/if}"
+                                                                            class="{if !$isMobile && !empty($wlPosition->Artikel->Bilder[1])} first{/if}"
                                                                         }
+                                                                        </div>
+                                                                    </div>
                                                                     {if !$isMobile && !empty($wlPosition->Artikel->Bilder[1])}
+                                                                    <div class="square square-image second-wrapper">
+                                                                        <div class="inner">
                                                                         {$image = $wlPosition->Artikel->Bilder[1]}
                                                                         {image alt=$wlPosition->Artikel->cName fluid=true webp=true lazy=true
                                                                             src="{$image->cURLKlein}"
@@ -438,6 +444,8 @@
                                                                             sizes="auto"
                                                                             class='second'
                                                                         }
+                                                                        </div>
+                                                                    </div>
                                                                     {/if}
                                                                     {/link}
                                                                 </div>

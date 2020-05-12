@@ -121,6 +121,7 @@ final class Uninstaller
             ReturnType::DEFAULT
         );
         $this->db->delete('tplugineinstellungen', 'kPlugin', $pluginID);
+        $this->db->delete('tconsent', 'pluginID', $pluginID);
         $this->db->delete('tplugincustomtabelle', 'kPlugin', $pluginID);
         $this->db->delete('tpluginlinkdatei', 'kPlugin', $pluginID);
         $this->db->queryPrepared(
@@ -173,7 +174,6 @@ final class Uninstaller
             ['pid' => $pluginID],
             ReturnType::DEFAULT
         );
-        $this->db->delete('tboxvorlage', ['kCustomID', 'eTyp'], [$pluginID, 'plugin']);
         $this->db->delete('tpluginlinkdatei', 'kPlugin', $pluginID);
         $this->db->queryPrepared(
             'DELETE temailvorlage, temailvorlagespracheoriginal

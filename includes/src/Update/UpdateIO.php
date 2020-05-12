@@ -11,7 +11,7 @@ use JTL\Plugin\Admin\Installation\MigrationManager as PluginMigrationManager;
 use JTL\Plugin\PluginLoader;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
-use JTL\Template;
+use JTL\Template\TemplateServiceInterface;
 use JTLShop\SemVer\Version;
 use JTLSmarty;
 use SmartyException;
@@ -44,23 +44,8 @@ class UpdateIO
      */
     public function update()
     {
-        $template = Template::getInstance();
-        $updater  = new Updater($this->db);
-
+        $updater = new Updater($this->db);
         try {
-            if ((int)$template->version === 5) {
-                $templateVersion = '5.0.0';
-            } elseif ((int)$template->version === 4) {
-                $templateVersion = '4.0.0';
-            } else {
-                $templateVersion = $template->version;
-            }
-            if ($template->xmlData === false
-                || (!Version::parse($template->xmlData->cVersion)->equals($templateVersion)
-                    && $template->setTemplate($template->xmlData->cName, $template->xmlData->eTyp))
-            ) {
-                unset($_SESSION['cTemplate'], $_SESSION['template']);
-            }
             $dbVersion       = $updater->getCurrentDatabaseVersion();
             $updateResult    = $updater->update();
             $availableUpdate = $updater->hasPendingUpdates();
@@ -70,6 +55,9 @@ class UpdateIO
                 $updateResult = \sprintf('Version: %d.%02d', $updateResult->getMajor(), $updateResult->getMinor());
             } else {
                 $updateResult = \sprintf('Version: %.2f', $updateResult / 100);
+            }
+            if ($availableUpdate === false) {
+                $updater->finalize();
             }
 
             return [
@@ -135,7 +123,7 @@ class UpdateIO
     {
         $smarty                 = JTLSmarty::getInstance(false, ContextType::BACKEND);
         $updater                = new Updater($this->db);
-        $template               = Template::getInstance();
+        $template               = Shop::Container()->get(TemplateServiceInterface::class)->getActiveTemplate();
         $manager                = null;
         $currentFileVersion     = $updater->getCurrentFileVersion();
         $currentDatabaseVersion = $updater->getCurrentDatabaseVersion();
@@ -168,8 +156,8 @@ class UpdateIO
                 ->equals(Version::parse($currentFileVersion)))
             ->assign('version', $version)
             ->assign('updateError', $updateError)
-            ->assign('currentTemplateFileVersion', $template->xmlData->cVersion ?? '1.0.0')
-            ->assign('currentTemplateDatabaseVersion', $template->version);
+            ->assign('currentTemplateFileVersion', $template->getFileVersion() ?? '1.0.0')
+            ->assign('currentTemplateDatabaseVersion', $template->getVersion());
 
         return [
             'tpl'  => $smarty->fetch('tpl_inc/dbupdater_status.tpl'),

@@ -28,5 +28,43 @@ Der Aufruf dieser Einstellungen ist im Frontend jedenzeit über ein entsprechend
 Consent Manager im Plugin
 -------------------------
 
---DEVELOPMENT--  |br|
+Auch Plugins können über den ConsentManager von JTL-Shop 5 Einverständniserklärungen einfordern.
+
+Hierfür registriert ein Plugin über den EventDispatcher (":ref:`label_bootstrapping_eventdispatcher`")
+einen Listener für das Event ``CONSENT_MANAGER_GET_ACTIVE_ITEMS``.
+
+.. code-block:: php
+
+    $dispatcher->listen('shop.hook.' . \CONSENT_MANAGER_GET_ACTIVE_ITEMS, [$this, 'addConsentItem']);
+
+Wird nun das Event ``CONSENT_MANAGER_GET_ACTIVE_ITEMS`` ausgelöst, registriert die Lambda-Funktion
+``addConsentItem()`` im Plugin die entsprechende Einverständniserklärung im Shop-ConsentManager.
+
+.. code-block:: php
+
+    /**
+     * @param array $args
+     */
+    public function addConsentItem(array $args): void
+    {
+        $lastID = $args['items']->reduce(static function ($result, Item $item) {
+                $value = $item->getID();
+
+                return $result === null || $value > $result ? $value : $result;
+            }) ?? 0;
+        $item   = new Item();
+        $item->setName('JTL Example Consent');
+        $item->setID(++$lastID);
+        $item->setItemID(self::CONSENT_ITEM_ID);
+        $item->setDescription('Dies ist nur ein Test aus dem Plugin JTL Test');
+        $item->setPurpose('Dieser Eintrag dient nur zu Testzwecken');
+        $item->setPrivacyPolicy('https://www.jtl-software.de/datenschutz');
+        $item->setCompany('JTL-Software-GmbH');
+        $args['items']->push($item);
+    }
+
+
+Im Plugin "`jtl-test <https://gitlab.com/jtl-software/jtl-shop/plugins/jtl_test>`_" können Sie sich diese Vorgehensweise
+in ausführlicherer Form anschauen.
+
 

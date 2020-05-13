@@ -179,7 +179,7 @@ $smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
     ->assign('opcPageService', Shop::Container()->getOPCPageService())
     ->assign('shopFaviconURL', Shop::getFaviconURL())
     ->assign('wishlists', Wishlist::getWishlists())
-    ->assign('robotsContent', $smarty->get_template_vars('robotsContent'))
+    ->assign('robotsContent', $smarty->getTemplateVars('robotsContent'))
     ->assign('device', $device)
     ->assign('isMobile', $device->isMobile())
     ->assign('isTablet', $device->isTablet());

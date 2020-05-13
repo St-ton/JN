@@ -17,9 +17,9 @@ use JTL\Update\IMigration;
 use JTL\Update\Migration;
 
 /**
- * Class Migration_20190901000000
+ * Class Migration_20200522000000
  */
-class Migration_20190901000000 extends Migration implements IMigration
+class Migration_20200522000000 extends Migration implements IMigration
 {
     protected $author      = 'fm';
     protected $description = 'Syntax checks';

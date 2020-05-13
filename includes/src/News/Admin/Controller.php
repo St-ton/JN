@@ -892,19 +892,15 @@ final class Controller
         $shopURL = Shop::getURL() . '/';
         foreach ($images as $image) {
             if (\mb_strpos($image, '_preview.') !== false) {
-                $text = \str_replace(
-                    '$#preview#$',
-                    '<img alt="" src="' . $shopURL . \PFAD_NEWSBILDER . $id . '/' . $image . '" />',
-                    $text
-                );
+                $placeholder = '$#preview#$';
             } else {
-                $imageID = \substr(\explode('.', $image)[0], 4);
-                $text    = \str_replace(
-                    '$#Bild' . $imageID . '#$',
-                    '<img alt="" src="' . $shopURL . \PFAD_NEWSBILDER . $id . '/' . $image . '" />',
-                    $text
-                );
+                $placeholder = '$#Bild' . \substr(\explode('.', $image)[0], 4) . '#$';
             }
+            $text = \str_replace(
+                $placeholder,
+                '<img alt="" src="' . $shopURL . \PFAD_NEWSBILDER . $id . '/' . $image . '" />',
+                $text
+            );
         }
 
         return $text;

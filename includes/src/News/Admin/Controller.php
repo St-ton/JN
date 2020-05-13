@@ -224,15 +224,15 @@ final class Controller
             if (!\is_dir($dir) && !\mkdir(self::UPLOAD_DIR . $newsItemID) && !\is_dir($dir)) {
                 throw new Exception('Cannot create upload dir: ' . $dir);
             }
-            if ($previewImage !== '') {
-                $oldImages = $this->getNewsImages($newsItemID, self::UPLOAD_DIR, false);
 
-                $newsItem->cPreviewImage = $this->addPreviewImage($oldImages, $newsItemID);
-                $this->addImages($oldImages, $newsItemID);
+            $oldImages = $this->getNewsImages($newsItemID, self::UPLOAD_DIR, false);
+            $this->addImages($oldImages, $newsItemID);
+            if ($previewImage !== '') {
                 $upd                = new stdClass();
-                $upd->cPreviewImage = $newsItem->cPreviewImage;
+                $upd->cPreviewImage = $this->addPreviewImage($oldImages, $newsItemID);
                 $this->db->update('tnews', 'kNews', $newsItemID, $upd);
             }
+
             $this->db->delete('tnewskategorienews', 'kNews', $newsItemID);
             foreach ($newsCategoryIDs as $categoryID) {
                 $ins                 = new stdClass();

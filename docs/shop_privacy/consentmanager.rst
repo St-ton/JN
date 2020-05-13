@@ -63,6 +63,9 @@ Wird nun das Event ``CONSENT_MANAGER_GET_ACTIVE_ITEMS`` ausgelöst, registriert 
         $args['items']->push($item);
     }
 
+Zur Einforderung der Einverständniserklärung wird sodann ein entsprechender Schalter im Shop-ConsentManager angezeigt.
+
+.. image:: /_images/cm-testcons.png
 
 Im Plugin "`jtl-test <https://gitlab.com/jtl-software/jtl-shop/plugins/jtl_test>`_" können Sie sich diese Vorgehensweise
 in ausführlicherer Form anschauen.

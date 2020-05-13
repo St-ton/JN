@@ -38,7 +38,9 @@ final class FrontendLinks extends AbstractItem
                 return InstallCode::MISSING_FRONTEND_LINKS;
             }
             $link = $this->sanitizeLinkData($link);
-            if (\mb_strlen($link['Filename']) === 0 && $this->getContext() !== ValidationItemInterface::CONTEXT_PLUGIN) {
+            if (\mb_strlen($link['Filename']) === 0
+                && $this->getContext() !== ValidationItemInterface::CONTEXT_PLUGIN
+            ) {
                 return InstallCode::INVALID_FRONTEND_LINK_FILENAME;
             }
             \preg_match(

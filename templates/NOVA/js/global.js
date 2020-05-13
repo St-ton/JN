@@ -518,6 +518,8 @@ $(document).ready(function () {
         }
     });
 
+    $('aside .box[class*=box-filter-]').last().addClass('mb-5');
+    console.log('giuhz');
 
     /*
      * set bootstrap viewport

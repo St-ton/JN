@@ -4,26 +4,22 @@ namespace JTL\Smarty;
 
 use JSMin\JSMin;
 use JSMin\UnterminatedStringException;
-use JTL\Backend\AdminTemplate;
 use JTL\Events\Dispatcher;
 use JTL\Helpers\GeneralObject;
 use JTL\Language\LanguageHelper;
 use JTL\phpQuery\phpQuery;
 use JTL\Plugin\Helper;
 use JTL\Shop;
-use JTL\Helpers\Template;
 use JTL\Template\BootChecker;
-use JTL\Template\BootstrapperInterface;
-use JTL\Template\Model;
-use JTL\Template\TemplateServiceInterface;
 use RuntimeException;
+use SmartyBC;
 
 /**
  * Class JTLSmarty
  * @package \JTL\Smarty
  * @method JTLSmarty assign(string $variable, mixed $value)
  */
-class JTLSmarty extends \SmartyBC
+class JTLSmarty extends SmartyBC
 {
     /**
      * @var array

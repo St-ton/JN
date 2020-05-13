@@ -236,7 +236,7 @@ class Status
     public function hasDifferentTemplateVersion(): bool
     {
         try {
-            $template = Shop::Container()->get(TemplateServiceInterface::class)->getActiveTemplate();
+            $template = Shop::Container()->getTemplateService()->getActiveTemplate();
         } catch (Exception $e) {
             return false;
         }
@@ -249,7 +249,7 @@ class Status
     public function hasMobileTemplateIssue(): bool
     {
         try {
-            $template = Shop::Container()->get(TemplateServiceInterface::class)->getActiveTemplate();
+            $template = Shop::Container()->getTemplateService()->getActiveTemplate();
         } catch (Exception $e) {
             return false;
         }

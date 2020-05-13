@@ -340,8 +340,7 @@ class BoxService implements BoxServiceInterface
      */
     public function buildList(int $pageType = \PAGE_UNBEKANNT, bool $activeOnly = true): array
     {
-        $model = Shop::Container()->get(TemplateServiceInterface::class)->getActiveTemplate();
-        /** @var Model $model */
+        $model            = Shop::Container()->getTemplateService()->getActiveTemplate();
         $visiblePositions = $this->getVisiblePositions($pageType, $model->getBoxLayout());
         if ($activeOnly === true && \count($visiblePositions) === 0) {
             return [];

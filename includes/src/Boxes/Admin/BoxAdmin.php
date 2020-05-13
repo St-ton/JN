@@ -545,8 +545,7 @@ final class BoxAdmin
      */
     public function getInvisibleBoxes(): array
     {
-        $model = Shop::Container()->get(TemplateServiceInterface::class)->getActiveTemplate();
-        /** @var Model $model */
+        $model      = Shop::Container()->getTemplateService()->getActiveTemplate();
         $unavailabe = filter($model->getBoxLayout(), static function ($e) {
             return $e === false;
         });

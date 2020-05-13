@@ -294,7 +294,7 @@ switch ($action) {
             'notice' => &$notice,
             'error'  => &$error
         ];
-        $template     = Shop::Container()->get(TemplateServiceInterface::class)->getActiveTemplate();
+        $template     = Shop::Container()->getTemplateService()->getActiveTemplate();
         $dirMan       = new DirManager();
         $dirMan->getData(PFAD_ROOT . PFAD_COMPILEDIR . $template->getDir(), $callback, $cbParameters);
         $dirMan->getData(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR, $callback, $cbParameters);
@@ -417,7 +417,7 @@ $callback = static function (array $pParameters) {
     }
 };
 
-$template = Shop::Container()->get(TemplateServiceInterface::class)->getActiveTemplate();
+$template = Shop::Container()->getTemplateService()->getActiveTemplate();
 $dirMan   = new DirManager();
 $dirMan->getData(PFAD_ROOT . PFAD_COMPILEDIR . $template->getDir(), $callback, ['files' => &$tplcacheStats->frontend])
     ->getData(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR, $callback, ['files' => &$tplcacheStats->backend]);

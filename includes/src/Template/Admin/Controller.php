@@ -336,8 +336,7 @@ class Controller
         if ($tplXML === null) {
             throw new InvalidArgumentException('Cannot display template settings');
         }
-        $service = Shop::Container()->get(TemplateServiceInterface::class);
-        /** @var TemplateService $service */
+        $service      = Shop::Container()->getTemplateService();
         $current      = $service->loadFull(['cTemplate' => $this->currentTemplateDir]);
         $parentFolder = null;
         if ($tplXML !== null && !empty($tplXML->Parent)) {

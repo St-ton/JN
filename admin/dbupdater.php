@@ -18,7 +18,7 @@ $oAccount->permission('SHOP_UPDATE_VIEW', true, true);
 $smarty->clearCompiledTemplate();
 $db          = Shop::Container()->getDB();
 $updater     = new Updater($db);
-$template    = Shop::Container()->get(TemplateServiceInterface::class)->getActiveTemplate();
+$template    = Shop::Container()->getTemplateService()->getActiveTemplate();
 $fileVersion = $updater->getCurrentFileVersion();
 
 $smarty->assign('updatesAvailable', $updater->hasPendingUpdates())

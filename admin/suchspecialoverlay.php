@@ -32,7 +32,7 @@ if (Request::verifyGPCDataInt('suchspecialoverlay') === 1) {
     }
 }
 $overlays = gibAlleSuchspecialOverlays();
-$template = Shop::Container()->get(TemplateServiceInterface::class)->getActiveTemplate();
+$template = Shop::Container()->getTemplateService()->getActiveTemplate();
 if ($template->getName() === 'Evo'
     && $template->getAuthor() === 'JTL-Software-GmbH'
     && (int)$template->getVersion() >= 4

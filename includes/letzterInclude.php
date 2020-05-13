@@ -30,7 +30,7 @@ use JTL\Template\TemplateServiceInterface;
 use JTL\Visitor;
 
 $smarty     = Shop::Smarty();
-$tplService = Shop::Container()->get(TemplateServiceInterface::class);
+$tplService = Shop::Container()->getTemplateService();
 $template   = $tplService->getActiveTemplate();
 $tplDir     = PFAD_TEMPLATES . $template->getDir() . '/';
 $shopURL    = Shop::getURL();

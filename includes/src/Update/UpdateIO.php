@@ -123,7 +123,7 @@ class UpdateIO
     {
         $smarty                 = JTLSmarty::getInstance(false, ContextType::BACKEND);
         $updater                = new Updater($this->db);
-        $template               = Shop::Container()->get(TemplateServiceInterface::class)->getActiveTemplate();
+        $template               = Shop::Container()->getTemplateService()->getActiveTemplate();
         $manager                = null;
         $currentFileVersion     = $updater->getCurrentFileVersion();
         $currentDatabaseVersion = $updater->getCurrentDatabaseVersion();

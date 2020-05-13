@@ -362,7 +362,7 @@ class Overlay
     public function setTemplateName(string $template = null): self
     {
         $this->templateName = $template
-            ?: Shop::Container()->get(TemplateServiceInterface::class)->getActiveTemplate()->getName();
+            ?: Shop::Container()->getTemplateService()->getActiveTemplate()->getName();
 
         return $this;
     }

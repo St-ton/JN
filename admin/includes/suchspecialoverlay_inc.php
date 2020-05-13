@@ -65,7 +65,7 @@ function speicherEinstellung(
 
     if (mb_strlen($files['name']) > 0) {
         $template    = $template
-            ?: Shop::Container()->get(TemplateServiceInterface::class)->getActiveTemplate()->getName();
+            ?: Shop::Container()->getTemplateService()->getActiveTemplate()->getName();
         $overlayPath = PFAD_ROOT . PFAD_TEMPLATES . $template . PFAD_OVERLAY_TEMPLATE;
         if (!is_writable($overlayPath)) {
             Shop::Container()->getAlertService()->addAlert(

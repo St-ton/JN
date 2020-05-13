@@ -185,10 +185,9 @@ if (Request::postInt('einstellungen') > 0) {
     $flushres = Shop::Container()->getCache()->flushTags([CACHING_GROUP_OBJECT, CACHING_GROUP_BOX, 'boxes']);
     Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
 }
-$boxList      = $boxService->buildList($pageID, false);
-$boxTemplates = $boxAdmin->getTemplates($pageID);
-$model        = Shop::Container()->get(TemplateServiceInterface::class)->getActiveTemplate();
-/** @var Model $model */
+$boxList       = $boxService->buildList($pageID, false);
+$boxTemplates  = $boxAdmin->getTemplates($pageID);
+$model         = Shop::Container()->getTemplateService()->getActiveTemplate();
 $boxContainer  = $model->getBoxLayout();
 $filterMapping = [];
 if ($pageID === PAGE_ARTIKELLISTE) { //map category name

@@ -573,7 +573,7 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $tableName = ''
                     @rmdir($pParameters['path'] . $pParameters['filename']);
                 }
             };
-            $templateDir = Shop::Container()->get(TemplateServiceInterface::class)->getActiveTemplate();
+            $templateDir = Shop::Container()->getTemplateService()->getActiveTemplate()->getDir();
             $dirMan      = new DirManager();
             $dirMan->getData(PFAD_ROOT . PFAD_COMPILEDIR . $templateDir, $callback);
             $dirMan->getData(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR, $callback);

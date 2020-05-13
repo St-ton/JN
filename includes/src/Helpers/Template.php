@@ -89,7 +89,7 @@ class Template
         $this->init();
         self::$frontEndInstance = $this;
         $this->reader           = new XMLReader();
-        $this->model            = Shop::Container()->get(TemplateServiceInterface::class)->getActiveTemplate();
+        $this->model            = Shop::Container()->getTemplateService()->getActiveTemplate();
         $this->xmlData          = $this->model;
     }
 
@@ -121,7 +121,7 @@ class Template
             return $this;
         }
         try {
-            $template = Shop::Container()->get(TemplateServiceInterface::class)->getActiveTemplate();
+            $template = Shop::Container()->getTemplateService()->getActiveTemplate();
             $this->loadFromModel($template);
             Shop::Container()->getCache()->set($cacheID, $template, [\CACHING_GROUP_TEMPLATE]);
         } catch (Exception $e) {

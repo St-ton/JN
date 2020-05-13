@@ -91,9 +91,8 @@ class JTLSmarty extends \SmartyBC
     {
         $parent = null;
         if ($this->context !== ContextType::BACKEND) {
-            $container = Shop::Container();
-            $model     = $container->get(TemplateServiceInterface::class)->getActiveTemplate();
-            /** @var Model $model */
+            $container  = Shop::Container();
+            $model      = $container->getTemplateService()->getActiveTemplate();
             $tplDir     = $model->getDir();
             $parent     = $model->getParent();
             $compileDir = \PFAD_ROOT . \PFAD_COMPILEDIR . $tplDir . '/';

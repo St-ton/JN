@@ -71,6 +71,9 @@ class UpdateIO
             } else {
                 $updateResult = \sprintf('Version: %.2f', $updateResult / 100);
             }
+            if ($availableUpdate === false) {
+                $updater->finalize();
+            }
 
             return [
                 'result'          => $updateResult,

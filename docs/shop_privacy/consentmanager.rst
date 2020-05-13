@@ -55,7 +55,7 @@ Wird nun das Event ``CONSENT_MANAGER_GET_ACTIVE_ITEMS`` ausgelöst, registriert 
         $item   = new Item();
         $item->setName('JTL Example Consent');
         $item->setID(++$lastID);
-        $item->setItemID(self::CONSENT_ITEM_ID);
+        $item->setItemID('jtl_test_consent');
         $item->setDescription('Dies ist nur ein Test aus dem Plugin JTL Test');
         $item->setPurpose('Dieser Eintrag dient nur zu Testzwecken');
         $item->setPrivacyPolicy('https://www.jtl-software.de/datenschutz');

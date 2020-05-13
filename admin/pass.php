@@ -12,7 +12,6 @@ $alertHelper = Shop::Container()->getAlertService();
 if (isset($_POST['mail']) && Form::validateToken()) {
     $account = Shop::Container()->getAdminAccount();
     $account->prepareResetPassword(Text::filterXSS($_POST['mail']));
-    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successEmailSend'), 'successEmailSend');
 } elseif (isset($_POST['pw_new'], $_POST['pw_new_confirm'], $_POST['fpm'], $_POST['fpwh']) && Form::validateToken()) {
     if ($_POST['pw_new'] === $_POST['pw_new_confirm']) {
         $account  = Shop::Container()->getAdminAccount();

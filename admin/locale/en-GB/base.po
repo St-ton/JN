@@ -332,6 +332,9 @@ msgstr "Both"
 msgid "successEmailSend"
 msgstr "An email with further instructions has been sent to the indicated email address (if applicable)."
 
+msgid "errorEmailNotFound"
+msgstr "Email not found."
+
 msgid "successPasswordChange"
 msgstr "Password changed successfully."
 

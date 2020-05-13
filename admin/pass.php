@@ -7,8 +7,8 @@ use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
-$step         = 'prepare';
-$aslertHelper = Shop::Container()->getAlertService();
+$step        = 'prepare';
+$alertHelper = Shop::Container()->getAlertService();
 if (isset($_POST['mail']) && Form::validateToken()) {
     $account = Shop::Container()->getAdminAccount();
     $account->prepareResetPassword(Text::filterXSS($_POST['mail']));

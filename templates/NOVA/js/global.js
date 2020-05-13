@@ -518,8 +518,10 @@ $(document).ready(function () {
         }
     });
 
+    /*
+     * margin to last filter-box
+     */
     $('aside .box[class*=box-filter-]').last().addClass('mb-5');
-    console.log('giuhz');
 
     /*
      * set bootstrap viewport

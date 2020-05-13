@@ -6,7 +6,6 @@ use DateTime;
 use InvalidArgumentException;
 use JTL\Backend\FileCheck;
 use JTL\Plugin\State;
-use JTL\Shop;
 use JTL\Template\Admin\Validation\TemplateValidator;
 use JTLShop\SemVer\Version;
 

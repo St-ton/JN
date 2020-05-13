@@ -3,13 +3,9 @@
 namespace JTL\License;
 
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\License\Struct\ExsLicense;
-use JTL\License\Struct\ReferencedItem;
 use JTL\License\Struct\ReferencedPlugin;
 use JTL\License\Struct\ReferencedTemplate;
-use JTL\Shop;
-use JTLShop\SemVer\Version;
 
 /**
  * Class Mapper

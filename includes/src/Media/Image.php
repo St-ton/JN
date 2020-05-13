@@ -7,9 +7,7 @@ use Imagick;
 use Intervention\Image\Constraint;
 use Intervention\Image\Image as InImage;
 use Intervention\Image\ImageManager;
-use JTL\DB\ReturnType;
 use JTL\Shop;
-use function Functional\reindex;
 
 /**
  * Class Image

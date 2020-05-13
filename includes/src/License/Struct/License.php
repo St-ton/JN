@@ -3,7 +3,6 @@
 namespace JTL\License\Struct;
 
 use DateTime;
-use JTL\Shop;
 use stdClass;
 
 /**

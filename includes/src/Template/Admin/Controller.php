@@ -19,8 +19,6 @@ use JTL\Template\Admin\Validation\TemplateValidator;
 use JTL\Template\BootChecker;
 use JTL\Template\Config;
 use JTL\Template\Model;
-use JTL\Template\TemplateService;
-use JTL\Template\TemplateServiceInterface;
 use JTL\Template\XMLReader;
 use stdClass;
 

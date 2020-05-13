@@ -5,7 +5,6 @@ namespace JTL\Minify;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use JTL\Template\Model;
-use JTL\Template\Resources;
 
 /**
  * Class MinifyService

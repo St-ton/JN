@@ -20,9 +20,9 @@ use JTL\Helpers\Tax;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
+use function Functional\map;
 use function Functional\select;
 use function Functional\some;
-use function Functional\map;
 
 /**
  * Class Warenkorb

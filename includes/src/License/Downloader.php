@@ -2,14 +2,12 @@
 
 namespace JTL\License;
 
-use InvalidArgumentException;
+use GuzzleHttp\Client;
 use JTL\License\Exception\ApiResultCodeException;
 use JTL\License\Exception\DownloadValidationException;
 use JTL\License\Exception\FilePermissionException;
-use JTL\Shop;
-use Psr\Http\Message\ResponseInterface;
-use GuzzleHttp\Client;
 use JTL\License\Struct\Release;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class Downloader

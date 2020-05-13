@@ -549,14 +549,17 @@ final class Controller
             $extension = 'jpg';
         }
         foreach ($oldImages as $image) {
-            if (\mb_strpos($image->cDatei, 'preview') !== false) {
+            if (\mb_strpos($image->cDatei, '_preview.') !== false) {
                 $this->deleteNewsImage($image->cName, $newsItemID, self::UPLOAD_DIR);
             }
         }
-        $uploadFile = self::UPLOAD_DIR . $newsItemID . '/preview.' . $extension;
+
+        $fileIDName = $newsItemID . '/' . \explode('.', \basename($_FILES['previewImage']['name']))[0]
+            . '_preview.' . $extension;
+        $uploadFile = self::UPLOAD_DIR . $fileIDName;
         \move_uploaded_file($_FILES['previewImage']['tmp_name'], $uploadFile);
 
-        return \PFAD_NEWSBILDER . $newsItemID . '/preview.' . $extension;
+        return \PFAD_NEWSBILDER . $fileIDName;
     }
 
     /**
@@ -723,12 +726,7 @@ final class Controller
         $iterator     = new DirectoryIterator($uploadDirName . $itemID);
         foreach ($iterator as $fileinfo) {
             $fileName = $fileinfo->getFilename();
-            if (($excludePreview
-                    && ($fileName === 'preview.png'
-                        || $fileName === 'preview.jpeg'
-                        || $fileName === 'preview.jpg'
-                    )
-                )
+            if (($excludePreview && \mb_strpos($fileName, '_preview.') !== false)
                 || !$fileinfo->isFile()
                 || $fileinfo->isDot()
             ) {

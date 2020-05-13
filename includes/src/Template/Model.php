@@ -223,7 +223,12 @@ final class Model extends DataModel
             $attributes['cVersion']   = DataAttribute::create('version', 'varchar', null, false);
             $attributes['preview']    = DataAttribute::create('preview', 'varchar');
             $attributes['exsID']      = DataAttribute::create('exsID', 'varchar');
-            $attributes['bootstrap']  = DataAttribute::create('bootstrap', 'tinyint', self::cast('0', 'tinyint'), false);
+            $attributes['bootstrap']  = DataAttribute::create(
+                'bootstrap',
+                'tinyint',
+                self::cast('0', 'tinyint'),
+                false
+            );
             $attributes['framework']  = DataAttribute::create('framework', 'varchar');
 
             $boxLayout = new DataAttribute();

@@ -42,9 +42,9 @@ class Config
         $configValues = $this->loadConfigFromDB();
         $configXML    = $reader->getConfigXML($this->currentTemplateDir, $parentFolder);
         foreach ($configXML as $section) {
-            foreach ($section->oSettings_arr as $setting) {
-                if ($setting->bEditable && isset($configValues[$section->cKey][$setting->cKey])) {
-                    $setting->cValue = $configValues[$section->cKey][$setting->cKey];
+            foreach ($section->settings as $setting) {
+                if ($setting->isEditable && isset($configValues[$section->key][$setting->key])) {
+                    $setting->value = $configValues[$section->key][$setting->key];
                 }
             }
         }
@@ -74,10 +74,10 @@ class Config
      *
      * @param string $section
      * @param string $name
-     * @param string $value
+     * @param mixed  $value
      * @return $this
      */
-    public function updateConfigInDB($section, $name, $value): self
+    public function updateConfigInDB(string $section, string $name, $value): self
     {
         $config = $this->db->select(
             'ttemplateeinstellungen',

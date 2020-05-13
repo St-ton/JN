@@ -48,9 +48,6 @@ class Mapper
             return $collection;
         }
         foreach ($data->extensions as $extension) {
-            if ($extension->id === 'jtl_paypal_shop5') {
-                $extension->id = 'jtl_paypal';
-            }
             $esxLicense = new ExsLicense($extension);
             $esxLicense->setQueryDate($data->timestamp);
             $esxLicense->setState(ExsLicense::STATE_ACTIVE);

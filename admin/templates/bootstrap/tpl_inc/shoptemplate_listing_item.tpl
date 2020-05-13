@@ -22,7 +22,7 @@
                     {/foreach}
                 {/if}
 				<div class="font-size-sm">
-                    {if !empty($listingItem->getURL())}<a href="{$listingItem->getURL()}" rel="noopener" target="_blank">{/if}
+					{if !empty($listingItem->getURL())}<a href="{$listingItem->getURL()}" rel="noopener" target="_blank"> <i class="fas fa-external-link"></i> {/if}
                         {$listingItem->getAuthor()}
                         {if !empty($listingItem->getURL())}</a>{/if}
 				</div>

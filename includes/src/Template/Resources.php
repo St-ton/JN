@@ -39,11 +39,6 @@ class Resources
     private $xmlList;
 
     /**
-     * @var string
-     */
-    private $dir;
-
-    /**
      * @var array
      */
     private $cacheTags = [];
@@ -51,14 +46,12 @@ class Resources
     /**
      * Resources constructor.
      * @param DbInterface           $db
-     * @param string                $dir
      * @param SimpleXMLElement      $xml
      * @param SimpleXMLElement|null $parentXML
      */
-    public function __construct(DbInterface $db, string $dir, SimpleXMLElement $xml, ?SimpleXMLElement $parentXML = null)
+    public function __construct(DbInterface $db, SimpleXMLElement $xml, ?SimpleXMLElement $parentXML = null)
     {
         $this->db      = $db;
-        $this->dir     = $dir;
         $this->xmlList = [$xml, $parentXML];
     }
 

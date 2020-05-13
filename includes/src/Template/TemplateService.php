@@ -96,7 +96,7 @@ class TemplateService implements TemplateServiceInterface
             $parentXML
         );
         $template->setBoxLayout($this->getBoxLayout($tplXML, $parentXML));
-        $template->setResources(new Resources($this->db, $template->getDir(), $tplXML, $parentXML));
+        $template->setResources(new Resources($this->db, $tplXML, $parentXML));
 
         return $template;
     }

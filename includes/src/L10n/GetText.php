@@ -1,11 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\L10n;
 
 use Gettext\Translations;
 use Gettext\Translator;
-use JTL\Plugin\Admin\ListingItem;
+use JTL\Plugin\Admin\ListingItem as PluginListingItem;
+use JTL\Shop;
+use JTL\Template\Admin\ListingItem as TemplateListingItem;
 use JTL\Plugin\PluginInterface;
+use JTL\Template\Model;
 
 /**
  * Class GetText
@@ -65,6 +68,15 @@ class GetText
     }
 
     /**
+     * @param Model $template
+     * @return string
+     */
+    public function getTemplateDir(Model $template): string
+    {
+        return \PFAD_ROOT . \PFAD_TEMPLATES . $template->getDir() . '/';
+    }
+
+    /**
      * @param PluginInterface $plugin
      * @return string
      */
@@ -90,6 +102,16 @@ class GetText
     public function getAdminMoPath(string $domain): string
     {
         return $this->getMoPath($this->getAdminDir(), $domain);
+    }
+
+    /**
+     * @param string $domain
+     * @param Model  $template
+     * @return string
+     */
+    public function getTemplateMoPath(string $domain, Model $template): string
+    {
+        return $this->getMoPath($this->getTemplateDir($template), $domain);
     }
 
     /**
@@ -150,21 +172,31 @@ class GetText
     }
 
     /**
-     * @param string      $domain
-     * @param ListingItem $item
+     * @param string $domain
+     * @param Model  $template
      * @return GetText
      */
-    public function loadPluginItemLocale(string $domain, ListingItem $item): self
+    public function loadTemplateLocale(string $domain, Model $template): self
+    {
+        return $this->loadLocaleFile($this->getTemplateMoPath($domain, $template));
+    }
+
+    /**
+     * @param string            $domain
+     * @param PluginListingItem $item
+     * @return GetText
+     */
+    public function loadPluginItemLocale(string $domain, PluginListingItem $item): self
     {
         return $this->loadTranslations(\PFAD_ROOT . \PLUGIN_DIR . $item->getDir() . '/', $domain);
     }
 
     /**
-     * @param string                          $domain
-     * @param \JTL\Template\Admin\ListingItem $item
+     * @param string              $domain
+     * @param TemplateListingItem $item
      * @return GetText
      */
-    public function loadTemplateItemLocale(string $domain, \JTL\Template\Admin\ListingItem $item): self
+    public function loadTemplateItemLocale(string $domain, TemplateListingItem $item): self
     {
         return $this->loadTranslations(\PFAD_ROOT . \PFAD_TEMPLATES . $item->getDir() . '/', $domain);
     }

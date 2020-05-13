@@ -231,52 +231,10 @@ class Controller
             $name    = $_POST['cName'][$i];
             $value   = $_POST['cWert'][$i];
             // for uploads, the value of an input field is the $_FILES index of the uploaded file
-            if (\mb_strpos($value, 'upload-') === 0) {
-                // all upload fields have to start with "upload-" - so check for that
-                if (!empty($_FILES[$value]['name']) && $_FILES[$value]['error'] === UPLOAD_ERR_OK) {
-                    // we have an upload field and the file is set in $_FILES array
-                    $file  = $_FILES[$value];
-                    $value = \basename($_FILES[$value]['name']);
-                    $break = false;
-                    foreach ($tplConfXML as $_section) {
-                        if (!isset($_section->oSettings_arr)) {
-                            continue;
-                        }
-                        foreach ($_section->oSettings_arr as $_setting) {
-                            if (!isset($_setting->cKey, $_setting->rawAttributes['target']) || $_setting->cKey !== $name) {
-                                continue;
-                            }
-                            $templatePath = PFAD_TEMPLATES . $this->currentTemplateDir . '/' . $_setting->rawAttributes['target'];
-                            $base         = PFAD_ROOT . $templatePath;
-                            // optional target file name + extension
-                            if (isset($_setting->rawAttributes['targetFileName'])) {
-                                $value = $_setting->rawAttributes['targetFileName'];
-                            }
-                            $targetFile = $base . $value;
-                            if (!\is_writable($base)) {
-                                $this->alertService->addAlert(
-                                    Alert::TYPE_ERROR,
-                                    \sprintf(__('errorFileUpload'), $templatePath),
-                                    'errorFileUpload',
-                                    ['saveInSession' => true]
-                                );
-                            } elseif (!\move_uploaded_file($file['tmp_name'], $targetFile)) {
-                                $this->alertService->addAlert(
-                                    Alert::TYPE_ERROR,
-                                    __('errorFileUploadGeneral'),
-                                    'errorFileUploadGeneral',
-                                    ['saveInSession' => true]
-                                );
-                            }
-                            $break = true;
-                            break;
-                        }
-                        if ($break === true) {
-                            break;
-                        }
-                    }
-                } else {
-                    // no file uploaded, ignore
+            if (\mb_strpos($value, 'upload-') === 0) { // all upload fields have to start with "upload-"
+                try {
+                    $value = $this->handleUpload($tplConfXML, $value, $name);
+                } catch (InvalidArgumentException $e) {
                     continue;
                 }
             }
@@ -289,13 +247,62 @@ class Controller
         } else {
             $this->alertService->addAlert(Alert::TYPE_ERROR, __('errorTemplateSave'), 'errorTemplateSave');
         }
-
         if (Request::verifyGPCDataInt('activate') === 1) {
             $overlayHelper = new Overlay($this->db);
             $overlayHelper->loadOverlaysFromTemplateFolder($this->currentTemplateDir);
         }
-
         $this->db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
+    }
+
+    /**
+     * @param array  $tplConfXML
+     * @param string $value
+     * @param string $name
+     * @return string
+     */
+    private function handleUpload(array $tplConfXML, string $value, string $name): string
+    {
+        if (empty($_FILES[$value]['name']) || $_FILES[$value]['error'] !== UPLOAD_ERR_OK) {
+            throw new InvalidArgumentException('No file provided or upload error');
+        }
+        $file  = $_FILES[$value];
+        $value = \basename($_FILES[$value]['name']);
+        foreach ($tplConfXML as $section) {
+            if (!isset($section->settings)) {
+                continue;
+            }
+            foreach ($section->settings as $setting) {
+                if (!isset($setting->cKey, $setting->rawAttributes['target']) || $setting->cKey !== $name) {
+                    continue;
+                }
+                $templatePath = PFAD_TEMPLATES . $this->currentTemplateDir . '/' . $setting->rawAttributes['target'];
+                $base         = PFAD_ROOT . $templatePath;
+                // optional target file name + extension
+                if (isset($setting->rawAttributes['targetFileName'])) {
+                    $value = $setting->rawAttributes['targetFileName'];
+                }
+                $targetFile = $base . $value;
+                if (!\is_writable($base)) {
+                    $this->alertService->addAlert(
+                        Alert::TYPE_ERROR,
+                        \sprintf(__('errorFileUpload'), $templatePath),
+                        'errorFileUpload',
+                        ['saveInSession' => true]
+                    );
+                } elseif (!\move_uploaded_file($file['tmp_name'], $targetFile)) {
+                    $this->alertService->addAlert(
+                        Alert::TYPE_ERROR,
+                        __('errorFileUploadGeneral'),
+                        'errorFileUploadGeneral',
+                        ['saveInSession' => true]
+                    );
+                }
+
+                return $value;
+            }
+        }
+
+        return $value;
     }
 
     private function displayOverview(): void
@@ -339,16 +346,17 @@ class Controller
         $service      = Shop::Container()->getTemplateService();
         $current      = $service->loadFull(['cTemplate' => $this->currentTemplateDir]);
         $parentFolder = null;
+        Shop::Container()->getGetText()->loadTemplateLocale('base', $current);
         if ($tplXML !== null && !empty($tplXML->Parent)) {
             $parentFolder = (string)$tplXML->Parent;
         }
-        $tplConfXML = $this->config->getConfigXML($reader, $parentFolder);
-        $preview    = $this->getPreview($tplConfXML);
+        $templateConfig = $this->config->getConfigXML($reader, $parentFolder);
+        $preview        = $this->getPreview($templateConfig);
 
         $this->smarty->assign('template', $current)
             ->assign('themePreviews', (\count($preview) > 0) ? $preview : null)
             ->assign('themePreviewsJSON', \json_encode($preview))
-            ->assign('oEinstellungenXML', $tplConfXML)
+            ->assign('templateConfig', $templateConfig)
             ->display('shoptemplate.tpl');
     }
 
@@ -364,34 +372,34 @@ class Controller
         $tplPath = $tplBase . $this->currentTemplateDir . '/';
         foreach ($tplConfXML as $_conf) {
             // iterate over each "Setting" in this "Section"
-            foreach ($_conf->oSettings_arr as $_setting) {
+            foreach ($_conf->settings as $_setting) {
                 if ($_setting->cType === 'upload'
                     && isset($_setting->rawAttributes['target'], $_setting->rawAttributes['targetFileName'])
                     && !\file_exists($tplPath . $_setting->rawAttributes['target']
                         . $_setting->rawAttributes['targetFileName'])
                 ) {
-                    $_setting->cValue = null;
+                    $_setting->value = null;
                 }
             }
-            if (isset($_conf->cKey, $_conf->oSettings_arr)
+            if (isset($_conf->cKey, $_conf->settings)
                 && $_conf->cKey === 'theme'
-                && \count($_conf->oSettings_arr) > 0
+                && \count($_conf->settings) > 0
             ) {
-                foreach ($_conf->oSettings_arr as $_themeConf) {
-                    if (isset($_themeConf->cKey, $_themeConf->oOptions_arr)
+                foreach ($_conf->settings as $_themeConf) {
+                    if (isset($_themeConf->cKey, $_themeConf->options)
                         && $_themeConf->cKey === 'theme_default'
-                        && \count($_themeConf->oOptions_arr) > 0
+                        && \count($_themeConf->options) > 0
                     ) {
-                        foreach ($_themeConf->oOptions_arr as $_theme) {
-                            $previewImage = isset($_theme->cOrdner)
-                                ? $tplBase . $_theme->cOrdner . '/themes/' .
-                                $_theme->cValue . '/preview.png'
-                                : $tplBase . $this->currentTemplateDir . '/themes/' . $_theme->cValue . '/preview.png';
+                        foreach ($_themeConf->options as $_theme) {
+                            $previewImage = isset($_theme->dir)
+                                ? $tplBase . $_theme->dir . '/themes/' .
+                                $_theme->value . '/preview.png'
+                                : $tplBase . $this->currentTemplateDir . '/themes/' . $_theme->value . '/preview.png';
                             if (\file_exists($previewImage)) {
-                                $base                     = $shopURL . PFAD_TEMPLATES;
-                                $preview[$_theme->cValue] = isset($_theme->cOrdner)
-                                    ? $base . $_theme->cOrdner . '/themes/' . $_theme->cValue . '/preview.png'
-                                    : $base . $this->currentTemplateDir . '/themes/' . $_theme->cValue . '/preview.png';
+                                $base                    = $shopURL . PFAD_TEMPLATES;
+                                $preview[$_theme->value] = isset($_theme->dir)
+                                    ? $base . $_theme->dir . '/themes/' . $_theme->value . '/preview.png'
+                                    : $base . $this->currentTemplateDir . '/themes/' . $_theme->value . '/preview.png';
                             }
                         }
                         break;

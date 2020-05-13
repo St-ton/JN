@@ -67,18 +67,18 @@ class XMLReader
                 $section   = null;
                 $sectionID = (string)$xmlSection->attributes()->Key;
                 $exists    = false;
-                foreach ($sections as &$_section) {
-                    if ($_section->cKey === $sectionID) {
+                foreach ($sections as $_section) {
+                    if ($_section->key === $sectionID) {
                         $exists  = true;
                         $section = $_section;
                         break;
                     }
                 }
                 if (!$exists) {
-                    $section                = new stdClass();
-                    $section->cName         = (string)$xmlSection->attributes()->Name;
-                    $section->cKey          = $sectionID;
-                    $section->oSettings_arr = [];
+                    $section           = new stdClass();
+                    $section->name     = (string)$xmlSection->attributes()->Name;
+                    $section->key      = $sectionID;
+                    $section->settings = [];
                 }
                 /** @var SimpleXMLElement $XMLSetting */
                 foreach ($xmlSection->Setting as $XMLSetting) {
@@ -96,34 +96,34 @@ class XMLReader
                     if ((string)$XMLSetting->attributes()->override === 'true') {
                         $ignoredSettings[] = $key;
                     }
-                    $setting->cName        = (string)$XMLSetting->attributes()->Description;
-                    $setting->cKey         = $key;
+                    $setting->name         = (string)$XMLSetting->attributes()->Description;
+                    $setting->key          = $key;
                     $setting->cType        = (string)$XMLSetting->attributes()->Type;
-                    $setting->cValue       = (string)$XMLSetting->attributes()->Value;
-                    $setting->bEditable    = (string)$XMLSetting->attributes()->Editable;
+                    $setting->value        = (string)$XMLSetting->attributes()->Value;
+                    $setting->isEditable   = (string)$XMLSetting->attributes()->Editable;
                     $setting->cPlaceholder = (string)$XMLSetting->attributes()->Placeholder;
                     // negative values for the 'toggle'-attributes of textarea(resizable), check-boxes and radio-buttons
-                    $vToggleValues = ['0', 'no', 'none', 'off', 'false'];
+                    $toggleValues = ['0', 'no', 'none', 'off', 'false'];
                     // special handling for textarea-type settings
                     if ($setting->cType === 'textarea') {
                         // inject the tag-attributes of the TextAreaValue in our oSetting
-                        $setting->vTextAreaAttr_arr = [];
+                        $setting->textareaAttributes = [];
                         // get the SimpleXMLElement-array
                         $attr = $XMLSetting->TextAreaValue->attributes();
                         // we insert our default "no resizable"
-                        $setting->vTextAreaAttr_arr['Resizable'] = 'none';
+                        $setting->textareaAttributes['Resizable'] = 'none';
                         foreach ($attr as $_key => $_val) {
-                            $_val                              = (string)$_val; // cast the value(!)
-                            $setting->vTextAreaAttr_arr[$_key] = $_val;
+                            $_val                               = (string)$_val; // cast the value(!)
+                            $setting->textareaAttributes[$_key] = $_val;
                             // multiple values of 'disable resizing' are allowed,
                             // but only vertical is ok, if 'resizable' is required
                             if ((string)$_key === 'Resizable') {
-                                \in_array($_val, $vToggleValues, true)
-                                    ? $setting->vTextAreaAttr_arr[$_key] = 'none'
-                                    : $setting->vTextAreaAttr_arr[$_key] = 'vertical';
+                                \in_array($_val, $toggleValues, true)
+                                    ? $setting->textareaAttributes[$_key] = 'none'
+                                    : $setting->textareaAttributes[$_key] = 'vertical';
                                 // only vertical, because horizontal breaks the layout
                             } else {
-                                $setting->vTextAreaAttr_arr[$_key] = $_val;
+                                $setting->textareaAttributes[$_key] = $_val;
                             }
                         }
                         // get the tag-content of "TextAreaValue"; trim leading and trailing spaces
@@ -131,57 +131,57 @@ class XMLReader
                         \array_walk($textLines, '\trim');
                         $setting->cTextAreaValue = \implode("\n", $textLines);
                     }
-                    foreach ($section->oSettings_arr as $_setting) {
-                        if ($_setting->cKey === $setting->cKey) {
+                    foreach ($section->settings as $_setting) {
+                        if ($_setting->key === $setting->key) {
                             $settingExists = true;
                             $setting       = $_setting;
                             break;
                         }
                     }
-                    if (\is_string($setting->bEditable)) {
-                        $setting->bEditable = \mb_strlen($setting->bEditable) === 0
+                    if (\is_string($setting->isEditable)) {
+                        $setting->isEditable = \mb_strlen($setting->isEditable) === 0
                             ? true
-                            : (bool)(int)$setting->bEditable;
+                            : (bool)(int)$setting->isEditable;
                     }
                     if (isset($XMLSetting->Option)) {
-                        if (!isset($setting->oOptions_arr)) {
-                            $setting->oOptions_arr = [];
+                        if (!isset($setting->options)) {
+                            $setting->options = [];
                         }
                         /** @var SimpleXMLElement $XMLOption */
                         foreach ($XMLSetting->Option as $XMLOption) {
-                            $oOption          = new stdClass();
-                            $oOption->cName   = (string)$XMLOption;
-                            $oOption->cValue  = (string)$XMLOption->attributes()->Value;
-                            $oOption->cOrdner = $dir; //add current folder to option - useful for theme previews
+                            $opt        = new stdClass();
+                            $opt->name  = (string)$XMLOption;
+                            $opt->value = (string)$XMLOption->attributes()->Value;
+                            $opt->dir   = $dir; // add current folder to option - useful for theme previews
                             if ((string)$XMLOption === '' && (string)$XMLOption->attributes()->Name !== '') {
-                                // overwrite the cName (which defaults to the tag-content),
+                                // overwrite the name (which defaults to the tag content),
                                 // if it's empty, with the Option-attribute "Name", if we got that
-                                $oOption->cName = (string)$XMLOption->attributes()->Name;
+                                $opt->name = (string)$XMLOption->attributes()->Name;
                             }
-                            $setting->oOptions_arr[] = $oOption;
+                            $setting->options[] = $opt;
                         }
                     }
                     if (isset($XMLSetting->Optgroup)) {
-                        if (!isset($setting->oOptgroup_arr)) {
-                            $setting->oOptgroup_arr = [];
+                        if (!isset($setting->optGroups)) {
+                            $setting->optGroups = [];
                         }
                         /** @var SimpleXMLElement $XMLOptgroup */
                         foreach ($XMLSetting->Optgroup as $XMLOptgroup) {
-                            $optgroup              = new stdClass();
-                            $optgroup->cName       = (string)$XMLOptgroup->attributes()->label;
-                            $optgroup->oValues_arr = [];
+                            $optgroup         = new stdClass();
+                            $optgroup->name   = (string)$XMLOptgroup->attributes()->label;
+                            $optgroup->values = [];
                             /** @var SimpleXMLElement $XMLOptgroupOption */
                             foreach ($XMLOptgroup->Option as $XMLOptgroupOption) {
-                                $oOptgroupValues         = new stdClass();
-                                $oOptgroupValues->cName  = (string)$XMLOptgroupOption;
-                                $oOptgroupValues->cValue = (string)$XMLOptgroupOption->attributes()->Value;
-                                $optgroup->oValues_arr[] = $oOptgroupValues;
+                                $optgroupValues        = new stdClass();
+                                $optgroupValues->name  = (string)$XMLOptgroupOption;
+                                $optgroupValues->value = (string)$XMLOptgroupOption->attributes()->Value;
+                                $optgroup->values[]    = $optgroupValues;
                             }
-                            $setting->oOptgroup_arr[] = $optgroup;
+                            $setting->optGroups[] = $optgroup;
                         }
                     }
                     if (!$settingExists) {
-                        $section->oSettings_arr[] = $setting;
+                        $section->settings[] = $setting;
                     }
                 }
                 if (!$exists) {

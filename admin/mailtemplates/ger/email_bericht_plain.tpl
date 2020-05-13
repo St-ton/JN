@@ -91,4 +91,12 @@ Produktvergleiche: {$oMailObjekt->nAnzahlVergleiche}
 {if $oMailObjekt->nAnzahlGenutzteKupons !== -1}
 Genutzte Coupons: {$oMailObjekt->nAnzahlGenutzteKupons}
 {/if}
+
+{if $oMailObjekt->nAnzahlNewsletterAbmeldungen !== -1}
+Newsletter Abmeldungen: {$oMailObjekt->nAnzahlNewsletterAbmeldungen}
+{/if}
+
+{if $oMailObjekt->nAnzahlNewsletterAnmeldungen !== -1}
+Newsletter Anmeldungen: {$oMailObjekt->nAnzahlNewsletterAnmeldungen}
+{/if}
 {includeMailTemplate template=footer type=plain}

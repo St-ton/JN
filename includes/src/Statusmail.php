@@ -66,7 +66,7 @@ class Statusmail
             $this->db->query(
                 "DELETE tcron, tjobqueue
                     FROM tcron
-                    LEFT JOIN tjobqueue 
+                    LEFT JOIN tjobqueue
                         ON tjobqueue.cronID = tcron.cronID
                     WHERE tcron.jobType = 'statusemail'",
                 ReturnType::DEFAULT
@@ -212,7 +212,7 @@ class Statusmail
             $productData            = $this->db->queryPrepared(
                 'SELECT COUNT(*) AS cnt
                     FROM tartikel
-                    LEFT JOIN tartikelsichtbarkeit 
+                    LEFT JOIN tartikelsichtbarkeit
                         ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
                         AND tartikelsichtbarkeit.kKundengruppe = :cgid
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL',
@@ -257,7 +257,7 @@ class Statusmail
         return (int)$this->db->queryPrepared(
             'SELECT COUNT(DISTINCT(tkunde.kKunde)) AS cnt
                 FROM tkunde
-                JOIN tbestellung 
+                JOIN tbestellung
                     ON tbestellung.kKunde = tkunde.kKunde
                 WHERE tbestellung.dErstellt >= :from
                     AND tbestellung.dErstellt < :to
@@ -298,7 +298,7 @@ class Statusmail
         return (int)$this->db->queryPrepared(
             'SELECT COUNT(*) AS cnt
                 FROM tbestellung
-                JOIN tkunde 
+                JOIN tkunde
                     ON tkunde.kKunde = tbestellung.kKunde
                 WHERE tbestellung.dErstellt >= :from
                     AND tbestellung.dErstellt < :to
@@ -358,7 +358,7 @@ class Statusmail
             'SELECT COUNT(*) AS cnt
                 FROM tbesucherarchiv
                 WHERE dZeit >= :from
-                    AND dZeit < :to 
+                    AND dZeit < :to
                     AND kBesucherBot = 0',
             [
                 'from' => $this->dateStart,
@@ -455,7 +455,7 @@ class Statusmail
     private function getNewsletterOptOutCount():int
     {
         $res = $this->db->queryPrepared(
-            'SELECT COUNT(*) AS total 
+            'SELECT COUNT(*) AS total
                 FROM toptinhistory
                 WHERE dDeActivated >= :from
                 AND dDeActivated < :to
@@ -468,6 +468,7 @@ class Statusmail
             ],
             ReturnType::SINGLE_OBJECT
         );
+
         return \is_object($res) ? $res->total : 0;
     }
 
@@ -477,7 +478,7 @@ class Statusmail
     private function getNewsletterOptInCount():int
     {
         $res = $this->db->queryPrepared(
-            'SELECT COUNT(*) AS total 
+            'SELECT COUNT(*) AS total
                 FROM toptin
                 WHERE dActivated >= :from
                 AND dActivated < :to

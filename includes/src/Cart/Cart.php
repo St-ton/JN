@@ -586,9 +586,10 @@ class Cart
 
     /**
      * @param int $type
+     * @param bool $force
      * @return $this
      */
-    public function loescheSpezialPos(int $type): self
+    public function loescheSpezialPos(int $type, bool $force = false): self
     {
         if (\count($this->PositionenArr) === 0) {
             return $this;
@@ -599,7 +600,7 @@ class Cart
             }
         }
         $this->PositionenArr = \array_merge($this->PositionenArr);
-        if (!empty($_POST['Kuponcode']) && $type === \C_WARENKORBPOS_TYP_KUPON) {
+        if (($force || !empty($_POST['Kuponcode'])) && $type === \C_WARENKORBPOS_TYP_KUPON) {
             if (!empty($_SESSION['Kupon'])) {
                 unset($_SESSION['Kupon']);
             } elseif (!empty($_SESSION['oVersandfreiKupon'])) {

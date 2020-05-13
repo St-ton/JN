@@ -185,7 +185,12 @@ class Slide
                 $this->image = \mb_substr($this->image, \mb_strlen($shopPath));
             }
 
-            $this->thumbnail = \STORAGE_OPC . '.tmb/' . \basename($this->image);
+            if (\JTL\Helpers\Text::startsWith($this->image, 'Bilder/')) {
+                $this->image     = \PFAD_MEDIAFILES . $this->image;
+                $this->thumbnail = \PFAD_MEDIAFILES . 'Bilder/.tmb/' . \basename($this->image);
+            } else {
+                $this->thumbnail = \STORAGE_OPC . '.tmb/' . \basename($this->image);
+            }
         }
 
         return $this->id === null || $this->id === 0

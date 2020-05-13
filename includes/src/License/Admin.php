@@ -9,6 +9,8 @@ use JTL\DB\DbInterface;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\License\Exception\DownloadValidationException;
+use JTL\License\Installer\PluginInstaller;
+use JTL\License\Installer\TemplateInstaller;
 use JTL\License\Struct\ExsLicense;
 use JTL\Plugin\Admin\Installation\Extractor;
 use JTL\Plugin\Admin\Installation\InstallationResponse;
@@ -109,10 +111,11 @@ class Admin
      * @param AjaxResponse $response
      * @return bool|int
      * @throws DownloadValidationException
+     * @throws InvalidArgumentException
      */
     private function updateItem(string $itemID, AjaxResponse $response)
     {
-        $res         = false;
+        $installer   = null;
         $licenseData = $this->manager->getLicenseByItemID($itemID);
         if ($licenseData === null) {
             throw new InvalidArgumentException('Could not find item with ID ' . $itemID);
@@ -123,37 +126,21 @@ class Admin
         }
         $downloader        = new Downloader();
         $downloadedArchive = $downloader->downloadRelease($available);
-        if ($licenseData->getType() === ExsLicense::TYPE_PLUGIN) {
-            $res = $this->updatePlugin($itemID, $downloadedArchive, $response);
+        switch ($licenseData->getType()) {
+            case ExsLicense::TYPE_PLUGIN:
+                $installer = new PluginInstaller($this->db, $this->cache);
+                break;
+            case ExsLicense::TYPE_TEMPLATE:
+                $installer = new TemplateInstaller($this->db, $this->cache);
+                break;
+            case ExsLicense::TYPE_PORTLET:
+                // @todo
+                throw new InvalidArgumentException('Cannot update portlets yet');
+                break;
+            default:
+                throw new InvalidArgumentException('Cannot update type ' . $licenseData->getType());
         }
 
-        return $res;
-    }
-
-    /**
-     * @param string       $itemID
-     * @param string       $downloadedArchive
-     * @param AjaxResponse $response
-     * @return int
-     */
-    private function updatePlugin(string $itemID, string $downloadedArchive, AjaxResponse $response): int
-    {
-        $parser           = new XMLParser();
-        $uninstaller      = new Uninstaller($this->db, $this->cache);
-        $legacyValidator  = new LegacyPluginValidator($this->db, $parser);
-        $pluginValidator  = new PluginValidator($this->db, $parser);
-        $installer        = new Installer($this->db, $uninstaller, $legacyValidator, $pluginValidator);
-        $updater          = new Updater($this->db, $installer);
-        $extractor        = new Extractor(new XMLParser());
-        $installResponse  = $extractor->extractPlugin($downloadedArchive);
-        $response->status = $installResponse->getStatus();
-        if ($response->status === InstallationResponse::STATUS_FAILED) {
-            $response->error      = $installResponse->getError() ?? \implode(', ', $installResponse->getMessages());
-            $response->additional = $installResponse;
-
-            return 0;
-        }
-
-        return $updater->update(Helper::getIDByPluginID($itemID));
+        return $installer->update($itemID, $downloadedArchive, $response);
     }
 }

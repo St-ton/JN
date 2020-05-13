@@ -176,4 +176,9 @@ class TemplateService implements TemplateServiceInterface
 
         return $items;
     }
+
+    public function reset(): void
+    {
+        $this->activeTemplate = null;
+    }
 }

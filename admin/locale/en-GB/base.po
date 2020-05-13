@@ -330,7 +330,7 @@ msgid "both"
 msgstr "Both"
 
 msgid "successEmailSend"
-msgstr "An email with further instructions has been sent to the indicated email address (if applicable)."
+msgstr "An email with further instructions has been sent to the indicated email address."
 
 msgid "errorEmailNotFound"
 msgstr "Email not found."

@@ -133,7 +133,6 @@ $fileExtraData                 |         | you also need to add the jtl_token: j
         {/if}
         {if $fileDefaultUploadSuccessEvent|default:true}
         $file.on('filebatchuploadsuccess', function (event, data) {
-            console.log('data@default:', data);
             if (data.response.status === 'OK') {
                 $fileSuccess.removeClass('d-none');
             } else {
@@ -143,7 +142,6 @@ $fileExtraData                 |         | you also need to add the jtl_token: j
         {/if}
         {if $fileDefaultUploadErrorEvent|default:true}
         $file.on('fileuploaderror, fileerror', function (event, data, msg) {
-            console.log('data@defaultError:', data);
             $fileError.removeClass('d-none');
             $fileError.append('<p style="margin-top:20px">' + msg + '</p>')
         });

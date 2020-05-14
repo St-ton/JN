@@ -357,6 +357,11 @@ class Bestellung
     public $oKampagne;
 
     /**
+     * @var array
+     */
+    public $OrderAttributes;
+
+    /**
      * Bestellung constructor.
      * @param int  $id
      * @param bool $init
@@ -809,6 +814,30 @@ class Bestellung
 
         if (empty($this->oEstimatedDelivery->localized)) {
             $this->berechneEstimatedDelivery();
+        }
+
+        $this->OrderAttributes = [];
+        if ((int)$this->kBestellung > 0) {
+            $OrderAttributes = $db->selectAll(
+                'tbestellattribut',
+                'kbestellung',
+                (int)$this->kBestellung);
+            foreach ($OrderAttributes as $attribute) {
+                $attr = new stdClass();
+                $attr->kBestellattribut = (int) $attribute->kBestellattribut;
+                $attr->kBestellung = (int) $attribute->kBestellung;
+                $attr->cName = $attribute->cName;
+                $attr->cValue = $attribute->cValue;
+                if ($attribute->cName === "Finanzierungskosten") {
+                    $attr->cValue = Preise::getLocalizedPriceString(
+                        str_replace(',','.',$attribute->cValue),
+                        $this->Waehrung,
+                        $htmlCurrency
+                    );
+                }
+                $this->OrderAttributes[] = $attr;
+            }
+
         }
 
         $this->setKampagne();

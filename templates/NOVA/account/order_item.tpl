@@ -199,5 +199,37 @@
                 {/block}
             {/if}
         {/foreach}
+        {foreach $Bestellung->OrderAttributes as $attribute}
+            {if $attribute->cName === 'Finanzierungskosten'}
+                <hr class="my-3">
+                {row class="type-{$smarty.const.C_WARENKORBPOS_TYP_ZINSAUFSCHLAG}"}
+                    {col cols=12 md="{if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}6{else}8{/if}"}
+                        {row}
+                            {col md=8 offset=3 offset-md=4}
+                                {block name='account-order-item-details-finance-costs'}
+                                    {lang key='financeCosts' section='order'}
+                                {/block}
+                            {/col}
+                        {/row}
+                    {/col}
+
+                    {block name='account-order-item-price'}
+                        {block name='account-order-item-price-qty'}
+                            {col class='qty-col text-right' md=2 cols=6}
+                                1
+                            {/col}
+                        {/block}
+                        {col class='price-col text-right hidden-xs text-nowrap' md=2 cols=3}{/col}
+                        {block name='account-order-item-price-overall'}
+                            {col class='price-col text-right text-nowrap' md=2 cols=3}
+                                <strong class="price_overall">
+                                    {$attribute->cValue}
+                                </strong>
+                            {/col}
+                        {/block}
+                    {/block}
+                {/row}
+            {/if}
+        {/foreach}
     </div>
 {/block}

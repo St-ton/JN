@@ -1,5 +1,5 @@
-Shop Consent Manager
-====================
+JTL-Shop Consent Manager
+========================
 
 .. |br| raw:: html
 
@@ -28,7 +28,7 @@ Der Aufruf dieser Einstellungen ist im Frontend jedenzeit über ein entsprechend
 Consent Manager im Plugin
 -------------------------
 
-Auch Plugins können über den ConsentManager von JTL-Shop 5 Einverständniserklärungen einfordern.
+Auch Plugins können über den Consent Manager von JTL-Shop 5 Einverständniserklärungen einfordern.
 
 Hierfür registriert ein Plugin über den EventDispatcher (":ref:`label_bootstrapping_eventdispatcher`")
 einen Listener für das Event ``CONSENT_MANAGER_GET_ACTIVE_ITEMS``.
@@ -38,7 +38,7 @@ einen Listener für das Event ``CONSENT_MANAGER_GET_ACTIVE_ITEMS``.
     $dispatcher->listen('shop.hook.' . \CONSENT_MANAGER_GET_ACTIVE_ITEMS, [$this, 'addConsentItem']);
 
 Wird nun das Event ``CONSENT_MANAGER_GET_ACTIVE_ITEMS`` ausgelöst, registriert die Lambda-Funktion
-``addConsentItem()`` im Plugin die entsprechende Einverständniserklärung im Shop-ConsentManager.
+``addConsentItem()`` im Plugin die entsprechende Einverständniserklärung im JTL-Shop Consent Manager.
 
 .. code-block:: php
 
@@ -63,7 +63,8 @@ Wird nun das Event ``CONSENT_MANAGER_GET_ACTIVE_ITEMS`` ausgelöst, registriert 
         $args['items']->push($item);
     }
 
-Zur Einforderung der Einverständniserklärung wird nun ein entsprechender Schalter im Shop-ConsentManager angezeigt.
+Zur Einforderung der Einverständniserklärung wird nun ein entsprechender Schalter im JTL-Shop Consent Manager
+angezeigt.
 
 .. image:: /_images/cm-testcons.png
 

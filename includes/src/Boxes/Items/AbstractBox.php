@@ -279,7 +279,7 @@ abstract class AbstractBox implements BoxInterface
         $this->setPosition($data->ePosition);
         $this->setType($data->eTyp);
 
-        if ($this->getType() !== Type::PLUGIN) {
+        if ($this->getType() !== Type::PLUGIN && \strpos($data->cTemplate, 'boxes/') !== 0) {
             $data->cTemplate = 'boxes/' . $data->cTemplate;
         }
         $this->setTemplateFile($data->cTemplate);
@@ -593,7 +593,7 @@ abstract class AbstractBox implements BoxInterface
      */
     public function getSort(?int $pageID = null): int
     {
-        return $pageID === null ? $this->sort : $this->sortByPageID[$pageID];
+        return $pageID === null ? $this->sort : $this->sortByPageID[$pageID] ?? 0;
     }
 
     /**

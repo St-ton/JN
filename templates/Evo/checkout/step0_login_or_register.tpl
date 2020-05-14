@@ -41,6 +41,11 @@
                         {/block}
                     </div>
                 {/block}
+                <div>
+                    <p class="privacy text-muted">
+                        <a href="{$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL()}" class="popup">{$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getName()}</a>
+                    </p>
+                </div>
                 <div class="text-right">
                     <input type="hidden" name="checkout" value="1">
                     <input type="hidden" name="form" value="1">

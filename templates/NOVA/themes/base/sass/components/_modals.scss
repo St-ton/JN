@@ -40,6 +40,9 @@
 	.modal-dialog {
 		height: auto;
 	}
+	.square-image {
+		margin-bottom: map-get($spacers, 1);
+	}
 }
 
 #maintenance button.close{

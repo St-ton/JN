@@ -5,8 +5,10 @@ namespace JTL\Media;
 use DirectoryIterator;
 use Exception;
 use FilesystemIterator;
+use JTL\DB\DbInterface;
 use JTL\Helpers\URL;
 use JTL\IO\IOError;
+use JTL\L10n\GetText;
 use JTL\Media\Image\Category;
 use JTL\Media\Image\Characteristic;
 use JTL\Media\Image\CharacteristicValue;
@@ -28,6 +30,22 @@ use stdClass;
 class Manager
 {
     /**
+     * @var DbInterface
+     */
+    private $db;
+
+    /**
+     * Manager constructor.
+     * @param DbInterface $db
+     * @param GetText     $getText
+     */
+    public function __construct(DbInterface $db, GetText $getText)
+    {
+        $this->db = $db;
+        $getText->loadAdminLocale('pages/bilderverwaltung');
+    }
+
+    /**
      * @param bool $filesize
      * @return array
      * @throws Exception
@@ -35,22 +53,22 @@ class Manager
     public function getItems(bool $filesize = false): array
     {
         return [
-            Image::TYPE_PRODUCT      => (object)[
+            Image::TYPE_PRODUCT              => (object)[
                 'name'  => __('product'),
                 'type'  => Image::TYPE_PRODUCT,
                 'stats' => Product::getStats($filesize)
             ],
-            Image::TYPE_CATEGORY     => (object)[
+            Image::TYPE_CATEGORY             => (object)[
                 'name'  => __('category'),
                 'type'  => Image::TYPE_CATEGORY,
                 'stats' => Category::getStats($filesize)
             ],
-            Image::TYPE_MANUFACTURER => (object)[
+            Image::TYPE_MANUFACTURER         => (object)[
                 'name'  => __('manufacturer'),
                 'type'  => Image::TYPE_MANUFACTURER,
                 'stats' => Manufacturer::getStats($filesize)
             ],
-            Image::TYPE_CHARACTERISTIC => (object)[
+            Image::TYPE_CHARACTERISTIC       => (object)[
                 'name'  => __('characteristic'),
                 'type'  => Image::TYPE_CHARACTERISTIC,
                 'stats' => Characteristic::getStats($filesize)
@@ -60,22 +78,22 @@ class Manager
                 'type'  => Image::TYPE_CHARACTERISTIC_VALUE,
                 'stats' => CharacteristicValue::getStats($filesize)
             ],
-            Image::TYPE_VARIATION => (object)[
+            Image::TYPE_VARIATION            => (object)[
                 'name'  => __('variation'),
                 'type'  => Image::TYPE_VARIATION,
                 'stats' => Variation::getStats($filesize)
             ],
-            Image::TYPE_NEWS => (object)[
+            Image::TYPE_NEWS                 => (object)[
                 'name'  => __('news'),
                 'type'  => Image::TYPE_NEWS,
                 'stats' => News::getStats($filesize)
             ],
-            Image::TYPE_NEWSCATEGORY => (object)[
+            Image::TYPE_NEWSCATEGORY         => (object)[
                 'name'  => __('newscategory'),
                 'type'  => Image::TYPE_NEWSCATEGORY,
                 'stats' => NewsCategory::getStats($filesize)
             ],
-            Image::TYPE_CONFIGGROUP => (object)[
+            Image::TYPE_CONFIGGROUP          => (object)[
                 'name'  => __('configgroup'),
                 'type'  => Image::TYPE_CONFIGGROUP,
                 'stats' => ConfigGroup::getStats($filesize)
@@ -127,7 +145,6 @@ class Manager
         $checkedInThisRun = 0;
         $deletedInThisRun = 0;
         $i                = 0;
-        $db               = Shop::Container()->getDB();
         foreach (new LimitIterator(new DirectoryIterator($directory), $index, \IMAGE_CLEANUP_LIMIT) as $i => $info) {
             /** @var DirectoryIterator $info */
             $fileName = $info->getFilename();
@@ -135,7 +152,7 @@ class Manager
                 continue;
             }
             ++$checkedInThisRun;
-            if (!$instance::imageIsUsed($db, $fileName)) {
+            if (!$instance::imageIsUsed($this->db, $fileName)) {
                 $result->deletes[] = $fileName;
                 \unlink($info->getRealPath());
                 ++$_SESSION['deletedImages'];
@@ -170,7 +187,6 @@ class Manager
      */
     public function clearImageCache(string $type, bool $isAjax = false): array
     {
-        Shop::Container()->getGetText()->loadAdminLocale('pages/bilderverwaltung');
         if ($type !== null && \preg_match('/[a-z]*/', $type)) {
             $instance = Media::getClass($type);
             /** @var IMedia $instance */
@@ -251,7 +267,6 @@ class Manager
         /** @var IMedia $instance */
         $corruptedImages = [];
         $totalImages     = $instance::getTotalImageCount();
-        $db              = Shop::Container()->getDB();
         do {
             $i = 0;
             foreach ($instance::getAllImages() as $image) {
@@ -261,7 +276,7 @@ class Manager
                         'article' => [],
                         'picture' => ''
                     ];
-                    $data                      = $db->select(
+                    $data                      = $this->db->select(
                         'tartikel',
                         'kArtikel',
                         $image->getId()

@@ -593,7 +593,7 @@ abstract class AbstractBox implements BoxInterface
      */
     public function getSort(?int $pageID = null): int
     {
-        return $pageID === null ? $this->sort : $this->sortByPageID[$pageID];
+        return $pageID === null ? $this->sort : $this->sortByPageID[$pageID] ?? 0;
     }
 
     /**

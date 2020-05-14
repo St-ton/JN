@@ -246,8 +246,14 @@
                             {opcMountPoint id='opc_before_submit'}
                             {block name='contact-index-form-submit'}
                                 {row}
-                                    {col cols=12 lg=4}{/col}
-                                    {col cols=12 lg=8}
+                                    {col cols=12 class="text-right mb-3"}
+                                        {block name='contact-index-modal-privacy'}
+                                            {link href=$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL() class="popup"}
+                                                {lang key='privacyPolicy'}
+                                            {/link}
+                                        {/block}
+                                    {/col}
+                                    {col cols=12 lg=8 offset-lg=4}
                                         {row}
                                             {col md=4 xl=3 class='ml-auto'}
                                             {input type='hidden' name='kontakt' value='1'}

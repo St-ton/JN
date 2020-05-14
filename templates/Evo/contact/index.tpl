@@ -185,6 +185,11 @@
                 {/if}
                 <input type="hidden" name="kontakt" value="1" />
                 {opcMountPoint id='opc_before_submit'}
+                <p class="privacy text-muted">
+                    <a href="{$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL()}" class="popup">
+                        {lang key='privacyPolicy'}
+                    </a>
+                </p>
                 <button type="submit" class="btn btn-primary">{lang key='sendMessage' section='contact'}</button>
             </form>
         </div>

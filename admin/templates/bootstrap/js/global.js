@@ -379,14 +379,22 @@ function switchCouponTooltipVisibility() {
 
 function tristate(cb)
 {
+    let boxId     = cb.dataset.boxId;
+    let boxIgnore = $('#boxIgnore' + boxId);
+
     if (cb.readOnly) {
         // checkbox was indeterminate before
         // so uncheck it
         cb.checked = cb.readOnly = false;
+        boxIgnore.val('-1');
     } else if (!cb.checked) {
         // checkbox was checked before
         // so set it to indeterminate
         cb.readOnly = cb.indeterminate = true;
+        boxIgnore.val(boxId);
+    } else {
+        // checkbox was unchecked before
+        boxIgnore.val('-1');
     }
 }
 

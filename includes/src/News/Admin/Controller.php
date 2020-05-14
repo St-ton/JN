@@ -272,13 +272,37 @@ final class Controller
      */
     public function saveComment(int $id, array $post): bool
     {
-        $upd                    = new stdClass();
-        $upd->cName             = $post['cName'];
-        $upd->cKommentar        = $post['cKommentar'];
-        $upd->cAntwortKommentar = $post['cAntwortKommentar'];
+        if ($id > 0) {
+            $upd             = new stdClass();
+            $upd->cName      = $post['cName'];
+            $upd->cKommentar = $post['cKommentar'];
+            $this->flushCache();
+            return $this->db->update('tnewskommentar', 'kNewsKommentar', $id, $upd) >= 0;
+        } else {
+            return $this->insertComment($post);
+        }
+    }
+
+    /**
+     * @param array $data
+     * @return bool
+     */
+    public function insertComment(array $post): bool
+    {
+        $adminID                 = (int)$_SESSION['AdminAccount']->kAdminlogin;
+        $insert                  = new stdClass();
+        $insert->kNews           = $post['kNews'];
+        $insert->cKommentar      = $post['cKommentar'];
+        $insert->kKunde          = $post['kKunde'] ?? 0;
+        $insert->nAktiv          = $post['nAktiv'] ?? 1;
+        $insert->cName           = $post['cName'] ?? 'Admin';
+        $insert->cEmail          = $post['cEmail'] ?? '';
+        $insert->isAdmin         = $post['isAdmin'] ?? $adminID ?? null;
+        $insert->parentCommentID = $post['parentCommentID'] ?? null;
+        $insert->dErstellt       = 'NOW()';
         $this->flushCache();
 
-        return $this->db->update('tnewskommentar', 'kNewsKommentar', $id, $upd) >= 0;
+        return $this->db->insert('tnewskommentar', $insert) >= 0;
     }
 
     /**

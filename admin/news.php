@@ -29,6 +29,7 @@ $controller     = new Controller($db, $smarty, Shop::Container()->getCache());
 $newsCategory   = new Category($db);
 $languages      = LanguageHelper::getAllLanguages();
 $defaultLang    = LanguageHelper::getDefaultLanguage();
+$adminID        = (int)$_SESSION['AdminAccount']->kAdminlogin;
 
 $_SESSION['kSprache'] = $defaultLang->kSprache;
 if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
@@ -121,12 +122,11 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
             } else {
                 $controller->setStep('news_kommentar_editieren');
                 $controller->setErrorMsg(__('errorCheckInput'));
-                $comment                    = new stdClass();
-                $comment->kNewsKommentar    = $_POST['kNewsKommentar'];
-                $comment->kNews             = $_POST['kNews'];
-                $comment->cName             = $_POST['cName'];
-                $comment->cKommentar        = $_POST['cKommentar'];
-                $comment->cAntwortKommentar = $_POST['cAntwortKommentar'];
+                $comment                 = new stdClass();
+                $comment->kNewsKommentar = $_POST['kNewsKommentar'];
+                $comment->kNews          = $_POST['kNews'];
+                $comment->cName          = $_POST['cName'];
+                $comment->cKommentar     = $_POST['cKommentar'];
                 $smarty->assign('oNewsKommentar', $comment);
             }
         } else {
@@ -138,6 +138,23 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
                 $smarty->assign('nFZ', 1);
             }
         }
+    } elseif (Request::verifyGPCDataInt('nkanswer') === 1 && Request::verifyGPCDataInt('kNews') > 0) {
+        $controller->setStep('news_kommentar_antwort_editieren');
+        $comment = new Comment($db);
+
+        if (empty($comment->loadByParentCommentID(Request::verifyGPCDataInt('parentCommentID')))) {
+            $comment->setID(0);
+            $comment->setNewsID(Request::verifyGPCDataInt('kNews'));
+            $comment->setCustomerID(0);
+            $comment->setIsActive(1);
+            $comment->setName('Admin');
+            $comment->setMail('');
+            $comment->setText('');
+            $comment->setIsAdmin($adminID);
+            $comment->setParentCommentID(Request::verifyGPCDataInt('parentCommentID'));
+        }
+        $smarty->assign('oNewsKommentar', $comment);
+
     } elseif (Request::postInt('news_speichern') === 1) {
         $controller->createOrUpdateNewsItem($_POST, $languages, $author);
     } elseif (Request::postInt('news_loeschen') === 1) {
@@ -241,9 +258,11 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
             if (Request::postInt('kommentare_loeschen') === 1 || isset($_POST['kommentareloeschenSubmit'])) {
                 $controller->deleteComments($_POST['kNewsKommentar'] ?? [], $newsItem);
             }
+            $comments = $newsItem->getComments()->getThreadedItems();
+
             $smarty->assign('oNews', $newsItem)
                    ->assign('files', $controller->getNewsImages($newsItem->getID(), $uploadDir))
-                   ->assign('comments', $newsItem->getComments()->getItems());
+                   ->assign('comments', $comments);
         }
     }
 }

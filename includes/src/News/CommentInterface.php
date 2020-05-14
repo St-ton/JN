@@ -124,4 +124,24 @@ interface CommentInterface
      * @param string $newsTitle
      */
     public function setNewsTitle(string $newsTitle): void;
+
+    /**
+    * @param int|null $isAdmin
+    */
+    public function setIsAdmin(?int $isAdmin): void;
+
+    /**
+     * @return int|null
+     */
+    public function getIsAdmin(): ?int;
+
+    /**
+     * @param int|null $parentCommentID
+     */
+    public function setParentCommentID(?int $parentCommentID): void;
+
+    /**
+     * @return int|null
+     */
+    public function getParentCommentID(): ?int;
 }

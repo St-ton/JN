@@ -20,10 +20,10 @@ class Comment implements CommentInterface
      */
     protected static $mapping = [
         'cKommentar'        => 'Text',
-        'cAntwortKommentar' => 'AnswerText',
         'cName'             => 'Name',
         'dErstellt'         => 'DateCreatedCompat',
         'dErstellt_de'      => 'DateCreatedCompat',
+        'cAntwortErstellt'  => 'AnswerDateCreated',
     ];
 
     /**
@@ -67,9 +67,19 @@ class Comment implements CommentInterface
     private $text;
 
     /**
-     * @var string
+     * @var int|null
      */
-    private $answerText;
+    private $isAdmin;
+
+    /**
+     * @var int|null
+     */
+    private $parentCommentID;
+
+    /**
+     * @var array
+     */
+    private $childComments = [];
 
     /**
      * @var \DateTime
@@ -111,6 +121,24 @@ class Comment implements CommentInterface
     }
 
     /**
+     * @param int $parentID
+     * @return CommentInterface|null
+     */
+    public function loadByParentCommentID(int $parentID): ?CommentInterface
+    {
+        $this->id = $parentID;
+        $comment  = $this->db->queryPrepared(
+            'SELECT * 
+                FROM tnewskommentar
+                WHERE parentCommentID = :cid',
+            ['cid' => $this->id],
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+
+        return $comment !== 0 && \count($comment) > 0 ? $this->map($comment) : null;
+    }
+
+    /**
      * @inheritdoc
      */
     public function map(array $comments): CommentInterface
@@ -123,7 +151,8 @@ class Comment implements CommentInterface
             $this->setName($comment->cName);
             $this->setMail($comment->cEmail);
             $this->setText($comment->cKommentar);
-            $this->setAnswerText($comment->cAntwortKommentar);
+            $this->setIsAdmin((int)$comment->isAdmin);
+            $this->setParentCommentID((int)$comment->parentCommentID);
             $this->setDateCreated($comment->dErstellt);
         }
 
@@ -310,18 +339,50 @@ class Comment implements CommentInterface
     }
 
     /**
-     * @return string|null
+     * @inheritDoc
      */
-    public function getAnswerText(): ?string
+    public function getIsAdmin(): ?int
     {
-        return $this->answerText;
+        return $this->isAdmin;
     }
 
     /**
-     * @param string|null $answerText
+     * @inheritDoc
      */
-    public function setAnswerText(?string $answerText): void
+    public function setIsAdmin(?int $isAdmin): void
     {
-        $this->answerText = $answerText;
+        $this->isAdmin = $isAdmin;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getParentCommentID(): ?int
+    {
+        return $this->parentCommentID;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setParentCommentID(?int $parentCommentID): void
+    {
+        $this->parentCommentID = $parentCommentID;
+    }
+
+    /**
+     * @return array
+     */
+    public function getChildComments(): array
+    {
+        return $this->childComments;
+    }
+
+    /**
+     * @param object $childComment
+     */
+    public function setChildComments(object $childComment): void
+    {
+        $this->childComments[] = $childComment;
     }
 }

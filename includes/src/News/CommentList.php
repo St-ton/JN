@@ -133,6 +133,27 @@ final class CommentList implements ItemListInterface
     }
 
     /**
+     * @return Collection
+     */
+    public function getThreadedItems(): Collection
+    {
+        foreach ($this->items as $comment) {
+            foreach ($this->items as $child) {
+                if ($comment->getID() === $child->getParentCommentID()) {
+                    $comment->setChildComments($child);
+                }
+            }
+        }
+        foreach ($this->items as $key => $comment) {
+            if (!empty($comment->getParentCommentID())) {
+                unset($this->items[$key]);
+            }
+        }
+
+        return $this->items;
+    }
+
+    /**
      * @param Collection $items
      */
     public function setItems(Collection $items): void

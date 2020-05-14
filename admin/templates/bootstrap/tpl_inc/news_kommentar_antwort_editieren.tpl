@@ -15,6 +15,7 @@
         {/if}
         <input type="hidden" name="kNews" value="{$oNewsKommentar->getNewsID()}" />
         <input type="hidden" name="kNewsKommentar" value="{$oNewsKommentar->getID()}" />
+        <input type="hidden" name="parentCommentID" value="{$oNewsKommentar->getParentCommentID()}" />
         <div class="card">
             <div class="card-header">
                 <div class="subheading1">{$oNewsKommentar->getName()} - {__('newsCommentEdit')}</div>
@@ -25,7 +26,7 @@
                     <label class="col col-sm-4 col-form-label text-sm-right" for="cName">{__('visitors')}:</label>
                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         <input id="cName" name="cName" class="form-control" type="text" value="{$oNewsKommentar->getName()}" />
-                        {if $oNewsKommentar->getCustomerID() === 0}
+                        {if $oNewsKommentar->getCustomerID() === 0 && empty($oNewsKommentar->getIsAdmin())}
                             &nbsp;({$oNewsKommentar->getMail()})
                         {/if}
                     </div>

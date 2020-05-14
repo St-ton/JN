@@ -98,7 +98,7 @@
                                     <div class="square square-image mb-2 d-none d-md-flex">
                                         <div class="inner">
                                             {image fluid=true lazy=true webp=true
-                                                src=$subCategory->getImage()
+                                                src=$subCategory->getImage(\JTL\Media\Image::SIZE_SM)
                                                 alt=$subCategory->getName()}
                                         </div>
                                     </div>

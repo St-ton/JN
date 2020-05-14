@@ -41,6 +41,9 @@ msgstr "Note (online shop)"
 msgid "noticeTextEmail"
 msgstr "Note (email)"
 
+msgid "noticeTextEmailDesc"
+msgstr "This text is displayed in addition to the existing content of the email templates \"Order confirmation\" and \"Order was updated \"."
+
 msgid "paymentAckMail"
 msgstr "Email: Confirmation of payment"
 

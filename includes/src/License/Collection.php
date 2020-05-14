@@ -40,4 +40,20 @@ class Collection extends \Illuminate\Support\Collection
             return $e->getID() === $itemID;
         })->first();
     }
+
+    /**
+     * @return $this
+     */
+    public function getActiveExpired(): self
+    {
+        return $this->getActive()->filter(static function (ExsLicense $e) {
+            $ref = $e->getReferencedItem();
+
+            return $ref !== null
+                && $ref->isActive()
+                && ($e->getLicense()->isExpired()
+                    || ($e->getLicense()->getSubscription() !== null &&
+                        $e->getLicense()->getSubscription()->isExpired()));
+        });
+    }
 }

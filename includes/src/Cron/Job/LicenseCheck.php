@@ -7,6 +7,7 @@ use JTL\Cron\Job;
 use JTL\Cron\JobInterface;
 use JTL\Cron\QueueEntry;
 use JTL\License\Manager;
+use JTL\License\Mapper;
 
 /**
  * Class LicenseCheck
@@ -31,7 +32,19 @@ final class LicenseCheck extends Job
         }
         $data = $this->db->select('licenses', 'id', $res);
         $this->setFinished((int)($data->returnCode ?? 0) === 200);
+        $this->handleExpiredLicenses($manager);
 
         return $this;
+    }
+
+    /**
+     * @param Manager $manager
+     */
+    private function handleExpiredLicenses(Manager $manager): void
+    {
+        $mapper = new Mapper($this->db, $manager);
+        foreach ($mapper->getCollection()->getActiveExpired() as $item) {
+            // @todo: do something
+        }
     }
 }

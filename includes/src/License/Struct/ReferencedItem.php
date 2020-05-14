@@ -36,6 +36,11 @@ abstract class ReferencedItem implements ReferencedItemInterface
     private $hasUpdate = false;
 
     /**
+     * @var bool
+     */
+    private $active = false;
+
+    /**
      * @inheritDoc
      */
     public function getID(): string
@@ -113,5 +118,21 @@ abstract class ReferencedItem implements ReferencedItemInterface
     public function setHasUpdate(bool $hasUpdate): void
     {
         $this->hasUpdate = $hasUpdate;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function isActive(): bool
+    {
+        return $this->active;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setActive(bool $active): void
+    {
+        $this->active = $active;
     }
 }

@@ -72,6 +72,11 @@ class ListingItem
     private $framework = '';
 
     /**
+     * @var string|null
+     */
+    private $exsid;
+
+    /**
      * @var int
      */
     private $errorCode = 0;
@@ -184,6 +189,7 @@ class ListingItem
             }
             $this->name         = $node['Name'];
             $this->description  = $node['Description'] ?? '';
+            $this->exsid        = $node['ExsID'] ?? '';
             $this->author       = $node['Author'] ?? '';
             $this->url          = $node['URL'] ?? null;
             $this->preview      = $node['Preview'] ?? null;
@@ -395,6 +401,22 @@ class ListingItem
     public function setFramework(?string $framework): void
     {
         $this->framework = $framework;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getExsID(): ?string
+    {
+        return $this->exsid;
+    }
+
+    /**
+     * @param string|null $exsid
+     */
+    public function setExsID(?string $exsid): void
+    {
+        $this->exsid = $exsid;
     }
 
     /**

@@ -59,4 +59,14 @@ interface ReferencedItemInterface
      * @param bool $hasUpdate
      */
     public function setHasUpdate(bool $hasUpdate): void;
+
+    /**
+     * @return bool
+     */
+    public function isActive(): bool;
+
+    /**
+     * @param bool $active
+     */
+    public function setActive(bool $active): void;
 }

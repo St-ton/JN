@@ -39,10 +39,7 @@ final class Listing
      * @param DbInterface        $db
      * @param ValidatorInterface $validator
      */
-    public function __construct(
-        DbInterface $db,
-        ValidatorInterface $validator
-    ) {
+    public function __construct(DbInterface $db, ValidatorInterface $validator) {
         $this->db        = $db;
         $this->validator = $validator;
         $this->items     = new Collection();

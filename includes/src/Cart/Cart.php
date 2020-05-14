@@ -921,6 +921,8 @@ class Cart
     {
         $defaultOptions               = Artikel::getDefaultOptions();
         $defaultOptions->nStueckliste = 1;
+        $this->oFavourableShipping    = null;
+
         foreach ($this->PositionenArr as $i => $item) {
             if ($item->kArtikel > 0 && $item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
                 $oldItem = clone $item;
@@ -1817,9 +1819,10 @@ class Cart
     }
 
     /**
+     * @param int|null $shippingFreeMinID
      * @return null|Versandart - cheapest shipping except shippings that offer cash payment
      */
-    public function getFavourableShipping(): ?Versandart
+    public function getFavourableShipping(?int $shippingFreeMinID = null): ?Versandart
     {
         if ((!empty($_SESSION['Versandart']->kVersandart) && isset($_SESSION['Versandart']->nMinLiefertage))
             || empty($_SESSION['Warenkorb']->PositionenArr)
@@ -1840,6 +1843,19 @@ class Cart
         if ($this->oFavourableShipping !== null
             && $this->oFavourableShipping->cCountryCode === $_SESSION['cLieferlandISO']
         ) {
+            return $this->oFavourableShipping;
+        }
+
+        //use previously determined shippingfree shipping method
+        if ($shippingFreeMinID !== null) {
+            $localizedZero              = Preise::getLocalizedPriceString(0);
+            $method                     = new Versandart($shippingFreeMinID);
+            $method->cCountryCode       = $countryCode;
+            $method->cPriceLocalized[0] = $localizedZero;
+            $method->cPriceLocalized[1] = $localizedZero;
+
+            $this->oFavourableShipping = $method;
+
             return $this->oFavourableShipping;
         }
 

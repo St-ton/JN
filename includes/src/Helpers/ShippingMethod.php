@@ -1276,26 +1276,11 @@ class ShippingMethod
         ) {
             return '';
         }
-        $db         = Shop::Container()->getDB();
-        $fSummeDiff = (float)$method->fVersandkostenfreiAbX - (float)$cartSum;
-        // check if vkfreiabx is calculated net or gross
-        if ($method->eSteuer === 'netto') {
-            // calculate net with default tax class
-            $defaultTaxClass = $db->select('tsteuerklasse', 'cStandard', 'Y');
-            if ($defaultTaxClass !== null && isset($defaultTaxClass->kSteuerklasse)) {
-                $taxClasss  = (int)$defaultTaxClass->kSteuerklasse;
-                $defaultTax = $db->select('tsteuersatz', 'kSteuerklasse', $taxClasss);
-                if ($defaultTax !== null) {
-                    $defaultTaxValue = $defaultTax->fSteuersatz;
-                    $fSummeDiff      = (float)$method->fVersandkostenfreiAbX -
-                        Tax::getNet((float)$cartSum, $defaultTaxValue);
-                }
-            }
-        }
+
         if (isset($method->cNameLocalized)) {
             $name = $method->cNameLocalized;
         } else {
-            $localized = $db->select(
+            $localized = Shop::Container()->getDB()->select(
                 'tversandartsprache',
                 'kVersandart',
                 $method->kVersandart,
@@ -1306,7 +1291,8 @@ class ShippingMethod
                 ? $localized->cName
                 : $method->cName;
         }
-        if ($fSummeDiff <= 0) {
+        $shippingFreeDifference = self::getShippingFreeDifference($method, $cartSum);
+        if ($shippingFreeDifference <= 0) {
             return \sprintf(
                 Shop::Lang()->get('noShippingCostsReached', 'basket'),
                 $name,
@@ -1317,10 +1303,37 @@ class ShippingMethod
 
         return \sprintf(
             Shop::Lang()->get('noShippingCostsAt', 'basket'),
-            Preise::getLocalizedPriceString($fSummeDiff),
+            Preise::getLocalizedPriceString($shippingFreeDifference),
             $name,
             self::getShippingFreeCountriesString($method)
         );
+    }
+
+    /**
+     * @param $method
+     * @param $cartSum
+     * @return float
+     */
+    public static function getShippingFreeDifference($method, $cartSum): float
+    {
+        $db                     = Shop::Container()->getDB();
+        $shippingFreeDifference = (float)$method->fVersandkostenfreiAbX - (float)$cartSum;
+        // check if vkfreiabx is calculated net or gross
+        if ($method->eSteuer === 'netto') {
+            // calculate net with default tax class
+            $defaultTaxClass = $db->select('tsteuerklasse', 'cStandard', 'Y');
+            if ($defaultTaxClass !== null && isset($defaultTaxClass->kSteuerklasse)) {
+                $taxClasss  = (int)$defaultTaxClass->kSteuerklasse;
+                $defaultTax = $db->select('tsteuersatz', 'kSteuerklasse', $taxClasss);
+                if ($defaultTax !== null) {
+                    $defaultTaxValue        = $defaultTax->fSteuersatz;
+                    $shippingFreeDifference = (float)$method->fVersandkostenfreiAbX -
+                        Tax::getNet((float)$cartSum, $defaultTaxValue);
+                }
+            }
+        }
+
+        return $shippingFreeDifference;
     }
 
     /**

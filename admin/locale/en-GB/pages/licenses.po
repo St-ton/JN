@@ -20,6 +20,24 @@ msgstr "Unbound licenses"
 msgid "free"
 msgstr "free"
 
+msgid "prod"
+msgstr "productive"
+
+msgid "test"
+msgstr "test"
+
+msgid "dev"
+msgstr "dev"
+
+msgid "License expired"
+msgstr "License expired"
+
+msgid "Subscription expired on %s"
+msgstr "Subscription expired on %s"
+
+msgid "License expired on %s"
+msgstr "License expired on %s"
+
 msgid "Valid until %s"
 msgstr "Valid until %s"
 
@@ -34,6 +52,9 @@ msgstr "Name"
 
 msgid "Installed"
 msgstr "Installed"
+
+msgid "Type"
+msgstr "Typ"
 
 msgid "Links"
 msgstr "Links"

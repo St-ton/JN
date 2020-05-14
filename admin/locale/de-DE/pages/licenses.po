@@ -17,6 +17,24 @@ msgstr "Ungebundene Lizenzen"
 msgid "free"
 msgstr "kostenlos"
 
+msgid "prod"
+msgstr "produktiv"
+
+msgid "test"
+msgstr "test"
+
+msgid "dev"
+msgstr "Entwicklung"
+
+msgid "License expired"
+msgstr "Lizenz abgelaufen"
+
+msgid "Subscription expired on %s"
+msgstr "Subskription abgelaufen am %s"
+
+msgid "License expired on %s"
+msgstr "Lizenz abgelaufen am %s"
+
 msgid "Valid until %s"
 msgstr "gültig bis %s"
 
@@ -34,6 +52,9 @@ msgstr "Name"
 
 msgid "Installed"
 msgstr "Installiert"
+
+msgid "Type"
+msgstr "Typ"
 
 msgid "Links"
 msgstr "Links"

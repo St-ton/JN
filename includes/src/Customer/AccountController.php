@@ -35,6 +35,7 @@ use JTL\Services\JTL\LinkServiceInterface;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
+use JTL\SimpleMail;
 use JTL\Smarty\JTLSmarty;
 use stdClass;
 use function Functional\some;

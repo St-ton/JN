@@ -12,6 +12,7 @@ use JTL\Language\LanguageHelper;
 use JTL\Nice;
 use JTL\Session\Frontend;
 use JTL\Shop;
+use stdClass;
 use function Functional\select;
 
 /**

@@ -13,6 +13,8 @@ use JTL\Plugin\Helper;
 use JTL\Plugin\State;
 use JTL\Profiler;
 use JTL\Shop;
+use JTL\SingletonTrait;
+use JTL\Template\TemplateServiceInterface;
 use JTL\Update\Updater;
 use stdClass;
 use Systemcheck\Environment;

@@ -7,6 +7,7 @@ use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Category;
 use JTL\Helpers\Request;
+use JTL\Helpers\Text;
 use JTL\Helpers\URL;
 use JTL\Language\LanguageHelper;
 use JTL\Media\Image;

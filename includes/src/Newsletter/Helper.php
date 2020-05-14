@@ -2,6 +2,8 @@
 
 namespace JTL\Newsletter;
 
+use JTL\DB\ReturnType;
+use JTL\Helpers\Text;
 use JTL\Shop;
 
 /**

@@ -2,6 +2,7 @@
 
 namespace JTL\Catalog\Category;
 
+use JTL\Helpers\Text;
 use JTL\MagicCompatibilityTrait;
 use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;

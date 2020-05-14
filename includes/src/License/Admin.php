@@ -12,8 +12,17 @@ use JTL\License\Exception\DownloadValidationException;
 use JTL\License\Installer\PluginInstaller;
 use JTL\License\Installer\TemplateInstaller;
 use JTL\License\Struct\ExsLicense;
+use JTL\Plugin\Admin\Installation\Extractor;
+use JTL\Plugin\Admin\Installation\InstallationResponse;
+use JTL\Plugin\Admin\Installation\Installer;
+use JTL\Plugin\Admin\Installation\Uninstaller;
+use JTL\Plugin\Admin\Updater;
+use JTL\Plugin\Admin\Validation\LegacyPluginValidator;
+use JTL\Plugin\Admin\Validation\PluginValidator;
+use JTL\Plugin\Helper;
 use JTL\Plugin\InstallCode;
 use JTL\Smarty\JTLSmarty;
+use JTL\XMLParser;
 
 /**
  * Class Admin

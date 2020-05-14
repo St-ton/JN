@@ -4,6 +4,7 @@ namespace JTL\Consent;
 
 use Exception;
 use Illuminate\Support\Collection;
+use JTL\DB\DbInterface;
 use JTL\Model\DataAttribute;
 use JTL\Model\DataModel;
 use JTL\Plugin\Admin\InputType;

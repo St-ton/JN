@@ -12,6 +12,7 @@ use JTL\Link\LinkInterface;
 use JTL\Services\JTL\LinkServiceInterface;
 use JTL\Session\Frontend;
 use JTL\Shop;
+use stdClass;
 
 /**
  * Class Navigation

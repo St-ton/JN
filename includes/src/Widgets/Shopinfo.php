@@ -3,6 +3,7 @@
 namespace JTL\Widgets;
 
 use JTL\Shop;
+use JTL\Template\TemplateServiceInterface;
 
 /**
  * Class Shopinfo

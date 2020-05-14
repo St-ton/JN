@@ -6,6 +6,8 @@ use JTL\DB\ReturnType;
 use JTL\Language\LanguageHelper;
 use JTL\MagicCompatibilityTrait;
 use JTL\Shop;
+use JTL\Template;
+use JTL\Template\TemplateServiceInterface;
 use stdClass;
 
 /**

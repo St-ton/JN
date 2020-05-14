@@ -3,6 +3,7 @@
 namespace JTL\Model;
 
 use Exception;
+use InvalidArgumentException;
 use JTL\Alert\Alert;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Form;

@@ -3,8 +3,10 @@
 namespace JTL\Consent;
 
 use Illuminate\Support\Collection;
+use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Session\Frontend;
+use JTL\Shop;
 
 /**
  * Class Manager

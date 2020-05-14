@@ -9,8 +9,8 @@ use JTL\DB\ReturnType;
 use JTL\OPC\Portlets\MissingPortlet\MissingPortlet;
 use JTL\Plugin\PluginLoader;
 use JTL\Shop;
-use JTL\Update\Updater;
 use function Functional\map;
+use JTL\Update\Updater;
 
 /**
  * Class DB

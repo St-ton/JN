@@ -11,6 +11,7 @@ use JTL\Plugin\Admin\Installation\MigrationManager as PluginMigrationManager;
 use JTL\Plugin\PluginLoader;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
+use JTL\Template\TemplateServiceInterface;
 use JTLShop\SemVer\Version;
 use JTLSmarty;
 use SmartyException;

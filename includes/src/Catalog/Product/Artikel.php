@@ -3,6 +3,7 @@
 namespace JTL\Catalog\Product;
 
 use DateTime;
+use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Hersteller;
 use JTL\Catalog\Separator;

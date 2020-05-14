@@ -2,6 +2,8 @@
 
 namespace JTL\OPC;
 
+use JTL\Shop;
+
 /**
  * Trait PortletStyles
  * @package JTL\OPC

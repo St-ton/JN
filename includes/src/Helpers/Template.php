@@ -7,6 +7,7 @@ use InvalidArgumentException;
 use JTL\Shop;
 use JTL\Template\Config;
 use JTL\Template\Model;
+use JTL\Template\TemplateServiceInterface;
 use JTL\Template\XMLReader;
 use SimpleXMLElement;
 use stdClass;

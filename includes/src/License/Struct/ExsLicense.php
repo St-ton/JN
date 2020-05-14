@@ -3,6 +3,8 @@
 namespace JTL\License\Struct;
 
 use DateTime;
+use JTL\Shop;
+use JTLShop\SemVer\Version;
 use stdClass;
 
 /**

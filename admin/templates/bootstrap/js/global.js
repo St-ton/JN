@@ -377,13 +377,17 @@ function switchCouponTooltipVisibility() {
     });
 }
 
-function tristateInit() {
-    $("input[type=checkbox].tristate").on('click', tristate(this));
-}
-
-function tristate(cb) {
-    if (cb.readOnly) cb.checked=cb.readOnly=false;
-    else if (!cb.checked) cb.readOnly=cb.indeterminate=true;
+function tristate(cb)
+{
+    if (cb.readOnly) {
+        // checkbox was indeterminate before
+        // so uncheck it
+        cb.checked = cb.readOnly = false;
+    } else if (!cb.checked) {
+        // checkbox was checked before
+        // so set it to indeterminate
+        cb.readOnly = cb.indeterminate = true;
+    }
 }
 
 function checkSingleSettingCard() {
@@ -522,10 +526,13 @@ $(document).ready(function () {
         }
     });
 
-    $("input[type=checkbox].tristate").prop("indeterminate", true).prop("readonly", true);
-    $("input[type=checkbox].tristate").on('change', function(e){
-        tristate(e.target);
-    });
+    let tristateCheckboxes = $("input[type=checkbox].tristate");
+
+    tristateCheckboxes
+        .prop("indeterminate", true).prop("readonly", true)
+        .on('change', e => {
+            tristate(e.target);
+        });
 
     $('.fieldfillout').on('change', function () {
         $(this).removeClass('fieldfillout');

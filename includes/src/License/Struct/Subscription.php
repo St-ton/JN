@@ -12,9 +12,14 @@ use stdClass;
 class Subscription
 {
     /**
-     * @var DateTime
+     * @var DateTime|null
      */
     private $validUntil;
+
+    /**
+     * @var bool
+     */
+    private $expired = false;
 
     /**
      * Subscription constructor.
@@ -33,21 +38,41 @@ class Subscription
     public function fromJSON(stdClass $json): void
     {
         $this->setValidUntil($json->validUntil);
+        $now = new DateTime();
+        $this->setExpired($this->getValidUntil() < $now);
     }
 
     /**
-     * @return DateTime
+     * @return DateTime|null
      */
-    public function getValidUntil(): DateTime
+    public function getValidUntil(): ?DateTime
     {
         return $this->validUntil;
     }
 
     /**
-     * @param DateTime|string $validUntil
+     * @param DateTime|string|null $validUntil
      */
     public function setValidUntil($validUntil): void
     {
-        $this->validUntil = \is_a(DateTime::class, $validUntil) ? $validUntil : new DateTime($validUntil);
+        if ($validUntil !== null) {
+            $this->validUntil = \is_a(DateTime::class, $validUntil) ? $validUntil : new DateTime($validUntil);
+        }
+    }
+
+    /**
+     * @return bool
+     */
+    public function isExpired(): bool
+    {
+        return $this->expired;
+    }
+
+    /**
+     * @param bool $expired
+     */
+    public function setExpired(bool $expired): void
+    {
+        $this->expired = $expired;
     }
 }

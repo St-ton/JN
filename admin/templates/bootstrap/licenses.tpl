@@ -12,6 +12,7 @@
                     <th>{__('ID')}</th>
                     <th>{__('Name')}</th>
                     <th>{__('Installed')}</th>
+                    <th>{__('Type')}</th>
                     <th>{__('Subscription')}</th>
                 </tr>
                 </thead>
@@ -22,6 +23,7 @@
                         <td>
                             {include file='tpl_inc/licenses_referenced_item.tpl' license=$license}
                         </td>
+                        <td>{__($license->getLicense()->getType())}</td>
                         <td>
                             {include file='tpl_inc/licenses_license.tpl' licData=$license->getLicense()}
                         </td>

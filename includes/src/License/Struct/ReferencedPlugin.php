@@ -14,15 +14,15 @@ class ReferencedPlugin extends ReferencedItem
     /**
      * ReferencedPlugin constructor.
      * @param DbInterface $db
-     * @param string      $id
+     * @param string      $exsid
      * @param Release     $release
      */
-    public function __construct(DbInterface $db, string $id, Release $release)
+    public function __construct(DbInterface $db, string $exsid, Release $release)
     {
-        $this->setID($id);
-        $installed = $db->select('tplugin', 'cPluginID', $id);
+        $installed = $db->select('tplugin', 'exsID', $exsid);
         if ($installed !== null) {
             $installedVersion = Version::parse($installed->nVersion);
+            $this->setID($installed->cPluginID);
             $this->setMaxInstallableVersion($release->getVersion());
             $this->setHasUpdate($installedVersion->smallerThan($release->getVersion()));
             $this->setInstalled(true);

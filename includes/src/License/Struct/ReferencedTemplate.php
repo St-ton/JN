@@ -14,16 +14,15 @@ class ReferencedTemplate extends ReferencedItem
 {
     /**
      * ReferencedPlugin constructor.
-     * @param DbInterface $db
-     * @param string      $id
+     * @param string      $exsid
      * @param Release     $release
      */
-    public function __construct(DbInterface $db, string $id, Release $release)
+    public function __construct(string $exsid, Release $release)
     {
-        $this->setID($id);
         $model = Shop::Container()->getTemplateService()->getActiveTemplate();
-        if ($model->getTemplate() === $id) {
+        if ($model->getExsID() === $exsid) {
             $installedVersion = Version::parse($model->getVersion());
+            $this->setID($model->getCTemplate());
             $this->setMaxInstallableVersion($release->getVersion());
             $this->setHasUpdate($installedVersion->smallerThan($release->getVersion()));
             $this->setInstalled(true);

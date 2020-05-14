@@ -178,6 +178,9 @@ class Controller
             $parentConfig = false;
         }
         $model = new Model($this->db);
+        if (isset($tplConfig->ExsID)) {
+            $model->setExsID((string)$tplConfig->ExsID);
+        }
         $model->setCTemplate($dir);
         $model->setType($type);
         if (!empty($tplConfig->Parent)) {

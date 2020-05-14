@@ -10,6 +10,7 @@ use JTL\License\Struct\ReferencedPlugin;
 use JTL\License\Struct\ReferencedTemplate;
 use JTL\Shop;
 use JTLShop\SemVer\Version;
+use stdClass;
 
 /**
  * Class Mapper
@@ -52,7 +53,7 @@ class Mapper
             $esxLicense = new ExsLicense($extension);
             $esxLicense->setQueryDate($data->timestamp);
             $esxLicense->setState(ExsLicense::STATE_ACTIVE);
-            $this->setReference($esxLicense, $extension->id);
+            $this->setReference($esxLicense, $extension);
             $collection->push($esxLicense);
         }
         foreach ($data->unbound as $extension) {
@@ -67,17 +68,17 @@ class Mapper
 
     /**
      * @param ExsLicense $esxLicense
-     * @param string     $id
+     * @param stdClass   $license
      */
-    private function setReference(ExsLicense $esxLicense, string $id): void
+    private function setReference(ExsLicense $esxLicense, stdClass $license): void
     {
         switch ($esxLicense->getType()) {
             case ExsLicense::TYPE_PLUGIN:
-                $plugin = new ReferencedPlugin($this->db, $id, $esxLicense->getReleases()->getAvailable());
+                $plugin = new ReferencedPlugin($this->db, $license->exsid, $esxLicense->getReleases()->getAvailable());
                 $esxLicense->setReferencedItem($plugin);
                 break;
             case ExsLicense::TYPE_TEMPLATE:
-                $template = new ReferencedTemplate($this->db, $id, $esxLicense->getReleases()->getAvailable());
+                $template = new ReferencedTemplate($license->exsid, $esxLicense->getReleases()->getAvailable());
                 $esxLicense->setReferencedItem($template);
                 break;
             case ExsLicense::TYPE_PORTLET:

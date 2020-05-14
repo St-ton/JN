@@ -46,6 +46,11 @@ class License
     private $subscription;
 
     /**
+     * @var bool
+     */
+    private $expired = false;
+
+    /**
      * License constructor.
      * @param stdClass|null $json
      */
@@ -67,7 +72,12 @@ class License
         $this->setKey($json->key);
         $this->setType($json->type);
         $this->setCreated($json->created);
+        $this->setValidUntil($json->validUntil);
         $this->setSubscription(new Subscription($json->subscription));
+        if ($this->getValidUntil() !== null) {
+            $now = new DateTime();
+            $this->setExpired($this->getValidUntil() < $now);
+        }
     }
 
     /**
@@ -143,10 +153,28 @@ class License
     }
 
     /**
-     * @param DateTime|null $validUntil
+     * @param DateTime|string|null $validUntil
      */
-    public function setValidUntil(?DateTime $validUntil): void
+    public function setValidUntil($validUntil): void
     {
-        $this->validUntil = $validUntil;
+        if ($validUntil !== null) {
+            $this->validUntil = \is_a(DateTime::class, $validUntil) ? $validUntil : new DateTime($validUntil);
+        }
+    }
+
+    /**
+     * @return bool
+     */
+    public function isExpired(): bool
+    {
+        return $this->expired;
+    }
+
+    /**
+     * @param bool $expired
+     */
+    public function setExpired(bool $expired): void
+    {
+        $this->expired = $expired;
     }
 }

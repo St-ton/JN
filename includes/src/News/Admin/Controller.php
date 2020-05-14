@@ -272,9 +272,9 @@ final class Controller
      */
     public function saveComment(int $id, array $post): bool
     {
-        $upd             = new stdClass();
-        $upd->cName      = $post['cName'];
-        $upd->cKommentar = $post['cKommentar'];
+        $upd                    = new stdClass();
+        $upd->cName             = $post['cName'];
+        $upd->cKommentar        = $post['cKommentar'];
         $upd->cAntwortKommentar = $post['cAntwortKommentar'];
         $this->flushCache();
 

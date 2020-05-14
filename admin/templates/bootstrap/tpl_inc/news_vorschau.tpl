@@ -58,9 +58,6 @@
                                 </blockquote>
                             {/if}
                         </div>
-
-
-                        </div>
                     </div>
                 {/foreach}
                 <div class="card-footer save-wrapper">

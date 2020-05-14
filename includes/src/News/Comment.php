@@ -310,7 +310,7 @@ class Comment implements CommentInterface
     }
 
     /**
-     * @return string | null
+     * @return string|null
      */
     public function getAnswerText(): ?string
     {
@@ -318,7 +318,7 @@ class Comment implements CommentInterface
     }
 
     /**
-     * @param string | null $answerText
+     * @param string|null $answerText
      */
     public function setAnswerText(?string $answerText): void
     {

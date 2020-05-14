@@ -32,6 +32,7 @@ class Migration_20200512132300 extends Migration implements IMigration
      */
     public function down()
     {
+        $this->removeLocalization('commentReply','news');
         $this->execute(
             "ALTER TABLE `tnewskommentar`
             DROP `cAntwortKommentar`;"

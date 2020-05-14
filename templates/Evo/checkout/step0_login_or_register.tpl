@@ -51,8 +51,8 @@
                     </div>
                 {/block}
                 <div>
-                    <p class="privacy text-muted">
-                        <a href="{$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL()}" class="popup">{$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getName()}</a>
+                    <p class="privacy text-muted text-right">
+                        <a href="{$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->cURL}" class="popup">{lang key="privacyPolicy" section="global"}</a>
                     </p>
                 </div>
                 <div class="text-right">

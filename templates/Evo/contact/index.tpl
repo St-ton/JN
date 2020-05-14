@@ -183,6 +183,9 @@
                             </div>
                         </div>
                     {/if}
+                    <p class="privacy text-muted small">
+                        <a href="{$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->cURL}" class="popup">{lang key="privacyPolicy" section="global"}</a>
+                    </p>
                     <input type="hidden" name="kontakt" value="1" />
                     <button type="submit" class="btn btn-primary">{lang key="sendMessage" section="contact"}</button>
                 </form>

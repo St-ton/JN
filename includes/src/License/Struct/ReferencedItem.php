@@ -41,6 +41,11 @@ abstract class ReferencedItem implements ReferencedItemInterface
     private $active = false;
 
     /**
+     * @var int
+     */
+    private $internalID = 0;
+
+    /**
      * @inheritDoc
      */
     public function getID(): string
@@ -134,5 +139,21 @@ abstract class ReferencedItem implements ReferencedItemInterface
     public function setActive(bool $active): void
     {
         $this->active = $active;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getInternalID(): int
+    {
+        return $this->internalID;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setInternalID(int $internalID): void
+    {
+        $this->internalID = $internalID;
     }
 }

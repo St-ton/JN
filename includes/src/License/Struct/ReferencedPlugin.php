@@ -30,6 +30,7 @@ class ReferencedPlugin extends ReferencedItem
             $this->setInstalled(true);
             $this->setInstalledVersion($installedVersion);
             $this->setActive((int)$installed->nStatus === State::ACTIVATED);
+            $this->setInternalID((int)$installed->kPlugin);
         }
     }
 }

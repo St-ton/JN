@@ -3,6 +3,7 @@
 namespace JTL\License;
 
 use JTL\License\Struct\ExsLicense;
+use JTL\License\Struct\License;
 
 /**
  * Class Collection
@@ -54,6 +55,46 @@ class Collection extends \Illuminate\Support\Collection
                 && ($e->getLicense()->isExpired()
                     || ($e->getLicense()->getSubscription() !== null &&
                         $e->getLicense()->getSubscription()->isExpired()));
+        });
+    }
+
+    /**
+     * @return $this
+     */
+    public function getExpiredActiveTests(): self
+    {
+        return $this->getActiveExpired()->filter(static function (ExsLicense $e) {
+            return $e->getLicense()->getType() === License::TYPE_TEST;
+        });
+    }
+
+    /**
+     * @return $this
+     */
+    public function getPlugins(): self
+    {
+        return $this->filter(static function (ExsLicense $e) {
+            return $e->getType() === ExsLicense::TYPE_PLUGIN;
+        });
+    }
+
+    /**
+     * @return $this
+     */
+    public function getTemplates(): self
+    {
+        return $this->filter(static function (ExsLicense $e) {
+            return $e->getType() === ExsLicense::TYPE_TEMPLATE;
+        });
+    }
+
+    /**
+     * @return $this
+     */
+    public function getPortlets(): self
+    {
+        return $this->filter(static function (ExsLicense $e) {
+            return $e->getType() === ExsLicense::TYPE_PORTLET;
         });
     }
 }

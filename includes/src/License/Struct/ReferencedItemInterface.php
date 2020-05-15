@@ -69,4 +69,14 @@ interface ReferencedItemInterface
      * @param bool $active
      */
     public function setActive(bool $active): void;
+
+    /**
+     * @return int
+     */
+    public function getInternalID(): int;
+
+    /**
+     * @param int $internalID
+     */
+    public function setInternalID(int $internalID): void;
 }

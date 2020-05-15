@@ -23,7 +23,6 @@ class Comment implements CommentInterface
         'cName'             => 'Name',
         'dErstellt'         => 'DateCreatedCompat',
         'dErstellt_de'      => 'DateCreatedCompat',
-        'cAntwortErstellt'  => 'AnswerDateCreated',
     ];
 
     /**
@@ -121,14 +120,13 @@ class Comment implements CommentInterface
     }
 
     /**
-     * @param int $parentID
-     * @return CommentInterface|null
+     * @inheritDoc
      */
     public function loadByParentCommentID(int $parentID): ?CommentInterface
     {
         $this->id = $parentID;
         $comment  = $this->db->queryPrepared(
-            'SELECT * 
+            'SELECT *
                 FROM tnewskommentar
                 WHERE parentCommentID = :cid',
             ['cid' => $this->id],
@@ -371,7 +369,7 @@ class Comment implements CommentInterface
     }
 
     /**
-     * @return array
+     * @inheritDoc
      */
     public function getChildComments(): array
     {
@@ -379,7 +377,7 @@ class Comment implements CommentInterface
     }
 
     /**
-     * @param object $childComment
+     * @inheritDoc
      */
     public function setChildComments(object $childComment): void
     {

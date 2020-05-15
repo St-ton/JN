@@ -154,7 +154,6 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
             $comment->setParentCommentID(Request::verifyGPCDataInt('parentCommentID'));
         }
         $smarty->assign('oNewsKommentar', $comment);
-
     } elseif (Request::postInt('news_speichern') === 1) {
         $controller->createOrUpdateNewsItem($_POST, $languages, $author);
     } elseif (Request::postInt('news_loeschen') === 1) {
@@ -258,11 +257,9 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
             if (Request::postInt('kommentare_loeschen') === 1 || isset($_POST['kommentareloeschenSubmit'])) {
                 $controller->deleteComments($_POST['kNewsKommentar'] ?? [], $newsItem);
             }
-            $comments = $newsItem->getComments()->getThreadedItems();
-
             $smarty->assign('oNews', $newsItem)
                    ->assign('files', $controller->getNewsImages($newsItem->getID(), $uploadDir))
-                   ->assign('comments', $comments);
+                   ->assign('comments', $newsItem->getComments()->getThreadedItems());
         }
     }
 }

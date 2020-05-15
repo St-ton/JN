@@ -194,13 +194,15 @@
                                                         {$comment->getName()}, {$comment->getDateCreated()->format('d.m.y H:i')}
                                                     </p>
                                                     {$comment->getText()}
-{*                                                    {if !empty($comment->getAnswerText())}*}
-{*                                                        <br><br>*}
-{*                                                        <blockquote class="review-reply">*}
-{*                                                            <strong>{lang key='commentReply' section='news'}:</strong><br>*}
-{*                                                            {$comment->getAnswerText()}*}
-{*                                                        </blockquote>*}
-{*                                                    {/if}*}
+                                                     {foreach $comment->getChildComments() as $childComment}
+                                                        <div class="review-reply mt-3 ml-3">
+                                                            <span class="subheadline">Antwort:</span>
+                                                            <blockquote>
+                                                                {$childComment->getText()}
+                                                                <div class="mt-3 blockquote-footer">{$childComment->getName()}, {$childComment->getDateCreated()->format('d.m.y H:i')}</div>
+                                                            </blockquote>
+                                                        </div>
+                                                     {/foreach}
                                                 {/listgroupitem}
                                             {/foreach}
                                         {/listgroup}

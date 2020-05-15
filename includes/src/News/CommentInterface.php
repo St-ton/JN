@@ -15,6 +15,12 @@ interface CommentInterface
     public function load(int $id): CommentInterface;
 
     /**
+     * @param int $parentID
+     * @return CommentInterface|null
+     */
+    public function loadByParentCommentID(int $parentID): ?CommentInterface;
+
+    /**
      * @param array $comments
      * @return CommentInterface
      */
@@ -144,4 +150,14 @@ interface CommentInterface
      * @return int|null
      */
     public function getParentCommentID(): ?int;
+
+    /**
+     * @param object $childComment
+     */
+    public function setChildComments(object $childComment): void;
+
+    /**
+     * @return array
+     */
+    public function getChildComments(): array;
 }

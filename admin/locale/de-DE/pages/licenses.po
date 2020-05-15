@@ -11,6 +11,9 @@ msgstr "Konnte keine Daten von der Store API holen."
 msgid "Licenses"
 msgstr "Lizenzen"
 
+msgid "(disabled)"
+msgstr "(deaktiviert)"
+
 msgid "Unbound licenses"
 msgstr "Ungebundene Lizenzen"
 

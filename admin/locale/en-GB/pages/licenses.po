@@ -11,6 +11,9 @@ msgstr "Could fetch data from store API."
 msgid "Licenses"
 msgstr "Licenses"
 
+msgid "(disabled)"
+msgstr "(disabled)"
+
 msgid "Active licenses"
 msgstr "Active licenses"
 

@@ -179,12 +179,6 @@ class Slide
     public function save(): bool
     {
         if (!empty($this->image)) {
-            $shopPath = \parse_url(Shop::getURL() . '/', \PHP_URL_PATH);
-
-            if (\JTL\Helpers\Text::startsWith($this->image, $shopPath)) {
-                $this->image = \mb_substr($this->image, \mb_strlen($shopPath));
-            }
-
             if (\JTL\Helpers\Text::startsWith($this->image, 'Bilder/')) {
                 $this->image     = \PFAD_MEDIAFILES . $this->image;
                 $this->thumbnail = \PFAD_MEDIAFILES . 'Bilder/.tmb/' . \basename($this->image);

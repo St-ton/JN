@@ -8,7 +8,7 @@
         {if $installedVersion === null}
             <i class="far fa-circle"></i>
         {else}
-            <i class="far fa-check-circle"></i> {$installedVersion}
+            <i class="far fa-check-circle"></i> {$installedVersion}{if $referencedItem->isActive() === false} {__('(disabled)')}{/if}
         {/if}
         {if $referencedItem->hasUpdate()}
             <span class="update-available badge badge-success">{__('Update to version %s available', $referencedItem->getMaxInstallableVersion())}</span>

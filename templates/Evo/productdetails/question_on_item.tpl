@@ -169,7 +169,7 @@
         {if $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'P' && !empty($oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getName())}
             <p class="privacy text-muted small">
                 <a href="{$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL()}" class="popup">
-                    {lang key='privacyPolicy'}
+                    {lang key='privacyNotice'}
                 </a>
             </p>
         {/if}

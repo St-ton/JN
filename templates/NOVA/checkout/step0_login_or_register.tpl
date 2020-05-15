@@ -49,7 +49,7 @@
                             {col cols=12 class="text-right mb-3"}
                                 {block name='checkout-step0-login-or-register-modal-privacy'}
                                     {link href=$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL() class="popup"}
-                                        {lang key='privacyPolicy'}
+                                        {lang key='privacyNotice'}
                                     {/link}
                                 {/block}
                             {/col}

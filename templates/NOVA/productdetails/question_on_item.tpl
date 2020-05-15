@@ -181,7 +181,7 @@
             {block name='productdetails-question-on-item-form-privacy'}
                 <p class="privacy text-muted small">
                     {link href=$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL() class="popup"}
-                        {lang key='privacyPolicy'}
+                        {lang key='privacyNotice'}
                     {/link}
                 </p>
             {/block}

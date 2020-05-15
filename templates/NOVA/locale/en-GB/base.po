@@ -50,7 +50,7 @@ msgid "Unterkategorien"
 msgstr "Sub categories"
 
 msgid "Seiten der Linkgruppe 'megamenu'"
-msgstr "Pages within the link group'megamenu'"
+msgstr "Pages within the link group „megamenu„"
 
 msgid "Hersteller-Dropdown"
 msgstr "Manufacturer dropdown"

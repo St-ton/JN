@@ -379,7 +379,15 @@ class Comment implements CommentInterface
     /**
      * @inheritDoc
      */
-    public function setChildComments(object $childComment): void
+    public function setChildComments(array $childComments): void
+    {
+        $this->childComments = $childComments;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setChildComment(object $childComment): void
     {
         $this->childComments[] = $childComment;
     }

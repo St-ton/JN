@@ -139,7 +139,7 @@ interface CommentInterface
     /**
      * @return int
      */
-    public function getIsAdmin(): ?int;
+    public function getIsAdmin(): int;
 
     /**
      * @param int $parentCommentID
@@ -154,7 +154,12 @@ interface CommentInterface
     /**
      * @param object $childComment
      */
-    public function setChildComments(object $childComment): void;
+    public function setChildComment(object $childComment): void;
+
+    /**
+     * @param array $childComments
+     */
+    public function setChildComments(array $childComments): void;
 
     /**
      * @return array

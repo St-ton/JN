@@ -140,7 +140,7 @@ final class CommentList implements ItemListInterface
         foreach ($this->items as $comment) {
             foreach ($this->items as $child) {
                 if ($comment->getID() === $child->getParentCommentID()) {
-                    $comment->setChildComments($child);
+                    $comment->setChildComment($child);
                 }
             }
         }

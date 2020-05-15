@@ -180,7 +180,7 @@
 
         {if $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'P'}
             <p class="privacy text-muted small">
-                <a href="{$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->cURL}" class="popup">{lang key="privacyPolicy" section="global"}</a>
+                <a href="{$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->cURL}" class="popup">{lang key="privacyNotice" section="global"}</a>
             </p>
         {/if}
         <input type="hidden" name="a" value="{$Artikel->kArtikel}" />

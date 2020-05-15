@@ -11,7 +11,7 @@
 class Migration_20200514143500 extends Migration implements IMigration
 {
     protected $author      = 'ms';
-    protected $description = 'Adds lang var for privacy policy';
+    protected $description = 'Adds lang var for privacy notice';
 
     /**
      * @return mixed|void
@@ -19,8 +19,8 @@ class Migration_20200514143500 extends Migration implements IMigration
      */
     public function up()
     {
-        $this->setLocalization('ger', 'global', 'privacyPolicy', 'Bitte beachten Sie unsere Datenschutzerklärung');
-        $this->setLocalization('eng', 'global', 'privacyPolicy', 'Please see our Privacy Policy');
+        $this->setLocalization('ger', 'global', 'privacyNotice', 'Bitte beachten Sie unsere Datenschutzerklärung');
+        $this->setLocalization('eng', 'global', 'privacyNotice', 'Please see our Privacy Policy');
     }
 
     /**
@@ -28,6 +28,6 @@ class Migration_20200514143500 extends Migration implements IMigration
      */
     public function down()
     {
-        $this->removeLocalization('privacyPolicy', 'global');
+        $this->removeLocalization('privacyNotice', 'global');
     }
 }

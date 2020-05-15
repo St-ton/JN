@@ -56,7 +56,7 @@
                 <Option Value="Y">Aktiv</Option>
                 <Option Value="N">Inaktiv</Option>
             </Setting>
-            <Setting Description="Seiten der Linkgruppe 'megamenu'" Key="show_pages" Type="select" Value="Y">
+            <Setting Description="Seiten der Linkgruppe &quot;megamenu&quot;" Key="show_pages" Type="select" Value="Y">
                 <Option Value="Y">Aktiv</Option>
                 <Option Value="N">Inaktiv</Option>
             </Setting>

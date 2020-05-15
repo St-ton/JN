@@ -1,4 +1,4 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=__('newsCommentEdit')}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('newsCommentAnswerEdit')}
 <div id="content" class="container-fluid2">
     <form name="umfrage" method="post" action="news.php" class="navbar-form">
         {$jtl_token}
@@ -18,12 +18,12 @@
         <input type="hidden" name="parentCommentID" value="{$oNewsKommentar->getParentCommentID()}" />
         <div class="card">
             <div class="card-header">
-                <div class="subheading1">{$oNewsKommentar->getName()} - {__('newsCommentEdit')}</div>
+                <div class="subheading1">{$oNewsKommentar->getName()} - {__('newsCommentAnswerEdit')}</div>
                 <hr class="mb-n3">
             </div>
             <div class="card-body">
                 <div class="form-group form-row align-items-center">
-                    <label class="col col-sm-4 col-form-label text-sm-right" for="cName">{__('visitors')}:</label>
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="cName">{__('displayedName')}:</label>
                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         <input id="cName" name="cName" class="form-control" type="text" value="{$oNewsKommentar->getName()}" />
                         {if $oNewsKommentar->getCustomerID() === 0 && empty($oNewsKommentar->getIsAdmin())}

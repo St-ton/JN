@@ -284,7 +284,7 @@ final class Controller
     }
 
     /**
-     * @param array $data
+     * @param array $post
      * @return bool
      */
     public function insertComment(array $post): bool
@@ -297,8 +297,8 @@ final class Controller
         $insert->nAktiv          = $post['nAktiv'] ?? 1;
         $insert->cName           = $post['cName'] ?? 'Admin';
         $insert->cEmail          = $post['cEmail'] ?? '';
-        $insert->isAdmin         = $post['isAdmin'] ?? $adminID ?? null;
-        $insert->parentCommentID = $post['parentCommentID'] ?? null;
+        $insert->isAdmin         = $post['isAdmin'] ?? $adminID ?? 0;
+        $insert->parentCommentID = $post['parentCommentID'] ?? 0;
         $insert->dErstellt       = 'NOW()';
         $this->flushCache();
 

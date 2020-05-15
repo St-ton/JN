@@ -160,3 +160,12 @@ msgstr "Markierte Kommentare wurden erfolgreich gelöscht."
 
 msgid "commentReply"
 msgstr "Antwort"
+
+msgid "answerComment"
+msgstr "Auf Kommentar antworten"
+
+msgid "newsCommentAnswerEdit"
+msgstr "Antwort bearbeiten"
+
+msgid "displayedName"
+msgstr "Angezeigter Name"

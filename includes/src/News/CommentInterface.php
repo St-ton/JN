@@ -132,24 +132,24 @@ interface CommentInterface
     public function setNewsTitle(string $newsTitle): void;
 
     /**
-    * @param int|null $isAdmin
+    * @param int $isAdmin
     */
-    public function setIsAdmin(?int $isAdmin): void;
+    public function setIsAdmin(int $isAdmin): void;
 
     /**
-     * @return int|null
+     * @return int
      */
     public function getIsAdmin(): ?int;
 
     /**
-     * @param int|null $parentCommentID
+     * @param int $parentCommentID
      */
-    public function setParentCommentID(?int $parentCommentID): void;
+    public function setParentCommentID(int $parentCommentID): void;
 
     /**
-     * @return int|null
+     * @return int
      */
-    public function getParentCommentID(): ?int;
+    public function getParentCommentID(): int;
 
     /**
      * @param object $childComment

@@ -25,10 +25,8 @@
                     {__('newsComments')}
                     <hr class="my-2">
                 </div>
-
                 {foreach $comments as $comment}
-
-                    <div class="card ">
+                    <div class="card">
                         <div class="card-header">
                             <div class="form-check">
                                 <div class="custom-control custom-checkbox">
@@ -46,7 +44,7 @@
                                         </a>
                                         <a href="news.php?news=1&kNews={$oNews->getID()}&parentCommentID={$comment->getID()}{if isset($cBackPage)}&{$cBackPage}{elseif isset($cTab)}&tab={$cTab}{/if}&nkanswer=1&token={$smarty.session.jtl_token}"
                                            class="btn btn-link px-2"
-                                           title="{__('answer')}"
+                                           title="{__('answerComment')}"
                                            data-toggle="tooltip">
                                         <span class="icon-hover">
                                             <span class="fal fa-reply"></span>
@@ -85,7 +83,6 @@
                             {/if}
                         </div>
                     </div>
-
                 {/foreach}
                 <div class="card-footer save-wrapper">
                     <div class="row">

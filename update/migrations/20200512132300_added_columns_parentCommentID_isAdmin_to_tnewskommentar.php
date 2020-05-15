@@ -20,8 +20,8 @@ class Migration_20200512132300 extends Migration implements IMigration
     {
         $this->execute(
             "ALTER TABLE `tnewskommentar`
-            ADD `isAdmin` int(10) unsigned NULL COMMENT 'checks if comment was created by adminlogin' AFTER `cKommentar`,
-            ADD `parentCommentID` int(10) unsigned NULL DEFAULT NULL COMMENT 'refers to the connected comment' AFTER `isAdmin`;"
+                    ADD `parentCommentID` int(10) unsigned NOT NULL DEFAULT '0' AFTER `cKommentar`,
+                    ADD `isAdmin` int(10) unsigned NOT NULL DEFAULT '0' AFTER `parentCommentID`;"
         );
         $this->setLocalization('ger', 'news', 'commentReply', 'Antwort');
         $this->setLocalization('eng', 'news', 'commentReply', 'Answer');

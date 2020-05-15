@@ -66,12 +66,12 @@ class Comment implements CommentInterface
     private $text;
 
     /**
-     * @var int|null
+     * @var int
      */
     private $isAdmin;
 
     /**
-     * @var int|null
+     * @var int
      */
     private $parentCommentID;
 
@@ -339,7 +339,7 @@ class Comment implements CommentInterface
     /**
      * @inheritDoc
      */
-    public function getIsAdmin(): ?int
+    public function getIsAdmin(): int
     {
         return $this->isAdmin;
     }
@@ -347,7 +347,7 @@ class Comment implements CommentInterface
     /**
      * @inheritDoc
      */
-    public function setIsAdmin(?int $isAdmin): void
+    public function setIsAdmin(int $isAdmin): void
     {
         $this->isAdmin = $isAdmin;
     }
@@ -355,7 +355,7 @@ class Comment implements CommentInterface
     /**
      * @inheritDoc
      */
-    public function getParentCommentID(): ?int
+    public function getParentCommentID(): int
     {
         return $this->parentCommentID;
     }
@@ -363,7 +363,7 @@ class Comment implements CommentInterface
     /**
      * @inheritDoc
      */
-    public function setParentCommentID(?int $parentCommentID): void
+    public function setParentCommentID(int $parentCommentID): void
     {
         $this->parentCommentID = $parentCommentID;
     }

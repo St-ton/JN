@@ -140,9 +140,9 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
         }
     } elseif (Request::verifyGPCDataInt('nkanswer') === 1 && Request::verifyGPCDataInt('kNews') > 0) {
         $controller->setStep('news_kommentar_antwort_editieren');
-        $comment = new Comment($db);
-
-        if (empty($comment->loadByParentCommentID(Request::verifyGPCDataInt('parentCommentID')))) {
+        $comment         = new Comment($db);
+        $parentCommentID = Request::verifyGPCDataInt('parentCommentID');
+        if (empty($comment->loadByParentCommentID($parentCommentID))) {
             $comment->setID(0);
             $comment->setNewsID(Request::verifyGPCDataInt('kNews'));
             $comment->setCustomerID(0);
@@ -151,7 +151,7 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
             $comment->setMail('');
             $comment->setText('');
             $comment->setIsAdmin($adminID);
-            $comment->setParentCommentID(Request::verifyGPCDataInt('parentCommentID'));
+            $comment->setParentCommentID($parentCommentID);
         }
         $smarty->assign('oNewsKommentar', $comment);
     } elseif (Request::postInt('news_speichern') === 1) {

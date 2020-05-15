@@ -145,7 +145,7 @@ final class CommentList implements ItemListInterface
             }
         }
         foreach ($this->items as $key => $comment) {
-            if (!empty($comment->getParentCommentID())) {
+            if ($comment->getParentCommentID() > 0) {
                 unset($this->items[$key]);
             }
         }

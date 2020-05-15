@@ -58,8 +58,6 @@
                         </div>
                         <div class="card-body">
                             {$comment->getText()}
-
-                            {if count($comment->getChildComments()) > 0}
                                 {foreach $comment->getChildComments() as $childComment}
                                 <div class="card ">
                                     <div class="card-header">
@@ -80,7 +78,6 @@
                                     </div>
                                 </div>
                                 {/foreach}
-                            {/if}
                         </div>
                     </div>
                 {/foreach}

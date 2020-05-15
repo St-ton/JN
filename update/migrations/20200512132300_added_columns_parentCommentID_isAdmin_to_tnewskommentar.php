@@ -1,5 +1,5 @@
 <?php
-/**Added cAntwortKommentar column to tnewskommentar table*/
+/**Added isAdmin, parentCommentID columns to tnewskommentar table*/
 
 use JTL\Update\IMigration;
 use JTL\Update\Migration;

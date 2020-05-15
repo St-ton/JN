@@ -19,10 +19,10 @@ class Comment implements CommentInterface
      * @var array
      */
     protected static $mapping = [
-        'cKommentar'        => 'Text',
-        'cName'             => 'Name',
-        'dErstellt'         => 'DateCreatedCompat',
-        'dErstellt_de'      => 'DateCreatedCompat',
+        'cKommentar'   => 'Text',
+        'cName'        => 'Name',
+        'dErstellt'    => 'DateCreatedCompat',
+        'dErstellt_de' => 'DateCreatedCompat',
     ];
 
     /**

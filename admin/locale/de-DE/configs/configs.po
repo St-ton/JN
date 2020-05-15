@@ -663,10 +663,10 @@ msgid "livesuche_max_ip_count_desc"
 msgstr "Hier legen Sie fest, wie viele Einträge maximal pro Besucher und Stunde in den Suchanfragen gespeichert werden. So können Sie die Manipulation der Suchanfragen verhindern."
 
 msgid "suchfilter_anzeigen_ab_name"
-msgstr "„Suche verfeinern“ anzeigen ab"
+msgstr "Filter im „Content-Bereich“ anzeigen ab"
 
 msgid "suchfilter_anzeigen_ab_desc"
-msgstr "Hier legen Sie fest, wie viele Artikel in den Suchergebnissen mindestens angezeigt werden müssen, damit weitere Suchfilter angeboten werden."
+msgstr "Hier legen Sie fest, wie viele Artikel in den Suchergebnissen mindestens angezeigt werden müssen, damit die Filter im „Content-Bereich“ angezeigt werden."
 
 msgid "artikeluebersicht_erw_darstellung_name"
 msgstr "Erweiterte Darstellung für Artikelübersicht nutzen"

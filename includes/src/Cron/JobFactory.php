@@ -3,6 +3,7 @@
 namespace JTL\Cron;
 
 use InvalidArgumentException;
+use JTL\Cache\JTLCacheInterface;
 use JTL\Cron\Job\Dummy;
 use JTL\DB\DbInterface;
 use JTL\Mapper\JobTypeToJob;
@@ -25,14 +26,21 @@ class JobFactory
     protected $logger;
 
     /**
-     * JobFactory constructor.
-     * @param DbInterface     $db
-     * @param LoggerInterface $logger
+     * @var JTLCacheInterface
      */
-    public function __construct(DbInterface $db, LoggerInterface $logger)
+    protected $cache;
+
+    /**
+     * JobFactory constructor.
+     * @param DbInterface       $db
+     * @param LoggerInterface   $logger
+     * @param JTLCacheInterface $cache
+     */
+    public function __construct(DbInterface $db, LoggerInterface $logger, JTLCacheInterface $cache)
     {
         $this->db     = $db;
         $this->logger = $logger;
+        $this->cache  = $cache;
     }
 
     /**
@@ -47,7 +55,7 @@ class JobFactory
         } catch (InvalidArgumentException $e) {
             $class = Dummy::class;
         }
-        $job = new $class($this->db, $this->logger, new JobHydrator());
+        $job = new $class($this->db, $this->logger, new JobHydrator(), $this->cache);
         /** @var JobInterface $job */
         $job->hydrate($data);
 

@@ -58,6 +58,7 @@ class CleanupForgottenOptins extends Method implements MethodInterface
             ],
             ReturnType::ARRAY_OF_OBJECTS
         );
+
         $toptinKeys                = [];
         $tnewsletterempfaengerKeys = [];
         foreach ($result as $row) {

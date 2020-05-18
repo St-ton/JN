@@ -39,7 +39,7 @@ class Subscription
     {
         $this->setValidUntil($json->validUntil);
         $now = new DateTime();
-        $this->setExpired($this->getValidUntil() < $now);
+        $this->setExpired($json->validUntil !== null && $this->getValidUntil() < $now);
     }
 
     /**

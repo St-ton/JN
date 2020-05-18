@@ -30,6 +30,13 @@
                     </tr>
                 {/foreach}
             </table>
+            <div class="save-wrapper">
+                <div class="row">
+                    <div class="ml-auto col-sm-12 col-xl-auto">
+                        <button class="btn btn-default"><i class="fas fa-refresh"></i> {__('Update all')}</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <div class="card">

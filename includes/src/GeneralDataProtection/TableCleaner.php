@@ -46,7 +46,8 @@ class TableCleaner
         ['name' => 'CleanupGuestAccountsWithoutOrders', 'intervalDays' => 0],
         ['name' => 'CleanupNewsletterRecipients', 'intervalDays' => 30],
         ['name' => 'CleanupLogs', 'intervalDays' => 90],
-        ['name' => 'CleanupService', 'intervalDays' => 0] // multiple own intervals
+        ['name' => 'CleanupService', 'intervalDays' => 0], // multiple own intervals
+        ['name' => 'CleanupForgottenOptins', 'intervalDays' => 1]  // same as 24 hours
     ];
 
     /**

@@ -17,6 +17,11 @@
         {if $license->getValidUntil() !== null}
         <tr>
             <th>{__('Valid until')}</th>
+            <td>{$license->getValidUntil()->format('d.m.Y')}</td>
+        </tr>
+        {elseif $license->getSubscription()->getValidUntil() !== null}
+        <tr>
+            <th>{__('Valid until')}</th>
             <td>{$license->getSubscription()->getValidUntil()->format('d.m.Y')}</td>
         </tr>
         {/if}

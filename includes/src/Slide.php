@@ -3,6 +3,7 @@
 namespace JTL;
 
 use JTL\DB\ReturnType;
+use JTL\Helpers\Text;
 use stdClass;
 
 /**
@@ -179,8 +180,7 @@ class Slide
     public function save(): bool
     {
         if (!empty($this->image)) {
-            if (\JTL\Helpers\Text::startsWith($this->image, 'Bilder/')) {
-                $this->image     = \PFAD_MEDIAFILES . $this->image;
+            if (Text::startsWith($this->image, 'Bilder/')) {
                 $this->thumbnail = \PFAD_MEDIAFILES . 'Bilder/.tmb/' . \basename($this->image);
             } else {
                 $this->thumbnail = \STORAGE_OPC . '.tmb/' . \basename($this->image);

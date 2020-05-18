@@ -11,6 +11,7 @@ use JTL\License\Manager;
 use JTL\License\Mapper;
 use JTL\License\Struct\ExsLicense;
 use JTL\Plugin\Admin\StateChanger;
+use JTL\Plugin\State;
 use JTL\Shop;
 
 /**
@@ -62,7 +63,7 @@ final class LicenseCheck extends Job
         $stateChanger = new StateChanger($this->db, $this->cache);
         foreach ($expired as $item) {
             /** @var ExsLicense $item */
-            $stateChanger->deactivate($item->getReferencedItem()->getInternalID());
+            $stateChanger->deactivate($item->getReferencedItem()->getInternalID(), State::LICENSE_KEY_INVALID);
         }
     }
 }

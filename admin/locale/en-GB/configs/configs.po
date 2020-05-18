@@ -2240,6 +2240,12 @@ msgstr "Allow customer review only for items already purchased"
 msgid "bewertung_artikel_gekauft_desc"
 msgstr "Specify whether customers can only rate items that they have purchased themselves."
 
+msgid "newsletter_active_name"
+msgstr "Enable newsletter"
+
+msgid "newsletter_active_desc"
+msgstr "Specify whether to enable the newsletter."
+
 msgid "newsletter_emailmethode_name"
 msgstr "Send emails via"
 

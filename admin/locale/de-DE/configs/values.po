@@ -1583,6 +1583,12 @@ msgstr "Ja"
 msgid "bewertung_artikel_gekauft_value(N)"
 msgstr "Nein"
 
+msgid "newsletter_active_value(N)"
+msgstr "Nein"
+
+msgid "newsletter_active_value(Y)"
+msgstr "Ja"
+
 msgid "newsletter_emailmethode_value(mail)"
 msgstr "PHP mail()"
 

@@ -246,7 +246,7 @@ msgid "admin_login_logger_mode_name"
 msgstr "Anmeldeversuche von Admin protokollieren"
 
 msgid "admin_login_logger_mode_desc"
-msgstr "Hier legen Sie fest, ob fehlgeschlagene Anmeldeversuche des Admins im Backend protokolliert werden."
+msgstr "Hier legen Sie fest, ob Anmeldeversuche des Admins im Backend protokolliert werden."
 
 msgid "global_cookie_lifetime_name"
 msgstr "Cookie-Lifetime"
@@ -348,13 +348,13 @@ msgid "email_smtp_hostname_name"
 msgstr "SMTP-Hostname"
 
 msgid "email_smtp_hostname_desc"
-msgstr "Falls Sie unter „E-Mails versenden per“ die Option „SMTP“ gewählt haben, geben Sie hier die Nummer des Ports ein."
+msgstr "Falls Sie unter „E-Mails versenden per“ die Option „SMTP“ gewählt haben, geben Sie hier den Namen des Hosts ein."
 
 msgid "email_smtp_port_name"
 msgstr "SMTP-Port"
 
 msgid "email_smtp_port_desc"
-msgstr "Falls Sie unter „E-Mails versenden per“ die Option „SMTP“ gewählt haben, können Sie hier angeben, ob eine SMTP-Authentifizierung notwendig ist."
+msgstr "Falls Sie unter „E-Mails versenden per“ die Option „SMTP“ gewählt haben, geben Sie hier die Nummer des Ports ein."
 
 msgid "email_smtp_auth_name"
 msgstr "SMTP-Auth nutzen"
@@ -546,7 +546,7 @@ msgid "artikeluebersicht_kurzbeschreibung_anzeigen_name"
 msgstr "Kurzbeschreibung anzeigen"
 
 msgid "artikeluebersicht_kurzbeschreibung_anzeigen_desc"
-msgstr "Hier legen Sie fest, ob in der Artikelübersicht auch die Kurzbeschreibung eines Artikels angezeigt werden soll. Diese Einstellung gilt nur für die Listendarstellung."
+msgstr "Hier legen Sie fest, ob in der Artikelübersicht auch die Kurzbeschreibung eines Artikels angezeigt werden soll. Diese Einstellung gilt nur für die Listenansicht."
 
 msgid "artikeluebersicht_lagerbestandanzeige_anzeigen_name"
 msgstr "Hinweis auf Lieferantenbestand anzeigen"
@@ -558,13 +558,13 @@ msgid "artikeluebersicht_hersteller_anzeigen_name"
 msgstr "Hersteller bei den Artikeln anzeigen"
 
 msgid "artikeluebersicht_hersteller_anzeigen_desc"
-msgstr "Hier legen Sie fest, ob und wie der Hersteller in der Artikelübersicht angezeigt werden soll. Diese Einstellung gilt nur für die Listendarstellung."
+msgstr "Hier legen Sie fest, ob und wie der Hersteller in der Artikelübersicht angezeigt werden soll. Diese Einstellung gilt nur für die Listenansicht."
 
 msgid "artikeluebersicht_artikelproseite_name"
 msgstr "Artikel pro Seite in der Artikelübersicht"
 
 msgid "artikeluebersicht_artikelproseite_desc"
-msgstr ""
+msgstr "Diese Einstellung greift, wenn für „Artikelanzahl in Listenansicht/Galerieansicht“ im Bereich „Erweiterte Darstellung“ kein Wert eingetragen ist."
 
 msgid "artikeluebersicht_artikelsortierung_name"
 msgstr "Standardsortierung"
@@ -636,7 +636,7 @@ msgid "artikeluebersicht_vergleichsliste_anzeigen_name"
 msgstr "Vergleichslisten-Schaltfläche anzeigen"
 
 msgid "artikeluebersicht_vergleichsliste_anzeigen_desc"
-msgstr "Hier legen Sie fest, ob in der Artikelliste eine Schaltfläche angezeigt wird, mit der Artikel auf die Vergleichsliste gesetzt werden können."
+msgstr "Hier legen Sie fest, ob in der Artikelliste eine Schaltfläche angezeigt wird, mit der Artikel auf die Vergleichsliste gesetzt werden können. Dafür muss zusätzlich in den Template-Einstellungen die Funktion „Zusatzinfos zu Artikeln beim Hovern/Antippen anzeigen“ aktiviert sein"
 
 msgid "artikeluebersicht_wunschzettel_anzeigen_name"
 msgstr "Wunschzettel-Schaltfläche anzeigen"
@@ -663,10 +663,10 @@ msgid "livesuche_max_ip_count_desc"
 msgstr "Hier legen Sie fest, wie viele Einträge maximal pro Besucher und Stunde in den Suchanfragen gespeichert werden. So können Sie die Manipulation der Suchanfragen verhindern."
 
 msgid "suchfilter_anzeigen_ab_name"
-msgstr "„Suche verfeinern“ anzeigen ab"
+msgstr "Filter im „Content-Bereich“ anzeigen ab"
 
 msgid "suchfilter_anzeigen_ab_desc"
-msgstr "Hier legen Sie fest, wie viele Artikel in den Suchergebnissen mindestens angezeigt werden müssen, damit weitere Suchfilter angeboten werden."
+msgstr "Hier legen Sie fest, wie viele Artikel in den Suchergebnissen mindestens angezeigt werden müssen, damit die Filter im „Content-Bereich“ angezeigt werden."
 
 msgid "artikeluebersicht_erw_darstellung_name"
 msgstr "Erweiterte Darstellung für Artikelübersicht nutzen"
@@ -681,19 +681,19 @@ msgid "artikeluebersicht_erw_darstellung_stdansicht_desc"
 msgstr "Hier legen Sie fest, welche Ansichtsoption der Artikelübersicht Ihren Kunden standardmäßig angezeigt wird."
 
 msgid "artikeluebersicht_anzahl_darstellung1_name"
-msgstr "Artikelanzahl in Listendarstellung"
+msgstr "Artikelanzahl in Listenansicht"
 
 msgid "artikeluebersicht_anzahl_darstellung1_desc"
-msgstr "Hier legen Sie fest, wie viele Artikel in der Listendarstellung jeweils pro Seite angezeigt werden."
+msgstr "Hier legen Sie fest, wie viele Artikel in der Listenansicht jeweils pro Seite angezeigt werden."
 
 msgid "products_per_page_list_name"
 msgstr "Artikel-Auswahloptionen pro Seite in Listenansicht"
 
 msgid "products_per_page_list_desc"
-msgstr "Hier legen Sie fest, wie viele Auswahloptionen für Artikel pro Seite zur Verfügung stehen sollen. Geben Sie -1 ein, wenn alle Auswahloptionen angezeigt werden sollen."
+msgstr "Hier geben Sie die Werte ein, aus denen der Kunde im Frontend auswählen kann, wie viele Artikel pro Seite sichtbar sein sollen. Geben Sie „-1“ ein, wenn die Möglichkeit angezeigt werden soll, alle Artikel auf einer Seite anzuzeigen."
 
 msgid "artikeluebersicht_anzahl_darstellung2_name"
-msgstr "Artikelanzahl in Galeriedarstellung"
+msgstr "Artikelanzahl in Galerieansicht"
 
 msgid "artikeluebersicht_anzahl_darstellung2_desc"
 msgstr "Hier legen Sie fest, wie viele Artikel in der Galeriedarstellung jeweils pro Seite angezeigt werden."
@@ -702,7 +702,7 @@ msgid "products_per_page_gallery_name"
 msgstr "Artikel-Auswahloptionen pro Seite in Galerieansicht"
 
 msgid "products_per_page_gallery_desc"
-msgstr "Hier legen Sie fest, wie viele Auswahloptionen für Artikel pro Seite zur Verfügung stehen sollen. Geben Sie -1 ein, wenn alle Auswahloptionen angezeigt werden sollen."
+msgstr "Hier geben Sie die Werte ein, aus denen der Kunde im Frontend auswählen kann, wie viele Artikel pro Seite sichtbar sein sollen. Geben Sie „-1“ ein, wenn die Möglichkeit angezeigt werden soll, alle Artikel auf einer Seite anzuzeigen."
 
 msgid "artikeldetails_xselling_standard_anzeigen_name"
 msgstr "Standard-Cross-Selling anzeigen"
@@ -1374,7 +1374,7 @@ msgid "bestellabschluss_spamschutz_nutzen_name"
 msgstr "Spamschutz aktivieren"
 
 msgid "bestellabschluss_spamschutz_nutzen_desc"
-msgstr "Hier legen Sie fest, ob weitere Bestellungen von der gleichen IP-Adresse nur nach 2 Minuten Wartezeit möglich sind. Wird früher versucht, erneut zu bestellen, wird die Wartezeit verdoppelt, sie beträgt dann also 4, 8, 16, 32 usw. Minuten. Für diese Option muss die IP-Adresse gespeichert werden."
+msgstr "Hier legen Sie fest, ob weitere Bestellungen von der gleichen IP-Adresse nur nach 2 Minuten Wartezeit möglich sind. Wird früher versucht, erneut zu bestellen, wird die Wartezeit verdoppelt, sie beträgt dann also 4, 8, 16, 32 usw. Minuten."
 
 msgid "bestellabschluss_abschlussseite_name"
 msgstr "Abschluss-Seite nach externer Bezahlung"
@@ -1740,13 +1740,7 @@ msgid "bilder_dateiformat_name"
 msgstr "Dateiformat"
 
 msgid "bilder_dateiformat_desc"
-msgstr "Hier legen Sie fest, ob die Bilder im PNG- oder im JPEG-Format gespeichert werden sollen."
-
-msgid "bilder_skalieren_name"
-msgstr "Bilder hochskalieren"
-
-msgid "bilder_skalieren_desc"
-msgstr "Hier legen Sie fest, ob Bilder, deren Abmessungen zu gering für die angegebenen Bildgrößen sind, hochskaliert werden sollen. Bitte beachten Sie, dass bei zu großen Unterschieden verpixelte Bilder entstehen können."
+msgstr "Hier legen Sie fest, ob die Bilder im PNG- oder im JPEG-Format gespeichert werden sollen. Falls „Auto“ ausgewählt wird und der Server dies zulässt, werden alle Bilder auch im webp-Format angelegt. Dadurch wird zwar zusätzlicher Speicherpatz auf dem Server belegt, Bilder im webp-Format sind jedoch wesentlich kleiner und führen daher zu einer besseren Performance im Frontend."
 
 msgid "bilder_hintergrundfarbe_name"
 msgstr "Hintergrundfarbe"
@@ -1773,7 +1767,7 @@ msgid "sonstiges_gratisgeschenk_nutzen_desc"
 msgstr "Hier legen Sie fest, ob Gratisgeschenke im Warenkorb angeboten werden, sobald ein Kunde den dafür erforderlichen Mindestbestellwert erreicht hat."
 
 msgid "sonstiges_gratisgeschenk_anzahl_name"
-msgstr "Anzahl Gratisgeschenk auf der Übersichtsseite/im Warenkorb"
+msgstr "Anzahl Gratisgeschenke auf der Übersichtsseite/im Warenkorb"
 
 msgid "sonstiges_gratisgeschenk_anzahl_desc"
 msgstr "Hier legen Sie fest, wie viele Gratisgeschenke auf der Übersichtsseite und im Warenkorb angezeigt werden. Geben Sie 0 an, um alle Gratisgeschenke anzuzeigen."
@@ -2196,7 +2190,7 @@ msgid "bewertungserinnerung_nutzen_name"
 msgstr "Bewertungserinnerung nutzen"
 
 msgid "bewertungserinnerung_nutzen_desc"
-msgstr "Hier legen Sie fest, ob Ihre Kunden nach dem Kauf eines Artikels per E-Mail erinnert werden sollen, den Artikel zu bewerten."
+msgstr "Hier legen Sie fest, ob Ihre Kunden nach dem Kauf eines Artikels per E-Mail erinnert werden sollen, den Artikel zu bewerten. Bewertungserinnerungen werden nur an Kunden geschickt, die dem Erhalt des Newsletters per Double-Opt-In zugestimmt haben. Welche Kundengruppen dem Newsletter über Double-Opt-In zustimmen müssen, können Sie unter Marketing > Aktionen > Newsletter > Einstellungen „Double-Opt-In für folgende Kunden“ einstellen."
 
 msgid "bewertungserinnerung_kundengruppen_name"
 msgstr "Bewertungserinnerung nur zulassen für"
@@ -2523,7 +2517,7 @@ msgid "global_meta_copyright_desc"
 msgstr "Hier geben Sie das globale Copyright der Website an."
 
 msgid "global_meta_title_anhaengen_name"
-msgstr "Meta Title an Artikelseiten anhängen"
+msgstr "Meta Title an Artikeldetailseiten anhängen"
 
 msgid "global_meta_title_anhaengen_desc"
 msgstr "Diese Einstellung sorgt dafür, dass der globale Meta Title auf jeder Artikeldetailseite an den individuellen Meta Title der Seite angehängt wird."
@@ -2976,7 +2970,7 @@ msgid "cron_freq_name"
 msgstr "Server-to-Server jeden X-ten Aufruf starten"
 
 msgid "cron_type_desc"
-msgstr "Welche Methode soll verwendet werden?"
+msgstr "Legt fest, ob eine Pseudo-Cron-Methode aktiv sein soll."
 
 msgid "cron_freq_desc"
 msgstr "Startet bei jedem x-ten Seitenaufruf den Pseudo-Cron"

@@ -48,7 +48,7 @@ msgid "showedName"
 msgstr "Displayed name"
 
 msgid "multipleChoice"
-msgstr "By holding the Ctrl key, you can select multiple options."
+msgstr "Multiple selections possible."
 
 msgid "save"
 msgstr "Save"
@@ -504,7 +504,7 @@ msgid "twoFactorAuth"
 msgstr "Two-factor authentication"
 
 msgid "activate"
-msgstr "enable"
+msgstr "Enable"
 
 msgid "permissions"
 msgstr "Permissions"
@@ -1275,7 +1275,7 @@ msgid "more"
 msgstr "More"
 
 msgid "insert"
-msgstr "insert"
+msgstr "Insert"
 
 msgid "pages"
 msgstr "Pages"

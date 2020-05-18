@@ -24,5 +24,4 @@ $prefix:			'consent';
 
 /* z-index */
 
-$zindex-banner:		100000;
-$zindex-modal:		$zindex-banner + 1;
+$zindex-banner:		$zindex-modal - 1;

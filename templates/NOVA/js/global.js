@@ -518,6 +518,10 @@ $(document).ready(function () {
         }
     });
 
+    /*
+     * margin to last filter-box
+     */
+    $('aside .box[class*=box-filter-]').last().addClass('mb-5');
 
     /*
      * set bootstrap viewport
@@ -545,6 +549,16 @@ $(document).ready(function () {
     addCopyToClipboardListener();
     initWow();
     setClickableRow();
+
+    document.addEventListener('lazybeforesizes', function(e){
+        //use width of parent node instead of the image width itself
+        var parent = e.target.parentNode;
+
+        if(parent.nodeName == 'PICTURE'){
+            parent = parent.parentNode;
+        }
+        e.detail.width = parent.offsetWidth || e.detail.width;
+    });
 });
 
 function setClickableRow ()

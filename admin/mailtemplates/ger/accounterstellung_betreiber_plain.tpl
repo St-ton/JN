@@ -17,9 +17,11 @@ Zur Kontrolle hier noch einmal Ihre Kundendaten:
 {/if}{if $Kunde->cMobil}Mobil: {$Kunde->cMobil}
 {/if}{if $Kunde->cFax}Fax: {$Kunde->cFax}
 {/if}E-Mail: {$Kunde->cMail}
-Passwort: {$Kunde->cPasswortKlartext}
 {if $Kunde->cUSTID}Ust-ID: {$Kunde->cUSTID}
 {/if}
+
+Bitte setzen Sie mit Hilfe der „Passwort vergessen“-Funktion ein neues Passwort:
+{$newPasswordURL|cat:"?email="|cat:$Kunde->cMail}
 
 Mit diesen Daten können Sie sich ab sofort in Ihrem persönlichen
 Kundenkonto anmelden und den aktuellen Status Ihrer Bestellungen
